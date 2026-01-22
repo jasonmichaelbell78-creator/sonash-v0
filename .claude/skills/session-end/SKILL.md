@@ -250,7 +250,7 @@ git log --oneline -10
 **IMPORTANT:** Run this command to update session state tracking:
 
 ```bash
-node scripts/check-hook-health.js --end
+npm run hooks:health -- --end
 ```
 
 This updates the cross-session validation system so that:

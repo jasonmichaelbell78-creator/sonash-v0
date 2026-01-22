@@ -553,6 +553,86 @@ Archive 4.
 
 ---
 
+#### Review #194: PR #296 Hookify Infrastructure - Qodo + CI Pattern Compliance (2026-01-22)
+
+**Source:** Qodo Security Compliance + Code Suggestions + CI Pattern Compliance
+**PR/Branch:** PR #296 / claude/new-session-N4X6y **Suggestions:** ~50 total
+(Critical: 1, Major: 4, Minor: 3, Trivial: 2, Deferred: 1)
+
+**Context:** Review of comprehensive hook infrastructure implementation (11 new
+hooks) including agent-trigger-enforcer, plan-mode-suggestion, and security
+foundation hooks.
+
+**Patterns Identified:**
+
+1. **Arbitrary file write without path containment** (Critical)
+   - Root cause: CLAUDE_PROJECT_DIR used without validation
+   - Prevention: Always validate environment variables with path.relative()
+     containment check
+
+2. **startsWith() path validation fails on Windows** (Major)
+   - Root cause: startsWith() doesn't handle Windows paths or edge cases
+   - Prevention: Use path.relative() and check for ".." prefix with proper regex
+
+3. **readFileSync without try/catch** (Major)
+   - Root cause: existsSync doesn't guarantee successful read (race conditions,
+     permissions)
+   - Prevention: Always wrap readFileSync in try/catch
+
+4. **Template literal regex bypass** (Major - Security)
+   - Root cause: Regex patterns only match single/double quotes, not backticks
+   - Prevention: Include backticks in quote character classes: `["'\`]`
+
+**Resolution:**
+
+- Fixed: 10 items across 12 files
+  - CRITICAL: Added path containment validation to check-hook-health.js
+  - MAJOR: Added template literal support (`["'\`]`) to firestore-write-block.js
+  - MAJOR: Replaced `startsWith("/")` with `path.isAbsolute()` in 8 hooks
+  - MAJOR: Replaced `startsWith("../")` with `/^\.\.(?:[\\/]|$)/.test()` in 8
+    hooks
+  - MAJOR: Removed existsSync race conditions, kept try/catch in 10 hooks
+  - MAJOR: Fixed path containment regex in test-hooks.js
+  - MINOR: Added exit non-zero for CI in check-hook-health.js
+  - MINOR: Safe error.message access in check-hook-health.js, test-hooks.js
+  - MINOR: Removed realpathSync TOCTOU in component-size-check.js
+  - TRIVIAL: Updated session-end SKILL.md to use npm script
+- Deferred: 1 item (Hook framework consolidation - major architectural refactor)
+- Rejected: 0 items
+
+**Files Modified:**
+
+- `.claude/hooks/agent-trigger-enforcer.js` - path validation, existsSync
+  removal
+- `.claude/hooks/app-check-validator.js` - path validation, existsSync removal
+- `.claude/hooks/component-size-check.js` - path validation, TOCTOU fix
+- `.claude/hooks/firestore-write-block.js` - path validation, template literal
+  regex
+- `.claude/hooks/large-context-warning.js` - path validation, existsSync removal
+- `.claude/hooks/repository-pattern-check.js` - path validation, existsSync
+  removal
+- `.claude/hooks/test-mocking-validator.js` - path validation, existsSync
+  removal
+- `.claude/hooks/typescript-strict-check.js` - path validation, existsSync
+  removal
+- `scripts/check-hook-health.js` - path containment, CI exit code, safe error
+  handling
+- `scripts/test-hooks.js` - path regex, safe error handling
+- `.claude/skills/session-end/SKILL.md` - npm script consistency
+
+**Key Learnings:**
+
+- Hook scripts need same security rigor as production code
+- Path validation must use `path.isAbsolute()` + `/^\.\.(?:[\\/]|$)/.test()` for
+  cross-platform safety
+- Template literals can bypass quote-based regex patterns - always include
+  backticks
+- existsSync + readFileSync is not atomic - remove existsSync, keep try/catch
+- fs.realpathSync before read creates TOCTOU race - validate path statically
+  first
+
+---
+
 #### Review #193: Qodo PR Security Compliance + Code Suggestions (2026-01-21)
 
 **Source:** Qodo Security Compliance + Code Suggestions **PR/Branch:**

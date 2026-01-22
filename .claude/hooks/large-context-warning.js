@@ -70,12 +70,13 @@ if (filePath.includes("\n") || filePath.includes("\r")) {
 // Normalize backslashes
 filePath = filePath.replace(/\\/g, "/");
 
-// Block absolute paths and traversal
-if (filePath.startsWith("/") || filePath.startsWith("//") || /^[A-Za-z]:\//.test(filePath)) {
+// Block absolute paths (cross-platform) and traversal
+if (path.isAbsolute(filePath) || /^[A-Za-z]:/.test(filePath)) {
   console.log("ok");
   process.exit(0);
 }
-if (filePath.includes("/../") || filePath.startsWith("../") || filePath.endsWith("/..")) {
+// Use regex for ".." detection (handles .., ../, ..\ edge cases)
+if (filePath.includes("/../") || /^\.\.(?:[\\/]|$)/.test(filePath) || filePath.endsWith("/..")) {
   console.log("ok");
   process.exit(0);
 }
@@ -87,20 +88,18 @@ process.chdir(projectDir);
 const stateFilePath = path.resolve(projectDir, STATE_FILE);
 let state = { filesRead: [], lastReset: Date.now(), warningShown: false };
 
-// Load existing state
+// Load existing state (skip existsSync to avoid race condition)
 try {
-  if (fs.existsSync(stateFilePath)) {
-    const stateContent = fs.readFileSync(stateFilePath, "utf8");
-    state = JSON.parse(stateContent);
+  const stateContent = fs.readFileSync(stateFilePath, "utf8");
+  state = JSON.parse(stateContent);
 
-    // Reset state if older than 30 minutes (new session)
-    const thirtyMinutes = 30 * 60 * 1000;
-    if (Date.now() - state.lastReset > thirtyMinutes) {
-      state = { filesRead: [], lastReset: Date.now(), warningShown: false };
-    }
+  // Reset state if older than 30 minutes (new session)
+  const thirtyMinutes = 30 * 60 * 1000;
+  if (Date.now() - state.lastReset > thirtyMinutes) {
+    state = { filesRead: [], lastReset: Date.now(), warningShown: false };
   }
 } catch {
-  // Ignore state load errors
+  // File doesn't exist or can't be read - use default state
 }
 
 // Track this file read
@@ -122,15 +121,13 @@ try {
 // Resolve full path for line counting
 const fullPath = path.resolve(projectDir, filePath);
 
-// Check single file size (only if file exists and is readable)
+// Check single file size (skip existsSync to avoid race condition)
 let lineCount = 0;
 try {
-  if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
-    const content = fs.readFileSync(fullPath, "utf8");
-    lineCount = content.split("\n").length;
-  }
+  const content = fs.readFileSync(fullPath, "utf8");
+  lineCount = content.split("\n").length;
 } catch {
-  // Ignore read errors
+  // File doesn't exist or can't be read - lineCount stays 0
 }
 
 // Determine warnings

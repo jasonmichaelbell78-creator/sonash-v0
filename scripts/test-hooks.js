@@ -24,8 +24,9 @@ const projectDir = path.resolve(__dirname, "..");
 const hooksDir = path.join(projectDir, ".claude", "hooks");
 
 // Security: Verify hooksDir is within projectDir (path containment check)
+// Use regex for ".." detection (handles .., ../, ..\ edge cases, avoids false positives like "..hidden")
 const relHooksDir = path.relative(projectDir, hooksDir);
-if (relHooksDir.startsWith("..") || path.isAbsolute(relHooksDir)) {
+if (/^\.\.(?:[\\/]|$)/.test(relHooksDir) || relHooksDir === "" || path.isAbsolute(relHooksDir)) {
   console.error("Security error: hooks directory escapes project boundary");
   process.exit(1);
 }
@@ -265,7 +266,8 @@ function validateSyntax(hookPath) {
     execFileSync("node", ["--check", hookPath], { stdio: "pipe" });
     return { valid: true };
   } catch (error) {
-    return { valid: false, error: error.message };
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    return { valid: false, error: errorMsg };
   }
 }
 

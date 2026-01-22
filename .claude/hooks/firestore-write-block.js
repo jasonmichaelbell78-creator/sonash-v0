@@ -87,12 +87,13 @@ if (filePath.includes("\n") || filePath.includes("\r")) {
 // Normalize backslashes
 filePath = filePath.replace(/\\/g, "/");
 
-// Block absolute paths and traversal
-if (filePath.startsWith("/") || filePath.startsWith("//") || /^[A-Za-z]:\//.test(filePath)) {
+// Block absolute paths (cross-platform) and traversal
+if (path.isAbsolute(filePath) || /^[A-Za-z]:/.test(filePath)) {
   console.log("ok");
   process.exit(0);
 }
-if (filePath.includes("/../") || filePath.startsWith("../") || filePath.endsWith("/..")) {
+// Use regex for ".." detection (handles .., ../, ..\ edge cases)
+if (filePath.includes("/../") || /^\.\.(?:[\\/]|$)/.test(filePath) || filePath.endsWith("/..")) {
   console.log("ok");
   process.exit(0);
 }
@@ -110,14 +111,13 @@ if (isAllowedPath) {
   process.exit(0);
 }
 
-// If no content provided (Edit tool), read the file
+// If no content provided (Edit tool), read the file (skip existsSync to avoid race condition)
 if (!content) {
   const fullPath = path.resolve(projectDir, filePath);
   try {
-    if (fs.existsSync(fullPath)) {
-      content = fs.readFileSync(fullPath, "utf8");
-    }
+    content = fs.readFileSync(fullPath, "utf8");
   } catch {
+    // File doesn't exist or can't be read
     console.log("ok");
     process.exit(0);
   }
@@ -130,17 +130,18 @@ if (!content) {
 
 // Patterns to detect direct Firestore writes
 // These must be specific enough to avoid false positives
+// Note: Include backticks to prevent template literal bypass
 const FIRESTORE_WRITE_PATTERNS = [
   // addDoc(collection(db, "collectionName"), data)
-  /addDoc\s*\(\s*collection\s*\([^,]+,\s*["'](\w+)["']\)/g,
+  /addDoc\s*\(\s*collection\s*\([^,]+,\s*["'`](\w+)["'`]\)/g,
   // setDoc(doc(db, "collectionName", id), data)
-  /setDoc\s*\(\s*doc\s*\([^,]+,\s*["'](\w+)["']/g,
+  /setDoc\s*\(\s*doc\s*\([^,]+,\s*["'`](\w+)["'`]/g,
   // updateDoc(doc(db, "collectionName", id), data)
-  /updateDoc\s*\(\s*doc\s*\([^,]+,\s*["'](\w+)["']/g,
+  /updateDoc\s*\(\s*doc\s*\([^,]+,\s*["'`](\w+)["'`]/g,
   // deleteDoc(doc(db, "collectionName", id))
-  /deleteDoc\s*\(\s*doc\s*\([^,]+,\s*["'](\w+)["']/g,
+  /deleteDoc\s*\(\s*doc\s*\([^,]+,\s*["'`](\w+)["'`]/g,
   // db.collection("collectionName").add/set/update/delete
-  /\.collection\s*\(\s*["'](\w+)["']\s*\)\s*\.\s*(?:add|set|update|delete)/g,
+  /\.collection\s*\(\s*["'`](\w+)["'`]\s*\)\s*\.\s*(?:add|set|update|delete)/g,
 ];
 
 // Check for violations

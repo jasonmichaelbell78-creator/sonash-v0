@@ -67,12 +67,13 @@ if (filePath.includes("\n") || filePath.includes("\r")) {
 // Normalize backslashes
 filePath = filePath.replace(/\\/g, "/");
 
-// Block absolute paths and traversal
-if (filePath.startsWith("/") || filePath.startsWith("//") || /^[A-Za-z]:\//.test(filePath)) {
+// Block absolute paths (cross-platform) and traversal
+if (path.isAbsolute(filePath) || /^[A-Za-z]:/.test(filePath)) {
   console.log("ok");
   process.exit(0);
 }
-if (filePath.includes("/../") || filePath.startsWith("../") || filePath.endsWith("/..")) {
+// Use regex for ".." detection (handles .., ../, ..\ edge cases)
+if (filePath.includes("/../") || /^\.\.(?:[\\/]|$)/.test(filePath) || filePath.endsWith("/..")) {
   console.log("ok");
   process.exit(0);
 }
@@ -95,39 +96,20 @@ process.chdir(projectDir);
 // Resolve full path
 const fullPath = path.resolve(projectDir, filePath);
 
-// Verify file exists
-if (!fs.existsSync(fullPath)) {
+// Verify containment BEFORE file access (prevents TOCTOU race condition)
+// Use path.relative on resolved paths without realpathSync
+const pathRel = path.relative(projectDir, fullPath);
+if (/^\.\.(?:[\\/]|$)/.test(pathRel) || pathRel === "" || path.isAbsolute(pathRel)) {
   console.log("ok");
   process.exit(0);
 }
 
-// Verify containment
-let realPath = "";
-let realProject = "";
-try {
-  realPath = fs.realpathSync(fullPath);
-  realProject = fs.realpathSync(projectDir);
-} catch {
-  console.log("ok");
-  process.exit(0);
-}
-
-const pathRel = path.relative(realProject, realPath);
-if (
-  pathRel === "" ||
-  pathRel.startsWith(".." + path.sep) ||
-  pathRel === ".." ||
-  path.isAbsolute(pathRel)
-) {
-  console.log("ok");
-  process.exit(0);
-}
-
-// Read file and count lines
+// Read file (skip existsSync to avoid race condition - just try/catch the read)
 let content = "";
 try {
   content = fs.readFileSync(fullPath, "utf8");
 } catch {
+  // File doesn't exist or can't be read - exit cleanly
   console.log("ok");
   process.exit(0);
 }

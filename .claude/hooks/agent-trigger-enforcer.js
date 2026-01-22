@@ -93,12 +93,13 @@ if (filePath.startsWith("-") || filePath.includes("\n") || filePath.includes("\r
 // Normalize backslashes
 filePath = filePath.replace(/\\/g, "/");
 
-// Block absolute paths and traversal
-if (filePath.startsWith("/") || filePath.startsWith("//") || /^[A-Za-z]:\//.test(filePath)) {
+// Block absolute paths (cross-platform) and traversal
+if (path.isAbsolute(filePath) || /^[A-Za-z]:/.test(filePath)) {
   console.log("ok");
   process.exit(0);
 }
-if (filePath.includes("/../") || filePath.startsWith("../") || filePath.endsWith("/..")) {
+// Use regex for ".." detection (handles .., ../, ..\ edge cases)
+if (filePath.includes("/../") || /^\.\.(?:[\\/]|$)/.test(filePath) || filePath.endsWith("/..")) {
   console.log("ok");
   process.exit(0);
 }
@@ -109,11 +110,10 @@ if (filePath.includes("/../") || filePath.startsWith("../") || filePath.endsWith
 function readState() {
   const statePath = path.join(projectDir, STATE_FILE);
   try {
-    if (fs.existsSync(statePath)) {
-      return JSON.parse(fs.readFileSync(statePath, "utf8"));
-    }
+    // Skip existsSync to avoid race condition - just try to read
+    return JSON.parse(fs.readFileSync(statePath, "utf8"));
   } catch {
-    // Ignore errors
+    // File doesn't exist or can't be read - return default
   }
   return { uses: 0, firstUse: null, lastUse: null, suggestedAgents: {}, phase: 1 };
 }

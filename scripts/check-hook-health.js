@@ -16,8 +16,19 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
-// Get project directory
-const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+// Get and validate project directory (prevent arbitrary file write)
+const safeBaseDir = path.resolve(process.cwd());
+const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
+const projectDir = path.resolve(safeBaseDir, projectDirInput);
+
+// Security: Ensure projectDir is within baseDir using path.relative()
+const baseRel = path.relative(safeBaseDir, projectDir);
+if (baseRel.startsWith(".." + path.sep) || baseRel === ".." || path.isAbsolute(baseRel)) {
+  // Path traversal attempt - use safe default
+  console.error("Warning: Invalid project directory, using current directory");
+  process.exit(1);
+}
+
 const hooksDir = path.join(projectDir, ".claude", "hooks");
 const stateFile = path.join(hooksDir, ".session-state.json");
 
@@ -41,11 +52,10 @@ function log(message, color = "reset") {
  */
 function readSessionState() {
   try {
-    if (fs.existsSync(stateFile)) {
-      return JSON.parse(fs.readFileSync(stateFile, "utf8"));
-    }
+    // Skip existsSync to avoid race condition - just try to read
+    return JSON.parse(fs.readFileSync(stateFile, "utf8"));
   } catch {
-    // Ignore errors
+    // File doesn't exist or can't be read - return null
   }
   return null;
 }
@@ -153,12 +163,17 @@ function validateHooks() {
     const hookFiles = fs.readdirSync(hooksDir).filter((f) => f.endsWith(".js"));
 
     for (const file of hookFiles) {
+      // Security: Validate filename doesn't contain path traversal
+      if (file.includes("/") || file.includes("\\") || file.includes("..")) {
+        continue;
+      }
       const hookPath = path.join(hooksDir, file);
       try {
         execFileSync("node", ["--check", hookPath], { stdio: "pipe" });
         results.push({ file, valid: true });
       } catch (error) {
-        results.push({ file, valid: false, error: error.message });
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        results.push({ file, valid: false, error: errorMsg });
       }
     }
   } catch {
@@ -272,7 +287,9 @@ if (require.main === module) {
     const result = runHealthCheck({ quiet: true });
     process.exit(result.hooksValid ? 0 : 1);
   } else {
-    runHealthCheck();
+    const result = runHealthCheck();
+    // Exit non-zero if hooks are invalid (for CI integration)
+    process.exit(result.hooksValid ? 0 : 1);
   }
 }
 
