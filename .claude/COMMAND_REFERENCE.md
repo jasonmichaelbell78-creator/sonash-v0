@@ -335,9 +335,10 @@ Skill requirements
 ~240 feature and technical ideas across 21 modules. Supports commands: begin,
 evaluate, status, decide, questions, push-to-roadmap, end. **When to use:**
 Evaluating expansion ideas, tracking progress, making decisions, or resuming
-evaluation session **Example:** `/expansion begin` or `/expansion evaluate F1 5`
-**Parameters:** Subcommand (begin, evaluate, status, decide, questions,
-push-to-roadmap, end) + optional module/idea ID
+evaluation session **Example:** `/expansion-evaluation begin` or
+`/expansion-evaluation evaluate F1 5` **Parameters:** Subcommand (begin,
+evaluate, status, decide, questions, push-to-roadmap, end) + optional
+module/idea ID
 
 #### `using-superpowers`
 

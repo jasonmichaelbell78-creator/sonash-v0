@@ -10,13 +10,18 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-21 **Branch**:
-`claude/audit-copilot-expansion-work-session88` **Working On**: PR review fixes
-for documentation and security compliance **Files Modified**:
-SESSION_DECISIONS.md, AI_REVIEW_LEARNINGS_LOG.md, .gitignore,
-.vscode/settings.json (removed settings.local.json from repo) **Next Step**:
-Continue with copilot expansion work or merge PR **Uncommitted Work**: None -
-all changes committed and pushed
+**Last Checkpoint**: 2026-01-22 15:30 **Branch**: `claude/expansion-begin-eu2vQ`
+**Working On**: T4 Encryption & Passcode module evaluation (expansion-evaluation
+skill) **Files Modified**: None - all clean **Next Step**: T4.6 (Recovery Key)
+decision pending, then T4.7-T4.12 **Uncommitted Work**: No
+
+**T4 Decisions Made (5/12)**:
+
+- T4.1: Accept M5 - Tab-level PIN lock (Journal + Growth), email recovery
+- T4.2: Accept M5 - PBKDF2 key derivation (bundled)
+- T4.3: Accept M5 - AES-256-GCM encryption (bundled)
+- T4.4: Accept M5 - ALL step work & inventories encrypted
+- T4.5: Merge T4.1 - Journal encryption already covered
 
 ---
 
