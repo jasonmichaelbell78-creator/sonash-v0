@@ -7,10 +7,10 @@
 
 ## Quick Resume
 
-> **Last Session:** 2026-01-21 (Foundational Questions Complete)
-> **Last Evaluated:** None yet - foundational framework established
-> **Next Suggested:** Run `/expansion evaluate T4` to begin Phase 1 (Encryption)
-> **Open Questions:** All 12 resolved ✅
+> **Last Session:** 2026-01-21 (Foundational Questions Complete) **Last
+> Evaluated:** None yet - foundational framework established **Next Suggested:**
+> Run `/expansion evaluate T4` to begin Phase 1 (Encryption) **Open Questions:**
+> All 12 resolved ✅
 
 ---
 
@@ -60,38 +60,39 @@ This prevents ROADMAP churn and allows batch review before integration.
 
 ## Foundational Decisions
 
-All 12 foundational questions have been answered. These decisions guide all module evaluations.
+All 12 foundational questions have been answered. These decisions guide all
+module evaluations.
 
 ### Architecture Decisions
 
-| Q# | Question | Decision | Rationale |
-|----|----------|----------|-----------|
-| 1 | Offline-first priority | **Per-feature decision** | Evaluate each module's offline need individually rather than blanket policy |
-| 3 | Encryption scope | **Mandatory maximum** | All step work encrypted as much as possible; implementation details TBD during T4 |
-| 10 | Native wrapper | **Defer** | Focus on PWA first; revisit when evaluating F11/T8 |
-| 11 | Evaluation order | **Hybrid (dependency-grouped)** | Analyze F↔T connections; group related items; slot standalone technical into feature flow |
+| Q#  | Question               | Decision                        | Rationale                                                                                 |
+| --- | ---------------------- | ------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1   | Offline-first priority | **Per-feature decision**        | Evaluate each module's offline need individually rather than blanket policy               |
+| 3   | Encryption scope       | **Mandatory maximum**           | All step work encrypted as much as possible; implementation details TBD during T4         |
+| 10  | Native wrapper         | **Defer**                       | Focus on PWA first; revisit when evaluating F11/T8                                        |
+| 11  | Evaluation order       | **Hybrid (dependency-grouped)** | Analyze F↔T connections; group related items; slot standalone technical into feature flow |
 
 ### Feature Decisions
 
-| Q# | Question | Decision | Rationale |
-|----|----------|----------|-----------|
-| 4 | Nashville scope | **Nashville-first, abstracted** | Build for Nashville but with city as parameter for future expansion |
-| 5 | Sponsor model | **Push only** | Sponsee sends read-only snapshots on demand; maximum privacy and user agency |
-| 6 | Meeting finder | **Explore automation** | Already built manually; worth exploring scripts for periodic pulls + geocoding pipeline |
+| Q#  | Question        | Decision                        | Rationale                                                                               |
+| --- | --------------- | ------------------------------- | --------------------------------------------------------------------------------------- |
+| 4   | Nashville scope | **Nashville-first, abstracted** | Build for Nashville but with city as parameter for future expansion                     |
+| 5   | Sponsor model   | **Push only**                   | Sponsee sends read-only snapshots on demand; maximum privacy and user agency            |
+| 6   | Meeting finder  | **Explore automation**          | Already built manually; worth exploring scripts for periodic pulls + geocoding pipeline |
 
 ### Technical Decisions
 
-| Q# | Question | Decision | Rationale |
-|----|----------|----------|-----------|
-| 7 | IndexedDB library | **Dexie.js** | Rich query API, React `useLiveQuery` hook, declarative schema, encryption addon support |
-| 8 | PDF generation | **@react-pdf/renderer** | React component model, flexbox layout, automatic pagination; bundle size acceptable (lazy-loaded) |
-| 9 | Analytics | **Minimal custom (Tier 1 + opt-in Tier 2)** | Privacy-first; Tier 1 = anonymous aggregates, Tier 2 = explicit opt-in for richer data |
+| Q#  | Question          | Decision                                    | Rationale                                                                                         |
+| --- | ----------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 7   | IndexedDB library | **Dexie.js**                                | Rich query API, React `useLiveQuery` hook, declarative schema, encryption addon support           |
+| 8   | PDF generation    | **@react-pdf/renderer**                     | React component model, flexbox layout, automatic pagination; bundle size acceptable (lazy-loaded) |
+| 9   | Analytics         | **Minimal custom (Tier 1 + opt-in Tier 2)** | Privacy-first; Tier 1 = anonymous aggregates, Tier 2 = explicit opt-in for richer data            |
 
 ### Process Decisions
 
-| Q# | Question | Decision | Rationale |
-|----|----------|----------|-----------|
-| 12 | ROADMAP integration | **Staged with explicit push** | Log decisions during evaluation; push to ROADMAP only on user request |
+| Q#  | Question            | Decision                      | Rationale                                                             |
+| --- | ------------------- | ----------------------------- | --------------------------------------------------------------------- |
+| 12  | ROADMAP integration | **Staged with explicit push** | Log decisions during evaluation; push to ROADMAP only on user request |
 
 ---
 
@@ -100,53 +101,60 @@ All 12 foundational questions have been answered. These decisions guide all modu
 Dependency-grouped, 7-phase evaluation flow:
 
 ### Phase 1: Core Privacy Foundation
-| Order | Module | Why Here |
-|-------|--------|----------|
-| 1 | **T4** (Encryption & Passcode) | Everything depends on encryption decisions |
-| 2 | **F4** (Offline/Privacy) | Directly depends on T4; defines privacy UX |
-| 3 | **T1** (System Architecture) | Offline architecture informed by F4 needs |
-| 4 | **T3** (Offline Queue & Conflict) | Implementation details for T1 decisions |
+
+| Order | Module                            | Why Here                                   |
+| ----- | --------------------------------- | ------------------------------------------ |
+| 1     | **T4** (Encryption & Passcode)    | Everything depends on encryption decisions |
+| 2     | **F4** (Offline/Privacy)          | Directly depends on T4; defines privacy UX |
+| 3     | **T1** (System Architecture)      | Offline architecture informed by F4 needs  |
+| 4     | **T3** (Offline Queue & Conflict) | Implementation details for T1 decisions    |
 
 ### Phase 2: Core Features
-| Order | Module | Why Here |
-|-------|--------|----------|
-| 5 | **F1** (Step Work Depth) | Core feature, needs T4 encryption, T2 schema |
-| 6 | **T2** (Data Model & Firestore) | Schema decisions informed by F1 needs |
-| 7 | **F5** (Journaling & Insights) | Core feature, uses T1/T3 offline patterns |
-| 8 | **F9** (Daily Engagement) | Core feature, offline + light analytics |
+
+| Order | Module                          | Why Here                                     |
+| ----- | ------------------------------- | -------------------------------------------- |
+| 5     | **F1** (Step Work Depth)        | Core feature, needs T4 encryption, T2 schema |
+| 6     | **T2** (Data Model & Firestore) | Schema decisions informed by F1 needs        |
+| 7     | **F5** (Journaling & Insights)  | Core feature, uses T1/T3 offline patterns    |
+| 8     | **F9** (Daily Engagement)       | Core feature, offline + light analytics      |
 
 ### Phase 3: Sponsor & Sharing
-| Order | Module | Why Here |
-|-------|--------|----------|
-| 9 | **F2** (Sponsor Tooling) | Push model decided; needs T2 schema, T4 privacy |
-| 10 | **F7** (Exports & Reports) | Sharing mechanism for sponsor/self |
-| 11 | **T5** (Exports & PDF) | Technical implementation for F7 |
+
+| Order | Module                     | Why Here                                        |
+| ----- | -------------------------- | ----------------------------------------------- |
+| 9     | **F2** (Sponsor Tooling)   | Push model decided; needs T2 schema, T4 privacy |
+| 10    | **F7** (Exports & Reports) | Sharing mechanism for sponsor/self              |
+| 11    | **T5** (Exports & PDF)     | Technical implementation for F7                 |
 
 ### Phase 4: Local & Knowledge
-| Order | Module | Why Here |
-|-------|--------|----------|
-| 12 | **F3** (Nashville Advantage) | Independent, abstracted per Q4 |
-| 13 | **F6** (Recovery Knowledge Base) | Offline content availability |
+
+| Order | Module                           | Why Here                       |
+| ----- | -------------------------------- | ------------------------------ |
+| 12    | **F3** (Nashville Advantage)     | Independent, abstracted per Q4 |
+| 13    | **F6** (Recovery Knowledge Base) | Offline content availability   |
 
 ### Phase 5: Safety & Personalization
-| Order | Module | Why Here |
-|-------|--------|----------|
-| 14 | **F10** (Safety & Harm Reduction) | Privacy-sensitive (T4), critical UX |
-| 15 | **F8** (Personalization) | Data schema (T2) dependent |
+
+| Order | Module                            | Why Here                            |
+| ----- | --------------------------------- | ----------------------------------- |
+| 14    | **F10** (Safety & Harm Reduction) | Privacy-sensitive (T4), critical UX |
+| 15    | **F8** (Personalization)          | Data schema (T2) dependent          |
 
 ### Phase 6: Quality & Operations
-| Order | Module | Why Here |
-|-------|--------|----------|
-| 16 | **T7** (Tech Debt & Quality) | Informed by all prior decisions |
-| 17 | **T6** (Analytics Plan) | Now know what to measure from features |
+
+| Order | Module                       | Why Here                               |
+| ----- | ---------------------------- | -------------------------------------- |
+| 16    | **T7** (Tech Debt & Quality) | Informed by all prior decisions        |
+| 17    | **T6** (Analytics Plan)      | Now know what to measure from features |
 
 ### Phase 7: Future Vision
-| Order | Module | Why Here |
-|-------|--------|----------|
-| 18 | **F11** (Visionary/Dream Big) | Depends on native decision (T8) |
-| 19 | **T8** (Native Path) | Deferred but evaluate options |
-| 20 | **F12** (Final Gaps) | Catch-all for anything missed |
-| 21 | **T9** (Open Questions & Future) | Remaining technical questions |
+
+| Order | Module                           | Why Here                        |
+| ----- | -------------------------------- | ------------------------------- |
+| 18    | **F11** (Visionary/Dream Big)    | Depends on native decision (T8) |
+| 19    | **T8** (Native Path)             | Deferred but evaluate options   |
+| 20    | **F12** (Final Gaps)             | Catch-all for anything missed   |
+| 21    | **T9** (Open Questions & Future) | Remaining technical questions   |
 
 ---
 
@@ -240,8 +248,10 @@ _None yet - add questions as they arise during module evaluation_
 ### Session: 2026-01-21 (Foundational Framework)
 
 - Answered all 12 foundational questions
-- Established tooling decisions: Dexie.js, @react-pdf/renderer, minimal custom analytics
-- Established privacy philosophy: mandatory encryption, push-only sponsor, no Google tracking
+- Established tooling decisions: Dexie.js, @react-pdf/renderer, minimal custom
+  analytics
+- Established privacy philosophy: mandatory encryption, push-only sponsor, no
+  Google tracking
 - Created 7-phase dependency-grouped evaluation order
 - Added staged ROADMAP integration process (decisions logged, pushed on request)
 - **Ready to begin module evaluations starting with T4 (Encryption)**
@@ -338,11 +348,12 @@ _Not yet started - ~12 ideas pending (Phase 7, Order 21)_
 
 ## Staged for ROADMAP
 
-_Accepted ideas are staged here until user requests `/expansion push-to-roadmap`_
+_Accepted ideas are staged here until user requests
+`/expansion push-to-roadmap`_
 
-| ID | Idea | Target Milestone | Rationale | Date |
-|----|------|------------------|-----------|------|
-| _None yet_ | | | | |
+| ID         | Idea | Target Milestone | Rationale | Date |
+| ---------- | ---- | ---------------- | --------- | ---- |
+| _None yet_ |      |                  |           |      |
 
 ---
 
@@ -366,7 +377,7 @@ _None yet_
 
 ## Version History
 
-| Version | Date       | Description                                        |
-| ------- | ---------- | -------------------------------------------------- |
-| 1.0     | 2026-01-20 | Initial tracker creation with 21 modules           |
+| Version | Date       | Description                                                                                     |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------- |
+| 1.0     | 2026-01-20 | Initial tracker creation with 21 modules                                                        |
 | 2.0     | 2026-01-21 | Foundational framework complete; all 12 Qs answered; 7-phase eval order; staged ROADMAP process |
