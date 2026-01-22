@@ -8,8 +8,8 @@ providing value
 ## Executive Summary
 
 **Current Context Usage:** ~50K tokens on startup **Recommendation:** Reduce to
-~15-20K tokens by disabling 5 unused servers **Potential Savings:** 30-35K
-tokens (~60-70% reduction)
+~20-30K tokens by removing 3 unused servers **Actual Savings:** ~20-30K tokens
+(~40-60% reduction)
 
 ---
 
@@ -53,13 +53,12 @@ Based on `.claude/settings.local.json` permissions and SESSION_CONTEXT.md:
 
 ### Heavy Use (Keep Enabled)
 
-| Server         | Tools Used | Evidence                                                                                     |
-| -------------- | ---------- | -------------------------------------------------------------------------------------------- |
-| **serena**     | 6+ tools   | `find_symbol`, `search_for_pattern`, `write_memory`, `get_symbols_overview`, `think_about_*` |
-| **sonarcloud** | 2 tools    | `get_issues`, `get_security_hotspots` - Critical for quality                                 |
-| **playwright** | 8+ tools   | `browser_click`, `browser_snapshot`, `browser_navigate`, etc.                                |
-| **firebase**   | 3 tools    | `firebase_get_environment`, `firebase_init`, `firebase_validate_security_rules`              |
-| **filesystem** | 2 tools    | `list_directory`, `directory_tree`                                                           |
+| Server         | Tools Used | Evidence                                                                        |
+| -------------- | ---------- | ------------------------------------------------------------------------------- |
+| **sonarcloud** | 2 tools    | `get_issues`, `get_security_hotspots` - Critical for quality                    |
+| **playwright** | 8+ tools   | `browser_click`, `browser_snapshot`, `browser_navigate`, etc.                   |
+| **firebase**   | 3 tools    | `firebase_get_environment`, `firebase_init`, `firebase_validate_security_rules` |
+| **filesystem** | 2 tools    | `list_directory`, `directory_tree`                                              |
 
 ### Moderate Use (Keep Enabled)
 
@@ -92,28 +91,26 @@ Based on `.claude/settings.local.json` permissions and SESSION_CONTEXT.md:
 
 **Action:** Disable rarely-used servers
 
+Add these to `.claude/settings.json`:
+
 ```json
-// .claude/settings.json
 {
   "enableAllProjectMcpServers": false,
   "disabledMcpjsonServers": [
     "rube",
     "nextjs-devtools",
-    // ADD THESE:
-    "puppeteer", // Redundant with playwright
-    "context7", // Not used
-    "ccusage" // Unknown purpose
+    "puppeteer",
+    "context7",
+    "ccusage"
   ]
 }
 ```
 
+Note: puppeteer is redundant with playwright; context7 and ccusage are unused.
+
 **Remove from `.mcp.json`:**
 
-```json
-// DELETE these entries:
-"memory": { ... },     // Already not loaded
-"git": { ... }         // Already not loaded
-```
+Delete the `memory` and `git` server entries (already not loaded).
 
 **Estimated savings:**
 
@@ -138,16 +135,13 @@ but not actively used:
 - No active tool usage in recent commits
 - Permissions in settings.local.json are leftover from testing
 
-Remove from `.claude/settings.local.json`:
+Remove from `.claude/settings.local.json` permissions array:
 
-```json
-// DELETE these stale permissions:
-"mcp__serena__search_for_pattern",
-"mcp__serena__find_symbol",
-"mcp__serena__think_about_collected_information",
-"mcp__serena__get_symbols_overview",
-"mcp__serena__write_memory",
-```
+- `mcp__serena__search_for_pattern`
+- `mcp__serena__find_symbol`
+- `mcp__serena__think_about_collected_information`
+- `mcp__serena__get_symbols_overview`
+- `mcp__serena__write_memory`
 
 **2. Consolidate GitHub Tools**
 
@@ -302,18 +296,27 @@ grep -r "mcp__" .claude/hooks/
 
 ### Final Configuration
 
+File: `.claude/settings.local.json`
+
 ```json
-// .claude/settings.local.json
 {
   "enabledMcpjsonServers": [
-    "sonarcloud", // Code quality monitoring
-    "github", // Git operations (may be redundant with gh CLI)
-    "filesystem", // File operations
-    "playwright", // Browser automation
-    "firebase" // Deployment and cloud operations
+    "sonarcloud",
+    "github",
+    "filesystem",
+    "playwright",
+    "firebase"
   ]
 }
 ```
+
+Server purposes:
+
+- **sonarcloud**: Code quality monitoring
+- **github**: Git operations (may be redundant with gh CLI)
+- **filesystem**: File operations
+- **playwright**: Browser automation
+- **firebase**: Deployment and cloud operations
 
 **Lazy loading:** Already enabled via `.claude/settings.json` with
 `enableAllProjectMcpServers: false`

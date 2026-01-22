@@ -113,7 +113,9 @@ Beyond `SESSION_DECISIONS.md`, use these mechanisms:
 - **Plans:** `.claude/plans/` (detailed implementation plans)
 - **Checkpoints:** `/checkpoint` command updates `SESSION_CONTEXT.md` (current
   state snapshot)
-- **Serena memories:** `.serena/memories/` (cross-session context, if enabled)
+- **Pattern library:** `docs/patterns/` (canonical preserved patterns)
+- **Serena memories (optional):** `.serena/memories/` (only if Serena MCP is
+  enabled)
 
 ---
 
