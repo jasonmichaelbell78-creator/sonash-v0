@@ -584,6 +584,45 @@ TypeScript rules)
 
 **⚠️ Never bypass:** See Git Workflow section for policy.
 
+### Claude Code Hooks (Session #90)
+
+**Location:** `.claude/hooks/`
+
+Claude Code hooks provide real-time feedback during AI-assisted development.
+Configured in `.claude/settings.json`.
+
+**PostToolUse Hooks (Write/Edit):**
+
+| Hook                        | Action | Purpose                               |
+| --------------------------- | ------ | ------------------------------------- |
+| pattern-check.js            | Warn   | Anti-pattern detection                |
+| component-size-check.js     | Warn   | Component >300 lines warning          |
+| firestore-write-block.js    | BLOCK  | Prevent direct writes to protected DB |
+| test-mocking-validator.js   | BLOCK  | Ensure tests mock httpsCallable       |
+| app-check-validator.js      | Warn   | Cloud Function App Check verification |
+| typescript-strict-check.js  | Warn   | Detect `any` type usage               |
+| repository-pattern-check.js | Warn   | Firestore queries in components       |
+
+**PostToolUse Hooks (Read):**
+
+| Hook                     | Action | Purpose                           |
+| ------------------------ | ------ | --------------------------------- |
+| large-context-warning.js | Warn   | Track file reads for context size |
+
+**UserPromptSubmit Hooks:**
+
+| Hook                    | Action | Purpose                       |
+| ----------------------- | ------ | ----------------------------- |
+| analyze-user-request.js | Prompt | Check PRE-TASK triggers       |
+| session-end-reminder.js | Prompt | Detect session ending phrases |
+| decision-save-prompt.js | Prompt | Remind to document decisions  |
+
+> **BLOCKING hooks**: firestore-write-block.js and test-mocking-validator.js
+> will prevent operations that violate security patterns. All other hooks
+> provide warnings/guidance but don't block.
+
+**See:** `docs/HOOKIFY_STRATEGY.md` for full hook documentation.
+
 ### CI/CD Workflows
 
 **Location:** `.github/workflows/`

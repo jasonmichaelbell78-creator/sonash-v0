@@ -30,6 +30,36 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pattern-check.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking pattern compliance..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/component-size-check.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking component size..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/firestore-write-block.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking Firestore security..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/test-mocking-validator.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking test mocking patterns..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/app-check-validator.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking App Check..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/typescript-strict-check.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking TypeScript strictness..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/repository-pattern-check.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking repository patterns..."
           }
         ]
       },
@@ -45,6 +75,36 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pattern-check.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking pattern compliance..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/component-size-check.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking component size..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/firestore-write-block.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking Firestore security..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/test-mocking-validator.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking test mocking patterns..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/app-check-validator.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking App Check..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/typescript-strict-check.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking TypeScript strictness..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/repository-pattern-check.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking repository patterns..."
           }
         ]
       },
@@ -60,6 +120,56 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pattern-check.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking pattern compliance..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/component-size-check.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking component size..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/firestore-write-block.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking Firestore security..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/test-mocking-validator.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking test mocking patterns..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/app-check-validator.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking App Check..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/typescript-strict-check.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking TypeScript strictness..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/repository-pattern-check.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking repository patterns..."
+          }
+        ]
+      },
+      {
+        "matcher": "^(?i)read$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/large-context-warning.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Tracking context size..."
+          }
+        ]
+      },
+      {
+        "matcher": "^(?i)askuserquestion$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/decision-save-prompt.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking decision documentation..."
           }
         ]
       }
@@ -71,6 +181,11 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/analyze-user-request.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking PRE-TASK triggers..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-end-reminder.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking session status..."
           }
         ]
       }
