@@ -19,9 +19,16 @@ const { execSync, spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
-// Get project directory
+// Get project directory with path containment validation
 const projectDir = path.resolve(__dirname, "..");
 const hooksDir = path.join(projectDir, ".claude", "hooks");
+
+// Security: Verify hooksDir is within projectDir (path containment check)
+const relHooksDir = path.relative(projectDir, hooksDir);
+if (relHooksDir.startsWith("..") || path.isAbsolute(relHooksDir)) {
+  console.error("Security error: hooks directory escapes project boundary");
+  process.exit(1);
+}
 
 // Test definitions for each hook
 // Note: Some hooks read files from disk, so we test with paths that skip checks
