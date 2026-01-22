@@ -112,22 +112,30 @@ features, tooling, and process.
 4. **Evaluation order** - (a) Sequential F1-F12→T1-T9, (b) Dependency-grouped
    hybrid, (c) Random/flexible
 
-**Features (3 decisions):** 5. **Nashville scope** - (a) Nashville-only
-hardcoded, (b) Nashville-first with abstraction, (c) Multi-city from day 1 6.
-**Sponsor model** - (a) Two-way sync, (b) Push-only (sponsee sends snapshots),
-(c) Pull-only (sponsor requests data) 7. **Meeting finder** - (a) Keep manual
-process, (b) Explore automation scripts, (c) Build full automation immediately
+**Features (3 decisions):**
 
-**Technical Tooling (3 decisions):** 8. **IndexedDB library** - (a) Vanilla
-IndexedDB, (b) Dexie.js, (c) localForage, (d) PouchDB 9. **PDF generation** -
-(a) jsPDF, (b) @react-pdf/renderer, (c) pdfmake, (d) Third-party service 10.
-**Analytics approach** - (a) No analytics, (b) Minimal custom (tiered privacy),
-(c) Google Analytics 4, (d) Full product analytics platform
+5. **Nashville scope** - (a) Nashville-only hardcoded, (b) Nashville-first with
+   abstraction, (c) Multi-city from day 1
+6. **Sponsor model** - (a) Two-way sync, (b) Push-only (sponsee sends
+   snapshots), (c) Pull-only (sponsor requests data)
+7. **Meeting finder** - (a) Keep manual process, (b) Explore automation scripts,
+   (c) Build full automation immediately
 
-**Process (2 decisions):** 11. **ROADMAP integration** - (a) Immediate push to
-ROADMAP, (b) Staged with explicit push, (c) Separate tracking doc only 12.
-**Session workflow** - (a) Complete all modules in one session, (b) Checkpointed
-resumable sessions
+**Technical Tooling (3 decisions):**
+
+8. **IndexedDB library** - (a) Vanilla IndexedDB, (b) Dexie.js, (c) localForage,
+   (d) PouchDB
+9. **PDF generation** - (a) jsPDF, (b) @react-pdf/renderer, (c) pdfmake, (d)
+   Third-party service
+10. **Analytics approach** - (a) No analytics, (b) Minimal custom (tiered
+    privacy), (c) Google Analytics 4, (d) Full product analytics platform
+
+**Process (2 decisions):**
+
+11. **ROADMAP integration** - (a) Immediate push to ROADMAP, (b) Staged with
+    explicit push, (c) Separate tracking doc only
+12. **Session workflow** - (a) Complete all modules in one session, (b)
+    Checkpointed resumable sessions
 
 **User Choice:**
 

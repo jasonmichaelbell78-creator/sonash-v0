@@ -553,6 +553,56 @@ Archive 4.
 
 ---
 
+#### Review #193: Qodo PR Security Compliance + Code Suggestions (2026-01-21)
+
+**Source:** Qodo Security Compliance + Code Suggestions **PR/Branch:**
+claude/audit-copilot-expansion-work-session88 **Suggestions:** 6 total
+(Critical: 4, Major: 0, Minor: 2, Trivial: 0)
+
+**Patterns Identified:**
+
+1. **Local Config Committed**: .claude/settings.local.json should never be
+   committed
+   - Root cause: .local.json files are user-specific, not for shared repository
+   - Prevention: Ensure .local.json in .gitignore, never commit user-specific
+     config
+
+2. **Duplicate Documentation Content**: Repeated "Key Learnings" section in
+   review entry
+   - Root cause: Manual content editing without verification
+   - Prevention: Review diff before committing, use unique section markers
+
+3. **Invalid Markdown Structure**: Malformed list formatting in
+   SESSION_DECISIONS.md
+   - Root cause: Line continuation without proper list syntax
+   - Prevention: Validate markdown structure, add newlines between list items
+
+**Resolution:**
+
+- Fixed: 6 items
+  - CRITICAL: Removed .claude/settings.local.json from git tracking (security
+    exposure resolved)
+  - CRITICAL: Added .claude/settings.local.json to .gitignore (prevents future
+    commits)
+  - MINOR: Removed duplicate "Key Learnings" section in
+    AI_REVIEW_LEARNINGS_LOG.md
+  - MINOR: Fixed markdown list formatting in SESSION_DECISIONS.md (lines
+    115-130)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- .local.json files are ALWAYS user-specific and must NEVER be committed to
+  repository
+- Local config files containing user paths or broad permissions are security
+  exposures
+- Use .gitignore patterns early to prevent accidental commits of local config
+- Always validate markdown structure - malformed lists break parsing tools
+- Review diffs carefully before committing to catch duplicate content
+
+---
+
 #### Review #192: PR Documentation Lint + Qodo Suggestions (2026-01-21)
 
 **Source:** CI Documentation Linter + Qodo Code Review **PR/Branch:**
@@ -600,17 +650,6 @@ claude/audit-copilot-expansion-work-session88 **Suggestions:** 6 total
   shared workspace settings
 - Document date formats should be actual dates (YYYY-MM-DD), not placeholder
   strings
-
-- Fixed: 6 items (1 Critical CI blocker, 2 Major, 3 Minor)
-- Deferred: 0 items
-- Rejected: 0 items
-
-**Key Learnings:**
-
-- Tier 2 documentation requires Purpose, Version History, AI Instructions, Quick
-  Start sections
-- Static audit reports should never be committed - use live dashboards instead
-- IDE user-specific settings (like SonarLint connection) should be gitignored
 
 **Files Modified:**
 
