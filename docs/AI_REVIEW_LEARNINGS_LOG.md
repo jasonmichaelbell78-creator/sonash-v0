@@ -643,6 +643,42 @@ foundation hooks.
 
 ---
 
+#### Review #194: GitHub Actions Documentation Lint + Qodo MCP Audit Contradiction (2026-01-22)
+
+**Source:** Mixed (GitHub Actions CI + Qodo PR) **PR/Branch:**
+claude/mcp-optimization-session90 **Suggestions:** 6 total (Critical: 1, Major:
+2, Minor: 3, Trivial: 0)
+
+**Patterns Identified:**
+
+1. **Documentation Moved Without Standardization**: Files moved from other
+   locations need full compliance
+   - Root cause: Moved .serena memory file without adding required documentation
+     sections
+   - Prevention: Always check documentation linter requirements when moving
+     files
+2. **Self-Contradictory Audit Documentation**: Audit document recommended
+   re-enabling serena but then documented removing it
+   - Root cause: Initial analysis assumed permissions = usage; actual
+     investigation revealed stale config
+   - Prevention: Verify usage before making recommendations; update
+     contradictory sections when conclusions change
+
+**Resolution:**
+
+- Fixed: 6 items (1 Critical, 2 Major, 3 Minor)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Documentation linter enforces structure on ALL docs, including moved files
+- Audit documents must reconcile analysis/recommendations with implementation
+- MCP permissions can be stale - verify actual usage via git history
+- Lazy loading already enabled via `enableAllProjectMcpServers: false`
+
+---
+
 #### Review #193: Qodo PR Security Compliance + Code Suggestions (2026-01-21)
 
 **Source:** Qodo Security Compliance + Code Suggestions **PR/Branch:**
