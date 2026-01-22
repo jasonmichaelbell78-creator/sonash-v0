@@ -10,18 +10,21 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-22 15:30 **Branch**: `claude/expansion-begin-eu2vQ`
+**Last Checkpoint**: 2026-01-22 16:00 **Branch**: `claude/expansion-begin-eu2vQ`
 **Working On**: T4 Encryption & Passcode module evaluation (expansion-evaluation
-skill) **Files Modified**: None - all clean **Next Step**: T4.6 (Recovery Key)
-decision pending, then T4.7-T4.12 **Uncommitted Work**: No
+skill) **Files Modified**: None - all clean **Next Step**: Confirm T4.7-T4.8
+decisions, then T4.9-T4.12 **Uncommitted Work**: No
 
-**T4 Decisions Made (5/12)**:
+**T4 Decisions Made (7/12)** - Needs confirmation:
 
 - T4.1: Accept M5 - Tab-level PIN lock (Journal + Growth), email recovery
 - T4.2: Accept M5 - PBKDF2 key derivation (bundled)
 - T4.3: Accept M5 - AES-256-GCM encryption (bundled)
 - T4.4: Accept M5 - ALL step work & inventories encrypted
 - T4.5: Merge T4.1 - Journal encryption already covered
+- T4.6: Accept M5 - Recovery key (BIP39 24-word) as backup to email
+- T4.7: Accept M5 - DEK/KEK key wrapping (pending confirm)
+- T4.8: Defer - Cloud escrow redundant (pending confirm - user said "reject")
 
 ---
 
