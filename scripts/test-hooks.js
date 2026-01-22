@@ -15,7 +15,7 @@
  * From HOOKIFY_STRATEGY.md: Hook Health Infrastructure
  */
 
-const { execSync, spawnSync } = require("node:child_process");
+const { execFileSync, spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -234,7 +234,7 @@ function log(message, color = "reset") {
 // Validate syntax of a hook file
 function validateSyntax(hookPath) {
   try {
-    execSync(`node --check "${hookPath}"`, { stdio: "pipe" });
+    execFileSync("node", ["--check", hookPath], { stdio: "pipe" });
     return { valid: true };
   } catch (error) {
     return { valid: false, error: error.message };

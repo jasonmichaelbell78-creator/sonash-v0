@@ -12,7 +12,7 @@
  * Run with: npm run hooks:health
  */
 
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -155,7 +155,7 @@ function validateHooks() {
     for (const file of hookFiles) {
       const hookPath = path.join(hooksDir, file);
       try {
-        execSync(`node --check "${hookPath}"`, { stdio: "pipe" });
+        execFileSync("node", ["--check", hookPath], { stdio: "pipe" });
         results.push({ file, valid: true });
       } catch (error) {
         results.push({ file, valid: false, error: error.message });
