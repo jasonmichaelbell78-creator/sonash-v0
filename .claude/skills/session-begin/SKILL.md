@@ -68,6 +68,32 @@ can leak to shell history and process listings.
 
 ---
 
+## 0b. Cross-Session Validation (AUTOMATIC)
+
+The SessionStart hook automatically checks if the previous session ended
+properly.
+
+**If you see a "Cross-Session Warning":**
+
+1. The previous session started but /session-end was not run
+2. Consider running the missed session-end checklist items:
+   - Update SESSION_CONTEXT.md with progress from the incomplete session
+   - Check for uncommitted changes
+   - Run `npm run hooks:health` to see session statistics
+
+**Quick remediation:**
+
+```bash
+# See session state
+npm run hooks:health
+
+# Check for uncommitted work from previous session
+git status
+git log --oneline -5
+```
+
+---
+
 ## 1. Context Loading (MANDATORY)
 
 - [ ] Read [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md) - Current status,

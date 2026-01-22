@@ -584,7 +584,7 @@ TypeScript rules)
 
 **⚠️ Never bypass:** See Git Workflow section for policy.
 
-### Claude Code Hooks (Session #90)
+### Claude Code Hooks (Session #90-91)
 
 **Location:** `.claude/hooks/`
 
@@ -622,6 +622,21 @@ Configured in `.claude/settings.json`.
 > provide warnings/guidance but don't block.
 
 **See:** `docs/HOOKIFY_STRATEGY.md` for full hook documentation.
+
+**Hook Health Infrastructure (Session #91):**
+
+| Command                | Purpose                             |
+| ---------------------- | ----------------------------------- |
+| `npm run hooks:test`   | Run test suite on all hooks         |
+| `npm run hooks:health` | Check hook syntax and session state |
+
+The hook health infrastructure includes:
+
+- **Cross-session validation**: Detects if previous session didn't run
+  `/session-end`
+- **Syntax validation**: Verifies all hooks parse correctly
+- **Session state tracking**: Tracks begin/end counts in
+  `.claude/hooks/.session-state.json`
 
 ### CI/CD Workflows
 

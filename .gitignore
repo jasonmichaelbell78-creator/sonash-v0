@@ -71,6 +71,7 @@ serviceAccountKey.json
 .claude/.lockfile-hash
 .claude/.functions-lockfile-hash
 .claude/hooks/.context-tracking-state.json
+.claude/hooks/.session-state.json
 
 # Claude Code session runtime data (per-session, not tracked)
 .claude/session-activity*.jsonl

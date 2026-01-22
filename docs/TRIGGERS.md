@@ -561,6 +561,31 @@ cat .claude/settings.json | jq '.hooks.PostToolUse'
 
 ---
 
+## 3.4 Hook Health Infrastructure (Session #91)
+
+| Attribute     | Value                                                   |
+| ------------- | ------------------------------------------------------- |
+| **Location**  | `scripts/test-hooks.js`, `scripts/check-hook-health.js` |
+| **Trigger**   | Manual via npm scripts                                  |
+| **Execution** | On-demand                                               |
+
+### Scripts Available
+
+| Command                | Purpose                                |
+| ---------------------- | -------------------------------------- |
+| `npm run hooks:test`   | Run test suite on all hooks (47 tests) |
+| `npm run hooks:health` | Check hook syntax and session state    |
+
+### Features
+
+- **Cross-session validation**: Detects if previous session didn't run
+  `/session-end`
+- **Syntax validation**: Verifies all hooks parse correctly
+- **Session state tracking**: Tracks begin/end counts in
+  `.claude/hooks/.session-state.json`
+
+---
+
 # 4. NPM SCRIPTS (MANUAL TRIGGERS)
 
 ## 4.1 Pattern Compliance Check

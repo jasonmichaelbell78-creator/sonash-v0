@@ -60,6 +60,63 @@ try {
 console.log("");
 
 // =============================================================================
+// Cross-Session Validation (check if previous session ended properly)
+// =============================================================================
+
+const SESSION_STATE_FILE = path.join(projectDir, ".claude", "hooks", ".session-state.json");
+
+/**
+ * Read session state from file
+ */
+function readSessionState() {
+  try {
+    if (fs.existsSync(SESSION_STATE_FILE)) {
+      return JSON.parse(fs.readFileSync(SESSION_STATE_FILE, "utf8"));
+    }
+  } catch {
+    // Ignore errors
+  }
+  return null;
+}
+
+/**
+ * Write session state to file
+ */
+function writeSessionState(state) {
+  try {
+    fs.writeFileSync(SESSION_STATE_FILE, JSON.stringify(state, null, 2));
+  } catch {
+    // Ignore errors
+  }
+}
+
+// Check previous session state
+const previousState = readSessionState();
+if (previousState && previousState.lastBegin) {
+  const lastBegin = new Date(previousState.lastBegin);
+  const lastEnd = previousState.lastEnd ? new Date(previousState.lastEnd) : null;
+
+  // If begin exists but no end after it, warn about incomplete session
+  if (!lastEnd || lastEnd < lastBegin) {
+    const hoursAgo = Math.round((Date.now() - lastBegin.getTime()) / (1000 * 60 * 60));
+    console.log("⚠️  Cross-Session Warning:");
+    console.log(`   Previous session started ${hoursAgo}h ago without session-end`);
+    console.log("   Tip: Run /session-end skill at end of each session");
+    console.log("   This helps track progress and update documentation");
+    console.log("");
+    warnings++;
+  }
+}
+
+// Update session state for this new session
+const newState = previousState || {};
+newState.lastBegin = new Date().toISOString();
+newState.beginCount = (newState.beginCount || 0) + 1;
+// Generate a simple session ID
+newState.currentSessionId = `session-${Date.now()}`;
+writeSessionState(newState);
+
+// =============================================================================
 // Encrypted Secrets Check (for MCP tokens)
 // =============================================================================
 
