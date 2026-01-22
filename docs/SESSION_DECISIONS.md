@@ -1,9 +1,50 @@
 # Session Decision Log
 
-**Purpose:** Capture important decisions, options presented, and user choices to
-prevent loss during context compaction.
+**Document Version:** 1.1 **Last Updated:** 2026-01-21
+
+## Purpose
+
+This document captures important decisions, options presented, and user choices
+to prevent loss during context compaction. It serves as a persistent record of
+architectural, feature, and implementation decisions made during Claude Code
+sessions.
 
 **Auto-updated by:** Claude Code when presenting options or making decisions
+
+---
+
+## AI Instructions
+
+When presenting 3+ options to the user:
+
+1. Save the decision to this document AFTER user makes their choice
+2. Include context, all options presented, user's choice, and rationale
+3. Link to implementation (PR/commit/roadmap item)
+4. Update version history table
+
+Use this for:
+
+- Architectural decisions (tech stack, patterns, infrastructure)
+- Feature design choices (behavior, scope, implementation approach)
+- Process decisions (workflow, tooling, sprint planning)
+
+Do NOT use for trivial choices (naming, formatting, minor tweaks).
+
+---
+
+## Quick Start
+
+**For AI Assistants:**
+
+1. Check if presenting 3+ options → save decision after user chooses
+2. Use Decision Format template below
+3. Update Version History table
+4. Reference this doc in SESSION_CONTEXT.md when decisions are logged
+
+**For Developers:**
+
+- Review recent decisions for context on "why" choices were made
+- Check Version History for decision timeline
 
 ---
 
