@@ -1,6 +1,6 @@
 {
-  "enableAllProjectMcpServers": true,
-  "disabledMcpjsonServers": ["rube"],
+  "enableAllProjectMcpServers": false,
+  "disabledMcpjsonServers": ["rube", "serena", "nextjs-devtools"],
   "hooks": {
     "SessionStart": [
       {

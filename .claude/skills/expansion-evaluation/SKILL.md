@@ -25,22 +25,23 @@ across sessions and enables flexible navigation between modules and ideas.
 
 ## Command Reference
 
-| Command                            | Description                              |
-| ---------------------------------- | ---------------------------------------- |
-| "/expansion begin"                 | Initialize or resume evaluation          |
-| "/expansion evaluate [module]"     | Jump to a specific module                |
-| "/expansion evaluate [module] [n]" | Jump to specific idea in module          |
-| "/expansion status"                | Show progress and recent decisions       |
-| "/expansion decide [action]"       | Record decision for current idea         |
-| "/expansion questions"             | Review open questions                    |
-| "/expansion push-to-roadmap"       | Push staged decisions to ROADMAP.md      |
-| "/expansion end"                   | Save checkpoint and commit               |
+| Command                            | Description                         |
+| ---------------------------------- | ----------------------------------- |
+| "/expansion begin"                 | Initialize or resume evaluation     |
+| "/expansion evaluate [module]"     | Jump to a specific module           |
+| "/expansion evaluate [module] [n]" | Jump to specific idea in module     |
+| "/expansion status"                | Show progress and recent decisions  |
+| "/expansion decide [action]"       | Record decision for current idea    |
+| "/expansion questions"             | Review open questions               |
+| "/expansion push-to-roadmap"       | Push staged decisions to ROADMAP.md |
+| "/expansion end"                   | Save checkpoint and commit          |
 
 ### Decision Actions
 
 Use with "/expansion decide":
 
-- `accept [milestone] [reason]` - Stage idea for ROADMAP (NOT pushed immediately)
+- `accept [milestone] [reason]` - Stage idea for ROADMAP (NOT pushed
+  immediately)
 - `defer [reason]` - Good idea, but not now
 - `reject [reason]` - Doesn't fit vision/scope
 - `merge [roadmap-item] [reason]` - Already in ROADMAP, enhance existing
@@ -59,7 +60,8 @@ Use with "/expansion decide":
 
 ### Workflow
 
-1. During evaluation, accepted ideas are logged in tracker's "Staged for ROADMAP" section
+1. During evaluation, accepted ideas are logged in tracker's "Staged for
+   ROADMAP" section
 2. User can review staged items anytime with "/expansion status"
 3. User explicitly requests "/expansion push-to-roadmap" when ready
 4. Only then are items added to ROADMAP.md and committed
@@ -82,21 +84,25 @@ Use with "/expansion decide":
 These decisions guide ALL module evaluations:
 
 ### Architecture
+
 - **Offline priority:** Per-feature decision (not blanket policy)
 - **Encryption:** Mandatory maximum for all step work
 - **Native wrapper:** Deferred (focus on PWA first)
 
 ### Features
+
 - **Nashville scope:** Nashville-first, abstracted (city as parameter)
 - **Sponsor model:** Push only (sponsee sends snapshots)
 - **Meeting finder:** Explore automation scripts
 
 ### Technical Tooling
+
 - **IndexedDB:** Dexie.js (rich queries, React hooks, encryption addon)
 - **PDF generation:** @react-pdf/renderer (React components, lazy-loaded)
 - **Analytics:** Minimal custom (Tier 1 anonymous + Tier 2 opt-in)
 
 ### Process
+
 - **Evaluation order:** Hybrid dependency-grouped (7 phases)
 - **ROADMAP integration:** Staged with explicit push
 
@@ -104,15 +110,15 @@ These decisions guide ALL module evaluations:
 
 7-phase dependency-grouped flow:
 
-| Phase | Modules | Focus |
-|-------|---------|-------|
-| 1 | T4 → F4 → T1 → T3 | Core Privacy Foundation |
-| 2 | F1 → T2 → F5 → F9 | Core Features |
-| 3 | F2 → F7 → T5 | Sponsor & Sharing |
-| 4 | F3 → F6 | Local & Knowledge |
-| 5 | F10 → F8 | Safety & Personalization |
-| 6 | T7 → T6 | Quality & Operations |
-| 7 | F11 → T8 → F12 → T9 | Future Vision |
+| Phase | Modules             | Focus                    |
+| ----- | ------------------- | ------------------------ |
+| 1     | T4 → F4 → T1 → T3   | Core Privacy Foundation  |
+| 2     | F1 → T2 → F5 → F9   | Core Features            |
+| 3     | F2 → F7 → T5        | Sponsor & Sharing        |
+| 4     | F3 → F6             | Local & Knowledge        |
+| 5     | F10 → F8            | Safety & Personalization |
+| 6     | T7 → T6             | Quality & Operations     |
+| 7     | F11 → T8 → F12 → T9 | Future Vision            |
 
 ## Core Workflow
 
@@ -158,15 +164,15 @@ These decisions guide ALL module evaluations:
 
 For each idea, assess:
 
-| Criteria        | Question                                       |
-| --------------- | ---------------------------------------------- |
-| ROADMAP Overlap | Already planned? Partially covered? New?       |
-| Offline Need    | Does this feature need offline support? (Q1)   |
-| Encryption      | Does this touch sensitive data? (Q3)           |
-| Feasibility     | Can we build with current stack?               |
-| Dependencies    | What modules/features must exist first?        |
-| User Benefit    | How much value does this provide?              |
-| Effort          | S/M/L/XL estimate                              |
+| Criteria        | Question                                     |
+| --------------- | -------------------------------------------- |
+| ROADMAP Overlap | Already planned? Partially covered? New?     |
+| Offline Need    | Does this feature need offline support? (Q1) |
+| Encryption      | Does this touch sensitive data? (Q3)         |
+| Feasibility     | Can we build with current stack?             |
+| Dependencies    | What modules/features must exist first?      |
+| User Benefit    | How much value does this provide?            |
+| Effort          | S/M/L/XL estimate                            |
 
 ## State Management
 
@@ -199,4 +205,5 @@ The tracker maintains:
 4. **Preserve discussion context** - Log key points in tracker
 5. **Track dependencies** - Note when ideas depend on other modules
 6. **Allow flexibility** - User can jump to any module at any time
-7. **Remind about staged items** - On "/expansion end", show count of staged items
+7. **Remind about staged items** - On "/expansion end", show count of staged
+   items

@@ -75,5 +75,8 @@ serviceAccountKey.json
 .claude/session-activity*.jsonl
 .claude/override-log*.jsonl
 
+# Claude Code local user settings (user-specific, never commit!)
+.claude/settings.local.json
+
 # Lighthouse audit reports (generated, not tracked)
 .lighthouse/

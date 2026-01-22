@@ -553,6 +553,112 @@ Archive 4.
 
 ---
 
+#### Review #193: Qodo PR Security Compliance + Code Suggestions (2026-01-21)
+
+**Source:** Qodo Security Compliance + Code Suggestions **PR/Branch:**
+claude/audit-copilot-expansion-work-session88 **Suggestions:** 6 total
+(Critical: 4, Major: 0, Minor: 2, Trivial: 0)
+
+**Patterns Identified:**
+
+1. **Local Config Committed**: .claude/settings.local.json should never be
+   committed
+   - Root cause: .local.json files are user-specific, not for shared repository
+   - Prevention: Ensure .local.json in .gitignore, never commit user-specific
+     config
+
+2. **Duplicate Documentation Content**: Repeated "Key Learnings" section in
+   review entry
+   - Root cause: Manual content editing without verification
+   - Prevention: Review diff before committing, use unique section markers
+
+3. **Invalid Markdown Structure**: Malformed list formatting in
+   SESSION_DECISIONS.md
+   - Root cause: Line continuation without proper list syntax
+   - Prevention: Validate markdown structure, add newlines between list items
+
+**Resolution:**
+
+- Fixed: 6 items
+  - CRITICAL: Removed .claude/settings.local.json from git tracking (security
+    exposure resolved)
+  - CRITICAL: Added .claude/settings.local.json to .gitignore (prevents future
+    commits)
+  - MINOR: Removed duplicate "Key Learnings" section in
+    AI_REVIEW_LEARNINGS_LOG.md
+  - MINOR: Fixed markdown list formatting in SESSION_DECISIONS.md (lines
+    115-130)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- .local.json files are ALWAYS user-specific and must NEVER be committed to
+  repository
+- Local config files containing user paths or broad permissions are security
+  exposures
+- Use .gitignore patterns early to prevent accidental commits of local config
+- Always validate markdown structure - malformed lists break parsing tools
+- Review diffs carefully before committing to catch duplicate content
+
+---
+
+#### Review #192: PR Documentation Lint + Qodo Suggestions (2026-01-21)
+
+**Source:** CI Documentation Linter + Qodo Code Review **PR/Branch:**
+claude/audit-copilot-expansion-work-session88 **Suggestions:** 6 total
+(Critical: 1, Major: 2, Minor: 3, Trivial: 0)
+
+**Patterns Identified:**
+
+1. **Documentation Linting**: SESSION_DECISIONS.md missing required sections
+   - Root cause: Document created without proper structure/frontmatter
+   - Prevention: Follow Tier 2 doc template (Purpose + Version History + AI
+     Instructions + Quick Start)
+
+2. **Static Audit Reports Anti-Pattern**: Committing SonarCloud snapshots
+   - Root cause: Audit reports hardcoded instead of using live dashboard
+   - Prevention: Use SonarCloud dashboard + issue tracker, not static markdown
+     files
+
+3. **Sensitive IDE Configuration**: User-specific settings in shared
+   .vscode/settings.json
+   - Root cause: IDE-specific config committed to shared workspace settings
+   - Prevention: Keep user settings in .vscode/settings.json, not shared config
+
+**Resolution:**
+
+- Fixed: 6 items
+  - CRITICAL: Added Purpose, AI Instructions, Quick Start sections to
+    SESSION_DECISIONS.md (CI blocker resolved)
+  - MAJOR: Removed static audit report
+    `docs/audits/sonarcloud-snapshots/20260119.md`
+  - MAJOR: Removed sensitive `sonarlint.connectedMode.project` from
+    `.vscode/settings.json`
+  - MINOR: Fixed "Last Updated" date format in SESSION_DECISIONS.md (2026-01-21)
+  - MINOR: All structural improvements included in SESSION_DECISIONS.md fixes
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Tier 2 documentation requires specific structural sections for CI linting
+  (Purpose, AI Instructions, Quick Start, Version History)
+- Static audit reports create maintenance debt and duplication - prefer live
+  dashboards and issue trackers
+- IDE connection configurations are user-specific and should not be committed to
+  shared workspace settings
+- Document date formats should be actual dates (YYYY-MM-DD), not placeholder
+  strings
+
+**Files Modified:**
+
+- docs/SESSION_DECISIONS.md - Added missing sections, fixed date format
+- docs/audits/sonarcloud-snapshots/20260119.md - DELETED (anti-pattern)
+- .vscode/settings.json - Removed sensitive SonarLint config
+
+---
+
 #### Review #183: SonarCloud Sprint PR 2 - Critical Issues Partial (2026-01-19)
 
 **Source:** SonarCloud Sprint Plan + Code Quality Analysis **PR/Branch:**
