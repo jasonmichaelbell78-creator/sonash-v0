@@ -7,9 +7,10 @@
 
 ## Quick Resume
 
-> **Last Session:** 2026-01-22 (T4 Complete) **Last Evaluated:** T4 Encryption &
-> Passcode (12/12 ideas) **Next Suggested:** Run `/expansion evaluate F4` to
-> continue Phase 1 (Offline/Privacy) **Open Questions:** All 12 resolved ✅
+> **Last Session:** 2026-01-22 (T4 + F4 Complete) **Last Evaluated:** F4
+> Offline/Privacy (15/15 ideas) **Next Suggested:** Run `/expansion evaluate T1`
+> to continue Phase 1 (System Architecture) **Open Questions:** All 12 resolved
+> ✅
 
 ---
 
@@ -51,9 +52,9 @@ This prevents ROADMAP churn and allows batch review before integration.
 
 | Category  | Modules | Ideas | Reviewed | Decided | Pending |
 | --------- | ------- | ----- | -------- | ------- | ------- |
-| Feature   | 12      | ~175  | 0        | 0       | 175     |
+| Feature   | 12      | ~175  | 15       | 15      | 160     |
 | Technical | 9       | ~105  | 12       | 12      | 93      |
-| **Total** | **21**  | ~280  | 12       | 12      | 268     |
+| **Total** | **21**  | ~280  | 27       | 27      | 253     |
 
 ---
 
@@ -166,7 +167,7 @@ Dependency-grouped, 7-phase evaluation flow:
 | F1  | Step Work Depth         | 60    | 0        | Not Started | 2     |
 | F2  | Sponsor Tooling         | 11    | 0        | Not Started | 3     |
 | F3  | Nashville Advantage     | 8     | 0        | Not Started | 4     |
-| F4  | Offline/Privacy         | 15    | 0        | Not Started | 1     |
+| F4  | Offline/Privacy         | 15    | 15       | ✅ Complete | 1     |
 | F5  | Journaling & Insights   | 15    | 0        | Not Started | 2     |
 | F6  | Recovery Knowledge Base | 12    | 0        | Not Started | 4     |
 | F7  | Exports & Reports       | 11    | 0        | Not Started | 3     |
@@ -255,7 +256,7 @@ _None yet - add questions as they arise during module evaluation_
 - Added staged ROADMAP integration process (decisions logged, pushed on request)
 - **Ready to begin module evaluations starting with T4 (Encryption)**
 
-### Session: 2026-01-22 (T4 Complete)
+### Session: 2026-01-22 (T4 + F4 Complete)
 
 - **T4 Encryption & Passcode: 12/12 ideas evaluated**
 - Accepted (M5): T4.1-4 (PIN + PBKDF2 + AES-GCM + encrypt all), T4.6-7 (recovery
@@ -265,8 +266,19 @@ _None yet - add questions as they arise during module evaluation_
 - Merged: T4.5 (journal encryption covered by T4.1), T4.11 (phased plan
   implicit)
 - Acknowledged: T4.12 (security questions not recommended - reference)
-- **7 items staged for ROADMAP M5**
-- **Next: F4 (Offline/Privacy)**
+
+- **F4 Offline/Privacy: 15/15 ideas evaluated**
+- Accepted M5: F4.1 (trust indicator), F4.5 (guest mode), F4.7 (selective sync),
+  F4.10 (nuclear option), F4.12 (no-tracking dashboard), F4.14 (snapshot
+  protection)
+- Accepted M6+: F4.2 (burn after reading - needs native)
+- Rejected: F4.9 (flip-to-hide - unreliable)
+- Deferred: F4.4 (stealth mode), F4.11 (shoulder blur)
+- Merged: F4.3→T4.1+T4.10, F4.6→T3, F4.8→T5, F4.13→T4.9
+- Acknowledged: F4.15 (local network cloak - design principle)
+
+- **14 items staged for ROADMAP (7 T4 + 7 F4)**
+- **Next: T1 (System Architecture)**
 
 ---
 
@@ -293,9 +305,30 @@ _None yet - add questions as they arise during module evaluation_
 
 **Summary:** 6 accepted (M5), 1 deferred, 1 rejected, 2 merged, 1 acknowledged
 
-### F4: Offline/Privacy
+### F4: Offline/Privacy ✅ COMPLETE
 
-_Not yet started - 15 ideas pending (Phase 1, Order 2)_
+**Evaluated:** 2026-01-22 | **Ideas:** 15/15 | **Phase 1, Order 2**
+
+| ID    | Idea                  | Decision            | Details                                  |
+| ----- | --------------------- | ------------------- | ---------------------------------------- |
+| F4.1  | Offline Queue (Trust) | ✅ Accept M5        | Status pill showing sync state           |
+| F4.2  | Burn After Reading    | ✅ Accept M6+       | Deferred to native for secure deletion   |
+| F4.3  | Biometric Step Vault  | 🔗 Merge T4.1+T4.10 | Covered by PIN (M5) + biometric (native) |
+| F4.4  | Stealth Mode          | ⏸️ Defer            | Requires native for icon switching       |
+| F4.5  | Guest Mode (Sandbox)  | ✅ Accept M5        | Try before sign-up with local storage    |
+| F4.6  | Conflict-Safe Sync    | 🔗 Merge T3         | Will evaluate with T3 module             |
+| F4.7  | Selective Sync        | ✅ Accept M5        | Granular privacy toggles per data type   |
+| F4.8  | Metadata Scrubber     | 🔗 Merge T5         | Will implement with exports              |
+| F4.9  | Flip-to-Hide Gesture  | ❌ Reject           | Auto-lock sufficient; unreliable in PWA  |
+| F4.10 | Nuclear Option        | ✅ Accept M5        | 3-step account deletion + GDPR           |
+| F4.11 | Shoulder Surf Blur    | ⏸️ Defer            | Nice-to-have; auto-lock covers use case  |
+| F4.12 | No-Tracking Dashboard | ✅ Accept M5        | Transparency screen in settings          |
+| F4.13 | Inactivity Lock       | 🔗 Merge T4.9       | Already covered by auto-lock             |
+| F4.14 | Snapshot Protection   | ✅ Accept M5        | Logo overlay on app background           |
+| F4.15 | Local Network Cloak   | 📋 Acknowledge      | Design principle; in privacy dashboard   |
+
+**Summary:** 6 accepted M5, 1 accepted M6+, 2 deferred, 1 rejected, 4 merged, 1
+acknowledged
 
 ### T1: System Architecture
 
@@ -380,23 +413,32 @@ _Not yet started - ~12 ideas pending (Phase 7, Order 21)_
 _Accepted ideas are staged here until user requests
 `/expansion push-to-roadmap`_
 
-| ID   | Idea                              | Target Milestone | Rationale                                  | Date       |
-| ---- | --------------------------------- | ---------------- | ------------------------------------------ | ---------- |
-| T4.1 | Tab-level PIN passcode            | M5               | Core encryption feature; privacy-first     | 2026-01-22 |
-| T4.2 | PBKDF2 key derivation             | M5               | Bundled with T4.1                          | 2026-01-22 |
-| T4.3 | AES-256-GCM encryption            | M5               | Bundled with T4.1                          | 2026-01-22 |
-| T4.4 | Encrypt ALL step work/inventories | M5               | Maximum privacy for sensitive content      | 2026-01-22 |
-| T4.6 | Recovery key generation           | M5               | Critical for user data recovery            | 2026-01-22 |
-| T4.7 | DEK/KEK key wrapping model        | M5               | Industry-standard; enables future features | 2026-01-22 |
-| T4.9 | Auto-lock timeout                 | M5               | Standard security UX; configurable         | 2026-01-22 |
+| ID    | Idea                              | Target Milestone | Rationale                                  | Date       |
+| ----- | --------------------------------- | ---------------- | ------------------------------------------ | ---------- |
+| T4.1  | Tab-level PIN passcode            | M5               | Core encryption feature; privacy-first     | 2026-01-22 |
+| T4.2  | PBKDF2 key derivation             | M5               | Bundled with T4.1                          | 2026-01-22 |
+| T4.3  | AES-256-GCM encryption            | M5               | Bundled with T4.1                          | 2026-01-22 |
+| T4.4  | Encrypt ALL step work/inventories | M5               | Maximum privacy for sensitive content      | 2026-01-22 |
+| T4.6  | Recovery key generation           | M5               | Critical for user data recovery            | 2026-01-22 |
+| T4.7  | DEK/KEK key wrapping model        | M5               | Industry-standard; enables future features | 2026-01-22 |
+| T4.9  | Auto-lock timeout                 | M5               | Standard security UX; configurable         | 2026-01-22 |
+| F4.1  | Offline Queue (Trust Indicator)   | M5               | Visible sync status; builds user trust     | 2026-01-22 |
+| F4.2  | Burn After Reading                | M6+              | Secure deletion requires native app        | 2026-01-22 |
+| F4.5  | Guest Mode (Sandbox)              | M5               | Try before sign-up; privacy-first          | 2026-01-22 |
+| F4.7  | Selective Sync                    | M5               | Granular control over cloud sync           | 2026-01-22 |
+| F4.10 | Nuclear Option (Account Delete)   | M5               | GDPR compliance; 3-step deletion           | 2026-01-22 |
+| F4.12 | No-Tracking Dashboard             | M5               | Transparency builds trust                  | 2026-01-22 |
+| F4.14 | Snapshot Protection               | M5               | Prevents app switcher snooping             | 2026-01-22 |
 
 ---
 
 ## Deferred Ideas Summary
 
-| ID    | Idea             | Reason                               | Revisit When |
-| ----- | ---------------- | ------------------------------------ | ------------ |
-| T4.10 | Biometric unlock | Requires native app (PWA limitation) | T8 eval      |
+| ID    | Idea               | Reason                                  | Revisit When |
+| ----- | ------------------ | --------------------------------------- | ------------ |
+| T4.10 | Biometric unlock   | Requires native app (PWA limitation)    | T8 eval      |
+| F4.4  | Stealth Mode       | Requires native for icon switching      | T8 eval      |
+| F4.11 | Shoulder Surf Blur | Nice-to-have; auto-lock covers use case | Post-launch  |
 
 ---
 
@@ -405,6 +447,7 @@ _Accepted ideas are staged here until user requests
 | ID   | Idea                         | Reason                                                          |
 | ---- | ---------------------------- | --------------------------------------------------------------- |
 | T4.8 | Cloud escrow (encrypted key) | Conflicts with privacy-first; creates server-side attack vector |
+| F4.9 | Flip-to-Hide Gesture         | Auto-lock sufficient; accelerometer unreliable in PWA           |
 
 ---
 
