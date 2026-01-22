@@ -508,17 +508,18 @@ feedback on code quality, security, and best practices.
 
 ### Hooks Implemented
 
-| Hook                        | Trigger     | Action | Purpose                               |
-| --------------------------- | ----------- | ------ | ------------------------------------- |
-| pattern-check.js            | Write/Edit  | Warn   | Anti-pattern detection                |
-| component-size-check.js     | Write/Edit  | Warn   | Component >300 lines warning          |
-| firestore-write-block.js    | Write/Edit  | Block  | Prevent direct writes to protected DB |
-| test-mocking-validator.js   | Write/Edit  | Block  | Ensure tests mock httpsCallable       |
-| app-check-validator.js      | Write/Edit  | Warn   | Cloud Function App Check verification |
-| typescript-strict-check.js  | Write/Edit  | Warn   | Detect `any` type usage               |
-| repository-pattern-check.js | Write/Edit  | Warn   | Firestore queries in components       |
-| large-context-warning.js    | Read        | Warn   | Track file reads for context bloat    |
-| decision-save-prompt.js     | AskQuestion | Prompt | Remind to document decisions          |
+| Hook                        | Trigger     | Action  | Purpose                               |
+| --------------------------- | ----------- | ------- | ------------------------------------- |
+| pattern-check.js            | Write/Edit  | Warn    | Anti-pattern detection                |
+| component-size-check.js     | Write/Edit  | Warn    | Component >300 lines warning          |
+| firestore-write-block.js    | Write/Edit  | Block   | Prevent direct writes to protected DB |
+| test-mocking-validator.js   | Write/Edit  | Block   | Ensure tests mock httpsCallable       |
+| app-check-validator.js      | Write/Edit  | Warn    | Cloud Function App Check verification |
+| typescript-strict-check.js  | Write/Edit  | Warn    | Detect `any` type usage               |
+| repository-pattern-check.js | Write/Edit  | Warn    | Firestore queries in components       |
+| agent-trigger-enforcer.js   | Write/Edit  | Suggest | Recommend agents for code changes     |
+| large-context-warning.js    | Read        | Warn    | Track file reads for context bloat    |
+| decision-save-prompt.js     | AskQuestion | Prompt  | Remind to document decisions          |
 
 ### Verification
 

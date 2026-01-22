@@ -154,6 +154,34 @@ const HOOK_TESTS = {
     ],
   },
 
+  "agent-trigger-enforcer.js": {
+    description: "Agent trigger enforcer (Phase 1 - suggest)",
+    tests: [
+      {
+        name: "Pass - non-code file",
+        input: JSON.stringify({ file_path: "README.md" }),
+        expectOk: true,
+      },
+      {
+        name: "Pass - test file (excluded)",
+        input: JSON.stringify({ file_path: "lib/utils.test.ts" }),
+        expectOk: true,
+      },
+      {
+        // Note: suggestions only happen once per day, so we don't check stderr
+        name: "Pass - code file (non-blocking)",
+        input: JSON.stringify({ file_path: "lib/service.ts" }),
+        expectOk: true, // Non-blocking
+      },
+      {
+        // Note: suggestions only happen once per day, so we don't check stderr
+        name: "Pass - cloud function file (non-blocking)",
+        input: JSON.stringify({ file_path: "functions/src/handler.ts" }),
+        expectOk: true, // Non-blocking
+      },
+    ],
+  },
+
   // UserPromptSubmit hooks
   "plan-mode-suggestion.js": {
     description: "Plan mode suggestion for complex tasks",

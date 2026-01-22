@@ -593,15 +593,16 @@ Configured in `.claude/settings.json`.
 
 **PostToolUse Hooks (Write/Edit):**
 
-| Hook                        | Action | Purpose                               |
-| --------------------------- | ------ | ------------------------------------- |
-| pattern-check.js            | Warn   | Anti-pattern detection                |
-| component-size-check.js     | Warn   | Component >300 lines warning          |
-| firestore-write-block.js    | BLOCK  | Prevent direct writes to protected DB |
-| test-mocking-validator.js   | BLOCK  | Ensure tests mock httpsCallable       |
-| app-check-validator.js      | Warn   | Cloud Function App Check verification |
-| typescript-strict-check.js  | Warn   | Detect `any` type usage               |
-| repository-pattern-check.js | Warn   | Firestore queries in components       |
+| Hook                        | Action  | Purpose                               |
+| --------------------------- | ------- | ------------------------------------- |
+| pattern-check.js            | Warn    | Anti-pattern detection                |
+| component-size-check.js     | Warn    | Component >300 lines warning          |
+| firestore-write-block.js    | BLOCK   | Prevent direct writes to protected DB |
+| test-mocking-validator.js   | BLOCK   | Ensure tests mock httpsCallable       |
+| app-check-validator.js      | Warn    | Cloud Function App Check verification |
+| typescript-strict-check.js  | Warn    | Detect `any` type usage               |
+| repository-pattern-check.js | Warn    | Firestore queries in components       |
+| agent-trigger-enforcer.js   | Suggest | Recommend agents for code changes     |
 
 **PostToolUse Hooks (Read):**
 

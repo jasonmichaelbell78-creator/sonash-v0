@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 1.6 **Last Updated:** 2026-01-22 **Purpose:** Comprehensive
+**Version:** 1.7 **Last Updated:** 2026-01-22 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -1401,6 +1401,22 @@ Write, Edit, or MultiEdit tools **What it does:**
 - Enforces code quality standards **Location:** `.claude/hooks/pattern-check.js`
   **Status Message:** "Checking pattern compliance..."
 
+#### `agent-trigger-enforcer.js`
+
+**Description:** Agent usage recommendation hook with phase evolution **When
+triggered:** After Write, Edit, or MultiEdit tools on code files **What it
+does:**
+
+- Tracks file modifications and suggests appropriate agents
+- Phase 1 (current): SUGGEST agent usage based on file patterns
+- Phase 2 trigger: After 50 uses or 30 days, notifies to consider warnings
+- Phase 3 trigger: After 100 uses or 60 days, notifies to consider blocking
+- Recommends code-reviewer for TS/JS files
+- Recommends security-auditor for Cloud Functions and Firestore rules
+- Tracks state in `.claude/hooks/.agent-trigger-state.json` **Location:**
+  `.claude/hooks/agent-trigger-enforcer.js` **Status Message:** "Checking agent
+  recommendations..."
+
 ### UserPromptSubmit Hooks
 
 #### `analyze-user-request.js`
@@ -1599,6 +1615,8 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                         |
 | ------- | ---------- | --------------------------------------------------------------- |
+| 1.7     | 2026-01-22 | Add agent-trigger-enforcer hook with phase notifications        |
+| 1.6     | 2026-01-22 | Add plan-mode-suggestion hook for complex task detection        |
 | 1.5     | 2026-01-21 | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook |
 | 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas                   |
 | 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions                 |

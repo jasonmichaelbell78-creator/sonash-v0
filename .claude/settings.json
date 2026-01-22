@@ -60,6 +60,11 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/repository-pattern-check.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking repository patterns..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/agent-trigger-enforcer.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking agent recommendations..."
           }
         ]
       },
@@ -105,6 +110,11 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/repository-pattern-check.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking repository patterns..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/agent-trigger-enforcer.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking agent recommendations..."
           }
         ]
       },
@@ -150,6 +160,11 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/repository-pattern-check.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking repository patterns..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/agent-trigger-enforcer.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking agent recommendations..."
           }
         ]
       },
