@@ -10,14 +10,19 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-22 14:30 **Branch**: `claude/expansion-begin-eu2vQ`
+**Last Checkpoint**: 2026-01-22 15:00 **Branch**: `claude/expansion-begin-eu2vQ`
 **Working On**: T4 Encryption & Passcode module evaluation (expansion-evaluation
 skill) **Files Modified**: None - all clean **Next Step**: Continue T4
-evaluation - T4.2 PBKDF2 decision pending, then T4.3-T4.12 **Uncommitted Work**:
+evaluation - T4.6 (Recovery Key) next, then T4.7-T4.12 **Uncommitted Work**:
 No - tracker updates pending (will commit at /expansion end)
 
-**T4.1 Decision Made**: Accept M5 - Tab-level PIN lock (Journal + Growth) with
-full encryption, email recovery, biometrics deferred to native
+**T4 Decisions Made (5/12)**:
+
+- T4.1: Accept M5 - Tab-level PIN lock (Journal + Growth), email recovery
+- T4.2: Accept M5 - PBKDF2 key derivation (bundled)
+- T4.3: Accept M5 - AES-256-GCM encryption (bundled)
+- T4.4: Accept M5 - ALL step work & inventories encrypted
+- T4.5: Merge T4.1 - Journal encryption already covered
 
 ---
 
