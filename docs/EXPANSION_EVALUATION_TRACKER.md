@@ -7,10 +7,9 @@
 
 ## Quick Resume
 
-> **Last Session:** 2026-01-21 (Foundational Questions Complete) **Last
-> Evaluated:** None yet - foundational framework established **Next Suggested:**
-> Run `/expansion evaluate T4` to begin Phase 1 (Encryption) **Open Questions:**
-> All 12 resolved ✅
+> **Last Session:** 2026-01-22 (T4 Complete) **Last Evaluated:** T4 Encryption &
+> Passcode (12/12 ideas) **Next Suggested:** Run `/expansion evaluate F4` to
+> continue Phase 1 (Offline/Privacy) **Open Questions:** All 12 resolved ✅
 
 ---
 
@@ -53,8 +52,8 @@ This prevents ROADMAP churn and allows batch review before integration.
 | Category  | Modules | Ideas | Reviewed | Decided | Pending |
 | --------- | ------- | ----- | -------- | ------- | ------- |
 | Feature   | 12      | ~175  | 0        | 0       | 175     |
-| Technical | 9       | ~105  | 0        | 0       | 105     |
-| **Total** | **21**  | ~280  | 0        | 0       | 280     |
+| Technical | 9       | ~105  | 12       | 12      | 93      |
+| **Total** | **21**  | ~280  | 12       | 12      | 268     |
 
 ---
 
@@ -184,7 +183,7 @@ Dependency-grouped, 7-phase evaluation flow:
 | T1  | System Architecture      | ~18   | 0        | Not Started | 1     |
 | T2  | Data Model & Firestore   | ~12   | 0        | Not Started | 2     |
 | T3  | Offline Queue & Conflict | ~15   | 0        | Not Started | 1     |
-| T4  | Encryption & Passcode    | ~12   | 0        | Not Started | 1     |
+| T4  | Encryption & Passcode    | 12    | 12       | ✅ Complete | 1     |
 | T5  | Exports & PDF            | ~10   | 0        | Not Started | 3     |
 | T6  | Analytics Plan           | ~8    | 0        | Not Started | 6     |
 | T7  | Tech Debt & Quality      | ~10   | 0        | Not Started | 6     |
@@ -256,13 +255,43 @@ _None yet - add questions as they arise during module evaluation_
 - Added staged ROADMAP integration process (decisions logged, pushed on request)
 - **Ready to begin module evaluations starting with T4 (Encryption)**
 
+### Session: 2026-01-22 (T4 Complete)
+
+- **T4 Encryption & Passcode: 12/12 ideas evaluated**
+- Accepted (M5): T4.1-4 (PIN + PBKDF2 + AES-GCM + encrypt all), T4.6-7 (recovery
+  key + DEK/KEK), T4.9 (auto-lock)
+- Rejected: T4.8 (cloud escrow - conflicts with privacy-first)
+- Deferred: T4.10 (biometric - requires native app)
+- Merged: T4.5 (journal encryption covered by T4.1), T4.11 (phased plan
+  implicit)
+- Acknowledged: T4.12 (security questions not recommended - reference)
+- **7 items staged for ROADMAP M5**
+- **Next: F4 (Offline/Privacy)**
+
 ---
 
 ## Module Evaluations
 
-### T4: Encryption & Passcode
+### T4: Encryption & Passcode ✅ COMPLETE
 
-_Not yet started - ~12 ideas pending (Phase 1, Order 1)_
+**Evaluated:** 2026-01-22 | **Ideas:** 12/12 | **Phase 1, Order 1**
+
+| ID    | Idea                     | Decision       | Details                                    |
+| ----- | ------------------------ | -------------- | ------------------------------------------ |
+| T4.1  | 6-digit PIN passcode     | ✅ Accept M5   | Tab-level PIN lock (Journal + Growth tabs) |
+| T4.2  | PBKDF2 key derivation    | ✅ Accept M5   | Bundled with T4.1                          |
+| T4.3  | AES-256-GCM encryption   | ✅ Accept M5   | Bundled with T4.1                          |
+| T4.4  | Encrypt Step 4 inventory | ✅ Accept M5   | ALL step work & inventories encrypted      |
+| T4.5  | Encrypt journal entries  | 🔗 Merge T4.1  | Already covered by tab-level encryption    |
+| T4.6  | Recovery key generation  | ✅ Accept M5   | Recovery key only; no server-side recovery |
+| T4.7  | DEK/KEK key wrapping     | ✅ Accept M5   | Industry-standard key architecture         |
+| T4.8  | Cloud escrow (encrypted) | ❌ Reject      | Conflicts with privacy-first architecture  |
+| T4.9  | Auto-lock timeout        | ✅ Accept M5   | Configurable (default 5 min)               |
+| T4.10 | Biometric unlock         | ⏸️ Defer       | Requires native app; revisit at T8         |
+| T4.11 | Phase 1 vs Phase 2 plan  | 🔗 Merge       | Already implicit in accepted items         |
+| T4.12 | Security questions       | 📋 Acknowledge | Reference; confirms correct approach       |
+
+**Summary:** 6 accepted (M5), 1 deferred, 1 rejected, 2 merged, 1 acknowledged
 
 ### F4: Offline/Privacy
 
@@ -351,21 +380,31 @@ _Not yet started - ~12 ideas pending (Phase 7, Order 21)_
 _Accepted ideas are staged here until user requests
 `/expansion push-to-roadmap`_
 
-| ID         | Idea | Target Milestone | Rationale | Date |
-| ---------- | ---- | ---------------- | --------- | ---- |
-| _None yet_ |      |                  |           |      |
+| ID   | Idea                              | Target Milestone | Rationale                                  | Date       |
+| ---- | --------------------------------- | ---------------- | ------------------------------------------ | ---------- |
+| T4.1 | Tab-level PIN passcode            | M5               | Core encryption feature; privacy-first     | 2026-01-22 |
+| T4.2 | PBKDF2 key derivation             | M5               | Bundled with T4.1                          | 2026-01-22 |
+| T4.3 | AES-256-GCM encryption            | M5               | Bundled with T4.1                          | 2026-01-22 |
+| T4.4 | Encrypt ALL step work/inventories | M5               | Maximum privacy for sensitive content      | 2026-01-22 |
+| T4.6 | Recovery key generation           | M5               | Critical for user data recovery            | 2026-01-22 |
+| T4.7 | DEK/KEK key wrapping model        | M5               | Industry-standard; enables future features | 2026-01-22 |
+| T4.9 | Auto-lock timeout                 | M5               | Standard security UX; configurable         | 2026-01-22 |
 
 ---
 
 ## Deferred Ideas Summary
 
-_None yet_
+| ID    | Idea             | Reason                               | Revisit When |
+| ----- | ---------------- | ------------------------------------ | ------------ |
+| T4.10 | Biometric unlock | Requires native app (PWA limitation) | T8 eval      |
 
 ---
 
 ## Rejected Ideas Summary
 
-_None yet_
+| ID   | Idea                         | Reason                                                          |
+| ---- | ---------------------------- | --------------------------------------------------------------- |
+| T4.8 | Cloud escrow (encrypted key) | Conflicts with privacy-first; creates server-side attack vector |
 
 ---
 

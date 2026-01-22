@@ -10,18 +10,19 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-22 15:30 **Branch**: `claude/expansion-begin-eu2vQ`
-**Working On**: T4 Encryption & Passcode module evaluation (expansion-evaluation
-skill) **Files Modified**: None - all clean **Next Step**: T4.6 (Recovery Key)
-decision pending, then T4.7-T4.12 **Uncommitted Work**: No
+**Last Checkpoint**: 2026-01-22 **Branch**: `claude/expansion-begin-eu2vQ`
+**Working On**: Expansion evaluation - F4 Offline/Privacy next
+(expansion-evaluation skill) **Files Modified**: EXPANSION_EVALUATION_TRACKER.md
+**Next Step**: F4.1-F4.15 evaluation (Phase 1, Order 2) **Uncommitted Work**:
+Yes - T4 completion updates
 
-**T4 Decisions Made (5/12)**:
+**T4 Complete (12/12)**:
 
-- T4.1: Accept M5 - Tab-level PIN lock (Journal + Growth), email recovery
-- T4.2: Accept M5 - PBKDF2 key derivation (bundled)
-- T4.3: Accept M5 - AES-256-GCM encryption (bundled)
-- T4.4: Accept M5 - ALL step work & inventories encrypted
-- T4.5: Merge T4.1 - Journal encryption already covered
+- ✅ Accepted M5: T4.1-4, T4.6-7, T4.9 (7 items staged for ROADMAP)
+- ❌ Rejected: T4.8 (cloud escrow)
+- ⏸️ Deferred: T4.10 (biometric - revisit T8)
+- 🔗 Merged: T4.5, T4.11
+- 📋 Acknowledged: T4.12
 
 ---
 
