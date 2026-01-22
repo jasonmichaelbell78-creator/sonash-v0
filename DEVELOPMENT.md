@@ -615,7 +615,7 @@ Configured in `.claude/settings.json`.
 | ----------------------- | ------ | ----------------------------- |
 | analyze-user-request.js | Prompt | Check PRE-TASK triggers       |
 | session-end-reminder.js | Prompt | Detect session ending phrases |
-| decision-save-prompt.js | Prompt | Remind to document decisions  |
+| plan-mode-suggestion.js | Prompt | Suggest Plan mode for complex |
 
 > **BLOCKING hooks**: firestore-write-block.js and test-mocking-validator.js
 > will prevent operations that violate security patterns. All other hooks

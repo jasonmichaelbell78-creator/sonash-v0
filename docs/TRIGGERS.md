@@ -552,6 +552,7 @@ cat .claude/settings.json | jq '.hooks.PostToolUse'
 | ----------------------- | --------------------------------------- |
 | analyze-user-request.js | Check PRE-TASK triggers for agent usage |
 | session-end-reminder.js | Detect session ending phrases           |
+| plan-mode-suggestion.js | Suggest Plan mode for complex tasks     |
 
 ### Compliance Status
 

@@ -186,6 +186,11 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-end-reminder.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking session status..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/plan-mode-suggestion.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking task complexity..."
           }
         ]
       }
