@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 1.5 **Last Updated:** 2026-01-21 **Purpose:** Comprehensive
+**Version:** 1.7 **Last Updated:** 2026-01-22 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -1342,7 +1342,7 @@ Project hooks that automatically execute on specific events. Configured in
 
 ### SessionStart Hooks
 
-#### `session-start.sh`
+#### `session-start.js`
 
 **Description:** Main session startup hook. Runs validation scripts and
 environment checks. **When triggered:** At the start of every Claude Code
@@ -1350,7 +1350,12 @@ session **What it does:**
 
 - Validates project setup
 - Checks dependencies
-- Runs startup diagnostics **Location:** `.claude/hooks/session-start.js`
+- Runs startup diagnostics
+- **Cross-session validation**: Detects if previous session didn't run
+  `/session-end`
+- **Session state tracking**: Records session begin/end for health monitoring
+
+**Location:** `.claude/hooks/session-start.js`
 
 #### `check-mcp-servers.sh`
 
@@ -1396,9 +1401,25 @@ Write, Edit, or MultiEdit tools **What it does:**
 - Enforces code quality standards **Location:** `.claude/hooks/pattern-check.js`
   **Status Message:** "Checking pattern compliance..."
 
+#### `agent-trigger-enforcer.js`
+
+**Description:** Agent usage recommendation hook with phase evolution **When
+triggered:** After Write, Edit, or MultiEdit tools on code files **What it
+does:**
+
+- Tracks file modifications and suggests appropriate agents
+- Phase 1 (current): SUGGEST agent usage based on file patterns
+- Phase 2 trigger: After 50 uses or 30 days, notifies to consider warnings
+- Phase 3 trigger: After 100 uses or 60 days, notifies to consider blocking
+- Recommends code-reviewer for TS/JS files
+- Recommends security-auditor for Cloud Functions and Firestore rules
+- Tracks state in `.claude/hooks/.agent-trigger-state.json` **Location:**
+  `.claude/hooks/agent-trigger-enforcer.js` **Status Message:** "Checking agent
+  recommendations..."
+
 ### UserPromptSubmit Hooks
 
-#### `analyze-user-request.sh`
+#### `analyze-user-request.js`
 
 **Description:** Pre-task trigger analyzer **When triggered:** When user submits
 a prompt **What it does:**
@@ -1408,6 +1429,28 @@ a prompt **What it does:**
 - Provides pre-task recommendations **Location:**
   `.claude/hooks/analyze-user-request.js` **Status Message:** "Checking PRE-TASK
   triggers..."
+
+#### `session-end-reminder.js`
+
+**Description:** Session ending detector **When triggered:** When user submits a
+prompt **What it does:**
+
+- Detects phrases indicating session is ending ("done", "that's all", etc.)
+- Reminds to run `/session-end` skill
+- Non-blocking (just provides guidance) **Location:**
+  `.claude/hooks/session-end-reminder.js` **Status Message:** "Checking session
+  status..."
+
+#### `plan-mode-suggestion.js`
+
+**Description:** Complex task detector **When triggered:** When user submits a
+prompt **What it does:**
+
+- Detects implementation keywords + complexity indicators
+- Suggests using Plan mode for multi-step tasks
+- Non-blocking (just provides guidance) **Location:**
+  `.claude/hooks/plan-mode-suggestion.js` **Status Message:** "Checking task
+  complexity..."
 
 ---
 
@@ -1572,6 +1615,8 @@ a prompt **What it does:**
 
 | Version | Date       | Changes                                                         |
 | ------- | ---------- | --------------------------------------------------------------- |
+| 1.7     | 2026-01-22 | Add agent-trigger-enforcer hook with phase notifications        |
+| 1.6     | 2026-01-22 | Add plan-mode-suggestion hook for complex task detection        |
 | 1.5     | 2026-01-21 | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook |
 | 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas                   |
 | 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions                 |

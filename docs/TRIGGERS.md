@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
-**Project**: SoNash Recovery Notebook **Document Version**: 1.3 **Created**:
-2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-02
+**Project**: SoNash Recovery Notebook **Document Version**: 1.4 **Created**:
+2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-22
 
 ---
 
@@ -63,13 +63,13 @@ repository. This document serves as:
 | ------------------------ | ----- | --------- | ------ | ------ |
 | GitHub Actions (CI/CD)   | 5     | ✅        | -      | Active |
 | Pre-Commit Hooks         | 1     | ✅        | -      | Active |
-| Session Hooks            | 1     | ✅        | -      | Active |
+| Session Hooks            | 12    | ✅        | -      | Active |
 | npm Scripts              | 8     | Semi      | ✅     | Active |
 | Automation Scripts       | 6     | -         | ✅     | Active |
 | Documentation Directives | 12+   | -         | ✅     | Active |
 | Anti-Pattern Checks      | 35+   | ✅        | -      | Active |
 
-**Total Enforcement Points**: 68+
+**Total Enforcement Points**: 79+
 
 ---
 
@@ -490,6 +490,100 @@ cat .claude/settings.json
 
 - ✅ **Automated**: Runs automatically on session start
 - ✅ **Non-blocking**: Session continues even if tests fail (reports status)
+
+---
+
+## 3.2 PostToolUse Hooks (Session #90)
+
+| Attribute     | Value                                 |
+| ------------- | ------------------------------------- |
+| **Location**  | `.claude/hooks/*.js`                  |
+| **Trigger**   | After Write/Edit/Read/AskUserQuestion |
+| **Execution** | Automatic                             |
+
+### Description
+
+PostToolUse hooks run after Claude uses specific tools. They provide real-time
+feedback on code quality, security, and best practices.
+
+### Hooks Implemented
+
+| Hook                        | Trigger     | Action  | Purpose                               |
+| --------------------------- | ----------- | ------- | ------------------------------------- |
+| pattern-check.js            | Write/Edit  | Warn    | Anti-pattern detection                |
+| component-size-check.js     | Write/Edit  | Warn    | Component >300 lines warning          |
+| firestore-write-block.js    | Write/Edit  | Block   | Prevent direct writes to protected DB |
+| test-mocking-validator.js   | Write/Edit  | Block   | Ensure tests mock httpsCallable       |
+| app-check-validator.js      | Write/Edit  | Warn    | Cloud Function App Check verification |
+| typescript-strict-check.js  | Write/Edit  | Warn    | Detect `any` type usage               |
+| repository-pattern-check.js | Write/Edit  | Warn    | Firestore queries in components       |
+| agent-trigger-enforcer.js   | Write/Edit  | Suggest | Recommend agents for code changes     |
+| large-context-warning.js    | Read        | Warn    | Track file reads for context bloat    |
+| decision-save-prompt.js     | AskQuestion | Prompt  | Remind to document decisions          |
+
+### Verification
+
+```bash
+# Test a specific hook
+node .claude/hooks/firestore-write-block.js '{"file_path": "test.ts", "content": "..."}'
+
+# Check hook configuration
+cat .claude/settings.json | jq '.hooks.PostToolUse'
+```
+
+### Compliance Status
+
+- ✅ **Automated**: Runs automatically after tool use
+- ⚠️ **Blocking hooks**: firestore-write-block.js, test-mocking-validator.js
+- ✅ **Warning hooks**: All others (inform but don't block)
+
+---
+
+## 3.3 UserPromptSubmit Hooks (Session #90)
+
+| Attribute     | Value                      |
+| ------------- | -------------------------- |
+| **Location**  | `.claude/hooks/*.js`       |
+| **Trigger**   | When user submits a prompt |
+| **Execution** | Automatic                  |
+
+### Hooks Implemented
+
+| Hook                    | Purpose                                 |
+| ----------------------- | --------------------------------------- |
+| analyze-user-request.js | Check PRE-TASK triggers for agent usage |
+| session-end-reminder.js | Detect session ending phrases           |
+| plan-mode-suggestion.js | Suggest Plan mode for complex tasks     |
+
+### Compliance Status
+
+- ✅ **Automated**: Runs automatically on user prompts
+- ✅ **Non-blocking**: Provides guidance but doesn't block
+
+---
+
+## 3.4 Hook Health Infrastructure (Session #91)
+
+| Attribute     | Value                                                   |
+| ------------- | ------------------------------------------------------- |
+| **Location**  | `scripts/test-hooks.js`, `scripts/check-hook-health.js` |
+| **Trigger**   | Manual via npm scripts                                  |
+| **Execution** | On-demand                                               |
+
+### Scripts Available
+
+| Command                | Purpose                                |
+| ---------------------- | -------------------------------------- |
+| `npm run hooks:test`   | Run test suite on all hooks (47 tests) |
+| `npm run hooks:health` | Check hook syntax and session state    |
+
+### Features
+
+- **Cross-session validation**: Detects if previous session didn't run
+  `/session-end`
+- **Syntax validation**: Verifies all hooks parse correctly
+- **Session state tracking**: Tracks begin/end counts in
+  `.claude/hooks/.session-state.json`
 
 ---
 

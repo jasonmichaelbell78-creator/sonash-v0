@@ -245,4 +245,20 @@ git log --oneline -10
 
 ---
 
+## 10. Update Session State (AUTOMATIC)
+
+**IMPORTANT:** Run this command to update session state tracking:
+
+```bash
+npm run hooks:health -- --end
+```
+
+This updates the cross-session validation system so that:
+
+- Next session-begin knows this session ended properly
+- Session statistics are tracked
+- No false warnings about incomplete sessions
+
+---
+
 Session complete. All work has been verified and documented.

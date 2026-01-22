@@ -584,6 +584,61 @@ TypeScript rules)
 
 **⚠️ Never bypass:** See Git Workflow section for policy.
 
+### Claude Code Hooks (Session #90-91)
+
+**Location:** `.claude/hooks/`
+
+Claude Code hooks provide real-time feedback during AI-assisted development.
+Configured in `.claude/settings.json`.
+
+**PostToolUse Hooks (Write/Edit):**
+
+| Hook                        | Action  | Purpose                               |
+| --------------------------- | ------- | ------------------------------------- |
+| pattern-check.js            | Warn    | Anti-pattern detection                |
+| component-size-check.js     | Warn    | Component >300 lines warning          |
+| firestore-write-block.js    | BLOCK   | Prevent direct writes to protected DB |
+| test-mocking-validator.js   | BLOCK   | Ensure tests mock httpsCallable       |
+| app-check-validator.js      | Warn    | Cloud Function App Check verification |
+| typescript-strict-check.js  | Warn    | Detect `any` type usage               |
+| repository-pattern-check.js | Warn    | Firestore queries in components       |
+| agent-trigger-enforcer.js   | Suggest | Recommend agents for code changes     |
+
+**PostToolUse Hooks (Read):**
+
+| Hook                     | Action | Purpose                           |
+| ------------------------ | ------ | --------------------------------- |
+| large-context-warning.js | Warn   | Track file reads for context size |
+
+**UserPromptSubmit Hooks:**
+
+| Hook                    | Action | Purpose                       |
+| ----------------------- | ------ | ----------------------------- |
+| analyze-user-request.js | Prompt | Check PRE-TASK triggers       |
+| session-end-reminder.js | Prompt | Detect session ending phrases |
+| plan-mode-suggestion.js | Prompt | Suggest Plan mode for complex |
+
+> **BLOCKING hooks**: firestore-write-block.js and test-mocking-validator.js
+> will prevent operations that violate security patterns. All other hooks
+> provide warnings/guidance but don't block.
+
+**See:** `docs/HOOKIFY_STRATEGY.md` for full hook documentation.
+
+**Hook Health Infrastructure (Session #91):**
+
+| Command                | Purpose                             |
+| ---------------------- | ----------------------------------- |
+| `npm run hooks:test`   | Run test suite on all hooks         |
+| `npm run hooks:health` | Check hook syntax and session state |
+
+The hook health infrastructure includes:
+
+- **Cross-session validation**: Detects if previous session didn't run
+  `/session-end`
+- **Syntax validation**: Verifies all hooks parse correctly
+- **Session state tracking**: Tracks begin/end counts in
+  `.claude/hooks/.session-state.json`
+
 ### CI/CD Workflows
 
 **Location:** `.github/workflows/`
