@@ -49,6 +49,25 @@ productive work.
 **See**: [ROADMAP.md](./ROADMAP.md#-active-sprint-operational-visibility-p0) |
 [Sprint Spec](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 
+### 🔧 Hookify Strategy - Pending Review
+
+**NEW:** [HOOKIFY_STRATEGY.md](docs/HOOKIFY_STRATEGY.md) documents 20 potential
+hookify hooks to improve code quality, security, and developer experience.
+
+**Action Required:** Review and prioritize hooks for sprint inclusion.
+
+**Quick Recommendations:**
+
+- **Phase 1 (Quick Wins):** 4 low-complexity hooks (~3 hrs total) - Session end
+  reminder, large context warning, decision auto-save, component size limit
+- **Phase 2 (Security):** 3 critical security hooks (~4.5 hrs total) - Direct
+  Firestore write block, test mocking validator, App Check validator
+- **Phase 3 (Quality):** 3 code quality hooks (~6.5 hrs total) - Pre-commit
+  pattern check, TypeScript strict mode, repository pattern validator
+
+**Total Investment:** ~14 hours for all 3 phases **Expected ROI:** -30% code
+review cycles, -80% security violations, +20% session productivity
+
 **Session #87 Update** - Expansion Evaluation Process Created:
 
 - **✅ EXPANSION SKILL CREATED**: `/expansion` commands for evaluating ~240
