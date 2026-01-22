@@ -80,9 +80,9 @@ Based on `.claude/settings.local.json` permissions and SESSION_CONTEXT.md:
 
 ### Context Anomaly
 
-| Server     | Issue                                      | Recommendation                                 |
-| ---------- | ------------------------------------------ | ---------------------------------------------- |
-| **serena** | Disabled but heavily used (6+ permissions) | ⚠️ **RE-ENABLE** - Critical for code analysis! |
+| Server     | Issue                                                               | Recommendation                              |
+| ---------- | ------------------------------------------------------------------- | ------------------------------------------- |
+| **serena** | Disabled, but stale permissions exist, creating configuration drift | 🗑️ **REMOVE PERMISSIONS** - Clean up config |
 
 ---
 
@@ -126,32 +126,27 @@ Based on `.claude/settings.local.json` permissions and SESSION_CONTEXT.md:
 
 ### Phase 2: Investigate Anomalies
 
-**1. Re-enable Serena (CRITICAL)**
+**1. Clean up Stale Serena Permissions**
 
-You have 6+ Serena tools in your permissions but serena is disabled! This is
-likely causing issues.
+The `serena` server is disabled, but several permissions for it still exist in
+the configuration. These should be removed to reflect the actual state.
 
-```json
-// .claude/settings.json - REMOVE from disabled list
-{
-  "disabledMcpjsonServers": [
-    "rube",
-    "nextjs-devtools"
-    // "serena"  // <-- REMOVE THIS LINE
-  ]
-}
-```
+Investigation revealed these permissions are stale - serena was briefly tested
+but not actively used:
 
-Add to `.mcp.json`:
+- Only 1 memory file created (context-preservation-pattern.md)
+- No active tool usage in recent commits
+- Permissions in settings.local.json are leftover from testing
+
+Remove from `.claude/settings.local.json`:
 
 ```json
-"serena": {
-  "command": "npx",
-  "args": ["-y", "@serena/mcp@latest"],
-  "env": {
-    "SERENA_PROJECT_ROOT": "."
-  }
-}
+// DELETE these stale permissions:
+"mcp__serena__search_for_pattern",
+"mcp__serena__find_symbol",
+"mcp__serena__think_about_collected_information",
+"mcp__serena__get_symbols_overview",
+"mcp__serena__write_memory",
 ```
 
 **2. Consolidate GitHub Tools**
@@ -236,18 +231,17 @@ grep -r "mcp__" .claude/hooks/
 - 12 servers configured
 - 8 servers loaded
 - ~50K tokens on startup
-- Serena disabled but permissions expect it enabled
+- Serena disabled with stale permissions in config
 
 **After:**
 
 - 7 servers configured (removed 5)
-- 6 servers loaded (disabled 2)
+- 5 servers loaded (disabled 3)
 - ~15-20K tokens on startup (-60-70%)
-- Serena re-enabled and working
+- Stale serena permissions cleaned up
 
 **Critical servers preserved:**
 
-- ✅ serena (re-enabled)
 - ✅ sonarcloud
 - ✅ playwright
 - ✅ firebase
