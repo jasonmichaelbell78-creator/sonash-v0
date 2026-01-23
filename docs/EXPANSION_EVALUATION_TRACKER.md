@@ -390,7 +390,7 @@ acknowledged
 
 ### T1: System Architecture ⏸️ IN PROGRESS
 
-**Evaluated:** 2026-01-23 | **Ideas:** 13/18 | **Phase 1, Order 3**
+**Evaluated:** 2026-01-23 | **Ideas:** 14/18 | **Phase 1, Order 3**
 
 | ID    | Idea                           | Decision        | Details                                    |
 | ----- | ------------------------------ | --------------- | ------------------------------------------ |
@@ -407,14 +407,14 @@ acknowledged
 | T1.11 | Queue depth visibility         | ✅ Accept M5-F1 | Unified sync status (staleness + queue)    |
 | T1.12 | Sync & Storage settings panel  | ✅ Accept M5-F1 | Full settings: offline, sync, storage mgmt |
 | T1.13 | React Query integration        | ❌ Reject       | Conflicts with offline-first architecture  |
-| T1.14 | iOS PWA constraint mitigations | Not evaluated   |                                            |
+| T1.14 | iOS PWA constraint mitigations | 🔗 Merge Multi  | Cross-cutting: T1.4/5/6/12/15 handle iOS   |
 | T1.15 | Storage quota management       | Not evaluated   |                                            |
 | T1.16 | Export backup flow             | Not evaluated   |                                            |
 | T1.17 | useOfflineFirst hook           | Not evaluated   |                                            |
 | T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                            |
 
-**Summary:** 6 accepted M5-F1, 6 merged (T1.1→Q7, T1.5/9/10→T1.4, T1.7→T1.11,
-T1.8→T1.2), 1 rejected (T1.13), 5 remaining
+**Summary:** 6 accepted M5-F1, 7 merged (T1.1→Q7, T1.5/9/10→T1.4, T1.7→T1.11,
+T1.8→T1.2, T1.14→Multi), 1 rejected (T1.13), 4 remaining
 
 **T1.6 Implementation Notes:**
 
