@@ -1570,6 +1570,65 @@ Minor: 2)
 
 ---
 
-_Reviews #137-179 have been archived to
+\_Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5
-section above for details._
+
+---
+
+### Review #195 - Expansion Evaluation Template Improvements (2026-01-22)
+
+**Context:** PR review for expansion-evaluation skill template documentation
+(commit af0139c). Qodo identified 6 suggestions ranging from missing options to
+formatting improvements.
+
+**Issues Found:**
+
+1. **Missing MERGED_INTO option** (8/10) - Relationship field lacked option for
+   merge outcomes
+2. **Contradictory rules** (7/10) - Rule 1 said "always include Placement
+   Recommendation" but Rule 6 said conditional
+3. **Trade-offs formatting** (6/10) - Inline Pro/Con entries reduced readability
+4. **Empty placeholders** (5/10) - Optional sections had placeholder bullets
+5. **Hard-wrapped field** (4/10) - Multi-line Relationship field risked
+   copy-paste errors
+6. **Template rigidity** (7/10) - User decided to keep strict "3 pros, 2 cons"
+   minimum despite Qodo's concern about forced padding
+
+**Fixes Applied:**
+
+- Added `MERGED_INTO:<ID>` to Relationship controlled vocabulary
+- Clarified Rule 1: "Always include... (Placement Recommendation is conditional,
+  see rule 6)"
+- Reformatted Trade-offs as bulleted list for readability
+- Removed placeholder bullets from optional Cross-Reference/Technical
+  Implementation sections
+- Unwrapped hard-wrapped Relationship field to single line
+- **Kept** strict pros/cons minimum - user decision based on previous procedural
+  deviation experience
+
+**New Patterns:**
+
+1. **Controlled vocabulary completeness** - When documenting options (like
+   Relationship field), ensure all valid outcomes are represented (Accept →
+   BUNDLED_WITH, Defer → FUTURE_ENHANCEMENT, Merge → MERGED_INTO, Reject → N/A)
+2. **Template rule consistency** - Cross-check all rules for contradictions;
+   conditional sections need clear references between rules
+3. **Markdown template formatting** - Use bulleted lists in templates for better
+   readability; avoid inline formatting with multiple `**Bold:**` items
+4. **Optional section clarity** - Mark optional sections explicitly and remove
+   placeholder content that might encourage empty submissions
+5. **Single-line fields in templates** - Avoid hard-wrapping fields in
+   copy-paste templates; use single lines even if long
+6. **Template structure trade-offs** - Strict minimums prevent insufficient
+   analysis; rigidity concerns are secondary to ensuring thorough evaluation
+
+**Key Learnings:**
+
+- Copy-paste templates need extra scrutiny for formatting robustness
+- Controlled vocabularies must cover all documented decision paths
+- Template rules need cross-validation to prevent contradictions
+- Previous session failures inform current design decisions (kept strict minimum
+  due to earlier procedural deviation)
+
+**Session:** #90 **Branch:** claude/mcp-optimization-session90 section above for
+details.\_

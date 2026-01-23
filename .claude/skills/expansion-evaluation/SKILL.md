@@ -197,22 +197,19 @@ For each idea, assess:
 - [Implementation details]
 - [How it works]
 
-**Cross-Reference:** [If applicable]
+**Cross-Reference (optional):** [Only include if applicable; otherwise omit this
+entire section]
 
-- [Reference to foundational decisions]
-- [Links to existing ROADMAP items]
-- [Dependencies on other modules]
-
-**Technical Implementation:** [If relevant]
-
-- [Technical approach]
-- [Stack/library choices]
-- [Platform considerations]
+**Technical Implementation (optional):** [Only include if relevant; otherwise
+omit this entire section]
 
 **Trade-offs:**
 
-**Pro:** [Benefit 1] **Pro:** [Benefit 2] **Pro:** [Benefit 3] **Con:**
-[Challenge/risk 1] **Con:** [Challenge/risk 2]
+- **Pro:** [Benefit 1]
+- **Pro:** [Benefit 2]
+- **Pro:** [Benefit 3]
+- **Con:** [Challenge/risk 1]
+- **Con:** [Challenge/risk 2]
 
 **Options:**
 
@@ -227,7 +224,7 @@ For each idea, assess:
 - **Feature Group:** [Which group within milestone - M5-F1, create new?]
 - **Insert After:** [MILESTONE:MX, ITEM:TX.X, or END:MX]
 - **Relationship:** [NEW, BUNDLED_WITH:<ID>, REQUIRES_NATIVE,
-  FUTURE_ENHANCEMENT]
+  FUTURE_ENHANCEMENT, MERGED_INTO:<ID>]
 - **Rationale:** [Why this placement makes sense - dependencies, grouping logic]
 
 **Recommendation:** [Accept/Defer/Reject] - [Your rationale explaining why this
@@ -238,8 +235,9 @@ is the best option]
 
 ### Presentation Template Rules
 
-1. **Always include:** Description, The Feature, Trade-offs, Options, Placement
-   Recommendation, Recommendation, question
+1. **Always include:** Description, The Feature, Trade-offs, Options,
+   Recommendation, question. (Placement Recommendation is conditional, see
+   rule 6)
 2. **Optional sections:** Cross-Reference, Technical Implementation (use when
    relevant)
 3. **Trade-offs format:** Start each with "Pro:" or "Con:" prefix
