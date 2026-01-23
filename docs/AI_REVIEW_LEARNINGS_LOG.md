@@ -558,8 +558,199 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #180-194 are actively maintained below. Older reviews (#137-179) are in
+Reviews #180-195 are actively maintained below. Older reviews (#137-179) are in
 Archive 5.
+
+---
+
+#### Review #196: PR #036fab3 Expansion Metadata Refinement - Qodo Follow-up (2026-01-22)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:**
+claude/mcp-optimization-session90 (commit 036fab3) **Suggestions:** 11 total
+(Critical: 1, Minor: 10)
+
+**Context:** Follow-up review of fixes applied in Review #195, identifying
+issues with the placement metadata implementation including broken insertion
+chain, command namespace inconsistencies, and opportunities to make metadata
+more machine-readable.
+
+**Patterns Identified:**
+
+1. **Broken Insertion Chain Logic**
+   - Root cause: F4.2 references F4.4 in Insert After, but F4.4 is in deferred
+     list not staged list
+   - Prevention: Insertion chains must only reference items within same list
+     (staged or deferred)
+   - Pattern: Cross-list references break linked-list integrity
+
+2. **Inconsistent Command Namespace**
+   - Root cause: Mixed use of `/expansion` and `/expansion-evaluation` commands
+   - Prevention: Use full namespace consistently across all documentation
+   - Pattern: Command namespace must match skill registration
+
+3. **Ambiguous Metadata Values**
+   - Root cause: Free-form text in Insert After ("Append to M10") and
+     Relationship columns
+   - Prevention: Use controlled vocabularies and type prefixes (MILESTONE:,
+     ITEM:, END:)
+   - Pattern: Automation requires machine-readable, unambiguous metadata
+
+**Specific Fixes Applied:**
+
+1. **CRITICAL: Fixed Broken Insertion Chain** (Importance 8/10)
+   - F4.2 Insert After: F4.4 → F4.14
+   - Root cause: F4.4 is in deferred list, not staged; cross-list reference
+     broke linked-list
+   - Impact: Restored deterministic insertion order integrity
+
+2. **MINOR: Standardized Command Namespace** (Importance 6-7/10)
+   - `/expansion` → `/expansion-evaluation` (12 occurrences fixed)
+   - Files: EXPANSION_EVALUATION_TRACKER.md (11 instances), SKILL.md (1
+     instance)
+   - Locations: Command Reference table, Quick Resume, workflow steps, skill
+     examples
+
+3. **MINOR: Fixed Suggestion Count** (Importance 5/10)
+   - Review #195: 5 total → 6 total (arithmetic error: 1+4+1=6 not 5)
+
+4. **MINOR: Fixed Placement Count** (Importance 6/10)
+   - Quick Resume: 16 items → 17 items (14 staged + 3 deferred)
+
+5. **MINOR: Made End-of-List Deterministic** (Importance 8/10)
+   - F4.11 deferred: "Append to M10" → "END:M10"
+   - F4.11 Placement: "M10" → "M10-F1" (consistent format)
+
+6. **MINOR: Added Type Prefixes to Insert After** (Importance 7/10)
+   - Milestones: M4 → MILESTONE:M4, M8 → MILESTONE:M8
+   - Items: T4.1 → ITEM:T4.1, F4.14 → ITEM:F4.14, etc. (17 items updated)
+   - End markers: Already had END: prefix
+   - Impact: Unambiguous references for automated processing
+
+7. **MINOR: Normalized Relationship Column** (Importance 7/10)
+   - Added controlled vocabulary legend (NEW, BUNDLED_WITH:<ID>,
+     REQUIRES_NATIVE, FUTURE_ENHANCEMENT)
+   - Updated all 17 items (14 staged + 3 deferred):
+     - "New foundation feature" → NEW
+     - "Bundled with T4.1" → BUNDLED_WITH:T4.1
+     - "Native-dependent ..." → REQUIRES_NATIVE
+     - "Future enhancement" → FUTURE_ENHANCEMENT
+
+8. **MINOR: Added Feature Group Registry** (Importance 7/10)
+   - Formalized M4.5-F1, M4.5-F2, M9-F1, M10-F1 definitions
+   - Authoritative reference for feature group identifiers
+   - Enables validation and clarity
+
+**Resolution:**
+
+- Fixed: 11 items (100% of suggestions - 1 CRITICAL + 10 MINOR)
+- Files modified: EXPANSION_EVALUATION_TRACKER.md v2.2, SKILL.md,
+  AI_REVIEW_LEARNINGS_LOG.md
+- Agents: None used (straightforward metadata corrections)
+- Verification: Documentation linter pending
+
+**Key Learnings:**
+
+- **Cross-List Reference Integrity:** Insertion chains must only reference items
+  within the same list (staged vs deferred); cross-list references break
+  linked-list integrity
+- **Command Namespace Consistency:** Use full skill namespace
+  (`/expansion-evaluation` not `/expansion`) consistently across all
+  documentation to prevent ambiguity
+- **Type Prefix Disambiguation:** Prefixes (MILESTONE:, ITEM:, END:) eliminate
+  ambiguity in references (e.g., is "M4" a milestone or an item ID?)
+- **Controlled Vocabularies:** Machine-readable codes (NEW, BUNDLED_WITH:<ID>,
+  etc.) enable robust automation vs free-form text
+- **Registry Formalization:** Explicitly defining identifier meanings (feature
+  groups) in registry tables prevents ambiguity and enables validation
+- **Arithmetic Vigilance:** Review counts must match sum of categories (caught
+  1+4+1≠5 error)
+
+---
+
+#### Review #195: PR #334f459 Expansion Placement Metadata - CI Lint + Qodo Suggestions (2026-01-22)
+
+**Source:** CI Documentation Linter + Qodo PR Code Suggestions **PR/Branch:**
+claude/mcp-optimization-session90 (commit 334f459) **Suggestions:** 6 total
+(Major: 1, Minor: 4, Deferred: 1)
+
+**Context:** Review of placement metadata framework added to
+EXPANSION_EVALUATION_TRACKER.md with new columns (Placement, Insert After,
+Relationship) and ROADMAP integration process documentation.
+
+**Patterns Identified:**
+
+1. **Documentation Lint Violations**
+   - Root cause: New tracker document lacked required Tier-2 sections
+   - Prevention: All Tier-2 docs require Purpose/Overview, AI Instructions,
+     Quick Start sections
+   - Pattern: EXPANSION_EVALUATION_TRACKER is state tracking doc, needs
+     structure like AI_REVIEW_LEARNINGS_LOG
+
+2. **Non-Deterministic Insertion Order**
+   - Root cause: Multiple items using "Create M4.5" instead of referencing
+     previous item ID
+   - Prevention: Use linked-list style insertion (each item references previous
+     ID)
+   - Pattern: Metadata for automation must be machine-readable and deterministic
+
+**Specific Fixes Applied:**
+
+1. **MAJOR: Added Purpose Section** (CI Lint - required for Tier-2 docs)
+   - Explained tracker's role as state tracking document for ~280 expansion
+     ideas
+   - Listed 5 key tracking responsibilities (progress, staging, decisions,
+     placement, resume context)
+   - Identified as "source of truth" for `/expansion-evaluation` skill
+
+2. **MINOR: Added AI Instructions Section** (CI Lint - recommended)
+   - 7 key directives for AI assistants working with tracker
+   - Emphasized mandatory placement metadata for accepted/deferred items
+   - Cross-referenced Quick Resume and staging workflow
+
+3. **MINOR: Added Quick Start Section** (CI Lint - recommended)
+   - Separate workflows for new vs resumed sessions
+   - Clear 3-4 step process for each scenario
+   - Integration with `/expansion-evaluation` commands
+
+4. **MINOR: Refined Insert After Column** (Qodo Suggestion - Importance 8/10)
+   - Changed from ambiguous "Create M4.5" to specific item IDs (M4, T4.1, T4.2,
+     etc.)
+   - Implemented linked-list pattern: each item references previous item ID
+   - Updated 16 items total (13 staged + 3 deferred) for deterministic ordering
+   - Example: T4.1→M4, T4.2→T4.1, T4.3→T4.2 (clear sequential chain)
+
+**Deferred for User Decision:**
+
+5. **Tracker Format Migration** (Qodo Suggestion - Importance 9/10)
+   - Migrate from Markdown to JSON/YAML for better programmatic access
+   - Logged in SESSION_DECISIONS.md v1.2 with 4 options (Keep Markdown, JSON,
+     YAML, Hybrid)
+   - Trade-offs: automation/validation vs human readability/workflow disruption
+   - Awaiting user architectural decision
+
+**Resolution:**
+
+- Fixed: 4 items (100% of fixable suggestions)
+- Deferred: 1 item (architectural decision requiring user input)
+- Files modified: EXPANSION_EVALUATION_TRACKER.md v2.1, SESSION_DECISIONS.md
+  v1.2
+- Agents: None used (straightforward documentation additions)
+- Verification: Documentation linter pending
+
+**Key Learnings:**
+
+- **Documentation Compliance:** State tracking documents (like trackers, logs)
+  need same structural sections as audit logs (Purpose, AI Instructions, Quick
+  Start) for Tier-2 compliance
+- **Deterministic Metadata:** Insertion order metadata must reference specific
+  IDs (linked-list pattern) for deterministic processing, not ambiguous
+  instructions like "Create M..."
+- **Markdown-as-Database Technical Debt:** Using Markdown tables as databases
+  creates parsing/validation challenges (Qodo importance: 9/10); consider
+  migration to structured formats for automation-heavy workflows
+- **Architectural Decisions:** High-impact suggestions requiring workflow
+  changes should be logged in SESSION_DECISIONS.md with options presented before
+  implementation
 
 ---
 

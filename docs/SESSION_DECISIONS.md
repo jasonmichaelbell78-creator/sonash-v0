@@ -1,6 +1,6 @@
 # Session Decision Log
 
-**Document Version:** 1.1 **Last Updated:** 2026-01-21
+**Document Version:** 1.2 **Last Updated:** 2026-01-22
 
 ## Purpose
 
@@ -182,11 +182,56 @@ evaluation
   evaluations)
 - Evaluation ready to begin with Phase 1: T4 (Encryption) → F4 (Offline/Privacy)
 
+### 2026-01-22 - Expansion Tracker Format Migration (DEFERRED)
+
+**Context:** During PR review #195 of the expansion evaluation placement
+metadata framework, Qodo suggested migrating `EXPANSION_EVALUATION_TRACKER.md`
+from Markdown to JSON/YAML structured format (Importance: 9/10).
+
+**Options Presented:**
+
+1. **Keep Markdown** - Maintain current human-readable format with structured
+   tables
+   - Pros: Easy to read/edit manually, git diffs are meaningful, low friction
+     for updates
+   - Cons: Harder to parse programmatically, no schema validation, potential for
+     formatting inconsistencies
+2. **Migrate to JSON** - Convert tracker to structured JSON with schema
+   validation
+   - Pros: Programmatically accessible, schema validation, tooling support
+   - Cons: Lose human readability, require tooling for all edits, verbose format
+3. **Migrate to YAML** - Convert tracker to YAML (human-friendly structured
+   format)
+   - Pros: Balance of readability and structure, schema validation possible,
+     easier to parse than Markdown
+   - Cons: Less familiar than Markdown, still requires tooling for complex
+     updates, whitespace-sensitive
+4. **Hybrid Approach** - Keep Markdown for primary tracking, generate JSON/YAML
+   artifacts for automation
+   - Pros: Best of both worlds, no workflow disruption, enables automation
+   - Cons: Synchronization complexity, potential for drift between formats
+
+**User Choice:** _(Pending user input)_
+
+**Rationale:** _(To be determined)_
+
+**Implementation:** _(TBD after user decision)_
+
+**Notes:**
+
+- Current tracker actively used in Markdown format during expansion evaluation
+  sessions
+- Migration would affect workflow for `/expansion-evaluation` skill
+- Automation benefits: deterministic parsing for ROADMAP push, validation, state
+  queries
+- Decision deferred during PR review to avoid blocking documentation fixes
+
 ---
 
 ## Version History
 
-| Version | Date       | Changes                                            |
-| ------- | ---------- | -------------------------------------------------- |
-| 1.1     | 2026-01-21 | Add 12 expansion evaluation foundational decisions |
-| 1.0     | 2026-01-17 | Initial creation with Firebase decisions           |
+| Version | Date       | Changes                                                         |
+| ------- | ---------- | --------------------------------------------------------------- |
+| 1.2     | 2026-01-22 | Add deferred tracker format migration decision (PR review #195) |
+| 1.1     | 2026-01-21 | Add 12 expansion evaluation foundational decisions              |
+| 1.0     | 2026-01-17 | Initial creation with Firebase decisions                        |

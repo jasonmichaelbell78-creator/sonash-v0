@@ -332,10 +332,11 @@ Skill requirements
 #### `expansion-evaluation`
 
 **Description:** Manage the SoNash expansion evaluation process for reviewing
-~240 feature and technical ideas across 21 modules. Supports commands: begin,
-evaluate, status, decide, questions, push-to-roadmap, end. **When to use:**
-Evaluating expansion ideas, tracking progress, making decisions, or resuming
-evaluation session **Example:** `/expansion-evaluation begin` or
+~280 feature and technical ideas across 21 modules. Includes ROADMAP placement
+discussion for all accepted/deferred items during evaluation. Supports commands:
+begin, evaluate, status, decide, questions, push-to-roadmap, end. **When to
+use:** Evaluating expansion ideas, tracking progress, making decisions, or
+resuming evaluation session **Example:** `/expansion-evaluation begin` or
 `/expansion-evaluation evaluate F1 5` **Parameters:** Subcommand (begin,
 evaluate, status, decide, questions, push-to-roadmap, end) + optional
 module/idea ID
@@ -1614,16 +1615,17 @@ prompt **What it does:**
 
 ## Version History
 
-| Version | Date       | Changes                                                         |
-| ------- | ---------- | --------------------------------------------------------------- |
-| 1.7     | 2026-01-22 | Add agent-trigger-enforcer hook with phase notifications        |
-| 1.6     | 2026-01-22 | Add plan-mode-suggestion hook for complex task detection        |
-| 1.5     | 2026-01-21 | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook |
-| 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas                   |
-| 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions                 |
-| 1.2     | 2026-01-20 | Note custom commands migrated to skills format                  |
-| 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction              |
-| 1.0     | 2026-01-10 | Initial comprehensive command reference created                 |
+| Version | Date       | Changes                                                          |
+| ------- | ---------- | ---------------------------------------------------------------- |
+| 1.8     | 2026-01-22 | Refine expansion-evaluation skill command examples (Review #196) |
+| 1.7     | 2026-01-22 | Add agent-trigger-enforcer hook with phase notifications         |
+| 1.6     | 2026-01-22 | Add plan-mode-suggestion hook for complex task detection         |
+| 1.5     | 2026-01-21 | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook  |
+| 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas                    |
+| 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions                  |
+| 1.2     | 2026-01-20 | Note custom commands migrated to skills format                   |
+| 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction               |
+| 1.0     | 2026-01-10 | Initial comprehensive command reference created                  |
 
 ---
 

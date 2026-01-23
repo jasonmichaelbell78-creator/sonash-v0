@@ -145,13 +145,18 @@ These decisions guide ALL module evaluations:
 2. Check ROADMAP overlap for each idea (FIRST!)
 3. Present ideas one at a time with evaluation criteria
 4. Discuss feasibility, dependencies, user benefit
-5. Record decisions incrementally in tracker
-6. Stage accepted items (do NOT push to ROADMAP yet)
+5. **NEW: If accepting/deferring, discuss ROADMAP placement:**
+   - Which milestone? (M5, M6, new milestone?)
+   - Which section/feature group within milestone?
+   - Relationship to existing items? (new/enhances/replaces)
+   - Insert where? (after which item, or append to end)
+6. Record decisions incrementally in tracker with **full placement metadata**
+7. Stage accepted/deferred items (do NOT push to ROADMAP yet)
 
 ### End Session
 
 ```
-/expansion end
+/expansion-evaluation end
 ```
 
 1. Update tracker with all decisions made
@@ -164,15 +169,18 @@ These decisions guide ALL module evaluations:
 
 For each idea, assess:
 
-| Criteria        | Question                                     |
-| --------------- | -------------------------------------------- |
-| ROADMAP Overlap | Already planned? Partially covered? New?     |
-| Offline Need    | Does this feature need offline support? (Q1) |
-| Encryption      | Does this touch sensitive data? (Q3)         |
-| Feasibility     | Can we build with current stack?             |
-| Dependencies    | What modules/features must exist first?      |
-| User Benefit    | How much value does this provide?            |
-| Effort          | S/M/L/XL estimate                            |
+| Criteria        | Question                                                      |
+| --------------- | ------------------------------------------------------------- |
+| ROADMAP Overlap | Already planned? Partially covered? New?                      |
+| Offline Need    | Does this feature need offline support? (Q1)                  |
+| Encryption      | Does this touch sensitive data? (Q3)                          |
+| Feasibility     | Can we build with current stack?                              |
+| Dependencies    | What modules/features must exist first?                       |
+| User Benefit    | How much value does this provide?                             |
+| Effort          | S/M/L/XL estimate                                             |
+| **Placement**   | **Which milestone? Which feature group? Insert where/after?** |
+
+**Placement must be discussed for all accepted/deferred items.**
 
 ## State Management
 
@@ -184,7 +192,11 @@ The tracker maintains:
 - Foundational Decisions reference
 - Approved Evaluation Order (7 phases)
 - Module progress tables with phase assignments
-- Staged for ROADMAP section (pending push)
+- **Staged for ROADMAP section with placement metadata:**
+  - **Placement** (milestone-feature, e.g., "M4.5-F1")
+  - **Insert After** (which item or "Create new milestone")
+  - **Relationship** (new/enhances/bundled with)
+- **Deferred Ideas with placement metadata** (for eventual push)
 - Decision log per module
 - Cross-reference table (F↔T dependencies)
 
@@ -202,8 +214,14 @@ The tracker maintains:
 1. **Always read tracker first** - Check current state before any action
 2. **Update tracker incrementally** - Don't batch updates within a session
 3. **Stage, don't push** - Accepted items go to staging, not ROADMAP
-4. **Preserve discussion context** - Log key points in tracker
-5. **Track dependencies** - Note when ideas depend on other modules
-6. **Allow flexibility** - User can jump to any module at any time
-7. **Remind about staged items** - On "/expansion end", show count of staged
-   items
+4. **Discuss placement during evaluation** - For every accept/defer, discuss
+   milestone, feature group, and insertion point BEFORE moving to next idea
+5. **Record full placement metadata** - Placement, Insert After, Relationship
+   columns must be filled for all accepted AND deferred items
+6. **Include deferred items in placement** - They also go to ROADMAP (future
+   milestones), not just accepted items
+7. **Preserve discussion context** - Log key points in tracker
+8. **Track dependencies** - Note when ideas depend on other modules
+9. **Allow flexibility** - User can jump to any module at any time
+10. **Remind about staged items** - On "/expansion end", show count of staged
+    items and placement summary
