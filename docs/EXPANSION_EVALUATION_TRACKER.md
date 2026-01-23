@@ -390,7 +390,7 @@ acknowledged
 
 ### T1: System Architecture ⏸️ IN PROGRESS
 
-**Evaluated:** 2026-01-23 | **Ideas:** 7/18 | **Phase 1, Order 3**
+**Evaluated:** 2026-01-23 | **Ideas:** 9/18 | **Phase 1, Order 3**
 
 | ID    | Idea                           | Decision        | Details                                    |
 | ----- | ------------------------------ | --------------- | ------------------------------------------ |
@@ -400,8 +400,8 @@ acknowledged
 | T1.4  | Background sync worker         | ✅ Accept M5-F1 | Sync engine with iOS fallback bundled      |
 | T1.5  | Sync-on-open strategy for iOS  | 🔗 Merge T1.4   | iOS fallback implementation detail of T1.4 |
 | T1.6  | Persisted Storage API request  | ✅ Accept M5-F1 | Early request + fallback to online-only    |
-| T1.7  | Read pipeline with staleness   | Not evaluated   |                                            |
-| T1.8  | Write pipeline (local-first)   | Not evaluated   |                                            |
+| T1.7  | Read pipeline with staleness   | 🔗 Merge T1.11  | Unified "Sync Status" with queue depth     |
+| T1.8  | Write pipeline (local-first)   | 🔗 Merge T1.2   | Write side of offline infrastructure       |
 | T1.9  | Network detection + retry      | Not evaluated   |                                            |
 | T1.10 | Exponential backoff retries    | Not evaluated   |                                            |
 | T1.11 | Queue depth visibility         | Not evaluated   |                                            |
@@ -413,7 +413,7 @@ acknowledged
 | T1.17 | useOfflineFirst hook           | Not evaluated   |                                            |
 | T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                            |
 
-**Summary:** 4 accepted M5-F1, 2 merged (Q7, T1.4), 11 remaining
+**Summary:** 4 accepted M5-F1, 4 merged (Q7, T1.4, T1.11, T1.2), 9 remaining
 
 **T1.6 Implementation Notes:**
 
@@ -423,6 +423,14 @@ acknowledged
 - If denied: Offer "Online-Only Mode" (data syncs to Firestore, no local
   persistence)
 - Bundle with T1.15 (Storage quota management) for cohesive storage UX
+
+**T1.7 + T1.11 Merge Rationale:**
+
+- Combined "Sync Status" indicator (staleness + queue depth)
+- Single UI element: "Last synced 2h ago • 3 pending uploads"
+- Color coding: green (synced), yellow (stale), red (errors)
+- Avoids multiple competing indicators
+- Evaluate together when reaching T1.11
 
 ### T3: Offline Queue & Conflict
 
