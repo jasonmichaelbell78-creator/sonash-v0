@@ -403,7 +403,7 @@ acknowledged
 | T1.7  | Read pipeline with staleness   | 🔗 Merge T1.11  | Unified "Sync Status" with queue depth     |
 | T1.8  | Write pipeline (local-first)   | 🔗 Merge T1.2   | Write side of offline infrastructure       |
 | T1.9  | Network detection + retry      | 🔗 Merge T1.4   | Network awareness for sync engine          |
-| T1.10 | Exponential backoff retries    | Not evaluated   |                                            |
+| T1.10 | Exponential backoff retries    | 🔗 Merge T1.4   | Retry reliability for sync engine          |
 | T1.11 | Queue depth visibility         | Not evaluated   |                                            |
 | T1.12 | Sync & Storage settings panel  | Not evaluated   |                                            |
 | T1.13 | React Query integration        | Not evaluated   |                                            |
@@ -413,7 +413,7 @@ acknowledged
 | T1.17 | useOfflineFirst hook           | Not evaluated   |                                            |
 | T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                            |
 
-**Summary:** 4 accepted M5-F1, 5 merged (Q7, T1.4×3, T1.11, T1.2), 8 remaining
+**Summary:** 4 accepted M5-F1, 6 merged (Q7, T1.2, T1.4×4, T1.11), 8 remaining
 
 **T1.6 Implementation Notes:**
 
