@@ -390,7 +390,7 @@ acknowledged
 
 ### T1: System Architecture ⏸️ IN PROGRESS
 
-**Evaluated:** 2026-01-23 | **Ideas:** 9/18 | **Phase 1, Order 3**
+**Evaluated:** 2026-01-23 | **Ideas:** 10/18 | **Phase 1, Order 3**
 
 | ID    | Idea                           | Decision        | Details                                    |
 | ----- | ------------------------------ | --------------- | ------------------------------------------ |
@@ -402,7 +402,7 @@ acknowledged
 | T1.6  | Persisted Storage API request  | ✅ Accept M5-F1 | Early request + fallback to online-only    |
 | T1.7  | Read pipeline with staleness   | 🔗 Merge T1.11  | Unified "Sync Status" with queue depth     |
 | T1.8  | Write pipeline (local-first)   | 🔗 Merge T1.2   | Write side of offline infrastructure       |
-| T1.9  | Network detection + retry      | Not evaluated   |                                            |
+| T1.9  | Network detection + retry      | 🔗 Merge T1.4   | Network awareness for sync engine          |
 | T1.10 | Exponential backoff retries    | Not evaluated   |                                            |
 | T1.11 | Queue depth visibility         | Not evaluated   |                                            |
 | T1.12 | Sync & Storage settings panel  | Not evaluated   |                                            |
@@ -413,7 +413,7 @@ acknowledged
 | T1.17 | useOfflineFirst hook           | Not evaluated   |                                            |
 | T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                            |
 
-**Summary:** 4 accepted M5-F1, 4 merged (Q7, T1.4, T1.11, T1.2), 9 remaining
+**Summary:** 4 accepted M5-F1, 5 merged (Q7, T1.4×3, T1.11, T1.2), 8 remaining
 
 **T1.6 Implementation Notes:**
 
