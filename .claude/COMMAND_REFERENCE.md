@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 1.7 **Last Updated:** 2026-01-22 **Purpose:** Comprehensive
+**Version:** 1.9 **Last Updated:** 2026-01-22 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -1617,6 +1617,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                          |
 | ------- | ---------- | ---------------------------------------------------------------- |
+| 1.9     | 2026-01-22 | Add detailed presentation format to expansion-evaluation skill   |
 | 1.8     | 2026-01-22 | Refine expansion-evaluation skill command examples (Review #196) |
 | 1.7     | 2026-01-22 | Add agent-trigger-enforcer hook with phase notifications         |
 | 1.6     | 2026-01-22 | Add plan-mode-suggestion hook for complex task detection         |
