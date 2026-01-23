@@ -563,10 +563,114 @@ Archive 5.
 
 ---
 
+#### Review #196: PR #036fab3 Expansion Metadata Refinement - Qodo Follow-up (2026-01-22)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:**
+claude/mcp-optimization-session90 (commit 036fab3) **Suggestions:** 11 total
+(Critical: 1, Minor: 10)
+
+**Context:** Follow-up review of fixes applied in Review #195, identifying
+issues with the placement metadata implementation including broken insertion
+chain, command namespace inconsistencies, and opportunities to make metadata
+more machine-readable.
+
+**Patterns Identified:**
+
+1. **Broken Insertion Chain Logic**
+   - Root cause: F4.2 references F4.4 in Insert After, but F4.4 is in deferred
+     list not staged list
+   - Prevention: Insertion chains must only reference items within same list
+     (staged or deferred)
+   - Pattern: Cross-list references break linked-list integrity
+
+2. **Inconsistent Command Namespace**
+   - Root cause: Mixed use of `/expansion` and `/expansion-evaluation` commands
+   - Prevention: Use full namespace consistently across all documentation
+   - Pattern: Command namespace must match skill registration
+
+3. **Ambiguous Metadata Values**
+   - Root cause: Free-form text in Insert After ("Append to M10") and
+     Relationship columns
+   - Prevention: Use controlled vocabularies and type prefixes (MILESTONE:,
+     ITEM:, END:)
+   - Pattern: Automation requires machine-readable, unambiguous metadata
+
+**Specific Fixes Applied:**
+
+1. **CRITICAL: Fixed Broken Insertion Chain** (Importance 8/10)
+   - F4.2 Insert After: F4.4 → F4.14
+   - Root cause: F4.4 is in deferred list, not staged; cross-list reference
+     broke linked-list
+   - Impact: Restored deterministic insertion order integrity
+
+2. **MINOR: Standardized Command Namespace** (Importance 6-7/10)
+   - `/expansion` → `/expansion-evaluation` (12 occurrences fixed)
+   - Files: EXPANSION_EVALUATION_TRACKER.md (11 instances), SKILL.md (1
+     instance)
+   - Locations: Command Reference table, Quick Resume, workflow steps, skill
+     examples
+
+3. **MINOR: Fixed Suggestion Count** (Importance 5/10)
+   - Review #195: 5 total → 6 total (arithmetic error: 1+4+1=6 not 5)
+
+4. **MINOR: Fixed Placement Count** (Importance 6/10)
+   - Quick Resume: 16 items → 17 items (14 staged + 3 deferred)
+
+5. **MINOR: Made End-of-List Deterministic** (Importance 8/10)
+   - F4.11 deferred: "Append to M10" → "END:M10"
+   - F4.11 Placement: "M10" → "M10-F1" (consistent format)
+
+6. **MINOR: Added Type Prefixes to Insert After** (Importance 7/10)
+   - Milestones: M4 → MILESTONE:M4, M8 → MILESTONE:M8
+   - Items: T4.1 → ITEM:T4.1, F4.14 → ITEM:F4.14, etc. (17 items updated)
+   - End markers: Already had END: prefix
+   - Impact: Unambiguous references for automated processing
+
+7. **MINOR: Normalized Relationship Column** (Importance 7/10)
+   - Added controlled vocabulary legend (NEW, BUNDLED_WITH:<ID>,
+     REQUIRES_NATIVE, FUTURE_ENHANCEMENT)
+   - Updated all 17 items (14 staged + 3 deferred):
+     - "New foundation feature" → NEW
+     - "Bundled with T4.1" → BUNDLED_WITH:T4.1
+     - "Native-dependent ..." → REQUIRES_NATIVE
+     - "Future enhancement" → FUTURE_ENHANCEMENT
+
+8. **MINOR: Added Feature Group Registry** (Importance 7/10)
+   - Formalized M4.5-F1, M4.5-F2, M9-F1, M10-F1 definitions
+   - Authoritative reference for feature group identifiers
+   - Enables validation and clarity
+
+**Resolution:**
+
+- Fixed: 11 items (100% of suggestions - 1 CRITICAL + 10 MINOR)
+- Files modified: EXPANSION_EVALUATION_TRACKER.md v2.2, SKILL.md,
+  AI_REVIEW_LEARNINGS_LOG.md
+- Agents: None used (straightforward metadata corrections)
+- Verification: Documentation linter pending
+
+**Key Learnings:**
+
+- **Cross-List Reference Integrity:** Insertion chains must only reference items
+  within the same list (staged vs deferred); cross-list references break
+  linked-list integrity
+- **Command Namespace Consistency:** Use full skill namespace
+  (`/expansion-evaluation` not `/expansion`) consistently across all
+  documentation to prevent ambiguity
+- **Type Prefix Disambiguation:** Prefixes (MILESTONE:, ITEM:, END:) eliminate
+  ambiguity in references (e.g., is "M4" a milestone or an item ID?)
+- **Controlled Vocabularies:** Machine-readable codes (NEW, BUNDLED_WITH:<ID>,
+  etc.) enable robust automation vs free-form text
+- **Registry Formalization:** Explicitly defining identifier meanings (feature
+  groups) in registry tables prevents ambiguity and enables validation
+- **Arithmetic Vigilance:** Review counts must match sum of categories (caught
+  1+4+1≠5 error)
+
+---
+
 #### Review #195: PR #334f459 Expansion Placement Metadata - CI Lint + Qodo Suggestions (2026-01-22)
 
 **Source:** CI Documentation Linter + Qodo PR Code Suggestions **PR/Branch:**
-claude/mcp-optimization-session90 (commit 334f459) **Suggestions:** 5 total
+claude/mcp-optimization-session90 (commit 334f459) **Suggestions:** 6 total
 (Major: 1, Minor: 4, Deferred: 1)
 
 **Context:** Review of placement metadata framework added to

@@ -156,7 +156,7 @@ These decisions guide ALL module evaluations:
 ### End Session
 
 ```
-/expansion end
+/expansion-evaluation end
 ```
 
 1. Update tracker with all decisions made

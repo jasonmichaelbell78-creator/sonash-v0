@@ -32,7 +32,7 @@ When working with this tracker:
 4. **Discuss placement** for ALL accepted/deferred items (milestone, feature
    group, insertion point)
 5. **Stage items, don't push** - Only user can request
-   `/expansion push-to-roadmap`
+   `/expansion-evaluation push-to-roadmap`
 6. **Record full rationale** in decision logs for future reference
 7. **Update Quick Resume** at session end with clear context for next session
 
@@ -61,26 +61,26 @@ When working with this tracker:
 ## Quick Resume
 
 > **Last Session:** 2026-01-22 (T4 + F4 Complete + Placement Decided) **Last
-> Evaluated:** F4 Offline/Privacy (15/15 ideas) **Placement Status:** 16 items
+> Evaluated:** F4 Offline/Privacy (15/15 ideas) **Placement Status:** 17 items
 > with full placement metadata (M4.5, M9, M10) **Next Suggested:** Run
-> `/expansion evaluate T1` to continue Phase 1 (System Architecture) **Open
-> Questions:** All 12 resolved ✅ **Ready to Push:** 14 items to M4.5/M9 (use
-> `/expansion push-to-roadmap` when ready)
+> `/expansion-evaluation evaluate T1` to continue Phase 1 (System Architecture)
+> **Open Questions:** All 12 resolved ✅ **Ready to Push:** 14 items to M4.5/M9
+> (use `/expansion-evaluation push-to-roadmap` when ready)
 
 ---
 
 ## Command Reference
 
-| Command                            | Description                        |
-| ---------------------------------- | ---------------------------------- |
-| `/expansion begin`                 | Initialize or resume evaluation    |
-| `/expansion evaluate [module]`     | Jump to a specific module          |
-| `/expansion evaluate [module] [n]` | Jump to specific idea in module    |
-| `/expansion status`                | Show progress and recent decisions |
-| `/expansion decide [action]`       | Record decision for current idea   |
-| `/expansion questions`             | Review open questions              |
-| `/expansion end`                   | Save checkpoint and commit         |
-| `/expansion push-to-roadmap`       | Push staged decisions to ROADMAP   |
+| Command                                       | Description                        |
+| --------------------------------------------- | ---------------------------------- |
+| `/expansion-evaluation begin`                 | Initialize or resume evaluation    |
+| `/expansion-evaluation evaluate [module]`     | Jump to a specific module          |
+| `/expansion-evaluation evaluate [module] [n]` | Jump to specific idea in module    |
+| `/expansion-evaluation status`                | Show progress and recent decisions |
+| `/expansion-evaluation decide [action]`       | Record decision for current idea   |
+| `/expansion-evaluation questions`             | Review open questions              |
+| `/expansion-evaluation end`                   | Save checkpoint and commit         |
+| `/expansion-evaluation push-to-roadmap`       | Push staged decisions to ROADMAP   |
 
 ### Decision Actions
 
@@ -95,8 +95,8 @@ When working with this tracker:
 **Important:** Decisions are STAGED, not immediately pushed to ROADMAP.md.
 
 1. During evaluation, accepted ideas are logged in "Staged for ROADMAP" section
-2. User reviews staged items with `/expansion status`
-3. User explicitly requests `/expansion push-to-roadmap` when ready
+2. User reviews staged items with `/expansion-evaluation status`
+3. User explicitly requests `/expansion-evaluation push-to-roadmap` when ready
 4. Only then are items added to ROADMAP.md and committed
 
 This prevents ROADMAP churn and allows batch review before integration.
@@ -466,7 +466,7 @@ _Not yet started - ~12 ideas pending (Phase 7, Order 21)_
 ## Staged for ROADMAP
 
 _Accepted ideas are staged here until user requests
-`/expansion push-to-roadmap`_
+`/expansion-evaluation push-to-roadmap`_
 
 ### Placement Strategy (Decided 2026-01-22)
 
@@ -476,24 +476,40 @@ M5. Contains all encryption infrastructure and privacy-first UX features.
 **New Milestone: M9 - Native App Features (2027)** Insert after M8, before M10.
 For features requiring native app (from T8 evaluation).
 
+#### Feature Group Registry (authoritative)
+
+| Milestone | Group | Name                     | Notes / Intended Contents                                   |
+| --------- | ----- | ------------------------ | ----------------------------------------------------------- |
+| M4.5      | F1    | Encryption Foundation    | Key mgmt, encryption primitives, recovery, auto-lock, etc.  |
+| M4.5      | F2    | Privacy & Data Controls  | Sync transparency, guest mode, selective sync, delete, etc. |
+| M9        | F1    | Native Security Features | Biometric unlock, stealth/icon switching, secure deletion.  |
+| M10       | F1    | Future Enhancements      | Post-launch improvements and nice-to-haves.                 |
+
 ### Staged Items with Full Placement
 
-| ID    | Idea                              | Placement | Insert After | Relationship             | Rationale                                  | Date       |
-| ----- | --------------------------------- | --------- | ------------ | ------------------------ | ------------------------------------------ | ---------- |
-| T4.1  | Tab-level PIN passcode            | M4.5-F1   | M4           | New foundation feature   | Core encryption feature; privacy-first     | 2026-01-22 |
-| T4.2  | PBKDF2 key derivation             | M4.5-F1   | T4.1         | Bundled with T4.1        | Technical implementation for T4.1          | 2026-01-22 |
-| T4.3  | AES-256-GCM encryption            | M4.5-F1   | T4.2         | Bundled with T4.1        | Technical implementation for T4.1          | 2026-01-22 |
-| T4.4  | Encrypt ALL step work/inventories | M4.5-F1   | T4.3         | New foundation feature   | Maximum privacy for sensitive content      | 2026-01-22 |
-| T4.6  | Recovery key generation           | M4.5-F1   | T4.4         | New foundation feature   | Critical for user data recovery            | 2026-01-22 |
-| T4.7  | DEK/KEK key wrapping model        | M4.5-F1   | T4.6         | New foundation feature   | Industry-standard; enables future features | 2026-01-22 |
-| T4.9  | Auto-lock timeout                 | M4.5-F1   | T4.7         | New foundation feature   | Standard security UX; configurable         | 2026-01-22 |
-| F4.1  | Offline Queue (Trust Indicator)   | M4.5-F2   | T4.9         | New privacy UX feature   | Visible sync status; builds user trust     | 2026-01-22 |
-| F4.5  | Guest Mode (Sandbox)              | M4.5-F2   | F4.1         | New privacy UX feature   | Try before sign-up; privacy-first          | 2026-01-22 |
-| F4.7  | Selective Sync                    | M4.5-F2   | F4.5         | New privacy UX feature   | Granular control over cloud sync           | 2026-01-22 |
-| F4.10 | Nuclear Option (Account Delete)   | M4.5-F2   | F4.7         | New privacy UX feature   | GDPR compliance; 3-step deletion           | 2026-01-22 |
-| F4.12 | No-Tracking Dashboard             | M4.5-F2   | F4.10        | New privacy UX feature   | Transparency builds trust                  | 2026-01-22 |
-| F4.14 | Snapshot Protection               | M4.5-F2   | F4.12        | New privacy UX feature   | Prevents app switcher snooping             | 2026-01-22 |
-| F4.2  | Burn After Reading                | M9-F1     | F4.4         | Native-dependent feature | Secure deletion requires native app        | 2026-01-22 |
+**Relationship codes (machine-readable):**
+
+- `NEW` - New standalone feature
+- `BUNDLED_WITH:<ID>` - Technical implementation bundled with another item
+- `REQUIRES_NATIVE` - Requires native app capabilities
+- `FUTURE_ENHANCEMENT` - Post-launch enhancement
+
+| ID    | Idea                              | Placement | Insert After | Relationship      | Rationale                                  | Date       |
+| ----- | --------------------------------- | --------- | ------------ | ----------------- | ------------------------------------------ | ---------- |
+| T4.1  | Tab-level PIN passcode            | M4.5-F1   | MILESTONE:M4 | NEW               | Core encryption feature; privacy-first     | 2026-01-22 |
+| T4.2  | PBKDF2 key derivation             | M4.5-F1   | ITEM:T4.1    | BUNDLED_WITH:T4.1 | Technical implementation for T4.1          | 2026-01-22 |
+| T4.3  | AES-256-GCM encryption            | M4.5-F1   | ITEM:T4.2    | BUNDLED_WITH:T4.1 | Technical implementation for T4.1          | 2026-01-22 |
+| T4.4  | Encrypt ALL step work/inventories | M4.5-F1   | ITEM:T4.3    | NEW               | Maximum privacy for sensitive content      | 2026-01-22 |
+| T4.6  | Recovery key generation           | M4.5-F1   | ITEM:T4.4    | NEW               | Critical for user data recovery            | 2026-01-22 |
+| T4.7  | DEK/KEK key wrapping model        | M4.5-F1   | ITEM:T4.6    | NEW               | Industry-standard; enables future features | 2026-01-22 |
+| T4.9  | Auto-lock timeout                 | M4.5-F1   | ITEM:T4.7    | NEW               | Standard security UX; configurable         | 2026-01-22 |
+| F4.1  | Offline Queue (Trust Indicator)   | M4.5-F2   | ITEM:T4.9    | NEW               | Visible sync status; builds user trust     | 2026-01-22 |
+| F4.5  | Guest Mode (Sandbox)              | M4.5-F2   | ITEM:F4.1    | NEW               | Try before sign-up; privacy-first          | 2026-01-22 |
+| F4.7  | Selective Sync                    | M4.5-F2   | ITEM:F4.5    | NEW               | Granular control over cloud sync           | 2026-01-22 |
+| F4.10 | Nuclear Option (Account Delete)   | M4.5-F2   | ITEM:F4.7    | NEW               | GDPR compliance; 3-step deletion           | 2026-01-22 |
+| F4.12 | No-Tracking Dashboard             | M4.5-F2   | ITEM:F4.10   | NEW               | Transparency builds trust                  | 2026-01-22 |
+| F4.14 | Snapshot Protection               | M4.5-F2   | ITEM:F4.12   | NEW               | Prevents app switcher snooping             | 2026-01-22 |
+| F4.2  | Burn After Reading                | M9-F1     | ITEM:F4.14   | REQUIRES_NATIVE   | Secure deletion requires native app        | 2026-01-22 |
 
 **M4.5-F1:** Encryption Foundation (7 items) **M4.5-F2:** Privacy & Data
 Controls (6 items) **M9-F1:** Native Security Features (1 item; 2 more from
@@ -505,11 +521,11 @@ deferred section)
 
 _Deferred items also get ROADMAP placement for future push_
 
-| ID    | Idea               | Placement | Insert After  | Relationship              | Reason                                  | Revisit When |
-| ----- | ------------------ | --------- | ------------- | ------------------------- | --------------------------------------- | ------------ |
-| T4.10 | Biometric unlock   | M9-F1     | M8            | Native-dependent security | Requires native app (PWA limitation)    | T8 eval      |
-| F4.4  | Stealth Mode       | M9-F1     | T4.10         | Native-dependent security | Requires native for icon switching      | T8 eval      |
-| F4.11 | Shoulder Surf Blur | M10       | Append to M10 | Future enhancement        | Nice-to-have; auto-lock covers use case | Post-launch  |
+| ID    | Idea               | Placement | Insert After | Relationship       | Reason                                  | Revisit When |
+| ----- | ------------------ | --------- | ------------ | ------------------ | --------------------------------------- | ------------ |
+| T4.10 | Biometric unlock   | M9-F1     | MILESTONE:M8 | REQUIRES_NATIVE    | Requires native app (PWA limitation)    | T8 eval      |
+| F4.4  | Stealth Mode       | M9-F1     | ITEM:T4.10   | REQUIRES_NATIVE    | Requires native for icon switching      | T8 eval      |
+| F4.11 | Shoulder Surf Blur | M10-F1    | END:M10      | FUTURE_ENHANCEMENT | Nice-to-have; auto-lock covers use case | Post-launch  |
 
 **M9-F1:** Native Security Features (2 items deferred until T8 Native Path
 evaluation + 1 from staged section) **M10:** Future Enhancements (1 item,
