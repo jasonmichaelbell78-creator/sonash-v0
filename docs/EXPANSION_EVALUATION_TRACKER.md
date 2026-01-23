@@ -106,6 +106,44 @@ This prevents ROADMAP churn and allows batch review before integration.
 
 ---
 
+## Final Step: ROADMAP Review & Reorganization
+
+**🎯 ACTION REQUIRED AFTER ALL MODULES EVALUATED**
+
+Once all 21 modules (F1-F12, T1-T9) are complete, do NOT immediately implement.
+Instead, schedule a dedicated session for:
+
+### ROADMAP Review, Refinement & Reorganization
+
+**Purpose:**
+
+- Review all ~280 evaluated ideas holistically
+- Identify cross-module dependencies and clusters
+- Reorganize milestones for logical implementation order
+- Refine feature groupings and milestone boundaries
+- Validate architectural coherence across accepted features
+- Create final implementation plan with sequencing rationale
+
+**Deliverables:**
+
+1. Refined ROADMAP.md with optimized milestone structure
+2. Cross-module dependency map
+3. Implementation sequencing strategy
+4. Risk mitigation plan for complex integrations
+5. Updated effort estimates based on clustered work
+
+**When to Schedule:**
+
+- After T9 evaluation complete (last module)
+- Before starting any M5+ implementation
+- Estimated time: 2-3 hours dedicated session
+
+**Note:** This session will create a new section in
+EXPANSION_EVALUATION_TRACKER.md documenting the reorganization plan and
+rationale.
+
+---
+
 ## Progress Summary
 
 | Category  | Modules | Ideas | Reviewed | Decided | Pending |
@@ -458,9 +496,51 @@ document (T1.18 ADR)
 - Prevents future revisiting of already-decided architectural questions
 - Standard ADR format, ~30 minutes to write
 
-### T3: Offline Queue & Conflict
+### T3: Offline Queue & Conflict ✅ COMPLETE
 
-_Not yet started - ~15 ideas pending (Phase 1, Order 4)_
+**Evaluated:** 2026-01-23 | **Ideas:** 15/15 | **Phase 1, Order 4**
+
+| ID    | Idea                                  | Decision        | Details                                     |
+| ----- | ------------------------------------- | --------------- | ------------------------------------------- |
+| T3.1  | Queue item format (ULID, status, etc) | 🔗 Merge T1.2   | Schema is implementation detail of T1.2     |
+| T3.2  | Mutation types enum                   | 🔗 Merge T1.2   | Part of queue schema (T3.1)                 |
+| T3.3  | Content hash comparison (SHA-256)     | ✅ Accept M5-F1 | Bundled: Conflict Resolution Strategy       |
+| T3.4  | Append-only detection for journal     | ✅ Accept M5-F1 | Bundled: Conflict Resolution Strategy       |
+| T3.5  | Row-level merge for Step 4            | ✅ Accept M5-F1 | Bundled: Conflict Resolution Strategy       |
+| T3.6  | Last-write-wins for settings          | ✅ Accept M5-F1 | Bundled: Conflict Resolution Strategy       |
+| T3.7  | Conflict banner in ribbon             | ✅ Accept M5-F1 | Bundled: Conflict Resolution UI             |
+| T3.8  | Conflict resolution UI (keep/merge)   | ✅ Accept M5-F1 | Bundled: Conflict Resolution UI (All 5 AIs) |
+| T3.9  | "Resolve later" option                | ✅ Accept M5-F1 | Bundled: Conflict Resolution UI             |
+| T3.10 | useOfflineQueue hook                  | 🔗 Merge T1.2   | Hook abstraction (like T1.17)               |
+| T3.11 | Sync worker single pass logic         | 🔗 Merge T1.4   | Sync engine implementation detail           |
+| T3.12 | Retry with backoff                    | 🔗 Merge T1.4   | Already covered by T1.10→T1.4               |
+| T3.13 | Dead letter queue for failed items    | ✅ Accept M5-F1 | Handle permanent failures                   |
+| T3.14 | Queue compaction for long offline     | ⏸️ Defer        | Optimization for v2, not critical           |
+| T3.15 | Rev integer for simple versioning     | 🔗 Merge T1.2   | Versioning for conflict detection           |
+
+**Summary:** 3 accepted M5-F1 (bundled: Conflict Strategy, Conflict UI, Dead
+Letter Queue), 6 merged (T3.1/2/10/15→T1.2, T3.11/12→T1.4), 1 deferred (T3.14)
+
+**T3 M5-F1 Features (3 bundled features):**
+
+1. **Conflict Resolution Strategy (T3.3-T3.6):**
+   - Content hash comparison (SHA-256) for conflict detection
+   - Append-only detection for journal entries (auto-resolve)
+   - Row-level merge for Step 4 inventory (granular resolution)
+   - Last-write-wins for settings (simple overwrite)
+   - Core algorithm layer for conflict handling
+
+2. **Conflict Resolution UI (T3.7-T3.9):**
+   - Conflict banner in ribbon (visual indicator)
+   - Conflict resolution modal (keep local / keep server / merge)
+   - "Resolve later" option (defer decision, track unresolved)
+   - All 5 AIs agreed this is essential
+
+3. **Dead Letter Queue (T3.13):**
+   - Separate queue for permanently failed mutations
+   - Manual intervention/review for items that exhausted retries
+   - Prevents data loss from silent failures
+   - Essential for production reliability
 
 ### F1: Step Work Depth
 
