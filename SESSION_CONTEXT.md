@@ -14,8 +14,8 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 **Working On**: F1 (Step Work Depth) expansion evaluation - Option C structure
 finalized **Files Modified**: None (all committed)
 
-**Next Step**: Update EXPANSION_EVALUATION_TRACKER with F1 complete evaluation
-results, then commit progress
+**Next Step**: Begin T2 (Data Model & Firestore) expansion evaluation (Phase 2,
+Order 6)
 
 **Uncommitted Work**: No
 
@@ -25,7 +25,7 @@ results, then commit progress
 - ✅ **M5-F3**: Step Work Interactive Enhancements (Steps 1-12) - Accepted
 - ✅ **M5-F4**: Step Work Context Tools (Unstuck + Reference) - Accepted
 - ✅ **NEW**: App-Wide Speech-to-Text (elevated from step work to universal
-  feature) - Placement TBD (M5-F0 recommended)
+  feature) - Staged as M5-F0
 
 **Context**: Completed F1 evaluation using established pattern across all steps.
 Chose Option C structure (separate worksheets/enhancements/tools features).
@@ -109,7 +109,7 @@ review cycles, -80% security violations, +20% session productivity
     mitigation
 - **Progress**: 33/280 ideas evaluated (11.8%), 2/21 modules complete
 - **Commits**: 16 commits across 2 merged PRs
-- **Branch**: `claude/new-session-z2qIR` (work merged to main)
+- **Branch**: `claude/new-session-z2qIR` (Session #91 work merged to main)
 - **All Checks Passed**: Tests (276 pass), Lint (0 errors), Pattern compliance
 
 **Session #90 Update** - Expansion Evaluation T1 Started + Skill Template Added:
@@ -398,7 +398,7 @@ symlink rejection)
     - `fed2436` - Session #92 counter increment
     - `532fd5b` - Checkpoint update
     - `2b54be7` - F1 evaluation complete
-  - **Branch**: `claude/new-session-z2qIR` (ready for PR)
+  - **Branch**: `claude/new-session-z2qIR` (Session #92 changes ready for PR)
 
 - **Session #87** (Jan 20, 2026):
   - ✅ **Expansion Evaluation Process** - Complete infrastructure for ~240 ideas

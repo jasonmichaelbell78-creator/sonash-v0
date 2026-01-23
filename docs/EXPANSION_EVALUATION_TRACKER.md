@@ -62,9 +62,9 @@ When working with this tracker:
 
 > **Last Session:** 2026-01-23 (F1 COMPLETE - Option C Structure) **Last
 > Evaluated:** F1 Step Work Depth (51/51 ideas evaluated) **Placement Status:**
-> 25 items with full placement metadata (M4.5, M5, M9, M10) **Next Suggested:**
+> 19 items with full placement metadata (M4.5, M5, M9) **Next Suggested:**
 > Continue to T2 (Data Model & Firestore) - Phase 2, Order 6 (~12 ideas) **Open
-> Questions:** All 12 resolved ✅ **Ready to Push:** 22 items to M4.5/M5/M9 (use
+> Questions:** All 12 resolved ✅ **Ready to Push:** 19 items to M4.5/M5/M9 (use
 > `/expansion-evaluation push-to-roadmap` when ready) **Key Decision:** Option C
 > structure for step work (separate worksheets/enhancements/tools features);
 > speech-to-text elevated to M5-F0 app-wide infrastructure
@@ -148,8 +148,8 @@ rationale.
 | Category  | Modules | Ideas | Reviewed | Decided | Pending |
 | --------- | ------- | ----- | -------- | ------- | ------- |
 | Feature   | 12      | ~175  | 66       | 66      | 109     |
-| Technical | 9       | ~105  | 12       | 12      | 93      |
-| **Total** | **21**  | ~280  | 78       | 78      | 202     |
+| Technical | 9       | ~105  | 18       | 18      | 87      |
+| **Total** | **21**  | ~280  | 84       | 84      | 196     |
 
 ---
 
@@ -545,12 +545,13 @@ Letter Queue), 6 merged (T3.1/2/10/15→T1.2, T3.11/12→T1.4), 1 deferred (T3.1
 
 **Evaluated:** 2026-01-23 | **Ideas:** ~51/51 | **Phase 2, Order 5**
 
-**Summary:** 3 accepted features using Option C structure (separate worksheets,
-enhancements, tools). Established per-step bundling pattern (12 steps × 4 tools
-= 48 tools + 3 universal). All step work requires R&D phase for ubiquitous
-exercises. Speech-to-text elevated to app-wide feature (M5-F0).
+**Summary:** 4 staged features using Option C structure (separate worksheets,
+enhancements, tools): 3 step-work feature groups (`M5-F2`/`M5-F3`/`M5-F4`) plus
+speech-to-text elevated to an app-wide feature (`M5-F0`). Established per-step
+bundling pattern (12 steps × 4 tools = 48 tools + 3 universal). All step work
+requires an R&D phase for ubiquitous exercises.
 
-**Structure Decision:** Option C - Separate backbone + enhancements
+**Structure Decision:** Option C - Separate backbone + enhancements + tools
 
 - **M5-F2**: Step Work Worksheets (Steps 2-9, 11-12) - text-based foundations
   with R&D
@@ -707,7 +708,7 @@ For features requiring native app (from T8 evaluation).
 | F4.12 | No-Tracking Dashboard              | M4.5-F2   | ITEM:F4.10   | NEW               | Transparency builds trust                  | 2026-01-22 |
 | F4.14 | Snapshot Protection                | M4.5-F2   | ITEM:F4.12   | NEW               | Prevents app switcher snooping             | 2026-01-22 |
 | F4.2  | Burn After Reading                 | M9-F1     | ITEM:F4.14   | REQUIRES_NATIVE   | Secure deletion requires native app        | 2026-01-22 |
-| F1.0  | App-Wide Speech-to-Text            | M5-F0     | MILESTONE:M4 | NEW               | Universal input; fast/smooth; all fields   | 2026-01-23 |
+| F1.0  | App-Wide Speech-to-Text            | M5-F0     | MILESTONE:M5 | NEW               | Universal input; fast/smooth; all fields   | 2026-01-23 |
 | F1.2  | Step Work Worksheets (Steps 2-9)   | M5-F2     | ITEM:F1.0    | NEW               | Text foundations with R&D phase            | 2026-01-23 |
 | F1.2b | Step Work Worksheets (Steps 11-12) | M5-F2     | ITEM:F1.2    | BUNDLED_WITH:F1.2 | Bundled with Steps 2-9 worksheets          | 2026-01-23 |
 | F1.3  | Step Work Enhancements (All)       | M5-F3     | ITEM:F1.2b   | NEW               | Optional; build after worksheet validation | 2026-01-23 |
