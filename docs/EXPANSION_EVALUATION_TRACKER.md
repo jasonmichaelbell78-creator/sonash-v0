@@ -390,7 +390,7 @@ acknowledged
 
 ### T1: System Architecture ⏸️ IN PROGRESS
 
-**Evaluated:** 2026-01-23 | **Ideas:** 15/18 | **Phase 1, Order 3**
+**Evaluated:** 2026-01-23 | **Ideas:** 17/18 | **Phase 1, Order 3**
 
 | ID    | Idea                           | Decision        | Details                                    |
 | ----- | ------------------------------ | --------------- | ------------------------------------------ |
@@ -409,12 +409,13 @@ acknowledged
 | T1.13 | React Query integration        | ❌ Reject       | Conflicts with offline-first architecture  |
 | T1.14 | iOS PWA constraint mitigations | 🔗 Merge Multi  | Cross-cutting: T1.4/5/6/12/15 handle iOS   |
 | T1.15 | Storage quota management       | 🔗 Merge T1.6   | Storage management cluster with T1.6/T1.12 |
-| T1.16 | Export backup flow             | Not evaluated   |                                            |
-| T1.17 | useOfflineFirst hook           | Not evaluated   |                                            |
+| T1.16 | Export backup flow             | 🔗 Merge T5+F7  | Evaluate exports holistically (21 ideas)   |
+| T1.17 | useOfflineFirst hook           | 🔗 Merge T1.2   | Hook API is implementation detail of T1.2  |
 | T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                            |
 
-**Summary:** 6 accepted M5-F1, 8 merged (T1.1→Q7, T1.5/9/10→T1.4, T1.7→T1.11,
-T1.8→T1.2, T1.14→Multi, T1.15→T1.6), 1 rejected (T1.13), 3 remaining
+**Summary:** 6 accepted M5-F1, 10 merged (T1.1→Q7, T1.5/8/9/10/17→T1.2/4,
+T1.7→T1.11, T1.14→Multi, T1.15→T1.6, T1.16→T5+F7), 1 rejected (T1.13), 1
+remaining
 
 **T1.6 + T1.15 Implementation Notes (Storage Management):**
 
