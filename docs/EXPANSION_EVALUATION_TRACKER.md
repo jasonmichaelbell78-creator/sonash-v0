@@ -543,13 +543,14 @@ Letter Queue), 6 merged (T3.1/2/10/15→T1.2, T3.11/12→T1.4), 1 deferred (T3.1
 
 ### F1: Step Work Depth ✅ COMPLETE
 
-**Evaluated:** 2026-01-23 | **Ideas:** ~51/51 | **Phase 2, Order 5**
+**Evaluated:** 2026-01-23 | **Ideas:** 51/51 | **Phase 2, Order 5**
 
 **Summary:** 4 staged features using Option C structure (separate worksheets,
 enhancements, tools): 3 step-work feature groups (`M5-F2`/`M5-F3`/`M5-F4`) plus
 speech-to-text elevated to an app-wide feature (`M5-F0`). Established per-step
-bundling pattern (12 steps × 4 tools = 48 tools + 3 universal). All step work
-requires an R&D phase for ubiquitous exercises.
+bundling pattern (12 steps × 4 step-specific tools = 48), plus 3 universal tools
+shared across all steps (51 total tools). All step work requires an R&D phase
+for ubiquitous exercises.
 
 **Structure Decision:** Option C - Separate backbone + enhancements + tools
 
