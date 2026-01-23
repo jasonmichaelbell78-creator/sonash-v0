@@ -1,7 +1,60 @@
 # Expansion Evaluation Tracker
 
-**Purpose:** Track progress through ~280 expansion ideas across 21 modules
-**Created:** 2026-01-20 | **Last Updated:** 2026-01-21
+**Document Version:** 2.1 **Created:** 2026-01-20 | **Last Updated:** 2026-01-22
+
+---
+
+## Purpose
+
+This document tracks the systematic evaluation of ~280 expansion ideas across 21
+modules (12 feature + 9 technical) for the SoNash project. It maintains:
+
+- **Progress status** for all modules (F1-F12, T1-T9)
+- **Staging area** for accepted/deferred items before ROADMAP push
+- **Decision log** with rationale for each evaluated idea
+- **Placement metadata** (milestone, insertion point, relationship) for ROADMAP
+  integration
+- **Quick Resume** context for multi-session evaluation workflow
+
+This is the **source of truth** for expansion evaluation state, used by the
+`/expansion-evaluation` skill.
+
+---
+
+## AI Instructions
+
+When working with this tracker:
+
+1. **Always read this file first** before any expansion evaluation actions
+2. **Check Quick Resume** to understand current context and next suggested
+   module
+3. **Update incrementally** during evaluation sessions (don't batch at end)
+4. **Discuss placement** for ALL accepted/deferred items (milestone, feature
+   group, insertion point)
+5. **Stage items, don't push** - Only user can request
+   `/expansion push-to-roadmap`
+6. **Record full rationale** in decision logs for future reference
+7. **Update Quick Resume** at session end with clear context for next session
+
+**Critical:** Placement metadata (Placement, Insert After, Relationship) is
+**mandatory** for all accepted AND deferred items.
+
+---
+
+## Quick Start
+
+**For new evaluation sessions:**
+
+1. Run `/expansion-evaluation begin` to load current state and get context
+2. Review "Quick Resume" section below for last session context
+3. Check "Staged for ROADMAP" count - remind user if >10 items awaiting push
+4. Continue from suggested next module or user can specify any module
+
+**For resuming work:**
+
+1. Check "Last Session" date in Quick Resume
+2. Review any open questions or decisions made since last session
+3. Use `/expansion-evaluation evaluate [module]` to jump to specific module
 
 ---
 
@@ -427,20 +480,20 @@ For features requiring native app (from T8 evaluation).
 
 | ID    | Idea                              | Placement | Insert After | Relationship             | Rationale                                  | Date       |
 | ----- | --------------------------------- | --------- | ------------ | ------------------------ | ------------------------------------------ | ---------- |
-| T4.1  | Tab-level PIN passcode            | M4.5-F1   | Create M4.5  | New foundation feature   | Core encryption feature; privacy-first     | 2026-01-22 |
-| T4.2  | PBKDF2 key derivation             | M4.5-F1   | Create M4.5  | Bundled with T4.1        | Technical implementation for T4.1          | 2026-01-22 |
-| T4.3  | AES-256-GCM encryption            | M4.5-F1   | Create M4.5  | Bundled with T4.1        | Technical implementation for T4.1          | 2026-01-22 |
-| T4.4  | Encrypt ALL step work/inventories | M4.5-F1   | Create M4.5  | New foundation feature   | Maximum privacy for sensitive content      | 2026-01-22 |
-| T4.6  | Recovery key generation           | M4.5-F1   | Create M4.5  | New foundation feature   | Critical for user data recovery            | 2026-01-22 |
-| T4.7  | DEK/KEK key wrapping model        | M4.5-F1   | Create M4.5  | New foundation feature   | Industry-standard; enables future features | 2026-01-22 |
-| T4.9  | Auto-lock timeout                 | M4.5-F1   | Create M4.5  | New foundation feature   | Standard security UX; configurable         | 2026-01-22 |
-| F4.1  | Offline Queue (Trust Indicator)   | M4.5-F2   | Create M4.5  | New privacy UX feature   | Visible sync status; builds user trust     | 2026-01-22 |
-| F4.5  | Guest Mode (Sandbox)              | M4.5-F2   | Create M4.5  | New privacy UX feature   | Try before sign-up; privacy-first          | 2026-01-22 |
-| F4.7  | Selective Sync                    | M4.5-F2   | Create M4.5  | New privacy UX feature   | Granular control over cloud sync           | 2026-01-22 |
-| F4.10 | Nuclear Option (Account Delete)   | M4.5-F2   | Create M4.5  | New privacy UX feature   | GDPR compliance; 3-step deletion           | 2026-01-22 |
-| F4.12 | No-Tracking Dashboard             | M4.5-F2   | Create M4.5  | New privacy UX feature   | Transparency builds trust                  | 2026-01-22 |
-| F4.14 | Snapshot Protection               | M4.5-F2   | Create M4.5  | New privacy UX feature   | Prevents app switcher snooping             | 2026-01-22 |
-| F4.2  | Burn After Reading                | M9-F1     | Create M9    | Native-dependent feature | Secure deletion requires native app        | 2026-01-22 |
+| T4.1  | Tab-level PIN passcode            | M4.5-F1   | M4           | New foundation feature   | Core encryption feature; privacy-first     | 2026-01-22 |
+| T4.2  | PBKDF2 key derivation             | M4.5-F1   | T4.1         | Bundled with T4.1        | Technical implementation for T4.1          | 2026-01-22 |
+| T4.3  | AES-256-GCM encryption            | M4.5-F1   | T4.2         | Bundled with T4.1        | Technical implementation for T4.1          | 2026-01-22 |
+| T4.4  | Encrypt ALL step work/inventories | M4.5-F1   | T4.3         | New foundation feature   | Maximum privacy for sensitive content      | 2026-01-22 |
+| T4.6  | Recovery key generation           | M4.5-F1   | T4.4         | New foundation feature   | Critical for user data recovery            | 2026-01-22 |
+| T4.7  | DEK/KEK key wrapping model        | M4.5-F1   | T4.6         | New foundation feature   | Industry-standard; enables future features | 2026-01-22 |
+| T4.9  | Auto-lock timeout                 | M4.5-F1   | T4.7         | New foundation feature   | Standard security UX; configurable         | 2026-01-22 |
+| F4.1  | Offline Queue (Trust Indicator)   | M4.5-F2   | T4.9         | New privacy UX feature   | Visible sync status; builds user trust     | 2026-01-22 |
+| F4.5  | Guest Mode (Sandbox)              | M4.5-F2   | F4.1         | New privacy UX feature   | Try before sign-up; privacy-first          | 2026-01-22 |
+| F4.7  | Selective Sync                    | M4.5-F2   | F4.5         | New privacy UX feature   | Granular control over cloud sync           | 2026-01-22 |
+| F4.10 | Nuclear Option (Account Delete)   | M4.5-F2   | F4.7         | New privacy UX feature   | GDPR compliance; 3-step deletion           | 2026-01-22 |
+| F4.12 | No-Tracking Dashboard             | M4.5-F2   | F4.10        | New privacy UX feature   | Transparency builds trust                  | 2026-01-22 |
+| F4.14 | Snapshot Protection               | M4.5-F2   | F4.12        | New privacy UX feature   | Prevents app switcher snooping             | 2026-01-22 |
+| F4.2  | Burn After Reading                | M9-F1     | F4.4         | Native-dependent feature | Secure deletion requires native app        | 2026-01-22 |
 
 **M4.5-F1:** Encryption Foundation (7 items) **M4.5-F2:** Privacy & Data
 Controls (6 items) **M9-F1:** Native Security Features (1 item; 2 more from
@@ -454,8 +507,8 @@ _Deferred items also get ROADMAP placement for future push_
 
 | ID    | Idea               | Placement | Insert After  | Relationship              | Reason                                  | Revisit When |
 | ----- | ------------------ | --------- | ------------- | ------------------------- | --------------------------------------- | ------------ |
-| T4.10 | Biometric unlock   | M9-F1     | Create M9     | Native-dependent security | Requires native app (PWA limitation)    | T8 eval      |
-| F4.4  | Stealth Mode       | M9-F1     | Create M9     | Native-dependent security | Requires native for icon switching      | T8 eval      |
+| T4.10 | Biometric unlock   | M9-F1     | M8            | Native-dependent security | Requires native app (PWA limitation)    | T8 eval      |
+| F4.4  | Stealth Mode       | M9-F1     | T4.10         | Native-dependent security | Requires native for icon switching      | T8 eval      |
 | F4.11 | Shoulder Surf Blur | M10       | Append to M10 | Future enhancement        | Nice-to-have; auto-lock covers use case | Post-launch  |
 
 **M9-F1:** Native Security Features (2 items deferred until T8 Native Path

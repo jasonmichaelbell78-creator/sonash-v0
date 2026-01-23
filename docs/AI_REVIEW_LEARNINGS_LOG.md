@@ -558,8 +558,95 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #180-194 are actively maintained below. Older reviews (#137-179) are in
+Reviews #180-195 are actively maintained below. Older reviews (#137-179) are in
 Archive 5.
+
+---
+
+#### Review #195: PR #334f459 Expansion Placement Metadata - CI Lint + Qodo Suggestions (2026-01-22)
+
+**Source:** CI Documentation Linter + Qodo PR Code Suggestions **PR/Branch:**
+claude/mcp-optimization-session90 (commit 334f459) **Suggestions:** 5 total
+(Major: 1, Minor: 4, Deferred: 1)
+
+**Context:** Review of placement metadata framework added to
+EXPANSION_EVALUATION_TRACKER.md with new columns (Placement, Insert After,
+Relationship) and ROADMAP integration process documentation.
+
+**Patterns Identified:**
+
+1. **Documentation Lint Violations**
+   - Root cause: New tracker document lacked required Tier-2 sections
+   - Prevention: All Tier-2 docs require Purpose/Overview, AI Instructions,
+     Quick Start sections
+   - Pattern: EXPANSION_EVALUATION_TRACKER is state tracking doc, needs
+     structure like AI_REVIEW_LEARNINGS_LOG
+
+2. **Non-Deterministic Insertion Order**
+   - Root cause: Multiple items using "Create M4.5" instead of referencing
+     previous item ID
+   - Prevention: Use linked-list style insertion (each item references previous
+     ID)
+   - Pattern: Metadata for automation must be machine-readable and deterministic
+
+**Specific Fixes Applied:**
+
+1. **MAJOR: Added Purpose Section** (CI Lint - required for Tier-2 docs)
+   - Explained tracker's role as state tracking document for ~280 expansion
+     ideas
+   - Listed 5 key tracking responsibilities (progress, staging, decisions,
+     placement, resume context)
+   - Identified as "source of truth" for `/expansion-evaluation` skill
+
+2. **MINOR: Added AI Instructions Section** (CI Lint - recommended)
+   - 7 key directives for AI assistants working with tracker
+   - Emphasized mandatory placement metadata for accepted/deferred items
+   - Cross-referenced Quick Resume and staging workflow
+
+3. **MINOR: Added Quick Start Section** (CI Lint - recommended)
+   - Separate workflows for new vs resumed sessions
+   - Clear 3-4 step process for each scenario
+   - Integration with `/expansion-evaluation` commands
+
+4. **MINOR: Refined Insert After Column** (Qodo Suggestion - Importance 8/10)
+   - Changed from ambiguous "Create M4.5" to specific item IDs (M4, T4.1, T4.2,
+     etc.)
+   - Implemented linked-list pattern: each item references previous item ID
+   - Updated 16 items total (13 staged + 3 deferred) for deterministic ordering
+   - Example: T4.1→M4, T4.2→T4.1, T4.3→T4.2 (clear sequential chain)
+
+**Deferred for User Decision:**
+
+5. **Tracker Format Migration** (Qodo Suggestion - Importance 9/10)
+   - Migrate from Markdown to JSON/YAML for better programmatic access
+   - Logged in SESSION_DECISIONS.md v1.2 with 4 options (Keep Markdown, JSON,
+     YAML, Hybrid)
+   - Trade-offs: automation/validation vs human readability/workflow disruption
+   - Awaiting user architectural decision
+
+**Resolution:**
+
+- Fixed: 4 items (100% of fixable suggestions)
+- Deferred: 1 item (architectural decision requiring user input)
+- Files modified: EXPANSION_EVALUATION_TRACKER.md v2.1, SESSION_DECISIONS.md
+  v1.2
+- Agents: None used (straightforward documentation additions)
+- Verification: Documentation linter pending
+
+**Key Learnings:**
+
+- **Documentation Compliance:** State tracking documents (like trackers, logs)
+  need same structural sections as audit logs (Purpose, AI Instructions, Quick
+  Start) for Tier-2 compliance
+- **Deterministic Metadata:** Insertion order metadata must reference specific
+  IDs (linked-list pattern) for deterministic processing, not ambiguous
+  instructions like "Create M..."
+- **Markdown-as-Database Technical Debt:** Using Markdown tables as databases
+  creates parsing/validation challenges (Qodo importance: 9/10); consider
+  migration to structured formats for automation-heavy workflows
+- **Architectural Decisions:** High-impact suggestions requiring workflow
+  changes should be logged in SESSION_DECISIONS.md with options presented before
+  implementation
 
 ---
 
