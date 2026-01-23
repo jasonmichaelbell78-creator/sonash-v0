@@ -390,7 +390,7 @@ acknowledged
 
 ### T1: System Architecture ⏸️ IN PROGRESS
 
-**Evaluated:** 2026-01-23 | **Ideas:** 14/18 | **Phase 1, Order 3**
+**Evaluated:** 2026-01-23 | **Ideas:** 15/18 | **Phase 1, Order 3**
 
 | ID    | Idea                           | Decision        | Details                                    |
 | ----- | ------------------------------ | --------------- | ------------------------------------------ |
@@ -408,22 +408,25 @@ acknowledged
 | T1.12 | Sync & Storage settings panel  | ✅ Accept M5-F1 | Full settings: offline, sync, storage mgmt |
 | T1.13 | React Query integration        | ❌ Reject       | Conflicts with offline-first architecture  |
 | T1.14 | iOS PWA constraint mitigations | 🔗 Merge Multi  | Cross-cutting: T1.4/5/6/12/15 handle iOS   |
-| T1.15 | Storage quota management       | Not evaluated   |                                            |
+| T1.15 | Storage quota management       | 🔗 Merge T1.6   | Storage management cluster with T1.6/T1.12 |
 | T1.16 | Export backup flow             | Not evaluated   |                                            |
 | T1.17 | useOfflineFirst hook           | Not evaluated   |                                            |
 | T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                            |
 
-**Summary:** 6 accepted M5-F1, 7 merged (T1.1→Q7, T1.5/9/10→T1.4, T1.7→T1.11,
-T1.8→T1.2, T1.14→Multi), 1 rejected (T1.13), 4 remaining
+**Summary:** 6 accepted M5-F1, 8 merged (T1.1→Q7, T1.5/9/10→T1.4, T1.7→T1.11,
+T1.8→T1.2, T1.14→Multi, T1.15→T1.6), 1 rejected (T1.13), 3 remaining
 
-**T1.6 Implementation Notes:**
+**T1.6 + T1.15 Implementation Notes (Storage Management):**
 
-- Request persisted storage after first journal entry
-- Clear warning: "Without this, browser may delete your data during storage
-  cleanup"
-- If denied: Offer "Online-Only Mode" (data syncs to Firestore, no local
-  persistence)
-- Bundle with T1.15 (Storage quota management) for cohesive storage UX
+- **T1.6 (Persistent Storage):** Request after first journal entry with clear
+  warning
+- **T1.15 (Quota Management):** Monitor usage, warn at 80%/90%/95%, cleanup
+  tools
+- **Combined "Storage Management" cluster in T1.12 Settings Panel**
+- Persistent storage permission + quota monitoring + usage display
+- If permission denied: Offer "Online-Only Mode" (Firestore only, no local)
+- iOS-specific: Handle 50MB hard limit (T1.14)
+- Smart cleanup: Delete oldest synced entries, export-before-delete
 
 **T1.11 Implementation Notes (Unified Sync Status):**
 
