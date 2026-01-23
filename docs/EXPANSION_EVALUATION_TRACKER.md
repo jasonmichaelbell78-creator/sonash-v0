@@ -388,9 +388,9 @@ _None yet - add questions as they arise during module evaluation_
 **Summary:** 6 accepted M5, 1 accepted M6+, 2 deferred, 1 rejected, 4 merged, 1
 acknowledged
 
-### T1: System Architecture ⏸️ IN PROGRESS
+### T1: System Architecture ✅ COMPLETE
 
-**Evaluated:** 2026-01-23 | **Ideas:** 17/18 | **Phase 1, Order 3**
+**Evaluated:** 2026-01-23 | **Ideas:** 18/18 | **Phase 1, Order 3**
 
 | ID    | Idea                           | Decision        | Details                                    |
 | ----- | ------------------------------ | --------------- | ------------------------------------------ |
@@ -411,11 +411,11 @@ acknowledged
 | T1.15 | Storage quota management       | 🔗 Merge T1.6   | Storage management cluster with T1.6/T1.12 |
 | T1.16 | Export backup flow             | 🔗 Merge T5+F7  | Evaluate exports holistically (21 ideas)   |
 | T1.17 | useOfflineFirst hook           | 🔗 Merge T1.2   | Hook API is implementation detail of T1.2  |
-| T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                            |
+| T1.18 | Why not PouchDB/RxDB analysis  | 📝 Document ADR | Architecture Decision Record for rationale |
 
 **Summary:** 6 accepted M5-F1, 10 merged (T1.1→Q7, T1.5/8/9/10/17→T1.2/4,
 T1.7→T1.11, T1.14→Multi, T1.15→T1.6, T1.16→T5+F7), 1 rejected (T1.13), 1
-remaining
+document (T1.18 ADR)
 
 **T1.6 + T1.15 Implementation Notes (Storage Management):**
 
@@ -447,6 +447,16 @@ remaining
 - MVP controls: offline mode toggle, manual sync button, storage usage display
 - Advanced: view sync queue, clear cache, detailed stats
 - Start simple and expand over time
+
+**T1.18 Documentation Task (ADR):**
+
+- Create Architecture Decision Record:
+  `docs/architecture/ADR-001-offline-sync-approach.md`
+- Document decision, context, alternatives (PouchDB/RxDB), rationale
+- Explain why custom sync (T1.2-T1.4) + Dexie.js (T1.1) over off-the-shelf
+  solutions
+- Prevents future revisiting of already-decided architectural questions
+- Standard ADR format, ~30 minutes to write
 
 ### T3: Offline Queue & Conflict
 
