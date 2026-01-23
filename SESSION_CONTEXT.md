@@ -10,19 +10,30 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-22 **Branch**: `claude/expansion-begin-eu2vQ`
-**Working On**: Expansion evaluation - F4 Offline/Privacy next
-(expansion-evaluation skill) **Files Modified**: EXPANSION_EVALUATION_TRACKER.md
-**Next Step**: F4.1-F4.15 evaluation (Phase 1, Order 2) **Uncommitted Work**:
-Yes - T4 completion updates
+**Last Checkpoint**: 2026-01-22 14:30 **Branch**:
+`claude/mcp-optimization-session90` **Working On**: T1 (System Architecture)
+evaluation - expansion-evaluation skill **Files Modified**:
 
-**T4 Complete (12/12)**:
+- .claude/skills/expansion-evaluation/SKILL.md (added presentation format
+  template)
+- .vscode/settings.json
 
-- ✅ Accepted M5: T4.1-4, T4.6-7, T4.9 (7 items staged for ROADMAP)
-- ❌ Rejected: T4.8 (cloud escrow)
-- ⏸️ Deferred: T4.10 (biometric - revisit T8)
-- 🔗 Merged: T4.5, T4.11
-- 📋 Acknowledged: T4.12
+**Next Step**: Continue T1 evaluation at T1.5 (Sync-on-open strategy for iOS) -
+user decision pending on merge vs separate **Uncommitted Work**: Yes - skill
+template updates
+
+**T1 Progress (5/18 evaluated)**:
+
+- 🔗 T1.1: Merged with Foundational Decisions (Dexie.js)
+- ✅ T1.2: Accepted M5-F1 (Custom mutation queue)
+- ✅ T1.3: Accepted M5-F1 (UI reads from local store)
+- ✅ T1.4: Accepted M5-F1 (Background sync worker with iOS fallback)
+- ⏸️ T1.5: **PENDING USER DECISION** - Merge with T1.4 or separate?
+
+**Context**: Added detailed presentation format to expansion-evaluation skill
+(Description, The Feature, Cross-Reference, Technical Implementation,
+Trade-offs, Options, Placement Recommendation, Recommendation). Following
+documented format for all T1 evaluations.
 
 ---
 
@@ -73,6 +84,32 @@ hookify hooks to improve code quality, security, and developer experience.
 
 **Total Investment:** ~14 hours for all 3 phases **Expected ROI:** -30% code
 review cycles, -80% security violations, +20% session productivity
+
+**Session #90 Update** - Expansion Evaluation T1 Started + Skill Template Added:
+
+- **✅ SKILL TEMPLATE ADDED**: Documented detailed presentation format for
+  expansion evaluations
+  - Added to `.claude/skills/expansion-evaluation/SKILL.md`
+  - Format: Description, The Feature, Cross-Reference, Technical Implementation,
+    Trade-offs (Pro/Con), Options (4 choices), Placement Recommendation (5
+    fields), Recommendation (decision + rationale)
+  - Rules: Must include placement for accept/defer options, 3+ pros, 2+ cons,
+    all 4 options presented
+- **✅ T1 EVALUATION STARTED**: System Architecture (5/18 ideas evaluated)
+  - T1.1: Merged with Q7 (Dexie.js already decided)
+  - T1.2: Accept M5-F1 (Custom mutation queue - first in Offline Infrastructure)
+  - T1.3: Accept M5-F1 (UI reads from local store - local-first pattern)
+  - T1.4: Accept M5-F1 (Background sync worker with iOS fallback bundled)
+  - T1.5: **PENDING USER DECISION** - Merge with T1.4 or separate?
+- **✅ STAGING AREA**: 17 items staged for ROADMAP (14 from T4/F4, 3 new from
+  T1)
+  - M4.5-F1: Encryption Foundation (7 items)
+  - M4.5-F2: Privacy & Data Controls (6 items)
+  - M5-F1: Offline Infrastructure (3 items: T1.2, T1.3, T1.4)
+  - M9-F1: Native Security Features (1 item)
+- **📋 NEXT**: Resume T1 evaluation at T1.5 decision, then continue T1.6-T1.18
+- **Branch**: `claude/mcp-optimization-session90` (1 commit: skill template)
+- **All Checks Passed**: Tests (276 pass), Lint (0 errors), Pattern compliance
 
 **Session #89 Update** - PR Review Fixes (Reviews #192-193):
 

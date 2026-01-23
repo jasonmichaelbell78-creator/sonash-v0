@@ -60,12 +60,15 @@ When working with this tracker:
 
 ## Quick Resume
 
-> **Last Session:** 2026-01-22 (T4 + F4 Complete + Placement Decided) **Last
-> Evaluated:** F4 Offline/Privacy (15/15 ideas) **Placement Status:** 17 items
-> with full placement metadata (M4.5, M9, M10) **Next Suggested:** Run
-> `/expansion-evaluation evaluate T1` to continue Phase 1 (System Architecture)
-> **Open Questions:** All 12 resolved ✅ **Ready to Push:** 14 items to M4.5/M9
-> (use `/expansion-evaluation push-to-roadmap` when ready)
+> **Last Session:** 2026-01-22 (T1 In Progress - Skill Template Added) **Last
+> Evaluated:** T1 System Architecture (5/18 evaluated) **Placement Status:** 20
+> items with full placement metadata (M4.5, M9, M10, M5-F1) **Next Suggested:**
+> Continue `/expansion-evaluation evaluate T1` - **T1.5 decision pending**
+> (merge with T1.4 or separate?) **Open Questions:** All 12 resolved ✅ **Ready
+> to Push:** 17 items to M4.5/M9/M5 (use `/expansion-evaluation push-to-roadmap`
+> when ready) **Skill Update:** Added detailed presentation format template to
+> skill file (Description, Feature, Cross-Ref, Technical, Trade-offs, Options,
+> Placement, Recommendation)
 
 ---
 
@@ -385,9 +388,33 @@ _None yet - add questions as they arise during module evaluation_
 **Summary:** 6 accepted M5, 1 accepted M6+, 2 deferred, 1 rejected, 4 merged, 1
 acknowledged
 
-### T1: System Architecture
+### T1: System Architecture ⏸️ IN PROGRESS
 
-_Not yet started - ~18 ideas pending (Phase 1, Order 3)_
+**Evaluated:** 2026-01-22 | **Ideas:** 5/18 | **Phase 1, Order 3**
+
+| ID    | Idea                           | Decision        | Details                                          |
+| ----- | ------------------------------ | --------------- | ------------------------------------------------ |
+| T1.1  | Use Dexie.js for IndexedDB     | 🔗 Merge Q7     | Already decided in foundational question         |
+| T1.2  | Custom mutation queue          | ✅ Accept M5-F1 | Core offline infrastructure                      |
+| T1.3  | UI always reads from local     | ✅ Accept M5-F1 | Local-first read pattern                         |
+| T1.4  | Background sync worker         | ✅ Accept M5-F1 | Sync engine with iOS fallback bundled            |
+| T1.5  | Sync-on-open strategy for iOS  | ⏸️ **PENDING**  | **User decision needed: merge T1.4 or separate** |
+| T1.6  | Persisted Storage API request  | Not evaluated   |                                                  |
+| T1.7  | Read pipeline with staleness   | Not evaluated   |                                                  |
+| T1.8  | Write pipeline (local-first)   | Not evaluated   |                                                  |
+| T1.9  | Network detection + retry      | Not evaluated   |                                                  |
+| T1.10 | Exponential backoff retries    | Not evaluated   |                                                  |
+| T1.11 | Queue depth visibility         | Not evaluated   |                                                  |
+| T1.12 | Sync & Storage settings panel  | Not evaluated   |                                                  |
+| T1.13 | React Query integration        | Not evaluated   |                                                  |
+| T1.14 | iOS PWA constraint mitigations | Not evaluated   |                                                  |
+| T1.15 | Storage quota management       | Not evaluated   |                                                  |
+| T1.16 | Export backup flow             | Not evaluated   |                                                  |
+| T1.17 | useOfflineFirst hook           | Not evaluated   |                                                  |
+| T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                                  |
+
+**Summary:** 3 accepted M5-F1, 1 merged (Q7), 1 pending user decision, 13
+remaining
 
 ### T3: Offline Queue & Conflict
 

@@ -182,6 +182,76 @@ For each idea, assess:
 
 **Placement must be discussed for all accepted/deferred items.**
 
+## Presentation Format (REQUIRED)
+
+**CRITICAL:** Use this exact format for every idea evaluation. Do NOT deviate.
+
+```markdown
+### [ID]: [Idea Name]
+
+**Description:** [One-sentence summary of what this is]
+
+**The Feature:**
+
+- [Bullet point explaining what it does]
+- [Implementation details]
+- [How it works]
+
+**Cross-Reference (optional):** [Only include if applicable; otherwise omit this
+entire section]
+
+**Technical Implementation (optional):** [Only include if relevant; otherwise
+omit this entire section]
+
+**Trade-offs:**
+
+- **Pro:** [Benefit 1]
+- **Pro:** [Benefit 2]
+- **Pro:** [Benefit 3]
+- **Con:** [Challenge/risk 1]
+- **Con:** [Challenge/risk 2]
+
+**Options:**
+
+1. Accept [Milestone] - [Brief reasoning]
+2. Defer - [Brief reasoning]
+3. Reject - [Brief reasoning]
+4. Merge [with item] - [Brief reasoning]
+
+**Placement Recommendation:** [If Accept/Defer option is viable]
+
+- **Milestone:** [Which milestone - M5, M6, new milestone?]
+- **Feature Group:** [Which group within milestone - M5-F1, create new?]
+- **Insert After:** [MILESTONE:MX, ITEM:TX.X, or END:MX]
+- **Relationship:** [NEW, BUNDLED_WITH:<ID>, REQUIRES_NATIVE,
+  FUTURE_ENHANCEMENT, MERGED_INTO:<ID>]
+- **Rationale:** [Why this placement makes sense - dependencies, grouping logic]
+
+**Recommendation:** [Accept/Defer/Reject] - [Your rationale explaining why this
+is the best option]
+
+**What's your decision?**
+```
+
+### Presentation Template Rules
+
+1. **Always include:** Description, The Feature, Trade-offs, Options,
+   Recommendation, question. (Placement Recommendation is conditional, see
+   rule 6)
+2. **Optional sections:** Cross-Reference, Technical Implementation (use when
+   relevant)
+3. **Trade-offs format:** Start each with "Pro:" or "Con:" prefix
+4. **List at least 3 pros and 2 cons** - Be thorough in analysis
+5. **Options:** Present all 4 options (Accept/Defer/Reject/Merge) with brief
+   reasoning for each
+6. **Placement Recommendation:** ALWAYS include for items that could be
+   accepted/deferred - show milestone, feature group, insert after,
+   relationship, and rationale
+7. **Recommendation:** CRITICAL - Always recommend a specific decision
+   (Accept/Defer/Reject/Merge) with clear rationale explaining why. This is YOUR
+   expert recommendation to guide the user's choice.
+8. **End with question:** "What's your decision?" to prompt user choice
+
 ## State Management
 
 Primary state file: `docs/EXPANSION_EVALUATION_TRACKER.md`
