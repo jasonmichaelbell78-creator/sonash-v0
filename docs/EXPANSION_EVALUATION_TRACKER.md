@@ -388,33 +388,75 @@ _None yet - add questions as they arise during module evaluation_
 **Summary:** 6 accepted M5, 1 accepted M6+, 2 deferred, 1 rejected, 4 merged, 1
 acknowledged
 
-### T1: System Architecture ⏸️ IN PROGRESS
+### T1: System Architecture ✅ COMPLETE
 
-**Evaluated:** 2026-01-22 | **Ideas:** 5/18 | **Phase 1, Order 3**
+**Evaluated:** 2026-01-23 | **Ideas:** 18/18 | **Phase 1, Order 3**
 
-| ID    | Idea                           | Decision        | Details                                          |
-| ----- | ------------------------------ | --------------- | ------------------------------------------------ |
-| T1.1  | Use Dexie.js for IndexedDB     | 🔗 Merge Q7     | Already decided in foundational question         |
-| T1.2  | Custom mutation queue          | ✅ Accept M5-F1 | Core offline infrastructure                      |
-| T1.3  | UI always reads from local     | ✅ Accept M5-F1 | Local-first read pattern                         |
-| T1.4  | Background sync worker         | ✅ Accept M5-F1 | Sync engine with iOS fallback bundled            |
-| T1.5  | Sync-on-open strategy for iOS  | ⏸️ **PENDING**  | **User decision needed: merge T1.4 or separate** |
-| T1.6  | Persisted Storage API request  | Not evaluated   |                                                  |
-| T1.7  | Read pipeline with staleness   | Not evaluated   |                                                  |
-| T1.8  | Write pipeline (local-first)   | Not evaluated   |                                                  |
-| T1.9  | Network detection + retry      | Not evaluated   |                                                  |
-| T1.10 | Exponential backoff retries    | Not evaluated   |                                                  |
-| T1.11 | Queue depth visibility         | Not evaluated   |                                                  |
-| T1.12 | Sync & Storage settings panel  | Not evaluated   |                                                  |
-| T1.13 | React Query integration        | Not evaluated   |                                                  |
-| T1.14 | iOS PWA constraint mitigations | Not evaluated   |                                                  |
-| T1.15 | Storage quota management       | Not evaluated   |                                                  |
-| T1.16 | Export backup flow             | Not evaluated   |                                                  |
-| T1.17 | useOfflineFirst hook           | Not evaluated   |                                                  |
-| T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                                  |
+| ID    | Idea                           | Decision        | Details                                    |
+| ----- | ------------------------------ | --------------- | ------------------------------------------ |
+| T1.1  | Use Dexie.js for IndexedDB     | 🔗 Merge Q7     | Already decided in foundational question   |
+| T1.2  | Custom mutation queue          | ✅ Accept M5-F1 | Core offline infrastructure                |
+| T1.3  | UI always reads from local     | ✅ Accept M5-F1 | Local-first read pattern                   |
+| T1.4  | Background sync worker         | ✅ Accept M5-F1 | Sync engine with iOS fallback bundled      |
+| T1.5  | Sync-on-open strategy for iOS  | 🔗 Merge T1.4   | iOS fallback implementation detail of T1.4 |
+| T1.6  | Persisted Storage API request  | ✅ Accept M5-F1 | Early request + fallback to online-only    |
+| T1.7  | Read pipeline with staleness   | 🔗 Merge T1.11  | Unified "Sync Status" with queue depth     |
+| T1.8  | Write pipeline (local-first)   | 🔗 Merge T1.2   | Write side of offline infrastructure       |
+| T1.9  | Network detection + retry      | 🔗 Merge T1.4   | Network awareness for sync engine          |
+| T1.10 | Exponential backoff retries    | 🔗 Merge T1.4   | Retry reliability for sync engine          |
+| T1.11 | Queue depth visibility         | ✅ Accept M5-F1 | Unified sync status (staleness + queue)    |
+| T1.12 | Sync & Storage settings panel  | ✅ Accept M5-F1 | Full settings: offline, sync, storage mgmt |
+| T1.13 | React Query integration        | ❌ Reject       | Conflicts with offline-first architecture  |
+| T1.14 | iOS PWA constraint mitigations | 🔗 Merge Multi  | Cross-cutting: T1.4/5/6/12/15 handle iOS   |
+| T1.15 | Storage quota management       | 🔗 Merge T1.6   | Storage management cluster with T1.6/T1.12 |
+| T1.16 | Export backup flow             | 🔗 Merge T5+F7  | Evaluate exports holistically (21 ideas)   |
+| T1.17 | useOfflineFirst hook           | 🔗 Merge T1.2   | Hook API is implementation detail of T1.2  |
+| T1.18 | Why not PouchDB/RxDB analysis  | 📝 Document ADR | Architecture Decision Record for rationale |
 
-**Summary:** 3 accepted M5-F1, 1 merged (Q7), 1 pending user decision, 13
-remaining
+**Summary:** 6 accepted M5-F1, 10 merged (T1.1→Q7, T1.5/8/9/10/17→T1.2/4,
+T1.7→T1.11, T1.14→Multi, T1.15→T1.6, T1.16→T5+F7), 1 rejected (T1.13), 1
+document (T1.18 ADR)
+
+**T1.6 + T1.15 Implementation Notes (Storage Management):**
+
+- **T1.6 (Persistent Storage):** Request after first journal entry with clear
+  warning
+- **T1.15 (Quota Management):** Monitor usage, warn at 80%/90%/95%, cleanup
+  tools
+- **Combined "Storage Management" cluster in T1.12 Settings Panel**
+- Persistent storage permission + quota monitoring + usage display
+- If permission denied: Offer "Online-Only Mode" (Firestore only, no local)
+- iOS-specific: Handle 50MB hard limit (T1.14)
+- Smart cleanup: Delete oldest synced entries, export-before-delete
+
+**T1.11 Implementation Notes (Unified Sync Status):**
+
+- Combined T1.7 (staleness) + T1.11 (queue depth) into single feature
+- Header badge: "Last synced 2h ago • 3 pending uploads"
+- Color coding: 🟢 synced, 🟡 stale, 🔴 errors
+- Smart visibility: auto-hide when all synced (reduces noise)
+- Tap to expand for detailed sync stats in settings
+- Priority: Medium (ship after core sync T1.2-T1.4 works)
+
+**T1.12 Implementation Notes (Settings Panel):**
+
+- All 5 AIs unanimous - marked "high priority"
+- Full settings: offline toggle, manual sync, storage management
+- Natural integration point for T1.6 (persistent storage), T1.11 (sync status),
+  T1.15 (quota)
+- MVP controls: offline mode toggle, manual sync button, storage usage display
+- Advanced: view sync queue, clear cache, detailed stats
+- Start simple and expand over time
+
+**T1.18 Documentation Task (ADR):**
+
+- Create Architecture Decision Record:
+  `docs/architecture/ADR-001-offline-sync-approach.md`
+- Document decision, context, alternatives (PouchDB/RxDB), rationale
+- Explain why custom sync (T1.2-T1.4) + Dexie.js (T1.1) over off-the-shelf
+  solutions
+- Prevents future revisiting of already-decided architectural questions
+- Standard ADR format, ~30 minutes to write
 
 ### T3: Offline Queue & Conflict
 
