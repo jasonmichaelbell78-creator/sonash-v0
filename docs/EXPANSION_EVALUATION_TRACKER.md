@@ -390,7 +390,7 @@ acknowledged
 
 ### T1: System Architecture ⏸️ IN PROGRESS
 
-**Evaluated:** 2026-01-23 | **Ideas:** 10/18 | **Phase 1, Order 3**
+**Evaluated:** 2026-01-23 | **Ideas:** 11/18 | **Phase 1, Order 3**
 
 | ID    | Idea                           | Decision        | Details                                    |
 | ----- | ------------------------------ | --------------- | ------------------------------------------ |
@@ -404,7 +404,7 @@ acknowledged
 | T1.8  | Write pipeline (local-first)   | 🔗 Merge T1.2   | Write side of offline infrastructure       |
 | T1.9  | Network detection + retry      | 🔗 Merge T1.4   | Network awareness for sync engine          |
 | T1.10 | Exponential backoff retries    | 🔗 Merge T1.4   | Retry reliability for sync engine          |
-| T1.11 | Queue depth visibility         | Not evaluated   |                                            |
+| T1.11 | Queue depth visibility         | ✅ Accept M5-F1 | Unified sync status (staleness + queue)    |
 | T1.12 | Sync & Storage settings panel  | Not evaluated   |                                            |
 | T1.13 | React Query integration        | Not evaluated   |                                            |
 | T1.14 | iOS PWA constraint mitigations | Not evaluated   |                                            |
@@ -413,7 +413,8 @@ acknowledged
 | T1.17 | useOfflineFirst hook           | Not evaluated   |                                            |
 | T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                            |
 
-**Summary:** 4 accepted M5-F1, 6 merged (Q7, T1.2, T1.4×4, T1.11), 8 remaining
+**Summary:** 5 accepted M5-F1, 6 merged (T1.1→Q7, T1.5/9/10→T1.4, T1.7→T1.11,
+T1.8→T1.2), 7 remaining
 
 **T1.6 Implementation Notes:**
 
@@ -424,13 +425,14 @@ acknowledged
   persistence)
 - Bundle with T1.15 (Storage quota management) for cohesive storage UX
 
-**T1.7 + T1.11 Merge Rationale:**
+**T1.11 Implementation Notes (Unified Sync Status):**
 
-- Combined "Sync Status" indicator (staleness + queue depth)
-- Single UI element: "Last synced 2h ago • 3 pending uploads"
-- Color coding: green (synced), yellow (stale), red (errors)
-- Avoids multiple competing indicators
-- Evaluate together when reaching T1.11
+- Combined T1.7 (staleness) + T1.11 (queue depth) into single feature
+- Header badge: "Last synced 2h ago • 3 pending uploads"
+- Color coding: 🟢 synced, 🟡 stale, 🔴 errors
+- Smart visibility: auto-hide when all synced (reduces noise)
+- Tap to expand for detailed sync stats in settings
+- Priority: Medium (ship after core sync T1.2-T1.4 works)
 
 ### T3: Offline Queue & Conflict
 
