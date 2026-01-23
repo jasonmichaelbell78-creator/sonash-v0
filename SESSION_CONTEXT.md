@@ -10,30 +10,27 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-22 14:30 **Branch**:
-`claude/mcp-optimization-session90` **Working On**: T1 (System Architecture)
-evaluation - expansion-evaluation skill **Files Modified**:
+**Last Checkpoint**: 2026-01-23 17:32 **Branch**: `claude/new-session-z2qIR`
+**Working On**: F1 (Step Work Depth) expansion evaluation - Option C structure
+finalized **Files Modified**: None (all committed)
 
-- .claude/skills/expansion-evaluation/SKILL.md (added presentation format
-  template)
-- .vscode/settings.json
+**Next Step**: Update EXPANSION_EVALUATION_TRACKER with F1 complete evaluation
+results, then commit progress
 
-**Next Step**: Continue T1 evaluation at T1.5 (Sync-on-open strategy for iOS) -
-user decision pending on merge vs separate **Uncommitted Work**: Yes - skill
-template updates
+**Uncommitted Work**: No
 
-**T1 Progress (5/18 evaluated)**:
+**F1 Evaluation Complete**:
 
-- 🔗 T1.1: Merged with Foundational Decisions (Dexie.js)
-- ✅ T1.2: Accepted M5-F1 (Custom mutation queue)
-- ✅ T1.3: Accepted M5-F1 (UI reads from local store)
-- ✅ T1.4: Accepted M5-F1 (Background sync worker with iOS fallback)
-- ⏸️ T1.5: **PENDING USER DECISION** - Merge with T1.4 or separate?
+- ✅ **M5-F2**: Step Work Worksheets (Steps 2-9, 11-12) - Accepted
+- ✅ **M5-F3**: Step Work Interactive Enhancements (Steps 1-12) - Accepted
+- ✅ **M5-F4**: Step Work Context Tools (Unstuck + Reference) - Accepted
+- ✅ **NEW**: App-Wide Speech-to-Text (elevated from step work to universal
+  feature) - Placement TBD (M5-F0 recommended)
 
-**Context**: Added detailed presentation format to expansion-evaluation skill
-(Description, The Feature, Cross-Reference, Technical Implementation,
-Trade-offs, Options, Placement Recommendation, Recommendation). Following
-documented format for all T1 evaluations.
+**Context**: Completed F1 evaluation using established pattern across all steps.
+Chose Option C structure (separate worksheets/enhancements/tools features).
+Elevated speech-to-text from step-work-only to app-wide infrastructure. Ready to
+document in tracker and move to next module.
 
 ---
 
