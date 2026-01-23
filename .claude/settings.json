@@ -13,6 +13,12 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-mcp-servers.js\"",
             "statusMessage": "Checking MCP availability..."
+          },
+          {
+            "type": "command",
+            "command": "powershell -Command \"Get-NetTCPConnection -LocalPort 24282 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }\"",
+            "statusMessage": "Stopping Serena dashboard...",
+            "async": true
           }
         ]
       }
