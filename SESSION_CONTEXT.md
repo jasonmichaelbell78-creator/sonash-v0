@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 3.16 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 3.19 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-01-23 (Session #91)
+2026-01-23 (Session #92)
 
 ---
 
@@ -10,30 +10,27 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-22 14:30 **Branch**:
-`claude/mcp-optimization-session90` **Working On**: T1 (System Architecture)
-evaluation - expansion-evaluation skill **Files Modified**:
+**Last Checkpoint**: 2026-01-23 17:32 **Branch**: `claude/new-session-z2qIR`
+**Working On**: F1 (Step Work Depth) expansion evaluation - Option C structure
+finalized **Files Modified**: None (all committed)
 
-- .claude/skills/expansion-evaluation/SKILL.md (added presentation format
-  template)
-- .vscode/settings.json
+**Next Step**: Begin T2 (Data Model & Firestore) expansion evaluation (Phase 2,
+Order 6)
 
-**Next Step**: Continue T1 evaluation at T1.5 (Sync-on-open strategy for iOS) -
-user decision pending on merge vs separate **Uncommitted Work**: Yes - skill
-template updates
+**Uncommitted Work**: No
 
-**T1 Progress (5/18 evaluated)**:
+**F1 Evaluation Complete**:
 
-- 🔗 T1.1: Merged with Foundational Decisions (Dexie.js)
-- ✅ T1.2: Accepted M5-F1 (Custom mutation queue)
-- ✅ T1.3: Accepted M5-F1 (UI reads from local store)
-- ✅ T1.4: Accepted M5-F1 (Background sync worker with iOS fallback)
-- ⏸️ T1.5: **PENDING USER DECISION** - Merge with T1.4 or separate?
+- ✅ **M5-F2**: Step Work Worksheets (Steps 2-9, 11-12) - Accepted
+- ✅ **M5-F3**: Step Work Interactive Enhancements (Steps 1-12) - Accepted
+- ✅ **M5-F4**: Step Work Context Tools (Unstuck + Reference) - Accepted
+- ✅ **NEW**: App-Wide Speech-to-Text (elevated from step work to universal
+  feature) - Staged as M5-F0
 
-**Context**: Added detailed presentation format to expansion-evaluation skill
-(Description, The Feature, Cross-Reference, Technical Implementation,
-Trade-offs, Options, Placement Recommendation, Recommendation). Following
-documented format for all T1 evaluations.
+**Context**: Completed F1 evaluation using established pattern across all steps.
+Chose Option C structure (separate worksheets/enhancements/tools features).
+Elevated speech-to-text from step-work-only to app-wide infrastructure. Ready to
+document in tracker and move to next module.
 
 ---
 
@@ -49,7 +46,7 @@ productive work.
 
 ## 🔢 Session Tracking
 
-**Current Session Count**: 91 (since Jan 1, 2026)
+**Current Session Count**: 92 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recently Completed" entries; review-focused sessions
@@ -84,6 +81,36 @@ hookify hooks to improve code quality, security, and developer experience.
 
 **Total Investment:** ~14 hours for all 3 phases **Expected ROI:** -30% code
 review cycles, -80% security violations, +20% session productivity
+
+**Session #91 Update** - T1 + T3 Expansion Evaluation Complete (33/280 ideas):
+
+- **✅ T1 SYSTEM ARCHITECTURE COMPLETE** - 18/18 ideas evaluated (Phase 1,
+  Order 3)
+  - **6 Accepted M5-F1** features: Core Infrastructure (T1.2-T1.4), Storage
+    Management (T1.6), Sync UI (T1.11-T1.12)
+  - **10 Merged** with other features: T1.1→Q7, T1.5/9/10→T1.4, T1.7→T1.11,
+    T1.8→T1.2, T1.14→Multi, T1.15→T1.6, T1.16→T5+F7, T1.17→T1.2-T1.4
+  - **1 Rejected**: T1.13 (React Query - architectural conflict)
+  - **1 Documentation**: T1.18 (ADR-001)
+  - **Key Decisions**: IndexedDB-first with Dexie.js, custom mutation queue, iOS
+    PWA constraints, persistent storage API with online-only fallback
+- **✅ T3 OFFLINE QUEUE & CONFLICT COMPLETE** - 15/15 ideas evaluated (Phase 1,
+  Order 4)
+  - **3 Accepted M5-F1** bundled features: Conflict Resolution Strategy
+    (T3.3-T3.6), Conflict Resolution UI (T3.7-T3.9), Dead Letter Queue (T3.13)
+  - **6 Merged** with T1: T3.1/2/10/15→T1.2, T3.11/12→T1.4
+  - **1 Deferred**: T3.14 (Queue compaction)
+  - **Key Decisions**: SHA-256 content hashing, append-only detection, row-level
+    merge, last-write-wins
+- **✅ ROADMAP REVIEW STEP ADDED**: Final holistic review process documented in
+  EXPANSION_EVALUATION_TRACKER.md
+  - Scheduled after all 21 modules evaluated
+  - Deliverables: refined ROADMAP, dependency map, sequencing strategy, risk
+    mitigation
+- **Progress**: 33/280 ideas evaluated (11.8%), 2/21 modules complete
+- **Commits**: 16 commits across 2 merged PRs
+- **Branch**: `claude/new-session-z2qIR` (Session #91 work merged to main)
+- **All Checks Passed**: Tests (276 pass), Lint (0 errors), Pattern compliance
 
 **Session #90 Update** - Expansion Evaluation T1 Started + Skill Template Added:
 
@@ -345,6 +372,33 @@ symlink rejection)
 ---
 
 ## ✅ Recently Completed
+
+- **Session #92** (Jan 23, 2026):
+  - ✅ **F1 (Step Work Depth) COMPLETE** - 51 ideas evaluated
+    - **Option C Structure**: Separate worksheets, enhancements, and tools
+      (maximum flexibility)
+    - **4 M5 Features Staged**:
+      - M5-F0: App-Wide Speech-to-Text (elevated from step-work to universal)
+      - M5-F2: Step Work Worksheets (Steps 2-9, 11-12) - R&D + text foundations
+      - M5-F3: Step Work Interactive Enhancements (Steps 1-12) - 48 optional
+        tools
+      - M5-F4: Step Work Context Tools (Unstuck button + Reference sidebar)
+    - **Key Decisions**: All 12 steps need worksheet backbone; interactive tools
+      are progressive enhancements; speech-to-text must be fast, smooth,
+      available on all text inputs
+    - **Pattern Established**: Per-step bundling (4 tools × 12 steps)
+    - **R&D Required**: Identify ubiquitous exercises across all steps
+  - ✅ **Documentation Updates**
+    - Updated EXPANSION_EVALUATION_TRACKER.md (v2.1 → v2.2)
+    - Added F1 complete evaluation with full rationale
+    - Updated Feature Group Registry with M5-F0, M5-F2, M5-F3, M5-F4
+    - Progress: 84/280 ideas evaluated (30%), 5/21 modules complete
+  - **Commits**: 4 commits (Session #91 wrap-up + Session #92 work)
+    - `c71b2ef` - Session #91 achievements documented
+    - `fed2436` - Session #92 counter increment
+    - `532fd5b` - Checkpoint update
+    - `2b54be7` - F1 evaluation complete
+  - **Branch**: `claude/new-session-z2qIR` (Session #92 changes ready for PR)
 
 - **Session #87** (Jan 20, 2026):
   - ✅ **Expansion Evaluation Process** - Complete infrastructure for ~240 ideas
@@ -782,6 +836,8 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                                                                                                                        | Author      |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 3.19    | 2026-01-23 | Session #92: F1 Step Work evaluation complete (51 ideas → 4 M5 features); Option C structure; speech-to-text elevated to app-wide; 84/280 ideas done (30%)     | Claude      |
+| 3.18    | 2026-01-23 | Session #91: T1 + T3 expansion evaluation complete (33/280 ideas); 2/21 modules done; ROADMAP review step added; 16 commits across 2 PRs                       | Claude      |
 | 3.14    | 2026-01-20 | Session #87: Expansion Evaluation Process created; /expansion skill with 6 commands; T1-T9 parsed; Tracker + PLAN_MAP.md                                       | Claude      |
 | 3.11    | 2026-01-17 | Session #75: Track A-P2 planned (A19-A22); Context preservation pattern added; Password reset fix; Quick wins A15-A18 complete                                 | Claude      |
 | 3.10    | 2026-01-16 | Session #70: Added Background Jobs Expansion (A10-A14) to ROADMAP Track A; Added Deferred Background Jobs to M2; Updated sprint priorities                     | Claude      |
