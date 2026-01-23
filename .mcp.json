@@ -8,13 +8,6 @@
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]
     },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
-      }
-    },
     "memory": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"]
@@ -29,17 +22,6 @@
       "env": {
         "SONAR_TOKEN": "${SONAR_TOKEN}",
         "SONAR_URL": "https://sonarcloud.io"
-      }
-    },
-    "firebase": {
-      "command": "npx",
-      "args": ["-y", "firebase-tools@latest", "experimental:mcp"]
-    },
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@context7/mcp@latest"],
-      "env": {
-        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
       }
     }
   }
