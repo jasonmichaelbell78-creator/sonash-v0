@@ -106,6 +106,44 @@ This prevents ROADMAP churn and allows batch review before integration.
 
 ---
 
+## Final Step: ROADMAP Review & Reorganization
+
+**🎯 ACTION REQUIRED AFTER ALL MODULES EVALUATED**
+
+Once all 21 modules (F1-F12, T1-T9) are complete, do NOT immediately implement.
+Instead, schedule a dedicated session for:
+
+### ROADMAP Review, Refinement & Reorganization
+
+**Purpose:**
+
+- Review all ~280 evaluated ideas holistically
+- Identify cross-module dependencies and clusters
+- Reorganize milestones for logical implementation order
+- Refine feature groupings and milestone boundaries
+- Validate architectural coherence across accepted features
+- Create final implementation plan with sequencing rationale
+
+**Deliverables:**
+
+1. Refined ROADMAP.md with optimized milestone structure
+2. Cross-module dependency map
+3. Implementation sequencing strategy
+4. Risk mitigation plan for complex integrations
+5. Updated effort estimates based on clustered work
+
+**When to Schedule:**
+
+- After T9 evaluation complete (last module)
+- Before starting any M5+ implementation
+- Estimated time: 2-3 hours dedicated session
+
+**Note:** This session will create a new section in
+EXPANSION_EVALUATION_TRACKER.md documenting the reorganization plan and
+rationale.
+
+---
+
 ## Progress Summary
 
 | Category  | Modules | Ideas | Reviewed | Decided | Pending |
