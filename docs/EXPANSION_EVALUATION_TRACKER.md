@@ -390,7 +390,7 @@ acknowledged
 
 ### T1: System Architecture ⏸️ IN PROGRESS
 
-**Evaluated:** 2026-01-23 | **Ideas:** 11/18 | **Phase 1, Order 3**
+**Evaluated:** 2026-01-23 | **Ideas:** 12/18 | **Phase 1, Order 3**
 
 | ID    | Idea                           | Decision        | Details                                    |
 | ----- | ------------------------------ | --------------- | ------------------------------------------ |
@@ -405,7 +405,7 @@ acknowledged
 | T1.9  | Network detection + retry      | 🔗 Merge T1.4   | Network awareness for sync engine          |
 | T1.10 | Exponential backoff retries    | 🔗 Merge T1.4   | Retry reliability for sync engine          |
 | T1.11 | Queue depth visibility         | ✅ Accept M5-F1 | Unified sync status (staleness + queue)    |
-| T1.12 | Sync & Storage settings panel  | Not evaluated   |                                            |
+| T1.12 | Sync & Storage settings panel  | ✅ Accept M5-F1 | Full settings: offline, sync, storage mgmt |
 | T1.13 | React Query integration        | Not evaluated   |                                            |
 | T1.14 | iOS PWA constraint mitigations | Not evaluated   |                                            |
 | T1.15 | Storage quota management       | Not evaluated   |                                            |
@@ -413,8 +413,8 @@ acknowledged
 | T1.17 | useOfflineFirst hook           | Not evaluated   |                                            |
 | T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                            |
 
-**Summary:** 5 accepted M5-F1, 6 merged (T1.1→Q7, T1.5/9/10→T1.4, T1.7→T1.11,
-T1.8→T1.2), 7 remaining
+**Summary:** 6 accepted M5-F1, 6 merged (T1.1→Q7, T1.5/9/10→T1.4, T1.7→T1.11,
+T1.8→T1.2), 6 remaining
 
 **T1.6 Implementation Notes:**
 
@@ -433,6 +433,16 @@ T1.8→T1.2), 7 remaining
 - Smart visibility: auto-hide when all synced (reduces noise)
 - Tap to expand for detailed sync stats in settings
 - Priority: Medium (ship after core sync T1.2-T1.4 works)
+
+**T1.12 Implementation Notes (Settings Panel):**
+
+- All 5 AIs unanimous - marked "high priority"
+- Full settings: offline toggle, manual sync, storage management
+- Natural integration point for T1.6 (persistent storage), T1.11 (sync status),
+  T1.15 (quota)
+- MVP controls: offline mode toggle, manual sync button, storage usage display
+- Advanced: view sync queue, clear cache, detailed stats
+- Start simple and expand over time
 
 ### T3: Offline Queue & Conflict
 
