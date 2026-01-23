@@ -558,8 +558,79 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #180-195 are actively maintained below. Older reviews (#137-179) are in
+Reviews #180-197 are actively maintained below. Older reviews (#137-179) are in
 Archive 5.
+
+---
+
+#### Review #197: PR claude/new-session-z2qIR Expansion Evaluation Tracker - Qodo Consistency Check (2026-01-23)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:** claude/new-session-z2qIR
+**Suggestions:** 11 total (Critical: 0, Major: 0, Minor: 6, Trivial: 5)
+
+**Context:** Follow-up review of expansion evaluation tracker after F1
+completion (Session #92). Qodo identified documentation consistency issues
+including stale counts, outdated next steps, and placement metadata
+inconsistencies between SESSION_CONTEXT and EXPANSION_EVALUATION_TRACKER.
+
+**Patterns Identified:**
+
+1. **Cross-Document Count Synchronization**
+   - Root cause: Evaluation totals in EXPANSION_EVALUATION_TRACKER (Technical:
+     12→18, Total: 78→84) not synchronized with SESSION_CONTEXT
+   - Prevention: After evaluation milestones, verify all summary counts match
+     across both documents
+   - Pattern: Multi-document tracking requires explicit sync checkpoints
+
+2. **Stale Handoff Next Steps**
+   - Root cause: SESSION_CONTEXT Next Step described completed work ("Update
+     tracker with F1 results") instead of actual next task
+   - Prevention: Update Next Step field when transitioning between evaluation
+     modules or major milestones
+   - Pattern: Handoff documents must reflect current state, not pending work
+
+3. **Placement Status Consistency**
+   - Root cause: SESSION_CONTEXT showed "Placement TBD" while
+     EXPANSION_EVALUATION_TRACKER showed "Staged as M5-F0"
+   - Prevention: After placement decisions finalize, update both documents in
+     same commit
+   - Pattern: Feature placement metadata must stay synchronized across
+     documentation
+
+4. **False Positive Detection - Qodo Limitations**
+   - Root cause: Qodo flagged "contradictory deferred reference" claiming
+     deferred section was empty, but it actually contained 2 M9-F1 items
+   - Prevention: Always verify AI reviewer claims against actual file content,
+     especially for "missing" or "empty" section claims
+   - Pattern: Code review AI can misinterpret section content - validate before
+     fixing
+
+**Resolution:**
+
+- Fixed: 10 items (5 MINOR, 5 TRIVIAL)
+  - Aligned evaluation totals (Technical: 12→18, Total: 78→84)
+  - Reconciled staged placement counts (25→19, 22→19)
+  - Updated stale Next Step to T2 evaluation
+  - Fixed milestone insertion ordering (M4→M5 for F1.0)
+  - Clarified structure definition (+ tools)
+  - Fixed feature count summary (3→4 with clarification)
+  - Removed merge-vs-PR contradiction (added session # qualifiers)
+  - Aligned placement status wording (TBD→Staged)
+  - Fixed inconsistent tool count math (clarified 48 + 3 = 51 total)
+  - Removed approximate marker from exact count (~51/51 → 51/51)
+- Rejected: 1 item (MINOR - False positive)
+  - Deferred section reference was accurate (2 M9-F1 items exist)
+
+**Key Learnings:**
+
+- Multi-document tracking systems need explicit synchronization checkpoints
+  after major milestones
+- Handoff Next Step fields become stale faster than other metadata - update at
+  every transition
+- Always verify AI reviewer claims about "missing" or "empty" content via git
+  history or direct file inspection
+- Placement metadata requires bidirectional consistency - both "where it came
+  from" (SESSION_CONTEXT) and "where it's going" (tracker) must match
 
 ---
 

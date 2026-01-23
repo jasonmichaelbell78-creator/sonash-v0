@@ -1,6 +1,6 @@
 # Expansion Evaluation Tracker
 
-**Document Version:** 2.1 **Created:** 2026-01-20 | **Last Updated:** 2026-01-22
+**Document Version:** 2.2 **Created:** 2026-01-20 | **Last Updated:** 2026-01-23
 
 ---
 
@@ -60,15 +60,14 @@ When working with this tracker:
 
 ## Quick Resume
 
-> **Last Session:** 2026-01-22 (T1 In Progress - Skill Template Added) **Last
-> Evaluated:** T1 System Architecture (5/18 evaluated) **Placement Status:** 20
-> items with full placement metadata (M4.5, M9, M10, M5-F1) **Next Suggested:**
-> Continue `/expansion-evaluation evaluate T1` - **T1.5 decision pending**
-> (merge with T1.4 or separate?) **Open Questions:** All 12 resolved ✅ **Ready
-> to Push:** 17 items to M4.5/M9/M5 (use `/expansion-evaluation push-to-roadmap`
-> when ready) **Skill Update:** Added detailed presentation format template to
-> skill file (Description, Feature, Cross-Ref, Technical, Trade-offs, Options,
-> Placement, Recommendation)
+> **Last Session:** 2026-01-23 (F1 COMPLETE - Option C Structure) **Last
+> Evaluated:** F1 Step Work Depth (51/51 ideas evaluated) **Placement Status:**
+> 19 items with full placement metadata (M4.5, M5, M9) **Next Suggested:**
+> Continue to T2 (Data Model & Firestore) - Phase 2, Order 6 (~12 ideas) **Open
+> Questions:** All 12 resolved ✅ **Ready to Push:** 19 items to M4.5/M5/M9 (use
+> `/expansion-evaluation push-to-roadmap` when ready) **Key Decision:** Option C
+> structure for step work (separate worksheets/enhancements/tools features);
+> speech-to-text elevated to M5-F0 app-wide infrastructure
 
 ---
 
@@ -148,9 +147,9 @@ rationale.
 
 | Category  | Modules | Ideas | Reviewed | Decided | Pending |
 | --------- | ------- | ----- | -------- | ------- | ------- |
-| Feature   | 12      | ~175  | 15       | 15      | 160     |
-| Technical | 9       | ~105  | 12       | 12      | 93      |
-| **Total** | **21**  | ~280  | 27       | 27      | 253     |
+| Feature   | 12      | ~175  | 66       | 66      | 109     |
+| Technical | 9       | ~105  | 18       | 18      | 87      |
+| **Total** | **21**  | ~280  | 84       | 84      | 196     |
 
 ---
 
@@ -542,9 +541,56 @@ Letter Queue), 6 merged (T3.1/2/10/15→T1.2, T3.11/12→T1.4), 1 deferred (T3.1
    - Prevents data loss from silent failures
    - Essential for production reliability
 
-### F1: Step Work Depth
+### F1: Step Work Depth ✅ COMPLETE
 
-_Not yet started - 60 ideas pending (Phase 2, Order 5)_
+**Evaluated:** 2026-01-23 | **Ideas:** 51/51 | **Phase 2, Order 5**
+
+**Summary:** 4 staged features using Option C structure (separate worksheets,
+enhancements, tools): 3 step-work feature groups (`M5-F2`/`M5-F3`/`M5-F4`) plus
+speech-to-text elevated to an app-wide feature (`M5-F0`). Established per-step
+bundling pattern (12 steps × 4 step-specific tools = 48), plus 3 universal tools
+shared across all steps (51 total tools). All step work requires an R&D phase
+for ubiquitous exercises.
+
+**Structure Decision:** Option C - Separate backbone + enhancements + tools
+
+- **M5-F2**: Step Work Worksheets (Steps 2-9, 11-12) - text-based foundations
+  with R&D
+- **M5-F3**: Step Work Interactive Enhancements (Steps 1-12) -
+  visual/interactive tools (build after worksheets validated)
+- **M5-F4**: Step Work Context Tools - Unstuck button + Reference sidebar
+  (universal helpers)
+- **M5-F0**: App-Wide Speech-to-Text (elevated from step work to universal input
+  feature)
+
+**Key Decisions:**
+
+- All 12 steps need worksheet backbone (like existing Steps 1 & 10)
+- Interactive tools are optional enhancements (progressive enhancement strategy)
+- User feedback on worksheets determines enhancement scope ("seeing end product
+  is final determination")
+- Speech-to-text must be fast, smooth, available on ALL text inputs (not just
+  step work)
+- R&D phase required to identify ubiquitous exercises across all steps
+
+**Existing Features (accounted for):**
+
+- Step 1 worksheet (Powerlessness & Unmanageability) - exists
+- Step 10 Nightly Inventory - exists
+- Spot Check Inventory - exists
+- Gratitude List - exists
+
+**Pattern Established:**
+
+- Per-step bundling (4 tools per step workspace)
+- Worksheets first, enhancements later (risk mitigation)
+- Universal tools benefit all steps (high ROI)
+
+**Dependencies:**
+
+- T4 (Encryption) - all step work encrypted
+- T2 (Data model) - structured storage
+- T1 (Offline) - works without connection
 
 ### T2: Data Model & Firestore
 
@@ -627,12 +673,16 @@ For features requiring native app (from T8 evaluation).
 
 #### Feature Group Registry (authoritative)
 
-| Milestone | Group | Name                     | Notes / Intended Contents                                   |
-| --------- | ----- | ------------------------ | ----------------------------------------------------------- |
-| M4.5      | F1    | Encryption Foundation    | Key mgmt, encryption primitives, recovery, auto-lock, etc.  |
-| M4.5      | F2    | Privacy & Data Controls  | Sync transparency, guest mode, selective sync, delete, etc. |
-| M9        | F1    | Native Security Features | Biometric unlock, stealth/icon switching, secure deletion.  |
-| M10       | F1    | Future Enhancements      | Post-launch improvements and nice-to-haves.                 |
+| Milestone | Group | Name                          | Notes / Intended Contents                                   |
+| --------- | ----- | ----------------------------- | ----------------------------------------------------------- |
+| M4.5      | F1    | Encryption Foundation         | Key mgmt, encryption primitives, recovery, auto-lock, etc.  |
+| M4.5      | F2    | Privacy & Data Controls       | Sync transparency, guest mode, selective sync, delete, etc. |
+| M5        | F0    | App-Wide Input Infrastructure | Speech-to-text on all text fields (universal)               |
+| M5        | F2    | Step Work Worksheets          | Text-based step work foundations (Steps 2-9, 11-12)         |
+| M5        | F3    | Step Work Enhancements        | Interactive/visual tools for all step worksheets (optional) |
+| M5        | F4    | Step Work Context Tools       | Universal step work helpers (unstuck, reference library)    |
+| M9        | F1    | Native Security Features      | Biometric unlock, stealth/icon switching, secure deletion.  |
+| M10       | F1    | Future Enhancements           | Post-launch improvements and nice-to-haves.                 |
 
 ### Staged Items with Full Placement
 
@@ -643,26 +693,33 @@ For features requiring native app (from T8 evaluation).
 - `REQUIRES_NATIVE` - Requires native app capabilities
 - `FUTURE_ENHANCEMENT` - Post-launch enhancement
 
-| ID    | Idea                              | Placement | Insert After | Relationship      | Rationale                                  | Date       |
-| ----- | --------------------------------- | --------- | ------------ | ----------------- | ------------------------------------------ | ---------- |
-| T4.1  | Tab-level PIN passcode            | M4.5-F1   | MILESTONE:M4 | NEW               | Core encryption feature; privacy-first     | 2026-01-22 |
-| T4.2  | PBKDF2 key derivation             | M4.5-F1   | ITEM:T4.1    | BUNDLED_WITH:T4.1 | Technical implementation for T4.1          | 2026-01-22 |
-| T4.3  | AES-256-GCM encryption            | M4.5-F1   | ITEM:T4.2    | BUNDLED_WITH:T4.1 | Technical implementation for T4.1          | 2026-01-22 |
-| T4.4  | Encrypt ALL step work/inventories | M4.5-F1   | ITEM:T4.3    | NEW               | Maximum privacy for sensitive content      | 2026-01-22 |
-| T4.6  | Recovery key generation           | M4.5-F1   | ITEM:T4.4    | NEW               | Critical for user data recovery            | 2026-01-22 |
-| T4.7  | DEK/KEK key wrapping model        | M4.5-F1   | ITEM:T4.6    | NEW               | Industry-standard; enables future features | 2026-01-22 |
-| T4.9  | Auto-lock timeout                 | M4.5-F1   | ITEM:T4.7    | NEW               | Standard security UX; configurable         | 2026-01-22 |
-| F4.1  | Offline Queue (Trust Indicator)   | M4.5-F2   | ITEM:T4.9    | NEW               | Visible sync status; builds user trust     | 2026-01-22 |
-| F4.5  | Guest Mode (Sandbox)              | M4.5-F2   | ITEM:F4.1    | NEW               | Try before sign-up; privacy-first          | 2026-01-22 |
-| F4.7  | Selective Sync                    | M4.5-F2   | ITEM:F4.5    | NEW               | Granular control over cloud sync           | 2026-01-22 |
-| F4.10 | Nuclear Option (Account Delete)   | M4.5-F2   | ITEM:F4.7    | NEW               | GDPR compliance; 3-step deletion           | 2026-01-22 |
-| F4.12 | No-Tracking Dashboard             | M4.5-F2   | ITEM:F4.10   | NEW               | Transparency builds trust                  | 2026-01-22 |
-| F4.14 | Snapshot Protection               | M4.5-F2   | ITEM:F4.12   | NEW               | Prevents app switcher snooping             | 2026-01-22 |
-| F4.2  | Burn After Reading                | M9-F1     | ITEM:F4.14   | REQUIRES_NATIVE   | Secure deletion requires native app        | 2026-01-22 |
+| ID    | Idea                               | Placement | Insert After | Relationship      | Rationale                                  | Date       |
+| ----- | ---------------------------------- | --------- | ------------ | ----------------- | ------------------------------------------ | ---------- |
+| T4.1  | Tab-level PIN passcode             | M4.5-F1   | MILESTONE:M4 | NEW               | Core encryption feature; privacy-first     | 2026-01-22 |
+| T4.2  | PBKDF2 key derivation              | M4.5-F1   | ITEM:T4.1    | BUNDLED_WITH:T4.1 | Technical implementation for T4.1          | 2026-01-22 |
+| T4.3  | AES-256-GCM encryption             | M4.5-F1   | ITEM:T4.2    | BUNDLED_WITH:T4.1 | Technical implementation for T4.1          | 2026-01-22 |
+| T4.4  | Encrypt ALL step work/inventories  | M4.5-F1   | ITEM:T4.3    | NEW               | Maximum privacy for sensitive content      | 2026-01-22 |
+| T4.6  | Recovery key generation            | M4.5-F1   | ITEM:T4.4    | NEW               | Critical for user data recovery            | 2026-01-22 |
+| T4.7  | DEK/KEK key wrapping model         | M4.5-F1   | ITEM:T4.6    | NEW               | Industry-standard; enables future features | 2026-01-22 |
+| T4.9  | Auto-lock timeout                  | M4.5-F1   | ITEM:T4.7    | NEW               | Standard security UX; configurable         | 2026-01-22 |
+| F4.1  | Offline Queue (Trust Indicator)    | M4.5-F2   | ITEM:T4.9    | NEW               | Visible sync status; builds user trust     | 2026-01-22 |
+| F4.5  | Guest Mode (Sandbox)               | M4.5-F2   | ITEM:F4.1    | NEW               | Try before sign-up; privacy-first          | 2026-01-22 |
+| F4.7  | Selective Sync                     | M4.5-F2   | ITEM:F4.5    | NEW               | Granular control over cloud sync           | 2026-01-22 |
+| F4.10 | Nuclear Option (Account Delete)    | M4.5-F2   | ITEM:F4.7    | NEW               | GDPR compliance; 3-step deletion           | 2026-01-22 |
+| F4.12 | No-Tracking Dashboard              | M4.5-F2   | ITEM:F4.10   | NEW               | Transparency builds trust                  | 2026-01-22 |
+| F4.14 | Snapshot Protection                | M4.5-F2   | ITEM:F4.12   | NEW               | Prevents app switcher snooping             | 2026-01-22 |
+| F4.2  | Burn After Reading                 | M9-F1     | ITEM:F4.14   | REQUIRES_NATIVE   | Secure deletion requires native app        | 2026-01-22 |
+| F1.0  | App-Wide Speech-to-Text            | M5-F0     | MILESTONE:M5 | NEW               | Universal input; fast/smooth; all fields   | 2026-01-23 |
+| F1.2  | Step Work Worksheets (Steps 2-9)   | M5-F2     | ITEM:F1.0    | NEW               | Text foundations with R&D phase            | 2026-01-23 |
+| F1.2b | Step Work Worksheets (Steps 11-12) | M5-F2     | ITEM:F1.2    | BUNDLED_WITH:F1.2 | Bundled with Steps 2-9 worksheets          | 2026-01-23 |
+| F1.3  | Step Work Enhancements (All)       | M5-F3     | ITEM:F1.2b   | NEW               | Optional; build after worksheet validation | 2026-01-23 |
+| F1.4  | Step Work Context Tools            | M5-F4     | ITEM:F1.3    | NEW               | Unstuck button + Reference sidebar         | 2026-01-23 |
 
 **M4.5-F1:** Encryption Foundation (7 items) **M4.5-F2:** Privacy & Data
-Controls (6 items) **M9-F1:** Native Security Features (1 item; 2 more from
-deferred section)
+Controls (6 items) **M5-F0:** App-Wide Input Infrastructure (1 item) **M5-F2:**
+Step Work Worksheets (2 items bundled) **M5-F3:** Step Work Enhancements (1
+item) **M5-F4:** Step Work Context Tools (1 item) **M9-F1:** Native Security
+Features (1 item; 2 more from deferred section)
 
 ---
 
@@ -699,8 +756,9 @@ _None yet_
 
 ## Version History
 
-| Version | Date       | Description                                                                                     |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------- |
-| 1.0     | 2026-01-20 | Initial tracker creation with 21 modules                                                        |
-| 2.0     | 2026-01-21 | Foundational framework complete; all 12 Qs answered; 7-phase eval order; staged ROADMAP process |
-| 2.1     | 2026-01-22 | Added placement metadata (Placement, Insert After, Relationship columns); defined M4.5 and M9   |
+| Version | Date       | Description                                                                                                         |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| 1.0     | 2026-01-20 | Initial tracker creation with 21 modules                                                                            |
+| 2.0     | 2026-01-21 | Foundational framework complete; all 12 Qs answered; 7-phase eval order; staged ROADMAP process                     |
+| 2.1     | 2026-01-22 | Added placement metadata (Placement, Insert After, Relationship columns); defined M4.5 and M9                       |
+| 2.2     | 2026-01-23 | F1 COMPLETE - 51 ideas evaluated; Option C structure (separate worksheets/enhancements/tools); speech-to-text M5-F0 |

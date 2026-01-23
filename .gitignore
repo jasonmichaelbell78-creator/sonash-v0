@@ -81,5 +81,11 @@ serviceAccountKey.json
 # Claude Code local user settings (user-specific, never commit!)
 .claude/settings.local.json
 
+# Claude Code hook backups (not tracked)
+.claude/hooks/backup/
+
 # Lighthouse audit reports (generated, not tracked)
 .lighthouse/
+
+# Windows artifact file (created from command redirects)
+nul
