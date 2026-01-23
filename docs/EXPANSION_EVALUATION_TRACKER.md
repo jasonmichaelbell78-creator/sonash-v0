@@ -496,9 +496,29 @@ document (T1.18 ADR)
 - Prevents future revisiting of already-decided architectural questions
 - Standard ADR format, ~30 minutes to write
 
-### T3: Offline Queue & Conflict
+### T3: Offline Queue & Conflict ⏸️ IN PROGRESS
 
-_Not yet started - ~15 ideas pending (Phase 1, Order 4)_
+**Evaluated:** 2026-01-23 | **Ideas:** 1/15 | **Phase 1, Order 4**
+
+| ID    | Idea                                  | Decision      | Details                                 |
+| ----- | ------------------------------------- | ------------- | --------------------------------------- |
+| T3.1  | Queue item format (ULID, status, etc) | 🔗 Merge T1.2 | Schema is implementation detail of T1.2 |
+| T3.2  | Mutation types enum                   | Not evaluated |                                         |
+| T3.3  | Content hash comparison (SHA-256)     | Not evaluated |                                         |
+| T3.4  | Append-only detection for journal     | Not evaluated |                                         |
+| T3.5  | Row-level merge for Step 4            | Not evaluated |                                         |
+| T3.6  | Last-write-wins for settings          | Not evaluated |                                         |
+| T3.7  | Conflict banner in ribbon             | Not evaluated |                                         |
+| T3.8  | Conflict resolution UI (keep/merge)   | Not evaluated |                                         |
+| T3.9  | "Resolve later" option                | Not evaluated |                                         |
+| T3.10 | useOfflineQueue hook                  | Not evaluated |                                         |
+| T3.11 | Sync worker single pass logic         | Not evaluated |                                         |
+| T3.12 | Retry with backoff                    | Not evaluated |                                         |
+| T3.13 | Dead letter queue for failed items    | Not evaluated |                                         |
+| T3.14 | Queue compaction for long offline     | Not evaluated |                                         |
+| T3.15 | Rev integer for simple versioning     | Not evaluated |                                         |
+
+**Summary:** 0 accepted, 1 merged (T3.1→T1.2), 0 rejected, 14 remaining
 
 ### F1: Step Work Depth
 
