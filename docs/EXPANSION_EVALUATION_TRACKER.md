@@ -390,7 +390,7 @@ acknowledged
 
 ### T1: System Architecture ⏸️ IN PROGRESS
 
-**Evaluated:** 2026-01-23 | **Ideas:** 6/18 | **Phase 1, Order 3**
+**Evaluated:** 2026-01-23 | **Ideas:** 7/18 | **Phase 1, Order 3**
 
 | ID    | Idea                           | Decision        | Details                                    |
 | ----- | ------------------------------ | --------------- | ------------------------------------------ |
@@ -399,7 +399,7 @@ acknowledged
 | T1.3  | UI always reads from local     | ✅ Accept M5-F1 | Local-first read pattern                   |
 | T1.4  | Background sync worker         | ✅ Accept M5-F1 | Sync engine with iOS fallback bundled      |
 | T1.5  | Sync-on-open strategy for iOS  | 🔗 Merge T1.4   | iOS fallback implementation detail of T1.4 |
-| T1.6  | Persisted Storage API request  | Not evaluated   |                                            |
+| T1.6  | Persisted Storage API request  | ✅ Accept M5-F1 | Early request + fallback to online-only    |
 | T1.7  | Read pipeline with staleness   | Not evaluated   |                                            |
 | T1.8  | Write pipeline (local-first)   | Not evaluated   |                                            |
 | T1.9  | Network detection + retry      | Not evaluated   |                                            |
@@ -413,7 +413,16 @@ acknowledged
 | T1.17 | useOfflineFirst hook           | Not evaluated   |                                            |
 | T1.18 | Why not PouchDB/RxDB analysis  | Not evaluated   |                                            |
 
-**Summary:** 3 accepted M5-F1, 2 merged (Q7, T1.4), 12 remaining
+**Summary:** 4 accepted M5-F1, 2 merged (Q7, T1.4), 11 remaining
+
+**T1.6 Implementation Notes:**
+
+- Request persisted storage after first journal entry
+- Clear warning: "Without this, browser may delete your data during storage
+  cleanup"
+- If denied: Offer "Online-Only Mode" (data syncs to Firestore, no local
+  persistence)
+- Bundle with T1.15 (Storage quota management) for cohesive storage UX
 
 ### T3: Offline Queue & Conflict
 
