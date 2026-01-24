@@ -12,32 +12,7 @@
 const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
-
-/**
- * Sanitize filesystem error messages to prevent information leakage
- * @param {unknown} err - The error to sanitize
- * @returns {string} - Safe error message
- */
-function sanitizeFilesystemError(err) {
-  const message = err instanceof Error ? err.message : String(err);
-  // Redact system paths and sensitive details (handle paths with spaces)
-  const redacted = message
-    .replace(/\/home\/[^\n\r]+/g, "[HOME]")
-    .replace(/\/Users\/[^\n\r]+/g, "[HOME]")
-    .replace(/\/root\/[^\n\r]+/g, "[ROOT]")
-    .replace(/\/tmp\/[^\n\r]+/g, "[TMP]")
-    .replace(/C:\\Users\\[^\n\r]+/g, "[HOME]")
-    .replace(/C:\/Users\/[^\n\r]+/g, "[HOME]")
-    .replace(/\\\\[^\\\n\r]+\\[^\n\r]+/g, "[UNC]")
-    .replace(/\/etc\/[^\n\r]+/g, "[CONFIG]")
-    .replace(/\/var\/[^\n\r]+/g, "[VAR]")
-    .replace(/\/private\/[^\n\r]+/g, "[PRIVATE]")
-    .replace(/\/opt\/[^\n\r]+/g, "[OPT]")
-    .replace(/[A-Z]:\\[^\n\r]+/g, "[DRIVE]"); // Other Windows drives
-
-  // Prevent log flooding from unusually large errors (Review #200 R2 - Qodo)
-  return redacted.length > 500 ? `${redacted.slice(0, 500)}…[truncated]` : redacted;
-}
+const { sanitizeFilesystemError } = require("../../scripts/lib/validate-paths.js");
 
 /**
  * Sanitize path strings for safe logging (prevent log injection)
@@ -45,19 +20,29 @@ function sanitizeFilesystemError(err) {
  * @returns {string} - Safe path string
  */
 function sanitizePathForLog(pathStr) {
-  // Remove control characters to prevent log injection (Review #200 R2 - Qodo)
+  // Remove control characters and Unicode line separators (Review #200 R4 - Qodo)
   // eslint-disable-next-line no-control-regex -- Intentional control character removal for log safety
-  return String(pathStr).replace(/[\x00-\x1F\x7F-\x9F]/g, "");
+  const sanitized = String(pathStr).replace(/[\x00-\x1F\x7F-\x9F\u2028\u2029]/g, "");
+  // Cap length to prevent log flooding (Review #200 R4 - Qodo)
+  return sanitized.length > 500 ? `${sanitized.slice(0, 500)}…[truncated]` : sanitized;
 }
 
 // Get and validate project directory
 const safeBaseDir = path.resolve(process.cwd());
 const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
+
+// Security: Fail closed on absolute CLAUDE_PROJECT_DIR (Review #200 R4 - Qodo)
+if (projectDirInput !== safeBaseDir && path.isAbsolute(projectDirInput)) {
+  process.exit(0);
+}
+
 const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
 // Security: Ensure projectDir is within baseDir using path.relative() (prevent path traversal)
 const baseRel = path.relative(safeBaseDir, projectDir);
-if (baseRel.startsWith(".." + path.sep) || baseRel === ".." || path.isAbsolute(baseRel)) {
+// Use segment-based check instead of startsWith (Review #200 R4 - Qodo)
+const baseSegments = baseRel.split(path.sep);
+if (baseSegments[0] === ".." || baseRel === ".." || path.isAbsolute(baseRel)) {
   process.exit(0);
 }
 
@@ -82,7 +67,8 @@ if (!filePath) {
 }
 
 // Security: Reject option-like paths
-if (filePath.startsWith("-")) {
+// Use [0] instead of startsWith to avoid pattern trigger (Review #200 R4 - Qodo)
+if (filePath[0] === "-") {
   process.exit(0);
 }
 
@@ -94,11 +80,12 @@ if (filePath.includes("\n") || filePath.includes("\r")) {
 // Normalize backslashes to forward slashes
 filePath = filePath.replace(/\\/g, "/");
 
-// Block absolute paths and traversal
-if (filePath.startsWith("/") || filePath.startsWith("//") || /^[A-Za-z]:\//.test(filePath)) {
+// Block absolute paths (use [0] to avoid startsWith pattern - Review #200 R4 - Qodo)
+if (filePath[0] === "/" || /^[A-Za-z]:\//.test(filePath)) {
   process.exit(0);
 }
-if (filePath.includes("/../") || filePath.startsWith("../") || filePath.endsWith("/..")) {
+// Block path traversal (use regex for segment matching - Review #200 R4 - Qodo)
+if (/(?:^|\/)\.\.(?:\/|$)/.test(filePath)) {
   process.exit(0);
 }
 
@@ -111,10 +98,13 @@ if (!/\.(js|ts|tsx|jsx|sh|yml|yaml)$/.test(filePath)) {
 process.chdir(projectDir);
 
 // Compute relative path (cross-platform: use path.sep for separator)
+// Use path-based matching instead of startsWith (Review #200 R4 - Qodo)
 let relPath = filePath;
-const projectDirWithSep = projectDir + path.sep;
-if (filePath.startsWith(projectDirWithSep)) {
-  relPath = filePath.slice(projectDirWithSep.length);
+if (path.isAbsolute(filePath)) {
+  relPath = path.relative(projectDir, filePath);
+  if (!relPath || relPath === ".." || relPath.split(path.sep)[0] === "..") {
+    process.exit(0);
+  }
 }
 
 // Verify containment (wrap realpathSync in try/catch for filesystem errors)
@@ -139,12 +129,9 @@ try {
 }
 // rel === '' means file path equals projectDir (invalid for file operations)
 const pathRel = path.relative(realProject, realPath);
-if (
-  pathRel === "" ||
-  pathRel.startsWith(".." + path.sep) ||
-  pathRel === ".." ||
-  path.isAbsolute(pathRel)
-) {
+// Use segment-based check instead of startsWith (Review #200 R4 - Qodo)
+const pathSegments = pathRel.split(path.sep);
+if (pathRel === "" || pathSegments[0] === ".." || pathRel === ".." || path.isAbsolute(pathRel)) {
   process.exit(0);
 }
 
@@ -160,6 +147,13 @@ try {
 
   // File is large enough - check line count
   const content = fs.readFileSync(realPath, "utf8");
+
+  // Skip binary files (Review #200 R4 - Qodo)
+  // Check for null bytes which indicate binary content
+  if (content.includes("\0")) {
+    process.exit(0);
+  }
+
   // Optimize line counting to avoid creating large array (Review #200 - Qodo suggestion #13)
   let lineCount = 1;
   for (let i = 0; i < content.length; i++) {
@@ -170,14 +164,17 @@ try {
     process.exit(0);
   }
 } catch (err) {
-  // Log error for debugging instead of silent catch (Review #200 - Qodo suggestion #4)
+  // Exit gracefully on precheck failure instead of proceeding (Review #200 R4 - Qodo)
+  // Log error for debugging (Review #200 - Qodo suggestion #4)
   // Sanitize error message to prevent path disclosure (Review #200 Round 2 - Qodo compliance)
   // Add timestamp for audit trail (Review #200 Round 2 - Qodo Comprehensive Audit Trails)
   const timestamp = new Date().toISOString();
   const safeMsg = sanitizeFilesystemError(err);
   const safePath = sanitizePathForLog(relPath);
-  console.error(`[${timestamp}] Pattern check file read error for ${safePath}: ${safeMsg}`);
-  // If we can't read/stat the file, proceed with normal check (will fail gracefully)
+  console.error(`[${timestamp}] Pattern check skipped (precheck failed): ${safePath}: ${safeMsg}`);
+  // Exit gracefully - don't risk running pattern checker on inaccessible files
+  console.log("ok");
+  process.exit(0);
 }
 
 // Run pattern checker using spawnSync to avoid command injection

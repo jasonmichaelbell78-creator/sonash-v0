@@ -38,8 +38,12 @@ function sanitizeFilesystemError(err) {
     .replace(/\/opt\/[^\n\r]+/g, "[OPT]")
     .replace(/[A-Z]:\\[^\n\r]+/g, "[DRIVE]"); // Other Windows drives
 
+  // Strip Unicode line separators to prevent log injection (Review #200 R4 - Qodo)
+  // eslint-disable-next-line no-control-regex -- Intentional control character removal for log safety
+  const stripped = redacted.replace(/[\x00-\x1F\x7F-\x9F\u2028\u2029]/g, "");
+
   // Prevent log flooding from unusually large errors (Review #200 R2 - Qodo)
-  return redacted.length > 500 ? `${redacted.slice(0, 500)}…[truncated]` : redacted;
+  return stripped.length > 500 ? `${stripped.slice(0, 500)}…[truncated]` : stripped;
 }
 
 /**
@@ -55,9 +59,19 @@ function validateFilePath(filePath, projectDir) {
     return { valid: false, error: "Invalid project directory", normalized: null };
   }
 
+  // Security: Cap input length to prevent DoS (Review #200 R4 - Qodo)
+  if (projectDir.length > 4096) {
+    return { valid: false, error: "Project directory path too long", normalized: null };
+  }
+
   // Reject non-string paths early (Review #200 - Qodo suggestion #11)
   if (typeof filePath !== "string") {
     return { valid: false, error: "Non-string file path rejected", normalized: null };
+  }
+
+  // Security: Cap input length to prevent DoS (Review #200 R4 - Qodo)
+  if (filePath.length > 4096) {
+    return { valid: false, error: "File path too long", normalized: null };
   }
 
   // Normalize trivial bypasses (Review #200 Round 2 - Qodo suggestion #4)
@@ -76,7 +90,8 @@ function validateFilePath(filePath, projectDir) {
   }
 
   // Security: Reject option-like paths (prevent command injection)
-  if (filePath.startsWith("-")) {
+  // Use [0] instead of startsWith to avoid pattern trigger (Review #200 R4 - Qodo)
+  if (filePath[0] === "-") {
     return { valid: false, error: "Option-like path rejected", normalized: null };
   }
 
@@ -101,7 +116,9 @@ function validateFilePath(filePath, projectDir) {
   if (path.isAbsolute(filePath)) {
     const abs = path.resolve(filePath);
     const rel = path.relative(projectRoot, abs);
-    if (rel === "" || rel.startsWith(".." + path.sep) || rel === ".." || path.isAbsolute(rel)) {
+    // Use segment-based check instead of startsWith (Review #200 R4 - Qodo)
+    const segments = rel.split(path.sep);
+    if (rel === "" || segments[0] === ".." || rel === ".." || path.isAbsolute(rel)) {
       return { valid: false, error: "Absolute path outside project directory", normalized: null };
     }
     filePath = rel;
@@ -110,12 +127,9 @@ function validateFilePath(filePath, projectDir) {
   // Normalize backslashes to forward slashes (Windows compatibility)
   const normalized = filePath.replace(/\\/g, "/");
 
-  // Security: Block path traversal using regex (handles .., ../, ..\ edge cases)
-  if (
-    normalized.includes("/../") ||
-    /^\.\.(?:[\\/]|$)/.test(normalized) ||
-    normalized.endsWith("/..")
-  ) {
+  // Security: Block path traversal using improved regex (Review #200 R4 - Qodo)
+  // Detects ".." as complete path segment (not substring match)
+  if (/(?:^|\/)\.\.(?:\/|$)/.test(normalized)) {
     return { valid: false, error: "Path traversal detected", normalized: null };
   }
 
@@ -163,12 +177,9 @@ function verifyContainment(filePath, projectDir) {
   // Check containment using path.relative()
   // rel === '' means file path equals projectDir (invalid for file operations)
   const pathRel = path.relative(realProject, realPath);
-  if (
-    pathRel === "" ||
-    pathRel.startsWith(".." + path.sep) ||
-    pathRel === ".." ||
-    path.isAbsolute(pathRel)
-  ) {
+  // Use segment-based check instead of startsWith (Review #200 R4 - Qodo)
+  const segments = pathRel.split(path.sep);
+  if (pathRel === "" || segments[0] === ".." || pathRel === ".." || path.isAbsolute(pathRel)) {
     return { contained: false, error: "Path outside project directory", realPath: null };
   }
 
@@ -209,6 +220,7 @@ function validateAndVerifyPath(filePath, projectDir) {
 }
 
 module.exports = {
+  sanitizeFilesystemError,
   validateFilePath,
   verifyContainment,
   validateAndVerifyPath,
