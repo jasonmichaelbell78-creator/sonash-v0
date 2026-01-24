@@ -13,6 +13,25 @@ const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
+/**
+ * Sanitize filesystem error messages to prevent information leakage
+ * @param {unknown} err - The error to sanitize
+ * @returns {string} - Safe error message
+ */
+function sanitizeFilesystemError(err) {
+  const message = err instanceof Error ? err.message : String(err);
+  // Redact system paths and sensitive details (handle paths with spaces)
+  return message
+    .replace(/\/home\/[^\n\r]+/g, "[HOME]")
+    .replace(/\/Users\/[^\n\r]+/g, "[HOME]")
+    .replace(/C:\\Users\\[^\n\r]+/g, "[HOME]")
+    .replace(/\/etc\/[^\n\r]+/g, "[CONFIG]")
+    .replace(/\/var\/[^\n\r]+/g, "[VAR]")
+    .replace(/\/private\/[^\n\r]+/g, "[PRIVATE]")
+    .replace(/\/opt\/[^\n\r]+/g, "[OPT]")
+    .replace(/[A-Z]:\\[^\n\r]+/g, "[DRIVE]"); // Other Windows drives
+}
+
 // Get and validate project directory
 const safeBaseDir = path.resolve(process.cwd());
 const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
@@ -88,9 +107,15 @@ let realProject = "";
 try {
   realPath = fs.realpathSync(fullPath);
   realProject = fs.realpathSync(projectDir);
-} catch {
+} catch (err) {
   // File doesn't exist or is inaccessible - skip pattern check (Review #200 - logging added)
-  console.error(`Pattern check skipped: ${relPath} (file not accessible)`);
+  // Sanitize error message to prevent path disclosure (Review #200 Round 2 - Qodo compliance)
+  // Add timestamp for audit trail (Review #200 Round 2 - Qodo Comprehensive Audit Trails)
+  const timestamp = new Date().toISOString();
+  const safeMsg = sanitizeFilesystemError(err);
+  console.error(
+    `[${timestamp}] Pattern check skipped: ${relPath} (file not accessible: ${safeMsg})`
+  );
   process.exit(0);
 }
 // rel === '' means file path equals projectDir (invalid for file operations)
@@ -106,15 +131,16 @@ if (
 
 // Quick Win: Skip pattern check for small files (<100 lines) to reduce latency (Review #200)
 // Pre-check file size before reading (Review #200 - Qodo suggestion #7)
+// Use realPath instead of fullPath to prevent TOCTOU race (Review #200 Round 2 - Qodo suggestion #0)
 try {
-  const { size } = fs.statSync(fullPath);
+  const { size } = fs.statSync(realPath);
   // Approximate small files (under ~8 KB) as <100 lines
   if (size < 8 * 1024) {
     process.exit(0);
   }
 
   // File is large enough - check line count
-  const content = fs.readFileSync(fullPath, "utf8");
+  const content = fs.readFileSync(realPath, "utf8");
   // Optimize line counting to avoid creating large array (Review #200 - Qodo suggestion #13)
   let lineCount = 1;
   for (let i = 0; i < content.length; i++) {
@@ -126,9 +152,11 @@ try {
   }
 } catch (err) {
   // Log error for debugging instead of silent catch (Review #200 - Qodo suggestion #4)
-  console.error(
-    `Pattern check file read error for ${relPath}: ${err instanceof Error ? err.message : String(err)}`
-  );
+  // Sanitize error message to prevent path disclosure (Review #200 Round 2 - Qodo compliance)
+  // Add timestamp for audit trail (Review #200 Round 2 - Qodo Comprehensive Audit Trails)
+  const timestamp = new Date().toISOString();
+  const safeMsg = sanitizeFilesystemError(err);
+  console.error(`[${timestamp}] Pattern check file read error for ${relPath}: ${safeMsg}`);
   // If we can't read/stat the file, proceed with normal check (will fail gracefully)
 }
 

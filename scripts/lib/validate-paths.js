@@ -21,13 +21,16 @@ const fs = require("node:fs");
  */
 function sanitizeFilesystemError(err) {
   const message = err instanceof Error ? err.message : String(err);
-  // Redact system paths and sensitive details
+  // Redact system paths and sensitive details (handle paths with spaces - Review #200 Round 2)
   return message
-    .replace(/\/home\/[^\s]+/g, "[HOME]")
-    .replace(/\/Users\/[^\s]+/g, "[HOME]")
-    .replace(/C:\\Users\\[^\s]+/g, "[HOME]")
-    .replace(/\/etc\/[^\s]+/g, "[CONFIG]")
-    .replace(/\/var\/[^\s]+/g, "[VAR]");
+    .replace(/\/home\/[^\n\r]+/g, "[HOME]")
+    .replace(/\/Users\/[^\n\r]+/g, "[HOME]")
+    .replace(/C:\\Users\\[^\n\r]+/g, "[HOME]")
+    .replace(/\/etc\/[^\n\r]+/g, "[CONFIG]")
+    .replace(/\/var\/[^\n\r]+/g, "[VAR]")
+    .replace(/\/private\/[^\n\r]+/g, "[PRIVATE]")
+    .replace(/\/opt\/[^\n\r]+/g, "[OPT]")
+    .replace(/[A-Z]:\\[^\n\r]+/g, "[DRIVE]"); // Other Windows drives
 }
 
 /**
@@ -43,9 +46,19 @@ function validateFilePath(filePath, projectDir) {
     return { valid: false, error: "Non-string file path rejected", normalized: null };
   }
 
+  // Normalize trivial bypasses (Review #200 Round 2 - Qodo suggestion #4)
+  filePath = filePath.trim();
+
   // Reject empty paths
   if (!filePath) {
     return { valid: false, error: "Empty file path", normalized: null };
+  }
+
+  // Security: Reject control chars (defense-in-depth - Review #200 Round 2 - Qodo suggestion #4)
+  // Control characters: 0x00-0x1F, 0x7F-0x9F (excluding tab, newline, carriage return which are checked separately)
+  // eslint-disable-next-line no-control-regex -- Intentional control character validation for security
+  if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/.test(filePath)) {
+    return { valid: false, error: "Control character rejected", normalized: null };
   }
 
   // Security: Reject option-like paths (prevent command injection)
@@ -77,6 +90,15 @@ function validateFilePath(filePath, projectDir) {
 
   // Normalize backslashes to forward slashes (Windows compatibility)
   const normalized = filePath.replace(/\\/g, "/");
+
+  // Defense-in-depth: reject anchored paths after normalization (Review #200 Round 2 - Qodo suggestion #2)
+  if (
+    normalized.startsWith("/") ||
+    normalized.startsWith("//") ||
+    /^[A-Za-z]:\//.test(normalized)
+  ) {
+    return { valid: false, error: "Absolute path rejected", normalized: null };
+  }
 
   // Security: Block path traversal using regex (handles .., ../, ..\ edge cases)
   if (

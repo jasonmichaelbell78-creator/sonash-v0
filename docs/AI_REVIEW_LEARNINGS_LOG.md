@@ -2211,3 +2211,94 @@ Trivial: 1, Deferred: 1)
   future reference
 
 **Session:** #90 **Branch:** claude/mcp-optimization-session90
+
+---
+
+**Follow-up (Qodo Round 2 - 2026-01-24):**
+
+After implementing Review #200 fixes (commit 925e397), Qodo provided additional
+compliance feedback flagging **2 CRITICAL** security logging issues that were
+introduced by Review #200 fixes, plus **8 additional suggestions** for
+hardening. This demonstrates the iterative nature of security reviews - fixes
+can introduce new issues that need immediate attention.
+
+**Round 2 Issues:**
+
+| #   | Issue                                         | Severity | Impact | Fix                                                                      |
+| --- | --------------------------------------------- | -------- | ------ | ------------------------------------------------------------------------ |
+| 1   | Raw error logging in pattern-check.js:128-131 | CRITICAL | 🔴     | Added sanitizeFilesystemError() call before logging err.message          |
+| 2   | Unsanitized log in pattern-check.js:92-94     | CRITICAL | 🔴     | Capture error in catch, sanitize, and log with context                   |
+| 3   | TOCTOU vulnerability (use realPath)           | MAJOR    | HIGH   | Changed statSync(fullPath) → statSync(realPath), same for readFileSync   |
+| 4   | Partial path redaction leaks (spaces)         | MINOR    | MEDIUM | Changed /[^\s]+/ → /[^\n\r]+/ in sanitization regex (handles spaces)     |
+| 5   | Expand path sanitization coverage             | MINOR    | MEDIUM | Added /private/, /opt/, and [A-Z]:\ patterns for comprehensive coverage  |
+| 6   | Block anchored paths after normalization      | MINOR    | MEDIUM | Added defense-in-depth check for /, //, and drive letters post-normalize |
+| 7   | Whitespace/control character validation       | MINOR    | MEDIUM | Trim input + reject control chars (0x00-0x1F, 0x7F-0x9F) in validatePath |
+| 8   | Log injection risk                            | MINOR    | ⚪     | Sanitization added in #1-2 addresses this (control char filtering added) |
+| 9   | Missing audit context (timestamp)             | MINOR    | ⚪     | Added ISO timestamp to both error logs ([2026-01-24T...])                |
+| 10  | Chunked reading for large files               | DEFERRED | -      | Current implementation sufficient; chunked reading adds complexity       |
+
+**New Patterns from Round 2:**
+
+11. **Security fixes can introduce security issues** - Adding error logging (#4
+    from R1) without sanitization created two CRITICAL compliance blockers;
+    always sanitize before logging
+12. **TOCTOU extends beyond existsSync** - Using `fullPath` instead of
+    `realPath` after resolving symlinks creates a race window where symlink
+    target can change
+13. **Path sanitization must handle spaces** - Regex `/[^\s]+/` stops at first
+    space, leaving partial paths exposed; use `/[^\n\r]+/` to redact complete
+    paths
+14. **Comprehensive path coverage** - Default sanitization patterns miss
+    /private/, /opt/, and non-C:\ Windows drives; need OS-specific and generic
+    patterns
+15. **Defense-in-depth after normalization** - Path normalization can create
+    anchored paths (/, //, C:/); add post-normalization validation to catch
+    bypasses
+16. **Control character filtering** - Trimming whitespace + rejecting control
+    chars prevents bypasses via leading/trailing spaces or embedded control
+    sequences
+17. **Audit logging completeness** - Security-relevant logs (file skipped, read
+    error) need timestamps and sanitized error context for forensic analysis
+
+**Resolution:**
+
+- **Fixed:** 9 items (2 CRITICAL 🔴, 1 MAJOR, 6 MINOR)
+  - CRITICAL #1-2: Added local `sanitizeFilesystemError()` function to
+    pattern-check.js with comprehensive path redaction
+  - MAJOR #3: Fixed TOCTOU by using `realPath` in all fs operations after
+    symlink resolution
+  - MINOR #4-5: Enhanced sanitization regex to handle paths with spaces +
+    expanded coverage (/private/, /opt/, other drives)
+  - MINOR #6: Added post-normalization check to reject /, //, and drive letters
+  - MINOR #7: Added trim + control character validation in validateFilePath
+  - MINOR #8: Addressed by sanitization in #1-2
+  - MINOR #9: Added ISO timestamps to both error logs
+- **Deferred:** 1 item (#10 chunked reading - marginal benefit, adds complexity)
+- **Rejected:** 0 items
+
+**Key Learnings from Round 2:**
+
+- **Iterative security hardening is normal** - Fixes from one round can
+  introduce new issues; requires multiple review cycles
+- **Error logging is a critical attack surface** - ANY log that outputs error
+  messages or paths must sanitize; this includes "debug" logging
+- **TOCTOU is multifaceted** - Not just existsSync; any use of unresolved paths
+  after symlink resolution creates race conditions
+- **Regex precision matters for security** - `/[^\s]+/` vs `/[^\n\r]+/` seems
+  minor but determines whether paths with spaces leak
+- **Sanitization must be comprehensive** - OS-specific paths (/private/ on
+  macOS, C:\ on Windows) plus generic patterns ([A-Z]:\) for full coverage
+- **Audit trails need structure** - Timestamps + sanitized context make logs
+  useful for forensics without exposing sensitive paths
+- **Compliance blockers warrant immediate attention** - 🔴 CRITICAL items block
+  CI/merge; must be addressed before code review or other work
+
+**Files Modified (Round 2):**
+
+- `.claude/hooks/pattern-check.js` - Added sanitization function, fixed TOCTOU,
+  added timestamps
+- `scripts/lib/validate-paths.js` - Enhanced sanitization, added post-normalize
+  check, added control char validation
+
+**Session:** #90 **Branch:** claude/mcp-optimization-session90 **Commits:**
+925e397 (R1), [current] (R2)
