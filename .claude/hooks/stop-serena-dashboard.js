@@ -9,6 +9,18 @@
  * 3. Logs all actions for audit trail
  * 4. Graceful shutdown before forced termination
  * 5. Cross-platform (Windows, macOS, Linux)
+ *
+ * Security trade-offs (Qodo Review #199 Round 6 - Advisory):
+ * - Design accepts port-based targeting: Any process on port 24282 matching the
+ *   allowlist (node/serena/claude) AND command-line patterns (serena/dashboard/24282)
+ *   will be terminated
+ * - Trade-off: Broad targeting (port + heuristics) vs strict identity (PID tracking)
+ * - Rationale: Serena MCP server must be stopped when Claude Code starts to prevent
+ *   conflicts, and we cannot reliably track PIDs across sessions
+ * - Mitigation: Exact name matching + word-boundary regex for command line reduces
+ *   false positives (e.g., "dashboard" won't match "mydashboard-app")
+ * - Risk acceptance: Local developer environment, not production; attacker would need
+ *   to craft process with matching name AND command line AND bind to port 24282
  */
 
 const { execFileSync } = require("node:child_process");
@@ -25,8 +37,20 @@ const SESSION_ID = process.env.CLAUDE_SESSION_ID || "unknown";
 
 function log(message, level = "INFO") {
   const timestamp = new Date().toISOString();
-  const entry = `[${timestamp}] [${level}] [User:${USER_CONTEXT}] [Session:${SESSION_ID}] ${message}\n`;
-  console.log(entry.trim());
+  // Human-readable for console (Qodo Review #199 Round 6)
+  const consoleEntry = `[${timestamp}] [${level}] [User:${USER_CONTEXT}] [Session:${SESSION_ID}] ${message}`;
+  console.log(consoleEntry);
+
+  // Structured JSON for file audit trail (Qodo Review #199 Round 6 - CRITICAL compliance)
+  const fileEntry =
+    JSON.stringify({
+      timestamp,
+      level,
+      user: USER_CONTEXT,
+      session: SESSION_ID,
+      message,
+    }) + "\n";
+
   try {
     // Symlink protection with TOCTOU mitigation (Review #198 Round 3)
     // Use O_NOFOLLOW on Unix to atomically refuse symlinks, fallback to lstatSync on Windows
@@ -47,7 +71,15 @@ function log(message, level = "INFO") {
           console.error(`[SECURITY] Refusing to write to non-file: ${LOG_FILE}`);
           return;
         }
-        fs.writeSync(fd, entry, null, "utf8");
+
+        // Enforce permissions even on pre-existing file (Qodo Review #199 Round 6)
+        try {
+          fs.fchmodSync(fd, 0o600);
+        } catch {
+          // Best-effort only (e.g., some FS mount options)
+        }
+
+        fs.writeSync(fd, fileEntry, null, "utf8");
       } finally {
         fs.closeSync(fd);
       }
@@ -61,7 +93,14 @@ function log(message, level = "INFO") {
           return;
         }
       }
-      fs.appendFileSync(LOG_FILE, entry, { mode: 0o600 });
+      fs.appendFileSync(LOG_FILE, fileEntry, { mode: 0o600 });
+
+      // Best-effort: keep permissions restricted if file already existed (Qodo Review #199 Round 6)
+      try {
+        fs.chmodSync(LOG_FILE, 0o600);
+      } catch {
+        // Ignore on platforms/filesystems where chmod isn't supported
+      }
     }
   } catch (err) {
     // Log failures to console for debugging (Review #198 follow-up)
@@ -86,11 +125,18 @@ function getProcessInfo(pid) {
         { encoding: "utf8", timeout: 5000 }
       ).trim();
 
-      if (!output) return null;
+      // Handle PowerShell returning "null" string or empty output (Qodo Review #199 Round 6)
+      if (!output || output === "null") return null;
 
       try {
         const parsed = JSON.parse(output);
-        return { name: parsed?.Name || "", commandLine: parsed?.CommandLine || "" };
+        // PowerShell can return array if multiple processes match (Qodo Review #199 Round 6)
+        const obj = Array.isArray(parsed) ? parsed[0] : parsed;
+
+        // Validate object structure
+        if (!obj || typeof obj !== "object") return null;
+
+        return { name: obj.Name || "", commandLine: obj.CommandLine || "" };
       } catch (parseErr) {
         const errMsg = parseErr instanceof Error ? parseErr.message : String(parseErr);
         console.error(`[ERROR] Failed to parse PowerShell JSON for PID ${pid}: ${errMsg}`);
@@ -129,11 +175,12 @@ function findListeningProcess(port) {
         { encoding: "utf8", timeout: 10000 }
       );
       // Use /\r?\n/ to handle Windows CRLF newlines (Qodo Review #199 Round 5)
+      // Filter invalid PIDs (NaN from unexpected output) (Qodo Review #199 Round 6)
       const pids = output
         .trim()
         .split(/\r?\n/)
-        .filter(Boolean)
-        .map((p) => parseInt(p.trim(), 10));
+        .map((p) => parseInt(p.trim(), 10))
+        .filter((n) => Number.isInteger(n) && n > 0);
       return pids.length > 0 ? pids[0] : null;
     } else {
       const output = execFileSync("lsof", ["-i", `:${port}`, "-sTCP:LISTEN", "-t"], {
@@ -142,11 +189,12 @@ function findListeningProcess(port) {
         stdio: ["ignore", "pipe", "ignore"], // Ignore stderr (equivalent to 2>/dev/null)
       });
       // Use /\r?\n/ for consistency, though Unix typically uses LF only
+      // Filter invalid PIDs (NaN from unexpected output) (Qodo Review #199 Round 6)
       const pids = output
         .trim()
         .split(/\r?\n/)
-        .filter(Boolean)
-        .map((p) => parseInt(p.trim(), 10));
+        .map((p) => parseInt(p.trim(), 10))
+        .filter((n) => Number.isInteger(n) && n > 0);
       return pids.length > 0 ? pids[0] : null;
     }
   } catch (err) {
@@ -159,18 +207,23 @@ function findListeningProcess(port) {
 
 function isAllowedProcess(processInfo) {
   if (!processInfo) return false;
-  const name = (processInfo.name || "").toLowerCase();
+  const name = (processInfo.name || "").toLowerCase().trim();
   const cmdLine = (processInfo.commandLine || "").toLowerCase();
-  const nameMatch = PROCESS_ALLOWLIST.some((allowed) => name.includes(allowed.toLowerCase()));
+
+  // Exact name matching prevents accidental termination (Qodo Review #199 Round 6)
+  const allowedNames = new Set(PROCESS_ALLOWLIST.map((s) => s.toLowerCase()));
+  const nameAllowed = allowedNames.has(name);
+
+  // Word-boundary regex prevents substring false matches (Qodo Review #199 Round 6)
   const cmdLineMatch =
-    cmdLine.includes("serena") || cmdLine.includes("dashboard") || cmdLine.includes("24282");
+    /\bserena\b/.test(cmdLine) || /\bdashboard\b/.test(cmdLine) || /\b24282\b/.test(cmdLine);
 
   // Never allow killing generic Node processes unless the command line indicates Serena/dashboard
   // (Qodo Review #198 follow-up - prevent terminating unrelated Node.js processes)
   const isGenericNode = name === "node" || name === "node.exe";
   if (isGenericNode) return cmdLineMatch;
 
-  return nameMatch && cmdLineMatch;
+  return nameAllowed && cmdLineMatch;
 }
 
 function terminateProcess(pid) {
