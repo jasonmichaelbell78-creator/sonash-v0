@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 10.1 **Created:** 2026-01-02 **Last Updated:** 2026-01-22
+**Document Version:** 10.2 **Created:** 2026-01-02 **Last Updated:** 2026-01-23
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 10.2    | 2026-01-23 | Review #198: PR #308 Serena Dashboard Hook - Qodo Security & Compliance (8 items - 1 Critical cross-platform, 2 Major security, 3 Minor logging/error handling, 2 Trivial). **KEY PATTERNS**: (1) Cross-platform hooks need Node.js with platform detection; (2) Process termination requires allowlist validation + state checking + audit logging; (3) Git merges can silently remove hook configs - verify after merge; (4) `continueOnError: true` prevents session startup failures. Review #197: PR claude/new-session-z2qIR Expansion Evaluation Tracker (11 items). Active reviews now #180-198. Consolidation counter: 0.                                                                                                                                                                                                 |
 | 10.1    | 2026-01-22 | **ARCHIVE #5**: Reviews #137-179 → REVIEWS_137-179.md (~1195 lines removed). Active reviews now #180-194. Consolidation counter unchanged (0 - no new patterns to consolidate). Archive covers: PR #243 Phase 4B/4C, Settings Page accessibility, Operational visibility sprint, Track A admin panel, aggregate-audit-findings hardening, PR #277 pagination patterns.                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 10.0    | 2026-01-20 | Review #190: Cherry-Pick PR Qodo Third Follow-up - 10 fixes (3 Security, 5 Major, 2 Minor). **SECURITY**: Symlink traversal protection in check-docs-light.js, phase-complete-check.js, archive-doc.js using lstatSync + realpathSync. **MAJOR**: Deterministic merge order in aggregate-audit-findings.js (sort after Set→Array), bulk fix conflict detection in verify-sonar-phase.js, safeToIso helper in admin.ts, Windows path detection in check-pattern-compliance.js. **PATTERNS**: (1) Always use lstatSync before statSync to detect symlinks; (2) Sort indices after Array.from(Set) for deterministic iteration; (3) Bulk operations must validate against individual entries for conflicts.                                                                                                                           |
 | 9.9     | 2026-01-19 | Review #185: PR 2 TypeScript Files - S3776 Cognitive Complexity Reduction (5 high-complexity TS/TSX files). Files: jobs.ts (42→~15), resources-page.tsx (48→~15), users-tab.tsx (41→~15), settings-page.tsx (41→~15), security-wrapper.ts (39→~15). **KEY PATTERNS FOR TYPESCRIPT**: (1) Extract health check helpers (e.g., `checkErrorRateHealth()`, `checkJobStatusHealth()`); (2) Extract badge/styling helpers (e.g., `getMeetingTypeBadgeClasses()`, `getHomeGenderBadgeClasses()`); (3) Extract state update helpers (e.g., `updateUserInList()`); (4) Extract validation builders (e.g., `buildCleanStartTimestamp()`, `parseDateTimeParts()`); (5) Extract security check steps (e.g., `checkUserRateLimit()`, `handleRecaptchaVerification()`). React pattern: Move helpers outside component to module scope for reuse. |
@@ -186,7 +187,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1**  | [claude.md](../claude.md)                                                                                                                                                                                      | Always (in AI context)        | ~115 lines  |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)                                                                                                                                                              | When investigating violations | ~190 lines  |
 | **2**  | Quick Index (below)                                                                                                                                                                                            | Pattern lookup                | ~50 lines   |
-| **3**  | Active Reviews (#180-194)                                                                                                                                                                                      | Deep investigation            | ~800 lines  |
+| **3**  | Active Reviews (#180-198)                                                                                                                                                                                      | Deep investigation            | ~850 lines  |
 | **4**  | Archive ([#1-40](./archive/REVIEWS_1-40.md), [#42-60](./archive/REVIEWS_42-60.md), [#61-100](./archive/REVIEWS_61-100.md), [#101-136](./archive/REVIEWS_101-136.md), [#137-179](./archive/REVIEWS_137-179.md)) | Historical research           | ~5600 lines |
 
 **Read Tier 3 only when:**
@@ -558,8 +559,84 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #180-197 are actively maintained below. Older reviews (#137-179) are in
+Reviews #180-198 are actively maintained below. Older reviews (#137-179) are in
 Archive 5.
+
+---
+
+#### Review #198: PR #308 Serena Dashboard Hook - Qodo Security & Compliance (2026-01-23)
+
+**Source:** Qodo Compliance + PR Code Suggestions **PR/Branch:**
+claude/mcp-optimization-session90 (PR #308) **Suggestions:** 8 total (Critical:
+1, Major: 2, Minor: 3, Trivial: 2)
+
+**Context:** Qodo security compliance review of PR #308 (Serena dashboard
+auto-launch fix). Initial PowerShell hook was lost during merge from main
+(commit 296b074). Qodo flagged CRITICAL cross-platform issues and MAJOR security
+vulnerabilities in the hook implementation that needed to be re-applied with
+proper security controls.
+
+**Patterns Identified:**
+
+1. **Cross-Platform Process Termination**
+   - Root cause: PowerShell-only hook (`Get-NetTCPConnection`, `Stop-Process`)
+     breaks on macOS/Linux
+   - Prevention: Use Node.js with platform detection (`process.platform`) and
+     cross-platform commands (PowerShell vs `lsof`/`kill`)
+   - Pattern: Session hooks must support all platforms (Windows, macOS, Linux)
+2. **Process Verification Before Termination**
+   - Root cause: Blind process termination without verification could kill wrong
+     process on port collision
+   - Prevention: Allowlist-based validation (`PROCESS_ALLOWLIST`) + process name
+     - command line matching
+   - Pattern: Never terminate processes without verifying identity
+3. **Listener vs Client State Targeting**
+   - Root cause: Original hook killed ANY process on port 24282 (clients or
+     listeners)
+   - Prevention: Filter for LISTENING state only (`-State Listen` /
+     `-sTCP:LISTEN`)
+   - Pattern: Target listening processes, not established connections
+4. **Audit Logging for Security Events**
+   - Root cause: Silent failures (`-ErrorAction SilentlyContinue`) masked
+     security issues
+   - Prevention: Log all termination attempts to `.serena-termination.log` with
+     timestamp, PID, decision
+   - Pattern: Security operations require audit trails
+5. **Graceful vs Forced Shutdown**
+   - Root cause: Immediate forced termination (`-Force`) prevented clean
+     shutdown
+   - Prevention: Try graceful (`SIGTERM`/`taskkill`) before forced
+     (`SIGKILL`/`taskkill /F`)
+   - Pattern: Give processes chance to clean up before force kill
+
+**Resolution:**
+
+- **Fixed:** 8 items (1 Critical, 2 Major, 3 Minor, 2 Trivial)
+  - CRITICAL: Cross-platform compatibility - Created Node.js script with
+    platform detection
+  - MAJOR: Security - Only stop listener process (added `-State Listen` filter)
+  - MAJOR: Security - Port collision protection (allowlist-based process
+    verification)
+  - MINOR: Add error reporting (console logging instead of silent failures)
+  - MINOR: Add audit logging (`.serena-termination.log` file)
+  - MINOR: Add `continueOnError: true` (prevents session startup failure)
+  - TRIVIAL: 2 items (both addressed by comprehensive Node.js implementation)
+- **Created:** `.claude/hooks/stop-serena-dashboard.js` (154 lines with full
+  security controls)
+- **Updated:** `.claude/settings.json` SessionStart hook to use Node.js script
+
+**Key Learnings:**
+
+- Security-critical hooks need same rigor as production code (allowlist
+  validation, audit logging, error handling)
+- Cross-platform compatibility is CRITICAL requirement for session hooks - must
+  support Windows, macOS, Linux
+- Process termination requires defense-in-depth: allowlist validation + state
+  checking + audit logging + graceful shutdown
+- Git merges can silently remove hook configurations - always verify
+  `.claude/settings.json` after merging main
+- `continueOnError: true` prevents session startup failures from non-critical
+  hooks
 
 ---
 

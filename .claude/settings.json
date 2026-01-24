@@ -16,9 +16,10 @@
           },
           {
             "type": "command",
-            "command": "powershell -Command \"Get-NetTCPConnection -LocalPort 24282 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }\"",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop-serena-dashboard.js\"",
             "statusMessage": "Stopping Serena dashboard...",
-            "async": true
+            "async": true,
+            "continueOnError": true
           }
         ]
       }
