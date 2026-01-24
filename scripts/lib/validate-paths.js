@@ -22,15 +22,24 @@ const fs = require("node:fs");
 function sanitizeFilesystemError(err) {
   const message = err instanceof Error ? err.message : String(err);
   // Redact system paths and sensitive details (handle paths with spaces - Review #200 Round 2)
-  return message
+  const redacted = message
     .replace(/\/home\/[^\n\r]+/g, "[HOME]")
     .replace(/\/Users\/[^\n\r]+/g, "[HOME]")
+    .replace(/\/root\/[^\n\r]+/g, "[ROOT]")
+    .replace(/\/tmp\/[^\n\r]+/g, "[TMP]")
+    .replace(/\/proc\/[^\n\r]+/g, "[PROC]")
+    .replace(/\/run\/[^\n\r]+/g, "[RUN]")
     .replace(/C:\\Users\\[^\n\r]+/g, "[HOME]")
+    .replace(/C:\/Users\/[^\n\r]+/g, "[HOME]")
+    .replace(/\\\\[^\\\n\r]+\\[^\n\r]+/g, "[UNC]")
     .replace(/\/etc\/[^\n\r]+/g, "[CONFIG]")
     .replace(/\/var\/[^\n\r]+/g, "[VAR]")
     .replace(/\/private\/[^\n\r]+/g, "[PRIVATE]")
     .replace(/\/opt\/[^\n\r]+/g, "[OPT]")
     .replace(/[A-Z]:\\[^\n\r]+/g, "[DRIVE]"); // Other Windows drives
+
+  // Prevent log flooding from unusually large errors (Review #200 R2 - Qodo)
+  return redacted.length > 500 ? `${redacted.slice(0, 500)}…[truncated]` : redacted;
 }
 
 /**
@@ -41,6 +50,11 @@ function sanitizeFilesystemError(err) {
  * @returns {object} { valid: boolean, error: string | null, normalized: string | null }
  */
 function validateFilePath(filePath, projectDir) {
+  // Fail closed on invalid projectDir (Review #200 R2 - Qodo)
+  if (typeof projectDir !== "string" || !projectDir.trim()) {
+    return { valid: false, error: "Invalid project directory", normalized: null };
+  }
+
   // Reject non-string paths early (Review #200 - Qodo suggestion #11)
   if (typeof filePath !== "string") {
     return { valid: false, error: "Non-string file path rejected", normalized: null };
@@ -66,8 +80,13 @@ function validateFilePath(filePath, projectDir) {
     return { valid: false, error: "Option-like path rejected", normalized: null };
   }
 
-  // Security: Reject multiline paths (prevent injection)
-  if (filePath.includes("\n") || filePath.includes("\r")) {
+  // Security: Reject multiline paths (prevent injection) - includes Unicode line separators (Review #200 R2 - Qodo)
+  if (
+    filePath.includes("\n") ||
+    filePath.includes("\r") ||
+    filePath.includes("\u2028") ||
+    filePath.includes("\u2029")
+  ) {
     return { valid: false, error: "Multiline path rejected", normalized: null };
   }
 
@@ -90,15 +109,6 @@ function validateFilePath(filePath, projectDir) {
 
   // Normalize backslashes to forward slashes (Windows compatibility)
   const normalized = filePath.replace(/\\/g, "/");
-
-  // Defense-in-depth: reject anchored paths after normalization (Review #200 Round 2 - Qodo suggestion #2)
-  if (
-    normalized.startsWith("/") ||
-    normalized.startsWith("//") ||
-    /^[A-Za-z]:\//.test(normalized)
-  ) {
-    return { valid: false, error: "Absolute path rejected", normalized: null };
-  }
 
   // Security: Block path traversal using regex (handles .., ../, ..\ edge cases)
   if (

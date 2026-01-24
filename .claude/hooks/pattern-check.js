@@ -21,15 +21,33 @@ const path = require("node:path");
 function sanitizeFilesystemError(err) {
   const message = err instanceof Error ? err.message : String(err);
   // Redact system paths and sensitive details (handle paths with spaces)
-  return message
+  const redacted = message
     .replace(/\/home\/[^\n\r]+/g, "[HOME]")
     .replace(/\/Users\/[^\n\r]+/g, "[HOME]")
+    .replace(/\/root\/[^\n\r]+/g, "[ROOT]")
+    .replace(/\/tmp\/[^\n\r]+/g, "[TMP]")
     .replace(/C:\\Users\\[^\n\r]+/g, "[HOME]")
+    .replace(/C:\/Users\/[^\n\r]+/g, "[HOME]")
+    .replace(/\\\\[^\\\n\r]+\\[^\n\r]+/g, "[UNC]")
     .replace(/\/etc\/[^\n\r]+/g, "[CONFIG]")
     .replace(/\/var\/[^\n\r]+/g, "[VAR]")
     .replace(/\/private\/[^\n\r]+/g, "[PRIVATE]")
     .replace(/\/opt\/[^\n\r]+/g, "[OPT]")
     .replace(/[A-Z]:\\[^\n\r]+/g, "[DRIVE]"); // Other Windows drives
+
+  // Prevent log flooding from unusually large errors (Review #200 R2 - Qodo)
+  return redacted.length > 500 ? `${redacted.slice(0, 500)}…[truncated]` : redacted;
+}
+
+/**
+ * Sanitize path strings for safe logging (prevent log injection)
+ * @param {string} pathStr - The path string to sanitize
+ * @returns {string} - Safe path string
+ */
+function sanitizePathForLog(pathStr) {
+  // Remove control characters to prevent log injection (Review #200 R2 - Qodo)
+  // eslint-disable-next-line no-control-regex -- Intentional control character removal for log safety
+  return String(pathStr).replace(/[\x00-\x1F\x7F-\x9F]/g, "");
 }
 
 // Get and validate project directory
@@ -113,8 +131,9 @@ try {
   // Add timestamp for audit trail (Review #200 Round 2 - Qodo Comprehensive Audit Trails)
   const timestamp = new Date().toISOString();
   const safeMsg = sanitizeFilesystemError(err);
+  const safePath = sanitizePathForLog(relPath);
   console.error(
-    `[${timestamp}] Pattern check skipped: ${relPath} (file not accessible: ${safeMsg})`
+    `[${timestamp}] Pattern check skipped: ${safePath} (file not accessible: ${safeMsg})`
   );
   process.exit(0);
 }
@@ -156,7 +175,8 @@ try {
   // Add timestamp for audit trail (Review #200 Round 2 - Qodo Comprehensive Audit Trails)
   const timestamp = new Date().toISOString();
   const safeMsg = sanitizeFilesystemError(err);
-  console.error(`[${timestamp}] Pattern check file read error for ${relPath}: ${safeMsg}`);
+  const safePath = sanitizePathForLog(relPath);
+  console.error(`[${timestamp}] Pattern check file read error for ${safePath}: ${safeMsg}`);
   // If we can't read/stat the file, proceed with normal check (will fail gracefully)
 }
 
