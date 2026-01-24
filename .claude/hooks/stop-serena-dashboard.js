@@ -11,7 +11,7 @@
  * 5. Cross-platform (Windows, macOS, Linux)
  */
 
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -41,6 +41,12 @@ function log(message, level = "INFO") {
         fs.constants.O_NOFOLLOW;
       const fd = fs.openSync(LOG_FILE, flags, 0o600);
       try {
+        // Verify target is a regular file, not a directory or FIFO (Qodo Review #199)
+        const st = fs.fstatSync(fd);
+        if (!st.isFile()) {
+          console.error(`[SECURITY] Refusing to write to non-file: ${LOG_FILE}`);
+          return;
+        }
         fs.writeSync(fd, entry, null, "utf8");
       } finally {
         fs.closeSync(fd);
@@ -49,8 +55,9 @@ function log(message, level = "INFO") {
       // Windows: Fallback to lstatSync check (TOCTOU still possible but rare)
       if (fs.existsSync(LOG_FILE)) {
         const stats = fs.lstatSync(LOG_FILE);
-        if (stats.isSymbolicLink()) {
-          console.error(`[SECURITY] Refusing to write to symlink: ${LOG_FILE}`);
+        // Verify it's a regular file, not a symlink, directory, or other special file (Qodo Review #199)
+        if (stats.isSymbolicLink() || !stats.isFile()) {
+          console.error(`[SECURITY] Refusing to write to non-file: ${LOG_FILE}`);
           return;
         }
       }
@@ -67,8 +74,9 @@ function getProcessInfo(pid) {
   try {
     if (process.platform === "win32") {
       try {
-        const output = execSync(
-          `wmic process where ProcessId=${pid} get Name,CommandLine /format:csv`,
+        const output = execFileSync(
+          "wmic",
+          ["process", "where", `ProcessId=${pid}`, "get", "Name,CommandLine", "/format:csv"],
           { encoding: "utf8", timeout: 5000 }
         );
         const lines = output
@@ -82,8 +90,14 @@ function getProcessInfo(pid) {
       } catch {
         // WMIC is deprecated on many Windows installs; fall back to PowerShell
         // (Qodo Review #198 follow-up - Windows process-info fallback)
-        const output = execSync(
-          `powershell -NoProfile -NonInteractive -Command "(Get-CimInstance Win32_Process -Filter \\"ProcessId=${pid}\\") | Select-Object -Property Name,CommandLine | ConvertTo-Json -Compress"`,
+        const output = execFileSync(
+          "powershell",
+          [
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            `(Get-CimInstance Win32_Process -Filter "ProcessId=${pid}") | Select-Object -Property Name,CommandLine | ConvertTo-Json -Compress`,
+          ],
           { encoding: "utf8", timeout: 5000 }
         ).trim();
 
@@ -101,8 +115,11 @@ function getProcessInfo(pid) {
       return null;
     }
 
-    const name = execSync(`ps -p ${pid} -o comm=`, { encoding: "utf8", timeout: 5000 }).trim();
-    const commandLine = execSync(`ps -p ${pid} -o args=`, {
+    const name = execFileSync("ps", ["-p", String(pid), "-o", "comm="], {
+      encoding: "utf8",
+      timeout: 5000,
+    }).trim();
+    const commandLine = execFileSync("ps", ["-p", String(pid), "-o", "args="], {
       encoding: "utf8",
       timeout: 5000,
     }).trim();
@@ -118,8 +135,14 @@ function getProcessInfo(pid) {
 function findListeningProcess(port) {
   try {
     if (process.platform === "win32") {
-      const output = execSync(
-        `powershell -NoProfile -NonInteractive -Command "Get-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess"`,
+      const output = execFileSync(
+        "powershell",
+        [
+          "-NoProfile",
+          "-NonInteractive",
+          "-Command",
+          `Get-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess`,
+        ],
         { encoding: "utf8", timeout: 10000 }
       );
       const pids = output
@@ -129,9 +152,10 @@ function findListeningProcess(port) {
         .map((p) => parseInt(p.trim(), 10));
       return pids.length > 0 ? pids[0] : null;
     } else {
-      const output = execSync(`lsof -i :${port} -sTCP:LISTEN -t 2>/dev/null`, {
+      const output = execFileSync("lsof", ["-i", `:${port}`, "-sTCP:LISTEN", "-t"], {
         encoding: "utf8",
         timeout: 10000,
+        stdio: ["ignore", "pipe", "ignore"], // Ignore stderr (equivalent to 2>/dev/null)
       });
       const pids = output
         .trim()
@@ -168,7 +192,7 @@ function terminateProcess(pid) {
   try {
     if (process.platform === "win32") {
       try {
-        execSync(`taskkill /PID ${pid}`, { timeout: 5000 });
+        execFileSync("taskkill", ["/PID", String(pid)], { timeout: 5000 });
         return true;
       } catch (gracefulErr) {
         // Graceful termination failed, try force kill (Review #198 Round 3 - add logging)
@@ -177,7 +201,7 @@ function terminateProcess(pid) {
           `[WARN] Graceful taskkill failed for PID ${pid}: ${errMsg}, trying force kill`
         );
         try {
-          execSync(`taskkill /PID ${pid} /F`, { timeout: 5000 });
+          execFileSync("taskkill", ["/PID", String(pid), "/F"], { timeout: 5000 });
           return true;
         } catch (forceErr) {
           const forceErrMsg = forceErr instanceof Error ? forceErr.message : String(forceErr);
@@ -204,19 +228,43 @@ function terminateProcess(pid) {
           process.kill(pid, 0);
           // Still alive, wait 250ms before next check
           Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 250);
-        } catch {
-          // Process terminated gracefully
-          return true;
+        } catch (checkErr) {
+          // Check error code to distinguish "doesn't exist" from "permission denied" (Qodo Review #199)
+          const code = checkErr && typeof checkErr === "object" ? checkErr.code : undefined;
+          if (code === "ESRCH") {
+            // Process terminated gracefully
+            return true;
+          }
+          // EPERM (or anything else) means it may still be alive but not signalable
+          const errMsg = checkErr instanceof Error ? checkErr.message : String(checkErr);
+          console.error(`[ERROR] Failed to verify PID ${pid} state: ${errMsg}`);
+          return false;
         }
       }
 
       // Graceful shutdown timeout - force kill with SIGKILL
       try {
         process.kill(pid, "SIGKILL");
-        return true;
-      } catch {
-        // Process may have terminated between poll and SIGKILL
-        return true;
+      } catch (forceErr) {
+        const code = forceErr && typeof forceErr === "object" ? forceErr.code : undefined;
+        if (code === "ESRCH") {
+          // Already exited between timeout and SIGKILL
+          return true;
+        }
+        const errMsg = forceErr instanceof Error ? forceErr.message : String(forceErr);
+        console.error(`[ERROR] Failed to send SIGKILL to PID ${pid}: ${errMsg}`);
+        return false;
+      }
+
+      // Verify it actually exited after SIGKILL (Qodo Review #199)
+      try {
+        process.kill(pid, 0);
+        // Still exists - force kill failed
+        return false;
+      } catch (verifyErr) {
+        const code = verifyErr && typeof verifyErr === "object" ? verifyErr.code : undefined;
+        // ESRCH = successfully terminated, anything else = failed
+        return code === "ESRCH";
       }
     }
   } catch {
@@ -243,11 +291,27 @@ function main() {
   const processInfo = getProcessInfo(pid);
 
   if (!processInfo) {
-    log(
-      `BLOCKED: Could not get info for PID ${pid} - refusing to terminate unknown process`,
-      "WARN"
-    );
-    process.exit(1);
+    // Race: process may have exited between discovery and inspection (Qodo Review #199)
+    // Check if PID still exists to distinguish "disappeared" from "failed to get info"
+    try {
+      process.kill(pid, 0); // Check existence without sending signal
+      // Process still exists but we couldn't get info - block
+      log(
+        `BLOCKED: Could not get info for PID ${pid} - refusing to terminate unknown process`,
+        "WARN"
+      );
+      process.exit(1);
+    } catch (err) {
+      const code = err && typeof err === "object" ? err.code : undefined;
+      if (code === "ESRCH") {
+        // Process exited between discovery and inspection - treat as success
+        log(`No longer running: PID ${pid} disappeared before inspection`, "INFO");
+        process.exit(0);
+      }
+      // Other error (EPERM, etc.) - block
+      log(`BLOCKED: Could not verify PID ${pid} existence - refusing to terminate`, "WARN");
+      process.exit(1);
+    }
   }
 
   // Log only process name to avoid exposing sensitive command line arguments (Review #198 Round 3)

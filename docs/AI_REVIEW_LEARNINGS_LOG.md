@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 10.4 **Created:** 2026-01-02 **Last Updated:** 2026-01-23
+**Document Version:** 10.5 **Created:** 2026-01-02 **Last Updated:** 2026-01-23
 
 ## Purpose
 
@@ -28,6 +28,8 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 10.5    | 2026-01-23 | Review #199: PR #308 Round 4 - CI Security Scanner + Qodo (4 items - 1 CI CRITICAL blocker, 3 Qodo HIGH importance 7-8). **CRITICAL**: Refactored all execSync to execFileSync with args arrays (eliminates template interpolation). **HIGH**: File type validation for log target (fstatSync/isFile), ESRCH vs EPERM error code handling in process polling, process disappearance race condition handling. **NEW PATTERNS**: (16) Args arrays over template interpolation; (17) Log target type validation; (18) Process signal error code semantics; (19) Process disappearance race handling. Total 28 fixes across 4 rounds. Active reviews #180-199. Consolidation counter: 0.                                                                                                                                               |
+| 10.4    | 2026-01-23 | Review #198 Round 3: Qodo + CI (9 items - 1 CRITICAL CI blocker unsafe error.message, 2 MAJOR: TOCTOU symlink race + command line exposure, 6 MINOR). **NEW PATTERNS**: (11) TOCTOU-safe file ops (O_NOFOLLOW); (12) Redact command lines in logs; (13) Native process signaling; (14) Graceful shutdown polling; (15) Error message instanceof check. Total 24 fixes across 3 rounds. Final: 278 lines with defense-in-depth. Commits: c674ec3 (R1), a2e6e27 (R2), b49d88e (R3). Active reviews #180-198. Consolidation counter: 0.                                                                                                                                                                                                                                                                                               |
 | 10.3    | 2026-01-23 | Review #198 Follow-up: Qodo Round 2 - 7 additional security/compliance fixes (2 MAJOR: symlink log overwrite via lstatSync, stricter process allowlist; 3 MINOR: user context in logs, PID validation, Windows PowerShell fallback; 2 TRIVIAL: Atomics.wait sleep, catch block logging). **NEW PATTERNS**: Symlink protection for log files, stricter allowlist for generic processes, user context in security logs, deprecated command fallbacks, cross-platform sleep. Total 15 fixes across 2 rounds. Active reviews #180-198. Consolidation counter: 0.                                                                                                                                                                                                                                                                       |
 | 10.2    | 2026-01-23 | Review #198: PR #308 Serena Dashboard Hook - Qodo Security & Compliance (8 items - 1 Critical cross-platform, 2 Major security, 3 Minor logging/error handling, 2 Trivial). **KEY PATTERNS**: (1) Cross-platform hooks need Node.js with platform detection; (2) Process termination requires allowlist validation + state checking + audit logging; (3) Git merges can silently remove hook configs - verify after merge; (4) `continueOnError: true` prevents session startup failures. Review #197: PR claude/new-session-z2qIR Expansion Evaluation Tracker (11 items). Active reviews now #180-198. Consolidation counter: 0.                                                                                                                                                                                                 |
 | 10.1    | 2026-01-22 | **ARCHIVE #5**: Reviews #137-179 → REVIEWS_137-179.md (~1195 lines removed). Active reviews now #180-194. Consolidation counter unchanged (0 - no new patterns to consolidate). Archive covers: PR #243 Phase 4B/4C, Settings Page accessibility, Operational visibility sprint, Track A admin panel, aggregate-audit-findings hardening, PR #277 pagination patterns.                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -757,6 +759,125 @@ CI pattern compliance + Qodo identified 12 additional issues in commit a2e6e27:
 - **Final File:** `.claude/hooks/stop-serena-dashboard.js` (278 lines with
   defense-in-depth security)
 - **Commits:** c674ec3 (Round 1), a2e6e27 (Round 2), [next commit] (Round 3 + CI
+  fixes)
+
+---
+
+#### Review #199: PR #308 Round 4 - CI Security Scanner + Qodo Hardening (2026-01-23)
+
+**Source:** CI Security Scanner + Qodo Code Suggestions **PR/Branch:**
+claude/mcp-optimization-session90 (PR #308) **Suggestions:** 4 total (CI
+Critical: 1 blocker, Qodo: 3 suggestions)
+
+**Context:** CI security scanner blocked PR #308 merge with HIGH severity issues
+flagging `execSync` template interpolation as potential command injection,
+despite variables being validated (pid=parseInt, port=constant). Qodo also
+provided 3 additional hardening suggestions for edge cases.
+
+**Patterns Identified:**
+
+1. **Security Scanner Context Limitations**
+   - Root cause: Static analysis tools flag template interpolation in shell
+     commands without understanding validation context
+   - Prevention: Refactor to `execFileSync`/`spawnSync` with args arrays to
+     eliminate template interpolation entirely
+   - Pattern: Even with validation, prefer args arrays over string interpolation
+     for shell commands
+
+2. **File Type Validation for Log Targets**
+   - Root cause: Writing to directories or FIFOs instead of regular files can be
+     exploited by local attackers
+   - Prevention: Use `fstatSync(fd).isFile()` on Unix after opening,
+     `lstatSync().isFile()` on Windows before writing
+   - Pattern: Verify file type for security-critical write operations
+
+3. **Error Code Semantics in Process Signals**
+   - Root cause: Different error codes have different meanings - ESRCH (doesn't
+     exist) vs EPERM (no permission)
+   - Prevention: Check `error.code === 'ESRCH'` specifically instead of treating
+     all errors as success
+   - Pattern: Error code semantics matter - don't assume all errors mean the
+     same thing
+
+4. **Process Discovery Race Conditions**
+   - Root cause: Process can exit between discovery (findListeningProcess) and
+     inspection (getProcessInfo)
+   - Prevention: When inspection fails, check if process still exists with
+     `kill(pid, 0)` and treat ESRCH as success
+   - Pattern: Handle race conditions gracefully by distinguishing "disappeared"
+     from "failed"
+
+**Resolution:**
+
+- **Fixed:** 4 items (1 CI CRITICAL blocker, 3 Qodo suggestions - all importance
+  7-8)
+  - CRITICAL: Refactored all 8 `execSync` calls to `execFileSync` with args
+    arrays (wmic, PowerShell ×3, ps ×2, lsof, taskkill ×2)
+  - HIGH (Qodo): Added `fstatSync().isFile()` check on Unix (after O_NOFOLLOW),
+    extended Windows check to verify `.isFile()`
+  - HIGH (Qodo): Fixed process polling to check `error.code === 'ESRCH'` instead
+    of treating all errors as success
+  - HIGH (Qodo): Added race condition handling when `getProcessInfo` returns
+    null - verify with `kill(pid, 0)` and treat ESRCH as success
+- **Deferred:** None
+- **Rejected:** None
+
+**Key Learnings:**
+
+- Security scanners flag patterns (template interpolation) without understanding
+  validation context - fix the pattern, not the validation
+- Args arrays (`execFileSync`) are more secure than template strings
+  (`execSync`) even with validated inputs
+- File type validation prevents writing to directories/FIFOs/devices that could
+  be exploited
+- Error codes have semantic meaning - ESRCH (no such process) ≠ EPERM (no
+  permission)
+- Process operations have inherent race conditions - handle gracefully by
+  checking if target disappeared
+
+**New Patterns from Round 4:**
+
+16. **Args Arrays Over Template Interpolation**
+    - Root cause: Template interpolation in shell commands flagged by security
+      scanners even with validation
+    - Prevention: Use `execFileSync(cmd, [arg1, arg2])` instead of
+      `execSync(\`cmd ${var}\`)`
+    - Pattern: Prefer args arrays for all subprocess calls - eliminates
+      injection vectors entirely
+
+17. **Log Target Type Validation**
+    - Root cause: Log files can be replaced with directories, FIFOs, or devices
+      by local attackers
+    - Prevention: Use `fstatSync(fd).isFile()` (Unix) or `lstatSync().isFile()`
+      (Windows) before writing
+    - Pattern: Verify file type for security-critical writes (logs, configs,
+      secrets)
+
+18. **Process Signal Error Code Semantics**
+    - Root cause: `process.kill()` errors have different meanings - ESRCH
+      (doesn't exist) vs EPERM (no permission)
+    - Prevention: Check `error.code === 'ESRCH'` to confirm termination, don't
+      assume all errors = success
+    - Pattern: Error codes are semantic - ESRCH = gone, EPERM = exists but can't
+      signal, other = unknown
+
+19. **Process Disappearance Race Handling**
+    - Root cause: Processes can exit between discovery and inspection, causing
+      misleading "failed to get info" errors
+    - Prevention: When inspection fails, verify with `kill(pid, 0)` and treat
+      ESRCH as success (process disappeared)
+    - Pattern: Distinguish "target disappeared" from "operation failed" in async
+      operations
+
+**Final Resolution:**
+
+- **Total Fixed:** 28 items (3 Critical, 8 Major, 13 Minor, 4 Trivial) across 4
+  rounds
+- **Deferred:** 2 items (multi-PID support, lsof fallback - documented as future
+  enhancements)
+- **Final File:** `.claude/hooks/stop-serena-dashboard.js` (318 lines with
+  hardened security)
+- **Commits:** c674ec3 (R1), a2e6e27 (R2), b49d88e (R3), [next commit] (R4 + CI
   fixes)
 
 ---
