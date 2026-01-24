@@ -645,11 +645,12 @@ class LearningEffectivenessAnalyzer {
 
     for (const issue of recurring) {
       if (issue.occurrencesSinceDoc >= 3) {
-        // Review #200: Security - Sanitize pattern name to prevent path traversal
+        // Review #200: Security - Sanitize pattern name to prevent path traversal and git option injection
         const safeName = issue.pattern
           .replace(/[/\\]/g, "_") // Remove path separators
           .replace(/\s+/g, "_")
           .replace(/[^a-zA-Z0-9_-]/g, "") // Remove special chars
+          .replace(/^-+/, "") // Review #200 R4: Strip leading dashes to prevent git option injection
           .toUpperCase();
 
         gaps.push({
@@ -1087,7 +1088,9 @@ class LearningEffectivenessAnalyzer {
 
     const content = this.generateDocTemplate(suggestion);
     writeFileSync(targetPath, content, "utf-8");
-    console.log(`  Created: ${targetPath}`);
+    // Review #200 R4: Log relative path to avoid exposing filesystem details
+    const relativePath = path.relative(ROOT, targetPath);
+    console.log(`  Created: ${sanitizeDisplayString(relativePath, 120)}`);
   }
 
   /**
@@ -1144,8 +1147,8 @@ This pattern has appeared ${suggestion.description.match(/\d+/)?.[0] || "multipl
     try {
       // Only stage the file that was changed (Review #200: Security - prevent staging unrelated files)
       if (suggestion.type === "doc-update" && suggestion.suggestedPath) {
-        // Review #200: Use execFileSync with args array instead of shell interpolation
-        execFileSync("git", ["add", suggestion.suggestedPath], { cwd: ROOT });
+        // Review #200 R4: Use -- terminator to prevent path being interpreted as git option
+        execFileSync("git", ["add", "--", suggestion.suggestedPath], { cwd: ROOT });
       } else {
         // Fallback: stage all changes (should ideally specify paths for other types too)
         execFileSync("git", ["add", "-A"], { cwd: ROOT });
@@ -1159,7 +1162,8 @@ Auto-applied by learning effectiveness analyzer.
 Priority: ${suggestion.priority} | Impact: ${suggestion.impact}
 `;
 
-      writeFileSync(msgFile, message, "utf-8");
+      // Review #200 R4: Harden temp file - exclusive flag + restrictive permissions
+      writeFileSync(msgFile, message, { encoding: "utf-8", flag: "wx", mode: 0o600 });
       execFileSync("git", ["commit", "-F", msgFile], { cwd: ROOT });
       console.log("  Committed changes");
     } catch (error) {
@@ -1339,10 +1343,14 @@ npm run learning:detailed
 
 ${this.results.suggestions
   .slice(0, 5)
-  .map(
-    (s, i) =>
-      `${i + 1}. **[${s.category}]** ${s.title}\n   - ${s.description}\n   - Action: ${s.action}`
-  )
+  .map((s, i) => {
+    // Review #200 R4: Sanitize content to prevent Markdown injection
+    const category = sanitizeDisplayString(s.category, 40);
+    const title = sanitizeDisplayString(s.title, 120);
+    const description = sanitizeDisplayString(s.description, 200);
+    const action = sanitizeDisplayString(s.action, 200);
+    return `${i + 1}. **[${category}]** ${title}\n   - ${description}\n   - Action: ${action}`;
+  })
   .join("\n\n")}
 
 ---
