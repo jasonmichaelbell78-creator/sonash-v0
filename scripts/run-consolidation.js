@@ -28,6 +28,18 @@
 // Use CommonJS for consistency with other scripts in scripts/ (Review #158)
 const { existsSync, readFileSync, writeFileSync } = require("node:fs");
 const { join } = require("node:path");
+const { execSync, execFileSync } = require("node:child_process");
+
+/**
+ * Simple error sanitizer (Review #200 - prevent internal detail leakage)
+ */
+function sanitizeError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  return message
+    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
+    .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
+}
 
 // File paths
 const LOG_FILE = join(__dirname, "..", "docs", "AI_REVIEW_LEARNINGS_LOG.md");
@@ -580,6 +592,23 @@ function main() {
       // Review #194: Make failure path explicit with return
       const applied = applyConsolidationChanges(content, reviews, recurringPatterns);
       if (applied) {
+        // Run learning effectiveness analysis after consolidation
+        log("\n📊 Running learning effectiveness analysis...", colors.blue);
+        try {
+          // Review #200: Use execFileSync instead of execSync to avoid shell invocation
+          execFileSync("node", ["scripts/analyze-learning-effectiveness.js", "--auto"], {
+            stdio: "inherit",
+            cwd: join(__dirname, ".."),
+          });
+        } catch (analysisErr) {
+          // Non-blocking: Don't fail consolidation if analysis fails
+          log("⚠️  Learning analysis failed (non-blocking)", colors.yellow);
+          if (verbose) {
+            // Review #200: Sanitize error message to prevent internal detail leakage
+            log(`   ${sanitizeError(analysisErr)}`, colors.yellow);
+          }
+        }
+
         process.exitCode = 0;
         return;
       }
