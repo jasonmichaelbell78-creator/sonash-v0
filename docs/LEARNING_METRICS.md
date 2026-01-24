@@ -57,8 +57,8 @@ npm run learning:detailed
 | ------------------------- | -------------------- |
 | Automation Coverage       | 100.0%               |
 | Learning Effectiveness    | 50.0%                |
-| Pattern Extraction Rate   | 2.35 patterns/review |
-| Consolidation Health      | Needs Attention      |
+| Pattern Extraction Rate   | 7.45 patterns/review |
+| Consolidation Health      | Good                 |
 | Total Documented Patterns | 5                    |
 | Automated Patterns        | 31                   |
 
@@ -69,7 +69,15 @@ npm run learning:detailed
    - Pattern documented in \#185 but appeared 6 more times
    - Action: Review documentation clarity, consider automation
 
-2. **[Training]** Create guide for "Test Mocking \(httpsCallable, not
+2. **[Tool]** Reconfigure or remove "Qodo"
+   - 47.1% false positive rate, 658 unique patterns
+   - Action: Review tool configuration or remove if low ROI
+
+3. **[Tool]** Reconfigure or remove "Pattern Checker"
+   - 59.3% false positive rate, 157 unique patterns
+   - Action: Review tool configuration or remove if low ROI
+
+4. **[Training]** Create guide for "Test Mocking \(httpsCallable, not
    Firestore\)"
    - Recurring 6 times after documentation
    - Action: Create
