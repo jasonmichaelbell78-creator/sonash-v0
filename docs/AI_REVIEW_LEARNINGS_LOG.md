@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 10.2 **Created:** 2026-01-02 **Last Updated:** 2026-01-23
+**Document Version:** 10.3 **Created:** 2026-01-02 **Last Updated:** 2026-01-23
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 10.3    | 2026-01-23 | Review #198 Follow-up: Qodo Round 2 - 7 additional security/compliance fixes (2 MAJOR: symlink log overwrite via lstatSync, stricter process allowlist; 3 MINOR: user context in logs, PID validation, Windows PowerShell fallback; 2 TRIVIAL: Atomics.wait sleep, catch block logging). **NEW PATTERNS**: Symlink protection for log files, stricter allowlist for generic processes, user context in security logs, deprecated command fallbacks, cross-platform sleep. Total 15 fixes across 2 rounds. Active reviews #180-198. Consolidation counter: 0.                                                                                                                                                                                                                                                                       |
 | 10.2    | 2026-01-23 | Review #198: PR #308 Serena Dashboard Hook - Qodo Security & Compliance (8 items - 1 Critical cross-platform, 2 Major security, 3 Minor logging/error handling, 2 Trivial). **KEY PATTERNS**: (1) Cross-platform hooks need Node.js with platform detection; (2) Process termination requires allowlist validation + state checking + audit logging; (3) Git merges can silently remove hook configs - verify after merge; (4) `continueOnError: true` prevents session startup failures. Review #197: PR claude/new-session-z2qIR Expansion Evaluation Tracker (11 items). Active reviews now #180-198. Consolidation counter: 0.                                                                                                                                                                                                 |
 | 10.1    | 2026-01-22 | **ARCHIVE #5**: Reviews #137-179 → REVIEWS_137-179.md (~1195 lines removed). Active reviews now #180-194. Consolidation counter unchanged (0 - no new patterns to consolidate). Archive covers: PR #243 Phase 4B/4C, Settings Page accessibility, Operational visibility sprint, Track A admin panel, aggregate-audit-findings hardening, PR #277 pagination patterns.                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 10.0    | 2026-01-20 | Review #190: Cherry-Pick PR Qodo Third Follow-up - 10 fixes (3 Security, 5 Major, 2 Minor). **SECURITY**: Symlink traversal protection in check-docs-light.js, phase-complete-check.js, archive-doc.js using lstatSync + realpathSync. **MAJOR**: Deterministic merge order in aggregate-audit-findings.js (sort after Set→Array), bulk fix conflict detection in verify-sonar-phase.js, safeToIso helper in admin.ts, Windows path detection in check-pattern-compliance.js. **PATTERNS**: (1) Always use lstatSync before statSync to detect symlinks; (2) Sort indices after Array.from(Set) for deterministic iteration; (3) Bulk operations must validate against individual entries for conflicts.                                                                                                                           |
@@ -637,6 +638,63 @@ proper security controls.
   `.claude/settings.json` after merging main
 - `continueOnError: true` prevents session startup failures from non-critical
   hooks
+
+**Follow-up (Qodo Round 2 - 2026-01-23):**
+
+Qodo identified 7 additional security/compliance issues in commit c674ec3:
+
+| #   | Issue                         | Severity | Fix                                                       |
+| --- | ----------------------------- | -------- | --------------------------------------------------------- |
+| 1   | Symlink log overwrite         | MAJOR    | Added lstatSync check before appendFileSync (Review #190) |
+| 2   | Overbroad process kill        | MAJOR    | Require cmdLineMatch for generic node processes           |
+| 3   | Comprehensive audit trails    | MINOR    | Added USER_CONTEXT and SESSION_ID to all log entries      |
+| 4   | Validate PID                  | MINOR    | Added Number.isInteger + >0 check before termination      |
+| 5   | Windows process-info fallback | MINOR    | Added PowerShell fallback for deprecated wmic command     |
+| 6   | Avoid external sleep          | TRIVIAL  | Replaced `execSync('sleep 1')` with `Atomics.wait`        |
+| 7   | Robust error handling         | TRIVIAL  | Added console.error logging to all catch blocks           |
+
+**New Patterns from Follow-up:**
+
+6. **Symlink Protection for Log Files**
+   - Root cause: appendFileSync without symlink check enables local symlink
+     attack
+   - Prevention: Use `lstatSync` + `isSymbolicLink()` before writing to log
+     files
+   - Pattern: Never write to files that could be symlinked without verification
+     (Review #190)
+7. **Stricter Process Allowlist Validation**
+   - Root cause: Original allowlist logic allowed terminating ANY node process
+     on the port
+   - Prevention: For generic node processes, REQUIRE command line match
+     (serena/dashboard/24282)
+   - Pattern: Generic process names (node, python, etc.) must have additional
+     validation
+8. **User Context in Audit Logs**
+   - Root cause: Security audit logs without user/session context prevent
+     accountability
+   - Prevention: Include `USER_CONTEXT` and `SESSION_ID` in all security log
+     entries
+   - Pattern: Security event logs must capture who initiated the action
+9. **Deprecated Command Fallbacks**
+   - Root cause: Windows `wmic` command deprecated on modern Windows systems
+   - Prevention: Add PowerShell `Get-CimInstance` fallback with JSON parsing
+   - Pattern: When using deprecated system commands, provide fallback
+     implementations
+10. **Cross-Platform Sleep**
+    - Root cause: `execSync('sleep 1')` relies on external binary that may not
+      exist
+    - Prevention: Use Node.js native
+      `Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000)`
+    - Pattern: Avoid relying on external commands when Node.js native
+      equivalents exist
+
+**Updated Resolution:**
+
+- **Total Fixed:** 15 items (1 Critical, 4 Major, 6 Minor, 4 Trivial) across 2
+  rounds
+- **Final File:** `.claude/hooks/stop-serena-dashboard.js` (195 lines with
+  comprehensive security)
+- **Commits:** c674ec3 (initial), [next commit] (follow-up hardening)
 
 ---
 
