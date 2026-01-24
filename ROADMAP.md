@@ -1,10 +1,15 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.16
-**Last Updated:** 2026-01-20
+**Document Version:** 3.9
+**Last Updated:** 2026-01-24
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
+
+> **v3.0 MAJOR UPDATE:** Integrated 76 expansion items from
+> EXPANSION_EVALUATION_TRACKER.md. Added M4.5 (Security & Privacy) and M9
+> (Native App) milestones. Updated M5, M6, M7 with expanded feature groups. See
+> [analysis/](./analysis/) for full deduplication and dependency analysis.
 
 **Overall Completion:** ~35%
 
@@ -61,22 +66,31 @@ recovery practices.
 
 ## 📊 Milestones Overview
 
-| Milestone                       | Status      | Progress         | Target    | Priority   |
-| ------------------------------- | ----------- | ---------------- | --------- | ---------- |
-| **M0 - Baseline**               | ✅ Complete | 100%             | Q4 2025   | Foundation |
-| **M1 - Foundation**             | ✅ Complete | 100%             | Q1 2026   | P0         |
-| **Integrated Improvement Plan** | ✅ Complete | 100% (9/9 steps) | Q1 2026   | DONE       |
-| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~25%             | Q1 2026   | **P0**     |
-| **M1.5 - Quick Wins**           | ⏸️ Paused   | ~50%             | Q1 2026   | P1         |
-| **M1.6 - Admin Panel + UX**     | ⏸️ Paused   | ~75%             | Q1 2026   | P1         |
-| **M2 - Architecture**           | ⏸️ Optional | 0%               | As needed | P2         |
-| **M3 - Meetings**               | 📋 Planned  | 0%               | Q2 2026   | P1         |
-| **M4 - Expansion**              | 📋 Planned  | 0%               | Q2 2026   | P1         |
-| **M5 - Inventories**            | 📋 Planned  | 0%               | Q3 2026   | P1         |
-| **M6 - Prayers**                | 📋 Planned  | 0%               | Q3 2026   | P2         |
-| **M7 - Fellowship**             | 📋 Planned  | 0%               | Q4 2026   | P1         |
-| **M8 - Speakers**               | 📋 Planned  | 0%               | Q4 2026   | P2         |
-| **M10 - Monetization**          | 🔬 Research | 0%               | 2027      | P2         |
+| Milestone                       | Status      | Progress         | Target    | Priority   | Items |
+| ------------------------------- | ----------- | ---------------- | --------- | ---------- | ----- |
+| **M0 - Baseline**               | ✅ Complete | 100%             | Q4 2025   | Foundation | -     |
+| **M1 - Foundation**             | ✅ Complete | 100%             | Q1 2026   | P0         | -     |
+| **Integrated Improvement Plan** | ✅ Complete | 100% (9/9 steps) | Q1 2026   | DONE       | -     |
+| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~25%             | Q1 2026   | **P0**     | ~38   |
+| **M1.5 - Quick Wins**           | ⏸️ Paused   | ~50%             | Q1 2026   | P1         | ~19   |
+| **M1.6 - Admin Panel + UX**     | ⏸️ Paused   | ~75%             | Q1 2026   | P1         | ~15   |
+| **M2 - Architecture**           | ⏸️ Optional | 0%               | As needed | P2         | ~72   |
+| ↳ M2.1 Code Quality             |             |                  |           | P2         | ~25   |
+| ↳ M2.2 Monitoring               |             |                  |           | P2         | ~25   |
+| ↳ M2.3 Infrastructure           |             |                  |           | P2         | ~22   |
+| **M3 - Meetings**               | 📋 Planned  | 0%               | Q2 2026   | P1         | 6     |
+| **M4 - Expansion**              | 📋 Planned  | 0%               | Q2 2026   | P1         | ~8    |
+| **M4.5 - Security & Privacy**   | 📋 Planned  | 0%               | Q2 2026   | **P0**     | 13    |
+| **M5 - Offline + Steps**        | 📋 Planned  | 0%               | Q3 2026   | P1         | 23    |
+| **M6 - Journaling + Safety**    | 📋 Planned  | 0%               | Q3 2026   | P1         | 26    |
+| **M7 - Fellowship Suite**       | 📋 Planned  | 0%               | Q4 2026   | P1         | ~55   |
+| ↳ M7.1 Sponsor & Sharing        |             |                  |           | P1         | ~15   |
+| ↳ M7.2 Exports & Reports        |             |                  |           | P1         | ~14   |
+| ↳ M7.3 Nashville & Knowledge    |             |                  |           | P1         | ~21   |
+| ↳ M7.4 Personalization          |             |                  |           | P2         | ~17   |
+| **M8 - Speakers**               | 📋 Planned  | 0%               | Q4 2026   | P2         | 3     |
+| **M9 - Native App**             | 📋 Planned  | 0%               | 2027      | P2         | 15    |
+| **M10 - Monetization + Future** | 🔬 Research | 0%               | 2027+     | P2         | ~15   |
 
 **Overall Progress:** ~40% (Improvement Plan complete, feature work ready to
 resume)
@@ -107,14 +121,16 @@ flowchart TD
         M2[M2 - Architecture\nOptional]
         M3[M3 - Meetings\nQ2 2026]
         M4[M4 - Expansion\nQ2 2026]
-        M5[M5 - Inventories\nQ3 2026]
-        M6[M6 - Prayers\nQ3 2026]
-        M7[M7 - Fellowship\nQ4 2026]
+        M45[M4.5 - Security & Privacy\nQ2 2026]
+        M5[M5 - Offline + Steps\nQ3 2026]
+        M6[M6 - Journaling + Safety\nQ3 2026]
+        M7[M7 - Fellowship Suite\nQ4 2026]
         M8[M8 - Speakers\nQ4 2026]
+        M9[M9 - Native App\n2027]
     end
 
     subgraph Research["🔬 Research"]
-        M10[M10 - Monetization\n2027]
+        M10[M10 - Monetization + Future\n2027+]
     end
 
     M0 --> M1
@@ -126,11 +142,13 @@ flowchart TD
     M16 --> M3
     M2 -.-> M3
     M3 --> M4
-    M4 --> M5
+    M4 --> M45
+    M45 --> M5
     M5 --> M6
     M5 --> M7
     M7 --> M8
-    M8 --> M10
+    M8 --> M9
+    M9 --> M10
 
     style M0 fill:#90EE90
     style M1 fill:#90EE90
@@ -141,15 +159,50 @@ flowchart TD
     style M2 fill:#D3D3D3
     style M3 fill:#ADD8E6
     style M4 fill:#ADD8E6
+    style M45 fill:#FFD700
     style M5 fill:#ADD8E6
     style M6 fill:#ADD8E6
     style M7 fill:#ADD8E6
     style M8 fill:#ADD8E6
+    style M9 fill:#FFD700
     style M10 fill:#DDA0DD
 ```
 
+### Critical Dependency Chains
+
+**Chain 1: Encryption → Offline → Features**
+
+- M4 → M4.5 (Encryption) → M5 (Offline) → {M6, M7}
+- **Impact:** M4.5 blocks 60+ items across M6/M7
+- **Mitigation:** Start encryption R&D during M4, parallel security audit
+
+**Chain 2: Offline Queue → Sponsor Sharing**
+
+- M5-F1 (T2.2 sharedPackets) → M7-F1 (Sponsor features)
+- **Impact:** T2.2 blocks 8 sponsor collaboration items
+- **Mitigation:** Implement T2.2 early in M5-F1
+
+**Chain 3: Capacitor Wrapper → ALL Native Features**
+
+- T8.1 (Capacitor wrapper) → M9-F1 (ALL native features)
+- **Impact:** T8.1 blocks entire M9 milestone (15 items)
+- **Mitigation:** Capacitor PoC during M8, PWA fallback path
+
+**Chain 4: Pattern Matcher → Journaling Insights**
+
+- F5.2 (Pattern Matcher) → {F5.3, F5.7, F5.13}
+- **Impact:** Low - only affects 3 visualization features
+- **Mitigation:** Feature flag, rule-based MVP before ML
+
 **Legend:** 🟢 Complete | 🟡 In Progress/Blocker | 🟠 Blocked | ⚪ Optional | 🔵
 Planned | 🟣 Research
+
+**Parallelization Guide:**
+[PARALLEL_EXECUTION_GUIDE.md](analysis/PARALLEL_EXECUTION_GUIDE.md)
+
+- 7 parallel work groups identified
+- Potential savings: 15 weeks (54 → 39 weeks)
+- See guide for execution order and resource requirements
 
 ---
 
@@ -349,11 +402,6 @@ creation.
 
 ### Track C - UI/UX & Analytics (Late Sprint)
 
-- [ ] **C1:** User Analytics Tab - Admin Panel (3-4hr)
-  - DAU/WAU/MAU trends
-  - Retention cohort analysis
-  - Feature usage metrics
-  - Consider PostHog integration (free tier: 5k replays + 1M events)
 - [ ] **C2:** Monitoring Consolidation (4-6hr)
   - Unify error formats across frontend/backend/logs
   - Add correlation IDs to logger (`EFF-006`)
@@ -364,7 +412,6 @@ creation.
 | ID         | Enhancement                            | Source      | Priority |
 | ---------- | -------------------------------------- | ----------- | -------- |
 | ADMIN-FE-1 | Move error knowledge base to Firestore | Review #151 | P2       |
-| ADMIN-FE-2 | Query GCP Cloud Logging API directly   | Review #162 | P2       |
 | SEC-LOG-1  | Sensitive log persistence review       | Review #162 | P2       |
 
 > **ADMIN-FE-1:** The error knowledge base (`lib/error-knowledge-base.ts`) is
@@ -483,37 +530,9 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 #### P0 - Critical UX
 
-1. **Expanded Onboarding Wizard** (8-13 SP)
-   - Program selection (AA/NA/CA/Smart Recovery)
-   - Sobriety/clean date setup with guidance
-   - Stage-of-recovery assessment
-   - Notification preferences
-   - Privacy walkthrough (what data is collected)
-   - Home screen customization (choose visible widgets)
-   - Sponsor contact setup (optional)
-   - Skip option for returning users
+1. ~~**Expanded Onboarding Wizard**~~ → _Moved to M6 F3: Onboarding_
 
-2. **Sponsor Personalization System** (8-13 SP)
-   - **Leverages:** `hasSponsor` data from onboarding
-   - **Sponsor Contact Management:**
-     - Add sponsor name, phone, email
-     - Quick-dial from app
-     - Track last contact date
-     - Set reminder frequency
-   - **Personalized Prompts:**
-     - "Have you called your sponsor today?" (if `hasSponsor === 'yes'`)
-     - "Consider finding a sponsor" nudges (if `hasSponsor === 'no'`)
-     - Meeting etiquette tips for sponsor-seekers (if
-       `hasSponsor === 'looking'`)
-   - **Step Work Integration:**
-     - Encourage sponsor involvement for Step 4-9
-     - "Share with sponsor" quick action for inventory entries
-   - **Analytics Tracking:**
-     - Sponsor contact frequency
-     - Retention comparison (sponsored vs non-sponsored users)
-     - Feature usage by sponsor status
-   - **Why:** Fulfills onboarding promise of personalization, proven retention
-     booster
+2. ~~**Sponsor Personalization System**~~ → _Moved to M7 F1: Sponsor Connection_
 
 3. **Stage-of-Recovery Selector** (4 SP)
    - Adjusts app emphasis based on user stage
@@ -892,13 +911,24 @@ been aggregated into a master list for prioritized implementation.
 
 **Goal:** Reduce technical debt only if friction prevents progress
 
+**Sub-milestones:** M2.1 (Code Quality), M2.2 (Monitoring), M2.3
+(Infrastructure)
+
+---
+
+### 📦 M2.1 - Code Quality & Tooling (~25 items)
+
+Developer tooling, SonarCloud cleanup, and code quality improvements.
+
 ### Deferred Foundation Work
 
 **From M1 - Monitoring & Observability:**
 
-- ⏳ Performance monitoring (page load times, API latency)
-- ⏳ User analytics baseline (DAU, retention, feature usage)
-- ⏳ Alert thresholds defined (automated error/performance alerts)
+- ⏳ Performance monitoring (page load times, API latency) - **P2** ⚡
+  _Consolidates: M2-DD-6 API Latency Metrics_
+- ⏳ User analytics baseline (DAU, retention, feature usage) - **P2** ⚡
+  _Consolidates: OV-A12, T6.3, T6.8_
+- ⏳ Alert thresholds defined (automated error/performance alerts) - **P2**
 
 **Incident Response Automation** (Jan 2026):
 
@@ -1153,21 +1183,10 @@ been aggregated into a master list for prioritized implementation.
   - ⏳ **Admin Panel Monitoring:** See
     [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)
   - **Files:** See commits `b6fe5e9`, `9e83e86`, `a818bea`, `b402f41`, `16b5deb`
-- ❌ **Firebase App Check** (Dec 30, 2025) - **DEDUP-0001**
-  - **Status:** DISABLED in all Cloud Functions (`requireAppCheck: false`)
-  - **Reason:** Hit 403 throttle errors (24-hour limit), implemented manual
-    reCAPTCHA as workaround
-  - **Impact:** Security posture weakened - App Check provides bot protection at
-    Firebase SDK level
-  - **Re-enablement Plan:**
+- ❌ **Firebase App Check** (Dec 30, 2025) - **DEDUP-0001** → _Moved to M4.5 F2:
+  Privacy Controls_
+  - See
     [APP_CHECK_REENABLE_PLAN.md](docs/reviews/2026-Q1/canonical/tier2-output/APP_CHECK_REENABLE_PLAN.md)
-    - Prerequisites: DEDUP-0003 (reCAPTCHA fail-closed), DEDUP-0004 (rate
-      limiting)
-    - Steps: Client init → Server enforcement → Testing
-  - **Reference:**
-    [RECAPTCHA_REMOVAL_GUIDE.md](./docs/RECAPTCHA_REMOVAL_GUIDE.md) for
-    removal/implementation guides
-- **Priority:** P0 - CRITICAL security item (re-enable after prerequisites)
 
 **Data Quality & Operations:**
 
@@ -1226,6 +1245,12 @@ These pre-existing issues were identified during PR review CI:
   - **Effort:** 4-6 hours (fix all 79 violations incrementally)
   - **Approach:** Fix during related maintenance work, not dedicated sprint
 
+---
+
+### 📊 M2.2 - Monitoring & Observability (~25 items)
+
+Performance monitoring, incident response, and dashboard enhancements.
+
 ### Engineering Productivity - Observability & Offline (from 2026-01-13 Audit)
 
 > **Source:**
@@ -1257,21 +1282,9 @@ These pre-existing issues were identified during PR review CI:
 
 #### Offline Support (CRITICAL)
 
-- ⏳ **EFF-010: Implement Offline Queue** (L effort, **CRITICAL**)
-  - **Issue:** `hooks/use-journal.ts:319-340` - all writes require network
-  - **Impact:** Offline is REQUIRED but writes fail, causing data loss
-  - **Fix:**
-    - [ ] IndexedDB queue with pending/synced/failed states
-    - [ ] Sync on reconnect with batch writes
-    - [ ] Conflict resolution strategy
-    - [ ] UI indicators for pending/synced/failed
-  - **Verification:** Go offline, make entry, verify pending state, go online,
-    verify sync
+- ⏳ **EFF-010:** → _Merged into T1.2 (M5 Offline Infrastructure)_
 
-- ⏳ **EFF-011: Add Offline Tests** (L effort)
-  - Mock network status in tests
-  - Test queue behavior, sync on reconnect
-  - **Verification:** `npm test -- --grep offline` all pass
+- ⏳ **EFF-011:** → _Moved to M5 F1: Offline Infrastructure_
 
 - ⏳ **EFF-012: Network Failure Error Handling Tests** (M effort)
   - **Deferred from:** Track A Admin Panel testing (Session #77, archived
@@ -1321,6 +1334,12 @@ These pre-existing issues were identified during PR review CI:
   - Ties to EFF-010 (Offline Queue) as prerequisite for good PWA score
   - **Verification:** PWA score documented with gap analysis
 
+---
+
+### 🏗️ M2.3 - Infrastructure & Refactoring (~22 items)
+
+Architecture refactoring, schema optimization, and infrastructure work.
+
 ### Validated Refactor Backlog (from Step 4.3 Audit - 2026-01-14)
 
 > **Full Backlog:**
@@ -1347,9 +1366,9 @@ These pre-existing issues were identified during PR review CI:
 
 ### Potential Architecture Work
 
-- ⏳ Component library consolidation
-- ⏳ State management standardization
-- ⏳ API abstraction layer
+- ⏳ Component library consolidation - **P2**
+- ⏳ State management standardization - **P2**
+- ⏳ API abstraction layer - **P2**
 - ⏳ Database schema optimization
 - ⏳ Admin route middleware (server-side protection for `/admin/*`)
 - ⏳ **M2: FirestoreService is a God Object** (lib/firestore-service.ts)
@@ -1504,10 +1523,10 @@ reveals performance issues
 
 ### Potential Features (TBD)
 
-- Multiple sobriety dates (separate counters per substance)
-- Tone/language settings (firm vs gentle)
-- Craving countdown timer ("ride it out" feature)
-- Auto-carry-forward task nudges
+- Multiple sobriety dates (separate counters per substance) - **P2**
+- Tone/language settings (firm vs gentle) - **P2**
+- Craving countdown timer ("ride it out" feature) - **P2**
+- Auto-carry-forward task nudges - **P2**
 
 ### HALT Check Enhancements
 
@@ -1520,7 +1539,7 @@ _Building on the basic HALT check feature from M1.5_
 - Correlation analysis with mood and usage patterns
 - Trend graphs showing HALT frequency over time
 
-**Phase 3: Smart Features**
+**Phase 3: Smart Features** 🔬 _R&D Required_
 
 - Predictive alerts: "You usually feel lonely at this time"
 - Context-aware suggestions based on historical patterns
@@ -1528,7 +1547,10 @@ _Building on the basic HALT check feature from M1.5_
 - Integration with meeting finder when lonely detected
 - Integration with sponsor contact when angry/lonely
 
-**Phase 4: Community & AI**
+> **R&D:** Requires time-series analysis, pattern detection algorithms.
+> Evaluate: simple rule-based vs ML. Start with heuristics before ML investment.
+
+**Phase 4: Community & AI** 🔬 _R&D Required_
 
 - Anonymous aggregate insights: "Others often feel the same today"
 - AI-powered coping strategy recommendations
@@ -1536,78 +1558,204 @@ _Building on the basic HALT check feature from M1.5_
 - Connection to support community during vulnerability
 - Emergency escalation for critical patterns
 
+> **R&D:** Requires local LLM or API integration, differential privacy for
+> aggregates. Significant infrastructure. Defer until M7+.
+
 **Story Points:** 26-34 SP (distributed across phases) **Priority:** P2
 (nice-to-have, builds on core feature)
 
 ---
 
-## 📝 M5 - Nightly Inventories (📋 Planned - Q3 2026)
+## 🔐 M4.5 - Security & Privacy (📋 Planned - Q2 2026)
 
-**Story Points:** 116 SP | **Priority:** P1
+**Story Points:** ~85 SP | **Priority:** P0 (Critical prerequisite for M5)
 
-### Features
+> **CRITICAL GATE:** This milestone MUST complete before M5 (Offline) can begin.
+> All offline data storage requires encryption infrastructure from M4.5.
 
-#### F1: 10th Step Inventory Tool (47 SP)
+### Overview
 
-- Structured inventory prompts (AA Big Book format)
-- Character defects checklist
-- Assets vs defects tracking
-- Progress over time visualization
+Implements encryption infrastructure and privacy controls as prerequisite for
+offline features in M5. All sensitive data (step work, inventories, journal
+entries) will be encrypted at rest using AES-256-GCM with PBKDF2 key derivation.
 
-#### F2: Inventory Templates (21 SP)
+### Dependencies
 
-- Multiple formats (AA, NA, custom)
-- User-created templates
-- Share templates with sponsor
+- **Prerequisite:** M4 (Feature Expansion) must complete first
+- **Blocks:** M5 (Offline), M6 (Journaling), M7 (Fellowship) - 60+ items depend
+  on encryption
 
-#### F3: Amends Tracker (26 SP)
+### F1: Encryption Infrastructure (7 items)
 
-- List of people harmed
-- Amends completion status
-- Notes and reflections
-- Privacy controls (sponsor-only sharing)
+- [ ] **T4.1** - Tab-level PIN passcode (user-set 4-6 digit PIN)
+- [ ] **T4.2** - PBKDF2 key derivation (bundled with T4.1)
+- [ ] **T4.3** - AES-256-GCM encryption engine
+- [ ] **T4.4** - Encrypt ALL step work and inventories at rest
+- [ ] **T4.6** - Recovery key generation (12-word mnemonic)
+- [ ] **T4.7** - DEK/KEK key wrapping architecture
+- [ ] **T4.9** - Auto-lock timeout (configurable: 1/5/15/30 min)
 
-#### F4: Pattern Recognition (22 SP)
+### F2: Privacy Controls (6 items)
 
-- AI-powered theme detection
-- Recurring character defects
-- Trigger identification
-- Insights dashboard
+- [ ] **F4.1** - Offline Queue Trust Indicator (visual sync status)
+- [ ] **F4.5** - Guest Mode (sandboxed demo without data persistence)
+- [ ] **F4.7** - Selective Sync (choose what syncs to cloud)
+- [ ] **F4.10** - Nuclear Option (3-step account + data deletion)
+- [ ] **F4.12** - No-Tracking Dashboard (transparency UI for telemetry)
+- [ ] **F4.14** - Snapshot Protection (prevent screenshots of sensitive screens)
+- [ ] **DEDUP-0001** - Re-enable Firebase App Check _(moved from M2)_
+  - Prerequisites: DEDUP-0003 (reCAPTCHA fail-closed), DEDUP-0004 (rate
+    limiting)
+  - See
+    [APP_CHECK_REENABLE_PLAN.md](docs/reviews/2026-Q1/canonical/tier2-output/APP_CHECK_REENABLE_PLAN.md)
 
-**Dependencies:**
+### Pre-M4.5 R&D (Start During M4) - **P0**
 
-- Secure storage (encrypted at rest)
-- Sponsor sharing permissions
-- AI/ML analysis (optional)
+> **Critical Path:** T4.3 blocks 60+ items. Early R&D reduces bottleneck risk.
+
+- [ ] **RND-T4.2** - PBKDF2 Prototype (1-2 days)
+  - Implement key derivation proof-of-concept
+  - Test iteration counts (100k-310k) for performance vs security
+  - Document browser compatibility (Web Crypto API support)
+  - **Output:** Working prototype in `lib/crypto/pbkdf2.ts`
+
+- [ ] **RND-T4.3** - AES-256-GCM Spike (2-3 days)
+  - Research Web Crypto API implementation patterns
+  - Prototype encrypt/decrypt with test vectors
+  - Measure performance on mobile devices (low-end Android target)
+  - **Output:** Spike report with implementation recommendations
+
+- [ ] **RND-AUDIT** - Security Audit Planning (1 day)
+  - Research security audit vendors (NCC Group, Trail of Bits, etc.)
+  - Get budget estimates for crypto implementation review
+  - Draft audit scope document
+  - **Output:** Audit vendor shortlist with timeline/cost estimates
+
+- [ ] **RND-DEXIE** - Dexie-Encrypted-Addon Evaluation (1 day)
+  - Test `dexie-encrypted-addon` for IndexedDB encryption
+  - Evaluate performance impact on read/write operations
+  - Confirm compatibility with planned schema
+  - **Output:** Go/no-go recommendation for addon vs custom implementation
+
+### Implementation Notes
+
+- External security audit required before M5 can start
+- Bundle implementation recommended (see Pass 2 deduplication analysis)
+- All crypto operations use Web Crypto API (no server-side keys)
 
 ---
 
-## 🙏 M6 - Prayers & Meditations (📋 Planned - Q3 2026)
+## 📝 M5 - Offline + Steps (📋 Planned - Q3 2026)
 
-**Story Points:** 63 SP | **Priority:** P2
+**Story Points:** ~150 SP | **Priority:** P1 | **Items:** 23
 
-### Features
+> **Prerequisite:** M4.5 (Encryption) must complete first
 
-#### F1: Prayer Library (21 SP)
+### F0: App-Wide Input Infrastructure (1 item)
 
-- AA-approved prayers (Serenity Prayer, 3rd Step, 7th Step)
-- NA prayers and meditations
-- Custom prayer creation
-- Favorites and bookmarks
+- [ ] **F1.0** - App-wide speech-to-text (Web Speech API with fallback)
 
-#### F2: Daily Meditation (16 SP)
+### F1: Offline Infrastructure (13 items)
 
-- Just for Today (NA)
-- Daily Reflections (AA)
-- 24 Hours a Day
-- Push notification reminders
+Core offline-first architecture enabling data persistence without connectivity.
 
-#### F3: Guided Meditation (26 SP)
+- [ ] **T1.2** - Custom mutation queue (Dexie.js wrapper)
+- [ ] **T1.3** - Sync worker with exponential retry
+- [ ] **T1.4** - IndexedDB setup via Dexie.js
+- [ ] **T1.6** - Storage quota management and warnings
+- [ ] **T1.11** - Multi-device conflict detection UI
+- [ ] **T1.12** - Conflict resolution strategies (LWW, merge, manual)
+- [ ] **T2.2** - sharedPackets collection (sponsor sharing foundation)
+- [ ] **T2.8** - SyncState per device tracking
+- [ ] **T2.12** - Soft delete pattern for offline-safe deletes
+- [ ] **T7.1** - Feature flag for offline rollout
+- [ ] **T7.2** - PR strategy (types → conflict UI incremental)
+- [ ] **T7.8** - Unit tests for conflict scenarios
+- [ ] **T7.9** - Firebase emulator integration tests
+- [ ] **EFF-011** - Offline Tests _(moved from M2)_
+  - Mock network status, test queue behavior, sync on reconnect
 
-- Audio meditation tracks
-- Mindfulness exercises
-- Breath work timers
-- Progress tracking
+### F2: Step Work Worksheets (4 items)
+
+Digital worksheets for structured step work (existing + expansion).
+
+- [ ] **F1.2** - Step Work Worksheets (Steps 2-9)
+- [ ] **F1.2b** - Step Work Worksheets (Steps 11-12)
+- [ ] 10th Step Inventory Tool (structured prompts, Big Book format)
+- [ ] Inventory Templates (AA, NA, custom formats)
+
+### F3: Step Work Enhancements (3 items)
+
+- [ ] **F1.3** - Interactive step tools (visual aids, drag-drop)
+- [ ] **F5.1** - Tag as Inventory (journal → Step 4 bridge)
+- [ ] Amends Tracker (Step 9 - people harmed, completion status)
+
+### F4: Step Work Context (2 items)
+
+- [ ] **F1.4** - "I'm Stuck" button with context-aware guidance
+- [ ] Pattern Recognition (AI theme detection, recurring defects) 🔬 _R&D:
+      Evaluate NLP libraries, local vs cloud processing, privacy implications_
+
+**Dependencies:**
+
+- M4.5 encryption infrastructure (REQUIRED)
+- Sponsor sharing permissions (via T2.2)
+- AI/ML analysis (optional enhancement)
+
+---
+
+## 🙏 M6 - Journaling + Safety (📋 Planned - Q3 2026)
+
+**Story Points:** ~180 SP | **Priority:** P1 | **Items:** 26
+
+> **Prerequisite:** M5 (Offline) must complete first for offline journaling
+
+### F1: Journaling & Insights (17 items)
+
+Advanced journaling tools building on offline infrastructure.
+
+- [ ] **F5.2** - Pattern Matcher (bundled with F5.3, F5.7, F5.13) - Recovery
+      weather, HALT heat map, context tags
+- [ ] **F5.4** - Gratitude Mosaic (visual gratitude collage)
+- [ ] **F5.5** - Time Capsule (On This Day reflection tool)
+- [ ] **F5.6** - The Wave (Urge Log - timer proving cravings pass)
+- [ ] **F5.9** - Rant Room (audio journal + transcription)
+- [ ] **F5.10** - Unsent Letter (therapeutic writing with Release ritual)
+- [ ] **F5.11** - Dynamic Prompts (recovery-stage aware question rotation)
+- [ ] **F5.12** - Meeting Takeaways (one-line wisdom capture)
+- [ ] **F5.14** - Brain Dump (timed freewriting sprint)
+- [ ] **F9.1** - One Action (contextual home screen suggestion engine)
+- [ ] **F9.2** - Bookends (AM/PM routine check-ins)
+- [ ] **F9.6** - Pause Protocol (haptic grounding for agitation)
+- [ ] **F9.7** - Habit Stacker (stack recovery onto existing habits)
+- [ ] **F9.10** - Sleep Hygiene (Wind-Down pre-sleep wizard)
+- [ ] **F7.6** - 30-Day Retrospective (monthly progress magazine)
+- [ ] **F6.5** - Crisis Decision Tree (yes/no wizard for crisis routing)
+- [ ] Prayer Library (existing - AA/NA prayers)
+
+### F2: Safety & Harm Reduction (4 items)
+
+Crisis intervention and harm reduction tools.
+
+- [ ] **F10.1** - The Lifeline (single-tap emergency with silent mode)
+- [ ] **F10.2** - The Guardrails (context-aware trauma gates)
+- [ ] **F10.3** - Harm Reduction Locker (Naloxone guide + Good Samaritan law)
+- [ ] **F10.4** - Compassionate U-Turn (relapse debriefing wizard)
+
+### F3: Onboarding (2 items)
+
+Improved new user experience.
+
+- [ ] **F12.10** - Intake Interview (conversational onboarding)
+- [ ] **F12.11** - Slow Rollout (progressive feature disclosure)
+- [ ] **Expanded Onboarding Wizard** (8-13 SP) _(moved from M1.5)_
+  - Program selection, sobriety date, stage-of-recovery, notifications
+  - Privacy walkthrough, home customization, sponsor setup, skip option
+
+### Existing Features (Prayers & Meditations)
+
+- Daily Meditation (Just for Today, Daily Reflections, 24 Hours a Day)
+- Guided Meditation (audio tracks, breath work, progress tracking)
 
 **Content Licensing:**
 
@@ -1616,50 +1764,176 @@ _Building on the basic HALT check feature from M1.5_
 
 ---
 
-## 🤝 M7 - Fellowship & Support (📋 Planned - Q4 2026)
+## 🤝 M7 - Fellowship Suite (📋 Planned - Q4 2026)
 
-**Story Points:** 100 SP | **Priority:** P1
+**Story Points:** ~350 SP | **Priority:** P1 | **Items:** ~55
 
-### Features
+> **Prerequisite:** M5 (Offline) must complete first for sponsor sharing
 
-#### F1: Sponsor Connection (32 SP)
+**Sub-milestones:** M7.1 (Sponsor), M7.2 (Exports), M7.3 (Nashville), M7.4
+(Personalization)
 
-- Sponsor contact quick-dial
-- "I need help" emergency button
-- Sponsor chat/messaging
-- Sponsor dashboard (view sponsee progress)
+---
 
-#### F2: Phone List (21 SP)
+### 👥 M7.1 - Sponsor & Sharing (~15 items)
 
-- Fellowship phone directory
-- Favorites and groups
-- One-tap calling
-- SMS integration
+Sponsor relationship management and daily engagement features.
 
-#### F3: Support Network (26 SP)
+### F1: Sponsor Connection (12 items)
 
-- Create accountability circles
-- Group check-ins
-- Shared gratitude lists
-- Peer encouragement system
+Complete sponsor relationship management.
 
-#### F4: Milestone Celebrations (11 SP)
+- [ ] **T2.4** - Sponsor contact storage (name/phone/email for offline) ⚡
+      _Consolidates: M16-P6-4 custom phone numbers_
+- [ ] **F2.1** - Sponsor Export + Redaction (pre-flight check with redaction UI)
+- [ ] **F2.2** - Hard Conversation Scripts (templates for difficult talks)
+- [ ] **F2.4** - Next Call Agenda (Park for Sponsor button on entries)
+- [ ] **F2.5** - Circle of Trust (multi-role permissions manager)
+- [ ] **F2.6** - Sponsor Vetting Guide (private checklist)
+- [ ] **F2.8** - Relapse Autopsy Worksheet (collaborative debrief)
+- [ ] **F2.9** - Shared Commitments (digital handshake accountability)
+- [ ] **F2.10** - Sponsor Prompt Library (suggested questions)
+- [ ] **T9.9** - Sponsor link UX (code + QR for pairing)
+- [ ] Sponsor contact quick-dial + emergency button (existing)
+- [ ] Sponsor dashboard (view sponsee progress) (existing)
+- [ ] **Sponsor Personalization System** (8-13 SP) _(moved from M1.5)_
+  - Sponsor contact management, personalized prompts by hasSponsor status
+  - Step work integration, analytics tracking
 
-- Auto-detect sobriety milestones (30/60/90 days, 1 year)
-- Shareable celebration graphics
-- Notify sponsor/support network
-- Digital chips and badges
+### F2: Service & Fellowship (1 item)
 
-#### F5: Gamification (Optional) (10 SP)
+- [ ] **F5.8** - Service Points (esteemable acts tracking for Step 12)
 
-- Principle-based badges (honesty, service)
-- Streak tracking (journal entries, meeting attendance)
-- No shame/punishment mechanics
-- Focus on growth, not competition
+### F3: Daily Engagement (2 items)
+
+- [ ] **F9.4** - Compassionate Milestones (anti-streak cumulative progress)
+- [ ] **F9.5** - Share Pocket (flag entries for meeting shares)
+
+---
+
+### 📄 M7.2 - Exports & Reports (~14 items)
+
+Comprehensive data export and professional documentation.
+
+### F4: Exports & Reports (14 items)
+
+Comprehensive data export and professional documentation.
+
+- [ ] **F7.1** - Recovery Resume (professional PDF for courts)
+- [ ] **F7.2** - Step Packets (workbook mode with margins)
+- [ ] **F7.4** - Emergency Wallet Card (print-and-fold pocket card)
+- [ ] **F7.5** - Full Archive (JSON/CSV/Text data sovereignty) ⚡ _Consolidates:
+      Desktop/Web CSV/JSON export, DW-012_
+- [ ] **F7.7** - Clinical Hand-Off (specialized export for therapists)
+- [ ] **F7.8** - Amends Ledger (Step 9 spreadsheet export)
+- [ ] **F7.10** - Service Log (volunteer hours timesheet)
+- [ ] **F7.11** - Incident Report (14-day relapse analysis)
+- [ ] **T5.2** - Client-side only PDF (no server-side - privacy)
+- [ ] **T5.3** - EXIF stripping (canvas re-encode for metadata)
+- [ ] **T5.5** - Preview screen before generate
+- [ ] **T5.6** - Sponsor packet builder UI
+- [ ] **T5.7** - Watermark option (CONFIDENTIAL for sensitive)
+- [ ] **T5.8** - Web Share API (native share sheet)
+
+---
+
+### 🎸 M7.3 - Nashville & Knowledge (~21 items)
+
+Nashville-specific resources and educational content.
+
+### F5: Nashville Advantage (8 items)
+
+Nashville-specific recovery resources.
+
+- [ ] **F3.2** - Safe Spaces Map (third places with late-night filter)
+- [ ] **F3.3** - My Sober Circuit (home group + routine stacking)
+- [ ] **F3.4** - Meeting After Meeting (community tips)
+- [ ] **F3.5** - Broadway Escape Plan (panic navigation for triggers)
+- [ ] **F3.6** - Clubhouse Status Hub (live recovery center dashboard)
+- [ ] **F3.7** - First 72 Hours (newcomer itinerary)
+- [ ] **F3.8** - Sober-Friendly Events (curated non-drinking social)
+- [ ] Nashville meeting proximity (from M3)
+
+### F6: Recovery Knowledge Base (13 items)
+
+Educational content and interactive guides.
+
+- [ ] **F6.2** - Am I Doing This Right? (etiquette flowchart)
+- [ ] **F6.3** - Smart Glossary (contextual hyperlinked definitions)
+- [ ] **F6.4** - Script Lab (roleplay scripts with vibe options)
+- [ ] **F6.6** - Daily Principle Deck (randomized principle application)
+- [ ] **F6.7** - Anatomy of a Meeting (visual map for newcomers)
+- [ ] **F6.8** - Normie Translator (shareable cards for family)
+- [ ] **F6.9** - Service Menu (micro-service options by difficulty)
+- [ ] **F6.10** - Fellowship Compass (AA/NA/CA/SMART comparison)
+- [ ] **F6.11** - Traditions in Real Life (relationship hacks)
+- [ ] **F6.12** - Readiness Checkers (self-reflective quizzes)
+- [ ] **T9.5** - FlexSearch (local-first search engine)
+- [ ] Plain English Steps (translator toggle) (existing M1.5)
+- [ ] Recovery Library (glossary + etiquette) (existing)
+
+---
+
+### ⚙️ M7.4 - Personalization & Analytics (~17 items)
+
+Safety, personalization, accessibility, and analytics features.
+
+### F7: Safety Features (5 items)
+
+Proactive safety tools (builds on M6 crisis features).
+
+- [ ] **F10.5** - The Canary (timed check-in with auto-alert)
+- [ ] **F10.6** - Medical ID (lock screen wallpaper for EMTs)
+- [ ] **F10.7** - Never Use Alone (spotter hotline integration)
+- [ ] **F10.8** - Exit Strategy Scripts (social excuses + fake call)
+- [ ] **F10.9** - Detox Navigator (Nashville detox directory + transport)
+
+### F8: Personalization (11 items)
+
+User customization and accessibility.
+
+- [ ] **F8.1** - Rosetta Stone (AA/NA/Secular vocabulary toggle)
+- [ ] **F8.4** - Nudge Engine (granular notification controls)
+- [ ] **F8.5** - Name Your Power (spiritual term customization)
+- [ ] **F8.6** - The Focus (substance vs behavior tracker logic)
+- [ ] **F8.7** - Notebook Aesthetics (paper, font, cover theming)
+- [ ] **F8.8** - The Why Anchor (persistent motivational photo)
+- [ ] **F8.9** - Accessibility Plus (enhanced scaling + dyslexia font)
+- [ ] **F8.10** - Red Line List (trigger word content masking)
+- [ ] **F8.11** - Sponsor Link Status (hide features if no sponsor)
+
+### F9: Analytics & Data (7 items)
+
+Privacy-respecting usage insights.
+
+- [ ] **T6.3** - Action event taxonomy (standard naming)
+- [ ] **T6.4** - Word count buckets (privacy-safe content metrics)
+- [ ] **T6.5** - Sync performance tracking
+- [ ] **T6.8** - 90-day retention (privacy-compliant retention)
+- [ ] **T9.2** - Data retention policy (user choice for auto-cleanup)
+- [ ] **T9.12** - Backup UX (monthly backup reminder) ⚡ _Consolidates:
+      Desktop/Web automated cloud backup, DW-013_
+- [ ] Analytics toggle (user control) (existing M10)
+
+### F10: Visionary Features (2 items) - **P3**
+
+Long-term engagement for old-timers.
+
+- [ ] **F11.6** - Scroll of Life (data fusion timeline) - P3
+- [ ] **F11.8** - 90-in-90 Passport (gamified meeting exploration) - P3
+
+### F11: Financial & Old-Timers (4 items)
+
+Financial recovery and mentorship tools.
+
+- [ ] **F12.1** - Savings Ticker (financial motivation via cost viz)
+- [ ] **F12.2** - Wreckage List (Step 9 debt tracking)
+- [ ] **F12.7** - Sponsee CRM (old-timer mentor dashboard)
+- [ ] **F12.8** - Speaker's Outline (story builder from timeline)
 
 **Privacy Considerations:**
 
-- Optional feature (opt-in only)
+- All sharing features are opt-in only
 - User controls visibility settings
 - Anonymous participation option
 
@@ -1698,9 +1972,87 @@ _Building on the basic HALT check feature from M1.5_
 - Copyright compliance
 - Content moderation
 
+### M8 Exit Criteria: M9 Go/No-Go Decision
+
+Before M8 completes, the following must be evaluated to decide M9 scope:
+
+| Criterion               | Go Signal                           | No-Go Signal                      |
+| ----------------------- | ----------------------------------- | --------------------------------- |
+| **PWA Limitations**     | Critical features impossible in PWA | PWA covers all needs              |
+| **User Feedback**       | Users request native features       | Users satisfied with PWA          |
+| **Cost/Benefit**        | Native ROI justifies 100+ SP        | PWA enhancements more efficient   |
+| **App Store Readiness** | Compliance achievable               | Store requirements prohibitive    |
+| **Capacitor PoC**       | T8.1 prototype successful           | Capacitor integration problematic |
+
+**Decision:** [ ] GO to full M9 | [ ] REDUCED M9 (PWA+ only) | [ ] CANCEL M9
+
 ---
 
-## 💰 M10 - Monetization Strategy (🔬 Research - 2027)
+## 📱 M9 - Native App Features (📋 Planned - 2027)
+
+**Story Points:** ~100 SP | **Priority:** P2 | **Items:** 15
+
+> **DECISION GATE:** Capacitor PoC required during M8 before M9 can proceed. If
+> Capacitor rejected, M9 may be cancelled or reduced to PWA enhancements.
+
+### Overview
+
+Native app enhancements using Capacitor wrapper. Provides biometric
+authentication, secure storage, health tracking, and native engagement features.
+Conditional on T8.1 (Capacitor wrapper) decision gate.
+
+### Dependencies
+
+- **Prerequisite:** M8 (Speakers) must complete first
+- **Decision Gate:** Capacitor PoC during M8 (approve or cancel M9)
+- **Blocks:** M10 (Monetization) - Premium features may leverage native
+
+### F1: Native Security (3 staged items)
+
+Core native security features (implemented first).
+
+- [ ] **T8.1** - Capacitor wrapper (CRITICAL - all other items depend on this)
+- [ ] **T8.4** - Native biometrics (Face ID/Touch ID via Capacitor)
+- [ ] **T8.5** - Native secure storage (Keychain/Keystore for encryption keys)
+
+### F1: Deferred Native Security (6 items)
+
+Additional native security requiring native app.
+
+- [ ] **T4.10** - Biometric unlock (requires native biometrics)
+- [ ] **F4.4** - Stealth Mode (icon switching requires native)
+- [ ] **F5.4b** - Gratitude widget/shake (home screen widget)
+- [ ] **F5.9b** - Voice tone analysis (native audio APIs)
+- [ ] **F9.9** - Nashville Sound (native music app deep links)
+- [ ] **F9.11** - Drive Time Companion (native car mode + voice journal)
+
+### F2: Native Health Integration (3 deferred items)
+
+Bio-rhythm tracking requiring Health Kit/Google Fit.
+
+- [ ] **F12.4** - Stress Monitor (heart rate tracking)
+- [ ] **F12.5** - Sleep Truth (sleep quality analysis)
+- [ ] **F12.6** - Movement as Medicine (exercise correlation)
+
+### F3: Native Engagement (3 deferred items)
+
+Advanced native features.
+
+- [ ] **F11.1** - SoNash Beacon (BLE proximity for meetings)
+- [ ] **T9.1** - Push notifications (native push infrastructure)
+- [ ] Additional native engagement features TBD
+
+### Implementation Notes
+
+- **Decision Gate:** T8.1 Capacitor PoC required during M8
+- **Alternative Path:** If Capacitor rejected, use PWA native APIs (limited)
+  - WebAuthn for biometrics, IndexedDB encryption for secure storage
+  - Reduces M9 scope significantly
+- All M9 features optional enhancements to core web app
+
+---
+
+## 💰 M10 - Monetization + Future (🔬 Research - 2027+)
 
 **Goal:** Sustainable revenue model without exploiting vulnerable users
 
@@ -1717,26 +2069,35 @@ _Building on the basic HALT check feature from M1.5_
 
 #### Viable Options
 
-**1. Premium Features (Ethical Freemium)**
+**1. Premium Features (Ethical Freemium)** - **P2** 🔬
 
 - ✅ Free: All core recovery tools (journal, meetings, inventories)
 - 💰 Premium: Advanced analytics, speaker library, offline mode
 - **Pricing:** $2.99/month or $19.99/year
 - **Positioning:** "Support SoNash, unlock extras"
 
-**2. Donation Model**
+> _R&D: Payment integration (Stripe), subscription management, feature flags for
+> premium content_
+
+**2. Donation Model** - **P2** 🔬
 
 - ✅ "Pay what you can" philosophy (AA 7th Tradition)
 - Optional recurring donations
 - Transparent expense reporting
 - No feature gating
 
-**3. B2B Licensing**
+> _R&D: Donation platform integration (Ko-fi, GitHub Sponsors, custom), expense
+> transparency dashboard_
+
+**3. B2B Licensing** - **P2** 🔬
 
 - Treatment centers license app for clients
 - Sober living facilities bulk subscriptions
 - Institutional pricing ($5-10/user/month)
 - White-label options
+
+> _R&D: Multi-tenancy architecture, admin portal for institutions, white-label
+> build pipeline, compliance (HIPAA?)_
 
 **4. Hybrid Approach (Recommended)**
 
@@ -1751,6 +2112,37 @@ _Building on the basic HALT check feature from M1.5_
 2. Measure engagement and retention (M3-M8)
 3. Survey users about willingness to pay
 4. Pilot premium tier Q1 2027
+
+### Deferred Future Enhancements (11 items) - **All P3** 🔬
+
+Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
+
+- [ ] **F4.11** - Shoulder Surf Blur (nice-to-have; auto-lock covers use case) -
+      P3
+- [ ] **T3.14** - Queue compaction (optimization for v2) - P3
+- [ ] **F11.2** - Reclaiming City map - P3 🔬 _R&D: Privacy review, location
+      data handling, map SDK evaluation_
+- [ ] **F11.3** - Digital Coffee Table - P3 🔬 _R&D: Real-time sync
+      architecture, WebRTC/WebSocket evaluation_
+- [ ] **F11.4** - Warm Handoff B2B integration - P3 🔬 _R&D: B2B API design,
+      multi-tenancy, compliance requirements_
+- [ ] **F11.5** - The Mirror AI companion - P3 🔬 _R&D: Local LLM feasibility,
+      on-device inference, Capacitor integration_
+- [ ] **F11.7** - Family Bridge trust builder - P3 🔬 _R&D: Multi-user
+      permission model, relationship privacy, consent flows_
+- [ ] **F11.9** - Service Exchange barter - P3 🔬 _R&D: Marketplace
+      architecture, moderation system, trust/reputation_
+- [ ] **T8.7** - Extract offline-core package (optimization; not required v1) -
+      P3
+- [ ] **F12.3** - The Envelope budget tool (budgeting complexity; scope creep) -
+      P3
+- [ ] **T9.4** - File attachments for photos - P3 🔬 _R&D: Storage architecture,
+      compression, quota management_
+
+### TBD / Needs Research
+
+- [ ] **F5.15** - Symptom vs Feeling distinction (needs UX research; close to
+      medical)
 
 ---
 
@@ -1771,7 +2163,7 @@ _Building on the basic HALT check feature from M1.5_
 - Correlation matrix (meetings ↔ mood)
 - Trend lines (multiple metrics)
 - Word clouds from journal entries
-- Export charts as PNG/SVG
+- Export charts as PNG/SVG → _See T5.8 (Web Share API)_
 
 ### Keyboard Shortcuts (8 SP)
 
@@ -1781,12 +2173,16 @@ _Building on the basic HALT check feature from M1.5_
 - `?`: Keyboard shortcuts help
 - Vim-style navigation (optional)
 
-### Export & Backup (13 SP)
+### Export & Backup (13 SP) ⚠️ CONSOLIDATED
 
-- CSV/JSON/PDF export
-- Automated cloud backup
-- Local file download
-- Sponsor report generation
+> **See M7-F4 (Exports & Reports)** - These items overlap with M7 export
+> features. Implement as part of M7, not separately.
+
+- CSV/JSON/PDF export → _See F7.5 (Full Archive), T5.2 (Client-side PDF)_
+- Automated cloud backup → _See T9.12 (Backup UX)_
+- Local file download → _See F7.5 (Full Archive)_
+- Sponsor report generation → _See F2.1 (Sponsor Export), T5.6 (Sponsor packet
+  builder)_
 
 ### Search & Filter (21 SP)
 
@@ -1814,15 +2210,13 @@ _Building on the basic HALT check feature from M1.5_
 
 ## 🎨 Feature Decisions (Quick Reference)
 
-| Feature                 | Status          | Priority | Notes                           |
-| ----------------------- | --------------- | -------- | ------------------------------- |
-| Recovery Library        | ✅ Approved     | P0       | Combine glossary + etiquette    |
-| HALT Check              | ✅ Approved     | P1       | User-initiated button           |
-| God Box                 | ❌ Deferred     | P3       | Maybe never                     |
-| Complacency Detector    | ⏳ Needs Review | P2       | Engagement drop alerts          |
-| Tone Settings           | ⏳ Needs Review | P1       | Firm vs gentle language         |
-| Multiple Sobriety Dates | ⏳ Needs Review | P2       | Separate counters per substance |
-| Principle-Based Badges  | ✅ Approved     | P2       | Honesty/service vs streaks      |
+| Feature                | Status          | Priority | Notes                        |
+| ---------------------- | --------------- | -------- | ---------------------------- |
+| Recovery Library       | ✅ Approved     | P0       | Combine glossary + etiquette |
+| HALT Check             | ✅ Approved     | P1       | User-initiated button        |
+| God Box                | ❌ Deferred     | P3       | Maybe never                  |
+| Complacency Detector   | ⏳ Needs Review | P2       | Engagement drop alerts       |
+| Principle-Based Badges | ✅ Approved     | P2       | Honesty/service vs streaks   |
 
 ---
 
@@ -2078,6 +2472,16 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.9     | 2026-01-24 | **R&D NOTES**: Added 🔬 R&D requirements to E3 items (HALT P3/P4, Pattern Recognition, F11.\*, M10 monetization)                                                                                                                                                                                                                                                                            |
+| 3.8     | 2026-01-24 | **CONSOLIDATION**: Added cross-references for overlapping items (Sponsor, Analytics, Export domains) with ⚡ markers                                                                                                                                                                                                                                                                        |
+| 3.7     | 2026-01-24 | **M9 GATE**: Added M8 exit criteria with go/no-go decision table for M9 native app                                                                                                                                                                                                                                                                                                          |
+| 3.6     | 2026-01-24 | **PARALLEL EXECUTION**: Created PARALLEL_EXECUTION_GUIDE.md with 7 work groups, 15-week potential savings                                                                                                                                                                                                                                                                                   |
+| 3.5     | 2026-01-24 | **ENCRYPTION R&D**: Added 4 pre-M4.5 R&D items (RND-T4.2, RND-T4.3, RND-AUDIT, RND-DEXIE) to reduce critical path bottleneck                                                                                                                                                                                                                                                                |
+| 3.4     | 2026-01-24 | **MILESTONE SPLIT**: Added sub-milestones M2.1/M2.2/M2.3 and M7.1/M7.2/M7.3/M7.4 to improve navigation of overloaded milestones                                                                                                                                                                                                                                                             |
+| 3.3     | 2026-01-24 | **PRIORITIES**: Assigned P2/P3 to 28 items missing priority (M2-MON, M2-ARCH, M4-_, M10-MODEL-_, F11.\*, deferred items)                                                                                                                                                                                                                                                                    |
+| 3.2     | 2026-01-24 | **RELOCATIONS**: Moved 4 miscategorized items (DEDUP-0001→M4.5, EFF-011→M5, Onboarding→M6, Sponsor→M7)                                                                                                                                                                                                                                                                                      |
+| 3.1     | 2026-01-24 | **DEDUPLICATION**: Removed 8 duplicate items (C1→A19, ADMIN-FE-2→A22, FD-005→M4-002, FD-006→M4-001, Journey Phase/Dashboard Builder refs→M1.5/M1.6, EFF-010→T1.2); analysis files in `analysis/` folder                                                                                                                                                                                     |
+| 3.0     | 2026-01-24 | **EXPANSION INTEGRATION**: Merged 85 expansion items from EXPANSION_EVALUATION_TRACKER.md; added M4.5 (Security), M9 (Native); updated M5/M6/M7 with 76 new items; full analysis completed (B1-B6 passes)                                                                                                                                                                                   |
 | 2.16    | 2026-01-20 | **BLOCKER RESOLVED**: Session #85 - SonarCloud Sprint PR 1+2 completed (~300 issues); PR 3-5 deferred to M2 Architecture backlog; Operational Visibility Sprint unblocked; feature development can proceed                                                                                                                                                                                  |
 | 2.15    | 2026-01-19 | **BLOCKER ADDED**: SonarCloud Cleanup Sprint blocks Operational Visibility Sprint; all 1,213 issues (1,116 code issues + 97 security hotspots) must be resolved before feature development resumes; created plan, snapshot, and runbook                                                                                                                                                     |
 | 2.14    | 2026-01-18 | Session #78: Added Admin Panel Phase 3 (A23-A25) - Error JSON export with timeframe selection, auto-refresh tabs on switch, soft-delete users with 30-day retention; deployed functions and Firestore indexes                                                                                                                                                                               |

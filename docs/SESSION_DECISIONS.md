@@ -226,12 +226,99 @@ from Markdown to JSON/YAML structured format (Importance: 9/10).
   queries
 - Decision deferred during PR review to avoid blocking documentation fixes
 
+### 2026-01-24 - ROADMAP Integration: Expansion Items Overlap Resolution
+
+**Context:** During Phase A of the ROADMAP v3.0 integration, Pass 2
+deduplication analysis identified 19 items that partially overlapped with
+existing ROADMAP features. User decision required to determine whether to MERGE
+(enhance existing) or ADD (new feature) for each overlap.
+
+**Options Presented:**
+
+1. **Accept All Recommendations** - Accept Pass 2 recommendations: MERGE T2.4
+   into M1.5, ADD all 18 others as new features
+2. **Review Each Category** - Present overlaps by category (Sponsor, Journaling,
+   Meeting, Export, Privacy, Engagement) for individual decisions
+3. **Show All 19 at Once** - Display all 19 overlaps in single summary for batch
+   review
+
+**User Choice:** Option 1 - Accept All Recommendations
+
+**Details:**
+
+- **MERGE (1 item):** T2.4 (Sponsor contact storage) → M1.5 Sponsor
+  Personalization (same data model)
+- **ADD (18 items):** F2.1, F2.5, F2.6, F5.2, F5.12, F7.6, F3.3, F9.5, F3.6,
+  F7.1, F7.7, F4.12, F4.10, F9.2, F9.10 + 3 others
+- **SKIP (8 duplicates):** F12.10, F8.2, F8.3, F2.3, F7.9, T6.7, F6.1, F3.1
+
+**Rationale:** Pass 2 analysis confirmed 90.6% of staged items were truly unique
+contributions. The 18 ADD items expand on existing concepts with distinct
+functionality (e.g., Pattern Matcher broader than HALT detection, Export
+features target different audiences than celebration graphics).
+
+**Implementation:**
+
+- ROADMAP.md v3.0 - 76 items integrated (85 - 8 duplicates - 1 merge)
+- M4.5 and M9 sections added
+- M5, M6, M7 updated with expanded feature groups
+- Full analysis in `analysis/pass2_deduplication.md`
+
+### 2026-01-24 - ROADMAP v3.9 Reorganization (10 Recommendations)
+
+**Context:** After completing Phase B Full Analysis (passes B1-B6) of the
+unified ROADMAP with all 660 items, 10 actionable recommendations were
+generated. User reviewed each recommendation sequentially and made decisions.
+
+**Recommendations & Decisions:**
+
+| #   | Recommendation                  | Options                                                 | User Choice                                      |
+| --- | ------------------------------- | ------------------------------------------------------- | ------------------------------------------------ |
+| 1   | Remove 8 duplicates             | (1) Apply all, (2) Review each, (3) Skip                | **Apply all**                                    |
+| 2   | Relocate 4 miscategorized items | (1) Apply all, (2) Review each, (3) Skip                | **Apply all**                                    |
+| 3   | Assign 28 missing priorities    | (1) Apply all P2/P3, (2) Review each, (3) Skip          | **Apply all**                                    |
+| 4   | Split M2 and M7 milestones      | (1) Apply both, (2) M2 only, (3) M7 only, (4) Skip      | **Apply both**                                   |
+| 5   | Add encryption R&D tracking     | (1) Create R&D items, (2) Add notes only, (3) Skip      | **Create R&D items**                             |
+| 6   | Content licensing outreach      | (1) Create task, (2) Add to M6, (3) Skip, (4) Later     | **Skip** (not blocking critical safety features) |
+| 7   | Create parallel execution guide | (1) Add notes to ROADMAP, (2) Detailed guide            | **Detailed guide**                               |
+| 8   | Add M9 go/no-go gate            | (1) Add after M9, (2) Add to M8 exit criteria, (3) Skip | **M8 exit criteria**                             |
+| 9   | Consolidate overlapping domains | (1) Add cross-refs, (2) Merge into groups, (3) Skip     | **Add cross-refs**                               |
+| 10  | Add R&D notes to E3 items       | (1) Add notes, (2) Create R&D tasks, (3) Skip           | **Add notes**                                    |
+
+**Implementation (ROADMAP.md v3.0 → v3.9):**
+
+- v3.1: Removed 8 duplicates (C1, ADMIN-FE-2, FD-005, FD-006, etc.)
+- v3.2: Relocated 4 items (DEDUP-0001→M4.5, EFF-011→M5, etc.)
+- v3.3: Assigned P2/P3 to 28 items
+- v3.4: Split M2 into M2.1/M2.2/M2.3 and M7 into M7.1/M7.2/M7.3/M7.4
+- v3.5: Created 4 pre-M4.5 R&D items (RND-T4.2, RND-T4.3, RND-AUDIT, RND-DEXIE)
+- v3.6: Created `analysis/PARALLEL_EXECUTION_GUIDE.md` with 7 parallelization
+  groups
+- v3.7: Added M8 exit criteria with go/no-go decision table for M9
+- v3.8: Added ⚡ cross-references for overlapping domains
+- v3.9: Added 🔬 R&D notes to E3 items
+
+**Key Clarification (Rec 6):** User asked what "4 safety features" were blocked
+by licensing. Clarified that licensing only blocks meditation/spiritual content
+features (M6-PRAYER, M6-MED-1, M6-MED-2, F6.5), NOT critical safety features
+like crisis hotlines (SOS Button, Guardrails, etc.).
+
+**Artifacts Created:**
+
+- `analysis/FULL_ANALYSIS_SUMMARY.md` - Consolidated analysis findings
+- `analysis/PARALLEL_EXECUTION_GUIDE.md` - 7-group parallel execution plan
+  (15-week savings)
+- `analysis/full_dependencies.md` - Item-level dependency mapping
+- `analysis/full_categorization.md` - 396 items categorized across 11 categories
+
 ---
 
 ## Version History
 
 | Version | Date       | Changes                                                         |
 | ------- | ---------- | --------------------------------------------------------------- |
+| 1.4     | 2026-01-24 | Add ROADMAP v3.9 reorganization (10 recommendations)            |
+| 1.3     | 2026-01-24 | Add ROADMAP v3.0 overlap resolution decision                    |
 | 1.2     | 2026-01-22 | Add deferred tracker format migration decision (PR review #195) |
 | 1.1     | 2026-01-21 | Add 12 expansion evaluation foundational decisions              |
 | 1.0     | 2026-01-17 | Initial creation with Firebase decisions                        |
