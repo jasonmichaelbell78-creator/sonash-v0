@@ -437,6 +437,11 @@ const ANTI_PATTERNS = [
       "decrypt-secrets.js",
       "pattern-check.js",
       "analyze-learning-effectiveness.js",
+      // 2026-01-24 audit (Review #202):
+      // - check-pattern-sync.js: readFileSync at L105 IS in try/catch (L104-109), L232 in try/catch (L231-235)
+      // - security-helpers.js: safeReadFile at L322 IS in try/catch (L321-329)
+      "check-pattern-sync.js",
+      "security-helpers.js",
     ],
   },
   {
@@ -470,8 +475,9 @@ const ANTI_PATTERNS = [
     // - check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
     // - validate-paths.js: L73 has `rel === "" ||` at start of condition (Review #200)
     // - analyze-learning-effectiveness.js: L1076 has `rel === "" ||` at start of condition (Review #200)
+    // - security-helpers.js: L104-108 validates empty/falsy paths upfront + L113 has `rel === "" ||` (Review #202)
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers)\.js$/,
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)

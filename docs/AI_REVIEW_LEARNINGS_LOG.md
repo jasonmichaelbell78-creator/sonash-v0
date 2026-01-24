@@ -620,6 +620,28 @@ _Reviews #137-179 have been archived to
    version history
 2. Applied other minor code quality improvements
 
+**Round 2:** 6 items (2 CRITICAL, 2 MAJOR, 2 MINOR)
+
+**CRITICAL (2):**
+
+1. **TOCTOU for overwrite** - Recheck symlink with lstatSync immediately before
+   overwrite
+2. **Regex DoS in getPatternDetails** - Replaced `[^]*?` with line-by-line
+   parsing
+
+**MAJOR (2):**
+
+1. **safeRegexExec zero-length match** - Prevent infinite loops by advancing
+   lastIndex
+2. **False pattern matches** - Refined regex to only match explicit "Pattern #N"
+   references
+
+**MINOR (2):**
+
+1. **Email masking subdomains** - Mask main domain, keep subdomains visible
+2. **Pattern checker exclusions** - Added check-pattern-sync.js,
+   security-helpers.js
+
 **NEW PATTERNS:**
 
 - (42) TOCTOU prevention: Use atomic flags (wx) instead of existsSync + write
@@ -629,6 +651,9 @@ _Reviews #137-179 have been archived to
   sources
 - (45) Word-boundary matching: Use `\b` regex anchors instead of substring
   includes()
+- (46) Regex DoS prevention: Use line-by-line parsing instead of unbounded lazy
+  matches
+- (47) Zero-length match handling: Advance lastIndex to prevent infinite loops
 
 **Files Changed:** analyze-learning-effectiveness.js, security-helpers.js,
 check-pattern-sync.js, AI_REVIEW_LEARNINGS_LOG.md

@@ -31,12 +31,14 @@ const FILES = {
 
 /**
  * Extract pattern numbers from a file
+ * Only matches explicit pattern references (Pattern #N, pattern #N)
+ * to avoid false positives from PR/issue numbers
  */
 function extractPatterns(content, source) {
   const patterns = new Map();
 
-  // Match patterns like "#31", "Pattern #31", "#31:", etc.
-  const regex = /#(\d+)(?:\s*[-:)]|\s|$)/g;
+  // Only match explicit pattern references (avoid PR/issue numbers like "PR #14")
+  const regex = /(?:^|\b)[Pp]attern\s+#(\d+)(?:\b|[^0-9])/gm;
   let match;
 
   while ((match = regex.exec(content)) !== null) {
@@ -234,18 +236,26 @@ function getPatternDetails(patternNum) {
     return null;
   }
 
-  // Find the pattern definition
-  const regex = new RegExp(
-    `\\*\\*Pattern #${patternNum}[^*]*\\*\\*[^]*?(?=\\*\\*Pattern #|\\*\\*Resolution|$)`,
-    "i"
-  );
-  const match = content.match(regex);
+  // Find the pattern definition using line-by-line parsing (avoids regex DoS)
+  const lines = content.split("\n");
+  let capturing = false;
+  let result = [];
+  const patternStart = new RegExp(`^\\*\\*Pattern #${patternNum}(?![0-9])`, "i");
+  const patternEnd = /^\*\*(?:Pattern #|Resolution)/i;
 
-  if (match) {
-    return match[0].trim();
+  for (const line of lines) {
+    if (capturing) {
+      if (patternEnd.test(line)) {
+        break; // Stop at next pattern or resolution section
+      }
+      result.push(line);
+    } else if (patternStart.test(line)) {
+      capturing = true;
+      result.push(line);
+    }
   }
 
-  return null;
+  return result.length > 0 ? result.join("\n").trim() : null;
 }
 
 // Main

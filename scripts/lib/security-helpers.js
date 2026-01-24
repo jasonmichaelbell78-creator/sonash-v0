@@ -130,21 +130,33 @@ function validatePathInDir(baseDir, userPath) {
 function safeWriteFile(filePath, content, options = {}) {
   refuseSymlinkWithParents(filePath);
 
-  const flag = options.allowOverwrite ? "w" : "wx";
-
-  try {
+  if (options.allowOverwrite) {
+    // For overwrites, recheck symlink status immediately before write (TOCTOU mitigation)
+    if (existsSync(filePath)) {
+      const stat = lstatSync(filePath);
+      if (stat.isSymbolicLink()) {
+        throw new Error(`Refusing to write through symlink: ${filePath}`);
+      }
+    }
     writeFileSync(filePath, content, {
       encoding: "utf-8",
-      flag,
+      flag: "w",
       mode: 0o600,
     });
-  } catch (error) {
-    // EEXIST means file was created between our symlink check and write (TOCTOU)
-    // This is the correct atomic behavior - wx flag prevents overwrite
-    if (error.code === "EEXIST") {
-      throw new Error(`Refusing to overwrite existing file: ${filePath}`);
+  } else {
+    // For new files, use atomic wx flag (fails if file exists)
+    try {
+      writeFileSync(filePath, content, {
+        encoding: "utf-8",
+        flag: "wx",
+        mode: 0o600,
+      });
+    } catch (error) {
+      if (error.code === "EEXIST") {
+        throw new Error(`Refusing to overwrite existing file: ${filePath}`);
+      }
+      throw error;
     }
-    throw error;
   }
 }
 
@@ -395,6 +407,11 @@ function safeRegexExec(pattern, content) {
 
   while ((match = pattern.exec(content)) !== null) {
     matches.push(match);
+
+    // Prevent infinite loops on zero-length matches
+    if (match[0].length === 0) {
+      pattern.lastIndex = Math.min(pattern.lastIndex + 1, content.length);
+    }
   }
 
   return matches;
@@ -426,7 +443,20 @@ function maskEmail(email) {
     return `${maskedLocal}@[REDACTED]`;
   }
 
-  const maskedDomain = domainParts[0].charAt(0) + "***." + domainParts.slice(1).join(".");
+  // Mask the main domain (second-to-last part), keep subdomains and TLD visible
+  // e.g., user@subdomain.example.com -> u***@subdomain.e***.com
+  let maskedDomain;
+  if (domainParts.length > 2) {
+    const subdomains = domainParts.slice(0, -2);
+    const mainDomain = domainParts[domainParts.length - 2];
+    const tld = domainParts[domainParts.length - 1];
+    const maskedMainDomain = mainDomain.charAt(0) + "***";
+    maskedDomain = [...subdomains, maskedMainDomain, tld].join(".");
+  } else {
+    // Simple domain like example.com
+    const maskedMainDomain = domainParts[0].charAt(0) + "***";
+    maskedDomain = maskedMainDomain + "." + domainParts[1];
+  }
 
   return `${maskedLocal}@${maskedDomain}`;
 }
