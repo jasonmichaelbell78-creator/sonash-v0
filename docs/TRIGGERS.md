@@ -587,6 +587,136 @@ cat .claude/settings.json | jq '.hooks.PostToolUse'
 
 ---
 
+## 3.5 Serena Dashboard Termination Hook (Session #90)
+
+| Attribute     | Value                                        |
+| ------------- | -------------------------------------------- |
+| **Name**      | Serena Dashboard Safe Termination            |
+| **Location**  | `.claude/hooks/stop-serena-dashboard.js`     |
+| **Trigger**   | Every new Claude Code session (SessionStart) |
+| **Execution** | Automatic (async, non-blocking)              |
+
+### Description
+
+Safely terminates the Serena MCP dashboard process that listens on port 24282
+when Claude Code starts. Implements defense-in-depth security controls to
+prevent accidental termination of unrelated processes.
+
+### Function
+
+```
+TRIGGER: Claude Code session starts
+  → FIND: Process listening on port 24282
+    → IF none found: Exit (nothing to do)
+  → VALIDATE: PID is valid integer
+  → GET: Process info (name, command line)
+  → CHECK: Process allowlist
+    → Allowed: node/node.exe/serena/claude with dashboard/serena/24282 in cmdline
+    → Block: Generic node processes without dashboard-related cmdline
+  → TERMINATE:
+    → Windows: taskkill (graceful) → taskkill /F (force if needed)
+    → Unix: SIGTERM → poll 5s (250ms intervals) → SIGKILL if needed
+  → LOG: All actions to .serena-termination.log (secure permissions 0o600)
+```
+
+### Security Controls (24 fixes across 3 rounds - Review #198)
+
+**Defense-in-Depth Layers:**
+
+1. **Process Identification**
+   - Only targets LISTENING processes (not client connections)
+   - Port-specific targeting (24282 only)
+   - Cross-platform detection (PowerShell/lsof)
+
+2. **Validation & Authorization**
+   - Process allowlist with strict matching
+   - PID validation (must be positive integer)
+   - Generic node processes require dashboard-related command line
+
+3. **Attack Prevention**
+   - TOCTOU-safe symlink protection (O_NOFOLLOW on Unix)
+   - Command line redaction in logs (prevent token exposure)
+   - No external binary dependencies (Atomics.wait vs sleep)
+
+4. **Graceful Shutdown**
+   - SIGTERM before SIGKILL (5-second grace period)
+   - Adaptive polling (250ms intervals, not fixed delays)
+   - Native process.kill() instead of shell commands
+
+5. **Audit & Compliance**
+   - Comprehensive logging with user/session context
+   - Secure log file permissions (0o600)
+   - Error logging for all failure modes
+   - Windows PowerShell fallback for deprecated wmic
+
+### Process Map
+
+```
+SessionStart
+     ↓
+[Find listener on 24282]
+     ↓
+  ┌──┴──┐
+  ↓     ↓
+None  Found (PID)
+  ↓     ↓
+Exit  [Get process info]
+       ↓
+    ┌──┴──┐
+    ↓     ↓
+  Fail  Success
+    ↓     ↓
+  Block [Check allowlist]
+         ↓
+      ┌──┴──┐
+      ↓     ↓
+  Blocked  Allowed
+      ↓     ↓
+    Exit  [Graceful shutdown]
+           ↓
+        ┌──┴──┐
+        ↓     ↓
+     Success  Timeout
+        ↓     ↓
+      Done  [Force kill]
+             ↓
+           Done
+```
+
+### Verification
+
+```bash
+# Check hook is configured
+cat .claude/settings.json | grep stop-serena-dashboard
+
+# Run hook manually
+node .claude/hooks/stop-serena-dashboard.js
+
+# View audit log
+cat .claude/hooks/.serena-termination.log
+
+# Test specific scenarios
+# (Start Serena dashboard, then run hook to test termination)
+```
+
+### Compliance Status
+
+- ✅ **Automated**: Runs automatically on session start
+- ✅ **Non-blocking**: Async with continueOnError (doesn't block session)
+- ✅ **Security-hardened**: 24 fixes across 3 review rounds
+- ✅ **Auditable**: Comprehensive logging with user/session context
+- ✅ **Cross-platform**: Windows (PowerShell/taskkill), Unix (lsof/kill)
+
+### Security Patterns Documented (Review #198)
+
+- Pattern 11: TOCTOU-safe file operations (O_NOFOLLOW)
+- Pattern 12: Redact command lines in security logs
+- Pattern 13: Native process signaling (process.kill vs execSync)
+- Pattern 14: Graceful shutdown polling
+- Pattern 15: Error message instanceof check
+
+---
+
 # 4. NPM SCRIPTS (MANUAL TRIGGERS)
 
 ## 4.1 Pattern Compliance Check

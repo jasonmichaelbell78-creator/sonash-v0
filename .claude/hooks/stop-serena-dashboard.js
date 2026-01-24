@@ -28,18 +28,38 @@ function log(message, level = "INFO") {
   const entry = `[${timestamp}] [${level}] [User:${USER_CONTEXT}] [Session:${SESSION_ID}] ${message}\n`;
   console.log(entry.trim());
   try {
-    // Symlink protection: Refuse to write to symlinks (Review #190 pattern)
-    if (fs.existsSync(LOG_FILE)) {
-      const stats = fs.lstatSync(LOG_FILE);
-      if (stats.isSymbolicLink()) {
-        console.error(`[SECURITY] Refusing to write to symlink: ${LOG_FILE}`);
-        return;
+    // Symlink protection with TOCTOU mitigation (Review #198 Round 3)
+    // Use O_NOFOLLOW on Unix to atomically refuse symlinks, fallback to lstatSync on Windows
+    const canNoFollow = process.platform !== "win32" && typeof fs.constants.O_NOFOLLOW === "number";
+
+    if (canNoFollow) {
+      // Unix: Use O_NOFOLLOW to prevent TOCTOU race
+      const flags =
+        fs.constants.O_WRONLY |
+        fs.constants.O_CREAT |
+        fs.constants.O_APPEND |
+        fs.constants.O_NOFOLLOW;
+      const fd = fs.openSync(LOG_FILE, flags, 0o600);
+      try {
+        fs.writeSync(fd, entry, null, "utf8");
+      } finally {
+        fs.closeSync(fd);
       }
+    } else {
+      // Windows: Fallback to lstatSync check (TOCTOU still possible but rare)
+      if (fs.existsSync(LOG_FILE)) {
+        const stats = fs.lstatSync(LOG_FILE);
+        if (stats.isSymbolicLink()) {
+          console.error(`[SECURITY] Refusing to write to symlink: ${LOG_FILE}`);
+          return;
+        }
+      }
+      fs.appendFileSync(LOG_FILE, entry, { mode: 0o600 });
     }
-    fs.appendFileSync(LOG_FILE, entry);
   } catch (err) {
     // Log failures to console for debugging (Review #198 follow-up)
-    console.error(`[ERROR] Failed to write to log: ${err.message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`[ERROR] Failed to write to log: ${errMsg}`);
   }
 }
 
@@ -68,8 +88,14 @@ function getProcessInfo(pid) {
         ).trim();
 
         if (output) {
-          const parsed = JSON.parse(output);
-          return { name: parsed?.Name || "", commandLine: parsed?.CommandLine || "" };
+          try {
+            const parsed = JSON.parse(output);
+            return { name: parsed?.Name || "", commandLine: parsed?.CommandLine || "" };
+          } catch (parseErr) {
+            const errMsg = parseErr instanceof Error ? parseErr.message : String(parseErr);
+            console.error(`[ERROR] Failed to parse PowerShell JSON for PID ${pid}: ${errMsg}`);
+            return null;
+          }
         }
       }
       return null;
@@ -83,7 +109,8 @@ function getProcessInfo(pid) {
     return { name, commandLine };
   } catch (err) {
     // Log process info retrieval failures for debugging (Review #198 follow-up)
-    console.error(`[ERROR] Failed to get process info for PID ${pid}: ${err.message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`[ERROR] Failed to get process info for PID ${pid}: ${errMsg}`);
     return null;
   }
 }
@@ -92,7 +119,7 @@ function findListeningProcess(port) {
   try {
     if (process.platform === "win32") {
       const output = execSync(
-        `powershell -Command "Get-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess"`,
+        `powershell -NoProfile -NonInteractive -Command "Get-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess"`,
         { encoding: "utf8", timeout: 10000 }
       );
       const pids = output
@@ -115,7 +142,8 @@ function findListeningProcess(port) {
     }
   } catch (err) {
     // Log process discovery failures for debugging (Review #198 follow-up)
-    console.error(`[ERROR] Failed to find listening process on port ${port}: ${err.message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`[ERROR] Failed to find listening process on port ${port}: ${errMsg}`);
     return null;
   }
 }
@@ -142,25 +170,53 @@ function terminateProcess(pid) {
       try {
         execSync(`taskkill /PID ${pid}`, { timeout: 5000 });
         return true;
-      } catch {
-        execSync(`taskkill /PID ${pid} /F`, { timeout: 5000 });
-        return true;
+      } catch (gracefulErr) {
+        // Graceful termination failed, try force kill (Review #198 Round 3 - add logging)
+        const errMsg = gracefulErr instanceof Error ? gracefulErr.message : String(gracefulErr);
+        console.error(
+          `[WARN] Graceful taskkill failed for PID ${pid}: ${errMsg}, trying force kill`
+        );
+        try {
+          execSync(`taskkill /PID ${pid} /F`, { timeout: 5000 });
+          return true;
+        } catch (forceErr) {
+          const forceErrMsg = forceErr instanceof Error ? forceErr.message : String(forceErr);
+          console.error(`[ERROR] Force taskkill failed for PID ${pid}: ${forceErrMsg}`);
+          return false;
+        }
       }
     } else {
+      // Unix: Use native process.kill() instead of execSync (Review #198 Round 3)
       try {
-        execSync(`kill -15 ${pid}`, { timeout: 5000 });
-        // Node-native synchronous sleep (avoids relying on external `sleep` binary)
-        // (Qodo Review #198 follow-up - avoid external sleep dependency)
-        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
+        // Send SIGTERM for graceful shutdown
+        process.kill(pid, "SIGTERM");
+      } catch (killErr) {
+        const errMsg = killErr instanceof Error ? killErr.message : String(killErr);
+        console.error(`[ERROR] Failed to send SIGTERM to PID ${pid}: ${errMsg}`);
+        return false;
+      }
+
+      // Poll for graceful shutdown (up to 5 seconds) instead of fixed sleep (Review #198 Round 3)
+      const start = Date.now();
+      while (Date.now() - start < 5000) {
         try {
-          execSync(`kill -0 ${pid}`, { timeout: 1000 });
-          execSync(`kill -9 ${pid}`, { timeout: 5000 });
+          // Check if process still exists (kill(pid, 0) doesn't send signal, just checks existence)
+          process.kill(pid, 0);
+          // Still alive, wait 250ms before next check
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 250);
         } catch {
-          // Process already terminated
+          // Process terminated gracefully
+          return true;
         }
+      }
+
+      // Graceful shutdown timeout - force kill with SIGKILL
+      try {
+        process.kill(pid, "SIGKILL");
         return true;
       } catch {
-        return false;
+        // Process may have terminated between poll and SIGKILL
+        return true;
       }
     }
   } catch {
@@ -194,9 +250,8 @@ function main() {
     process.exit(1);
   }
 
-  log(
-    `Process info: name="${processInfo.name}", cmd="${processInfo.commandLine.substring(0, 100)}..."`
-  );
+  // Log only process name to avoid exposing sensitive command line arguments (Review #198 Round 3)
+  log(`Process info: name="${processInfo.name}" (command line redacted for security)`);
 
   if (!isAllowedProcess(processInfo)) {
     log(

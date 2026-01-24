@@ -591,6 +591,21 @@ TypeScript rules)
 Claude Code hooks provide real-time feedback during AI-assisted development.
 Configured in `.claude/settings.json`.
 
+**SessionStart Hooks:**
+
+| Hook                     | Action    | Purpose                                            |
+| ------------------------ | --------- | -------------------------------------------------- |
+| stop-serena-dashboard.js | Terminate | Safely stop Serena dashboard process on port 24282 |
+| session-start.js         | Setup     | Verify dependencies, build functions, run tests    |
+| check-mcp-servers.js     | Check     | Verify MCP server availability                     |
+
+> **Security Controls (stop-serena-dashboard.js)**: Cross-platform process
+> termination with defense-in-depth security: process allowlist validation,
+> listen-only state targeting, TOCTOU-safe symlink protection (O_NOFOLLOW), PID
+> validation, graceful shutdown polling, comprehensive audit logging with
+> user/session context, native process signaling, secure log permissions
+> (0o600). See Review #198 for 24 security hardening fixes across 3 rounds.
+
 **PostToolUse Hooks (Write/Edit):**
 
 | Hook                        | Action  | Purpose                               |

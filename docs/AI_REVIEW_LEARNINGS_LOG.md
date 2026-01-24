@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 10.3 **Created:** 2026-01-02 **Last Updated:** 2026-01-23
+**Document Version:** 10.4 **Created:** 2026-01-02 **Last Updated:** 2026-01-23
 
 ## Purpose
 
@@ -694,7 +694,70 @@ Qodo identified 7 additional security/compliance issues in commit c674ec3:
   rounds
 - **Final File:** `.claude/hooks/stop-serena-dashboard.js` (195 lines with
   comprehensive security)
-- **Commits:** c674ec3 (initial), [next commit] (follow-up hardening)
+- **Commits:** c674ec3 (initial), a2e6e27 (Round 2 hardening)
+
+**Follow-up (Qodo + CI Round 3 - 2026-01-23):**
+
+CI pattern compliance + Qodo identified 12 additional issues in commit a2e6e27:
+
+| #   | Issue                                    | Severity | Fix                                                      |
+| --- | ---------------------------------------- | -------- | -------------------------------------------------------- |
+| 1   | CI: Unsafe error.message access          | CRITICAL | Added instanceof Error checks (3 locations)              |
+| 2   | TOCTOU race on symlink check             | MAJOR    | Use O_NOFOLLOW on Unix, lstatSync on Windows             |
+| 3   | Command line exposure in logs            | MAJOR    | Redacted command line from log output                    |
+| 4   | PowerShell non-interactive flags missing | MINOR    | Added -NoProfile -NonInteractive to findListeningProcess |
+| 5   | Fixed 1s sleep for graceful shutdown     | MINOR    | Implemented 5s polling loop with 250ms intervals         |
+| 6   | External kill command                    | MINOR    | Replaced execSync with native process.kill() on Unix     |
+| 7   | Log file permissions                     | MINOR    | Set mode 0o600 on log file creation                      |
+| 8   | JSON.parse crash risk                    | MINOR    | Wrapped PowerShell JSON parsing in try/catch             |
+| 9   | Silent termination failures              | MINOR    | Added error logging to all termination catch blocks      |
+| 10  | Multiple PIDs on port                    | DEFERRED | Single PID adequate for current use case                 |
+| 11  | lsof fallback (ss/netstat)               | DEFERRED | Adds complexity for rare edge case                       |
+| 12  | Overbroad process kill (duplicate)       | REJECTED | Already fixed in Round 2                                 |
+
+**New Patterns from Round 3:**
+
+11. **TOCTOU-Safe File Operations**
+    - Root cause: Time-of-check to time-of-use race between lstatSync and
+      appendFileSync
+    - Prevention: Use `O_NOFOLLOW` flag on Unix platforms to atomically refuse
+      symlinks
+    - Pattern: For security-critical file operations, use atomic flags when
+      available
+
+12. **Sensitive Data in Audit Logs**
+    - Root cause: Command line arguments can contain passwords, tokens, API keys
+    - Prevention: Redact command line from security logs, log only process name
+    - Pattern: Never log full command lines without sanitization
+
+13. **Native Process Signaling**
+    - Root cause: `execSync('kill')` adds unnecessary shell overhead and
+      security risk
+    - Prevention: Use native `process.kill(pid, 'SIGTERM')` instead of execSync
+    - Pattern: Prefer Node.js native APIs over shell commands when available
+
+14. **Graceful Shutdown Polling**
+    - Root cause: Fixed sleep duration doesn't adapt to actual termination time
+    - Prevention: Poll `process.kill(pid, 0)` in loop until process exits
+    - Pattern: Use polling with timeout instead of fixed delays for async
+      operations
+
+15. **Error Message Safety**
+    - Root cause: `error.message` crashes if non-Error objects are thrown
+    - Prevention: Use `error instanceof Error ? error.message : String(error)`
+    - Pattern: Always validate error type before accessing properties (Review
+      #17, #51, #53)
+
+**Final Resolution:**
+
+- **Total Fixed:** 24 items (2 Critical, 6 Major, 12 Minor, 4 Trivial) across 3
+  rounds
+- **Deferred:** 2 items (multi-PID support, lsof fallback - documented as future
+  enhancements)
+- **Final File:** `.claude/hooks/stop-serena-dashboard.js` (278 lines with
+  defense-in-depth security)
+- **Commits:** c674ec3 (Round 1), a2e6e27 (Round 2), [next commit] (Round 3 + CI
+  fixes)
 
 ---
 
