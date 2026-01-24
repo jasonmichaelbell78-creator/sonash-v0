@@ -78,8 +78,8 @@ function sanitizeDisplayString(str, maxLength = 100) {
  */
 function escapeMd(str, maxLength = 100) {
   const sanitized = sanitizeDisplayString(str, maxLength);
-  // Escape Markdown metacharacters
-  return sanitized.replace(/[[\]()_*`#>!-]/g, "\\$&");
+  // Review #200 R6: Escape all Markdown metacharacters including backslash
+  return sanitized.replace(/[\\[\]()_*`#>!-]/g, "\\$&");
 }
 
 /**
@@ -88,12 +88,22 @@ function escapeMd(str, maxLength = 100) {
  * @throws {Error} If path is a symlink
  */
 function refuseSymlink(filePath) {
-  if (existsSync(filePath)) {
-    const { lstatSync } = require("node:fs");
-    const st = lstatSync(filePath);
-    if (st.isSymbolicLink()) {
-      throw new Error(`Refusing to write through symlink: ${filePath}`);
+  const { lstatSync } = require("node:fs");
+  const path = require("node:path");
+
+  // Review #200 R6: Check target AND all parent directories for symlinks
+  let current = path.resolve(filePath);
+  while (true) {
+    if (existsSync(current)) {
+      const st = lstatSync(current);
+      if (st.isSymbolicLink()) {
+        throw new Error(`Refusing to write through symlink: ${current}`);
+      }
     }
+
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
   }
 }
 
@@ -782,8 +792,10 @@ class LearningEffectivenessAnalyzer {
 
       if (this.options.outputFile) {
         refuseSymlink(this.options.outputFile);
+        // Review #200 R6: Use wx flag to prevent overwrites
         writeFileSync(this.options.outputFile, json, {
           encoding: "utf-8",
+          flag: "wx",
           mode: 0o600,
         });
         console.log(`📊 JSON output written to: ${this.options.outputFile}`);
@@ -1210,8 +1222,24 @@ This pattern has appeared ${suggestion.description.match(/\d+/)?.[0] || "multipl
     try {
       // Review #200 R5: Only allow explicit paths - no git add -A fallback
       if (suggestion.type === "doc-update" && suggestion.suggestedPath) {
+        const path = require("node:path");
+
+        // Review #200 R6: Block Git pathspec magic (e.g. ':(exclude)...')
+        if (suggestion.suggestedPath.startsWith(":")) {
+          console.warn("⚠️  Refusing to stage pathspec-magic path");
+          return false;
+        }
+
+        // Review #200 R6: Validate path is within repository root
+        const resolved = path.resolve(ROOT, suggestion.suggestedPath);
+        const relToRoot = path.relative(ROOT, resolved);
+
+        if (relToRoot === "" || /^\.\.(?:[\\/]|$)/.test(relToRoot) || path.isAbsolute(relToRoot)) {
+          throw new Error(`Refusing to stage path outside repo: ${suggestion.suggestedPath}`);
+        }
+
         // Review #200 R4: Use -- terminator to prevent path being interpreted as git option
-        execFileSync("git", ["add", "--", suggestion.suggestedPath], { cwd: ROOT });
+        execFileSync("git", ["add", "--", relToRoot], { cwd: ROOT });
       } else {
         // Review #200 R5: Refuse to stage unknown types to prevent sensitive file exposure
         console.warn("⚠️  Cannot stage: unknown suggestion type or missing path");
@@ -1506,13 +1534,16 @@ function parseArgs(args) {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
-    if (arg === "--since-review" && args[i + 1]) {
+    if (arg === "--since-review") {
+      // Review #200 R6: Validate argument has value (consistent with other args)
+      const next = args[i + 1];
+      if (!next || next.startsWith("--")) {
+        throw new Error('Missing value for --since-review (e.g. "--since-review 150")');
+      }
       // Review #200: Validate --since-review is a positive integer
-      const reviewNum = parseInt(args[i + 1], 10);
+      const reviewNum = parseInt(next, 10);
       if (isNaN(reviewNum) || reviewNum < 1) {
-        throw new Error(
-          `Invalid --since-review value: "${args[i + 1]}" (must be a positive integer)`
-        );
+        throw new Error(`Invalid --since-review value: "${next}" (must be a positive integer)`);
       }
       options.sinceReview = reviewNum;
       i++;
