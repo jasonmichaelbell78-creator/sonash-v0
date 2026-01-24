@@ -28,7 +28,7 @@
 // Use CommonJS for consistency with other scripts in scripts/ (Review #158)
 const { existsSync, readFileSync, writeFileSync } = require("node:fs");
 const { join } = require("node:path");
-const { execSync } = require("node:child_process");
+const { execSync, execFileSync } = require("node:child_process");
 
 /**
  * Simple error sanitizer (Review #200 - prevent internal detail leakage)
@@ -595,7 +595,8 @@ function main() {
         // Run learning effectiveness analysis after consolidation
         log("\n📊 Running learning effectiveness analysis...", colors.blue);
         try {
-          execSync("node scripts/analyze-learning-effectiveness.js --auto", {
+          // Review #200: Use execFileSync instead of execSync to avoid shell invocation
+          execFileSync("node", ["scripts/analyze-learning-effectiveness.js", "--auto"], {
             stdio: "inherit",
             cwd: join(__dirname, ".."),
           });

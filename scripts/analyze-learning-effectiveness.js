@@ -54,21 +54,20 @@ function sanitizeError(error) {
 function sanitizeDisplayString(str, maxLength = 100) {
   if (!str) return "";
 
-  return (
-    String(str)
-      // Remove code blocks and inline code
-      .replace(/```[\s\S]*?```/g, "[CODE]")
-      .replace(/`[^`]+`/g, "[CODE]")
-      // Remove file paths (absolute paths)
-      .replace(/C:\\Users\\[^\s]+/gi, "[PATH]")
-      .replace(/\/home\/[^\s]+/gi, "[PATH]")
-      .replace(/\/Users\/[^\s]+/gi, "[PATH]")
-      // Collapse whitespace
-      .replace(/\s+/g, " ")
-      .trim()
-      // Truncate if too long
-      .substring(0, maxLength) + (str.length > maxLength ? "..." : "")
-  );
+  const sanitized = String(str)
+    // Remove code blocks and inline code
+    .replace(/```[\s\S]*?```/g, "[CODE]")
+    .replace(/`[^`]+`/g, "[CODE]")
+    // Remove file paths (absolute paths)
+    .replace(/C:\\Users\\[^\s]+/gi, "[PATH]")
+    .replace(/\/home\/[^\s]+/gi, "[PATH]")
+    .replace(/\/Users\/[^\s]+/gi, "[PATH]")
+    // Collapse whitespace
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Review #200: Qodo - Fix truncation logic to check sanitized length
+  return sanitized.length > maxLength ? sanitized.substring(0, maxLength) + "..." : sanitized;
 }
 
 class LearningEffectivenessAnalyzer {
@@ -592,7 +591,8 @@ class LearningEffectivenessAnalyzer {
     for (const review of this.reviews) {
       for (const finding of review.findings) {
         // Extract file paths (simplified - looks for common patterns)
-        const fileMatches = finding.match(/[\w/\-.]+\.(js|ts|jsx|tsx|md|json|sh|yml|yaml)/g);
+        // Review #200: SonarCloud - Fix unsafe regex to prevent ReDoS
+        const fileMatches = finding.match(/[^\s]+\.(js|ts|jsx|tsx|md|json|sh|yml|yaml)\b/g);
         if (fileMatches) {
           for (const file of fileMatches) {
             fileMentions.set(file, (fileMentions.get(file) || 0) + 1);
@@ -1066,13 +1066,14 @@ class LearningEffectivenessAnalyzer {
     }
 
     // Review #200: Security - Validate path is within allowed directory
-    const { join: pathJoin, resolve, relative } = require("node:path");
-    const allowedBase = resolve(ROOT, "docs", "agent_docs");
-    const targetPath = resolve(ROOT, suggestion.suggestedPath);
+    const path = require("node:path");
+    const allowedBase = path.resolve(ROOT, "docs", "agent_docs");
+    const targetPath = path.resolve(ROOT, suggestion.suggestedPath);
 
-    // Check if path is within allowed directory
-    const rel = relative(allowedBase, targetPath);
-    if (rel.startsWith("..") || pathJoin.isAbsolute(rel)) {
+    // Check if path is within allowed directory (Review #17, #18, #40, #53)
+    const rel = path.relative(allowedBase, targetPath);
+    // Use regex for Windows compatibility and edge cases (..hidden.md, empty string)
+    if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
       throw new Error(
         `Invalid path: ${suggestion.suggestedPath} (must be within docs/agent_docs/)`
       );
@@ -1080,7 +1081,7 @@ class LearningEffectivenessAnalyzer {
 
     // Review #200: Create directory if it doesn't exist
     const { mkdirSync } = require("node:fs");
-    const parentDir = pathJoin(targetPath, "..");
+    const parentDir = path.dirname(targetPath);
     mkdirSync(parentDir, { recursive: true });
 
     const content = this.generateDocTemplate(suggestion);
