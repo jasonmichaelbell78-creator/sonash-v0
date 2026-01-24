@@ -1,0 +1,397 @@
+ID,Title,Milestone,Feature Group,Status,Effort,Priority
+OV-A1,Wire Sentry client in app/layout.tsx,Operational Visibility,Track A - Sentry,Complete,E1,P0
+OV-A2,Configure Sentry Cloud Function env vars,Operational Visibility,Track A - Sentry,Complete,E0,P0
+OV-A3,Admin Errors Tab displays real data,Operational Visibility,Track A - Sentry,Complete,E2,P0
+OV-A3.1,Add user correlation to Errors Tab,Operational Visibility,Track A - Sentry,Complete,E1,P0
+OV-A4,Build Admin Logs Tab with GCP deep links,Operational Visibility,Track A - Sentry,Complete,E2,P0
+OV-A5,Fix Dashboard Tab - adminGetDashboardStats,Operational Visibility,Track A - Fixes,Complete,E1,P0
+OV-A6,Users Tab - Initial population with pagination,Operational Visibility,Track A - Fixes,Complete,E2,P0
+OV-A7,Stacked Tabs UI - Replace horizontal scroll,Operational Visibility,Track A - Fixes,Complete,E1,P0
+OV-A8,Create user privilege types infrastructure,Operational Visibility,Track A - Privileges,Complete,E2,P0
+OV-A9,Grant privileges in Admin Users screen,Operational Visibility,Track A - Privileges,Complete,E1,P0
+OV-A10,Cleanup Old Sessions job,Operational Visibility,Track A - Jobs,Complete,E1,P0
+OV-A11,Cleanup Orphaned Storage Files job,Operational Visibility,Track A - Jobs,Complete,E1,P0
+OV-A12,Generate Usage Analytics job,Operational Visibility,Track A - Jobs,Complete,E1,P0
+OV-A13,Prune Security Events job,Operational Visibility,Track A - Jobs,Complete,E1,P0
+OV-A14,Health Check Notifications job,Operational Visibility,Track A - Jobs,Complete,E1,P0
+OV-A15,Password Reset Button in Users Tab,Operational Visibility,Track A - Firebase,Complete,E1,P1
+OV-A16,Storage Stats in Dashboard,Operational Visibility,Track A - Firebase,Complete,E1,P1
+OV-A17,Rate Limit Viewer in Dashboard,Operational Visibility,Track A - Firebase,Complete,E1,P1
+OV-A18,Collection Document Counts in Dashboard,Operational Visibility,Track A - Firebase,Complete,E1,P1
+OV-A19,User Analytics Tab,Operational Visibility,Track A-P2,Planned,E2,P1
+OV-A20,Job Results Detailed Viewer,Operational Visibility,Track A-P2,Planned,E1,P1
+OV-A21,Sentry Error to User Correlation,Operational Visibility,Track A-P2,Planned,E1,P1
+OV-A22,GCP Cloud Logging Query Builder,Operational Visibility,Track A-P2,Planned,E2,P1
+OV-A23,Error JSON Export with Timeframe Selection,Operational Visibility,Track A - Phase 3,Complete,E1,P1
+OV-A24,Auto-Refresh Tabs on Switch,Operational Visibility,Track A - Phase 3,Complete,E1,P1
+OV-A25,Soft-Delete Users with 30-Day Retention,Operational Visibility,Track A - Phase 3,Complete,E2,P1
+OV-B1,Create /dev route with auth gate,Operational Visibility,Track B - Dev Dashboard,Planned,E1,P1
+OV-B2,PERF-001 Lighthouse audit script,Operational Visibility,Track B - Dev Dashboard,Planned,E1,P1
+OV-B3,Lighthouse Dashboard Tab,Operational Visibility,Track B - Dev Dashboard,Planned,E1,P1
+OV-B4,Doc Sync Tab,Operational Visibility,Track B - Dev Dashboard,Planned,E0,P1
+OV-B5,Testing Integration Tab,Operational Visibility,Track B - Dev Dashboard,Planned,E2,P1
+OV-B6,Audit Threshold Monitoring,Operational Visibility,Track B - Dev Dashboard,Planned,E1,P1
+OV-B7,PERF-002 Lighthouse CI integration,Operational Visibility,Track B - Dev Dashboard,Planned,E1,P1
+OV-B8,PERF-003 Firestore history storage,Operational Visibility,Track B - Dev Dashboard,Planned,E1,P1
+OV-B9-B11,Error Session Override tabs,Operational Visibility,Track B - Dev Dashboard,Planned,E2,P2
+OV-C1,User Analytics Tab - Admin Panel,Operational Visibility,Track C - UI/UX,Planned,E2,P2
+OV-C2,Monitoring Consolidation,Operational Visibility,Track C - UI/UX,Planned,E2,P2
+OV-FE-1,ADMIN-FE-1 Move error knowledge base to Firestore,Operational Visibility,Future Enhancements,Planned,E2,P2
+OV-FE-2,ADMIN-FE-2 Query GCP Cloud Logging API directly,Operational Visibility,Future Enhancements,Planned,E3,P2
+OV-FE-3,SEC-LOG-1 Sensitive log persistence review,Operational Visibility,Future Enhancements,Planned,E2,P2
+OV-TEST-LOGS,Logs Tab UI Tests (24 tests),Operational Visibility,Track A-Test,Complete,E1,P0
+OV-TEST-PRIV-BE,Privileges Backend Tests (16 tests),Operational Visibility,Track A-Test,Partial,E1,P0
+OV-TEST-PRIV-FE,Privileges Frontend Tests (14 tests),Operational Visibility,Track A-Test,Partial,E1,P0
+OV-TEST-JOBS,Background Jobs Tests (30 tests),Operational Visibility,Track A-Test,Active,E2,P0
+OV-TEST-SEC,Security Testing (10 tests),Operational Visibility,Track A-Test,Partial,E1,P0
+OV-TEST-INT,Integration Tests (26 tests),Operational Visibility,Track A-Test,Complete,E1,P0
+OV-TEST-PERF,Performance Tests (5 tests),Operational Visibility,Track A-Test,Complete,E1,P0
+M15-CANON-0107,Missing security headers,M1.5,Audit Backlog,Planned,E0,P0
+M15-CANON-0108,No Firebase Storage rules,M1.5,Audit Backlog,Planned,E0,P0
+M15-CANON-0103,Fix docs:check false positives,M1.5,Audit Backlog,Planned,E1,P1
+M15-CANON-0104,Add scripts to session start,M1.5,Audit Backlog,Planned,E0,P1
+M15-CANON-0105,Add CANON validation to CI,M1.5,Audit Backlog,Planned,E1,P1
+M15-CANON-0106,Add npm commands for scripts,M1.5,Audit Backlog,Planned,E0,P2
+M15-LEGACY-001,Retrofit SSR-safe localStorage,M1.5,Audit Backlog,Planned,E1,P2
+M15-REFAC-001,Extract admin.ts/jobs.ts helpers,M1.5,Audit Backlog,Planned,E2,P2
+M15-CANON-0101,Missing Quick Start sections,M1.5,Audit Backlog,Planned,E2,P2
+M15-CANON-0102,Missing AI Instructions sections,M1.5,Audit Backlog,Planned,E1,P2
+M15-SAST,Research SAST Tool Integration,M1.5,Research,Planned,E2,P1
+M15-001,Settings page UI,M1.5,UX Features,Active,E2,P1
+M15-002,Profile management,M1.5,UX Features,Active,E2,P1
+M15-003,Clean date picker improvements,M1.5,UX Features,Active,E1,P1
+M15-004,Expanded Onboarding Wizard,M1.5,P0 - Critical UX,Planned,E2,P0
+M15-005,Sponsor Personalization System,M1.5,P0 - Critical UX,Planned,E2,P0
+M15-006,Stage-of-Recovery Selector,M1.5,P0 - Critical UX,Planned,E1,P0
+M15-007,User Documentation & Help System,M1.5,P1 - High Value,Planned,E2,P1
+M15-008,Sober Fun Ideas Generator,M1.5,P1 - High Value,Planned,E1,P1
+M15-009,Meetings Starting Soon Filter,M1.5,P1 - High Value,Planned,E1,P1
+M15-010,Too Tired Mode,M1.5,P2 - Nice to Have,Planned,E1,P2
+M15-011,Disguised App Icon + Name,M1.5,P2 - Nice to Have,Planned,E1,P2
+M15-EFF-001,Add npm run dev:offline Script,M1.5,Engineering,Planned,E0,P1
+M15-EFF-003,Add scripts/doctor.js Environment Validator,M1.5,Engineering,Planned,E0,P1
+M15-EFF-005,Cache npm ci in CI Workflow,M1.5,Engineering,Planned,E0,P1
+M15-AUTO-001,Wire Session-Start Scripts,M1.5,Process,Complete,E0,P1
+M15-AUTO-002,Add npm audit to Pre-Push,M1.5,Process,Planned,E0,P1
+M15-AUTO-003,Integrate Sentry with Logger,M1.5,Process,Planned,E1,P1
+M15-TEST-001,Add redactSensitiveUrl Tests,M1.5,Testing,Planned,E0,P1
+M15-TEST-002,Add Cloud Functions Validation Tests,M1.5,Testing,Planned,E1,P1
+M16-P4-1,adminGetSentryErrorSummary Cloud Function,M1.6,Phase 4 - Sentry,Planned,E1,P0
+M16-P4-2,Error summary card on Dashboard,M1.6,Phase 4 - Sentry,Planned,E1,P0
+M16-P4-3,Errors tab with recent errors,M1.6,Phase 4 - Sentry,Planned,E2,P0
+M16-P4-4,Deep links to Sentry for each error,M1.6,Phase 4 - Sentry,Planned,E1,P0
+M16-P4-5,User ID correlation (link to user detail),M1.6,Phase 4 - Sentry,Planned,E1,P1
+M16-P5-1,Recent security events display,M1.6,Phase 5 - GCP,Planned,E2,P1
+M16-P5-2,Deep link to GCP Cloud Logging Console,M1.6,Phase 5 - GCP,Planned,E1,P1
+M16-P5-3,Verify log retention configured (90+ days),M1.6,Phase 5 - GCP,Planned,E0,P1
+M16-P5-4,Log sink for long-term archival,M1.6,Phase 5 - GCP,Planned,E2,P2
+M16-P55-1,Display local resources in Growth tab,M1.6,Phase 5.5 - Resources,Planned,E1,P1
+M16-P55-2,Category filtering (8 categories),M1.6,Phase 5.5 - Resources,Planned,E1,P1
+M16-P55-3,Search/filter by resource name or services,M1.6,Phase 5.5 - Resources,Planned,E1,P1
+M16-P55-4,Map view with Nearby feature,M1.6,Phase 5.5 - Resources,Planned,E2,P1
+M16-P55-5,Resource detail cards,M1.6,Phase 5.5 - Resources,Planned,E1,P1
+M16-P55-6,Call and Get Directions quick actions,M1.6,Phase 5.5 - Resources,Planned,E1,P1
+M16-P55-7,Sort by distance,M1.6,Phase 5.5 - Resources,Planned,E1,P1
+M16-P55-8,Resources tab in Admin Panel,M1.6,Phase 5.5 - Resources,Planned,E1,P1
+M16-P55-9,CRUD operations for local resources,M1.6,Phase 5.5 - Resources,Planned,E2,P1
+M16-P6-1,Settings panel for Quick Actions customization,M1.6,Phase 6 - Quick Actions,Planned,E2,P1
+M16-P6-2,Action selection (choose which actions to show),M1.6,Phase 6 - Quick Actions,Planned,E1,P1
+M16-P6-3,Action ordering (drag-and-drop),M1.6,Phase 6 - Quick Actions,Planned,E2,P1
+M16-P6-4,Custom phone numbers (sponsor support contacts),M1.6,Phase 6 - Quick Actions,Planned,E1,P1
+M16-P6-5,Save preferences to user profile,M1.6,Phase 6 - Quick Actions,Planned,E1,P1
+M16-FUT-1,Batch Operations (multi-select users),M1.6,Future Enhancements,Planned,E2,P2
+M16-FUT-2,Dark Mode for Admin Panel,M1.6,Future Enhancements,Planned,E1,P2
+M2-MON-1,Performance monitoring (page load API latency),M2,Deferred Monitoring,Planned,E2,P2
+M2-MON-2,User analytics baseline (DAU retention),M2,Deferred Monitoring,Planned,E2,P2
+M2-MON-3,Alert thresholds defined,M2,Deferred Monitoring,Planned,E1,P2
+M2-INC-P1-1,GCP budget alerts with Slack/Discord,M2,Incident Response Phase 1,Planned,E1,P1
+M2-INC-P1-2,Log-based metrics for security events,M2,Incident Response Phase 1,Planned,E1,P1
+M2-INC-P1-3,Sentry alert rules for error rate spikes,M2,Incident Response Phase 1,Planned,E0,P1
+M2-INC-P2-1,Hot-loadable blocklist in Firestore,M2,Incident Response Phase 2,Planned,E2,P2
+M2-INC-P2-2,Emergency response scripts,M2,Incident Response Phase 2,Planned,E2,P2
+M2-INC-P2-3,Incident timeline extractor,M2,Incident Response Phase 2,Planned,E2,P2
+M2-INC-P2-4,Admin panel UI for blocklist,M2,Incident Response Phase 2,Planned,E1,P2
+M2-JOB-1,Refresh Cache/Indexes job,M2,Deferred Background Jobs,Planned,E1,P3
+M2-JOB-2,Database Backup Verification job,M2,Deferred Background Jobs,Planned,E1,P3
+M2-SC-PR3,PR 3: Major Code Quality (~220 issues),M2,SonarCloud Deferred,Planned,E3,P2
+M2-SC-PR4,PR 4: Medium/Minor Priority (~1095 issues),M2,SonarCloud Deferred,Planned,E3,P3
+M2-SC-PR5,PR 5: Security Hotspots (97 hotspots),M2,SonarCloud Deferred,Planned,E2,P2
+M2-TOOL-1,Prettier - Code formatting,M2,Developer Tooling,Complete,E0,P0
+M2-TOOL-2,ESLint - Code linting,M2,Developer Tooling,Complete,E0,P0
+M2-TOOL-3,madge - Circular dependency detection,M2,Developer Tooling,Complete,E0,P0
+M2-TOOL-4,Pattern Compliance - Anti-pattern detection,M2,Developer Tooling,Complete,E0,P0
+M2-TOOL-5,Delta Review Process,M2,Developer Tooling,Complete,E0,P0
+M2-TOOL-6,Cross-Platform Testing,M2,Developer Tooling,Planned,E2,P2
+M2-TOOL-7,knip - Unused export detection,M2,Developer Tooling,Planned,E1,P2
+M2-TOOL-8,ESLint Import Boundary Rules,M2,Developer Tooling,Planned,E1,P2
+M2-TOOL-9,Automated Metrics Dashboard,M2,Developer Tooling,Planned,E2,P2
+M2-DEP-1,recharts 2.x to 3.x migration,M2,Dependency Maintenance,Planned,E2,P2
+M2-DEP-2,tailwind-merge 2.x to 3.x migration,M2,Dependency Maintenance,Planned,E1,P2
+M2-DEP-3,react-resizable-panels 2.x to 4.x migration,M2,Dependency Maintenance,Planned,E1,P2
+M2-DEP-4,lucide-react update,M2,Dependency Maintenance,Planned,E0,P2
+M2-DEP-5,Add LICENSE file to project,M2,Dependency Maintenance,Planned,E0,P3
+M2-CTX-1,File-Size Filtering in pattern-check.js,M2,Context Optimization,Complete,E0,P1
+M2-CTX-2,Shared Path Validation Utility,M2,Context Optimization,Active,E0,P1
+M2-CTX-3,Hook Redundancy Analysis,M2,Context Optimization,Planned,E0,P1
+M2-CTX-4,Create codebase-explorer Agent,M2,Agent Infrastructure,Planned,E2,P1
+M2-CTX-5,Refactor code-reviewer Skill for Parallelization,M2,Agent Infrastructure,Planned,E2,P1
+M2-CTX-6,Create agent-router Agent,M2,Agent Infrastructure,Planned,E1,P2
+M2-CTX-7,Extract Shared Utilities,M2,Agent Infrastructure,Planned,E1,P2
+M2-CTX-8,Build documentation-enforcement Agent,M2,Advanced Optimization,Planned,E2,P3
+M2-CTX-9,Audit All 42 Skills for Parallelization,M2,Advanced Optimization,Planned,E3,P3
+M2-CTX-10,Create context-optimizer Agent,M2,Advanced Optimization,Planned,E2,P3
+M2-DD-1,Bundle Size Analysis Tab,M2,Dev Dashboard Future,Planned,E1,P1
+M2-DD-2,CI/CD Pipeline Status,M2,Dev Dashboard Future,Planned,E0,P1
+M2-DD-3,Deployment History,M2,Dev Dashboard Future,Planned,E0,P1
+M2-DD-4,Test Coverage Dashboard,M2,Dev Dashboard Future,Planned,E1,P2
+M2-DD-5,Dependency Security Tab,M2,Dev Dashboard Future,Planned,E0,P2
+M2-DD-6,API Latency Metrics,M2,Dev Dashboard Future,Planned,E1,P2
+M2-DD-7,Database Stats,M2,Dev Dashboard Future,Planned,E0,P2
+M2-DD-8,Health Check Endpoint,M2,Dev Dashboard Future,Planned,E0,P1
+M2-DD-9,Feature Flags Management,M2,Dev Dashboard Future,Planned,E2,P2
+M2-DD-10,Cost Monitoring,M2,Dev Dashboard Future,Planned,E1,P2
+M2-SEC-1,Manual reCAPTCHA Enterprise Implementation,M2,Security Hardening,Active,E2,P1
+M2-SEC-2,Re-enable Firebase App Check,M2,Security Hardening,Planned,E2,P0
+M2-DATA-1,Retry Geocoding for 50 Meeting Addresses,M2,Data Quality,Planned,E0,P2
+M2-DATA-2,Revert to next/font/google for Font Optimization,M2,Data Quality,Planned,E0,P3
+M2-CQ-1,Prettier Formatting (518 files),M2,Code Quality,Planned,E0,P2
+M2-CQ-2,Unused devDependencies removal,M2,Code Quality,Planned,E0,P3
+M2-CQ-3,Unlisted dependencies,M2,Code Quality,Planned,E0,P2
+M2-CQ-4,Duplicate exports fix,M2,Code Quality,Planned,E0,P3
+M2-CQ-5,Pattern Compliance - Dev Utility Scripts (79 violations),M2,Code Quality,Planned,E2,P4
+M2-EFF-006,Add Correlation IDs to Logger,M2,Observability,Planned,E1,P2
+M2-EFF-007,Add Network Status to Logs,M2,Observability,Planned,E1,P2
+M2-EFF-008,Create Smoke Test Script,M2,Observability,Planned,E1,P2
+M2-EFF-009,Add Bug Report GitHub Template,M2,Observability,Planned,E0,P2
+M2-EFF-010,Implement Offline Queue (CRITICAL),M2,Offline Support,Planned,E3,P0
+M2-EFF-011,Add Offline Tests,M2,Offline Support,Planned,E2,P2
+M2-EFF-012,Network Failure Error Handling Tests,M2,Offline Support,Planned,E1,P2
+M2-PERF-003,Historical Score Tracking,M2,Lighthouse,Planned,E1,P2
+M2-PERF-004,Performance Budgets,M2,Lighthouse,Planned,E0,P2
+M2-PERF-005,Development Dashboard Integration,M2,Lighthouse,Planned,E2,P2
+M2-PERF-006,PWA Audit Baseline,M2,Lighthouse,Planned,E0,P2
+M2-ARCH-1,Component library consolidation,M2,Architecture,Planned,E3,P2
+M2-ARCH-2,State management standardization,M2,Architecture,Planned,E3,P2
+M2-ARCH-3,API abstraction layer,M2,Architecture,Planned,E3,P2
+M3-F1,Meeting Proximity Detection,M3,F1,Planned,E3,P1
+M3-F2,Meeting Notes,M3,F2,Planned,E2,P1
+M3-F3,Calendar Integration,M3,F3,Planned,E3,P1
+M3-F4,Virtual Meeting Support,M3,F4,Planned,E2,P1
+M3-F5,Enhanced Meeting Data,M3,F5,Planned,E2,P1
+M3-F6,Celebrate Recovery Integration,M3,F6,Planned,E2,P1
+M4-001,Multiple sobriety dates,M4,Potential Features,Planned,E2,P2
+M4-002,Tone/language settings,M4,Potential Features,Planned,E1,P2
+M4-003,Craving countdown timer,M4,Potential Features,Planned,E1,P2
+M4-004,Auto-carry-forward task nudges,M4,Potential Features,Planned,E1,P2
+M4-HALT-P2-1,Pattern detection analytics,M4,HALT Phase 2,Planned,E2,P2
+M4-HALT-P2-2,Weekly/monthly HALT summaries,M4,HALT Phase 2,Planned,E2,P2
+M4-HALT-P2-3,Correlation analysis with mood,M4,HALT Phase 2,Planned,E2,P2
+M4-HALT-P3-1,Predictive alerts,M4,HALT Phase 3,Planned,E3,P2
+M4-HALT-P3-2,Context-aware suggestions,M4,HALT Phase 3,Planned,E3,P2
+M4-HALT-P3-3,Reminder system for HALT checks,M4,HALT Phase 3,Planned,E1,P2
+M4-HALT-P4-1,Anonymous aggregate insights,M4,HALT Phase 4,Planned,E2,P2
+M4-HALT-P4-2,AI-powered coping strategies,M4,HALT Phase 4,Planned,E3,P2
+T4.1,Tab-level PIN passcode,M4.5,F1 - Encryption,Planned,E2,P0
+T4.2,PBKDF2 key derivation,M4.5,F1 - Encryption,Planned,E1,P0
+T4.3,AES-256-GCM encryption engine,M4.5,F1 - Encryption,Planned,E2,P0
+T4.4,Encrypt ALL step work and inventories,M4.5,F1 - Encryption,Planned,E2,P0
+T4.6,Recovery key generation (12-word mnemonic),M4.5,F1 - Encryption,Planned,E1,P0
+T4.7,DEK/KEK key wrapping architecture,M4.5,F1 - Encryption,Planned,E2,P0
+T4.9,Auto-lock timeout,M4.5,F1 - Encryption,Planned,E1,P0
+F4.1,Offline Queue Trust Indicator,M4.5,F2 - Privacy,Planned,E1,P1
+F4.5,Guest Mode (sandboxed demo),M4.5,F2 - Privacy,Planned,E2,P1
+F4.7,Selective Sync,M4.5,F2 - Privacy,Planned,E2,P1
+F4.10,Nuclear Option (account deletion),M4.5,F2 - Privacy,Planned,E2,P1
+F4.12,No-Tracking Dashboard,M4.5,F2 - Privacy,Planned,E1,P1
+F4.14,Snapshot Protection,M4.5,F2 - Privacy,Planned,E1,P2
+F1.0,App-wide speech-to-text,M5,F0 - Input Infrastructure,Planned,E2,P1
+T1.2,Custom mutation queue (Dexie.js),M5,F1 - Offline Infrastructure,Planned,E2,P0
+T1.3,Sync worker with exponential retry,M5,F1 - Offline Infrastructure,Planned,E2,P0
+T1.4,IndexedDB setup via Dexie.js,M5,F1 - Offline Infrastructure,Planned,E2,P0
+T1.6,Storage quota management,M5,F1 - Offline Infrastructure,Planned,E1,P1
+T1.11,Multi-device conflict detection UI,M5,F1 - Offline Infrastructure,Planned,E2,P1
+T1.12,Conflict resolution strategies,M5,F1 - Offline Infrastructure,Planned,E2,P1
+T2.2,sharedPackets collection,M5,F1 - Offline Infrastructure,Planned,E2,P0
+T2.8,SyncState per device tracking,M5,F1 - Offline Infrastructure,Planned,E1,P1
+T2.12,Soft delete pattern for offline,M5,F1 - Offline Infrastructure,Planned,E1,P1
+T7.1,Feature flag for offline rollout,M5,F1 - Offline Infrastructure,Planned,E1,P1
+T7.2,PR strategy (types incremental),M5,F1 - Offline Infrastructure,Planned,E1,P1
+T7.8,Unit tests for conflict scenarios,M5,F1 - Offline Infrastructure,Planned,E2,P1
+T7.9,Firebase emulator integration tests,M5,F1 - Offline Infrastructure,Planned,E2,P1
+F1.2,Step Work Worksheets (Steps 2-9),M5,F2 - Step Work,Planned,E3,P1
+F1.2b,Step Work Worksheets (Steps 11-12),M5,F2 - Step Work,Planned,E2,P1
+M5-STEP-1,10th Step Inventory Tool,M5,F2 - Step Work,Planned,E2,P1
+M5-STEP-2,Inventory Templates,M5,F2 - Step Work,Planned,E2,P1
+F1.3,Interactive step tools,M5,F3 - Step Enhancements,Planned,E2,P1
+F5.1,Tag as Inventory,M5,F3 - Step Enhancements,Planned,E1,P1
+M5-AMENDS,Amends Tracker,M5,F3 - Step Enhancements,Planned,E2,P1
+F1.4,Im Stuck button,M5,F4 - Step Context,Planned,E1,P1
+M5-PATTERN,Pattern Recognition,M5,F4 - Step Context,Planned,E3,P2
+F5.2,Pattern Matcher (bundled),M6,F1 - Journaling,Planned,E3,P1
+F5.4,Gratitude Mosaic,M6,F1 - Journaling,Planned,E2,P1
+F5.5,Time Capsule (On This Day),M6,F1 - Journaling,Planned,E2,P1
+F5.6,The Wave (Urge Log),M6,F1 - Journaling,Planned,E2,P1
+F5.9,Rant Room (audio journal),M6,F1 - Journaling,Planned,E2,P1
+F5.10,Unsent Letter,M6,F1 - Journaling,Planned,E2,P1
+F5.11,Dynamic Prompts,M6,F1 - Journaling,Planned,E2,P1
+F5.12,Meeting Takeaways,M6,F1 - Journaling,Planned,E1,P1
+F5.14,Brain Dump,M6,F1 - Journaling,Planned,E1,P1
+F9.1,One Action,M6,F1 - Journaling,Planned,E2,P1
+F9.2,Bookends (AM/PM routine),M6,F1 - Journaling,Planned,E2,P1
+F9.6,Pause Protocol,M6,F1 - Journaling,Planned,E1,P1
+F9.7,Habit Stacker,M6,F1 - Journaling,Planned,E2,P1
+F9.10,Sleep Hygiene (Wind-Down),M6,F1 - Journaling,Planned,E2,P1
+F7.6,30-Day Retrospective,M6,F1 - Journaling,Planned,E2,P1
+F6.5,Crisis Decision Tree,M6,F1 - Journaling,Planned,E2,P0
+M6-PRAYER,Prayer Library,M6,F1 - Journaling,Planned,E1,P1
+F10.1,The Lifeline (emergency),M6,F2 - Safety,Planned,E2,P0
+F10.2,The Guardrails (trauma gates),M6,F2 - Safety,Planned,E2,P0
+F10.3,Harm Reduction Locker,M6,F2 - Safety,Planned,E2,P0
+F10.4,Compassionate U-Turn (relapse),M6,F2 - Safety,Planned,E2,P1
+F12.10,Intake Interview,M6,F3 - Onboarding,Planned,E2,P1
+F12.11,Slow Rollout,M6,F3 - Onboarding,Planned,E1,P1
+M6-MED-1,Daily Meditation,M6,Existing Features,Planned,E2,P1
+M6-MED-2,Guided Meditation,M6,Existing Features,Planned,E2,P1
+M6-LICENSE,Content Licensing (AA/NA permissions),M6,Dependencies,Planned,E1,P0
+T2.4,Sponsor contact storage,M7,F1 - Sponsor Connection,Planned,E1,P1
+F2.1,Sponsor Export + Redaction,M7,F1 - Sponsor Connection,Planned,E2,P1
+F2.2,Hard Conversation Scripts,M7,F1 - Sponsor Connection,Planned,E1,P1
+F2.4,Next Call Agenda,M7,F1 - Sponsor Connection,Planned,E1,P1
+F2.5,Circle of Trust,M7,F1 - Sponsor Connection,Planned,E2,P1
+F2.6,Sponsor Vetting Guide,M7,F1 - Sponsor Connection,Planned,E1,P1
+F2.8,Relapse Autopsy Worksheet,M7,F1 - Sponsor Connection,Planned,E2,P1
+F2.9,Shared Commitments,M7,F1 - Sponsor Connection,Planned,E2,P1
+F2.10,Sponsor Prompt Library,M7,F1 - Sponsor Connection,Planned,E1,P1
+T9.9,Sponsor link UX (QR pairing),M7,F1 - Sponsor Connection,Planned,E2,P1
+M7-SPONSOR-1,Sponsor contact quick-dial,M7,F1 - Sponsor Connection,Planned,E1,P1
+M7-SPONSOR-2,Sponsor dashboard,M7,F1 - Sponsor Connection,Planned,E2,P1
+F5.8,Service Points,M7,F2 - Service,Planned,E2,P1
+F9.4,Compassionate Milestones,M7,F3 - Engagement,Planned,E2,P1
+F9.5,Share Pocket,M7,F3 - Engagement,Planned,E1,P1
+F7.1,Recovery Resume,M7,F4 - Exports,Planned,E2,P1
+F7.2,Step Packets,M7,F4 - Exports,Planned,E2,P1
+F7.4,Emergency Wallet Card,M7,F4 - Exports,Planned,E1,P1
+F7.5,Full Archive,M7,F4 - Exports,Planned,E2,P1
+F7.7,Clinical Hand-Off,M7,F4 - Exports,Planned,E2,P1
+F7.8,Amends Ledger,M7,F4 - Exports,Planned,E2,P1
+F7.10,Service Log,M7,F4 - Exports,Planned,E1,P1
+F7.11,Incident Report,M7,F4 - Exports,Planned,E2,P1
+T5.2,Client-side only PDF,M7,F4 - Exports,Planned,E2,P1
+T5.3,EXIF stripping,M7,F4 - Exports,Planned,E1,P1
+T5.5,Preview screen before generate,M7,F4 - Exports,Planned,E1,P1
+T5.6,Sponsor packet builder UI,M7,F4 - Exports,Planned,E2,P1
+T5.7,Watermark option,M7,F4 - Exports,Planned,E1,P1
+T5.8,Web Share API,M7,F4 - Exports,Planned,E1,P1
+F3.2,Safe Spaces Map,M7,F5 - Nashville Advantage,Planned,E2,P1
+F3.3,My Sober Circuit,M7,F5 - Nashville Advantage,Planned,E2,P1
+F3.4,Meeting After Meeting,M7,F5 - Nashville Advantage,Planned,E1,P1
+F3.5,Broadway Escape Plan,M7,F5 - Nashville Advantage,Planned,E2,P1
+F3.6,Clubhouse Status Hub,M7,F5 - Nashville Advantage,Planned,E2,P1
+F3.7,First 72 Hours,M7,F5 - Nashville Advantage,Planned,E2,P1
+F3.8,Sober-Friendly Events,M7,F5 - Nashville Advantage,Planned,E2,P1
+M7-NASH,Nashville meeting proximity,M7,F5 - Nashville Advantage,Planned,E2,P1
+F6.2,Am I Doing This Right?,M7,F6 - Knowledge Base,Planned,E1,P1
+F6.3,Smart Glossary,M7,F6 - Knowledge Base,Planned,E2,P1
+F6.4,Script Lab,M7,F6 - Knowledge Base,Planned,E2,P1
+F6.6,Daily Principle Deck,M7,F6 - Knowledge Base,Planned,E1,P1
+F6.7,Anatomy of a Meeting,M7,F6 - Knowledge Base,Planned,E2,P1
+F6.8,Normie Translator,M7,F6 - Knowledge Base,Planned,E1,P1
+F6.9,Service Menu,M7,F6 - Knowledge Base,Planned,E1,P1
+F6.10,Fellowship Compass,M7,F6 - Knowledge Base,Planned,E2,P1
+F6.11,Traditions in Real Life,M7,F6 - Knowledge Base,Planned,E2,P1
+F6.12,Readiness Checkers,M7,F6 - Knowledge Base,Planned,E1,P1
+T9.5,FlexSearch,M7,F6 - Knowledge Base,Planned,E2,P1
+M7-STEPS,Plain English Steps,M7,F6 - Knowledge Base,Planned,E1,P1
+M7-LIB,Recovery Library,M7,F6 - Knowledge Base,Planned,E2,P1
+F10.5,The Canary,M7,F7 - Safety,Planned,E2,P1
+F10.6,Medical ID,M7,F7 - Safety,Planned,E1,P1
+F10.7,Never Use Alone,M7,F7 - Safety,Planned,E1,P1
+F10.8,Exit Strategy Scripts,M7,F7 - Safety,Planned,E2,P1
+F10.9,Detox Navigator,M7,F7 - Safety,Planned,E2,P1
+F8.1,Rosetta Stone,M7,F8 - Personalization,Planned,E2,P1
+F8.4,Nudge Engine,M7,F8 - Personalization,Planned,E2,P1
+F8.5,Name Your Power,M7,F8 - Personalization,Planned,E1,P1
+F8.6,The Focus,M7,F8 - Personalization,Planned,E2,P1
+F8.7,Notebook Aesthetics,M7,F8 - Personalization,Planned,E2,P1
+F8.8,The Why Anchor,M7,F8 - Personalization,Planned,E1,P1
+F8.9,Accessibility Plus,M7,F8 - Personalization,Planned,E2,P1
+F8.10,Red Line List,M7,F8 - Personalization,Planned,E2,P1
+F8.11,Sponsor Link Status,M7,F8 - Personalization,Planned,E1,P1
+M7-PHASE,Journey Phase,M7,F8 - Personalization,Planned,E1,P1
+M7-DASH,Dashboard Builder,M7,F8 - Personalization,Planned,E2,P1
+T6.3,Action event taxonomy,M7,F9 - Analytics,Planned,E1,P1
+T6.4,Word count buckets,M7,F9 - Analytics,Planned,E1,P1
+T6.5,Sync performance tracking,M7,F9 - Analytics,Planned,E1,P1
+T6.8,90-day retention,M7,F9 - Analytics,Planned,E1,P1
+T9.2,Data retention policy,M7,F9 - Analytics,Planned,E2,P1
+T9.12,Backup UX,M7,F9 - Analytics,Planned,E1,P1
+M7-ANLY,Analytics toggle,M7,F9 - Analytics,Planned,E1,P1
+F11.6,Scroll of Life,M7,F10 - Visionary,Planned,E3,P2
+F11.8,90-in-90 Passport,M7,F10 - Visionary,Planned,E2,P2
+F12.1,Savings Ticker,M7,F11 - Financial,Planned,E2,P1
+F12.2,Wreckage List,M7,F11 - Financial,Planned,E2,P1
+F12.7,Sponsee CRM,M7,F11 - Financial,Planned,E2,P1
+F12.8,Speakers Outline,M7,F11 - Financial,Planned,E2,P1
+M8-F1,Speaker Library,M8,F1,Planned,E3,P2
+M8-F2,Personal Recording,M8,F2,Planned,E3,P2
+M8-F3,Audio Player,M8,F3,Planned,E2,P2
+T8.1,Capacitor wrapper (CRITICAL),M9,F1 - Native Security,Planned,E3,P0
+T8.4,Native biometrics (Face ID/Touch ID),M9,F1 - Native Security,Planned,E2,P0
+T8.5,Native secure storage,M9,F1 - Native Security,Planned,E2,P0
+T4.10,Biometric unlock,M9,F1 - Deferred Native,Planned,E2,P1
+F4.4,Stealth Mode,M9,F1 - Deferred Native,Planned,E2,P1
+F5.4b,Gratitude widget/shake,M9,F1 - Deferred Native,Planned,E2,P1
+F5.9b,Voice tone analysis,M9,F1 - Deferred Native,Planned,E3,P2
+F9.9,Nashville Sound,M9,F1 - Deferred Native,Planned,E2,P2
+F9.11,Drive Time Companion,M9,F1 - Deferred Native,Planned,E3,P2
+F12.4,Stress Monitor,M9,F2 - Native Health,Planned,E2,P2
+F12.5,Sleep Truth,M9,F2 - Native Health,Planned,E2,P2
+F12.6,Movement as Medicine,M9,F2 - Native Health,Planned,E2,P2
+F11.1,SoNash Beacon,M9,F3 - Native Engagement,Planned,E3,P2
+T9.1,Push notifications,M9,F3 - Native Engagement,Planned,E2,P1
+M9-TBD,Additional native engagement features,M9,F3 - Native Engagement,Planned,E3,P3
+M10-MODEL-1,Premium Features (Ethical Freemium),M10,Viable Options,Research,E3,P2
+M10-MODEL-2,Donation Model,M10,Viable Options,Research,E2,P2
+M10-MODEL-3,B2B Licensing,M10,Viable Options,Research,E3,P2
+M10-MODEL-4,Hybrid Approach (Recommended),M10,Viable Options,Research,E3,P1
+F4.11,Shoulder Surf Blur,M10,Deferred,Research,E2,P3
+T3.14,Queue compaction,M10,Deferred,Research,E2,P3
+F11.2,Reclaiming City map,M10,Deferred,Research,E3,P3
+F11.3,Digital Coffee Table,M10,Deferred,Research,E3,P3
+F11.4,Warm Handoff B2B,M10,Deferred,Research,E3,P3
+F11.5,The Mirror AI companion,M10,Deferred,Research,E3,P3
+F11.7,Family Bridge,M10,Deferred,Research,E3,P3
+F11.9,Service Exchange,M10,Deferred,Research,E3,P3
+DW-001,Split-screen views,Desktop/Web,Multi-Panel Layout,Planned,E2,P2
+DW-002,Dashboard mode (4-panel grid),Desktop/Web,Multi-Panel Layout,Planned,E2,P2
+DW-003,Resizable panels,Desktop/Web,Multi-Panel Layout,Planned,E2,P2
+DW-004,Keyboard shortcuts (basic),Desktop/Web,Multi-Panel Layout,Planned,E1,P2
+DW-005,Mood heat map (calendar view),Desktop/Web,Advanced Visualizations,Planned,E2,P2
+DW-006,Correlation matrix,Desktop/Web,Advanced Visualizations,Planned,E3,P2
+DW-007,Trend lines (multiple metrics),Desktop/Web,Advanced Visualizations,Planned,E2,P2
+DW-008,Word clouds from journal,Desktop/Web,Advanced Visualizations,Planned,E2,P2
+DW-009,Export charts as PNG/SVG,Desktop/Web,Advanced Visualizations,Planned,E1,P2
+DW-010,J/K Navigate timeline,Desktop/Web,Keyboard Shortcuts,Planned,E1,P2
+DW-011,Vim-style navigation,Desktop/Web,Keyboard Shortcuts,Planned,E2,P3
+DW-012,CSV/JSON/PDF export,Desktop/Web,Export & Backup,Planned,E2,P2
+DW-013,Automated cloud backup,Desktop/Web,Export & Backup,Planned,E2,P2
+DW-014,Sponsor report generation,Desktop/Web,Export & Backup,Planned,E2,P2
+DW-015,Full-text search,Desktop/Web,Search & Filter,Planned,E2,P1
+DW-016,Advanced filters,Desktop/Web,Search & Filter,Planned,E2,P2
+DW-017,Admin Panel mobile-friendly layout,Desktop/Web,Mobile Responsiveness,Planned,E2,P2
+DW-018,On-call admin scenarios support,Desktop/Web,Mobile Responsiveness,Planned,E2,P2
+PT-001,Session Activity Monitor,Process,Development Dashboard,Planned,E1,P1
+PT-002,Error & Tracing Viewer,Process,Development Dashboard,Planned,E2,P1
+PT-003,Override Audit Trail,Process,Development Dashboard,Planned,E1,P2
+PT-004,Document Sync Status,Process,Development Dashboard,Planned,E1,P1
+PT-005,Cross-Document Dependency Map,Process,Cross-Document,Complete,E0,P1
+PT-006,Pre-Commit Hook Integration,Process,Doc Automation,Planned,E1,P3
+PT-007,Pre-Push Hook Integration,Process,Doc Automation,Planned,E1,P2
+PT-008,CI/CD Integration for doc sync,Process,Doc Automation,Planned,E1,P1
+FD-001,Recovery Library,Feature Decisions,Decisions,Approved,E2,P0
+FD-002,HALT Check,Feature Decisions,Decisions,Approved,E1,P1
+FD-003,God Box,Feature Decisions,Decisions,Deferred,E1,P3
+FD-004,Complacency Detector,Feature Decisions,Decisions,Needs Review,E2,P2
+FD-005,Tone Settings,Feature Decisions,Decisions,Needs Review,E1,P1
+FD-006,Multiple Sobriety Dates,Feature Decisions,Decisions,Needs Review,E2,P2
+FD-007,Principle-Based Badges,Feature Decisions,Decisions,Approved,E2,P2

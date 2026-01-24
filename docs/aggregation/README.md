@@ -7,11 +7,15 @@ actionable items for ROADMAP.md integration.
 
 ## Contents
 
-| Document                                           | Description                                 |
-| -------------------------------------------------- | ------------------------------------------- |
-| [MASTER_ISSUE_LIST.md](./MASTER_ISSUE_LIST.md)     | 283 findings from 6-model multi-AI audits   |
-| [ROADMAP_INTEGRATION.md](./ROADMAP_INTEGRATION.md) | Prioritized backlog items ready for ROADMAP |
-| [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) | Execution plan for aggregated findings      |
+| Document                                           | Description                               | Status       |
+| -------------------------------------------------- | ----------------------------------------- | ------------ |
+| [MASTER_ISSUE_LIST.md](./MASTER_ISSUE_LIST.md)     | 283 findings from 6-model multi-AI audits | Active       |
+| [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) | Execution plan for aggregated findings    | Active       |
+| ROADMAP_INTEGRATION.md                             | Prioritized backlog (was ROADMAP v2.6)    | **Archived** |
+
+> **Note:** ROADMAP_INTEGRATION.md was archived (2026-01-24) as ROADMAP.md has
+> been reorganized to v3.9 with the full expansion integration. See
+> [archived version](../archive/2026-jan-deprecated/ROADMAP_INTEGRATION.md).
 
 ---
 
