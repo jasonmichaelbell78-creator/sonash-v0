@@ -49,26 +49,37 @@ npm run learning:detailed
 
 ## Current Analysis
 
-**Review Range:** #180 - #200 (21 reviews) **Analysis Date:** 2026-01-24
+**Review Range:** #180 - #201 (22 reviews) **Analysis Date:** 2026-01-24
 
 ### Key Metrics
 
 | Metric                    | Value                |
 | ------------------------- | -------------------- |
 | Automation Coverage       | 100.0%               |
-| Learning Effectiveness    | 100%                 |
-| Pattern Extraction Rate   | 2.29 patterns/review |
+| Learning Effectiveness    | 50.0%                |
+| Pattern Extraction Rate   | 2.68 patterns/review |
 | Consolidation Health      | Needs Attention      |
 | Total Documented Patterns | 5                    |
 | Automated Patterns        | 30                   |
 
 ### Top 5 Recommended Actions
 
+1. **[Learning]** Address recurring "Test Mocking \(httpsCallable, not
+   Firestore\)" issue
+   - Pattern documented in \#185 but appeared 6 more times
+   - Action: Review documentation clarity, consider automation
+
+2. **[Training]** Create guide for "Test Mocking \(httpsCallable, not
+   Firestore\)"
+   - Recurring 6 times after documentation
+   - Action: Create
+     docs/agent_docs/TEST_MOCKING_HTTPSCALLABLE_NOT_FIRESTORE_GUIDE.md
+
 ---
 
 ## Analysis History
 
-- 2026-01-24: Analyzed 21 reviews (#180 - #200)
+- 2026-01-24: Analyzed 22 reviews (#180 - #201)
 
 ---
 

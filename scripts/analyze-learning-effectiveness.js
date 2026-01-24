@@ -18,6 +18,7 @@
  *   npm run learning:analyze -- --category automation  # Single category
  *   npm run learning:analyze -- --since-review 150     # Specific range
  *   npm run learning:analyze -- --auto                 # Non-interactive (for hooks)
+ *   npm run learning:analyze -- --file path/to/file   # Analyze specific file (e.g. archive)
  *
  * Exit codes: 0 = success, 1 = errors found, 2 = fatal error
  */
@@ -116,6 +117,7 @@ class LearningEffectivenessAnalyzer {
       auto: options.auto || false,
       detailed: options.detailed || false,
       outputFile: options.outputFile || null,
+      inputFile: options.inputFile || null,
     };
 
     this.reviews = [];
@@ -168,19 +170,22 @@ class LearningEffectivenessAnalyzer {
   }
 
   /**
-   * Load and parse reviews from AI_REVIEW_LEARNINGS_LOG.md
+   * Load and parse reviews from AI_REVIEW_LEARNINGS_LOG.md or custom file
    */
   async loadReviews() {
-    if (!existsSync(LEARNINGS_LOG)) {
-      // Review #200: Qodo - Don't expose full path in error message
-      throw new Error("Learnings log not found: docs/AI_REVIEW_LEARNINGS_LOG.md");
+    // Support --file option for analyzing archives or custom files
+    const inputFile = this.options.inputFile ? join(ROOT, this.options.inputFile) : LEARNINGS_LOG;
+
+    if (!existsSync(inputFile)) {
+      const displayPath = this.options.inputFile || "docs/AI_REVIEW_LEARNINGS_LOG.md";
+      throw new Error(`Input file not found: ${displayPath}`);
     }
 
     let content;
     try {
-      content = readFileSync(LEARNINGS_LOG, "utf-8");
+      content = readFileSync(inputFile, "utf-8");
     } catch (error) {
-      throw new Error(`Failed to read learnings log: ${sanitizeError(error)}`);
+      throw new Error(`Failed to read input file: ${sanitizeError(error)}`);
     }
 
     const lines = content.split("\n");
@@ -1529,6 +1534,7 @@ function parseArgs(args) {
     auto: false,
     detailed: false,
     outputFile: null,
+    inputFile: null,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -1574,6 +1580,14 @@ function parseArgs(args) {
         throw new Error('Missing value for --output (e.g. "--output path/to/file.json")');
       }
       options.outputFile = next;
+      i++;
+    } else if (arg === "--file") {
+      // Support analyzing archive files or custom input
+      const next = args[i + 1];
+      if (!next || next.startsWith("--")) {
+        throw new Error('Missing value for --file (e.g. "--file docs/archive/REVIEWS_180-201.md")');
+      }
+      options.inputFile = next;
       i++;
     }
   }
