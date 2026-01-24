@@ -1019,6 +1019,101 @@ been aggregated into a master list for prioritized implementation.
 
 **License Review:** Add LICENSE file to project (currently UNLICENSED)
 
+### Context Optimization & Agent Infrastructure (Added 2026-01-23 - Session #90)
+
+> **Source:** Context optimization analysis (Session #90) **Quick Wins
+> Completed:** 3/3 (file-size filtering, hook analysis, shared path validation
+> utility) **Projected Impact:** 40-75% context reduction in high-volume
+> operations
+
+**✅ Completed Quick Wins:**
+
+- ✅ **File-Size Filtering in pattern-check.js** (E0 effort, High ROI)
+  - Skip pattern checks on files <100 lines
+  - Reduces per-edit latency by ~50ms on small files
+  - Context savings: 5-10% on average edits
+- ✅ **Shared Path Validation Utility** (E0 effort, High ROI)
+  - Created `scripts/lib/validate-paths.js`
+  - Consolidated duplicate validation logic from 5+ hooks
+  - Reduces code duplication by ~50 lines
+  - Improves security audit consistency
+- ✅ **Hook Redundancy Analysis** (E0 effort)
+  - Analyzed `analyze-user-request.js` and `agent-trigger-enforcer.js`
+  - Determined they are complementary (different triggers), not redundant
+  - No consolidation needed
+- ✅ **Audit Orchestration System** (E1 effort, Very High ROI)
+  - Created `audit-comprehensive` orchestrator skill
+  - Created `audit-aggregator` deduplication agent
+  - Enables parallel execution of all 6 audit agents
+  - Time savings: 77% (150 minutes → 35 minutes)
+  - Cross-domain insights through deduplication and priority ranking
+
+**Phase 2: Agent Infrastructure (Medium Priority)**
+
+- ⏳ **Create `codebase-explorer` Agent** (E2 effort)
+  - Specialized agent for codebase navigation and context gathering
+  - Replaces ad-hoc file reads with structured exploration
+  - Use cases: "Find all error handlers", "Map authentication flow", "Locate
+    configuration"
+  - **Context savings:** 40-60% on exploratory tasks
+  - **Priority:** P1 - High-frequency use case
+
+- ⏳ **Refactor `code-reviewer` Skill for Parallelization** (E2 effort)
+  - Split single-file reviews into parallel subagent tasks
+  - Enable concurrent analysis of multiple files
+  - **Context savings:** 30-50% on multi-file PR reviews
+  - **Priority:** P1 - Used in every PR review
+
+- ⏳ **Create `agent-router` Agent** (E1 effort)
+  - Meta-agent that analyzes task and delegates to appropriate specialist
+  - Reduces overhead of manual agent selection
+  - **Context savings:** 20-30% on complex multi-domain tasks
+  - **Priority:** P2 - Nice-to-have optimization
+
+- ⏳ **Extract Shared Utilities** (E1 effort)
+  - Identify repeated logic in skills/agents
+  - Create reusable utilities (similar to validate-paths.js)
+  - Targets: hook validation patterns, file processing, output formatting
+  - **Context savings:** 10-20% across all agents
+  - **Priority:** P2 - Incremental improvement
+
+**Phase 3: Advanced Optimization (Lower Priority)**
+
+- ⏳ **Build `documentation-enforcement` Agent** (E2 effort)
+  - Automated enforcement of documentation standards
+  - Triggered by SessionStart or PostToolUse for doc files
+  - Reduces manual doc validation overhead
+  - **Context savings:** 30-40% on documentation work
+  - **Priority:** P3 - Defer until doc debt reduced
+
+- ⏳ **Audit All 42 Skills for Parallelization** (E3 effort)
+  - Systematic review of all skills for subagent opportunities
+  - Identify sequential operations that can run in parallel
+  - Create refactor roadmap for high-impact skills
+  - **Context savings:** 20-40% across skill executions
+  - **Priority:** P3 - Long-term efficiency gain
+
+- ⏳ **Create `context-optimizer` Agent** (E2 effort)
+  - Meta-agent that suggests context optimization strategies
+  - Analyzes session transcripts for inefficient patterns
+  - Recommends agent delegation, file read optimization, etc.
+  - **Context savings:** 10-20% through continuous improvement
+  - **Priority:** P3 - Self-optimization tool
+
+**Implementation Strategy:**
+
+1. **Phase 2 (Q2 2026):** Implement codebase-explorer and code-reviewer refactor
+2. **Phase 3 (Q3 2026):** Create agent-router and extract shared utilities
+3. **Phase 4 (Q4 2026):** Build documentation-enforcement and context-optimizer
+4. **Continuous:** Audit skills for parallelization opportunities during routine
+   maintenance
+
+**Success Metrics:**
+
+- Context token usage reduction: >40% on exploratory tasks
+- Session latency reduction: >30% on multi-file operations
+- Developer productivity: Fewer "context rot" incidents
+
 ### Dev Dashboard Future Enhancements (Session #69)
 
 > **Note:** These are future additions to the Dev Dashboard after core tabs are

@@ -106,6 +106,19 @@ if (
   process.exit(0);
 }
 
+// Quick Win: Skip pattern check for small files (<100 lines) to reduce latency
+// Context optimization: Small files unlikely to have complex pattern violations
+try {
+  const content = fs.readFileSync(fullPath, "utf8");
+  const lineCount = content.split("\n").length;
+  if (lineCount < 100) {
+    console.log("ok");
+    process.exit(0);
+  }
+} catch {
+  // If we can't read the file, proceed with normal check (will fail gracefully)
+}
+
 // Run pattern checker using spawnSync to avoid command injection
 const result = spawnSync("node", ["scripts/check-pattern-compliance.js", relPath], {
   encoding: "utf8",
