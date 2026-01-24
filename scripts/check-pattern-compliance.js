@@ -473,6 +473,19 @@ const ANTI_PATTERNS = [
     pathExclude:
       /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness)\.js$/,
   },
+
+  // Test patterns from Consolidation #14 (Reviews #180-201)
+  {
+    id: "test-mock-firestore-directly",
+    // Catch vi.mock or jest.mock of firebase/firestore in test files
+    // App uses Cloud Functions for writes - mock httpsCallable instead
+    pattern: /(?:vi|jest)\.mock\s*\(\s*['"`]firebase\/firestore['"`]/g,
+    message:
+      "Mocking firebase/firestore directly - app uses Cloud Functions (httpsCallable) for writes",
+    fix: 'Mock firebase/functions instead: vi.mock("firebase/functions", () => ({ httpsCallable: vi.fn(() => vi.fn().mockResolvedValue({ data: {} })) }))',
+    review: "#185, #180-201 (recurring 6x)",
+    fileTypes: [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx", ".test.js", ".test.jsx"],
+  },
 ];
 
 /**

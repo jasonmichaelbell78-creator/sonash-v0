@@ -49,7 +49,7 @@ npm run learning:detailed
 
 ## Current Analysis
 
-**Review Range:** #180 - #201 (22 reviews) **Analysis Date:** 2026-01-24
+**Review Range:** #1 - #201 (107 reviews) **Analysis Date:** 2026-01-24
 
 ### Key Metrics
 
@@ -57,10 +57,10 @@ npm run learning:detailed
 | ------------------------- | -------------------- |
 | Automation Coverage       | 100.0%               |
 | Learning Effectiveness    | 50.0%                |
-| Pattern Extraction Rate   | 2.68 patterns/review |
+| Pattern Extraction Rate   | 2.35 patterns/review |
 | Consolidation Health      | Needs Attention      |
 | Total Documented Patterns | 5                    |
-| Automated Patterns        | 30                   |
+| Automated Patterns        | 31                   |
 
 ### Top 5 Recommended Actions
 
@@ -79,7 +79,7 @@ npm run learning:detailed
 
 ## Analysis History
 
-- 2026-01-24: Analyzed 22 reviews (#180 - #201)
+- 2026-01-24: Analyzed 107 reviews (#1 - #201)
 
 ---
 

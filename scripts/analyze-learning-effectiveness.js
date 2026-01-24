@@ -19,6 +19,7 @@
  *   npm run learning:analyze -- --since-review 150     # Specific range
  *   npm run learning:analyze -- --auto                 # Non-interactive (for hooks)
  *   npm run learning:analyze -- --file path/to/file   # Analyze specific file (e.g. archive)
+ *   npm run learning:analyze -- --all-archives        # Analyze ALL archive files combined
  *
  * Exit codes: 0 = success, 1 = errors found, 2 = fatal error
  */
@@ -118,6 +119,7 @@ class LearningEffectivenessAnalyzer {
       detailed: options.detailed || false,
       outputFile: options.outputFile || null,
       inputFile: options.inputFile || null,
+      allArchives: options.allArchives || false,
     };
 
     this.reviews = [];
@@ -170,22 +172,53 @@ class LearningEffectivenessAnalyzer {
   }
 
   /**
-   * Load and parse reviews from AI_REVIEW_LEARNINGS_LOG.md or custom file
+   * Load and parse reviews from AI_REVIEW_LEARNINGS_LOG.md, custom file, or all archives
    */
   async loadReviews() {
-    // Support --file option for analyzing archives or custom files
-    const inputFile = this.options.inputFile ? join(ROOT, this.options.inputFile) : LEARNINGS_LOG;
+    let content = "";
 
-    if (!existsSync(inputFile)) {
-      const displayPath = this.options.inputFile || "docs/AI_REVIEW_LEARNINGS_LOG.md";
-      throw new Error(`Input file not found: ${displayPath}`);
-    }
+    if (this.options.allArchives) {
+      // Scan all archive files in docs/archive/
+      const archiveDir = join(ROOT, "docs", "archive");
+      if (!existsSync(archiveDir)) {
+        throw new Error("Archive directory not found: docs/archive/");
+      }
 
-    let content;
-    try {
-      content = readFileSync(inputFile, "utf-8");
-    } catch (error) {
-      throw new Error(`Failed to read input file: ${sanitizeError(error)}`);
+      const { readdirSync } = require("node:fs");
+      const archiveFiles = readdirSync(archiveDir)
+        .filter((f) => f.startsWith("REVIEWS_") && f.endsWith(".md"))
+        .sort(); // Sort for consistent ordering
+
+      if (archiveFiles.length === 0) {
+        throw new Error("No REVIEWS_*.md files found in docs/archive/");
+      }
+
+      console.log(`📂 Scanning ${archiveFiles.length} archive files...`);
+
+      for (const file of archiveFiles) {
+        const filePath = join(archiveDir, file);
+        try {
+          const fileContent = readFileSync(filePath, "utf-8");
+          content += "\n" + fileContent;
+          console.log(`   ✓ ${file}`);
+        } catch (error) {
+          console.warn(`   ⚠ Failed to read ${file}: ${sanitizeError(error)}`);
+        }
+      }
+    } else {
+      // Single file mode (--file or default)
+      const inputFile = this.options.inputFile ? join(ROOT, this.options.inputFile) : LEARNINGS_LOG;
+
+      if (!existsSync(inputFile)) {
+        const displayPath = this.options.inputFile || "docs/AI_REVIEW_LEARNINGS_LOG.md";
+        throw new Error(`Input file not found: ${displayPath}`);
+      }
+
+      try {
+        content = readFileSync(inputFile, "utf-8");
+      } catch (error) {
+        throw new Error(`Failed to read input file: ${sanitizeError(error)}`);
+      }
     }
 
     const lines = content.split("\n");
@@ -1535,6 +1568,7 @@ function parseArgs(args) {
     detailed: false,
     outputFile: null,
     inputFile: null,
+    allArchives: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -1589,6 +1623,9 @@ function parseArgs(args) {
       }
       options.inputFile = next;
       i++;
+    } else if (arg === "--all-archives") {
+      // Analyze all archive files combined
+      options.allArchives = true;
     }
   }
 
