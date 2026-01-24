@@ -25,7 +25,7 @@
 const { readFileSync, writeFileSync, existsSync } = require("node:fs");
 const { join } = require("node:path");
 const { createInterface } = require("node:readline");
-const { execSync } = require("node:child_process");
+const { execSync, execFileSync } = require("node:child_process");
 
 const ROOT = join(__dirname, "..");
 
@@ -45,6 +45,30 @@ function sanitizeError(error) {
     .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
     .replace(/\/home\/[^/\s]+/gi, "[HOME]")
     .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
+}
+
+/**
+ * Sanitize display strings from review content (Review #200 - structured logging)
+ * Prevents logging sensitive data from pattern names, suggestions, etc.
+ */
+function sanitizeDisplayString(str, maxLength = 100) {
+  if (!str) return "";
+
+  return (
+    String(str)
+      // Remove code blocks and inline code
+      .replace(/```[\s\S]*?```/g, "[CODE]")
+      .replace(/`[^`]+`/g, "[CODE]")
+      // Remove file paths (absolute paths)
+      .replace(/C:\\Users\\[^\s]+/gi, "[PATH]")
+      .replace(/\/home\/[^\s]+/gi, "[PATH]")
+      .replace(/\/Users\/[^\s]+/gi, "[PATH]")
+      // Collapse whitespace
+      .replace(/\s+/g, " ")
+      .trim()
+      // Truncate if too long
+      .substring(0, maxLength) + (str.length > maxLength ? "..." : "")
+  );
 }
 
 class LearningEffectivenessAnalyzer {
@@ -115,7 +139,13 @@ class LearningEffectivenessAnalyzer {
       throw new Error(`Learnings log not found: ${LEARNINGS_LOG}`);
     }
 
-    const content = readFileSync(LEARNINGS_LOG, "utf-8");
+    let content;
+    try {
+      content = readFileSync(LEARNINGS_LOG, "utf-8");
+    } catch (error) {
+      throw new Error(`Failed to read learnings log: ${sanitizeError(error)}`);
+    }
+
     const lines = content.split("\n");
 
     let currentReview = null;
@@ -188,6 +218,9 @@ class LearningEffectivenessAnalyzer {
       throw new Error(`No reviews found in range (since #${this.options.sinceReview})`);
     }
 
+    // Review #200: Sort reviews by number for correct chronological order
+    this.reviews.sort((a, b) => a.number - b.number);
+
     console.log(
       `✅ Loaded ${this.reviews.length} reviews (#${this.reviews[0].number} - #${this.reviews[this.reviews.length - 1].number})`
     );
@@ -202,7 +235,14 @@ class LearningEffectivenessAnalyzer {
       return;
     }
 
-    const content = readFileSync(CODE_PATTERNS, "utf-8");
+    let content;
+    try {
+      content = readFileSync(CODE_PATTERNS, "utf-8");
+    } catch (error) {
+      console.warn(`⚠️  Failed to read CODE_PATTERNS.md: ${sanitizeError(error)}`);
+      return;
+    }
+
     const lines = content.split("\n");
 
     let currentPattern = null;
@@ -262,7 +302,13 @@ class LearningEffectivenessAnalyzer {
       return;
     }
 
-    const content = readFileSync(PATTERN_CHECKER, "utf-8");
+    let content;
+    try {
+      content = readFileSync(PATTERN_CHECKER, "utf-8");
+    } catch (error) {
+      console.warn(`⚠️  Failed to read pattern checker: ${sanitizeError(error)}`);
+      return;
+    }
 
     // Extract ANTI_PATTERNS array
     const match = content.match(/const ANTI_PATTERNS = \[([\s\S]*?)\];/);
@@ -575,14 +621,14 @@ class LearningEffectivenessAnalyzer {
     const totalPatterns = this.reviews.reduce((sum, r) => sum + r.patterns.length, 0);
 
     // Check for consolidation lag (reviews without patterns = not consolidated yet)
-    const uncombiledReviews = this.reviews.filter((r) => r.patterns.length === 0);
+    const unconsolidatedReviews = this.reviews.filter((r) => r.patterns.length === 0);
 
     return {
       patternExtractionRate: (totalPatterns / totalReviews).toFixed(2),
       coveragePercentage: ((reviewsWithPatterns / totalReviews) * 100).toFixed(1) + "%",
       totalPatternsExtracted: totalPatterns,
-      uncombiledReviews: uncombiledReviews.length,
-      health: uncombiledReviews.length < totalReviews * 0.1 ? "Good" : "Needs Attention",
+      unconsolidatedReviews: unconsolidatedReviews.length,
+      health: unconsolidatedReviews.length < totalReviews * 0.1 ? "Good" : "Needs Attention",
     };
   }
 
@@ -598,10 +644,17 @@ class LearningEffectivenessAnalyzer {
 
     for (const issue of recurring) {
       if (issue.occurrencesSinceDoc >= 3) {
+        // Review #200: Security - Sanitize pattern name to prevent path traversal
+        const safeName = issue.pattern
+          .replace(/[/\\]/g, "_") // Remove path separators
+          .replace(/\s+/g, "_")
+          .replace(/[^a-zA-Z0-9_-]/g, "") // Remove special chars
+          .toUpperCase();
+
         gaps.push({
           topic: issue.pattern,
           occurrences: issue.occurrencesSinceDoc,
-          suggestedDoc: `docs/agent_docs/${issue.pattern.replace(/\s+/g, "_").toUpperCase()}_GUIDE.md`,
+          suggestedDoc: `docs/agent_docs/${safeName}_GUIDE.md`,
           priority: issue.priority,
         });
       }
@@ -732,9 +785,9 @@ class LearningEffectivenessAnalyzer {
 
       for (let i = 0; i < Math.min(5, this.results.suggestions.length); i++) {
         const s = this.results.suggestions[i];
-        console.log(`${i + 1}. [${s.category}] ${s.title}`);
-        console.log(`   ${s.description}`);
-        console.log(`   → ${s.action}\n`);
+        console.log(`${i + 1}. [${s.category}] ${sanitizeDisplayString(s.title, 80)}`);
+        console.log(`   ${sanitizeDisplayString(s.description, 120)}`);
+        console.log(`   → ${sanitizeDisplayString(s.action, 120)}\n`);
       }
     } else {
       console.log("✅ No high-priority suggestions at this time.\n");
@@ -756,7 +809,7 @@ class LearningEffectivenessAnalyzer {
     if (this.results.automationGaps.length > 0) {
       console.log("Top patterns that should be automated:\n");
       for (const gap of this.results.automationGaps.slice(0, 10)) {
-        console.log(`  • ${gap.pattern}`);
+        console.log(`  • ${sanitizeDisplayString(gap.pattern, 80)}`);
         console.log(`    Occurrences: ${gap.occurrences} | ROI: ${gap.roi}`);
         console.log(`    Reviews: ${gap.reviews.join(", ")}\n`);
       }
@@ -769,7 +822,9 @@ class LearningEffectivenessAnalyzer {
     if (this.results.documentationGaps.length > 0) {
       console.log("Patterns mentioned but not documented:\n");
       for (const gap of this.results.documentationGaps.slice(0, 10)) {
-        console.log(`  • ${gap.pattern} (${gap.occurrences} mentions)\n`);
+        console.log(
+          `  • ${sanitizeDisplayString(gap.pattern, 80)} (${gap.occurrences} mentions)\n`
+        );
       }
     } else {
       console.log("  ✅ All frequent patterns are documented\n");
@@ -780,7 +835,7 @@ class LearningEffectivenessAnalyzer {
     if (this.results.recurringIssues.length > 0) {
       console.log("Patterns that keep appearing despite documentation:\n");
       for (const issue of this.results.recurringIssues.slice(0, 10)) {
-        console.log(`  • ${issue.pattern} [${issue.priority}]`);
+        console.log(`  • ${sanitizeDisplayString(issue.pattern, 80)} [${issue.priority}]`);
         console.log(`    First: #${issue.firstMention} | Last: #${issue.lastMention}`);
         console.log(`    Effectiveness: ${issue.learningEffectiveness.toFixed(1)}%\n`);
       }
@@ -841,8 +896,8 @@ class LearningEffectivenessAnalyzer {
     console.log("🎓 10. TRAINING GAPS\n");
     if (this.results.trainingGaps.length > 0) {
       for (const gap of this.results.trainingGaps) {
-        console.log(`  • ${gap.topic} (${gap.occurrences} occurrences)`);
-        console.log(`    Suggested: ${gap.suggestedDoc}\n`);
+        console.log(`  • ${sanitizeDisplayString(gap.topic, 80)} (${gap.occurrences} occurrences)`);
+        console.log(`    Suggested: ${sanitizeDisplayString(gap.suggestedDoc, 80)}\n`);
       }
     } else {
       console.log("  ✅ No training gaps identified\n");
@@ -897,7 +952,9 @@ class LearningEffectivenessAnalyzer {
     for (let i = 0; i < this.results.suggestions.length; i++) {
       const suggestion = this.results.suggestions[i];
 
-      console.log(`\n[${i + 1}/${this.results.suggestions.length}] ${suggestion.title}`);
+      console.log(
+        `\n[${i + 1}/${this.results.suggestions.length}] ${sanitizeDisplayString(suggestion.title, 80)}`
+      );
       console.log(
         `Category: ${suggestion.category} | Priority: ${suggestion.priority} | Effort: ${suggestion.effort}`
       );
@@ -1008,9 +1065,27 @@ class LearningEffectivenessAnalyzer {
       throw new Error("No suggested path for doc update");
     }
 
+    // Review #200: Security - Validate path is within allowed directory
+    const { join: pathJoin, resolve, relative } = require("node:path");
+    const allowedBase = resolve(ROOT, "docs", "agent_docs");
+    const targetPath = resolve(ROOT, suggestion.suggestedPath);
+
+    // Check if path is within allowed directory
+    const rel = relative(allowedBase, targetPath);
+    if (rel.startsWith("..") || pathJoin.isAbsolute(rel)) {
+      throw new Error(
+        `Invalid path: ${suggestion.suggestedPath} (must be within docs/agent_docs/)`
+      );
+    }
+
+    // Review #200: Create directory if it doesn't exist
+    const { mkdirSync } = require("node:fs");
+    const parentDir = pathJoin(targetPath, "..");
+    mkdirSync(parentDir, { recursive: true });
+
     const content = this.generateDocTemplate(suggestion);
-    writeFileSync(suggestion.suggestedPath, content);
-    console.log(`  Created: ${suggestion.suggestedPath}`);
+    writeFileSync(targetPath, content, "utf-8");
+    console.log(`  Created: ${targetPath}`);
   }
 
   /**
@@ -1058,15 +1133,28 @@ This pattern has appeared ${suggestion.description.match(/\d+/)?.[0] || "multipl
    */
   async createCommit(suggestion) {
     try {
-      execSync("git add -A", { cwd: ROOT });
+      // Only stage the file that was changed (Review #200: Security - prevent staging unrelated files)
+      if (suggestion.type === "doc-update" && suggestion.suggestedPath) {
+        // Review #200: Use execFileSync with args array instead of shell interpolation
+        execFileSync("git", ["add", suggestion.suggestedPath], { cwd: ROOT });
+      } else {
+        // Fallback: stage all changes (should ideally specify paths for other types too)
+        execFileSync("git", ["add", "-A"], { cwd: ROOT });
+      }
+
       const message = `chore(learning): ${suggestion.title}
 
 ${suggestion.description}
 
 Auto-applied by learning effectiveness analyzer.
-Priority: ${suggestion.priority} | Impact: ${suggestion.impact}`;
+Priority: ${suggestion.priority} | Impact: ${suggestion.impact}
+`;
 
-      execSync(`git commit -m "${message.replace(/"/g, '\\"')}"`, { cwd: ROOT });
+      // Review #200: Security - Use git commit -F with execFileSync
+      const msgFile = join(ROOT, ".git", "LEARNING_COMMIT_MSG.txt");
+      writeFileSync(msgFile, message, "utf-8");
+
+      execFileSync("git", ["commit", "-F", msgFile], { cwd: ROOT });
       console.log("  Committed changes");
     } catch (error) {
       console.warn("⚠️  Could not create commit:", sanitizeError(error));
@@ -1078,14 +1166,14 @@ Priority: ${suggestion.priority} | Impact: ${suggestion.impact}`;
    */
   viewSuggestionDetails(suggestion) {
     console.log("\n" + "=".repeat(60));
-    console.log(`SUGGESTION DETAILS: ${suggestion.title}`);
+    console.log(`SUGGESTION DETAILS: ${sanitizeDisplayString(suggestion.title, 120)}`);
     console.log("=".repeat(60));
     console.log(`\nCategory: ${suggestion.category}`);
     console.log(`Priority: ${suggestion.priority}`);
     console.log(`Effort: ${suggestion.effort}`);
     console.log(`Impact: ${suggestion.impact}`);
-    console.log(`\nDescription: ${suggestion.description}`);
-    console.log(`\nRecommended Action: ${suggestion.action}`);
+    console.log(`\nDescription: ${sanitizeDisplayString(suggestion.description, 200)}`);
+    console.log(`\nRecommended Action: ${sanitizeDisplayString(suggestion.action, 200)}`);
     if (suggestion.type) {
       console.log(`Type: ${suggestion.type}`);
     }
@@ -1175,21 +1263,66 @@ This file tracks suggestions that were explicitly skipped with rationale.
 
     const content = `# Learning Effectiveness Metrics
 
-**Last Analysis:** ${now}
+**Last Updated:** ${now}
+
+---
+
+## Purpose
+
+This document tracks the effectiveness of the SoNash learning system by analyzing AI review patterns and quantifying whether documented patterns prevent recurring issues. It provides actionable metrics to guide automation, documentation, and training priorities.
+
+**Auto-generated by:** \`scripts/analyze-learning-effectiveness.js\`
+**Update frequency:** After consolidation (every 10 reviews) or manual analysis
+
+---
+
+## AI Instructions
+
+This is a **Tier 2 metrics document** - reference during:
+
+- **Post-consolidation**: Review trends to identify automation gaps
+- **Session planning**: Prioritize technical debt based on recurring issues
+- **Pattern updates**: Validate that new patterns are being adopted
+
+**Key sections:**
+- **Key Metrics**: High-level health indicators
+- **Top 5 Actions**: Priority-ranked recommendations
+- **Analysis History**: Track trends over time
+
+---
+
+## Quick Start
+
+\`\`\`bash
+# View current metrics
+cat docs/LEARNING_METRICS.md
+
+# Run fresh analysis
+npm run learning:analyze
+
+# View detailed breakdown
+npm run learning:detailed
+\`\`\`
+
+---
+
+## Current Analysis
+
 **Review Range:** #${firstReview} - #${lastReview} (${this.reviews.length} reviews)
+**Analysis Date:** ${now}
 
-## Key Metrics
+### Key Metrics
 
-| Metric | Value |
-|--------|-------|
-| Automation Coverage | ${this.getAutomationCoverage()} |
-| Learning Effectiveness | ${this.getLearningEffectiveness()} |
-| Pattern Extraction Rate | ${this.results.consolidationQuality.patternExtractionRate} patterns/review |
-| Consolidation Health | ${this.results.consolidationQuality.health} |
-| Total Documented Patterns | ${this.codePatterns.length} |
-| Automated Patterns | ${this.automatedPatterns.length} |
+| Metric                    | Value                                                           |
+| ------------------------- | --------------------------------------------------------------- |
+| Automation Coverage       | ${this.getAutomationCoverage()}                                 |
+| Learning Effectiveness    | ${this.getLearningEffectiveness()}                              |
+| Pattern Extraction Rate   | ${this.results.consolidationQuality.patternExtractionRate} patterns/review |
+| Consolidation Health      | ${this.results.consolidationQuality.health}                     |
+| Total Documented Patterns | ${this.codePatterns.length}                                     |
+| Automated Patterns        | ${this.automatedPatterns.length}                                |
 
-## Top 5 Recommended Actions
+### Top 5 Recommended Actions
 
 ${this.results.suggestions
   .slice(0, 5)
@@ -1199,9 +1332,19 @@ ${this.results.suggestions
   )
   .join("\n\n")}
 
+---
+
 ## Analysis History
 
-- ${now}: Analyzed ${this.reviews.length} reviews
+- ${now}: Analyzed ${this.reviews.length} reviews (#${firstReview} - #${lastReview})
+
+---
+
+## Version History
+
+| Version | Date       | Description                              |
+| ------- | ---------- | ---------------------------------------- |
+| 1.0     | ${now}     | Initial auto-generated metrics dashboard |
 `;
 
     writeFileSync(METRICS_FILE, content);
@@ -1213,9 +1356,9 @@ ${this.results.suggestions
    */
   getAutomationCoverage() {
     if (this.codePatterns.length === 0) return "N/A";
-    const percentage = ((this.automatedPatterns.length / this.codePatterns.length) * 100).toFixed(
-      1
-    );
+    const rawPercentage = (this.automatedPatterns.length / this.codePatterns.length) * 100;
+    // Review #200: Cap at 100% for clearer metrics
+    const percentage = Math.min(rawPercentage, 100).toFixed(1);
     return `${percentage}%`;
   }
 
@@ -1266,7 +1409,14 @@ function parseArgs(args) {
     const arg = args[i];
 
     if (arg === "--since-review" && args[i + 1]) {
-      options.sinceReview = parseInt(args[i + 1]);
+      // Review #200: Validate --since-review is a positive integer
+      const reviewNum = parseInt(args[i + 1], 10);
+      if (isNaN(reviewNum) || reviewNum < 1) {
+        throw new Error(
+          `Invalid --since-review value: "${args[i + 1]}" (must be a positive integer)`
+        );
+      }
+      options.sinceReview = reviewNum;
       i++;
     } else if (arg === "--category" && args[i + 1]) {
       options.category = args[i + 1];

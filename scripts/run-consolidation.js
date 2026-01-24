@@ -30,6 +30,17 @@ const { existsSync, readFileSync, writeFileSync } = require("node:fs");
 const { join } = require("node:path");
 const { execSync } = require("node:child_process");
 
+/**
+ * Simple error sanitizer (Review #200 - prevent internal detail leakage)
+ */
+function sanitizeError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  return message
+    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
+    .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
+}
+
 // File paths
 const LOG_FILE = join(__dirname, "..", "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 // Reserved for future automatic updates (currently manual)
@@ -592,10 +603,8 @@ function main() {
           // Non-blocking: Don't fail consolidation if analysis fails
           log("⚠️  Learning analysis failed (non-blocking)", colors.yellow);
           if (verbose) {
-            log(
-              `   ${analysisErr instanceof Error ? analysisErr.message : String(analysisErr)}`,
-              colors.yellow
-            );
+            // Review #200: Sanitize error message to prevent internal detail leakage
+            log(`   ${sanitizeError(analysisErr)}`, colors.yellow);
           }
         }
 
