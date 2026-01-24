@@ -2300,5 +2300,84 @@ can introduce new issues that need immediate attention.
 - `scripts/lib/validate-paths.js` - Enhanced sanitization, added post-normalize
   check, added control char validation
 
+---
+
+**Follow-up (Qodo + CI Round 3 - 2026-01-24):**
+
+After implementing Review #200 Round 2 (commit 0d189e4), CI pattern compliance
+check blocked the PR with **1 CRITICAL pattern violation**, and Qodo provided
+**10 additional high-priority suggestions** (Impact 6-8). This round
+demonstrates that even security fixes can introduce new compliance issues,
+requiring immediate attention.
+
+**Round 3 Issues:**
+
+| #   | Issue                                      | Severity | Impact | Fix                                                                          |
+| --- | ------------------------------------------ | -------- | ------ | ---------------------------------------------------------------------------- |
+| 0   | CI BLOCKER: startsWith() pattern violation | CRITICAL | 🔴     | Removed redundant defense-in-depth check at lines 94-101 (already validated) |
+| 1   | Log injection via unsanitized relPath      | CRITICAL | 8      | Added sanitizePathForLog() to strip control chars before logging relPath     |
+| 2   | Expand path redaction (Unix + Windows)     | MAJOR    | 8      | Added /root, /tmp, /proc, /run, C:/, UNC paths to sanitization               |
+| 3   | Add error message truncation               | MAJOR    | 7-8    | Truncate sanitized errors >500 chars to prevent log flooding                 |
+| 4   | Fail closed on invalid projectDir          | MAJOR    | 7      | Validate projectDir is non-empty string before use                           |
+| 5   | Block Unicode line separators              | MAJOR    | 7      | Reject \u2028, \u2029 in multiline path check                                |
+| 6   | Reject tab control characters              | MINOR    | 7      | SKIPPED - tabs are rare in paths, minimal security value                     |
+| 7   | Separate projectDir resolution             | MINOR    | 7      | DEFERRED - current error messages sufficient                                 |
+| 8   | Chunked reading for large files            | MINOR    | 6      | DEFERRED - same as R2 #10 (marginal benefit)                                 |
+
+**New Patterns from Round 3:**
+
+18. **Pattern compliance from security fixes** - Security enhancements can
+    introduce pattern violations; always check against established anti-patterns
+    (Review #17-18: never use startsWith() for path validation)
+19. **Log injection extends to user-controlled paths** - Not just error
+    messages; any user-controlled string (filePath, relPath) logged without
+    sanitization is an injection risk
+20. **Comprehensive path coverage requires OS-specificity** - Generic patterns
+    miss OS-specific paths (/proc, /run on Linux, UNC on Windows); need both
+    generic and OS-specific redaction
+21. **Truncation prevents log-based DoS** - Error messages can be arbitrarily
+    large; truncate at reasonable limit (500 chars) to prevent log flooding
+    attacks
+22. **Fail closed validation** - When validating inputs to security functions,
+    reject invalid types/empty values rather than continuing with potentially
+    unsafe defaults
+
+**Resolution:**
+
+- **Fixed:** 5 items (1 CI CRITICAL 🔴, 4 MAJOR Impact 7-8)
+  - CI BLOCKER: Removed redundant startsWith() check (lines 94-101 in
+    validate-paths.js)
+  - CRITICAL #1: Added sanitizePathForLog() to both error logs in
+    pattern-check.js
+  - MAJOR #2-3: Enhanced sanitization with more paths + 500-char truncation in
+    both files
+  - MAJOR #4: Added projectDir type/empty validation
+  - MAJOR #5: Block Unicode line separators (\u2028, \u2029)
+- **Deferred:** 2 items (#7 error message separation, #8 chunked reading)
+- **Rejected:** 1 item (#6 tab rejection - minimal value, tabs rare in paths)
+
+**Key Learnings from Round 3:**
+
+- **Security fixes can introduce compliance violations** - Round 2 added
+  defense-in-depth check using startsWith(), which violated established
+  anti-pattern from Review #17-18
+- **User-controlled strings in logs are injection vectors** - relPath comes from
+  process.argv and was logged unsanitized; control characters can break log
+  parsers or display spoofing
+- **Comprehensive sanitization requires iteration** - Round 1: basic paths,
+  Round 2: spaces + more paths, Round 3: OS-specific paths + UNC + truncation
+- **Pattern checkers catch what reviews miss** - CI pattern compliance flagged
+  startsWith() that Qodo didn't notice; multi-layer validation is essential
+- **Fail-closed principle for security utilities** - validateFilePath now
+  rejects invalid projectDir rather than potentially operating on unsafe
+  defaults
+
+**Files Modified (Round 3):**
+
+- `.claude/hooks/pattern-check.js` - Added sanitizePathForLog(), enhanced
+  sanitizeFilesystemError() with truncation + more paths
+- `scripts/lib/validate-paths.js` - Removed startsWith() pattern violation,
+  enhanced sanitization, added projectDir validation, Unicode newline blocking
+
 **Session:** #90 **Branch:** claude/mcp-optimization-session90 **Commits:**
-925e397 (R1), [current] (R2)
+925e397 (R1), 0d189e4 (R2), 2c633f6 (R3)
