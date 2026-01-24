@@ -1,6 +1,6 @@
 # Expansion Evaluation Tracker
 
-**Document Version:** 2.5 **Created:** 2026-01-20 | **Last Updated:** 2026-01-24
+**Document Version:** 4.0 **Created:** 2026-01-20 | **Last Updated:** 2026-01-24
 
 ---
 
@@ -166,7 +166,8 @@ achieved through Phase B Full Analysis (passes B1-B6).
 | Technical | 9       | 105   | 105      | 105     | 0       |
 | **Total** | **21**  | 280   | **280**  | **280** | **0**   |
 
-**🎉 ALL MODULES COMPLETE - Ready for ROADMAP Review & Reorganization**
+**🎉 EVALUATION COMPLETE - 280/280 ideas evaluated, 76 items pushed to ROADMAP
+v3.9**
 
 ---
 
@@ -437,7 +438,8 @@ _None yet - add questions as they arise during module evaluation_
 - F12: Bio-rhythm features (sleep, HR, movement) require native → M9
 - T9: FlexSearch for local-first search; both code + QR for sponsor links
 
-**NEXT STEP: Schedule dedicated ROADMAP Review & Reorganization session**
+**STATUS: ROADMAP integration complete (v3.9). See
+analysis/pass2_deduplication.md for details.**
 
 ### Session: 2026-01-22 (T4 + F4 Complete)
 
@@ -711,7 +713,13 @@ revised), 6 merged, 1 deferred, 1 acknowledged
   creatorUid: string,
   recipientUid: string,
   type: "step4" | "journal" | "progress",
-  snapshot: { /* immutable frozen data (T2.5) */ },
+  snapshot: {
+    // Encrypted with AES-256-GCM (T4.1-4.4)
+    ciphertext: string,           // Base64-encoded encrypted data
+    iv: string,                   // Base64-encoded initialization vector (12 bytes)
+    algorithm: "AES-256-GCM"      // Encryption algorithm identifier
+    // Decrypted data contains: immutable frozen data (T2.5)
+  },
   createdAt: Timestamp,
   expiresAt: Timestamp | null,     // T2.6: auto-expiry
   status: "active" | "revoked",    // T2.7: revocation
@@ -725,14 +733,16 @@ revised), 6 merged, 1 deferred, 1 acknowledged
 ```javascript
 /users/{uid}/sponsorContact
 {
-  name: string,              // User-entered sponsor name
-  phone: string,             // For one-tap call / emergency button
-  email?: string,            // Optional
-  linkedUid?: string,        // If sponsor also uses SoNash
+  // All PII fields encrypted at rest (AES-256-GCM via T4.1-4.4)
+  name: string,              // User-entered sponsor name [ENCRYPTED]
+  phone: string,             // For one-tap call / emergency button [ENCRYPTED]
+  email?: string,            // Optional [ENCRYPTED]
+  linkedUid?: string,        // If sponsor also uses SoNash (not encrypted - internal ref)
   connectedAt: Timestamp,
-  notes?: string             // User's private notes
+  notes?: string             // User's private notes [ENCRYPTED]
 }
 // Enables offline access to sponsor contact for emergency "I need help" button
+// Encryption: Client-side AES-256-GCM before storage; decryption on read
 ```
 
 ### F5: Journaling & Insights ✅ COMPLETE
@@ -946,7 +956,7 @@ Takeaways), F5.14 (Brain Dump)
 | T7.9  | Firebase emulator tests       | ✅ Accept M5   | Integration testing infrastructure       |
 | T7.10 | Strict typing (no any)        | 📋 Acknowledge | Already enforced via SonarCloud          |
 
-**Summary:** 3 accepted M5 (T7.1, T7.2, T7.8, T7.9), 5 merged, 1 acknowledged
+**Summary:** 4 accepted M5 (T7.1, T7.2, T7.8, T7.9), 5 merged, 1 acknowledged
 
 ### T6: Analytics Plan ✅ COMPLETE
 
@@ -1254,16 +1264,16 @@ For features requiring native app (from T8 evaluation).
   F5.14, F9.1-2, F9.6-7, F9.10, F7.6, F6.5)
 - **M6-F2:** Safety & Harm Reduction (4 items: F10.1-4)
 - **M6-F3:** Onboarding (2 items: F12.10-11)
-- **M7-F1:** Sponsor Connection (12 items: T2.4, F2.1-6, F2.8-10, T9.9)
+- **M7-F1:** Sponsor Connection (11 items: T2.4, F2.1-6, F2.8-10, T9.9)
 - **M7-F2:** Service & Fellowship (1 item: F5.8)
 - **M7-F3:** Daily Engagement (2 items: F9.4-5)
-- **M7-F4:** Exports & Reports (14 items: F7.1-2, F7.4-5, F7.7-11, T5.2-3,
+- **M7-F4:** Exports & Reports (15 items: F7.1-2, F7.4-5, F7.7-11, T5.2-3,
   T5.5-8)
 - **M7-F5:** Nashville Advantage (8 items: F3.1-8)
 - **M7-F6:** Recovery Knowledge Base (13 items: F6.1-4, F6.6-12, T9.5)
 - **M7-F7:** Safety Features (5 items: F10.5-9)
 - **M7-F8:** Personalization (11 items: F8.1-11)
-- **M7-F9:** Analytics & Data (5 items: T6.3-5, T6.7-8, T9.2, T9.12)
+- **M7-F9:** Analytics & Data (7 items: T6.3-5, T6.7-8, T9.2, T9.12)
 - **M7-F10:** Visionary Features (2 items: F11.6, F11.8)
 - **M7-F11:** Financial Repair & Old-Timers (4 items: F12.1-2, F12.7-8)
 - **M9-F1:** Native Security Features (3 items staged: T8.1, T8.4-5; + deferred
@@ -1303,7 +1313,7 @@ _Deferred items also get ROADMAP placement for future push_
 
 **Summary by Milestone:**
 
-- **M9-F1:** Native Security/Features (9 items: T4.10, F4.4, F5.4b, F5.9b, F9.9,
+- **M9-F1:** Native Security/Features (8 items: T4.10, F4.4, F5.4b, F5.9b, F9.9,
   F9.11, F11.1, T9.1)
 - **M9-F2:** Health Integration (3 items: F12.4-6 bio-rhythm features)
 - **M10-F1:** Future Enhancements (11 items: F4.11, T3.14, F11.2-5, F11.7,
@@ -1370,4 +1380,4 @@ _Deferred items also get ROADMAP placement for future push_
 | 2.3     | 2026-01-24 | T2 COMPLETE - 12 ideas; sharedPackets schema with expiry/revocation; sponsor contact storage (M7-F1)                                                                                             |
 | 2.4     | 2026-01-24 | F5 COMPLETE - 15 ideas; Pattern Matcher bundles 3 features; M6 gets 10 journaling tools; 34 staged                                                                                               |
 | 3.0     | 2026-01-24 | 🎉 ALL 21 MODULES COMPLETE - 280/280 ideas evaluated; 85+ staged items; M4.5/M5/M6/M7/M9/M10 feature groups defined                                                                              |
-| 4.0     | 2026-01-24 | 🚀 ROADMAP PUSH COMPLETE - 76 items integrated into ROADMAP.md v3.0 (8 duplicates skipped, 1 merged). M4.5 and M9 sections added. Full deduplication analysis in analysis/pass2_deduplication.md |
+| 4.0     | 2026-01-24 | 🚀 ROADMAP PUSH COMPLETE - 76 items integrated into ROADMAP.md v3.9 (8 duplicates skipped, 1 merged). M4.5 and M9 sections added. Full deduplication analysis in analysis/pass2_deduplication.md |

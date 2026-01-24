@@ -1,30 +1,30 @@
 # SoNash ROADMAP.md Full Inventory
 
-**Generated:** 2026-01-24 **Source:** ROADMAP.md v3.0 **Total Items:** 396
+**Generated:** 2026-01-24 **Source:** ROADMAP.md v3.9 **Total Items:** 396
 
 ---
 
 ## Summary Statistics by Milestone
 
-| Milestone                | Status    | Total Items | Complete | Active | Planned | Missing Effort | Missing Priority |
-| ------------------------ | --------- | ----------- | -------- | ------ | ------- | -------------- | ---------------- |
-| Operational Visibility   | Active    | 47          | 32       | 7      | 8       | 3              | 0                |
-| M1.5 - Quick Wins        | Paused    | 30          | 1        | 3      | 26      | 8              | 0                |
-| M1.6 - Admin Panel       | Paused    | 25          | 0        | 0      | 25      | 12             | 0                |
-| M2 - Architecture        | Optional  | 72          | 6        | 1      | 65      | 35             | 15               |
-| M3 - Meetings            | Planned   | 6           | 0        | 0      | 6       | 0              | 0                |
-| M4 - Expansion           | Planned   | 12          | 0        | 0      | 12      | 12             | 4                |
-| M4.5 - Security          | Planned   | 13          | 0        | 0      | 13      | 0              | 0                |
-| M5 - Offline + Steps     | Planned   | 23          | 0        | 0      | 23      | 0              | 0                |
-| M6 - Journaling + Safety | Planned   | 26          | 0        | 0      | 26      | 0              | 0                |
-| M7 - Fellowship Suite    | Planned   | 79          | 0        | 0      | 79      | 2              | 0                |
-| M8 - Speakers            | Planned   | 3           | 0        | 0      | 3       | 0              | 0                |
-| M9 - Native App          | Planned   | 15          | 0        | 0      | 15      | 0              | 0                |
-| M10 - Monetization       | Research  | 12          | 0        | 0      | 12      | 12             | 6                |
-| Desktop/Web              | Planned   | 18          | 0        | 0      | 18      | 0              | 0                |
-| Process & Tooling        | Mixed     | 8           | 1        | 0      | 7       | 5              | 3                |
-| Feature Decisions        | Reference | 7           | 2        | 0      | 5       | 7              | 0                |
-| **TOTAL**                | -         | **396**     | **42**   | **11** | **343** | **96**         | **28**           |
+| Milestone                 | Status    | Total Items | Complete | Active | Planned | Missing Effort | Missing Priority |
+| ------------------------- | --------- | ----------- | -------- | ------ | ------- | -------------- | ---------------- |
+| Operational Visibility    | Active    | 47          | 32       | 7      | 8       | 3              | 0                |
+| M1.5 - Quick Wins         | Paused    | 30          | 1        | 3      | 26      | 8              | 0                |
+| M1.6 - Admin Panel        | Paused    | 25          | 0        | 0      | 25      | 12             | 0                |
+| M2 - Architecture         | Optional  | 72          | 6        | 1      | 65      | 35             | 8                |
+| M3 - Meetings             | Planned   | 6           | 0        | 0      | 6       | 0              | 0                |
+| M4 - Expansion            | Planned   | 12          | 0        | 0      | 12      | 12             | 4                |
+| M4.5 - Security & Privacy | Planned   | 13          | 0        | 0      | 13      | 0              | 0                |
+| M5 - Offline + Steps      | Planned   | 23          | 0        | 0      | 23      | 0              | 0                |
+| M6 - Journaling + Safety  | Planned   | 26          | 0        | 0      | 26      | 0              | 0                |
+| M7 - Fellowship Suite     | Planned   | 79          | 0        | 0      | 79      | 2              | 0                |
+| M8 - Speakers             | Planned   | 3           | 0        | 0      | 3       | 0              | 0                |
+| M9 - Native App           | Planned   | 15          | 0        | 0      | 15      | 0              | 0                |
+| M10 - Monetization        | Research  | 12          | 0        | 0      | 12      | 12             | 6                |
+| Desktop/Web               | Planned   | 18          | 0        | 0      | 18      | 0              | 0                |
+| Process & Tooling         | Mixed     | 8           | 1        | 0      | 7       | 5              | 0                |
+| Feature Decisions         | Reference | 7           | 2        | 0      | 5       | 7              | 0                |
+| **TOTAL**                 | -         | **396**     | **42**   | **11** | **343** | **96**         | **18**           |
 
 ---
 
@@ -611,7 +611,7 @@
 | FD-006       | Decisions | Multiple Sobriety Dates                          |
 | FD-007       | Decisions | Principle-Based Badges                           |
 
-### Missing Priority (28 items)
+### Missing Priority (18 items)
 
 | ID          | Milestone | Title                            |
 | ----------- | --------- | -------------------------------- |

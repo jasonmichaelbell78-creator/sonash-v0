@@ -2,7 +2,7 @@
 
 **Generated:** 2026-01-24 **Analyst:** Claude Code (Opus 4.5) **Sources:**
 
-- ROADMAP.md v3.0
+- ROADMAP.md v3.9
 - analysis/full_inventory.md (396 items)
 - analysis/effort_estimates.md (96 items with E0-E3 estimates)
 - analysis/full_dependencies.md (dependency chains)
@@ -255,7 +255,7 @@ explicit dependency to M7-F5 for user-facing features.
 
 ### Recommendation 8: Add Missing Priorities
 
-**28 items currently missing priority assignments.**
+**18 items currently missing priority assignments.**
 
 **Recommended Assignments:**
 
@@ -278,7 +278,7 @@ explicit dependency to M7-F5 for user-facing features.
 | M10-MODEL-3 | B2B Licensing                    | P2                   | Revenue strategy           |
 | F4.11       | Shoulder Surf Blur               | P3                   | Deferred                   |
 | T3.14       | Queue compaction                 | P3                   | Optimization               |
-| F11.2-F11.9 | Deferred future features         | P3                   | Research phase             |
+| F11.2       | Reclaiming City (map)            | P3                   | Deferred to M10            |
 
 ---
 
@@ -462,7 +462,7 @@ explicit dependency to M7-F5 for user-facing features.
 | M2-CQ-2     | Unused devDependencies           | Infrastructure | P3       | Yes                |
 | M2-CQ-3     | Unlisted dependencies            | Infrastructure | P2       | Yes                |
 | M2-CQ-4     | Duplicate exports fix            | Infrastructure | P3       | Yes                |
-| M2-CQ-5     | Pattern Compliance Scripts       | Infrastructure | P4       | Yes                |
+| M2-CQ-5     | Pattern Compliance Scripts       | Infrastructure | P3       | Yes                |
 | M2-EFF-006  | Add Correlation IDs              | Infrastructure | P2       | Yes                |
 | M2-EFF-007  | Add Network Status               | Infrastructure | P2       | Yes                |
 | M2-EFF-008  | Create Smoke Test Script         | Testing        | P2       | Yes                |
@@ -735,7 +735,7 @@ explicit dependency to M7-F5 for user-facing features.
 | Status                        | Count | Percentage |
 | ----------------------------- | ----- | ---------- |
 | Validated (correct placement) | 368   | 92.9%      |
-| Missing Priority              | 28    | 7.1%       |
+| Missing Priority              | 18    | 4.5%       |
 | Miscategorized (should move)  | 14    | 3.5%       |
 
 ### Priority Validation Summary
