@@ -88,9 +88,9 @@ auto-enriches SonarCloud issues via API
 **Description:** Complete verification steps before starting work session **When
 to use:** **START OF EVERY SESSION** - validates environment and dependencies
 **Example:** `/session-begin` **Parameters:** None **Output:** Validation status
-(patterns:check, review:check, lessons:surface) **Note:** Now includes automatic
-secrets decryption check - Claude will prompt for your passphrase if MCP tokens
-need decrypting
+(patterns:check, review:check, lessons:surface) **Note:** Includes automatic
+secrets decryption check and references to SECURITY_CHECKLIST.md for pre-write
+security patterns
 
 ### `/session-end`
 
