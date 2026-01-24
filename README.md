@@ -192,11 +192,13 @@ chip (WIP) │ └── ui/ # shadcn components └── public/ └── ima
 | M2 - Architecture           | ⏸️ Optional | 0%       |
 | M3 - Meetings               | 📋 Planned  | 0%       |
 | M4 - Expansion              | 📋 Planned  | 0%       |
-| M5 - Inventories            | 📋 Planned  | 0%       |
-| M6 - Prayers                | 📋 Planned  | 0%       |
-| M7 - Fellowship             | 📋 Planned  | 0%       |
+| M4.5 - Security & Privacy   | 📋 Planned  | 0%       |
+| M5 - Offline + Steps        | 📋 Planned  | 0%       |
+| M6 - Journaling + Safety    | 📋 Planned  | 0%       |
+| M7 - Fellowship Suite       | 📋 Planned  | 0%       |
 | M8 - Speakers               | 📋 Planned  | 0%       |
-| M10 - Monetization          | 🔬 Research | 0%       |
+| M9 - Native App             | 📋 Planned  | 0%       |
+| M10 - Monetization + Future | 🔬 Research | 0%       |
 
 ### Recent Completions
 
