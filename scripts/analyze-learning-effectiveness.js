@@ -3,29 +3,32 @@
 /**
  * Learning Effectiveness Analyzer
  *
- * Measures if documented patterns prevent recurring issues and identifies gaps.
+ * Measures CLAUDE'S LEARNING EFFECTIVENESS - whether documented patterns
+ * prevent recurring issues and identifies automation needs.
  *
- * This tool analyzes the AI_REVIEW_LEARNINGS_LOG.md to:
- * - Quantify whether documented patterns prevent recurring issues
- * - Identify automation gaps (patterns that should be enforced by tooling)
- * - Detect process weaknesses (where we keep making same mistakes)
- * - Optimize tool usage (ROI analysis: signal vs. noise)
- * - Guide training needs (missing skills/guides)
+ * THE CORE QUESTION: "Is Claude learning from documented patterns?"
+ *
+ * This tool analyzes:
+ * - Pattern recurrence: Did documented patterns appear again?
+ * - Learning gaps: Which patterns keep failing despite documentation?
+ * - Automation needs: Which recurring patterns need Pattern Checker enforcement?
+ * - Training effectiveness: Are guides and documentation working?
  *
  * Usage:
  *   npm run learning:analyze                           # Dashboard + interactive
- *   npm run learning:analyze -- --detailed             # Full 10-category report
- *   npm run learning:analyze -- --category automation  # Single category
+ *   npm run learning:analyze -- --detailed             # Full learning report
  *   npm run learning:analyze -- --since-review 150     # Specific range
  *   npm run learning:analyze -- --auto                 # Non-interactive (for hooks)
+ *   npm run learning:analyze -- --file path/to/file    # Analyze specific file
+ *   npm run learning:analyze -- --all-archives         # Analyze ALL archive files
  *
  * Exit codes: 0 = success, 1 = errors found, 2 = fatal error
  */
 
-const { readFileSync, writeFileSync, existsSync } = require("node:fs");
-const { join } = require("node:path");
+const { readFileSync, writeFileSync, existsSync, readdirSync, lstatSync } = require("node:fs");
+const path = require("node:path");
+const { join } = path;
 const { createInterface } = require("node:readline");
-const { execSync, execFileSync } = require("node:child_process");
 
 const ROOT = join(__dirname, "..");
 
@@ -34,7 +37,6 @@ const CODE_PATTERNS = join(ROOT, "docs", "agent_docs", "CODE_PATTERNS.md");
 const PATTERN_CHECKER = join(ROOT, "scripts", "check-pattern-compliance.js");
 const METRICS_FILE = join(ROOT, "docs", "LEARNING_METRICS.md");
 const TODO_FILE = join(ROOT, "docs", "LEARNING_TODO.md");
-const SKIPPED_FILE = join(ROOT, "docs", "LEARNING_SKIPPED.md");
 
 /**
  * Simple error sanitizer (avoid ES module dependency)
@@ -48,50 +50,38 @@ function sanitizeError(error) {
 }
 
 /**
- * Sanitize display strings from review content (Review #200 - structured logging)
- * Prevents logging sensitive data from pattern names, suggestions, etc.
+ * Sanitize display strings from review content
  */
 function sanitizeDisplayString(str, maxLength = 100) {
   if (!str) return "";
 
   const sanitized = String(str)
-    // Remove code blocks and inline code
     .replace(/```[\s\S]*?```/g, "[CODE]")
     .replace(/`[^`]+`/g, "[CODE]")
-    // Remove file paths (absolute paths)
     .replace(/C:\\Users\\[^\s]+/gi, "[PATH]")
     .replace(/\/home\/[^\s]+/gi, "[PATH]")
     .replace(/\/Users\/[^\s]+/gi, "[PATH]")
-    // Collapse whitespace
     .replace(/\s+/g, " ")
     .trim();
 
-  // Review #200: Qodo - Fix truncation logic to check sanitized length
   return sanitized.length > maxLength ? sanitized.substring(0, maxLength) + "..." : sanitized;
 }
 
 /**
- * Escape Markdown metacharacters to prevent injection (Review #200 R5)
- * @param {string} str - Input string
- * @param {number} maxLength - Maximum length
- * @returns {string} Sanitized and escaped string
+ * Escape Markdown metacharacters
  */
 function escapeMd(str, maxLength = 100) {
   const sanitized = sanitizeDisplayString(str, maxLength);
-  // Review #200 R6: Escape all Markdown metacharacters including backslash
   return sanitized.replace(/[\\[\]()_*`#>!-]/g, "\\$&");
 }
 
 /**
- * Check if path is a symlink and refuse to write through it (Review #200 R5)
- * @param {string} filePath - Path to check
- * @throws {Error} If path is a symlink
+ * Check if path is a symlink and refuse to write through it
  */
 function refuseSymlink(filePath) {
   const { lstatSync } = require("node:fs");
   const path = require("node:path");
 
-  // Review #200 R6: Check target AND all parent directories for symlinks
   let current = path.resolve(filePath);
   while (true) {
     if (existsSync(current)) {
@@ -111,16 +101,17 @@ class LearningEffectivenessAnalyzer {
   constructor(options = {}) {
     this.options = {
       sinceReview: options.sinceReview || 1,
-      category: options.category || null,
       format: options.format || "dashboard",
       auto: options.auto || false,
       detailed: options.detailed || false,
-      outputFile: options.outputFile || null,
+      inputFile: options.inputFile || null,
+      allArchives: options.allArchives || false,
     };
 
     this.reviews = [];
-    this.codePatterns = [];
-    this.automatedPatterns = [];
+    this.documentedPatterns = []; // Patterns from CODE_PATTERNS.md
+    this.automatedPatterns = []; // Patterns from check-pattern-compliance.js
+    this.patternOccurrences = new Map(); // Pattern name -> array of review numbers
     this.results = {};
   }
 
@@ -130,27 +121,28 @@ class LearningEffectivenessAnalyzer {
   async analyze() {
     try {
       console.log("📊 Learning Effectiveness Analyzer\n");
+      console.log("🎯 Focus: Is Claude learning from documented patterns?\n");
 
       await this.loadReviews();
-      await this.loadCodePatterns();
+      await this.loadDocumentedPatterns();
       await this.loadAutomatedPatterns();
+      await this.buildPatternOccurrenceMap();
 
-      console.log(`📈 Analyzing ${this.reviews.length} reviews...\n`);
+      console.log(
+        `📈 Analyzing ${this.reviews.length} reviews for Claude's learning patterns...\n`
+      );
 
+      // Core analysis: Claude's learning effectiveness
       this.results = {
-        automationGaps: this.analyzeAutomationGaps(),
-        documentationGaps: this.analyzeDocumentationGaps(),
-        recurringIssues: this.analyzeRecurringIssues(),
-        processMetrics: this.analyzeProcessMetrics(),
-        toolEffectiveness: this.analyzeToolEffectiveness(),
-        categoryBalance: this.analyzeCategoryBalance(),
-        falsePositives: this.analyzeFalsePositives(),
-        complexityHotspots: this.analyzeComplexityHotspots(),
-        consolidationQuality: this.analyzeConsolidationQuality(),
-        trainingGaps: this.analyzeTrainingGaps(),
+        patternLearning: this.analyzePatternLearning(),
+        automationNeeds: this.analyzeAutomationNeeds(),
+        learningTrends: this.analyzeLearningTrends(),
+        recurrenceDetails: this.analyzeRecurrenceDetails(),
       };
 
+      // Generate actionable suggestions
       this.results.suggestions = this.generateSuggestions();
+      this.results.summary = this.calculateSummaryMetrics();
 
       await this.outputReport();
       await this.updateMetrics();
@@ -168,71 +160,121 @@ class LearningEffectivenessAnalyzer {
   }
 
   /**
-   * Load and parse reviews from AI_REVIEW_LEARNINGS_LOG.md
+   * Load and parse reviews from AI_REVIEW_LEARNINGS_LOG.md or archives
    */
   async loadReviews() {
-    if (!existsSync(LEARNINGS_LOG)) {
-      // Review #200: Qodo - Don't expose full path in error message
-      throw new Error("Learnings log not found: docs/AI_REVIEW_LEARNINGS_LOG.md");
+    let content = "";
+
+    if (this.options.allArchives) {
+      const archiveDir = join(ROOT, "docs", "archive");
+      if (!existsSync(archiveDir)) {
+        throw new Error("Archive directory not found: docs/archive/");
+      }
+
+      const { readdirSync } = require("node:fs");
+      const archiveFiles = readdirSync(archiveDir)
+        .filter((f) => f.startsWith("REVIEWS_") && f.endsWith(".md"))
+        .sort();
+
+      if (archiveFiles.length === 0) {
+        throw new Error("No REVIEWS_*.md files found in docs/archive/");
+      }
+
+      console.log(`📂 Scanning ${archiveFiles.length} archive files...`);
+
+      for (const file of archiveFiles) {
+        const filePath = join(archiveDir, file);
+        try {
+          // Check for symlinks to prevent symlink-based path traversal
+          const stat = lstatSync(filePath);
+          if (stat.isSymbolicLink()) {
+            console.warn(`   ⚠ Skipping symlink: ${file}`);
+            continue;
+          }
+          const fileContent = readFileSync(filePath, "utf-8");
+          content += "\n" + fileContent;
+          console.log(`   ✓ ${file}`);
+        } catch (error) {
+          console.warn(`   ⚠ Failed to read ${file}: ${sanitizeError(error)}`);
+        }
+      }
+
+      // Also include current learnings log
+      if (existsSync(LEARNINGS_LOG)) {
+        try {
+          content += "\n" + readFileSync(LEARNINGS_LOG, "utf-8");
+          console.log(`   ✓ AI_REVIEW_LEARNINGS_LOG.md (current)`);
+        } catch (error) {
+          console.warn(`   ⚠ Failed to read current log: ${sanitizeError(error)}`);
+        }
+      }
+    } else {
+      const displayPath = this.options.inputFile || "docs/AI_REVIEW_LEARNINGS_LOG.md";
+      const resolvedInput = this.options.inputFile
+        ? path.resolve(ROOT, this.options.inputFile)
+        : LEARNINGS_LOG;
+
+      // Path traversal prevention
+      const relToRoot = path.relative(ROOT, resolvedInput);
+      if (
+        this.options.inputFile &&
+        (relToRoot === "" || /^\.\.(?:[\\/]|$)/.test(relToRoot) || path.isAbsolute(relToRoot))
+      ) {
+        throw new Error(`Input file must be within repo: ${displayPath}`);
+      }
+
+      if (!existsSync(resolvedInput)) {
+        throw new Error(`Input file not found: ${displayPath}`);
+      }
+
+      // Symlink check to prevent symlink-based path traversal
+      const stat = lstatSync(resolvedInput);
+      if (stat.isSymbolicLink()) {
+        throw new Error(`Symbolic links not allowed: ${displayPath}`);
+      }
+
+      try {
+        content = readFileSync(resolvedInput, "utf-8");
+      } catch (error) {
+        throw new Error(`Failed to read input file: ${sanitizeError(error)}`);
+      }
     }
 
-    let content;
-    try {
-      content = readFileSync(LEARNINGS_LOG, "utf-8");
-    } catch (error) {
-      throw new Error(`Failed to read learnings log: ${sanitizeError(error)}`);
-    }
-
+    // Parse reviews from content
     const lines = content.split("\n");
-
     let currentReview = null;
-    let currentSection = null;
+    const seenReviewNumbers = new Set(); // Deduplicate reviews from multiple files
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
-      // Match review headers: #### Review #123: Title
       const reviewMatch = line.match(/^####\s+Review\s+#(\d+)/);
       if (reviewMatch) {
+        const reviewNum = parseInt(reviewMatch[1]);
+
+        // Skip duplicate reviews (can appear in both archive and current log)
+        if (seenReviewNumbers.has(reviewNum)) {
+          currentReview = null; // Reset so we don't capture lines from duplicate
+          continue;
+        }
+
         if (currentReview && currentReview.number >= this.options.sinceReview) {
           this.reviews.push(currentReview);
+          seenReviewNumbers.add(currentReview.number);
         }
 
         currentReview = {
-          number: parseInt(reviewMatch[1]),
+          number: reviewNum,
           title: line.replace(/^####\s+Review\s+#\d+\s*:?\s*/, ""),
-          tool: null,
-          findings: [],
           patterns: [],
-          severity: null,
-          category: null,
-          falsePositive: false,
-          sections: {},
+          findings: [],
+          rawLines: [],
         };
-        currentSection = null;
         continue;
       }
 
       if (!currentReview) continue;
-
-      // Extract metadata
-      if (line.startsWith("**Tool:**")) {
-        currentReview.tool = line.replace("**Tool:**", "").trim();
-      } else if (line.startsWith("**Severity:**")) {
-        currentReview.severity = line.replace("**Severity:**", "").trim();
-      } else if (line.startsWith("**Category:**")) {
-        currentReview.category = line.replace("**Category:**", "").trim();
-      } else if (line.includes("False Positive") || line.includes("false positive")) {
-        currentReview.falsePositive = true;
-      }
-
-      // Track sections for detailed analysis
-      if (line.startsWith("### ")) {
-        currentSection = line.replace(/^###\s+/, "").trim();
-        currentReview.sections[currentSection] = [];
-      } else if (currentSection && line.trim()) {
-        currentReview.sections[currentSection].push(line);
-      }
+      currentReview.rawLines.push(line);
 
       // Extract patterns mentioned
       const patternMatch = line.match(/Pattern:\s*(.+)/i);
@@ -240,13 +282,18 @@ class LearningEffectivenessAnalyzer {
         currentReview.patterns.push(patternMatch[1].trim());
       }
 
-      // Extract findings (bullet points)
+      // Extract from numbered pattern lists
+      const numberedPattern = line.match(/^\d+\.\s+\*\*([^*]+)\*\*/);
+      if (numberedPattern) {
+        currentReview.patterns.push(numberedPattern[1].trim());
+      }
+
+      // Extract findings for keyword matching
       if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
         currentReview.findings.push(line.trim().substring(2));
       }
     }
 
-    // Add last review
     if (currentReview && currentReview.number >= this.options.sinceReview) {
       this.reviews.push(currentReview);
     }
@@ -255,7 +302,6 @@ class LearningEffectivenessAnalyzer {
       throw new Error(`No reviews found in range (since #${this.options.sinceReview})`);
     }
 
-    // Review #200: Sort reviews by number for correct chronological order
     this.reviews.sort((a, b) => a.number - b.number);
 
     console.log(
@@ -265,10 +311,11 @@ class LearningEffectivenessAnalyzer {
 
   /**
    * Load documented patterns from CODE_PATTERNS.md
+   * These are the patterns Claude SHOULD have learned
    */
-  async loadCodePatterns() {
+  async loadDocumentedPatterns() {
     if (!existsSync(CODE_PATTERNS)) {
-      console.warn("⚠️  CODE_PATTERNS.md not found, skipping pattern analysis");
+      console.warn("⚠️  CODE_PATTERNS.md not found");
       return;
     }
 
@@ -281,7 +328,6 @@ class LearningEffectivenessAnalyzer {
     }
 
     const lines = content.split("\n");
-
     let currentPattern = null;
     let currentPriority = null;
 
@@ -297,24 +343,25 @@ class LearningEffectivenessAnalyzer {
             : "Edge case";
       }
 
-      // Match pattern headers
+      // Match pattern headers (### 1. Pattern Name)
       if (line.startsWith("### ")) {
         if (currentPattern) {
-          this.codePatterns.push(currentPattern);
+          this.documentedPatterns.push(currentPattern);
         }
 
+        const name = line.replace(/^###\s+\d+\.\s*/, "").trim();
         currentPattern = {
-          name: line.replace(/^###\s+\d+\.\s*/, "").trim(),
+          name,
           priority: currentPriority,
-          description: "",
           sourceReviews: [],
+          keywords: this.extractKeywords(name),
         };
       }
 
-      // Extract source reviews
-      const reviewMatch = line.match(/Review #(\d+)/g);
-      if (reviewMatch && currentPattern) {
-        reviewMatch.forEach((match) => {
+      // Extract source reviews (Review #123)
+      const reviewMatches = line.match(/Review #(\d+)/g);
+      if (reviewMatches && currentPattern) {
+        reviewMatches.forEach((match) => {
           const num = parseInt(match.replace("Review #", ""));
           if (!currentPattern.sourceReviews.includes(num)) {
             currentPattern.sourceReviews.push(num);
@@ -324,10 +371,23 @@ class LearningEffectivenessAnalyzer {
     }
 
     if (currentPattern) {
-      this.codePatterns.push(currentPattern);
+      this.documentedPatterns.push(currentPattern);
     }
 
-    console.log(`✅ Loaded ${this.codePatterns.length} documented patterns`);
+    console.log(
+      `✅ Loaded ${this.documentedPatterns.length} documented patterns from CODE_PATTERNS.md`
+    );
+  }
+
+  /**
+   * Extract keywords from pattern name for matching
+   */
+  extractKeywords(name) {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 2);
   }
 
   /**
@@ -335,7 +395,7 @@ class LearningEffectivenessAnalyzer {
    */
   async loadAutomatedPatterns() {
     if (!existsSync(PATTERN_CHECKER)) {
-      console.warn("⚠️  Pattern checker not found, skipping automation analysis");
+      console.warn("⚠️  Pattern checker not found");
       return;
     }
 
@@ -354,461 +414,368 @@ class LearningEffectivenessAnalyzer {
       return;
     }
 
-    // Parse pattern objects (simplified - just extract IDs and reviews)
     const patternsText = match[1];
     const patternBlocks = patternsText.split(/\{\s*id:/g).slice(1);
 
     for (const block of patternBlocks) {
       const idMatch = block.match(/["']([^"']+)["']/);
+      const messageMatch = block.match(/message:\s*["']([^"']+)["']/);
       const reviewMatch = block.match(/review:\s*["']([^"']+)["']/);
 
       if (idMatch) {
         this.automatedPatterns.push({
           id: idMatch[1],
-          reviews: reviewMatch
-            ? reviewMatch[1].split(",").map((r) => parseInt(r.replace(/[^0-9]/g, "")))
-            : [],
+          message: messageMatch ? messageMatch[1] : "",
+          reviewRefs: reviewMatch ? reviewMatch[1] : "",
+          keywords: this.extractKeywords(idMatch[1] + " " + (messageMatch ? messageMatch[1] : "")),
         });
       }
     }
 
-    console.log(`✅ Loaded ${this.automatedPatterns.length} automated patterns`);
+    console.log(
+      `✅ Loaded ${this.automatedPatterns.length} automated patterns from Pattern Checker`
+    );
   }
 
   /**
-   * ANALYSIS CATEGORY 1: Automation Gaps
-   * Identifies patterns that appear frequently but aren't automated yet
+   * Build a map of pattern keywords -> review occurrences
+   * This tracks when patterns were mentioned across all reviews
    */
-  analyzeAutomationGaps() {
-    const gaps = [];
-    const patternFrequency = new Map();
+  async buildPatternOccurrenceMap() {
+    for (const pattern of this.documentedPatterns) {
+      const occurrences = [];
 
-    // Count pattern occurrences across reviews
-    for (const review of this.reviews) {
-      for (const pattern of review.patterns) {
-        patternFrequency.set(pattern, (patternFrequency.get(pattern) || 0) + 1);
+      for (const review of this.reviews) {
+        // Check if any pattern keyword appears in review
+        const reviewText = [
+          review.title,
+          ...review.patterns,
+          ...review.findings,
+          ...review.rawLines,
+        ]
+          .join(" ")
+          .toLowerCase();
+
+        const matchScore = this.calculatePatternMatch(pattern.keywords, reviewText);
+        if (matchScore >= 0.5) {
+          // 50% keyword match threshold
+          occurrences.push(review.number);
+        }
+      }
+
+      this.patternOccurrences.set(pattern.name, occurrences);
+    }
+  }
+
+  /**
+   * Calculate keyword match score between pattern and text
+   * Uses word-boundary matching to prevent false positives (e.g., "path" in "filepath")
+   */
+  calculatePatternMatch(keywords, text) {
+    if (keywords.length === 0) return 0;
+    const matches = keywords.filter((kw) => {
+      // Escape special regex chars in keyword, then match at word boundaries
+      const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const wordBoundaryRegex = new RegExp(`\\b${escaped}\\b`, "i");
+      return wordBoundaryRegex.test(text);
+    }).length;
+    return matches / keywords.length;
+  }
+
+  /**
+   * CORE ANALYSIS: Claude's Pattern Learning Effectiveness
+   *
+   * For each documented pattern:
+   * - When was it first documented?
+   * - Did it appear again after documentation?
+   * - Is it now automated?
+   * - What's the learning status?
+   */
+  analyzePatternLearning() {
+    const learningResults = [];
+
+    for (const pattern of this.documentedPatterns) {
+      const occurrences = this.patternOccurrences.get(pattern.name) || [];
+      const firstDocumented =
+        pattern.sourceReviews.length > 0 ? Math.min(...pattern.sourceReviews) : null;
+
+      // Find occurrences after first documentation
+      const recurrences = firstDocumented
+        ? occurrences.filter((r) => r > firstDocumented + 5) // Grace period of 5 reviews
+        : [];
+
+      // Check if pattern is automated
+      const isAutomated = this.isPatternAutomated(pattern.name);
+
+      // Determine learning status
+      let status;
+      let statusEmoji;
+      if (recurrences.length === 0) {
+        status = "LEARNED";
+        statusEmoji = "✅";
+      } else if (isAutomated) {
+        status = "AUTOMATED";
+        statusEmoji = "🔧";
+      } else if (recurrences.length <= 2) {
+        status = "WEAK";
+        statusEmoji = "🟡";
+      } else {
+        status = "FAILED";
+        statusEmoji = "🔴";
+      }
+
+      learningResults.push({
+        pattern: pattern.name,
+        priority: pattern.priority,
+        firstDocumented,
+        totalOccurrences: occurrences.length,
+        recurrences: recurrences.length,
+        recurrenceReviews: recurrences.slice(-5), // Last 5 recurrences
+        isAutomated,
+        status,
+        statusEmoji,
+        learningScore: recurrences.length === 0 ? 100 : Math.max(0, 100 - recurrences.length * 20),
+      });
+    }
+
+    // Sort by recurrence count (worst first)
+    return learningResults.sort((a, b) => b.recurrences - a.recurrences);
+  }
+
+  /**
+   * Check if a pattern is automated in Pattern Checker
+   */
+  isPatternAutomated(patternName) {
+    const patternKeywords = this.extractKeywords(patternName);
+
+    for (const automated of this.automatedPatterns) {
+      const matchScore = this.calculatePatternMatch(patternKeywords, automated.keywords.join(" "));
+      if (matchScore >= 0.4) {
+        return true;
       }
     }
 
-    // Find patterns with high frequency that aren't automated
-    for (const [pattern, count] of patternFrequency.entries()) {
-      if (count >= 3) {
-        // Threshold: appears 3+ times
-        const isAutomated = this.automatedPatterns.some((ap) =>
-          pattern.toLowerCase().includes(ap.id.toLowerCase())
-        );
+    return false;
+  }
 
-        if (!isAutomated) {
-          gaps.push({
-            pattern,
-            occurrences: count,
-            roi: count > 10 ? "High" : count > 5 ? "Medium" : "Low",
-            reviews: this.reviews.filter((r) => r.patterns.includes(pattern)).map((r) => r.number),
+  /**
+   * Identify patterns that need automation
+   * (Recurring patterns not yet in Pattern Checker)
+   */
+  analyzeAutomationNeeds() {
+    const needs = [];
+
+    for (const result of this.results?.patternLearning || this.analyzePatternLearning()) {
+      if (result.status === "FAILED" || result.status === "WEAK") {
+        if (!result.isAutomated) {
+          needs.push({
+            pattern: result.pattern,
+            priority: result.priority,
+            recurrences: result.recurrences,
+            lastSeen: result.recurrenceReviews[result.recurrenceReviews.length - 1],
+            recommendation: this.generateAutomationRecommendation(result),
           });
         }
       }
     }
 
-    return gaps.sort((a, b) => b.occurrences - a.occurrences);
+    return needs.sort((a, b) => b.recurrences - a.recurrences);
   }
 
   /**
-   * ANALYSIS CATEGORY 2: Documentation Gaps
-   * Finds patterns mentioned in reviews but not in CODE_PATTERNS.md
+   * Generate automation recommendation for a pattern
    */
-  analyzeDocumentationGaps() {
-    const gaps = [];
-    const documentedPatternNames = new Set(this.codePatterns.map((p) => p.name.toLowerCase()));
-
-    const patternMentions = new Map();
-
-    for (const review of this.reviews) {
-      for (const pattern of review.patterns) {
-        const normalized = pattern.toLowerCase();
-
-        // Check if documented
-        let isDocumented = false;
-        for (const docPattern of documentedPatternNames) {
-          if (normalized.includes(docPattern) || docPattern.includes(normalized)) {
-            isDocumented = true;
-            break;
-          }
-        }
-
-        if (!isDocumented) {
-          patternMentions.set(pattern, (patternMentions.get(pattern) || 0) + 1);
-        }
-      }
-    }
-
-    for (const [pattern, count] of patternMentions.entries()) {
-      if (count >= 2) {
-        // Threshold: mentioned 2+ times
-        gaps.push({ pattern, occurrences: count });
-      }
-    }
-
-    return gaps.sort((a, b) => b.occurrences - a.occurrences);
-  }
-
-  /**
-   * ANALYSIS CATEGORY 3: Recurring Issues
-   * Detects patterns that keep appearing despite documentation
-   */
-  analyzeRecurringIssues() {
-    const recurring = [];
-
-    for (const codePattern of this.codePatterns) {
-      const sourceReviews = codePattern.sourceReviews;
-      if (sourceReviews.length === 0) continue;
-
-      const firstMention = Math.min(...sourceReviews);
-      const lastMention = Math.max(...sourceReviews);
-
-      // Check if pattern appeared again after 10+ reviews from first mention
-      if (lastMention - firstMention >= 10) {
-        const occurrencesSinceDoc = sourceReviews.filter((r) => r > firstMention + 10).length;
-
-        if (occurrencesSinceDoc > 0) {
-          recurring.push({
-            pattern: codePattern.name,
-            priority: codePattern.priority,
-            firstMention,
-            lastMention,
-            totalOccurrences: sourceReviews.length,
-            occurrencesSinceDoc,
-            learningEffectiveness: Math.max(
-              0,
-              100 - (occurrencesSinceDoc / sourceReviews.length) * 100
-            ),
-          });
-        }
-      }
-    }
-
-    return recurring.sort((a, b) => b.occurrencesSinceDoc - a.occurrencesSinceDoc);
-  }
-
-  /**
-   * ANALYSIS CATEGORY 4: Process Metrics
-   * Review cadence, severity distribution, resolution time
-   */
-  analyzeProcessMetrics() {
-    const severityCounts = {};
-    const categoryCounts = {};
-    const toolCounts = {};
-
-    for (const review of this.reviews) {
-      if (review.severity) {
-        severityCounts[review.severity] = (severityCounts[review.severity] || 0) + 1;
-      }
-      if (review.category) {
-        categoryCounts[review.category] = (categoryCounts[review.category] || 0) + 1;
-      }
-      if (review.tool) {
-        toolCounts[review.tool] = (toolCounts[review.tool] || 0) + 1;
-      }
-    }
-
-    const avgPatternsPerReview =
-      this.reviews.reduce((sum, r) => sum + r.patterns.length, 0) / this.reviews.length;
+  generateAutomationRecommendation(result) {
+    const sanitized = (result.pattern || "")
+      .replace(/[^a-zA-Z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .toLowerCase()
+      .slice(0, 40);
+    const safeName = sanitized || `pattern-${Date.now()}`;
 
     return {
-      totalReviews: this.reviews.length,
-      severityDistribution: severityCounts,
-      categoryDistribution: categoryCounts,
-      toolDistribution: toolCounts,
-      avgPatternsPerReview: avgPatternsPerReview.toFixed(2),
+      action: `Add to check-pattern-compliance.js`,
+      patternId: safeName,
+      priority: result.recurrences >= 5 ? "HIGH" : result.recurrences >= 3 ? "MEDIUM" : "LOW",
+      effort: "30-60 minutes",
     };
   }
 
   /**
-   * ANALYSIS CATEGORY 5: Tool Effectiveness
-   * Signal-to-noise ratio, unique findings, false positive rate
+   * Analyze learning trends over time
    */
-  analyzeToolEffectiveness() {
-    const toolStats = {};
+  analyzeLearningTrends() {
+    const patternLearning = this.results?.patternLearning || this.analyzePatternLearning();
 
-    for (const review of this.reviews) {
-      if (!review.tool) continue;
+    // Calculate overall learning effectiveness
+    const total = patternLearning.length;
+    const learned = patternLearning.filter((p) => p.status === "LEARNED").length;
+    const automated = patternLearning.filter((p) => p.status === "AUTOMATED").length;
+    const weak = patternLearning.filter((p) => p.status === "WEAK").length;
+    const failed = patternLearning.filter((p) => p.status === "FAILED").length;
 
-      if (!toolStats[review.tool]) {
-        toolStats[review.tool] = {
-          total: 0,
-          falsePositives: 0,
-          uniquePatterns: new Set(),
-        };
-      }
-
-      toolStats[review.tool].total++;
-      if (review.falsePositive) {
-        toolStats[review.tool].falsePositives++;
-      }
-      review.patterns.forEach((p) => toolStats[review.tool].uniquePatterns.add(p));
-    }
-
-    const results = [];
-    for (const [tool, stats] of Object.entries(toolStats)) {
-      results.push({
-        tool,
-        totalFindings: stats.total,
-        falsePositives: stats.falsePositives,
-        falsePositiveRate: ((stats.falsePositives / stats.total) * 100).toFixed(1) + "%",
-        uniquePatterns: stats.uniquePatterns.size,
-        signalToNoise: (stats.total - stats.falsePositives) / stats.total,
-      });
-    }
-
-    return results.sort((a, b) => b.signalToNoise - a.signalToNoise);
-  }
-
-  /**
-   * ANALYSIS CATEGORY 6: Category Balance
-   * Distribution across Security/Quality/Performance/Docs/Process
-   */
-  analyzeCategoryBalance() {
-    const categories = {};
-
-    for (const review of this.reviews) {
-      if (!review.category) continue;
-      categories[review.category] = (categories[review.category] || 0) + 1;
-    }
-
-    const total = Object.values(categories).reduce((sum, count) => sum + count, 0);
-    const distribution = {};
-
-    for (const [category, count] of Object.entries(categories)) {
-      distribution[category] = {
-        count,
-        percentage: ((count / total) * 100).toFixed(1) + "%",
-      };
-    }
-
-    return distribution;
-  }
-
-  /**
-   * ANALYSIS CATEGORY 7: False Positive Patterns
-   * Tools/patterns with high false positive rate
-   */
-  analyzeFalsePositives() {
-    const toolFPs = new Map();
-
-    for (const review of this.reviews) {
-      if (!review.falsePositive || !review.tool) continue;
-
-      if (!toolFPs.has(review.tool)) {
-        toolFPs.set(review.tool, []);
-      }
-
-      toolFPs.get(review.tool).push({
-        reviewNumber: review.number,
-        patterns: review.patterns,
-      });
-    }
-
-    const results = [];
-    for (const [tool, fps] of toolFPs.entries()) {
-      results.push({
-        tool,
-        count: fps.length,
-        examples: fps.slice(0, 3),
-      });
-    }
-
-    return results.sort((a, b) => b.count - a.count);
-  }
-
-  /**
-   * ANALYSIS CATEGORY 8: Complexity Hotspots
-   * Files that appear in multiple reviews (need refactoring)
-   */
-  analyzeComplexityHotspots() {
-    const fileMentions = new Map();
-
-    for (const review of this.reviews) {
-      for (const finding of review.findings) {
-        // Extract file paths (simplified - looks for common patterns)
-        // Review #200: SonarCloud - Fix unsafe regex to prevent ReDoS
-        const fileMatches = finding.match(/[^\s]+\.(js|ts|jsx|tsx|md|json|sh|yml|yaml)\b/g);
-        if (fileMatches) {
-          for (const file of fileMatches) {
-            fileMentions.set(file, (fileMentions.get(file) || 0) + 1);
-          }
-        }
-      }
-    }
-
-    const hotspots = [];
-    for (const [file, count] of fileMentions.entries()) {
-      if (count >= 3) {
-        hotspots.push({ file, mentions: count });
-      }
-    }
-
-    return hotspots.sort((a, b) => b.mentions - a.mentions);
-  }
-
-  /**
-   * ANALYSIS CATEGORY 9: Consolidation Quality
-   * Pattern extraction rate, consolidation lag, coverage
-   */
-  analyzeConsolidationQuality() {
-    const totalReviews = this.reviews.length;
-    const reviewsWithPatterns = this.reviews.filter((r) => r.patterns.length > 0).length;
-    const totalPatterns = this.reviews.reduce((sum, r) => sum + r.patterns.length, 0);
-
-    // Check for consolidation lag (reviews without patterns = not consolidated yet)
-    const unconsolidatedReviews = this.reviews.filter((r) => r.patterns.length === 0);
+    // Calculate by priority
+    const criticalPatterns = patternLearning.filter((p) => p.priority === "Critical");
+    const criticalLearned = criticalPatterns.filter(
+      (p) => p.status === "LEARNED" || p.status === "AUTOMATED"
+    ).length;
 
     return {
-      patternExtractionRate: (totalPatterns / totalReviews).toFixed(2),
-      coveragePercentage: ((reviewsWithPatterns / totalReviews) * 100).toFixed(1) + "%",
-      totalPatternsExtracted: totalPatterns,
-      unconsolidatedReviews: unconsolidatedReviews.length,
-      health: unconsolidatedReviews.length < totalReviews * 0.1 ? "Good" : "Needs Attention",
+      total,
+      learned,
+      automated,
+      weak,
+      failed,
+      effectivenessRate: total > 0 ? ((learned + automated) / total) * 100 : 0,
+      criticalTotal: criticalPatterns.length,
+      criticalLearned,
+      criticalRate:
+        criticalPatterns.length > 0 ? (criticalLearned / criticalPatterns.length) * 100 : 0,
     };
   }
 
   /**
-   * ANALYSIS CATEGORY 10: Training Gaps
-   * Missing guides/skills based on recurring issues
+   * Get detailed recurrence information
    */
-  analyzeTrainingGaps() {
-    const gaps = [];
+  analyzeRecurrenceDetails() {
+    const patternLearning = this.results?.patternLearning || this.analyzePatternLearning();
 
-    // Analyze recurring issues for training opportunities
-    const recurring = this.analyzeRecurringIssues();
+    // Get top recurring patterns with details
+    const recurring = patternLearning
+      .filter((p) => p.recurrences > 0)
+      .map((p) => ({
+        pattern: p.pattern,
+        priority: p.priority,
+        firstDocumented: p.firstDocumented,
+        recurrences: p.recurrences,
+        recurrenceReviews: p.recurrenceReviews,
+        isAutomated: p.isAutomated,
+        diagnosis: this.diagnoseRecurrence(p),
+      }));
 
-    for (const issue of recurring) {
-      if (issue.occurrencesSinceDoc >= 3) {
-        // Review #200: Security - Sanitize pattern name to prevent path traversal and git option injection
-        const safeBase = issue.pattern
-          .replace(/[/\\]/g, "_") // Remove path separators
-          .replace(/\s+/g, "_")
-          .replace(/[^a-zA-Z0-9_-]/g, "") // Remove special chars
-          .replace(/^-+/, "") // Review #200 R4: Strip leading dashes to prevent git option injection
-          .toUpperCase()
-          .slice(0, 60); // Review #200 R5: Length limit to prevent long filenames
-
-        // Review #200 R5: Fallback for empty names
-        const safeName = safeBase || "UNNAMED_PATTERN";
-
-        gaps.push({
-          topic: issue.pattern,
-          occurrences: issue.occurrencesSinceDoc,
-          suggestedDoc: `docs/agent_docs/${safeName}_GUIDE.md`,
-          priority: issue.priority,
-        });
-      }
-    }
-
-    return gaps;
+    return recurring;
   }
 
   /**
-   * Generate actionable suggestions from all analysis categories
+   * Diagnose why a pattern keeps recurring
+   */
+  diagnoseRecurrence(pattern) {
+    if (pattern.isAutomated) {
+      return "Automated but automation may need refinement";
+    }
+    if (pattern.recurrences >= 5) {
+      return "High recurrence - documentation insufficient, needs automation";
+    }
+    if (pattern.recurrences >= 3) {
+      return "Moderate recurrence - consider adding to Pattern Checker";
+    }
+    return "Low recurrence - monitor for improvement";
+  }
+
+  /**
+   * Generate actionable suggestions focused on learning improvement
    */
   generateSuggestions() {
     const suggestions = [];
     let priority = 1;
 
-    // Automation gaps (top 5)
-    const automationGaps = this.results.automationGaps.slice(0, 5);
-    for (const gap of automationGaps) {
-      if (gap.roi === "High") {
-        suggestions.push({
-          priority: priority++,
-          category: "Automation",
-          title: `Automate "${gap.pattern}" pattern`,
-          description: `This pattern appears in ${gap.occurrences} reviews (${gap.reviews.join(", ")})`,
-          effort: "30-60 minutes",
-          impact: gap.roi,
-          action: "Add to check-pattern-compliance.js",
-          type: "pattern-check",
-          pattern: gap.pattern,
-        });
-      }
-    }
-
-    // Recurring issues (learning breakdown)
-    const recurring = this.results.recurringIssues.slice(0, 3);
-    for (const issue of recurring) {
-      if (issue.learningEffectiveness < 70) {
-        suggestions.push({
-          priority: priority++,
-          category: "Learning",
-          title: `Address recurring "${issue.pattern}" issue`,
-          description: `Pattern documented in #${issue.firstMention} but appeared ${issue.occurrencesSinceDoc} more times`,
-          effort: "1-2 hours",
-          impact: "High",
-          action: "Review documentation clarity, consider automation",
-        });
-      }
-    }
-
-    // Tool effectiveness (remove low-value tools)
-    const lowValueTools = this.results.toolEffectiveness.filter(
-      (t) => parseFloat(t.falsePositiveRate) > 30 || t.signalToNoise < 0.5
+    // Suggestion 1: Patterns that FAILED learning (need automation)
+    const failedPatterns = this.results.patternLearning.filter(
+      (p) => p.status === "FAILED" && !p.isAutomated
     );
-    for (const tool of lowValueTools.slice(0, 2)) {
+
+    for (const pattern of failedPatterns.slice(0, 3)) {
       suggestions.push({
         priority: priority++,
-        category: "Tool",
-        title: `Reconfigure or remove "${tool.tool}"`,
-        description: `${tool.falsePositiveRate} false positive rate, ${tool.uniquePatterns} unique patterns`,
-        effort: "15-30 minutes",
-        impact: "Medium",
-        action: "Review tool configuration or remove if low ROI",
+        category: "Automation",
+        title: `Automate "${sanitizeDisplayString(pattern.pattern, 50)}"`,
+        description: `Recurred ${pattern.recurrences} times after documentation (Reviews: ${pattern.recurrenceReviews.join(", ")})`,
+        action: "Add pattern to check-pattern-compliance.js",
+        effort: "30-60 minutes",
+        impact: "High - will prevent future recurrences",
+        type: "automation",
+        patternName: pattern.pattern,
       });
     }
 
-    // Training gaps (top 3)
-    const trainingGaps = this.results.trainingGaps.slice(0, 3);
-    for (const gap of trainingGaps) {
+    // Suggestion 2: Weak patterns (need documentation improvement)
+    const weakPatterns = this.results.patternLearning.filter(
+      (p) => p.status === "WEAK" && !p.isAutomated
+    );
+
+    for (const pattern of weakPatterns.slice(0, 2)) {
+      suggestions.push({
+        priority: priority++,
+        category: "Documentation",
+        title: `Improve documentation for "${sanitizeDisplayString(pattern.pattern, 50)}"`,
+        description: `Recurred ${pattern.recurrences} times - documentation may be unclear`,
+        action: "Review and enhance pattern documentation in CODE_PATTERNS.md",
+        effort: "15-30 minutes",
+        impact: "Medium - may reduce recurrences",
+        type: "documentation",
+        patternName: pattern.pattern,
+      });
+    }
+
+    // Suggestion 3: Training guides for complex patterns
+    const complexPatterns = this.results.patternLearning.filter(
+      (p) => p.recurrences >= 3 && p.priority === "Critical"
+    );
+
+    for (const pattern of complexPatterns.slice(0, 2)) {
+      const sanitized = (pattern.pattern || "")
+        .replace(/[^a-zA-Z0-9\s]/g, "_")
+        .replace(/\s+/g, "_")
+        .toUpperCase()
+        .slice(0, 40);
+      const safeName = sanitized || `PATTERN_${Date.now()}`;
+
       suggestions.push({
         priority: priority++,
         category: "Training",
-        title: `Create guide for "${gap.topic}"`,
-        description: `Recurring ${gap.occurrences} times after documentation`,
-        effort: "2-3 hours",
-        impact: gap.priority === "Critical" ? "High" : "Medium",
-        action: `Create ${gap.suggestedDoc}`,
-        type: "doc-update",
-        suggestedPath: gap.suggestedDoc,
+        title: `Create guide for "${sanitizeDisplayString(pattern.pattern, 50)}"`,
+        description: `Critical pattern with ${pattern.recurrences} recurrences needs dedicated guide`,
+        action: `Create docs/agent_docs/${safeName}_GUIDE.md`,
+        effort: "1-2 hours",
+        impact: "High - addresses critical pattern gap",
+        type: "training",
+        patternName: pattern.pattern,
+        suggestedPath: `docs/agent_docs/${safeName}_GUIDE.md`,
       });
     }
 
-    return suggestions.slice(0, 10); // Top 10 suggestions
+    return suggestions.slice(0, 10);
+  }
+
+  /**
+   * Calculate summary metrics
+   */
+  calculateSummaryMetrics() {
+    const trends = this.results.learningTrends;
+
+    return {
+      learningEffectiveness: trends.effectivenessRate.toFixed(1) + "%",
+      patternsLearned: trends.learned,
+      patternsAutomated: trends.automated,
+      patternsFailing: trends.failed,
+      patternsWeak: trends.weak,
+      criticalPatternRate: trends.criticalRate.toFixed(1) + "%",
+      totalDocumentedPatterns: this.documentedPatterns.length,
+      totalAutomatedPatterns: this.automatedPatterns.length,
+      automationCoverage:
+        this.documentedPatterns.length > 0
+          ? ((this.automatedPatterns.length / this.documentedPatterns.length) * 100).toFixed(1) +
+            "%"
+          : "N/A",
+    };
   }
 
   /**
    * Output report based on format option
    */
   async outputReport() {
-    // Review #200 R5: Support JSON output format
-    if (this.options.format === "json") {
-      const json = JSON.stringify(this.results, null, 2);
-
-      if (this.options.outputFile) {
-        refuseSymlink(this.options.outputFile);
-        // Review #200 R6: Use wx flag to prevent overwrites
-        writeFileSync(this.options.outputFile, json, {
-          encoding: "utf-8",
-          flag: "wx",
-          mode: 0o600,
-        });
-        console.log(`📊 JSON output written to: ${this.options.outputFile}`);
-      } else {
-        console.log(json);
-      }
-      return;
-    }
-
     if (this.options.detailed) {
       this.outputDetailed();
-    } else if (this.options.category) {
-      this.outputCategory(this.options.category);
     } else {
       this.outputDashboard();
     }
@@ -820,179 +787,212 @@ class LearningEffectivenessAnalyzer {
   outputDashboard() {
     const firstReview = this.reviews[0].number;
     const lastReview = this.reviews[this.reviews.length - 1].number;
+    const summary = this.results.summary;
+    const trends = this.results.learningTrends;
 
-    console.log("╔════════════════════════════════════════════════════════════╗");
-    console.log("║         LEARNING EFFECTIVENESS DASHBOARD                   ║");
-    console.log("╚════════════════════════════════════════════════════════════╝\n");
+    console.log("╔════════════════════════════════════════════════════════════════════════╗");
+    console.log("║            CLAUDE'S LEARNING EFFECTIVENESS DASHBOARD                  ║");
+    console.log("╚════════════════════════════════════════════════════════════════════════╝\n");
 
     console.log(
       `📊 Analysis Period: Review #${firstReview} - #${lastReview} (${this.reviews.length} reviews)\n`
     );
 
-    console.log("┌─────────────────────────────────────────────────────────┐");
-    console.log("│ KEY METRICS                                             │");
-    console.log("├─────────────────────────────────────────────────────────┤");
-    console.log(`│ Automation Coverage:        ${this.getAutomationCoverage().padEnd(30)}│`);
-    console.log(`│ Learning Effectiveness:     ${this.getLearningEffectiveness().padEnd(30)}│`);
-    console.log(
-      `│ Pattern Extraction Rate:    ${this.results.consolidationQuality.patternExtractionRate} patterns/review${" ".repeat(14)}│`
-    );
-    console.log(
-      `│ Consolidation Health:       ${this.results.consolidationQuality.health.padEnd(30)}│`
-    );
-    console.log("└─────────────────────────────────────────────────────────┘\n");
+    // Key metrics
+    console.log("┌───────────────────────────────────────────────────────────────────────┐");
+    console.log("│ KEY LEARNING METRICS                                                  │");
+    console.log("├───────────────────────────────────────────────────────────────────────┤");
+    console.log(`│ Learning Effectiveness:     ${summary.learningEffectiveness.padEnd(44)}│`);
+    console.log(`│ Patterns Learned:           ${String(summary.patternsLearned).padEnd(44)}│`);
+    console.log(`│ Patterns Automated:         ${String(summary.patternsAutomated).padEnd(44)}│`);
+    console.log(`│ Patterns Failing:           ${String(summary.patternsFailing).padEnd(44)}│`);
+    console.log(`│ Critical Pattern Success:   ${summary.criticalPatternRate.padEnd(44)}│`);
+    console.log(`│ Automation Coverage:        ${summary.automationCoverage.padEnd(44)}│`);
+    console.log("└───────────────────────────────────────────────────────────────────────┘\n");
 
+    // Pattern Learning Status Table
+    console.log("📈 PATTERN LEARNING STATUS\n");
+    console.log(
+      "┌──────────────────────────────────────────────┬────────────┬──────────┬────────┐"
+    );
+    console.log(
+      "│ Pattern                                      │ Documented │ Recurred │ Status │"
+    );
+    console.log(
+      "├──────────────────────────────────────────────┼────────────┼──────────┼────────┤"
+    );
+
+    const topPatterns = this.results.patternLearning.slice(0, 15);
+    for (const p of topPatterns) {
+      const name = sanitizeDisplayString(p.pattern, 42).padEnd(44);
+      const doc = p.firstDocumented ? `#${p.firstDocumented}`.padStart(10) : "N/A".padStart(10);
+      const rec = `${p.recurrences}x`.padStart(8);
+      const status = `${p.statusEmoji}`.padStart(6);
+      console.log(`│ ${name} │${doc} │${rec} │${status} │`);
+    }
+    console.log(
+      "└──────────────────────────────────────────────┴────────────┴──────────┴────────┘\n"
+    );
+
+    // Status Legend
+    console.log(
+      "Legend: ✅ LEARNED (no recurrence) | 🔧 AUTOMATED | 🟡 WEAK (1-2 recurrences) | 🔴 FAILED (3+ recurrences)\n"
+    );
+
+    // Top Recommendations
     if (this.results.suggestions.length > 0) {
-      console.log("🎯 TOP 5 RECOMMENDED ACTIONS:\n");
+      console.log("🎯 TOP RECOMMENDED ACTIONS TO IMPROVE LEARNING:\n");
 
       for (let i = 0; i < Math.min(5, this.results.suggestions.length); i++) {
         const s = this.results.suggestions[i];
-        console.log(`${i + 1}. [${s.category}] ${sanitizeDisplayString(s.title, 80)}`);
-        console.log(`   ${sanitizeDisplayString(s.description, 120)}`);
-        console.log(`   → ${sanitizeDisplayString(s.action, 120)}\n`);
+        console.log(`${i + 1}. [${s.category}] ${sanitizeDisplayString(s.title, 60)}`);
+        console.log(`   ${sanitizeDisplayString(s.description, 80)}`);
+        console.log(`   → ${sanitizeDisplayString(s.action, 80)}`);
+        console.log(`   Effort: ${s.effort} | Impact: ${s.impact}\n`);
       }
     } else {
-      console.log("✅ No high-priority suggestions at this time.\n");
+      console.log("✅ No high-priority learning improvements needed at this time.\n");
     }
 
-    console.log("💡 Run with --detailed for full 10-category analysis");
-    console.log("💡 Run with --category <name> for specific deep-dive\n");
+    console.log("💡 Run with --detailed for full pattern breakdown");
+    console.log("💡 Run with --all-archives to analyze historical patterns\n");
   }
 
   /**
-   * Output detailed report (all 10 categories)
+   * Output detailed report
    */
   outputDetailed() {
-    console.log("LEARNING EFFECTIVENESS - DETAILED REPORT\n");
-    console.log("═".repeat(60) + "\n");
+    const firstReview = this.reviews[0].number;
+    const lastReview = this.reviews[this.reviews.length - 1].number;
+    const summary = this.results.summary;
 
-    // 1. Automation Opportunities
-    console.log("🤖 1. AUTOMATION OPPORTUNITIES\n");
-    if (this.results.automationGaps.length > 0) {
-      console.log("Top patterns that should be automated:\n");
-      for (const gap of this.results.automationGaps.slice(0, 10)) {
-        console.log(`  • ${sanitizeDisplayString(gap.pattern, 80)}`);
-        console.log(`    Occurrences: ${gap.occurrences} | ROI: ${gap.roi}`);
-        console.log(`    Reviews: ${gap.reviews.join(", ")}\n`);
+    console.log("═".repeat(80));
+    console.log("CLAUDE'S LEARNING EFFECTIVENESS - DETAILED REPORT");
+    console.log("═".repeat(80) + "\n");
+
+    console.log(
+      `Analysis Period: Review #${firstReview} - #${lastReview} (${this.reviews.length} reviews)\n`
+    );
+
+    // 1. Summary Metrics
+    console.log("📊 1. SUMMARY METRICS\n");
+    console.log("┌────────────────────────────────┬─────────────────────────────────────────┐");
+    console.log("│ Metric                         │ Value                                   │");
+    console.log("├────────────────────────────────┼─────────────────────────────────────────┤");
+    console.log(`│ Learning Effectiveness         │ ${summary.learningEffectiveness.padEnd(39)} │`);
+    console.log(
+      `│ Total Documented Patterns      │ ${String(summary.totalDocumentedPatterns).padEnd(39)} │`
+    );
+    console.log(
+      `│ Total Automated Patterns       │ ${String(summary.totalAutomatedPatterns).padEnd(39)} │`
+    );
+    console.log(`│ Automation Coverage            │ ${summary.automationCoverage.padEnd(39)} │`);
+    console.log(
+      `│ Patterns Successfully Learned  │ ${String(summary.patternsLearned).padEnd(39)} │`
+    );
+    console.log(
+      `│ Patterns Needing Automation    │ ${String(summary.patternsFailing).padEnd(39)} │`
+    );
+    console.log(`│ Critical Pattern Success Rate  │ ${summary.criticalPatternRate.padEnd(39)} │`);
+    console.log("└────────────────────────────────┴─────────────────────────────────────────┘\n");
+
+    // 2. Full Pattern Learning Status
+    console.log("📈 2. COMPLETE PATTERN LEARNING STATUS\n");
+    console.log(
+      "┌────────────────────────────────────────────────┬──────────┬────────────┬──────────┬────────┬───────────┐"
+    );
+    console.log(
+      "│ Pattern                                        │ Priority │ Documented │ Recurred │ Status │ Automated │"
+    );
+    console.log(
+      "├────────────────────────────────────────────────┼──────────┼────────────┼──────────┼────────┼───────────┤"
+    );
+
+    for (const p of this.results.patternLearning) {
+      const name = sanitizeDisplayString(p.pattern, 44).padEnd(46);
+      const pri = (p.priority || "N/A").substring(0, 8).padEnd(8);
+      const doc = p.firstDocumented ? `#${p.firstDocumented}`.padStart(10) : "N/A".padStart(10);
+      const rec = `${p.recurrences}x`.padStart(8);
+      const status = `${p.statusEmoji}`.padStart(6);
+      const auto = p.isAutomated ? "Yes".padStart(9) : "No".padStart(9);
+      console.log(`│ ${name} │ ${pri} │${doc} │${rec} │${status} │${auto} │`);
+    }
+    console.log(
+      "└────────────────────────────────────────────────┴──────────┴────────────┴──────────┴────────┴───────────┘\n"
+    );
+
+    // 3. Automation Needs
+    console.log("🔧 3. PATTERNS NEEDING AUTOMATION\n");
+    const automationNeeds = this.results.automationNeeds || this.analyzeAutomationNeeds();
+
+    if (automationNeeds.length > 0) {
+      console.log("These patterns keep recurring and should be added to Pattern Checker:\n");
+      console.log(
+        "┌────────────────────────────────────────────────┬──────────┬────────────┬──────────┐"
+      );
+      console.log(
+        "│ Pattern                                        │ Priority │ Recurred   │ Last     │"
+      );
+      console.log(
+        "├────────────────────────────────────────────────┼──────────┼────────────┼──────────┤"
+      );
+
+      for (const need of automationNeeds) {
+        const name = sanitizeDisplayString(need.pattern, 44).padEnd(46);
+        const pri = (need.priority || "N/A").substring(0, 8).padEnd(8);
+        const rec = `${need.recurrences}x`.padStart(10);
+        const last = need.lastSeen ? `#${need.lastSeen}`.padStart(8) : "N/A".padStart(8);
+        console.log(`│ ${name} │ ${pri} │${rec} │${last} │`);
+      }
+      console.log(
+        "└────────────────────────────────────────────────┴──────────┴────────────┴──────────┘\n"
+      );
+
+      // Show implementation suggestions
+      console.log("Implementation Examples:\n");
+      for (const need of automationNeeds.slice(0, 3)) {
+        const rec = need.recommendation;
+        console.log(`  • ${sanitizeDisplayString(need.pattern, 50)}`);
+        console.log(`    Pattern ID: ${rec.patternId}`);
+        console.log(`    Priority: ${rec.priority} | Effort: ${rec.effort}\n`);
       }
     } else {
-      console.log("  ✅ No high-frequency patterns missing automation\n");
+      console.log("  ✅ All recurring patterns are already automated\n");
     }
 
-    // 2. Documentation Gaps
-    console.log("📚 2. DOCUMENTATION GAPS\n");
-    if (this.results.documentationGaps.length > 0) {
-      console.log("Patterns mentioned but not documented:\n");
-      for (const gap of this.results.documentationGaps.slice(0, 10)) {
+    // 4. Recurrence Details
+    console.log("📋 4. RECURRENCE DETAILS\n");
+    const recurrenceDetails = this.results.recurrenceDetails || this.analyzeRecurrenceDetails();
+
+    if (recurrenceDetails.length > 0) {
+      for (const r of recurrenceDetails.slice(0, 10)) {
+        console.log(`  • ${sanitizeDisplayString(r.pattern, 60)} [${r.priority || "N/A"}]`);
+        console.log(`    First documented: Review #${r.firstDocumented || "?"}`);
         console.log(
-          `  • ${sanitizeDisplayString(gap.pattern, 80)} (${gap.occurrences} mentions)\n`
+          `    Recurred ${r.recurrences} times: Reviews ${r.recurrenceReviews.join(", ")}`
         );
+        console.log(`    Automated: ${r.isAutomated ? "Yes" : "No"}`);
+        console.log(`    Diagnosis: ${r.diagnosis}\n`);
       }
     } else {
-      console.log("  ✅ All frequent patterns are documented\n");
+      console.log("  ✅ No patterns have recurred - excellent learning!\n");
     }
 
-    // 3. Recurring Issues
-    console.log("⚠️  3. RECURRING ISSUES (Learning Breakdown)\n");
-    if (this.results.recurringIssues.length > 0) {
-      console.log("Patterns that keep appearing despite documentation:\n");
-      for (const issue of this.results.recurringIssues.slice(0, 10)) {
-        console.log(`  • ${sanitizeDisplayString(issue.pattern, 80)} [${issue.priority}]`);
-        console.log(`    First: #${issue.firstMention} | Last: #${issue.lastMention}`);
-        console.log(`    Effectiveness: ${issue.learningEffectiveness.toFixed(1)}%\n`);
+    // 5. Recommendations
+    console.log("═".repeat(80));
+    console.log("RECOMMENDATIONS TO IMPROVE CLAUDE'S LEARNING");
+    console.log("═".repeat(80) + "\n");
+
+    if (this.results.suggestions.length > 0) {
+      for (const s of this.results.suggestions) {
+        console.log(`${s.priority}. [${s.category}] ${sanitizeDisplayString(s.title, 60)}`);
+        console.log(`   Description: ${sanitizeDisplayString(s.description, 70)}`);
+        console.log(`   Action: ${sanitizeDisplayString(s.action, 70)}`);
+        console.log(`   Effort: ${s.effort} | Impact: ${s.impact}\n`);
       }
     } else {
-      console.log("  ✅ No recurring issues detected\n");
+      console.log("✅ No immediate actions required - learning system is healthy\n");
     }
-
-    // 4. Process Metrics
-    console.log("🔧 4. PROCESS METRICS\n");
-    console.log(`  Total Reviews: ${this.results.processMetrics.totalReviews}`);
-    console.log(`  Avg Patterns/Review: ${this.results.processMetrics.avgPatternsPerReview}\n`);
-    console.log("  Severity Distribution:");
-    for (const [severity, count] of Object.entries(
-      this.results.processMetrics.severityDistribution
-    )) {
-      console.log(`    ${severity}: ${count}`);
-    }
-    console.log("\n  Category Distribution:");
-    for (const [category, count] of Object.entries(
-      this.results.processMetrics.categoryDistribution
-    )) {
-      console.log(`    ${category}: ${count}`);
-    }
-    console.log("");
-
-    // 5. Tool Effectiveness
-    console.log("🛠️  5. TOOL EFFECTIVENESS\n");
-    if (this.results.toolEffectiveness.length > 0) {
-      console.log("Tool performance metrics:\n");
-      for (const tool of this.results.toolEffectiveness) {
-        console.log(`  • ${tool.tool}`);
-        console.log(
-          `    Total: ${tool.totalFindings} | FP Rate: ${tool.falsePositiveRate} | Unique: ${tool.uniquePatterns}`
-        );
-        console.log(`    Signal/Noise: ${(tool.signalToNoise * 100).toFixed(1)}%\n`);
-      }
-    }
-
-    // Continue with other categories...
-    console.log("📊 6. CATEGORY BALANCE\n");
-    for (const [category, stats] of Object.entries(this.results.categoryBalance)) {
-      console.log(`  ${category}: ${stats.count} (${stats.percentage})`);
-    }
-    console.log("");
-
-    // 7-10 abbreviated for space
-    console.log("🚫 7. FALSE POSITIVE PATTERNS\n");
-    console.log(`  ${this.results.falsePositives.length} tools with false positives\n`);
-
-    console.log("🔥 8. COMPLEXITY HOTSPOTS\n");
-    console.log(`  ${this.results.complexityHotspots.length} files mentioned 3+ times\n`);
-
-    console.log("📈 9. CONSOLIDATION QUALITY\n");
-    console.log(`  Extraction Rate: ${this.results.consolidationQuality.patternExtractionRate}`);
-    console.log(`  Coverage: ${this.results.consolidationQuality.coveragePercentage}`);
-    console.log(`  Health: ${this.results.consolidationQuality.health}\n`);
-
-    console.log("🎓 10. TRAINING GAPS\n");
-    if (this.results.trainingGaps.length > 0) {
-      for (const gap of this.results.trainingGaps) {
-        console.log(`  • ${sanitizeDisplayString(gap.topic, 80)} (${gap.occurrences} occurrences)`);
-        console.log(`    Suggested: ${sanitizeDisplayString(gap.suggestedDoc, 80)}\n`);
-      }
-    } else {
-      console.log("  ✅ No training gaps identified\n");
-    }
-  }
-
-  /**
-   * Output single category deep-dive
-   */
-  outputCategory(categoryName) {
-    console.log(`📊 CATEGORY: ${categoryName.toUpperCase()}\n`);
-
-    const categoryMap = {
-      automation: "automationGaps",
-      documentation: "documentationGaps",
-      recurring: "recurringIssues",
-      process: "processMetrics",
-      tools: "toolEffectiveness",
-      balance: "categoryBalance",
-      "false-positives": "falsePositives",
-      hotspots: "complexityHotspots",
-      consolidation: "consolidationQuality",
-      training: "trainingGaps",
-    };
-
-    const key = categoryMap[categoryName.toLowerCase()];
-    if (!key || !this.results[key]) {
-      console.error(`❌ Unknown category: ${categoryName}`);
-      console.log(`Valid options: ${Object.keys(categoryMap).join(", ")}`);
-      return;
-    }
-
-    console.log(JSON.stringify(this.results[key], null, 2));
   }
 
   /**
@@ -1008,44 +1008,39 @@ class LearningEffectivenessAnalyzer {
     console.log("  [Q]uit - Exit interactive mode\n");
 
     const deferred = [];
-    const skipped = [];
-    const applied = [];
 
     for (let i = 0; i < this.results.suggestions.length; i++) {
       const suggestion = this.results.suggestions[i];
 
       console.log(
-        `\n[${i + 1}/${this.results.suggestions.length}] ${sanitizeDisplayString(suggestion.title, 80)}`
+        `\n[${i + 1}/${this.results.suggestions.length}] ${sanitizeDisplayString(suggestion.title, 60)}`
       );
       console.log(
-        `Category: ${suggestion.category} | Priority: ${suggestion.priority} | Effort: ${suggestion.effort}`
+        `Category: ${suggestion.category} | Effort: ${suggestion.effort} | Impact: ${suggestion.impact}`
       );
 
       const choice = await this.promptUser("\n[A]pply [S]kip [V]iew [D]efer [Q]uit: ");
 
       switch (choice.toLowerCase()) {
-        case "a": {
-          const success = await this.applySuggestion(suggestion);
-          if (success) {
-            applied.push(suggestion);
-            console.log("✅ Applied and committed");
-          } else {
-            console.log("⚠️  Could not auto-apply this suggestion type");
-            const defer = await this.promptUser("Defer to TODO? [y/n]: ");
-            if (defer.toLowerCase() === "y") {
-              deferred.push(suggestion);
-            }
-          }
+        case "a":
+          console.log("⚠️  Auto-apply not implemented for this suggestion type");
+          console.log(
+            "   Please implement manually: " + sanitizeDisplayString(suggestion.action, 80)
+          );
           break;
-        }
-        case "s": {
-          const reason = await this.promptUser("Reason for skipping: ");
-          skipped.push({ suggestion, reason });
+        case "s":
           console.log("⏭️  Skipped");
           break;
-        }
         case "v":
-          this.viewSuggestionDetails(suggestion);
+          console.log("\n" + "=".repeat(60));
+          console.log(`SUGGESTION DETAILS: ${sanitizeDisplayString(suggestion.title, 50)}`);
+          console.log("=".repeat(60));
+          console.log(`\nCategory: ${suggestion.category}`);
+          console.log(`Effort: ${suggestion.effort}`);
+          console.log(`Impact: ${suggestion.impact}`);
+          console.log(`\nDescription: ${sanitizeDisplayString(suggestion.description, 200)}`);
+          console.log(`\nAction: ${sanitizeDisplayString(suggestion.action, 200)}`);
+          console.log("=".repeat(60) + "\n");
           i--; // Re-ask
           break;
         case "d":
@@ -1054,7 +1049,7 @@ class LearningEffectivenessAnalyzer {
           break;
         case "q":
           console.log("\n👋 Exiting interactive mode...");
-          i = this.results.suggestions.length; // Exit loop
+          i = this.results.suggestions.length;
           break;
         default:
           console.log("Invalid choice, please try again");
@@ -1062,236 +1057,10 @@ class LearningEffectivenessAnalyzer {
       }
     }
 
-    // Save tracking files
     if (deferred.length > 0) {
       await this.saveTodoFile(deferred);
       console.log(`\n📝 ${deferred.length} suggestions saved to ${TODO_FILE}`);
     }
-    if (skipped.length > 0) {
-      await this.saveSkippedFile(skipped);
-      console.log(`📋 ${skipped.length} suggestions logged to ${SKIPPED_FILE}`);
-    }
-    if (applied.length > 0) {
-      console.log(`✅ ${applied.length} suggestions applied`);
-    }
-
-    console.log(
-      `\n📊 Summary: ${applied.length} applied, ${deferred.length} deferred, ${skipped.length} skipped`
-    );
-  }
-
-  /**
-   * Apply a suggestion (file modifications + git commit)
-   */
-  async applySuggestion(suggestion) {
-    if (!suggestion.type) {
-      return false; // Cannot auto-apply
-    }
-
-    try {
-      switch (suggestion.type) {
-        case "pattern-check":
-          await this.applyPatternCheck(suggestion);
-          break;
-        case "doc-update":
-          await this.applyDocUpdate(suggestion);
-          break;
-        default:
-          return false;
-      }
-
-      // Create git commit
-      // Review #200 R5: Check createCommit return value before reporting success
-      const committed = await this.createCommit(suggestion);
-      return committed === true;
-    } catch (error) {
-      console.error("Error applying suggestion:", sanitizeError(error));
-      return false;
-    }
-  }
-
-  /**
-   * Add pattern to check-pattern-compliance.js
-   */
-  async applyPatternCheck(suggestion) {
-    console.log("⚠️  Manual implementation required for pattern checks");
-    console.log("This would require adding a RegEx pattern and validation logic.");
-    console.log("Please add manually to scripts/check-pattern-compliance.js");
-    throw new Error("Manual implementation required");
-  }
-
-  /**
-   * Create or update documentation file
-   */
-  async applyDocUpdate(suggestion) {
-    if (!suggestion.suggestedPath) {
-      throw new Error("No suggested path for doc update");
-    }
-
-    // Review #200: Security - Validate path is within allowed directory
-    const path = require("node:path");
-    const allowedBase = path.resolve(ROOT, "docs", "agent_docs");
-    const targetPath = path.resolve(ROOT, suggestion.suggestedPath);
-
-    // Check if path is within allowed directory (Review #17, #18, #40, #53)
-    const rel = path.relative(allowedBase, targetPath);
-    // Use regex for Windows compatibility and edge cases (..hidden.md, empty string)
-    if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
-      throw new Error(
-        `Invalid path: ${suggestion.suggestedPath} (must be within docs/agent_docs/)`
-      );
-    }
-
-    // Review #200: Create directory if it doesn't exist
-    const { mkdirSync, lstatSync } = require("node:fs");
-    const parentDir = path.dirname(targetPath);
-    mkdirSync(parentDir, { recursive: true });
-
-    // Review #200 R5: Prevent overwrites and symlink clobbering
-    if (existsSync(targetPath)) {
-      const st = lstatSync(targetPath);
-      if (st.isSymbolicLink()) {
-        throw new Error(`Refusing to write through symlink: ${suggestion.suggestedPath}`);
-      }
-      throw new Error(`Refusing to overwrite existing file: ${suggestion.suggestedPath}`);
-    }
-
-    const content = this.generateDocTemplate(suggestion);
-    // Review #200 R5: Exclusive flag + restrictive permissions
-    writeFileSync(targetPath, content, {
-      encoding: "utf-8",
-      flag: "wx",
-      mode: 0o600,
-    });
-    // Review #200 R4: Log relative path to avoid exposing filesystem details
-    const relativePath = path.relative(ROOT, targetPath);
-    console.log(`  Created: ${sanitizeDisplayString(relativePath, 120)}`);
-  }
-
-  /**
-   * Generate documentation template for training gaps
-   */
-  generateDocTemplate(suggestion) {
-    return `# ${suggestion.title.replace("Create guide for ", "")}
-
-**Created:** ${new Date().toISOString().split("T")[0]}
-**Purpose:** Guide to prevent recurring issues with this pattern
-
-## Overview
-
-This pattern has appeared ${suggestion.description.match(/\d+/)?.[0] || "multiple"} times in code reviews, indicating a knowledge gap.
-
-## Common Mistakes
-
-[Document common mistakes from review findings]
-
-## Best Practices
-
-[Document recommended approach]
-
-## Examples
-
-### ✅ Good
-\`\`\`javascript
-// Add correct example
-\`\`\`
-
-### ❌ Bad
-\`\`\`javascript
-// Add anti-pattern example
-\`\`\`
-
-## References
-
-- [CODE_PATTERNS.md](./CODE_PATTERNS.md)
-- Review learnings: ${suggestion.description}
-`;
-  }
-
-  /**
-   * Create git commit for applied suggestion
-   */
-  async createCommit(suggestion) {
-    const { tmpdir } = require("node:os");
-    const { unlinkSync } = require("node:fs");
-    const path = require("node:path");
-
-    // Review #200: Qodo - Use temp directory instead of .git to prevent symlink attacks
-    const msgFile = path.join(tmpdir(), `LEARNING_COMMIT_MSG_${process.pid}_${Date.now()}.txt`);
-
-    try {
-      // Review #200 R5: Only allow explicit paths - no git add -A fallback
-      if (suggestion.type === "doc-update" && suggestion.suggestedPath) {
-        const path = require("node:path");
-
-        // Review #200 R6: Block Git pathspec magic (e.g. ':(exclude)...')
-        if (suggestion.suggestedPath.startsWith(":")) {
-          console.warn("⚠️  Refusing to stage pathspec-magic path");
-          return false;
-        }
-
-        // Review #200 R6: Validate path is within repository root
-        const resolved = path.resolve(ROOT, suggestion.suggestedPath);
-        const relToRoot = path.relative(ROOT, resolved);
-
-        if (relToRoot === "" || /^\.\.(?:[\\/]|$)/.test(relToRoot) || path.isAbsolute(relToRoot)) {
-          throw new Error(`Refusing to stage path outside repo: ${suggestion.suggestedPath}`);
-        }
-
-        // Review #200 R4: Use -- terminator to prevent path being interpreted as git option
-        execFileSync("git", ["add", "--", relToRoot], { cwd: ROOT });
-      } else {
-        // Review #200 R5: Refuse to stage unknown types to prevent sensitive file exposure
-        console.warn("⚠️  Cannot stage: unknown suggestion type or missing path");
-        return false;
-      }
-
-      // Review #200 R5: Sanitize suggestion fields for commit message
-      const safeTitle = sanitizeDisplayString(suggestion.title, 100);
-      const safeDesc = sanitizeDisplayString(suggestion.description, 200);
-      const message = `chore(learning): ${safeTitle}
-
-${safeDesc}
-
-Auto-applied by learning effectiveness analyzer.
-Priority: ${suggestion.priority} | Impact: ${suggestion.impact}
-`;
-
-      // Review #200 R4: Harden temp file - exclusive flag + restrictive permissions
-      writeFileSync(msgFile, message, { encoding: "utf-8", flag: "wx", mode: 0o600 });
-      execFileSync("git", ["commit", "-F", msgFile], { cwd: ROOT });
-      console.log("  Committed changes");
-      return true; // Review #200 R5: Return success status
-    } catch (error) {
-      console.warn("⚠️  Could not create commit:", sanitizeError(error));
-      return false; // Review #200 R5: Return failure status
-    } finally {
-      // Cleanup temp file
-      try {
-        unlinkSync(msgFile);
-      } catch {
-        // Ignore cleanup failures
-      }
-    }
-  }
-
-  /**
-   * View detailed analysis for a suggestion
-   */
-  viewSuggestionDetails(suggestion) {
-    console.log("\n" + "=".repeat(60));
-    console.log(`SUGGESTION DETAILS: ${sanitizeDisplayString(suggestion.title, 120)}`);
-    console.log("=".repeat(60));
-    console.log(`\nCategory: ${suggestion.category}`);
-    console.log(`Priority: ${suggestion.priority}`);
-    console.log(`Effort: ${suggestion.effort}`);
-    console.log(`Impact: ${suggestion.impact}`);
-    console.log(`\nDescription: ${sanitizeDisplayString(suggestion.description, 200)}`);
-    console.log(`\nRecommended Action: ${sanitizeDisplayString(suggestion.action, 200)}`);
-    if (suggestion.type) {
-      console.log(`Type: ${suggestion.type}`);
-    }
-    console.log("=".repeat(60) + "\n");
   }
 
   /**
@@ -1306,71 +1075,22 @@ Priority: ${suggestion.priority} | Impact: ${suggestion.impact}
 
 **Generated:** ${now}
 **Review Range:** #${firstReview} - #${lastReview}
+**Focus:** Improve Claude's learning from documented patterns
 
-## Priority 1 (Immediate)
+## Priority Actions
 
 `;
 
-    const p1 = deferred.filter((d) => d.priority <= 3);
-    const p2 = deferred.filter((d) => d.priority > 3 && d.priority <= 7);
-    const p3 = deferred.filter((d) => d.priority > 7);
-
-    // Review #200 R5: Sanitize and escape all user-derived fields
-    for (const item of p1) {
-      content += `- [ ] **[${escapeMd(item.category, 40)}]** ${escapeMd(item.title, 120)}\n`;
-      content += `  - **Effort:** ${escapeMd(item.effort, 40)}\n`;
-      content += `  - **Impact:** ${escapeMd(item.impact, 40)}\n`;
-      content += `  - **Action:** ${escapeMd(item.action, 160)}\n`;
-      content += `  - **Details:** ${escapeMd(item.description, 240)}\n\n`;
+    for (const item of deferred) {
+      content += `- [ ] **[${escapeMd(item.category, 20)}]** ${escapeMd(item.title, 80)}\n`;
+      content += `  - **Effort:** ${escapeMd(item.effort, 30)}\n`;
+      content += `  - **Impact:** ${escapeMd(item.impact, 50)}\n`;
+      content += `  - **Action:** ${escapeMd(item.action, 100)}\n`;
+      content += `  - **Details:** ${escapeMd(item.description, 150)}\n\n`;
     }
 
-    if (p2.length > 0) {
-      content += `## Priority 2 (Soon)\n\n`;
-      for (const item of p2) {
-        content += `- [ ] **[${escapeMd(item.category, 40)}]** ${escapeMd(item.title, 120)}\n`;
-        content += `  - **Effort:** ${escapeMd(item.effort, 40)} | **Impact:** ${escapeMd(item.impact, 40)}\n`;
-        content += `  - ${escapeMd(item.action, 160)}\n\n`;
-      }
-    }
-
-    if (p3.length > 0) {
-      content += `## Priority 3 (Later)\n\n`;
-      for (const item of p3) {
-        content += `- [ ] [${escapeMd(item.category, 40)}] ${escapeMd(item.title, 120)}\n`;
-      }
-    }
-
-    // Review #200 R5: Symlink protection + restrictive permissions
     refuseSymlink(TODO_FILE);
     writeFileSync(TODO_FILE, content, { encoding: "utf-8", mode: 0o600 });
-  }
-
-  /**
-   * Save skipped suggestions to tracking file
-   */
-  async saveSkippedFile(skipped) {
-    const now = new Date().toISOString().split("T")[0];
-
-    let content = `# Skipped Learning Suggestions
-
-**Last Updated:** ${now}
-
-This file tracks suggestions that were explicitly skipped with rationale.
-
-`;
-
-    // Review #200 R5: Sanitize and escape all user-derived fields
-    for (const item of skipped) {
-      content += `## ${escapeMd(item.suggestion.title, 120)}\n\n`;
-      content += `- **Category:** ${escapeMd(item.suggestion.category, 40)}\n`;
-      content += `- **Priority:** ${escapeMd(String(item.suggestion.priority), 10)}\n`;
-      content += `- **Reason Skipped:** ${escapeMd(item.reason, 200)}\n`;
-      content += `- **Details:** ${escapeMd(item.suggestion.description, 240)}\n\n`;
-    }
-
-    // Review #200 R5: Symlink protection + restrictive permissions
-    refuseSymlink(SKIPPED_FILE);
-    writeFileSync(SKIPPED_FILE, content, { encoding: "utf-8", mode: 0o600 });
   }
 
   /**
@@ -1380,6 +1100,7 @@ This file tracks suggestions that were explicitly skipped with rationale.
     const now = new Date().toISOString().split("T")[0];
     const firstReview = this.reviews[0].number;
     const lastReview = this.reviews[this.reviews.length - 1].number;
+    const summary = this.results.summary;
 
     const content = `# Learning Effectiveness Metrics
 
@@ -1389,7 +1110,7 @@ This file tracks suggestions that were explicitly skipped with rationale.
 
 ## Purpose
 
-This document tracks the effectiveness of the SoNash learning system by analyzing AI review patterns and quantifying whether documented patterns prevent recurring issues. It provides actionable metrics to guide automation, documentation, and training priorities.
+This document tracks Claude's learning effectiveness - whether documented patterns prevent recurring issues. It provides actionable metrics to guide automation priorities and documentation improvements.
 
 **Auto-generated by:** \`scripts/analyze-learning-effectiveness.js\`
 **Update frequency:** After consolidation (every 10 reviews) or manual analysis
@@ -1400,29 +1121,9 @@ This document tracks the effectiveness of the SoNash learning system by analyzin
 
 This is a **Tier 2 metrics document** - reference during:
 
-- **Post-consolidation**: Review trends to identify automation gaps
-- **Session planning**: Prioritize technical debt based on recurring issues
-- **Pattern updates**: Validate that new patterns are being adopted
-
-**Key sections:**
-- **Key Metrics**: High-level health indicators
-- **Top 5 Actions**: Priority-ranked recommendations
-- **Analysis History**: Track trends over time
-
----
-
-## Quick Start
-
-\`\`\`bash
-# View current metrics
-cat docs/LEARNING_METRICS.md
-
-# Run fresh analysis
-npm run learning:analyze
-
-# View detailed breakdown
-npm run learning:detailed
-\`\`\`
+- **Post-consolidation**: Check if patterns are being learned
+- **Session planning**: Prioritize automation for failing patterns
+- **Pattern updates**: Validate that documentation improvements work
 
 ---
 
@@ -1435,32 +1136,40 @@ npm run learning:detailed
 
 | Metric                    | Value                                                           |
 | ------------------------- | --------------------------------------------------------------- |
-| Automation Coverage       | ${this.getAutomationCoverage()}                                 |
-| Learning Effectiveness    | ${this.getLearningEffectiveness()}                              |
-| Pattern Extraction Rate   | ${this.results.consolidationQuality.patternExtractionRate} patterns/review |
-| Consolidation Health      | ${this.results.consolidationQuality.health}                     |
-| Total Documented Patterns | ${this.codePatterns.length}                                     |
-| Automated Patterns        | ${this.automatedPatterns.length}                                |
+| Learning Effectiveness    | ${summary.learningEffectiveness}                                |
+| Patterns Learned          | ${summary.patternsLearned}                                      |
+| Patterns Automated        | ${summary.patternsAutomated}                                    |
+| Patterns Failing          | ${summary.patternsFailing}                                      |
+| Critical Pattern Success  | ${summary.criticalPatternRate}                                  |
+| Automation Coverage       | ${summary.automationCoverage}                                   |
+| Total Documented Patterns | ${summary.totalDocumentedPatterns}                              |
+| Total Automated Patterns  | ${summary.totalAutomatedPatterns}                               |
 
-### Top 5 Recommended Actions
+### Top Recommended Actions
 
 ${this.results.suggestions
   .slice(0, 5)
   .map((s, i) => {
-    // Review #200 R5: Escape Markdown metacharacters to prevent injection
-    const category = escapeMd(s.category, 40);
-    const title = escapeMd(s.title, 120);
-    const description = escapeMd(s.description, 200);
-    const action = escapeMd(s.action, 200);
-    return `${i + 1}. **[${category}]** ${title}\n   - ${description}\n   - Action: ${action}`;
+    const category = escapeMd(s.category, 20);
+    const title = escapeMd(s.title, 80);
+    const description = escapeMd(s.description, 150);
+    const action = escapeMd(s.action, 150);
+    return `${i + 1}. **[${category}]** ${title}
+   - ${description}
+   - Action: ${action}`;
   })
   .join("\n\n")}
 
 ---
 
-## Analysis History
+## Pattern Learning Status Summary
 
-- ${now}: Analyzed ${this.reviews.length} reviews (#${firstReview} - #${lastReview})
+| Status     | Count | Description                              |
+| ---------- | ----- | ---------------------------------------- |
+| ✅ LEARNED | ${summary.patternsLearned}     | Pattern never recurred after documentation |
+| 🔧 AUTOMATED | ${summary.patternsAutomated}   | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK    | ${summary.patternsWeak}     | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED  | ${summary.patternsFailing}     | Pattern recurred 3+ times - needs automation |
 
 ---
 
@@ -1468,36 +1177,12 @@ ${this.results.suggestions
 
 | Version | Date       | Description                              |
 | ------- | ---------- | ---------------------------------------- |
-| 1.0     | ${now}     | Initial auto-generated metrics dashboard |
+| 2.0     | ${now}     | Rewritten to focus on Claude's learning effectiveness |
 `;
 
-    // Review #200 R5: Symlink protection + restrictive permissions
     refuseSymlink(METRICS_FILE);
     writeFileSync(METRICS_FILE, content, { encoding: "utf-8", mode: 0o600 });
     console.log(`\n✅ Metrics updated: ${METRICS_FILE}`);
-  }
-
-  /**
-   * Helper: Calculate automation coverage percentage
-   */
-  getAutomationCoverage() {
-    if (this.codePatterns.length === 0) return "N/A";
-    const rawPercentage = (this.automatedPatterns.length / this.codePatterns.length) * 100;
-    // Review #200: Cap at 100% for clearer metrics
-    const percentage = Math.min(rawPercentage, 100).toFixed(1);
-    return `${percentage}%`;
-  }
-
-  /**
-   * Helper: Calculate learning effectiveness score
-   */
-  getLearningEffectiveness() {
-    const recurring = this.results.recurringIssues;
-    if (recurring.length === 0) return "100%";
-
-    const avgEffectiveness =
-      recurring.reduce((sum, r) => sum + r.learningEffectiveness, 0) / recurring.length;
-    return `${avgEffectiveness.toFixed(1)}%`;
   }
 
   /**
@@ -1524,57 +1209,40 @@ ${this.results.suggestions
 function parseArgs(args) {
   const options = {
     sinceReview: 1,
-    category: null,
     format: "dashboard",
     auto: false,
     detailed: false,
-    outputFile: null,
+    inputFile: null,
+    allArchives: false,
   };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
     if (arg === "--since-review") {
-      // Review #200 R6: Validate argument has value (consistent with other args)
       const next = args[i + 1];
       if (!next || next.startsWith("--")) {
         throw new Error('Missing value for --since-review (e.g. "--since-review 150")');
       }
-      // Review #200: Validate --since-review is a positive integer
       const reviewNum = parseInt(next, 10);
       if (isNaN(reviewNum) || reviewNum < 1) {
         throw new Error(`Invalid --since-review value: "${next}" (must be a positive integer)`);
       }
       options.sinceReview = reviewNum;
       i++;
-    } else if (arg === "--category") {
-      // Review #200 R5: Validate argument has value
-      const next = args[i + 1];
-      if (!next || next.startsWith("--")) {
-        throw new Error('Missing value for --category (e.g. "--category automation")');
-      }
-      options.category = next;
-      i++;
-    } else if (arg === "--format") {
-      // Review #200 R5: Validate argument has value
-      const next = args[i + 1];
-      if (!next || next.startsWith("--")) {
-        throw new Error('Missing value for --format (e.g. "--format dashboard")');
-      }
-      options.format = next;
-      i++;
     } else if (arg === "--auto") {
       options.auto = true;
     } else if (arg === "--detailed") {
       options.detailed = true;
-    } else if (arg === "--output") {
-      // Review #200 R5: Validate argument has value
+    } else if (arg === "--file") {
       const next = args[i + 1];
       if (!next || next.startsWith("--")) {
-        throw new Error('Missing value for --output (e.g. "--output path/to/file.json")');
+        throw new Error('Missing value for --file (e.g. "--file docs/archive/REVIEWS_180-201.md")');
       }
-      options.outputFile = next;
+      options.inputFile = next;
       i++;
+    } else if (arg === "--all-archives") {
+      options.allArchives = true;
     }
   }
 

@@ -471,6 +471,8 @@ npm audit fix
 | `npm run consolidation:check`         | Check consolidation status | Warns if 10+ reviews pending             |
 | `npm run consolidation:run`           | Run consolidation          | Extract patterns to CODE_PATTERNS.md     |
 | `npm run consolidation:run -- --auto` | Auto-consolidation         | Runs silently, used by SessionStart hook |
+| `npm run patterns:check`              | Pattern compliance         | Check for anti-patterns in staged files  |
+| `npm run patterns:sync`               | Pattern sync check         | Verify docs/automation consistency       |
 
 ### Prettier (Code Formatting)
 

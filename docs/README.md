@@ -143,10 +143,11 @@ code reviews and audits:
 
 ### Code Quality & Analysis
 
-| Document                  | Purpose                            | Location                              |
-| ------------------------- | ---------------------------------- | ------------------------------------- |
-| **CODE_PATTERNS.md**      | Anti-patterns and best practices   | `docs/agent_docs/CODE_PATTERNS.md`    |
-| **sonarqube-manifest.md** | SonarQube static analysis baseline | `docs/analysis/sonarqube-manifest.md` |
+| Document                  | Purpose                            | Location                                |
+| ------------------------- | ---------------------------------- | --------------------------------------- |
+| **CODE_PATTERNS.md**      | Anti-patterns and best practices   | `docs/agent_docs/CODE_PATTERNS.md`      |
+| **SECURITY_CHECKLIST.md** | Pre-write security checklist       | `docs/agent_docs/SECURITY_CHECKLIST.md` |
+| **sonarqube-manifest.md** | SonarQube static analysis baseline | `docs/analysis/sonarqube-manifest.md`   |
 
 ### Architecture Decision Records
 

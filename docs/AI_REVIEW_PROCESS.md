@@ -510,8 +510,26 @@ node scripts/add-false-positive.js \
 
 ---
 
+## 🛡️ Prevention (Pre-Write Checks)
+
+Before writing scripts that handle file I/O, git, CLI, or shell commands:
+
+1. **Check SECURITY_CHECKLIST.md**: Review applicable patterns at
+   `docs/agent_docs/SECURITY_CHECKLIST.md`
+2. **Use security-helpers.js**: Import from `scripts/lib/security-helpers.js`:
+   - `safeWriteFile()`, `safeReadFile()`, `safeGitAdd()`, `safeGitCommit()`
+   - `sanitizeError()`, `escapeMd()`, `validatePathInDir()`
+   - `refuseSymlinkWithParents()`, `sanitizeFilename()`, `parseCliArgs()`
+3. **Run pattern check**: `npm run patterns:check` before committing
+4. **Verify sync**: `npm run patterns:sync` after adding new patterns
+
+This proactive approach reduces review rounds from 6+ to 1-2.
+
+---
+
 ## 🔗 Related Documents
 
+- **SECURITY_CHECKLIST.md** - Pre-write security checklist (180+ patterns)
 - **PR_WORKFLOW_CHECKLIST.md** (Phase 4) - Pre-PR checklist includes AI review
   step
 - **DOCUMENTATION_STANDARDS.md** (Phase 1) - Standards for doc structure

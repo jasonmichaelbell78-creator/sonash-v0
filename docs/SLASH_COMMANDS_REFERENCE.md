@@ -154,6 +154,7 @@ status is checked, and the AI is prepared to work effectively.
 
 ```bash
 npm run patterns:check    # Surface known anti-patterns
+npm run patterns:sync     # Verify docs/automation consistency
 npm run review:check      # Check if multi-AI review thresholds reached
 npm run lessons:surface   # Surface past lessons relevant to current work
 ```
@@ -769,7 +770,7 @@ args: arg1 - Description of argument
 | ------------------ | -------------------- | --------------------------------- | -------------------------- | ---------------- |
 | Session management | SessionStart         | -                                 | session-begin, session-end | Covered          |
 | Code review        | UserPromptSubmit     | -                                 | pr-review                  | Covered          |
-| Pattern checking   | pre-commit, pre-push | patterns:check                    | -                          | No command       |
+| Pattern checking   | pre-commit, pre-push | patterns:check, patterns:sync     | -                          | Covered          |
 | Consolidation      | -                    | lessons:surface, patterns:suggest | -                          | **CRITICAL GAP** |
 | Security audit     | -                    | -                                 | audit-security             | Covered          |
 | Review triggers    | -                    | review:check                      | -                          | Advisory only    |

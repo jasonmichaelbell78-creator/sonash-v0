@@ -75,6 +75,11 @@ This is the primary context file for Claude Code sessions:
 [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (180+
 patterns with priority tiers 🔴/🟡/⚪ from 179 reviews)
 
+**Pre-Write Checklist**:
+[docs/agent_docs/SECURITY_CHECKLIST.md](docs/agent_docs/SECURITY_CHECKLIST.md) -
+Check BEFORE writing scripts that handle file I/O, git, CLI args, or shell
+commands. Use helpers from `scripts/lib/security-helpers.js`.
+
 **App-Specific:**
 
 - `migrateAnonymousUserData` handles merges - don't merge manually
