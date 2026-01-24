@@ -240,12 +240,17 @@ class LearningEffectivenessAnalyzer {
           number: parseInt(reviewMatch[1]),
           title: line.replace(/^####\s+Review\s+#\d+\s*:?\s*/, ""),
           tool: null,
+          tools: [], // Multiple tools possible
           findings: [],
           patterns: [],
           severity: null,
+          severityCounts: { critical: 0, major: 0, minor: 0, trivial: 0 },
           category: null,
+          categories: [], // Multiple categories possible
           falsePositive: false,
+          resolution: { fixed: 0, deferred: 0, rejected: 0 },
           sections: {},
+          rawLines: [],
         };
         currentSection = null;
         continue;
@@ -253,34 +258,130 @@ class LearningEffectivenessAnalyzer {
 
       if (!currentReview) continue;
 
-      // Extract metadata
-      if (line.startsWith("**Tool:**")) {
-        currentReview.tool = line.replace("**Tool:**", "").trim();
-      } else if (line.startsWith("**Severity:**")) {
-        currentReview.severity = line.replace("**Severity:**", "").trim();
-      } else if (line.startsWith("**Category:**")) {
-        currentReview.category = line.replace("**Category:**", "").trim();
-      } else if (line.includes("False Positive") || line.includes("false positive")) {
-        currentReview.falsePositive = true;
+      // Store raw lines for detailed parsing
+      currentReview.rawLines.push(line);
+
+      // Extract Source/Tool - parse "**Source:** Qodo + SonarCloud + CI"
+      if (line.startsWith("**Source:**")) {
+        const sourceText = line.replace("**Source:**", "").trim();
+        // Extract tool names
+        if (sourceText.includes("Qodo")) currentReview.tools.push("Qodo");
+        if (sourceText.includes("SonarCloud") || sourceText.includes("Sonar"))
+          currentReview.tools.push("SonarCloud");
+        if (sourceText.includes("CodeRabbit")) currentReview.tools.push("CodeRabbit");
+        if (sourceText.includes("CI") || sourceText.includes("Pattern"))
+          currentReview.tools.push("Pattern Checker");
+        if (sourceText.includes("Manual") || sourceText.includes("Session"))
+          currentReview.tools.push("Manual");
+        currentReview.tool = currentReview.tools[0] || "Unknown";
+      }
+
+      // Extract severity counts from "**Suggestions:** 8 total (Critical: 1, Major: 2, Minor: 3, Trivial: 2)"
+      const suggestionsMatch = line.match(
+        /Critical:\s*(\d+)|Major:\s*(\d+)|Minor:\s*(\d+)|Trivial:\s*(\d+)/gi
+      );
+      if (suggestionsMatch) {
+        for (const match of suggestionsMatch) {
+          if (/critical/i.test(match))
+            currentReview.severityCounts.critical += parseInt(match.match(/\d+/)[0]);
+          if (/major/i.test(match))
+            currentReview.severityCounts.major += parseInt(match.match(/\d+/)[0]);
+          if (/minor/i.test(match))
+            currentReview.severityCounts.minor += parseInt(match.match(/\d+/)[0]);
+          if (/trivial/i.test(match))
+            currentReview.severityCounts.trivial += parseInt(match.match(/\d+/)[0]);
+        }
+      }
+
+      // Extract category from context or title
+      const lowerLine = line.toLowerCase();
+      if (
+        lowerLine.includes("security") ||
+        lowerLine.includes("vulnerability") ||
+        lowerLine.includes("injection")
+      ) {
+        if (!currentReview.categories.includes("Security"))
+          currentReview.categories.push("Security");
+      }
+      if (
+        lowerLine.includes("performance") ||
+        lowerLine.includes("optimization") ||
+        lowerLine.includes("speed")
+      ) {
+        if (!currentReview.categories.includes("Performance"))
+          currentReview.categories.push("Performance");
+      }
+      if (
+        lowerLine.includes("documentation") ||
+        lowerLine.includes("docs") ||
+        lowerLine.includes("readme")
+      ) {
+        if (!currentReview.categories.includes("Documentation"))
+          currentReview.categories.push("Documentation");
+      }
+      if (
+        lowerLine.includes("test") ||
+        lowerLine.includes("quality") ||
+        lowerLine.includes("lint")
+      ) {
+        if (!currentReview.categories.includes("Quality")) currentReview.categories.push("Quality");
+      }
+      if (
+        lowerLine.includes("process") ||
+        lowerLine.includes("workflow") ||
+        lowerLine.includes("ci/cd")
+      ) {
+        if (!currentReview.categories.includes("Process")) currentReview.categories.push("Process");
+      }
+      currentReview.category = currentReview.categories[0] || "Uncategorized";
+
+      // Extract resolution counts from "**Fixed:** X items" or "- **Fixed:** X"
+      const fixedMatch = line.match(/\*\*Fixed:?\*\*:?\s*(\d+)/i);
+      if (fixedMatch) currentReview.resolution.fixed += parseInt(fixedMatch[1]);
+      const deferredMatch = line.match(/\*\*Deferred:?\*\*:?\s*(\d+)/i);
+      if (deferredMatch) currentReview.resolution.deferred += parseInt(deferredMatch[1]);
+      const rejectedMatch = line.match(/\*\*Rejected:?\*\*:?\s*(\d+)|false positive/i);
+      if (rejectedMatch) {
+        if (rejectedMatch[1]) currentReview.resolution.rejected += parseInt(rejectedMatch[1]);
+        else currentReview.falsePositive = true;
       }
 
       // Track sections for detailed analysis
-      if (line.startsWith("### ")) {
-        currentSection = line.replace(/^###\s+/, "").trim();
+      if (line.startsWith("### ") || line.match(/^\*\*[A-Z][a-z]+.*:\*\*/)) {
+        currentSection = line
+          .replace(/^###\s+/, "")
+          .replace(/\*\*/g, "")
+          .replace(/:$/, "")
+          .trim();
         currentReview.sections[currentSection] = [];
       } else if (currentSection && line.trim()) {
         currentReview.sections[currentSection].push(line);
       }
 
-      // Extract patterns mentioned
+      // Extract patterns mentioned - multiple formats
       const patternMatch = line.match(/Pattern:\s*(.+)/i);
       if (patternMatch) {
         currentReview.patterns.push(patternMatch[1].trim());
+      }
+      // Also extract from numbered pattern lists "1. **Pattern Name**"
+      const numberedPattern = line.match(/^\d+\.\s+\*\*([^*]+)\*\*/);
+      if (numberedPattern && currentSection && /pattern/i.test(currentSection)) {
+        currentReview.patterns.push(numberedPattern[1].trim());
       }
 
       // Extract findings (bullet points)
       if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
         currentReview.findings.push(line.trim().substring(2));
+      }
+
+      // Extract table rows for issue counts
+      const tableRow = line.match(/^\|\s*\d+\s*\|.*\|(.*Critical|Major|Minor|Trivial).*\|/i);
+      if (tableRow) {
+        const sev = tableRow[1].toLowerCase();
+        if (sev.includes("critical")) currentReview.severityCounts.critical++;
+        if (sev.includes("major")) currentReview.severityCounts.major++;
+        if (sev.includes("minor")) currentReview.severityCounts.minor++;
+        if (sev.includes("trivial")) currentReview.severityCounts.trivial++;
       }
     }
 
@@ -529,75 +630,193 @@ class LearningEffectivenessAnalyzer {
 
   /**
    * ANALYSIS CATEGORY 4: Process Metrics
-   * Review cadence, severity distribution, resolution time
+   * Review cadence, severity distribution, resolution time, trends
    */
   analyzeProcessMetrics() {
-    const severityCounts = {};
+    // Aggregate severity counts from parsed data
+    const severityCounts = { Critical: 0, Major: 0, Minor: 0, Trivial: 0 };
     const categoryCounts = {};
     const toolCounts = {};
+    let totalFixed = 0;
+    let totalDeferred = 0;
+    let totalRejected = 0;
 
     for (const review of this.reviews) {
-      if (review.severity) {
-        severityCounts[review.severity] = (severityCounts[review.severity] || 0) + 1;
+      // Aggregate severity from parsed counts
+      severityCounts.Critical += review.severityCounts.critical;
+      severityCounts.Major += review.severityCounts.major;
+      severityCounts.Minor += review.severityCounts.minor;
+      severityCounts.Trivial += review.severityCounts.trivial;
+
+      // Aggregate categories
+      for (const cat of review.categories) {
+        categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
       }
-      if (review.category) {
+      if (review.categories.length === 0 && review.category) {
         categoryCounts[review.category] = (categoryCounts[review.category] || 0) + 1;
       }
-      if (review.tool) {
+
+      // Aggregate tools
+      for (const tool of review.tools) {
+        toolCounts[tool] = (toolCounts[tool] || 0) + 1;
+      }
+      if (review.tools.length === 0 && review.tool) {
         toolCounts[review.tool] = (toolCounts[review.tool] || 0) + 1;
       }
+
+      // Resolution stats
+      totalFixed += review.resolution.fixed;
+      totalDeferred += review.resolution.deferred;
+      totalRejected += review.resolution.rejected;
     }
 
     const avgPatternsPerReview =
       this.reviews.reduce((sum, r) => sum + r.patterns.length, 0) / this.reviews.length;
 
+    const totalFindings =
+      severityCounts.Critical +
+      severityCounts.Major +
+      severityCounts.Minor +
+      severityCounts.Trivial;
+
+    // Calculate trends (split reviews into thirds)
+    const third = Math.floor(this.reviews.length / 3);
+    const trends = {
+      early: { critical: 0, major: 0, total: 0 },
+      middle: { critical: 0, major: 0, total: 0 },
+      recent: { critical: 0, major: 0, total: 0 },
+    };
+
+    this.reviews.forEach((review, i) => {
+      const period = i < third ? "early" : i < third * 2 ? "middle" : "recent";
+      trends[period].critical += review.severityCounts.critical;
+      trends[period].major += review.severityCounts.major;
+      trends[period].total++;
+    });
+
     return {
       totalReviews: this.reviews.length,
+      totalFindings,
       severityDistribution: severityCounts,
       categoryDistribution: categoryCounts,
       toolDistribution: toolCounts,
       avgPatternsPerReview: avgPatternsPerReview.toFixed(2),
+      resolution: {
+        fixed: totalFixed,
+        deferred: totalDeferred,
+        rejected: totalRejected,
+        fixRate: totalFindings > 0 ? ((totalFixed / totalFindings) * 100).toFixed(1) + "%" : "N/A",
+      },
+      trends,
+      criticalTrend:
+        trends.recent.total > 0 && trends.early.total > 0
+          ? trends.recent.critical / trends.recent.total >
+            trends.early.critical / trends.early.total
+            ? "📈 Increasing"
+            : trends.recent.critical / trends.recent.total <
+                trends.early.critical / trends.early.total
+              ? "📉 Decreasing"
+              : "➡️ Stable"
+          : "N/A",
     };
   }
 
   /**
    * ANALYSIS CATEGORY 5: Tool Effectiveness
-   * Signal-to-noise ratio, unique findings, false positive rate
+   * Signal-to-noise ratio, unique findings, false positive rate, overlap detection
    */
   analyzeToolEffectiveness() {
     const toolStats = {};
+    const allPatterns = new Set();
+    const patternsByTool = {};
 
+    // Collect stats per tool (including multi-tool reviews)
     for (const review of this.reviews) {
-      if (!review.tool) continue;
+      const tools = review.tools.length > 0 ? review.tools : [review.tool || "Unknown"];
 
-      if (!toolStats[review.tool]) {
-        toolStats[review.tool] = {
-          total: 0,
-          falsePositives: 0,
-          uniquePatterns: new Set(),
-        };
-      }
+      for (const tool of tools) {
+        if (!toolStats[tool]) {
+          toolStats[tool] = {
+            reviews: 0,
+            critical: 0,
+            major: 0,
+            minor: 0,
+            trivial: 0,
+            falsePositives: 0,
+            patterns: new Set(),
+            fixed: 0,
+            deferred: 0,
+          };
+          patternsByTool[tool] = new Set();
+        }
 
-      toolStats[review.tool].total++;
-      if (review.falsePositive) {
-        toolStats[review.tool].falsePositives++;
+        toolStats[tool].reviews++;
+        toolStats[tool].critical += review.severityCounts.critical;
+        toolStats[tool].major += review.severityCounts.major;
+        toolStats[tool].minor += review.severityCounts.minor;
+        toolStats[tool].trivial += review.severityCounts.trivial;
+        toolStats[tool].fixed += review.resolution.fixed;
+        toolStats[tool].deferred += review.resolution.deferred;
+
+        if (review.falsePositive) {
+          toolStats[tool].falsePositives++;
+        }
+
+        review.patterns.forEach((p) => {
+          toolStats[tool].patterns.add(p);
+          patternsByTool[tool].add(p);
+          allPatterns.add(p);
+        });
       }
-      review.patterns.forEach((p) => toolStats[review.tool].uniquePatterns.add(p));
     }
 
+    // Calculate overlap between tools
     const results = [];
     for (const [tool, stats] of Object.entries(toolStats)) {
+      const totalFindings = stats.critical + stats.major + stats.minor + stats.trivial;
+      const uniquePatterns = stats.patterns.size;
+
+      // Calculate overlap: patterns found by this tool that were also found by others
+      let overlapCount = 0;
+      for (const pattern of stats.patterns) {
+        let foundByOthers = false;
+        for (const [otherTool, otherPatterns] of Object.entries(patternsByTool)) {
+          if (otherTool !== tool && otherPatterns.has(pattern)) {
+            foundByOthers = true;
+            break;
+          }
+        }
+        if (foundByOthers) overlapCount++;
+      }
+
+      const uniqueFindings =
+        uniquePatterns > 0 ? ((uniquePatterns - overlapCount) / uniquePatterns) * 100 : 0;
+      const overlapRate = uniquePatterns > 0 ? (overlapCount / uniquePatterns) * 100 : 0;
+      const fpRate = stats.reviews > 0 ? (stats.falsePositives / stats.reviews) * 100 : 0;
+      const signalToNoise = fpRate > 0 ? (100 - fpRate) / fpRate : 99;
+
       results.push({
         tool,
-        totalFindings: stats.total,
+        reviews: stats.reviews,
+        totalFindings,
+        critical: stats.critical,
+        major: stats.major,
+        minor: stats.minor,
+        trivial: stats.trivial,
+        uniquePatterns,
+        uniqueFindings: uniqueFindings.toFixed(0) + "%",
+        overlapRate: overlapRate.toFixed(0) + "%",
         falsePositives: stats.falsePositives,
-        falsePositiveRate: ((stats.falsePositives / stats.total) * 100).toFixed(1) + "%",
-        uniquePatterns: stats.uniquePatterns.size,
-        signalToNoise: (stats.total - stats.falsePositives) / stats.total,
+        falsePositiveRate: fpRate.toFixed(1) + "%",
+        signalToNoise: signalToNoise > 99 ? "99:1" : signalToNoise.toFixed(1) + ":1",
+        fixed: stats.fixed,
+        deferred: stats.deferred,
+        actionableRate:
+          totalFindings > 0 ? ((stats.fixed / totalFindings) * 100).toFixed(0) + "%" : "N/A",
       });
     }
 
-    return results.sort((a, b) => b.signalToNoise - a.signalToNoise);
+    return results.sort((a, b) => b.totalFindings - a.totalFindings);
   }
 
   /**
@@ -943,60 +1162,174 @@ class LearningEffectivenessAnalyzer {
       console.log("  ✅ No recurring issues detected\n");
     }
 
-    // 4. Process Metrics
+    // 4. Process Metrics - Full breakdown
     console.log("🔧 4. PROCESS METRICS\n");
-    console.log(`  Total Reviews: ${this.results.processMetrics.totalReviews}`);
-    console.log(`  Avg Patterns/Review: ${this.results.processMetrics.avgPatternsPerReview}\n`);
-    console.log("  Severity Distribution:");
-    for (const [severity, count] of Object.entries(
-      this.results.processMetrics.severityDistribution
-    )) {
-      console.log(`    ${severity}: ${count}`);
-    }
-    console.log("\n  Category Distribution:");
-    for (const [category, count] of Object.entries(
-      this.results.processMetrics.categoryDistribution
-    )) {
-      console.log(`    ${category}: ${count}`);
-    }
-    console.log("");
+    const pm = this.results.processMetrics;
 
-    // 5. Tool Effectiveness
+    console.log("Overview:");
+    console.log("┌────────────────────────────┬─────────────────────────────┐");
+    console.log("│ Metric                     │ Value                       │");
+    console.log("├────────────────────────────┼─────────────────────────────┤");
+    console.log(`│ Total Reviews              │ ${String(pm.totalReviews).padEnd(27)} │`);
+    console.log(`│ Total Findings             │ ${String(pm.totalFindings).padEnd(27)} │`);
+    console.log(`│ Avg Patterns/Review        │ ${pm.avgPatternsPerReview.padEnd(27)} │`);
+    console.log(`│ Fix Rate                   │ ${pm.resolution.fixRate.padEnd(27)} │`);
+    console.log(`│ Critical Issues Trend      │ ${pm.criticalTrend.padEnd(27)} │`);
+    console.log("└────────────────────────────┴─────────────────────────────┘\n");
+
+    console.log("Severity Distribution:");
+    console.log("┌──────────────┬─────────┬──────────┐");
+    console.log("│ Severity     │ Count   │ %        │");
+    console.log("├──────────────┼─────────┼──────────┤");
+    const totalSev = pm.totalFindings || 1;
+    for (const [severity, count] of Object.entries(pm.severityDistribution)) {
+      const pct = ((count / totalSev) * 100).toFixed(1) + "%";
+      console.log(`│ ${severity.padEnd(12)} │ ${String(count).padStart(7)} │ ${pct.padStart(8)} │`);
+    }
+    console.log("└──────────────┴─────────┴──────────┘\n");
+
+    console.log("Resolution Status:");
+    console.log(
+      `  ✅ Fixed: ${pm.resolution.fixed}  ⏸️ Deferred: ${pm.resolution.deferred}  ❌ Rejected: ${pm.resolution.rejected}\n`
+    );
+
+    if (Object.keys(pm.toolDistribution).length > 0) {
+      console.log("Tool Distribution:");
+      for (const [tool, count] of Object.entries(pm.toolDistribution).sort((a, b) => b[1] - a[1])) {
+        const bar = "█".repeat(Math.min(30, Math.floor((count / pm.totalReviews) * 30)));
+        console.log(`  ${tool.padEnd(18)} ${bar} ${count}`);
+      }
+      console.log("");
+    }
+
+    // 5. Tool Effectiveness - Full table format
     console.log("🛠️  5. TOOL EFFECTIVENESS\n");
     if (this.results.toolEffectiveness.length > 0) {
-      console.log("Tool performance metrics:\n");
+      console.log("┌─────────────────┬─────────┬──────────┬──────────┬──────────┬────────┐");
+      console.log("│ Tool            │ Reviews │ Findings │ Unique % │ FP Rate  │ S/N    │");
+      console.log("├─────────────────┼─────────┼──────────┼──────────┼──────────┼────────┤");
       for (const tool of this.results.toolEffectiveness) {
-        console.log(`  • ${tool.tool}`);
-        console.log(
-          `    Total: ${tool.totalFindings} | FP Rate: ${tool.falsePositiveRate} | Unique: ${tool.uniquePatterns}`
-        );
-        console.log(`    Signal/Noise: ${(tool.signalToNoise * 100).toFixed(1)}%\n`);
+        const name = tool.tool.substring(0, 15).padEnd(15);
+        const reviews = String(tool.reviews).padStart(7);
+        const findings = String(tool.totalFindings).padStart(8);
+        const unique = tool.uniqueFindings.padStart(8);
+        const fp = tool.falsePositiveRate.padStart(8);
+        const sn = tool.signalToNoise.padStart(6);
+        console.log(`│ ${name} │${reviews} │${findings} │${unique} │${fp} │${sn} │`);
       }
+      console.log("└─────────────────┴─────────┴──────────┴──────────┴──────────┴────────┘\n");
+
+      // Severity breakdown by tool
+      console.log("Severity Distribution by Tool:");
+      console.log("┌─────────────────┬──────────┬────────┬────────┬─────────┐");
+      console.log("│ Tool            │ Critical │ Major  │ Minor  │ Trivial │");
+      console.log("├─────────────────┼──────────┼────────┼────────┼─────────┤");
+      for (const tool of this.results.toolEffectiveness) {
+        const name = tool.tool.substring(0, 15).padEnd(15);
+        const crit = String(tool.critical).padStart(8);
+        const maj = String(tool.major).padStart(6);
+        const min = String(tool.minor).padStart(6);
+        const triv = String(tool.trivial).padStart(7);
+        console.log(`│ ${name} │${crit} │${maj} │${min} │${triv} │`);
+      }
+      console.log("└─────────────────┴──────────┴────────┴────────┴─────────┘\n");
+    } else {
+      console.log("  No tool data available\n");
     }
 
-    // Continue with other categories...
+    // 6. Category Balance - with targets
     console.log("📊 6. CATEGORY BALANCE\n");
-    for (const [category, stats] of Object.entries(this.results.categoryBalance)) {
-      console.log(`  ${category}: ${stats.count} (${stats.percentage})`);
+    const categoryTargets = {
+      Security: "40-50%",
+      Quality: "25-30%",
+      Performance: "10-15%",
+      Documentation: "10-15%",
+      Process: "5-10%",
+    };
+    const totalCategorized = Object.values(this.results.categoryBalance).reduce(
+      (sum, s) => sum + s.count,
+      0
+    );
+
+    if (totalCategorized > 0) {
+      console.log("┌──────────────────┬───────┬──────────┬──────────┬─────────────────────┐");
+      console.log("│ Category         │ Count │ %        │ Target   │ Status              │");
+      console.log("├──────────────────┼───────┼──────────┼──────────┼─────────────────────┤");
+      for (const [category, stats] of Object.entries(this.results.categoryBalance)) {
+        const name = category.substring(0, 16).padEnd(16);
+        const count = String(stats.count).padStart(5);
+        const pct = stats.percentage.padStart(8);
+        const target = (categoryTargets[category] || "N/A").padStart(8);
+        const pctNum = parseFloat(stats.percentage);
+        let status = "⚠️ Review";
+        if (category === "Security" && pctNum >= 40 && pctNum <= 60) status = "✅ Healthy";
+        else if (category === "Quality" && pctNum >= 20 && pctNum <= 35) status = "✅ Healthy";
+        else if (category === "Performance" && pctNum >= 8 && pctNum <= 20) status = "✅ Healthy";
+        else if (pctNum < 5) status = "🔴 Low";
+        console.log(`│ ${name} │${count} │${pct} │${target} │ ${status.padEnd(19)} │`);
+      }
+      console.log("└──────────────────┴───────┴──────────┴──────────┴─────────────────────┘\n");
+    } else {
+      console.log("  No category data available\n");
     }
-    console.log("");
 
-    // 7-10 abbreviated for space
+    // 7. False Positive Patterns
     console.log("🚫 7. FALSE POSITIVE PATTERNS\n");
-    console.log(`  ${this.results.falsePositives.length} tools with false positives\n`);
+    if (this.results.falsePositives.length > 0) {
+      console.log("Tools with false positive reports:");
+      for (const fp of this.results.falsePositives.slice(0, 5)) {
+        console.log(`  • ${fp.tool}: ${fp.count} false positives`);
+        if (fp.examples.length > 0) {
+          console.log(
+            `    Examples: Review #${fp.examples.map((e) => e.reviewNumber).join(", #")}`
+          );
+        }
+      }
+      console.log("");
+    } else {
+      console.log("  ✅ No significant false positive patterns detected\n");
+    }
 
+    // 8. Complexity Hotspots - Top 10
     console.log("🔥 8. COMPLEXITY HOTSPOTS\n");
-    console.log(`  ${this.results.complexityHotspots.length} files mentioned 3+ times\n`);
+    if (this.results.complexityHotspots.length > 0) {
+      console.log("Files appearing in multiple reviews (potential refactoring targets):\n");
+      for (const hotspot of this.results.complexityHotspots.slice(0, 10)) {
+        console.log(`  ${String(hotspot.mentions).padStart(3)}x  ${hotspot.file}`);
+      }
+      console.log("");
+    } else {
+      console.log("  ✅ No complexity hotspots detected\n");
+    }
 
+    // 9. Consolidation Quality
     console.log("📈 9. CONSOLIDATION QUALITY\n");
-    console.log(`  Extraction Rate: ${this.results.consolidationQuality.patternExtractionRate}`);
-    console.log(`  Coverage: ${this.results.consolidationQuality.coveragePercentage}`);
-    console.log(`  Health: ${this.results.consolidationQuality.health}\n`);
+    console.log("┌────────────────────────────┬─────────────────────────────┐");
+    console.log("│ Metric                     │ Value                       │");
+    console.log("├────────────────────────────┼─────────────────────────────┤");
+    console.log(
+      `│ Pattern Extraction Rate    │ ${this.results.consolidationQuality.patternExtractionRate.padEnd(27)} │`
+    );
+    console.log(
+      `│ Review Coverage            │ ${this.results.consolidationQuality.coveragePercentage.padEnd(27)} │`
+    );
+    console.log(
+      `│ Total Patterns Extracted   │ ${String(this.results.consolidationQuality.totalPatternsExtracted).padEnd(27)} │`
+    );
+    console.log(
+      `│ Unconsolidated Reviews     │ ${String(this.results.consolidationQuality.unconsolidatedReviews).padEnd(27)} │`
+    );
+    console.log(
+      `│ Health                     │ ${this.results.consolidationQuality.health.padEnd(27)} │`
+    );
+    console.log("└────────────────────────────┴─────────────────────────────┘\n");
 
+    // 10. Training Gaps
     console.log("🎓 10. TRAINING GAPS\n");
     if (this.results.trainingGaps.length > 0) {
+      console.log("Recurring issues that may need dedicated guides:\n");
       for (const gap of this.results.trainingGaps) {
-        console.log(`  • ${sanitizeDisplayString(gap.topic, 80)} (${gap.occurrences} occurrences)`);
+        console.log(`  • ${sanitizeDisplayString(gap.topic, 60)} (${gap.occurrences} occurrences)`);
         console.log(`    Suggested: ${sanitizeDisplayString(gap.suggestedDoc, 80)}\n`);
       }
     } else {
