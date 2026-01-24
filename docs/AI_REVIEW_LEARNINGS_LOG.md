@@ -28,7 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 10.9    | 2026-01-24 | Review #201: PR #310 Learning Effectiveness Analyzer - Qodo Security Hardening (27 items across 5 rounds - 1 CRITICAL, 20 MAJOR, 4 MINOR, 2 DEFERRED). **CRITICAL**: Git option injection. **MAJOR (R1-4)**: Temp file wx+0o600, Markdown injection, relative logging, path validation, sanitization fix, ReDoS, symlink, execFileSync. **MAJOR (R5)**: escapeMd(), refuseSymlink(), git add -A removal, empty fallback, JSON output, createCommit check, CLI validation. **NEW PATTERNS**: (31-34) Git option, temp file, Markdown, relative path; (35-38) Markdown escape, symlink protection, empty fallback, git add avoidance. Total 25 fixes. Active reviews #180-201. Consolidation counter: 0.                                                                                                                                                    |
+| 10.9    | 2026-01-24 | Review #201: PR #310 Learning Effectiveness Analyzer - Qodo Security Hardening (33 items across 6 rounds - 1 CRITICAL, 26 MAJOR, 4 MINOR, 2 DEFERRED). **CRITICAL**: Git option injection. **MAJOR (R1-5)**: Temp file wx, Markdown injection, relative logging, path validation, escapeMd(), refuseSymlink(), git add -A removal, empty fallback, JSON output. **MAJOR (R6)**: Symlink parent traversal, Git pathspec magic `:`, repo root path validation, wx for JSON, Markdown escape fix. **NEW PATTERNS**: (31-38) R4-5 patterns; (39-41) Symlink parent, pathspec magic, repo root. Total 31 fixes. Active reviews #180-201. Consolidation counter: 0.                                                                                                                                                                                             |
 | 10.8    | 2026-01-24 | Review #200 Round 4: PR #309 Round 4 - Qodo Final Hardening (12 items - 5 HIGH imp 8-9 Security, 4 MEDIUM imp 7 Quality, 3 MINOR imp 6 Compliance). **HIGH**: Path traversal segment regex `/(?:^                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | \/)\.\.(?:\/ | $)/`, CLAUDE_PROJECT_DIR absolute path validation, 4096 char DoS caps, Unicode separator stripping (`\u2028`, `\u2029`), control char removal in sanitizeFilesystemError. **MEDIUM**: Deduplicated sanitization (export from validate-paths.js), segment-based containment (no startsWith), binary file skip, precheck graceful exit. **MINOR**: 500 char log cap, `filePath[0] === "-"` pattern trigger fix. **NEW PATTERNS**: (27) Segment-based path checks; (28) Unicode log injection; (29) Input length DoS caps; (30) Code deduplication via exports. Total 12 fixes. Pattern-check.js: 230 lines. Active reviews #180-200. Consolidation counter: 0. |
 | 10.7    | 2026-01-23 | Review #199 Round 6: Qodo Security Compliance + Code Suggestions (6 items - 1 CRITICAL 🔴 reversed rejection, 4 MAJOR imp 7, 1 ADVISORY). **CRITICAL**: Structured JSON logging (reversed R5 rejection due to escalation - hybrid: JSON for file audit trail, human-readable for console). **MAJOR**: PowerShell null/"null"/array handling, invalid PID filtering (NaN prevention), exact name matching + word-boundary regex for process allowlist, log file permission enforcement (fchmodSync/chmodSync). **ADVISORY**: Process termination design trade-off documented. **NEW PATTERNS**: (23) Structured audit logging (hybrid approach); (24) PowerShell JSON edge cases; (25) Subprocess output validation; (26) Process matching precision. Total 37 fixes across 6 rounds. Final: 386 lines. Active reviews #180-199. Consolidation counter: 0. |
 | 10.6    | 2026-01-23 | Review #199 Round 5: Qodo Code Suggestions + Generic Compliance (7 items - 2 HIGH imp 7-8, 1 MEDIUM imp 6, 1 Compliance, 2 DEFERRED, 1 REJECTED). **HIGH**: Removed deprecated WMIC CSV parsing (use PowerShell directly), added /T flag to taskkill (kills process tree). **MEDIUM**: Normalize Windows newlines (/\r?\n/ regex). **COMPLIANCE**: Added logging to silent catch. **DEFERRED**: Multiple PIDs (same as R3), sleep buffer optimization (marginal benefit). **REJECTED**: Structured logging (overkill for local hook). **NEW PATTERNS**: (20) Deprecated command elimination; (21) Process tree termination; (22) Cross-platform newline handling. Total 32 fixes across 5 rounds. Final: 333 lines. Active reviews #180-199. Consolidation counter: 0.                                                                                    |
@@ -886,8 +886,8 @@ improvements in path validation and hook infrastructure.
 #### Review #201: PR #310 Learning Effectiveness Analyzer - Qodo Security Hardening (2026-01-24)
 
 **Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
-claude/mcp-optimization-session90 (PR #310) **Suggestions:** 27 total across 5
-rounds (Critical: 1, Major: 20, Minor: 4, Deferred: 2)
+claude/mcp-optimization-session90 (PR #310) **Suggestions:** 33 total across 6
+rounds (Critical: 1, Major: 26, Minor: 4, Deferred: 2)
 
 **Context:** New learning effectiveness analyzer script with interactive
 suggestion handler. Multiple rounds of security fixes for path handling, git
@@ -948,9 +948,28 @@ command injection, temp file security, and Markdown injection prevention.
    - Pattern: Never use `git add -A` in automation - always explicit paths
    - Impact: Prevents accidental exposure of sensitive files
 
+9. **Pattern #39: Symlink Parent Directory Traversal** (Round 6)
+   - Root cause: refuseSymlink() only checked target, not parent paths
+   - Prevention: Walk up directory tree checking each segment for symlinks
+   - Pattern: Always check parent directories when validating symlinks
+   - Impact: Prevents symlink bypass via parent directory attack
+
+10. **Pattern #40: Git Pathspec Magic Injection** (Round 6)
+    - Root cause: Paths starting with `:` are Git pathspec magic
+    - Prevention: Reject paths starting with `:` before git add
+    - Pattern: `--` terminator doesn't prevent pathspec magic - explicit check
+      needed
+    - Impact: Prevents arbitrary pathspec manipulation
+
+11. **Pattern #41: Repository Root Path Validation** (Round 6)
+    - Root cause: createCommit() didn't validate paths were inside repo
+    - Prevention: Use `path.relative()` + regex check for traversal
+    - Pattern: Validate all paths against repo root before git operations
+    - Impact: Prevents staging files outside repository
+
 **Resolution:**
 
-- Fixed: 25 items across 5 rounds
+- Fixed: 31 items across 6 rounds
 - Deferred: 2 items (audit trails + structured logging - overkill for local dev
   tool)
 - Rejected: 0 items
@@ -980,8 +999,12 @@ command injection, temp file security, and Markdown injection prevention.
    content
 7. **Symlink protection** needed for all auto-generated files (reports, TODO)
 8. **git add -A** is dangerous in automation - always use explicit paths
+9. **Symlink checks must include parents** - bypass via symlinked parent dir
+10. **Git pathspec magic** (`:`) bypasses `--` terminator - explicit check
+    needed
+11. **All paths to git** must be validated against repo root
 
-**Learning Entry:** Review #201 updated with Round 5 fixes
+**Learning Entry:** Review #201 updated with Round 6 fixes
 (AI_REVIEW_LEARNINGS_LOG.md)
 
 ---
