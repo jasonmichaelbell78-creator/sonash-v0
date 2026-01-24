@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 10.5 **Created:** 2026-01-02 **Last Updated:** 2026-01-23
+**Document Version:** 10.6 **Created:** 2026-01-02 **Last Updated:** 2026-01-23
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 10.6    | 2026-01-23 | Review #199 Round 5: Qodo Code Suggestions + Generic Compliance (7 items - 2 HIGH imp 7-8, 1 MEDIUM imp 6, 1 Compliance, 2 DEFERRED, 1 REJECTED). **HIGH**: Removed deprecated WMIC CSV parsing (use PowerShell directly), added /T flag to taskkill (kills process tree). **MEDIUM**: Normalize Windows newlines (/\r?\n/ regex). **COMPLIANCE**: Added logging to silent catch. **DEFERRED**: Multiple PIDs (same as R3), sleep buffer optimization (marginal benefit). **REJECTED**: Structured logging (overkill for local hook). **NEW PATTERNS**: (20) Deprecated command elimination; (21) Process tree termination; (22) Cross-platform newline handling. Total 32 fixes across 5 rounds. Final: 333 lines. Active reviews #180-199. Consolidation counter: 0.                                                             |
 | 10.5    | 2026-01-23 | Review #199: PR #308 Round 4 - CI Security Scanner + Qodo (4 items - 1 CI CRITICAL blocker, 3 Qodo HIGH importance 7-8). **CRITICAL**: Refactored all execSync to execFileSync with args arrays (eliminates template interpolation). **HIGH**: File type validation for log target (fstatSync/isFile), ESRCH vs EPERM error code handling in process polling, process disappearance race condition handling. **NEW PATTERNS**: (16) Args arrays over template interpolation; (17) Log target type validation; (18) Process signal error code semantics; (19) Process disappearance race handling. Total 28 fixes across 4 rounds. Active reviews #180-199. Consolidation counter: 0.                                                                                                                                               |
 | 10.4    | 2026-01-23 | Review #198 Round 3: Qodo + CI (9 items - 1 CRITICAL CI blocker unsafe error.message, 2 MAJOR: TOCTOU symlink race + command line exposure, 6 MINOR). **NEW PATTERNS**: (11) TOCTOU-safe file ops (O_NOFOLLOW); (12) Redact command lines in logs; (13) Native process signaling; (14) Graceful shutdown polling; (15) Error message instanceof check. Total 24 fixes across 3 rounds. Final: 278 lines with defense-in-depth. Commits: c674ec3 (R1), a2e6e27 (R2), b49d88e (R3). Active reviews #180-198. Consolidation counter: 0.                                                                                                                                                                                                                                                                                               |
 | 10.3    | 2026-01-23 | Review #198 Follow-up: Qodo Round 2 - 7 additional security/compliance fixes (2 MAJOR: symlink log overwrite via lstatSync, stricter process allowlist; 3 MINOR: user context in logs, PID validation, Windows PowerShell fallback; 2 TRIVIAL: Atomics.wait sleep, catch block logging). **NEW PATTERNS**: Symlink protection for log files, stricter allowlist for generic processes, user context in security logs, deprecated command fallbacks, cross-platform sleep. Total 15 fixes across 2 rounds. Active reviews #180-198. Consolidation counter: 0.                                                                                                                                                                                                                                                                       |
@@ -869,16 +870,54 @@ provided 3 additional hardening suggestions for edge cases.
     - Pattern: Distinguish "target disappeared" from "operation failed" in async
       operations
 
+**Follow-up (Qodo Round 5 - 2026-01-23):**
+
+Qodo provided 2 generic compliance issues + 5 code suggestions (importance 4-8):
+
+| #   | Issue                           | Severity         | Fix                                                                |
+| --- | ------------------------------- | ---------------- | ------------------------------------------------------------------ |
+| 1   | Remove brittle WMIC CSV parsing | HIGH (imp 8)     | Removed deprecated wmic path, use PowerShell Get-CimInstance only  |
+| 2   | Add /T flag to taskkill         | HIGH (imp 7)     | Added /T to both graceful and forced taskkill (kills process tree) |
+| 3   | Normalize Windows newlines      | MEDIUM (imp 6)   | Changed split("\n") to split(/\r?\n/) in 2 locations               |
+| 4   | Silent catch block logging      | COMPLIANCE       | Added console.error to outer catch in terminateProcess             |
+| 5   | Handle multiple PIDs            | DEFERRED (imp 6) | Single PID adequate (same reason as R3 #10)                        |
+| 6   | Reuse sleep buffer in polling   | DEFERRED (imp 4) | Marginal benefit, adds complexity                                  |
+| 7   | Structured logging (JSON)       | REJECTED         | Overkill for local hook audit log                                  |
+
+**New Patterns from Round 5:**
+
+20. **Deprecated Command Elimination**
+    - Root cause: WMIC is deprecated on Windows 11+, CSV parsing fragile (breaks
+      on commas in command lines)
+    - Prevention: Remove deprecated fallback paths, use modern commands directly
+      (PowerShell Get-CimInstance)
+    - Pattern: Don't maintain deprecated code paths - migrate to modern
+      equivalents
+
+21. **Process Tree Termination**
+    - Root cause: Child processes can be orphaned if parent is killed without /T
+      flag
+    - Prevention: Use `taskkill /T` to terminate entire process tree
+    - Pattern: When terminating services, ensure child processes are also
+      terminated
+
+22. **Cross-Platform Newline Handling**
+    - Root cause: Windows uses CRLF (\r\n), Unix uses LF (\n) - splitting by \n
+      leaves \r
+    - Prevention: Use `/\r?\n/` regex for splitting subprocess output
+    - Pattern: Always use cross-platform newline regex in Node.js scripts
+
 **Final Resolution:**
 
-- **Total Fixed:** 28 items (3 Critical, 8 Major, 13 Minor, 4 Trivial) across 4
+- **Total Fixed:** 32 items (3 Critical, 10 Major, 15 Minor, 4 Trivial) across 5
   rounds
-- **Deferred:** 2 items (multi-PID support, lsof fallback - documented as future
-  enhancements)
-- **Final File:** `.claude/hooks/stop-serena-dashboard.js` (318 lines with
-  hardened security)
-- **Commits:** c674ec3 (R1), a2e6e27 (R2), b49d88e (R3), [next commit] (R4 + CI
-  fixes)
+- **Deferred:** 3 items (multi-PID support ×2, sleep buffer optimization -
+  documented)
+- **Rejected:** 1 item (structured logging - local hook, not production)
+- **Final File:** `.claude/hooks/stop-serena-dashboard.js` (333 lines -
+  increased from 318 with added logging)
+- **Commits:** c674ec3 (R1), a2e6e27 (R2), b49d88e (R3), f75aa54 (R4), [next
+  commit] (R5)
 
 ---
 

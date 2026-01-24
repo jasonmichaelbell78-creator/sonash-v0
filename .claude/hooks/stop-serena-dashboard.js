@@ -73,46 +73,29 @@ function log(message, level = "INFO") {
 function getProcessInfo(pid) {
   try {
     if (process.platform === "win32") {
-      try {
-        const output = execFileSync(
-          "wmic",
-          ["process", "where", `ProcessId=${pid}`, "get", "Name,CommandLine", "/format:csv"],
-          { encoding: "utf8", timeout: 5000 }
-        );
-        const lines = output
-          .trim()
-          .split("\n")
-          .filter((l) => l.includes(","));
-        if (lines.length > 1) {
-          const parts = lines[1].split(",");
-          return { name: parts[2] || "", commandLine: parts[1] || "" };
-        }
-      } catch {
-        // WMIC is deprecated on many Windows installs; fall back to PowerShell
-        // (Qodo Review #198 follow-up - Windows process-info fallback)
-        const output = execFileSync(
-          "powershell",
-          [
-            "-NoProfile",
-            "-NonInteractive",
-            "-Command",
-            `(Get-CimInstance Win32_Process -Filter "ProcessId=${pid}") | Select-Object -Property Name,CommandLine | ConvertTo-Json -Compress`,
-          ],
-          { encoding: "utf8", timeout: 5000 }
-        ).trim();
+      // Use PowerShell Get-CimInstance directly (Qodo Review #199 Round 5)
+      // WMIC is deprecated and CSV parsing is fragile (breaks on commas in command lines)
+      const output = execFileSync(
+        "powershell",
+        [
+          "-NoProfile",
+          "-NonInteractive",
+          "-Command",
+          `(Get-CimInstance Win32_Process -Filter "ProcessId=${pid}") | Select-Object -Property Name,CommandLine | ConvertTo-Json -Compress`,
+        ],
+        { encoding: "utf8", timeout: 5000 }
+      ).trim();
 
-        if (output) {
-          try {
-            const parsed = JSON.parse(output);
-            return { name: parsed?.Name || "", commandLine: parsed?.CommandLine || "" };
-          } catch (parseErr) {
-            const errMsg = parseErr instanceof Error ? parseErr.message : String(parseErr);
-            console.error(`[ERROR] Failed to parse PowerShell JSON for PID ${pid}: ${errMsg}`);
-            return null;
-          }
-        }
+      if (!output) return null;
+
+      try {
+        const parsed = JSON.parse(output);
+        return { name: parsed?.Name || "", commandLine: parsed?.CommandLine || "" };
+      } catch (parseErr) {
+        const errMsg = parseErr instanceof Error ? parseErr.message : String(parseErr);
+        console.error(`[ERROR] Failed to parse PowerShell JSON for PID ${pid}: ${errMsg}`);
+        return null;
       }
-      return null;
     }
 
     const name = execFileSync("ps", ["-p", String(pid), "-o", "comm="], {
@@ -145,9 +128,10 @@ function findListeningProcess(port) {
         ],
         { encoding: "utf8", timeout: 10000 }
       );
+      // Use /\r?\n/ to handle Windows CRLF newlines (Qodo Review #199 Round 5)
       const pids = output
         .trim()
-        .split("\n")
+        .split(/\r?\n/)
         .filter(Boolean)
         .map((p) => parseInt(p.trim(), 10));
       return pids.length > 0 ? pids[0] : null;
@@ -157,9 +141,10 @@ function findListeningProcess(port) {
         timeout: 10000,
         stdio: ["ignore", "pipe", "ignore"], // Ignore stderr (equivalent to 2>/dev/null)
       });
+      // Use /\r?\n/ for consistency, though Unix typically uses LF only
       const pids = output
         .trim()
-        .split("\n")
+        .split(/\r?\n/)
         .filter(Boolean)
         .map((p) => parseInt(p.trim(), 10));
       return pids.length > 0 ? pids[0] : null;
@@ -192,7 +177,8 @@ function terminateProcess(pid) {
   try {
     if (process.platform === "win32") {
       try {
-        execFileSync("taskkill", ["/PID", String(pid)], { timeout: 5000 });
+        // /T flag terminates entire process tree to prevent orphaned children (Qodo Review #199 Round 5)
+        execFileSync("taskkill", ["/PID", String(pid), "/T"], { timeout: 5000 });
         return true;
       } catch (gracefulErr) {
         // Graceful termination failed, try force kill (Review #198 Round 3 - add logging)
@@ -201,7 +187,8 @@ function terminateProcess(pid) {
           `[WARN] Graceful taskkill failed for PID ${pid}: ${errMsg}, trying force kill`
         );
         try {
-          execFileSync("taskkill", ["/PID", String(pid), "/F"], { timeout: 5000 });
+          // /T terminates process tree, /F forces termination (Qodo Review #199 Round 5)
+          execFileSync("taskkill", ["/PID", String(pid), "/F", "/T"], { timeout: 5000 });
           return true;
         } catch (forceErr) {
           const forceErrMsg = forceErr instanceof Error ? forceErr.message : String(forceErr);
@@ -267,7 +254,10 @@ function terminateProcess(pid) {
         return code === "ESRCH";
       }
     }
-  } catch {
+  } catch (err) {
+    // Log unexpected errors for debugging (Qodo Review #199 Round 5 - Generic compliance)
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`[ERROR] Unexpected error in terminateProcess for PID ${pid}: ${errMsg}`);
     return false;
   }
 }
