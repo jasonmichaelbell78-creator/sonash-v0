@@ -28,6 +28,7 @@
 // Use CommonJS for consistency with other scripts in scripts/ (Review #158)
 const { existsSync, readFileSync, writeFileSync } = require("node:fs");
 const { join } = require("node:path");
+const { execSync } = require("node:child_process");
 
 // File paths
 const LOG_FILE = join(__dirname, "..", "docs", "AI_REVIEW_LEARNINGS_LOG.md");
@@ -580,6 +581,24 @@ function main() {
       // Review #194: Make failure path explicit with return
       const applied = applyConsolidationChanges(content, reviews, recurringPatterns);
       if (applied) {
+        // Run learning effectiveness analysis after consolidation
+        log("\n📊 Running learning effectiveness analysis...", colors.blue);
+        try {
+          execSync("node scripts/analyze-learning-effectiveness.js --auto", {
+            stdio: "inherit",
+            cwd: join(__dirname, ".."),
+          });
+        } catch (analysisErr) {
+          // Non-blocking: Don't fail consolidation if analysis fails
+          log("⚠️  Learning analysis failed (non-blocking)", colors.yellow);
+          if (verbose) {
+            log(
+              `   ${analysisErr instanceof Error ? analysisErr.message : String(analysisErr)}`,
+              colors.yellow
+            );
+          }
+        }
+
         process.exitCode = 0;
         return;
       }
