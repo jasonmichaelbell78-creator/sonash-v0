@@ -70,6 +70,33 @@ function sanitizeDisplayString(str, maxLength = 100) {
   return sanitized.length > maxLength ? sanitized.substring(0, maxLength) + "..." : sanitized;
 }
 
+/**
+ * Escape Markdown metacharacters to prevent injection (Review #200 R5)
+ * @param {string} str - Input string
+ * @param {number} maxLength - Maximum length
+ * @returns {string} Sanitized and escaped string
+ */
+function escapeMd(str, maxLength = 100) {
+  const sanitized = sanitizeDisplayString(str, maxLength);
+  // Escape Markdown metacharacters
+  return sanitized.replace(/[[\]()_*`#>!-]/g, "\\$&");
+}
+
+/**
+ * Check if path is a symlink and refuse to write through it (Review #200 R5)
+ * @param {string} filePath - Path to check
+ * @throws {Error} If path is a symlink
+ */
+function refuseSymlink(filePath) {
+  if (existsSync(filePath)) {
+    const { lstatSync } = require("node:fs");
+    const st = lstatSync(filePath);
+    if (st.isSymbolicLink()) {
+      throw new Error(`Refusing to write through symlink: ${filePath}`);
+    }
+  }
+}
+
 class LearningEffectivenessAnalyzer {
   constructor(options = {}) {
     this.options = {
@@ -646,12 +673,16 @@ class LearningEffectivenessAnalyzer {
     for (const issue of recurring) {
       if (issue.occurrencesSinceDoc >= 3) {
         // Review #200: Security - Sanitize pattern name to prevent path traversal and git option injection
-        const safeName = issue.pattern
+        const safeBase = issue.pattern
           .replace(/[/\\]/g, "_") // Remove path separators
           .replace(/\s+/g, "_")
           .replace(/[^a-zA-Z0-9_-]/g, "") // Remove special chars
           .replace(/^-+/, "") // Review #200 R4: Strip leading dashes to prevent git option injection
-          .toUpperCase();
+          .toUpperCase()
+          .slice(0, 60); // Review #200 R5: Length limit to prevent long filenames
+
+        // Review #200 R5: Fallback for empty names
+        const safeName = safeBase || "UNNAMED_PATTERN";
 
         gaps.push({
           topic: issue.pattern,
@@ -745,6 +776,23 @@ class LearningEffectivenessAnalyzer {
    * Output report based on format option
    */
   async outputReport() {
+    // Review #200 R5: Support JSON output format
+    if (this.options.format === "json") {
+      const json = JSON.stringify(this.results, null, 2);
+
+      if (this.options.outputFile) {
+        refuseSymlink(this.options.outputFile);
+        writeFileSync(this.options.outputFile, json, {
+          encoding: "utf-8",
+          mode: 0o600,
+        });
+        console.log(`📊 JSON output written to: ${this.options.outputFile}`);
+      } else {
+        console.log(json);
+      }
+      return;
+    }
+
     if (this.options.detailed) {
       this.outputDetailed();
     } else if (this.options.category) {
@@ -1041,8 +1089,9 @@ class LearningEffectivenessAnalyzer {
       }
 
       // Create git commit
-      await this.createCommit(suggestion);
-      return true;
+      // Review #200 R5: Check createCommit return value before reporting success
+      const committed = await this.createCommit(suggestion);
+      return committed === true;
     } catch (error) {
       console.error("Error applying suggestion:", sanitizeError(error));
       return false;
@@ -1082,12 +1131,26 @@ class LearningEffectivenessAnalyzer {
     }
 
     // Review #200: Create directory if it doesn't exist
-    const { mkdirSync } = require("node:fs");
+    const { mkdirSync, lstatSync } = require("node:fs");
     const parentDir = path.dirname(targetPath);
     mkdirSync(parentDir, { recursive: true });
 
+    // Review #200 R5: Prevent overwrites and symlink clobbering
+    if (existsSync(targetPath)) {
+      const st = lstatSync(targetPath);
+      if (st.isSymbolicLink()) {
+        throw new Error(`Refusing to write through symlink: ${suggestion.suggestedPath}`);
+      }
+      throw new Error(`Refusing to overwrite existing file: ${suggestion.suggestedPath}`);
+    }
+
     const content = this.generateDocTemplate(suggestion);
-    writeFileSync(targetPath, content, "utf-8");
+    // Review #200 R5: Exclusive flag + restrictive permissions
+    writeFileSync(targetPath, content, {
+      encoding: "utf-8",
+      flag: "wx",
+      mode: 0o600,
+    });
     // Review #200 R4: Log relative path to avoid exposing filesystem details
     const relativePath = path.relative(ROOT, targetPath);
     console.log(`  Created: ${sanitizeDisplayString(relativePath, 120)}`);
@@ -1145,18 +1208,22 @@ This pattern has appeared ${suggestion.description.match(/\d+/)?.[0] || "multipl
     const msgFile = path.join(tmpdir(), `LEARNING_COMMIT_MSG_${process.pid}_${Date.now()}.txt`);
 
     try {
-      // Only stage the file that was changed (Review #200: Security - prevent staging unrelated files)
+      // Review #200 R5: Only allow explicit paths - no git add -A fallback
       if (suggestion.type === "doc-update" && suggestion.suggestedPath) {
         // Review #200 R4: Use -- terminator to prevent path being interpreted as git option
         execFileSync("git", ["add", "--", suggestion.suggestedPath], { cwd: ROOT });
       } else {
-        // Fallback: stage all changes (should ideally specify paths for other types too)
-        execFileSync("git", ["add", "-A"], { cwd: ROOT });
+        // Review #200 R5: Refuse to stage unknown types to prevent sensitive file exposure
+        console.warn("⚠️  Cannot stage: unknown suggestion type or missing path");
+        return false;
       }
 
-      const message = `chore(learning): ${suggestion.title}
+      // Review #200 R5: Sanitize suggestion fields for commit message
+      const safeTitle = sanitizeDisplayString(suggestion.title, 100);
+      const safeDesc = sanitizeDisplayString(suggestion.description, 200);
+      const message = `chore(learning): ${safeTitle}
 
-${suggestion.description}
+${safeDesc}
 
 Auto-applied by learning effectiveness analyzer.
 Priority: ${suggestion.priority} | Impact: ${suggestion.impact}
@@ -1166,8 +1233,10 @@ Priority: ${suggestion.priority} | Impact: ${suggestion.impact}
       writeFileSync(msgFile, message, { encoding: "utf-8", flag: "wx", mode: 0o600 });
       execFileSync("git", ["commit", "-F", msgFile], { cwd: ROOT });
       console.log("  Committed changes");
+      return true; // Review #200 R5: Return success status
     } catch (error) {
       console.warn("⚠️  Could not create commit:", sanitizeError(error));
+      return false; // Review #200 R5: Return failure status
     } finally {
       // Cleanup temp file
       try {
@@ -1218,31 +1287,34 @@ Priority: ${suggestion.priority} | Impact: ${suggestion.impact}
     const p2 = deferred.filter((d) => d.priority > 3 && d.priority <= 7);
     const p3 = deferred.filter((d) => d.priority > 7);
 
+    // Review #200 R5: Sanitize and escape all user-derived fields
     for (const item of p1) {
-      content += `- [ ] **[${item.category}]** ${item.title}\n`;
-      content += `  - **Effort:** ${item.effort}\n`;
-      content += `  - **Impact:** ${item.impact}\n`;
-      content += `  - **Action:** ${item.action}\n`;
-      content += `  - **Details:** ${item.description}\n\n`;
+      content += `- [ ] **[${escapeMd(item.category, 40)}]** ${escapeMd(item.title, 120)}\n`;
+      content += `  - **Effort:** ${escapeMd(item.effort, 40)}\n`;
+      content += `  - **Impact:** ${escapeMd(item.impact, 40)}\n`;
+      content += `  - **Action:** ${escapeMd(item.action, 160)}\n`;
+      content += `  - **Details:** ${escapeMd(item.description, 240)}\n\n`;
     }
 
     if (p2.length > 0) {
       content += `## Priority 2 (Soon)\n\n`;
       for (const item of p2) {
-        content += `- [ ] **[${item.category}]** ${item.title}\n`;
-        content += `  - **Effort:** ${item.effort} | **Impact:** ${item.impact}\n`;
-        content += `  - ${item.action}\n\n`;
+        content += `- [ ] **[${escapeMd(item.category, 40)}]** ${escapeMd(item.title, 120)}\n`;
+        content += `  - **Effort:** ${escapeMd(item.effort, 40)} | **Impact:** ${escapeMd(item.impact, 40)}\n`;
+        content += `  - ${escapeMd(item.action, 160)}\n\n`;
       }
     }
 
     if (p3.length > 0) {
       content += `## Priority 3 (Later)\n\n`;
       for (const item of p3) {
-        content += `- [ ] [${item.category}] ${item.title}\n`;
+        content += `- [ ] [${escapeMd(item.category, 40)}] ${escapeMd(item.title, 120)}\n`;
       }
     }
 
-    writeFileSync(TODO_FILE, content);
+    // Review #200 R5: Symlink protection + restrictive permissions
+    refuseSymlink(TODO_FILE);
+    writeFileSync(TODO_FILE, content, { encoding: "utf-8", mode: 0o600 });
   }
 
   /**
@@ -1259,15 +1331,18 @@ This file tracks suggestions that were explicitly skipped with rationale.
 
 `;
 
+    // Review #200 R5: Sanitize and escape all user-derived fields
     for (const item of skipped) {
-      content += `## ${item.suggestion.title}\n\n`;
-      content += `- **Category:** ${item.suggestion.category}\n`;
-      content += `- **Priority:** ${item.suggestion.priority}\n`;
-      content += `- **Reason Skipped:** ${item.reason}\n`;
-      content += `- **Details:** ${item.suggestion.description}\n\n`;
+      content += `## ${escapeMd(item.suggestion.title, 120)}\n\n`;
+      content += `- **Category:** ${escapeMd(item.suggestion.category, 40)}\n`;
+      content += `- **Priority:** ${escapeMd(String(item.suggestion.priority), 10)}\n`;
+      content += `- **Reason Skipped:** ${escapeMd(item.reason, 200)}\n`;
+      content += `- **Details:** ${escapeMd(item.suggestion.description, 240)}\n\n`;
     }
 
-    writeFileSync(SKIPPED_FILE, content);
+    // Review #200 R5: Symlink protection + restrictive permissions
+    refuseSymlink(SKIPPED_FILE);
+    writeFileSync(SKIPPED_FILE, content, { encoding: "utf-8", mode: 0o600 });
   }
 
   /**
@@ -1344,11 +1419,11 @@ npm run learning:detailed
 ${this.results.suggestions
   .slice(0, 5)
   .map((s, i) => {
-    // Review #200 R4: Sanitize content to prevent Markdown injection
-    const category = sanitizeDisplayString(s.category, 40);
-    const title = sanitizeDisplayString(s.title, 120);
-    const description = sanitizeDisplayString(s.description, 200);
-    const action = sanitizeDisplayString(s.action, 200);
+    // Review #200 R5: Escape Markdown metacharacters to prevent injection
+    const category = escapeMd(s.category, 40);
+    const title = escapeMd(s.title, 120);
+    const description = escapeMd(s.description, 200);
+    const action = escapeMd(s.action, 200);
     return `${i + 1}. **[${category}]** ${title}\n   - ${description}\n   - Action: ${action}`;
   })
   .join("\n\n")}
@@ -1368,7 +1443,9 @@ ${this.results.suggestions
 | 1.0     | ${now}     | Initial auto-generated metrics dashboard |
 `;
 
-    writeFileSync(METRICS_FILE, content);
+    // Review #200 R5: Symlink protection + restrictive permissions
+    refuseSymlink(METRICS_FILE);
+    writeFileSync(METRICS_FILE, content, { encoding: "utf-8", mode: 0o600 });
     console.log(`\n✅ Metrics updated: ${METRICS_FILE}`);
   }
 
@@ -1439,18 +1516,33 @@ function parseArgs(args) {
       }
       options.sinceReview = reviewNum;
       i++;
-    } else if (arg === "--category" && args[i + 1]) {
-      options.category = args[i + 1];
+    } else if (arg === "--category") {
+      // Review #200 R5: Validate argument has value
+      const next = args[i + 1];
+      if (!next || next.startsWith("--")) {
+        throw new Error('Missing value for --category (e.g. "--category automation")');
+      }
+      options.category = next;
       i++;
-    } else if (arg === "--format" && args[i + 1]) {
-      options.format = args[i + 1];
+    } else if (arg === "--format") {
+      // Review #200 R5: Validate argument has value
+      const next = args[i + 1];
+      if (!next || next.startsWith("--")) {
+        throw new Error('Missing value for --format (e.g. "--format dashboard")');
+      }
+      options.format = next;
       i++;
     } else if (arg === "--auto") {
       options.auto = true;
     } else if (arg === "--detailed") {
       options.detailed = true;
-    } else if (arg === "--output" && args[i + 1]) {
-      options.outputFile = args[i + 1];
+    } else if (arg === "--output") {
+      // Review #200 R5: Validate argument has value
+      const next = args[i + 1];
+      if (!next || next.startsWith("--")) {
+        throw new Error('Missing value for --output (e.g. "--output path/to/file.json")');
+      }
+      options.outputFile = next;
       i++;
     }
   }
