@@ -102,6 +102,11 @@ function refuseSymlinkWithParents(filePath) {
  * @throws {Error} If path escapes baseDir
  */
 function validatePathInDir(baseDir, userPath) {
+  // Reject empty/falsy paths upfront
+  if (!userPath || typeof userPath !== "string" || userPath.trim() === "") {
+    throw new Error(`Path must be within ${path.basename(baseDir)}/`);
+  }
+
   const resolved = path.resolve(baseDir, userPath);
   const rel = path.relative(baseDir, resolved);
 
@@ -125,17 +130,22 @@ function validatePathInDir(baseDir, userPath) {
 function safeWriteFile(filePath, content, options = {}) {
   refuseSymlinkWithParents(filePath);
 
-  if (!options.allowOverwrite && existsSync(filePath)) {
-    throw new Error(`Refusing to overwrite existing file: ${filePath}`);
-  }
-
   const flag = options.allowOverwrite ? "w" : "wx";
 
-  writeFileSync(filePath, content, {
-    encoding: "utf-8",
-    flag,
-    mode: 0o600,
-  });
+  try {
+    writeFileSync(filePath, content, {
+      encoding: "utf-8",
+      flag,
+      mode: 0o600,
+    });
+  } catch (error) {
+    // EEXIST means file was created between our symlink check and write (TOCTOU)
+    // This is the correct atomic behavior - wx flag prevents overwrite
+    if (error.code === "EEXIST") {
+      throw new Error(`Refusing to overwrite existing file: ${filePath}`);
+    }
+    throw error;
+  }
 }
 
 /**
@@ -335,8 +345,29 @@ function validateUrl(urlString, allowedHosts) {
       return { valid: false, error: "Only HTTPS URLs allowed" };
     }
 
-    if (!allowedHosts.includes(url.hostname)) {
-      return { valid: false, error: `Host ${url.hostname} not in allowlist` };
+    // Block localhost/loopback bypasses (SSRF hardening)
+    const hostname = url.hostname.toLowerCase();
+    const blockedPatterns = [
+      "localhost",
+      "127.0.0.1",
+      "0.0.0.0",
+      "::1",
+      "[::1]",
+      "0177.0.0.1", // Octal
+      "2130706433", // Decimal
+    ];
+    if (blockedPatterns.some((p) => hostname === p || hostname.endsWith("." + p))) {
+      return { valid: false, error: "Localhost/loopback not allowed" };
+    }
+
+    // Block IP addresses (only allow domain names)
+    if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname) || hostname.startsWith("[")) {
+      return { valid: false, error: "IP addresses not allowed - use domain names" };
+    }
+
+    // Exact hostname match only (no subdomain bypass)
+    if (!allowedHosts.some((allowed) => hostname === allowed.toLowerCase())) {
+      return { valid: false, error: `Host ${hostname} not in allowlist` };
     }
 
     return { valid: true, url };
@@ -383,9 +414,18 @@ function maskEmail(email) {
   if (parts.length !== 2) return "[REDACTED]";
 
   const [local, domain] = parts;
+  if (!local || !domain) return "[REDACTED]";
+
   const domainParts = domain.split(".");
 
-  const maskedLocal = local.charAt(0) + "***";
+  // Handle edge cases: empty local, single-part domain
+  const maskedLocal = local.length > 0 ? local.charAt(0) + "***" : "***";
+
+  // Domain must have at least one dot for valid email
+  if (domainParts.length < 2) {
+    return `${maskedLocal}@[REDACTED]`;
+  }
+
   const maskedDomain = domainParts[0].charAt(0) + "***." + domainParts.slice(1).join(".");
 
   return `${maskedLocal}@${maskedDomain}`;

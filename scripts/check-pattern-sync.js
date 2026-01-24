@@ -58,10 +58,11 @@ function extractPatterns(content, source) {
  */
 function isPatternAutomated(checkerContent, patternNum) {
   // Look for pattern number in ANTI_PATTERNS array comments or descriptions
+  // Note: No /g flag needed - we only need boolean result, not iteration
   const patterns = [
-    new RegExp(`#${patternNum}[^0-9]`, "g"),
-    new RegExp(`Pattern ${patternNum}[^0-9]`, "g"),
-    new RegExp(`Review #\\d+.*#${patternNum}`, "g"),
+    new RegExp(`#${patternNum}(?![0-9])`),
+    new RegExp(`Pattern ${patternNum}(?![0-9])`),
+    new RegExp(`Review #\\d+.*#${patternNum}(?![0-9])`),
   ];
 
   return patterns.some((p) => p.test(checkerContent));
@@ -98,11 +99,16 @@ function checkPatternSync() {
 
   // Read all files
   const contents = {};
-  for (const [key, path] of Object.entries(FILES)) {
-    if (existsSync(path)) {
-      contents[key] = readFileSync(path, "utf-8");
+  for (const [key, filePath] of Object.entries(FILES)) {
+    if (existsSync(filePath)) {
+      try {
+        contents[key] = readFileSync(filePath, "utf-8");
+      } catch (error) {
+        console.warn(`⚠️  Failed to read ${filePath}: ${error.code || "unknown error"}`);
+        contents[key] = "";
+      }
     } else {
-      console.warn(`⚠️  File not found: ${path}`);
+      console.warn(`⚠️  File not found: ${filePath}`);
       contents[key] = "";
     }
   }
@@ -221,7 +227,12 @@ function getPatternDetails(patternNum) {
   const learningsPath = FILES.learningsLog;
   if (!existsSync(learningsPath)) return null;
 
-  const content = readFileSync(learningsPath, "utf-8");
+  let content;
+  try {
+    content = readFileSync(learningsPath, "utf-8");
+  } catch {
+    return null;
+  }
 
   // Find the pattern definition
   const regex = new RegExp(

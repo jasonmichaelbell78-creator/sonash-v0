@@ -25,8 +25,9 @@
  * Exit codes: 0 = success, 1 = errors found, 2 = fatal error
  */
 
-const { readFileSync, writeFileSync, existsSync } = require("node:fs");
-const { join } = require("node:path");
+const { readFileSync, writeFileSync, existsSync, readdirSync, lstatSync } = require("node:fs");
+const path = require("node:path");
+const { join } = path;
 const { createInterface } = require("node:readline");
 
 const ROOT = join(__dirname, "..");
@@ -184,6 +185,12 @@ class LearningEffectivenessAnalyzer {
       for (const file of archiveFiles) {
         const filePath = join(archiveDir, file);
         try {
+          // Check for symlinks to prevent symlink-based path traversal
+          const stat = lstatSync(filePath);
+          if (stat.isSymbolicLink()) {
+            console.warn(`   ⚠ Skipping symlink: ${file}`);
+            continue;
+          }
           const fileContent = readFileSync(filePath, "utf-8");
           content += "\n" + fileContent;
           console.log(`   ✓ ${file}`);
@@ -202,15 +209,32 @@ class LearningEffectivenessAnalyzer {
         }
       }
     } else {
-      const inputFile = this.options.inputFile ? join(ROOT, this.options.inputFile) : LEARNINGS_LOG;
+      const displayPath = this.options.inputFile || "docs/AI_REVIEW_LEARNINGS_LOG.md";
+      const resolvedInput = this.options.inputFile
+        ? path.resolve(ROOT, this.options.inputFile)
+        : LEARNINGS_LOG;
 
-      if (!existsSync(inputFile)) {
-        const displayPath = this.options.inputFile || "docs/AI_REVIEW_LEARNINGS_LOG.md";
+      // Path traversal prevention
+      const relToRoot = path.relative(ROOT, resolvedInput);
+      if (
+        this.options.inputFile &&
+        (relToRoot === "" || /^\.\.(?:[\\/]|$)/.test(relToRoot) || path.isAbsolute(relToRoot))
+      ) {
+        throw new Error(`Input file must be within repo: ${displayPath}`);
+      }
+
+      if (!existsSync(resolvedInput)) {
         throw new Error(`Input file not found: ${displayPath}`);
       }
 
+      // Symlink check to prevent symlink-based path traversal
+      const stat = lstatSync(resolvedInput);
+      if (stat.isSymbolicLink()) {
+        throw new Error(`Symbolic links not allowed: ${displayPath}`);
+      }
+
       try {
-        content = readFileSync(inputFile, "utf-8");
+        content = readFileSync(resolvedInput, "utf-8");
       } catch (error) {
         throw new Error(`Failed to read input file: ${sanitizeError(error)}`);
       }
@@ -219,18 +243,28 @@ class LearningEffectivenessAnalyzer {
     // Parse reviews from content
     const lines = content.split("\n");
     let currentReview = null;
+    const seenReviewNumbers = new Set(); // Deduplicate reviews from multiple files
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
       const reviewMatch = line.match(/^####\s+Review\s+#(\d+)/);
       if (reviewMatch) {
+        const reviewNum = parseInt(reviewMatch[1]);
+
+        // Skip duplicate reviews (can appear in both archive and current log)
+        if (seenReviewNumbers.has(reviewNum)) {
+          currentReview = null; // Reset so we don't capture lines from duplicate
+          continue;
+        }
+
         if (currentReview && currentReview.number >= this.options.sinceReview) {
           this.reviews.push(currentReview);
+          seenReviewNumbers.add(currentReview.number);
         }
 
         currentReview = {
-          number: parseInt(reviewMatch[1]),
+          number: reviewNum,
           title: line.replace(/^####\s+Review\s+#\d+\s*:?\s*/, ""),
           patterns: [],
           findings: [],
@@ -435,10 +469,16 @@ class LearningEffectivenessAnalyzer {
 
   /**
    * Calculate keyword match score between pattern and text
+   * Uses word-boundary matching to prevent false positives (e.g., "path" in "filepath")
    */
   calculatePatternMatch(keywords, text) {
     if (keywords.length === 0) return 0;
-    const matches = keywords.filter((kw) => text.includes(kw)).length;
+    const matches = keywords.filter((kw) => {
+      // Escape special regex chars in keyword, then match at word boundaries
+      const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const wordBoundaryRegex = new RegExp(`\\b${escaped}\\b`, "i");
+      return wordBoundaryRegex.test(text);
+    }).length;
     return matches / keywords.length;
   }
 
@@ -546,11 +586,12 @@ class LearningEffectivenessAnalyzer {
    * Generate automation recommendation for a pattern
    */
   generateAutomationRecommendation(result) {
-    const safeName = result.pattern
+    const sanitized = (result.pattern || "")
       .replace(/[^a-zA-Z0-9\s-]/g, "")
       .replace(/\s+/g, "-")
       .toLowerCase()
       .slice(0, 40);
+    const safeName = sanitized || `pattern-${Date.now()}`;
 
     return {
       action: `Add to check-pattern-compliance.js`,
@@ -682,11 +723,12 @@ class LearningEffectivenessAnalyzer {
     );
 
     for (const pattern of complexPatterns.slice(0, 2)) {
-      const safeName = pattern.pattern
+      const sanitized = (pattern.pattern || "")
         .replace(/[^a-zA-Z0-9\s]/g, "_")
         .replace(/\s+/g, "_")
         .toUpperCase()
         .slice(0, 40);
+      const safeName = sanitized || `PATTERN_${Date.now()}`;
 
       suggestions.push({
         priority: priority++,
