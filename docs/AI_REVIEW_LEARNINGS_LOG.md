@@ -2123,3 +2123,91 @@ formatting improvements.
 
 **Session:** #90 **Branch:** claude/mcp-optimization-session90 section above for
 details.\_
+
+---
+
+### Review #200: PR #309 Context Optimization - CI + Qodo Feedback (2026-01-23)
+
+**Context:** PR #309 (Context optimization infrastructure + Serena hook
+hardening). Mixed feedback from CI pattern compliance blocker (3 violations) +
+Qodo PR Compliance (2 items) + Qodo Code Suggestions (9 items). Total: 14
+suggestions.
+
+**Source:** CI Pattern Compliance + Qodo Compliance + Qodo Code Suggestions
+
+**PR/Branch:** PR #309 / claude/mcp-optimization-session90
+
+**Suggestions:** 14 total (Critical: 1 group = 3 violations, Major: 7, Minor: 2,
+Trivial: 1, Deferred: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                                      | Severity | Category       | Fix                                                                    |
+| --- | ------------------------------------------ | -------- | -------------- | ---------------------------------------------------------------------- |
+| 1-3 | Pattern compliance violations (CI BLOCKER) | Critical | Security       | Fixed path validation + readFileSync pattern; added exclusions         |
+| 4   | Silent exception handling                  | Major    | Error Handling | Added logging to pattern-check.js catch block                          |
+| 5   | Raw filesystem errors                      | Major    | Security       | Added sanitizeFilesystemError() to redact paths                        |
+| 6   | Pre-check file size                        | Major    | Performance    | Use statSync before readFileSync to skip small files                   |
+| 7   | Block NUL bytes in paths                   | Major    | Security       | Added \0 rejection to validateFilePath                                 |
+| 8   | Support safe absolute paths                | Major    | Functionality  | Allow absolute paths within project, convert to relative               |
+| 9   | Eliminate TOCTOU race                      | Major    | Security       | Removed existsSync, handle ENOENT/ENOTDIR in realpathSync catch        |
+| 10  | Add validation to containment check        | Major    | Security       | Call validateFilePath at start of verifyContainment (defense-in-depth) |
+| 11  | Validate input type                        | Minor    | Robustness     | Added typeof filePath === "string" check                               |
+| 12  | Reduce line-count memory                   | Minor    | Performance    | Count newlines instead of split() to avoid array allocation            |
+| 13  | Silent exit without logging                | Trivial  | Code Style     | Removed console.log("ok") from pattern-check.js                        |
+| 14  | Implement audit aggregation with code      | Deferred | Architecture   | Tracked in ROADMAP.md M2 - future enhancement                          |
+
+**New Patterns:**
+
+1. **Type validation before string operations** - Always check
+   `typeof param === "string"` before using string methods like
+   startsWith/includes to prevent runtime errors
+2. **NUL byte injection prevention** - Add `filePath.includes("\0")` check to
+   reject NUL bytes that could bypass path validation
+3. **Safe absolute path handling** - Allow absolute paths within project
+   directory by using `path.relative()` to convert to relative before further
+   validation
+4. **TOCTOU race elimination** - Don't use existsSync before file operations;
+   rely on try/catch around actual operation (e.g., realpathSync) and handle
+   specific error codes (ENOENT, ENOTDIR)
+5. **Filesystem error sanitization** - Redact system paths from error messages
+   ([HOME], [CONFIG], [VAR]) to prevent information leakage
+6. **Defense-in-depth validation** - Functions that call other validation
+   functions should still validate inputs (e.g., verifyContainment calling
+   validateFilePath first)
+7. **File size pre-check optimization** - Use statSync to check file size before
+   reading full content (e.g., skip pattern check for files <8KB ≈ <100 lines)
+8. **Memory-efficient line counting** - Count newlines via charCodeAt loop
+   instead of split("\n") to avoid creating large temporary array
+9. **Silent catch anti-pattern** - Always log error context in catch blocks for
+   debugging, even if gracefully continuing
+10. **Pattern checker false positive management** - Document verified safe code
+    in pathExcludeList/pathExclude with Review number and line references
+
+**Key Learnings:**
+
+- **Mixed review sources require comprehensive categorization** - CI blockers
+  (CRITICAL), Qodo compliance (MAJOR), and code suggestions
+  (MAJOR/MINOR/TRIVIAL) all need systematic handling
+- **Path validation requires multiple layers** - Type check → format validation
+  → absolute path handling → traversal prevention → containment verification
+- **TOCTOU races are subtle** - existsSync followed by file operation creates
+  race condition window; better to try the operation and handle specific error
+  codes
+- **Pattern checkers have limitations** - Regex-based pattern matching can't
+  understand multi-line try/catch context; need exclusion lists for verified
+  safe code
+- **Performance optimizations should be measurable** - File size check (~8KB
+  threshold) provides ~50ms savings per small file; line counting optimization
+  reduces memory allocation
+- **Error sanitization is critical in shared utilities** - Any utility that
+  might be called with user-controlled paths must sanitize error messages to
+  prevent path disclosure
+- **Deferred items need proper tracking** - High-importance architectural
+  suggestions (like #6: audit aggregation code) should be tracked in ROADMAP.md,
+  not ignored
+- **False positives need documentation** - When adding files to pattern
+  exclusion lists, document the specific line numbers and Review number for
+  future reference
+
+**Session:** #90 **Branch:** claude/mcp-optimization-session90

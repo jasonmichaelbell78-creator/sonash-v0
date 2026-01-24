@@ -15,6 +15,22 @@ const path = require("node:path");
 const fs = require("node:fs");
 
 /**
+ * Sanitize filesystem error messages to prevent information leakage
+ * @param {unknown} err - The error to sanitize
+ * @returns {string} - Safe error message
+ */
+function sanitizeFilesystemError(err) {
+  const message = err instanceof Error ? err.message : String(err);
+  // Redact system paths and sensitive details
+  return message
+    .replace(/\/home\/[^\s]+/g, "[HOME]")
+    .replace(/\/Users\/[^\s]+/g, "[HOME]")
+    .replace(/C:\\Users\\[^\s]+/g, "[HOME]")
+    .replace(/\/etc\/[^\s]+/g, "[CONFIG]")
+    .replace(/\/var\/[^\s]+/g, "[VAR]");
+}
+
+/**
  * Validate that a file path is safe and within the project directory
  *
  * @param {string} filePath - The file path to validate (can be relative or absolute)
@@ -22,6 +38,11 @@ const fs = require("node:fs");
  * @returns {object} { valid: boolean, error: string | null, normalized: string | null }
  */
 function validateFilePath(filePath, projectDir) {
+  // Reject non-string paths early (Review #200 - Qodo suggestion #11)
+  if (typeof filePath !== "string") {
+    return { valid: false, error: "Non-string file path rejected", normalized: null };
+  }
+
   // Reject empty paths
   if (!filePath) {
     return { valid: false, error: "Empty file path", normalized: null };
@@ -37,17 +58,25 @@ function validateFilePath(filePath, projectDir) {
     return { valid: false, error: "Multiline path rejected", normalized: null };
   }
 
-  // Normalize backslashes to forward slashes (Windows compatibility)
-  let normalized = filePath.replace(/\\/g, "/");
-
-  // Security: Block absolute paths
-  if (
-    normalized.startsWith("/") ||
-    normalized.startsWith("//") ||
-    /^[A-Za-z]:\//.test(normalized)
-  ) {
-    return { valid: false, error: "Absolute path rejected", normalized: null };
+  // Security: Reject NUL bytes (Review #200 - Qodo suggestion #9)
+  if (filePath.includes("\0")) {
+    return { valid: false, error: "NUL byte rejected", normalized: null };
   }
+
+  const projectRoot = path.resolve(projectDir);
+
+  // Allow absolute paths only if they are contained in projectDir (Review #200 - Qodo suggestion #10)
+  if (path.isAbsolute(filePath)) {
+    const abs = path.resolve(filePath);
+    const rel = path.relative(projectRoot, abs);
+    if (rel === "" || rel.startsWith(".." + path.sep) || rel === ".." || path.isAbsolute(rel)) {
+      return { valid: false, error: "Absolute path outside project directory", normalized: null };
+    }
+    filePath = rel;
+  }
+
+  // Normalize backslashes to forward slashes (Windows compatibility)
+  const normalized = filePath.replace(/\\/g, "/");
 
   // Security: Block path traversal using regex (handles .., ../, ..\ edge cases)
   if (
@@ -70,22 +99,33 @@ function validateFilePath(filePath, projectDir) {
  * @returns {object} { contained: boolean, error: string | null, realPath: string | null }
  */
 function verifyContainment(filePath, projectDir) {
-  const fullPath = path.resolve(projectDir, filePath);
-
-  // Verify file exists
-  if (!fs.existsSync(fullPath)) {
-    return { contained: false, error: "File does not exist", realPath: null };
+  // Defense-in-depth: Validate format first (Review #200 - Qodo suggestion #14)
+  const validation = validateFilePath(filePath, projectDir);
+  if (!validation.valid) {
+    return { contained: false, error: validation.error, realPath: null };
   }
 
-  // Resolve symlinks (wrap in try/catch for filesystem errors)
+  const fullPath = path.resolve(projectDir, validation.normalized);
+
+  // Resolve symlinks without TOCTOU race (Review #200 - Qodo suggestion #12)
+  // Don't use existsSync - rely on realpathSync error handling
   let realPath = "";
   let realProject = "";
   try {
     realPath = fs.realpathSync(fullPath);
     realProject = fs.realpathSync(projectDir);
   } catch (err) {
-    const errMsg = err instanceof Error ? err.message : String(err);
-    return { contained: false, error: `Filesystem error: ${errMsg}`, realPath: null };
+    const e = /** @type {NodeJS.ErrnoException} */ (err);
+    // Handle specific error codes clearly
+    if (e && (e.code === "ENOENT" || e.code === "ENOTDIR")) {
+      return { contained: false, error: "File does not exist", realPath: null };
+    }
+    // Sanitize other filesystem errors (Review #200 - Qodo suggestion #5)
+    return {
+      contained: false,
+      error: `Filesystem error: ${sanitizeFilesystemError(err)}`,
+      realPath: null,
+    };
   }
 
   // Check containment using path.relative()

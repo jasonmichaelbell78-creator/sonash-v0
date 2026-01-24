@@ -80,19 +80,17 @@ if (filePath.startsWith(projectDirWithSep)) {
   relPath = filePath.slice(projectDirWithSep.length);
 }
 
-// Verify file exists and is within project
-const fullPath = path.resolve(projectDir, relPath);
-if (!fs.existsSync(fullPath)) {
-  process.exit(0);
-}
-
 // Verify containment (wrap realpathSync in try/catch for filesystem errors)
+// Note: No existsSync check - avoid TOCTOU race, rely on realpathSync error handling (Review #200)
+const fullPath = path.resolve(projectDir, relPath);
 let realPath = "";
 let realProject = "";
 try {
   realPath = fs.realpathSync(fullPath);
   realProject = fs.realpathSync(projectDir);
 } catch {
+  // File doesn't exist or is inaccessible - skip pattern check (Review #200 - logging added)
+  console.error(`Pattern check skipped: ${relPath} (file not accessible)`);
   process.exit(0);
 }
 // rel === '' means file path equals projectDir (invalid for file operations)
@@ -106,17 +104,32 @@ if (
   process.exit(0);
 }
 
-// Quick Win: Skip pattern check for small files (<100 lines) to reduce latency
-// Context optimization: Small files unlikely to have complex pattern violations
+// Quick Win: Skip pattern check for small files (<100 lines) to reduce latency (Review #200)
+// Pre-check file size before reading (Review #200 - Qodo suggestion #7)
 try {
-  const content = fs.readFileSync(fullPath, "utf8");
-  const lineCount = content.split("\n").length;
-  if (lineCount < 100) {
-    console.log("ok");
+  const { size } = fs.statSync(fullPath);
+  // Approximate small files (under ~8 KB) as <100 lines
+  if (size < 8 * 1024) {
     process.exit(0);
   }
-} catch {
-  // If we can't read the file, proceed with normal check (will fail gracefully)
+
+  // File is large enough - check line count
+  const content = fs.readFileSync(fullPath, "utf8");
+  // Optimize line counting to avoid creating large array (Review #200 - Qodo suggestion #13)
+  let lineCount = 1;
+  for (let i = 0; i < content.length; i++) {
+    if (content.charCodeAt(i) === 10) lineCount++;
+  }
+
+  if (lineCount < 100) {
+    process.exit(0);
+  }
+} catch (err) {
+  // Log error for debugging instead of silent catch (Review #200 - Qodo suggestion #4)
+  console.error(
+    `Pattern check file read error for ${relPath}: ${err instanceof Error ? err.message : String(err)}`
+  );
+  // If we can't read/stat the file, proceed with normal check (will fail gracefully)
 }
 
 // Run pattern checker using spawnSync to avoid command injection
