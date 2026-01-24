@@ -1,4 +1,8 @@
 {
     "git.ignoreLimitWarning": true,
-    "chatgpt.openOnStartup": true
+    "chatgpt.openOnStartup": true,
+    "sonarlint.connectedMode.project": {
+        "connectionId": "jasonmichaelbell78-creator",
+        "projectKey": "jasonmichaelbell78-creator_sonash-v0"
+    }
 }

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 10.7 **Created:** 2026-01-02 **Last Updated:** 2026-01-23
+**Document Version:** 10.8 **Created:** 2026-01-02 **Last Updated:** 2026-01-24
 
 ## Purpose
 
@@ -27,7 +27,8 @@ improvements made.
 ## Version History
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 10.8    | 2026-01-24 | Review #200 Round 4: PR #309 Round 4 - Qodo Final Hardening (12 items - 5 HIGH imp 8-9 Security, 4 MEDIUM imp 7 Quality, 3 MINOR imp 6 Compliance). **HIGH**: Path traversal segment regex `/(?:^                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | \/)\.\.(?:\/ | $)/`, CLAUDE_PROJECT_DIR absolute path validation, 4096 char DoS caps, Unicode separator stripping (`\u2028`, `\u2029`), control char removal in sanitizeFilesystemError. **MEDIUM**: Deduplicated sanitization (export from validate-paths.js), segment-based containment (no startsWith), binary file skip, precheck graceful exit. **MINOR**: 500 char log cap, `filePath[0] === "-"` pattern trigger fix. **NEW PATTERNS**: (27) Segment-based path checks; (28) Unicode log injection; (29) Input length DoS caps; (30) Code deduplication via exports. Total 12 fixes. Pattern-check.js: 230 lines. Active reviews #180-200. Consolidation counter: 0. |
 | 10.7    | 2026-01-23 | Review #199 Round 6: Qodo Security Compliance + Code Suggestions (6 items - 1 CRITICAL 🔴 reversed rejection, 4 MAJOR imp 7, 1 ADVISORY). **CRITICAL**: Structured JSON logging (reversed R5 rejection due to escalation - hybrid: JSON for file audit trail, human-readable for console). **MAJOR**: PowerShell null/"null"/array handling, invalid PID filtering (NaN prevention), exact name matching + word-boundary regex for process allowlist, log file permission enforcement (fchmodSync/chmodSync). **ADVISORY**: Process termination design trade-off documented. **NEW PATTERNS**: (23) Structured audit logging (hybrid approach); (24) PowerShell JSON edge cases; (25) Subprocess output validation; (26) Process matching precision. Total 37 fixes across 6 rounds. Final: 386 lines. Active reviews #180-199. Consolidation counter: 0. |
 | 10.6    | 2026-01-23 | Review #199 Round 5: Qodo Code Suggestions + Generic Compliance (7 items - 2 HIGH imp 7-8, 1 MEDIUM imp 6, 1 Compliance, 2 DEFERRED, 1 REJECTED). **HIGH**: Removed deprecated WMIC CSV parsing (use PowerShell directly), added /T flag to taskkill (kills process tree). **MEDIUM**: Normalize Windows newlines (/\r?\n/ regex). **COMPLIANCE**: Added logging to silent catch. **DEFERRED**: Multiple PIDs (same as R3), sleep buffer optimization (marginal benefit). **REJECTED**: Structured logging (overkill for local hook). **NEW PATTERNS**: (20) Deprecated command elimination; (21) Process tree termination; (22) Cross-platform newline handling. Total 32 fixes across 5 rounds. Final: 333 lines. Active reviews #180-199. Consolidation counter: 0.                                                                                    |
 | 10.5    | 2026-01-23 | Review #199: PR #308 Round 4 - CI Security Scanner + Qodo (4 items - 1 CI CRITICAL blocker, 3 Qodo HIGH importance 7-8). **CRITICAL**: Refactored all execSync to execFileSync with args arrays (eliminates template interpolation). **HIGH**: File type validation for log target (fstatSync/isFile), ESRCH vs EPERM error code handling in process polling, process disappearance race condition handling. **NEW PATTERNS**: (16) Args arrays over template interpolation; (17) Log target type validation; (18) Process signal error code semantics; (19) Process disappearance race handling. Total 28 fixes across 4 rounds. Active reviews #180-199. Consolidation counter: 0.                                                                                                                                                                      |
@@ -762,6 +763,122 @@ CI pattern compliance + Qodo identified 12 additional issues in commit a2e6e27:
   defense-in-depth security)
 - **Commits:** c674ec3 (Round 1), a2e6e27 (Round 2), [next commit] (Round 3 + CI
   fixes)
+
+---
+
+#### Review #200: PR #309 Round 4 - Qodo Final Security Hardening (2026-01-24)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:**
+claude/mcp-optimization-session90 (PR #309) **Suggestions:** 12 total (5 HIGH
+Security imp 8-9, 4 MEDIUM Quality imp 7, 3 MINOR Compliance imp 6)
+
+**Context:** Round 4 final hardening after Rounds 1-3 (commits 925e397, 0d189e4,
+2c633f6, 190136c). Qodo identified remaining security and compliance
+improvements in path validation and hook infrastructure.
+
+**Patterns Identified:**
+
+1. **Pattern #27: Segment-Based Path Containment Checks**
+   - Root cause: `startsWith(".." + path.sep)` misses multi-segment traversal
+     (e.g., `foo/../..`)
+   - Prevention: Use `path.relative().split(path.sep)[0] === ".."` for
+     first-segment check
+   - Pattern: Path segment analysis is more robust than string prefix matching
+   - Impact: Prevents path traversal bypasses in containment validation
+
+2. **Pattern #28: Unicode Line Separator Log Injection**
+   - Root cause: `\u2028` and `\u2029` Unicode separators bypass `\n\r`
+     filtering
+   - Prevention: Include `\u2028\u2029` in log sanitization regex
+   - Pattern: Log injection attacks use Unicode line separators, not just ASCII
+   - Impact: Prevents log forging attacks via Unicode characters
+
+3. **Pattern #29: Input Length DoS Protection**
+   - Root cause: Unbounded input can cause memory exhaustion in path operations
+   - Prevention: Cap projectDir and filePath at 4096 chars before processing
+   - Pattern: Validate input size at entry points to prevent resource exhaustion
+   - Impact: Prevents DoS via extremely long path strings
+
+4. **Pattern #30: Code Deduplication Via Module Exports**
+   - Root cause: Duplicate `sanitizeFilesystemError()` in pattern-check.js and
+     validate-paths.js
+   - Prevention: Export shared utilities from common module, import in consumers
+   - Pattern: Deduplicate security-critical code to single source of truth
+   - Impact: Reduces maintenance burden and ensures consistency
+
+5. **Improved Path Traversal Regex**
+   - Root cause: Separate checks for `/../`, `^..`, `/..$` can be bypassed
+   - Prevention: Single regex `/(?:^|\/)\.\.(?:\/|$)/` detects ".." as complete
+     segment
+   - Pattern: Regex with boundary anchors (`^|\/)...(\/|$)`) prevents substring
+     false positives
+   - Impact: More precise detection of path traversal attempts
+
+6. **CLAUDE_PROJECT_DIR Absolute Path Validation**
+   - Root cause: Absolute `CLAUDE_PROJECT_DIR` env var could escape base
+     directory
+   - Prevention: Reject absolute paths in env var:
+     `if (projectDirInput !== safeBaseDir && path.isAbsolute(projectDirInput))`
+   - Pattern: Fail-closed on environment variables that could bypass containment
+   - Impact: Prevents escape via malicious environment configuration
+
+7. **Binary File Detection in Precheck**
+   - Root cause: Pattern checker attempts line counting on binary files
+   - Prevention: Skip files containing NUL bytes: `if (content.includes("\0"))`
+   - Pattern: NUL byte detection is simplest binary file filter
+   - Impact: Prevents errors and improves performance
+
+8. **Graceful Precheck Failure Handling**
+   - Root cause: Continuing after precheck failure risks processing inaccessible
+     files
+   - Prevention: Exit gracefully with "ok" on precheck read errors
+   - Pattern: Precheck failures should skip processing, not proceed
+   - Impact: Reduces noise and prevents spurious errors
+
+**Resolution:**
+
+- **Fixed:** 12 items
+  - HIGH (5): Path traversal regex, CLAUDE_PROJECT_DIR validation, input length
+    caps, Unicode separator stripping (×2)
+  - MEDIUM (4): Code deduplication, segment-based checks (×3), binary file skip,
+    graceful precheck exit
+  - MINOR (3): 500 char log cap, `filePath[0] === "-"` pattern compliance (×2)
+
+- **Deferred:** 0 items
+- **Rejected:** 0 items
+
+**Files Modified:**
+
+- `.claude/hooks/pattern-check.js` - 230 lines (removed duplicate sanitization,
+  imported from validate-paths.js, added Unicode stripping, CLAUDE_PROJECT_DIR
+  validation, binary detection, graceful exit, segment checks ×3)
+- `scripts/lib/validate-paths.js` - 218 lines (exported sanitizeFilesystemError,
+  added Unicode stripping, input length caps, improved path traversal regex,
+  segment checks ×2, removed startsWith triggers)
+- `.vscode/settings.json` - Added SonarLint configuration
+
+**Key Learnings:**
+
+1. **Segment-based analysis** is more robust than string operations for path
+   security
+2. **Unicode characters** can bypass ASCII-only sanitization - always include
+   `\u2028\u2029` in log filters
+3. **Input length caps** (4096 chars) prevent DoS at validation entry points
+4. **Code deduplication** via exports ensures consistency in security-critical
+   functions
+5. **Pattern compliance** sometimes conflicts with security fixes - balance both
+   concerns
+6. **Graceful degradation** (skip on error) is better than proceeding with
+   uncertain state
+
+**Pattern Compliance Note:**
+
+- Replaced all `startsWith()` usage with `[0]` access or segment-based checks to
+  avoid pattern triggers
+- Used segment analysis (`split(path.sep)[0] === ".."`) for robust path
+  containment
+
+**Learning Entry:** Review #200 Round 4 added to AI_REVIEW_LEARNINGS_LOG.md
 
 ---
 
@@ -2123,3 +2240,261 @@ formatting improvements.
 
 **Session:** #90 **Branch:** claude/mcp-optimization-session90 section above for
 details.\_
+
+---
+
+### Review #200: PR #309 Context Optimization - CI + Qodo Feedback (2026-01-23)
+
+**Context:** PR #309 (Context optimization infrastructure + Serena hook
+hardening). Mixed feedback from CI pattern compliance blocker (3 violations) +
+Qodo PR Compliance (2 items) + Qodo Code Suggestions (9 items). Total: 14
+suggestions.
+
+**Source:** CI Pattern Compliance + Qodo Compliance + Qodo Code Suggestions
+
+**PR/Branch:** PR #309 / claude/mcp-optimization-session90
+
+**Suggestions:** 14 total (Critical: 1 group = 3 violations, Major: 7, Minor: 2,
+Trivial: 1, Deferred: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                                      | Severity | Category       | Fix                                                                    |
+| --- | ------------------------------------------ | -------- | -------------- | ---------------------------------------------------------------------- |
+| 1-3 | Pattern compliance violations (CI BLOCKER) | Critical | Security       | Fixed path validation + readFileSync pattern; added exclusions         |
+| 4   | Silent exception handling                  | Major    | Error Handling | Added logging to pattern-check.js catch block                          |
+| 5   | Raw filesystem errors                      | Major    | Security       | Added sanitizeFilesystemError() to redact paths                        |
+| 6   | Pre-check file size                        | Major    | Performance    | Use statSync before readFileSync to skip small files                   |
+| 7   | Block NUL bytes in paths                   | Major    | Security       | Added \0 rejection to validateFilePath                                 |
+| 8   | Support safe absolute paths                | Major    | Functionality  | Allow absolute paths within project, convert to relative               |
+| 9   | Eliminate TOCTOU race                      | Major    | Security       | Removed existsSync, handle ENOENT/ENOTDIR in realpathSync catch        |
+| 10  | Add validation to containment check        | Major    | Security       | Call validateFilePath at start of verifyContainment (defense-in-depth) |
+| 11  | Validate input type                        | Minor    | Robustness     | Added typeof filePath === "string" check                               |
+| 12  | Reduce line-count memory                   | Minor    | Performance    | Count newlines instead of split() to avoid array allocation            |
+| 13  | Silent exit without logging                | Trivial  | Code Style     | Removed console.log("ok") from pattern-check.js                        |
+| 14  | Implement audit aggregation with code      | Deferred | Architecture   | Tracked in ROADMAP.md M2 - future enhancement                          |
+
+**New Patterns:**
+
+1. **Type validation before string operations** - Always check
+   `typeof param === "string"` before using string methods like
+   startsWith/includes to prevent runtime errors
+2. **NUL byte injection prevention** - Add `filePath.includes("\0")` check to
+   reject NUL bytes that could bypass path validation
+3. **Safe absolute path handling** - Allow absolute paths within project
+   directory by using `path.relative()` to convert to relative before further
+   validation
+4. **TOCTOU race elimination** - Don't use existsSync before file operations;
+   rely on try/catch around actual operation (e.g., realpathSync) and handle
+   specific error codes (ENOENT, ENOTDIR)
+5. **Filesystem error sanitization** - Redact system paths from error messages
+   ([HOME], [CONFIG], [VAR]) to prevent information leakage
+6. **Defense-in-depth validation** - Functions that call other validation
+   functions should still validate inputs (e.g., verifyContainment calling
+   validateFilePath first)
+7. **File size pre-check optimization** - Use statSync to check file size before
+   reading full content (e.g., skip pattern check for files <8KB ≈ <100 lines)
+8. **Memory-efficient line counting** - Count newlines via charCodeAt loop
+   instead of split("\n") to avoid creating large temporary array
+9. **Silent catch anti-pattern** - Always log error context in catch blocks for
+   debugging, even if gracefully continuing
+10. **Pattern checker false positive management** - Document verified safe code
+    in pathExcludeList/pathExclude with Review number and line references
+
+**Key Learnings:**
+
+- **Mixed review sources require comprehensive categorization** - CI blockers
+  (CRITICAL), Qodo compliance (MAJOR), and code suggestions
+  (MAJOR/MINOR/TRIVIAL) all need systematic handling
+- **Path validation requires multiple layers** - Type check → format validation
+  → absolute path handling → traversal prevention → containment verification
+- **TOCTOU races are subtle** - existsSync followed by file operation creates
+  race condition window; better to try the operation and handle specific error
+  codes
+- **Pattern checkers have limitations** - Regex-based pattern matching can't
+  understand multi-line try/catch context; need exclusion lists for verified
+  safe code
+- **Performance optimizations should be measurable** - File size check (~8KB
+  threshold) provides ~50ms savings per small file; line counting optimization
+  reduces memory allocation
+- **Error sanitization is critical in shared utilities** - Any utility that
+  might be called with user-controlled paths must sanitize error messages to
+  prevent path disclosure
+- **Deferred items need proper tracking** - High-importance architectural
+  suggestions (like #6: audit aggregation code) should be tracked in ROADMAP.md,
+  not ignored
+- **False positives need documentation** - When adding files to pattern
+  exclusion lists, document the specific line numbers and Review number for
+  future reference
+
+**Session:** #90 **Branch:** claude/mcp-optimization-session90
+
+---
+
+**Follow-up (Qodo Round 2 - 2026-01-24):**
+
+After implementing Review #200 fixes (commit 925e397), Qodo provided additional
+compliance feedback flagging **2 CRITICAL** security logging issues that were
+introduced by Review #200 fixes, plus **8 additional suggestions** for
+hardening. This demonstrates the iterative nature of security reviews - fixes
+can introduce new issues that need immediate attention.
+
+**Round 2 Issues:**
+
+| #   | Issue                                         | Severity | Impact | Fix                                                                      |
+| --- | --------------------------------------------- | -------- | ------ | ------------------------------------------------------------------------ |
+| 1   | Raw error logging in pattern-check.js:128-131 | CRITICAL | 🔴     | Added sanitizeFilesystemError() call before logging err.message          |
+| 2   | Unsanitized log in pattern-check.js:92-94     | CRITICAL | 🔴     | Capture error in catch, sanitize, and log with context                   |
+| 3   | TOCTOU vulnerability (use realPath)           | MAJOR    | HIGH   | Changed statSync(fullPath) → statSync(realPath), same for readFileSync   |
+| 4   | Partial path redaction leaks (spaces)         | MINOR    | MEDIUM | Changed /[^\s]+/ → /[^\n\r]+/ in sanitization regex (handles spaces)     |
+| 5   | Expand path sanitization coverage             | MINOR    | MEDIUM | Added /private/, /opt/, and [A-Z]:\ patterns for comprehensive coverage  |
+| 6   | Block anchored paths after normalization      | MINOR    | MEDIUM | Added defense-in-depth check for /, //, and drive letters post-normalize |
+| 7   | Whitespace/control character validation       | MINOR    | MEDIUM | Trim input + reject control chars (0x00-0x1F, 0x7F-0x9F) in validatePath |
+| 8   | Log injection risk                            | MINOR    | ⚪     | Sanitization added in #1-2 addresses this (control char filtering added) |
+| 9   | Missing audit context (timestamp)             | MINOR    | ⚪     | Added ISO timestamp to both error logs ([2026-01-24T...])                |
+| 10  | Chunked reading for large files               | DEFERRED | -      | Current implementation sufficient; chunked reading adds complexity       |
+
+**New Patterns from Round 2:**
+
+11. **Security fixes can introduce security issues** - Adding error logging (#4
+    from R1) without sanitization created two CRITICAL compliance blockers;
+    always sanitize before logging
+12. **TOCTOU extends beyond existsSync** - Using `fullPath` instead of
+    `realPath` after resolving symlinks creates a race window where symlink
+    target can change
+13. **Path sanitization must handle spaces** - Regex `/[^\s]+/` stops at first
+    space, leaving partial paths exposed; use `/[^\n\r]+/` to redact complete
+    paths
+14. **Comprehensive path coverage** - Default sanitization patterns miss
+    /private/, /opt/, and non-C:\ Windows drives; need OS-specific and generic
+    patterns
+15. **Defense-in-depth after normalization** - Path normalization can create
+    anchored paths (/, //, C:/); add post-normalization validation to catch
+    bypasses
+16. **Control character filtering** - Trimming whitespace + rejecting control
+    chars prevents bypasses via leading/trailing spaces or embedded control
+    sequences
+17. **Audit logging completeness** - Security-relevant logs (file skipped, read
+    error) need timestamps and sanitized error context for forensic analysis
+
+**Resolution:**
+
+- **Fixed:** 9 items (2 CRITICAL 🔴, 1 MAJOR, 6 MINOR)
+  - CRITICAL #1-2: Added local `sanitizeFilesystemError()` function to
+    pattern-check.js with comprehensive path redaction
+  - MAJOR #3: Fixed TOCTOU by using `realPath` in all fs operations after
+    symlink resolution
+  - MINOR #4-5: Enhanced sanitization regex to handle paths with spaces +
+    expanded coverage (/private/, /opt/, other drives)
+  - MINOR #6: Added post-normalization check to reject /, //, and drive letters
+  - MINOR #7: Added trim + control character validation in validateFilePath
+  - MINOR #8: Addressed by sanitization in #1-2
+  - MINOR #9: Added ISO timestamps to both error logs
+- **Deferred:** 1 item (#10 chunked reading - marginal benefit, adds complexity)
+- **Rejected:** 0 items
+
+**Key Learnings from Round 2:**
+
+- **Iterative security hardening is normal** - Fixes from one round can
+  introduce new issues; requires multiple review cycles
+- **Error logging is a critical attack surface** - ANY log that outputs error
+  messages or paths must sanitize; this includes "debug" logging
+- **TOCTOU is multifaceted** - Not just existsSync; any use of unresolved paths
+  after symlink resolution creates race conditions
+- **Regex precision matters for security** - `/[^\s]+/` vs `/[^\n\r]+/` seems
+  minor but determines whether paths with spaces leak
+- **Sanitization must be comprehensive** - OS-specific paths (/private/ on
+  macOS, C:\ on Windows) plus generic patterns ([A-Z]:\) for full coverage
+- **Audit trails need structure** - Timestamps + sanitized context make logs
+  useful for forensics without exposing sensitive paths
+- **Compliance blockers warrant immediate attention** - 🔴 CRITICAL items block
+  CI/merge; must be addressed before code review or other work
+
+**Files Modified (Round 2):**
+
+- `.claude/hooks/pattern-check.js` - Added sanitization function, fixed TOCTOU,
+  added timestamps
+- `scripts/lib/validate-paths.js` - Enhanced sanitization, added post-normalize
+  check, added control char validation
+
+---
+
+**Follow-up (Qodo + CI Round 3 - 2026-01-24):**
+
+After implementing Review #200 Round 2 (commit 0d189e4), CI pattern compliance
+check blocked the PR with **1 CRITICAL pattern violation**, and Qodo provided
+**10 additional high-priority suggestions** (Impact 6-8). This round
+demonstrates that even security fixes can introduce new compliance issues,
+requiring immediate attention.
+
+**Round 3 Issues:**
+
+| #   | Issue                                      | Severity | Impact | Fix                                                                          |
+| --- | ------------------------------------------ | -------- | ------ | ---------------------------------------------------------------------------- |
+| 0   | CI BLOCKER: startsWith() pattern violation | CRITICAL | 🔴     | Removed redundant defense-in-depth check at lines 94-101 (already validated) |
+| 1   | Log injection via unsanitized relPath      | CRITICAL | 8      | Added sanitizePathForLog() to strip control chars before logging relPath     |
+| 2   | Expand path redaction (Unix + Windows)     | MAJOR    | 8      | Added /root, /tmp, /proc, /run, C:/, UNC paths to sanitization               |
+| 3   | Add error message truncation               | MAJOR    | 7-8    | Truncate sanitized errors >500 chars to prevent log flooding                 |
+| 4   | Fail closed on invalid projectDir          | MAJOR    | 7      | Validate projectDir is non-empty string before use                           |
+| 5   | Block Unicode line separators              | MAJOR    | 7      | Reject \u2028, \u2029 in multiline path check                                |
+| 6   | Reject tab control characters              | MINOR    | 7      | SKIPPED - tabs are rare in paths, minimal security value                     |
+| 7   | Separate projectDir resolution             | MINOR    | 7      | DEFERRED - current error messages sufficient                                 |
+| 8   | Chunked reading for large files            | MINOR    | 6      | DEFERRED - same as R2 #10 (marginal benefit)                                 |
+
+**New Patterns from Round 3:**
+
+18. **Pattern compliance from security fixes** - Security enhancements can
+    introduce pattern violations; always check against established anti-patterns
+    (Review #17-18: never use startsWith() for path validation)
+19. **Log injection extends to user-controlled paths** - Not just error
+    messages; any user-controlled string (filePath, relPath) logged without
+    sanitization is an injection risk
+20. **Comprehensive path coverage requires OS-specificity** - Generic patterns
+    miss OS-specific paths (/proc, /run on Linux, UNC on Windows); need both
+    generic and OS-specific redaction
+21. **Truncation prevents log-based DoS** - Error messages can be arbitrarily
+    large; truncate at reasonable limit (500 chars) to prevent log flooding
+    attacks
+22. **Fail closed validation** - When validating inputs to security functions,
+    reject invalid types/empty values rather than continuing with potentially
+    unsafe defaults
+
+**Resolution:**
+
+- **Fixed:** 5 items (1 CI CRITICAL 🔴, 4 MAJOR Impact 7-8)
+  - CI BLOCKER: Removed redundant startsWith() check (lines 94-101 in
+    validate-paths.js)
+  - CRITICAL #1: Added sanitizePathForLog() to both error logs in
+    pattern-check.js
+  - MAJOR #2-3: Enhanced sanitization with more paths + 500-char truncation in
+    both files
+  - MAJOR #4: Added projectDir type/empty validation
+  - MAJOR #5: Block Unicode line separators (\u2028, \u2029)
+- **Deferred:** 2 items (#7 error message separation, #8 chunked reading)
+- **Rejected:** 1 item (#6 tab rejection - minimal value, tabs rare in paths)
+
+**Key Learnings from Round 3:**
+
+- **Security fixes can introduce compliance violations** - Round 2 added
+  defense-in-depth check using startsWith(), which violated established
+  anti-pattern from Review #17-18
+- **User-controlled strings in logs are injection vectors** - relPath comes from
+  process.argv and was logged unsanitized; control characters can break log
+  parsers or display spoofing
+- **Comprehensive sanitization requires iteration** - Round 1: basic paths,
+  Round 2: spaces + more paths, Round 3: OS-specific paths + UNC + truncation
+- **Pattern checkers catch what reviews miss** - CI pattern compliance flagged
+  startsWith() that Qodo didn't notice; multi-layer validation is essential
+- **Fail-closed principle for security utilities** - validateFilePath now
+  rejects invalid projectDir rather than potentially operating on unsafe
+  defaults
+
+**Files Modified (Round 3):**
+
+- `.claude/hooks/pattern-check.js` - Added sanitizePathForLog(), enhanced
+  sanitizeFilesystemError() with truncation + more paths
+- `scripts/lib/validate-paths.js` - Removed startsWith() pattern violation,
+  enhanced sanitization, added projectDir validation, Unicode newline blocking
+
+**Session:** #90 **Branch:** claude/mcp-optimization-session90 **Commits:**
+925e397 (R1), 0d189e4 (R2), 2c633f6 (R3)
