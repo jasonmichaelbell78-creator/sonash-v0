@@ -408,6 +408,8 @@ const ANTI_PATTERNS = [
     // - decrypt-secrets.js: readFileSync at L178 IS in try/catch (L177-191), L197 in try/catch (L196-201)
     // 2026-01-23 audit (Review #200):
     // - pattern-check.js: readFileSync at L117 IS in try/catch (L110-125)
+    // 2026-01-24 audit (Review #200):
+    // - analyze-learning-effectiveness.js: readFileSync at L143, L241, L308 all in try/catch blocks
     // S5843: Use array instead of complex regex to reduce complexity from 21 to < 20
     // (Review #184 - SonarCloud regex complexity)
     pathExcludeList: [
@@ -434,6 +436,7 @@ const ANTI_PATTERNS = [
       "encrypt-secrets.js",
       "decrypt-secrets.js",
       "pattern-check.js",
+      "analyze-learning-effectiveness.js",
     ],
   },
   {
@@ -466,8 +469,9 @@ const ANTI_PATTERNS = [
     // - .claude/hooks/*.js: All verified 2026-01-12 (Review #134) to have `rel === '' ||` at start of condition
     // - check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
     // - validate-paths.js: L73 has `rel === "" ||` at start of condition (Review #200)
+    // - analyze-learning-effectiveness.js: L1076 has `rel === "" ||` at start of condition (Review #200)
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness)\.js$/,
   },
 ];
 

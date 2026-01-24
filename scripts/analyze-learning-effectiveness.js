@@ -135,7 +135,8 @@ class LearningEffectivenessAnalyzer {
    */
   async loadReviews() {
     if (!existsSync(LEARNINGS_LOG)) {
-      throw new Error(`Learnings log not found: ${LEARNINGS_LOG}`);
+      // Review #200: Qodo - Don't expose full path in error message
+      throw new Error("Learnings log not found: docs/AI_REVIEW_LEARNINGS_LOG.md");
     }
 
     let content;
@@ -1133,6 +1134,13 @@ This pattern has appeared ${suggestion.description.match(/\d+/)?.[0] || "multipl
    * Create git commit for applied suggestion
    */
   async createCommit(suggestion) {
+    const { tmpdir } = require("node:os");
+    const { unlinkSync } = require("node:fs");
+    const path = require("node:path");
+
+    // Review #200: Qodo - Use temp directory instead of .git to prevent symlink attacks
+    const msgFile = path.join(tmpdir(), `LEARNING_COMMIT_MSG_${process.pid}_${Date.now()}.txt`);
+
     try {
       // Only stage the file that was changed (Review #200: Security - prevent staging unrelated files)
       if (suggestion.type === "doc-update" && suggestion.suggestedPath) {
@@ -1151,14 +1159,18 @@ Auto-applied by learning effectiveness analyzer.
 Priority: ${suggestion.priority} | Impact: ${suggestion.impact}
 `;
 
-      // Review #200: Security - Use git commit -F with execFileSync
-      const msgFile = join(ROOT, ".git", "LEARNING_COMMIT_MSG.txt");
       writeFileSync(msgFile, message, "utf-8");
-
       execFileSync("git", ["commit", "-F", msgFile], { cwd: ROOT });
       console.log("  Committed changes");
     } catch (error) {
       console.warn("⚠️  Could not create commit:", sanitizeError(error));
+    } finally {
+      // Cleanup temp file
+      try {
+        unlinkSync(msgFile);
+      } catch {
+        // Ignore cleanup failures
+      }
     }
   }
 
