@@ -63,9 +63,9 @@ critical credential exposures require immediate remediation.
 `.env.local`:
 
 ```
-GITHUB_TOKEN=[REDACTED - github_pat_...]
-SONAR_TOKEN=[REDACTED - b8ae9...]
-CONTEXT7_API_KEY=[REDACTED - ctx7sk-...]
+GITHUB_TOKEN=[REDACTED]
+SONAR_TOKEN=[REDACTED]
+CONTEXT7_API_KEY=[REDACTED]
 ```
 
 Git history shows this file was committed multiple times, including in merge
