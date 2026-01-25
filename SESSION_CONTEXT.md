@@ -28,9 +28,9 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
   - 28 S1, 46 S2, 32 S3
   - 110 hours remediation across 4 phases (28 SP)
 - ⚠️ **CRITICAL SECURITY FINDINGS**:
-  - SEC-001: Live credentials in git (.env.local - GitHub PAT, SonarCloud token)
-  - SEC-002: Firebase service account key exposed
-  - **ACTION REQUIRED: Rotate credentials before next session**
+  - SEC-001: Credential exposure identified.
+  - SEC-002: Service account key exposure identified.
+  - **ACTION REQUIRED: Rotate all credentials mentioned in the audit before next session.**
 - ✅ **AUDIT_TRACKER.md** - All 6 category thresholds reset
 - ✅ **Reports Generated**:
   - COMPREHENSIVE_AUDIT_REPORT.md (unified 115 findings)
