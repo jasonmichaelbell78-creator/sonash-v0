@@ -113,5 +113,34 @@ else
   fi
 fi
 
+# 9. Audit file S0/S1 validation (BLOCKING - Session #98)
+# Validates that S0/S1 findings have proper verification_steps
+# Override with: SKIP_AUDIT_VALIDATION=1 git commit ...
+if [ -z "$SKIP_AUDIT_VALIDATION" ]; then
+  STAGED_AUDIT_FILES=$(echo "$STAGED_FILES" | grep -E "docs/audits/.*\.jsonl$" || true)
+  if [ -n "$STAGED_AUDIT_FILES" ]; then
+    echo "  ▶ Validating audit S0/S1 compliance..."
+    AUDIT_FAILED=0
+    echo "$STAGED_AUDIT_FILES" | while IFS= read -r audit_file; do
+      [ -z "$audit_file" ] && continue
+      if ! node scripts/validate-audit.js "$audit_file" --strict-s0s1 > /dev/null 2>&1; then
+        AUDIT_FAILED=1
+        echo "  ❌ S0/S1 validation failed: $audit_file"
+        node scripts/validate-audit.js "$audit_file" --strict-s0s1 2>&1 | grep -E "^   ❌|BLOCKING" | head -5
+      fi
+    done
+    if [ "$AUDIT_FAILED" -eq 1 ]; then
+      echo ""
+      echo "  Fix S0/S1 violations or downgrade severity. Run:"
+      echo "    node scripts/validate-audit.js <file> --strict-s0s1"
+      echo "  Override (use sparingly): SKIP_AUDIT_VALIDATION=1 git commit ..."
+      exit 1
+    fi
+    echo "  ✅ Audit S0/S1 validation passed"
+  fi
+else
+  echo "  ⏭️ Skipping audit validation (SKIP_AUDIT_VALIDATION set)"
+fi
+
 echo ""
 echo "✅ All pre-commit checks passed - commit allowed"

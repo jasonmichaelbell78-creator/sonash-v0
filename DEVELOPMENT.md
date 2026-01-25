@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.2 **Status:** ACTIVE **Last Updated:** 2026-01-13
+**Document Version:** 2.4 **Status:** ACTIVE **Last Updated:** 2026-01-24
 
 ---
 
@@ -553,16 +553,17 @@ TypeScript rules)
 
 **Pre-commit hook (`.husky/pre-commit`) runs:**
 
-| Step               | Command                        | Blocking?           |
-| ------------------ | ------------------------------ | ------------------- |
-| ESLint             | `npm run lint`                 | YES - blocks commit |
-| lint-staged        | `npx --no-install lint-staged` | YES - auto-formats  |
-| Pattern compliance | `npm run patterns:check`       | YES - blocks commit |
-| Tests              | `npm test`                     | YES - blocks commit |
-| CANON validation   | `npm run validate:canon`       | NO - warning only   |
-| Skill validation   | `npm run skills:validate`      | NO - warning only   |
-| Cross-doc deps     | `npm run crossdoc:check`       | YES - blocks commit |
-| Learning reminder  | (checks staged files)          | NO - reminder only  |
+| Step               | Command                           | Blocking?                         |
+| ------------------ | --------------------------------- | --------------------------------- |
+| ESLint             | `npm run lint`                    | YES - blocks commit               |
+| lint-staged        | `npx --no-install lint-staged`    | YES - auto-formats                |
+| Pattern compliance | `npm run patterns:check`          | YES - blocks commit               |
+| Tests              | `npm test`                        | YES - blocks commit               |
+| CANON validation   | `npm run validate:canon`          | NO - warning only                 |
+| Skill validation   | `npm run skills:validate`         | NO - warning only                 |
+| Cross-doc deps     | `npm run crossdoc:check`          | YES - blocks commit               |
+| Learning reminder  | (checks staged files)             | NO - reminder only                |
+| Audit S0/S1        | `validate-audit.js --strict-s0s1` | YES - blocks commit (Session #98) |
 
 > **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
 > staged. Validates schema compliance for audit output files.
@@ -610,16 +611,17 @@ Configured in `.claude/settings.json`.
 
 **PostToolUse Hooks (Write/Edit):**
 
-| Hook                        | Action  | Purpose                               |
-| --------------------------- | ------- | ------------------------------------- |
-| pattern-check.js            | Warn    | Anti-pattern detection                |
-| component-size-check.js     | Warn    | Component >300 lines warning          |
-| firestore-write-block.js    | BLOCK   | Prevent direct writes to protected DB |
-| test-mocking-validator.js   | BLOCK   | Ensure tests mock httpsCallable       |
-| app-check-validator.js      | Warn    | Cloud Function App Check verification |
-| typescript-strict-check.js  | Warn    | Detect `any` type usage               |
-| repository-pattern-check.js | Warn    | Firestore queries in components       |
-| agent-trigger-enforcer.js   | Suggest | Recommend agents for code changes     |
+| Hook                        | Action  | Purpose                                           |
+| --------------------------- | ------- | ------------------------------------------------- |
+| pattern-check.js            | Warn    | Anti-pattern detection                            |
+| component-size-check.js     | Warn    | Component >300 lines warning                      |
+| firestore-write-block.js    | BLOCK   | Prevent direct writes to protected DB             |
+| test-mocking-validator.js   | BLOCK   | Ensure tests mock httpsCallable                   |
+| app-check-validator.js      | Warn    | Cloud Function App Check verification             |
+| typescript-strict-check.js  | Warn    | Detect `any` type usage                           |
+| repository-pattern-check.js | Warn    | Firestore queries in components                   |
+| agent-trigger-enforcer.js   | Suggest | Recommend agents for code changes                 |
+| audit-s0s1-validator.js     | Warn    | S0/S1 verification_steps validation (Session #98) |
 
 **PostToolUse Hooks (Read):**
 

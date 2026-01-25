@@ -35,6 +35,22 @@ const CONFIDENCE_LEVELS = { HIGH: 2, MEDIUM: 1, LOW: 0 };
 // Valid confidence values
 const VALID_CONFIDENCES = new Set(["HIGH", "MEDIUM", "LOW"]);
 
+// Valid verification methods for S0/S1 verification_steps
+const VALID_FIRST_PASS_METHODS = new Set(["grep", "tool_output", "file_read", "code_search"]);
+const VALID_SECOND_PASS_METHODS = new Set([
+  "contextual_review",
+  "exploitation_test",
+  "manual_verification",
+]);
+const VALID_TOOL_CONFIRMATIONS = new Set([
+  "eslint",
+  "sonarcloud",
+  "npm_audit",
+  "patterns_check",
+  "typescript",
+  "NONE",
+]);
+
 // Required fields by severity
 const REQUIRED_FIELDS_BY_SEVERITY = {
   S0: [
@@ -431,6 +447,175 @@ function checkDuplicates(findings) {
 }
 
 /**
+ * Validate S0/S1 findings with strict requirements (Session #98)
+ * Returns blocking violations for:
+ * - LOW confidence on S0/S1
+ * - MANUAL_ONLY verification on S0/S1
+ * - Missing verification_steps
+ * - second_pass.confirmed !== true
+ * - Evidence array < 2 items
+ *
+ * @param {Array<Object>} findings - Audit findings to validate
+ * @returns {Array<Object>} Blocking violations
+ */
+function validateS0S1Strict(findings) {
+  const violations = [];
+
+  const s0s1Findings = findings.filter(
+    (f) => !f._parseError && (f.severity === "S0" || f.severity === "S1")
+  );
+
+  for (const finding of s0s1Findings) {
+    const prefix = `${finding.id || "unknown"} (${finding.severity})`;
+
+    // Check 1: LOW confidence is blocking for S0/S1
+    if (finding.confidence === "LOW") {
+      violations.push({
+        type: "LOW_CONFIDENCE_S0S1",
+        findingId: finding.id,
+        severity: finding.severity,
+        message: `${prefix}: LOW confidence not allowed for S0/S1 findings. Upgrade confidence or downgrade severity.`,
+        blocking: true,
+      });
+    }
+
+    // Check 2: MANUAL_ONLY cross_ref is blocking for S0/S1
+    if (finding.cross_ref === "MANUAL_ONLY") {
+      violations.push({
+        type: "MANUAL_ONLY_S0S1",
+        findingId: finding.id,
+        severity: finding.severity,
+        message: `${prefix}: MANUAL_ONLY not allowed for S0/S1 findings. Require tool validation or downgrade severity.`,
+        blocking: true,
+      });
+    }
+
+    // Check 3: Missing verification_steps
+    if (!finding.verification_steps) {
+      violations.push({
+        type: "MISSING_VERIFICATION_STEPS",
+        findingId: finding.id,
+        severity: finding.severity,
+        message: `${prefix}: Missing required 'verification_steps' object for S0/S1 findings.`,
+        blocking: true,
+      });
+      continue; // Skip further verification_steps checks
+    }
+
+    const vs = finding.verification_steps;
+
+    // Check 4: Validate first_pass
+    if (!vs.first_pass) {
+      violations.push({
+        type: "MISSING_FIRST_PASS",
+        findingId: finding.id,
+        severity: finding.severity,
+        message: `${prefix}: Missing 'verification_steps.first_pass' object.`,
+        blocking: true,
+      });
+    } else {
+      if (!vs.first_pass.method || !VALID_FIRST_PASS_METHODS.has(vs.first_pass.method)) {
+        violations.push({
+          type: "INVALID_FIRST_PASS_METHOD",
+          findingId: finding.id,
+          severity: finding.severity,
+          message: `${prefix}: Invalid first_pass.method '${vs.first_pass.method}'. Must be one of: ${[...VALID_FIRST_PASS_METHODS].join(", ")}`,
+          blocking: true,
+        });
+      }
+      if (
+        !Array.isArray(vs.first_pass.evidence_collected) ||
+        vs.first_pass.evidence_collected.length < 1
+      ) {
+        violations.push({
+          type: "EMPTY_FIRST_PASS_EVIDENCE",
+          findingId: finding.id,
+          severity: finding.severity,
+          message: `${prefix}: first_pass.evidence_collected must have at least 1 item.`,
+          blocking: true,
+        });
+      }
+    }
+
+    // Check 5: Validate second_pass
+    if (!vs.second_pass) {
+      violations.push({
+        type: "MISSING_SECOND_PASS",
+        findingId: finding.id,
+        severity: finding.severity,
+        message: `${prefix}: Missing 'verification_steps.second_pass' object.`,
+        blocking: true,
+      });
+    } else {
+      if (!vs.second_pass.method || !VALID_SECOND_PASS_METHODS.has(vs.second_pass.method)) {
+        violations.push({
+          type: "INVALID_SECOND_PASS_METHOD",
+          findingId: finding.id,
+          severity: finding.severity,
+          message: `${prefix}: Invalid second_pass.method '${vs.second_pass.method}'. Must be one of: ${[...VALID_SECOND_PASS_METHODS].join(", ")}`,
+          blocking: true,
+        });
+      }
+      if (vs.second_pass.confirmed !== true) {
+        violations.push({
+          type: "SECOND_PASS_NOT_CONFIRMED",
+          findingId: finding.id,
+          severity: finding.severity,
+          message: `${prefix}: second_pass.confirmed must be true. If not confirmed, downgrade severity.`,
+          blocking: true,
+        });
+      }
+    }
+
+    // Check 6: Validate tool_confirmation
+    if (!vs.tool_confirmation) {
+      violations.push({
+        type: "MISSING_TOOL_CONFIRMATION",
+        findingId: finding.id,
+        severity: finding.severity,
+        message: `${prefix}: Missing 'verification_steps.tool_confirmation' object.`,
+        blocking: true,
+      });
+    } else {
+      if (!vs.tool_confirmation.tool || !VALID_TOOL_CONFIRMATIONS.has(vs.tool_confirmation.tool)) {
+        violations.push({
+          type: "INVALID_TOOL_CONFIRMATION",
+          findingId: finding.id,
+          severity: finding.severity,
+          message: `${prefix}: Invalid tool_confirmation.tool '${vs.tool_confirmation.tool}'. Must be one of: ${[...VALID_TOOL_CONFIRMATIONS].join(", ")}`,
+          blocking: true,
+        });
+      }
+      if (
+        typeof vs.tool_confirmation.reference !== "string" ||
+        vs.tool_confirmation.reference.trim() === ""
+      ) {
+        violations.push({
+          type: "MISSING_TOOL_REFERENCE",
+          findingId: finding.id,
+          severity: finding.severity,
+          message: `${prefix}: tool_confirmation.reference must be a non-empty string.`,
+          blocking: true,
+        });
+      }
+    }
+
+    // Check 7: Evidence array should have >= 2 items for S0/S1
+    if (!Array.isArray(finding.evidence) || finding.evidence.length < 2) {
+      violations.push({
+        type: "INSUFFICIENT_EVIDENCE",
+        findingId: finding.id,
+        severity: finding.severity,
+        message: `${prefix}: S0/S1 findings require at least 2 evidence items (found ${finding.evidence?.length ?? 0}).`,
+        blocking: true,
+      });
+    }
+  }
+
+  return violations;
+}
+
+/**
  * Cross-reference findings against npm audit output
  * Uses portable command execution (no shell-specific redirection)
  * @param {Array<Object>} findings - Audit findings to cross-reference
@@ -544,8 +729,9 @@ function crossReferenceEslint(findings) {
   }
 }
 
-function generateReport(filePath, findings, results) {
-  const { falsePositives, fieldIssues, duplicates, npmCrossRef, eslintCrossRef } = results;
+function generateReport(filePath, findings, results, strictS0S1 = false) {
+  const { falsePositives, fieldIssues, duplicates, npmCrossRef, eslintCrossRef, s0s1Violations } =
+    results;
 
   console.log("\n" + "=".repeat(80));
   console.log(`AUDIT VALIDATION REPORT: ${node_path.basename(filePath)}`);
@@ -624,10 +810,28 @@ function generateReport(filePath, findings, results) {
     `   ESLint: ${eslintCrossRef.validated.length} validated, ${eslintCrossRef.unvalidated.length} unvalidated`
   );
 
+  // S0/S1 Strict Violations (only if strict mode enabled)
+  const s0s1ViolationCount = s0s1Violations?.length || 0;
+  if (strictS0S1 && s0s1ViolationCount > 0) {
+    console.log(`\n🚨 S0/S1 STRICT VALIDATION (${s0s1ViolationCount} BLOCKING violations)`);
+    for (const violation of s0s1Violations) {
+      console.log(`   ❌ ${violation.message}`);
+    }
+    console.log(`\n   ⚠️  These violations BLOCK commit when --strict-s0s1 is enabled.`);
+    console.log(`   Fix violations or downgrade severity to S2/S3.`);
+  } else if (strictS0S1) {
+    console.log(`\n🚨 S0/S1 STRICT VALIDATION`);
+    console.log(`   ✅ All S0/S1 findings pass strict validation`);
+  }
+
   // Summary
   const totalIssues = falsePositives.length + fieldIssues.length + duplicates.length;
+  const blockingIssues = strictS0S1 ? s0s1ViolationCount : 0;
   console.log("\n" + "=".repeat(80));
-  if (totalIssues === 0) {
+  if (blockingIssues > 0) {
+    console.log(`❌ VALIDATION FAILED - ${blockingIssues} BLOCKING S0/S1 violations`);
+    console.log(`   Standard issues: ${totalIssues}`);
+  } else if (totalIssues === 0) {
     console.log("✅ VALIDATION PASSED - No issues found");
   } else {
     console.log(`⚠️  VALIDATION COMPLETED - ${totalIssues} issues to review`);
@@ -635,11 +839,13 @@ function generateReport(filePath, findings, results) {
   console.log("=".repeat(80) + "\n");
 
   return {
-    passed: totalIssues === 0,
+    passed: totalIssues === 0 && blockingIssues === 0,
+    blocked: blockingIssues > 0,
     totalFindings: findings.filter((f) => !f._parseError).length,
     falsePositiveCount: falsePositives.length,
     fieldIssueCount: fieldIssues.length,
     duplicateCount: duplicates.length,
+    s0s1ViolationCount: s0s1ViolationCount,
   };
 }
 
@@ -676,15 +882,28 @@ validate-audit.js - Validate single-session audit findings
 
 Usage:
   node scripts/validate-audit.js <audit-file.jsonl>
+  node scripts/validate-audit.js <audit-file.jsonl> --strict-s0s1
   node scripts/validate-audit.js --all
   node scripts/validate-audit.js --recent [n]
 
 Options:
-  --all         Validate all audit files
-  --recent [n]  Validate the n most recent audits (default: 5)
-  --help        Show this help
+  --all           Validate all audit files
+  --recent [n]    Validate the n most recent audits (default: 5)
+  --strict-s0s1   Enable strict S0/S1 validation (BLOCKING mode)
+                  Fails with exit code 1 if any S0/S1 findings have:
+                  - LOW confidence
+                  - MANUAL_ONLY cross_ref
+                  - Missing verification_steps
+                  - Unconfirmed second_pass
+                  - < 2 evidence items
+  --help          Show this help
 `);
     process.exit(0);
+  }
+
+  const strictS0S1 = args.includes("--strict-s0s1");
+  if (strictS0S1) {
+    console.log("🔒 Strict S0/S1 mode ENABLED - blocking violations will fail validation\n");
   }
 
   const falsePositiveDb = loadFalsePositives();
@@ -722,10 +941,13 @@ Options:
         duplicates: checkDuplicates(findings),
         npmCrossRef: crossReferenceNpmAudit(findings),
         eslintCrossRef: crossReferenceEslint(findings),
+        s0s1Violations: strictS0S1 ? validateS0S1Strict(findings) : [],
       };
 
-      const summary = generateReport(file.path, findings, results);
+      const summary = generateReport(file.path, findings, results, strictS0S1);
       if (!summary.passed) allPassed = false;
+      // In strict mode, blocking violations cause exit 1
+      if (strictS0S1 && summary.blocked) allPassed = false;
     } catch (err) {
       console.error(`❌ Error validating ${file.path}: ${err.message}`);
       allPassed = false;
