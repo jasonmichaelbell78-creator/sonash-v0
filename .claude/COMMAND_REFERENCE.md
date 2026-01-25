@@ -32,7 +32,7 @@ commands.
 **Description:** Run a single-session code review audit **When to use:** When
 you need a quick code quality check without multi-AI consensus **Example:**
 `/audit-code` **Parameters:** None **Output:** Code review findings in session
-output
+output **Note:** S0/S1 findings require `verification_steps` (Session #98)
 
 ### `/audit-documentation`
 
@@ -66,7 +66,8 @@ with SonarQube integration
 **Description:** Run a single-session security audit **When to use:** Quick
 security review for auth, input validation, secrets management **Example:**
 `/audit-security` **Parameters:** None **Output:** Security findings with OWASP
-compliance check
+compliance check **Note:** S0/S1 findings require `verification_steps` (Session
+#98)
 
 ### `/docs-sync`
 

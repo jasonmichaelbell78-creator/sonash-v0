@@ -113,6 +113,48 @@ supplement the base schema.
 - Security Hardening
 - Testing Infrastructure
 
+### S0/S1 Verification Extension (REQUIRED for Critical/High Findings)
+
+For all S0 (Critical) and S1 (High) severity findings, the `verification_steps`
+field is **REQUIRED**. This ensures dual-pass verification and tool confirmation
+for high-severity issues.
+
+```json
+{
+  "verification_steps": {
+    "first_pass": {
+      "method": "grep|tool_output|file_read|code_search",
+      "evidence_collected": ["initial code snippet", "grep output line"]
+    },
+    "second_pass": {
+      "method": "contextual_review|exploitation_test|manual_verification",
+      "confirmed": true,
+      "notes": "Re-read in context, no existing mitigation found"
+    },
+    "tool_confirmation": {
+      "tool": "eslint|sonarcloud|npm_audit|patterns_check|typescript|NONE",
+      "reference": "Tool output ID or NONE with justification"
+    }
+  }
+}
+```
+
+**Validation Rules for verification_steps:**
+
+| Field                           | Required | Validation                           |
+| ------------------------------- | -------- | ------------------------------------ |
+| `first_pass.method`             | Yes      | Must be valid method enum            |
+| `first_pass.evidence_collected` | Yes      | Array with >= 1 item                 |
+| `second_pass.method`            | Yes      | Must be valid method enum            |
+| `second_pass.confirmed`         | Yes      | Must be `true` (or downgrade to S2+) |
+| `tool_confirmation.tool`        | Yes      | Must be valid tool or "NONE"         |
+| `tool_confirmation.reference`   | Yes      | Non-empty string                     |
+
+**Note:** S0/S1 findings with `confidence: "LOW"` or `cross_ref: "MANUAL_ONLY"`
+require additional scrutiny and may be blocked by pre-commit hooks.
+
+---
+
 ### Security Audit Extensions
 
 ```json
@@ -213,6 +255,11 @@ encountered 5. **DEDUPED_FINDINGS_JSONL** - Canonical findings with IDs 6.
 4. **Non-empty arrays**: `files` and `acceptance_tests` must have ≥1 item
 5. **Fingerprint format**: Must follow `<category>::<file>::<identifier>`
    pattern
+6. **S0/S1 strict validation**: High-severity findings must include:
+   - `verification_steps` object with all required subfields
+   - `confidence`: "HIGH" or "MEDIUM" (LOW is blocked)
+   - `cross_ref`: Tool validation preferred (MANUAL_ONLY triggers warning)
+   - `evidence`: Array with >= 2 items
 
 ### Confidence Thresholds
 
@@ -247,9 +294,10 @@ When aggregating:
 
 ## Version History
 
-| Version | Date       | Changes                                     | Author |
-| ------- | ---------- | ------------------------------------------- | ------ |
-| 1.0     | 2026-01-03 | Initial schema standard creation (Task 6.7) | Claude |
+| Version | Date       | Changes                                                | Author |
+| ------- | ---------- | ------------------------------------------------------ | ------ |
+| 1.1     | 2026-01-24 | Added S0/S1 verification_steps extension (Session #98) | Claude |
+| 1.0     | 2026-01-03 | Initial schema standard creation (Task 6.7)            | Claude |
 
 ---
 

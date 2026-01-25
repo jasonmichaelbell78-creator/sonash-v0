@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
-**Project**: SoNash Recovery Notebook **Document Version**: 1.4 **Created**:
-2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-22
+**Project**: SoNash Recovery Notebook **Document Version**: 1.5 **Created**:
+2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-24
 
 ---
 
@@ -63,7 +63,7 @@ repository. This document serves as:
 | ------------------------ | ----- | --------- | ------ | ------ |
 | GitHub Actions (CI/CD)   | 5     | ✅        | -      | Active |
 | Pre-Commit Hooks         | 1     | ✅        | -      | Active |
-| Session Hooks            | 12    | ✅        | -      | Active |
+| Session Hooks            | 13    | ✅        | -      | Active |
 | npm Scripts              | 8     | Semi      | ✅     | Active |
 | Automation Scripts       | 6     | -         | ✅     | Active |
 | Documentation Directives | 12+   | -         | ✅     | Active |
@@ -91,16 +91,17 @@ commits. Blocks on critical failures, warns on advisory issues.
 
 ### Checks Performed
 
-| #   | Check                  | Blocking | Purpose                                           |
-| --- | ---------------------- | -------- | ------------------------------------------------- |
-| 1   | ESLint                 | ✅ Yes   | Code quality and errors                           |
-| 2   | lint-staged (Prettier) | ✅ Yes   | Auto-formats staged files (Session #70)           |
-| 3   | Pattern Compliance     | ✅ Yes   | Anti-pattern detection                            |
-| 4   | Tests                  | ✅ Yes   | Unit test validation                              |
-| 5   | CANON Schema           | ⚠️ No    | Audit file validation (when JSONL staged)         |
-| 6   | Skill Validation       | ⚠️ No    | Command/skill structure (when skill files staged) |
-| 7   | Cross-Doc Dependencies | ✅ Yes   | Blocks if dependent docs not staged (Session #69) |
-| 8   | Learning Reminder      | ⚠️ No    | Reminds to log PR feedback                        |
+| #   | Check                  | Blocking | Purpose                                               |
+| --- | ---------------------- | -------- | ----------------------------------------------------- |
+| 1   | ESLint                 | ✅ Yes   | Code quality and errors                               |
+| 2   | lint-staged (Prettier) | ✅ Yes   | Auto-formats staged files (Session #70)               |
+| 3   | Pattern Compliance     | ✅ Yes   | Anti-pattern detection                                |
+| 4   | Tests                  | ✅ Yes   | Unit test validation                                  |
+| 5   | CANON Schema           | ⚠️ No    | Audit file validation (when JSONL staged)             |
+| 6   | Skill Validation       | ⚠️ No    | Command/skill structure (when skill files staged)     |
+| 7   | Cross-Doc Dependencies | ✅ Yes   | Blocks if dependent docs not staged (Session #69)     |
+| 8   | Learning Reminder      | ⚠️ No    | Reminds to log PR feedback                            |
+| 9   | Audit S0/S1 Validation | ✅ Yes   | Blocks S0/S1 without verification_steps (Session #98) |
 
 ### Function
 
@@ -114,6 +115,7 @@ TRIGGER: git commit
   → CHECK 6: npm run skills:validate (if skill files staged)
   → CHECK 7: npm run crossdoc:check (BLOCKING - Session #69)
   → CHECK 8: Learning entry reminder (if many files changed)
+  → CHECK 9: Audit S0/S1 validation (if audit JSONL staged) (BLOCKING - Session #98)
   → IF all blocking checks pass: Allow commit
   → IF any blocking check fails: Block commit with error
 ```
@@ -508,18 +510,19 @@ feedback on code quality, security, and best practices.
 
 ### Hooks Implemented
 
-| Hook                        | Trigger     | Action  | Purpose                               |
-| --------------------------- | ----------- | ------- | ------------------------------------- |
-| pattern-check.js            | Write/Edit  | Warn    | Anti-pattern detection                |
-| component-size-check.js     | Write/Edit  | Warn    | Component >300 lines warning          |
-| firestore-write-block.js    | Write/Edit  | Block   | Prevent direct writes to protected DB |
-| test-mocking-validator.js   | Write/Edit  | Block   | Ensure tests mock httpsCallable       |
-| app-check-validator.js      | Write/Edit  | Warn    | Cloud Function App Check verification |
-| typescript-strict-check.js  | Write/Edit  | Warn    | Detect `any` type usage               |
-| repository-pattern-check.js | Write/Edit  | Warn    | Firestore queries in components       |
-| agent-trigger-enforcer.js   | Write/Edit  | Suggest | Recommend agents for code changes     |
-| large-context-warning.js    | Read        | Warn    | Track file reads for context bloat    |
-| decision-save-prompt.js     | AskQuestion | Prompt  | Remind to document decisions          |
+| Hook                        | Trigger     | Action  | Purpose                                           |
+| --------------------------- | ----------- | ------- | ------------------------------------------------- |
+| pattern-check.js            | Write/Edit  | Warn    | Anti-pattern detection                            |
+| component-size-check.js     | Write/Edit  | Warn    | Component >300 lines warning                      |
+| firestore-write-block.js    | Write/Edit  | Block   | Prevent direct writes to protected DB             |
+| test-mocking-validator.js   | Write/Edit  | Block   | Ensure tests mock httpsCallable                   |
+| app-check-validator.js      | Write/Edit  | Warn    | Cloud Function App Check verification             |
+| typescript-strict-check.js  | Write/Edit  | Warn    | Detect `any` type usage                           |
+| repository-pattern-check.js | Write/Edit  | Warn    | Firestore queries in components                   |
+| agent-trigger-enforcer.js   | Write/Edit  | Suggest | Recommend agents for code changes                 |
+| large-context-warning.js    | Read        | Warn    | Track file reads for context bloat                |
+| decision-save-prompt.js     | AskQuestion | Prompt  | Remind to document decisions                      |
+| audit-s0s1-validator.js     | Write       | Warn    | S0/S1 verification_steps validation (Session #98) |
 
 ### Verification
 

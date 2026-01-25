@@ -239,6 +239,31 @@ Each line (UPDATED SCHEMA with confidence and verification):
 }
 ```
 
+**S0/S1 findings MUST include `verification_steps` (Session #98):**
+
+```json
+{
+  "verification_steps": {
+    "first_pass": {
+      "method": "grep|tool_output|file_read|code_search",
+      "evidence_collected": ["wc -l output", "complexity metrics"]
+    },
+    "second_pass": {
+      "method": "contextual_review|exploitation_test|manual_verification",
+      "confirmed": true,
+      "notes": "Re-read in context, verified refactoring needed"
+    },
+    "tool_confirmation": {
+      "tool": "eslint|sonarcloud|npm_audit|patterns_check|typescript|NONE",
+      "reference": "SonarCloud complexity score or NONE with justification"
+    }
+  }
+}
+```
+
+See `docs/templates/JSONL_SCHEMA_STANDARD.md#s0s1-verification-extension` for
+full schema.
+
 **3. Markdown Report (save to file):**
 
 Create file: `docs/audits/single-session/refactoring/audit-[YYYY-MM-DD].md`
