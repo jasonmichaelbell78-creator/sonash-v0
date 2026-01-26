@@ -1,19 +1,25 @@
 # Operational Visibility Sprint
 
-**Document Version:** 1.0 **Created:** 2026-01-14 **Status:** ACTIVE
-**Priority:** P0 - Immediate Focus **Last Updated:** 2026-01-15
+**Document Version:** 2.0 **Created:** 2026-01-14 **Status:** ACTIVE
+**Priority:** P0 - Immediate Focus **Last Updated:** 2026-01-26
 
 ---
 
 ## Overview
 
-This sprint consolidates Admin Panel completion (Phases 4-5) and Development
-Dashboard creation into a single focused effort. The goal is full operational
-visibility across both production monitoring (Admin Panel) and development
-tooling (Dev Dashboard).
+This sprint consolidates Admin Panel completion (Phases 4-5), Development
+Dashboard creation, CI/CD reliability, and solo developer automations. The goal
+is full operational visibility across production monitoring, development
+tooling, and automated quality assurance.
 
-**Sprint Goal:** Get Admin Panel Phases 4-5 and Development Dashboard MVP
-operational ASAP.
+**Sprint Goal:** Full operational visibility with sustainable automations for a
+solo no-code developer using Claude Code.
+
+**Audit Integration (Session #101):** This sprint now incorporates findings
+from:
+
+- Process Audit 2026-Q1 (CANON-0105 to CANON-0118)
+- Comprehensive Audit 2026-01-24 (115 findings)
 
 ---
 
@@ -21,37 +27,45 @@ operational ASAP.
 
 1. Review sprint goals and priorities
 2. Check task status and blockers
-3. Follow implementation order
+3. Follow implementation order by track
 
 ## AI Instructions
 
 When working on operational visibility:
 
-- Prioritize P0 items first
+- Prioritize P0 items first (Track A, D critical items)
 - Update task status after each change
 - Document blockers immediately
+- Run code-reviewer agent after code changes
+- Update SESSION_CONTEXT.md with progress
 
 ---
 
 ## Current State Assessment
 
-| Component        | Status                     | Effort to Complete |
-| ---------------- | -------------------------- | ------------------ |
-| Sentry SDK       | Installed, NOT initialized | 1 hour             |
-| Admin Errors Tab | UI exists, needs env vars  | Config only        |
-| Admin Logs Tab   | Not built                  | 3-4 hours          |
-| Dev Dashboard    | Does not exist             | 6-8 hours          |
-| Lighthouse CI    | Not built                  | 3-4 hours          |
-| Security Logging | Complete (25 event types)  | Done               |
-| reCAPTCHA        | Complete (fail-closed)     | Done               |
+| Component               | Status                        | Effort to Complete |
+| ----------------------- | ----------------------------- | ------------------ |
+| Sentry SDK              | Installed, NOT initialized    | 1 hour             |
+| Admin Errors Tab        | UI exists, needs env vars     | Config only        |
+| Admin Logs Tab          | Not built                     | 3-4 hours          |
+| Dev Dashboard           | Route exists (B1 done)        | 4-6 hours          |
+| Lighthouse CI           | Script exists (B2 done)       | 2-3 hours          |
+| CI Quality Gates        | 4 non-blocking (S0 issue)     | 4-8 hours          |
+| Pre-commit Optimization | ~50s (target: <15s)           | 1-4 hours          |
+| Warning Resolution      | No mechanism exists           | 4-6 hours          |
+| Security Scanning CI    | Missing npm audit, Dependabot | 4-8 hours          |
+| Deployment Safety       | No health checks/approval     | 6-10 hours         |
+| Security Logging        | Complete (25 event types)     | Done               |
+| reCAPTCHA               | Complete (fail-closed)        | Done               |
+| Agent Tracking          | Complete (Session #101)       | Done               |
 
 ---
 
-## Sprint Tracks (Parallel Execution)
+## Sprint Tracks (5 Parallel Tracks)
 
 ### Track A: Admin Panel Completion (Phases 4-5)
 
-**Goal:** Production error and log visibility
+**Goal:** Production error and log visibility **Status:** 🔄 In Progress
 
 ```
 Week 1:
@@ -83,77 +97,249 @@ Week 2:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Track B: Development Dashboard MVP
+### Track B: Development Dashboard MVP (Expanded)
 
-**Goal:** Developer visibility into performance, sessions, and system health
+**Goal:** Developer visibility into performance, sessions, system health, and
+warnings **Status:** 🔄 In Progress (B1-B2 done)
 
 ```
-Week 1:
+Week 1 (DONE):
 ┌─────────────────────────────────────────────────────────────┐
-│  B1: Create /dev Route Structure (2hr)                      │
-│  ├─ Create app/dev/page.tsx                                 │
-│  ├─ Create app/dev/layout.tsx with auth gate                │
-│  ├─ Create components/dev/dev-dashboard.tsx                 │
-│  ├─ Add navigation tabs structure                           │
-│  └─ Link from Admin Panel (optional dev tools link)         │
-├─────────────────────────────────────────────────────────────┤
-│  B2: PERF-001 - Lighthouse Script (2hr)                     │
-│  ├─ Install lighthouse, puppeteer dependencies              │
-│  ├─ Create scripts/lighthouse-audit.js                      │
-│  ├─ Add npm run lighthouse command                          │
-│  └─ Test against all 7 routes                               │
+│  B1: Create /dev Route Structure (2hr) ✅ DONE              │
+│  B2: PERF-001 - Lighthouse Script (2hr) ✅ DONE             │
 └─────────────────────────────────────────────────────────────┘
 
 Week 2:
 ┌─────────────────────────────────────────────────────────────┐
 │  B3: PERF-002 - Lighthouse CI Integration (2hr)             │
-│  ├─ Add start-server-and-test dependency                    │
-│  ├─ Create .github/workflows/lighthouse.yml                 │
-│  ├─ Upload reports as artifacts                             │
-│  └─ Add PR comment with scores (optional)                   │
-├─────────────────────────────────────────────────────────────┤
 │  B4: PERF-003 - Firestore History Storage (2hr)             │
-│  ├─ Create Firestore collection: dev/lighthouse/history     │
-│  ├─ CI job writes scores after each run                     │
-│  ├─ Implement regression detection (>10pt drop)             │
-│  └─ Add Firestore rules for dev collection                  │
-├─────────────────────────────────────────────────────────────┤
 │  B5: Lighthouse Dashboard Tab (3hr)                         │
-│  ├─ Create components/dev/lighthouse-tab.tsx                │
-│  ├─ Display current scores table (all pages)                │
-│  ├─ Historical trend chart (line graph)                     │
-│  ├─ Regression alerts display                               │
-│  └─ Links to full HTML reports                              │
 └─────────────────────────────────────────────────────────────┘
 
 Week 3:
 ┌─────────────────────────────────────────────────────────────┐
 │  B6: Error Tracing Tab (2hr)                                │
 │  ├─ Create components/dev/errors-tab.tsx                    │
-│  ├─ Local error aggregation from console                    │
-│  ├─ Link to Sentry for production errors                    │
+│  ├─ Local error aggregation + Sentry link                   │
+│  ├─ npm audit security results display (NEW)                │
 │  └─ Filter by severity, component                           │
 ├─────────────────────────────────────────────────────────────┤
 │  B7: Session Activity Tab (2hr)                             │
-│  ├─ Create components/dev/sessions-tab.tsx                  │
-│  ├─ Read from Firestore dev/sessions collection             │
-│  ├─ Display event timeline                                  │
-│  ├─ Session duration, files changed metrics                 │
-│  └─ Detect sessions without end markers                     │
-├─────────────────────────────────────────────────────────────┤
 │  B8: Document Sync Tab (1hr)                                │
-│  ├─ Create components/dev/docs-tab.tsx                      │
-│  ├─ Run docs:sync-check and display results                 │
-│  ├─ Placeholder detection status                            │
-│  └─ Template/instance health overview                       │
-├─────────────────────────────────────────────────────────────┤
 │  B9: Override Audit Tab (1hr)                               │
-│  ├─ Create components/dev/overrides-tab.tsx                 │
-│  ├─ Display override log entries                            │
-│  ├─ Frequency and pattern analysis                          │
-│  └─ Flag unusual patterns                                   │
+└─────────────────────────────────────────────────────────────┘
+
+Week 4 (NEW - Process Audit Integration):
+┌─────────────────────────────────────────────────────────────┐
+│  B10: System Health Tab (3hr) **NEW**                       │
+│  ├─ Create components/dev/health-tab.tsx                    │
+│  ├─ Pattern compliance status (93 violations baseline)      │
+│  ├─ CI gate status (blocking/non-blocking)                  │
+│  ├─ Script test coverage metrics (2-7% → target)            │
+│  ├─ Pre-commit/pre-push timing display                      │
+│  ├─ Backlog health from check-backlog-health.js             │
+│  ├─ Agent compliance from .session-agents.json              │
+│  └─ Historical trends (track improvements)                  │
+├─────────────────────────────────────────────────────────────┤
+│  B11: Warnings Resolution Tab (3hr) **NEW**                 │
+│  ├─ Create components/dev/warnings-tab.tsx                  │
+│  ├─ Display unresolved hook warnings                        │
+│  ├─ Resolution actions: Acknowledge/Resolve/Suppress        │
+│  ├─ Connect to false-positive.json system                   │
+│  ├─ Aging alerts (warnings > 7 days)                        │
+│  └─ Session warning history                                 │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### Track C: UI/UX Improvements (Reserved)
+
+**Status:** 📋 Planned - Reserved for future expansion
+
+### Track D: CI Reliability & Automation (NEW)
+
+**Goal:** Fix CI quality gates, optimize developer velocity, deployment safety
+**Status:** 📋 Planned **Source:** Process Audit CANON-0105-0118 + Comprehensive
+Audit 2026-01-24
+
+```
+Phase 1 - Quick Wins (E0-E1):
+┌─────────────────────────────────────────────────────────────┐
+│  D1: Pin Firebase CLI Version (30min) [CANON-0112]          │
+│  ├─ Change npm install -g firebase-tools                    │
+│  └─ To: npm install -g firebase-tools@14.0.1                │
+├─────────────────────────────────────────────────────────────┤
+│  D2: Optimize Pre-Commit Hook (2hr) [CANON-0110]            │
+│  ├─ Remove duplicate test run (already in pre-push)         │
+│  ├─ Run pattern check on staged files only                  │
+│  ├─ Add decision aid output                                 │
+│  └─ Target: ~50s → <15s                                     │
+├─────────────────────────────────────────────────────────────┤
+│  D3: Update Workflow Documentation (2hr) [CANON-0109]       │
+│  ├─ Sync DEVELOPMENT.md triggers with actual YAML           │
+│  └─ Document hook execution order                           │
+└─────────────────────────────────────────────────────────────┘
+
+Phase 2 - CI Quality Gates (E2):
+┌─────────────────────────────────────────────────────────────┐
+│  D4: Fix Non-Blocking CI Gates (4hr) [CANON-0105, 0111]     │
+│  ├─ Convert Prettier check to blocking (already done?)      │
+│  ├─ Add diff-based pattern check (PR changed files only)    │
+│  ├─ Keep full-repo check non-blocking for visibility        │
+│  ├─ Track baseline burn-down in Dev Dashboard               │
+│  └─ Severity: S0 - Quality regressions escape to main       │
+├─────────────────────────────────────────────────────────────┤
+│  D5: Add Security Scanning to CI (4hr) [CANON-0107]         │
+│  ├─ Add npm audit step to ci.yml                            │
+│  ├─ Create .github/dependabot.yml                           │
+│  ├─ Consider CodeQL for static analysis (free for public)   │
+│  └─ Store audit results for Dashboard display               │
+└─────────────────────────────────────────────────────────────┘
+
+Phase 3 - Deployment Safety (E2-E3):
+┌─────────────────────────────────────────────────────────────┐
+│  D6: Post-Deployment Health Checks (2hr) [Comprehensive]    │
+│  ├─ Add health endpoint call after deploy                   │
+│  ├─ Verify app responds before marking success              │
+│  └─ Alert on deployment failure                             │
+├─────────────────────────────────────────────────────────────┤
+│  D7: Deployment Approval Gates (2hr) [Comprehensive]        │
+│  ├─ Require manual approval before production               │
+│  ├─ Configure GitHub environment protection                 │
+│  └─ Prevent accidental production pushes                    │
+├─────────────────────────────────────────────────────────────┤
+│  D8: Automated Rollback (5hr) [Comprehensive]               │
+│  ├─ Detect deployment failure via health check              │
+│  ├─ Trigger rollback to previous version                    │
+│  └─ Notify on rollback                                      │
+├─────────────────────────────────────────────────────────────┤
+│  D9: Canary Deployments (6hr) [Comprehensive - Optional]    │
+│  ├─ 5% → 50% → 100% traffic rollout                         │
+│  ├─ Monitor error rates between stages                      │
+│  └─ Auto-rollback on error spike                            │
+└─────────────────────────────────────────────────────────────┘
+
+Phase 4 - Ongoing (Multi-Session):
+┌─────────────────────────────────────────────────────────────┐
+│  D10: Script Test Coverage (ongoing) [CANON-0106]           │
+│  ├─ Priority scripts: update-readme-status.js               │
+│  ├─ validate-phase-completion.js                            │
+│  ├─ check-docs-light.js, check-review-needed.js             │
+│  ├─ Target: 2-7% → 30%+                                     │
+│  └─ Track in Dev Dashboard B10                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Track E: Solo Developer Automations (NEW)
+
+**Goal:** Automations specifically for a solo no-code developer using Claude
+Code **Status:** 📋 Planned **Rationale:** Everything must be automated - no
+manual script running or debugging
+
+```
+Foundation:
+┌─────────────────────────────────────────────────────────────┐
+│  E1: Warning Collector Hook (2hr)                           │
+│  ├─ Create .claude/hooks/warning-collector.js               │
+│  ├─ Intercept hook stderr output                            │
+│  ├─ Parse and categorize warnings                           │
+│  ├─ Store in .claude/hooks/.warnings.json                   │
+│  └─ Feeds B11 Warnings Resolution Tab                       │
+├─────────────────────────────────────────────────────────────┤
+│  E2: Session Health Summary (1hr)                           │
+│  ├─ Enhance session-start.js                                │
+│  ├─ Output structured JSON to .session-health.json          │
+│  ├─ Include: patterns, backlog, consolidation status        │
+│  └─ Dashboard can poll for live updates                     │
+└─────────────────────────────────────────────────────────────┘
+
+Escalation & Guidance:
+┌─────────────────────────────────────────────────────────────┐
+│  E3: Auto-Escalation System (2hr)                           │
+│  ├─ S1 finding > 7 days → Notify at session start           │
+│  ├─ S2 finding > 14 days → Suggest de-prioritize/resolve    │
+│  ├─ 3+ warnings on same file → Suggest consolidation        │
+│  └─ Store escalation state in Firestore                     │
+├─────────────────────────────────────────────────────────────┤
+│  E4: Pre-Commit Decision Aid (1hr)                          │
+│  ├─ Analyze warnings and blockers at commit time            │
+│  ├─ Output recommendation: Safe/Review/Fix First            │
+│  ├─ Help Claude make informed commit decisions              │
+│  └─ Reduce --no-verify bypass rate                          │
+├─────────────────────────────────────────────────────────────┤
+│  E5: Automated Fix Suggestions (3hr)                        │
+│  ├─ Enhance suggest-pattern-automation.js                   │
+│  ├─ Generate patches for known pattern violations           │
+│  ├─ Store suggestions in Firestore for Dashboard            │
+│  └─ Claude can apply with user approval                     │
+└─────────────────────────────────────────────────────────────┘
+
+Periodic Reports:
+┌─────────────────────────────────────────────────────────────┐
+│  E6: Weekly Health Digest (2hr)                             │
+│  ├─ Scheduled GitHub Action (weekly)                        │
+│  ├─ Aggregate: patterns, coverage, security, backlog        │
+│  ├─ Identify: improvements, regressions, stale items        │
+│  └─ Post to Dev Dashboard as digest entry                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Effort Summary by Track
+
+| Track   | Description              | Total Effort  | Priority |
+| ------- | ------------------------ | ------------- | -------- |
+| A       | Admin Panel              | ~6 hours      | P0       |
+| B       | Dev Dashboard (expanded) | ~20 hours     | P0       |
+| D       | CI Reliability           | ~28 hours     | P1       |
+| E       | Solo Dev Automations     | ~11 hours     | P1       |
+| **ALL** | **Total Sprint**         | **~65 hours** | -        |
+
+---
+
+## Warning Resolution Mechanism
+
+### The Problem
+
+Currently hooks emit warnings but:
+
+1. Warnings scroll by and are forgotten
+2. No way to track which warnings have been addressed
+3. No way to suppress known-acceptable warnings
+
+### The Solution
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Hook Execution                                              │
+│       │                                                      │
+│       ▼                                                      │
+│  ┌─────────────┐    ┌──────────────────┐                    │
+│  │ Any hook    │───▶│ warning-         │                    │
+│  │ (stderr)    │    │ collector.js     │                    │
+│  └─────────────┘    └────────┬─────────┘                    │
+│                              │                              │
+│                              ▼                              │
+│                     ┌──────────────────┐                    │
+│                     │ .warnings.json   │                    │
+│                     │ (session cache)  │                    │
+│                     └────────┬─────────┘                    │
+│                              │                              │
+│              ┌───────────────┴───────────────┐              │
+│              ▼                               ▼              │
+│     ┌──────────────────┐          ┌──────────────────┐     │
+│     │ session-end      │          │ Dev Dashboard    │     │
+│     │ (batch sync)     │          │ (B11 tab)        │     │
+│     └──────────────────┘          └──────────────────┘     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Warning States
+
+- **active** - Warning raised, not addressed
+- **acknowledged** - Seen, will address later
+- **resolved** - Fixed the underlying issue
+- **suppressed** - Added to false-positive.json
 
 ---
 
@@ -162,226 +348,174 @@ Week 3:
 ```mermaid
 flowchart TD
     subgraph TrackA["Track A: Admin Panel"]
-        A1[A1: Wire Sentry Client]
-        A2[A2: Configure Cloud Function]
+        A1[A1: Wire Sentry]
+        A2[A2: Configure Cloud Fn]
         A3[A3: Verify Errors Tab]
         A4[A4: Build Logs Tab]
-
         A1 --> A3
         A2 --> A3
         A3 --> A4
     end
 
     subgraph TrackB["Track B: Dev Dashboard"]
-        B1[B1: Create /dev Route]
-        B2[B2: Lighthouse Script]
+        B1[B1: /dev Route ✅]
+        B2[B2: Lighthouse Script ✅]
         B3[B3: Lighthouse CI]
         B4[B4: Firestore History]
         B5[B5: Lighthouse Tab]
-        B6[B6: Error Tracing Tab]
-        B7[B7: Session Activity Tab]
-        B8[B8: Document Sync Tab]
-        B9[B9: Override Audit Tab]
+        B6[B6: Error Tracing]
+        B7[B7: Session Activity]
+        B8[B8: Document Sync]
+        B9[B9: Override Audit]
+        B10[B10: Health Tab]
+        B11[B11: Warnings Tab]
 
-        B1 --> B5
-        B1 --> B6
-        B1 --> B7
-        B1 --> B8
-        B1 --> B9
-        B2 --> B3
-        B3 --> B4
-        B4 --> B5
+        B1 --> B5 & B6 & B7 & B8 & B9 & B10 & B11
+        B2 --> B3 --> B4 --> B5
     end
 
-    %% Cross-track dependencies
+    subgraph TrackD["Track D: CI Reliability"]
+        D1[D1: Pin Firebase CLI]
+        D2[D2: Optimize Pre-Commit]
+        D4[D4: Fix CI Gates]
+        D5[D5: Security Scanning]
+        D6[D6: Health Checks]
+        D7[D7: Approval Gates]
+        D1 --> D6
+        D4 --> B10
+    end
+
+    subgraph TrackE["Track E: Solo Dev Automations"]
+        E1[E1: Warning Collector]
+        E2[E2: Session Health]
+        E3[E3: Auto-Escalation]
+        E4[E4: Decision Aid]
+        E1 --> B11
+        E2 --> B10
+        D2 --> E4
+    end
+
+    %% Cross-track
     A1 -.-> B6
-
-    style A1 fill:#FFB3B3
-    style A2 fill:#FFB3B3
-    style B1 fill:#FFB3B3
-    style B2 fill:#FFB3B3
+    D5 -.-> B6
 ```
-
-**Legend:** Red = Week 1 priorities (can run in parallel)
 
 ---
 
-## Parallel Execution Plan
+## Files to Create
 
-### Week 1 (Parallel)
-
-| Session   | Track A                       | Track B                     |
-| --------- | ----------------------------- | --------------------------- |
-| **Day 1** | A1: Wire Sentry (1hr)         | B1: /dev Route (2hr)        |
-| **Day 1** | A2: Configure Cloud Fn (1hr)  | B2: Lighthouse Script (2hr) |
-| **Day 2** | A3: Verify Errors Tab (30min) | Continue B2 if needed       |
-
-**Week 1 Deliverables:**
-
-- [ ] Sentry capturing production errors
-- [ ] Admin Errors Tab showing real data
-- [ ] `/dev` route accessible
-- [ ] `npm run lighthouse` working
-
-### Week 2 (Parallel)
-
-| Session   | Track A              | Track B                     |
-| --------- | -------------------- | --------------------------- |
-| **Day 1** | A4: Logs Tab (3-4hr) | B3: Lighthouse CI (2hr)     |
-| **Day 2** | Continue A4          | B4: Firestore History (2hr) |
-| **Day 3** | -                    | B5: Lighthouse Tab (3hr)    |
-
-**Week 2 Deliverables:**
-
-- [ ] Admin Logs Tab with GCP deep links
-- [ ] Lighthouse CI running on PRs
-- [ ] Dev Dashboard showing Lighthouse scores
-
-### Week 3 (Parallel)
-
-| Session   | Track B                                                   |
-| --------- | --------------------------------------------------------- |
-| **Day 1** | B6: Error Tracing Tab (2hr)                               |
-| **Day 2** | B7: Session Activity Tab (2hr)                            |
-| **Day 3** | B8: Document Sync Tab (1hr), B9: Override Audit Tab (1hr) |
-
-**Week 3 Deliverables:**
-
-- [ ] Full Dev Dashboard MVP with all 5 tabs
-
----
-
-## Technical Specifications
-
-### Auth Model for /dev Route
-
-```typescript
-// app/dev/layout.tsx
-// Option A: Same as admin - require admin claim
-const isAdmin = tokenResult.claims.admin === true;
-
-// Or Option B: Allowlist specific emails (if different from admin)
-const DEV_ALLOWLIST = ["your-email@domain.com"];
-const isDeveloper = DEV_ALLOWLIST.includes(user.email);
-```
-
-**Recommendation:** Use admin claim (Option A) - you're the only admin anyway.
-
-### Firestore Schema for Dev Data
+### Track B (New Files)
 
 ```
-/dev
-  /lighthouse
-    /history
-      - {documentId}: { timestamp, commit, branch, device, results[] }
-    /budgets
-      - current: { lcp, fid, cls, performance, accessibility, ... }
-  /sessions
-    - {sessionId}: { start, end, filesChanged, skillsUsed, commits[] }
-  /overrides
-    - {overrideId}: { timestamp, rule, reason, context }
+components/dev/health-tab.tsx          # NEW - System health dashboard
+components/dev/warnings-tab.tsx        # NEW - Warning resolution
 ```
 
-### Environment Variables Needed
+### Track D (New Files)
 
-**For Sentry (Cloud Functions):**
-
-```bash
-firebase functions:config:set sentry.api_token="YOUR_TOKEN"
-firebase functions:config:set sentry.org="YOUR_ORG"
-firebase functions:config:set sentry.project="YOUR_PROJECT"
+```
+.github/dependabot.yml                 # NEW - Dependency updates
+.github/workflows/security.yml         # NEW - npm audit workflow (optional)
 ```
 
-**For Sentry (Client - .env.local):**
+### Track E (New Files)
 
-```bash
-NEXT_PUBLIC_SENTRY_DSN=https://xxx@sentry.io/xxx
-NEXT_PUBLIC_SENTRY_ENABLED=true
+```
+.claude/hooks/warning-collector.js     # NEW - Intercept warnings
+.claude/hooks/.warnings.json           # NEW - Warning cache
+scripts/sync-warnings-to-firestore.js  # NEW - Batch sync
+```
+
+### Files to Modify
+
+```
+.github/workflows/deploy-firebase.yml  # Add health checks, approval
+.github/workflows/ci.yml               # Add security scanning, diff-based checks
+.husky/pre-commit                      # Optimize (remove test duplication)
+.claude/hooks/session-start.js         # Add health summary JSON output
+scripts/check-pattern-compliance.js    # Add staged-files-only mode
+package.json                           # Add new npm scripts
 ```
 
 ---
 
 ## Success Criteria
 
-### Admin Panel (Phases 4-5) Complete When:
+### Track A Complete When:
 
 - [ ] Production errors appear in Admin Errors Tab
 - [ ] Error trends (24hr comparison) display correctly
 - [ ] Logs Tab shows recent security events
 - [ ] GCP deep links work
 
-### Dev Dashboard MVP Complete When:
+### Track B Complete When:
 
 - [ ] `/dev` route accessible (admin auth)
 - [ ] Lighthouse scores display for all 7 pages
 - [ ] Historical trends visible (after 3+ CI runs)
-- [ ] Error tracing shows recent errors
+- [ ] Error tracing shows recent errors + security audit results
 - [ ] Session activity visualized
 - [ ] Document sync status displayed
 - [ ] Override audit trail visible
+- [ ] **System Health Tab shows all metrics** (NEW)
+- [ ] **Warnings Tab tracks/resolves warnings** (NEW)
+
+### Track D Complete When:
+
+- [ ] Pre-commit time < 15 seconds (from ~50s)
+- [ ] CI quality gates block on NEW violations only
+- [ ] Security scanning in CI (npm audit)
+- [ ] Post-deployment health checks verify success
+- [ ] Deployment requires manual approval
+
+### Track E Complete When:
+
+- [ ] Hook warnings captured and displayed
+- [ ] Warning resolution workflow functional
+- [ ] Session health summary available in Dashboard
+- [ ] Auto-escalation alerts for aging issues
 
 ---
 
-## Files to Create
+## Audit Finding Coverage
 
-### Track A (Admin Panel)
-
-```
-components/admin/logs-tab.tsx          # NEW - GCP logs viewer
-```
-
-### Track B (Dev Dashboard)
-
-```
-app/dev/page.tsx                       # NEW - Dev dashboard route
-app/dev/layout.tsx                     # NEW - Auth-gated layout
-components/dev/dev-dashboard.tsx       # NEW - Main dashboard
-components/dev/dev-tabs.tsx            # NEW - Tab navigation
-components/dev/lighthouse-tab.tsx      # NEW - Lighthouse scores
-components/dev/errors-tab.tsx          # NEW - Error tracing
-components/dev/sessions-tab.tsx        # NEW - Session activity
-components/dev/docs-tab.tsx            # NEW - Document sync
-components/dev/overrides-tab.tsx       # NEW - Override audit
-scripts/lighthouse-audit.js            # NEW - Lighthouse script
-.github/workflows/lighthouse.yml       # NEW - CI workflow
-```
-
-### Files to Modify
-
-```
-app/layout.tsx                         # Add initSentryClient() call
-lib/auth-context.tsx                   # Add setSentryUser() call
-components/admin/admin-tabs.tsx        # Add Logs tab, Dev Tools link
-.gitignore                             # Add .lighthouse/
-package.json                           # Add lighthouse scripts
-firestore.rules                        # Add /dev collection rules
-```
-
----
-
-## Risk Mitigation
-
-| Risk                   | Mitigation                          |
-| ---------------------- | ----------------------------------- |
-| Sentry API rate limits | Cache responses, 5-min TTL          |
-| GCP API complexity     | Use deep links, not API             |
-| Lighthouse CI slow     | Run only on PR, not every commit    |
-| Firestore costs        | Dev collection small, minimal reads |
+| CANON ID   | Finding                        | Track | Task    |
+| ---------- | ------------------------------ | ----- | ------- |
+| CANON-0105 | Non-blocking CI gates          | D     | D4      |
+| CANON-0106 | Script test coverage (2-7%)    | D     | D10     |
+| CANON-0107 | Security scanning gaps         | D     | D5      |
+| CANON-0109 | Workflow docs don't match YAML | D     | D3      |
+| CANON-0110 | Pre-commit slow (~50s)         | D     | D2      |
+| CANON-0111 | Pattern checker non-blocking   | D     | D4      |
+| CANON-0112 | Firebase CLI unpinned          | D     | D1      |
+| Comp-001   | No post-deploy health checks   | D     | D6      |
+| Comp-002   | No deployment approval         | D     | D7      |
+| Comp-003   | No automated rollback          | D     | D8      |
+| Comp-004   | No canary deployments          | D     | D9      |
+| Comp-005   | No error rate monitoring       | B     | B6, B10 |
+| Comp-006   | Hook execution slow            | D     | D2      |
 
 ---
 
 ## Related Documents
 
-- [LIGHTHOUSE_INTEGRATION_PLAN.md](./LIGHTHOUSE_INTEGRATION_PLAN.md) - Detailed
+- [LIGHTHOUSE_INTEGRATION_PLAN.md](./LIGHTHOUSE_INTEGRATION_PLAN.md) -
   Lighthouse spec
 - [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) -
   Phase 4-5 details
+- [PROCESS_AUDIT_FINDINGS_2026_Q1.md](./reviews/2026-Q1/PROCESS_AUDIT_FINDINGS_2026_Q1.md) -
+  Process audit findings
+- [AUDIT_SUMMARY.md](./audits/comprehensive/AUDIT_SUMMARY.md) - Comprehensive
+  audit summary
 - [ROADMAP.md](../ROADMAP.md) - Overall product roadmap
 
 ---
 
 ## Version History
 
-| Version | Date       | Changes                     |
-| ------- | ---------- | --------------------------- |
-| 1.0     | 2026-01-14 | Initial sprint plan created |
+| Version | Date       | Changes                                                           |
+| ------- | ---------- | ----------------------------------------------------------------- |
+| 2.0     | 2026-01-26 | Major update: Added Track D (CI Reliability), Track E (Solo Dev), |
+|         |            | B10 (Health Tab), B11 (Warnings Tab); Integrated Process Audit    |
+|         |            | CANON-0105-0118 and Comprehensive Audit findings; ~65 hours total |
+| 1.0     | 2026-01-14 | Initial sprint plan created                                       |

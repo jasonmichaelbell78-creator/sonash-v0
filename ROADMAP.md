@@ -1,7 +1,7 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.10
+**Document Version:** 3.11
 **Last Updated:** 2026-01-26
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -210,8 +210,8 @@ Planned | 🟣 Research
 
 > **Spec:**
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
-> **Goal:** Full operational visibility via Admin Panel + Development Dashboard
-> **Status:** 🔄 ACTIVE | **Started:** 2026-01-14 | **Updated:** 2026-01-20
+> **Goal:** Full operational visibility with sustainable automations for solo
+> dev **Status:** 🔄 ACTIVE | **Started:** 2026-01-14 | **Updated:** 2026-01-26
 
 > **✅ SonarCloud Sprint Partially Complete (Session #85)**
 >
@@ -224,18 +224,24 @@ Planned | 🟣 Research
 > - **Completed:** ~300 issues fixed (mechanical + critical)
 > - **Deferred:** ~1,400 issues to M2 (major, minor, security hotspots)
 
-This sprint consolidates Admin Panel Phases 4-5 and Development Dashboard
-creation.
+> **📋 Process Audit Integration (Session #101)**
+>
+> This sprint now includes CI/CD reliability and solo developer automation work
+> from Process Audit CANON-0105-0118 and Comprehensive Audit 2026-01-24. Total
+> sprint effort: ~65 hours across 5 tracks.
 
-### Sprint Tracks (Parallel)
+This sprint consolidates Admin Panel completion, Development Dashboard, CI/CD
+reliability, and solo developer automations.
 
-| Track            | Focus                           | Status          | Target   |
-| ---------------- | ------------------------------- | --------------- | -------- |
-| **Track A**      | Admin Panel (Sentry + GCP Logs) | ✅ Dev Complete | Week 1-2 |
-| **Track A-Test** | Track A Testing & Validation    | ✅ Complete     | Week 2   |
-| **Track A-P2**   | Firebase Console Phase 2 (5-8)  | 📋 Planned      | Week 3-4 |
-| **Track B**      | Dev Dashboard MVP               | 🔄 In Progress  | Week 1-3 |
-| **Track C**      | UI/UX Improvements              | 📋 Planned      | Week 2-3 |
+### Sprint Tracks (5 Parallel Tracks)
+
+| Track       | Focus                                 | Status          | Effort    |
+| ----------- | ------------------------------------- | --------------- | --------- |
+| **Track A** | Admin Panel (Sentry + GCP Logs)       | ✅ Dev Complete | ~6 hours  |
+| **Track B** | Dev Dashboard MVP (expanded +B10/B11) | 🔄 In Progress  | ~20 hours |
+| **Track C** | UI/UX Improvements                    | 📋 Reserved     | TBD       |
+| **Track D** | CI Reliability & Automation (NEW)     | 📋 Planned      | ~28 hours |
+| **Track E** | Solo Developer Automations (NEW)      | 📋 Planned      | ~11 hours |
 
 ### Track A - Admin Panel ✅ DEVELOPMENT COMPLETE
 
@@ -375,30 +381,77 @@ creation.
 - [ ] Verify Sentry env vars configured
 - [ ] Create test user accounts (admin, premium, free)
 
-### Track B - Dev Dashboard
+### Track B - Dev Dashboard (Expanded)
 
-#### Core Setup
+> **Full spec:** See
+> [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
+> Track B
 
-- [ ] **B1:** Create `/dev` route with auth gate (2hr)
-- [ ] **B2:** PERF-001 - Lighthouse audit script (2hr) - **PRIORITIZED**
+#### Core Setup ✅ PARTIAL
 
-#### Dev Dashboard Tabs (Reordered by Priority)
+- [x] **B1:** Create `/dev` route with auth gate (2hr) ✅
+- [x] **B2:** PERF-001 - Lighthouse audit script (2hr) ✅
 
-- [ ] **B3:** Lighthouse Dashboard Tab (3hr) - **PRIORITIZED**
-- [ ] **B4:** Doc Sync Tab (1hr) - **PRIORITIZED**
-  - Visual status of template-instance relationships
-  - Run `docs:sync-check` and display results
-- [ ] **B5:** Testing Integration Tab (4-6hr)
-  - Test coverage metrics (% by file/component)
-  - CI test history (last N runs, pass/fail trends)
-  - Optional: Live test runner UI
-- [ ] **B6:** Audit Threshold Monitoring (2hr)
-  - Surface `npm run review:check` metrics
-  - Show "Days since last audit" per category
-  - Alert when any category is triggered
-- [ ] **B7:** PERF-002 - Lighthouse CI integration (2hr)
-- [ ] **B8:** PERF-003 - Firestore history storage (2hr)
-- [ ] **B9-B11:** Error, Session, Override tabs (4hr total)
+#### Dev Dashboard Tabs
+
+- [ ] **B3:** Lighthouse CI Integration (2hr)
+- [ ] **B4:** Firestore History Storage (2hr)
+- [ ] **B5:** Lighthouse Dashboard Tab (3hr)
+- [ ] **B6:** Error Tracing Tab (2hr) - includes npm audit display
+- [ ] **B7:** Session Activity Tab (2hr)
+- [ ] **B8:** Document Sync Tab (1hr)
+- [ ] **B9:** Override Audit Tab (1hr)
+- [ ] **B10:** System Health Tab (3hr) **NEW - Process Audit Integration**
+  - Pattern compliance status (93 violations baseline)
+  - CI gate status, script test coverage
+  - Pre-commit timing, agent compliance
+- [ ] **B11:** Warnings Resolution Tab (3hr) **NEW - Session #101**
+  - Track unresolved hook warnings
+  - Resolution actions: Acknowledge/Resolve/Suppress
+  - Aging alerts for old warnings
+
+### Track D - CI Reliability & Automation (NEW)
+
+> **Source:** Process Audit CANON-0105-0118 + Comprehensive Audit 2026-01-24
+> **Full spec:** See
+> [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
+> Track D
+
+#### Phase 1 - Quick Wins
+
+- [ ] **D1:** Pin Firebase CLI version (30min) [CANON-0112]
+- [ ] **D2:** Optimize pre-commit hook (2hr) [CANON-0110] - Target: ~50s → <15s
+- [ ] **D3:** Update workflow documentation (2hr) [CANON-0109]
+
+#### Phase 2 - CI Quality Gates
+
+- [ ] **D4:** Fix non-blocking CI gates (4hr) [CANON-0105, 0111] - S0 priority
+- [ ] **D5:** Add security scanning to CI (4hr) [CANON-0107]
+
+#### Phase 3 - Deployment Safety
+
+- [ ] **D6:** Post-deployment health checks (2hr) [Comprehensive]
+- [ ] **D7:** Deployment approval gates (2hr) [Comprehensive]
+- [ ] **D8:** Automated rollback (5hr) [Comprehensive]
+- [ ] **D9:** Canary deployments (6hr) [Comprehensive - Optional]
+
+#### Phase 4 - Ongoing
+
+- [ ] **D10:** Script test coverage (ongoing) [CANON-0106] - 2-7% → 30%
+
+### Track E - Solo Developer Automations (NEW)
+
+> **Rationale:** Automations for solo no-code developer using Claude Code **Full
+> spec:** See
+> [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
+> Track E
+
+- [ ] **E1:** Warning collector hook (2hr) - Feed B11 Warnings Tab
+- [ ] **E2:** Session health summary (1hr) - JSON output for Dashboard
+- [ ] **E3:** Auto-escalation system (2hr) - Age-based issue alerts
+- [ ] **E4:** Pre-commit decision aid (1hr) - Guide commit decisions
+- [ ] **E5:** Automated fix suggestions (3hr) - Generate patches
+- [ ] **E6:** Weekly health digest (2hr) - Automated trend summary
 
 ### Track C - UI/UX & Analytics (Late Sprint)
 
@@ -530,31 +583,38 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 **Goal:** High-impact, low-effort features that improve user experience
 
-### 🚨 Clear Audit Backlog (Do First)
+### 🚨 Clear Audit Backlog ✅ MOSTLY COMPLETE
 
-> **Prerequisite:** Complete before starting new feature work. See
+> **Status:** Session #99 completed 7 items. Only 2 documentation items remain,
+> deferred to documentation sprint. See
 > [AUDIT_FINDINGS_BACKLOG.md](docs/AUDIT_FINDINGS_BACKLOG.md)
 
-**Current backlog:** 10 items (9-13 hours estimated)
+**Current backlog:** 2 items (deferred to documentation sprint)
 
-| ID         | Category      | Severity | Effort | Description                      |
-| ---------- | ------------- | -------- | ------ | -------------------------------- |
-| CANON-0107 | Security      | S1       | E0     | Missing security headers         |
-| CANON-0108 | Security      | S2       | E0     | No Firebase Storage rules        |
-| CANON-0103 | Process       | S2       | E1     | Fix docs:check false positives   |
-| CANON-0104 | Process       | S2       | E0     | Add scripts to session start     |
-| CANON-0105 | Process       | S2       | E1     | Add CANON validation to CI       |
-| CANON-0106 | Process       | S3       | E0     | Add npm commands for scripts     |
-| LEGACY-001 | Code Quality  | S3       | E1     | Retrofit SSR-safe localStorage   |
-| REFAC-001  | Code Quality  | S3       | E2     | Extract admin.ts/jobs.ts helpers |
-| CANON-0101 | Documentation | S3       | E2     | Missing Quick Start sections     |
-| CANON-0102 | Documentation | S3       | E1     | Missing AI Instructions sections |
+| ID         | Category      | Severity | Effort | Status   | Description                      |
+| ---------- | ------------- | -------- | ------ | -------- | -------------------------------- |
+| CANON-0101 | Documentation | S3       | E2     | DEFERRED | Missing Quick Start sections     |
+| CANON-0102 | Documentation | S3       | E1     | DEFERRED | Missing AI Instructions sections |
 
-**Acceptance criteria:**
+**Completed in Session #99:**
 
-- [ ] All S1 items resolved
-- [ ] All S2 items resolved or deferred with justification
-- [ ] `npm run backlog:check` returns healthy status
+- ✅ CANON-0107: Security headers (S1)
+- ✅ CANON-0108: Storage rules (verified existing)
+- ✅ CANON-0103: docs:check false positives
+- ✅ CANON-0104: Scripts in session start (verified existing)
+- ✅ CANON-0105: CANON validation in CI
+- ✅ CANON-0106: npm commands added
+- ✅ LEGACY-001: SSR-safe localStorage retrofit
+
+**Process Audit items moved to Operational Visibility Sprint Track D:**
+
+- CANON-0105 (CI gates) → Track D: D4
+- CANON-0106 (Script coverage) → Track D: D10
+- CANON-0107 (Security scanning) → Track D: D5
+- CANON-0109 (Workflow docs) → Track D: D3
+- CANON-0110 (Pre-commit slow) → Track D: D2
+- CANON-0111 (Pattern checker) → Track D: D4
+- CANON-0112 (Firebase CLI) → Track D: D1
 
 ### 🔬 Research: SAST Tool Integration (After Backlog)
 
