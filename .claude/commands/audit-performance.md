@@ -113,6 +113,18 @@ If outdated, note discrepancies but proceed with current values.
 4. **Impact Estimate** - Quantified performance impact (% improvement, KB saved,
    ms saved)
 
+**Existence-Based Findings (Session #99 Enhancement):**
+
+For findings claiming "file X doesn't exist" or "config Y is missing":
+
+1. **MUST include actual command output** in evidence (e.g.,
+   `ls -la <file> 2>&1`)
+2. **Check config references** - If a config references a file, verify it exists
+3. **Check recent commits** - Run `git log --oneline -5 -- <filename>` to see if
+   file was recently added/removed
+4. **Cap confidence at MEDIUM** for existence-based findings without tool
+   validation
+
 **Confidence Levels:**
 
 - **HIGH (90%+)**: Confirmed by build output, Lighthouse, or profiling data;
@@ -121,6 +133,14 @@ If outdated, note discrepancies but proceed with current values.
   impact estimated
 - **LOW (<70%)**: Pattern match only, impact uncertain, needs profiling to
   confirm
+
+**Confidence Caps (Session #99):**
+
+- **Existence claims** ("file missing", "config absent"): Max MEDIUM unless
+  tool-validated
+- **Negative assertions** ("no optimization found"): Max MEDIUM - absence of
+  evidence ≠ evidence of absence
+- **Performance analysis**: Require actual measurement, not assumption
 
 **S0/S1 findings require:**
 
@@ -293,12 +313,19 @@ Full markdown report with all findings, baselines, and optimization plan.
 1. Display summary to user
 2. Confirm files saved to `docs/audits/single-session/performance/`
 3. Run `node scripts/validate-audit.js` on the JSONL file
-4. **Validate CANON schema** (if audit updates CANON files):
+4. **Pre-Backlog Verification (Session #99 Enhancement):** Before adding
+   findings to AUDIT_FINDINGS_BACKLOG.md, verify each:
+   - **Existence findings**: Re-run `ls -la <file>` to confirm file is still
+     missing
+   - **Config findings**: Re-read the actual config file to confirm issue exists
+   - **Performance claims**: Re-run build/measurement to confirm impact If a
+     finding fails verification, mark as FALSE_POSITIVE with reason.
+5. **Validate CANON schema** (if audit updates CANON files):
    ```bash
    npm run validate:canon
    ```
    Ensure all CANON files pass validation before committing.
-5. **Update AUDIT_TRACKER.md** - Add entry to "Performance Audits" table:
+6. **Update AUDIT_TRACKER.md** - Add entry to "Performance Audits" table:
    - Date: Today's date
    - Session: Current session number from SESSION_CONTEXT.md
    - Commits Covered: Number of commits since last performance audit
@@ -306,14 +333,14 @@ Full markdown report with all findings, baselines, and optimization plan.
    - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-6. **Update Technical Debt Backlog** - Re-aggregate all findings:
+7. **Update Technical Debt Backlog** - Re-aggregate all findings:
    ```bash
    npm run aggregate:audit-findings
    ```
    This updates `docs/aggregation/MASTER_ISSUE_LIST.md` and the Technical Debt
    Backlog section in `ROADMAP.md`. Review the updated counts and ensure new
    findings are properly categorized.
-7. Ask: "Would you like me to fix any of these issues now? (Quick wins
+8. Ask: "Would you like me to fix any of these issues now? (Quick wins
    recommended first)"
 
 ---

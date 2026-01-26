@@ -131,6 +131,19 @@ If outdated, note discrepancies but proceed with current values.
 4. **Standard Reference** - ESLint rule, TypeScript error, or React best
    practice citation
 
+**Existence-Based Findings (Session #99 Enhancement):**
+
+For findings claiming "file X doesn't exist" or "config Y is missing":
+
+1. **MUST include actual command output** in evidence (e.g.,
+   `ls -la <file> 2>&1`)
+2. **Check package.json/tsconfig references** - If a config references a file,
+   verify the file actually exists
+3. **Check recent commits** - Run `git log --oneline -5 -- <filename>` to see if
+   file was recently added/removed
+4. **Cap confidence at MEDIUM** for existence-based findings without tool
+   validation
+
 **Confidence Levels:**
 
 - **HIGH (90%+)**: Confirmed by external tool (ESLint, TypeScript, tests),
@@ -138,6 +151,14 @@ If outdated, note discrepancies but proceed with current values.
 - **MEDIUM (70-89%)**: Found via pattern search, file verified, but no tool
   confirmation
 - **LOW (<70%)**: Pattern match only, needs manual verification
+
+**Confidence Caps (Session #99):**
+
+- **Existence claims** ("file missing", "config absent"): Max MEDIUM unless
+  tool-validated
+- **Negative assertions** ("no X found"): Max MEDIUM - absence of evidence ≠
+  evidence of absence
+- **Configuration analysis**: Require actual file read, not assumption
 
 **S0/S1 findings require:**
 
@@ -306,12 +327,19 @@ Full markdown report with all findings, baselines, and recommendations.
 1. Display summary to user
 2. Confirm files saved to `docs/audits/single-session/code/`
 3. Run `node scripts/validate-audit.js` on the JSONL file
-4. **Validate CANON schema** (if audit updates CANON files):
+4. **Pre-Backlog Verification (Session #99 Enhancement):** Before adding
+   findings to AUDIT_FINDINGS_BACKLOG.md, verify each:
+   - **Existence findings**: Re-run `ls -la <file>` to confirm file is still
+     missing
+   - **Config findings**: Re-read the actual config file to confirm issue exists
+   - **Reference findings**: Verify referenced files/functions still exist If a
+     finding fails verification, mark as FALSE_POSITIVE with reason.
+5. **Validate CANON schema** (if audit updates CANON files):
    ```bash
    npm run validate:canon
    ```
    Ensure all CANON files pass validation before committing.
-5. **Update AUDIT_TRACKER.md** - Add entry to "Code Audits" table:
+6. **Update AUDIT_TRACKER.md** - Add entry to "Code Audits" table:
    - Date: Today's date
    - Session: Current session number from SESSION_CONTEXT.md
    - Commits Covered: Number of commits since last code audit
@@ -319,14 +347,14 @@ Full markdown report with all findings, baselines, and recommendations.
    - Findings: Total count (e.g., "3 S1, 5 S2, 2 S3")
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-6. **Update Technical Debt Backlog** - Re-aggregate all findings:
+7. **Update Technical Debt Backlog** - Re-aggregate all findings:
    ```bash
    npm run aggregate:audit-findings
    ```
    This updates `docs/aggregation/MASTER_ISSUE_LIST.md` and the Technical Debt
    Backlog section in `ROADMAP.md`. Review the updated counts and ensure new
    findings are properly categorized.
-7. Ask: "Would you like me to fix any of these issues now?"
+8. Ask: "Would you like me to fix any of these issues now?"
 
 ---
 

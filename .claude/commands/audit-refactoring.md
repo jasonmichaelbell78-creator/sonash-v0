@@ -117,6 +117,19 @@ If outdated, note discrepancies but proceed with current values.
 4. **Quantified Impact** - Lines of code, number of dependencies, complexity
    score
 
+**Existence-Based Findings (Session #99 Enhancement):**
+
+For findings claiming "file X doesn't exist" or "module Y is missing":
+
+1. **MUST include actual command output** in evidence (e.g.,
+   `ls -la <file> 2>&1`)
+2. **Check import/export references** - If code references a file, verify it
+   exists
+3. **Check recent commits** - Run `git log --oneline -5 -- <filename>` to see if
+   file was recently added/removed
+4. **Cap confidence at MEDIUM** for existence-based findings without tool
+   validation
+
 **Confidence Levels:**
 
 - **HIGH (90%+)**: Confirmed by tool (SonarQube, deps:circular, wc -l), verified
@@ -124,6 +137,15 @@ If outdated, note discrepancies but proceed with current values.
 - **MEDIUM (70-89%)**: Found via pattern search, file verified, but metrics
   estimated
 - **LOW (<70%)**: Pattern match only, needs manual verification
+
+**Confidence Caps (Session #99):**
+
+- **Existence claims** ("file missing", "module absent"): Max MEDIUM unless
+  tool-validated
+- **Negative assertions** ("no duplication found"): Max MEDIUM - absence of
+  evidence ≠ evidence of absence
+- **Metrics analysis**: Require actual measurement (wc -l, tools), not
+  assumption
 
 **S0/S1 findings require:**
 
@@ -301,12 +323,19 @@ Full markdown report with all findings, baselines, and refactoring plan.
 1. Display summary to user
 2. Confirm files saved to `docs/audits/single-session/refactoring/`
 3. Run `node scripts/validate-audit.js` on the JSONL file
-4. **Validate CANON schema** (if audit updates CANON files):
+4. **Pre-Backlog Verification (Session #99 Enhancement):** Before adding
+   findings to AUDIT_FINDINGS_BACKLOG.md, verify each:
+   - **Existence findings**: Re-run `ls -la <file>` to confirm file is still
+     missing
+   - **Metrics findings**: Re-run `wc -l` or tool to confirm line counts/metrics
+   - **Dependency findings**: Re-run deps:circular to confirm cycles If a
+     finding fails verification, mark as FALSE_POSITIVE with reason.
+5. **Validate CANON schema** (if audit updates CANON files):
    ```bash
    npm run validate:canon
    ```
    Ensure all CANON files pass validation before committing.
-5. **Update AUDIT_TRACKER.md** - Add entry to "Refactoring Audits" table:
+6. **Update AUDIT_TRACKER.md** - Add entry to "Refactoring Audits" table:
    - Date: Today's date
    - Session: Current session number from SESSION_CONTEXT.md
    - Commits Covered: Number of commits since last refactoring audit
@@ -316,14 +345,14 @@ Full markdown report with all findings, baselines, and refactoring plan.
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-6. **Update Technical Debt Backlog** - Re-aggregate all findings:
+7. **Update Technical Debt Backlog** - Re-aggregate all findings:
    ```bash
    npm run aggregate:audit-findings
    ```
    This updates `docs/aggregation/MASTER_ISSUE_LIST.md` and the Technical Debt
    Backlog section in `ROADMAP.md`. Review the updated counts and ensure new
    findings are properly categorized.
-7. Ask: "Would you like me to tackle any of these refactoring tasks now?
+8. Ask: "Would you like me to tackle any of these refactoring tasks now?
    (Recommend starting with batch fixes)"
 
 ---
