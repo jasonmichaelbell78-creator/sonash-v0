@@ -461,6 +461,18 @@ function checkDuplicates(findings) {
 function validateS0S1Strict(findings) {
   const violations = [];
 
+  // Review #204 R3: Fail closed on malformed JSONL (prevents S0/S1 evasion)
+  const parseErrors = findings.filter((f) => f._parseError);
+  if (parseErrors.length > 0) {
+    violations.push({
+      type: "JSONL_PARSE_ERROR",
+      findingId: null,
+      severity: "S0/S1",
+      message: `Audit file contains ${parseErrors.length} malformed JSONL line(s); strict S0/S1 validation requires a fully parseable file.`,
+      blocking: true,
+    });
+  }
+
   const s0s1Findings = findings.filter(
     (f) => !f._parseError && (f.severity === "S0" || f.severity === "S1")
   );

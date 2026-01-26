@@ -228,8 +228,14 @@ function main() {
   const fullPath = path.resolve(projectDir, filePath.replace(/\\/g, "/"));
 
   // Containment check: resolved path must be within projectDir
+  // Review #204 R3: Use regex to avoid false positives (e.g., "..hidden.md")
   const relative = path.relative(projectDir, fullPath);
-  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+  // relative === "" means fullPath === projectDir (invalid for a file)
+  // /^\.\.(?:[/\\]|$)/ catches ".." and "../" but not "..hidden.md"
+  // path.isAbsolute catches different drives on Windows
+  const isOutsideProject =
+    relative === "" || /^\.\.(?:[/\\]|$)/.test(relative) || path.isAbsolute(relative);
+  if (isOutsideProject) {
     console.error("Path traversal attempt blocked");
     process.exit(1);
   }
