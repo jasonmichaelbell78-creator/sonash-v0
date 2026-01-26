@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.9
-**Last Updated:** 2026-01-24
+**Document Version:** 3.10
+**Last Updated:** 2026-01-26
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -71,7 +71,7 @@ recovery practices.
 | **M0 - Baseline**               | ✅ Complete | 100%             | Q4 2025   | Foundation | -     |
 | **M1 - Foundation**             | ✅ Complete | 100%             | Q1 2026   | P0         | -     |
 | **Integrated Improvement Plan** | ✅ Complete | 100% (9/9 steps) | Q1 2026   | DONE       | -     |
-| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~25%             | Q1 2026   | **P0**     | ~38   |
+| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~30%             | Q1 2026   | **P0**     | ~56   |
 | **M1.5 - Quick Wins**           | ⏸️ Paused   | ~50%             | Q1 2026   | P1         | ~19   |
 | **M1.6 - Admin Panel + UX**     | ⏸️ Paused   | ~75%             | Q1 2026   | P1         | ~15   |
 | **M2 - Architecture**           | ⏸️ Optional | 0%               | As needed | P2         | ~72   |
@@ -406,6 +406,65 @@ creation.
   - Unify error formats across frontend/backend/logs
   - Add correlation IDs to logger (`EFF-006`)
   - Enables end-to-end request tracing
+
+### Track D - Performance Critical (NEW - Session #98)
+
+> **Source:**
+> [Comprehensive Audit 2026-01-24](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)
+> **Tracking:** [TECHNICAL_DEBT_MASTER.md](docs/TECHNICAL_DEBT_MASTER.md)
+
+**Priority:** P0 - Core Web Vitals failing, 11MB image payload
+
+#### D1: Image Optimization (4hr) - **CRITICAL**
+
+- [ ] **D1.1:** Remove unused gemini-generated images (-4MB)
+- [ ] **D1.2:** Convert remaining images to WebP format (-90% size)
+- [ ] **D1.3:** Add responsive srcsets for notebook covers
+- [ ] **D1.4:** Preload LCP image (wood-table.jpg)
+
+**Impact:** LCP 4s → <2.5s, Initial load 11MB → <2MB
+
+#### D2: Bundle Optimization (3hr)
+
+- [ ] **D2.1:** Add dynamic imports for notebook pages
+- [ ] **D2.2:** Tree-shake framer-motion (only import needed functions)
+- [ ] **D2.3:** Code-split admin panel
+
+**Impact:** TTI 3-5s → <2s, Bundle -40%
+
+#### D3: React Performance (3hr)
+
+- [ ] **D3.1:** Add React.memo to today-page child components
+- [ ] **D3.2:** Memoize auth context value
+- [ ] **D3.3:** Add useMemo to expensive array.map operations
+
+**Impact:** FID/INP 250ms → <100ms
+
+#### D4: Firestore Optimization (2hr)
+
+- [ ] **D4.1:** Add `limit(7)` to weekly stats query
+- [ ] **D4.2:** Create composite indexes for common queries
+- [ ] **D4.3:** Implement request deduplication
+
+**Impact:** Firestore reads -90%, Query time -50%
+
+#### D5: Caching & Offline (4hr)
+
+- [ ] **D5.1:** Add HTTP cache headers to firebase.json
+- [ ] **D5.2:** Install and configure next-pwa
+- [ ] **D5.3:** Add offline fallback page
+
+**Impact:** Repeat visits instant, Offline support
+
+#### D6: Security Headers (2hr)
+
+- [ ] **D6.1:** Add Content Security Policy
+- [ ] **D6.2:** Add X-Frame-Options, X-Content-Type-Options
+- [ ] **D6.3:** Remove hardcoded reCAPTCHA fallback
+
+**Impact:** XSS protection, Clickjacking prevention
+
+**Track D Total: ~18 hours**
 
 ### Future Enhancements (Deferred from PR Reviews)
 
@@ -847,63 +906,75 @@ experience
 
 ## 📊 Technical Debt Backlog (Aggregated)
 
-> **Source:** [MASTER_ISSUE_LIST.md](docs/aggregation/MASTER_ISSUE_LIST.md)
-> **Last Aggregated:** 2026-01-17 | **Total Items:** 283 unique findings
-> **Integration:**
-> [ROADMAP_INTEGRATION.md](docs/aggregation/ROADMAP_INTEGRATION.md)
+> **Primary Source:** [TECHNICAL_DEBT_MASTER.md](docs/TECHNICAL_DEBT_MASTER.md)
+> ← **NEW (Session #98)** **Legacy Source:**
+> [MASTER_ISSUE_LIST.md](docs/aggregation/MASTER_ISSUE_LIST.md) (2026-01-17,
+> superseded) **Comprehensive Audit:**
+> [COMPREHENSIVE_AUDIT_REPORT.md](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)
+> (2026-01-24) **Last Updated:** 2026-01-26 (Session #98)
 
 ### Overview
 
-All audit findings from single-session audits, CANON files, and backlogs have
-been aggregated into a master list for prioritized implementation.
+Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 
-| Severity | Count | Description                          |
-| -------- | ----- | ------------------------------------ |
-| **S0**   | 10    | Critical - Immediate action required |
-| **S1**   | 75    | High - Current/next sprint           |
-| **S2**   | 135   | Medium - Backlog priority            |
-| **S3**   | 63    | Low - Nice to have                   |
+- Comprehensive Audit (2026-01-24): 112 valid findings (2 false positives
+  removed)
+- MASTER_ISSUE_LIST legacy items (cross-referenced, many duplicates)
+- ROADMAP inline items (CANON-, DEDUP-, EFF-, PERF-)
+
+| Severity | Count | Description                 | Sprint Location       |
+| -------- | ----- | --------------------------- | --------------------- |
+| **S0**   | 7     | Critical - Immediate action | Track D (Performance) |
+| **S1**   | 28    | High - Current/next sprint  | Track D + M1.5        |
+| **S2**   | 45    | Medium - Backlog priority   | M2                    |
+| **S3**   | 32    | Low - Nice to have          | Backlog               |
 
 ### S0 Critical Items (Immediate Action)
 
-| ID          | Title                                      | Effort | Milestone            |
-| ----------- | ------------------------------------------ | ------ | -------------------- |
-| MASTER-0078 | App Check disabled on Cloud Functions      | E2     | M2 - Security        |
-| MASTER-0079 | Legacy journalEntries direct write path    | E2     | M2 - Security        |
-| MASTER-0120 | useJournal memory leak                     | E1     | Op Visibility Sprint |
-| MASTER-0140 | 47 CRITICAL cognitive complexity functions | E3     | M2 - Code Quality    |
-| MASTER-0176 | CI quality gates non-blocking              | E1     | M1.5 - Quick Wins    |
+| ID           | Title                       | Effort | Sprint Location    |
+| ------------ | --------------------------- | ------ | ------------------ |
+| ~~SEC-001~~  | ~~Credentials in git~~      | -      | **FALSE POSITIVE** |
+| ~~SEC-002~~  | ~~Firebase key exposed~~    | -      | **FALSE POSITIVE** |
+| **PERF-001** | Unoptimized images (11MB)   | E2     | Track D - D1       |
+| **PERF-002** | No code splitting           | E2     | Track D - D2       |
+| **PERF-003** | Missing React memoization   | E2     | Track D - D3       |
+| **PERF-004** | Unbounded Firestore queries | E2     | Track D - D4       |
+| **PERF-005** | No service worker           | E2     | Track D - D5       |
+| **PERF-007** | Missing cache headers       | E1     | Track D - D5       |
+| MASTER-0078  | App Check disabled          | E2     | M4.5               |
 
-### Quick Wins by PR Bucket (E0/E1 + S1/S2)
+### Quick Wins (E0/E1) - ~12 Hours Total
 
-| PR Bucket                    | Count | Top Items                              |
-| ---------------------------- | ----- | -------------------------------------- |
-| **security-hardening**       | 38    | Headers, reCAPTCHA, App Check          |
-| **performance-optimization** | 31    | SSR, bundle size, memory leaks         |
-| **code-quality**             | 84    | Type safety, god objects, duplications |
-| **process-automation**       | 24    | CI gates, hooks, scripts               |
-| **documentation-sync**       | 24    | Link rot, placeholders, metadata       |
+| Task                                | Effort | Impact         | Sprint       |
+| ----------------------------------- | ------ | -------------- | ------------ |
+| Remove hardcoded reCAPTCHA fallback | 15min  | Security       | Track D - D6 |
+| Add HTTP cache headers              | 30min  | Caching        | Track D - D5 |
+| Add security headers (CSP)          | 2hr    | XSS protection | Track D - D6 |
+| Tree-shake framer-motion            | 2hr    | -25KB bundle   | Track D - D2 |
+| Lazy load images                    | 2hr    | LCP            | Track D - D1 |
+| Create CONTRIBUTING.md              | 2hr    | Onboarding     | M1.5         |
+| Consolidate error handlers          | 3hr    | Consistency    | M2           |
 
 ### Implementation Phases
 
-| Phase | Focus                 | Items | Timeline  |
-| ----- | --------------------- | ----- | --------- |
-| 1     | Critical (S0 only)    | 10    | Week 1    |
-| 2     | Security + Quick Wins | 30    | Week 2    |
-| 3     | Performance + Code    | 60    | Weeks 3-4 |
-| 4     | Architecture          | 50    | Weeks 5-6 |
-| 5     | Remaining backlog     | 133   | Ongoing   |
+| Phase | Focus                         | Items | Sprint                  |
+| ----- | ----------------------------- | ----- | ----------------------- |
+| 1     | **Performance Critical (S0)** | 7     | Track D (NOW)           |
+| 2     | Security + Quick Wins         | 15    | Track D + M1.5          |
+| 3     | Deployment Safety             | 5     | Track B (Dev Dashboard) |
+| 4     | Code Quality                  | 25    | M2.1                    |
+| 5     | Architecture                  | 30    | M2                      |
+| 6     | Remaining backlog             | 30    | Ongoing                 |
 
 ### Update Triggers
 
 **This section is updated when:**
 
-- Single-session audit completes → Run `npm run aggregate:audit-findings`
-- Multi-AI audit completes → Run `npm run aggregate:audit-findings`
-- Items are resolved → Mark status in MASTER_ISSUE_LIST.md
+- Session ends → Update TECHNICAL_DEBT_MASTER.md with resolved items
+- Comprehensive audit runs → Regenerate findings, verify false positives
+- Items resolved → Mark status in TECHNICAL_DEBT_MASTER.md
 
-**Full Details:** See
-[IMPLEMENTATION_PLAN.md](docs/aggregation/IMPLEMENTATION_PLAN.md)
+**Full Tracking:** See [TECHNICAL_DEBT_MASTER.md](docs/TECHNICAL_DEBT_MASTER.md)
 
 ---
 
@@ -2472,6 +2543,7 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.10    | 2026-01-26 | **Session #98**: Added Track D (Performance Critical) with 18hr of urgent fixes; created TECHNICAL_DEBT_MASTER.md as single source of truth; verified SEC-001/SEC-002 as false positives; updated Technical Debt Backlog section with corrected counts (7 S0, 28 S1, 45 S2, 32 S3)                                                                                                          |
 | 3.9     | 2026-01-24 | **R&D NOTES**: Added 🔬 R&D requirements to E3 items (HALT P3/P4, Pattern Recognition, F11.\*, M10 monetization)                                                                                                                                                                                                                                                                            |
 | 3.8     | 2026-01-24 | **CONSOLIDATION**: Added cross-references for overlapping items (Sponsor, Analytics, Export domains) with ⚡ markers                                                                                                                                                                                                                                                                        |
 | 3.7     | 2026-01-24 | **M9 GATE**: Added M8 exit criteria with go/no-go decision table for M9 native app                                                                                                                                                                                                                                                                                                          |
