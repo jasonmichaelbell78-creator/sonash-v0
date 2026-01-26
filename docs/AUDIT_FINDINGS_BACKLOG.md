@@ -147,33 +147,21 @@ Deferred items MUST be:
 
 ## Backlog Items
 
-### [Code Quality] Retrofit SSR-Safe localStorage
+### ~~[Code Quality] Retrofit SSR-Safe localStorage~~ ✅ COMPLETED
 
 **CANON-ID**: LEGACY-001 (pre-audit discovery) **Severity**: S3 **Effort**: E1
 (1-2 hours) **Source**: Phase 3 (PR3) - Error guards and SSR safety **Status**:
-PENDING
+✅ DONE (Session #99, 2026-01-26)
 
-**Description**: Replace direct `localStorage` calls with SSR-safe utility
-functions. Existing code works fine (client-only components), but using
-utilities adds future-proofing.
+**Resolution**: Replaced 11 direct `localStorage` calls with SSR-safe utilities
+from `lib/utils/storage.ts`:
 
-**Why deferred**:
+- `lib/utils/anonymous-backup.ts` (3 calls)
+- `components/notebook/pages/today-page.tsx` (6 calls)
+- `components/notebook/notebook-shell.tsx` (1 call)
+- `components/notebook/hooks/use-smart-prompts.ts` (2 calls)
 
-- Existing code works fine (client-only components)
-- Not causing SSR crashes
-- Defensive improvement, not fixing a bug
-
-**Value**:
-
-- Consistent use of SSR-safe utilities across codebase
-- Future-proofs against accidental SSR rendering
-- Removes 11 direct `localStorage` calls
-
-**Risk if skipped**:
-
-- Low - existing code won't break
-- If components become server-rendered in the future, could cause SSR crashes
-- New developers might copy old pattern instead of using utilities
+Utilities used: `getLocalStorage`, `setLocalStorage`, `removeLocalStorage`
 
 **Files affected**:
 
@@ -207,24 +195,15 @@ utilities adds future-proofing.
 
 **CANON-ID**: CANON-0101 (Documentation Audit finding) **Severity**: S3
 **Effort**: E2 (2-3 hours) **Source**: docs:check lint (Session #48 analysis)
-**Status**: PENDING
+**Status**: DEFERRED to documentation sprint
 
-**Description**: ~40 Tier 2 documents are missing recommended "Quick Start"
-sections. These sections help users quickly understand how to use the document.
-
-**Files affected**: Run `npm run docs:check` for full list (warning: "Missing
-recommended section matching: /quick start/i")
+**Note (Session #99)**: ~54 docs missing Quick Start sections. Scope too large
+for single session. Recommend dedicated documentation sprint.
 
 **Implementation notes**:
 
 1. Batch add "## Quick Start" sections with 3-5 bullet points
 2. Prioritize high-traffic docs first (templates, guides)
-3. Template docs with YYYY-MM-DD dates are false positives - exclude
-
-**Acceptance criteria**:
-
-- [ ] Core Tier 1-2 docs have Quick Start sections
-- [ ] Warning count reduced by 50%+
 
 ---
 
@@ -232,45 +211,25 @@ recommended section matching: /quick start/i")
 
 **CANON-ID**: CANON-0102 (Documentation Audit finding) **Severity**: S3
 **Effort**: E1 (1-2 hours) **Source**: docs:check lint (Session #48 analysis)
-**Status**: PENDING
+**Status**: DEFERRED to documentation sprint
 
-**Description**: ~25 Tier 2 documents are missing "AI Instructions" sections.
-These sections guide AI assistants on how to use the document.
-
-**Files affected**: Run `npm run docs:check` for full list (warning: "Missing
-recommended section matching: /ai instructions/i")
-
-**Implementation notes**:
-
-1. Batch add "## AI Instructions" sections
-2. Can use standard template: "When referencing this document: [context]. Key
-   points: [bullets]"
-3. Focus on docs AI is likely to reference
+**Note (Session #99)**: ~25 docs missing AI Instructions. Combine with
+CANON-0101 in a documentation sprint for efficiency.
 
 ---
 
-### [Process] Fix docs:check False Positives
+### ~~[Process] Fix docs:check False Positives~~ ✅ COMPLETED
 
 **CANON-ID**: CANON-0103 (Process Audit finding) **Severity**: S2 **Effort**: E1
-(1 hour) **Source**: Session #48 analysis **Status**: PENDING
+(1 hour) **Source**: Session #48 analysis **Status**: ✅ DONE (Session #99,
+2026-01-26)
 
-**Description**: The docs:check linter reports false positive "broken links" for
-instructional placeholder text like `[text]` + `(path)` in templates. This
-creates noise in the validation output.
+**Resolution**: Added `isPlaceholderLink()` helper to filter instructional
+placeholder links:
 
-**Files affected**: `scripts/check-docs-light.js`
-
-**Implementation notes**:
-
-1. Add heuristic to skip links containing literal placeholders (`path`,
-   `<path>`, `<http://`)
-2. Or add template-specific exclusions for known instructional patterns
-3. Alternatively, mark template placeholder sections with HTML comments
-
-**Acceptance criteria**:
-
-- [ ] `npm run docs:check` on template files doesn't report instructional
-      placeholders as broken
+- Patterns: `<path>`, `<url>`, literal `path`, `url`, `file`, etc.
+- Generic word pairs: `[text](text)`, `[link](link)`, etc.
+- Example/placeholder patterns in templates now skipped
 
 ---
 
@@ -359,15 +318,15 @@ audit 2026-01-13 **Status**: ✅ DONE (Already existed - verified Session #99)
 
 | Category      | Count | Effort |
 | ------------- | ----- | ------ |
-| Code Quality  | 1     | E1     |
+| Code Quality  | 0     | -      |
 | Security      | 0     | -      |
 | Performance   | 0     | -      |
 | Refactoring   | 0     | -      |
 | Documentation | 2     | E3     |
-| Process       | 1     | E1     |
+| Process       | 0     | -      |
 
-**Total items**: 4 **Total estimated effort**: 4-6 hours **Completed this
-session**: 5 (CANON-0104, CANON-0105, CANON-0106, CANON-0107, CANON-0108)
+**Total items**: 2 **Total estimated effort**: 2-3 hours **Completed this
+session**: 7 (CANON-0103, 0104, 0105, 0106, 0107, 0108, LEGACY-001)
 
 ---
 

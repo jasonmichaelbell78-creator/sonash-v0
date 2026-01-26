@@ -254,6 +254,42 @@ function parseDate(dateStr) {
 }
 
 /**
+ * Check if a link looks like an instructional placeholder
+ * Session #99 (CANON-0103): Filter false positives from template examples
+ * @param {string} text - Link text
+ * @param {string} target - Link target
+ * @returns {boolean}
+ */
+function isPlaceholderLink(text, target) {
+  // Common placeholder patterns in templates/documentation
+  const placeholderPatterns = [
+    /^<.*>$/, // <path>, <url>, <filename>
+    /^path$/i, // literal "path"
+    /^url$/i, // literal "url"
+    /^file$/i, // literal "file"
+    /^link$/i, // literal "link"
+    /^filename$/i, // literal "filename"
+    /^your-.*$/i, // your-file, your-path
+    /^\[.*\]$/, // [placeholder] style
+    /^\.\.\.$/i, // ellipsis
+    /example/i, // contains "example"
+  ];
+
+  // Check if target looks like a placeholder
+  for (const pattern of placeholderPatterns) {
+    if (pattern.test(target)) return true;
+  }
+
+  // Check if both text and target are the same generic word (instructional format)
+  const genericWords = ["text", "link", "file", "path", "url", "title", "name"];
+  if (genericWords.includes(text.toLowerCase()) && genericWords.includes(target.toLowerCase())) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Extract all markdown links from content
  * @param {string} content - Markdown content
  * @returns {Array<{text: string, target: string, line: number, isAnchor: boolean}>}
@@ -268,6 +304,7 @@ function extractLinks(content) {
     let match;
 
     while ((match = linkPattern.exec(lines[i])) !== null) {
+      const text = match[1];
       const target = match[2];
 
       // Skip external links
@@ -279,8 +316,13 @@ function extractLinks(content) {
         continue;
       }
 
+      // Session #99 (CANON-0103): Skip placeholder links in templates
+      if (isPlaceholderLink(text, target)) {
+        continue;
+      }
+
       links.push({
-        text: match[1],
+        text: text,
         target: target,
         line: i + 1,
         isAnchor: target.startsWith("#"),

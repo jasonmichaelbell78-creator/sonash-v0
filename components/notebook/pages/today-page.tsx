@@ -13,6 +13,7 @@ import { getTodayDateId, formatDateForDisplay } from "@/lib/utils/date-utils";
 import { toDate } from "@/lib/types/firebase-types";
 import { STORAGE_KEYS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants";
 import { NotebookModuleId } from "../notebook-types";
+import { getLocalStorage, setLocalStorage } from "@/lib/utils/storage";
 import { DailyQuoteCard } from "../features/daily-quote-card";
 import { RecoveryNotepad } from "../features/recovery-notepad";
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown";
@@ -406,9 +407,10 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       });
 
       // Mark as celebrated and persist to localStorage
+      // Session #99 (LEGACY-001): Use SSR-safe storage utility
       setHasCelebratedToday(true);
       const celebrationKey = `made-it-through-${getTodayDateId(referenceDate)}`;
-      localStorage.setItem(celebrationKey, new Date().toISOString());
+      setLocalStorage(celebrationKey, new Date().toISOString());
 
       toast.success("🎉 You did it! One day at a time.");
     } catch (error) {
@@ -525,7 +527,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     if (!user) return;
 
     // Basic local restore first (fast)
-    const savedEntry = localStorage.getItem(STORAGE_KEYS.JOURNAL_TEMP);
+    // Session #99 (LEGACY-001): Use SSR-safe storage utility
+    const savedEntry = getLocalStorage(STORAGE_KEYS.JOURNAL_TEMP);
     if (savedEntry && !journalEntry) setJournalEntry(savedEntry);
 
     // Subscribe to Firestore updates
@@ -580,7 +583,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     setSaveComplete(false);
     try {
       // Always save locally first as backup
-      localStorage.setItem(STORAGE_KEYS.JOURNAL_TEMP, dataToSave.journalEntry);
+      // Session #99 (LEGACY-001): Use SSR-safe storage utility
+      setLocalStorage(STORAGE_KEYS.JOURNAL_TEMP, dataToSave.journalEntry);
 
       // DEBUG: Log what we're about to save
       // Don't include date - firestore-service generates it in YYYY-MM-DD format
@@ -800,8 +804,9 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   // Check if already celebrated today (prevent spam)
   useEffect(() => {
     if (!user) return;
+    // Session #99 (LEGACY-001): Use SSR-safe storage utility
     const celebrationKey = `made-it-through-${getTodayDateId(referenceDate)}`;
-    const hasCelebrated = localStorage.getItem(celebrationKey);
+    const hasCelebrated = getLocalStorage(celebrationKey);
     if (hasCelebrated) {
       setHasCelebratedToday(true);
     }
@@ -828,15 +833,16 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     ];
 
     // Check each milestone
+    // Session #99 (LEGACY-001): Use SSR-safe storage utilities
     for (const milestone of milestones) {
       if (totalDays === milestone.days) {
         const milestoneKey = `milestone_${milestone.days}_${user?.uid}`;
-        const hasShown = localStorage.getItem(milestoneKey);
+        const hasShown = getLocalStorage(milestoneKey);
 
         if (!hasShown) {
           // Celebrate this milestone!
           celebrate(milestone.type, { daysClean: milestone.days });
-          localStorage.setItem(milestoneKey, new Date().toISOString());
+          setLocalStorage(milestoneKey, new Date().toISOString());
         }
         break; // Only celebrate one milestone at a time
       }

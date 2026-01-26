@@ -9,6 +9,7 @@ import StickyNote from "./sticky-note";
 import PlaceholderPage from "./pages/placeholder-page";
 import { useAuth } from "@/components/providers/auth-provider";
 import { logger } from "@/lib/logger";
+import { removeLocalStorage } from "@/lib/utils/storage";
 import { Shield, AlertTriangle } from "lucide-react";
 
 import {
@@ -128,7 +129,8 @@ async function handleSignOut(onClose: () => void): Promise<void> {
     const { auth } = await import("@/lib/firebase");
 
     // Clear local temp data for security
-    localStorage.removeItem("sonash_journal_temp");
+    // Session #99 (LEGACY-001): Use SSR-safe storage utility
+    removeLocalStorage("sonash_journal_temp");
 
     await signOut(auth);
     onClose();

@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { logger } from "@/lib/logger";
 import { getTodayDateId } from "@/lib/utils/date-utils";
+import { getLocalStorage, setLocalStorage } from "@/lib/utils/storage";
 
 interface UseSmartPromptsProps {
   mood: string | null;
@@ -42,16 +43,12 @@ export function useSmartPrompts({
   weekStats,
 }: UseSmartPromptsProps): SmartPromptState {
   // Load dismissed prompts from localStorage on mount using lazy initializer
-  // SSR guard: localStorage is not available during server-side rendering
+  // Session #99 (LEGACY-001): Use SSR-safe storage utility
   const [dismissedPrompts, setDismissedPrompts] = useState<Set<string>>(() => {
-    if (typeof globalThis.window === "undefined") {
-      return new Set();
-    }
-
     try {
       const today = getTodayDateId(new Date());
       const storageKey = `dismissed-prompts-${today}`;
-      const stored = localStorage.getItem(storageKey);
+      const stored = getLocalStorage(storageKey);
 
       if (stored) {
         const parsed = JSON.parse(stored) as string[];
@@ -66,21 +63,19 @@ export function useSmartPrompts({
   });
 
   // Persist dismissed prompts to localStorage
+  // Session #99 (LEGACY-001): Use SSR-safe storage utility
   const dismissPrompt = (promptId: string) => {
     setDismissedPrompts((prev) => {
       const updated = new Set(prev).add(promptId);
 
-      // SSR guard: persist to localStorage only in browser
-      if (typeof globalThis.window !== "undefined") {
-        try {
-          const today = getTodayDateId(new Date());
-          const storageKey = `dismissed-prompts-${today}`;
-          localStorage.setItem(storageKey, JSON.stringify(Array.from(updated)));
-        } catch (error) {
-          logger.warn("Failed to persist dismissed prompts to localStorage", {
-            errorType: error instanceof Error ? error.constructor.name : typeof error,
-          });
-        }
+      try {
+        const today = getTodayDateId(new Date());
+        const storageKey = `dismissed-prompts-${today}`;
+        setLocalStorage(storageKey, JSON.stringify(Array.from(updated)));
+      } catch (error) {
+        logger.warn("Failed to persist dismissed prompts to localStorage", {
+          errorType: error instanceof Error ? error.constructor.name : typeof error,
+        });
       }
 
       return updated;
