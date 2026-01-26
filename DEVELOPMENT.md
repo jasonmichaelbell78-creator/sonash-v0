@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.4 **Status:** ACTIVE **Last Updated:** 2026-01-24
+**Document Version:** 2.5 **Status:** ACTIVE **Last Updated:** 2026-01-26
 
 ---
 
@@ -596,11 +596,12 @@ Configured in `.claude/settings.json`.
 
 **SessionStart Hooks:**
 
-| Hook                     | Action    | Purpose                                            |
-| ------------------------ | --------- | -------------------------------------------------- |
-| stop-serena-dashboard.js | Terminate | Safely stop Serena dashboard process on port 24282 |
-| session-start.js         | Setup     | Verify dependencies, build functions, run tests    |
-| check-mcp-servers.js     | Check     | Verify MCP server availability                     |
+| Hook                            | Action    | Purpose                                            |
+| ------------------------------- | --------- | -------------------------------------------------- |
+| session-start.js                | Setup     | Verify dependencies, build functions, run tests    |
+| check-mcp-servers.js            | Check     | Verify MCP server availability                     |
+| check-remote-session-context.js | Check     | Find newer SESSION_CONTEXT.md in remote branches   |
+| stop-serena-dashboard.js        | Terminate | Safely stop Serena dashboard process on port 24282 |
 
 > **Security Controls (stop-serena-dashboard.js)**: Cross-platform process
 > termination with defense-in-depth security: process allowlist validation,
@@ -636,6 +637,12 @@ Configured in `.claude/settings.json`.
 | analyze-user-request.js | Prompt | Check PRE-TASK triggers       |
 | session-end-reminder.js | Prompt | Detect session ending phrases |
 | plan-mode-suggestion.js | Prompt | Suggest Plan mode for complex |
+
+**PostToolUse Hooks (Task):**
+
+| Hook                      | Action | Purpose                                 |
+| ------------------------- | ------ | --------------------------------------- |
+| track-agent-invocation.js | Track  | Record agent invocations for compliance |
 
 > **BLOCKING hooks**: firestore-write-block.js and test-mocking-validator.js
 > will prevent operations that violate security patterns. All other hooks

@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
-**Project**: SoNash Recovery Notebook **Document Version**: 1.5 **Created**:
-2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-24
+**Project**: SoNash Recovery Notebook **Document Version**: 1.6 **Created**:
+2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-26
 
 ---
 
@@ -495,6 +495,40 @@ cat .claude/settings.json
 
 ---
 
+## 3.1.2 Remote Session Context Check (Session #101)
+
+| Attribute     | Value                                           |
+| ------------- | ----------------------------------------------- |
+| **Name**      | Remote Session Context Check                    |
+| **Location**  | `.claude/hooks/check-remote-session-context.js` |
+| **Trigger**   | Every new Claude Code session (SessionStart)    |
+| **Execution** | Automatic                                       |
+
+### Description
+
+Checks remote branches for more recent SESSION_CONTEXT.md updates. Solves the
+problem where session-end commits sit in unmerged feature branches and the next
+session starting from main doesn't see them.
+
+### Function
+
+```
+TRIGGER: Claude Code session starts
+  → FETCH: git fetch --quiet origin
+  → LIST: Remote claude/* branches from last 7 days
+  → COMPARE: SESSION_CONTEXT.md session counter
+    → IF remote newer: WARN user to check/merge branch
+    → IF local newer: Continue silently
+```
+
+### Compliance Status
+
+- ✅ **Automated**: Runs automatically on session start
+- ✅ **Non-blocking**: Warns but doesn't block session
+- ✅ **Network-dependent**: Requires git fetch (continues on error)
+
+---
+
 ## 3.2 PostToolUse Hooks (Session #90)
 
 | Attribute     | Value                                 |
@@ -523,6 +557,7 @@ feedback on code quality, security, and best practices.
 | large-context-warning.js    | Read        | Warn    | Track file reads for context bloat                |
 | decision-save-prompt.js     | AskQuestion | Prompt  | Remind to document decisions                      |
 | audit-s0s1-validator.js     | Write       | Warn    | S0/S1 verification_steps validation (Session #98) |
+| track-agent-invocation.js   | Task        | Track   | Record agent invocations for compliance (#101)    |
 
 ### Verification
 

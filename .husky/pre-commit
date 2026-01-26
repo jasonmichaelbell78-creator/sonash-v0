@@ -149,5 +149,17 @@ else
   echo "  ⏭️ Skipping audit validation (SKIP_AUDIT_VALIDATION set)"
 fi
 
+# 10. Agent compliance check (non-blocking warning - Session #101)
+# Warns if code files are being committed but agents weren't invoked
+# Make blocking with: STRICT_AGENT_CHECK=1 git commit ...
+echo "  ▶ Checking agent compliance..."
+if [ -n "$STRICT_AGENT_CHECK" ]; then
+  if ! node scripts/check-agent-compliance.js --strict 2>&1; then
+    exit 1
+  fi
+else
+  node scripts/check-agent-compliance.js 2>&1 || true
+fi
+
 echo ""
 echo "✅ All pre-commit checks passed - commit allowed"

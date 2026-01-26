@@ -16,6 +16,12 @@
           },
           {
             "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-remote-session-context.js\"",
+            "statusMessage": "Checking remote branches for session context...",
+            "continueOnError": true
+          },
+          {
+            "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop-serena-dashboard.js\"",
             "statusMessage": "Stopping Serena dashboard...",
             "async": true,
@@ -197,6 +203,16 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/decision-save-prompt.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking decision documentation..."
+          }
+        ]
+      },
+      {
+        "matcher": "^(?i)task$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/track-agent-invocation.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Tracking agent invocation..."
           }
         ]
       }
