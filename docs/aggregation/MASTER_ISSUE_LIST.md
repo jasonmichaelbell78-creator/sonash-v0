@@ -4,6 +4,16 @@
 CANON files, and backlogs **Total Items:** 291 (deduplicated from 301 raw
 findings)
 
+> **⚠️ SUPERSEDED (Session #98 - 2026-01-26):** This document has been
+> superseded by [TECHNICAL_DEBT_MASTER.md](../TECHNICAL_DEBT_MASTER.md) which
+> consolidates:
+>
+> - This list (cross-referenced, many duplicates identified)
+> - Comprehensive Audit (2026-01-24): 112 valid findings
+> - ROADMAP inline items (CANON, DEDUP, EFF, PERF)
+>
+> **Use TECHNICAL_DEBT_MASTER.md for current tech debt tracking.**
+
 ---
 
 ## Summary Statistics

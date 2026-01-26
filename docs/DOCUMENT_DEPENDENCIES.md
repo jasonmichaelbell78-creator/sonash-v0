@@ -311,23 +311,26 @@ changes in one document affect the accuracy of another.
 > **Note:** INTEGRATED_IMPROVEMENT_PLAN.md is now archived (2026-01-14) to
 > `docs/archive/completed-plans/`. Related triggers removed (Review #144).
 
-| When This Changes                  | Check These Documents                                   | Reason                                            | Enforced |
-| ---------------------------------- | ------------------------------------------------------- | ------------------------------------------------- | -------- |
-| `ROADMAP.md` milestones/priorities | `SESSION_CONTEXT.md` priorities section                 | Session context reflects current roadmap focus    | ✅ BLOCK |
-| New npm script added               | `DEVELOPMENT.md` (scripts section)                      | All scripts should be documented                  | ✅ BLOCK |
-| New hook added                     | `DEVELOPMENT.md` (hooks section), `docs/TRIGGERS.md`    | Hook documentation must be complete               | ✅ BLOCK |
-| `app/admin/` files changed         | `ROADMAP.md` (Track A status)                           | Admin Panel changes must update roadmap           | ✅ BLOCK |
-| `functions/src/admin*` changed     | `ROADMAP.md` (Track A status)                           | Admin backend changes must update roadmap         | ✅ BLOCK |
-| `app/(protected)/dashboard/`       | `ROADMAP.md` (sprint status)                            | Dashboard changes must update roadmap             | ✅ BLOCK |
-| Milestone/Feature completed        | `ROADMAP.md`, `ROADMAP_LOG.md`                          | Multiple docs track completion status             | Manual   |
-| New policy document created        | `claude.md` or relevant policy index                    | Policy references need updating                   | Manual   |
-| PR review fixes applied            | `AI_REVIEW_LEARNINGS_LOG.md`                            | Lessons learned must be captured                  |
-| New skill/command added            | `.claude/settings.json`, `.claude/COMMAND_REFERENCE.md` | Skill registry and reference must be complete     |
-| Security-related changes           | `docs/SECURITY.md`, `docs/GLOBAL_SECURITY_STANDARDS.md` | Security documentation must reflect current state |
-| Firebase config changes            | `docs/FIREBASE_CHANGE_POLICY.md`                        | Policy requires documenting all Firebase changes  |
-| Test coverage changes              | `SESSION_CONTEXT.md` (Test Status line)                 | Keep test counts current                          |
-| Planning documents added/archived  | `docs/PLAN_MAP.md`                                      | Plan map shows documentation hierarchy            | Manual   |
-| `.claude/plans/` files changed     | `docs/PLAN_MAP.md`                                      | Keep plan map current with active plans           | Manual   |
+| When This Changes                  | Check These Documents                                   | Reason                                             | Enforced |
+| ---------------------------------- | ------------------------------------------------------- | -------------------------------------------------- | -------- |
+| `ROADMAP.md` milestones/priorities | `SESSION_CONTEXT.md` priorities section                 | Session context reflects current roadmap focus     | ✅ BLOCK |
+| Audit findings resolved            | `docs/TECHNICAL_DEBT_MASTER.md`                         | Technical debt tracker must reflect resolved items | Manual   |
+| Comprehensive audit runs           | `docs/TECHNICAL_DEBT_MASTER.md`, `ROADMAP.md`           | New findings must be consolidated and prioritized  | Manual   |
+| `TECHNICAL_DEBT_MASTER.md` changed | `ROADMAP.md` (Technical Debt Backlog section)           | Backlog section references tech debt master        | Manual   |
+| New npm script added               | `DEVELOPMENT.md` (scripts section)                      | All scripts should be documented                   | ✅ BLOCK |
+| New hook added                     | `DEVELOPMENT.md` (hooks section), `docs/TRIGGERS.md`    | Hook documentation must be complete                | ✅ BLOCK |
+| `app/admin/` files changed         | `ROADMAP.md` (Track A status)                           | Admin Panel changes must update roadmap            | ✅ BLOCK |
+| `functions/src/admin*` changed     | `ROADMAP.md` (Track A status)                           | Admin backend changes must update roadmap          | ✅ BLOCK |
+| `app/(protected)/dashboard/`       | `ROADMAP.md` (sprint status)                            | Dashboard changes must update roadmap              | ✅ BLOCK |
+| Milestone/Feature completed        | `ROADMAP.md`, `ROADMAP_LOG.md`                          | Multiple docs track completion status              | Manual   |
+| New policy document created        | `claude.md` or relevant policy index                    | Policy references need updating                    | Manual   |
+| PR review fixes applied            | `AI_REVIEW_LEARNINGS_LOG.md`                            | Lessons learned must be captured                   |
+| New skill/command added            | `.claude/settings.json`, `.claude/COMMAND_REFERENCE.md` | Skill registry and reference must be complete      |
+| Security-related changes           | `docs/SECURITY.md`, `docs/GLOBAL_SECURITY_STANDARDS.md` | Security documentation must reflect current state  |
+| Firebase config changes            | `docs/FIREBASE_CHANGE_POLICY.md`                        | Policy requires documenting all Firebase changes   |
+| Test coverage changes              | `SESSION_CONTEXT.md` (Test Status line)                 | Keep test counts current                           |
+| Planning documents added/archived  | `docs/PLAN_MAP.md`                                      | Plan map shows documentation hierarchy             | Manual   |
+| `.claude/plans/` files changed     | `docs/PLAN_MAP.md`                                      | Keep plan map current with active plans            | Manual   |
 
 ### Usage
 
