@@ -4,6 +4,25 @@
 
 ---
 
+## Quick Start
+
+1. Fetch issues:
+   `curl -s "https://sonarcloud.io/api/issues/search?componentKeys=jasonmichaelbell78-creator_sonash-v0&ps=500&p=1" > /tmp/sonar.json`
+2. Generate report: `node scripts/generate-detailed-sonar-report.js`
+3. Verify phase: `node scripts/verify-sonar-phase.js --phase=1`
+
+## AI Instructions
+
+When running SonarCloud cleanup:
+
+- **Start with Phase 0**: Always fetch fresh data before making changes
+- **Use verification**: Run `verify-sonar-phase.js` before each commit
+- **Document dismissals**: Add justifications to
+  `docs/audits/sonarcloud-dismissals.md`
+- **Extract learnings**: Run `--extract-learnings` after completing each phase
+
+---
+
 ## Purpose
 
 This runbook provides a repeatable process for SonarCloud analysis and cleanup

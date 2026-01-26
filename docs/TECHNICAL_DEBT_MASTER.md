@@ -6,6 +6,25 @@ across multiple files
 
 ---
 
+## Quick Start
+
+1. Check **URGENT** section for S0/S1 items before starting new features
+2. Use **Quick Wins** table for small fixes (<2 hrs each)
+3. Reference **Cross-Reference** table to map legacy IDs to current tracking
+
+## AI Instructions
+
+When working with technical debt:
+
+- **Before coding**: Check if related debt exists here to address
+  opportunistically
+- **After audits**: Update this document with new findings (not
+  MASTER_ISSUE_LIST)
+- **ID conflicts**: Use namespace prefix (AUDIT-PERF-001 vs ROADMAP-PERF-001)
+- **Completion**: Mark items with ✅ and date when resolved
+
+---
+
 ## Overview
 
 This document consolidates technical debt from:

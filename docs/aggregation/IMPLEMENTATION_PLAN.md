@@ -4,6 +4,24 @@
 
 ---
 
+## Quick Start
+
+1. **Start with Phase 1**: Critical (S0) items require immediate action
+2. **Check dependencies**: See Dependency Chain section before implementing
+3. **Follow PR sequence**: Use Suggested PR Sequence for optimal ordering
+
+## AI Instructions
+
+When implementing from this plan:
+
+- **Check TECHNICAL_DEBT_MASTER.md first**: This plan is partially superseded
+- **Verify still valid**: Some items may have been resolved since 2026-01-17
+- **Update on completion**: Mark items with [x] when resolved
+- **Respect dependencies**: Don't implement items until their dependencies are
+  done
+
+---
+
 ## Overview
 
 This plan organizes the deduplicated findings into PR buckets for systematic

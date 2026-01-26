@@ -1,7 +1,24 @@
 # Aggregation Documents
 
-**Purpose:** Consolidated findings from multi-AI audits, aggregated into
-actionable items for ROADMAP.md integration.
+**Last Updated:** 2026-01-26
+
+---
+
+## Purpose
+
+Consolidated findings from multi-AI audits, aggregated into actionable items for
+ROADMAP.md integration.
+
+---
+
+## AI Instructions
+
+When working with aggregation:
+
+- **Use TECHNICAL_DEBT_MASTER.md**: This folder is largely superseded
+- **Historical reference only**: MASTER_ISSUE_LIST.md preserved for
+  cross-reference
+- **New findings**: Add to TECHNICAL_DEBT_MASTER.md, not here
 
 ---
 

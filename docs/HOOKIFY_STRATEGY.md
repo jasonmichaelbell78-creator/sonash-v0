@@ -6,6 +6,25 @@ IMPLEMENTED - Phase 1-4 hooks deployed, Hook Health Infrastructure added
 
 ---
 
+## Quick Start
+
+1. **Check status**: Review Quick Decision Matrix for current implementation
+   state
+2. **Add new hook**: Follow template in Technical Implementation Notes section
+3. **Evaluate priority**: Use Prioritization Criteria to assess new hook
+   proposals
+
+## AI Instructions
+
+When working with hooks:
+
+- **Check matrix first**: See which hooks are ✅ IMPLEMENTED vs ⚠️ MAYBE
+- **Follow phases**: Implement in order (Phase 1-3 complete, Phase 4 pending)
+- **Fail open**: Hooks should NEVER block operations due to hook bugs
+- **Track metrics**: Monitor trigger/block/false-positive rates per hook
+
+---
+
 ## 📋 Purpose
 
 This document catalogs potential hookify hooks to improve code quality,

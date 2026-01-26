@@ -41,6 +41,8 @@
     "skills:validate": "node scripts/validate-skill-config.js",
     "skills:verify-usage": "node scripts/verify-skill-usage.js",
     "validate:canon": "node scripts/validate-canon-schema.js",
+    "audit:validate": "node scripts/validate-audit.js",
+    "canon:normalize": "node scripts/normalize-canon-ids.js",
     "backlog:check": "node scripts/check-backlog-health.js",
     "aggregate:audit-findings": "node scripts/aggregate-audit-findings.js && prettier --write docs/aggregation/*.md",
     "security:check": "node scripts/security-check.js",

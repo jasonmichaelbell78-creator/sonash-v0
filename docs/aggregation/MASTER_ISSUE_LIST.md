@@ -4,6 +4,26 @@
 CANON files, and backlogs **Total Items:** 291 (deduplicated from 301 raw
 findings)
 
+---
+
+## Quick Start
+
+1. **Check TECHNICAL_DEBT_MASTER.md first** - This document is superseded
+2. **Use for cross-reference only** - Map MASTER-\* IDs to current tracking
+3. **Don't add new items here** - Add to TECHNICAL_DEBT_MASTER.md instead
+
+## AI Instructions
+
+When referencing this document:
+
+- **Historical only**: This is preserved for ID cross-reference
+- **Current tracking**: Use
+  [TECHNICAL_DEBT_MASTER.md](../TECHNICAL_DEBT_MASTER.md)
+- **ID mapping**: Cross-reference table in TECHNICAL_DEBT_MASTER.md maps legacy
+  IDs
+
+---
+
 > **⚠️ SUPERSEDED (Session #98 - 2026-01-26):** This document has been
 > superseded by [TECHNICAL_DEBT_MASTER.md](../TECHNICAL_DEBT_MASTER.md) which
 > consolidates:

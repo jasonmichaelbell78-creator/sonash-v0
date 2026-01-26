@@ -5,6 +5,16 @@ CODE_PATTERNS.md) **Recent Additions:** #31-41 (PR #310 Session #90)
 
 ---
 
+## Quick Start
+
+1. **Before writing code**: Scan relevant sections below (File Ops, Git, User
+   Input)
+2. **Use helpers**: Import from `scripts/lib/security-helpers.js` when available
+3. **New patterns**: Add discoveries here AND to CODE_PATTERNS.md, then run
+   `npm run patterns:sync`
+
+---
+
 ## Purpose
 
 Use this checklist **BEFORE writing or reviewing** any script that handles:

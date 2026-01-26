@@ -254,6 +254,57 @@ function parseDate(dateStr) {
 }
 
 /**
+ * Check if a link looks like an instructional placeholder
+ * Session #99 (CANON-0103): Filter false positives from template examples
+ * @param {string} text - Link text
+ * @param {string} target - Link target
+ * @returns {boolean}
+ */
+function isPlaceholderLink(text, target) {
+  // Common placeholder patterns in templates/documentation
+  // Review #206: Refined patterns to avoid false negatives
+  // Review #207: Add path/anchor detection to prevent skipping real links
+  const normalizedTarget = target.trim();
+
+  // Skip placeholder detection for things that look like real paths/anchors
+  // This prevents skipping validation for links like "your-file.md" or "[something].md"
+  const looksLikePathOrAnchor =
+    normalizedTarget.startsWith("#") ||
+    /[\\/]/.test(normalizedTarget) ||
+    /\.[a-z0-9]+$/i.test(normalizedTarget);
+
+  const placeholderPatterns = [
+    /^<[a-z_-]+>$/i, // <path>, <url>, <filename> - specific angle bracket placeholders
+    /^path$/i, // literal "path"
+    /^url$/i, // literal "url"
+    /^file$/i, // literal "file"
+    /^link$/i, // literal "link"
+    /^filename$/i, // literal "filename"
+    /^\.\.\.$/i, // ellipsis
+    /^example$/i, // exact "example" only (not "example.com")
+  ];
+
+  // Only check placeholder patterns if it doesn't look like a real path/anchor
+  if (!looksLikePathOrAnchor) {
+    // Check if target looks like a placeholder
+    for (const pattern of placeholderPatterns) {
+      if (pattern.test(normalizedTarget)) return true;
+    }
+  }
+
+  // Check if text and target are the SAME generic word (instructional format)
+  // Review #206: Require exact match, not just both being generic words
+  const normalizedText = text.trim().toLowerCase();
+  const normalizedTargetLower = normalizedTarget.toLowerCase();
+  const genericWords = ["text", "link", "file", "path", "url", "title", "name"];
+  if (normalizedText === normalizedTargetLower && genericWords.includes(normalizedText)) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Extract all markdown links from content
  * @param {string} content - Markdown content
  * @returns {Array<{text: string, target: string, line: number, isAnchor: boolean}>}
@@ -268,6 +319,7 @@ function extractLinks(content) {
     let match;
 
     while ((match = linkPattern.exec(lines[i])) !== null) {
+      const text = match[1];
       const target = match[2];
 
       // Skip external links
@@ -279,8 +331,13 @@ function extractLinks(content) {
         continue;
       }
 
+      // Session #99 (CANON-0103): Skip placeholder links in templates
+      if (isPlaceholderLink(text, target)) {
+        continue;
+      }
+
       links.push({
-        text: match[1],
+        text: text,
         target: target,
         line: i + 1,
         isAnchor: target.startsWith("#"),

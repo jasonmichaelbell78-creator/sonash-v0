@@ -4,6 +4,15 @@
 
 ---
 
+## Quick Start
+
+1. **Check effectiveness**: Review Key Metrics table for current learning rate
+2. **Find failing patterns**: Look at Pattern Learning Status Summary for 🔴
+   FAILED items
+3. **Regenerate**: Run `node scripts/analyze-learning-effectiveness.js`
+
+---
+
 ## Purpose
 
 This document tracks Claude's learning effectiveness - whether documented

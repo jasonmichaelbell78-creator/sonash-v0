@@ -6,6 +6,7 @@
  */
 
 import { logger } from "@/lib/logger";
+import { getLocalStorage, setLocalStorage, removeLocalStorage } from "@/lib/utils/storage";
 
 const BACKUP_KEY = "sonash_anonymous_backup";
 const MAX_ENTRIES = 20; // Keep last 20 entries in backup
@@ -99,7 +100,8 @@ export function backupProfile(userId: string, profile: AnonymousBackup["profile"
  */
 export function getBackup(): AnonymousBackup | null {
   try {
-    const data = localStorage.getItem(BACKUP_KEY);
+    // Session #99 (LEGACY-001): Use SSR-safe storage utility
+    const data = getLocalStorage(BACKUP_KEY);
     if (!data) return null;
     return JSON.parse(data) as AnonymousBackup;
   } catch {
@@ -139,14 +141,18 @@ export function getBackupStats(): { entryCount: number; lastBackup: Date | null 
  * Clear the backup (call after successful account link)
  */
 export function clearBackup(): void {
-  try {
-    localStorage.removeItem(BACKUP_KEY);
-  } catch {
-    // Ignore
-  }
+  // Session #99 (LEGACY-001): Use SSR-safe storage utility
+  removeLocalStorage(BACKUP_KEY);
 }
 
 // Private helper
+// Session #99 (LEGACY-001): Use SSR-safe storage utility
+// Review #206: Add try/catch for storage errors (quota exceeded, etc.)
 function saveBackup(backup: AnonymousBackup): void {
-  localStorage.setItem(BACKUP_KEY, JSON.stringify(backup));
+  try {
+    setLocalStorage(BACKUP_KEY, JSON.stringify(backup));
+  } catch {
+    // Silent fail - backup is best-effort, don't break user flow
+    // Storage errors typically from quota exceeded or private browsing
+  }
 }
