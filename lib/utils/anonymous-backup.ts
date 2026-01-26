@@ -147,6 +147,12 @@ export function clearBackup(): void {
 
 // Private helper
 // Session #99 (LEGACY-001): Use SSR-safe storage utility
+// Review #206: Add try/catch for storage errors (quota exceeded, etc.)
 function saveBackup(backup: AnonymousBackup): void {
-  setLocalStorage(BACKUP_KEY, JSON.stringify(backup));
+  try {
+    setLocalStorage(BACKUP_KEY, JSON.stringify(backup));
+  } catch {
+    // Silent fail - backup is best-effort, don't break user flow
+    // Storage errors typically from quota exceeded or private browsing
+  }
 }

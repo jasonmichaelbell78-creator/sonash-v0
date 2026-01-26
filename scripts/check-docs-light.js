@@ -262,8 +262,9 @@ function parseDate(dateStr) {
  */
 function isPlaceholderLink(text, target) {
   // Common placeholder patterns in templates/documentation
+  // Review #206: Refined patterns to avoid false negatives
   const placeholderPatterns = [
-    /^<.*>$/, // <path>, <url>, <filename>
+    /^<[a-z_-]+>$/i, // <path>, <url>, <filename> - specific angle bracket placeholders
     /^path$/i, // literal "path"
     /^url$/i, // literal "url"
     /^file$/i, // literal "file"
@@ -272,7 +273,7 @@ function isPlaceholderLink(text, target) {
     /^your-.*$/i, // your-file, your-path
     /^\[.*\]$/, // [placeholder] style
     /^\.\.\.$/i, // ellipsis
-    /example/i, // contains "example"
+    /^example$/i, // exact "example" only (not "example.com")
   ];
 
   // Check if target looks like a placeholder
@@ -280,9 +281,12 @@ function isPlaceholderLink(text, target) {
     if (pattern.test(target)) return true;
   }
 
-  // Check if both text and target are the same generic word (instructional format)
+  // Check if text and target are the SAME generic word (instructional format)
+  // Review #206: Require exact match, not just both being generic words
+  const normalizedText = text.trim().toLowerCase();
+  const normalizedTarget = target.trim().toLowerCase();
   const genericWords = ["text", "link", "file", "path", "url", "title", "name"];
-  if (genericWords.includes(text.toLowerCase()) && genericWords.includes(target.toLowerCase())) {
+  if (normalizedText === normalizedTarget && genericWords.includes(normalizedText)) {
     return true;
   }
 

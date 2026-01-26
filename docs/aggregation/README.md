@@ -1,7 +1,13 @@
 # Aggregation Documents
 
-**Purpose:** Consolidated findings from multi-AI audits, aggregated into
-actionable items for ROADMAP.md integration.
+**Last Updated:** 2026-01-26
+
+---
+
+## Purpose
+
+Consolidated findings from multi-AI audits, aggregated into actionable items for
+ROADMAP.md integration.
 
 ---
 
