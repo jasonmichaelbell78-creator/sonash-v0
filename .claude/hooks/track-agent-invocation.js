@@ -21,9 +21,8 @@ const safeBaseDir = path.resolve(process.cwd());
 const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
 const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
-// Security: Ensure projectDir is within baseDir
-const baseRel = path.relative(safeBaseDir, projectDir);
-if (baseRel.startsWith(".." + path.sep) || baseRel === ".." || path.isAbsolute(baseRel)) {
+// Security: Ensure projectDir is within baseDir (improved check)
+if (!projectDir.startsWith(safeBaseDir + path.sep) && projectDir !== safeBaseDir) {
   console.log("ok");
   process.exit(0);
 }
@@ -80,8 +79,9 @@ function writeState(state) {
     // Ensure directory exists
     fs.mkdirSync(path.dirname(statePath), { recursive: true });
     fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
-  } catch {
-    // Ignore errors
+  } catch (err) {
+    // Log error but don't block execution
+    console.error(`Warning: Could not write to ${STATE_FILE}:`, err.message);
   }
 }
 
@@ -109,10 +109,20 @@ if (state.sessionId !== currentSessionId) {
   state.filesModified = [];
 }
 
+// Sanitize description to remove potential sensitive data
+function sanitizeDescription(desc) {
+  if (!desc) return "";
+  return desc
+    .slice(0, 100) // Truncate for storage
+    .replace(/[A-Za-z0-9+/=]{20,}/g, "[REDACTED]") // Base64-like tokens
+    .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, "[EMAIL]") // Emails
+    .replace(/password|secret|token|key|credential/gi, "[SENSITIVE]"); // Sensitive keywords
+}
+
 // Record the agent invocation
 const invocation = {
   agent: subagentType,
-  description: description.slice(0, 100), // Truncate for storage
+  description: sanitizeDescription(description),
   timestamp: new Date().toISOString(),
 };
 

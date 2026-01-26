@@ -445,6 +445,13 @@ const ANTI_PATTERNS = [
       // 2026-01-26 audit (Review #198):
       // - audit-s0s1-validator.js: readFileSync at L216 IS in try/catch (L214-221)
       "audit-s0s1-validator.js",
+      // 2026-01-26 audit (Review #208):
+      // - check-remote-session-context.js: readFileSync at L113 IS in try/catch (L112-118)
+      // - track-agent-invocation.js: readFileSync at L61 IS in try/catch (L60-64), L92 IS in try/catch (L91-96)
+      // - check-agent-compliance.js: readFileSync at L76 IS in try/catch (L74-80)
+      "check-remote-session-context.js",
+      "track-agent-invocation.js",
+      "check-agent-compliance.js",
     ],
   },
   {

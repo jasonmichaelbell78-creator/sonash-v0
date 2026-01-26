@@ -52,11 +52,12 @@ const AGENT_EXPECTATIONS = {
 };
 
 /**
- * Get staged files
+ * Get staged files (excluding deleted files)
  */
 function getStagedFiles() {
   try {
-    const output = execSync("git diff --cached --name-only", {
+    // --diff-filter=ACM: Added, Copied, Modified (excludes Deleted)
+    const output = execSync("git diff --cached --name-only --diff-filter=ACM", {
       cwd: ROOT,
       encoding: "utf8",
     });
@@ -124,35 +125,35 @@ function main() {
     process.exit(0);
   }
 
-  // Report issues
+  // Report issues (use stderr for warnings to improve CI log parsing)
   if (!QUIET) {
-    console.log("");
-    console.log("⚠️  AGENT COMPLIANCE CHECK");
-    console.log("━".repeat(40));
+    console.error("");
+    console.error("⚠️  AGENT COMPLIANCE CHECK");
+    console.error("━".repeat(40));
 
     for (const issue of issues) {
-      console.log(`\n📋 ${issue.type.toUpperCase()}: ${issue.message}`);
-      console.log(`   Expected agent: ${issue.agent}`);
-      console.log(`   Files (${issue.fileCount}):`);
+      console.error(`\n📋 ${issue.type.toUpperCase()}: ${issue.message}`);
+      console.error(`   Expected agent: ${issue.agent}`);
+      console.error(`   Files (${issue.fileCount}):`);
       for (const file of issue.files) {
-        console.log(`     - ${file}`);
+        console.error(`     - ${file}`);
       }
       if (issue.fileCount > 5) {
-        console.log(`     ... and ${issue.fileCount - 5} more`);
+        console.error(`     ... and ${issue.fileCount - 5} more`);
       }
     }
 
-    console.log("\n━".repeat(40));
+    console.error("\n━".repeat(40));
 
     if (STRICT) {
-      console.log("❌ BLOCKING: Run the recommended agents before committing");
-      console.log("   Or use --no-verify to bypass (not recommended)");
+      console.error("❌ BLOCKING: Run the recommended agents before committing");
+      console.error("   Or use --no-verify to bypass (not recommended)");
     } else {
-      console.log("⚠️  WARNING: Consider running the recommended agents");
-      console.log("   This is currently non-blocking (Phase 1)");
+      console.error("⚠️  WARNING: Consider running the recommended agents");
+      console.error("   This is currently non-blocking (Phase 1)");
     }
 
-    console.log("");
+    console.error("");
   }
 
   process.exit(STRICT ? 1 : 0);

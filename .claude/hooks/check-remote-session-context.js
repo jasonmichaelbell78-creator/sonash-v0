@@ -125,8 +125,9 @@ function main() {
   let newerDate = null;
 
   for (const { branch, date } of recentBranches) {
-    // Skip current branch
-    if (branch.endsWith(currentBranch)) continue;
+    // Normalize and skip current branch (remote has origin/ prefix)
+    const remoteBranch = branch.replace(/^origin\//, "");
+    if (remoteBranch === currentBranch) continue;
 
     const remoteContent = readContextFromBranch(branch);
     if (!remoteContent) continue;
