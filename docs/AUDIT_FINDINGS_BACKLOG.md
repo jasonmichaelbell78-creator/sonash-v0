@@ -274,108 +274,50 @@ creates noise in the validation output.
 
 ---
 
-### [Process] Add Missing Script Triggers to Session Start
+### ~~[Process] Add Missing Script Triggers to Session Start~~ ✅ COMPLETED
 
 **CANON-ID**: CANON-0104 (Process Audit finding) **Severity**: S2 **Effort**: E0
-(15 min) **Source**: Session #48 script trigger audit **Status**: PENDING
+(15 min) **Source**: Session #48 script trigger audit **Status**: ✅ DONE
+(Already implemented - verified Session #99)
 
-**Description**: Two useful scripts run manually but should auto-run at session
-start:
+**Resolution**: Both scripts already run in session-start.sh:
 
-- `surface-lessons-learned.js` - Surfaces relevant past lessons
-- `check-document-sync.js` - Checks template-instance sync (with --quick flag)
-
-**Files affected**: `.claude/hooks/session-start.sh`
-
-**Implementation notes**:
-
-```bash
-# Add after consolidation check in session-start.sh
-echo "🔍 Surfacing relevant lessons..."
-node scripts/surface-lessons-learned.js 2>/dev/null || true
-
-echo "🔍 Checking document sync..."
-node scripts/check-document-sync.js --quick 2>/dev/null || true
-```
-
-**Acceptance criteria**:
-
-- [ ] Both scripts run during session start
-- [ ] Failures are non-blocking (warnings only)
+- `surface-lessons-learned.js` at lines 298-305
+- `check-document-sync.js --quick` at lines 314-324
 
 ---
 
-### [Process] Add CANON Validation to CI Pipeline
+### ~~[Process] Add CANON Validation to CI Pipeline~~ ✅ COMPLETED
 
 **CANON-ID**: CANON-0105 (Process Audit finding) **Severity**: S2 **Effort**: E1
-(30 min) **Source**: Session #48 script trigger audit **Status**: PENDING
+(30 min) **Source**: Session #48 script trigger audit **Status**: ✅ DONE
+(Session #99, 2026-01-26)
 
-**Description**: CANON schema validation scripts exist but only run manually.
-Should run in CI when CANON files change.
-
-**Scripts**:
-
-- `validate-canon-schema.js` - Validates CANON JSONL schema
-- `validate-audit.js` - Validates audit file structure
-
-**Files affected**: `.github/workflows/ci.yml`
-
-**Implementation notes**:
+**Resolution**: Added to `.github/workflows/ci.yml`:
 
 ```yaml
-# Option 1: Use paths-filter action for conditional runs
-- name: Check changed files
-  uses: dorny/paths-filter@v3
-  id: changes
-  with:
-    filters: |
-      canon:
-        - '**/CANON*.jsonl'
-        - '**/canonical/**'
-      audit:
-        - '**/AUDIT*.md'
-        - '**/audit/**'
-
 - name: Validate CANON schema
-  if: steps.changes.outputs.canon == 'true'
-  run: node scripts/validate-canon-schema.js
+  run: npm run validate:canon
 
 - name: Validate audit files
-  if: steps.changes.outputs.audit == 'true'
-  run: node scripts/validate-audit.js
-
-# Option 2: Always run validation (simpler, recommended for fast scripts)
-- name: Validate CANON schema
-  run: node scripts/validate-canon-schema.js
+  run: npm run audit:validate
 ```
 
-**Acceptance criteria**:
-
-- [ ] CI runs validation on relevant file changes
-- [ ] Invalid CANON files fail the build
+Used Option 2 (always run) since scripts are fast.
 
 ---
 
-### [Process] Add npm Commands for Undocumented Scripts
+### ~~[Process] Add npm Commands for Undocumented Scripts~~ ✅ COMPLETED
 
 **CANON-ID**: CANON-0106 (Process Audit finding) **Severity**: S3 **Effort**: E0
-(10 min) **Source**: Session #48 script trigger audit **Status**: PENDING
+(10 min) **Source**: Session #48 script trigger audit **Status**: ✅ DONE
+(Session #99, 2026-01-26)
 
-**Description**: Several scripts lack npm run commands, making them harder to
-discover and use.
+**Resolution**: Added npm commands to package.json:
 
-**Scripts needing npm commands**:
-
-- `validate-audit.js` → `npm run audit:validate`
-- `validate-canon-schema.js` → `npm run canon:validate`
-- `normalize-canon-ids.js` → `npm run canon:normalize`
-
-**Files affected**: `package.json`
-
-**Acceptance criteria**:
-
-- [ ] All validation scripts have npm run commands
-- [ ] Commands documented in relevant docs
+- `validate:canon` already existed
+- `audit:validate` → `node scripts/validate-audit.js` (added)
+- `canon:normalize` → `node scripts/normalize-canon-ids.js` (added)
 
 ---
 
@@ -422,10 +364,10 @@ audit 2026-01-13 **Status**: ✅ DONE (Already existed - verified Session #99)
 | Performance   | 0     | -      |
 | Refactoring   | 0     | -      |
 | Documentation | 2     | E3     |
-| Process       | 4     | E2     |
+| Process       | 1     | E1     |
 
-**Total items**: 7 **Total estimated effort**: 6-9 hours **Completed this
-session**: 2 (CANON-0107, CANON-0108)
+**Total items**: 4 **Total estimated effort**: 4-6 hours **Completed this
+session**: 5 (CANON-0104, CANON-0105, CANON-0106, CANON-0107, CANON-0108)
 
 ---
 

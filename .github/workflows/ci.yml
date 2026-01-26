@@ -80,6 +80,14 @@ jobs:
         continue-on-error: true
         run: npm run docs:check
 
+      - name: Validate CANON schema
+        # Validates all CANON*.jsonl files have correct structure
+        run: npm run validate:canon
+
+      - name: Validate audit files
+        # Validates audit JSONL files have required fields
+        run: npm run audit:validate
+
       - name: Type check
         run: npx tsc --noEmit
 
