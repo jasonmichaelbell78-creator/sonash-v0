@@ -214,7 +214,9 @@ function getNextDay(dateString) {
   // Parse as UTC midnight to avoid timezone-related off-by-one errors (Review #198)
   const date = new Date(dateString + "T00:00:00Z");
   if (isNaN(date.getTime())) {
-    return dateString; // Return original if invalid
+    // Review #204: Fail closed - return empty string so callers treat as no-op
+    // This prevents command injection if sanitizeDateString somehow fails
+    return "";
   }
   // Use UTC methods to ensure consistent behavior across environments
   date.setUTCDate(date.getUTCDate() + 1);

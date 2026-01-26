@@ -122,8 +122,9 @@ if [ -z "$SKIP_AUDIT_VALIDATION" ]; then
     echo "  ▶ Validating audit S0/S1 compliance..."
     # POSIX-compatible: Write to temp file, read with while loop
     # Review #204: Pipe creates subshell where variable changes don't propagate
+    # Chain with existing EXIT trap instead of overwriting
     AUDIT_TMPFILE=$(mktemp)
-    trap 'rm -f "$TEST_TMPFILE" "$AUDIT_TMPFILE"' EXIT
+    trap 'rm -f "$TEST_TMPFILE" "$AUDIT_TMPFILE" 2>/dev/null' EXIT
     echo "$STAGED_AUDIT_FILES" > "$AUDIT_TMPFILE"
     AUDIT_FAILED=0
     while IFS= read -r audit_file || [ -n "$audit_file" ]; do

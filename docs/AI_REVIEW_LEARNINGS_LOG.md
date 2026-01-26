@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 11.2 **Created:** 2026-01-02 **Last Updated:** 2026-01-26
+**Document Version:** 11.3 **Created:** 2026-01-02 **Last Updated:** 2026-01-26
 
 ## Purpose
 
@@ -29,7 +29,8 @@ improvements made.
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 11.0    | 2026-01-24 | **SECURITY INFRASTRUCTURE**: Created proactive security prevention framework after Review #201 required 6 rounds of fixes. **NEW FILES**: (1) `docs/agent_docs/SECURITY_CHECKLIST.md` - Pre-write checklist with 180+ patterns from CODE_PATTERNS.md; (2) `scripts/lib/security-helpers.js` - Reusable secure implementations (sanitizeError, escapeMd, refuseSymlinkWithParents, validatePathInDir, safeWriteFile, safeGitAdd, safeGitCommit, sanitizeFilename, parseCliArgs, safeReadFile, validateUrl, safeRegexExec, maskEmail); (3) `scripts/check-pattern-sync.js` - Verifies consistency between docs and automation. **NEW SCRIPT**: `npm run patterns:sync`. **FEEDBACK LOOP**: PR review → Learnings log → Consolidation → Pattern sync → Checklist/helpers update → Automation.                                                                                    |
-| 11.2    | 2026-01-26 | Review #204: Session #98 PR - Qodo Compliance + CI Fixes (7 items - 3 CRITICAL, 2 MAJOR, 2 MINOR). **CRITICAL**: Subshell guardrail bypass in pre-commit hook (pipe→here-string), lint-staged knip false positive, readFileSync pattern compliance false positive. **MAJOR**: UTC timezone bug in getNextDay, command injection input validation (already mitigated by sanitizeDateString). **MINOR**: ROLLOUT_MODE env-configurable, duplicate constants noted. **NEW PATTERNS**: Pipe creates subshell where variable changes don't propagate - use here-string (<<<) for variable persistence. Active reviews #180-204.                                                                                                                                                                                                                                                    |
+| 11.3    | 2026-01-26 | Review #204 Round 2: Session #98 PR - Qodo Security Hardening (5 items - 2 CRITICAL, 2 MAJOR, 1 MINOR). **CRITICAL**: Path traversal in audit-s0s1-validator.js (containment + symlink rejection), trap cleanup bug. **MAJOR**: Fail-closed on invalid dates (empty string return), silent JSONL parse failures (track \_parseError). **MINOR**: ROLLOUT_MODE normalization (trim/uppercase). **NEW PATTERNS**: (50) Path containment validation; (51) Fail-closed parsing. Total 11 fixes across 2 rounds. Active reviews #180-204.                                                                                                                                                                                                                                                                                                                                          |
+| 11.2    | 2026-01-26 | Review #204 Round 1: Session #98 PR - Qodo Compliance + CI Fixes (7 items - 3 CRITICAL, 2 MAJOR, 2 MINOR). **CRITICAL**: Subshell guardrail bypass in pre-commit hook (temp file + while read), lint-staged knip false positive, readFileSync pattern compliance false positive. **MAJOR**: UTC timezone bug in getNextDay, command injection input validation (already mitigated by sanitizeDateString). **MINOR**: ROLLOUT_MODE env-configurable, duplicate constants noted. **NEW PATTERNS**: (48) Pipe subshell variable isolation; (49) UTC date arithmetic. Active reviews #180-204.                                                                                                                                                                                                                                                                                    |
 | 11.1    | 2026-01-24 | Review #203: PR #312 ROADMAP v3.9 Reorganization - Qodo Quality Fixes (24 items - 0 CRITICAL, 2 MAJOR, 10 MINOR, 12 TRIVIAL). **MAJOR**: Security schema explicit encryption fields for sharedPackets snapshot (ciphertext/iv/algorithm), sponsor contact PII encryption comments. **MINOR**: Version metadata v3.0→v3.9 in 3 analysis files, missing-priority count 28→18 correction, priority normalization P4→P3, validation metrics alignment. **TRIVIAL**: Count fixes (T7 3→4, M7-F1 12→11, M7-F4 14→15, M7-F9 5→7, M9-F1 9→8), naming consistency (M4.5 "Security & Privacy"), contradictory completion status removal. Documentation accuracy fixes. Active reviews #180-203.                                                                                                                                                                                         |
 | 10.9    | 2026-01-24 | Review #201: PR #310 Learning Effectiveness Analyzer - Qodo Security Hardening (33 items across 6 rounds - 1 CRITICAL, 26 MAJOR, 4 MINOR, 2 DEFERRED). **CRITICAL**: Git option injection. **MAJOR (R1-5)**: Temp file wx, Markdown injection, relative logging, path validation, escapeMd(), refuseSymlink(), git add -A removal, empty fallback, JSON output. **MAJOR (R6)**: Symlink parent traversal, Git pathspec magic `:`, repo root path validation, wx for JSON, Markdown escape fix. **NEW PATTERNS**: (31-38) R4-5 patterns; (39-41) Symlink parent, pathspec magic, repo root. Total 31 fixes. Active reviews #180-201. Consolidation counter: 0.                                                                                                                                                                                                                 |
 | 10.8    | 2026-01-24 | Review #200 Round 4: PR #309 Round 4 - Qodo Final Hardening (12 items - 5 HIGH imp 8-9 Security, 4 MEDIUM imp 7 Quality, 3 MINOR imp 6 Compliance). **HIGH**: Path traversal segment regex `/(?:^\|\/)\.\.(?:\/\|$)/`, CLAUDE_PROJECT_DIR absolute path validation, 4096 char DoS caps, Unicode separator stripping (`\u2028`, `\u2029`), control char removal in sanitizeFilesystemError. **MEDIUM**: Deduplicated sanitization (export from validate-paths.js), segment-based containment (no startsWith), binary file skip, precheck graceful exit. **MINOR**: 500 char log cap, `filePath[0] === "-"` pattern trigger fix. **NEW PATTERNS**: (27) Segment-based path checks; (28) Unicode log injection; (29) Input length DoS caps; (30) Code deduplication via exports. Total 12 fixes. Pattern-check.js: 230 lines. Active reviews #180-200. Consolidation counter: 0. |
@@ -704,11 +705,41 @@ Minor: 2)
 - (49) **UTC date arithmetic**: When doing date math, parse as UTC midnight and
   use UTC methods to avoid timezone-related off-by-one errors.
 
-**Resolution:**
+**Round 2** (Post 368228e): 5 additional items
 
-- Fixed: 6 items
+**CRITICAL (2):**
+
+1. **Path traversal in audit-s0s1-validator.js** - isAuditFile() regex allowed
+   `../` segments. Fixed by: rejecting path traversal patterns, path containment
+   validation, symlink rejection.
+2. **Trap cleanup bug** - `trap 'rm -f "$TEST_TMPFILE" "$AUDIT_TMPFILE"'`
+   overwrites previous trap. Added 2>/dev/null for safety.
+
+**MAJOR (2):**
+
+1. **Fail-closed on invalid dates** - getNextDay() returned original string on
+   parse failure (potential command injection if sanitization fails). Changed to
+   return empty string.
+2. **Silent JSONL parse failures** - parseJSONLContent() silently skipped
+   invalid lines. Now tracks `_parseError` to prevent S0/S1 evasion.
+
+**MINOR (1):**
+
+1. **Normalize ROLLOUT_MODE** - Added `.trim().toUpperCase()` and EFFECTIVE_MODE
+   for robust env var handling.
+
+**NEW PATTERNS (Round 2):**
+
+- (50) **Path containment validation**: Use `path.relative()` + startsWith("..")
+  check after `path.resolve()` to prevent traversal.
+- (51) **Fail-closed parsing**: Return empty/default values on parse failure
+  rather than echoing potentially malicious input.
+
+**Resolution (Total):**
+
+- Fixed: 11 items (6 in Round 1 + 5 in Round 2)
 - Deferred: 1 item (duplicate constants - minor, non-blocking)
-- Rejected: 0 items
+- Rejected: 1 item (unstructured logs - advisory only, local tooling)
 
 **Files Changed:** .husky/pre-commit, knip.json,
 scripts/check-pattern-compliance.js, scripts/check-review-needed.js,

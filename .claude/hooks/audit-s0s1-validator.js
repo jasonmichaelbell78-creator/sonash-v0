@@ -17,7 +17,9 @@ const path = require("node:path");
 
 // Rollout mode: WARN = non-blocking, BLOCK = blocking
 // Can be overridden via environment variable for gradual rollout (Review #198)
-const ROLLOUT_MODE = process.env.AUDIT_S0S1_MODE || "WARN";
+// Review #204: Normalize to handle "block", "BLOCK ", etc.
+const ROLLOUT_MODE = (process.env.AUDIT_S0S1_MODE || "WARN").trim().toUpperCase();
+const EFFECTIVE_MODE = ROLLOUT_MODE === "BLOCK" ? "BLOCK" : "WARN";
 
 // Valid verification methods (match validate-audit.js)
 const VALID_FIRST_PASS_METHODS = new Set(["grep", "tool_output", "file_read", "code_search"]);
@@ -51,16 +53,24 @@ function parseFilePath(arg) {
 
 /**
  * Check if file path matches audit JSONL pattern
+ * Review #204: Reject path traversal attempts (../ segments)
  */
 function isAuditFile(filePath) {
   if (!filePath) return false;
   // Normalize to forward slashes
   const normalized = filePath.replace(/\\/g, "/");
-  return /docs\/audits\/.*\.jsonl$/.test(normalized);
+  // Reject path traversal attempts - check for ../ or /.. patterns
+  if (/(?:^|\/)\.\.[/\\]|(?:^|[/\\])\.\.$/.test(normalized)) {
+    return false;
+  }
+  return /^docs\/audits\/[^.][^/]*\.jsonl$|^docs\/audits\/[^.][^/]*\/[^.][^/]*\.jsonl$/.test(
+    normalized
+  );
 }
 
 /**
  * Parse JSONL content and extract findings
+ * Review #204: Track parse errors to prevent S0/S1 evasion via malformed lines
  */
 function parseJSONLContent(content) {
   const findings = [];
@@ -71,7 +81,8 @@ function parseJSONLContent(content) {
       const finding = JSON.parse(lines[i]);
       findings.push({ ...finding, _lineNumber: i + 1 });
     } catch {
-      // Skip invalid JSON lines
+      // Mark parse errors so validation can detect potential evasion
+      findings.push({ _parseError: true, _lineNumber: i + 1, _rawLine: lines[i].slice(0, 100) });
     }
   }
 
@@ -207,9 +218,34 @@ function main() {
     process.exit(0);
   }
 
-  // Get project directory
+  // Get project directory - validate absolute path
+  // Review #204: Path traversal protection
   const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+  if (!path.isAbsolute(projectDir)) {
+    console.log("ok"); // Invalid config, skip validation
+    process.exit(0);
+  }
   const fullPath = path.resolve(projectDir, filePath.replace(/\\/g, "/"));
+
+  // Containment check: resolved path must be within projectDir
+  const relative = path.relative(projectDir, fullPath);
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    console.error("Path traversal attempt blocked");
+    process.exit(1);
+  }
+
+  // Reject symlinks to prevent traversal via symlink
+  try {
+    const stats = fs.lstatSync(fullPath);
+    if (stats.isSymbolicLink()) {
+      console.error("Symlink files not allowed");
+      process.exit(1);
+    }
+  } catch {
+    // File doesn't exist yet - skip validation
+    console.log("ok");
+    process.exit(0);
+  }
 
   // Read file content
   let content;
@@ -252,7 +288,7 @@ function main() {
     console.error("  docs/templates/JSONL_SCHEMA_STANDARD.md#s0s1-verification-extension");
     console.error("\u2501".repeat(28));
 
-    if (ROLLOUT_MODE === "BLOCK") {
+    if (EFFECTIVE_MODE === "BLOCK") {
       // Blocking mode - fail the hook
       process.exit(1);
     }
