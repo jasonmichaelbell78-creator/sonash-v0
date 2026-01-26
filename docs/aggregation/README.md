@@ -5,6 +5,17 @@ actionable items for ROADMAP.md integration.
 
 ---
 
+## AI Instructions
+
+When working with aggregation:
+
+- **Use TECHNICAL_DEBT_MASTER.md**: This folder is largely superseded
+- **Historical reference only**: MASTER_ISSUE_LIST.md preserved for
+  cross-reference
+- **New findings**: Add to TECHNICAL_DEBT_MASTER.md, not here
+
+---
+
 ## Contents
 
 | Document                                           | Description                               | Status          |

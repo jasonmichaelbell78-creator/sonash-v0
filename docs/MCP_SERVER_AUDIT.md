@@ -5,6 +5,26 @@ providing value
 
 ---
 
+## Quick Start
+
+1. Check enabled servers:
+   `cat .claude/settings.local.json | jq '.enabledMcpjsonServers'`
+2. To disable a server: Add to `disabledMcpjsonServers` in
+   `.claude/settings.json`
+3. To add permissions: Edit `.claude/settings.local.json` permissions array
+
+## AI Instructions
+
+When modifying MCP configuration:
+
+- **Before changes**: Read current `.claude/settings.local.json` state
+- **Preserve critical**: Never disable sonarcloud, playwright, firebase,
+  filesystem
+- **Clean up stale**: Remove permissions for disabled servers
+- **Document changes**: Update this audit document with rationale
+
+---
+
 ## Executive Summary
 
 **Current Context Usage:** ~50K tokens on startup **Recommendation:** Reduce to

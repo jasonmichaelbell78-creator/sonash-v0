@@ -4,6 +4,23 @@
 
 ---
 
+## Quick Start
+
+1. **Find a doc**: Use Visual Hierarchy diagram below to locate documents
+2. **Understand tiers**: Tier 1 = essential, Tier 5 = archive
+3. **Check sync triggers**: See table at bottom for what updates require sync
+
+## AI Instructions
+
+When navigating documentation:
+
+- **Start here**: Use this map to understand document relationships
+- **ROADMAP.md is canonical**: All planning flows from ROADMAP.md
+- **Update triggers**: Check sync table before making cross-document changes
+- **Archive properly**: Move completed plans to `docs/archive/completed-plans/`
+
+---
+
 ## Visual Hierarchy
 
 ```
