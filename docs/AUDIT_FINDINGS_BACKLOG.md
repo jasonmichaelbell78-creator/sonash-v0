@@ -1,8 +1,8 @@
 # Audit Findings Backlog
 
-**Document Version**: 3.5 **Created**: 2025-12-30 **Last Updated**: 2026-01-26
-**Status**: ACTIVE **Total Items**: 7 pending, 2 completed (6-9 hours estimated
-effort)
+**Document Version**: 3.6 **Created**: 2025-12-30 **Last Updated**: 2026-01-26
+**Status**: ACTIVE **Total Items**: 2 deferred, 9 completed (Session #99: 7
+items done)
 
 ---
 
@@ -356,6 +356,7 @@ _(Items completed during Step 4B remediation move here)_
 
 | Version | Date       | Changes                                                                                                            | Author           |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------ | ---------------- |
+| 3.6     | 2026-01-26 | Completed 7 items in Session #99: CANON-0103-0108, LEGACY-001; deferred CANON-0101/0102 to doc sprint; 2 remaining | Claude Session99 |
 | 3.5     | 2026-01-26 | Completed CANON-0107 (security headers), verified CANON-0108 (storage.rules already existed); 7 items remaining    | Claude Session99 |
 | 3.4     | 2026-01-21 | Refreshed backlog for CI health check; updated item count to 10                                                    | Claude           |
 | 3.3     | 2026-01-13 | Added CANON-0107 (security headers) and CANON-0108 (storage.rules) from single-session security audit              | Claude           |
