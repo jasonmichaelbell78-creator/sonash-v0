@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { logger } from "@/lib/logger";
 import { getTodayDateId } from "@/lib/utils/date-utils";
 import { getLocalStorage, setLocalStorage } from "@/lib/utils/storage";
@@ -62,25 +62,28 @@ export function useSmartPrompts({
     return new Set();
   });
 
-  // Persist dismissed prompts to localStorage
+  // Dismiss prompt (pure state update)
   // Session #99 (LEGACY-001): Use SSR-safe storage utility
+  // Review #207: Move persistence out of state updater to useEffect for React Strict Mode
   const dismissPrompt = (promptId: string) => {
-    setDismissedPrompts((prev) => {
-      const updated = new Set(prev).add(promptId);
-
-      try {
-        const today = getTodayDateId(new Date());
-        const storageKey = `dismissed-prompts-${today}`;
-        setLocalStorage(storageKey, JSON.stringify(Array.from(updated)));
-      } catch (error) {
-        logger.warn("Failed to persist dismissed prompts to localStorage", {
-          errorType: error instanceof Error ? error.constructor.name : typeof error,
-        });
-      }
-
-      return updated;
-    });
+    setDismissedPrompts((prev) => new Set(prev).add(promptId));
   };
+
+  // Persist dismissed prompts to localStorage (separate from state updater)
+  useEffect(() => {
+    // Skip persistence on initial render (dismissedPrompts loaded from storage)
+    if (dismissedPrompts.size === 0) return;
+
+    try {
+      const today = getTodayDateId(new Date());
+      const storageKey = `dismissed-prompts-${today}`;
+      setLocalStorage(storageKey, JSON.stringify(Array.from(dismissedPrompts)));
+    } catch (error) {
+      logger.warn("Failed to persist dismissed prompts to localStorage", {
+        errorType: error instanceof Error ? error.constructor.name : typeof error,
+      });
+    }
+  }, [dismissedPrompts]);
 
   // Smart prompt: Evening check-in reminder (6 PM - 10 PM)
   const showCheckInReminder = useMemo(() => {

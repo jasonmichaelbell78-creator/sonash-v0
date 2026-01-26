@@ -528,8 +528,15 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
     // Basic local restore first (fast)
     // Session #99 (LEGACY-001): Use SSR-safe storage utility
-    const savedEntry = getLocalStorage(STORAGE_KEYS.JOURNAL_TEMP);
-    if (savedEntry && !journalEntry) setJournalEntry(savedEntry);
+    // Review #207: Guard storage reads from crashes (Safari private mode, etc.)
+    try {
+      const savedEntry = getLocalStorage(STORAGE_KEYS.JOURNAL_TEMP);
+      if (savedEntry && !journalEntry) setJournalEntry(savedEntry);
+    } catch (error) {
+      logger.warn("Failed to restore journal temp from storage", {
+        errorType: error instanceof Error ? error.constructor.name : typeof error,
+      });
+    }
 
     // Subscribe to Firestore updates
     let unsubscribe: (() => void) | undefined;
@@ -582,9 +589,17 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     setIsSaving(true);
     setSaveComplete(false);
     try {
-      // Always save locally first as backup
+      // Always save locally first as backup (best-effort)
       // Session #99 (LEGACY-001): Use SSR-safe storage utility
-      setLocalStorage(STORAGE_KEYS.JOURNAL_TEMP, dataToSave.journalEntry);
+      // Review #207: Isolate local storage to not block Firestore save
+      try {
+        setLocalStorage(STORAGE_KEYS.JOURNAL_TEMP, dataToSave.journalEntry);
+      } catch (storageError) {
+        logger.warn("Failed to persist journal temp locally", {
+          errorType:
+            storageError instanceof Error ? storageError.constructor.name : typeof storageError,
+        });
+      }
 
       // DEBUG: Log what we're about to save
       // Don't include date - firestore-service generates it in YYYY-MM-DD format

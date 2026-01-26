@@ -86,8 +86,9 @@ jobs:
 
       - name: Validate audit files
         # Validates audit JSONL files have required fields
+        # Review #207: Use -- to pass args through npm to the script
         continue-on-error: true
-        run: npm run audit:validate --all
+        run: npm run audit:validate -- --all
 
       - name: Type check
         run: npx tsc --noEmit

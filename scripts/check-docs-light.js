@@ -263,6 +263,16 @@ function parseDate(dateStr) {
 function isPlaceholderLink(text, target) {
   // Common placeholder patterns in templates/documentation
   // Review #206: Refined patterns to avoid false negatives
+  // Review #207: Add path/anchor detection to prevent skipping real links
+  const normalizedTarget = target.trim();
+
+  // Skip placeholder detection for things that look like real paths/anchors
+  // This prevents skipping validation for links like "your-file.md" or "[something].md"
+  const looksLikePathOrAnchor =
+    normalizedTarget.startsWith("#") ||
+    /[\\/]/.test(normalizedTarget) ||
+    /\.[a-z0-9]+$/i.test(normalizedTarget);
+
   const placeholderPatterns = [
     /^<[a-z_-]+>$/i, // <path>, <url>, <filename> - specific angle bracket placeholders
     /^path$/i, // literal "path"
@@ -270,23 +280,24 @@ function isPlaceholderLink(text, target) {
     /^file$/i, // literal "file"
     /^link$/i, // literal "link"
     /^filename$/i, // literal "filename"
-    /^your-.*$/i, // your-file, your-path
-    /^\[.*\]$/, // [placeholder] style
     /^\.\.\.$/i, // ellipsis
     /^example$/i, // exact "example" only (not "example.com")
   ];
 
-  // Check if target looks like a placeholder
-  for (const pattern of placeholderPatterns) {
-    if (pattern.test(target)) return true;
+  // Only check placeholder patterns if it doesn't look like a real path/anchor
+  if (!looksLikePathOrAnchor) {
+    // Check if target looks like a placeholder
+    for (const pattern of placeholderPatterns) {
+      if (pattern.test(normalizedTarget)) return true;
+    }
   }
 
   // Check if text and target are the SAME generic word (instructional format)
   // Review #206: Require exact match, not just both being generic words
   const normalizedText = text.trim().toLowerCase();
-  const normalizedTarget = target.trim().toLowerCase();
+  const normalizedTargetLower = normalizedTarget.toLowerCase();
   const genericWords = ["text", "link", "file", "path", "url", "title", "name"];
-  if (normalizedText === normalizedTarget && genericWords.includes(normalizedText)) {
+  if (normalizedText === normalizedTargetLower && genericWords.includes(normalizedText)) {
     return true;
   }
 
