@@ -221,7 +221,48 @@ npm run lessons:surface
 **Record results in session audit** - these must be marked as "Ran" or "Failed
 (reason)" in `/session-end` audit.
 
-## 8. Incident Documentation Reminder
+## 8. Technical Debt Awareness (NEW - Session #98)
+
+**Check current technical debt status:**
+
+- [ ] Read [TECHNICAL_DEBT_MASTER.md](../../docs/TECHNICAL_DEBT_MASTER.md) for
+      prioritized tech debt
+- [ ] Note any S0/S1 items that should be addressed this session
+- [ ] Check if any items from previous session need updating
+
+**Key tracking documents:**
+
+| Document                   | Purpose                                    |
+| -------------------------- | ------------------------------------------ |
+| `TECHNICAL_DEBT_MASTER.md` | Single source of truth for all tech debt   |
+| `AUDIT_TRACKER.md`         | Audit completion and threshold tracking    |
+| `ROADMAP.md` Track D       | Performance-critical items for this sprint |
+
+**After resolving tech debt items:**
+
+1. Mark item as resolved in TECHNICAL_DEBT_MASTER.md
+2. Update ROADMAP.md if item was in a sprint track
+3. Note in session summary
+
+## 9. Cross-Document Dependency Check
+
+**Before starting work**, verify cross-document consistency:
+
+```bash
+# Check cross-document dependencies
+npm run crossdoc:check
+```
+
+**Key dependencies to verify:**
+
+- ROADMAP.md ↔ SESSION_CONTEXT.md (priorities match)
+- TECHNICAL_DEBT_MASTER.md ↔ ROADMAP.md (tech debt section current)
+- Audit findings ↔ TECHNICAL_DEBT_MASTER.md (new findings consolidated)
+
+**See:** [DOCUMENT_DEPENDENCIES.md](../../docs/DOCUMENT_DEPENDENCIES.md) for
+full dependency matrix.
+
+## 10. Incident Documentation Reminder
 
 **After encountering any significant errors or issues:**
 

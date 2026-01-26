@@ -1,8 +1,11 @@
 # Audit Tracker
 
-**Document Version:** 2.2 **Created:** 2026-01-08 **Last Updated:** 2026-01-24
+**Document Version:** 2.3 **Created:** 2026-01-08 **Last Updated:** 2026-01-26
 **Purpose:** Track single-session and multi-AI audit completions for threshold
 management
+
+> **Related:** [TECHNICAL_DEBT_MASTER.md](./TECHNICAL_DEBT_MASTER.md) ← Single
+> source of truth for all technical debt items (Session #98)
 
 ---
 

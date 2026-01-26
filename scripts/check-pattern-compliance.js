@@ -442,6 +442,9 @@ const ANTI_PATTERNS = [
       // - security-helpers.js: safeReadFile at L322 IS in try/catch (L321-329)
       "check-pattern-sync.js",
       "security-helpers.js",
+      // 2026-01-26 audit (Review #198):
+      // - audit-s0s1-validator.js: readFileSync at L216 IS in try/catch (L214-221)
+      "audit-s0s1-validator.js",
     ],
   },
   {

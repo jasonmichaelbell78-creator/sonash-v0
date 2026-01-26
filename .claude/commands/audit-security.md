@@ -280,6 +280,31 @@ Each line (UPDATED SCHEMA with confidence and verification):
 }
 ```
 
+**S0/S1 findings MUST include `verification_steps` (Session #98):**
+
+```json
+{
+  "verification_steps": {
+    "first_pass": {
+      "method": "grep|tool_output|file_read|code_search",
+      "evidence_collected": ["initial code snippet", "grep output"]
+    },
+    "second_pass": {
+      "method": "contextual_review|exploitation_test|manual_verification",
+      "confirmed": true,
+      "notes": "Re-read in context, verified exploitable"
+    },
+    "tool_confirmation": {
+      "tool": "eslint|sonarcloud|npm_audit|patterns_check|typescript|NONE",
+      "reference": "npm audit CVE-XXXX or NONE with justification"
+    }
+  }
+}
+```
+
+See `docs/templates/JSONL_SCHEMA_STANDARD.md#s0s1-verification-extension` for
+full schema.
+
 **3. Markdown Report (save to file):**
 
 Create file: `docs/audits/single-session/security/audit-[YYYY-MM-DD].md`

@@ -204,6 +204,26 @@ function sanitizeDateString(dateString) {
 }
 
 /**
+ * Get the day after a given date (for exclusive date filtering)
+ * This ensures we only count commits made AFTER the audit day, not on the same day.
+ * Fixes false positives where commits earlier on the audit day were counted as "since" the audit.
+ * @param {string} dateString - ISO date string (YYYY-MM-DD)
+ * @returns {string} ISO date string for the next day
+ */
+function getNextDay(dateString) {
+  // Parse as UTC midnight to avoid timezone-related off-by-one errors (Review #198)
+  const date = new Date(dateString + "T00:00:00Z");
+  if (isNaN(date.getTime())) {
+    // Review #204: Fail closed - return empty string so callers treat as no-op
+    // This prevents command injection if sanitizeDateString somehow fails
+    return "";
+  }
+  // Use UTC methods to ensure consistent behavior across environments
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().split("T")[0];
+}
+
+/**
  * Safely read a file with error handling
  * @param {string} filePath - Absolute path to the file to read
  * @param {string} description - Human-readable description for error messages
@@ -540,25 +560,31 @@ function getSingleAuditCounts(content) {
 }
 
 /**
- * Get count of commits since a specific date
+ * Get count of commits since a specific date (exclusive - starts from day AFTER the date)
+ * Uses getNextDay() to fix false positives where commits earlier on the audit day were counted.
  * @param {string} sinceDate - ISO date string (YYYY-MM-DD) to count commits from
  * @returns {number} Number of commits since the date (0 if error or none)
  */
 function getCommitsSince(sinceDate) {
-  const result = safeExec(`git rev-list --count --since="${sinceDate}" HEAD`, "count commits");
+  // Use next day to ensure we only count commits AFTER the audit day
+  const afterDate = getNextDay(sinceDate);
+  const result = safeExec(`git rev-list --count --since="${afterDate}" HEAD`, "count commits");
   return result.success ? Number.parseInt(result.output, 10) || 0 : 0;
 }
 
 /**
- * Get files modified since a date that match a given pattern
+ * Get files modified since a date that match a given pattern (exclusive - starts from day AFTER the date)
+ * Uses getNextDay() to fix false positives where commits earlier on the audit day were counted.
  * @param {string} sinceDate - ISO date string (YYYY-MM-DD) to find modifications from
  * @param {RegExp} pattern - Regex pattern to filter file paths
  * @returns {string[]} Array of matching file paths
  */
 function getFilesModifiedSince(sinceDate, pattern) {
+  // Use next day to ensure we only count files modified AFTER the audit day
+  const afterDate = getNextDay(sinceDate);
   // Use git native output and JavaScript for filtering (more portable than shell pipes)
   const result = safeExec(
-    `git log --since="${sinceDate}" --name-only --pretty=format:`,
+    `git log --since="${afterDate}" --name-only --pretty=format:`,
     "files modified"
   );
 

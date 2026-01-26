@@ -27,7 +27,8 @@
     "react-hook-form",
     "react-resizable-panels",
     "recharts",
-    "vaul"
+    "vaul",
+    "lint-staged"
   ],
   "ignoreBinaries": ["printf", "report"],
   "next": {

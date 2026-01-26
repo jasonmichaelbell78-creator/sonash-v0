@@ -7,11 +7,20 @@ actionable items for ROADMAP.md integration.
 
 ## Contents
 
-| Document                                           | Description                               | Status       |
-| -------------------------------------------------- | ----------------------------------------- | ------------ |
-| [MASTER_ISSUE_LIST.md](./MASTER_ISSUE_LIST.md)     | 283 findings from 6-model multi-AI audits | Active       |
-| [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) | Execution plan for aggregated findings    | Active       |
-| ROADMAP_INTEGRATION.md                             | Prioritized backlog (was ROADMAP v2.6)    | **Archived** |
+| Document                                           | Description                               | Status          |
+| -------------------------------------------------- | ----------------------------------------- | --------------- |
+| [MASTER_ISSUE_LIST.md](./MASTER_ISSUE_LIST.md)     | 283 findings from 6-model multi-AI audits | **SUPERSEDED**  |
+| [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) | Execution plan for aggregated findings    | Active (legacy) |
+| ROADMAP_INTEGRATION.md                             | Prioritized backlog (was ROADMAP v2.6)    | **Archived**    |
+
+> **⚠️ IMPORTANT (Session #98):** MASTER_ISSUE_LIST.md is now **superseded** by
+> [TECHNICAL_DEBT_MASTER.md](../TECHNICAL_DEBT_MASTER.md) which consolidates:
+>
+> - Comprehensive Audit (2026-01-24): 112 valid findings
+> - This list (2026-01-17): Cross-referenced, many duplicates identified
+> - ROADMAP inline items (CANON, DEDUP, EFF, PERF)
+>
+> **Use TECHNICAL_DEBT_MASTER.md for current tech debt tracking.**
 
 > **Note:** ROADMAP_INTEGRATION.md was archived (2026-01-24) as ROADMAP.md has
 > been reorganized to v3.9 with the full expansion integration. See

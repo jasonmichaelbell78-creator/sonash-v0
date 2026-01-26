@@ -35,6 +35,11 @@
           },
           {
             "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/audit-s0s1-validator.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking audit S0/S1 compliance..."
+          },
+          {
+            "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pattern-check.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking pattern compliance..."
           },
