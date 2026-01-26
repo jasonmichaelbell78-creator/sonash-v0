@@ -211,11 +211,13 @@ function sanitizeDateString(dateString) {
  * @returns {string} ISO date string for the next day
  */
 function getNextDay(dateString) {
-  const date = new Date(dateString);
+  // Parse as UTC midnight to avoid timezone-related off-by-one errors (Review #198)
+  const date = new Date(dateString + "T00:00:00Z");
   if (isNaN(date.getTime())) {
     return dateString; // Return original if invalid
   }
-  date.setDate(date.getDate() + 1);
+  // Use UTC methods to ensure consistent behavior across environments
+  date.setUTCDate(date.getUTCDate() + 1);
   return date.toISOString().split("T")[0];
 }
 

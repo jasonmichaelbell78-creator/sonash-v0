@@ -16,7 +16,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 // Rollout mode: WARN = non-blocking, BLOCK = blocking
-const ROLLOUT_MODE = "WARN";
+// Can be overridden via environment variable for gradual rollout (Review #198)
+const ROLLOUT_MODE = process.env.AUDIT_S0S1_MODE || "WARN";
 
 // Valid verification methods (match validate-audit.js)
 const VALID_FIRST_PASS_METHODS = new Set(["grep", "tool_output", "file_read", "code_search"]);
