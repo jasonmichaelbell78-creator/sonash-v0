@@ -88,7 +88,7 @@ const CATEGORY_THRESHOLDS = {
   },
   process: {
     commits: 75, // was 30
-    files: 10, // was 1 (ANY) - now requires meaningful changes
+    files: 20, // was 10 - Session #101: increased to reduce noise from routine script updates
     filePattern: /(\.github|\.claude|\.husky|scripts\/)/,
   },
 };
@@ -695,13 +695,15 @@ function checkCategoryTriggers(category, sinceDate, thresholds) {
 
 /**
  * Check if bundle configuration files changed since a date
+ * Session #101: Removed package.json from check - it changes too frequently for non-bundle reasons
+ * (e.g., adding npm scripts). Only check actual bundler config files.
  * @param {string} sinceDate - ISO date string (YYYY-MM-DD) to check from
- * @returns {boolean} True if package.json, next.config.*, or webpack.config.js changed
+ * @returns {boolean} True if next.config.* or webpack.config.js changed
  */
 function isBundleChanged(sinceDate) {
   const bundleFiles = getFilesModifiedSince(
     sinceDate,
-    /^(package\.json|next\.config\.(js|mjs|ts)|webpack\.config\.js)$/
+    /^(next\.config\.(js|mjs|ts)|webpack\.config\.js|vite\.config\.(js|ts)|rollup\.config\.(js|mjs))$/
   );
   return bundleFiles.length > 0;
 }

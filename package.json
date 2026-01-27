@@ -44,6 +44,8 @@
     "audit:validate": "node scripts/validate-audit.js",
     "canon:normalize": "node scripts/normalize-canon-ids.js",
     "backlog:check": "node scripts/check-backlog-health.js",
+    "agents:check": "node scripts/check-agent-compliance.js",
+    "agents:check-strict": "node scripts/check-agent-compliance.js --strict",
     "aggregate:audit-findings": "node scripts/aggregate-audit-findings.js && prettier --write docs/aggregation/*.md",
     "security:check": "node scripts/security-check.js",
     "security:check-all": "node scripts/security-check.js --all",
