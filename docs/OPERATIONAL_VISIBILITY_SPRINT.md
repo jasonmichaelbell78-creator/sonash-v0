@@ -1,7 +1,7 @@
 # Operational Visibility Sprint
 
-**Document Version:** 2.0 **Created:** 2026-01-14 **Status:** ACTIVE
-**Priority:** P0 - Immediate Focus **Last Updated:** 2026-01-26
+**Document Version:** 2.1 **Created:** 2026-01-14 **Status:** ACTIVE
+**Priority:** P0 - Immediate Focus **Last Updated:** 2026-01-27
 
 ---
 
@@ -197,6 +197,18 @@ Phase 2 - CI Quality Gates (E2):
 
 Phase 3 - Deployment Safety (E2-E3):
 ┌─────────────────────────────────────────────────────────────┐
+│  D5.5: Golden-Path E2E Test (3hr) [CTO Advisory]            │
+│  ├─ Create tests/e2e/golden-path.spec.ts                    │
+│  ├─ Test critical user journey:                             │
+│  │   1. Load homepage                                       │
+│  │   2. Sign in (test user or mock)                         │
+│  │   3. Navigate to Today page                              │
+│  │   4. Create a daily entry                                │
+│  │   5. Verify entry appears                                │
+│  ├─ Run in CI before deploy (blocking)                      │
+│  ├─ Use Playwright (already in devDependencies)             │
+│  └─ Store screenshots on failure for debugging              │
+├─────────────────────────────────────────────────────────────┤
 │  D6: Post-Deployment Health Checks (2hr) [Comprehensive]    │
 │  ├─ Add health endpoint call after deploy                   │
 │  ├─ Verify app responds before marking success              │
@@ -281,19 +293,157 @@ Periodic Reports:
 │  ├─ Identify: improvements, regressions, stale items        │
 │  └─ Post to Dev Dashboard as digest entry                   │
 └─────────────────────────────────────────────────────────────┘
+
+Runbooks & Documentation:
+┌─────────────────────────────────────────────────────────────┐
+│  E7: Session-End Runbook (1hr)                              │
+│  ├─ Create docs/runbooks/SESSION_END.md                     │
+│  ├─ Document /session-end skill execution                   │
+│  ├─ Checklist: commit, push, context update, PR decision    │
+│  └─ Link from AI_WORKFLOW.md and SESSION_CONTEXT.md         │
+├─────────────────────────────────────────────────────────────┤
+│  E8: Incident Response Runbook (2hr)                        │
+│  ├─ Create docs/runbooks/INCIDENT_RESPONSE.md               │
+│  ├─ Severity definitions (P0-P3)                            │
+│  ├─ Escalation paths (who to contact: just you)             │
+│  ├─ Checklist for common incidents (see E9-E12)             │
+│  └─ Post-incident template                                  │
+├─────────────────────────────────────────────────────────────┤
+│  E9: Broken Deploy Triage Runbook (30min)                   │
+│  ├─ Create docs/runbooks/BROKEN_DEPLOY.md                   │
+│  ├─ Check: GitHub Actions logs, Firebase deploy status      │
+│  ├─ Common causes: build failure, env vars, function crash  │
+│  ├─ Rollback steps (Firebase hosting rollback command)      │
+│  └─ Prevention checklist                                    │
+├─────────────────────────────────────────────────────────────┤
+│  E10: Firestore Permission Denied Runbook (30min)           │
+│  ├─ Create docs/runbooks/FIRESTORE_PERMISSION_DENIED.md     │
+│  ├─ Check: firestore.rules syntax, auth state, user claims  │
+│  ├─ Debug: Firebase Console → Firestore → Rules Playground  │
+│  ├─ Common causes: missing auth, wrong collection path      │
+│  └─ Emulator testing steps                                  │
+├─────────────────────────────────────────────────────────────┤
+│  E11: App Check Issues Runbook (30min)                      │
+│  ├─ Create docs/runbooks/APP_CHECK_ISSUES.md                │
+│  ├─ Check: reCAPTCHA config, App Check token refresh        │
+│  ├─ Debug: Firebase Console → App Check → Metrics           │
+│  ├─ Common causes: expired token, blocked domain            │
+│  └─ Bypass for testing (dev only)                           │
+├─────────────────────────────────────────────────────────────┤
+│  E12: Cost Spike Triage Runbook (30min)                     │
+│  ├─ Create docs/runbooks/COST_SPIKE.md                      │
+│  ├─ Check: Firebase Usage → Firestore reads, Functions      │
+│  ├─ Identify: runaway queries, missing pagination           │
+│  ├─ Emergency: disable problematic function/endpoint        │
+│  └─ Prevention: budget alerts, query limits                 │
+├─────────────────────────────────────────────────────────────┤
+│  E13: Claude Fix Bundle Format (1hr)                        │
+│  ├─ Create docs/CLAUDE_FIX_BUNDLE.md                        │
+│  ├─ Define standard format for exporting issues to Claude:  │
+│  │   - Symptom summary (what went wrong)                    │
+│  │   - Environment (prod/dev), release SHA, time window     │
+│  │   - Reproduction steps                                   │
+│  │   - Stack trace + breadcrumbs (PII redacted)             │
+│  │   - Affected route/page                                  │
+│  │   - Recent deploy changes (git diff summary)             │
+│  │   - Classification (Security/Reliability/Perf/Cost)      │
+│  │   - Suggested diagnostic commands                        │
+│  │   - Proposed fix plan                                    │
+│  ├─ Add export button to Admin Errors Tab                   │
+│  └─ Template file: .claude/templates/fix-bundle.md          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Track O: Owner Actions (Zero Claude Work)
+
+**Goal:** Essential setup tasks that require manual action in external services
+**Status:** 📋 Pending **Effort:** ~10 minutes total
+
+> **IMPORTANT:** These tasks cannot be automated by Claude. They require you to
+> log into external services and configure settings manually.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  O1: Firebase Budget Alert (~2 min)                         │
+│                                                             │
+│  WHY: Prevent unexpected charges from runaway usage         │
+│                                                             │
+│  STEPS:                                                     │
+│  1. Go to Firebase Console: https://console.firebase.google.com │
+│  2. Select your project (sonash-app)                        │
+│  3. Click gear icon → "Usage and billing"                   │
+│  4. Click "Details & settings" tab                          │
+│  5. Under "Budget alerts", click "Create budget"            │
+│  6. Set budget amount: $25 (or your comfort level)          │
+│  7. Set alert thresholds: 50%, 90%, 100%                    │
+│  8. Add notification email: your email address              │
+│  9. Click "Create"                                          │
+│                                                             │
+│  VERIFICATION: You'll receive a confirmation email          │
+│                                                             │
+│  NOTE: Budget alerts are warnings only - they don't stop    │
+│  billing. To set a hard cap, use GCP budgets instead:       │
+│  https://cloud.google.com/billing/docs/how-to/budgets       │
+├─────────────────────────────────────────────────────────────┤
+│  O2: UptimeRobot External Monitoring (~5 min)               │
+│                                                             │
+│  WHY: Get alerted when your site is down (even if Firebase  │
+│  is down and can't send alerts)                             │
+│                                                             │
+│  STEPS:                                                     │
+│  1. Go to: https://uptimerobot.com                          │
+│  2. Click "Register for FREE" (50 monitors free)            │
+│  3. Create account with your email                          │
+│  4. Click "Add New Monitor"                                 │
+│  5. Configure:                                              │
+│     - Monitor Type: HTTPS                                   │
+│     - Friendly Name: SoNash Production                      │
+│     - URL: https://sonash-app.web.app (your prod URL)       │
+│     - Monitoring Interval: 5 minutes                        │
+│  6. Under "Alert Contacts", add your email                  │
+│  7. Click "Create Monitor"                                  │
+│                                                             │
+│  OPTIONAL (recommended):                                    │
+│  - Add second monitor for your API/health endpoint          │
+│  - URL: https://us-central1-sonash-app.cloudfunctions.net/healthCheck │
+│  - This monitors Firebase Functions independently           │
+│                                                             │
+│  VERIFICATION: Force a test alert from dashboard            │
+├─────────────────────────────────────────────────────────────┤
+│  O3: GitHub Dependabot Enable (~2 min)                      │
+│                                                             │
+│  WHY: Auto-detect vulnerable dependencies weekly            │
+│                                                             │
+│  STEPS:                                                     │
+│  1. Go to your repo: github.com/[your-username]/sonash-v0   │
+│  2. Click "Settings" tab                                    │
+│  3. Click "Code security and analysis" in sidebar           │
+│  4. Under "Dependabot", enable:                             │
+│     - Dependabot alerts: ON                                 │
+│     - Dependabot security updates: ON                       │
+│  5. Done! GitHub will now alert you to CVEs                 │
+│                                                             │
+│  NOTE: D5 in Track D will add a dependabot.yml for          │
+│  version updates, but security alerts work without it.      │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## Effort Summary by Track
 
-| Track   | Description              | Total Effort  | Priority |
-| ------- | ------------------------ | ------------- | -------- |
-| A       | Admin Panel              | ~6 hours      | P0       |
-| B       | Dev Dashboard (expanded) | ~20 hours     | P0       |
-| D       | CI Reliability           | ~28 hours     | P1       |
-| E       | Solo Dev Automations     | ~11 hours     | P1       |
-| **ALL** | **Total Sprint**         | **~65 hours** | -        |
+| Track   | Description              | Total Effort  | Priority | Owner  |
+| ------- | ------------------------ | ------------- | -------- | ------ |
+| A       | Admin Panel              | ~6 hours      | P0       | Claude |
+| B       | Dev Dashboard (expanded) | ~20 hours     | P0       | Claude |
+| D       | CI Reliability           | ~31 hours     | P1       | Claude |
+| E       | Solo Dev Automations     | ~17 hours     | P1       | Claude |
+| **O**   | **Owner Actions**        | **~10 min**   | **P0**   | Jason  |
+| **ALL** | **Total Sprint**         | **~74 hours** | -        | -      |
+
+> **Track O Note:** Owner Actions are P0 priority because they provide critical
+> external monitoring (O2) and cost protection (O1) that cannot be replicated by
+> code. Complete these first - they take only 10 minutes total.
 
 ---
 
@@ -465,6 +615,7 @@ package.json                           # Add new npm scripts
 - [ ] Pre-commit time < 15 seconds (from ~50s)
 - [ ] CI quality gates block on NEW violations only
 - [ ] Security scanning in CI (npm audit)
+- [ ] **Golden-path E2E test runs in CI** (NEW - D5.5)
 - [ ] Post-deployment health checks verify success
 - [ ] Deployment requires manual approval
 
@@ -474,6 +625,16 @@ package.json                           # Add new npm scripts
 - [ ] Warning resolution workflow functional
 - [ ] Session health summary available in Dashboard
 - [ ] Auto-escalation alerts for aging issues
+- [ ] **Session-end runbook created** (E7)
+- [ ] **Incident response runbook created** (E8)
+- [ ] **Triage runbooks created** (E9-E12: deploy, Firestore, App Check, cost)
+- [ ] **Claude Fix Bundle format documented** (E13)
+
+### Track O Complete When (Owner Checklist):
+
+- [ ] Firebase budget alert configured (O1)
+- [ ] UptimeRobot monitor active (O2)
+- [ ] GitHub Dependabot alerts enabled (O3)
 
 ---
 
@@ -515,6 +676,9 @@ package.json                           # Add new npm scripts
 
 | Version | Date       | Changes                                                           |
 | ------- | ---------- | ----------------------------------------------------------------- |
+| 2.1     | 2026-01-27 | Added Track O (Owner Actions) with Firebase budget, UptimeRobot,  |
+|         |            | Dependabot setup; Added E7 (Session-End Runbook), E8 (Incident    |
+|         |            | Response Runbook); Added D5.5 (Golden-Path E2E Test); ~71 hours   |
 | 2.0     | 2026-01-26 | Major update: Added Track D (CI Reliability), Track E (Solo Dev), |
 |         |            | B10 (Health Tab), B11 (Warnings Tab); Integrated Process Audit    |
 |         |            | CANON-0105-0118 and Comprehensive Audit findings; ~65 hours total |
