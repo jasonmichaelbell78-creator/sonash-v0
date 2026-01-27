@@ -1,7 +1,11 @@
 # SonarCloud Issue Dismissals
 
-**Purpose**: Document issues that are dismissed rather than fixed, with
-justification.
+> **Last Updated:** 2026-01-27
+
+## Purpose
+
+This document records SonarCloud issues that are dismissed rather than fixed,
+along with categorized justifications for each dismissal decision.
 
 **Format**: Each dismissal must include:
 
@@ -111,3 +115,11 @@ shows no issues with current report sizes (~300 issues). **Reviewed by**: Claude
 - [Sprint Plan](../archive/completed-plans/sonarcloud-cleanup-sprint.md) - 5-PR
   structure (paused)
 - [Triage Guide](../SONARCLOUD_TRIAGE.md) - Triage decision framework
+
+---
+
+## Version History
+
+| Version | Date       | Changes                                 |
+| ------- | ---------- | --------------------------------------- |
+| 1.0     | 2026-01-19 | Initial version with Phase 5 dismissals |

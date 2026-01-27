@@ -1,4 +1,22 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Module 2 – Sponsor Tooling & Connection
+
+## Purpose
+
+Expansion module ideation document exploring sponsor tooling and connection
+features for the SoNash app, bridging digital isolation with human
+accountability.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 **Core Philosophy:** "The Bridge." The app is a private sanctuary, but recovery
 requires connection. These tools bridge the gap between digital isolation and

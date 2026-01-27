@@ -1,6 +1,13 @@
 # SoNash Documentation Plan Map
 
-**Last Updated:** 2026-01-20 | **Version:** 1.0
+**Last Updated:** 2026-01-27 | **Version:** 1.0
+
+---
+
+## Purpose
+
+Provide a visual map of documentation relationships, hierarchy, and
+cross-document sync triggers for the SoNash project.
 
 ---
 

@@ -1,4 +1,22 @@
-# _SoNash Expansion Full Ideation All Modules_
+---
+Last Updated: 2026-01-27
+---
+
+# SoNash Expansion Full Ideation All Modules
+
+## Purpose
+
+Comprehensive expansion module ideation document containing all feature
+brainstorming and ideation for the SoNash app across all 14 modules, from step
+work depth to old-timer toolkits.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 # SoNash Expansion: Module 1 – Step Work Depth
 

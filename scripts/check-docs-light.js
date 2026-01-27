@@ -172,7 +172,12 @@ function extractHeadings(content) {
     if (match) {
       headings.push({
         level: match[1].length,
-        text: match[2].replace(/🔗|📋|🎯|📊|🗓️|🤖|💡|🚨|✅|📝|📚|🔐|🔄|🗺️|📖|📐|🔀/gu, "").trim(),
+        text: match[2]
+          .replace(
+            /🔗|📋|🎯|📊|🗓️|🤖|💡|🚨|✅|📝|📚|🔐|🔄|🗺️|📖|📐|🔀|🚀|🏛️|⚡|🖥️|⏸️|🔧|🛠️|📦|🧪|🔍|📈/gu,
+            ""
+          )
+          .trim(),
         line: i + 1,
       });
     }
@@ -399,7 +404,11 @@ function validateAnchorLinks(links, headings) {
   }
 
   for (const link of links) {
-    if (!link.isAnchor && !link.target.includes("#")) continue;
+    // Review #213: Only validate same-file anchors (pure #anchor links)
+    // Cross-file anchors (./file.md#anchor) would need to resolve the target file's headings
+    // For now, skip cross-file anchor validation as it causes false positives
+    if (!link.isAnchor) continue;
+    if (!link.target.includes("#")) continue;
 
     const anchor = link.target.split("#")[1];
     if (!anchor) continue;

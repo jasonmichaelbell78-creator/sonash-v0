@@ -1,7 +1,14 @@
 # ROADMAP Analysis
 
-**Created:** 2026-01-24 **Purpose:** Full analysis artifacts from ROADMAP v3.0
-reorganization
+**Created:** 2026-01-24 | **Last Updated:** 2026-01-27
+
+## Purpose
+
+This folder contains comprehensive analysis documents generated during the
+ROADMAP v3.0 reorganization. These artifacts document the systematic evaluation
+of 660+ roadmap items through inventory, deduplication, dependency mapping,
+categorization, and effort estimation passes. The analysis informed the
+evolution from ROADMAP v3.0 to v3.9.
 
 ---
 
@@ -83,3 +90,12 @@ ROADMAP reorganization (v3.0 → v3.9). The analysis was conducted in two phases
 - [EXPANSION_EVALUATION_TRACKER.md](../docs/EXPANSION_EVALUATION_TRACKER.md) -
   Expansion evaluation tracking
 - [SESSION_DECISIONS.md](../docs/SESSION_DECISIONS.md) - Decision log
+
+---
+
+## Version History
+
+| Version | Date       | Author | Changes                                   |
+| ------- | ---------- | ------ | ----------------------------------------- |
+| 1.0     | 2026-01-24 | Claude | Initial creation with Phase A/B artifacts |
+| 1.1     | 2026-01-27 | Claude | Added Purpose section and Version History |

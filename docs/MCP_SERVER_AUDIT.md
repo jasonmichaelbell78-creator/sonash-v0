@@ -1,7 +1,12 @@
 # MCP Server Usage Audit
 
-**Date:** 2026-01-22 **Purpose:** Identify MCP servers consuming context without
-providing value
+**Last Updated:** 2026-01-22
+
+---
+
+## Purpose
+
+Identify MCP servers consuming context without providing value.
 
 ---
 

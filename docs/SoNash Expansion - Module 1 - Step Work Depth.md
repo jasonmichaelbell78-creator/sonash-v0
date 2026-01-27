@@ -1,4 +1,22 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Module 1 – Step Work Depth
+
+## Purpose
+
+Expansion module ideation document exploring step work depth features for the
+SoNash app, focusing on structured, principle-based workflows for each of the 12
+Steps.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 **Focus:** Deepening engagement through structured, principle-based workflows.
 **Tech Stack Approach:** "Vibe Coder" (Start as text/forms -> Upgrade to

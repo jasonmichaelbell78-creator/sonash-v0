@@ -112,32 +112,10 @@ function checkMilestoneItemCounts(content, fileName) {
     return;
   }
 
-  // Check a sample milestone - Active Sprint
-  const sprintItemsMatch = content.match(
-    /\*\*🚀 Operational Visibility\*\*[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|\s*~?(\d+)/
-  );
-
-  if (sprintItemsMatch) {
-    const claimedCount = parseInt(sprintItemsMatch[1], 10);
-
-    // Count actual checkboxes in sprint section
-    // Use \r?\n for cross-platform CRLF compatibility (Review #211)
-    const sprintSectionMatch = content.match(
-      /## 🚀 ACTIVE SPRINT[\s\S]*?(?=\r?\n## ⚡|\r?\n## 🖥️|\r?\n## 📊 Technical|$)/
-    );
-
-    if (sprintSectionMatch) {
-      const checkboxes = (sprintSectionMatch[0].match(/- \[[ x]\]/g) || []).length;
-
-      // Allow 100% variance for approximate counts (they use ~ prefix)
-      // The Overview table shows planned items, actual checkboxes may differ significantly
-      if (Math.abs(checkboxes - claimedCount) > claimedCount * 1.0) {
-        warnings.push(
-          `${fileName}: Active Sprint claims ~${claimedCount} items but has ${checkboxes} checkboxes (diff: ${Math.abs(checkboxes - claimedCount)})`
-        );
-      }
-    }
-  }
+  // NOTE: The Overview table's last column is estimated HOURS, not item count.
+  // Comparing hours to checkbox count is not meaningful.
+  // This check has been disabled - checkbox counts vary by task granularity.
+  // Review #213: Removed misleading hours-vs-items comparison.
 }
 
 /**

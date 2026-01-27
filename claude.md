@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.3 **Last Updated:** 2026-01-18
+**Document Version:** 3.4 **Last Updated:** 2026-01-27
 
 ---
 
@@ -72,8 +72,8 @@ This is the primary context file for Claude Code sessions:
 | exec() loops       | `/g` flag REQUIRED (no /g = infinite loop)                        |
 
 **Full Reference**:
-[docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (180+
-patterns with priority tiers 🔴/🟡/⚪ from 179 reviews)
+[docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (230+
+patterns with priority tiers 🔴/🟡/⚪ from 212 reviews)
 
 **Pre-Write Checklist**:
 [docs/agent_docs/SECURITY_CHECKLIST.md](docs/agent_docs/SECURITY_CHECKLIST.md) -

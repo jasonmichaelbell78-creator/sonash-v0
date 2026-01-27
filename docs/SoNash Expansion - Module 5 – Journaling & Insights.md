@@ -1,4 +1,22 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Module 5 – Journaling & Insights
+
+## Purpose
+
+Expansion module ideation document exploring journaling and insights features
+for the SoNash app, turning subjective feelings into objective data to help
+users and their sponsors make better decisions.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 **Core Philosophy:** "The Mirror, Not the Doctor." The app never diagnoses ("You
 are depressed"). It only reflects ("You’ve written about 'sadness' 4 days in a

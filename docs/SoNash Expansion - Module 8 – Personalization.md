@@ -1,4 +1,22 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Module 8 – Personalization
+
+## Purpose
+
+Expansion module ideation document exploring personalization features for the
+SoNash app, allowing users to customize the interface, terminology, and features
+to match their specific recovery program and preferences.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 **Core Philosophy:** "The App Fits You, You Don't Fit the App." We avoid the
 "one size fits all" trap of standard 12-step apps. Whether a user is an atheist

@@ -12,6 +12,15 @@
 
 ---
 
+## Status/Progress
+
+**Current Status:** Planning document for future milestones (M2-M10). Not yet in
+active development.
+
+**Last Review:** 2026-01-27
+
+---
+
 ## 🎯 Document Purpose
 
 This document contains **detailed specifications for future milestones** that

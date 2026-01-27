@@ -1,4 +1,22 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Module 4 – Offline, Privacy & Trust
+
+## Purpose
+
+Expansion module ideation document exploring offline capability, privacy, and
+trust features for the SoNash app, prioritizing local-first storage and visible
+security.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 **Core Philosophy:** "Your Phone is the Vault." We assume the user is writing
 things that could ruin their reputation, relationships, or legal standing if

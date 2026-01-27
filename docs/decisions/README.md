@@ -1,6 +1,13 @@
 # Architecture Decision Records (ADRs)
 
-**Created:** 2026-01-03 **Updated:** 2026-01-15
+**Created:** 2026-01-03 **Last Updated:** 2026-01-27
+
+---
+
+## Status
+
+Active directory for Architecture Decision Records. ADR process and templates
+are current.
 
 ---
 

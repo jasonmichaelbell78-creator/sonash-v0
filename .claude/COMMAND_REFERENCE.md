@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 2.0 **Last Updated:** 2026-01-22 **Purpose:** Comprehensive
+**Version:** 2.1 **Last Updated:** 2026-01-27 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 

@@ -1,6 +1,13 @@
 # Single-Session Audit Results
 
-**Created:** 2026-01-08 **Updated:** 2026-01-13
+**Created:** 2026-01-08 **Last Updated:** 2026-01-27
+
+---
+
+## Status
+
+Active directory for single-session audit results. Audit commands and processes
+are current.
 
 ---
 
