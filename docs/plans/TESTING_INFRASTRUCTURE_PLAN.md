@@ -216,23 +216,32 @@ tests/e2e/
 
 ```typescript
 // tests/factories/user.factory.ts
-export const createTestUser = (overrides?: Partial<User>): User => ({
-  id: `test-user-${Date.now()}`,
-  email: `test-${Date.now()}@example.com`,
-  cleanDate: new Date(),
-  fellowship: "AA",
-  ...overrides,
-});
+// Use counter instead of Date.now() to avoid race conditions in parallel tests
+let userCounter = 0;
+export const createTestUser = (overrides?: Partial<User>): User => {
+  userCounter++;
+  return {
+    id: `test-user-${userCounter}`,
+    email: `test-${userCounter}@example.com`,
+    cleanDate: new Date(),
+    fellowship: "AA",
+    ...overrides,
+  };
+};
 
 // tests/factories/meeting.factory.ts
-export const createTestMeeting = (overrides?: Partial<Meeting>): Meeting => ({
-  id: `test-meeting-${Date.now()}`,
-  name: "Test Meeting",
-  type: "AA",
-  day: "Monday",
-  time: "19:00",
-  ...overrides,
-});
+let meetingCounter = 0;
+export const createTestMeeting = (overrides?: Partial<Meeting>): Meeting => {
+  meetingCounter++;
+  return {
+    id: `test-meeting-${meetingCounter}`,
+    name: "Test Meeting",
+    type: "AA",
+    day: "Monday",
+    time: "19:00",
+    ...overrides,
+  };
+};
 ```
 
 ---

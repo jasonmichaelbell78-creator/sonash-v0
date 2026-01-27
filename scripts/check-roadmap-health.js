@@ -17,7 +17,7 @@
  *   npm run roadmap:validate
  *   node scripts/check-roadmap-health.js [--fix]
  *
- * Created: 2026-01-27 (Session #102)
+ * Created: 2026-01-27 (Session #103)
  */
 
 const fs = require("node:fs");
@@ -32,28 +32,45 @@ let errors = [];
 let warnings = [];
 
 /**
- * Read file safely
+ * Read file safely with error context
  */
 function readFile(filePath) {
   try {
     return fs.readFileSync(filePath, "utf-8");
-  } catch {
-    errors.push(`Cannot read file: ${filePath}`);
+  } catch (error) {
+    // Provide context: error code (ENOENT, EACCES, etc.) and message
+    // Safe error access: check instanceof Error first (Review #211)
+    const code = error instanceof Error && error.code ? error.code : "UNKNOWN";
+    const msg = error instanceof Error ? error.message : String(error);
+    errors.push(`Cannot read file: ${path.basename(filePath)} (${code}: ${msg})`);
     return null;
   }
 }
 
 /**
  * Check 1: Version consistency
+ * Scoped to Version History section to avoid false matches (Review #211)
  */
 function checkVersionConsistency(content, fileName) {
   // Extract version from header
   const headerVersionMatch = content.match(/\*\*Document Version:\*\*\s*(\d+\.\d+)/);
   const headerVersion = headerVersionMatch ? headerVersionMatch[1] : null;
 
-  // Extract latest version from history table
-  const historyMatch = content.match(/\|\s*(\d+\.\d+)\s*\|\s*\d{4}-\d{2}-\d{2}\s*\|/);
-  const historyVersion = historyMatch ? historyMatch[1] : null;
+  // Extract latest version from Version History section only (Review #211)
+  // Use \r?\n for CRLF compatibility
+  const versionHistorySectionMatch = content.match(
+    /##\s*🗓️?\s*Version History[\s\S]*?(?=\r?\n##\s|\r?\n---\s*$|$)/
+  );
+
+  let historyVersion = null;
+  if (versionHistorySectionMatch) {
+    const section = versionHistorySectionMatch[0];
+    // First version row after the table header is treated as "latest"
+    const rows = Array.from(section.matchAll(/^\|\s*(\d+\.\d+)\s*\|\s*\d{4}-\d{2}-\d{2}\s*\|/gm));
+    historyVersion = rows.length > 0 ? rows[0][1] : null;
+  } else {
+    warnings.push(`${fileName}: Could not find Version History section`);
+  }
 
   if (headerVersion && historyVersion && headerVersion !== historyVersion) {
     errors.push(
@@ -85,8 +102,9 @@ function checkProgressPercentages(content, fileName) {
  */
 function checkMilestoneItemCounts(content, fileName) {
   // Extract claimed item counts from overview table
+  // Use \r?\n for cross-platform CRLF compatibility (Review #211)
   const overviewTableMatch = content.match(
-    /## 📊 Milestones Overview[\s\S]*?\|[\s\S]*?(?=\n\n|\n##|\n---)/
+    /## 📊 Milestones Overview[\s\S]*?\|[\s\S]*?(?=\r?\n\r?\n|\r?\n##|\r?\n---)/
   );
 
   if (!overviewTableMatch) {
@@ -103,8 +121,9 @@ function checkMilestoneItemCounts(content, fileName) {
     const claimedCount = parseInt(sprintItemsMatch[1], 10);
 
     // Count actual checkboxes in sprint section
+    // Use \r?\n for cross-platform CRLF compatibility (Review #211)
     const sprintSectionMatch = content.match(
-      /## 🚀 ACTIVE SPRINT[\s\S]*?(?=\n## ⚡|\n## 🖥️|\n## 📊 Technical|$)/
+      /## 🚀 ACTIVE SPRINT[\s\S]*?(?=\r?\n## ⚡|\r?\n## 🖥️|\r?\n## 📊 Technical|$)/
     );
 
     if (sprintSectionMatch) {
@@ -137,9 +156,28 @@ function checkLinkedDocuments(content, fileName) {
       continue;
     }
 
-    // Resolve relative path
-    const basePath = fileName === "ROADMAP.md" ? REPO_ROOT : REPO_ROOT;
-    const fullPath = path.resolve(basePath, linkPath.split("#")[0]);
+    const target = linkPath.split("#")[0];
+
+    // Disallow absolute paths for internal links (Review #211)
+    if (path.isAbsolute(target)) {
+      warnings.push(
+        `${fileName}: Invalid internal link (absolute path) "${linkText}" -> ${linkPath}`
+      );
+      continue;
+    }
+
+    // Resolve relative path from repo root
+    const fullPath = path.resolve(REPO_ROOT, target);
+
+    // Path traversal prevention: ensure resolved path stays within repo (Review #211)
+    // Use regex for cross-platform ".." detection (handles "..hidden.md" edge case)
+    const rel = path.relative(REPO_ROOT, fullPath);
+    if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+      warnings.push(
+        `${fileName}: Invalid internal link (escapes repo) "${linkText}" -> ${linkPath}`
+      );
+      continue;
+    }
 
     if (!fs.existsSync(fullPath)) {
       warnings.push(`${fileName}: Broken link "${linkText}" -> ${linkPath}`);
@@ -149,6 +187,7 @@ function checkLinkedDocuments(content, fileName) {
 
 /**
  * Check 5: Parallel group consistency
+ * Validates that PG markers in roadmap docs are defined in guide (Review #211)
  */
 function checkParallelGroups(roadmapContent, futureContent) {
   // Check if PARALLEL_EXECUTION_GUIDE.md exists
@@ -157,29 +196,50 @@ function checkParallelGroups(roadmapContent, futureContent) {
     return;
   }
 
-  // Count PG markers in both documents
-  const pgMarkersRoadmap = (roadmapContent.match(/⏸\s*PG\d/g) || []).length;
-  const pgMarkersFuture = futureContent ? (futureContent.match(/⏸\s*PG\d/g) || []).length : 0;
+  const guideContent = readFile(PARALLEL_GUIDE_PATH);
+  if (!guideContent) {
+    warnings.push("PARALLEL_EXECUTION_GUIDE.md unreadable; skipping PG validation");
+    return;
+  }
 
-  if (pgMarkersRoadmap + pgMarkersFuture === 0) {
+  // Extract defined group numbers from guide
+  // Guide uses "Group 1", "Group 2" format, roadmap uses "⏸ PG1", "⏸ PG2"
+  const defined = new Set(Array.from(guideContent.matchAll(/Group\s*(\d+)/gi)).map((m) => m[1]));
+
+  // Extract referenced PG numbers from roadmap docs
+  const combined = `${roadmapContent}\n${futureContent || ""}`;
+  const referenced = new Set(Array.from(combined.matchAll(/⏸\s*PG(\d+)\b/g)).map((m) => m[1]));
+
+  if (referenced.size === 0) {
     warnings.push("No parallel group markers (⏸ PG#) found in roadmap documents");
+    return;
+  }
+
+  // Validate each referenced PG is defined
+  for (const pg of referenced) {
+    if (!defined.has(pg)) {
+      errors.push(
+        `Parallel group marker "PG${pg}" is used in roadmap docs but not defined in PARALLEL_EXECUTION_GUIDE.md`
+      );
+    }
   }
 }
 
 /**
  * Check 6: Track naming consistency
- * Note: Allows Track A-Test, Track A-P2 style subsections
+ * Matches main track headers: "### Track X -" or "### Track X:"
+ * Excludes subsections like "### Track A-Test" or "### Track A-P2" (Review #211)
  */
 function checkTrackNaming(content, fileName) {
-  // Find all Track headers - look for exact "Track X -" or "Track X:" pattern
-  // Allow Track A-Test, Track A-P2, etc. as valid subsections
-  const trackMatches = content.matchAll(/### Track ([A-Z])(?:\s*-\s*(?!Test|P\d)|\s*:)/g);
+  // Find main Track headers only - "Track X -" or "Track X:" patterns
+  // Negative lookbehind excludes subsections (Track A-Test, Track A-P2)
+  const trackMatches = content.matchAll(/### Track ([A-Z])(?:\s+-|\s*:)/g);
   const tracks = new Set();
 
   for (const match of trackMatches) {
     const trackLetter = match[1];
     if (tracks.has(trackLetter)) {
-      errors.push(`${fileName}: Duplicate Track ${trackLetter} found (not a subsection)`);
+      errors.push(`${fileName}: Duplicate Track ${trackLetter} found`);
     }
     tracks.add(trackLetter);
   }
@@ -210,7 +270,9 @@ function main() {
   checkTrackNaming(roadmapContent, "ROADMAP.md");
 
   // Run checks on ROADMAP_FUTURE.md if it exists
-  if (futureContent) {
+  if (!futureContent) {
+    console.warn("⚠️  Skipping ROADMAP_FUTURE.md checks; file not found or unreadable.");
+  } else {
     console.log("📄 Checking ROADMAP_FUTURE.md...");
     checkVersionConsistency(futureContent, "ROADMAP_FUTURE.md");
     checkLinkedDocuments(futureContent, "ROADMAP_FUTURE.md");

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 11.8 **Created:** 2026-01-02 **Last Updated:** 2026-01-27
+**Document Version:** 11.9 **Created:** 2026-01-02 **Last Updated:** 2026-01-27
 
 ## Purpose
 
@@ -27,13 +27,14 @@ improvements made.
 ## Version History
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 11.0    | 2026-01-24 | **SECURITY INFRASTRUCTURE**: Created proactive security prevention framework after Review #201 required 6 rounds of fixes. **NEW FILES**: (1) `docs/agent_docs/SECURITY_CHECKLIST.md` - Pre-write checklist with 180+ patterns from CODE_PATTERNS.md; (2) `scripts/lib/security-helpers.js` - Reusable secure implementations (sanitizeError, escapeMd, refuseSymlinkWithParents, validatePathInDir, safeWriteFile, safeGitAdd, safeGitCommit, sanitizeFilename, parseCliArgs, safeReadFile, validateUrl, safeRegexExec, maskEmail); (3) `scripts/check-pattern-sync.js` - Verifies consistency between docs and automation. **NEW SCRIPT**: `npm run patterns:sync`. **FEEDBACK LOOP**: PR review → Learnings log → Consolidation → Pattern sync → Checklist/helpers update → Automation.                                                                                                                          |
-| 11.8    | 2026-01-27 | Reviews #208-210: Session #102 Hook Robustness & Security (3 rounds, 20+ items). **Review #208** (7 items): Pattern checker exclusions (3 verified try/catch files), remote branch normalization, path traversal startsWith fix, state write error logging, description sanitization, deleted files filter, stderr warnings. **Review #209** (6 items): Path containment hardening (path.relative), detached HEAD handling, null sessionId state reset prevention, session identity validation, execSync timeout/maxBuffer, agentsInvoked 200-entry cap. **Review #210 R1** (4 items): Project dir validation, stale state false pass fix, task matcher regex ((?i) not JS), atomic state writes (tmp+rename). **Review #210 R2** (4 items): Cross-platform path regex `^\.\.(?:[\\/]                                                                                                                               | $)`, email regex fix [A-Za-z] (was [A-Z                                                                                                                                                                                                                                                                             | a-z] matching literal \|), CI null session skip, hook pathExclude update. **NEW PATTERNS**: (60) Atomic file writes via tmp+rename; (61) Task agent matchers need explicit case variants; (62) path.relative for containment validation. Active reviews #180-210. |
+| 11.9    | 2026-01-27 | Review #211: Session #103 Testing Infrastructure PR - Qodo + SonarCloud + CI (18 items - 5 MAJOR, 6 MINOR, 1 TRIVIAL, 2 DEFERRED, 1 REJECTED). **MAJOR**: (1) readFile error handling with instanceof check; (2-3) CRLF regex compatibility `\r?\n`; (4) Bug L141 - conditional returns same value; (5) Path traversal regex `^\.\.(?:[\\/]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | $)` instead of startsWith. **MINOR**: (1) Test factory counter vs Date.now(); (2) Warning for skipped ROADMAP_FUTURE checks; (3) Track naming regex excludes subsections; (4) PG validation matches "Group" format; (5) Scoped version history regex; (6) Session #102→#103. **DEFERRED**: MCP Memory vs Vector DB; --fix CLI flag. **REJECTED**: Unstructured logging (CLI intentional). **NEW PATTERNS**: (63) Counter-based unique IDs for test factories; (64) Scope regex to relevant section; (65) Format matching for validation scripts (Group vs PG). Active reviews #180-211. |
+| 11.8    | 2026-01-27 | Reviews #208-210: Session #102 Hook Robustness & Security (3 rounds, 20+ items). **Review #208** (7 items): Pattern checker exclusions (3 verified try/catch files), remote branch normalization, path traversal startsWith fix, state write error logging, description sanitization, deleted files filter, stderr warnings. **Review #209** (6 items): Path containment hardening (path.relative), detached HEAD handling, null sessionId state reset prevention, session identity validation, execSync timeout/maxBuffer, agentsInvoked 200-entry cap. **Review #210 R1** (4 items): Project dir validation, stale state false pass fix, task matcher regex ((?i) not JS), atomic state writes (tmp+rename). **Review #210 R2** (4 items): Cross-platform path regex `^\.\.(?:[\\/]                                                                                                                               | $)`, email regex fix [A-Za-z] (was [A-Z                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | a-z] matching literal \|), CI null session skip, hook pathExclude update. **NEW PATTERNS**: (60) Atomic file writes via tmp+rename; (61) Task agent matchers need explicit case variants; (62) path.relative for containment validation. Active reviews #180-210. |
 | 11.7    | 2026-01-26 | Review #207: Session #99 PR Round 2 - Storage Robustness + React Patterns (6 items - 1 MAJOR CI, 1 MEDIUM placeholder detection, 4 MEDIUM React/storage). **MAJOR CI**: (1) npm run audit:validate needs `--` before `--all` for args to pass through. **MEDIUM**: (2) isPlaceholderLink - add path/anchor detection to avoid false negatives; (3) today-page.tsx getLocalStorage try/catch for Safari private mode; (4) today-page.tsx setLocalStorage isolated try/catch to not block Firestore; (5) use-smart-prompts.ts - move persistence from state updater to useEffect for React Strict Mode. **DEFERRED**: (6) saveBackup logging - silent fail intentional. **PATTERNS**: (57) npm args require `--` separator to pass to script; (58) React state updaters should be pure - move side effects to useEffect; (59) Storage operations need isolation to not block critical saves. Active reviews #180-207. |
 | 11.6    | 2026-01-26 | Review #206: Session #99 PR CI Fixes (6 items - 2 MAJOR CI blockers, 3 MINOR, 1 TRIVIAL). **MAJOR CI**: (1) docs/aggregation/README.md missing Purpose section heading - inline bold not recognized as section; (2) audit:validate needs --all flag + continue-on-error (script requires args). **MINOR**: (3) /example/i pattern too broad - matches "example.com" - changed to /^example$/i; (4) Angle bracket pattern too broad - changed to /^<[a-z_-]+>$/i; (5) Generic words check required SAME word match, not just both generic. **TRIVIAL**: (6) saveBackup try/catch for storage quota errors. **PATTERNS**: (55) Tier-1 docs need proper ## section headings, not inline bold; (56) CI scripts needing args must have continue-on-error or explicit args. Active reviews #180-206.                                                                                                                      |
 | 11.5    | 2026-01-26 | Review #205: Audit False Positive Prevention - Process improvement after CANON-0107/0108 false positives (storage.rules claimed missing but existed). **ROOT CAUSE**: Existence-based findings had HIGH confidence without command output evidence; S2/S3 skip verification. **FIXES TO audit-security.md**: (1) Existence findings MUST include actual command output; (2) Cap confidence at MEDIUM for existence/negative assertions; (3) Add Pre-Backlog Verification step; (4) Check firebase.json references. **NEW PATTERNS**: (53) Verify existence claims with actual ls output; (54) Absence of evidence ≠ evidence of absence. Active reviews #180-205.                                                                                                                                                                                                                                                   |
-| 11.4    | 2026-01-26 | Review #204 Round 3: Session #98 PR - CI Pattern Compliance Fixes (3 items - 3 CRITICAL CI blockers). **CRITICAL**: Path validation `startsWith("..")` has false positives for files like "..hidden.md" - use regex `/^\.\.(?:[/\\]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | $)/`; empty string edge case in path.relative(); JSONL parse errors must block strict S0/S1 mode. **FIXES**: Changed to proper regex check + empty check + isAbsolute for Windows drives; added \_parseError blocking in validateS0S1Strict. **PATTERNS**: (52) Regex-based path traversal detection `^\.\.(?:[/\\] | $)` instead of startsWith. Total 14 fixes across 3 rounds. Active reviews #180-204.                                                                                                                                                                               |
+| 11.4    | 2026-01-26 | Review #204 Round 3: Session #98 PR - CI Pattern Compliance Fixes (3 items - 3 CRITICAL CI blockers). **CRITICAL**: Path validation `startsWith("..")` has false positives for files like "..hidden.md" - use regex `/^\.\.(?:[/\\]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | $)/`; empty string edge case in path.relative(); JSONL parse errors must block strict S0/S1 mode. **FIXES**: Changed to proper regex check + empty check + isAbsolute for Windows drives; added \_parseError blocking in validateS0S1Strict. **PATTERNS**: (52) Regex-based path traversal detection `^\.\.(?:[/\\]                                                                                                                                                                                                                                                                     | $)` instead of startsWith. Total 14 fixes across 3 rounds. Active reviews #180-204.                                                                                                                                                                               |
 | 11.3    | 2026-01-26 | Review #204 Round 2: Session #98 PR - Qodo Security Hardening (5 items - 2 CRITICAL, 2 MAJOR, 1 MINOR). **CRITICAL**: Path traversal in audit-s0s1-validator.js (containment + symlink rejection), trap cleanup bug. **MAJOR**: Fail-closed on invalid dates (empty string return), silent JSONL parse failures (track \_parseError). **MINOR**: ROLLOUT_MODE normalization (trim/uppercase). **NEW PATTERNS**: (50) Path containment validation; (51) Fail-closed parsing. Total 11 fixes across 2 rounds. Active reviews #180-204.                                                                                                                                                                                                                                                                                                                                                                                |
 | 11.2    | 2026-01-26 | Review #204 Round 1: Session #98 PR - Qodo Compliance + CI Fixes (7 items - 3 CRITICAL, 2 MAJOR, 2 MINOR). **CRITICAL**: Subshell guardrail bypass in pre-commit hook (temp file + while read), lint-staged knip false positive, readFileSync pattern compliance false positive. **MAJOR**: UTC timezone bug in getNextDay, command injection input validation (already mitigated by sanitizeDateString). **MINOR**: ROLLOUT_MODE env-configurable, duplicate constants noted. **NEW PATTERNS**: (48) Pipe subshell variable isolation; (49) UTC date arithmetic. Active reviews #180-204.                                                                                                                                                                                                                                                                                                                          |
 | 11.1    | 2026-01-24 | Review #203: PR #312 ROADMAP v3.9 Reorganization - Qodo Quality Fixes (24 items - 0 CRITICAL, 2 MAJOR, 10 MINOR, 12 TRIVIAL). **MAJOR**: Security schema explicit encryption fields for sharedPackets snapshot (ciphertext/iv/algorithm), sponsor contact PII encryption comments. **MINOR**: Version metadata v3.0→v3.9 in 3 analysis files, missing-priority count 28→18 correction, priority normalization P4→P3, validation metrics alignment. **TRIVIAL**: Count fixes (T7 3→4, M7-F1 12→11, M7-F4 14→15, M7-F9 5→7, M9-F1 9→8), naming consistency (M4.5 "Security & Privacy"), contradictory completion status removal. Documentation accuracy fixes. Active reviews #180-203.                                                                                                                                                                                                                               |
@@ -752,10 +753,96 @@ scripts/check-pattern-compliance.js, scripts/check-review-needed.js,
 
 ---
 
+#### Review #211: Session #103 Testing Infrastructure PR - Qodo + SonarCloud + CI (2026-01-27)
+
+**Source:** Qodo PR Compliance + SonarCloud + CI Failure Analysis **PR/Branch:**
+claude/resume-previous-session-D9N5N **Suggestions:** 18 total (MAJOR: 5, MINOR:
+6, TRIVIAL: 1, DEFERRED: 2, REJECTED: 1)
+
+**Files Modified:**
+
+- `scripts/check-roadmap-health.js` - 11 fixes
+- `docs/plans/TESTING_INFRASTRUCTURE_PLAN.md` - 1 fix
+
+**MAJOR (5):**
+
+1. **readFile error handling with context** - Added `instanceof Error` check
+   before accessing `.message` and `.code` properties. Pattern compliance
+   requires safe error property access.
+
+2. **CRLF regex line 89 (Milestones Overview)** - Changed regex to use `\r?\n`
+   for cross-platform CRLF compatibility in milestone table parsing.
+
+3. **CRLF regex line 107 (Sprint Section)** - Changed regex to use `\r?\n` for
+   cross-platform CRLF compatibility in sprint section parsing.
+
+4. **Bug L141 conditional same value** - Removed redundant ternary that returned
+   same value regardless of condition. Changed from
+   `rows.length > 0 ? rows[0][1] : rows[0][1]` to proper null check.
+
+5. **Path traversal prevention** - Replaced `startsWith("..")` with regex
+   `/^\.\.(?:[\\/]|$)/.test(rel)` to handle edge cases like "..hidden.md" and
+   cross-platform path separators. Combined with `path.relative()` and
+   `path.isAbsolute()` for complete protection.
+
+**MINOR (6):**
+
+1. **Test factory counter vs Date.now()** - Changed test data factory example in
+   TESTING_INFRASTRUCTURE_PLAN.md to use counter-based unique IDs instead of
+   `Date.now()` to avoid race conditions in parallel tests.
+
+2. **Warning for skipped ROADMAP_FUTURE checks** - Added `console.warn()` when
+   ROADMAP_FUTURE.md cannot be read, rather than silently skipping checks.
+
+3. **Track naming regex excludes subsections** - Changed regex from
+   `/### Track ([A-Z])/g` to `/### Track ([A-Z])(?:\s+-|\s*:)/g` to only match
+   main track headers (e.g., "Track A - Name") and exclude subsections (e.g.,
+   "Track A-Test", "Track A-P2").
+
+4. **PG validation matches "Group" format** - PARALLEL_EXECUTION_GUIDE.md uses
+   "Group 1" format while roadmap uses "⏸ PG1". Changed validation to extract
+   from guide using `Group\s*(\d+)` regex for proper matching.
+
+5. **Scoped version history regex** - Limited version search to Version History
+   section only to avoid false matches from version numbers elsewhere in
+   document.
+
+6. **Session #102 → #103** - Updated script header comment to correct session
+   number.
+
+**TRIVIAL (1):**
+
+1. Session number comment update in file header.
+
+**DEFERRED (2):**
+
+1. **MCP Memory vs Vector DB decision** - Architectural decision about knowledge
+   graph vs vector database for context preservation. Deferred to later session.
+
+2. **--fix CLI flag** - Auto-fix capability for validation script. Nice-to-have
+   but not blocking.
+
+**REJECTED (1):**
+
+1. **Unstructured logging** - console.log is intentional for CLI tool output.
+   Structured logging is overkill for local validation scripts.
+
+**NEW PATTERNS (3):**
+
+- **(63) Counter-based unique IDs for test factories** - Use incrementing
+  counters instead of `Date.now()` to avoid collisions in parallel tests
+- **(64) Scope regex to relevant section** - When searching for patterns like
+  version numbers, extract the section first to avoid false positives
+- **(65) Format matching for validation scripts** - When validating references
+  between documents, ensure regex matches the actual format used in each
+  document (e.g., "Group 1" vs "PG1")
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #205: PR #XXX Title - Review Source (DATE)
+#### Review #212: PR #XXX Title - Review Source (DATE)
 
 
 -->
