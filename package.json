@@ -16,6 +16,7 @@
     "docs:archive": "node scripts/archive-doc.js",
     "docs:sync-check": "node scripts/check-document-sync.js",
     "docs:index": "node scripts/generate-documentation-index.js",
+    "roadmap:validate": "node scripts/check-roadmap-health.js",
     "review:check": "node scripts/check-review-needed.js",
     "phase:complete": "node scripts/phase-complete-check.js",
     "phase:complete:auto": "node scripts/phase-complete-check.js --auto",

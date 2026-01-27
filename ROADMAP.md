@@ -1,17 +1,16 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.12
-**Last Updated:** 2026-01-27
+**Document Version:** 3.14
+**Last Updated:** 2026-01-27 (Session #103)
 **Status:** ACTIVE
+**Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
 
 > **v3.0 MAJOR UPDATE:** Integrated 76 expansion items from
 > EXPANSION_EVALUATION_TRACKER.md. Added M4.5 (Security & Privacy) and M9
 > (Native App) milestones. Updated M5, M6, M7 with expanded feature groups. See
 > [analysis/](./analysis/) for full deduplication and dependency analysis.
-
-**Overall Completion:** ~35%
 
 ---
 
@@ -233,7 +232,7 @@ Planned | 🟣 Research
 This sprint consolidates Admin Panel completion, Development Dashboard, CI/CD
 reliability, and solo developer automations.
 
-### Sprint Tracks (6 Parallel Tracks)
+### Sprint Tracks (8 Parallel Tracks)
 
 | Track       | Focus                                 | Status          | Effort    | Owner  |
 | ----------- | ------------------------------------- | --------------- | --------- | ------ |
@@ -243,6 +242,8 @@ reliability, and solo developer automations.
 | **Track D** | CI Reliability & Automation           | 📋 Planned      | ~28 hours | Claude |
 | **Track E** | Solo Developer Automations            | 📋 Planned      | ~14 hours | Claude |
 | **Track O** | Owner Actions (manual setup)          | 📋 **DO FIRST** | ~10 min   | Jason  |
+| **Track P** | Performance Critical (CWV fix)        | 📋 Planned      | ~18 hours | Claude |
+| **Track T** | Testing Infrastructure (Playwright)   | 📋 Planned      | ~45 hours | Claude |
 
 ### Track A - Admin Panel ✅ DEVELOPMENT COMPLETE
 
@@ -431,8 +432,8 @@ reliability, and solo developer automations.
 
 #### Phase 3 - Deployment Safety
 
-- [ ] **D5.5:** Golden-path E2E test (3hr) [CTO Advisory] - Critical user
-      journey test
+- [x] **D5.5:** Golden-path E2E test (3hr) [CTO Advisory] - ✅ **Consolidated
+      into Track T** (T2.1-T2.5)
 - [ ] **D6:** Post-deployment health checks (2hr) [Comprehensive]
 - [ ] **D7:** Deployment approval gates (2hr) [Comprehensive]
 - [ ] **D8:** Automated rollback (5hr) [Comprehensive]
@@ -490,64 +491,131 @@ reliability, and solo developer automations.
   - Add correlation IDs to logger (`EFF-006`)
   - Enables end-to-end request tracing
 
-### Track D - Performance Critical (NEW - Session #98)
+### Track P - Performance Critical (NEW - Session #98)
 
 > **Source:**
 > [Comprehensive Audit 2026-01-24](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)
 > **Tracking:** [TECHNICAL_DEBT_MASTER.md](docs/TECHNICAL_DEBT_MASTER.md)
+>
+> **Note:** Renamed from "Track D" to "Track P" to avoid confusion with Track D
+> (CI Reliability) in the Operational Visibility Sprint.
 
 **Priority:** P0 - Core Web Vitals failing, 11MB image payload
 
-#### D1: Image Optimization (4hr) - **CRITICAL**
+#### P1: Image Optimization (4hr) - **CRITICAL**
 
-- [ ] **D1.1:** Remove unused gemini-generated images (-4MB)
-- [ ] **D1.2:** Convert remaining images to WebP format (-90% size)
-- [ ] **D1.3:** Add responsive srcsets for notebook covers
-- [ ] **D1.4:** Preload LCP image (wood-table.jpg)
+- [ ] **P1.1:** Remove unused gemini-generated images (-4MB)
+- [ ] **P1.2:** Convert remaining images to WebP format (-90% size)
+- [ ] **P1.3:** Add responsive srcsets for notebook covers
+- [ ] **P1.4:** Preload LCP image (wood-table.jpg)
 
 **Impact:** LCP 4s → <2.5s, Initial load 11MB → <2MB
 
-#### D2: Bundle Optimization (3hr)
+#### P2: Bundle Optimization (3hr)
 
-- [ ] **D2.1:** Add dynamic imports for notebook pages
-- [ ] **D2.2:** Tree-shake framer-motion (only import needed functions)
-- [ ] **D2.3:** Code-split admin panel
+- [ ] **P2.1:** Add dynamic imports for notebook pages
+- [ ] **P2.2:** Tree-shake framer-motion (only import needed functions)
+- [ ] **P2.3:** Code-split admin panel
 
 **Impact:** TTI 3-5s → <2s, Bundle -40%
 
-#### D3: React Performance (3hr)
+#### P3: React Performance (3hr)
 
-- [ ] **D3.1:** Add React.memo to today-page child components
-- [ ] **D3.2:** Memoize auth context value
-- [ ] **D3.3:** Add useMemo to expensive array.map operations
+- [ ] **P3.1:** Add React.memo to today-page child components
+- [ ] **P3.2:** Memoize auth context value
+- [ ] **P3.3:** Add useMemo to expensive array.map operations
 
 **Impact:** FID/INP 250ms → <100ms
 
-#### D4: Firestore Optimization (2hr)
+#### P4: Firestore Optimization (2hr)
 
-- [ ] **D4.1:** Add `limit(7)` to weekly stats query
-- [ ] **D4.2:** Create composite indexes for common queries
-- [ ] **D4.3:** Implement request deduplication
+- [ ] **P4.1:** Add `limit(7)` to weekly stats query
+- [ ] **P4.2:** Create composite indexes for common queries
+- [ ] **P4.3:** Implement request deduplication
 
 **Impact:** Firestore reads -90%, Query time -50%
 
-#### D5: Caching & Offline (4hr)
+#### P5: Caching & Offline (4hr)
 
-- [ ] **D5.1:** Add HTTP cache headers to firebase.json
-- [ ] **D5.2:** Install and configure next-pwa
-- [ ] **D5.3:** Add offline fallback page
+- [ ] **P5.1:** Add HTTP cache headers to firebase.json
+- [ ] **P5.2:** Install and configure next-pwa
+- [ ] **P5.3:** Add offline fallback page
 
 **Impact:** Repeat visits instant, Offline support
 
-#### D6: Security Headers (2hr)
+#### P6: Security Headers (2hr)
 
-- [ ] **D6.1:** Add Content Security Policy
-- [ ] **D6.2:** Add X-Frame-Options, X-Content-Type-Options
-- [ ] **D6.3:** Remove hardcoded reCAPTCHA fallback
+- [ ] **P6.1:** Add Content Security Policy
+- [ ] **P6.2:** Add X-Frame-Options, X-Content-Type-Options
+- [ ] **P6.3:** Remove hardcoded reCAPTCHA fallback
 
 **Impact:** XSS protection, Clickjacking prevention
 
-**Track D Total: ~18 hours**
+**Track P Total: ~18 hours**
+
+### Track T - Testing Infrastructure (NEW - Session #103)
+
+> **Spec:**
+> [TESTING_INFRASTRUCTURE_PLAN.md](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)
+> **Goal:** Automated testing for components, user journeys, and visual
+> regression **Note:** Consolidates D5.5, AUTO-004, TEST-001, TEST-002 into
+> unified testing track
+
+**Priority:** P1 - Build sustainable testing infrastructure for solo developer
+
+#### Phase 1: Playwright Foundation (8hr)
+
+- [ ] **T1.1:** Install and configure Playwright (2hr)
+- [ ] **T1.2:** Create test fixtures (auth, emulator, test users) (2hr)
+- [ ] **T1.3:** Create base page objects (HomePage, AdminPage, etc.) (2hr)
+- [ ] **T1.4:** Configure CI integration (GitHub Actions) (2hr)
+
+#### Phase 2: Golden Path E2E Tests (10hr)
+
+> Implements and expands D5.5 (Golden-path E2E test)
+
+- [ ] **T2.1:** Auth Flow - Sign in, anonymous auth, sign out (2hr)
+- [ ] **T2.2:** Onboarding - Clean date, fellowship, nickname (2hr)
+- [ ] **T2.3:** Daily Journal - Mood, gratitude, free-write (2hr)
+- [ ] **T2.4:** Meeting Finder - Search, filter, pagination (2hr)
+- [ ] **T2.5:** Admin CRUD - Meetings/Quotes/Users operations (2hr)
+
+#### Phase 3: Component Testing (10hr)
+
+- [ ] **T3.1:** Form Components - Input validation, submit states (2hr)
+- [ ] **T3.2:** Modal/Dialog - Open, close, interactions (2hr)
+- [ ] **T3.3:** Navigation - Tabs, ribbon, breadcrumbs (2hr)
+- [ ] **T3.4:** Data Display - Cards, lists, pagination (2hr)
+- [ ] **T3.5:** Admin Components - CRUD forms, data tables (2hr)
+
+#### Phase 4: Visual Regression (6hr)
+
+- [ ] **T4.1:** Configure Playwright visual comparison (2hr)
+- [ ] **T4.2:** Create baseline screenshots (key pages) (2hr)
+- [ ] **T4.3:** Integrate with CI (fail on diff > threshold) (2hr)
+
+#### Phase 5: Dev Dashboard Integration (5hr)
+
+> Depends on Track B completion
+
+- [ ] **T5.1:** Test Results Tab - Show pass/fail summary (2hr)
+- [ ] **T5.2:** Coverage Display - File/component breakdown (2hr)
+- [ ] **T5.3:** Run Tests Button - Trigger test suite from panel (1hr)
+
+#### Phase 6: Test Data Management (6hr)
+
+- [ ] **T6.1:** Test Data Factories - User, Meeting, Journal factories (2hr)
+- [ ] **T6.2:** Seed Scripts - Populate emulator with realistic data (2hr)
+- [ ] **T6.3:** Cleanup Utilities - Reset state between tests (2hr)
+
+**Track T Total: ~45 hours**
+
+**Environment Support:**
+
+| Environment  | Browser                | Extension Support | Notes                 |
+| ------------ | ---------------------- | ----------------- | --------------------- |
+| Web (Remote) | Headless Chromium      | Limited           | CI/CD, automated runs |
+| CLI (Local)  | Chrome with extensions | Full              | Chrome extension mode |
 
 ### Future Enhancements (Deferred from PR Reviews)
 
@@ -765,10 +833,11 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
     - [ ] Add correlation ID context
     - **Verification:** Production errors appear in Sentry
 
-15. **AUTO-004: Add Code Coverage to CI** (M effort, Medium ROI)
-    - [ ] Wire `npm run test:coverage` into CI
-    - [ ] Add coverage threshold check
-    - [ ] Generate coverage badge
+15. **AUTO-004: Add Code Coverage to CI** (M effort, Medium ROI) - ✅
+    **Consolidated into Track T** (T1.4, T5.2)
+    - [x] Wire `npm run test:coverage` into CI → T1.4
+    - [x] Add coverage threshold check → T1.4
+    - [x] Generate coverage badge → T5.2
     - **Verification:** CI fails if coverage drops >5%
 
 16. **AUTO-005: Remove CI continue-on-error Flags** (S effort, Medium ROI)
@@ -788,21 +857,20 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 > **Source:** PR #277 Testing revealed missing automated tests for
 > security-critical code
 
-18. **TEST-001: Add redactSensitiveUrl Tests** (S effort, High ROI)
-    - [ ] Export `redactSensitiveUrl` from `lib/utils/error-export.ts` (or test
-          via exported wrapper)
-    - [ ] Test strips query params from URLs
-    - [ ] Test strips hash fragments from URLs
-    - [ ] Test handles malformed URLs (returns `"[invalid-url]"`)
+18. **TEST-001: Add redactSensitiveUrl Tests** (S effort, High ROI) - ✅
+    **Consolidated into Track T** (T6.1)
+    - [x] Export `redactSensitiveUrl` from `lib/utils/error-export.ts` → T6.1
+    - [x] Test strips query params from URLs → T6.1
+    - [x] Test strips hash fragments from URLs → T6.1
+    - [x] Test handles malformed URLs → T6.1
     - **Verification:** `npm test` includes URL redaction tests
 
-19. **TEST-002: Add Cloud Functions Validation Tests** (M effort, High ROI)
-    - [ ] Set up test infrastructure in `functions/` (vitest +
-          firebase-functions-test)
-    - [ ] Test `adminSoftDeleteUser` Zod validation (uid > 128 chars rejected,
-          reason > 500 chars rejected)
-    - [ ] Test self-deletion block (admin cannot delete own account)
-    - [ ] Test rollback on Auth failure (Firestore restored)
+19. **TEST-002: Add Cloud Functions Validation Tests** (M effort, High ROI) - ✅
+    **Consolidated into Track T** (T6.1, T2.5)
+    - [x] Set up test infrastructure in `functions/` → T6.1
+    - [x] Test `adminSoftDeleteUser` Zod validation → T2.5
+    - [x] Test self-deletion block → T2.5
+    - [x] Test rollback on Auth failure → T2.5
     - **Verification:** `cd functions && npm test` runs backend tests
 
 ---
@@ -2618,14 +2686,87 @@ summary command; full dashboard is larger scope.
 
 ## 🤖 AI Instructions
 
-When working on roadmap items:
+### Document Scope
 
-1. **Before starting work**, verify the feature is in this roadmap
-2. **Update status** when starting a feature (PENDING → IN_PROGRESS)
-3. **Update progress** after significant work
-4. **Archive completed items** to ROADMAP_LOG.md using `npm run docs:archive`
-5. **Follow Definition of Done** checklist before marking complete
-6. **Run `npm run docs:update-readme`** after milestone changes
+- **This document (ROADMAP.md):** Active sprint work, paused milestones (M1.5,
+  M1.6), overview tables
+- **ROADMAP_FUTURE.md:** Detailed specifications for future milestones (M2-M10)
+- **ROADMAP_LOG.md:** Archive of completed items
+
+### When to Update This Document
+
+| Trigger                       | What to Update                   | How to Update                                      |
+| ----------------------------- | -------------------------------- | -------------------------------------------------- |
+| Starting a task               | Task status                      | Change `- [ ]` to `- [x]` or add 🔄 emoji          |
+| Task completed                | Task checkbox + sprint progress  | Mark `[x]`, update progress % in sprint header     |
+| New task for active sprint    | Add to appropriate Track section | Use format: `- [ ] **ID:** Description (effort)`   |
+| New task for future milestone | Add to ROADMAP_FUTURE.md         | See ROADMAP_FUTURE.md AI Instructions              |
+| Sprint progress >10% change   | Milestones Overview table        | Update Progress column percentage                  |
+| Milestone promoted to active  | Move from ROADMAP_FUTURE.md      | Copy section here, update status in Overview table |
+| Milestone completed           | Archive to ROADMAP_LOG.md        | Use `npm run docs:archive`, update Overview table  |
+| Blocker discovered            | Blockers table                   | Add row with status and resolution plan            |
+| Blocker resolved              | Blockers table                   | Update status to ✅ Resolved with date             |
+
+### Specific Update Instructions
+
+**When marking a task complete:**
+
+```markdown
+# Before:
+
+- [ ] **A1:** Wire Sentry client in `app/layout.tsx`
+
+# After:
+
+- [x] **A1:** Wire Sentry client in `app/layout.tsx` ✅
+```
+
+**When updating sprint progress:**
+
+1. Count completed `[x]` items in the track
+2. Calculate percentage: (completed / total) × 100
+3. Update the Track table row AND the Milestones Overview table
+
+**When adding a new task to active sprint:**
+
+```markdown
+- [ ] **[Track][Number]:** Task description (effort estimate)
+  - Implementation detail or subtask
+  - Dependency: [Blocking task if any]
+```
+
+**When a milestone is promoted to active:**
+
+1. Copy full section from ROADMAP_FUTURE.md to this document
+2. Update Milestones Overview table: Status → 🔄 ACTIVE
+3. Delete detailed section from ROADMAP_FUTURE.md (keep 1-line reference)
+4. Update both document versions
+
+### Cross-Document Updates Required
+
+| Change Here                 | Also Update                             |
+| --------------------------- | --------------------------------------- |
+| Milestone status changes    | SESSION_CONTEXT.md priorities section   |
+| Sprint progress >10%        | SESSION_CONTEXT.md current work section |
+| Track A/B/C/D/E/O/P changes | OPERATIONAL_VISIBILITY_SPRINT.md        |
+| New blocker added           | SESSION_CONTEXT.md blockers section     |
+| Dependency chain changes    | analysis/PARALLEL_EXECUTION_GUIDE.md    |
+| Technical debt resolved     | docs/TECHNICAL_DEBT_MASTER.md           |
+
+### What NOT to Do
+
+- ❌ Do NOT add future milestone details here (use ROADMAP_FUTURE.md)
+- ❌ Do NOT delete completed tasks (archive to ROADMAP_LOG.md)
+- ❌ Do NOT change milestone order without updating dependency graph
+- ❌ Do NOT update percentages without counting actual completed items
+- ❌ Do NOT skip updating SESSION_CONTEXT.md after significant changes
+
+### Validation Commands
+
+```bash
+npm run docs:update-readme    # Sync README with roadmap status
+npm run roadmap:validate      # Check consistency (when available)
+```
 
 ---
 
@@ -2633,6 +2774,8 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.14    | 2026-01-27 | **Session #103**: Added Track T (Testing Infrastructure) with 6 phases (~45hr); consolidated D5.5, AUTO-004, TEST-001, TEST-002 into Track T; Playwright-based E2E, component, and visual regression testing; Dev Dashboard integration; CLI Chrome extension support                                                                                                                       |
+| 3.13    | 2026-01-27 | **ROADMAP RESTRUCTURE**: Split into ROADMAP.md (active) + ROADMAP_FUTURE.md (M2-M10 details); fixed percentage inconsistency (removed duplicate 35%); renamed Track D Performance → Track P (avoid collision); added 7 Parallel Groups with `⏸ PG#` markers; comprehensive AI Instructions with specific update triggers; added DOCUMENT_DEPENDENCIES cross-references                      |
 | 3.10    | 2026-01-26 | **Session #98**: Added Track D (Performance Critical) with 18hr of urgent fixes; created TECHNICAL_DEBT_MASTER.md as single source of truth; verified SEC-001/SEC-002 as false positives; updated Technical Debt Backlog section with corrected counts (7 S0, 28 S1, 45 S2, 32 S3)                                                                                                          |
 | 3.9     | 2026-01-24 | **R&D NOTES**: Added 🔬 R&D requirements to E3 items (HALT P3/P4, Pattern Recognition, F11.\*, M10 monetization)                                                                                                                                                                                                                                                                            |
 | 3.8     | 2026-01-24 | **CONSOLIDATION**: Added cross-references for overlapping items (Sponsor, Analytics, Export domains) with ⚡ markers                                                                                                                                                                                                                                                                        |

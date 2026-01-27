@@ -452,6 +452,9 @@ const ANTI_PATTERNS = [
       "check-remote-session-context.js",
       "track-agent-invocation.js",
       "check-agent-compliance.js",
+      // 2026-01-27 audit (Review #212):
+      // - check-roadmap-health.js: readFileSync at L39 IS in try/catch (L38-47 readFile function)
+      "check-roadmap-health.js",
     ],
   },
   {
@@ -488,8 +491,10 @@ const ANTI_PATTERNS = [
     // - security-helpers.js: L104-108 validates empty/falsy paths upfront + L113 has `rel === "" ||` (Review #202)
     // 2026-01-27 audit (Review #210): check-remote-session-context.js and track-agent-invocation.js
     // both use `/^\.\.(?:[\\/]|$)/.test(rel)` which correctly handles empty rel (same path = valid)
+    // 2026-01-27 audit (Review #212):
+    // - check-roadmap-health.js: L175 has `rel === "" ||` at start of condition
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health)\.js$/,
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)
