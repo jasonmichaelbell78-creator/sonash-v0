@@ -124,9 +124,11 @@ function main() {
   let newerCounter = localCounter;
   let newerDate = null;
 
-  for (const { branch, date } of recentBranches) {
-    // Normalize and skip current branch (remote has origin/ prefix)
-    const remoteBranch = branch.replace(/^origin\//, "");
+  for (const { branch } of recentBranches) {
+    // Guard against detached HEAD state (currentBranch would be "HEAD")
+    if (!currentBranch || currentBranch === "HEAD") break;
+    // Normalize remote branch name (safer than regex for non-origin remotes)
+    const remoteBranch = branch.startsWith("origin/") ? branch.slice("origin/".length) : branch;
     if (remoteBranch === currentBranch) continue;
 
     const remoteContent = readContextFromBranch(branch);

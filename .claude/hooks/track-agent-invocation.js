@@ -21,8 +21,10 @@ const safeBaseDir = path.resolve(process.cwd());
 const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
 const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
-// Security: Ensure projectDir is within baseDir (improved check)
-if (!projectDir.startsWith(safeBaseDir + path.sep) && projectDir !== safeBaseDir) {
+// Security: Ensure projectDir is within baseDir (robust relative-path check)
+const rel = path.relative(safeBaseDir, projectDir);
+// If rel is empty, paths are same. If rel starts with ".." or is absolute, it's outside
+if (rel !== "" && (rel.startsWith("..") || path.isAbsolute(rel))) {
   console.log("ok");
   process.exit(0);
 }
@@ -100,8 +102,11 @@ function getCurrentSessionId() {
 const state = readState();
 const currentSessionId = getCurrentSessionId();
 
-// Reset if different session
-if (state.sessionId !== currentSessionId) {
+// Reset only on a real session change (avoid wiping state when session id is unavailable)
+const isFirstInit = state.sessionId == null && state.sessionStart == null;
+const hasValidSessionId = currentSessionId != null;
+
+if (isFirstInit || (hasValidSessionId && state.sessionId !== currentSessionId)) {
   state.sessionId = currentSessionId;
   state.sessionStart = new Date().toISOString();
   state.agentsInvoked = [];
@@ -127,6 +132,8 @@ const invocation = {
 };
 
 state.agentsInvoked.push(invocation);
+// Cap array size to prevent unbounded growth
+state.agentsInvoked = state.agentsInvoked.slice(-200);
 writeState(state);
 
 // Log for visibility

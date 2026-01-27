@@ -60,6 +60,8 @@ function getStagedFiles() {
     const output = execSync("git diff --cached --name-only --diff-filter=ACM", {
       cwd: ROOT,
       encoding: "utf8",
+      timeout: 15_000,
+      maxBuffer: 10 * 1024 * 1024,
     });
     return output.trim().split("\n").filter(Boolean);
   } catch {
@@ -68,13 +70,32 @@ function getStagedFiles() {
 }
 
 /**
- * Read session agents state
+ * Get current session ID from session state
+ */
+function getCurrentSessionId() {
+  const sessionStatePath = join(ROOT, ".claude/hooks/.session-state.json");
+  try {
+    if (!existsSync(sessionStatePath)) return null;
+    const sessionState = JSON.parse(readFileSync(sessionStatePath, "utf8"));
+    return sessionState.currentSessionId || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Read session agents state (validates session identity to avoid stale data)
  */
 function getInvokedAgents() {
   const statePath = join(ROOT, ".claude/hooks/.session-agents.json");
   try {
     if (!existsSync(statePath)) return [];
     const state = JSON.parse(readFileSync(statePath, "utf8"));
+
+    // Validate state belongs to current session to avoid stale data
+    const currentSessionId = getCurrentSessionId();
+    if (currentSessionId && state.sessionId !== currentSessionId) return [];
+
     return (state.agentsInvoked || []).map((a) => a.agent);
   } catch {
     return [];
