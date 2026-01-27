@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.11
-**Last Updated:** 2026-01-26
+**Document Version:** 3.12
+**Last Updated:** 2026-01-27
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -233,15 +233,16 @@ Planned | 🟣 Research
 This sprint consolidates Admin Panel completion, Development Dashboard, CI/CD
 reliability, and solo developer automations.
 
-### Sprint Tracks (5 Parallel Tracks)
+### Sprint Tracks (6 Parallel Tracks)
 
-| Track       | Focus                                 | Status          | Effort    |
-| ----------- | ------------------------------------- | --------------- | --------- |
-| **Track A** | Admin Panel (Sentry + GCP Logs)       | ✅ Dev Complete | ~6 hours  |
-| **Track B** | Dev Dashboard MVP (expanded +B10/B11) | 🔄 In Progress  | ~20 hours |
-| **Track C** | UI/UX Improvements                    | 📋 Reserved     | TBD       |
-| **Track D** | CI Reliability & Automation (NEW)     | 📋 Planned      | ~28 hours |
-| **Track E** | Solo Developer Automations (NEW)      | 📋 Planned      | ~11 hours |
+| Track       | Focus                                 | Status          | Effort    | Owner  |
+| ----------- | ------------------------------------- | --------------- | --------- | ------ |
+| **Track A** | Admin Panel (Sentry + GCP Logs)       | ✅ Dev Complete | ~6 hours  | Claude |
+| **Track B** | Dev Dashboard MVP (expanded +B10/B11) | 🔄 In Progress  | ~20 hours | Claude |
+| **Track C** | UI/UX Improvements                    | 📋 Reserved     | TBD       | Claude |
+| **Track D** | CI Reliability & Automation           | 📋 Planned      | ~28 hours | Claude |
+| **Track E** | Solo Developer Automations            | 📋 Planned      | ~14 hours | Claude |
+| **Track O** | Owner Actions (manual setup)          | 📋 **DO FIRST** | ~10 min   | Jason  |
 
 ### Track A - Admin Panel ✅ DEVELOPMENT COMPLETE
 
@@ -430,6 +431,8 @@ reliability, and solo developer automations.
 
 #### Phase 3 - Deployment Safety
 
+- [ ] **D5.5:** Golden-path E2E test (3hr) [CTO Advisory] - Critical user
+      journey test
 - [ ] **D6:** Post-deployment health checks (2hr) [Comprehensive]
 - [ ] **D7:** Deployment approval gates (2hr) [Comprehensive]
 - [ ] **D8:** Automated rollback (5hr) [Comprehensive]
@@ -452,6 +455,28 @@ reliability, and solo developer automations.
 - [ ] **E4:** Pre-commit decision aid (1hr) - Guide commit decisions
 - [ ] **E5:** Automated fix suggestions (3hr) - Generate patches
 - [ ] **E6:** Weekly health digest (2hr) - Automated trend summary
+- [ ] **E7:** Session-end runbook (1hr) - docs/runbooks/SESSION_END.md
+- [ ] **E8:** Incident response runbook (2hr) -
+      docs/runbooks/INCIDENT_RESPONSE.md
+
+### Track O - Owner Actions (Jason - Manual Setup)
+
+> **PRIORITY:** Do these FIRST - they take only ~10 minutes total and provide
+> critical external monitoring that code cannot replicate.
+>
+> **Full instructions:** See
+> [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
+> Track O
+
+- [ ] **O1:** Firebase Budget Alert (~2 min)
+  - Firebase Console → Usage and billing → Create budget
+  - Set $25 threshold, add your email
+- [ ] **O2:** UptimeRobot External Monitoring (~5 min)
+  - Create free account at uptimerobot.com
+  - Add HTTPS monitor for production URL
+  - Add email alerts
+- [ ] **O3:** GitHub Dependabot Enable (~2 min)
+  - Repo Settings → Code security → Enable Dependabot alerts
 
 ### Track C - UI/UX & Analytics (Late Sprint)
 
