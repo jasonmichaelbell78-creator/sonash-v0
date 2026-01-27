@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
-**Project**: SoNash Recovery Notebook **Document Version**: 1.6 **Created**:
-2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-26
+**Project**: SoNash Recovery Notebook **Document Version**: 1.7 **Created**:
+2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-27
 
 ---
 
@@ -100,8 +100,10 @@ commits. Blocks on critical failures, warns on advisory issues.
 | 5   | CANON Schema           | ⚠️ No    | Audit file validation (when JSONL staged)             |
 | 6   | Skill Validation       | ⚠️ No    | Command/skill structure (when skill files staged)     |
 | 7   | Cross-Doc Dependencies | ✅ Yes   | Blocks if dependent docs not staged (Session #69)     |
-| 8   | Learning Reminder      | ⚠️ No    | Reminds to log PR feedback                            |
-| 9   | Audit S0/S1 Validation | ✅ Yes   | Blocks S0/S1 without verification_steps (Session #98) |
+| 8   | Doc Index Staleness    | ✅ Yes   | Blocks if new .md added but index not updated (#103)  |
+| 9   | Learning Reminder      | ⚠️ No    | Reminds to log PR feedback                            |
+| 10  | Audit S0/S1 Validation | ✅ Yes   | Blocks S0/S1 without verification_steps (Session #98) |
+| 11  | Agent Compliance       | ⚠️ No    | Warns if code written without agent review (#101)     |
 
 ### Function
 
@@ -114,8 +116,10 @@ TRIGGER: git commit
   → CHECK 5: npm run validate:canon (if JSONL staged)
   → CHECK 6: npm run skills:validate (if skill files staged)
   → CHECK 7: npm run crossdoc:check (BLOCKING - Session #69)
-  → CHECK 8: Learning entry reminder (if many files changed)
-  → CHECK 9: Audit S0/S1 validation (if audit JSONL staged) (BLOCKING - Session #98)
+  → CHECK 8: Doc Index check (if new .md files added) (BLOCKING - Session #103)
+  → CHECK 9: Learning entry reminder (if many files changed)
+  → CHECK 10: Audit S0/S1 validation (if audit JSONL staged) (BLOCKING - Session #98)
+  → CHECK 11: Agent compliance check (non-blocking warning)
   → IF all blocking checks pass: Allow commit
   → IF any blocking check fails: Block commit with error
 ```
@@ -139,6 +143,21 @@ Blocks when you modify documents that have known dependencies:
 
 See:
 [DOCUMENT_DEPENDENCIES.md](./DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
+
+### Documentation Index Staleness (Check 8) - BLOCKING
+
+**Added in Session #103.** Prevents commit if new .md files are being added but
+`DOCUMENTATION_INDEX.md` is not staged. Override with
+`SKIP_DOC_INDEX_CHECK=1 git commit ...`
+
+| When Triggered                         | Resolution                                                 |
+| -------------------------------------- | ---------------------------------------------------------- |
+| New .md file added (git diff-filter=A) | Run `npm run docs:index && git add DOCUMENTATION_INDEX.md` |
+| DOCUMENTATION_INDEX.md already staged  | Check passes                                               |
+
+> **Why blocking:** DOCUMENTATION_INDEX.md is the canonical auto-generated index
+> of all documentation. If new docs are added without regenerating the index,
+> the index becomes stale and unusable for navigation.
 
 ### Verification
 
@@ -1235,6 +1254,9 @@ sufficient coverage. Revisit if doc drift becomes a problem._
 
 | Version | Date       | Changes                                               | Author |
 | ------- | ---------- | ----------------------------------------------------- | ------ |
+| 1.7     | 2026-01-27 | Add DOCUMENTATION_INDEX.md staleness check (BLOCKING) | Claude |
+| 1.6     | 2026-01-26 | Add Agent compliance check (non-blocking)             | Claude |
+| 1.5     | 2026-01-24 | Add Audit S0/S1 validation check (BLOCKING)           | Claude |
 | 1.4     | 2026-01-16 | Cross-doc dependency check now BLOCKING (Session #69) | Claude |
 | 1.3     | 2026-01-02 | Resolved Gap 4, added security linting                | Claude |
 | 1.2     | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy   | Claude |

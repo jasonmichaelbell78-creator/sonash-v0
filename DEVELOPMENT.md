@@ -553,17 +553,19 @@ TypeScript rules)
 
 **Pre-commit hook (`.husky/pre-commit`) runs:**
 
-| Step               | Command                           | Blocking?                         |
-| ------------------ | --------------------------------- | --------------------------------- |
-| ESLint             | `npm run lint`                    | YES - blocks commit               |
-| lint-staged        | `npx --no-install lint-staged`    | YES - auto-formats                |
-| Pattern compliance | `npm run patterns:check`          | YES - blocks commit               |
-| Tests              | `npm test`                        | YES - blocks commit               |
-| CANON validation   | `npm run validate:canon`          | NO - warning only                 |
-| Skill validation   | `npm run skills:validate`         | NO - warning only                 |
-| Cross-doc deps     | `npm run crossdoc:check`          | YES - blocks commit               |
-| Learning reminder  | (checks staged files)             | NO - reminder only                |
-| Audit S0/S1        | `validate-audit.js --strict-s0s1` | YES - blocks commit (Session #98) |
+| Step               | Command                           | Blocking?                          |
+| ------------------ | --------------------------------- | ---------------------------------- |
+| ESLint             | `npm run lint`                    | YES - blocks commit                |
+| lint-staged        | `npx --no-install lint-staged`    | YES - auto-formats                 |
+| Pattern compliance | `npm run patterns:check`          | YES - blocks commit                |
+| Tests              | `npm test`                        | YES - blocks commit                |
+| CANON validation   | `npm run validate:canon`          | NO - warning only                  |
+| Skill validation   | `npm run skills:validate`         | NO - warning only                  |
+| Cross-doc deps     | `npm run crossdoc:check`          | YES - blocks commit                |
+| Doc Index check    | (checks for new .md files)        | YES - blocks commit (Session #103) |
+| Learning reminder  | (checks staged files)             | NO - reminder only                 |
+| Audit S0/S1        | `validate-audit.js --strict-s0s1` | YES - blocks commit (Session #98)  |
+| Agent compliance   | `check-agent-compliance.js`       | NO - warning only (Session #101)   |
 
 > **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
 > staged. Validates schema compliance for audit output files.

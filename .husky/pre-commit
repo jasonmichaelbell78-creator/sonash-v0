@@ -93,7 +93,28 @@ if ! node scripts/check-cross-doc-deps.js; then
 fi
 echo "  ✅ Cross-document dependencies satisfied"
 
-# 8. Learning entry reminder (non-blocking, ~0.5s)
+# 8. Documentation Index staleness check (BLOCKING - Session #103)
+# Blocks commit if new docs are added but DOCUMENTATION_INDEX.md not updated
+# Override with: SKIP_DOC_INDEX_CHECK=1 git commit ...
+if [ -z "$SKIP_DOC_INDEX_CHECK" ]; then
+  NEW_MD_FILES=$(git diff --cached --name-only --diff-filter=A | grep -E "\.md$" || true)
+  if [ -n "$NEW_MD_FILES" ]; then
+    if ! echo "$STAGED_FILES" | grep -q "DOCUMENTATION_INDEX.md"; then
+      echo "  ❌ New .md files added but DOCUMENTATION_INDEX.md not updated"
+      echo ""
+      echo "  New files detected:"
+      echo "$NEW_MD_FILES" | head -5
+      echo ""
+      echo "  Regenerate the index and stage it:"
+      echo "    npm run docs:index && git add DOCUMENTATION_INDEX.md"
+      echo ""
+      echo "  Override (use sparingly): SKIP_DOC_INDEX_CHECK=1 git commit ..."
+      exit 1
+    fi
+  fi
+fi
+
+# 9. Learning entry reminder (non-blocking, ~0.5s)  [was step 8]
 # Reminds to capture learnings when it looks like PR feedback was addressed
 LEARNINGS_LOG="docs/AI_REVIEW_LEARNINGS_LOG.md"
 
@@ -113,7 +134,7 @@ else
   fi
 fi
 
-# 9. Audit file S0/S1 validation (BLOCKING - Session #98)
+# 10. Audit file S0/S1 validation (BLOCKING - Session #98)
 # Validates that S0/S1 findings have proper verification_steps
 # Override with: SKIP_AUDIT_VALIDATION=1 git commit ...
 if [ -z "$SKIP_AUDIT_VALIDATION" ]; then
@@ -149,7 +170,7 @@ else
   echo "  ⏭️ Skipping audit validation (SKIP_AUDIT_VALIDATION set)"
 fi
 
-# 10. Agent compliance check (non-blocking warning - Session #101)
+# 11. Agent compliance check (non-blocking warning - Session #101)
 # Warns if code files are being committed but agents weren't invoked
 # Make blocking with: STRICT_AGENT_CHECK=1 git commit ...
 echo "  ▶ Checking agent compliance..."

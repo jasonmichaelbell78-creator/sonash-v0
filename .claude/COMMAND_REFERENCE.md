@@ -1618,6 +1618,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                          |
 | ------- | ---------- | ---------------------------------------------------------------- |
+| 2.1     | 2026-01-27 | Updated session-end checklist to include DOCUMENTATION_INDEX.md  |
 | 2.0     | 2026-01-22 | Fix expansion-evaluation template per PR review (Review #195)    |
 | 1.9     | 2026-01-22 | Add detailed presentation format to expansion-evaluation skill   |
 | 1.8     | 2026-01-22 | Refine expansion-evaluation skill command examples (Review #196) |

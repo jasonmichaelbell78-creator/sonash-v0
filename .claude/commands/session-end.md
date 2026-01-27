@@ -35,6 +35,8 @@ If you modified any of these, verify they still work:
 - [ ] Update ROADMAP.md Active Sprint checkboxes if features completed
 - [ ] Log any significant learnings in AI_REVIEW_LEARNINGS_LOG.md
 - [ ] Archive completed/cancelled plans to `docs/archive/completed-plans/`
+- [ ] **Regenerate DOCUMENTATION_INDEX.md** if you added/removed/moved any docs:
+      `npm run docs:index && git add DOCUMENTATION_INDEX.md`
 - [ ] **Cross-document check**: Review docs modified this session against
       [DOCUMENT_DEPENDENCIES.md](../../docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
       trigger matrix - update any dependent documents
