@@ -85,24 +85,26 @@ function getCurrentSessionId() {
 
 /**
  * Read session agents state (validates session identity to avoid stale data)
+ * @returns {string[] | null} - Agent names, or null to skip enforcement (CI/fresh clone)
  */
 function getInvokedAgents() {
   const statePath = join(ROOT, ".claude/hooks/.session-agents.json");
   try {
-    if (!existsSync(statePath)) return [];
-    const state = JSON.parse(readFileSync(statePath, "utf8"));
+    if (!existsSync(statePath)) return null; // No state file = skip enforcement
 
     // Validate state belongs to current session to avoid stale data
     const currentSessionId = getCurrentSessionId();
-    // If no current session ID, return empty to avoid false passes from stale data
-    if (!currentSessionId) return [];
-    if (state.sessionId !== currentSessionId) return [];
+    // If no current session ID, skip enforcement (e.g., CI/fresh clone)
+    if (!currentSessionId) return null;
+
+    const state = JSON.parse(readFileSync(statePath, "utf8"));
+    if (state.sessionId !== currentSessionId) return null; // Stale state = skip
 
     // Validate agentsInvoked is array with valid entries
     const invoked = Array.isArray(state.agentsInvoked) ? state.agentsInvoked : [];
     return invoked.map((a) => (a && typeof a.agent === "string" ? a.agent : null)).filter(Boolean);
   } catch {
-    return [];
+    return null; // Error reading = skip enforcement
   }
 }
 
@@ -112,6 +114,12 @@ function getInvokedAgents() {
 function checkCompliance() {
   const stagedFiles = getStagedFiles();
   const invokedAgents = getInvokedAgents();
+
+  // If invokedAgents is null, skip enforcement (CI/fresh clone/no session)
+  if (invokedAgents === null) {
+    return [];
+  }
+
   const issues = [];
 
   // Check each expectation

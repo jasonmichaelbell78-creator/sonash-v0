@@ -486,8 +486,10 @@ const ANTI_PATTERNS = [
     // - validate-paths.js: L73 has `rel === "" ||` at start of condition (Review #200)
     // - analyze-learning-effectiveness.js: L1076 has `rel === "" ||` at start of condition (Review #200)
     // - security-helpers.js: L104-108 validates empty/falsy paths upfront + L113 has `rel === "" ||` (Review #202)
+    // 2026-01-27 audit (Review #210): check-remote-session-context.js and track-agent-invocation.js
+    // both use `/^\.\.(?:[\\/]|$)/.test(rel)` which correctly handles empty rel (same path = valid)
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation)\.js$/,
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)

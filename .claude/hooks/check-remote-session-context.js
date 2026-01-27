@@ -26,7 +26,9 @@ const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
 // Security: Ensure projectDir is within baseDir (robust relative-path check)
 const rel = path.relative(safeBaseDir, projectDir);
-if (rel !== "" && (rel.startsWith("..") || path.isAbsolute(rel))) {
+// Use regex for cross-platform ".." detection (handles Unix / and Windows \)
+const isOutsideBase = /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel);
+if (isOutsideBase) {
   console.log("ok");
   process.exit(0);
 }

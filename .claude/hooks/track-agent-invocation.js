@@ -23,11 +23,10 @@ const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
 // Security: Ensure projectDir is within baseDir (robust relative-path check)
 const rel = path.relative(safeBaseDir, projectDir);
-// Use path.sep for cross-platform robustness
-const isOutside =
-  rel !== "" && (rel === ".." || rel.startsWith(`..${path.sep}`) || path.isAbsolute(rel));
+// Use regex for cross-platform ".." detection (handles Unix / and Windows \)
+const isOutsideBase = /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel);
 
-if (isOutside) {
+if (isOutsideBase) {
   console.log("ok");
   process.exit(0);
 }
@@ -143,7 +142,7 @@ function sanitizeDescription(desc) {
   return desc
     .slice(0, 100) // Truncate for storage
     .replace(/[A-Za-z0-9+/=]{20,}/g, "[REDACTED]") // Base64-like tokens
-    .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, "[EMAIL]") // Emails
+    .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, "[EMAIL]") // Emails
     .replace(/password|secret|token|key|credential/gi, "[SENSITIVE]"); // Sensitive keywords
 }
 
