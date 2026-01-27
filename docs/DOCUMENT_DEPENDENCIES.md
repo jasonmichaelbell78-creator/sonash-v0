@@ -1,9 +1,9 @@
 # Document Dependencies
 
-**Document Type:** REFERENCE (Tier 4) **Version:** 1.3 **Created:** 2026-01-08
+**Document Type:** REFERENCE (Tier 4) **Version:** 1.4 **Created:** 2026-01-08
 **Status:** ACTIVE **Purpose:** Track template-instance relationships,
 cross-document dependencies, and synchronization requirements **Last Updated:**
-2026-01-17
+2026-01-27
 
 ---
 
@@ -314,6 +314,9 @@ changes in one document affect the accuracy of another.
 | When This Changes                  | Check These Documents                                   | Reason                                             | Enforced |
 | ---------------------------------- | ------------------------------------------------------- | -------------------------------------------------- | -------- |
 | `ROADMAP.md` milestones/priorities | `SESSION_CONTEXT.md` priorities section                 | Session context reflects current roadmap focus     | ✅ BLOCK |
+| `ROADMAP.md` milestone promoted    | `ROADMAP_FUTURE.md` (remove detailed section)           | Future details move with promotion                 | Manual   |
+| `ROADMAP_FUTURE.md` task added     | `analysis/PARALLEL_EXECUTION_GUIDE.md` (if PG marker)   | Parallel groups must stay synchronized             | Manual   |
+| Milestone promoted to active       | `ROADMAP.md`, `ROADMAP_FUTURE.md`                       | Move section from FUTURE to active roadmap         | Manual   |
 | Audit findings resolved            | `docs/TECHNICAL_DEBT_MASTER.md`                         | Technical debt tracker must reflect resolved items | Manual   |
 | Comprehensive audit runs           | `docs/TECHNICAL_DEBT_MASTER.md`, `ROADMAP.md`           | New findings must be consolidated and prioritized  | Manual   |
 | `TECHNICAL_DEBT_MASTER.md` changed | `ROADMAP.md` (Technical Debt Backlog section)           | Backlog section references tech debt master        | Manual   |
@@ -393,6 +396,7 @@ When reviewing documentation PRs:
 
 | Version | Date       | Changes                                                                                                                                          | Author      |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| 1.4     | 2026-01-27 | Added ROADMAP_FUTURE.md to dependency matrix; added milestone promotion and parallel group sync triggers; 3 new cross-document rules.            | Claude Code |
 | 1.3     | 2026-01-17 | Added BLOCKING rules for feature file → ROADMAP.md: app/admin/, functions/src/admin\*, app/(protected)/dashboard/ now require ROADMAP.md update. | Claude Code |
 | 1.2     | 2026-01-14 | Added pre-commit hook automation for cross-document dependency warnings.                                                                         | Claude Code |
 | 1.1     | 2026-01-14 | Added "Cross-Document Update Triggers" section with 12-row trigger matrix for content-level cascading updates between core documents.            | Claude Code |
