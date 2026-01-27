@@ -458,6 +458,11 @@ reliability, and solo developer automations.
 - [ ] **E7:** Session-end runbook (1hr) - docs/runbooks/SESSION_END.md
 - [ ] **E8:** Incident response runbook (2hr) -
       docs/runbooks/INCIDENT_RESPONSE.md
+- [ ] **E9:** Broken deploy triage runbook (30min)
+- [ ] **E10:** Firestore permission denied runbook (30min)
+- [ ] **E11:** App Check issues runbook (30min)
+- [ ] **E12:** Cost spike triage runbook (30min)
+- [ ] **E13:** Claude Fix Bundle format (1hr) - docs/CLAUDE_FIX_BUNDLE.md
 
 ### Track O - Owner Actions (Jason - Manual Setup)
 

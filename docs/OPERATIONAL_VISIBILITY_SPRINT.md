@@ -306,12 +306,51 @@ Runbooks & Documentation:
 │  ├─ Create docs/runbooks/INCIDENT_RESPONSE.md               │
 │  ├─ Severity definitions (P0-P3)                            │
 │  ├─ Escalation paths (who to contact: just you)             │
-│  ├─ Checklist for common incidents:                         │
-│  │   - Firebase outage → Check status.firebase.google.com   │
-│  │   - Sentry spike → Check Errors Tab, recent deploys      │
-│  │   - Auth failures → Check App Check, API keys            │
-│  │   - Build failures → Check CI logs, npm audit            │
+│  ├─ Checklist for common incidents (see E9-E12)             │
 │  └─ Post-incident template                                  │
+├─────────────────────────────────────────────────────────────┤
+│  E9: Broken Deploy Triage Runbook (30min)                   │
+│  ├─ Create docs/runbooks/BROKEN_DEPLOY.md                   │
+│  ├─ Check: GitHub Actions logs, Firebase deploy status      │
+│  ├─ Common causes: build failure, env vars, function crash  │
+│  ├─ Rollback steps (Firebase hosting rollback command)      │
+│  └─ Prevention checklist                                    │
+├─────────────────────────────────────────────────────────────┤
+│  E10: Firestore Permission Denied Runbook (30min)           │
+│  ├─ Create docs/runbooks/FIRESTORE_PERMISSION_DENIED.md     │
+│  ├─ Check: firestore.rules syntax, auth state, user claims  │
+│  ├─ Debug: Firebase Console → Firestore → Rules Playground  │
+│  ├─ Common causes: missing auth, wrong collection path      │
+│  └─ Emulator testing steps                                  │
+├─────────────────────────────────────────────────────────────┤
+│  E11: App Check Issues Runbook (30min)                      │
+│  ├─ Create docs/runbooks/APP_CHECK_ISSUES.md                │
+│  ├─ Check: reCAPTCHA config, App Check token refresh        │
+│  ├─ Debug: Firebase Console → App Check → Metrics           │
+│  ├─ Common causes: expired token, blocked domain            │
+│  └─ Bypass for testing (dev only)                           │
+├─────────────────────────────────────────────────────────────┤
+│  E12: Cost Spike Triage Runbook (30min)                     │
+│  ├─ Create docs/runbooks/COST_SPIKE.md                      │
+│  ├─ Check: Firebase Usage → Firestore reads, Functions      │
+│  ├─ Identify: runaway queries, missing pagination           │
+│  ├─ Emergency: disable problematic function/endpoint        │
+│  └─ Prevention: budget alerts, query limits                 │
+├─────────────────────────────────────────────────────────────┤
+│  E13: Claude Fix Bundle Format (1hr)                        │
+│  ├─ Create docs/CLAUDE_FIX_BUNDLE.md                        │
+│  ├─ Define standard format for exporting issues to Claude:  │
+│  │   - Symptom summary (what went wrong)                    │
+│  │   - Environment (prod/dev), release SHA, time window     │
+│  │   - Reproduction steps                                   │
+│  │   - Stack trace + breadcrumbs (PII redacted)             │
+│  │   - Affected route/page                                  │
+│  │   - Recent deploy changes (git diff summary)             │
+│  │   - Classification (Security/Reliability/Perf/Cost)      │
+│  │   - Suggested diagnostic commands                        │
+│  │   - Proposed fix plan                                    │
+│  ├─ Add export button to Admin Errors Tab                   │
+│  └─ Template file: .claude/templates/fix-bundle.md          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -398,9 +437,9 @@ Runbooks & Documentation:
 | A       | Admin Panel              | ~6 hours      | P0       | Claude |
 | B       | Dev Dashboard (expanded) | ~20 hours     | P0       | Claude |
 | D       | CI Reliability           | ~31 hours     | P1       | Claude |
-| E       | Solo Dev Automations     | ~14 hours     | P1       | Claude |
+| E       | Solo Dev Automations     | ~17 hours     | P1       | Claude |
 | **O**   | **Owner Actions**        | **~10 min**   | **P0**   | Jason  |
-| **ALL** | **Total Sprint**         | **~71 hours** | -        | -      |
+| **ALL** | **Total Sprint**         | **~74 hours** | -        | -      |
 
 > **Track O Note:** Owner Actions are P0 priority because they provide critical
 > external monitoring (O2) and cost protection (O1) that cannot be replicated by
@@ -586,8 +625,10 @@ package.json                           # Add new npm scripts
 - [ ] Warning resolution workflow functional
 - [ ] Session health summary available in Dashboard
 - [ ] Auto-escalation alerts for aging issues
-- [ ] **Session-end runbook created** (NEW - E7)
-- [ ] **Incident response runbook created** (NEW - E8)
+- [ ] **Session-end runbook created** (E7)
+- [ ] **Incident response runbook created** (E8)
+- [ ] **Triage runbooks created** (E9-E12: deploy, Firestore, App Check, cost)
+- [ ] **Claude Fix Bundle format documented** (E13)
 
 ### Track O Complete When (Owner Checklist):
 
