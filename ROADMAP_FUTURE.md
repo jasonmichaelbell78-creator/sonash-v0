@@ -136,7 +136,8 @@ needed
 
 **Priority:** P2-P3 | Can be done incrementally
 
-- [ ] **EFF-002** - Add git pre-push hook for test failures (S effort)
+- [ ] **EFF-002** - Add git pre-push hook for test failures (S effort) _Uses
+      Track T infrastructure_
 - [ ] **EFF-004** - Create shared TypeScript config packages (M effort)
 - [ ] **EFF-006** - Add correlation IDs to logger (M effort) ⚡ _Cross-ref: C2
       Monitoring Consolidation_
@@ -326,9 +327,9 @@ Core offline-first architecture (sequential - has dependencies):
 - [ ] **T2.12** - Soft delete pattern for offline-safe deletes
 - [ ] **T7.1** - Feature flag for offline rollout
 - [ ] **T7.2** - PR strategy (types → conflict UI incremental)
-- [ ] **T7.8** - Unit tests for conflict scenarios
-- [ ] **T7.9** - Firebase emulator integration tests
-- [ ] **EFF-011** - Offline Tests
+- [ ] **T7.8** - Unit tests for conflict scenarios _Uses Track T infrastructure_
+- [ ] **T7.9** - Firebase emulator integration tests _Uses Track T fixtures_
+- [ ] **EFF-011** - Offline Tests _Uses Track T infrastructure_
 
 ### F2: Step Work Worksheets (4 items) - `⏸ PG2`
 

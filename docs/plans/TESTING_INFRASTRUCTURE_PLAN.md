@@ -1,8 +1,12 @@
 # Testing Infrastructure Plan
 
-**Document Version:** 1.0 **Created:** 2026-01-27 (Session #103) **Status:**
-DRAFT **Priority:** P1 **Related:** [TESTING_PLAN.md](../TESTING_PLAN.md),
-[ROADMAP.md](../../ROADMAP.md)
+**Document Version:** 1.1 **Created:** 2026-01-27 (Session #103) **Status:**
+ACTIVE **Priority:** P1 **Related:** [TESTING_PLAN.md](../TESTING_PLAN.md),
+[ROADMAP.md](../../ROADMAP.md) (Track T)
+
+> **Integrated:** This plan is now **Track T** in the Active Sprint. See
+> [ROADMAP.md#track-t](../../ROADMAP.md#track-t---testing-infrastructure-new---session-103)
+> for task tracking.
 
 ---
 
@@ -436,9 +440,10 @@ When working with testing:
 
 ## Version History
 
-| Version | Date       | Changes                      |
-| ------- | ---------- | ---------------------------- |
-| 1.0     | 2026-01-27 | Initial draft - Session #103 |
+| Version | Date       | Changes                                              |
+| ------- | ---------- | ---------------------------------------------------- |
+| 1.1     | 2026-01-27 | Integrated into ROADMAP.md as Track T - Session #103 |
+| 1.0     | 2026-01-27 | Initial draft - Session #103                         |
 
 ---
 

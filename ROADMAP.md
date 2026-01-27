@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.13
-**Last Updated:** 2026-01-27
+**Document Version:** 3.14
+**Last Updated:** 2026-01-27 (Session #103)
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
@@ -232,7 +232,7 @@ Planned | 🟣 Research
 This sprint consolidates Admin Panel completion, Development Dashboard, CI/CD
 reliability, and solo developer automations.
 
-### Sprint Tracks (7 Parallel Tracks)
+### Sprint Tracks (8 Parallel Tracks)
 
 | Track       | Focus                                 | Status          | Effort    | Owner  |
 | ----------- | ------------------------------------- | --------------- | --------- | ------ |
@@ -243,6 +243,7 @@ reliability, and solo developer automations.
 | **Track E** | Solo Developer Automations            | 📋 Planned      | ~14 hours | Claude |
 | **Track O** | Owner Actions (manual setup)          | 📋 **DO FIRST** | ~10 min   | Jason  |
 | **Track P** | Performance Critical (CWV fix)        | 📋 Planned      | ~18 hours | Claude |
+| **Track T** | Testing Infrastructure (Playwright)   | 📋 Planned      | ~45 hours | Claude |
 
 ### Track A - Admin Panel ✅ DEVELOPMENT COMPLETE
 
@@ -431,8 +432,8 @@ reliability, and solo developer automations.
 
 #### Phase 3 - Deployment Safety
 
-- [ ] **D5.5:** Golden-path E2E test (3hr) [CTO Advisory] - Critical user
-      journey test
+- [x] **D5.5:** Golden-path E2E test (3hr) [CTO Advisory] - ✅ **Consolidated
+      into Track T** (T2.1-T2.5)
 - [ ] **D6:** Post-deployment health checks (2hr) [Comprehensive]
 - [ ] **D7:** Deployment approval gates (2hr) [Comprehensive]
 - [ ] **D8:** Automated rollback (5hr) [Comprehensive]
@@ -551,6 +552,70 @@ reliability, and solo developer automations.
 **Impact:** XSS protection, Clickjacking prevention
 
 **Track P Total: ~18 hours**
+
+### Track T - Testing Infrastructure (NEW - Session #103)
+
+> **Spec:**
+> [TESTING_INFRASTRUCTURE_PLAN.md](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)
+> **Goal:** Automated testing for components, user journeys, and visual
+> regression **Note:** Consolidates D5.5, AUTO-004, TEST-001, TEST-002 into
+> unified testing track
+
+**Priority:** P1 - Build sustainable testing infrastructure for solo developer
+
+#### Phase 1: Playwright Foundation (8hr)
+
+- [ ] **T1.1:** Install and configure Playwright (2hr)
+- [ ] **T1.2:** Create test fixtures (auth, emulator, test users) (2hr)
+- [ ] **T1.3:** Create base page objects (HomePage, AdminPage, etc.) (2hr)
+- [ ] **T1.4:** Configure CI integration (GitHub Actions) (2hr)
+
+#### Phase 2: Golden Path E2E Tests (10hr)
+
+> Implements and expands D5.5 (Golden-path E2E test)
+
+- [ ] **T2.1:** Auth Flow - Sign in, anonymous auth, sign out (2hr)
+- [ ] **T2.2:** Onboarding - Clean date, fellowship, nickname (2hr)
+- [ ] **T2.3:** Daily Journal - Mood, gratitude, free-write (2hr)
+- [ ] **T2.4:** Meeting Finder - Search, filter, pagination (2hr)
+- [ ] **T2.5:** Admin CRUD - Meetings/Quotes/Users operations (2hr)
+
+#### Phase 3: Component Testing (10hr)
+
+- [ ] **T3.1:** Form Components - Input validation, submit states (2hr)
+- [ ] **T3.2:** Modal/Dialog - Open, close, interactions (2hr)
+- [ ] **T3.3:** Navigation - Tabs, ribbon, breadcrumbs (2hr)
+- [ ] **T3.4:** Data Display - Cards, lists, pagination (2hr)
+- [ ] **T3.5:** Admin Components - CRUD forms, data tables (2hr)
+
+#### Phase 4: Visual Regression (6hr)
+
+- [ ] **T4.1:** Configure Playwright visual comparison (2hr)
+- [ ] **T4.2:** Create baseline screenshots (key pages) (2hr)
+- [ ] **T4.3:** Integrate with CI (fail on diff > threshold) (2hr)
+
+#### Phase 5: Dev Dashboard Integration (5hr)
+
+> Depends on Track B completion
+
+- [ ] **T5.1:** Test Results Tab - Show pass/fail summary (2hr)
+- [ ] **T5.2:** Coverage Display - File/component breakdown (2hr)
+- [ ] **T5.3:** Run Tests Button - Trigger test suite from panel (1hr)
+
+#### Phase 6: Test Data Management (6hr)
+
+- [ ] **T6.1:** Test Data Factories - User, Meeting, Journal factories (2hr)
+- [ ] **T6.2:** Seed Scripts - Populate emulator with realistic data (2hr)
+- [ ] **T6.3:** Cleanup Utilities - Reset state between tests (2hr)
+
+**Track T Total: ~45 hours**
+
+**Environment Support:**
+
+| Environment  | Browser                | Extension Support | Notes                 |
+| ------------ | ---------------------- | ----------------- | --------------------- |
+| Web (Remote) | Headless Chromium      | Limited           | CI/CD, automated runs |
+| CLI (Local)  | Chrome with extensions | Full              | Chrome extension mode |
 
 ### Future Enhancements (Deferred from PR Reviews)
 
@@ -768,10 +833,11 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
     - [ ] Add correlation ID context
     - **Verification:** Production errors appear in Sentry
 
-15. **AUTO-004: Add Code Coverage to CI** (M effort, Medium ROI)
-    - [ ] Wire `npm run test:coverage` into CI
-    - [ ] Add coverage threshold check
-    - [ ] Generate coverage badge
+15. **AUTO-004: Add Code Coverage to CI** (M effort, Medium ROI) - ✅
+    **Consolidated into Track T** (T1.4, T5.2)
+    - [x] Wire `npm run test:coverage` into CI → T1.4
+    - [x] Add coverage threshold check → T1.4
+    - [x] Generate coverage badge → T5.2
     - **Verification:** CI fails if coverage drops >5%
 
 16. **AUTO-005: Remove CI continue-on-error Flags** (S effort, Medium ROI)
@@ -791,21 +857,20 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 > **Source:** PR #277 Testing revealed missing automated tests for
 > security-critical code
 
-18. **TEST-001: Add redactSensitiveUrl Tests** (S effort, High ROI)
-    - [ ] Export `redactSensitiveUrl` from `lib/utils/error-export.ts` (or test
-          via exported wrapper)
-    - [ ] Test strips query params from URLs
-    - [ ] Test strips hash fragments from URLs
-    - [ ] Test handles malformed URLs (returns `"[invalid-url]"`)
+18. **TEST-001: Add redactSensitiveUrl Tests** (S effort, High ROI) - ✅
+    **Consolidated into Track T** (T6.1)
+    - [x] Export `redactSensitiveUrl` from `lib/utils/error-export.ts` → T6.1
+    - [x] Test strips query params from URLs → T6.1
+    - [x] Test strips hash fragments from URLs → T6.1
+    - [x] Test handles malformed URLs → T6.1
     - **Verification:** `npm test` includes URL redaction tests
 
-19. **TEST-002: Add Cloud Functions Validation Tests** (M effort, High ROI)
-    - [ ] Set up test infrastructure in `functions/` (vitest +
-          firebase-functions-test)
-    - [ ] Test `adminSoftDeleteUser` Zod validation (uid > 128 chars rejected,
-          reason > 500 chars rejected)
-    - [ ] Test self-deletion block (admin cannot delete own account)
-    - [ ] Test rollback on Auth failure (Firestore restored)
+19. **TEST-002: Add Cloud Functions Validation Tests** (M effort, High ROI) - ✅
+    **Consolidated into Track T** (T6.1, T2.5)
+    - [x] Set up test infrastructure in `functions/` → T6.1
+    - [x] Test `adminSoftDeleteUser` Zod validation → T2.5
+    - [x] Test self-deletion block → T2.5
+    - [x] Test rollback on Auth failure → T2.5
     - **Verification:** `cd functions && npm test` runs backend tests
 
 ---
@@ -2709,6 +2774,7 @@ npm run roadmap:validate      # Check consistency (when available)
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.14    | 2026-01-27 | **Session #103**: Added Track T (Testing Infrastructure) with 6 phases (~45hr); consolidated D5.5, AUTO-004, TEST-001, TEST-002 into Track T; Playwright-based E2E, component, and visual regression testing; Dev Dashboard integration; CLI Chrome extension support                                                                                                                       |
 | 3.13    | 2026-01-27 | **ROADMAP RESTRUCTURE**: Split into ROADMAP.md (active) + ROADMAP_FUTURE.md (M2-M10 details); fixed percentage inconsistency (removed duplicate 35%); renamed Track D Performance → Track P (avoid collision); added 7 Parallel Groups with `⏸ PG#` markers; comprehensive AI Instructions with specific update triggers; added DOCUMENT_DEPENDENCIES cross-references                      |
 | 3.10    | 2026-01-26 | **Session #98**: Added Track D (Performance Critical) with 18hr of urgent fixes; created TECHNICAL_DEBT_MASTER.md as single source of truth; verified SEC-001/SEC-002 as false positives; updated Technical Debt Backlog section with corrected counts (7 S0, 28 S1, 45 S2, 32 S3)                                                                                                          |
 | 3.9     | 2026-01-24 | **R&D NOTES**: Added 🔬 R&D requirements to E3 items (HALT P3/P4, Pattern Recognition, F11.\*, M10 monetization)                                                                                                                                                                                                                                                                            |
