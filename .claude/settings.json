@@ -197,7 +197,7 @@
         ]
       },
       {
-        "matcher": "^(?i)askuserquestion$",
+        "matcher": "^(askuserquestion|AskUserQuestion|ASKUSERQUESTION)$",
         "hooks": [
           {
             "type": "command",
@@ -207,7 +207,7 @@
         ]
       },
       {
-        "matcher": "^(?i)task$",
+        "matcher": "^(task|Task|TASK)$",
         "hooks": [
           {
             "type": "command",

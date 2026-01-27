@@ -19,8 +19,17 @@ const CONTEXT_FILE = "SESSION_CONTEXT.md";
 const BRANCH_PREFIX = "claude/";
 const MAX_AGE_DAYS = 7;
 
-// Get project directory
-const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+// Get and validate project directory
+const safeBaseDir = path.resolve(process.cwd());
+const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
+const projectDir = path.resolve(safeBaseDir, projectDirInput);
+
+// Security: Ensure projectDir is within baseDir (robust relative-path check)
+const rel = path.relative(safeBaseDir, projectDir);
+if (rel !== "" && (rel.startsWith("..") || path.isAbsolute(rel))) {
+  console.log("ok");
+  process.exit(0);
+}
 
 /**
  * Run git command safely using execFileSync (no shell interpolation)
@@ -124,9 +133,13 @@ function main() {
   let newerCounter = localCounter;
   let newerDate = null;
 
+  // Guard against detached HEAD state (currentBranch would be "HEAD")
+  if (!currentBranch || currentBranch === "HEAD") {
+    console.log("ok");
+    return;
+  }
+
   for (const { branch } of recentBranches) {
-    // Guard against detached HEAD state (currentBranch would be "HEAD")
-    if (!currentBranch || currentBranch === "HEAD") break;
     // Normalize remote branch name (safer than regex for non-origin remotes)
     const remoteBranch = branch.startsWith("origin/") ? branch.slice("origin/".length) : branch;
     if (remoteBranch === currentBranch) continue;

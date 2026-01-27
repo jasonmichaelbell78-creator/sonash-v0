@@ -23,8 +23,11 @@ const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
 // Security: Ensure projectDir is within baseDir (robust relative-path check)
 const rel = path.relative(safeBaseDir, projectDir);
-// If rel is empty, paths are same. If rel starts with ".." or is absolute, it's outside
-if (rel !== "" && (rel.startsWith("..") || path.isAbsolute(rel))) {
+// Use path.sep for cross-platform robustness
+const isOutside =
+  rel !== "" && (rel === ".." || rel.startsWith(`..${path.sep}`) || path.isAbsolute(rel));
+
+if (isOutside) {
   console.log("ok");
   process.exit(0);
 }
@@ -54,34 +57,54 @@ if (!subagentType) {
 }
 
 /**
- * Read state from file
+ * Read state from file (validates schema)
  */
 function readState() {
   const statePath = path.join(projectDir, STATE_FILE);
-  try {
-    return JSON.parse(fs.readFileSync(statePath, "utf8"));
-  } catch {
-    // File doesn't exist - return default
-  }
-  return {
+  const defaults = {
     sessionId: null,
     sessionStart: null,
     agentsInvoked: [],
     agentsSuggested: [],
     filesModified: [],
   };
+
+  try {
+    const parsed = JSON.parse(fs.readFileSync(statePath, "utf8"));
+    // Validate and normalize state shape
+    return {
+      sessionId: typeof parsed.sessionId === "string" ? parsed.sessionId : null,
+      sessionStart: typeof parsed.sessionStart === "string" ? parsed.sessionStart : null,
+      agentsInvoked: Array.isArray(parsed.agentsInvoked) ? parsed.agentsInvoked : [],
+      agentsSuggested: Array.isArray(parsed.agentsSuggested) ? parsed.agentsSuggested : [],
+      filesModified: Array.isArray(parsed.filesModified) ? parsed.filesModified : [],
+    };
+  } catch {
+    // Missing/invalid file -> defaults
+    return defaults;
+  }
 }
 
 /**
- * Write state to file
+ * Write state to file (atomic write pattern)
  */
 function writeState(state) {
   const statePath = path.join(projectDir, STATE_FILE);
+  const tmpPath = `${statePath}.tmp`;
   try {
     // Ensure directory exists
-    fs.mkdirSync(path.dirname(statePath), { recursive: true });
-    fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+    const dir = path.dirname(statePath);
+    fs.mkdirSync(dir, { recursive: true });
+    // Atomic write: write to temp file, then rename
+    fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+    fs.renameSync(tmpPath, statePath);
   } catch (err) {
+    // Clean up temp file on error
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      // ignore cleanup failures
+    }
     // Log error but don't block execution
     console.error(`Warning: Could not write to ${STATE_FILE}:`, err.message);
   }

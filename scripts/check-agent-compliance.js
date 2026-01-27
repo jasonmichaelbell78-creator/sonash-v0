@@ -94,9 +94,13 @@ function getInvokedAgents() {
 
     // Validate state belongs to current session to avoid stale data
     const currentSessionId = getCurrentSessionId();
-    if (currentSessionId && state.sessionId !== currentSessionId) return [];
+    // If no current session ID, return empty to avoid false passes from stale data
+    if (!currentSessionId) return [];
+    if (state.sessionId !== currentSessionId) return [];
 
-    return (state.agentsInvoked || []).map((a) => a.agent);
+    // Validate agentsInvoked is array with valid entries
+    const invoked = Array.isArray(state.agentsInvoked) ? state.agentsInvoked : [];
+    return invoked.map((a) => (a && typeof a.agent === "string" ? a.agent : null)).filter(Boolean);
   } catch {
     return [];
   }
