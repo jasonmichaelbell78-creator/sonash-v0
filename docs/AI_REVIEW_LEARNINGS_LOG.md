@@ -925,10 +925,98 @@ claude/resume-previous-session-D9N5N **Suggestions:** 6 total (MAJOR: 2, MINOR:
 
 ---
 
+#### Review #214: PR #322 Alert System & Context Preservation - Qodo + SonarCloud + CI (2026-01-28)
+
+**Source:** Qodo PR Compliance + Code Suggestions, SonarCloud, CI Pattern Check
+**PR/Branch:** claude/resume-previous-session-D9N5N **Suggestions:** 35+ total
+(CRITICAL: 21 CI, MAJOR: 11, MINOR: 6, DEFERRED: 1)
+
+**Files Modified:**
+
+- `.claude/hooks/alerts-reminder.js` - try/catch wrapping (5 locations)
+- `.claude/hooks/auto-save-context.js` - security fixes + try/catch
+- `.claude/skills/alerts/scripts/run-alerts.js` - path fixes + try/catch
+- `scripts/generate-pending-alerts.js` - try/catch + regex fix + race condition
+- `scripts/append-hook-warning.js` - try/catch wrapping
+- `.claude/hooks/large-context-warning.js` - try/catch wrapping
+- `claude.md` - fixed path traversal regex character
+- `.husky/pre-push` - empty alert prevention
+
+**CRITICAL CI (21 - Pattern Compliance):**
+
+All 21 violations are `readFileSync without try/catch` - existsSync does NOT
+guarantee read success due to race conditions, permission changes, encoding
+errors. See Review #36, #37 for pattern background.
+
+**MAJOR (11):**
+
+1. **Directory traversal fix** - `auto-save-context.js` path.relative check
+   vulnerable. Changed to use `startsWith(safeBaseDir + path.sep)` method.
+
+2. **Sensitive data persistence** - `auto-save-context.js` saves raw context to
+   disk. Added sanitization to exclude sensitive fields before persisting.
+
+3. **Path traversal regex character** - `claude.md` line 90 had box-drawing
+   character │ instead of pipe |. Fixed regex: `/^\.\.(?:[\\/]|$)/`.
+
+4. **Session-state path mismatch** - `run-alerts.js` used wrong path
+   `.claude/session-state.json` instead of `.claude/hooks/.session-state.json`.
+
+5. **SESSION_CONTEXT.md path** - `run-alerts.js` checked wrong path
+   `ROOT_DIR/SESSION_CONTEXT.md` instead of `ROOT_DIR/docs/SESSION_CONTEXT.md`.
+
+6. **getRecentDecisions order** - Got oldest decisions, not newest. Changed to
+   collect all then `.slice(-limit)` to get most recent.
+
+7. **Race condition data loss** - `readHookWarnings()` cleared warnings before
+   processing complete. Moved clear to separate acknowledged flow.
+
+8. **SonarQube regex precedence** - L47 in `generate-pending-alerts.js` needs
+   explicit grouping for operator precedence clarity.
+
+9. **Type-check always report** - `run-alerts.js` silently ignored type errors
+   when count couldn't be parsed. Now always reports failure.
+
+10. **Platform root search** - `findProjectRoot()` used hardcoded "/" which
+    fails on Windows. Changed to `path.parse(dir).root`.
+
+11. **Empty alert prevention** - `pre-push` hook could create empty alerts.
+    Added guard to check for non-empty warning message.
+
+**MINOR (6):**
+
+12. Unused 'require' in session-end-reminder.js (line 2)
+13. Unused 'error' in session-start.js (line 470)
+14. Unsafe regex patterns in session-end-reminder.js (documented, not fixed)
+15. Consistent session state path across files
+16. Improved secret detection regex
+17. More specific alert messages in pre-commit
+
+**DEFERRED (1):**
+
+- **Replace custom alerting with standard tools** - Valid architectural
+  suggestion to use issue tracker/CI dashboards instead of markdown parsing. Too
+  large for this PR, deferred to ROADMAP_FUTURE.md consideration.
+
+**NEW PATTERNS (4):**
+
+- **(70) existsSync + readFileSync race** - ALWAYS wrap readFileSync in
+  try/catch even after existsSync - file can be deleted/locked/permissions
+  changed between checks
+- **(71) path.relative security** - For containment validation, prefer
+  `!resolved.startsWith(base + path.sep) && resolved !== base` over
+  path.relative checks which have edge cases
+- **(72) Regex character encoding** - Watch for Unicode box-drawing characters
+  (│) being confused with pipe (|) in documentation - they look similar
+- **(73) Platform-agnostic root** - Use `path.parse(dir).root` not hardcoded "/"
+  for cross-platform compatibility
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #214: PR #XXX Title - Review Source (DATE)
+#### Review #215: PR #XXX Title - Review Source (DATE)
 
 
 -->

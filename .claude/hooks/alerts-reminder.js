@@ -32,8 +32,10 @@ const CONTEXT_TRACKING_FILE = path.join(
 function checkContextSize() {
   const FILE_THRESHOLD = 20;
 
+  // Pattern #70: Skip existsSync - use try/catch alone (race condition safe)
   try {
-    const tracking = JSON.parse(fs.readFileSync(CONTEXT_TRACKING_FILE, "utf8"));
+    const content = fs.readFileSync(CONTEXT_TRACKING_FILE, "utf8");
+    const tracking = JSON.parse(content);
     const filesRead = tracking.filesRead?.length || 0;
 
     if (filesRead >= FILE_THRESHOLD) {
@@ -43,7 +45,7 @@ function checkContextSize() {
       };
     }
   } catch {
-    // File doesn't exist or can't be read
+    // File doesn't exist or can't be read - safe to ignore
   }
 
   return { shouldSave: false };
@@ -53,13 +55,13 @@ function checkContextSize() {
  * Check for pending MCP save
  */
 function checkPendingMcpSave() {
+  // Pattern #70: Skip existsSync - use try/catch alone (race condition safe)
   try {
-    if (fs.existsSync(PENDING_MCP_SAVE_FILE)) {
-      const data = JSON.parse(fs.readFileSync(PENDING_MCP_SAVE_FILE, "utf8"));
-      return data;
-    }
+    const content = fs.readFileSync(PENDING_MCP_SAVE_FILE, "utf8");
+    const data = JSON.parse(content);
+    return data;
   } catch {
-    // Ignore
+    // File doesn't exist or can't be read - safe to ignore
   }
   return null;
 }
@@ -68,46 +70,48 @@ function main() {
   const messages = [];
 
   // Check for pending alerts
-  if (fs.existsSync(ALERTS_FILE)) {
-    let alertsAcknowledged = false;
+  // Pattern #70: Skip existsSync - use try/catch alone (race condition safe)
+  let alertsAcknowledged = false;
+  let alertsData = null;
 
-    if (fs.existsSync(ALERTS_ACK_FILE)) {
-      try {
-        const ackData = JSON.parse(fs.readFileSync(ALERTS_ACK_FILE, "utf8"));
-        const alertsData = JSON.parse(fs.readFileSync(ALERTS_FILE, "utf8"));
+  // Try to read alerts file
+  try {
+    const content = fs.readFileSync(ALERTS_FILE, "utf8");
+    alertsData = JSON.parse(content);
+  } catch {
+    // File doesn't exist or can't be read - no alerts to check
+  }
 
-        if (ackData.acknowledgedAt && alertsData.generated) {
-          const ackTime = new Date(ackData.acknowledgedAt).getTime();
-          const alertsTime = new Date(alertsData.generated).getTime();
-          if (ackTime > alertsTime) {
-            alertsAcknowledged = true;
-          }
+  if (alertsData) {
+    // Check if alerts were acknowledged
+    try {
+      const ackContent = fs.readFileSync(ALERTS_ACK_FILE, "utf8");
+      const ackData = JSON.parse(ackContent);
+
+      if (ackData.acknowledgedAt && alertsData.generated) {
+        const ackTime = new Date(ackData.acknowledgedAt).getTime();
+        const alertsTime = new Date(alertsData.generated).getTime();
+        if (ackTime > alertsTime) {
+          alertsAcknowledged = true;
         }
-      } catch {
-        // Ignore
       }
+    } catch {
+      // Ack file doesn't exist or can't be read - treat as not acknowledged
     }
 
     if (!alertsAcknowledged) {
-      try {
-        const alerts = JSON.parse(fs.readFileSync(ALERTS_FILE, "utf8"));
-        const counts = { error: 0, warning: 0, info: 0 };
-        for (const alert of alerts.alerts || []) {
-          counts[alert.severity] = (counts[alert.severity] || 0) + 1;
-        }
+      const counts = { error: 0, warning: 0, info: 0 };
+      for (const alert of alertsData.alerts || []) {
+        counts[alert.severity] = (counts[alert.severity] || 0) + 1;
+      }
 
-        const total = counts.error + counts.warning + counts.info;
-        if (total > 0) {
-          const parts = [];
-          if (counts.error > 0) parts.push(`${counts.error} error(s)`);
-          if (counts.warning > 0) parts.push(`${counts.warning} warning(s)`);
-          if (counts.info > 0) parts.push(`${counts.info} info`);
-          messages.push(
-            `ALERTS: ${total} pending (${parts.join(", ")}). Tell user or run /alerts.`
-          );
-        }
-      } catch {
-        // Ignore
+      const total = counts.error + counts.warning + counts.info;
+      if (total > 0) {
+        const parts = [];
+        if (counts.error > 0) parts.push(`${counts.error} error(s)`);
+        if (counts.warning > 0) parts.push(`${counts.warning} warning(s)`);
+        if (counts.info > 0) parts.push(`${counts.info} info`);
+        messages.push(`ALERTS: ${total} pending (${parts.join(", ")}). Tell user or run /alerts.`);
       }
     }
   }

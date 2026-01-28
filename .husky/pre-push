@@ -129,7 +129,10 @@ else
       printf '%s\n' "$triggers_output" | grep -E "^⚠️|^   Action:" | head -10
       # Extract first warning message for the alert
       first_warning=$(printf '%s\n' "$triggers_output" | grep "^⚠️" | head -1 | sed 's/^⚠️ *//')
-      node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning" 2>/dev/null || true
+      # Review #214: Only create alert if we have a non-empty message
+      if [ -n "$first_warning" ]; then
+        node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning" 2>/dev/null || true
+      fi
     else
       echo "  ✅ No blocking triggers"
     fi

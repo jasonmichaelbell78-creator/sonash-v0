@@ -36,14 +36,14 @@ function parseArgs() {
 
 /**
  * Read existing warnings file or create empty structure
+ * Pattern #70: Skip existsSync, use try/catch alone (race condition safe)
  */
 function readWarnings() {
-  if (!fs.existsSync(WARNINGS_FILE)) {
-    return { warnings: [], lastCleared: null };
-  }
   try {
-    return JSON.parse(fs.readFileSync(WARNINGS_FILE, "utf8"));
+    const content = fs.readFileSync(WARNINGS_FILE, "utf8");
+    return JSON.parse(content);
   } catch {
+    // File doesn't exist or can't be read - return empty structure
     return { warnings: [], lastCleared: null };
   }
 }

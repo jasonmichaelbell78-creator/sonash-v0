@@ -31,17 +31,18 @@ const safeBaseDir = path.resolve(process.cwd());
 const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
 const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
-// Security check
-const baseRel = path.relative(safeBaseDir, projectDir);
-if (baseRel.startsWith(".." + path.sep) || baseRel === ".." || path.isAbsolute(baseRel)) {
-  console.log("ok");
+// Security check - Pattern #71: Use startsWith for robust containment validation
+// path.relative has edge cases with empty strings; prefer explicit prefix check
+if (!projectDir.startsWith(safeBaseDir + path.sep) && projectDir !== safeBaseDir) {
+  console.log("ok"); // Exit silently on security violation
   process.exit(0);
 }
 
 process.chdir(projectDir);
 
 const STATE_FILE = path.join(projectDir, ".claude", "hooks", ".auto-save-state.json");
-const SESSION_STATE_FILE = path.join(projectDir, ".claude", "session-state.json");
+// Review #214: Fixed path to match session-start.js location
+const SESSION_STATE_FILE = path.join(projectDir, ".claude", "hooks", ".session-state.json");
 const PENDING_ALERTS_FILE = path.join(projectDir, ".claude", "pending-alerts.json");
 const SESSION_DECISIONS_FILE = path.join(projectDir, "docs", "SESSION_DECISIONS.md");
 const CONTEXT_TRACKING_FILE = path.join(
@@ -91,27 +92,59 @@ function getContextMetrics() {
 
 /**
  * Get recent decisions from SESSION_DECISIONS.md
+ * Review #214: Fixed to get MOST RECENT decisions, not oldest
  */
 function getRecentDecisions(limit = 3) {
   try {
     const content = fs.readFileSync(SESSION_DECISIONS_FILE, "utf8");
     // Match decision blocks (### [DATE] - [TITLE])
-    const decisionPattern = /^### \[(\d{4}-\d{2}-\d{2})\] - (.+?)$([\s\S]*?)(?=^### \[|^## |$)/gm;
-    const decisions = [];
-    let match;
+    // Pattern needs explicit newline after header for proper content capture
+    const decisionPattern = /^### \[(\d{4}-\d{2}-\d{2})\] - (.+?)\n([\s\S]*?)(?=^### \[|^## |$)/gm;
 
-    while ((match = decisionPattern.exec(content)) !== null && decisions.length < limit) {
-      decisions.push({
-        date: match[1],
-        title: match[2].trim(),
-        summary: match[3].trim().substring(0, 200) + "...",
-      });
-    }
+    // Collect ALL decisions first
+    const allDecisions = Array.from(content.matchAll(decisionPattern)).map((m) => ({
+      date: m[1],
+      title: m[2].trim(),
+      summary: (m[3] || "").trim().substring(0, 200) + "...",
+    }));
 
-    return decisions;
+    // Return the LAST N decisions (most recent, assuming file is chronological)
+    return allDecisions.slice(-limit);
   } catch {
     return [];
   }
+}
+
+/**
+ * Sanitize context data to remove potentially sensitive information
+ * Review #214: Prevent sensitive data persistence
+ */
+function sanitizeContextData(contextData) {
+  const sanitized = {
+    metrics: contextData.metrics,
+    // Only include safe session state fields
+    sessionState: contextData.sessionState
+      ? {
+          lastBegin: contextData.sessionState.lastBegin,
+          lastEnd: contextData.sessionState.lastEnd,
+          sessionCount: contextData.sessionState.sessionCount,
+        }
+      : null,
+    // Alerts are generally safe (no secrets)
+    alerts: (contextData.alerts || []).map((a) => ({
+      type: a.type,
+      severity: a.severity,
+      message: a.message,
+      // Exclude details which might contain sensitive info
+    })),
+    // Decisions only include title/date
+    decisions: (contextData.decisions || []).map((d) => ({
+      date: d.date,
+      title: d.title,
+      // Exclude summary which might contain sensitive context
+    })),
+  };
+  return sanitized;
 }
 
 /**
@@ -154,7 +187,8 @@ function saveToMcpMemory(contextData) {
       entityType: "session_context",
       observations: observations,
     },
-    raw: contextData,
+    // Review #214: Sanitize raw data to prevent sensitive info persistence
+    raw: sanitizeContextData(contextData),
   };
 
   return saveJson(mcpSaveFile, mcpData);

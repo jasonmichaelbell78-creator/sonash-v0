@@ -16,14 +16,20 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 // Find project root (where package.json is)
+// Review #214: Use platform-agnostic root detection
 function findProjectRoot() {
   let dir = __dirname;
-  while (dir !== "/") {
+  const fsRoot = path.parse(dir).root; // Platform-agnostic (handles Windows drives)
+
+  while (dir && dir !== fsRoot) {
     if (fs.existsSync(path.join(dir, "package.json"))) {
       return dir;
     }
-    dir = path.dirname(dir);
+    const next = path.dirname(dir);
+    if (next === dir) break; // Prevent infinite loop
+    dir = next;
   }
+
   return process.cwd();
 }
 
@@ -95,18 +101,18 @@ function checkCodeHealth() {
     tsResult = runCommand("npx tsc --noEmit 2>&1", { timeout: 120000 });
   }
 
+  // Review #214: Always report type-check failures, even if count can't be parsed
   if (!tsResult.success && !tsResult.output.includes("Missing script")) {
-    const errorMatch = tsResult.output.match(/Found (\d+) error/);
+    const errorMatch = tsResult.output.match(/Found (\d+) error/i);
     const errorCount = errorMatch ? parseInt(errorMatch[1], 10) : null;
-    if (errorCount) {
-      addAlert(
-        "code",
-        "error",
-        `${errorCount} TypeScript error(s)`,
-        tsResult.output.split("\n").slice(0, 10),
-        "Run: npx tsc --noEmit"
-      );
-    }
+
+    addAlert(
+      "code",
+      "error",
+      errorCount ? `${errorCount} TypeScript error(s)` : "TypeScript type-check failed",
+      tsResult.output.split("\n").slice(0, 10),
+      "Run: npx tsc --noEmit"
+    );
   }
 
   // ESLint warnings
@@ -132,13 +138,27 @@ function checkCodeHealth() {
   }
 
   // Circular dependencies
+  // Review #214: More specific check - only alert on actual circular detection
   const circularResult = runCommand("npm run check:circular 2>&1", { timeout: 60000 });
-  if (!circularResult.success || circularResult.output.includes("circular")) {
+  const circularDetected =
+    /\bcircular\b/i.test(circularResult.output) ||
+    /\bcircular\b/i.test(circularResult.stderr || "");
+  const missingScript = /Missing script/i.test(circularResult.output);
+
+  if (circularDetected) {
     addAlert(
       "code",
       "warning",
       "Circular dependencies detected",
       null,
+      "Run: npm run check:circular"
+    );
+  } else if (!circularResult.success && !missingScript) {
+    addAlert(
+      "code",
+      "warning",
+      "Circular dependency check failed to run",
+      (circularResult.output || circularResult.stderr || "").split("\n").slice(0, 10),
       "Run: npm run check:circular"
     );
   }
@@ -181,12 +201,24 @@ function checkSecurity() {
   }
 
   // Encrypted secrets check
+  // Review #214: Pattern #70 - use try/catch, improved regex validation
   const encryptedPath = path.join(ROOT_DIR, ".env.local.encrypted");
   const envLocalPath = path.join(ROOT_DIR, ".env.local");
 
   if (fs.existsSync(encryptedPath)) {
-    // Check if env.local exists and has content
-    if (!fs.existsSync(envLocalPath)) {
+    let hasValidTokens = false;
+
+    try {
+      const envContent = fs.readFileSync(envLocalPath, "utf8");
+      // Check for actual token values (not placeholders)
+      hasValidTokens =
+        /SONARCLOUD_TOKEN=(?!your-|placeholder|xxx)[^\s]+/.test(envContent) ||
+        /GITHUB_TOKEN=(?!your-|placeholder|xxx)[^\s]+/.test(envContent);
+    } catch {
+      // File doesn't exist or can't be read - treat as not decrypted
+    }
+
+    if (!hasValidTokens) {
       addAlert(
         "security",
         "warning",
@@ -194,17 +226,6 @@ function checkSecurity() {
         null,
         "Run: node scripts/secrets/decrypt-secrets.js"
       );
-    } else {
-      const envContent = fs.readFileSync(envLocalPath, "utf8");
-      if (!envContent.includes("SONARCLOUD") && !envContent.includes("MCP")) {
-        addAlert(
-          "security",
-          "warning",
-          "Encrypted secrets may not be fully decrypted",
-          null,
-          "Run: node scripts/secrets/decrypt-secrets.js"
-        );
-      }
     }
   }
 
@@ -229,22 +250,23 @@ function checkSessionContext() {
   console.error("  Checking session context...");
 
   // Cross-session warning
-  const sessionStatePath = path.join(ROOT_DIR, ".claude", "session-state.json");
-  if (fs.existsSync(sessionStatePath)) {
-    try {
-      const state = JSON.parse(fs.readFileSync(sessionStatePath, "utf8"));
-      if (state.lastBegin && !state.lastEnd) {
-        addAlert(
-          "session",
-          "warning",
-          "Previous session did not run /session-end",
-          null,
-          "Run: /session-end at end of sessions"
-        );
-      }
-    } catch {
-      // JSON parse failed, skip
+  // Review #214: Fixed path to match session-start.js location
+  const sessionStatePath = path.join(ROOT_DIR, ".claude", "hooks", ".session-state.json");
+  // Pattern #70: Skip existsSync, use try/catch alone
+  try {
+    const content = fs.readFileSync(sessionStatePath, "utf8");
+    const state = JSON.parse(content);
+    if (state.lastBegin && !state.lastEnd) {
+      addAlert(
+        "session",
+        "warning",
+        "Previous session did not run /session-end",
+        null,
+        "Run: /session-end at end of sessions"
+      );
     }
+  } catch {
+    // File doesn't exist or can't be read - skip
   }
 
   // MCP memory status (informational)
@@ -265,36 +287,35 @@ function checkCurrentAlerts() {
   console.error("  Checking current alerts...");
 
   // Read pending-alerts.json if it exists
+  // Pattern #70: Skip existsSync, use try/catch alone
   const alertsPath = path.join(ROOT_DIR, ".claude", "pending-alerts.json");
-  if (fs.existsSync(alertsPath)) {
-    try {
-      const alerts = JSON.parse(fs.readFileSync(alertsPath, "utf8"));
-      for (const alert of alerts.alerts || []) {
-        const severity =
-          alert.severity === "error" ? "error" : alert.severity === "warning" ? "warning" : "info";
-        addAlert("alerts", severity, alert.message, alert.details, alert.action);
-      }
-    } catch {
-      // JSON parse failed, skip
-    }
-  } else {
+  let alertsData = null;
+
+  try {
+    const content = fs.readFileSync(alertsPath, "utf8");
+    alertsData = JSON.parse(content);
+  } catch {
+    // File doesn't exist - try to generate
+  }
+
+  if (!alertsData) {
     // Generate alerts
     const genResult = runCommand("node scripts/generate-pending-alerts.js 2>&1");
-    if (genResult.success && fs.existsSync(alertsPath)) {
+    if (genResult.success) {
       try {
-        const alerts = JSON.parse(fs.readFileSync(alertsPath, "utf8"));
-        for (const alert of alerts.alerts || []) {
-          const severity =
-            alert.severity === "error"
-              ? "error"
-              : alert.severity === "warning"
-                ? "warning"
-                : "info";
-          addAlert("alerts", severity, alert.message, alert.details, alert.action);
-        }
+        const content = fs.readFileSync(alertsPath, "utf8");
+        alertsData = JSON.parse(content);
       } catch {
-        // JSON parse failed, skip
+        // Still can't read - skip
       }
+    }
+  }
+
+  if (alertsData) {
+    for (const alert of alertsData.alerts || []) {
+      const severity =
+        alert.severity === "error" ? "error" : alert.severity === "warning" ? "warning" : "info";
+      addAlert("alerts", severity, alert.message, alert.details, alert.action);
     }
   }
 }
@@ -333,8 +354,9 @@ function checkDocumentationHealth() {
   }
 
   // Check for stale SESSION_CONTEXT.md
-  const sessionContextPath = path.join(ROOT_DIR, "SESSION_CONTEXT.md");
-  if (fs.existsSync(sessionContextPath)) {
+  // Review #214: Fixed path to docs/ directory
+  const sessionContextPath = path.join(ROOT_DIR, "docs", "SESSION_CONTEXT.md");
+  try {
     const stats = fs.statSync(sessionContextPath);
     const daysSinceUpdate = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60 * 24);
     if (daysSinceUpdate > 7) {
@@ -343,9 +365,11 @@ function checkDocumentationHealth() {
         "warning",
         `SESSION_CONTEXT.md is ${Math.floor(daysSinceUpdate)} days old`,
         null,
-        "Update SESSION_CONTEXT.md with current status"
+        "Update docs/SESSION_CONTEXT.md with current status"
       );
     }
+  } catch {
+    // File doesn't exist or can't be accessed - skip
   }
 }
 
@@ -357,8 +381,9 @@ function checkRoadmapPlanning() {
   console.error("  Checking roadmap/planning...");
 
   // Check ROADMAP.md for blocked items
+  // Pattern #70: Skip existsSync, use try/catch alone
   const roadmapPath = path.join(ROOT_DIR, "ROADMAP.md");
-  if (fs.existsSync(roadmapPath)) {
+  try {
     const content = fs.readFileSync(roadmapPath, "utf8");
 
     // Look for blocked markers
@@ -395,6 +420,8 @@ function checkRoadmapPlanning() {
         "Review ROADMAP.md for outdated target dates"
       );
     }
+  } catch {
+    // File doesn't exist or can't be read - skip
   }
 }
 

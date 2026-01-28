@@ -31,11 +31,14 @@ const BACKLOG_FILE = path.join(ROOT_DIR, "docs", "AUDIT_FINDINGS_BACKLOG.md");
 function scanDeferredItems() {
   const alerts = [];
 
-  if (!fs.existsSync(LEARNINGS_LOG)) {
-    return alerts;
+  // Pattern #70: Skip existsSync, use try/catch alone
+  let content;
+  try {
+    content = fs.readFileSync(LEARNINGS_LOG, "utf8");
+  } catch {
+    return alerts; // File doesn't exist or can't be read
   }
 
-  const content = fs.readFileSync(LEARNINGS_LOG, "utf8");
   const deferredItems = [];
 
   // Pattern 1: Standalone deferred items like "**DEFERRED (Review #51)**"
@@ -44,7 +47,8 @@ function scanDeferredItems() {
   while ((match = standalonePattern.exec(content)) !== null) {
     deferredItems.push({
       review: match[1],
-      description: match[2].trim().replace(/^\*\*|\*\*$/g, ""),
+      // Review #214: Fixed regex precedence - group alternations explicitly
+      description: match[2].trim().replace(/(^\*\*)|(\*\*$)/g, ""),
     });
   }
 
@@ -105,11 +109,13 @@ function scanDeferredItems() {
 function scanBacklogItems() {
   const alerts = [];
 
-  if (!fs.existsSync(BACKLOG_FILE)) {
-    return alerts;
+  // Pattern #70: Skip existsSync, use try/catch alone
+  let content;
+  try {
+    content = fs.readFileSync(BACKLOG_FILE, "utf8");
+  } catch {
+    return alerts; // File doesn't exist or can't be read
   }
-
-  const content = fs.readFileSync(BACKLOG_FILE, "utf8");
 
   // Find the "## Backlog Items" section (active items only)
   // Stop at "## Completed Items", "## Rejected Items", or "## Backlog Statistics"
@@ -218,30 +224,30 @@ function checkCrossSessionWarnings() {
   const sessionStatePath = path.join(ROOT_DIR, ".claude", "hooks", ".session-state.json");
 
   // Check session state file for incomplete sessions
-  if (fs.existsSync(sessionStatePath)) {
-    try {
-      const state = JSON.parse(fs.readFileSync(sessionStatePath, "utf8"));
-      // Check lastBegin without corresponding lastEnd (or lastSessionEnd)
-      if (state.lastBegin && !state.lastEnd && !state.lastSessionEnd) {
-        const hoursSinceStart =
-          (Date.now() - new Date(state.lastBegin).getTime()) / (1000 * 60 * 60);
-        if (hoursSinceStart < 24 && hoursSinceStart > 0.1) {
-          // More than 6 minutes ago
-          alerts.push({
-            type: "cross-session",
-            severity: "info",
-            message: `Previous session started ${Math.round(hoursSinceStart)}h ago without session-end`,
-            action: "Run /session-end skill at end of each session",
-          });
-        }
+  // Pattern #70: Skip existsSync, use try/catch alone
+  try {
+    const stateContent = fs.readFileSync(sessionStatePath, "utf8");
+    const state = JSON.parse(stateContent);
+    // Check lastBegin without corresponding lastEnd (or lastSessionEnd)
+    if (state.lastBegin && !state.lastEnd && !state.lastSessionEnd) {
+      const hoursSinceStart = (Date.now() - new Date(state.lastBegin).getTime()) / (1000 * 60 * 60);
+      if (hoursSinceStart < 24 && hoursSinceStart > 0.1) {
+        // More than 6 minutes ago
+        alerts.push({
+          type: "cross-session",
+          severity: "info",
+          message: `Previous session started ${Math.round(hoursSinceStart)}h ago without session-end`,
+          action: "Run /session-end skill at end of each session",
+        });
       }
-    } catch {
-      // Ignore parse errors
     }
+  } catch {
+    // File doesn't exist or can't be read - skip
   }
 
   // Also check SESSION_CONTEXT.md
-  if (fs.existsSync(sessionContextPath)) {
+  // Pattern #70: Skip existsSync, use try/catch alone
+  try {
     const content = fs.readFileSync(sessionContextPath, "utf8");
     const statusMatch = content.match(/\*\*Status\*\*:\s*(\w+)/i);
     if (statusMatch && statusMatch[1].toLowerCase() === "active") {
@@ -255,6 +261,8 @@ function checkCrossSessionWarnings() {
         });
       }
     }
+  } catch {
+    // File doesn't exist or can't be read - skip
   }
 
   return alerts;
@@ -282,54 +290,53 @@ function checkMcpMemoryReminder() {
 function readHookWarnings() {
   const alerts = [];
 
-  if (!fs.existsSync(HOOK_WARNINGS_FILE)) {
+  // Pattern #70: Skip existsSync, use try/catch alone
+  let data;
+  try {
+    const content = fs.readFileSync(HOOK_WARNINGS_FILE, "utf8");
+    data = JSON.parse(content);
+  } catch {
+    return alerts; // File doesn't exist or can't be read
+  }
+
+  const warnings = data.warnings || [];
+
+  // Only include warnings from last 24 hours
+  const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const recentWarnings = warnings.filter((w) => new Date(w.timestamp).getTime() > oneDayAgo);
+
+  if (recentWarnings.length === 0) {
     return alerts;
   }
 
-  try {
-    const data = JSON.parse(fs.readFileSync(HOOK_WARNINGS_FILE, "utf8"));
-    const warnings = data.warnings || [];
+  // Group by hook type
+  const preCommitWarnings = recentWarnings.filter((w) => w.hook === "pre-commit");
+  const prePushWarnings = recentWarnings.filter((w) => w.hook === "pre-push");
 
-    // Only include warnings from last 24 hours
-    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
-    const recentWarnings = warnings.filter((w) => new Date(w.timestamp).getTime() > oneDayAgo);
-
-    if (recentWarnings.length === 0) {
-      return alerts;
-    }
-
-    // Group by hook type
-    const preCommitWarnings = recentWarnings.filter((w) => w.hook === "pre-commit");
-    const prePushWarnings = recentWarnings.filter((w) => w.hook === "pre-push");
-
-    if (preCommitWarnings.length > 0) {
-      alerts.push({
-        type: "hook-precommit",
-        severity: preCommitWarnings.some((w) => w.severity === "warning") ? "warning" : "info",
-        message: `${preCommitWarnings.length} warning(s) from recent commits`,
-        details: preCommitWarnings.slice(0, 3).map((w) => w.message),
-        action: preCommitWarnings[0].action || "Review warnings above",
-      });
-    }
-
-    if (prePushWarnings.length > 0) {
-      alerts.push({
-        type: "hook-prepush",
-        severity: prePushWarnings.some((w) => w.severity === "warning") ? "warning" : "info",
-        message: `${prePushWarnings.length} warning(s) from recent pushes`,
-        details: prePushWarnings.slice(0, 3).map((w) => w.message),
-        action: prePushWarnings[0].action || "Review warnings above",
-      });
-    }
-
-    // Clear warnings after they've been read (they'll be surfaced by Claude)
-    fs.writeFileSync(
-      HOOK_WARNINGS_FILE,
-      JSON.stringify({ warnings: [], lastCleared: new Date().toISOString() }, null, 2)
-    );
-  } catch {
-    // Ignore parse errors
+  if (preCommitWarnings.length > 0) {
+    alerts.push({
+      type: "hook-precommit",
+      severity: preCommitWarnings.some((w) => w.severity === "warning") ? "warning" : "info",
+      message: `${preCommitWarnings.length} warning(s) from recent commits`,
+      details: preCommitWarnings.slice(0, 3).map((w) => w.message),
+      action: preCommitWarnings[0].action || "Review warnings above",
+    });
   }
+
+  if (prePushWarnings.length > 0) {
+    alerts.push({
+      type: "hook-prepush",
+      severity: prePushWarnings.some((w) => w.severity === "warning") ? "warning" : "info",
+      message: `${prePushWarnings.length} warning(s) from recent pushes`,
+      details: prePushWarnings.slice(0, 3).map((w) => w.message),
+      action: prePushWarnings[0].action || "Review warnings above",
+    });
+  }
+
+  // Review #214: Don't clear warnings during read - prevents data loss if
+  // subsequent steps fail. Warnings should be cleared separately after being
+  // acknowledged by user/Claude via append-hook-warning.js --clear=true
+  // Note: Keeping old warnings around is safer than premature clearing
 
   return alerts;
 }
