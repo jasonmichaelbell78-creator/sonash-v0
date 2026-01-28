@@ -421,6 +421,71 @@ if (warnings === 0) {
   console.log("   Some steps may have failed - check output above.");
 }
 
+// =============================================================================
+// Generate and Display Pending Alerts (BLOCKING if warnings exist)
+// =============================================================================
+console.log("");
+console.log("🔍 Generating pending alerts...");
+try {
+  execSync("node scripts/generate-pending-alerts.js", {
+    encoding: "utf8",
+    timeout: 10000,
+  });
+  console.log("   ✓ Alerts generated");
+
+  // Read and display alerts
+  const alertsFile = path.join(process.cwd(), ".claude", "pending-alerts.json");
+  if (fs.existsSync(alertsFile)) {
+    const alertsData = JSON.parse(fs.readFileSync(alertsFile, "utf8"));
+    const alertCount = alertsData.alertCount || 0;
+
+    // More than just MCP memory reminder
+    if (alertCount > 1) {
+      console.log("");
+      console.log("━".repeat(66));
+      console.log("🚨 PENDING ALERTS REQUIRING ATTENTION");
+      console.log("━".repeat(66));
+
+      for (const alert of alertsData.alerts) {
+        if (alert.type === "mcp-memory") continue; // Skip MCP reminder in hook
+        const icon = alert.severity === "error" ? "❌" : alert.severity === "warning" ? "⚠️" : "ℹ️";
+        console.log(`\n${icon} ${alert.message}`);
+        if (alert.details) {
+          for (const detail of alert.details) {
+            console.log(`   • ${detail}`);
+          }
+        }
+        if (alert.action) {
+          console.log(`   → Action: ${alert.action}`);
+        }
+      }
+
+      console.log("");
+      console.log("━".repeat(66));
+      console.log("");
+      console.log("📌 These alerts will be discussed with Claude. Press ENTER to continue...");
+
+      // Blocking prompt - wait for user input (cross-platform)
+      // Works on Windows, macOS, and Linux
+      try {
+        const { spawnSync } = require("node:child_process");
+        if (process.platform === "win32") {
+          // Windows: use pause command
+          spawnSync("cmd", ["/c", "pause >nul"], { stdio: "inherit" });
+        } else {
+          // Unix: use read command
+          spawnSync("bash", ["-c", "read -r"], { stdio: "inherit" });
+        }
+      } catch {
+        // If blocking fails, continue anyway
+      }
+    }
+  }
+} catch (error) {
+  console.log("   ⚠️ Alerts generation skipped");
+  warnings++;
+}
+
 console.log("");
 console.log("━".repeat(66));
 console.log("📋 SESSION CHECKLIST (from AI_WORKFLOW.md):");
