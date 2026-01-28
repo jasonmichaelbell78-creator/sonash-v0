@@ -434,8 +434,9 @@ try {
   console.log("   ✓ Alerts generated");
 
   // Read and display alerts
+  // Review #322: Wrap in try/catch to prevent crash on corrupted file
   const alertsFile = path.join(process.cwd(), ".claude", "pending-alerts.json");
-  if (fs.existsSync(alertsFile)) {
+  try {
     const alertsData = JSON.parse(fs.readFileSync(alertsFile, "utf8"));
     const alertCount = alertsData.alertCount || 0;
 
@@ -466,6 +467,8 @@ try {
       // Note: Blocking prompts don't work in Claude Code's hook environment (no TTY)
       // The alerts are saved to pending-alerts.json for Claude to read and surface
     }
+  } catch {
+    // File doesn't exist or is malformed - don't break session-start
   }
 } catch (error) {
   console.log("   ⚠️ Alerts generation skipped");

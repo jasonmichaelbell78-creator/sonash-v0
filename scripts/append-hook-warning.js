@@ -50,13 +50,21 @@ function readWarnings() {
 
 /**
  * Write warnings file
+ * Review #322: Use atomic write (write to temp file then rename) for resilience
  */
 function writeWarnings(data) {
-  const claudeDir = path.dirname(WARNINGS_FILE);
-  if (!fs.existsSync(claudeDir)) {
-    fs.mkdirSync(claudeDir, { recursive: true });
+  try {
+    const claudeDir = path.dirname(WARNINGS_FILE);
+    if (!fs.existsSync(claudeDir)) {
+      fs.mkdirSync(claudeDir, { recursive: true });
+    }
+
+    const tmpFile = `${WARNINGS_FILE}.tmp`;
+    fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2));
+    fs.renameSync(tmpFile, WARNINGS_FILE);
+  } catch {
+    // Hooks should not block git operations due to warning persistence failures
   }
-  fs.writeFileSync(WARNINGS_FILE, JSON.stringify(data, null, 2));
 }
 
 /**

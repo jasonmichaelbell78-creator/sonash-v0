@@ -197,7 +197,14 @@ function checkSecurity() {
       );
     }
   } catch {
-    // JSON parse failed, skip
+    // Review #322: Surface audit execution failures instead of silently skipping
+    addAlert(
+      "security",
+      "warning",
+      auditResult.success ? "npm audit output was not valid JSON" : "npm audit failed to run",
+      (auditResult.output || auditResult.stderr || "").split("\n").slice(0, 10),
+      "Run: npm audit"
+    );
   }
 
   // Encrypted secrets check

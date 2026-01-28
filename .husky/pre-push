@@ -93,10 +93,17 @@ echo "  ✅ Type check passed"
 # Checks for high/critical vulnerabilities in dependencies
 echo "  ▶ Running security audit..."
 # Review #214: Disable errexit for npm audit (returns non-zero for vulnerabilities)
+# Review #322: Preserve and restore original errexit state
+had_errexit=0
+case $- in
+  *e*) had_errexit=1 ;;
+esac
 set +e
 audit_output=$(npm audit --audit-level=high 2>&1)
 audit_exit=$?
-set -e
+if [ "$had_errexit" -eq 1 ]; then
+  set -e
+fi
 if [ $audit_exit -ne 0 ]; then
   # Check if it's a real vulnerability (exit code 1) vs network error
   if echo "$audit_output" | grep -q "vulnerabilities"; then
@@ -132,9 +139,11 @@ else
       printf '%s\n' "$triggers_output" | grep -E "^⚠️|^   Action:" | head -10
       # Extract first warning message for the alert
       first_warning=$(printf '%s\n' "$triggers_output" | grep "^⚠️" | head -1 | sed 's/^⚠️ *//')
+      # Review #322: Normalize warning message to single line to prevent parsing issues
+      first_warning_one_line=$(printf '%s' "$first_warning" | tr '\n\r' '  ' | sed 's/[[:space:]]\{1,\}/ /g; s/^ *//; s/ *$//')
       # Review #214: Only create alert if we have a non-empty message
-      if [ -n "$first_warning" ]; then
-        node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning" 2>/dev/null || true
+      if [ -n "$first_warning_one_line" ]; then
+        node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning_one_line" 2>/dev/null || true
       fi
     else
       echo "  ✅ No blocking triggers"

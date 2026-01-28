@@ -85,9 +85,9 @@ This is the primary context file for Claude Code sessions:
 **Top 5 (enforced by `npm run patterns:check`):**
 
 | Pattern            | Rule                                                              |
-| ------------------ | ----------------------------------------------------------------- | ----------------------------------- |
+| ------------------ | ----------------------------------------------------------------- |
 | Error sanitization | Use `scripts/lib/sanitize-error.js` - never log raw error.message |
-| Path traversal     | Use `/^\.\.(?:[\\/]                                               | $)/.test(rel)`NOT`startsWith('..')` |
+| Path traversal     | Use `/^\.\.(?:[\\/]\|$)/.test(rel)` NOT `startsWith('..')`        |
 | Test mocking       | Mock `httpsCallable`, NOT direct Firestore writes                 |
 | File reads         | Wrap ALL in try/catch (existsSync race condition)                 |
 | exec() loops       | `/g` flag REQUIRED (no /g = infinite loop)                        |

@@ -344,7 +344,8 @@ if node "$REPO_ROOT/scripts/generate-pending-alerts.js" 2>/dev/null; then
   # Read and display alerts prominently
   ALERTS_FILE="$REPO_ROOT/.claude/pending-alerts.json"
   if [[ -f "$ALERTS_FILE" ]]; then
-    ALERT_COUNT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$ALERTS_FILE')).alertCount)" 2>/dev/null || echo "0")
+    # Review #322: Add 'utf8' encoding to ensure correct JSON parsing
+    ALERT_COUNT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$ALERTS_FILE','utf8')).alertCount)" 2>/dev/null || echo "0")
 
     if [[ "$ALERT_COUNT" -gt 0 ]]; then  # Display alerts if any exist
       echo ""
@@ -353,8 +354,9 @@ if node "$REPO_ROOT/scripts/generate-pending-alerts.js" 2>/dev/null; then
       echo "$SEPARATOR_LINE"
 
       # Parse and display each alert
+      # Review #322: Add 'utf8' encoding to ensure correct JSON parsing
       node -e "
-        const data = JSON.parse(require('fs').readFileSync('$ALERTS_FILE'));
+        const data = JSON.parse(require('fs').readFileSync('$ALERTS_FILE','utf8'));
         data.alerts.forEach(a => {
           // MCP reminder removed in Session #113 - now context-aware via alerts-reminder.js
           const icon = a.severity === 'error' ? '❌' : a.severity === 'warning' ? '⚠️' : 'ℹ️';
