@@ -110,13 +110,13 @@ function scanBacklogItems() {
 
   const content = fs.readFileSync(BACKLOG_FILE, "utf8");
 
-  // Count S1 items (Major severity)
-  const s1Pattern = /\|\s*S1\s*\|/g;
+  // Count S1 items (Major severity) - format is "**Severity**: S1" or "| S1 |"
+  const s1Pattern = /\*\*Severity\*\*:\s*S1|\|\s*S1\s*\|/gi;
   const s1Matches = content.match(s1Pattern) || [];
   const s1Count = s1Matches.length;
 
   // Count S0 items (Critical - should be zero)
-  const s0Pattern = /\|\s*S0\s*\|/g;
+  const s0Pattern = /\*\*Severity\*\*:\s*S0|\|\s*S0\s*\|/gi;
   const s0Matches = content.match(s0Pattern) || [];
   const s0Count = s0Matches.length;
 
@@ -142,24 +142,87 @@ function scanBacklogItems() {
 }
 
 /**
+ * Check for encrypted secrets that need decryption
+ */
+function checkEncryptedSecrets() {
+  const alerts = [];
+  const envLocalPath = path.join(ROOT_DIR, ".env.local");
+  const encryptedPath = path.join(ROOT_DIR, ".env.local.encrypted");
+
+  // Check if encrypted file exists
+  if (fs.existsSync(encryptedPath)) {
+    // Check if .env.local has actual tokens (not just placeholders)
+    let hasTokens = false;
+    if (fs.existsSync(envLocalPath)) {
+      try {
+        const content = fs.readFileSync(envLocalPath, "utf8");
+        // Check for actual token values (not placeholders like "your-token-here")
+        hasTokens =
+          /SONARCLOUD_TOKEN=(?!your-|placeholder|xxx)[^\s]+/.test(content) ||
+          /GITHUB_TOKEN=(?!your-|placeholder|xxx)[^\s]+/.test(content);
+      } catch {
+        // Ignore read errors
+      }
+    }
+
+    if (!hasTokens) {
+      alerts.push({
+        type: "secrets",
+        severity: "warning",
+        message: "Encrypted secrets found but not decrypted",
+        action: "Run: node scripts/secrets/decrypt-secrets.js",
+      });
+    }
+  }
+
+  return alerts;
+}
+
+/**
  * Check for cross-session warnings
  */
 function checkCrossSessionWarnings() {
   const alerts = [];
   const sessionContextPath = path.join(ROOT_DIR, "docs", "SESSION_CONTEXT.md");
+  const sessionStatePath = path.join(ROOT_DIR, ".claude", "hooks", ".session-state.json");
 
+  // Check session state file for incomplete sessions
+  if (fs.existsSync(sessionStatePath)) {
+    try {
+      const state = JSON.parse(fs.readFileSync(sessionStatePath, "utf8"));
+      // Check lastBegin without corresponding lastEnd (or lastSessionEnd)
+      if (state.lastBegin && !state.lastEnd && !state.lastSessionEnd) {
+        const hoursSinceStart =
+          (Date.now() - new Date(state.lastBegin).getTime()) / (1000 * 60 * 60);
+        if (hoursSinceStart < 24 && hoursSinceStart > 0.1) {
+          // More than 6 minutes ago
+          alerts.push({
+            type: "cross-session",
+            severity: "info",
+            message: `Previous session started ${Math.round(hoursSinceStart)}h ago without session-end`,
+            action: "Run /session-end skill at end of each session",
+          });
+        }
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }
+
+  // Also check SESSION_CONTEXT.md
   if (fs.existsSync(sessionContextPath)) {
     const content = fs.readFileSync(sessionContextPath, "utf8");
-
-    // Check if session was marked as ended
     const statusMatch = content.match(/\*\*Status\*\*:\s*(\w+)/i);
     if (statusMatch && statusMatch[1].toLowerCase() === "active") {
-      alerts.push({
-        type: "cross-session",
-        severity: "info",
-        message: "Previous session may not have ended cleanly",
-        action: "Review SESSION_CONTEXT.md for context",
-      });
+      // Only add if we didn't already add a cross-session warning
+      if (!alerts.some((a) => a.type === "cross-session")) {
+        alerts.push({
+          type: "cross-session",
+          severity: "info",
+          message: "Previous session may not have ended cleanly",
+          action: "Review SESSION_CONTEXT.md for context",
+        });
+      }
     }
   }
 
@@ -247,6 +310,7 @@ function generateAlerts() {
   const alerts = [
     ...scanDeferredItems(),
     ...scanBacklogItems(),
+    ...checkEncryptedSecrets(),
     ...checkCrossSessionWarnings(),
     ...readHookWarnings(),
     ...checkMcpMemoryReminder(),
@@ -286,4 +350,10 @@ if (require.main === module) {
   generateAlerts();
 }
 
-module.exports = { generateAlerts, scanDeferredItems, scanBacklogItems, readHookWarnings };
+module.exports = {
+  generateAlerts,
+  scanDeferredItems,
+  scanBacklogItems,
+  checkEncryptedSecrets,
+  readHookWarnings,
+};
