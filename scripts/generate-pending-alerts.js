@@ -344,7 +344,8 @@ function generateAlerts() {
     ...checkEncryptedSecrets(),
     ...checkCrossSessionWarnings(),
     ...readHookWarnings(),
-    ...checkMcpMemoryReminder(),
+    // Note: MCP memory reminders removed (Session #113) - now handled by
+    // context-aware alerts-reminder.js that triggers only when thresholds exceeded
   ];
 
   const output = {

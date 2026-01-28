@@ -332,6 +332,8 @@ changes in one document affect the accuracy of another.
 | Security-related changes           | `docs/SECURITY.md`, `docs/GLOBAL_SECURITY_STANDARDS.md` | Security documentation must reflect current state  |
 | Firebase config changes            | `docs/FIREBASE_CHANGE_POLICY.md`                        | Policy requires documenting all Firebase changes   |
 | Test coverage changes              | `SESSION_CONTEXT.md` (Test Status line)                 | Keep test counts current                           |
+| Session summary archival           | `docs/SESSION_HISTORY.md`                               | Old session summaries archive here                 | Manual   |
+| `SESSION_CONTEXT.md` 5+ sessions   | `docs/SESSION_HISTORY.md`, `SESSION_CONTEXT.md`         | Keep SESSION_CONTEXT.md < 200 lines                | Manual   |
 | `tests/e2e/` files changed         | `ROADMAP.md` (Track T status), `TESTING_PLAN.md`        | E2E test changes must update Track T status        | Manual   |
 | Testing infrastructure changes     | `docs/plans/TESTING_INFRASTRUCTURE_PLAN.md`             | Track T spec must reflect implementation           | Manual   |
 | Planning documents added/archived  | `docs/PLAN_MAP.md`                                      | Plan map shows documentation hierarchy             | Manual   |

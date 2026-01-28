@@ -100,6 +100,21 @@ use:** **END OF EVERY SESSION** - ensures all work is committed and tracked
 **Example:** `/session-end` **Parameters:** None **Output:** Completion
 checklist and session summary
 
+### `/alerts`
+
+**Description:** View system health alerts and pending issues **When to use:**
+Check system health, review warnings, see pending actions **Example:** `/alerts`
+or `/alerts --full` **Parameters:** `--full` for complete health check
+**Output:** Categorized alerts (Code Health, Security, Session Context,
+Documentation, Roadmap) **Added:** Session #113
+
+### `/save-context`
+
+**Description:** Save important session context to MCP memory **When to use:**
+Before compaction, after complex investigations, when prompted by context
+warnings **Example:** `/save-context` **Parameters:** None **Output:** Saved
+entity confirmation with observations **Added:** Session #113
+
 ---
 
 ## Slash Commands (System/Built-in)

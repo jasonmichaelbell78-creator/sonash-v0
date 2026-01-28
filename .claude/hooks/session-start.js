@@ -439,15 +439,14 @@ try {
     const alertsData = JSON.parse(fs.readFileSync(alertsFile, "utf8"));
     const alertCount = alertsData.alertCount || 0;
 
-    // More than just MCP memory reminder
-    if (alertCount > 1) {
+    // Display alerts if any exist (MCP reminder removed in Session #113)
+    if (alertCount > 0) {
       console.log("");
       console.log("━".repeat(66));
       console.log("🚨 PENDING ALERTS REQUIRING ATTENTION");
       console.log("━".repeat(66));
 
       for (const alert of alertsData.alerts) {
-        if (alert.type === "mcp-memory") continue; // Skip MCP reminder in hook
         const icon = alert.severity === "error" ? "❌" : alert.severity === "warning" ? "⚠️" : "ℹ️";
         console.log(`\n${icon} ${alert.message}`);
         if (alert.details) {

@@ -42,18 +42,26 @@ fi
 echo "  ✅ Pattern compliance passed"
 
 # 4. Run tests - stream output using temp file
-echo "  ▶ Running tests..."
-TEST_TMPFILE=$(mktemp)
-trap 'rm -f "$TEST_TMPFILE"' EXIT
+# Skip tests if only documentation/config files changed (Quick Win - Session #113)
+DOC_ONLY_COMMIT=0
+CODE_FILES=$(git diff --cached --name-only | grep -E '\.(ts|tsx|js|jsx|json)$' | grep -v 'package-lock.json' || true)
+if [ -z "$CODE_FILES" ]; then
+  DOC_ONLY_COMMIT=1
+  echo "  ⏭️ Skipping tests (doc-only commit)"
+else
+  echo "  ▶ Running tests..."
+  TEST_TMPFILE=$(mktemp)
+  trap 'rm -f "$TEST_TMPFILE"' EXIT
 
-if ! npm test > "$TEST_TMPFILE" 2>&1; then
-  echo "  ❌ Tests failed"
-  tail -10 "$TEST_TMPFILE"
-  echo ""
-  echo "  Fix tests before committing. Run: npm test"
-  exit 1
+  if ! npm test > "$TEST_TMPFILE" 2>&1; then
+    echo "  ❌ Tests failed"
+    tail -10 "$TEST_TMPFILE"
+    echo ""
+    echo "  Fix tests before committing. Run: npm test"
+    exit 1
+  fi
+  echo "  ✅ Tests passed"
 fi
-echo "  ✅ Tests passed"
 
 # 5. CANON schema validation (non-blocking warning, ~1s)
 # Validates CANON files when audit output is staged

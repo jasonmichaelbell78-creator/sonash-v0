@@ -346,7 +346,7 @@ if node "$REPO_ROOT/scripts/generate-pending-alerts.js" 2>/dev/null; then
   if [[ -f "$ALERTS_FILE" ]]; then
     ALERT_COUNT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$ALERTS_FILE')).alertCount)" 2>/dev/null || echo "0")
 
-    if [[ "$ALERT_COUNT" -gt 1 ]]; then  # More than just MCP memory reminder
+    if [[ "$ALERT_COUNT" -gt 0 ]]; then  # Display alerts if any exist
       echo ""
       echo "$SEPARATOR_LINE"
       echo "🚨 PENDING ALERTS REQUIRING ATTENTION"
@@ -356,7 +356,7 @@ if node "$REPO_ROOT/scripts/generate-pending-alerts.js" 2>/dev/null; then
       node -e "
         const data = JSON.parse(require('fs').readFileSync('$ALERTS_FILE'));
         data.alerts.forEach(a => {
-          if (a.type === 'mcp-memory') return; // Skip MCP reminder in hook output
+          // MCP reminder removed in Session #113 - now context-aware via alerts-reminder.js
           const icon = a.severity === 'error' ? '❌' : a.severity === 'warning' ? '⚠️' : 'ℹ️';
           console.log(\"\n\" + icon + \" \" + a.message);
           if (a.details) a.details.forEach(d => console.log(\"   • \" + d));

@@ -423,6 +423,11 @@ reliability, and solo developer automations.
 
 - [ ] **D1:** Pin Firebase CLI version (30min) [CANON-0112]
 - [ ] **D2:** Optimize pre-commit hook (2hr) [CANON-0110] - Target: ~50s → <15s
+  - [x] **D2.1:** Skip tests for doc-only commits (10min) - ✅ Session #113
+  - [ ] **D2.2:** Remove duplicate test run from pre-push (done) - ✅ Session
+        #113
+  - [ ] **D2.3:** Add file extension filters to hook matchers (1hr)
+  - [ ] **D2.4:** Consolidate Write/Edit/MultiEdit hooks (2hr)
 - [ ] **D3:** Update workflow documentation (2hr) [CANON-0109]
 
 #### Phase 2 - CI Quality Gates
@@ -464,6 +469,11 @@ reliability, and solo developer automations.
 - [ ] **E11:** App Check issues runbook (30min)
 - [ ] **E12:** Cost spike triage runbook (30min)
 - [ ] **E13:** Claude Fix Bundle format (1hr) - docs/CLAUDE_FIX_BUNDLE.md
+- [ ] **E14:** Reduce SESSION_CONTEXT.md (1hr) - Archive history to
+      SESSION_HISTORY.md
+- [x] **E15:** Create SKILL_INDEX.md (30min) - ✅ Session #113
+- [ ] **E16:** Consolidate audit skills (2hr) - Merge 9 /audit-\* into single
+      /audit
 
 ### Track O - Owner Actions (Jason - Manual Setup)
 

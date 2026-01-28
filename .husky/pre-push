@@ -4,16 +4,8 @@
 
 echo "🚀 Running pre-push checks..."
 
-# 1. Run tests
-echo "  ▶ Running tests..."
-if ! npm test > /dev/null 2>&1; then
-  echo "  ❌ Tests failed"
-  npm test 2>&1 | tail -10
-  echo ""
-  echo "  Fix tests before pushing. Run: npm test"
-  exit 1
-fi
-echo "  ✅ Tests passed"
+# 1. Tests already run in pre-commit (Quick Win - Session #113)
+# Removed duplicate test run - saves 50-60s per push
 
 # 2. Check for circular dependencies (blocking - architectural integrity)
 echo "  ▶ Checking for circular dependencies..."
