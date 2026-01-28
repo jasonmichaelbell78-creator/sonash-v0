@@ -100,6 +100,7 @@ function scanDeferredItems() {
 
 /**
  * Scan AUDIT_FINDINGS_BACKLOG.md for active S1+ items
+ * Only counts items that are NOT completed/done/rejected
  */
 function scanBacklogItems() {
   const alerts = [];
@@ -110,15 +111,45 @@ function scanBacklogItems() {
 
   const content = fs.readFileSync(BACKLOG_FILE, "utf8");
 
-  // Count S1 items (Major severity) - format is "**Severity**: S1" or "| S1 |"
-  const s1Pattern = /\*\*Severity\*\*:\s*S1|\|\s*S1\s*\|/gi;
-  const s1Matches = content.match(s1Pattern) || [];
-  const s1Count = s1Matches.length;
+  // Find the "## Backlog Items" section (active items only)
+  // Stop at "## Completed Items", "## Rejected Items", or "## Backlog Statistics"
+  const backlogStart = content.indexOf("## Backlog Items");
+  const completedStart = content.indexOf("## Completed Items");
+  const rejectedStart = content.indexOf("## Rejected Items");
+  const statsStart = content.indexOf("## Backlog Statistics");
 
-  // Count S0 items (Critical - should be zero)
-  const s0Pattern = /\*\*Severity\*\*:\s*S0|\|\s*S0\s*\|/gi;
-  const s0Matches = content.match(s0Pattern) || [];
-  const s0Count = s0Matches.length;
+  if (backlogStart === -1) return alerts;
+
+  // Find the end of the active backlog section
+  const sectionEnds = [completedStart, rejectedStart, statsStart].filter((i) => i > backlogStart);
+  const backlogEnd = sectionEnds.length > 0 ? Math.min(...sectionEnds) : content.length;
+
+  const activeContent = content.substring(backlogStart, backlogEnd);
+
+  // Split into sections by ### headers (backlog items)
+  const sections = activeContent.split(/(?=^### )/m);
+
+  let s0Count = 0;
+  let s1Count = 0;
+
+  for (const section of sections) {
+    // Skip if not a backlog item section (must start with ### [Category])
+    if (!section.match(/^### \[/)) continue;
+
+    // Skip completed items (strikethrough ~~ or COMPLETED/DONE status)
+    if (section.match(/^### ~~/) || section.match(/✅\s*(COMPLETED|DONE)/i)) continue;
+
+    // Skip template/example sections (contain placeholder text like "Item Name" or "S1/S2/S3")
+    if (section.match(/^### \[Category\] Item Name/) || section.match(/S1\/S2\/S3/)) continue;
+
+    // Check for S0/S1 severity in this specific section
+    if (section.match(/\*\*Severity\*\*:\s*S0/i)) {
+      s0Count++;
+    }
+    if (section.match(/\*\*Severity\*\*:\s*S1/i)) {
+      s1Count++;
+    }
+  }
 
   if (s0Count > 0) {
     alerts.push({

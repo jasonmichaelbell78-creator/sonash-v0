@@ -463,22 +463,9 @@ try {
       console.log("");
       console.log("━".repeat(66));
       console.log("");
-      console.log("📌 These alerts will be discussed with Claude. Press ENTER to continue...");
-
-      // Blocking prompt - wait for user input (cross-platform)
-      // Works on Windows, macOS, and Linux
-      try {
-        const { spawnSync } = require("node:child_process");
-        if (process.platform === "win32") {
-          // Windows: use pause command
-          spawnSync("cmd", ["/c", "pause >nul"], { stdio: "inherit" });
-        } else {
-          // Unix: use read command
-          spawnSync("bash", ["-c", "read -r"], { stdio: "inherit" });
-        }
-      } catch {
-        // If blocking fails, continue anyway
-      }
+      console.log("📌 Claude will discuss these alerts at the start of the conversation.");
+      // Note: Blocking prompts don't work in Claude Code's hook environment (no TTY)
+      // The alerts are saved to pending-alerts.json for Claude to read and surface
     }
   }
 } catch (error) {

@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.5 **Last Updated:** 2026-01-28
+**Document Version:** 3.6 **Last Updated:** 2026-01-28
 
 ---
 
@@ -18,6 +18,27 @@ the SoNash project. It contains:
 This is a **Tier 4 document** - always loaded in AI context to prevent repeated
 violations and ensure consistency across sessions.
 
+## Session Start Protocol (DO THIS FIRST)
+
+> [!IMPORTANT] Hook output is collapsed in Claude Code UI. You MUST proactively
+> surface alerts - they won't be seen otherwise.
+
+**At the start of EVERY session:**
+
+1. **Read `.claude/pending-alerts.json`** - Tell the user about alerts in your
+   first response. Example: "You have 3 deferred PR items and 2 S1 backlog
+   items. Want details?"
+
+2. **Run `mcp__memory__read_graph()`** - Retrieve context saved from previous
+   sessions. Summarize relevant entities for the user.
+
+3. **Before compaction** - Save important context with
+   `mcp__memory__create_entities()` to preserve decisions and progress.
+
+4. **Follow checklist** - SESSION_CONTEXT.md, ROADMAP.md, active blockers
+
+---
+
 ## AI Instructions
 
 This is the primary context file for Claude Code sessions:
@@ -25,24 +46,6 @@ This is the primary context file for Claude Code sessions:
 - Read this file at session start
 - Follow all patterns in Section 4
 - Reference linked docs for detailed procedures
-
-### Session Start Protocol
-
-**IMPORTANT:** At the start of each session, perform these steps:
-
-1. **Read pending alerts** - Check `.claude/pending-alerts.json` and **tell the
-   user** about any alerts (deferred items, backlog warnings, etc.) in your
-   first response. Example: "You have 3 deferred PR items to review. Want me to
-   list them?"
-
-2. **Check MCP Memory** - Run `mcp__memory__read_graph()` to retrieve any
-   context saved from previous sessions. If entities exist, summarize relevant
-   context for the user.
-
-3. **Follow the checklist** - SESSION_CONTEXT.md, ROADMAP.md priorities,
-   blockers
-
-This ensures important information doesn't get buried in collapsed hook output.
 
 ---
 
@@ -82,9 +85,9 @@ This ensures important information doesn't get buried in collapsed hook output.
 **Top 5 (enforced by `npm run patterns:check`):**
 
 | Pattern            | Rule                                                              |
-| ------------------ | ----------------------------------------------------------------- | ----------------------------------- |
+| ------------------ | ----------------------------------------------------------------- |
 | Error sanitization | Use `scripts/lib/sanitize-error.js` - never log raw error.message |
-| Path traversal     | `/^\.\.(?:[\\/]                                                   | $)/.test(rel)`NOT`startsWith('..')` |
+| Path traversal     | Use `/^\.\.(?:[\\/]│$)/.test(rel)` NOT `startsWith('..')`         |
 | Test mocking       | Mock `httpsCallable`, NOT direct Firestore writes                 |
 | File reads         | Wrap ALL in try/catch (existsSync race condition)                 |
 | exec() loops       | `/g` flag REQUIRED (no /g = infinite loop)                        |
@@ -182,6 +185,7 @@ Choice:** What was selected **Implementation:** Link to PR/commit/roadmap
 
 | Version | Date       | Description                                                                         |
 | ------- | ---------- | ----------------------------------------------------------------------------------- |
+| 3.6     | 2026-01-28 | Promoted Session Start Protocol to top, fixed table formatting, added save reminder |
 | 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                   |
 | 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)               |
 | 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md |
