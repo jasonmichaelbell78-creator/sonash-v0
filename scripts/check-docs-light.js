@@ -172,7 +172,9 @@ function extractHeadings(content) {
     if (match) {
       headings.push({
         level: match[1].length,
-        text: match[2].replace(/🔗|📋|🎯|📊|🗓️|🤖|💡|🚨|✅|📝|📚|🔐|🔄|🗺️|📖|📐|🔀/gu, "").trim(),
+        // Review #215: Use \p{Extended_Pictographic} to match all emojis (reduces regex complexity)
+        // and replaceAll() for ES2021+ idiom
+        text: match[2].replaceAll(/\p{Extended_Pictographic}/gu, "").trim(),
         line: i + 1,
       });
     }
@@ -366,8 +368,16 @@ function validateFileLinks(links, docPath) {
 
     if (!filePath) continue; // Pure anchor link
 
+    // Review #215: Decode URL-encoded paths (e.g., %20 for spaces)
+    let decodedPath;
+    try {
+      decodedPath = decodeURIComponent(filePath);
+    } catch {
+      decodedPath = filePath; // Use original if decode fails
+    }
+
     // Resolve relative path
-    const absolutePath = join(docDir, filePath);
+    const absolutePath = join(docDir, decodedPath);
 
     if (!existsSync(absolutePath)) {
       errors.push(`Line ${link.line}: Broken link to "${link.target}" (file not found)`);
@@ -399,7 +409,11 @@ function validateAnchorLinks(links, headings) {
   }
 
   for (const link of links) {
-    if (!link.isAnchor && !link.target.includes("#")) continue;
+    // Review #213: Only validate same-file anchors (pure #anchor links)
+    // Cross-file anchors (./file.md#anchor) would need to resolve the target file's headings
+    // For now, skip cross-file anchor validation as it causes false positives
+    if (!link.isAnchor) continue;
+    if (!link.target.includes("#")) continue;
 
     const anchor = link.target.split("#")[1];
     if (!anchor) continue;

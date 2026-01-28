@@ -1,6 +1,24 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Module 7 – Exports & Reports
 
-**Core Philosophy:** "Your Data, Your Evidence." Whether it’s showing a court
+## Purpose
+
+Expansion module ideation document exploring exports and reports features for
+the SoNash app, providing tools to format user data for specific audiences
+including courts, sponsors, and therapists.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
+
+**Core Philosophy:** "Your Data, Your Evidence." Whether it's showing a court
 officer you attended 90 meetings, handing a sponsor your 4th Step, or just
 backing up your life, the user owns the data. We provide the tools to format it
 for the specific audience that needs to see it.

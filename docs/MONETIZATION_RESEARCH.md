@@ -32,7 +32,8 @@ sustainability with accessibility for recovery users.
 
 **Related To**:
 
-- [M3 - Meetings](../ROADMAP.md#m3---meetings) - Feature value creation
+- [M3 - Meetings](../ROADMAP.md#m3-meetings-location-planned-q2-2026) - Feature
+  value creation
 - [Growth Tab Features](../ROADMAP.md) - Premium feature development
 - Post-Growth Tab implementation
 

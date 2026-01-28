@@ -1,4 +1,22 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Module 9 – Daily Engagement & Habits
+
+## Purpose
+
+Expansion module ideation document exploring daily engagement and habit-building
+features for the SoNash app, designed as low-friction, high-impact
+micro-interactions that build recovery muscle.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 **Core Philosophy:** "The Next Right Thing." We don't want the user glued to the
 phone. We want them to get in, get grounded, and get out into their life. These

@@ -1,8 +1,17 @@
 # Master Issue List
 
-**Generated:** 2026-01-17 **Source:** Aggregated from single-session audits,
-CANON files, and backlogs **Total Items:** 291 (deduplicated from 301 raw
-findings)
+**Last Updated:** 2026-01-27 | **Version:** 1.0
+
+---
+
+## Purpose
+
+Consolidated tracking of all technical debt and issues aggregated from
+single-session audits, CANON files, and backlogs. Total Items: 291 (deduplicated
+from 301 raw findings).
+
+**Note:** This document has been superseded by TECHNICAL_DEBT_MASTER.md for
+current tracking.
 
 ---
 
@@ -640,4 +649,8 @@ _...and 191 more items (see MASTER_ISSUE_LIST.jsonl for full list)_
 
 ---
 
-**Document Version:** 1.0 **Last Updated:** 2026-01-17
+## Version History
+
+| Version | Date       | Changes                                                    |
+| ------- | ---------- | ---------------------------------------------------------- |
+| 1.0     | 2026-01-17 | Initial aggregation from audits, CANON files, and backlogs |

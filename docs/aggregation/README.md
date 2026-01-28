@@ -1,6 +1,13 @@
 # Aggregation Documents
 
-**Last Updated:** 2026-01-26
+**Last Updated:** 2026-01-27
+
+---
+
+## Status
+
+This directory contains historical aggregation documents. New findings should be
+added to TECHNICAL_DEBT_MASTER.md instead.
 
 ---
 

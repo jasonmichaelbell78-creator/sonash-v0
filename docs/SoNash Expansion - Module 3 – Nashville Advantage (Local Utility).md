@@ -1,4 +1,22 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Module 3 – Nashville Advantage (Local Utility)
+
+## Purpose
+
+Expansion module ideation document exploring Nashville-specific local utility
+features for the SoNash app, helping users navigate the physical geography of
+Nashville while avoiding triggers and finding community.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 **Core Philosophy:** "The Ground Truth." National apps have data; SoNash has
 _context_. These tools help users navigate the physical geography of Nashville

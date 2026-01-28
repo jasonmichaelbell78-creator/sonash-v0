@@ -336,6 +336,7 @@ changes in one document affect the accuracy of another.
 | Testing infrastructure changes     | `docs/plans/TESTING_INFRASTRUCTURE_PLAN.md`             | Track T spec must reflect implementation           | Manual   |
 | Planning documents added/archived  | `docs/PLAN_MAP.md`                                      | Plan map shows documentation hierarchy             | Manual   |
 | `.claude/plans/` files changed     | `docs/PLAN_MAP.md`                                      | Keep plan map current with active plans            | Manual   |
+| **Docs added/removed/moved**       | `DOCUMENTATION_INDEX.md` (run `npm run docs:index`)     | Auto-generated index must reflect current state    | Manual   |
 
 ### Usage
 

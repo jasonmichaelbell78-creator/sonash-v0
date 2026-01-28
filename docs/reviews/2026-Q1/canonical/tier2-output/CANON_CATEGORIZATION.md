@@ -1,8 +1,8 @@
 # CANON Findings Categorization
 
-**Generated:** 2026-01-11 **Task:** 4.3.2 - Cross-reference with
-EIGHT_PHASE_REFACTOR_PLAN.md **Input:** 97 unique findings (after Tier-2
-deduplication)
+**Generated:** 2026-01-11 **Last Updated:** 2026-01-27 **Task:** 4.3.2 -
+Cross-reference with EIGHT_PHASE_REFACTOR_PLAN.md **Input:** 97 unique findings
+(after Tier-2 deduplication)
 
 ---
 

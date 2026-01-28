@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 12.0 **Created:** 2026-01-02 **Last Updated:** 2026-01-27
+**Document Version:** 12.1 **Created:** 2026-01-02 **Last Updated:** 2026-01-28
 
 ## Purpose
 
@@ -871,10 +871,64 @@ blockers, both false positives)
 
 ---
 
+#### Review #213: PR #321 Doc Compliance - Qodo + SonarCloud (2026-01-28)
+
+**Source:** Qodo PR Code Suggestions + SonarCloud Issues **PR/Branch:**
+claude/resume-previous-session-D9N5N **Suggestions:** 6 total (MAJOR: 2, MINOR:
+3, DEFERRED: 1)
+
+**Files Modified:**
+
+- `.husky/pre-commit` - ADM filter + quoted variables
+- `scripts/check-docs-light.js` - Unicode emoji regex + URL decoding
+- `scripts/check-roadmap-health.js` - Removed redundant return
+- `scripts/generate-documentation-index.js` - Purpose/Version History sections +
+  parentheses encoding
+
+**MAJOR (2):**
+
+1. **Broaden pre-commit doc index check** - Changed `--diff-filter=A` to
+   `--diff-filter=ADM` to catch modified/deleted docs, not just added. Also
+   quoted variables for robust filename handling with spaces.
+
+2. **Simplify regex complexity** - SonarCloud flagged emoji regex at 27
+   alternations (max 20). Changed to `\p{Extended_Pictographic}` Unicode
+   property escape + `replaceAll()` for ES2021+ idiom.
+
+**MINOR (3):**
+
+3. **URL decode file paths** - Docs linter wasn't decoding `%20` etc. in links,
+   causing false "broken link" errors. Added `decodeURIComponent()` with
+   try/catch fallback.
+
+4. **Remove redundant return** - SonarCloud flagged `return;` at L112 in
+   check-roadmap-health.js - function ends immediately after anyway.
+
+5. **Encode parentheses in markdown links** - `encodeURI()` doesn't encode `(`
+   and `)`, breaking markdown link parsing. Created `encodeMarkdownPath()`
+   helper that also encodes `%28`/`%29`.
+
+**DEFERRED (1):**
+
+6. **Cross-file anchor validation** - Qodo suggested implementing full
+   cross-file anchor resolution with caching. Deferred as significant feature
+   enhancement requiring new functions and caching logic.
+
+**NEW PATTERNS (3):**
+
+- **(67) Unicode property escapes for emoji** - Use `\p{Extended_Pictographic}`
+  instead of listing individual emojis to reduce regex complexity
+- **(68) Markdown link parentheses encoding** - `encodeURI()` doesn't encode
+  `()` which breaks markdown `[text](url)` parsing
+- **(69) Pre-commit ADM filter** - Check Added/Deleted/Modified files, not just
+  Added, for complete doc index freshness
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #213: PR #XXX Title - Review Source (DATE)
+#### Review #214: PR #XXX Title - Review Source (DATE)
 
 
 -->

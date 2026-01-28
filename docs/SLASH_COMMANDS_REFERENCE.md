@@ -140,8 +140,7 @@ status is checked, and the AI is prepared to work effectively.
    check ROADMAP.md
 2. **Consolidation Status** - Check if pattern consolidation was missed (>=10
    reviews)
-3. **Documentation Awareness** - Check INTEGRATED_IMPROVEMENT_PLAN.md current
-   step
+3. **Documentation Awareness** - Check ROADMAP.md Active Sprint for current work
 4. **Skill Selection** - Decision tree for appropriate agent/skill usage
 5. **Code Review Handling** - Procedures for processing review feedback
 6. **Anti-Pattern Awareness** - Scan claude.md Section 4 + CODE_PATTERNS.md
@@ -187,8 +186,8 @@ documented, validated, and ready for handoff.
 
 1. **Work Verification** - All todos complete, commits pushed, tests pass
 2. **CI Verification** - Check modified CI files still work
-3. **Documentation Updates** - Update SESSION_CONTEXT.md,
-   INTEGRATED_IMPROVEMENT_PLAN.md
+3. **Documentation Updates** - Update SESSION_CONTEXT.md, ROADMAP.md Active
+   Sprint
 4. **Learning Consolidation** - Check/perform pattern consolidation if due
 5. **Code Review Audit** - Verify all review items addressed
 6. **Agent/Skill/Hook Audit** - Comprehensive 6-section audit table

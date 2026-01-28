@@ -1,6 +1,8 @@
 # **Multi - AI Aggregated Technical App Ideas**
 
-**Last Updated:** 2026-01-20 | **Document Type:** Ideation/Reference
+**Last Updated:** 2026-01-20
+
+**Document Type:** Ideation/Reference
 
 ---
 

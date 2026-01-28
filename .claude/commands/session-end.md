@@ -32,11 +32,11 @@ If you modified any of these, verify they still work:
   - Work completed this session
   - Any new blockers discovered
   - Next steps for future sessions
-- [ ] If applicable, update INTEGRATED_IMPROVEMENT_PLAN.md
-      (`docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md`) with step
-      progress
+- [ ] Update ROADMAP.md Active Sprint checkboxes if features completed
 - [ ] Log any significant learnings in AI_REVIEW_LEARNINGS_LOG.md
 - [ ] Archive completed/cancelled plans to `docs/archive/completed-plans/`
+- [ ] **Regenerate DOCUMENTATION_INDEX.md** if you added/removed/moved any docs:
+      `npm run docs:index && git add DOCUMENTATION_INDEX.md`
 - [ ] **Cross-document check**: Review docs modified this session against
       [DOCUMENT_DEPENDENCIES.md](../../docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
       trigger matrix - update any dependent documents

@@ -117,14 +117,14 @@ git log --oneline --since="YYYY-MM-DD"
 
 **Compare commits against documented status:**
 
-1. Look for PR/feature commits (e.g., "PR7:", "refactor:", "fix:")
-2. Cross-reference with INTEGRATED_IMPROVEMENT_PLAN.md task checkboxes
+1. Look for PR/feature commits (e.g., "feat:", "fix:", "refactor:")
+2. Cross-reference with ROADMAP.md Active Sprint checkboxes
 3. If commits show work done but docs show incomplete → **UPDATE THE DOCS**
 
 **Common discrepancies to check:**
 
-- Step 4B PRs: Check for commits like "PR7:", "PR8:", etc. and verify checkboxes
-  match
+- Sprint track items: Check commits against Active Sprint checkboxes in
+  ROADMAP.md
 - Session counter: Check AI_REVIEW_LEARNINGS_LOG.md version history for session
   numbers
 - Test counts: Run `npm test` to verify actual vs documented
@@ -153,11 +153,12 @@ the "Consolidation Trigger" section:
 
 ## 3. Documentation & Planning Awareness
 
-- [ ] Check
-      [INTEGRATED_IMPROVEMENT_PLAN.md](../../docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)
-      for current step
+- [ ] Check [ROADMAP.md](../../ROADMAP.md) Active Sprint section for current
+      work
 - [ ] Note: Archive files in `docs/archive/` are excluded from linting
 - [ ] Completed plans are archived to `docs/archive/completed-plans/`
+- [ ] Reference: INTEGRATED_IMPROVEMENT_PLAN.md is ✅ COMPLETE (archived
+      2026-01-14)
 
 ## 4. Skill Selection (BEFORE starting work)
 

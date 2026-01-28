@@ -1,8 +1,8 @@
 # Tier-2 Cross-Category Aggregation Summary
 
-**Generated:** 2026-01-11 **Input:** 118 CANON findings across 6 categories
-**Output:** 97 unique findings (21 merged as duplicates) **Scope:** CANON
-findings + SonarQube (548) + ESLint warnings (246)
+**Generated:** 2026-01-11 **Last Updated:** 2026-01-27 **Input:** 118 CANON
+findings across 6 categories **Output:** 97 unique findings (21 merged as
+duplicates) **Scope:** CANON findings + SonarQube (548) + ESLint warnings (246)
 
 ---
 

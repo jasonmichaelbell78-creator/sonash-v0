@@ -1,6 +1,13 @@
 # Multi-AI Reviews Directory
 
-**Created:** 2026-01-06 **Updated:** 2026-01-15
+**Created:** 2026-01-06 **Last Updated:** 2026-01-27
+
+---
+
+## Status
+
+Active directory for multi-AI review documents. Review processes and templates
+are current.
 
 ---
 

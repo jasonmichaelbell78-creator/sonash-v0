@@ -1,4 +1,22 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Module 10 – Safety & Harm Reduction
+
+## Purpose
+
+Expansion module ideation document exploring safety and harm reduction features
+for the SoNash app, focusing on preserving life, protecting legal rights, and
+minimizing damage during crisis situations.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 **Core Philosophy:** "Alive to Try Again." Recovery is impossible if you are
 dead. This module strips away judgment and focuses entirely on preserving life,

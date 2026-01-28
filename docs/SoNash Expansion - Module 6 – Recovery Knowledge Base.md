@@ -1,4 +1,22 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Module 6 – Recovery Knowledge Base
+
+## Purpose
+
+Expansion module ideation document exploring recovery knowledge base features
+for the SoNash app, translating recovery culture into plain English to help
+users navigate social and structural aspects of getting sober.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 **Core Philosophy:** "The Pocket Guide to the Unwritten Rules." We don't
 reproduce the Big Book (copyright trap). We translate the _culture_ of recovery

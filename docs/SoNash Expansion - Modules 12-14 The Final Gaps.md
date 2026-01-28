@@ -1,4 +1,22 @@
+---
+Last Updated: 2026-01-27
+---
+
 # SoNash Expansion: Modules 12, 13, 14 (The Final Gaps)
+
+## Purpose
+
+Expansion module ideation document exploring financial repair, bio-rhythm
+tracking, and old-timer toolkit features for the SoNash app, addressing the
+whole person and ensuring the app remains valuable from Day 0 to Year 10.
+
+## Version History
+
+| Version | Date       | Description           |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-27 | Initial documentation |
+
+---
 
 **Overview:** These modules address the "Whole Person" (Finances, Body) and the
 "Long Tail" of recovery (Old Timers), ensuring the app remains valuable from Day
