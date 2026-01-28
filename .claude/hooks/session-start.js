@@ -435,19 +435,22 @@ try {
 
   // Read and display alerts
   // Review #322: Wrap in try/catch to prevent crash on corrupted file
+  // Review #322 Round 3: Validate alerts array to prevent crashes on malformed JSON
   const alertsFile = path.join(process.cwd(), ".claude", "pending-alerts.json");
   try {
     const alertsData = JSON.parse(fs.readFileSync(alertsFile, "utf8"));
-    const alertCount = alertsData.alertCount || 0;
+    const alertsList = Array.isArray(alertsData.alerts) ? alertsData.alerts : [];
+    const alertCount =
+      typeof alertsData.alertCount === "number" ? alertsData.alertCount : alertsList.length;
 
     // Display alerts if any exist (MCP reminder removed in Session #113)
-    if (alertCount > 0) {
+    if (alertCount > 0 && alertsList.length > 0) {
       console.log("");
       console.log("━".repeat(66));
       console.log("🚨 PENDING ALERTS REQUIRING ATTENTION");
       console.log("━".repeat(66));
 
-      for (const alert of alertsData.alerts) {
+      for (const alert of alertsList) {
         const icon = alert.severity === "error" ? "❌" : alert.severity === "warning" ? "⚠️" : "ℹ️";
         console.log(`\n${icon} ${alert.message}`);
         if (alert.details) {

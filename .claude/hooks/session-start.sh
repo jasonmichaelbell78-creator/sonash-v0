@@ -370,7 +370,12 @@ if node "$REPO_ROOT/scripts/generate-pending-alerts.js" 2>/dev/null; then
       echo "$SEPARATOR_LINE"
       echo ""
       echo "📌 These alerts will be discussed with Claude. Press ENTER to continue..."
-      read -r < /dev/tty || true
+      # Review #322 Round 3: Check for interactive terminal to avoid hanging in CI/CD
+      if [ -t 0 ] && [ -r /dev/tty ]; then
+        read -r < /dev/tty || true
+      else
+        echo "   (non-interactive; skipping acknowledgment prompt)"
+      fi
     fi
   fi
 else

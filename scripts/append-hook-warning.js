@@ -51,18 +51,33 @@ function readWarnings() {
 /**
  * Write warnings file
  * Review #322: Use atomic write (write to temp file then rename) for resilience
+ * Review #322 Round 3: Fix Windows compatibility (remove before rename, cleanup tmp)
  */
 function writeWarnings(data) {
+  const tmpFile = `${WARNINGS_FILE}.tmp`;
   try {
     const claudeDir = path.dirname(WARNINGS_FILE);
     if (!fs.existsSync(claudeDir)) {
       fs.mkdirSync(claudeDir, { recursive: true });
     }
 
-    const tmpFile = `${WARNINGS_FILE}.tmp`;
     fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2));
+
+    // Windows: rename over existing file may fail, so remove first
+    try {
+      fs.rmSync(WARNINGS_FILE, { force: true });
+    } catch {
+      // ignore - file may not exist
+    }
+
     fs.renameSync(tmpFile, WARNINGS_FILE);
   } catch {
+    // Best-effort cleanup to avoid leaving stale tmp files
+    try {
+      fs.rmSync(tmpFile, { force: true });
+    } catch {
+      // ignore
+    }
     // Hooks should not block git operations due to warning persistence failures
   }
 }

@@ -34,10 +34,16 @@ const projectDir = path.resolve(safeBaseDir, projectDirInput);
 // Security check - Pattern #71: Use startsWith for robust containment validation
 // path.relative has edge cases with empty strings; prefer explicit prefix check
 // Review #322: Normalize to lowercase on Windows (case-insensitive filesystem)
+// Review #322 Round 3: Allow bidirectional containment (script run from subdirectory)
 const baseForCheck = process.platform === "win32" ? safeBaseDir.toLowerCase() : safeBaseDir;
 const projectForCheck = process.platform === "win32" ? projectDir.toLowerCase() : projectDir;
 
-if (!projectForCheck.startsWith(baseForCheck + path.sep) && projectForCheck !== baseForCheck) {
+const projectInsideCwd =
+  projectForCheck === baseForCheck || projectForCheck.startsWith(baseForCheck + path.sep);
+const cwdInsideProject =
+  baseForCheck === projectForCheck || baseForCheck.startsWith(projectForCheck + path.sep);
+
+if (!projectInsideCwd && !cwdInsideProject) {
   console.log("ok"); // Exit silently on security violation
   process.exit(0);
 }

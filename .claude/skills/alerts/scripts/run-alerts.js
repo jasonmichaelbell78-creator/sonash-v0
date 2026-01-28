@@ -94,32 +94,36 @@ function checkCodeHealth() {
   console.error("  Checking code health...");
 
   // TypeScript errors (try tsc directly if no npm script)
-  let tsResult = runCommand("npm run type-check 2>&1", { timeout: 120000 });
+  // Review #322 Round 3: Remove 2>&1 - use combined output for checks
+  let tsResult = runCommand("npm run type-check", { timeout: 120000 });
 
   // If script doesn't exist, try tsc directly
-  if (tsResult.output.includes("Missing script")) {
-    tsResult = runCommand("npx tsc --noEmit 2>&1", { timeout: 120000 });
+  const tsCombinedOutput = `${tsResult.output || ""}\n${tsResult.stderr || ""}`;
+  if (tsCombinedOutput.includes("Missing script")) {
+    tsResult = runCommand("npx tsc --noEmit", { timeout: 120000 });
   }
 
   // Review #214: Always report type-check failures, even if count can't be parsed
-  if (!tsResult.success && !tsResult.output.includes("Missing script")) {
-    const errorMatch = tsResult.output.match(/Found (\d+) error/i);
+  const tsFullOutput = `${tsResult.output || ""}\n${tsResult.stderr || ""}`;
+  if (!tsResult.success && !tsFullOutput.includes("Missing script")) {
+    const errorMatch = tsFullOutput.match(/Found (\d+) error/i);
     const errorCount = errorMatch ? parseInt(errorMatch[1], 10) : null;
 
     addAlert(
       "code",
       "error",
       errorCount ? `${errorCount} TypeScript error(s)` : "TypeScript type-check failed",
-      tsResult.output.split("\n").slice(0, 10),
+      tsFullOutput.split("\n").slice(0, 10),
       "Run: npx tsc --noEmit"
     );
   }
 
   // ESLint warnings
-  const lintResult = runCommand("npm run lint 2>&1", { timeout: 120000 });
+  const lintResult = runCommand("npm run lint", { timeout: 120000 });
+  const lintFullOutput = `${lintResult.output || ""}\n${lintResult.stderr || ""}`;
   if (!lintResult.success) {
-    const warnMatch = lintResult.output.match(/(\d+) warning/);
-    const errMatch = lintResult.output.match(/(\d+) error/);
+    const warnMatch = lintFullOutput.match(/(\d+) warning/);
+    const errMatch = lintFullOutput.match(/(\d+) error/);
     const warnCount = warnMatch ? parseInt(warnMatch[1], 10) : 0;
     const errCount = errMatch ? parseInt(errMatch[1], 10) : 0;
 
@@ -132,18 +136,18 @@ function checkCodeHealth() {
   }
 
   // Pattern violations
-  const patternsResult = runCommand("npm run patterns:check 2>&1", { timeout: 60000 });
-  if (!patternsResult.success && patternsResult.output.includes("violation")) {
+  const patternsResult = runCommand("npm run patterns:check", { timeout: 60000 });
+  const patternsFullOutput = `${patternsResult.output || ""}\n${patternsResult.stderr || ""}`;
+  if (!patternsResult.success && patternsFullOutput.includes("violation")) {
     addAlert("code", "warning", "Pattern violations found", null, "Run: npm run patterns:check");
   }
 
   // Circular dependencies
   // Review #214: More specific check - only alert on actual circular detection
-  const circularResult = runCommand("npm run check:circular 2>&1", { timeout: 60000 });
-  const circularDetected =
-    /\bcircular\b/i.test(circularResult.output) ||
-    /\bcircular\b/i.test(circularResult.stderr || "");
-  const missingScript = /Missing script/i.test(circularResult.output);
+  const circularResult = runCommand("npm run check:circular", { timeout: 60000 });
+  const circularFullOutput = `${circularResult.output || ""}\n${circularResult.stderr || ""}`;
+  const circularDetected = /\bcircular\b/i.test(circularFullOutput);
+  const missingScript = /Missing script/i.test(circularFullOutput);
 
   if (circularDetected) {
     addAlert(
@@ -172,7 +176,8 @@ function checkSecurity() {
   console.error("  Checking security...");
 
   // npm audit
-  const auditResult = runCommand("npm audit --json 2>&1", { timeout: 60000 });
+  // Review #322 Round 3: Remove 2>&1 to prevent stderr corrupting JSON output
+  const auditResult = runCommand("npm audit --json", { timeout: 60000 });
   try {
     const audit = JSON.parse(auditResult.output);
     const high = audit.metadata?.vulnerabilities?.high || 0;
@@ -198,9 +203,10 @@ function checkSecurity() {
     }
   } catch {
     // Review #322: Surface audit execution failures instead of silently skipping
+    // Review #322 Round 3: Upgrade to error when audit fails to run
     addAlert(
       "security",
-      "warning",
+      auditResult.success ? "warning" : "error",
       auditResult.success ? "npm audit output was not valid JSON" : "npm audit failed to run",
       (auditResult.output || auditResult.stderr || "").split("\n").slice(0, 10),
       "Run: npm audit"
@@ -237,8 +243,9 @@ function checkSecurity() {
   }
 
   // Security patterns check
-  const securityResult = runCommand("npm run security:check 2>&1", { timeout: 60000 });
-  if (!securityResult.success && securityResult.output.includes("warning")) {
+  const securityResult = runCommand("npm run security:check", { timeout: 60000 });
+  const securityFullOutput = `${securityResult.output || ""}\n${securityResult.stderr || ""}`;
+  if (!securityResult.success && securityFullOutput.includes("warning")) {
     addAlert(
       "security",
       "warning",
@@ -307,7 +314,7 @@ function checkCurrentAlerts() {
 
   if (!alertsData) {
     // Generate alerts
-    const genResult = runCommand("node scripts/generate-pending-alerts.js 2>&1");
+    const genResult = runCommand("node scripts/generate-pending-alerts.js");
     if (genResult.success) {
       try {
         const content = fs.readFileSync(alertsPath, "utf8");
@@ -335,9 +342,10 @@ function checkDocumentationHealth() {
   console.error("  Checking documentation health...");
 
   // CANON validation
-  const canonResult = runCommand("npm run validate:canon 2>&1", { timeout: 60000 });
+  const canonResult = runCommand("npm run validate:canon", { timeout: 60000 });
+  const canonFullOutput = `${canonResult.output || ""}\n${canonResult.stderr || ""}`;
   if (!canonResult.success) {
-    const issueMatch = canonResult.output.match(/(\d+)\s+issue/i);
+    const issueMatch = canonFullOutput.match(/(\d+)\s+issue/i);
     const issueCount = issueMatch ? issueMatch[1] : "some";
     addAlert(
       "docs",
@@ -349,8 +357,9 @@ function checkDocumentationHealth() {
   }
 
   // Cross-doc dependencies
-  const crossdocResult = runCommand("npm run crossdoc:check 2>&1", { timeout: 60000 });
-  if (!crossdocResult.success && crossdocResult.output.includes("Missing")) {
+  const crossdocResult = runCommand("npm run crossdoc:check", { timeout: 60000 });
+  const crossdocFullOutput = `${crossdocResult.output || ""}\n${crossdocResult.stderr || ""}`;
+  if (!crossdocResult.success && crossdocFullOutput.includes("Missing")) {
     addAlert(
       "docs",
       "warning",
