@@ -222,6 +222,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/alerts-reminder.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking pending alerts..."
+          },
+          {
+            "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/analyze-user-request.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking PRE-TASK triggers..."
           },

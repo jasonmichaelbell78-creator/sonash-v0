@@ -93,3 +93,4 @@ nul
 # Session alert state files
 .claude/pending-alerts.json
 .claude/hook-warnings.json
+.claude/alerts-acknowledged.json
