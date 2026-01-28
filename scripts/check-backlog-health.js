@@ -153,9 +153,11 @@ const BACKLOG_FILE = join(__dirname, "..", "docs", "AUDIT_FINDINGS_BACKLOG.md");
 function parseBacklogItems(content) {
   const items = [];
 
+  // Remove markdown code blocks to avoid parsing templates/examples
+  const contentWithoutCodeBlocks = content.replace(/```[\s\S]*?```/g, "");
+
   // Match item headers like "### [Category] Item Name"
-  const itemRegex = /^### \[([^\]]+)\] (.+)$/gm;
-  const sections = content.split(/^### \[/gm);
+  const sections = contentWithoutCodeBlocks.split(/^### \[/gm);
 
   for (let i = 1; i < sections.length; i++) {
     const section = "### [" + sections[i];
@@ -164,6 +166,9 @@ function parseBacklogItems(content) {
 
     const category = headerMatch[1];
     const name = headerMatch[2];
+
+    // Skip template/example items
+    if (category === "Category" && name === "Item Name") continue;
 
     // Skip completed/rejected items
     if (section.includes("## Completed Items") || section.includes("## Rejected Items")) {
@@ -174,6 +179,9 @@ function parseBacklogItems(content) {
     const severityMatch = section.match(/\*\*Severity\*\*:\s*(S[0-3])/i);
     const severity = severityMatch ? severityMatch[1].toUpperCase() : "UNKNOWN";
 
+    // Skip items with template severity (S1/S2/S3)
+    if (section.includes("S1/S2/S3")) continue;
+
     // Extract status
     const statusMatch = section.match(/\*\*Status\*\*:\s*(PENDING|IN_PROGRESS|DONE|DEFERRED)/i);
     const status = statusMatch ? statusMatch[1].toUpperCase() : "UNKNOWN";
@@ -181,6 +189,9 @@ function parseBacklogItems(content) {
     // Extract CANON-ID
     const canonMatch = section.match(/\*\*CANON-ID\*\*:\s*([A-Z]+-\d+)/i);
     const canonId = canonMatch ? canonMatch[1] : "UNKNOWN";
+
+    // Skip items with template CANON-ID
+    if (canonId === "UNKNOWN" || section.includes("CANON-NNN")) continue;
 
     // Only track pending/in-progress items
     if (status === "DONE" || status === "DEFERRED") continue;
