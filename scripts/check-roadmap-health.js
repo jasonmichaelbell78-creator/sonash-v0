@@ -109,7 +109,7 @@ function checkMilestoneItemCounts(content, fileName) {
 
   if (!overviewTableMatch) {
     warnings.push(`${fileName}: Could not find Milestones Overview table`);
-    return;
+    // Review #215: Removed redundant return - function ends after comments anyway
   }
 
   // NOTE: The Overview table's last column is estimated HOURS, not item count.
