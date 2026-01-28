@@ -193,6 +193,11 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/large-context-warning.js\" \"$ARGUMENTS\"",
             "statusMessage": "Tracking context size..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/auto-save-context.js\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking context preservation..."
           }
         ]
       },

@@ -4,10 +4,11 @@
 /**
  * Alerts Reminder Hook
  *
- * Checks if there are pending alerts that haven't been acknowledged this session
- * and reminds Claude to surface them to the user.
+ * Checks for:
+ * 1. Pending alerts that haven't been acknowledged
+ * 2. Pending MCP memory saves (context preservation)
  *
- * This hook runs on UserPromptSubmit.
+ * This hook runs on UserPromptSubmit, outputting directly to Claude's context.
  */
 
 const fs = require("node:fs");
@@ -17,67 +18,125 @@ const ROOT_DIR = path.resolve(__dirname, "../..");
 const ALERTS_FILE = path.join(ROOT_DIR, ".claude", "pending-alerts.json");
 const SESSION_STATE_FILE = path.join(ROOT_DIR, ".claude", "session-state.json");
 const ALERTS_ACK_FILE = path.join(ROOT_DIR, ".claude", "alerts-acknowledged.json");
+const PENDING_MCP_SAVE_FILE = path.join(ROOT_DIR, ".claude", "pending-mcp-save.json");
+const CONTEXT_TRACKING_FILE = path.join(
+  ROOT_DIR,
+  ".claude",
+  "hooks",
+  ".context-tracking-state.json"
+);
 
-function main() {
-  // Check if alerts file exists
-  if (!fs.existsSync(ALERTS_FILE)) {
-    process.exit(0);
+/**
+ * Check for large context that needs saving
+ */
+function checkContextSize() {
+  const FILE_THRESHOLD = 20;
+
+  try {
+    const tracking = JSON.parse(fs.readFileSync(CONTEXT_TRACKING_FILE, "utf8"));
+    const filesRead = tracking.filesRead?.length || 0;
+
+    if (filesRead >= FILE_THRESHOLD) {
+      return {
+        shouldSave: true,
+        filesRead: filesRead,
+      };
+    }
+  } catch {
+    // File doesn't exist or can't be read
   }
 
-  // Check if alerts have been acknowledged this session
-  let alertsAcknowledged = false;
-  if (fs.existsSync(ALERTS_ACK_FILE)) {
-    try {
-      const ackData = JSON.parse(fs.readFileSync(ALERTS_ACK_FILE, "utf8"));
-      const alertsData = JSON.parse(fs.readFileSync(ALERTS_FILE, "utf8"));
+  return { shouldSave: false };
+}
 
-      // If ack timestamp is after alerts generation, they've been acknowledged
-      if (ackData.acknowledgedAt && alertsData.generated) {
-        const ackTime = new Date(ackData.acknowledgedAt).getTime();
-        const alertsTime = new Date(alertsData.generated).getTime();
-        if (ackTime > alertsTime) {
-          alertsAcknowledged = true;
+/**
+ * Check for pending MCP save
+ */
+function checkPendingMcpSave() {
+  try {
+    if (fs.existsSync(PENDING_MCP_SAVE_FILE)) {
+      const data = JSON.parse(fs.readFileSync(PENDING_MCP_SAVE_FILE, "utf8"));
+      return data;
+    }
+  } catch {
+    // Ignore
+  }
+  return null;
+}
+
+function main() {
+  const messages = [];
+
+  // Check for pending alerts
+  if (fs.existsSync(ALERTS_FILE)) {
+    let alertsAcknowledged = false;
+
+    if (fs.existsSync(ALERTS_ACK_FILE)) {
+      try {
+        const ackData = JSON.parse(fs.readFileSync(ALERTS_ACK_FILE, "utf8"));
+        const alertsData = JSON.parse(fs.readFileSync(ALERTS_FILE, "utf8"));
+
+        if (ackData.acknowledgedAt && alertsData.generated) {
+          const ackTime = new Date(ackData.acknowledgedAt).getTime();
+          const alertsTime = new Date(alertsData.generated).getTime();
+          if (ackTime > alertsTime) {
+            alertsAcknowledged = true;
+          }
         }
+      } catch {
+        // Ignore
       }
-    } catch {
-      // Ignore parse errors
+    }
+
+    if (!alertsAcknowledged) {
+      try {
+        const alerts = JSON.parse(fs.readFileSync(ALERTS_FILE, "utf8"));
+        const counts = { error: 0, warning: 0, info: 0 };
+        for (const alert of alerts.alerts || []) {
+          counts[alert.severity] = (counts[alert.severity] || 0) + 1;
+        }
+
+        const total = counts.error + counts.warning + counts.info;
+        if (total > 0) {
+          const parts = [];
+          if (counts.error > 0) parts.push(`${counts.error} error(s)`);
+          if (counts.warning > 0) parts.push(`${counts.warning} warning(s)`);
+          if (counts.info > 0) parts.push(`${counts.info} info`);
+          messages.push(
+            `ALERTS: ${total} pending (${parts.join(", ")}). Tell user or run /alerts.`
+          );
+        }
+      } catch {
+        // Ignore
+      }
     }
   }
 
-  if (alertsAcknowledged) {
-    process.exit(0);
+  // Check for large context needing MCP save
+  const contextCheck = checkContextSize();
+  const pendingMcp = checkPendingMcpSave();
+
+  if (contextCheck.shouldSave || pendingMcp) {
+    messages.push(
+      `CONTEXT: ${contextCheck.filesRead || "many"} files read. Save to MCP memory before compaction!`
+    );
+    if (pendingMcp) {
+      messages.push(
+        `ACTION: Run mcp__memory__create_entities with entity from .claude/pending-mcp-save.json`
+      );
+    } else {
+      messages.push(
+        `ACTION: Use /save-context skill or manually save important context to MCP memory`
+      );
+    }
   }
 
-  // Read alerts
-  let alerts;
-  try {
-    alerts = JSON.parse(fs.readFileSync(ALERTS_FILE, "utf8"));
-  } catch {
-    process.exit(0);
+  // Output all messages
+  if (messages.length > 0) {
+    messages.forEach((m) => console.log(m));
   }
 
-  // Count alerts by severity
-  const counts = { error: 0, warning: 0, info: 0 };
-  for (const alert of alerts.alerts || []) {
-    counts[alert.severity] = (counts[alert.severity] || 0) + 1;
-  }
-
-  const total = counts.error + counts.warning + counts.info;
-  if (total === 0) {
-    process.exit(0);
-  }
-
-  // Output reminder
-  const parts = [];
-  if (counts.error > 0) parts.push(`${counts.error} error(s)`);
-  if (counts.warning > 0) parts.push(`${counts.warning} warning(s)`);
-  if (counts.info > 0) parts.push(`${counts.info} info`);
-
-  console.log(`REMINDER: There are ${total} pending alerts (${parts.join(", ")}).`);
-  console.log("Tell the user about these alerts or run /alerts for details.");
-  console.log(
-    "After discussing alerts, acknowledge by writing to .claude/alerts-acknowledged.json"
-  );
+  process.exit(0);
 }
 
 main();
