@@ -71,7 +71,7 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                       | References | Last Modified |
 | ------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](claude.md)              | This document provides essential context and rules for AI as...   | ↓4 ↑8      | 2026-01-27    |
+| [AI Context & Rules for SoNash](claude.md)              | This document provides essential context and rules for AI as...   | ↓4 ↑8      | 2026-01-28    |
 | [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑14    | 2026-01-27    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓13 ↑5     | 2026-01-27    |
 | [Development Guide](DEVELOPMENT.md)                     | -                                                                 | ↓12 ↑6     | 2026-01-27    |
@@ -92,7 +92,7 @@ _Main documentation directory_
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                                                                      | -                                                                 | ↓3 ↑4      | 2026-01-27    |
 | [ADR-NNN: [Short Title]](docs/decisions/TEMPLATE.md)                                                                                                                        | [Briefly describe the purpose of this ADR - what decision do...   | ↓1 ↑0      | 2026-01-27    |
 | [Aggregation Documents](docs/aggregation/README.md)                                                                                                                         | Consolidated findings from multi-AI audits, aggregated into ...   | ↓0 ↑6      | 2026-01-27    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                                                  | This document is the **audit trail** of all AI code review l...   | ↓7 ↑3      | 2026-01-27    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                                                  | This document is the **audit trail** of all AI code review l...   | ↓7 ↑3      | 2026-01-28    |
 | [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                                                                                             | This guide covers Firebase App Check configuration for the S...   | ↓2 ↑0      | 2026-01-27    |
 | [Architecture Decision Records (ADRs)](docs/decisions/README.md)                                                                                                            | This directory contains Architecture Decision Records (ADRs)...   | ↓0 ↑1      | 2026-01-27    |
 | [Audit Findings Backlog](docs/AUDIT_FINDINGS_BACKLOG.md)                                                                                                                    | -                                                                 | ↓1 ↑3      | 2026-01-27    |

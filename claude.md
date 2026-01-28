@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.4 **Last Updated:** 2026-01-27
+**Document Version:** 3.5 **Last Updated:** 2026-01-28
 
 ---
 
@@ -25,6 +25,24 @@ This is the primary context file for Claude Code sessions:
 - Read this file at session start
 - Follow all patterns in Section 4
 - Reference linked docs for detailed procedures
+
+### Session Start Protocol
+
+**IMPORTANT:** At the start of each session, perform these steps:
+
+1. **Read pending alerts** - Check `.claude/pending-alerts.json` and **tell the
+   user** about any alerts (deferred items, backlog warnings, etc.) in your
+   first response. Example: "You have 3 deferred PR items to review. Want me to
+   list them?"
+
+2. **Check MCP Memory** - Run `mcp__memory__read_graph()` to retrieve any
+   context saved from previous sessions. If entities exist, summarize relevant
+   context for the user.
+
+3. **Follow the checklist** - SESSION_CONTEXT.md, ROADMAP.md priorities,
+   blockers
+
+This ensures important information doesn't get buried in collapsed hook output.
 
 ---
 
@@ -146,7 +164,9 @@ Choice:** What was selected **Implementation:** Link to PR/commit/roadmap
 
 - Writing detailed plans to `.claude/plans/` before implementation
 - Using `/checkpoint` before risky operations
-- Using Serena memories for cross-session context
+- **MCP Memory for cross-session context** - Save important context with
+  `mcp__memory__create_entities()` before compaction, retrieve with
+  `mcp__memory__read_graph()` at session start
 
 ## 8. Coding Standards
 
@@ -162,6 +182,7 @@ Choice:** What was selected **Implementation:** Link to PR/commit/roadmap
 
 | Version | Date       | Description                                                                         |
 | ------- | ---------- | ----------------------------------------------------------------------------------- |
+| 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                   |
 | 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)               |
 | 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md |
 | 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)     |

@@ -332,6 +332,19 @@ else
   echo "   Some steps may have failed - check output above."
 fi
 
+# =============================================================================
+# Generate Pending Alerts for Claude (~1s)
+# =============================================================================
+# Scans for deferred items, backlog health, etc. and writes to JSON file
+# Claude will read this file and surface alerts conversationally
+echo "🔍 Generating pending alerts..."
+if node "$REPO_ROOT/scripts/generate-pending-alerts.js" 2>/dev/null; then
+  echo "   ✓ Alerts file written to .claude/pending-alerts.json"
+else
+  echo "   ⚠️ Alerts generation skipped (script may be missing)"
+  WARNINGS=$((WARNINGS + 1))
+fi
+
 echo ""
 echo "$SEPARATOR_LINE"
 echo "📋 SESSION CHECKLIST (from AI_WORKFLOW.md):"
