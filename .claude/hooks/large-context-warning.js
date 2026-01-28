@@ -147,7 +147,7 @@ if (state.filesRead.length >= SESSION_FILE_LIMIT && !state.warningShown) {
   warnings.push({
     type: "many_files",
     message: `${state.filesRead.length} files read this session (>=${SESSION_FILE_LIMIT})`,
-    suggestion: "Consider using /checkpoint to save progress",
+    suggestion: "Consider using /save-context to preserve important context to MCP memory",
   });
   state.warningShown = true;
 
@@ -171,7 +171,7 @@ if (warnings.length > 0) {
   }
 
   console.error("");
-  console.error("Tip: Use /checkpoint to save session state before risky operations");
+  console.error("Tip: Use /save-context to save to MCP memory before compaction");
   console.error("\u2501".repeat(28));
 }
 

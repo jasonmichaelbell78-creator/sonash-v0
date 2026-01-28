@@ -272,12 +272,12 @@ The tracker maintains:
 
 ## File Locations
 
-| File                                           | Purpose                     |
-| ---------------------------------------------- | --------------------------- |
-| `docs/EXPANSION_EVALUATION_TRACKER.md`         | Main state/progress tracker |
-| `docs/SoNash Expansion - Technical Modules.md` | T1-T9 parsed modules        |
-| `docs/SoNash Expansion - Module N - *.md`      | F1-F12 feature modules      |
-| `ROADMAP.md`                                   | Target for accepted ideas   |
+| File                                                                      | Purpose                           |
+| ------------------------------------------------------------------------- | --------------------------------- |
+| `docs/EXPANSION_EVALUATION_TRACKER.md`                                    | Main state/progress tracker       |
+| `docs/archive/expansion-ideation/SoNash Expansion - Technical Modules.md` | T1-T9 parsed modules (archived)   |
+| `docs/archive/expansion-ideation/SoNash Expansion - Module N - *.md`      | F1-F12 feature modules (archived) |
+| `ROADMAP.md`                                                              | Target for accepted ideas         |
 
 ## Implementation Notes
 

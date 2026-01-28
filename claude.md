@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.4 **Last Updated:** 2026-01-27
+**Document Version:** 3.6 **Last Updated:** 2026-01-28
 
 ---
 
@@ -17,6 +17,27 @@ the SoNash project. It contains:
 
 This is a **Tier 4 document** - always loaded in AI context to prevent repeated
 violations and ensure consistency across sessions.
+
+## Session Start Protocol (DO THIS FIRST)
+
+> [!IMPORTANT] Hook output is collapsed in Claude Code UI. You MUST proactively
+> surface alerts - they won't be seen otherwise.
+
+**At the start of EVERY session:**
+
+1. **Read `.claude/pending-alerts.json`** - Tell the user about alerts in your
+   first response. Example: "You have 3 deferred PR items and 2 S1 backlog
+   items. Want details?"
+
+2. **Run `mcp__memory__read_graph()`** - Retrieve context saved from previous
+   sessions. Summarize relevant entities for the user.
+
+3. **Before compaction** - Save important context with
+   `mcp__memory__create_entities()` to preserve decisions and progress.
+
+4. **Follow checklist** - SESSION_CONTEXT.md, ROADMAP.md, active blockers
+
+---
 
 ## AI Instructions
 
@@ -64,9 +85,9 @@ This is the primary context file for Claude Code sessions:
 **Top 5 (enforced by `npm run patterns:check`):**
 
 | Pattern            | Rule                                                              |
-| ------------------ | ----------------------------------------------------------------- | ----------------------------------- |
+| ------------------ | ----------------------------------------------------------------- |
 | Error sanitization | Use `scripts/lib/sanitize-error.js` - never log raw error.message |
-| Path traversal     | `/^\.\.(?:[\\/]                                                   | $)/.test(rel)`NOT`startsWith('..')` |
+| Path traversal     | Use `/^\.\.(?:[\\/]&#124;$)/.test(rel)` NOT `startsWith('..')`    |
 | Test mocking       | Mock `httpsCallable`, NOT direct Firestore writes                 |
 | File reads         | Wrap ALL in try/catch (existsSync race condition)                 |
 | exec() loops       | `/g` flag REQUIRED (no /g = infinite loop)                        |
@@ -146,7 +167,9 @@ Choice:** What was selected **Implementation:** Link to PR/commit/roadmap
 
 - Writing detailed plans to `.claude/plans/` before implementation
 - Using `/checkpoint` before risky operations
-- Using Serena memories for cross-session context
+- **MCP Memory for cross-session context** - Save important context with
+  `mcp__memory__create_entities()` before compaction, retrieve with
+  `mcp__memory__read_graph()` at session start
 
 ## 8. Coding Standards
 
@@ -162,6 +185,8 @@ Choice:** What was selected **Implementation:** Link to PR/commit/roadmap
 
 | Version | Date       | Description                                                                         |
 | ------- | ---------- | ----------------------------------------------------------------------------------- |
+| 3.6     | 2026-01-28 | Promoted Session Start Protocol to top, fixed table formatting, added save reminder |
+| 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                   |
 | 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)               |
 | 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md |
 | 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)     |

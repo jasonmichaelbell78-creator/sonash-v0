@@ -332,6 +332,57 @@ else
   echo "   Some steps may have failed - check output above."
 fi
 
+# =============================================================================
+# Generate and Display Pending Alerts (BLOCKING if warnings exist)
+# =============================================================================
+# Scans for deferred items, backlog health, hook warnings, etc.
+# Displays alerts prominently and waits for user acknowledgment
+echo "🔍 Generating pending alerts..."
+if node "$REPO_ROOT/scripts/generate-pending-alerts.js" 2>/dev/null; then
+  echo "   ✓ Alerts generated"
+
+  # Read and display alerts prominently
+  ALERTS_FILE="$REPO_ROOT/.claude/pending-alerts.json"
+  if [[ -f "$ALERTS_FILE" ]]; then
+    # Review #322: Add 'utf8' encoding to ensure correct JSON parsing
+    ALERT_COUNT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$ALERTS_FILE','utf8')).alertCount)" 2>/dev/null || echo "0")
+
+    if [[ "$ALERT_COUNT" -gt 0 ]]; then  # Display alerts if any exist
+      echo ""
+      echo "$SEPARATOR_LINE"
+      echo "🚨 PENDING ALERTS REQUIRING ATTENTION"
+      echo "$SEPARATOR_LINE"
+
+      # Parse and display each alert
+      # Review #322: Add 'utf8' encoding to ensure correct JSON parsing
+      node -e "
+        const data = JSON.parse(require('fs').readFileSync('$ALERTS_FILE','utf8'));
+        data.alerts.forEach(a => {
+          // MCP reminder removed in Session #113 - now context-aware via alerts-reminder.js
+          const icon = a.severity === 'error' ? '❌' : a.severity === 'warning' ? '⚠️' : 'ℹ️';
+          console.log(\"\n\" + icon + \" \" + a.message);
+          if (a.details) a.details.forEach(d => console.log(\"   • \" + d));
+          if (a.action) console.log(\"   → Action: \" + a.action);
+        });
+      " 2>/dev/null || true
+
+      echo ""
+      echo "$SEPARATOR_LINE"
+      echo ""
+      echo "📌 These alerts will be discussed with Claude. Press ENTER to continue..."
+      # Review #322 Round 3: Check for interactive terminal to avoid hanging in CI/CD
+      if [ -t 0 ] && [ -r /dev/tty ]; then
+        read -r < /dev/tty || true
+      else
+        echo "   (non-interactive; skipping acknowledgment prompt)"
+      fi
+    fi
+  fi
+else
+  echo "   ⚠️ Alerts generation skipped (script may be missing)"
+  WARNINGS=$((WARNINGS + 1))
+fi
+
 echo ""
 echo "$SEPARATOR_LINE"
 echo "📋 SESSION CHECKLIST (from AI_WORKFLOW.md):"

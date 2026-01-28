@@ -89,3 +89,10 @@ serviceAccountKey.json
 
 # Windows artifact file (created from command redirects)
 nul
+
+# Session alert state files
+.claude/pending-alerts.json
+.claude/hook-warnings.json
+.claude/alerts-acknowledged.json
+.claude/pending-mcp-save.json
+.claude/hooks/.auto-save-state.json

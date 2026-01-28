@@ -421,6 +421,63 @@ if (warnings === 0) {
   console.log("   Some steps may have failed - check output above.");
 }
 
+// =============================================================================
+// Generate and Display Pending Alerts (BLOCKING if warnings exist)
+// =============================================================================
+console.log("");
+console.log("🔍 Generating pending alerts...");
+try {
+  execSync("node scripts/generate-pending-alerts.js", {
+    encoding: "utf8",
+    timeout: 10000,
+  });
+  console.log("   ✓ Alerts generated");
+
+  // Read and display alerts
+  // Review #322: Wrap in try/catch to prevent crash on corrupted file
+  // Review #322 Round 3: Validate alerts array to prevent crashes on malformed JSON
+  const alertsFile = path.join(process.cwd(), ".claude", "pending-alerts.json");
+  try {
+    const alertsData = JSON.parse(fs.readFileSync(alertsFile, "utf8"));
+    const alertsList = Array.isArray(alertsData.alerts) ? alertsData.alerts : [];
+    const alertCount =
+      typeof alertsData.alertCount === "number" ? alertsData.alertCount : alertsList.length;
+
+    // Display alerts if any exist (MCP reminder removed in Session #113)
+    if (alertCount > 0 && alertsList.length > 0) {
+      console.log("");
+      console.log("━".repeat(66));
+      console.log("🚨 PENDING ALERTS REQUIRING ATTENTION");
+      console.log("━".repeat(66));
+
+      for (const alert of alertsList) {
+        const icon = alert.severity === "error" ? "❌" : alert.severity === "warning" ? "⚠️" : "ℹ️";
+        console.log(`\n${icon} ${alert.message}`);
+        if (alert.details) {
+          for (const detail of alert.details) {
+            console.log(`   • ${detail}`);
+          }
+        }
+        if (alert.action) {
+          console.log(`   → Action: ${alert.action}`);
+        }
+      }
+
+      console.log("");
+      console.log("━".repeat(66));
+      console.log("");
+      console.log("📌 Claude will discuss these alerts at the start of the conversation.");
+      // Note: Blocking prompts don't work in Claude Code's hook environment (no TTY)
+      // The alerts are saved to pending-alerts.json for Claude to read and surface
+    }
+  } catch {
+    // File doesn't exist or is malformed - don't break session-start
+  }
+} catch (error) {
+  console.log("   ⚠️ Alerts generation skipped");
+  warnings++;
+}
+
 console.log("");
 console.log("━".repeat(66));
 console.log("📋 SESSION CHECKLIST (from AI_WORKFLOW.md):");

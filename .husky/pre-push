@@ -4,16 +4,8 @@
 
 echo "🚀 Running pre-push checks..."
 
-# 1. Run tests
-echo "  ▶ Running tests..."
-if ! npm test > /dev/null 2>&1; then
-  echo "  ❌ Tests failed"
-  npm test 2>&1 | tail -10
-  echo ""
-  echo "  Fix tests before pushing. Run: npm test"
-  exit 1
-fi
-echo "  ✅ Tests passed"
+# 1. Tests already run in pre-commit (Quick Win - Session #113)
+# Removed duplicate test run - saves 50-60s per push
 
 # 2. Check for circular dependencies (blocking - architectural integrity)
 echo "  ▶ Checking for circular dependencies..."
@@ -80,6 +72,7 @@ EOF
     exit 1
   elif echo "$security_output" | grep -q "MEDIUM\|LOW"; then
     echo "  ⚠️ Security warnings (not blocking) - run: npm run security:check"
+    node scripts/append-hook-warning.js --hook=pre-push --type=security --severity=warning --message="Security warnings (MEDIUM/LOW) found in pushed code" --action="npm run security:check" 2>/dev/null || true
   else
     echo "  ✅ Security check passed"
   fi
@@ -99,13 +92,24 @@ echo "  ✅ Type check passed"
 # 6. Security audit (non-blocking warning, ~3-8s)
 # Checks for high/critical vulnerabilities in dependencies
 echo "  ▶ Running security audit..."
+# Review #214: Disable errexit for npm audit (returns non-zero for vulnerabilities)
+# Review #322: Preserve and restore original errexit state
+had_errexit=0
+case $- in
+  *e*) had_errexit=1 ;;
+esac
+set +e
 audit_output=$(npm audit --audit-level=high 2>&1)
 audit_exit=$?
+if [ "$had_errexit" -eq 1 ]; then
+  set -e
+fi
 if [ $audit_exit -ne 0 ]; then
   # Check if it's a real vulnerability (exit code 1) vs network error
   if echo "$audit_output" | grep -q "vulnerabilities"; then
     echo "  ⚠️ Security vulnerabilities found (not blocking - run: npm audit)"
     echo "$audit_output" | grep -E "high|critical|vulnerabilities" | head -5
+    node scripts/append-hook-warning.js --hook=pre-push --type=audit --severity=warning --message="npm audit found security vulnerabilities" --action="npm audit" 2>/dev/null || true
   else
     echo "  ⚠️ npm audit check skipped (network or registry issue)"
   fi
@@ -133,6 +137,14 @@ else
     # Show warnings but don't block
     if echo "$triggers_output" | grep -q "⚠️"; then
       printf '%s\n' "$triggers_output" | grep -E "^⚠️|^   Action:" | head -10
+      # Extract first warning message for the alert
+      first_warning=$(printf '%s\n' "$triggers_output" | grep "^⚠️" | head -1 | sed 's/^⚠️ *//')
+      # Review #322: Normalize warning message to single line to prevent parsing issues
+      first_warning_one_line=$(printf '%s' "$first_warning" | tr '\n\r' '  ' | sed 's/[[:space:]]\{1,\}/ /g; s/^ *//; s/ *$//')
+      # Review #214: Only create alert if we have a non-empty message
+      if [ -n "$first_warning_one_line" ]; then
+        node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning_one_line" 2>/dev/null || true
+      fi
     else
       echo "  ✅ No blocking triggers"
     fi

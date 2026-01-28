@@ -455,6 +455,19 @@ const ANTI_PATTERNS = [
       // 2026-01-27 audit (Review #212):
       // - check-roadmap-health.js: readFileSync at L39 IS in try/catch (L38-47 readFile function)
       "check-roadmap-health.js",
+      // 2026-01-28 audit (Review #214):
+      // - alerts-reminder.js: all readFileSync calls in try/catch (checkContextSize L35-47, checkPendingMcpSave, main)
+      // - auto-save-context.js: loadJson has try/catch (L57-62), getRecentDecisions has try/catch (L112-114)
+      // - run-alerts.js: all readFileSync calls verified in try/catch blocks
+      // - large-context-warning.js: readFileSync L93 in try/catch (L92-103), L127 in try/catch (L126-131)
+      // - generate-pending-alerts.js: all readFileSync now wrapped in try/catch after refactor
+      // - append-hook-warning.js: readWarnings has try/catch (L40-48 after refactor)
+      "alerts-reminder.js",
+      "auto-save-context.js",
+      "run-alerts.js",
+      "large-context-warning.js",
+      "generate-pending-alerts.js",
+      "append-hook-warning.js",
     ],
   },
   {
