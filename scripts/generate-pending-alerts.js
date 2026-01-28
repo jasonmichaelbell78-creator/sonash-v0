@@ -367,8 +367,27 @@ function generateAlerts() {
     fs.mkdirSync(claudeDir, { recursive: true });
   }
 
-  // Write alerts file
-  fs.writeFileSync(ALERTS_FILE, JSON.stringify(output, null, 2));
+  // Write alerts file (atomic write to avoid partially-written JSON)
+  // Review #322 Round 4: Use tmp file + rename for atomicity
+  const tmpFile = `${ALERTS_FILE}.tmp`;
+  try {
+    fs.writeFileSync(tmpFile, JSON.stringify(output, null, 2));
+    // Windows: rename over existing may fail, remove first
+    try {
+      fs.rmSync(ALERTS_FILE, { force: true });
+    } catch {
+      // ignore
+    }
+    fs.renameSync(tmpFile, ALERTS_FILE);
+  } catch {
+    // Cleanup on failure
+    try {
+      fs.rmSync(tmpFile, { force: true });
+    } catch {
+      // ignore
+    }
+    throw new Error("Failed to write alerts file");
+  }
 
   // Output summary for hook
   const errorCount = alerts.filter((a) => a.severity === "error").length;

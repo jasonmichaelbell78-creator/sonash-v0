@@ -47,7 +47,8 @@ STAGED_FILES=$(git diff --cached --name-only)
 DOC_ONLY_COMMIT=0
 
 # Always run tests for risky config changes that can break builds/tests
-if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(package\.json|tsconfig.*\.json|next\.config\.(js|mjs|ts)|\.husky/|\.github/)'; then
+# Review #322 Round 4: Include lockfiles (package-lock.json, yarn.lock, pnpm-lock.yaml)
+if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|tsconfig.*\.json|next\.config\.(js|mjs|ts)|\.husky/|\.github/)'; then
   echo "  ▶ Running tests (config changes detected)..."
   TEST_TMPFILE=$(mktemp)
   trap 'rm -f "$TEST_TMPFILE"' EXIT
@@ -98,7 +99,8 @@ if printf '%s\n' "$STAGED_FILES" | grep -q "docs/reviews/.*\.jsonl"; then
 fi
 
 # 6. Skill configuration validation (non-blocking, when skill files modified)
-if printf '%s\n' "$STAGED_FILES" | grep -q "\.claude/commands/.*\.md"; then
+# Review #322 Round 4: Include .claude/skills/ not just .claude/commands/
+if printf '%s\n' "$STAGED_FILES" | grep -Eq '\.(claude)/(skills|commands)/.*\.md$'; then
   echo "  ▶ Validating skill configurations..."
   skills_output=$(npm run skills:validate 2>&1)
   if echo "$skills_output" | grep -q "❌ ERROR"; then
