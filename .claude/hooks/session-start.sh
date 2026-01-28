@@ -333,13 +333,44 @@ else
 fi
 
 # =============================================================================
-# Generate Pending Alerts for Claude (~1s)
+# Generate and Display Pending Alerts (BLOCKING if warnings exist)
 # =============================================================================
-# Scans for deferred items, backlog health, etc. and writes to JSON file
-# Claude will read this file and surface alerts conversationally
+# Scans for deferred items, backlog health, hook warnings, etc.
+# Displays alerts prominently and waits for user acknowledgment
 echo "🔍 Generating pending alerts..."
 if node "$REPO_ROOT/scripts/generate-pending-alerts.js" 2>/dev/null; then
-  echo "   ✓ Alerts file written to .claude/pending-alerts.json"
+  echo "   ✓ Alerts generated"
+
+  # Read and display alerts prominently
+  ALERTS_FILE="$REPO_ROOT/.claude/pending-alerts.json"
+  if [[ -f "$ALERTS_FILE" ]]; then
+    ALERT_COUNT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$ALERTS_FILE')).alertCount)" 2>/dev/null || echo "0")
+
+    if [[ "$ALERT_COUNT" -gt 1 ]]; then  # More than just MCP memory reminder
+      echo ""
+      echo "$SEPARATOR_LINE"
+      echo "🚨 PENDING ALERTS REQUIRING ATTENTION"
+      echo "$SEPARATOR_LINE"
+
+      # Parse and display each alert
+      node -e "
+        const data = JSON.parse(require('fs').readFileSync('$ALERTS_FILE'));
+        data.alerts.forEach(a => {
+          if (a.type === 'mcp-memory') return; // Skip MCP reminder in hook output
+          const icon = a.severity === 'error' ? '❌' : a.severity === 'warning' ? '⚠️' : 'ℹ️';
+          console.log(\"\n\" + icon + \" \" + a.message);
+          if (a.details) a.details.forEach(d => console.log(\"   • \" + d));
+          if (a.action) console.log(\"   → Action: \" + a.action);
+        });
+      " 2>/dev/null || true
+
+      echo ""
+      echo "$SEPARATOR_LINE"
+      echo ""
+      echo "📌 These alerts will be discussed with Claude. Press ENTER to continue..."
+      read -r < /dev/tty || true
+    fi
+  fi
 else
   echo "   ⚠️ Alerts generation skipped (script may be missing)"
   WARNINGS=$((WARNINGS + 1))
