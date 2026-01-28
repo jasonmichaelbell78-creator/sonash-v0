@@ -1,6 +1,6 @@
 {
-  "generated": "2026-01-28T13:00:14.605Z",
-  "alertCount": 2,
+  "generated": "2026-01-28T13:38:21.966Z",
+  "alertCount": 3,
   "alerts": [
     {
       "type": "deferred",
@@ -13,6 +13,13 @@
         "Review #213: Cross-file anchor validation"
       ],
       "action": "Consider adding to ROADMAP_FUTURE.md or AUDIT_FINDINGS_BACKLOG.md"
+    },
+    {
+      "type": "hook-precommit",
+      "severity": "warning",
+      "message": "1 warning(s) from recent commits",
+      "details": ["Test warning from pre-commit"],
+      "action": "npm run test:fix"
     },
     {
       "type": "mcp-memory",

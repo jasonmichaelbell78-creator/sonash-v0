@@ -21,6 +21,7 @@ const path = require("path");
 
 const ROOT_DIR = path.join(__dirname, "..");
 const ALERTS_FILE = path.join(ROOT_DIR, ".claude", "pending-alerts.json");
+const HOOK_WARNINGS_FILE = path.join(ROOT_DIR, ".claude", "hook-warnings.json");
 const LEARNINGS_LOG = path.join(ROOT_DIR, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const BACKLOG_FILE = path.join(ROOT_DIR, "docs", "AUDIT_FINDINGS_BACKLOG.md");
 
@@ -181,6 +182,65 @@ function checkMcpMemoryReminder() {
 }
 
 /**
+ * Read hook warnings from pre-commit/pre-push hooks
+ * These are warnings that were generated during recent git operations
+ */
+function readHookWarnings() {
+  const alerts = [];
+
+  if (!fs.existsSync(HOOK_WARNINGS_FILE)) {
+    return alerts;
+  }
+
+  try {
+    const data = JSON.parse(fs.readFileSync(HOOK_WARNINGS_FILE, "utf8"));
+    const warnings = data.warnings || [];
+
+    // Only include warnings from last 24 hours
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    const recentWarnings = warnings.filter((w) => new Date(w.timestamp).getTime() > oneDayAgo);
+
+    if (recentWarnings.length === 0) {
+      return alerts;
+    }
+
+    // Group by hook type
+    const preCommitWarnings = recentWarnings.filter((w) => w.hook === "pre-commit");
+    const prePushWarnings = recentWarnings.filter((w) => w.hook === "pre-push");
+
+    if (preCommitWarnings.length > 0) {
+      alerts.push({
+        type: "hook-precommit",
+        severity: preCommitWarnings.some((w) => w.severity === "warning") ? "warning" : "info",
+        message: `${preCommitWarnings.length} warning(s) from recent commits`,
+        details: preCommitWarnings.slice(0, 3).map((w) => w.message),
+        action: preCommitWarnings[0].action || "Review warnings above",
+      });
+    }
+
+    if (prePushWarnings.length > 0) {
+      alerts.push({
+        type: "hook-prepush",
+        severity: prePushWarnings.some((w) => w.severity === "warning") ? "warning" : "info",
+        message: `${prePushWarnings.length} warning(s) from recent pushes`,
+        details: prePushWarnings.slice(0, 3).map((w) => w.message),
+        action: prePushWarnings[0].action || "Review warnings above",
+      });
+    }
+
+    // Clear warnings after they've been read (they'll be surfaced by Claude)
+    fs.writeFileSync(
+      HOOK_WARNINGS_FILE,
+      JSON.stringify({ warnings: [], lastCleared: new Date().toISOString() }, null, 2)
+    );
+  } catch {
+    // Ignore parse errors
+  }
+
+  return alerts;
+}
+
+/**
  * Main function to generate all alerts
  */
 function generateAlerts() {
@@ -188,6 +248,7 @@ function generateAlerts() {
     ...scanDeferredItems(),
     ...scanBacklogItems(),
     ...checkCrossSessionWarnings(),
+    ...readHookWarnings(),
     ...checkMcpMemoryReminder(),
   ];
 
@@ -225,4 +286,4 @@ if (require.main === module) {
   generateAlerts();
 }
 
-module.exports = { generateAlerts, scanDeferredItems, scanBacklogItems };
+module.exports = { generateAlerts, scanDeferredItems, scanBacklogItems, readHookWarnings };

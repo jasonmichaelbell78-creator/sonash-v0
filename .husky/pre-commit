@@ -64,6 +64,7 @@ if echo "$STAGED_FILES" | grep -q "docs/reviews/.*\.jsonl"; then
     echo "  ✅ CANON validation passed"
   else
     echo "  ⚠️ CANON validation issues found (not blocking - run: npm run validate:canon)"
+    node scripts/append-hook-warning.js --hook=pre-commit --type=canon --severity=warning --message="CANON validation issues found" --action="npm run validate:canon" 2>/dev/null || true
   fi
 fi
 
@@ -74,6 +75,7 @@ if echo "$STAGED_FILES" | grep -q "\.claude/commands/.*\.md"; then
   if echo "$skills_output" | grep -q "❌ ERROR"; then
     echo "  ⚠️ Skill validation issues found (not blocking - run: npm run skills:validate)"
     printf '%s\n' "$skills_output" | grep -E "^📄|^   ❌" | head -10
+    node scripts/append-hook-warning.js --hook=pre-commit --type=skill --severity=warning --message="Skill validation issues found" --action="npm run skills:validate" 2>/dev/null || true
   else
     echo "  ✅ Skill validation passed"
   fi
@@ -180,7 +182,11 @@ if [ -n "$STRICT_AGENT_CHECK" ]; then
     exit 1
   fi
 else
-  node scripts/check-agent-compliance.js 2>&1 || true
+  agent_output=$(node scripts/check-agent-compliance.js 2>&1) || true
+  echo "$agent_output"
+  if echo "$agent_output" | grep -q "⚠️"; then
+    node scripts/append-hook-warning.js --hook=pre-commit --type=agent --severity=warning --message="Agent compliance warnings - code changed without agent review" --action="Use code-reviewer agent for modified code" 2>/dev/null || true
+  fi
 fi
 
 echo ""

@@ -80,6 +80,7 @@ EOF
     exit 1
   elif echo "$security_output" | grep -q "MEDIUM\|LOW"; then
     echo "  ⚠️ Security warnings (not blocking) - run: npm run security:check"
+    node scripts/append-hook-warning.js --hook=pre-push --type=security --severity=warning --message="Security warnings (MEDIUM/LOW) found in pushed code" --action="npm run security:check" 2>/dev/null || true
   else
     echo "  ✅ Security check passed"
   fi
@@ -106,6 +107,7 @@ if [ $audit_exit -ne 0 ]; then
   if echo "$audit_output" | grep -q "vulnerabilities"; then
     echo "  ⚠️ Security vulnerabilities found (not blocking - run: npm audit)"
     echo "$audit_output" | grep -E "high|critical|vulnerabilities" | head -5
+    node scripts/append-hook-warning.js --hook=pre-push --type=audit --severity=warning --message="npm audit found security vulnerabilities" --action="npm audit" 2>/dev/null || true
   else
     echo "  ⚠️ npm audit check skipped (network or registry issue)"
   fi
@@ -133,6 +135,9 @@ else
     # Show warnings but don't block
     if echo "$triggers_output" | grep -q "⚠️"; then
       printf '%s\n' "$triggers_output" | grep -E "^⚠️|^   Action:" | head -10
+      # Extract first warning message for the alert
+      first_warning=$(printf '%s\n' "$triggers_output" | grep "^⚠️" | head -1 | sed 's/^⚠️ *//')
+      node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning" 2>/dev/null || true
     else
       echo "  ✅ No blocking triggers"
     fi
