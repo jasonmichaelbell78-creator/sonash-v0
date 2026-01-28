@@ -115,6 +115,22 @@ Before compaction, after complex investigations, when prompted by context
 warnings **Example:** `/save-context` **Parameters:** None **Output:** Saved
 entity confirmation with observations **Added:** Session #113
 
+### `/docs-update`
+
+**Description:** Update documentation artifacts after markdown file changes
+**When to use:** After creating, moving, or deleting .md files; when pre-commit
+blocks due to DOCUMENTATION_INDEX.md **Example:** `/docs-update` **Parameters:**
+None **Output:** Regenerated index, cross-doc dependency check, suggested
+updates **Added:** Session #113
+
+### `/quick-fix`
+
+**Description:** Auto-suggest fixes for common pre-commit failures **When to
+use:** When lint, pattern compliance, or TypeScript checks fail **Example:**
+`/quick-fix` or `/quick-fix [error output]` **Parameters:** Optional error
+context **Output:** Categorized fixes with auto-fix commands **Added:** Session
+#113
+
 ---
 
 ## Slash Commands (System/Built-in)

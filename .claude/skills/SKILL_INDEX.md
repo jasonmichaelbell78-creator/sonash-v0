@@ -1,6 +1,6 @@
 # Skill Index
 
-**Version**: 1.0 **Last Updated**: 2026-01-28 **Total Skills**: 43
+**Version**: 1.1 **Last Updated**: 2026-01-28 **Total Skills**: 45
 
 Quick reference for all available Claude Code skills organized by category.
 
@@ -16,7 +16,7 @@ Quick reference for all available Claude Code skills organized by category.
 
 ## Categories
 
-### Audit & Code Quality (9 skills)
+### Audit & Code Quality (10 skills)
 
 | Skill                  | Description                               |
 | ---------------------- | ----------------------------------------- |
@@ -29,6 +29,7 @@ Quick reference for all available Claude Code skills organized by category.
 | `/audit-security`      | Security vulnerability audit              |
 | `/audit-aggregator`    | Aggregate multiple audit results          |
 | `/code-reviewer`       | Run code review on recent changes         |
+| `/quick-fix`           | Auto-suggest fixes for common issues      |
 
 ### Session Management (5 skills)
 
@@ -60,11 +61,12 @@ Quick reference for all available Claude Code skills organized by category.
 | `/ui-design-system`       | Design system components |
 | `/ux-researcher-designer` | UX research and design   |
 
-### Documentation & Content (3 skills)
+### Documentation & Content (4 skills)
 
 | Skill                      | Description                         |
 | -------------------------- | ----------------------------------- |
 | `/docs-sync`               | Sync documentation across files     |
+| `/docs-update`             | Update doc artifacts after changes  |
 | `/content-research-writer` | Content research and writing        |
 | `/markitdown`              | Convert various formats to markdown |
 
