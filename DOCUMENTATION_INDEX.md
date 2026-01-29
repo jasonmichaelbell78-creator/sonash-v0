@@ -74,7 +74,7 @@ _Essential project-level documentation_
 | [AI Context & Rules for SoNash](claude.md)              | This document provides essential context and rules for AI as...   | ↓4 ↑8      | 2026-01-29    |
 | [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑14    | 2026-01-28    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓13 ↑5     | 2026-01-28    |
-| [Development Guide](DEVELOPMENT.md)                     | -                                                                 | ↓12 ↑6     | 2026-01-28    |
+| [Development Guide](DEVELOPMENT.md)                     | -                                                                 | ↓12 ↑6     | 2026-01-29    |
 | [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓7 ↑9      | 2026-01-29    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑14     | 2026-01-29    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓2 ↑4      | 2026-01-29    |
@@ -97,13 +97,14 @@ _Main documentation directory_
 | [Architecture Decision Records (ADRs)](docs/decisions/README.md)                                                        | This directory contains Architecture Decision Records (ADRs)...   | ↓0 ↑1      | 2026-01-28    |
 | [Audit Findings Backlog](docs/AUDIT_FINDINGS_BACKLOG.md)                                                                | -                                                                 | ↓1 ↑3      | 2026-01-28    |
 | [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                                  | Track single-session and multi-AI audit completions for thre...   | ↓3 ↑17     | 2026-01-28    |
-| [Code Quality Audit Report](docs/audits/comprehensive/audit-code-report.md)                                             | This document provides a comprehensive code quality audit of...   | ↓2 ↑0      | 2026-01-28    |
+| [Code Quality Audit Report](docs/audits/comprehensive/audit-code-report.md)                                             | This document provides a comprehensive code quality audit of...   | ↓3 ↑0      | 2026-01-28    |
 | [Code Review Audit - 2026-01-17](docs/audits/single-session/code/audit-2026-01-17.md)                                   | This document provides a single-session code quality audit f...   | ↓1 ↑0      | 2026-01-28    |
 | [Code Review Audit - 2026-01-24](docs/audits/single-session/code/audit-2026-01-24.md)                                   | This document provides a single-session code quality audit f...   | ↓0 ↑1      | 2026-01-28    |
-| [Comprehensive Audit Report - SoNash v0](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)                       | This document aggregates findings from 6 domain-specific aud...   | ↓2 ↑0      | 2026-01-28    |
-| [Comprehensive Documentation Audit Report](docs/audits/comprehensive/audit-documentation-report.md)                     | This comprehensive documentation audit evaluates the SoNash ...   | ↓1 ↑0      | 2026-01-28    |
+| [Comprehensive Audit Report - SoNash v0](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)                       | This document aggregates findings from 6 domain-specific aud...   | ↓3 ↑0      | 2026-01-28    |
+| [Comprehensive Audits - Report Index](docs/audits/comprehensive/README.md)                                              | This folder contains all comprehensive audit reports for the...   | ↓0 ↑11     | 2026-01-29    |
+| [Comprehensive Documentation Audit Report](docs/audits/comprehensive/audit-documentation-report.md)                     | This comprehensive documentation audit evaluates the SoNash ...   | ↓2 ↑0      | 2026-01-28    |
 | [Comprehensive Process & Automation Audit Report](docs/audits/comprehensive/audit-process-report.md)                    | This document provides a comprehensive audit of the SoNash p...   | ↓2 ↑0      | 2026-01-28    |
-| [Comprehensive Refactoring Audit Report](docs/audits/comprehensive/audit-refactoring-report.md)                         | This document provides a comprehensive refactoring audit of ...   | ↓1 ↑0      | 2026-01-28    |
+| [Comprehensive Refactoring Audit Report](docs/audits/comprehensive/audit-refactoring-report.md)                         | This document provides a comprehensive refactoring audit of ...   | ↓2 ↑0      | 2026-01-28    |
 | [Context Preservation Pattern](docs/patterns/context-preservation-pattern.md)                                           | This document describes the Context Preservation Pattern for...   | ↓0 ↑0      | 2026-01-28    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                                                                  | Track template-instance relationships,                            | ↓3 ↑1      | 2026-01-29    |
 | [Documentation Audit - 2026-01-17](docs/audits/single-session/documentation/audit-2026-01-17.md)                        | This document provides a single-session documentation audit ...   | ↓1 ↑0      | 2026-01-28    |
@@ -127,9 +128,8 @@ _Main documentation directory_
 | [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md)                                                      | Master index and                                                  | ↓13 ↑12    | 2026-01-28    |
 | [Operational Visibility Sprint](docs/OPERATIONAL_VISIBILITY_SPRINT.md)                                                  | -                                                                 | ↓3 ↑5      | 2026-01-28    |
 | [Performance Audit - 2026-01-17](docs/audits/single-session/performance/audit-2026-01-17.md)                            | This document provides a single-session performance audit co...   | ↓1 ↑0      | 2026-01-28    |
-| [Performance Audit Report](docs/audits/comprehensive/audit-performance-report.md)                                       | This document provides a comprehensive performance audit of ...   | ↓1 ↑0      | 2026-01-28    |
+| [Performance Audit Report](docs/audits/comprehensive/audit-performance-report.md)                                       | This document provides a comprehensive performance audit of ...   | ↓2 ↑0      | 2026-01-28    |
 | [PR Workflow Checklist - MANDATORY FOR ALL PHASES](docs/PR_WORKFLOW_CHECKLIST.md)                                       | -                                                                 | ↓4 ↑3      | 2026-01-28    |
-| [Process & Automation Audit - Complete Report Package](docs/audits/comprehensive/README.md)                             | This document serves as the main index and navigation guide ...   | ↓0 ↑3      | 2026-01-28    |
 | [Process & Automation Audit - Executive Summary](docs/audits/comprehensive/AUDIT_SUMMARY.md)                            | This document provides an executive summary of the Process a...   | ↓2 ↑0      | 2026-01-28    |
 | [Process Audit - 2026-01-17](docs/audits/single-session/process/audit-2026-01-17.md)                                    | This document provides a single-session process audit coveri...   | ↓1 ↑0      | 2026-01-28    |
 | [Process Audit - Quick Action Checklist](docs/audits/comprehensive/QUICK_ACTION_CHECKLIST.md)                           | This document provides a step-by-step implementation checkli...   | ↓1 ↑0      | 2026-01-28    |
@@ -154,16 +154,16 @@ _Main documentation directory_
 | [SonarCloud Issue Dismissals](docs/audits/sonarcloud-dismissals.md)                                                     | This document records SonarCloud issues that are dismissed r...   | ↓2 ↑1      | 2026-01-28    |
 | [SonarCloud Issue Fixes](docs/audits/sonarcloud-fixes.md)                                                               | This document tracks SonarCloud issues that have been fixed,...   | ↓0 ↑1      | 2026-01-28    |
 | [SonarCloud Issue Triage](docs/SONARCLOUD_TRIAGE.md)                                                                    | This document records the triage decisions for 921 SonarClou...   | ↓3 ↑1      | 2026-01-28    |
-| [SoNash Comprehensive Refactoring Audit Report](docs/audits/comprehensive/REFACTORING_AUDIT_REPORT.md)                  | Comprehensive 10-category audit of the SoNash codebase ident...   | ↓1 ↑2      | 2026-01-29    |
+| [SoNash Comprehensive Refactoring Audit Report](docs/audits/comprehensive/REFACTORING_AUDIT_REPORT.md)                  | Comprehensive 10-category audit of the SoNash codebase            | ↓2 ↑2      | 2026-01-29    |
 | [SoNash Documentation Plan Map](docs/PLAN_MAP.md)                                                                       | Provide a visual map of documentation relationships, hierarc...   | ↓0 ↑0      | 2026-01-28    |
 | [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                                       | -                                                                 | ↓7 ↑1      | 2026-01-28    |
 | [SoNash Engineering Productivity Audit Report](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md) | This audit identifies engineering productivity inefficiencie...   | ↓2 ↑0      | 2026-01-28    |
-| [SoNash Refactoring Audit - Deduplicated Report](docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md)           | Cross-reference of audit findings against existing roadmap i...   | ↓2 ↑3      | 2026-01-29    |
-| [SoNash Security Audit Report](docs/audits/comprehensive/audit-security-report.md)                                      | This document provides a comprehensive security audit of the...   | ↓1 ↑0      | 2026-01-28    |
+| [SoNash Refactoring Audit - Deduplicated Report](docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md)           | Cross-reference of audit findings against existing roadmap i...   | ↓3 ↑3      | 2026-01-29    |
+| [SoNash Security Audit Report](docs/audits/comprehensive/audit-security-report.md)                                      | This document provides a comprehensive security audit of the...   | ↓2 ↑0      | 2026-01-28    |
 | [Technical Debt Master Tracker](docs/TECHNICAL_DEBT_MASTER.md)                                                          | Single source of truth for all technical debt items               | ↓5 ↑0      | 2026-01-28    |
 | [Testing Infrastructure Plan](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)                                                | This document outlines a comprehensive testing infrastructur...   | ↓1 ↑2      | 2026-01-28    |
 | [Testing Plan](docs/TESTING_PLAN.md)                                                                                    | Comprehensive testing guidance for the SoNash application, i...   | ↓5 ↑0      | 2026-01-28    |
-| [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)                                                    | -                                                                 | ↓2 ↑1      | 2026-01-28    |
+| [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)                                                    | -                                                                 | ↓2 ↑1      | 2026-01-29    |
 
 ### 2026 Q1 Reviews (Tier 3)
 
@@ -507,6 +507,7 @@ Documents that link to other documents most frequently:
 | [SoNash - Sober Nashville Recovery Notebook](README.md)                                              | 14             |
 | [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md)                                   | 12             |
 | [Documentation Inventory](docs/README.md)                                                            | 11             |
+| [Comprehensive Audits - Report Index](docs/audits/comprehensive/README.md)                           | 11             |
 | [Session Context](SESSION_CONTEXT.md)                                                                | 9              |
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                   | 9              |
 | [AI Context &amp; Rules for SoNash](claude.md)                                                       | 8              |
@@ -520,7 +521,6 @@ Documents that link to other documents most frequently:
 | [Operational Visibility Sprint](docs/OPERATIONAL_VISIBILITY_SPRINT.md)                               | 5              |
 | [Multi-AI Audit Results](docs/audits/multi-ai/README.md)                                             | 5              |
 | [SoNash Multi-AI Documentation Audit Plan](docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md) | 5              |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                     | 5              |
 
 ---
 
@@ -688,7 +688,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Skill and Agent Usage Policy](docs/agent_docs/SKILL_AGENT_POLICY.md)
 - [Aggregation Documents](docs/aggregation/README.md)
 - [Engineering Productivity Audit Analysis](docs/audits/ENGINEERING_PRODUCTIVITY_AUDIT_ANALYSIS.md)
-- [Process &amp; Automation Audit - Complete Report Package](docs/audits/comprehensive/README.md)
+- [Comprehensive Audits - Report Index](docs/audits/comprehensive/README.md)
 - [Multi-AI Performance Audit Report](docs/audits/multi-ai/performance/audit-2026-01-08.md)
 - [Code Review Audit - 2026-01-24](docs/audits/single-session/code/audit-2026-01-24.md)
 - [Engineering Productivity Audit - 2026-01-17](docs/audits/single-session/engineering-productivity/audit-2026-01-17.md)
@@ -909,7 +909,7 @@ Documents with no inbound links (not referenced by any other document):
 | 177 | [docs/audits/comprehensive/audit-security-report.md](docs/audits/comprehensive/audit-security-report.md)                                                     | SoNash Security Audit Report                                       | 2    | \*\*VERIFIED FALSE                                                              |
 | 178 | [docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)                                           | Comprehensive Audit Report - SoNash v0                             | 2    | -                                                                               |
 | 179 | [docs/audits/comprehensive/QUICK_ACTION_CHECKLIST.md](docs/audits/comprehensive/QUICK_ACTION_CHECKLIST.md)                                                   | Process Audit - Quick Action Checklist                             | 2    | -                                                                               |
-| 180 | [docs/audits/comprehensive/README.md](docs/audits/comprehensive/README.md)                                                                                   | Process &amp; Automation Audit - Complete Report Package           | 2    | Ready for Implementation                                                        |
+| 180 | [docs/audits/comprehensive/README.md](docs/audits/comprehensive/README.md)                                                                                   | Comprehensive Audits - Report Index                                | 2    | Ready for Implementation                                                        |
 | 181 | [docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md](docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md)                                   | SoNash Refactoring Audit - Deduplicated Report                     | 2    | COMPLETE                                                                        |
 | 182 | [docs/audits/comprehensive/REFACTORING_AUDIT_REPORT.md](docs/audits/comprehensive/REFACTORING_AUDIT_REPORT.md)                                               | SoNash Comprehensive Refactoring Audit Report                      | 2    | COMPLETE                                                                        |
 | 183 | [docs/audits/ENGINEERING_PRODUCTIVITY_AUDIT_ANALYSIS.md](docs/audits/ENGINEERING_PRODUCTIVITY_AUDIT_ANALYSIS.md)                                             | Engineering Productivity Audit Analysis                            | 2    | -                                                                               |
@@ -1003,7 +1003,7 @@ Documents with no inbound links (not referenced by any other document):
 | 271 | [docs/templates/PLANNING_DOC_TEMPLATE.md](docs/templates/PLANNING_DOC_TEMPLATE.md)                                                                           | \[Feature/Initiative Name\] Plan                                   | 3    | -                                                                               |
 | 272 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md)                                                                         | \[Workflow/Reference Name\]                                        | 3    | -                                                                               |
 | 273 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md)                                                                                                                 | Testing Plan                                                       | 2    | Active **Last Updated:**                                                        |
-| 274 | [docs/TRIGGERS.md](docs/TRIGGERS.md)                                                                                                                         | TRIGGERS.md - Automation &amp; Enforcement Reference               | 2    | -                                                                               |
+| 274 | [docs/TRIGGERS.md](docs/TRIGGERS.md)                                                                                                                         | TRIGGERS.md - Automation &amp; Enforcement Reference               | 2    | DRAFT \| ACTIVE \| DEPRECATED                                                   |
 | 275 | [README.md](README.md)                                                                                                                                       | SoNash - Sober Nashville Recovery Notebook                         | 1    | ACTIVE **Last Updated:** 2026-01-03                                             |
 | 276 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md)                                                                                                                       | SoNash Future Roadmap                                              | 1    | ACTIVE                                                                          |
 | 277 | [ROADMAP_LOG.md](ROADMAP_LOG.md)                                                                                                                             | SoNash Roadmap Log                                                 | 1    | ACTIVE \(append-only archive\) \*\*Last                                         |

@@ -58,7 +58,8 @@
     "deps:unused": "knip",
     "prepare": "husky || echo 'Husky not available, skipping git hooks setup'",
     "hooks:test": "node scripts/test-hooks.js",
-    "hooks:health": "node scripts/check-hook-health.js"
+    "hooks:health": "node scripts/check-hook-health.js",
+    "docs:headers": "node scripts/check-doc-headers.js --all"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"

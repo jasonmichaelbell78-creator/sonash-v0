@@ -563,12 +563,17 @@ TypeScript rules)
 | Skill validation   | `npm run skills:validate`         | NO - warning only                  |
 | Cross-doc deps     | `npm run crossdoc:check`          | YES - blocks commit                |
 | Doc Index check    | (checks for new .md files)        | YES - blocks commit (Session #103) |
+| Doc Header check   | `npm run docs:headers`            | YES - blocks commit (Session #115) |
 | Learning reminder  | (checks staged files)             | NO - reminder only                 |
 | Audit S0/S1        | `validate-audit.js --strict-s0s1` | YES - blocks commit (Session #98)  |
 | Agent compliance   | `check-agent-compliance.js`       | NO - warning only (Session #101)   |
 
 > **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
 > staged. Validates schema compliance for audit output files.
+>
+> **Doc Header Check**: When new `.md` files are added, validates they have
+> required headers (Document Version, Last Updated, Status). Exempt: README.md,
+> CHANGELOG.md, archive/. Override: `SKIP_DOC_HEADER_CHECK=1`
 >
 > **Learning Entry Reminder**: If 5+ files are staged or template/hook changes
 > are detected, the hook reminds you to update `docs/AI_REVIEW_LEARNINGS_LOG.md`

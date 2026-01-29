@@ -101,6 +101,7 @@ commits. Blocks on critical failures, warns on advisory issues.
 | 6   | Skill Validation       | ⚠️ No    | Command/skill structure (when skill files staged)     |
 | 7   | Cross-Doc Dependencies | ✅ Yes   | Blocks if dependent docs not staged (Session #69)     |
 | 8   | Doc Index Staleness    | ✅ Yes   | Blocks if new .md added but index not updated (#103)  |
+| 8.5 | Doc Header Validation  | ✅ Yes   | Blocks if new .md lacks required headers (#115)       |
 | 9   | Learning Reminder      | ⚠️ No    | Reminds to log PR feedback                            |
 | 10  | Audit S0/S1 Validation | ✅ Yes   | Blocks S0/S1 without verification_steps (Session #98) |
 | 11  | Agent Compliance       | ⚠️ No    | Warns if code written without agent review (#101)     |
@@ -117,6 +118,7 @@ TRIGGER: git commit
   → CHECK 6: npm run skills:validate (if skill files staged)
   → CHECK 7: npm run crossdoc:check (BLOCKING - Session #69)
   → CHECK 8: Doc Index check (if new .md files added) (BLOCKING - Session #103)
+  → CHECK 8.5: Doc Header validation (if new .md files) (BLOCKING - Session #115)
   → CHECK 9: Learning entry reminder (if many files changed)
   → CHECK 10: Audit S0/S1 validation (if audit JSONL staged) (BLOCKING - Session #98)
   → CHECK 11: Agent compliance check (non-blocking warning)
@@ -158,6 +160,33 @@ See:
 > **Why blocking:** DOCUMENTATION_INDEX.md is the canonical auto-generated index
 > of all documentation. If new docs are added without regenerating the index,
 > the index becomes stale and unusable for navigation.
+
+### Document Header Validation (Check 8.5) - BLOCKING for new docs
+
+**Added in Session #115.** Ensures new markdown documents have required headers
+per documentation standards. Override with
+`SKIP_DOC_HEADER_CHECK=1 git commit ...`
+
+| When Triggered                         | Resolution                           |
+| -------------------------------------- | ------------------------------------ |
+| New .md file added (git diff-filter=A) | Add required headers to new document |
+| Headers already present                | Check passes                         |
+
+**Required Headers:**
+
+```markdown
+<!-- prettier-ignore-start -->
+**Document Version:** 1.0
+**Last Updated:** YYYY-MM-DD
+**Status:** DRAFT | ACTIVE | DEPRECATED
+<!-- prettier-ignore-end -->
+```
+
+**Exempt files:** README.md, CHANGELOG.md, LICENSE.md, archive/,
+DOCUMENTATION_INDEX.md
+
+> **Why blocking:** Consistent document headers enable automated tooling,
+> version tracking, and status visibility across all documentation.
 
 ### Verification
 
