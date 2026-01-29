@@ -1,12 +1,21 @@
-# Process & Automation Audit - Complete Report Package
+# Comprehensive Audits - Report Index
 
-> **Last Updated:** 2026-01-27
+> **Last Updated:** 2026-01-29
 
 ## Purpose
 
-This document serves as the main index and navigation guide for the Process and
-Automation audit package, providing links to the executive summary, detailed
-report, and implementation checklist.
+This folder contains all comprehensive audit reports for the SoNash project.
+Each audit provides detailed findings across multiple categories with actionable
+recommendations.
+
+### Latest Audit (Session #115)
+
+- **[REFACTORING_AUDIT_REPORT.md](./REFACTORING_AUDIT_REPORT.md)** - 209
+  findings across 10 categories
+- **[REFACTORING_AUDIT_DEDUPLICATED.md](./REFACTORING_AUDIT_DEDUPLICATED.md)** -
+  94 NET NEW items after roadmap cross-reference
+
+### Process & Automation Audit (Original)
 
 ---
 
@@ -341,8 +350,25 @@ Ready for Implementation
 
 ---
 
+## All Comprehensive Audit Reports
+
+| Report                                                                   | Date       | Findings   | Status   |
+| ------------------------------------------------------------------------ | ---------- | ---------- | -------- |
+| [REFACTORING_AUDIT_REPORT.md](./REFACTORING_AUDIT_REPORT.md)             | 2026-01-29 | 209        | Complete |
+| [REFACTORING_AUDIT_DEDUPLICATED.md](./REFACTORING_AUDIT_DEDUPLICATED.md) | 2026-01-29 | 94 NET NEW | Complete |
+| [COMPREHENSIVE_AUDIT_REPORT.md](./COMPREHENSIVE_AUDIT_REPORT.md)         | 2026-01-24 | -          | Complete |
+| [audit-process-report.md](./audit-process-report.md)                     | 2026-01-24 | -          | Complete |
+| [audit-performance-report.md](./audit-performance-report.md)             | 2026-01-24 | -          | Complete |
+| [audit-security-report.md](./audit-security-report.md)                   | 2026-01-24 | -          | Complete |
+| [audit-code-report.md](./audit-code-report.md)                           | 2026-01-24 | -          | Complete |
+| [audit-refactoring-report.md](./audit-refactoring-report.md)             | 2026-01-24 | -          | Complete |
+| [audit-documentation-report.md](./audit-documentation-report.md)         | 2026-01-24 | -          | Complete |
+
+---
+
 ## Version History
 
-| Version | Date       | Changes         |
-| ------- | ---------- | --------------- |
-| 1.0     | 2026-01-24 | Initial version |
+| Version | Date       | Changes                                      |
+| ------- | ---------- | -------------------------------------------- |
+| 1.1     | 2026-01-29 | Added Session #115 Refactoring Audit reports |
+| 1.0     | 2026-01-24 | Initial version                              |

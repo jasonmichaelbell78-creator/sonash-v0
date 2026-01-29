@@ -10,7 +10,7 @@
 > **v3.15 UPDATE:** Integrated 94 NET NEW findings from Refactoring Audit
 > (Session #115). Added Track T Phase 7 (Cloud Functions Testing), M2.3-REF (God
 > Object Refactoring), M4.5-F3 (Security Hardening), and Quick Wins. See
-> [REFACTORING_AUDIT_DEDUPLICATED.md](./REFACTORING_AUDIT_DEDUPLICATED.md)
+> [docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md](./docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md)
 
 > **v3.0 MAJOR UPDATE:** Integrated 76 expansion items from
 > EXPANSION_EVALUATION_TRACKER.md. Added M4.5 (Security & Privacy) and M9
@@ -239,8 +239,8 @@ reliability, and solo developer automations.
 
 ### 🚨 Immediate Hotfixes (~2 hours) **NEW - Refactoring Audit Session #115**
 
-> **Source:** REFACTORING_AUDIT_DEDUPLICATED.md - Critical issues requiring
-> immediate attention
+> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md -
+> Critical issues requiring immediate attention
 
 | ID        | Issue                        | File                                 | Effort | Priority     |
 | --------- | ---------------------------- | ------------------------------------ | ------ | ------------ |
@@ -646,8 +646,9 @@ reliability, and solo developer automations.
 
 #### Phase 7: Cloud Functions Testing (22hr) **NEW - Refactoring Audit**
 
-> **Source:** REFACTORING_AUDIT_DEDUPLICATED.md (TEST-001 through TEST-005)
-> **Critical Gap:** All 19 Cloud Functions have **0% test coverage**
+> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md
+> (TEST-001 through TEST-005) **Critical Gap:** All 19 Cloud Functions have **0%
+> test coverage**
 
 - [ ] **T7.1:** admin.ts test suite (6hr) - 3,111 lines, 0 tests
 - [ ] **T7.2:** jobs.ts test suite (4hr) - 1,036 lines, 0 tests
@@ -764,7 +765,8 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 ### 🔥 Refactoring Audit Quick Wins (~1 hour) **NEW - Session #115**
 
-> **Source:** REFACTORING_AUDIT_DEDUPLICATED.md - Dependency housekeeping items
+> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md -
+> Dependency housekeeping items
 
 | ID      | Issue                    | Effort | Action                      |
 | ------- | ------------------------ | ------ | --------------------------- |
@@ -1660,9 +1662,9 @@ Architecture refactoring, schema optimization, and infrastructure work.
 
 ### M2.3-REF: God Object Refactoring (~38 hours) **NEW - Refactoring Audit**
 
-> **Source:** REFACTORING_AUDIT_DEDUPLICATED.md (ARCH-001 through ARCH-005)
-> **Critical:** 4 files exceed 1,000 lines, affecting maintainability and
-> performance
+> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md
+> (ARCH-001 through ARCH-005) **Critical:** 4 files exceed 1,000 lines,
+> affecting maintainability and performance
 
 | ID           | File                                     | Lines | Target | Effort | Priority |
 | ------------ | ---------------------------------------- | ----- | ------ | ------ | -------- |
@@ -1932,8 +1934,8 @@ entries) will be encrypted at rest using AES-256-GCM with PBKDF2 key derivation.
 
 ### F3: Security Hardening (5 items) **NEW - Refactoring Audit**
 
-> **Source:** REFACTORING_AUDIT_DEDUPLICATED.md (SEC-002, SEC-003, SEC-004,
-> SEC-007, FB-003)
+> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md
+> (SEC-002, SEC-003, SEC-004, SEC-007, FB-003)
 
 - [ ] **M4.5-SEC-001** - Rate limiting on public endpoints (4hr)
 - [ ] **M4.5-SEC-002** - Restrict CORS origins (1hr)
