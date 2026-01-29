@@ -90,10 +90,58 @@ function escapeRegex(str) {
 }
 
 /**
+ * Parse version history to find the highest review number
+ * Session #114: Compute-based tracking instead of trusting manual counter
+ */
+function getHighestReviewNumber(content) {
+  const versionRegex =
+    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):/g;
+  let match;
+  let highest = 0;
+
+  while ((match = versionRegex.exec(content)) !== null) {
+    const reviewNum = parseInt(match[1], 10);
+    if (reviewNum > highest) {
+      highest = reviewNum;
+    }
+  }
+
+  return highest;
+}
+
+/**
+ * Parse "Last Consolidation" section to find last consolidated review number
+ * Session #114: Look for "Reviews consolidated: #X-#Y" pattern
+ */
+function getLastConsolidatedReview(content) {
+  // Find the "Last Consolidation" section - look for the end range of consolidated reviews
+  const sectionMatch = content.match(
+    /### Last Consolidation[\s\S]{0,500}?\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i
+  );
+  if (sectionMatch) {
+    return parseInt(sectionMatch[1], 10);
+  }
+
+  // Fallback: look for "Active reviews now #X-Y" which indicates reviews before X were archived/consolidated
+  const activeMatch = content.match(/Active reviews(?:\s+now)?\s+#(\d+)-/i);
+  if (activeMatch) {
+    return parseInt(activeMatch[1], 10) - 1;
+  }
+
+  return 0;
+}
+
+/**
  * Extract consolidation status from the log
+ * Session #114: Now COMPUTES actual count and cross-validates against manual counter
  * Scoped to "Consolidation Trigger" section for robustness (Review #160)
  */
 function getConsolidationStatus(content) {
+  // COMPUTED: Get actual review counts from parsing
+  const highestReview = getHighestReviewNumber(content);
+  const lastConsolidated = getLastConsolidatedReview(content);
+  const computedCount = highestReview > lastConsolidated ? highestReview - lastConsolidated : 0;
+
   // Scope parsing to Consolidation Trigger section only (Review #160)
   const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");
   const sectionEnd = content.indexOf("\n## ", sectionStart + 1);
@@ -105,24 +153,30 @@ function getConsolidationStatus(content) {
   const endIndex = sectionEnd === -1 ? content.length : sectionEnd;
   const section = content.slice(sectionStart, endIndex);
 
-  // Validate critical pattern match exists (Review #157)
+  // MANUAL: Extract consolidation counter for cross-validation
   const counterMatch = section.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
-  if (!counterMatch) {
-    throw new Error(
-      "Could not find 'Reviews since last consolidation' counter in log file. Check document format."
+  const manualCount = counterMatch ? parseInt(counterMatch[1], 10) || 0 : 0;
+
+  // Cross-validation: warn if manual counter drifted from computed
+  if (manualCount !== computedCount && !quiet) {
+    console.log(
+      `${colors.yellow}⚠️  COUNTER DRIFT: Manual=${manualCount}, Computed=${computedCount}${colors.reset}`
     );
+    console.log(`   Using COMPUTED value for threshold check.`);
+    console.log("");
   }
-  const reviewCount = parseInt(counterMatch[1], 10) || 0;
 
   const lastConsolidationMatch = section.match(/\*\*Date:\*\*\s+([^\n]+)/);
   const lastConsolidation = lastConsolidationMatch ? lastConsolidationMatch[1].trim() : "Unknown";
 
-  const nextReviewMatch = section.match(/After Review #(\d+)/);
-  const lastReviewNum = nextReviewMatch
-    ? parseInt(nextReviewMatch[1], 10) - CONSOLIDATION_THRESHOLD
-    : 0;
-
-  return { reviewCount, lastConsolidation, lastReviewNum };
+  // Return computed count (authoritative) and parsed lastReviewNum for extractRecentReviews
+  return {
+    reviewCount: computedCount, // Use COMPUTED, not manual
+    manualCount, // Keep for reporting
+    lastConsolidation,
+    lastReviewNum: lastConsolidated, // Use parsed value
+    highestReview,
+  };
 }
 
 /**
@@ -350,8 +404,9 @@ function generateReport(reviews, patterns, categories) {
 
 /**
  * Update the consolidation counter in the log file
+ * Session #114: Also updates "Last Consolidation" section with review range
  */
-function updateConsolidationCounter(content, newCount, nextReview) {
+function updateConsolidationCounter(content, newCount, nextReview, consolidatedRange) {
   // Scope replacements to "Consolidation Trigger" section only (Review #158)
   // This prevents accidental modifications to other parts of the document
   const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");
@@ -383,9 +438,17 @@ function updateConsolidationCounter(content, newCount, nextReview) {
     `**Status:** ✅ Current **Next consolidation due:** After Review #${nextReview}`
   );
 
-  // Update last consolidation date
+  // Update last consolidation date and session
   const today = new Date().toISOString().split("T")[0];
-  section = section.replace(/\*\*Date:\*\*\s+[^\n]+/, `**Date:** ${today} (Session #69+)`);
+  section = section.replace(/\*\*Date:\*\*\s+[^\n]+/, `**Date:** ${today} (Session #114+)`);
+
+  // Update "Reviews consolidated" with actual range
+  if (consolidatedRange) {
+    section = section.replace(
+      /\*\*Reviews consolidated:\*\*\s+#?\d+-#?\d+[^\n]*/,
+      `**Reviews consolidated:** #${consolidatedRange.start}-#${consolidatedRange.end} (${consolidatedRange.count} reviews)`
+    );
+  }
 
   // Reconstruct the full content
   return content.slice(0, sectionStart) + section + content.slice(endIndex);
@@ -447,14 +510,29 @@ function applyConsolidationChanges(content, reviews, recurringPatterns) {
     return false;
   }
 
-  // Calculate next review number
+  // Calculate next review number and range
+  const minReviewNum = Math.min(...reviews.map((r) => r.number));
   const maxReviewNum = Math.max(...reviews.map((r) => r.number));
   const nextConsolidationReview = maxReviewNum + CONSOLIDATION_THRESHOLD;
+  const consolidatedRange = {
+    start: minReviewNum,
+    end: maxReviewNum,
+    count: reviews.length,
+  };
 
   // Update log file
-  const updatedContent = updateConsolidationCounter(content, 0, nextConsolidationReview);
+  const updatedContent = updateConsolidationCounter(
+    content,
+    0,
+    nextConsolidationReview,
+    consolidatedRange
+  );
   writeFileSync(LOG_FILE, updatedContent, "utf8");
   log(`  ✅ Reset consolidation counter in AI_REVIEW_LEARNINGS_LOG.md`, colors.green);
+  log(
+    `  ✅ Consolidated reviews #${minReviewNum}-#${maxReviewNum} (${reviews.length} reviews)`,
+    colors.green
+  );
   log(`  ✅ Next consolidation due after Review #${nextConsolidationReview}`, colors.green);
 
   // Output summary based on mode
@@ -515,10 +593,16 @@ function readLogFile() {
 
 /**
  * Output current consolidation status
+ * Session #114: Show both computed and manual counts
  */
 function outputConsolidationStatus(status) {
   log(`Current status:`);
-  log(`  Reviews since consolidation: ${status.reviewCount}`);
+  log(`  Highest review: #${status.highestReview}`);
+  log(`  Last consolidated: #${status.lastReviewNum}`);
+  log(`  Reviews pending (computed): ${status.reviewCount}`);
+  if (status.manualCount !== status.reviewCount) {
+    log(`  Reviews pending (manual): ${status.manualCount} ← OUT OF SYNC`);
+  }
   log(`  Threshold: ${CONSOLIDATION_THRESHOLD}`);
   log(`  Last consolidation: ${status.lastConsolidation}`);
   log("");
