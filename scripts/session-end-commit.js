@@ -22,7 +22,12 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const SESSION_CONTEXT_PATH = path.join(process.cwd(), "SESSION_CONTEXT.md");
+// Review #217 R3: Resolve from git repo root, not cwd (works from any subdirectory)
+const REPO_ROOT = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+  encoding: "utf8",
+}).trim();
+
+const SESSION_CONTEXT_PATH = path.join(REPO_ROOT, "SESSION_CONTEXT.md");
 
 // Colors for output
 const colors = {
@@ -145,10 +150,11 @@ function main() {
   try {
     runGit(["add", "SESSION_CONTEXT.md"]);
 
-    // Review #217 R2: Commit ONLY SESSION_CONTEXT.md to prevent accidental commits of other staged files
+    // Review #217 R2/R3: Commit ONLY SESSION_CONTEXT.md to prevent accidental commits of other staged files
+    // --only flag ensures only specified file is committed, even if other files are staged
     // Use SKIP flags via env to avoid blocking on doc index/header checks
     const commitMessage = "docs: session end - mark complete\n\nhttps://claude.ai/code";
-    execFileSync("git", ["commit", "SESSION_CONTEXT.md", "-m", commitMessage], {
+    execFileSync("git", ["commit", "--only", "-m", commitMessage, "--", "SESSION_CONTEXT.md"], {
       encoding: "utf8",
       stdio: "inherit",
       env: { ...process.env, SKIP_DOC_INDEX_CHECK: "1", SKIP_DOC_HEADER_CHECK: "1" },
