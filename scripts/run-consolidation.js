@@ -114,7 +114,7 @@ function getHighestReviewNumber(content) {
  * Session #114: Look for "Reviews consolidated: #X-#Y" pattern
  */
 function getLastConsolidatedReview(content) {
-  // Find the "Last Consolidation" section - look for the end range of consolidated reviews
+  // Preferred: "Last Consolidation" section
   const sectionMatch = content.match(
     /### Last Consolidation[\s\S]{0,500}?\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i
   );
@@ -122,7 +122,21 @@ function getLastConsolidatedReview(content) {
     return parseInt(sectionMatch[1], 10);
   }
 
-  // Fallback: look for "Active reviews now #X-Y" which indicates reviews before X were archived/consolidated
+  // Fallback: "Consolidation Trigger" section (this is where the script updates the range)
+  // Review #215: Align read location with write location
+  const triggerStart = content.indexOf("## 🔔 Consolidation Trigger");
+  if (triggerStart !== -1) {
+    const triggerEnd = content.indexOf("\n## ", triggerStart + 1);
+    const endIndex = triggerEnd === -1 ? content.length : triggerEnd;
+    const triggerSection = content.slice(triggerStart, endIndex);
+
+    const triggerMatch = triggerSection.match(/\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i);
+    if (triggerMatch) {
+      return parseInt(triggerMatch[1], 10);
+    }
+  }
+
+  // Fallback: "Active reviews now #X-Y" indicates reviews up to X-1 were consolidated
   const activeMatch = content.match(/Active reviews(?:\s+now)?\s+#(\d+)-/i);
   if (activeMatch) {
     return parseInt(activeMatch[1], 10) - 1;
@@ -137,10 +151,17 @@ function getLastConsolidatedReview(content) {
  * Scoped to "Consolidation Trigger" section for robustness (Review #160)
  */
 function getConsolidationStatus(content) {
-  // COMPUTED: Get actual review counts from parsing
-  const highestReview = getHighestReviewNumber(content);
+  // COMPUTED: count actual review entries > last consolidated (gap-safe)
+  // Review #215: Use Set counting instead of subtraction to handle gaps
   const lastConsolidated = getLastConsolidatedReview(content);
-  const computedCount = highestReview > lastConsolidated ? highestReview - lastConsolidated : 0;
+  const versionRegex =
+    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):/g;
+
+  const allNums = Array.from(content.matchAll(versionRegex), (m) => parseInt(m[1], 10));
+  const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
+
+  const highestReview = allNums.length ? Math.max(...allNums.filter((n) => Number.isFinite(n))) : 0;
+  const computedCount = uniqueNums.size;
 
   // Scope parsing to Consolidation Trigger section only (Review #160)
   const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");

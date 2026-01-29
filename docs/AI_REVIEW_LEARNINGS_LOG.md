@@ -311,8 +311,9 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-01-29 (Session #114+)
-- **Reviews consolidated:** #184-#212 (29 reviews)
+- **Date:** 2026-01-29 (Session #114)
+- **Reviews consolidated:** #184-#212 (29 reviews) **Last consolidated review:**
+  #212
 - **Patterns added to CODE_PATTERNS.md v2.4:**
   - **React/Frontend (11 patterns, NEW SECTION):**
     - Accessible toggle switches (button + role=switch)
@@ -1013,10 +1014,43 @@ errors. See Review #36, #37 for pattern background.
 
 ---
 
+#### Review #215: PR #324 Round 2 - Gap-Safe Consolidation Counting (2026-01-29)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:** PR #324 /
+claude/new-session-yBRX5 **Suggestions:** 7 total (Critical: 0, Major: 3, Minor:
+3, Trivial: 1)
+
+**Patterns Identified:**
+
+1. **Gap-safe counting**: Subtraction-based counting (highest - last) fails when
+   review numbers have gaps
+   - Root cause: Reviews may be skipped or deleted, leaving gaps in numbering
+   - Prevention: Use Set-based counting of unique review numbers > threshold
+
+2. **Read/write location mismatch**: Script reads from one section but writes to
+   another
+   - Root cause: getLastConsolidatedReview only checks "Last Consolidation"
+     section
+   - Prevention: Add fallback to check "Consolidation Trigger" section where
+     updates happen
+
+**Resolution:**
+
+- Fixed: 7 items (all suggestions applied)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Gap-safe counting (Set-based) is more robust than arithmetic subtraction
+- Always ensure read/write locations match in parsing logic
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #215: PR #XXX Title - Review Source (DATE)
+#### Review #216: PR #XXX Title - Review Source (DATE)
 
 
 -->

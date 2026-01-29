@@ -204,6 +204,7 @@ needed
 - [ ] **DT-007** - Structured JSON state for consolidation tracking (PR #324)
   - Replace fragile markdown regex parsing with JSON state file
   - Store `lastConsolidatedReview` in `consolidation-state.json`
+  - Require atomic writes (tmp + rename) and schema version/validation
   - Improves robustness and eliminates silent parse failures
 
 ### Context Optimization & Agent Infrastructure (Session #90)
