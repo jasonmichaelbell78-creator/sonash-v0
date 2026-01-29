@@ -69,9 +69,13 @@ function getCurrentBranch() {
   return branch ? branch.trim() : "";
 }
 
-function hasUncommittedChanges() {
-  const status = runGit(["status", "--porcelain"], { silent: true });
-  return status && status.trim().length > 0;
+/**
+ * Check if SESSION_CONTEXT.md has uncommitted changes
+ * Review #217 R2: Scope to target file to prevent committing unrelated staged files
+ */
+function hasSessionContextChanges() {
+  const status = runGit(["status", "--porcelain", "SESSION_CONTEXT.md"], { silent: true });
+  return Boolean(status && status.trim().length > 0);
 }
 
 function updateSessionContext() {
@@ -129,9 +133,10 @@ function main() {
   // Step 1: Update SESSION_CONTEXT.md
   updateSessionContext();
 
-  // Step 2: Check if there are changes to commit
-  if (!hasUncommittedChanges()) {
-    log("\n✅ No changes to commit - session end already complete", colors.green);
+  // Step 2: Check if SESSION_CONTEXT.md has changes to commit
+  // Review #217 R2: Only check target file, not all uncommitted changes
+  if (!hasSessionContextChanges()) {
+    log("\n✅ No changes to SESSION_CONTEXT.md - session end already complete", colors.green);
     return;
   }
 
@@ -140,12 +145,13 @@ function main() {
   try {
     runGit(["add", "SESSION_CONTEXT.md"]);
 
-    // Use SKIP flags via env to avoid blocking on doc index
+    // Review #217 R2: Commit ONLY SESSION_CONTEXT.md to prevent accidental commits of other staged files
+    // Use SKIP flags via env to avoid blocking on doc index/header checks
     const commitMessage = "docs: session end - mark complete\n\nhttps://claude.ai/code";
-    execFileSync("git", ["commit", "-m", commitMessage], {
+    execFileSync("git", ["commit", "SESSION_CONTEXT.md", "-m", commitMessage], {
       encoding: "utf8",
       stdio: "inherit",
-      env: { ...process.env, SKIP_DOC_INDEX_CHECK: "1" },
+      env: { ...process.env, SKIP_DOC_INDEX_CHECK: "1", SKIP_DOC_HEADER_CHECK: "1" },
     });
     log("✓ Committed session-end changes", colors.green);
   } catch (err) {
