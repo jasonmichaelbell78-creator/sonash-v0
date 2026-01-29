@@ -468,6 +468,11 @@ const ANTI_PATTERNS = [
       "large-context-warning.js",
       "generate-pending-alerts.js",
       "append-hook-warning.js",
+      // 2026-01-29 audit (Review #217):
+      // - check-doc-headers.js: readFileSync at L100 IS in try/catch (L99-126)
+      // - session-end-commit.js: readFileSync at L86 IS in try/catch (L85-90)
+      "check-doc-headers.js",
+      "session-end-commit.js",
     ],
   },
   {
