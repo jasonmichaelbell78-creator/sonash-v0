@@ -289,7 +289,7 @@ Log findings from ALL AI code review sources:
 ## 🔔 Consolidation Trigger
 
 **Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #211
+**Status:** ✅ Current **Next consolidation due:** After Review #222
 
 ### When to Consolidate
 
@@ -311,9 +311,10 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-01-20 (Session #69+)
-- **Reviews consolidated:** #144-#153 (10 reviews)
-- **Patterns added to CODE_PATTERNS.md v1.8:**
+- **Date:** 2026-01-29 (Session #114)
+- **Reviews consolidated:** #184-#212 (29 reviews) **Last consolidated review:**
+  #212
+- **Patterns added to CODE_PATTERNS.md v2.4:**
   - **React/Frontend (11 patterns, NEW SECTION):**
     - Accessible toggle switches (button + role=switch)
     - Local date extraction (getFullYear not toISOString)
@@ -1013,10 +1014,78 @@ errors. See Review #36, #37 for pattern background.
 
 ---
 
+#### Review #215: PR #324 Round 2 - Gap-Safe Consolidation Counting (2026-01-29)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:** PR #324 /
+claude/new-session-yBRX5 **Suggestions:** 7 total (Critical: 0, Major: 3, Minor:
+3, Trivial: 1)
+
+**Patterns Identified:**
+
+1. **Gap-safe counting**: Subtraction-based counting (highest - last) fails when
+   review numbers have gaps
+   - Root cause: Reviews may be skipped or deleted, leaving gaps in numbering
+   - Prevention: Use Set-based counting of unique review numbers > threshold
+
+2. **Read/write location mismatch**: Script reads from one section but writes to
+   another
+   - Root cause: getLastConsolidatedReview only checks "Last Consolidation"
+     section
+   - Prevention: Add fallback to check "Consolidation Trigger" section where
+     updates happen
+
+**Resolution:**
+
+- Fixed: 7 items (all suggestions applied)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Gap-safe counting (Set-based) is more robust than arithmetic subtraction
+- Always ensure read/write locations match in parsing logic
+
+---
+
+#### Review #216: PR #324 Round 3 - Defensive Math Operations (2026-01-29)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:** PR #324 /
+claude/new-session-yBRX5 **Suggestions:** 5 total (Critical: 0, Major: 3, Minor:
+2, Trivial: 0)
+
+**Patterns Identified:**
+
+1. **Math.max on empty array**: `Math.max(...[])` returns -Infinity, not 0
+   - Root cause: Filter may produce empty array, spread to Math.max fails
+   - Prevention: Check filtered array length before calling Math.max
+
+2. **Spread operator stack limits**: `Math.max(...largeArray)` can overflow call
+   stack
+   - Root cause: Spread converts array to function arguments (limited ~65k)
+   - Prevention: Use reduce() for unbounded arrays
+
+3. **Script parity**: Check script missing fallback that run script has
+   - Root cause: Only updated one script's getLastConsolidatedReview
+   - Prevention: When updating shared logic, update all scripts
+
+**Resolution:**
+
+- Fixed: 5 items (all suggestions applied)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Always filter to a variable, check length, then call Math.max/min
+- Use reduce() instead of spread for potentially large arrays
+- Keep validation scripts in sync with their runner counterparts
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #215: PR #XXX Title - Review Source (DATE)
+#### Review #217: PR #XXX Title - Review Source (DATE)
 
 
 -->

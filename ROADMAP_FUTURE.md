@@ -1,8 +1,8 @@
 # SoNash Future Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-01-27
+**Document Version:** 1.2
+**Last Updated:** 2026-01-29
 **Status:** ACTIVE
 **Parent Document:** [ROADMAP.md](./ROADMAP.md)
 <!-- prettier-ignore-end -->
@@ -188,6 +188,25 @@ needed
   - From conventional commits
   - Group by feature/fix/docs
 
+#### Deferred PR Review Items (Session #114)
+
+> Triaged from PR reviews - long-term improvements not blocking current work.
+
+- [ ] **DT-004** - Migrate regex patterns to AST-based parsing (Review #51)
+  - Replace complex regex with proper AST parsing where appropriate
+  - Improves maintainability and reduces ReDoS risk
+- [ ] **DT-005** - Add `--fix` CLI flag to validation scripts (Review #211)
+  - Auto-fix capability for pattern violations
+  - Similar to ESLint's --fix behavior
+- [ ] **DT-006** - Cross-file anchor validation for documentation (Review #213)
+  - Validate markdown anchor links across documents
+  - Detect broken cross-references automatically
+- [ ] **DT-007** - Structured JSON state for consolidation tracking (PR #324)
+  - Replace fragile markdown regex parsing with JSON state file
+  - Store `lastConsolidatedReview` in `consolidation-state.json`
+  - Require atomic writes (tmp + rename) and schema version/validation
+  - Improves robustness and eliminates silent parse failures
+
 ### Context Optimization & Agent Infrastructure (Session #90)
 
 - [ ] **CTX-001** - Context Budget Tracking Dashboard
@@ -199,6 +218,10 @@ needed
 - [ ] **CTX-003** - Parallel Agent Orchestration
   - Coordinate multiple subagents
   - Share context efficiently
+- [ ] **CTX-004** - Evaluate MCP Memory vs Vector DB (Review #211)
+  - Compare current MCP memory server with vector database options
+  - Consider Pinecone, Weaviate, or local vector stores for semantic search
+  - Decision needed for long-term context persistence strategy
 
 ### 📊 M2.2 - Monitoring & Observability (~25 items)
 
@@ -538,6 +561,8 @@ See TECHNICAL_DEBT_MASTER.md for full breakdown and prioritization.
 
 ## 🗓️ Version History
 
-| Version | Date       | Changes                                                                                               | Author |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------------- | ------ |
-| 1.0     | 2026-01-27 | Initial creation - split from ROADMAP.md; added Parallel Group markers; comprehensive AI Instructions | Claude |
+| Version | Date       | Changes                                                                                                 | Author |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------- | ------ |
+| 1.2     | 2026-01-29 | PR #324 review: Added DT-007 (JSON state for consolidation tracking)                                    | Claude |
+| 1.1     | 2026-01-29 | Session #114: Added 4 deferred PR review items (DT-004 to DT-006, CTX-004) from Reviews #51, #211, #213 | Claude |
+| 1.0     | 2026-01-27 | Initial creation - split from ROADMAP.md; added Parallel Group markers; comprehensive AI Instructions   | Claude |

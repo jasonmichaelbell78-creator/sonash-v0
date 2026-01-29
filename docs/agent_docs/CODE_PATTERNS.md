@@ -1,7 +1,7 @@
 # Code Review Patterns Reference
 
-**Document Version:** 2.3 **Source:** Distilled from 201 AI code reviews **Last
-Updated:** 2026-01-24
+**Document Version:** 2.4 **Source:** Distilled from 212 AI code reviews **Last
+Updated:** 2026-01-29
 
 ---
 
@@ -271,6 +271,15 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | Secure file permissions  | `fs.chmodSync(path, 0o600)` after writing secrets files                             | Prevent other users from reading (Review #191)                        |
 | 🟡       | Buffer length validation | Check minimum length before slicing crypto buffers                                  | Prevents confusing errors on corrupt files (Review #191)              |
 | 🟡       | Placeholder detection    | Check for patterns like "your\_", "\_here", "example", "xxx"                        | Detect unfilled templates before use (Review #191)                    |
+| 🟡       | Confidence cap negatives | Cap audit confidence at MEDIUM for existence/absence assertions                     | Absence of evidence ≠ evidence of absence (Review #205)               |
+| 🟡       | Verify existence claims  | Include actual `ls`/`cat` output when claiming files exist/don't exist              | AI audits can have false positives without evidence (Review #205)     |
+| 🔴       | Subshell variable leak   | Use temp file + `while read` instead of pipe for counting in subshell               | Pipe subshells can't modify parent shell variables (Review #204)      |
+| 🟡       | UTC date arithmetic      | Use `setUTCDate(getUTCDate()+1)` not `setDate(getDate()+1)` for timezone safety     | Local date arithmetic shifts across DST boundaries (Review #204)      |
+| 🟡       | CRLF regex compatibility | Use `\r?\n` not `\n` for cross-platform line splitting                              | Windows files have CRLF line endings (Review #211)                    |
+| 🔴       | Atomic state writes      | Write to tmp file + `fs.renameSync()` for state files                               | Prevents partial writes on crash/interrupt (Review #210)              |
+| 🟡       | Detached HEAD handling   | Check `git symbolic-ref HEAD` before assuming branch name exists                    | CI may run in detached HEAD state (Review #209)                       |
+| 🟡       | Session identity check   | Validate sessionId matches expected format before state operations                  | Prevents cross-session state pollution (Review #209)                  |
+| 🟡       | execSync limits          | Add `{ timeout: 30000, maxBuffer: 10*1024*1024 }` to all execSync calls             | Prevents hanging/OOM on runaway processes (Review #209)               |
 
 ---
 
@@ -454,25 +463,28 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ## React/Frontend
 
-| Priority | Pattern                        | Rule                                                                 | Why                                              |
-| -------- | ------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------ |
-| 🟡       | Accessible toggle switches     | Use `<button role="switch" aria-checked>` not `<div onClick>`        | Keyboard support, screen readers                 |
-| 🟡       | Local date extraction          | Use `getFullYear()/getMonth()/getDate()` not `toISOString()`         | toISOString() converts to UTC, shifts dates      |
-| 🟡       | Preference spread on update    | `{ ...existing.preferences, [field]: value }` not direct assign      | Prevents losing unmodified fields                |
-| 🟡       | useEffect state dependency     | Avoid state vars in deps that trigger re-subscriptions               | Creates multiple subscriptions                   |
-| 🟡       | Firestore Timestamp handling   | Check for `.toDate()` method on timestamp fields                     | Data may be Timestamp object or string           |
-| 🟡       | Module-level init flags        | `let didInit = false` outside component for side effects             | Prevents double-init in React Strict Mode        |
-| 🟡       | Async cleanup pattern          | `let isCancelled = false` with `return () => { isCancelled = true }` | Prevents state updates after unmount             |
-| 🟡       | useMemo for derived data       | Memoize arrays mapped with derived fields                            | Prevents recalculation every render              |
-| 🟡       | Null guards at render boundary | Check `if (!user) return null` even if state "guarantees" it         | Defense in depth for edge cases                  |
-| 🟡       | finally for state cleanup      | Use `finally { setLoading(false) }` not duplicate in try/catch       | Consistent cleanup regardless of success/failure |
-| 🟡       | Error user-facing messages     | Generic messages to user; log errorCode only                         | Firebase errors can leak implementation details  |
-| 🟡       | Cursor pagination batch jobs   | Use `startAfter(lastDoc)` not `hasMore = size === limit`             | Prevents infinite loops when items fail          |
-| 🟡       | Firestore-first operation      | Write Firestore before Auth/external services                        | Easier rollback on external failure              |
-| 🟡       | Capture before transaction     | Store original values before transaction for rollback                | Full restoration if post-transaction steps fail  |
-| 🟡       | Primitive useEffect deps       | Use `user?.uid` not `user` object in dependency array                | Prevents unnecessary re-renders                  |
-| 🟡       | Functional setState updates    | Use `setState((prev) => ...)` in useCallback                         | Avoids stale closure state                       |
-| 🟡       | Claims preservation            | `setCustomUserClaims({ ...existing, newClaim })` spread first        | Firebase replaces entire claims object           |
+| Priority | Pattern                        | Rule                                                                  | Why                                                          |
+| -------- | ------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
+| 🟡       | Accessible toggle switches     | Use `<button role="switch" aria-checked>` not `<div onClick>`         | Keyboard support, screen readers                             |
+| 🟡       | Local date extraction          | Use `getFullYear()/getMonth()/getDate()` not `toISOString()`          | toISOString() converts to UTC, shifts dates                  |
+| 🟡       | Preference spread on update    | `{ ...existing.preferences, [field]: value }` not direct assign       | Prevents losing unmodified fields                            |
+| 🟡       | useEffect state dependency     | Avoid state vars in deps that trigger re-subscriptions                | Creates multiple subscriptions                               |
+| 🟡       | Firestore Timestamp handling   | Check for `.toDate()` method on timestamp fields                      | Data may be Timestamp object or string                       |
+| 🟡       | Module-level init flags        | `let didInit = false` outside component for side effects              | Prevents double-init in React Strict Mode                    |
+| 🟡       | Async cleanup pattern          | `let isCancelled = false` with `return () => { isCancelled = true }`  | Prevents state updates after unmount                         |
+| 🟡       | useMemo for derived data       | Memoize arrays mapped with derived fields                             | Prevents recalculation every render                          |
+| 🟡       | Null guards at render boundary | Check `if (!user) return null` even if state "guarantees" it          | Defense in depth for edge cases                              |
+| 🟡       | finally for state cleanup      | Use `finally { setLoading(false) }` not duplicate in try/catch        | Consistent cleanup regardless of success/failure             |
+| 🟡       | Error user-facing messages     | Generic messages to user; log errorCode only                          | Firebase errors can leak implementation details              |
+| 🟡       | Cursor pagination batch jobs   | Use `startAfter(lastDoc)` not `hasMore = size === limit`              | Prevents infinite loops when items fail                      |
+| 🟡       | Firestore-first operation      | Write Firestore before Auth/external services                         | Easier rollback on external failure                          |
+| 🟡       | Capture before transaction     | Store original values before transaction for rollback                 | Full restoration if post-transaction steps fail              |
+| 🟡       | Primitive useEffect deps       | Use `user?.uid` not `user` object in dependency array                 | Prevents unnecessary re-renders                              |
+| 🟡       | Functional setState updates    | Use `setState((prev) => ...)` in useCallback                          | Avoids stale closure state                                   |
+| 🟡       | Claims preservation            | `setCustomUserClaims({ ...existing, newClaim })` spread first         | Firebase replaces entire claims object                       |
+| 🟡       | React state updaters pure      | Move side effects (localStorage/Firestore) from setState to useEffect | State updaters called twice in Strict Mode (Review #207)     |
+| 🟡       | Storage operations isolation   | Independent try/catch for localStorage vs Firestore saves             | One failing shouldn't block the other (Review #207)          |
+| 🟡       | npm script arg separator       | Use `npm run script -- --flag` to pass args to underlying command     | Args before `--` go to npm, after go to script (Review #207) |
 
 ---
 

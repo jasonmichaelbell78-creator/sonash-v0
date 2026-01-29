@@ -1,15 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-01-24
-
----
-
-## Quick Start
-
-1. **Check effectiveness**: Review Key Metrics table for current learning rate
-2. **Find failing patterns**: Look at Pattern Learning Status Summary for 🔴
-   FAILED items
-3. **Regenerate**: Run `node scripts/analyze-learning-effectiveness.js`
+**Last Updated:** 2026-01-29
 
 ---
 
@@ -36,15 +27,15 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #1 - #202 (108 reviews) **Analysis Date:** 2026-01-24
+**Review Range:** #213 - #215 (3 reviews) **Analysis Date:** 2026-01-29
 
 ### Key Metrics
 
 | Metric                    | Value  |
 | ------------------------- | ------ |
 | Learning Effectiveness    | 100.0% |
-| Patterns Learned          | 4      |
-| Patterns Automated        | 1      |
+| Patterns Learned          | 5      |
+| Patterns Automated        | 0      |
 | Patterns Failing          | 0      |
 | Critical Pattern Success  | 100.0% |
 | Automation Coverage       | 620.0% |
@@ -59,8 +50,8 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 4     | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 1     | Pattern recurred but now enforced by tooling |
+| ✅ LEARNED   | 5     | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 0     | Pattern recurred but now enforced by tooling |
 | 🟡 WEAK      | 0     | Pattern recurred 1-2 times - needs attention |
 | 🔴 FAILED    | 0     | Pattern recurred 3+ times - needs automation |
 
@@ -70,4 +61,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-01-24 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-01-29 | Rewritten to focus on Claude's learning effectiveness |
