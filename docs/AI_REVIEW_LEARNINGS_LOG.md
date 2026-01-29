@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 12.1 **Created:** 2026-01-02 **Last Updated:** 2026-01-28
+**Document Version:** 12.2 **Created:** 2026-01-02 **Last Updated:** 2026-01-29
 
 ## Purpose
 
@@ -459,8 +459,8 @@ positives (2026-01-04)** |
 - [x] Keep `patterns:check` blocking for critical files
 - [x] ESLint warnings audited and documented (181 baseline as of 2026-01-04)
 - [ ] Review full repo quarterly
-- [ ] **DEFERRED (Review #51)**: Consider migrating regex patterns to AST-based
-      ESLint rules
+- [x] **TRIAGED → DT-004** (Review #51): Migrate regex patterns to AST-based
+      ESLint rules → See ROADMAP_FUTURE.md
 
 ---
 
@@ -816,13 +816,10 @@ claude/resume-previous-session-D9N5N **Suggestions:** 18 total (MAJOR: 5, MINOR:
 
 1. Session number comment update in file header.
 
-**DEFERRED (2):**
+**TRIAGED (2):** → ROADMAP_FUTURE.md
 
-1. **MCP Memory vs Vector DB decision** - Architectural decision about knowledge
-   graph vs vector database for context preservation. Deferred to later session.
-
-2. **--fix CLI flag** - Auto-fix capability for validation script. Nice-to-have
-   but not blocking.
+1. **MCP Memory vs Vector DB decision** → CTX-004
+2. **--fix CLI flag** → DT-005
 
 **REJECTED (1):**
 
@@ -909,11 +906,9 @@ claude/resume-previous-session-D9N5N **Suggestions:** 6 total (MAJOR: 2, MINOR:
    and `)`, breaking markdown link parsing. Created `encodeMarkdownPath()`
    helper that also encodes `%28`/`%29`.
 
-**DEFERRED (1):**
+**TRIAGED (1):** → ROADMAP_FUTURE.md
 
-6. **Cross-file anchor validation** - Qodo suggested implementing full
-   cross-file anchor resolution with caching. Deferred as significant feature
-   enhancement requiring new functions and caching logic.
+6. **Cross-file anchor validation** → DT-006
 
 **NEW PATTERNS (3):**
 

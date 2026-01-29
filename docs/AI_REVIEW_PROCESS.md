@@ -194,6 +194,36 @@ After processing AI review suggestions, document decisions using this template:
 **When to skip:** Never. Even if no clear patterns, document "No significant
 patterns identified" with review summary.
 
+### 7. **Triaging Deferred Items** ⚠️ **IMPORTANT**
+
+When deferred items are added to ROADMAP_FUTURE.md (or
+AUDIT_FINDINGS_BACKLOG.md):
+
+1. **Update the source entry** in AI_REVIEW_LEARNINGS_LOG.md:
+   - Change `**DEFERRED (N):**` to `**TRIAGED (N):** → ROADMAP_FUTURE.md`
+   - Replace item descriptions with cross-references (e.g., `→ DT-004`)
+2. **This prevents duplicate alerts** - The alerts system scans for `DEFERRED`
+   markers; `TRIAGED` is ignored
+3. **Always include the target ID** (DT-XXX, CTX-XXX, etc.) for traceability
+
+**Example transformation:**
+
+```markdown
+# Before (triggers alerts)
+
+**DEFERRED (2):**
+
+1. **MCP Memory vs Vector DB** - Architectural decision...
+2. **--fix CLI flag** - Auto-fix capability...
+
+# After (no alerts)
+
+**TRIAGED (2):** → ROADMAP_FUTURE.md
+
+1. **MCP Memory vs Vector DB** → CTX-004
+2. **--fix CLI flag** → DT-005
+```
+
 ---
 
 ## 📋 Common Rejection Reasons

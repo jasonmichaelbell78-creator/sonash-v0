@@ -327,7 +327,8 @@ changes in one document affect the accuracy of another.
 | `app/(protected)/dashboard/`       | `ROADMAP.md` (sprint status)                                                         | Dashboard changes must update roadmap              | ✅ BLOCK |
 | Milestone/Feature completed        | `ROADMAP.md`, `ROADMAP_LOG.md`                                                       | Multiple docs track completion status              | Manual   |
 | New policy document created        | `claude.md` or relevant policy index                                                 | Policy references need updating                    | Manual   |
-| PR review fixes applied            | `AI_REVIEW_LEARNINGS_LOG.md`                                                         | Lessons learned must be captured                   |
+| PR review fixes applied            | `AI_REVIEW_LEARNINGS_LOG.md`                                                         | Lessons learned must be captured                   | Manual   |
+| Deferred items → ROADMAP_FUTURE    | `AI_REVIEW_LEARNINGS_LOG.md` (change DEFERRED → TRIAGED)                             | Prevents duplicate alerts; keeps source updated    | Manual   |
 | New skill/command added            | `.claude/settings.json`, `.claude/COMMAND_REFERENCE.md`                              | Skill registry and reference must be complete      |
 | Security-related changes           | `docs/SECURITY.md`, `docs/GLOBAL_SECURITY_STANDARDS.md`                              | Security documentation must reflect current state  |
 | Firebase config changes            | `docs/FIREBASE_CHANGE_POLICY.md`                                                     | Policy requires documenting all Firebase changes   |
@@ -401,6 +402,7 @@ When reviewing documentation PRs:
 
 | Version | Date       | Changes                                                                                                                                          | Author      |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| 1.6     | 2026-01-29 | Added DEFERRED → TRIAGED trigger: when items move to ROADMAP_FUTURE.md, source entries must be updated; Session #115.                            | Claude Code |
 | 1.5     | 2026-01-27 | Added Track T (Testing Infrastructure) triggers: tests/e2e/ and testing infrastructure changes; Session #103.                                    | Claude Code |
 | 1.4     | 2026-01-27 | Added ROADMAP_FUTURE.md to dependency matrix; added milestone promotion and parallel group sync triggers; 3 new cross-document rules.            | Claude Code |
 | 1.3     | 2026-01-17 | Added BLOCKING rules for feature file → ROADMAP.md: app/admin/, functions/src/admin\*, app/(protected)/dashboard/ now require ROADMAP.md update. | Claude Code |
