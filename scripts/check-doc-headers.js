@@ -15,9 +15,12 @@
  *   node scripts/check-doc-headers.js --all        # Check all staged .md files
  *   node scripts/check-doc-headers.js --verbose    # Show all checks
  *
+ * Override: SKIP_DOC_HEADER_CHECK=1 to bypass (use sparingly)
+ *
  * Reference: docs/DOCUMENTATION_INDEX.md for tier definitions
  *
  * Created: Session #115 (2026-01-29)
+ * Security: Review #217 - error handling, basename checks, override implementation
  */
 
 const { execFileSync } = require("node:child_process");
@@ -42,6 +45,13 @@ const colors = {
 
 function log(message, color = "") {
   console.log(color ? `${color}${message}${colors.reset}` : message);
+}
+
+/**
+ * Safely extract error message (Review #217: pattern compliance)
+ */
+function getErrorMessage(err) {
+  return err instanceof Error ? err.message : String(err);
 }
 
 // Files/folders exempt from header requirements
@@ -73,8 +83,13 @@ const RECOMMENDED_HEADERS = [
   { pattern: /\*\*Purpose:\*\*|^>\s*\*\*Purpose/m, name: "Purpose" },
 ];
 
+/**
+ * Check if file is exempt from header requirements
+ * Review #217: Test both full path AND basename to handle nested files like docs/README.md
+ */
 function isExempt(filePath) {
-  return EXEMPT_PATTERNS.some((pattern) => pattern.test(filePath));
+  const basename = path.basename(filePath);
+  return EXEMPT_PATTERNS.some((pattern) => pattern.test(filePath) || pattern.test(basename));
 }
 
 function checkDocumentHeaders(filePath) {
@@ -106,10 +121,15 @@ function checkDocumentHeaders(filePath) {
 
     return { errors, warnings };
   } catch (err) {
-    return { errors: [`Could not read file: ${err.message}`], warnings: [] };
+    // Review #217: Safe error message extraction
+    return { errors: [`Could not read file: ${getErrorMessage(err)}`], warnings: [] };
   }
 }
 
+/**
+ * Get staged .md files from git
+ * Review #217: Log error and exit instead of silent failure
+ */
 function getStagedFiles(filter = "A") {
   try {
     // A = Added, M = Modified, AM = both
@@ -119,12 +139,23 @@ function getStagedFiles(filter = "A") {
       { encoding: "utf8" }
     );
     return result.split("\n").filter((f) => f.endsWith(".md") && f.trim() !== "");
-  } catch {
-    return [];
+  } catch (err) {
+    log(
+      `\n❌ Error getting staged files. Is git installed and are you in a git repository?`,
+      colors.red
+    );
+    log(`   ${getErrorMessage(err)}`, colors.red);
+    process.exit(2);
   }
 }
 
 function main() {
+  // Review #217: Implement documented SKIP_DOC_HEADER_CHECK override
+  if (process.env.SKIP_DOC_HEADER_CHECK === "1") {
+    log("⏭️  SKIP_DOC_HEADER_CHECK=1 set; skipping document header validation.", colors.yellow);
+    process.exit(0);
+  }
+
   log("\n📎 Document Header Validation\n");
 
   // Get staged files - new files only by default, all if --all

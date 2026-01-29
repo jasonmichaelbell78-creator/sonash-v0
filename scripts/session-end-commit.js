@@ -15,9 +15,10 @@
  *   3. Pushes to the current branch
  *
  * Created: Session #115 (2026-01-29)
+ * Security: Review #217 - execFileSync with args arrays (no command injection)
  */
 
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -36,9 +37,21 @@ function log(msg, color = "") {
   console.log(color ? `${color}${msg}${colors.reset}` : msg);
 }
 
-function run(cmd, options = {}) {
+/**
+ * Safely extract error message (Review #217: pattern compliance)
+ */
+function getErrorMessage(err) {
+  return err instanceof Error ? err.message : String(err);
+}
+
+/**
+ * Run a git command using execFileSync (Review #217: no command injection)
+ * @param {string[]} args - Git command arguments
+ * @param {object} options - execFileSync options
+ */
+function runGit(args, options = {}) {
   try {
-    return execSync(cmd, {
+    return execFileSync("git", args, {
       encoding: "utf8",
       stdio: options.silent ? "pipe" : "inherit",
       ...options,
@@ -52,11 +65,12 @@ function run(cmd, options = {}) {
 }
 
 function getCurrentBranch() {
-  return run("git branch --show-current", { silent: true }).trim();
+  const branch = runGit(["branch", "--show-current"], { silent: true });
+  return branch ? branch.trim() : "";
 }
 
 function hasUncommittedChanges() {
-  const status = run("git status --porcelain", { silent: true });
+  const status = runGit(["status", "--porcelain"], { silent: true });
   return status && status.trim().length > 0;
 }
 
@@ -66,12 +80,24 @@ function updateSessionContext() {
     return false;
   }
 
-  let content = fs.readFileSync(SESSION_CONTEXT_PATH, "utf8");
+  // Review #217: Wrap readFileSync in try/catch (TOCTOU + permission errors)
+  let content;
+  try {
+    content = fs.readFileSync(SESSION_CONTEXT_PATH, "utf8");
+  } catch (err) {
+    log(`❌ Failed to read SESSION_CONTEXT.md: ${getErrorMessage(err)}`, colors.red);
+    return false;
+  }
 
   // Update "Uncommitted Work: Yes" to "Uncommitted Work: No"
   if (content.includes("**Uncommitted Work**: Yes")) {
     content = content.replace("**Uncommitted Work**: Yes", "**Uncommitted Work**: No");
-    fs.writeFileSync(SESSION_CONTEXT_PATH, content);
+    try {
+      fs.writeFileSync(SESSION_CONTEXT_PATH, content);
+    } catch (err) {
+      log(`❌ Failed to write SESSION_CONTEXT.md: ${getErrorMessage(err)}`, colors.red);
+      return false;
+    }
     log("✓ Updated SESSION_CONTEXT.md (Uncommitted Work: No)", colors.green);
     return true;
   }
@@ -90,10 +116,18 @@ function main() {
   log("\n📋 Session End Auto-Commit\n", colors.cyan);
 
   const branch = getCurrentBranch();
+
+  // Review #217: Check for detached HEAD state
+  if (!branch) {
+    log("❌ Could not determine current branch (detached HEAD?)", colors.red);
+    log("   Please checkout a branch before running session:end", colors.yellow);
+    process.exit(1);
+  }
+
   log(`Branch: ${branch}`);
 
   // Step 1: Update SESSION_CONTEXT.md
-  const updated = updateSessionContext();
+  updateSessionContext();
 
   // Step 2: Check if there are changes to commit
   if (!hasUncommittedChanges()) {
@@ -104,29 +138,30 @@ function main() {
   // Step 3: Commit
   log("\n📝 Committing session-end...", colors.cyan);
   try {
-    run("git add SESSION_CONTEXT.md");
+    runGit(["add", "SESSION_CONTEXT.md"]);
 
-    // Use SKIP flags to avoid blocking on doc index (SESSION_CONTEXT.md doesn't affect index)
-    const commitCmd = `SKIP_DOC_INDEX_CHECK=1 git commit -m "docs: session end - mark complete
-
-https://claude.ai/code"`;
-
-    run(commitCmd);
+    // Use SKIP flags via env to avoid blocking on doc index
+    const commitMessage = "docs: session end - mark complete\n\nhttps://claude.ai/code";
+    execFileSync("git", ["commit", "-m", commitMessage], {
+      encoding: "utf8",
+      stdio: "inherit",
+      env: { ...process.env, SKIP_DOC_INDEX_CHECK: "1" },
+    });
     log("✓ Committed session-end changes", colors.green);
   } catch (err) {
     log("❌ Commit failed - may need manual intervention", colors.red);
-    console.error(err.message);
+    console.error(getErrorMessage(err));
     process.exit(1);
   }
 
-  // Step 4: Push
+  // Step 4: Push (Review #217: args array prevents branch name injection)
   log("\n🚀 Pushing to remote...", colors.cyan);
   try {
-    run(`git push -u origin ${branch}`);
+    runGit(["push", "-u", "origin", branch]);
     log("✓ Pushed to remote", colors.green);
   } catch (err) {
     log("❌ Push failed - may need manual push", colors.red);
-    console.error(err.message);
+    console.error(getErrorMessage(err));
     process.exit(1);
   }
 

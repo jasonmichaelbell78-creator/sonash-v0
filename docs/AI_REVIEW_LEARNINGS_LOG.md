@@ -1077,10 +1077,78 @@ claude/new-session-yBRX5 **Suggestions:** 5 total (Critical: 0, Major: 3, Minor:
 
 ---
 
+#### Review #217: PR #325 Session #115 - Qodo + SonarCloud + CI (2026-01-29)
+
+**Source:** Qodo Compliance + SonarCloud Security Hotspots + CI Pattern
+Compliance **PR/Branch:** PR #325 / claude/new-session-nFHFo **Suggestions:** 16
+total (Critical: 2, Major: 5, Minor: 2, Trivial: 1, Deferred: 2, Rejected: 1)
+
+**Patterns Identified:**
+
+1. **Command injection via execSync**: String interpolation in shell commands
+   allows injection
+   - Root cause: `execSync(\`git push -u origin ${branch}\`)` vulnerable if
+     branch contains metacharacters
+   - Prevention: Use execFileSync with array arguments:
+     `execFileSync("git", ["push", "-u", "origin", branch])`
+
+2. **Detached HEAD edge case**: Scripts assume branch name exists
+   - Root cause: `git branch --show-current` returns empty string in detached
+     HEAD state
+   - Prevention: Check for empty branch before using in commands
+
+3. **Silent git failures**: Empty catch returns [] instead of failing
+   - Root cause: getStagedFiles() swallows errors silently
+   - Prevention: Log error and exit with appropriate code for CI visibility
+
+4. **Basename not checked for exemptions**: `/^README\.md$/` fails for nested
+   README.md files
+   - Root cause: Regex tested against full path, not basename
+   - Prevention: Test both full path AND path.basename() for file name patterns
+
+5. **Override flag documented but not implemented**: SKIP_DOC_HEADER_CHECK in
+   comments but not in code
+   - Root cause: Documentation added without corresponding implementation
+   - Prevention: Always implement documented overrides, test skip paths
+
+6. **ARIA accessibility regression**: Conditional rendering removes tabpanel IDs
+   from DOM
+   - Root cause: `{activeTab === 'x' && <Panel/>}` removes panel entirely
+   - Prevention: Use hidden attribute on wrapper, conditionally render heavy
+     content inside
+
+**Resolution:**
+
+- Fixed: 10 items (2 CRITICAL, 5 MAJOR, 2 MINOR, 1 TRIVIAL already correct)
+- Deferred: 3 items (audit storage location - architectural; pre-commit perf -
+  already handled; DOCUMENTATION_INDEX.md placeholder - generator bug)
+- Rejected: 1 item (tab map refactor - conflicts with ARIA fix)
+
+**Files Modified:**
+
+- `scripts/session-end-commit.js` - Complete rewrite with execFileSync, detached
+  HEAD check, safe error handling
+- `scripts/check-doc-headers.js` - Complete rewrite with SKIP override, basename
+  check, proper git error handling
+- `components/admin/admin-tabs.tsx` - ARIA fix: tabpanel IDs persist with hidden
+  attribute
+- `docs/audits/comprehensive/REFACTORING_AUDIT_REPORT.md` - Removed session URL
+  for security
+
+**Key Learnings:**
+
+- Always use execFileSync with args arrays for shell commands (no interpolation)
+- Check for detached HEAD state before git operations that need branch name
+- Implement all documented override/skip flags
+- Test exempt patterns against both full path and basename
+- ARIA tabpanel IDs must persist in DOM even when content is hidden
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #217: PR #XXX Title - Review Source (DATE)
+#### Review #218: PR #XXX Title - Review Source (DATE)
 
 
 -->
