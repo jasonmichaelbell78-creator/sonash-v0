@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useContext, ReactNode, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+} from "react";
 import {
   CelebrationType,
   CelebrationEvent,
@@ -18,8 +26,23 @@ const CelebrationContext = createContext<CelebrationContextType | null>(null);
 
 export function CelebrationProvider({ children }: { children: ReactNode }) {
   const [activeEvent, setActiveEvent] = useState<CelebrationEvent | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timeout on unmount (REACT-001 fix)
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const celebrate = useCallback((type: CelebrationType, data: Partial<CelebrationEvent> = {}) => {
+    // Clear any existing timeout to prevent memory leak (REACT-001 fix)
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
     const event: CelebrationEvent = {
       type,
       intensity: data.intensity || CELEBRATION_INTENSITY_MAP[type],
@@ -33,10 +56,15 @@ export function CelebrationProvider({ children }: { children: ReactNode }) {
     // Auto-dismiss after animation completes (based on intensity)
     const dismissDelay =
       event.intensity === "high" ? 6000 : event.intensity === "medium" ? 4000 : 2500;
-    setTimeout(() => setActiveEvent(null), dismissDelay);
+    timeoutRef.current = setTimeout(() => setActiveEvent(null), dismissDelay);
   }, []);
 
   const clearCelebration = useCallback(() => {
+    // Clear timeout when manually clearing (REACT-001 fix)
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     setActiveEvent(null);
   }, []);
 

@@ -1,5 +1,5 @@
 {
-  "name": "my-v0-project",
+  "name": "sonash",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -58,7 +58,9 @@
     "deps:unused": "knip",
     "prepare": "husky || echo 'Husky not available, skipping git hooks setup'",
     "hooks:test": "node scripts/test-hooks.js",
-    "hooks:health": "node scripts/check-hook-health.js"
+    "hooks:health": "node scripts/check-hook-health.js",
+    "docs:headers": "node scripts/check-doc-headers.js --all",
+    "session:end": "node scripts/session-end-commit.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
@@ -74,13 +76,11 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.4",
     "@sentry/nextjs": "^10.30.0",
-    "@types/leaflet": "^1.9.21",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
     "date-fns": "^4.1.0",
-    "dotenv": "^17.2.3",
     "firebase": "^12.6.0",
     "framer-motion": "^12.23.0",
     "leaflet": "^1.9.4",
@@ -99,19 +99,20 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "tsx": "^4.21.0",
     "vaul": "^1.1.2",
     "zod": "^4.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@tailwindcss/postcss": "^4.1.9",
+    "@types/leaflet": "^1.9.21",
     "@types/node": "^22.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "c8": "^10.1.3",
     "chrome-launcher": "^1.2.1",
     "cross-env": "^10.1.0",
+    "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-security": "^3.0.1",
@@ -130,6 +131,7 @@
     "remark-stringify": "^11.0.0",
     "tailwindcss": "^4.1.9",
     "tsc-alias": "^1.8.16",
+    "tsx": "^4.21.0",
     "tw-animate-css": "1.3.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.49.0",

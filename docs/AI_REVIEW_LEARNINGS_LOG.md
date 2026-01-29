@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 12.1 **Created:** 2026-01-02 **Last Updated:** 2026-01-28
+**Document Version:** 12.2 **Created:** 2026-01-02 **Last Updated:** 2026-01-29
 
 ## Purpose
 
@@ -459,8 +459,8 @@ positives (2026-01-04)** |
 - [x] Keep `patterns:check` blocking for critical files
 - [x] ESLint warnings audited and documented (181 baseline as of 2026-01-04)
 - [ ] Review full repo quarterly
-- [ ] **DEFERRED (Review #51)**: Consider migrating regex patterns to AST-based
-      ESLint rules
+- [x] **TRIAGED → DT-004** (Review #51): Migrate regex patterns to AST-based
+      ESLint rules → See ROADMAP_FUTURE.md
 
 ---
 
@@ -816,13 +816,10 @@ claude/resume-previous-session-D9N5N **Suggestions:** 18 total (MAJOR: 5, MINOR:
 
 1. Session number comment update in file header.
 
-**DEFERRED (2):**
+**TRIAGED (2):** → ROADMAP_FUTURE.md
 
-1. **MCP Memory vs Vector DB decision** - Architectural decision about knowledge
-   graph vs vector database for context preservation. Deferred to later session.
-
-2. **--fix CLI flag** - Auto-fix capability for validation script. Nice-to-have
-   but not blocking.
+1. **MCP Memory vs Vector DB decision** → CTX-004
+2. **--fix CLI flag** → DT-005
 
 **REJECTED (1):**
 
@@ -909,11 +906,9 @@ claude/resume-previous-session-D9N5N **Suggestions:** 6 total (MAJOR: 2, MINOR:
    and `)`, breaking markdown link parsing. Created `encodeMarkdownPath()`
    helper that also encodes `%28`/`%29`.
 
-**DEFERRED (1):**
+**TRIAGED (1):** → ROADMAP_FUTURE.md
 
-6. **Cross-file anchor validation** - Qodo suggested implementing full
-   cross-file anchor resolution with caching. Deferred as significant feature
-   enhancement requiring new functions and caching logic.
+6. **Cross-file anchor validation** → DT-006
 
 **NEW PATTERNS (3):**
 
@@ -1082,10 +1077,78 @@ claude/new-session-yBRX5 **Suggestions:** 5 total (Critical: 0, Major: 3, Minor:
 
 ---
 
+#### Review #217: PR #325 Session #115 - Qodo + SonarCloud + CI (2026-01-29)
+
+**Source:** Qodo Compliance + SonarCloud Security Hotspots + CI Pattern
+Compliance **PR/Branch:** PR #325 / claude/new-session-nFHFo **Suggestions:** 16
+total (Critical: 2, Major: 5, Minor: 2, Trivial: 1, Deferred: 2, Rejected: 1)
+
+**Patterns Identified:**
+
+1. **Command injection via execSync**: String interpolation in shell commands
+   allows injection
+   - Root cause: `execSync(\`git push -u origin ${branch}\`)` vulnerable if
+     branch contains metacharacters
+   - Prevention: Use execFileSync with array arguments:
+     `execFileSync("git", ["push", "-u", "origin", branch])`
+
+2. **Detached HEAD edge case**: Scripts assume branch name exists
+   - Root cause: `git branch --show-current` returns empty string in detached
+     HEAD state
+   - Prevention: Check for empty branch before using in commands
+
+3. **Silent git failures**: Empty catch returns [] instead of failing
+   - Root cause: getStagedFiles() swallows errors silently
+   - Prevention: Log error and exit with appropriate code for CI visibility
+
+4. **Basename not checked for exemptions**: `/^README\.md$/` fails for nested
+   README.md files
+   - Root cause: Regex tested against full path, not basename
+   - Prevention: Test both full path AND path.basename() for file name patterns
+
+5. **Override flag documented but not implemented**: SKIP_DOC_HEADER_CHECK in
+   comments but not in code
+   - Root cause: Documentation added without corresponding implementation
+   - Prevention: Always implement documented overrides, test skip paths
+
+6. **ARIA accessibility regression**: Conditional rendering removes tabpanel IDs
+   from DOM
+   - Root cause: `{activeTab === 'x' && <Panel/>}` removes panel entirely
+   - Prevention: Use hidden attribute on wrapper, conditionally render heavy
+     content inside
+
+**Resolution:**
+
+- Fixed: 10 items (2 CRITICAL, 5 MAJOR, 2 MINOR, 1 TRIVIAL already correct)
+- Deferred: 3 items (audit storage location - architectural; pre-commit perf -
+  already handled; DOCUMENTATION_INDEX.md placeholder - generator bug)
+- Rejected: 1 item (tab map refactor - conflicts with ARIA fix)
+
+**Files Modified:**
+
+- `scripts/session-end-commit.js` - Complete rewrite with execFileSync, detached
+  HEAD check, safe error handling
+- `scripts/check-doc-headers.js` - Complete rewrite with SKIP override, basename
+  check, proper git error handling
+- `components/admin/admin-tabs.tsx` - ARIA fix: tabpanel IDs persist with hidden
+  attribute
+- `docs/audits/comprehensive/REFACTORING_AUDIT_REPORT.md` - Removed session URL
+  for security
+
+**Key Learnings:**
+
+- Always use execFileSync with args arrays for shell commands (no interpolation)
+- Check for detached HEAD state before git operations that need branch name
+- Implement all documented override/skip flags
+- Test exempt patterns against both full path and basename
+- ARIA tabpanel IDs must persist in DOM even when content is hidden
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #217: PR #XXX Title - Review Source (DATE)
+#### Review #218: PR #XXX Title - Review Source (DATE)
 
 
 -->

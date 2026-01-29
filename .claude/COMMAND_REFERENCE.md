@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 2.2 **Last Updated:** 2026-01-29 **Purpose:** Comprehensive
+**Version:** 2.3 **Last Updated:** 2026-01-29 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -630,9 +630,11 @@ if MCP tokens need decrypting. **When to use:** **START OF EVERY SESSION**
 
 #### `session-end`
 
-**Description:** Complete verification steps before ending the session **When to
+**Description:** Complete verification steps before ending the session. Includes
+mandatory auto-commit script (`npm run session:end`) that commits and pushes
+SESSION_CONTEXT.md updates to ensure session-end is never forgotten. **When to
 use:** **END OF EVERY SESSION** **Example:** Final action before closing
-**Parameters:** None
+**Parameters:** None **Added:** Auto-commit mechanism in Session #115
 
 ---
 
@@ -1812,6 +1814,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                                                                                                                         |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.3     | 2026-01-29 | Session #115: Added auto-commit mechanism to session-end skill (`npm run session:end`) to prevent forgetting session-end commits                                |
 | 2.2     | 2026-01-29 | Session #114: Added 3 missing skills (audit-aggregator, audit-comprehensive, checkpoint), documented 14 undocumented hooks, clarified commands→skills migration |
 | 2.1     | 2026-01-27 | Updated session-end checklist to include DOCUMENTATION_INDEX.md                                                                                                 |
 | 2.0     | 2026-01-22 | Fix expansion-evaluation template per PR review (Review #195)                                                                                                   |

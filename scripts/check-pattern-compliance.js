@@ -309,7 +309,8 @@ const ANTI_PATTERNS = [
     review: "#33, #34, #38, #39, #40",
     fileTypes: [".js", ".ts"],
     // Review #190: phase-complete-check.js L171 has containment via safeStatCheck→isWithinArchive
-    pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
+    // Review #217 R4: check-doc-headers.js L112 has containment check on L117 (rel === "" || regex || isAbsolute)
+    pathExclude: /(?:^|[\\/])(?:phase-complete-check|check-doc-headers)\.js$/,
   },
   {
     id: "error-without-first-line",
@@ -468,6 +469,11 @@ const ANTI_PATTERNS = [
       "large-context-warning.js",
       "generate-pending-alerts.js",
       "append-hook-warning.js",
+      // 2026-01-29 audit (Review #217):
+      // - check-doc-headers.js: readFileSync at L100 IS in try/catch (L99-126)
+      // - session-end-commit.js: readFileSync at L86 IS in try/catch (L85-90)
+      "check-doc-headers.js",
+      "session-end-commit.js",
     ],
   },
   {
@@ -506,8 +512,10 @@ const ANTI_PATTERNS = [
     // both use `/^\.\.(?:[\\/]|$)/.test(rel)` which correctly handles empty rel (same path = valid)
     // 2026-01-27 audit (Review #212):
     // - check-roadmap-health.js: L175 has `rel === "" ||` at start of condition
+    // 2026-01-29 audit (Review #217 R4):
+    // - check-doc-headers.js: L117 has `rel === "" ||` at start of condition
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers)\.js$/,
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)

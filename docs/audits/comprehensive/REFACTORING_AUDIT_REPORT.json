@@ -1,0 +1,2003 @@
+{
+  "metadata": {
+    "generated": "2026-01-29T15:30:00.000Z",
+    "session": 115,
+    "auditor": "Claude Opus 4.5",
+    "codebase": "SoNash Recovery Notebook App (v0)",
+    "totalFindings": 209,
+    "estimatedHours": {
+      "min": 160,
+      "max": 240
+    }
+  },
+  "summary": {
+    "bySeverity": {
+      "CRITICAL": 23,
+      "HIGH": 55,
+      "MEDIUM": 84,
+      "LOW": 47
+    },
+    "byCategory": {
+      "security": 12,
+      "architecture": 20,
+      "codeQuality": 13,
+      "reactNextjs": 10,
+      "firebase": 17,
+      "testing": 27,
+      "performance": 30,
+      "dependencies": 25,
+      "documentation": 35,
+      "aiPatterns": 20
+    }
+  },
+  "categories": [
+    {
+      "id": 1,
+      "name": "Security & Vulnerabilities",
+      "code": "SEC",
+      "findings": [
+        {
+          "id": "SEC-001",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "Firebase App Check disabled in production",
+          "files": ["lib/firebase.ts", "lib/init-app-check.ts"],
+          "recommendation": "Ensure NEXT_PUBLIC_RECAPTCHA_SITE_KEY is always set in production; add startup validation"
+        },
+        {
+          "id": "SEC-002",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Missing rate limiting on public endpoints",
+          "files": ["functions/src/admin.ts"],
+          "recommendation": "Implement rate limiting middleware for all Cloud Functions"
+        },
+        {
+          "id": "SEC-003",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "CORS configuration too permissive",
+          "files": ["firebase.json"],
+          "recommendation": "Restrict CORS to specific allowed origins"
+        },
+        {
+          "id": "SEC-004",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Admin privilege escalation potential",
+          "files": ["functions/src/admin.ts"],
+          "recommendation": "Add additional verification for admin role changes"
+        },
+        {
+          "id": "SEC-005",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Sensitive data in console logs",
+          "files": ["Multiple"],
+          "recommendation": "Remove or sanitize console.log statements with user data"
+        },
+        {
+          "id": "SEC-006",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Missing input sanitization",
+          "files": ["lib/db/*.ts"],
+          "recommendation": "Add input sanitization layer for all user inputs"
+        },
+        {
+          "id": "SEC-007",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Session token rotation missing",
+          "files": ["lib/firebase.ts"],
+          "recommendation": "Implement token rotation for long-lived sessions"
+        },
+        {
+          "id": "SEC-008",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Error messages expose internal details",
+          "files": ["functions/src/*.ts"],
+          "recommendation": "Sanitize error messages before returning to client"
+        },
+        {
+          "id": "SEC-009",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Missing CSP headers",
+          "files": ["next.config.mjs"],
+          "recommendation": "Add Content-Security-Policy headers"
+        },
+        {
+          "id": "SEC-010",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Cookie security flags not set",
+          "files": [],
+          "recommendation": "Set HttpOnly, Secure, SameSite flags on cookies"
+        },
+        {
+          "id": "SEC-011",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Debug endpoints accessible",
+          "files": ["functions/src/admin.ts"],
+          "recommendation": "Disable or protect debug endpoints in production"
+        },
+        {
+          "id": "SEC-012",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Audit logging incomplete",
+          "files": ["functions/src/*.ts"],
+          "recommendation": "Implement comprehensive audit logging"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Architectural Integrity",
+      "code": "ARCH",
+      "findings": [
+        {
+          "id": "ARCH-001",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "Repository pattern violation - direct Firestore access",
+          "files": ["Multiple components"],
+          "recommendation": "Route all Firestore access through FirestoreService"
+        },
+        {
+          "id": "ARCH-002",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "God object - admin.ts (3,111 lines)",
+          "files": ["functions/src/admin.ts"],
+          "lines": 3111,
+          "recommendation": "Split into admin-users.ts, admin-content.ts, admin-monitoring.ts"
+        },
+        {
+          "id": "ARCH-003",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "God object - users-tab.tsx (2,092 lines)",
+          "files": ["components/admin/users-tab.tsx"],
+          "lines": 2092,
+          "recommendation": "Extract UserTable, UserFilters, UserActions, UserDetailDialog"
+        },
+        {
+          "id": "ARCH-004",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "God object - today-page.tsx (1,199 lines)",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "lines": 1199,
+          "recommendation": "Split into container/view pattern, extract to custom hooks"
+        },
+        {
+          "id": "ARCH-005",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "God object - dashboard-tab.tsx (1,031 lines)",
+          "files": ["components/admin/dashboard-tab.tsx"],
+          "lines": 1031,
+          "recommendation": "Extract card components"
+        },
+        {
+          "id": "ARCH-006",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Circular dependency potential",
+          "files": ["lib/db/*.ts"],
+          "recommendation": "Audit and refactor dependency graph"
+        },
+        {
+          "id": "ARCH-007",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Missing service layer abstraction",
+          "files": ["components/*.tsx"],
+          "recommendation": "Add service layer between components and data layer"
+        },
+        {
+          "id": "ARCH-008",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Inconsistent data access patterns",
+          "files": ["lib/db/*.ts"],
+          "recommendation": "Standardize on single data access pattern"
+        },
+        {
+          "id": "ARCH-009",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Provider nesting too deep (7 levels)",
+          "files": ["app/layout.tsx"],
+          "recommendation": "Consolidate or flatten provider hierarchy"
+        },
+        {
+          "id": "ARCH-010",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Missing error boundary coverage",
+          "files": ["components/providers/*.tsx"],
+          "recommendation": "Add error boundaries at key component boundaries"
+        },
+        {
+          "id": "ARCH-011",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Tight coupling between components",
+          "files": ["components/notebook/*.tsx"],
+          "recommendation": "Introduce composition patterns"
+        },
+        {
+          "id": "ARCH-012",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Business logic in UI components",
+          "files": ["components/admin/*.tsx"],
+          "recommendation": "Extract business logic to services/hooks"
+        },
+        {
+          "id": "ARCH-013",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Missing domain separation",
+          "files": ["lib/*.ts"],
+          "recommendation": "Organize code by domain boundaries"
+        },
+        {
+          "id": "ARCH-014",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Inconsistent module boundaries",
+          "files": ["lib/db/*.ts"],
+          "recommendation": "Define clear module interfaces"
+        },
+        {
+          "id": "ARCH-015",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Missing dependency injection",
+          "files": ["functions/src/*.ts"],
+          "recommendation": "Add DI for better testability"
+        },
+        {
+          "id": "ARCH-016",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Shared state management gaps",
+          "files": ["hooks/*.ts"],
+          "recommendation": "Review and consolidate state management"
+        },
+        {
+          "id": "ARCH-017",
+          "severity": "MEDIUM",
+          "confidence": "LOW",
+          "issue": "Missing API versioning",
+          "files": ["functions/src/*.ts"],
+          "recommendation": "Add API versioning strategy"
+        },
+        {
+          "id": "ARCH-018",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Inconsistent naming conventions",
+          "files": ["Multiple"],
+          "recommendation": "Apply consistent naming across codebase"
+        },
+        {
+          "id": "ARCH-019",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Missing architectural decision records",
+          "files": ["docs/decisions/"],
+          "recommendation": "Create ADRs for key decisions"
+        },
+        {
+          "id": "ARCH-020",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Outdated architecture documentation",
+          "files": ["ARCHITECTURE.md"],
+          "recommendation": "Update architecture docs to match current state"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Code Quality & Maintainability",
+      "code": "CODE",
+      "findings": [
+        {
+          "id": "CODE-001",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "any type usage bypasses TypeScript safety",
+          "files": ["Multiple"],
+          "recommendation": "Replace with proper types or unknown with type guards"
+        },
+        {
+          "id": "CODE-002",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Missing error boundaries",
+          "files": ["components/*.tsx"],
+          "recommendation": "Add error boundaries at component boundaries"
+        },
+        {
+          "id": "CODE-003",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Inconsistent error handling",
+          "files": ["lib/db/*.ts"],
+          "recommendation": "Standardize error handling strategy"
+        },
+        {
+          "id": "CODE-004",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Dead code paths",
+          "files": ["Multiple"],
+          "recommendation": "Remove unreachable code"
+        },
+        {
+          "id": "CODE-005",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Magic numbers without constants",
+          "files": ["components/notebook/*.tsx"],
+          "recommendation": "Extract magic numbers to named constants"
+        },
+        {
+          "id": "CODE-006",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Complex conditional logic",
+          "files": ["components/admin/*.tsx"],
+          "recommendation": "Simplify or extract to helper functions"
+        },
+        {
+          "id": "CODE-007",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Missing null checks",
+          "files": ["lib/*.ts"],
+          "recommendation": "Add null/undefined checks"
+        },
+        {
+          "id": "CODE-008",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Inconsistent async patterns",
+          "files": ["lib/db/*.ts"],
+          "recommendation": "Standardize on async/await"
+        },
+        {
+          "id": "CODE-009",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Overly complex functions (50+ lines)",
+          "files": ["Multiple"],
+          "recommendation": "Break into smaller functions"
+        },
+        {
+          "id": "CODE-010",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Missing type guards",
+          "files": ["lib/*.ts"],
+          "recommendation": "Add type guards for runtime safety"
+        },
+        {
+          "id": "CODE-011",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Inconsistent naming conventions",
+          "files": ["Multiple"],
+          "recommendation": "Apply consistent naming"
+        },
+        {
+          "id": "CODE-012",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Missing JSDoc on public APIs",
+          "files": ["lib/*.ts"],
+          "recommendation": "Add JSDoc documentation"
+        },
+        {
+          "id": "CODE-013",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Console.log statements in production",
+          "files": ["Multiple"],
+          "recommendation": "Remove or use proper logging"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "React & Next.js Patterns",
+      "code": "REACT",
+      "findings": [
+        {
+          "id": "REACT-001",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "setTimeout without cleanup - memory leak",
+          "files": ["components/celebrations/celebration-provider.tsx"],
+          "recommendation": "Use ref to store timeout ID and clear in useEffect cleanup"
+        },
+        {
+          "id": "REACT-002",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Missing React.memo on list items",
+          "files": ["components/admin/users-tab.tsx"],
+          "recommendation": "Wrap list item components in React.memo"
+        },
+        {
+          "id": "REACT-003",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "State updates in cleanup functions",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "recommendation": "Move state updates outside cleanup"
+        },
+        {
+          "id": "REACT-004",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Missing useCallback for handlers",
+          "files": ["Multiple"],
+          "recommendation": "Wrap event handlers in useCallback"
+        },
+        {
+          "id": "REACT-005",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Props drilling through multiple levels",
+          "files": ["components/notebook/*.tsx"],
+          "recommendation": "Use context or composition"
+        },
+        {
+          "id": "REACT-006",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Missing key prop optimization",
+          "files": ["components/journal/timeline.tsx"],
+          "recommendation": "Use stable keys for list items"
+        },
+        {
+          "id": "REACT-007",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Inline object/array props cause re-renders",
+          "files": ["Multiple"],
+          "recommendation": "Extract to constants or useMemo"
+        },
+        {
+          "id": "REACT-008",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Missing displayName on components",
+          "files": ["Multiple"],
+          "recommendation": "Add displayName for DevTools"
+        },
+        {
+          "id": "REACT-009",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Inconsistent component file structure",
+          "files": ["components/*.tsx"],
+          "recommendation": "Standardize component structure"
+        },
+        {
+          "id": "REACT-010",
+          "severity": "LOW",
+          "confidence": "LOW",
+          "issue": "Missing prop-types alternative",
+          "files": ["components/*.tsx"],
+          "recommendation": "Ensure TypeScript interfaces cover all props"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Firebase & Backend",
+      "code": "FB",
+      "findings": [
+        {
+          "id": "FB-001",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "App Check not enforced on all endpoints",
+          "files": ["functions/src/*.ts"],
+          "recommendation": "Add App Check enforcement to all Cloud Functions"
+        },
+        {
+          "id": "FB-002",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "Firebase SDK version mismatch",
+          "files": ["package.json", "functions/package.json"],
+          "recommendation": "Align Firebase versions across packages"
+        },
+        {
+          "id": "FB-003",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Missing Firestore security rules for new collections",
+          "files": ["firestore.rules"],
+          "recommendation": "Add security rules for all collections"
+        },
+        {
+          "id": "FB-004",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Real-time listeners not optimized",
+          "files": ["hooks/*.ts"],
+          "recommendation": "Limit real-time listeners scope"
+        },
+        {
+          "id": "FB-005",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Missing composite indexes",
+          "files": ["firestore.indexes.json"],
+          "recommendation": "Add required composite indexes"
+        },
+        {
+          "id": "FB-006",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Cloud Functions cold start optimization needed",
+          "files": ["functions/src/*.ts"],
+          "recommendation": "Implement lazy loading and code splitting"
+        },
+        {
+          "id": "FB-007",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Missing transaction for related writes",
+          "files": ["lib/firestore-service.ts"],
+          "recommendation": "Use transactions for atomic operations"
+        },
+        {
+          "id": "FB-008",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Inefficient batch operations",
+          "files": ["functions/src/admin.ts"],
+          "recommendation": "Optimize batch size and parallelization"
+        },
+        {
+          "id": "FB-009",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Missing offline persistence config",
+          "files": ["lib/firebase.ts"],
+          "recommendation": "Configure offline persistence settings"
+        },
+        {
+          "id": "FB-010",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Incomplete error codes",
+          "files": ["functions/src/*.ts"],
+          "recommendation": "Add standardized error codes"
+        },
+        {
+          "id": "FB-011",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Missing retry logic",
+          "files": ["lib/firestore-service.ts"],
+          "recommendation": "Add retry logic for transient failures"
+        },
+        {
+          "id": "FB-012",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Hardcoded Firebase config values",
+          "files": ["functions/src/jobs.ts"],
+          "recommendation": "Extract to environment variables"
+        },
+        {
+          "id": "FB-013",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Missing Cloud Function timeouts",
+          "files": ["functions/src/*.ts"],
+          "recommendation": "Set appropriate timeout values"
+        },
+        {
+          "id": "FB-014",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Deprecated Firebase patterns",
+          "files": ["lib/firebase.ts"],
+          "recommendation": "Update to current Firebase patterns"
+        },
+        {
+          "id": "FB-015",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Missing emulator configuration",
+          "files": ["firebase.json"],
+          "recommendation": "Add emulator settings for local dev"
+        },
+        {
+          "id": "FB-016",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Incomplete Firebase hosting headers",
+          "files": ["firebase.json"],
+          "recommendation": "Add security headers"
+        },
+        {
+          "id": "FB-017",
+          "severity": "LOW",
+          "confidence": "LOW",
+          "issue": "Missing Cloud Function memory allocation",
+          "files": ["functions/src/*.ts"],
+          "recommendation": "Set memory allocation based on function needs"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Testing & Quality Gates",
+      "code": "TEST",
+      "findings": [
+        {
+          "id": "TEST-001",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "0% test coverage - admin.ts (3,111 lines)",
+          "files": ["functions/src/admin.ts"],
+          "recommendation": "Create comprehensive test suite"
+        },
+        {
+          "id": "TEST-002",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "0% test coverage - jobs.ts (1,036 lines)",
+          "files": ["functions/src/jobs.ts"],
+          "recommendation": "Create test suite for background jobs"
+        },
+        {
+          "id": "TEST-003",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "0% test coverage - index.ts",
+          "files": ["functions/src/index.ts"],
+          "recommendation": "Add tests for entry point"
+        },
+        {
+          "id": "TEST-004",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "0% test coverage - triggers.ts",
+          "files": ["functions/src/triggers.ts"],
+          "recommendation": "Add tests for Firestore triggers"
+        },
+        {
+          "id": "TEST-005",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "0% test coverage - emailer.ts",
+          "files": ["functions/src/emailer.ts"],
+          "recommendation": "Add tests for email functionality"
+        },
+        {
+          "id": "TEST-006",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "No integration tests for Cloud Functions",
+          "files": ["functions/"],
+          "recommendation": "Set up Firebase emulator tests"
+        },
+        {
+          "id": "TEST-007",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "No E2E tests for critical user flows",
+          "files": [],
+          "recommendation": "Implement Playwright E2E tests"
+        },
+        {
+          "id": "TEST-008",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "Security rules not tested",
+          "files": ["firestore.rules"],
+          "recommendation": "Add security rules test suite"
+        },
+        {
+          "id": "TEST-009",
+          "severity": "CRITICAL",
+          "confidence": "MEDIUM",
+          "issue": "No load testing",
+          "files": [],
+          "recommendation": "Implement load testing"
+        },
+        {
+          "id": "TEST-010",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "No Firebase emulator test suite",
+          "files": [],
+          "recommendation": "Set up emulator-based testing"
+        },
+        {
+          "id": "TEST-011",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "Admin functionality untested",
+          "files": ["components/admin/*.tsx"],
+          "recommendation": "Add admin component tests"
+        },
+        {
+          "id": "TEST-012",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "Background jobs untested",
+          "files": ["functions/src/jobs.ts"],
+          "recommendation": "Add scheduled job tests"
+        },
+        {
+          "id": "TEST-013",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Missing unit tests for firestore-service.ts",
+          "files": ["lib/firestore-service.ts"],
+          "recommendation": "Add unit tests"
+        },
+        {
+          "id": "TEST-014",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Missing hook tests",
+          "files": ["hooks/*.ts"],
+          "recommendation": "Add React hook tests"
+        },
+        {
+          "id": "TEST-015",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Missing error path tests",
+          "files": ["Multiple"],
+          "recommendation": "Add negative test cases"
+        },
+        {
+          "id": "TEST-016",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "No snapshot tests for UI",
+          "files": ["components/*.tsx"],
+          "recommendation": "Add component snapshots"
+        },
+        {
+          "id": "TEST-017",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Missing boundary condition tests",
+          "files": ["lib/*.ts"],
+          "recommendation": "Add edge case tests"
+        },
+        {
+          "id": "TEST-018",
+          "severity": "HIGH",
+          "confidence": "LOW",
+          "issue": "No performance regression tests",
+          "files": [],
+          "recommendation": "Add performance benchmarks"
+        },
+        {
+          "id": "TEST-019",
+          "severity": "HIGH",
+          "confidence": "MEDIUM",
+          "issue": "Missing accessibility tests",
+          "files": [],
+          "recommendation": "Add a11y tests"
+        },
+        {
+          "id": "TEST-020",
+          "severity": "HIGH",
+          "confidence": "LOW",
+          "issue": "No visual regression tests",
+          "files": [],
+          "recommendation": "Set up visual testing"
+        },
+        {
+          "id": "TEST-021",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Incomplete mock coverage",
+          "files": ["__tests__/*.ts"],
+          "recommendation": "Expand mock coverage"
+        },
+        {
+          "id": "TEST-022",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Missing test for edge cases",
+          "files": ["Multiple"],
+          "recommendation": "Add edge case coverage"
+        },
+        {
+          "id": "TEST-023",
+          "severity": "MEDIUM",
+          "confidence": "LOW",
+          "issue": "No mutation testing",
+          "files": [],
+          "recommendation": "Consider mutation testing"
+        },
+        {
+          "id": "TEST-024",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Flaky tests not addressed",
+          "files": [],
+          "recommendation": "Identify and fix flaky tests"
+        },
+        {
+          "id": "TEST-025",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Test naming inconsistencies",
+          "files": ["__tests__/*.ts"],
+          "recommendation": "Standardize test naming"
+        },
+        {
+          "id": "TEST-026",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Missing test documentation",
+          "files": [],
+          "recommendation": "Document testing strategy"
+        },
+        {
+          "id": "TEST-027",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Test utilities not extracted",
+          "files": ["__tests__/*.ts"],
+          "recommendation": "Create shared test utilities"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Performance & Optimization",
+      "code": "PERF",
+      "findings": [
+        {
+          "id": "PERF-001",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Admin panel not lazy loaded",
+          "files": ["app/admin/page.tsx", "components/admin/admin-tabs.tsx"],
+          "recommendation": "Lazy load admin panel with dynamic imports"
+        },
+        {
+          "id": "PERF-002",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "All 13 admin tabs rendered simultaneously with hidden attribute",
+          "files": ["components/admin/admin-tabs.tsx"],
+          "lines": [129, 234],
+          "recommendation": "Use conditional rendering instead of hidden attribute"
+        },
+        {
+          "id": "PERF-003",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Journal entry forms not lazy loaded",
+          "files": ["components/journal/journal-hub.tsx"],
+          "recommendation": "Lazy load forms only when needed"
+        },
+        {
+          "id": "PERF-004",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "No bundle analyzer configured",
+          "files": ["next.config.mjs"],
+          "recommendation": "Add @next/bundle-analyzer"
+        },
+        {
+          "id": "PERF-005",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Heavy dependencies not code-split",
+          "files": ["package.json"],
+          "recommendation": "Code-split framer-motion, leaflet, recharts"
+        },
+        {
+          "id": "PERF-006",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "UserTableRow not memoized in large lists",
+          "files": ["components/admin/users-tab.tsx"],
+          "lines": [704, 742],
+          "recommendation": "Wrap in React.memo"
+        },
+        {
+          "id": "PERF-007",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "EntryCard not memoized",
+          "files": ["components/journal/entry-card.tsx"],
+          "recommendation": "Add React.memo wrapper"
+        },
+        {
+          "id": "PERF-008",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "TodayPage with 20+ state variables causing frequent re-renders",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "lines": [231, 319],
+          "recommendation": "Split component, use useReducer"
+        },
+        {
+          "id": "PERF-009",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Missing useMemo for expensive calculations",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "recommendation": "Memoize calculateWeeklyStats"
+        },
+        {
+          "id": "PERF-010",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "AuthProvider changes trigger all children re-renders",
+          "files": ["components/providers/auth-provider.tsx"],
+          "recommendation": "Use focused hooks"
+        },
+        {
+          "id": "PERF-011",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Journal fetches 100 entries without pagination",
+          "files": ["hooks/use-journal.ts"],
+          "lines": [277, 281],
+          "recommendation": "Implement pagination with load-more"
+        },
+        {
+          "id": "PERF-012",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Weekly stats calculation fetches all logs",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "lines": [714, 817],
+          "recommendation": "Add limit(7) to query"
+        },
+        {
+          "id": "PERF-013",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Separate real-time listeners could be consolidated",
+          "files": [
+            "components/providers/profile-context.tsx",
+            "components/providers/daily-log-context.tsx"
+          ],
+          "recommendation": "Evaluate consolidation"
+        },
+        {
+          "id": "PERF-014",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "No virtual scrolling for large lists",
+          "files": ["components/admin/users-tab.tsx"],
+          "recommendation": "Implement react-window"
+        },
+        {
+          "id": "PERF-015",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Daily quote not cached",
+          "files": ["hooks/use-daily-quote.ts"],
+          "recommendation": "Cache in localStorage for 24 hours"
+        },
+        {
+          "id": "PERF-016",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Image optimization disabled for static export",
+          "files": ["next.config.mjs"],
+          "lines": [14, 16],
+          "recommendation": "Pre-optimize images during build"
+        },
+        {
+          "id": "PERF-017",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Background image not optimized",
+          "files": ["app/page.tsx"],
+          "lines": [24, 27],
+          "recommendation": "Optimize and use WebP"
+        },
+        {
+          "id": "PERF-018",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Static images not using modern formats",
+          "files": ["public/images/"],
+          "recommendation": "Convert to WebP"
+        },
+        {
+          "id": "PERF-019",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Only 5 usages of next/image",
+          "files": ["Multiple"],
+          "recommendation": "Audit image usage"
+        },
+        {
+          "id": "PERF-020",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "setTimeout not tracked in celebration-provider",
+          "files": ["components/celebrations/celebration-provider.tsx"],
+          "lines": [33, 36],
+          "recommendation": "Use ref and cleanup"
+        },
+        {
+          "id": "PERF-021",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Multiple setTimeout without cleanup",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "lines": [468, 470],
+          "recommendation": "Consolidate timeout management"
+        },
+        {
+          "id": "PERF-022",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "103 useEffect hooks without cleanup",
+          "files": ["Multiple"],
+          "recommendation": "Audit cleanup needs"
+        },
+        {
+          "id": "PERF-023",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "setState called during cleanup",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "lines": [695, 711],
+          "recommendation": "Move setState outside cleanup"
+        },
+        {
+          "id": "PERF-024",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Client-side filtering instead of Firestore query",
+          "files": ["hooks/use-journal.ts"],
+          "lines": [212, 232],
+          "recommendation": "Add server-side filter"
+        },
+        {
+          "id": "PERF-025",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "History query without pagination",
+          "files": ["lib/firestore-service.ts"],
+          "lines": [301, 327],
+          "recommendation": "Add pagination support"
+        },
+        {
+          "id": "PERF-026",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Streak calculation could be cached",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "recommendation": "Cache for 1 hour"
+        },
+        {
+          "id": "PERF-027",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Timeline fetches all entries, filters locally",
+          "files": ["components/journal/timeline.tsx", "hooks/use-journal.ts"],
+          "lines": [25, 38],
+          "recommendation": "Add date filter to query"
+        },
+        {
+          "id": "PERF-028",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "reCAPTCHA loaded with lazyOnload still blocks",
+          "files": ["app/layout.tsx"],
+          "lines": [87, 90],
+          "recommendation": "Load on-demand"
+        },
+        {
+          "id": "PERF-029",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "framer-motion (36 instances) is heavy",
+          "files": ["Multiple"],
+          "recommendation": "Consider lighter alternatives"
+        },
+        {
+          "id": "PERF-030",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Shallow equality check could use deep compare",
+          "files": ["components/providers/profile-context.tsx"],
+          "lines": [50, 59],
+          "recommendation": "Use fast-deep-equal"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Dependencies & Configuration",
+      "code": "DEP",
+      "findings": [
+        {
+          "id": "DEP-001",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "@types/leaflet in production dependencies",
+          "files": ["package.json"],
+          "lines": [77],
+          "recommendation": "Move to devDependencies"
+        },
+        {
+          "id": "DEP-002",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "lucide-react 109 versions behind",
+          "files": ["package.json"],
+          "lines": [88],
+          "recommendation": "Update to latest"
+        },
+        {
+          "id": "DEP-003",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "react-resizable-panels 2 major versions behind",
+          "files": ["package.json"],
+          "lines": [97],
+          "recommendation": "Review changelog and update"
+        },
+        {
+          "id": "DEP-004",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "recharts major version gap",
+          "files": ["package.json"],
+          "lines": [98],
+          "recommendation": "Plan v3 migration"
+        },
+        {
+          "id": "DEP-005",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "tailwind-merge major version gap",
+          "files": ["package.json"],
+          "lines": [100],
+          "recommendation": "Update for Tailwind v4"
+        },
+        {
+          "id": "DEP-006",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "tsx in production dependencies",
+          "files": ["package.json"],
+          "lines": [102],
+          "recommendation": "Move to devDependencies if only for scripts"
+        },
+        {
+          "id": "DEP-007",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "dotenv in production dependencies",
+          "files": ["package.json"],
+          "lines": [83],
+          "recommendation": "Consider moving to devDependencies"
+        },
+        {
+          "id": "DEP-008",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Generic project name my-v0-project",
+          "files": ["package.json"],
+          "lines": [2],
+          "recommendation": "Rename to sonash"
+        },
+        {
+          "id": "DEP-009",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Missing TypeScript strict options",
+          "files": ["tsconfig.json"],
+          "lines": [2, 24],
+          "recommendation": "Add noUncheckedIndexedAccess, noImplicitOverride"
+        },
+        {
+          "id": "DEP-010",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Old ES6 target",
+          "files": ["tsconfig.json"],
+          "lines": [5],
+          "recommendation": "Update to ES2020 or ES2022"
+        },
+        {
+          "id": "DEP-011",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Functions missing noUnusedParameters",
+          "files": ["functions/tsconfig.json"],
+          "lines": [1, 15],
+          "recommendation": "Add noUnusedParameters: true"
+        },
+        {
+          "id": "DEP-012",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Missing security headers in Next.js config",
+          "files": ["next.config.mjs"],
+          "lines": [12, 19],
+          "recommendation": "Add security headers or configure in firebase.json"
+        },
+        {
+          "id": "DEP-013",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Incomplete Sentry integration",
+          "files": ["lib/sentry.client.ts"],
+          "recommendation": "Run @sentry/wizard or verify custom implementation"
+        },
+        {
+          "id": "DEP-014",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "No bundle analyzer configured",
+          "files": ["next.config.mjs"],
+          "recommendation": "Add @next/bundle-analyzer"
+        },
+        {
+          "id": "DEP-015",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Missing eslint-plugin-jsx-a11y",
+          "files": ["eslint.config.mjs"],
+          "lines": [1, 62],
+          "recommendation": "Add accessibility linting"
+        },
+        {
+          "id": "DEP-016",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "ESLint version mismatch between packages",
+          "files": ["eslint.config.mjs", "functions/eslint.config.mjs"],
+          "recommendation": "Align versions"
+        },
+        {
+          "id": "DEP-017",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "no-console rule turned off",
+          "files": ["eslint.config.mjs"],
+          "lines": [42],
+          "recommendation": "Change to warn with allow: [warn, error]"
+        },
+        {
+          "id": "DEP-018",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Firebase config in committed .env.production",
+          "files": [".env.production"],
+          "lines": [5, 11],
+          "recommendation": "Use CI/CD env vars or secrets manager"
+        },
+        {
+          "id": "DEP-019",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "No Zod env validation",
+          "files": ["lib/firebase.ts"],
+          "lines": [8, 34],
+          "recommendation": "Create centralized Zod env schema"
+        },
+        {
+          "id": "DEP-020",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Hardcoded storage bucket URL",
+          "files": ["functions/src/jobs.ts"],
+          "lines": [496],
+          "recommendation": "Extract to environment variable"
+        },
+        {
+          "id": "DEP-021",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Node 24 not LTS version",
+          "files": ["functions/package.json"],
+          "lines": [14],
+          "recommendation": "Use Node 20 LTS"
+        },
+        {
+          "id": "DEP-022",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "lodash vulnerability in functions",
+          "files": ["functions/package.json"],
+          "lines": [17, 23],
+          "recommendation": "Run npm audit fix"
+        },
+        {
+          "id": "DEP-023",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "google-auth-library major version gap",
+          "files": ["functions/package.json"],
+          "lines": [21],
+          "recommendation": "Plan upgrade to v10"
+        },
+        {
+          "id": "DEP-024",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Large knip ignoreDependencies list",
+          "files": ["knip.json"],
+          "lines": [13, 31],
+          "recommendation": "Review periodically"
+        },
+        {
+          "id": "DEP-025",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Heavy pre-commit hook (10+ checks)",
+          "files": [".husky/pre-commit"],
+          "lines": [1, 226],
+          "recommendation": "Move non-critical checks to pre-push"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Documentation & Maintainability",
+      "code": "DOC",
+      "findings": [
+        {
+          "id": "DOC-001",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "today-page.tsx missing JSDoc (1199 lines)",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "recommendation": "Add comprehensive JSDoc"
+        },
+        {
+          "id": "DOC-002",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Cloud Functions undocumented (3111 lines)",
+          "files": ["functions/src/admin.ts"],
+          "recommendation": "Add JSDoc for all exports"
+        },
+        {
+          "id": "DOC-003",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Component JSDoc coverage at 3%",
+          "files": ["Multiple"],
+          "recommendation": "Prioritize public hooks and reusable components"
+        },
+        {
+          "id": "DOC-004",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "API endpoints not self-documenting",
+          "files": ["functions/src/*.ts"],
+          "recommendation": "Add @param, @returns, @throws JSDoc"
+        },
+        {
+          "id": "DOC-005",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Type interfaces without descriptions",
+          "files": ["types/*.ts", "lib/types/*.ts"],
+          "recommendation": "Add JSDoc to exported types"
+        },
+        {
+          "id": "DOC-006",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Deprecated code without migration path",
+          "files": ["components/providers/auth-provider.tsx", "lib/db/meetings.ts"],
+          "recommendation": "Add @deprecated with version and alternative"
+        },
+        {
+          "id": "DOC-007",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "CONTRIBUTING.md missing",
+          "files": [],
+          "recommendation": "Create comprehensive contributing guide"
+        },
+        {
+          "id": "DOC-008",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Environment variable documentation incomplete",
+          "files": ["DEVELOPMENT.md"],
+          "lines": [49, 70],
+          "recommendation": "Document all env vars including MCP tokens"
+        },
+        {
+          "id": "DOC-009",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Setup instructions reference wrong case",
+          "files": ["README.md"],
+          "lines": [44],
+          "recommendation": "Use lowercase claude.md consistently"
+        },
+        {
+          "id": "DOC-010",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Deployment missing functions build step",
+          "files": ["DEVELOPMENT.md"],
+          "lines": [345, 349],
+          "recommendation": "Add cd functions && npm run build step"
+        },
+        {
+          "id": "DOC-011",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "System diagrams missing",
+          "files": ["ARCHITECTURE.md", "docs/"],
+          "recommendation": "Add Mermaid diagrams for architecture"
+        },
+        {
+          "id": "DOC-012",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Data flow documentation gaps",
+          "files": ["ARCHITECTURE.md"],
+          "lines": [376, 394],
+          "recommendation": "Document error paths and rollback"
+        },
+        {
+          "id": "DOC-013",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "ADRs minimal coverage",
+          "files": ["docs/decisions/"],
+          "recommendation": "Create ADRs for IndexedDB, dual-save, deduplication"
+        },
+        {
+          "id": "DOC-014",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Component hierarchy outdated",
+          "files": ["ARCHITECTURE.md"],
+          "lines": [286, 323],
+          "recommendation": "Update to match current implementation"
+        },
+        {
+          "id": "DOC-015",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Stale CLAUDE.md reference",
+          "files": ["README.md"],
+          "lines": [44],
+          "recommendation": "Standardize on lowercase"
+        },
+        {
+          "id": "DOC-016",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Version numbers inconsistent",
+          "files": ["README.md", "claude.md"],
+          "recommendation": "Use single source of truth"
+        },
+        {
+          "id": "DOC-017",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Test status numbers don't match",
+          "files": ["README.md", "SESSION_CONTEXT.md", "DEVELOPMENT.md"],
+          "recommendation": "Create single source of truth"
+        },
+        {
+          "id": "DOC-018",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Broken internal link reference",
+          "files": ["README.md"],
+          "lines": [64],
+          "recommendation": "Validate directory links"
+        },
+        {
+          "id": "DOC-019",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Terminology inconsistency (daily_logs vs Today Page)",
+          "files": ["Multiple"],
+          "recommendation": "Create terminology guide"
+        },
+        {
+          "id": "DOC-020",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Document update dates inconsistent",
+          "files": ["Multiple"],
+          "recommendation": "Add git hook or remove field"
+        },
+        {
+          "id": "DOC-021",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "today-page.tsx over 500 lines (1199)",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "lines": 1199,
+          "recommendation": "Split into container/view/hooks"
+        },
+        {
+          "id": "DOC-022",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "users-tab.tsx over 500 lines (2092)",
+          "files": ["components/admin/users-tab.tsx"],
+          "lines": 2092,
+          "recommendation": "Extract sub-components"
+        },
+        {
+          "id": "DOC-023",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "dashboard-tab.tsx over 500 lines (1031)",
+          "files": ["components/admin/dashboard-tab.tsx"],
+          "lines": 1031,
+          "recommendation": "Extract card components"
+        },
+        {
+          "id": "DOC-024",
+          "severity": "CRITICAL",
+          "confidence": "HIGH",
+          "issue": "admin.ts 3,111 lines affects cold start",
+          "files": ["functions/src/admin.ts"],
+          "lines": 3111,
+          "recommendation": "Split by domain"
+        },
+        {
+          "id": "DOC-025",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "resources-page.tsx over 500 lines (958)",
+          "files": ["components/notebook/pages/resources-page.tsx"],
+          "lines": 958,
+          "recommendation": "Extract badge and styling logic"
+        },
+        {
+          "id": "DOC-026",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Check-in logic over 50 lines",
+          "files": ["components/notebook/pages/today-page.tsx"],
+          "recommendation": "Extract to custom hooks"
+        },
+        {
+          "id": "DOC-027",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Deep nesting in admin functions",
+          "files": ["functions/src/admin.ts"],
+          "recommendation": "Apply early returns"
+        },
+        {
+          "id": "DOC-028",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "High cyclomatic complexity in jobs",
+          "files": ["functions/src/jobs.ts"],
+          "lines": 1036,
+          "recommendation": "Split by job type"
+        },
+        {
+          "id": "DOC-029",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "ROADMAP.md version reference missing",
+          "files": ["ROADMAP.md"],
+          "recommendation": "Add version to header"
+        },
+        {
+          "id": "DOC-030",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "SESSION_CONTEXT.md exceeds recommended length (1116 lines)",
+          "files": ["SESSION_CONTEXT.md"],
+          "lines": 1116,
+          "recommendation": "Archive old sessions"
+        },
+        {
+          "id": "DOC-031",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "AI_WORKFLOW.md missing update date",
+          "files": ["AI_WORKFLOW.md"],
+          "lines": [5],
+          "recommendation": "Update date"
+        },
+        {
+          "id": "DOC-032",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "CODE_PATTERNS.md version mismatch",
+          "files": ["docs/agent_docs/CODE_PATTERNS.md"],
+          "lines": [2, 3],
+          "recommendation": "Clarify cumulative review count"
+        },
+        {
+          "id": "DOC-033",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "ROADMAP.md inconsistent progress tracking",
+          "files": ["ROADMAP.md"],
+          "recommendation": "Auto-generate from completed tasks"
+        },
+        {
+          "id": "DOC-034",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Missing decision documentation for key patterns",
+          "files": ["docs/"],
+          "recommendation": "Create SESSION_DECISIONS.md"
+        },
+        {
+          "id": "DOC-035",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "TECHNICAL_DEBT_MASTER.md not in navigation",
+          "files": ["AI_WORKFLOW.md", "README.md", "docs/README.md"],
+          "recommendation": "Add to documentation index"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "AI/Vibe-Coding Patterns",
+      "code": "AI",
+      "findings": [
+        {
+          "id": "AI-001",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Database abstraction with single implementation",
+          "files": ["lib/database/database-interface.ts", "lib/database/firestore-adapter.ts"],
+          "recommendation": "Remove abstraction if no migration planned"
+        },
+        {
+          "id": "AI-002",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Over-engineered feature flag system for 2 flags",
+          "files": ["lib/utils.ts"],
+          "lines": [26, 46],
+          "recommendation": "Acceptable if security justified"
+        },
+        {
+          "id": "AI-003",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Nearly identical CRUD services (4 copies)",
+          "files": [
+            "lib/db/glossary.ts",
+            "lib/db/quotes.ts",
+            "lib/db/slogans.ts",
+            "lib/db/sober-living.ts"
+          ],
+          "lines": [24, 46],
+          "recommendation": "Create generic createCrudService factory",
+          "linesReduced": 130
+        },
+        {
+          "id": "AI-004",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "Identical service adapter pattern (4 copies)",
+          "files": [
+            "components/admin/glossary-tab.tsx",
+            "components/admin/quotes-tab.tsx",
+            "components/admin/slogans-tab.tsx",
+            "components/admin/sober-living-tab.tsx"
+          ],
+          "recommendation": "Create createServiceAdapter helper",
+          "linesReduced": 24
+        },
+        {
+          "id": "AI-005",
+          "severity": "HIGH",
+          "confidence": "HIGH",
+          "issue": "prayers/links tabs don't use AdminCrudTable (650 lines)",
+          "files": ["components/admin/prayers-tab.tsx", "components/admin/links-tab.tsx"],
+          "lines": [324, 345],
+          "recommendation": "Migrate to AdminCrudTable",
+          "linesReduced": 500
+        },
+        {
+          "id": "AI-006",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Duplicate CRUD in library.ts",
+          "files": ["lib/db/library.ts"],
+          "lines": [47, 66, 97, 116],
+          "recommendation": "Use generic CRUD helpers",
+          "linesReduced": 50
+        },
+        {
+          "id": "AI-007",
+          "severity": "MEDIUM",
+          "confidence": "MEDIUM",
+          "issue": "Time parsing utilities could be shared",
+          "files": ["lib/db/meetings.ts"],
+          "lines": [22, 75],
+          "recommendation": "Extract if needed elsewhere"
+        },
+        {
+          "id": "AI-008",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Repeated validation patterns",
+          "files": ["components/admin/*-tab.tsx"],
+          "recommendation": "Consider Zod schemas"
+        },
+        {
+          "id": "AI-009",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "TODO about unimplemented limit parameter",
+          "files": ["lib/database/firestore-adapter.ts"],
+          "lines": [51],
+          "recommendation": "Implement or remove parameter"
+        },
+        {
+          "id": "AI-010",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Deprecated function still in use",
+          "files": ["lib/db/meetings.ts"],
+          "lines": [134],
+          "recommendation": "Migrate callers or remove"
+        },
+        {
+          "id": "AI-011",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Deprecated code reference",
+          "files": ["lib/firestore-service.ts"],
+          "lines": [405],
+          "recommendation": "Verify if still reachable"
+        },
+        {
+          "id": "AI-012",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Inconsistent admin tab implementation",
+          "files": ["components/admin/*.tsx"],
+          "recommendation": "Standardize on AdminCrudTable"
+        },
+        {
+          "id": "AI-013",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Inconsistent error handling in db services",
+          "files": ["lib/db/*.ts"],
+          "recommendation": "Document and standardize strategy"
+        },
+        {
+          "id": "AI-014",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Inconsistent document creation pattern",
+          "files": ["lib/db/*.ts"],
+          "recommendation": "Standardize on addDoc vs setDoc"
+        },
+        {
+          "id": "AI-015",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Inconsistent node: prefix usage",
+          "files": ["lib/sentry.client.ts"],
+          "lines": [1],
+          "recommendation": "Apply consistently per CODE_PATTERNS.md"
+        },
+        {
+          "id": "AI-016",
+          "severity": "N/A",
+          "confidence": "HIGH",
+          "issue": "No imports from non-existent packages (CLEAN)",
+          "files": [],
+          "recommendation": "None needed"
+        },
+        {
+          "id": "AI-017",
+          "severity": "N/A",
+          "confidence": "HIGH",
+          "issue": "No references to non-existent files (CLEAN)",
+          "files": [],
+          "recommendation": "None needed"
+        },
+        {
+          "id": "AI-018",
+          "severity": "MEDIUM",
+          "confidence": "HIGH",
+          "issue": "Functions reimplementing shared CRUD utilities",
+          "files": ["Multiple"],
+          "recommendation": "Create shared CRUD factory"
+        },
+        {
+          "id": "AI-019",
+          "severity": "LOW",
+          "confidence": "MEDIUM",
+          "issue": "Duplicate type definitions (justified by domain)",
+          "files": ["lib/db/quotes.ts", "lib/db/slogans.ts"],
+          "recommendation": "Acceptable - different domain requirements"
+        },
+        {
+          "id": "AI-020",
+          "severity": "LOW",
+          "confidence": "HIGH",
+          "issue": "Duplicate type aliases",
+          "files": ["lib/db/library.ts"],
+          "lines": [42, 43],
+          "recommendation": "Consider generic Input<T> helper if pattern grows"
+        }
+      ]
+    }
+  ],
+  "remediation": {
+    "phases": [
+      {
+        "name": "Phase 1: Critical",
+        "priority": 1,
+        "estimatedHours": { "min": 40, "max": 60 },
+        "timeline": "1-2 weeks",
+        "focus": "Security, stability, blocking issues",
+        "items": [
+          "SEC-001",
+          "TEST-001",
+          "TEST-002",
+          "TEST-003",
+          "TEST-004",
+          "TEST-005",
+          "TEST-006",
+          "TEST-007",
+          "TEST-008",
+          "TEST-009",
+          "TEST-010",
+          "TEST-011",
+          "TEST-012",
+          "PERF-002",
+          "ARCH-002",
+          "FB-001",
+          "FB-002"
+        ]
+      },
+      {
+        "name": "Phase 2: High Priority",
+        "priority": 2,
+        "estimatedHours": { "min": 60, "max": 80 },
+        "timeline": "2-4 weeks",
+        "focus": "Architecture and major code quality improvements",
+        "items": [
+          "ARCH-003",
+          "ARCH-004",
+          "ARCH-005",
+          "AI-003",
+          "AI-004",
+          "AI-005",
+          "PERF-001",
+          "PERF-003",
+          "CODE-001",
+          "DOC-007"
+        ]
+      },
+      {
+        "name": "Phase 3: Medium Priority",
+        "priority": 3,
+        "estimatedHours": { "min": 40, "max": 60 },
+        "timeline": "4-6 weeks",
+        "focus": "Performance optimization and documentation",
+        "items": [
+          "PERF-006",
+          "PERF-007",
+          "PERF-008",
+          "PERF-009",
+          "PERF-010",
+          "PERF-011",
+          "PERF-012",
+          "DEP-001",
+          "DEP-002",
+          "DEP-003",
+          "DOC-001",
+          "DOC-002",
+          "DOC-003",
+          "FB-003",
+          "FB-004",
+          "FB-005",
+          "FB-006",
+          "FB-007"
+        ]
+      },
+      {
+        "name": "Phase 4: Low Priority",
+        "priority": 4,
+        "estimatedHours": { "min": 20, "max": 40 },
+        "timeline": "Ongoing",
+        "focus": "Code polish and best practices",
+        "items": "All LOW severity items"
+      }
+    ]
+  },
+  "codeReduction": {
+    "totalLinesRemovable": 700,
+    "breakdown": [
+      { "id": "AI-003", "lines": 130, "description": "CRUD service consolidation" },
+      { "id": "AI-004", "lines": 24, "description": "Adapter consolidation" },
+      { "id": "AI-005", "lines": 500, "description": "Migrate prayers/links to AdminCrudTable" },
+      { "id": "AI-006", "lines": 50, "description": "library.ts CRUD consolidation" }
+    ]
+  },
+  "fileSizeAnalysis": [
+    {
+      "file": "functions/src/admin.ts",
+      "lines": 3111,
+      "status": "CRITICAL",
+      "action": "Split required"
+    },
+    {
+      "file": "components/admin/users-tab.tsx",
+      "lines": 2092,
+      "status": "CRITICAL",
+      "action": "Split required"
+    },
+    {
+      "file": "components/notebook/pages/today-page.tsx",
+      "lines": 1199,
+      "status": "HIGH",
+      "action": "Split recommended"
+    },
+    {
+      "file": "functions/src/jobs.ts",
+      "lines": 1036,
+      "status": "HIGH",
+      "action": "Split recommended"
+    },
+    {
+      "file": "components/admin/dashboard-tab.tsx",
+      "lines": 1031,
+      "status": "HIGH",
+      "action": "Split recommended"
+    },
+    {
+      "file": "components/notebook/pages/resources-page.tsx",
+      "lines": 958,
+      "status": "MEDIUM",
+      "action": "Monitor"
+    }
+  ],
+  "positiveObservations": [
+    "Security-first architecture with Cloud Functions for all writes",
+    "Comprehensive pre-commit hooks for quality gates",
+    "eslint-plugin-security enabled",
+    "No AI hallucination artifacts detected",
+    "TypeScript strict mode enabled",
+    "Extensive documentation infrastructure",
+    "AdminCrudTable abstraction well-designed",
+    "Clean npm audit (0 vulnerabilities in main package)",
+    "Consistent Zod validation usage"
+  ]
+}

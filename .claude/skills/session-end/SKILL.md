@@ -259,4 +259,27 @@ This updates the cross-session validation system so that:
 
 ---
 
+## 11. Final Commit & Push (MANDATORY - DO NOT SKIP)
+
+**CRITICAL:** Run this command to automatically commit and push session-end:
+
+```bash
+npm run session:end
+```
+
+This script will:
+
+1. Update SESSION_CONTEXT.md to mark "Uncommitted Work: No"
+2. Commit the changes with session-end message
+3. Push to the current branch
+
+> **Why this is mandatory:** Session #115 identified that session-end was being
+> skipped because PR descriptions were provided but the actual commit/push
+> wasn't executed. This script ensures it always happens.
+
+**Only AFTER this script completes successfully**, provide the PR description to
+the user.
+
+---
+
 Session complete. All work has been verified and documented.

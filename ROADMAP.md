@@ -1,11 +1,16 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.14
-**Last Updated:** 2026-01-27 (Session #103)
+**Document Version:** 3.15
+**Last Updated:** 2026-01-29 (Session #115)
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
+
+> **v3.15 UPDATE:** Integrated 94 NET NEW findings from Refactoring Audit
+> (Session #115). Added Track T Phase 7 (Cloud Functions Testing), M2.3-REF (God
+> Object Refactoring), M4.5-F3 (Security Hardening), and Quick Wins. See
+> [docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md](./docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md)
 
 > **v3.0 MAJOR UPDATE:** Integrated 76 expansion items from
 > EXPANSION_EVALUATION_TRACKER.md. Added M4.5 (Security & Privacy) and M9
@@ -232,6 +237,24 @@ Planned | 🟣 Research
 This sprint consolidates Admin Panel completion, Development Dashboard, CI/CD
 reliability, and solo developer automations.
 
+### 🚨 Immediate Hotfixes ✅ COMPLETE (Session #115)
+
+> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md -
+> Critical issues requiring immediate attention
+
+| ID        | Issue                        | File                                 | Effort | Status   |
+| --------- | ---------------------------- | ------------------------------------ | ------ | -------- |
+| REACT-001 | setTimeout memory leak       | celebration-provider.tsx             | 30 min | ✅ Fixed |
+| PERF-002  | Admin tabs all rendered      | admin-tabs.tsx                       | 1 hr   | ✅ Fixed |
+| DEP-018   | Firebase config in committed | .env.production                      | 10 min | ⏭️ N/A   |
+| FB-002    | Firebase SDK mismatch        | package.json, functions/package.json | 30 min | ⏭️ N/A   |
+
+> **DEP-018/FB-002 Note:** Investigated and found to be false positives -
+> Firebase config is public by design, and SDK versions differ because they're
+> different packages.
+
+**Completed:** Session #115 | **Actual Time:** ~45 minutes
+
 ### Sprint Tracks (8 Parallel Tracks)
 
 | Track       | Focus                                 | Status          | Effort    | Owner  |
@@ -242,8 +265,8 @@ reliability, and solo developer automations.
 | **Track D** | CI Reliability & Automation           | 📋 Planned      | ~28 hours | Claude |
 | **Track E** | Solo Developer Automations            | 📋 Planned      | ~14 hours | Claude |
 | **Track O** | Owner Actions (manual setup)          | 📋 **DO FIRST** | ~10 min   | Jason  |
-| **Track P** | Performance Critical (CWV fix)        | 📋 Planned      | ~18 hours | Claude |
-| **Track T** | Testing Infrastructure (Playwright)   | 📋 Planned      | ~45 hours | Claude |
+| **Track P** | Performance Critical (CWV fix)        | 📋 Planned      | ~24 hours | Claude |
+| **Track T** | Testing Infrastructure (Playwright)   | 📋 Planned      | ~70 hours | Claude |
 
 ### Track A - Admin Panel ✅ DEVELOPMENT COMPLETE
 
@@ -521,27 +544,32 @@ reliability, and solo developer automations.
 
 **Impact:** LCP 4s → <2.5s, Initial load 11MB → <2MB
 
-#### P2: Bundle Optimization (3hr)
+#### P2: Bundle Optimization (4hr)
 
 - [ ] **P2.1:** Add dynamic imports for notebook pages
 - [ ] **P2.2:** Tree-shake framer-motion (only import needed functions)
 - [ ] **P2.3:** Code-split admin panel
+- [ ] **P2.4:** Add bundle analyzer (@next/bundle-analyzer) (1hr) **NEW -
+      Audit**
 
 **Impact:** TTI 3-5s → <2s, Bundle -40%
 
-#### P3: React Performance (3hr)
+#### P3: React Performance (6hr)
 
 - [ ] **P3.1:** Add React.memo to today-page child components
 - [ ] **P3.2:** Memoize auth context value
 - [ ] **P3.3:** Add useMemo to expensive array.map operations
+- [ ] **P3.4:** Virtual scrolling for large lists (react-window) (3hr) **NEW -
+      Audit**
 
 **Impact:** FID/INP 250ms → <100ms
 
-#### P4: Firestore Optimization (2hr)
+#### P4: Firestore Optimization (4hr)
 
 - [ ] **P4.1:** Add `limit(7)` to weekly stats query
 - [ ] **P4.2:** Create composite indexes for common queries
 - [ ] **P4.3:** Implement request deduplication
+- [ ] **P4.4:** Consolidate real-time listeners (2hr) **NEW - Audit**
 
 **Impact:** Firestore reads -90%, Query time -50%
 
@@ -561,7 +589,7 @@ reliability, and solo developer automations.
 
 **Impact:** XSS protection, Clickjacking prevention
 
-**Track P Total: ~18 hours**
+**Track P Total: ~24 hours** (was ~18 hours, +6hr from Audit)
 
 ### Track T - Testing Infrastructure (NEW - Session #103)
 
@@ -617,8 +645,23 @@ reliability, and solo developer automations.
 - [ ] **T6.1:** Test Data Factories - User, Meeting, Journal factories (2hr)
 - [ ] **T6.2:** Seed Scripts - Populate emulator with realistic data (2hr)
 - [ ] **T6.3:** Cleanup Utilities - Reset state between tests (2hr)
+- [ ] **T6.4:** Security Rules Tests - Test firestore.rules coverage (3hr)
+      **NEW - Audit**
 
-**Track T Total: ~45 hours**
+#### Phase 7: Cloud Functions Testing (22hr) **NEW - Refactoring Audit**
+
+> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md
+> (TEST-001 through TEST-005) **Critical Gap:** All 19 Cloud Functions have **0%
+> test coverage**
+
+- [ ] **T7.1:** admin.ts test suite (6hr) - 3,111 lines, 0 tests
+- [ ] **T7.2:** jobs.ts test suite (4hr) - 1,036 lines, 0 tests
+- [ ] **T7.3:** index.ts tests (2hr) - Entry point coverage
+- [ ] **T7.4:** triggers.ts tests (4hr) - Firestore trigger coverage
+- [ ] **T7.5:** emailer.ts tests (2hr) - Email functionality
+- [ ] **T7.6:** Background jobs tests (4hr) - Scheduled job testing
+
+**Track T Total: ~70 hours** (was ~45 hours)
 
 **Environment Support:**
 
@@ -723,6 +766,27 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 - CANON-0110 (Pre-commit slow) → Track D: D2
 - CANON-0111 (Pattern checker) → Track D: D4
 - CANON-0112 (Firebase CLI) → Track D: D1
+
+### 🔥 Refactoring Audit Quick Wins ✅ COMPLETE (Session #115)
+
+> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md -
+> Dependency housekeeping items
+
+| ID      | Issue                    | Effort | Action                      | Status |
+| ------- | ------------------------ | ------ | --------------------------- | ------ |
+| DEP-001 | @types/leaflet in prod   | 5 min  | Move to devDependencies     | ✅     |
+| DEP-002 | lucide-react outdated    | 10 min | npm update lucide-react     | ✅     |
+| DEP-020 | Hardcoded storage bucket | 15 min | Extract to env var          | ⏭️ N/A |
+| DEP-021 | Node 24 not LTS          | 10 min | Change to Node 20           | ✅     |
+| DEP-022 | lodash vulnerability     | 10 min | npm audit fix in functions/ | ✅     |
+| DEP-006 | tsx in prod deps         | 5 min  | Move to devDependencies     | ✅     |
+| DEP-007 | dotenv in prod deps      | 5 min  | Move to devDependencies     | ✅     |
+| DEP-008 | Generic project name     | 5 min  | Rename to sonash            | ✅     |
+
+> **DEP-020 Note:** Hardcoded storage bucket in `functions/src/jobs.ts` is
+> intentional - the default `bucket()` returns the wrong appspot.com bucket.
+
+**Completed:** Session #115 | **Actual Time:** ~15 minutes
 
 ### 🔬 Research: SAST Tool Integration (After Backlog)
 
@@ -1603,6 +1667,33 @@ Architecture refactoring, schema optimization, and infrastructure work.
 | DEDUP-0012 | Enable SSR for landing page         | E2     | PR13 |
 | CANON-0072 | Split TodayPage god component       | E3     | -    |
 
+### M2.3-REF: God Object Refactoring (~38 hours) **NEW - Refactoring Audit**
+
+> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md
+> (ARCH-001 through ARCH-005) **Critical:** 4 files exceed 1,000 lines,
+> affecting maintainability and performance
+
+| ID           | File                                     | Lines | Target | Effort | Priority |
+| ------------ | ---------------------------------------- | ----- | ------ | ------ | -------- |
+| M2.3-REF-001 | functions/src/admin.ts                   | 3,111 | ~500   | 16hr   | P1       |
+| M2.3-REF-002 | components/admin/users-tab.tsx           | 2,092 | ~500   | 8hr    | P1       |
+| M2.3-REF-003 | components/notebook/pages/today-page.tsx | 1,199 | ~500   | 6hr    | P2       |
+| M2.3-REF-004 | components/admin/dashboard-tab.tsx       | 1,031 | ~500   | 4hr    | P2       |
+| M2.3-REF-005 | Repository pattern violations (multiple) | -     | -      | 4hr    | P2       |
+
+**Splitting Strategy:**
+
+- **admin.ts** → admin-users.ts, admin-content.ts, admin-monitoring.ts,
+  admin-jobs.ts (8 files)
+- **users-tab.tsx** → UserTable, UserFilters, UserActions, UserDetailDialog,
+  UserBulkActions (5 components)
+- **today-page.tsx** → TodayContainer, DailyCheckIn, WeeklyStats,
+  QuickActionsPanel (4 components)
+- **dashboard-tab.tsx** → SystemHealthCard, UserMetricsCard, JobStatusCard,
+  StorageCard (4 components)
+
+**Total Lines Reduction:** ~5,430 lines through proper decomposition
+
 ### Potential Architecture Work
 
 - ⏳ Component library consolidation - **P2**
@@ -1847,6 +1938,19 @@ entries) will be encrypted at rest using AES-256-GCM with PBKDF2 key derivation.
     limiting)
   - See
     [APP_CHECK_REENABLE_PLAN.md](docs/reviews/2026-Q1/canonical/tier2-output/APP_CHECK_REENABLE_PLAN.md)
+
+### F3: Security Hardening (5 items) **NEW - Refactoring Audit**
+
+> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md
+> (SEC-002, SEC-003, SEC-004, SEC-007, FB-003)
+
+- [ ] **M4.5-SEC-001** - Rate limiting on public endpoints (4hr)
+- [ ] **M4.5-SEC-002** - Restrict CORS origins (1hr)
+- [ ] **M4.5-SEC-003** - Admin privilege hardening (2hr)
+- [ ] **M4.5-SEC-004** - Token rotation for long-lived sessions (3hr)
+- [ ] **M4.5-SEC-005** - Security rules for new collections (2hr)
+
+**F3 Total: ~12 hours**
 
 ### Pre-M4.5 R&D (Start During M4) - **P0**
 
