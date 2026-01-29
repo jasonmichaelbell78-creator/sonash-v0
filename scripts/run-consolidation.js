@@ -160,7 +160,8 @@ function getConsolidationStatus(content) {
   const allNums = Array.from(content.matchAll(versionRegex), (m) => parseInt(m[1], 10));
   const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
-  const highestReview = allNums.length ? Math.max(...allNums.filter((n) => Number.isFinite(n))) : 0;
+  // Review #216: Use reduce to avoid -Infinity and stack overflow on large arrays
+  const highestReview = allNums.reduce((max, n) => (Number.isFinite(n) && n > max ? n : max), 0);
   const computedCount = uniqueNums.size;
 
   // Scope parsing to Consolidation Trigger section only (Review #160)
@@ -532,8 +533,14 @@ function applyConsolidationChanges(content, reviews, recurringPatterns) {
   }
 
   // Calculate next review number and range
-  const minReviewNum = Math.min(...reviews.map((r) => r.number));
-  const maxReviewNum = Math.max(...reviews.map((r) => r.number));
+  // Review #216: Use reduce to avoid stack overflow on large review batches
+  const { minReviewNum, maxReviewNum } = reviews.reduce(
+    (acc, r) => ({
+      minReviewNum: r.number < acc.minReviewNum ? r.number : acc.minReviewNum,
+      maxReviewNum: r.number > acc.maxReviewNum ? r.number : acc.maxReviewNum,
+    }),
+    { minReviewNum: Infinity, maxReviewNum: 0 }
+  );
   const nextConsolidationReview = maxReviewNum + CONSOLIDATION_THRESHOLD;
   const consolidatedRange = {
     start: minReviewNum,

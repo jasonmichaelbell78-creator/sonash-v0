@@ -1047,10 +1047,45 @@ claude/new-session-yBRX5 **Suggestions:** 7 total (Critical: 0, Major: 3, Minor:
 
 ---
 
+#### Review #216: PR #324 Round 3 - Defensive Math Operations (2026-01-29)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:** PR #324 /
+claude/new-session-yBRX5 **Suggestions:** 5 total (Critical: 0, Major: 3, Minor:
+2, Trivial: 0)
+
+**Patterns Identified:**
+
+1. **Math.max on empty array**: `Math.max(...[])` returns -Infinity, not 0
+   - Root cause: Filter may produce empty array, spread to Math.max fails
+   - Prevention: Check filtered array length before calling Math.max
+
+2. **Spread operator stack limits**: `Math.max(...largeArray)` can overflow call
+   stack
+   - Root cause: Spread converts array to function arguments (limited ~65k)
+   - Prevention: Use reduce() for unbounded arrays
+
+3. **Script parity**: Check script missing fallback that run script has
+   - Root cause: Only updated one script's getLastConsolidatedReview
+   - Prevention: When updating shared logic, update all scripts
+
+**Resolution:**
+
+- Fixed: 5 items (all suggestions applied)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Always filter to a variable, check length, then call Math.max/min
+- Use reduce() instead of spread for potentially large arrays
+- Keep validation scripts in sync with their runner counterparts
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #216: PR #XXX Title - Review Source (DATE)
+#### Review #217: PR #XXX Title - Review Source (DATE)
 
 
 -->

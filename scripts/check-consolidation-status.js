@@ -50,7 +50,7 @@ function getHighestReviewNumber(content) {
  * Looks for "Reviews consolidated: #X-#Y" pattern
  */
 function getLastConsolidatedReview(content) {
-  // Find the "Last Consolidation" section
+  // Preferred: "Last Consolidation" section
   const sectionMatch = content.match(
     /### Last Consolidation[\s\S]{0,500}?\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i
   );
@@ -58,10 +58,23 @@ function getLastConsolidatedReview(content) {
     return parseInt(sectionMatch[1], 10);
   }
 
-  // Fallback: look for "Active reviews now #X-Y" which indicates reviews before X were archived/consolidated
+  // Fallback: "Consolidation Trigger" section (this is where the script updates the range)
+  // Review #216: Align read location with run-consolidation.js
+  const triggerStart = content.indexOf("## 🔔 Consolidation Trigger");
+  if (triggerStart !== -1) {
+    const triggerEnd = content.indexOf("\n## ", triggerStart + 1);
+    const endIndex = triggerEnd === -1 ? content.length : triggerEnd;
+    const triggerSection = content.slice(triggerStart, endIndex);
+
+    const triggerMatch = triggerSection.match(/\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i);
+    if (triggerMatch) {
+      return parseInt(triggerMatch[1], 10);
+    }
+  }
+
+  // Fallback: "Active reviews now #X-Y" indicates reviews up to X-1 were consolidated
   const activeMatch = content.match(/Active reviews(?:\s+now)?\s+#(\d+)-/i);
   if (activeMatch) {
-    // Active reviews start at X means reviews up to X-1 were consolidated
     return parseInt(activeMatch[1], 10) - 1;
   }
 
@@ -96,9 +109,8 @@ function main() {
     const allNums = Array.from(activeContent.matchAll(versionRegex), (m) => parseInt(m[1], 10));
     const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
-    const highestReview = allNums.length
-      ? Math.max(...allNums.filter((n) => Number.isFinite(n)))
-      : 0;
+    // Review #216: Use reduce to avoid -Infinity and stack overflow on large arrays
+    const highestReview = allNums.reduce((max, n) => (Number.isFinite(n) && n > max ? n : max), 0);
     const computedCount = uniqueNums.size;
 
     // MANUAL: Extract consolidation counter for cross-validation
