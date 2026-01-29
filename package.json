@@ -59,7 +59,8 @@
     "prepare": "husky || echo 'Husky not available, skipping git hooks setup'",
     "hooks:test": "node scripts/test-hooks.js",
     "hooks:health": "node scripts/check-hook-health.js",
-    "docs:headers": "node scripts/check-doc-headers.js --all"
+    "docs:headers": "node scripts/check-doc-headers.js --all",
+    "session:end": "node scripts/session-end-commit.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
