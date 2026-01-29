@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 2.1 **Last Updated:** 2026-01-27 **Purpose:** Comprehensive
+**Version:** 2.2 **Last Updated:** 2026-01-29 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -23,9 +23,11 @@ available in Claude Code
 Custom slash commands defined in `.claude/commands/`. These are project-specific
 commands.
 
-> **Note (2026-01-20):** All custom commands have been migrated to skills format
-> in `.claude/skills/` for better discoverability. Both `/command-name` and the
-> skill invocation work identically.
+> **Note (2026-01-29):** All custom commands have been migrated to skills format
+> in `.claude/skills/`. The command files in `.claude/commands/` are legacy
+> duplicates. Both `/command-name` and the skill invocation work identically.
+> **Prefer using the skill versions** as they may have additional features. See
+> the [Skills](#skills) section for the authoritative list.
 
 ### `/audit-code`
 
@@ -560,11 +562,25 @@ Creating work breakdown **Parameters:** Feature requirements
 
 ### Audit Skills
 
+#### `audit-aggregator`
+
+**Description:** Aggregate and consolidate findings from multiple audit types
+into a unified report **When to use:** After running multiple individual audits
+to get a consolidated view **Example:** After completing code, security, and
+performance audits **Parameters:** None **Added:** Session #114
+
 #### `audit-code`
 
 **Description:** Run single-session code review audit on the codebase **When to
 use:** Quick code quality check **Example:** Pre-commit review **Parameters:**
 None
+
+#### `audit-comprehensive`
+
+**Description:** Run all audit types (code, security, performance, docs,
+process, refactoring) in sequence with aggregated results **When to use:** Full
+codebase health assessment **Example:** Before major release or quarterly review
+**Parameters:** None **Added:** Session #114
 
 #### `audit-documentation`
 
@@ -596,6 +612,14 @@ use:** Security review **Example:** Pre-production security check
 **Parameters:** None
 
 ### Session Management
+
+#### `checkpoint`
+
+**Description:** Create a checkpoint for the current session state. Saves
+progress markers and context for session recovery or handoff. **When to use:**
+Before complex operations, mid-session saves, or preparing for handoff
+**Example:** `/checkpoint` before major refactoring **Parameters:** None
+**Added:** Session #114
 
 #### `session-begin`
 
@@ -1401,6 +1425,26 @@ start (after session-start.sh) **What it does:**
 - Validates MCP configuration **Location:** `.claude/hooks/check-mcp-servers.js`
   **Status Message:** "Checking MCP availability..."
 
+#### `check-remote-session-context.js`
+
+**Description:** Remote session context validator **When triggered:** At session
+start for remote/web sessions **What it does:**
+
+- Validates remote session environment
+- Checks for encrypted secrets needing decryption
+- Ensures proper context for remote work **Location:**
+  `.claude/hooks/check-remote-session-context.js` **Added:** Session #114
+
+#### `stop-serena-dashboard.js`
+
+**Description:** Serena dashboard cleanup **When triggered:** At session start
+**What it does:**
+
+- Checks for orphaned Serena dashboard processes
+- Cleans up stale dashboard instances
+- Prevents resource leaks **Location:** `.claude/hooks/stop-serena-dashboard.js`
+  **Added:** Session #114
+
 ### PostToolUse Hooks
 
 #### `check-write-requirements.sh`
@@ -1451,7 +1495,115 @@ does:**
   `.claude/hooks/agent-trigger-enforcer.js` **Status Message:** "Checking agent
   recommendations..."
 
+#### `app-check-validator.js`
+
+**Description:** Firebase App Check validation **When triggered:** After edits
+to Firebase-related files **What it does:**
+
+- Validates App Check configuration
+- Checks for security misconfigurations **Location:**
+  `.claude/hooks/app-check-validator.js` **Added:** Session #114
+
+#### `audit-s0s1-validator.js`
+
+**Description:** Audit finding severity validator **When triggered:** After
+edits to audit-related files **What it does:**
+
+- Validates S0/S1 findings have required fields
+- Ensures verification_steps are present
+- Enforces audit quality standards **Location:**
+  `.claude/hooks/audit-s0s1-validator.js` **Added:** Session #114
+
+#### `auto-save-context.js`
+
+**Description:** Automatic context saver **When triggered:** After significant
+tool operations **What it does:**
+
+- Monitors for important context changes
+- Auto-saves to MCP memory when appropriate
+- Prevents context loss **Location:** `.claude/hooks/auto-save-context.js`
+  **Added:** Session #114
+
+#### `component-size-check.js`
+
+**Description:** React component size monitor **When triggered:** After edits to
+React component files **What it does:**
+
+- Checks component file sizes
+- Warns when components exceed recommended limits
+- Suggests splitting large components **Location:**
+  `.claude/hooks/component-size-check.js` **Added:** Session #114
+
+#### `decision-save-prompt.js`
+
+**Description:** Decision documentation prompter **When triggered:** After
+significant decisions detected **What it does:**
+
+- Detects architectural/design decisions
+- Prompts to document in decision log
+- Non-blocking **Location:** `.claude/hooks/decision-save-prompt.js` **Added:**
+  Session #114
+
+#### `firestore-write-block.js`
+
+**Description:** Firestore write protection **When triggered:** After Firestore
+rule modifications **What it does:**
+
+- Validates Firestore security rules
+- Blocks potentially dangerous write patterns
+- Enforces security best practices **Location:**
+  `.claude/hooks/firestore-write-block.js` **Added:** Session #114
+
+#### `repository-pattern-check.js`
+
+**Description:** Repository pattern validator **When triggered:** After edits to
+repository/data access files **What it does:**
+
+- Validates repository pattern compliance
+- Checks for direct database access anti-patterns **Location:**
+  `.claude/hooks/repository-pattern-check.js` **Added:** Session #114
+
+#### `test-mocking-validator.js`
+
+**Description:** Test mock pattern validator **When triggered:** After edits to
+test files **What it does:**
+
+- Validates proper test mocking patterns
+- Checks for httpsCallable mocking (not Firestore directly)
+- Ensures test isolation **Location:** `.claude/hooks/test-mocking-validator.js`
+  **Added:** Session #114
+
+#### `track-agent-invocation.js`
+
+**Description:** Agent usage tracker **When triggered:** After Task tool
+invocations **What it does:**
+
+- Tracks which agents are invoked
+- Records usage statistics
+- Supports agent effectiveness analysis **Location:**
+  `.claude/hooks/track-agent-invocation.js` **Added:** Session #114
+
+#### `typescript-strict-check.js`
+
+**Description:** TypeScript strict mode enforcer **When triggered:** After edits
+to TypeScript files **What it does:**
+
+- Validates strict TypeScript compliance
+- Checks for any/unknown type usage
+- Enforces type safety standards **Location:**
+  `.claude/hooks/typescript-strict-check.js` **Added:** Session #114
+
 ### UserPromptSubmit Hooks
+
+#### `alerts-reminder.js`
+
+**Description:** Pending alerts notifier **When triggered:** When user submits a
+prompt **What it does:**
+
+- Checks for pending system alerts
+- Reminds user of unaddressed warnings
+- Non-blocking **Location:** `.claude/hooks/alerts-reminder.js` **Status
+  Message:** "Checking alerts..." **Added:** Session #114
 
 #### `analyze-user-request.js`
 
@@ -1464,16 +1616,16 @@ a prompt **What it does:**
   `.claude/hooks/analyze-user-request.js` **Status Message:** "Checking PRE-TASK
   triggers..."
 
-#### `session-end-reminder.js`
+#### `large-context-warning.js`
 
-**Description:** Session ending detector **When triggered:** When user submits a
+**Description:** Context size monitor **When triggered:** When user submits a
 prompt **What it does:**
 
-- Detects phrases indicating session is ending ("done", "that's all", etc.)
-- Reminds to run `/session-end` skill
-- Non-blocking (just provides guidance) **Location:**
-  `.claude/hooks/session-end-reminder.js` **Status Message:** "Checking session
-  status..."
+- Monitors conversation context size
+- Warns when approaching context limits
+- Suggests `/save-context` when needed **Location:**
+  `.claude/hooks/large-context-warning.js` **Status Message:** "Checking context
+  size..." **Added:** Session #114
 
 #### `plan-mode-suggestion.js`
 
@@ -1485,6 +1637,17 @@ prompt **What it does:**
 - Non-blocking (just provides guidance) **Location:**
   `.claude/hooks/plan-mode-suggestion.js` **Status Message:** "Checking task
   complexity..."
+
+#### `session-end-reminder.js`
+
+**Description:** Session ending detector **When triggered:** When user submits a
+prompt **What it does:**
+
+- Detects phrases indicating session is ending ("done", "that's all", etc.)
+- Reminds to run `/session-end` skill
+- Non-blocking (just provides guidance) **Location:**
+  `.claude/hooks/session-end-reminder.js` **Status Message:** "Checking session
+  status..."
 
 ---
 
@@ -1647,20 +1810,21 @@ prompt **What it does:**
 
 ## Version History
 
-| Version | Date       | Changes                                                          |
-| ------- | ---------- | ---------------------------------------------------------------- |
-| 2.1     | 2026-01-27 | Updated session-end checklist to include DOCUMENTATION_INDEX.md  |
-| 2.0     | 2026-01-22 | Fix expansion-evaluation template per PR review (Review #195)    |
-| 1.9     | 2026-01-22 | Add detailed presentation format to expansion-evaluation skill   |
-| 1.8     | 2026-01-22 | Refine expansion-evaluation skill command examples (Review #196) |
-| 1.7     | 2026-01-22 | Add agent-trigger-enforcer hook with phase notifications         |
-| 1.6     | 2026-01-22 | Add plan-mode-suggestion hook for complex task detection         |
-| 1.5     | 2026-01-21 | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook  |
-| 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas                    |
-| 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions                  |
-| 1.2     | 2026-01-20 | Note custom commands migrated to skills format                   |
-| 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction               |
-| 1.0     | 2026-01-10 | Initial comprehensive command reference created                  |
+| Version | Date       | Changes                                                                                                                                                         |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.2     | 2026-01-29 | Session #114: Added 3 missing skills (audit-aggregator, audit-comprehensive, checkpoint), documented 14 undocumented hooks, clarified commands→skills migration |
+| 2.1     | 2026-01-27 | Updated session-end checklist to include DOCUMENTATION_INDEX.md                                                                                                 |
+| 2.0     | 2026-01-22 | Fix expansion-evaluation template per PR review (Review #195)                                                                                                   |
+| 1.9     | 2026-01-22 | Add detailed presentation format to expansion-evaluation skill                                                                                                  |
+| 1.8     | 2026-01-22 | Refine expansion-evaluation skill command examples (Review #196)                                                                                                |
+| 1.7     | 2026-01-22 | Add agent-trigger-enforcer hook with phase notifications                                                                                                        |
+| 1.6     | 2026-01-22 | Add plan-mode-suggestion hook for complex task detection                                                                                                        |
+| 1.5     | 2026-01-21 | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook                                                                                                 |
+| 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas                                                                                                                   |
+| 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions                                                                                                                 |
+| 1.2     | 2026-01-20 | Note custom commands migrated to skills format                                                                                                                  |
+| 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction                                                                                                              |
+| 1.0     | 2026-01-10 | Initial comprehensive command reference created                                                                                                                 |
 
 ---
 
