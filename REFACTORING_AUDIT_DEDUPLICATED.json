@@ -1,0 +1,559 @@
+{
+  "metadata": {
+    "generated": "2026-01-29T16:00:00.000Z",
+    "session": 115,
+    "basedOn": "REFACTORING_AUDIT_REPORT.md",
+    "crossReferenced": ["ROADMAP.md", "ROADMAP_FUTURE.md"],
+    "roadmapVersion": "3.14",
+    "futureRoadmapVersion": "1.2"
+  },
+  "summary": {
+    "totalFindings": 209,
+    "alreadyTracked": 73,
+    "partialCoverage": 42,
+    "netNew": 94,
+    "percentages": {
+      "alreadyTracked": 34.9,
+      "partialCoverage": 20.1,
+      "netNew": 45.0
+    }
+  },
+  "immediateHotfixes": [
+    {
+      "id": "REACT-001",
+      "severity": "CRITICAL",
+      "issue": "setTimeout without cleanup in celebration-provider",
+      "file": "components/celebrations/celebration-provider.tsx",
+      "effort": "30 min",
+      "action": "Use ref to store timeout ID and clear in useEffect cleanup"
+    },
+    {
+      "id": "PERF-002",
+      "severity": "CRITICAL",
+      "issue": "13 admin tabs rendered with hidden attribute",
+      "file": "components/admin/admin-tabs.tsx",
+      "effort": "1 hour",
+      "action": "Change to conditional rendering: {activeTab === 'x' && <Component />}"
+    },
+    {
+      "id": "DEP-018",
+      "severity": "HIGH",
+      "issue": "Firebase config in committed .env.production",
+      "file": ".env.production",
+      "effort": "10 min",
+      "action": "Move to CI/CD env vars or .env.local"
+    },
+    {
+      "id": "FB-002",
+      "severity": "CRITICAL",
+      "issue": "Firebase SDK version mismatch",
+      "files": ["package.json", "functions/package.json"],
+      "effort": "30 min",
+      "action": "Align Firebase versions across packages"
+    }
+  ],
+  "quickWins": [
+    {
+      "id": "DEP-001",
+      "issue": "@types/leaflet in prod deps",
+      "effort": "5 min",
+      "action": "Move to devDependencies"
+    },
+    {
+      "id": "DEP-002",
+      "issue": "lucide-react outdated",
+      "effort": "10 min",
+      "action": "npm update lucide-react"
+    },
+    {
+      "id": "DEP-020",
+      "issue": "Hardcoded storage bucket",
+      "effort": "15 min",
+      "action": "Extract to env var"
+    },
+    {
+      "id": "DEP-021",
+      "issue": "Node 24 not LTS",
+      "effort": "10 min",
+      "action": "Change to Node 20"
+    },
+    {
+      "id": "DEP-022",
+      "issue": "lodash vulnerability",
+      "effort": "10 min",
+      "action": "npm audit fix in functions/"
+    },
+    {
+      "id": "DEP-006",
+      "issue": "tsx in prod deps",
+      "effort": "5 min",
+      "action": "Move to devDependencies"
+    },
+    {
+      "id": "DEP-007",
+      "issue": "dotenv in prod deps",
+      "effort": "5 min",
+      "action": "Move to devDependencies"
+    },
+    {
+      "id": "DEP-008",
+      "issue": "Generic project name",
+      "effort": "5 min",
+      "action": "Rename to sonash"
+    }
+  ],
+  "alreadyTracked": {
+    "trackP": [
+      { "auditId": "PERF-016", "existingId": "P1.1-P1.4", "description": "Image optimization" },
+      { "auditId": "PERF-017", "existingId": "P1.2", "description": "Background image" },
+      { "auditId": "PERF-018", "existingId": "P1.2", "description": "WebP conversion" },
+      { "auditId": "PERF-001", "existingId": "P2.3", "description": "Admin lazy load" },
+      { "auditId": "PERF-003", "existingId": "P2.1", "description": "Journal lazy load" },
+      { "auditId": "PERF-005", "existingId": "P2.2", "description": "Code splitting" },
+      { "auditId": "PERF-006", "existingId": "P3.1", "description": "Memoization" },
+      { "auditId": "PERF-008", "existingId": "P3.1", "description": "TodayPage state" },
+      { "auditId": "PERF-009", "existingId": "P3.3", "description": "useMemo" },
+      { "auditId": "PERF-010", "existingId": "P3.2", "description": "AuthProvider" },
+      { "auditId": "PERF-012", "existingId": "P4.1", "description": "Weekly stats" },
+      { "auditId": "PERF-011", "existingId": "P4.3", "description": "Journal pagination" }
+    ],
+    "trackT": [
+      { "auditId": "TEST-006", "existingId": "T1.1-T1.4", "description": "Integration tests" },
+      { "auditId": "TEST-007", "existingId": "T2.1-T2.5", "description": "E2E tests" },
+      { "auditId": "TEST-014", "existingId": "T3.1-T3.5", "description": "Hook tests" },
+      { "auditId": "TEST-016", "existingId": "T4.1-T4.3", "description": "Visual regression" },
+      { "auditId": "TEST-019", "existingId": "Track T", "description": "A11y tests" },
+      { "auditId": "TEST-013", "existingId": "T6.1", "description": "Firestore tests" }
+    ],
+    "m45Security": [
+      { "auditId": "SEC-001", "existingId": "DEDUP-0001", "description": "App Check" },
+      { "auditId": "FB-001", "existingId": "M4.5-T4.*", "description": "App Check enforcement" },
+      { "auditId": "SEC-009", "existingId": "P6.1-P6.3", "description": "CSP headers" }
+    ],
+    "m2Architecture": [
+      { "auditId": "ARCH-006", "existingId": "M2.1", "description": "Circular deps" },
+      { "auditId": "ARCH-019", "existingId": "M2.3", "description": "ADRs" },
+      { "auditId": "ARCH-020", "existingId": "M2.3", "description": "Arch docs" },
+      { "auditId": "CODE-004", "existingId": "SONAR-PR4", "description": "Dead code" },
+      { "auditId": "CODE-009", "existingId": "SONAR-PR3", "description": "Complex functions" },
+      { "auditId": "CODE-011", "existingId": "SONAR-PR4", "description": "Naming" }
+    ]
+  },
+  "partialCoverage": {
+    "expandTrackP": [
+      {
+        "auditId": "PERF-002",
+        "related": "P2.3",
+        "gap": "CRITICAL - needs higher priority",
+        "newId": "P2.3-HOT"
+      },
+      { "auditId": "PERF-004", "related": null, "gap": "Bundle analyzer", "newId": "P2.4" },
+      {
+        "auditId": "PERF-007",
+        "related": "P3.1",
+        "gap": "EntryCard memoization",
+        "newId": "P3.1+"
+      },
+      {
+        "auditId": "PERF-013",
+        "related": "P4.3",
+        "gap": "Listener consolidation",
+        "newId": "P4.4"
+      },
+      { "auditId": "PERF-014", "related": null, "gap": "Virtual scrolling", "newId": "P3.4" }
+    ],
+    "expandTrackT": [
+      { "auditId": "TEST-001", "related": null, "gap": "CF admin.ts tests", "newId": "T7.1" },
+      { "auditId": "TEST-002", "related": null, "gap": "CF jobs.ts tests", "newId": "T7.2" },
+      { "auditId": "TEST-003", "related": null, "gap": "CF index.ts tests", "newId": "T7.3" },
+      { "auditId": "TEST-004", "related": null, "gap": "CF triggers.ts tests", "newId": "T7.4" },
+      { "auditId": "TEST-005", "related": null, "gap": "CF emailer.ts tests", "newId": "T7.5" },
+      { "auditId": "TEST-008", "related": "T6.*", "gap": "Security rules tests", "newId": "T6.4" },
+      { "auditId": "TEST-012", "related": null, "gap": "Background jobs tests", "newId": "T7.6" }
+    ],
+    "expandM45": [
+      { "auditId": "SEC-002", "related": "M4.5", "gap": "Rate limiting", "newId": "M4.5-SEC-001" },
+      {
+        "auditId": "SEC-003",
+        "related": "M4.5",
+        "gap": "CORS restriction",
+        "newId": "M4.5-SEC-002"
+      },
+      { "auditId": "SEC-007", "related": "M4.5", "gap": "Token rotation", "newId": "M4.5-SEC-004" }
+    ]
+  },
+  "netNew": {
+    "critical": {
+      "cloudFunctionsTesting": {
+        "recommendedTrack": "T7",
+        "effort": "20 hours",
+        "items": [
+          {
+            "id": "TEST-001",
+            "description": "admin.ts 0% coverage (3,111 lines)",
+            "newId": "T7.1"
+          },
+          { "id": "TEST-002", "description": "jobs.ts 0% coverage (1,036 lines)", "newId": "T7.2" },
+          { "id": "TEST-003", "description": "index.ts 0% coverage", "newId": "T7.3" },
+          { "id": "TEST-004", "description": "triggers.ts 0% coverage", "newId": "T7.4" },
+          { "id": "TEST-005", "description": "emailer.ts 0% coverage", "newId": "T7.5" }
+        ]
+      },
+      "godObjectRefactoring": {
+        "recommendedTrack": "M2.3-REF",
+        "effort": "40 hours",
+        "items": [
+          {
+            "id": "ARCH-001",
+            "description": "Repository pattern violation",
+            "newId": "M2.3-REF-005",
+            "effort": "4h"
+          },
+          {
+            "id": "ARCH-002",
+            "description": "admin.ts 3,111 lines",
+            "newId": "M2.3-REF-001",
+            "effort": "16h"
+          },
+          {
+            "id": "ARCH-003",
+            "description": "users-tab.tsx 2,092 lines",
+            "newId": "M2.3-REF-002",
+            "effort": "8h"
+          },
+          {
+            "id": "ARCH-004",
+            "description": "today-page.tsx 1,199 lines",
+            "newId": "M2.3-REF-003",
+            "effort": "6h"
+          },
+          {
+            "id": "ARCH-005",
+            "description": "dashboard-tab.tsx 1,031 lines",
+            "newId": "M2.3-REF-004",
+            "effort": "4h"
+          }
+        ]
+      }
+    },
+    "high": {
+      "security": [
+        {
+          "id": "SEC-004",
+          "description": "Admin privilege escalation",
+          "recommendedPlacement": "M4.5-SEC-003"
+        },
+        {
+          "id": "SEC-005",
+          "description": "Sensitive data in logs",
+          "recommendedPlacement": "Track E"
+        },
+        {
+          "id": "SEC-006",
+          "description": "Missing input sanitization",
+          "recommendedPlacement": "M4.5"
+        },
+        {
+          "id": "SEC-008",
+          "description": "Error messages expose internals",
+          "recommendedPlacement": "Track D"
+        }
+      ],
+      "architecture": [
+        {
+          "id": "ARCH-007",
+          "description": "Missing service layer",
+          "recommendedPlacement": "M2.3"
+        },
+        {
+          "id": "ARCH-008",
+          "description": "Inconsistent data access",
+          "recommendedPlacement": "M2.1"
+        },
+        {
+          "id": "ARCH-010",
+          "description": "Missing error boundaries",
+          "recommendedPlacement": "Track P"
+        },
+        {
+          "id": "ARCH-011",
+          "description": "Tight component coupling",
+          "recommendedPlacement": "M2.3"
+        },
+        {
+          "id": "ARCH-013",
+          "description": "Missing domain separation",
+          "recommendedPlacement": "M2.3"
+        }
+      ],
+      "codeQuality": [
+        {
+          "id": "CODE-002",
+          "description": "Missing error boundaries",
+          "recommendedPlacement": "Track P"
+        },
+        {
+          "id": "CODE-003",
+          "description": "Inconsistent error handling",
+          "recommendedPlacement": "M2.1"
+        },
+        { "id": "CODE-005", "description": "Magic numbers", "recommendedPlacement": "M2.1" },
+        { "id": "CODE-006", "description": "Complex conditionals", "recommendedPlacement": "M2.1" }
+      ],
+      "firebase": [
+        { "id": "FB-003", "description": "Missing security rules", "recommendedPlacement": "M4.5" },
+        {
+          "id": "FB-004",
+          "description": "Listeners not optimized",
+          "recommendedPlacement": "Track P"
+        },
+        {
+          "id": "FB-005",
+          "description": "Missing composite indexes",
+          "recommendedPlacement": "Track P"
+        },
+        {
+          "id": "FB-006",
+          "description": "CF cold start optimization",
+          "recommendedPlacement": "M2.3"
+        },
+        { "id": "FB-007", "description": "Missing transactions", "recommendedPlacement": "M2.1" }
+      ]
+    },
+    "medium": {
+      "dependencies": [
+        {
+          "id": "DEP-009",
+          "description": "Missing TS strict options",
+          "recommendedPlacement": "M2.1"
+        },
+        {
+          "id": "DEP-012",
+          "description": "Missing security headers",
+          "recommendedPlacement": "Track P P6"
+        },
+        {
+          "id": "DEP-013",
+          "description": "Incomplete Sentry integration",
+          "recommendedPlacement": "Track A"
+        },
+        { "id": "DEP-015", "description": "Missing jsx-a11y", "recommendedPlacement": "M2.1" },
+        { "id": "DEP-019", "description": "No Zod env validation", "recommendedPlacement": "M2.1" }
+      ],
+      "documentation": [
+        {
+          "id": "DOC-001",
+          "description": "today-page missing JSDoc",
+          "recommendedPlacement": "M2.1"
+        },
+        { "id": "DOC-002", "description": "CF undocumented", "recommendedPlacement": "M2.1" },
+        { "id": "DOC-003", "description": "JSDoc 3% coverage", "recommendedPlacement": "M2.1" },
+        {
+          "id": "DOC-007",
+          "description": "CONTRIBUTING.md missing",
+          "recommendedPlacement": "Track E"
+        },
+        {
+          "id": "DOC-008",
+          "description": "Env var docs incomplete",
+          "recommendedPlacement": "Track E"
+        },
+        {
+          "id": "DOC-010",
+          "description": "Deployment docs missing step",
+          "recommendedPlacement": "Track E"
+        },
+        {
+          "id": "DOC-011",
+          "description": "System diagrams missing",
+          "recommendedPlacement": "M2.3"
+        }
+      ]
+    }
+  },
+  "consolidationOpportunities": {
+    "totalLinesRemovable": 704,
+    "items": [
+      {
+        "id": "AI-003",
+        "lines": 130,
+        "description": "4 identical CRUD services",
+        "action": "Create createCrudService factory",
+        "effort": "1h"
+      },
+      {
+        "id": "AI-004",
+        "lines": 24,
+        "description": "4 identical service adapters",
+        "action": "Create createServiceAdapter helper",
+        "effort": "30min"
+      },
+      {
+        "id": "AI-005",
+        "lines": 500,
+        "description": "prayers/links tabs duplicate AdminCrudTable",
+        "action": "Migrate to AdminCrudTable",
+        "effort": "2h"
+      },
+      {
+        "id": "AI-006",
+        "lines": 50,
+        "description": "library.ts CRUD duplication",
+        "action": "Use generic CRUD helpers",
+        "effort": "30min"
+      }
+    ],
+    "recommendedPlacement": "M1.5 Quick Win"
+  },
+  "roadmapPlacements": {
+    "immediateThisSession": {
+      "description": "Hotfixes to complete this session",
+      "items": ["REACT-001", "PERF-002", "DEP-018", "FB-002"],
+      "totalEffort": "2 hours"
+    },
+    "addToCurrentSprint": {
+      "description": "Add to Operational Visibility Sprint",
+      "trackA": [
+        {
+          "newId": "A26",
+          "auditId": "DEP-013",
+          "description": "Complete Sentry integration",
+          "effort": "2h"
+        },
+        {
+          "newId": "A27",
+          "auditId": "SEC-012",
+          "description": "Expand audit logging",
+          "effort": "2h"
+        }
+      ],
+      "trackE": [
+        {
+          "newId": "E17",
+          "auditId": "DOC-007",
+          "description": "Create CONTRIBUTING.md",
+          "effort": "2h"
+        }
+      ]
+    },
+    "addToTrackP": {
+      "description": "Expand Track P Performance",
+      "items": [
+        {
+          "newId": "P2.4",
+          "auditId": "PERF-004",
+          "description": "Bundle analyzer",
+          "effort": "1h"
+        },
+        {
+          "newId": "P3.4",
+          "auditId": "PERF-014",
+          "description": "Virtual scrolling",
+          "effort": "3h"
+        },
+        {
+          "newId": "P4.4",
+          "auditId": "PERF-013",
+          "description": "Consolidate listeners",
+          "effort": "2h"
+        }
+      ]
+    },
+    "newTrackTPhase7": {
+      "description": "NEW: Cloud Functions Testing",
+      "items": [
+        { "id": "T7.1", "description": "admin.ts test suite", "effort": "6h" },
+        { "id": "T7.2", "description": "jobs.ts test suite", "effort": "4h" },
+        { "id": "T7.3", "description": "index.ts tests", "effort": "2h" },
+        { "id": "T7.4", "description": "triggers.ts tests", "effort": "4h" },
+        { "id": "T7.5", "description": "emailer.ts tests", "effort": "2h" },
+        { "id": "T7.6", "description": "Background jobs tests", "effort": "4h" }
+      ],
+      "totalEffort": "22 hours"
+    },
+    "newM23REF": {
+      "description": "NEW: M2.3-REF God Object Refactoring",
+      "items": [
+        {
+          "id": "M2.3-REF-001",
+          "description": "Split admin.ts",
+          "effort": "16h",
+          "linesReduction": 2600
+        },
+        {
+          "id": "M2.3-REF-002",
+          "description": "Split users-tab.tsx",
+          "effort": "8h",
+          "linesReduction": 1600
+        },
+        {
+          "id": "M2.3-REF-003",
+          "description": "Split today-page.tsx",
+          "effort": "6h",
+          "linesReduction": 700
+        },
+        {
+          "id": "M2.3-REF-004",
+          "description": "Split dashboard-tab.tsx",
+          "effort": "4h",
+          "linesReduction": 530
+        },
+        {
+          "id": "M2.3-REF-005",
+          "description": "Fix repository pattern",
+          "effort": "4h",
+          "linesReduction": 0
+        }
+      ],
+      "totalEffort": "38 hours",
+      "totalLinesReduction": 5430
+    },
+    "addToM45": {
+      "description": "Add to M4.5 Security & Privacy",
+      "items": [
+        {
+          "newId": "M4.5-SEC-001",
+          "auditId": "SEC-002",
+          "description": "Rate limiting",
+          "effort": "4h"
+        },
+        {
+          "newId": "M4.5-SEC-002",
+          "auditId": "SEC-003",
+          "description": "CORS restriction",
+          "effort": "1h"
+        },
+        {
+          "newId": "M4.5-SEC-003",
+          "auditId": "SEC-004",
+          "description": "Admin privilege hardening",
+          "effort": "2h"
+        },
+        {
+          "newId": "M4.5-SEC-004",
+          "auditId": "SEC-007",
+          "description": "Token rotation",
+          "effort": "3h"
+        },
+        {
+          "newId": "M4.5-SEC-005",
+          "auditId": "FB-003",
+          "description": "Security rules",
+          "effort": "2h"
+        }
+      ],
+      "totalEffort": "12 hours"
+    }
+  },
+  "effortSummary": {
+    "immediateHotfixes": "2 hours",
+    "quickWins": "1 hour",
+    "currentSprintAdditions": "6 hours",
+    "trackPExpansions": "8 hours",
+    "trackTPhase7": "22 hours",
+    "m23REFGodObjects": "38 hours",
+    "m45SecurityAdditions": "12 hours",
+    "consolidationOpportunities": "4 hours",
+    "totalNetNewEffort": "93 hours"
+  }
+}
