@@ -22,14 +22,7 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
-// Review #217 R3: Resolve from git repo root, not cwd (works from any subdirectory)
-const REPO_ROOT = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-  encoding: "utf8",
-}).trim();
-
-const SESSION_CONTEXT_PATH = path.join(REPO_ROOT, "SESSION_CONTEXT.md");
-
-// Colors for output
+// Colors for output (defined early for error messages)
 const colors = {
   green: "\x1b[32m",
   red: "\x1b[31m",
@@ -49,20 +42,38 @@ function getErrorMessage(err) {
   return err instanceof Error ? err.message : String(err);
 }
 
+// Review #217 R3/R4: Resolve from git repo root, not cwd (works from any subdirectory)
+let REPO_ROOT = "";
+try {
+  REPO_ROOT = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+    encoding: "utf8",
+  }).trim();
+} catch (err) {
+  log("❌ session:end must be run inside a git repository.", colors.red);
+  log(`   ${getErrorMessage(err)}`, colors.red);
+  process.exit(2);
+}
+
+const SESSION_CONTEXT_PATH = path.join(REPO_ROOT, "SESSION_CONTEXT.md");
+
 /**
  * Run a git command using execFileSync (Review #217: no command injection)
  * @param {string[]} args - Git command arguments
- * @param {object} options - execFileSync options
+ * @param {object} options - Custom options (silent, ignoreError) + execFileSync options (cwd, etc.)
  */
 function runGit(args, options = {}) {
+  // Review #217 R4: Extract custom options before passing to execFileSync
+  const { silent, ignoreError, ...execOptions } = options;
+
   try {
     return execFileSync("git", args, {
       encoding: "utf8",
-      stdio: options.silent ? "pipe" : "inherit",
-      ...options,
+      stdio: silent ? "pipe" : "inherit",
+      cwd: REPO_ROOT, // Default to repo root for subdirectory support
+      ...execOptions,
     });
   } catch (err) {
-    if (!options.ignoreError) {
+    if (!ignoreError) {
       throw err;
     }
     return null;
@@ -76,10 +87,13 @@ function getCurrentBranch() {
 
 /**
  * Check if SESSION_CONTEXT.md has uncommitted changes
- * Review #217 R2: Scope to target file to prevent committing unrelated staged files
+ * Review #217 R2/R4: Scope to target file, use absolute path for subdirectory support
  */
 function hasSessionContextChanges() {
-  const status = runGit(["status", "--porcelain", "SESSION_CONTEXT.md"], { silent: true });
+  const status = runGit(["status", "--porcelain", "--", SESSION_CONTEXT_PATH], {
+    silent: true,
+    cwd: REPO_ROOT,
+  });
   return Boolean(status && status.trim().length > 0);
 }
 
@@ -150,11 +164,12 @@ function main() {
   try {
     runGit(["add", "SESSION_CONTEXT.md"]);
 
-    // Review #217 R2/R3: Commit ONLY SESSION_CONTEXT.md to prevent accidental commits of other staged files
+    // Review #217 R2/R3/R4: Commit ONLY SESSION_CONTEXT.md to prevent accidental commits of other staged files
     // --only flag ensures only specified file is committed, even if other files are staged
     // Use SKIP flags via env to avoid blocking on doc index/header checks
     const commitMessage = "docs: session end - mark complete\n\nhttps://claude.ai/code";
     execFileSync("git", ["commit", "--only", "-m", commitMessage, "--", "SESSION_CONTEXT.md"], {
+      cwd: REPO_ROOT, // Review #217 R4: Works from any subdirectory
       encoding: "utf8",
       stdio: "inherit",
       env: { ...process.env, SKIP_DOC_INDEX_CHECK: "1", SKIP_DOC_HEADER_CHECK: "1" },

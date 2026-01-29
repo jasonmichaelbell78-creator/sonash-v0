@@ -27,6 +27,17 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
+// Review #217 R4: Resolve from git repo root for path safety and subdirectory support
+let REPO_ROOT = "";
+try {
+  REPO_ROOT = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+    encoding: "utf8",
+  }).trim();
+} catch {
+  // Not in a git repository - use cwd as fallback
+  REPO_ROOT = process.cwd();
+}
+
 // Parse arguments
 const args = process.argv.slice(2);
 const verbose = args.includes("--verbose");
@@ -97,7 +108,17 @@ function checkDocumentHeaders(filePath) {
   const warnings = [];
 
   try {
-    const content = fs.readFileSync(filePath, "utf8");
+    // Review #217 R4: Construct absolute path from repo root for subdirectory support
+    const absolutePath = path.isAbsolute(filePath) ? filePath : path.join(REPO_ROOT, filePath);
+
+    // Review #217 R4: Path containment validation to prevent path traversal
+    // Use regex pattern to avoid false positives like "..hidden.md"
+    const rel = path.relative(REPO_ROOT, absolutePath);
+    if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+      return { errors: [`Path outside repository: ${filePath}`], warnings: [] };
+    }
+
+    const content = fs.readFileSync(absolutePath, "utf8");
     const headerSection = content.slice(0, 2000); // Check first 2000 chars for headers
 
     // Check required headers
