@@ -312,8 +312,8 @@ Consolidation is needed when:
 ### Last Consolidation
 
 - **Date:** 2026-01-29 (Session #114+)
-- **Reviews consolidated:** #184-#212 (12 reviews)
-- **Patterns added to CODE_PATTERNS.md v2.0:**
+- **Reviews consolidated:** #184-#212 (29 reviews)
+- **Patterns added to CODE_PATTERNS.md v2.4:**
   - **React/Frontend (11 patterns, NEW SECTION):**
     - Accessible toggle switches (button + role=switch)
     - Local date extraction (getFullYear not toISOString)

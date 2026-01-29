@@ -1,7 +1,7 @@
 # SoNash Future Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Last Updated:** 2026-01-29
 **Status:** ACTIVE
 **Parent Document:** [ROADMAP.md](./ROADMAP.md)
@@ -201,6 +201,10 @@ needed
 - [ ] **DT-006** - Cross-file anchor validation for documentation (Review #213)
   - Validate markdown anchor links across documents
   - Detect broken cross-references automatically
+- [ ] **DT-007** - Structured JSON state for consolidation tracking (PR #324)
+  - Replace fragile markdown regex parsing with JSON state file
+  - Store `lastConsolidatedReview` in `consolidation-state.json`
+  - Improves robustness and eliminates silent parse failures
 
 ### Context Optimization & Agent Infrastructure (Session #90)
 
@@ -558,5 +562,6 @@ See TECHNICAL_DEBT_MASTER.md for full breakdown and prioritization.
 
 | Version | Date       | Changes                                                                                                 | Author |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------- | ------ |
+| 1.2     | 2026-01-29 | PR #324 review: Added DT-007 (JSON state for consolidation tracking)                                    | Claude |
 | 1.1     | 2026-01-29 | Session #114: Added 4 deferred PR review items (DT-004 to DT-006, CTX-004) from Reviews #51, #211, #213 | Claude |
 | 1.0     | 2026-01-27 | Initial creation - split from ROADMAP.md; added Parallel Group markers; comprehensive AI Instructions   | Claude |

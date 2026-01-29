@@ -27,7 +27,7 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #202 - #215 (7 reviews) **Analysis Date:** 2026-01-29
+**Review Range:** #202 - #215 (14 reviews) **Analysis Date:** 2026-01-29
 
 ### Key Metrics
 

@@ -117,6 +117,7 @@ function main() {
     let exitCode = 0;
 
     // Cross-validation: warn if manual counter drifted from computed
+    // Note: Drift is a WARNING only, not a failure (PR Review #324)
     if (manualCount !== computedCount) {
       console.log(
         `⚠️  COUNTER DRIFT DETECTED: Manual counter shows ${manualCount}, but computed is ${computedCount}`
@@ -124,7 +125,7 @@ function main() {
       console.log("   The manual counter in AI_REVIEW_LEARNINGS_LOG.md is out of sync.");
       console.log("   Using COMPUTED value for threshold check.");
       console.log("");
-      exitCode = 1;
+      // Don't set exitCode = 1 here - drift is informational, not a failure
     }
 
     // Check consolidation threshold (use COMPUTED value, not manual)
