@@ -87,10 +87,11 @@ function getCurrentBranch() {
 
 /**
  * Check if SESSION_CONTEXT.md has uncommitted changes
- * Review #217 R2/R4: Scope to target file, use absolute path for subdirectory support
+ * Review #217 R2/R4/R5: Scope to target file, use repo-relative pathspec with cwd
  */
 function hasSessionContextChanges() {
-  const status = runGit(["status", "--porcelain", "--", SESSION_CONTEXT_PATH], {
+  // Use repo-relative path with cwd for better portability (Review #217 R5)
+  const status = runGit(["status", "--porcelain", "--", "SESSION_CONTEXT.md"], {
     silent: true,
     cwd: REPO_ROOT,
   });

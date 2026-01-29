@@ -111,14 +111,18 @@ function checkDocumentHeaders(filePath) {
     // Review #217 R4: Construct absolute path from repo root for subdirectory support
     const absolutePath = path.isAbsolute(filePath) ? filePath : path.join(REPO_ROOT, filePath);
 
-    // Review #217 R4: Path containment validation to prevent path traversal
+    // Review #217 R5: Resolve symlinks before containment check to prevent reading outside repo
+    const realRepoRoot = fs.realpathSync(REPO_ROOT);
+    const realAbsolutePath = fs.realpathSync(absolutePath);
+
+    // Review #217 R4/R5: Path containment validation to prevent path traversal and symlink bypass
     // Use regex pattern to avoid false positives like "..hidden.md"
-    const rel = path.relative(REPO_ROOT, absolutePath);
+    const rel = path.relative(realRepoRoot, realAbsolutePath);
     if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
       return { errors: [`Path outside repository: ${filePath}`], warnings: [] };
     }
 
-    const content = fs.readFileSync(absolutePath, "utf8");
+    const content = fs.readFileSync(realAbsolutePath, "utf8");
     const headerSection = content.slice(0, 2000); // Check first 2000 chars for headers
 
     // Check required headers
@@ -150,16 +154,21 @@ function checkDocumentHeaders(filePath) {
 /**
  * Get staged .md files from git
  * Review #217: Log error and exit instead of silent failure
+ * Review #217 R5: Use -z flag for NUL-delimited output to handle filenames with spaces
  */
 function getStagedFiles(filter = "A") {
   try {
     // A = Added, M = Modified, AM = both
+    // -z flag outputs NUL-delimited paths for safe parsing of filenames with spaces
     const result = execFileSync(
       "git",
-      ["diff", "--cached", "--name-only", "--diff-filter=" + filter],
+      ["diff", "--cached", "--name-only", "--diff-filter=" + filter, "-z"],
       { encoding: "utf8" }
     );
-    return result.split("\n").filter((f) => f.endsWith(".md") && f.trim() !== "");
+    return result
+      .split("\0")
+      .map((f) => f.trim())
+      .filter((f) => f !== "" && f.toLowerCase().endsWith(".md"));
   } catch (err) {
     log(
       `\n❌ Error getting staged files. Is git installed and are you in a git repository?`,
