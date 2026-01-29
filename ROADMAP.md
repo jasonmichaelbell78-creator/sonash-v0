@@ -237,19 +237,23 @@ Planned | 🟣 Research
 This sprint consolidates Admin Panel completion, Development Dashboard, CI/CD
 reliability, and solo developer automations.
 
-### 🚨 Immediate Hotfixes (~2 hours) **NEW - Refactoring Audit Session #115**
+### 🚨 Immediate Hotfixes ✅ COMPLETE (Session #115)
 
 > **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md -
 > Critical issues requiring immediate attention
 
-| ID        | Issue                        | File                                 | Effort | Priority     |
-| --------- | ---------------------------- | ------------------------------------ | ------ | ------------ |
-| REACT-001 | setTimeout memory leak       | celebration-provider.tsx             | 30 min | **CRITICAL** |
-| PERF-002  | Admin tabs all rendered      | admin-tabs.tsx                       | 1 hr   | **CRITICAL** |
-| DEP-018   | Firebase config in committed | .env.production                      | 10 min | HIGH         |
-| FB-002    | Firebase SDK mismatch        | package.json, functions/package.json | 30 min | **CRITICAL** |
+| ID        | Issue                        | File                                 | Effort | Status   |
+| --------- | ---------------------------- | ------------------------------------ | ------ | -------- |
+| REACT-001 | setTimeout memory leak       | celebration-provider.tsx             | 30 min | ✅ Fixed |
+| PERF-002  | Admin tabs all rendered      | admin-tabs.tsx                       | 1 hr   | ✅ Fixed |
+| DEP-018   | Firebase config in committed | .env.production                      | 10 min | ⏭️ N/A   |
+| FB-002    | Firebase SDK mismatch        | package.json, functions/package.json | 30 min | ⏭️ N/A   |
 
-**Total: ~2 hours**
+> **DEP-018/FB-002 Note:** Investigated and found to be false positives -
+> Firebase config is public by design, and SDK versions differ because they're
+> different packages.
+
+**Completed:** Session #115 | **Actual Time:** ~45 minutes
 
 ### Sprint Tracks (8 Parallel Tracks)
 
@@ -763,23 +767,26 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 - CANON-0111 (Pattern checker) → Track D: D4
 - CANON-0112 (Firebase CLI) → Track D: D1
 
-### 🔥 Refactoring Audit Quick Wins (~1 hour) **NEW - Session #115**
+### 🔥 Refactoring Audit Quick Wins ✅ COMPLETE (Session #115)
 
 > **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md -
 > Dependency housekeeping items
 
-| ID      | Issue                    | Effort | Action                      |
-| ------- | ------------------------ | ------ | --------------------------- |
-| DEP-001 | @types/leaflet in prod   | 5 min  | Move to devDependencies     |
-| DEP-002 | lucide-react outdated    | 10 min | npm update lucide-react     |
-| DEP-020 | Hardcoded storage bucket | 15 min | Extract to env var          |
-| DEP-021 | Node 24 not LTS          | 10 min | Change to Node 20           |
-| DEP-022 | lodash vulnerability     | 10 min | npm audit fix in functions/ |
-| DEP-006 | tsx in prod deps         | 5 min  | Move to devDependencies     |
-| DEP-007 | dotenv in prod deps      | 5 min  | Move to devDependencies     |
-| DEP-008 | Generic project name     | 5 min  | Rename to sonash            |
+| ID      | Issue                    | Effort | Action                      | Status |
+| ------- | ------------------------ | ------ | --------------------------- | ------ |
+| DEP-001 | @types/leaflet in prod   | 5 min  | Move to devDependencies     | ✅     |
+| DEP-002 | lucide-react outdated    | 10 min | npm update lucide-react     | ✅     |
+| DEP-020 | Hardcoded storage bucket | 15 min | Extract to env var          | ⏭️ N/A |
+| DEP-021 | Node 24 not LTS          | 10 min | Change to Node 20           | ✅     |
+| DEP-022 | lodash vulnerability     | 10 min | npm audit fix in functions/ | ✅     |
+| DEP-006 | tsx in prod deps         | 5 min  | Move to devDependencies     | ✅     |
+| DEP-007 | dotenv in prod deps      | 5 min  | Move to devDependencies     | ✅     |
+| DEP-008 | Generic project name     | 5 min  | Rename to sonash            | ✅     |
 
-**Total: ~65 minutes**
+> **DEP-020 Note:** Hardcoded storage bucket in `functions/src/jobs.ts` is
+> intentional - the default `bucket()` returns the wrong appspot.com bucket.
+
+**Completed:** Session #115 | **Actual Time:** ~15 minutes
 
 ### 🔬 Research: SAST Tool Integration (After Backlog)
 
