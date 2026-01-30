@@ -142,6 +142,59 @@ function getCategoryFromIdPrefix(id) {
   return null;
 }
 
+// Synonym mapping for semantic deduplication (Session #116)
+// Each key maps to an array of related terms that should match
+const SYNONYM_GROUPS = {
+  // Tracing/Logging related
+  correlation: ["tracing", "trace", "request-id", "requestid", "tracking"],
+  tracing: ["correlation", "trace", "request-id", "tracking", "observability"],
+  logger: ["logging", "logs", "observability", "telemetry"],
+
+  // Offline/Sync related
+  offline: ["sync", "persistence", "cache", "queue", "buffer"],
+  persistence: ["offline", "cache", "storage", "indexeddb"],
+  queue: ["buffer", "offline", "pending", "sync"],
+
+  // Component size related
+  monolithic: ["large", "god-object", "bloated", "oversized"],
+  "god-object": ["monolithic", "large", "bloated", "oversized", "god"],
+
+  // Security related
+  authentication: ["auth", "login", "session", "credential"],
+  authorization: ["permissions", "access", "roles", "claims"],
+  validation: ["sanitization", "input", "escape", "xss"],
+
+  // Performance related
+  optimization: ["performance", "speed", "fast", "efficient"],
+  caching: ["cache", "memoization", "memo", "usememo"],
+  rendering: ["render", "rerender", "paint", "layout"],
+
+  // Architecture related
+  refactoring: ["refactor", "restructure", "reorganize", "extract"],
+  duplication: ["duplicate", "duplicated", "copy", "repeated", "dry"],
+  separation: ["extract", "split", "decouple", "modularize"],
+};
+
+/**
+ * Expand a word with its synonyms for matching (Session #116)
+ */
+function expandWithSynonyms(word) {
+  const normalized = word.toLowerCase().replace(/[-_]/g, "");
+  const synonyms = new Set([normalized]);
+
+  for (const [key, values] of Object.entries(SYNONYM_GROUPS)) {
+    const normalizedKey = key.replace(/[-_]/g, "");
+    if (normalizedKey === normalized || values.some((v) => v.replace(/[-_]/g, "") === normalized)) {
+      synonyms.add(normalizedKey);
+      for (const v of values) {
+        synonyms.add(v.replace(/[-_]/g, ""));
+      }
+    }
+  }
+
+  return Array.from(synonyms);
+}
+
 // PR bucket suggestions based on category
 const PR_BUCKET_MAP = {
   security: "security-hardening",
@@ -382,9 +435,18 @@ function parseRoadmapItems(filePath) {
       const itemId = checkboxMatch[2];
       const description = checkboxMatch[3].trim();
 
-      // Extract file references from description (e.g., `file.tsx`)
-      const fileMatches = description.match(/`([^`]+\.(tsx?|jsx?|mjs|cjs|json|md))`/g);
-      const files = fileMatches ? fileMatches.map((m) => m.replace(/`/g, "")) : [];
+      // Extract file references with optional line numbers (e.g., `file.tsx:123` or `file.tsx`)
+      const fileLineMatches = description.matchAll(
+        /`([^`]+\.(tsx?|jsx?|mjs|cjs|json|md))(?::(\d+))?`/g
+      );
+      const files = [];
+      const fileLines = []; // {file, line} pairs for precise matching
+      for (const match of fileLineMatches) {
+        files.push(match[1]);
+        if (match[3]) {
+          fileLines.push({ file: match[1], line: parseInt(match[3], 10) });
+        }
+      }
 
       items.push({
         id: itemId,
@@ -393,6 +455,7 @@ function parseRoadmapItems(filePath) {
         description: description.replace(/[\u2705\u{1F504}\u{1F4CB}\u23F3]/gu, "").trim(),
         status: isComplete ? "complete" : "pending",
         files,
+        fileLines,
         source: "roadmap",
       });
     }
@@ -415,9 +478,18 @@ function parseRoadmapItems(filePath) {
       // Detect completion status from emoji
       const isComplete = line.includes("\u2705"); // ✅
 
-      // Extract file references
-      const fileMatches = description.match(/`([^`]+\.(tsx?|jsx?|mjs|cjs|json|md))`/g);
-      const files = fileMatches ? fileMatches.map((m) => m.replace(/`/g, "")) : [];
+      // Extract file references with optional line numbers
+      const fileLineMatches = description.matchAll(
+        /`([^`]+\.(tsx?|jsx?|mjs|cjs|json|md))(?::(\d+))?`/g
+      );
+      const files = [];
+      const fileLines = [];
+      for (const match of fileLineMatches) {
+        files.push(match[1]);
+        if (match[3]) {
+          fileLines.push({ file: match[1], line: parseInt(match[3], 10) });
+        }
+      }
 
       // Avoid duplicates
       if (!items.some((i) => i.id === itemId)) {
@@ -428,6 +500,7 @@ function parseRoadmapItems(filePath) {
           description: description.replace(/[\u2705\u{1F504}\u{1F4CB}\u23F3]/gu, "").trim(),
           status: isComplete ? "complete" : "pending",
           files,
+          fileLines,
           source: "roadmap",
         });
       }
@@ -448,10 +521,23 @@ function parseRoadmapItems(filePath) {
       // If col2 is a file path, use it as the file and col3 as description
       const description = col2IsFilePath ? col3 : col2;
       const files = [];
+      const fileLines = [];
+
+      // Helper to extract file and optional line number
+      const extractFileLine = (path) => {
+        const lineMatch = path.match(/^(.+):(\d+)$/);
+        if (lineMatch) {
+          files.push(lineMatch[1]);
+          fileLines.push({ file: lineMatch[1], line: parseInt(lineMatch[2], 10) });
+        } else {
+          files.push(path);
+        }
+      };
+
       if (col2IsFilePath) {
-        files.push(col2);
+        extractFileLine(col2);
       } else if (/\.(?:tsx?|jsx?|mjs|cjs|json|md)$/i.test(col3)) {
-        files.push(col3);
+        extractFileLine(col3);
       }
 
       // Check if already added (avoid duplicates)
@@ -463,6 +549,7 @@ function parseRoadmapItems(filePath) {
           description,
           status: line.includes("✅") ? "complete" : "pending",
           files,
+          fileLines,
           source: "roadmap",
         });
       }
@@ -524,16 +611,21 @@ function parseTechDebtItems(filePath) {
 /**
  * Cross-reference findings against ROADMAP and TECHNICAL_DEBT items (Session #116)
  * Returns findings with roadmap_status field: "already_tracked" or "net_new"
+ * Enhanced with file:line matching and synonym expansion (Session #116)
  */
 function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
   // Build lookup indices for fast matching
   const roadmapByFile = new Map();
+  const roadmapByFileLine = new Map(); // For file:line exact matching
   const roadmapByDescription = new Map();
   const techDebtById = new Map();
   const techDebtByTitle = new Map();
 
+  // Line proximity threshold for matching (findings within N lines of tracked item)
+  const LINE_PROXIMITY_THRESHOLD = 15;
+
   for (const item of roadmapItems) {
-    // Index by files
+    // Index by files (basename)
     for (const file of item.files || []) {
       const normalizedFile = file.replace(/^.*\//, ""); // basename only
       if (!roadmapByFile.has(normalizedFile)) {
@@ -541,31 +633,53 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
       }
       roadmapByFile.get(normalizedFile).push(item);
     }
-    // Index by description words (for fuzzy matching)
+
+    // Index by file:line for precise matching
+    for (const fileLine of item.fileLines || []) {
+      const key = `${fileLine.file.replace(/^.*\//, "")}:${fileLine.line}`;
+      if (!roadmapByFileLine.has(key)) {
+        roadmapByFileLine.set(key, []);
+      }
+      roadmapByFileLine.get(key).push({ ...item, matchedLine: fileLine.line });
+    }
+
+    // Index by description words with synonym expansion
     const descWords = item.description
       .toLowerCase()
       .split(/\s+/)
       .filter((w) => w.length > 4);
     for (const word of descWords) {
-      if (!roadmapByDescription.has(word)) {
-        roadmapByDescription.set(word, []);
+      // Expand each word with its synonyms
+      const expandedWords = expandWithSynonyms(word);
+      for (const expandedWord of expandedWords) {
+        if (!roadmapByDescription.has(expandedWord)) {
+          roadmapByDescription.set(expandedWord, []);
+        }
+        // Avoid duplicate entries
+        if (!roadmapByDescription.get(expandedWord).some((i) => i.id === item.id)) {
+          roadmapByDescription.get(expandedWord).push(item);
+        }
       }
-      roadmapByDescription.get(word).push(item);
     }
   }
 
   for (const item of techDebtItems) {
     techDebtById.set(item.id, item);
-    // Index by title words
+    // Index by title words with synonym expansion
     const titleWords = item.title
       .toLowerCase()
       .split(/\s+/)
       .filter((w) => w.length > 4);
     for (const word of titleWords) {
-      if (!techDebtByTitle.has(word)) {
-        techDebtByTitle.set(word, []);
+      const expandedWords = expandWithSynonyms(word);
+      for (const expandedWord of expandedWords) {
+        if (!techDebtByTitle.has(expandedWord)) {
+          techDebtByTitle.set(expandedWord, []);
+        }
+        if (!techDebtByTitle.get(expandedWord).some((i) => i.id === item.id)) {
+          techDebtByTitle.get(expandedWord).push(item);
+        }
       }
-      techDebtByTitle.get(word).push(item);
     }
   }
 
@@ -584,7 +698,34 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
       matchReason = "direct ID match";
     }
 
-    // Check 2: File-based match with roadmap
+    // Check 1.5: File:line exact match (highest precision)
+    if (!matchedRoadmapItem && finding.file && finding.line) {
+      const basename = finding.file.replace(/^.*\//, "");
+      const exactKey = `${basename}:${finding.line}`;
+      const exactMatches = roadmapByFileLine.get(exactKey) || [];
+      if (exactMatches.length > 0) {
+        matchedRoadmapItem = exactMatches[0];
+        matchReason = `file:line exact match: ${exactKey}`;
+      }
+    }
+
+    // Check 1.6: File:line proximity match (within N lines)
+    if (!matchedRoadmapItem && finding.file && finding.line) {
+      const basename = finding.file.replace(/^.*\//, "");
+      // Check all roadmap items with file:line references
+      for (const [key, items] of roadmapByFileLine) {
+        if (key.startsWith(basename + ":")) {
+          const roadmapLine = parseInt(key.split(":")[1], 10);
+          if (Math.abs(finding.line - roadmapLine) <= LINE_PROXIMITY_THRESHOLD) {
+            matchedRoadmapItem = items[0];
+            matchReason = `file:line proximity (within ${LINE_PROXIMITY_THRESHOLD} lines): ${basename}:${roadmapLine}`;
+            break;
+          }
+        }
+      }
+    }
+
+    // Check 2: File-based match with roadmap (fallback to basename only)
     if (!matchedRoadmapItem && finding.file) {
       const basename = finding.file.replace(/^.*\//, "");
       const roadmapMatches = roadmapByFile.get(basename) || [];
@@ -594,7 +735,7 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
       }
     }
 
-    // Check 3: Title similarity with tech debt
+    // Check 3: Title similarity with tech debt (with synonym expansion)
     if (!matchedTechDebtItem && finding.title) {
       const titleWords = finding.title
         .toLowerCase()
@@ -602,21 +743,25 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
         .filter((w) => w.length > 4);
       const candidates = new Map();
       for (const word of titleWords) {
-        for (const item of techDebtByTitle.get(word) || []) {
-          candidates.set(item.id, (candidates.get(item.id) || 0) + 1);
+        // Expand with synonyms for better matching
+        const expandedWords = expandWithSynonyms(word);
+        for (const expandedWord of expandedWords) {
+          for (const item of techDebtByTitle.get(expandedWord) || []) {
+            candidates.set(item.id, (candidates.get(item.id) || 0) + 1);
+          }
         }
       }
       // Require at least 2 matching words for title match
       for (const [id, count] of candidates) {
         if (count >= 2) {
           matchedTechDebtItem = techDebtById.get(id);
-          matchReason = `title similarity (${count} words)`;
+          matchReason = `title similarity (${count} words, with synonyms)`;
           break;
         }
       }
     }
 
-    // Check 4: Description similarity with roadmap
+    // Check 4: Description similarity with roadmap (with synonym expansion)
     if (!matchedRoadmapItem && finding.title) {
       const titleWords = finding.title
         .toLowerCase()
@@ -624,15 +769,19 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
         .filter((w) => w.length > 4);
       const candidates = new Map();
       for (const word of titleWords) {
-        for (const item of roadmapByDescription.get(word) || []) {
-          candidates.set(item.id, (candidates.get(item.id) || 0) + 1);
+        // Expand with synonyms for better matching
+        const expandedWords = expandWithSynonyms(word);
+        for (const expandedWord of expandedWords) {
+          for (const item of roadmapByDescription.get(expandedWord) || []) {
+            candidates.set(item.id, (candidates.get(item.id) || 0) + 1);
+          }
         }
       }
       // Require at least 2 matching words
       for (const [id, count] of candidates) {
         if (count >= 2) {
           matchedRoadmapItem = roadmapItems.find((i) => i.id === id);
-          matchReason = `description similarity (${count} words)`;
+          matchReason = `description similarity (${count} words, with synonyms)`;
           break;
         }
       }

@@ -77,8 +77,9 @@ const REQUIRED_FIELDS_BY_SEVERITY = {
     "evidence",
     "confidence",
   ],
-  S2: ["id", "category", "severity", "file", "title", "description", "recommendation"],
-  S3: ["id", "category", "severity", "title", "description"],
+  // Session #116: Added line to S2/S3 for deduplication/cross-reference
+  S2: ["id", "category", "severity", "file", "line", "title", "description", "recommendation"],
+  S3: ["id", "category", "severity", "file", "line", "title", "description"],
 };
 
 function loadFalsePositives() {

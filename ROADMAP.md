@@ -339,6 +339,7 @@ reliability, and solo developer automations.
 - [ ] **A21:** Sentry Error → User Correlation (2-3hr)
   - Link errors to specific user accounts
   - Show user's recent actions before error
+  - **Key lines:** `lib/logger.ts:1`
   - Quick navigation to user details from error
 - [ ] **A22:** GCP Cloud Logging Query Builder (3-4hr)
   - Simple log queries without GCP Console
@@ -1565,6 +1566,7 @@ Performance monitoring, incident response, and dashboard enhancements.
 - ⏳ **EFF-006: Add Correlation IDs to Logger** (M effort)
   - Generate unique correlation ID per request
   - Pass through all log calls (frontend + backend)
+  - **Key lines:** `lib/logger.ts:1`, `hooks/use-journal.ts:319`
   - Enables tracing requests across services
   - **Verification:** Make request, find same ID in frontend and backend logs
 
@@ -1586,6 +1588,7 @@ Performance monitoring, incident response, and dashboard enhancements.
 #### Offline Support (CRITICAL)
 
 - ⏳ **EFF-010:** → _Merged into T1.2 (M5 Offline Infrastructure)_
+  - **Key lines:** `hooks/use-journal.ts:319`, `lib/firebase.ts:1`
 
 - ⏳ **EFF-011:** → _Moved to M5 F1: Offline Infrastructure_
 
@@ -1680,6 +1683,17 @@ Architecture refactoring, schema optimization, and infrastructure work.
 | M2.3-REF-003 | components/notebook/pages/today-page.tsx | 1,199 | ~500   | 6hr    | P2       |
 | M2.3-REF-004 | components/admin/dashboard-tab.tsx       | 1,031 | ~500   | 4hr    | P2       |
 | M2.3-REF-005 | Repository pattern violations (multiple) | -     | -      | 4hr    | P2       |
+
+**Key Issue Lines (for audit cross-reference):**
+
+- **M2.3-REF-001:** `admin.ts:143` (ReDoS regex), `admin.ts:1388` (nested
+  templates), `admin.ts:1726` (cognitive complexity), `admin.ts:1835` (cognitive
+  complexity)
+- **M2.3-REF-002:** `users-tab.tsx:1` (god component), `users-tab.tsx:84`
+  (complexity)
+- **M2.3-REF-003:** `today-page.tsx:1` (god component), `today-page.tsx:396`
+  (debug logs)
+- **M2.3-REF-004:** `dashboard-tab.tsx:1` (large component)
 
 **Splitting Strategy:**
 

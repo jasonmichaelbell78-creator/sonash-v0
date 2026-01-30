@@ -443,7 +443,11 @@ Compliance|Frontmatter|Content Quality", "title": "short, specific issue",
 "path2"], "issue_details": { "description": "what's wrong", "impact": "how it
 affects users", "examples": ["specific instances"] }, "remediation": { "steps":
 ["step 1", "step 2"], "verification": ["how to verify fix"] }, "evidence":
-["grep output or link checks"], "notes": "optional" }
+["grep output or link checks"], "notes": "optional", "line": 123 }
+
+**⚠️ REQUIRED FIELDS (Session #116):** `files` (at least one path) and `line`
+(primary line number, use 1 if file-wide) are REQUIRED for ROADMAP
+cross-reference.
 
 3. SUSPECTED_FINDINGS_JSONL (same schema, but confidence <= 40; needs manual
    verification)

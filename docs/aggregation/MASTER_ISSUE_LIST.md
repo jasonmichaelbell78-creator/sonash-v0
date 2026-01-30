@@ -2,7 +2,7 @@
 
 **Generated:** 2026-01-30 **Source:** Aggregated from single-session audits,
 CANON files, and backlogs **Total Items:** 285 (deduplicated from 295 raw
-findings) **NET NEW:** 198 (87 already in ROADMAP/Tech Debt)
+findings) **NET NEW:** 172 (113 already in ROADMAP/Tech Debt)
 
 ---
 
@@ -13,8 +13,8 @@ findings) **NET NEW:** 198 (87 already in ROADMAP/Tech Debt)
 | Metric                | Count   |
 | --------------------- | ------- |
 | Total Unique Findings | 285     |
-| Already in ROADMAP    | 87      |
-| **NET NEW**           | **198** |
+| Already in ROADMAP    | 113     |
+| **NET NEW**           | **172** |
 
 ### By Severity
 

@@ -232,6 +232,15 @@ Each line (UPDATED SCHEMA with confidence and verification):
 }
 ```
 
+**⚠️ REQUIRED FIELDS (for deduplication/cross-reference):**
+
+- `file` - REQUIRED: Full path from repo root (e.g.,
+  `components/notebook/pages/today-page.tsx`)
+- `line` - REQUIRED: Specific line number where issue occurs (use line 1 if
+  file-wide)
+- These fields enable the aggregator to match findings against existing ROADMAP
+  items
+
 **3. Markdown Report (save to file):**
 
 Create file: `docs/audits/single-session/performance/audit-[YYYY-MM-DD].md`
