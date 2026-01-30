@@ -301,13 +301,13 @@ Full markdown report with all findings, baselines, and refactoring plan.
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-6. **Update Technical Debt Backlog** - Re-aggregate all findings:
+6. **TDMS Integration (MANDATORY)** - Ingest findings to canonical debt store:
    ```bash
-   npm run aggregate:audit-findings
+   node scripts/debt/intake-audit.js docs/audits/single-session/refactoring/audit-[YYYY-MM-DD].jsonl --source "audit-refactoring-[DATE]"
    ```
-   This updates `docs/aggregation/MASTER_ISSUE_LIST.md` and the Technical Debt
-   Backlog section in `ROADMAP.md`. Review the updated counts and ensure new
-   findings are properly categorized.
+   This assigns DEBT-XXXX IDs and adds to
+   `docs/technical-debt/MASTER_DEBT.jsonl`. See
+   `docs/technical-debt/PROCEDURE.md` for the full TDMS workflow.
 7. Ask: "Would you like me to tackle any of these refactoring tasks now?
    (Recommend starting with batch fixes)"
 
