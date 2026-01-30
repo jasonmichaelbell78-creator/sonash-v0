@@ -647,6 +647,52 @@ if (!lastSessionEndRan || commitsSinceLastMetrics >= 5) {
 | **14** | Dev dashboard integration          | Phases 1, 10        | E2               |
 | **15** | Run verification batches           | Phase 9             | E3 (ongoing)     |
 | **16** | **Final doc sync & enforcement**   | All phases          | E1               |
+| **17** | **Final System Audit**             | Phase 16            | E1               |
+
+### Phase Audit Requirements (MANDATORY)
+
+After completing EACH implementation phase:
+
+1. **Create Audit Report** - `docs/technical-debt/PHASE_N_AUDIT.md`
+   - List all requirements from the plan for that phase
+   - Mark each as PASS, FAIL, or DEFERRED
+   - Document any deviations with justification
+   - Include summary statistics where applicable
+
+2. **Commit All Changes** - Include audit report in commit
+   - Use message format: `feat: complete TDMS Phase N - [description]`
+
+3. **Run Checkpoint** - Invoke `/checkpoint` skill after commit
+   - Creates session checkpoint for recovery
+   - Documents phase completion in SESSION_CONTEXT.md
+
+4. **Update Plan Status** - Mark phase as complete in Approval section (bottom)
+
+**Audit Report Template:**
+
+```markdown
+# TDMS Phase N Audit Report
+
+**Audit Date:** YYYY-MM-DD **Phase:** Implementation Phase N ([description])
+**Status:** PASS | PASS with deviations | FAIL
+
+## Requirements Checklist
+
+| Requirement | Status             | Notes |
+| ----------- | ------------------ | ----- |
+| ...         | PASS/FAIL/DEFERRED | ...   |
+
+## Deviations Summary
+
+| Item | Deviation | Impact | Resolution |
+| ---- | --------- | ------ | ---------- |
+
+## Audit Verdict
+
+[PASS/FAIL with explanation]
+```
+
+---
 
 ### Phase 16: Final Doc Sync & Enforcement (MANDATORY)
 
@@ -678,6 +724,35 @@ updated:
 - [ ] All audit skill files - Verify canonical output references
 - [ ] `docs/audits/canonical/README.md` - Update migration status
 - [ ] `ROADMAP.md` - Update all DEBT-XXXX references
+
+---
+
+### Phase 17: Final System Audit (MANDATORY)
+
+After all phases complete, conduct a final system-wide audit:
+
+**Audit Checklist:**
+
+- [ ] All 16 phases audited with PASS status
+- [ ] All phase audit reports exist in `docs/technical-debt/`
+- [ ] MASTER_DEBT.jsonl schema validates
+- [ ] All views regenerate without errors
+- [ ] ROADMAP.md contains valid DEBT-XXXX references
+- [ ] No orphaned references in ROADMAP
+- [ ] All intake scripts functional
+- [ ] All validation scripts functional
+- [ ] Pre-commit hooks active
+- [ ] CI checks passing
+- [ ] Dev dashboard displaying metrics
+- [ ] Archive manifest complete
+- [ ] All dependent docs updated per Phase 16
+
+**Final Audit Report:** `docs/technical-debt/FINAL_SYSTEM_AUDIT.md`
+
+**Sign-off:** Update Approval section with final completion date
+
+**Post-Audit:** Invoke `/checkpoint` skill with summary of entire TDMS
+implementation
 
 ---
 
@@ -804,10 +879,25 @@ To retrieve in future sessions:
 - [x] Verification trigger (hybrid: >25 items OR >3 days) approved (2026-01-30)
 - [x] Metrics trigger (session-end + failsafe) approved (2026-01-30)
 - [x] Dev dashboard integration approved (2026-01-30)
-- [ ] Implementation started
-- [ ] Phase 1 complete (Consolidation)
+- [x] Implementation started (2026-01-30)
+- [x] **Phase 1 complete** (Consolidation) - Audited 2026-01-30, PASS with
+      deviations
+- [ ] Phase 2 complete (PROCEDURE.md)
+- [ ] Phase 3 complete (Intake scripts)
+- [ ] Phase 4 complete (Validation scripts)
+- [ ] Phase 5 complete (Update audit skills)
+- [ ] Phase 6 complete (Create intake skills)
+- [ ] Phase 7 complete (Pre-commit hooks)
+- [ ] Phase 8 complete (CI checks)
+- [ ] Phase 9 complete (Verification skill)
+- [ ] Phase 10 complete (GitHub Action)
+- [ ] Phase 11 complete (PR template)
+- [ ] Phase 12 complete (pr-review skill)
 - [ ] Phase 13 complete (Archive)
-- [ ] Phase 15 ongoing (Verification)
+- [ ] Phase 14 complete (Dev dashboard)
+- [ ] Phase 15 ongoing (Verification batches)
+- [ ] Phase 16 complete (Final doc sync)
+- [ ] **Phase 17 complete** (Final System Audit)
 
 ---
 

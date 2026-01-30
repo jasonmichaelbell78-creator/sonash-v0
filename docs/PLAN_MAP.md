@@ -1,6 +1,6 @@
 # SoNash Documentation Plan Map
 
-**Last Updated:** 2026-01-30 | **Version:** 1.1
+**Last Updated:** 2026-01-30 | **Version:** 1.2
 
 ---
 
@@ -70,9 +70,13 @@ ROADMAP.md
     │                                    │
     ├──► docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md (TDMS)
     │    └─ Canonical technical debt process (DEBT-XXXX IDs)
+    │    └─ Phase 1 COMPLETE (2026-01-30) - 867 items consolidated
     │
-    └──► docs/technical-debt/ (Future canonical location)
-         └── MASTER_DEBT.jsonl (Single source of truth - pending)
+    └──► docs/technical-debt/ (Canonical location - ACTIVE)
+         ├── MASTER_DEBT.jsonl (867 items, single source of truth)
+         ├── INDEX.md (Human-readable summary)
+         ├── PHASE_1_AUDIT.md (Phase 1 audit report)
+         └── views/ (by-severity, by-category, by-status)
 ```
 
 > **Note:** `docs/aggregation/` and `docs/audits/canonical/` will be archived
@@ -204,7 +208,8 @@ docs/archive/
 
 ## Version History
 
-| Version | Date       | Description                                       |
-| ------- | ---------- | ------------------------------------------------- |
-| 1.1     | 2026-01-30 | Added TDMS plan references, updated sync triggers |
-| 1.0     | 2026-01-20 | Initial plan map created after document archival  |
+| Version | Date       | Description                                            |
+| ------- | ---------- | ------------------------------------------------------ |
+| 1.2     | 2026-01-30 | TDMS Phase 1 complete, docs/technical-debt/ now active |
+| 1.1     | 2026-01-30 | Added TDMS plan references, updated sync triggers      |
+| 1.0     | 2026-01-20 | Initial plan map created after document archival       |
