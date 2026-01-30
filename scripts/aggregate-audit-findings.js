@@ -397,11 +397,25 @@ function parseRoadmapItems(filePath) {
     }
 
     // Also match table rows with IDs: | REACT-001 | Description | file.tsx | ...
-    const tableMatch = line.match(/^\|\s*([\w-]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/);
-    if (tableMatch && /^[A-Z]+-\d+$/.test(tableMatch[1].trim())) {
+    // Extended pattern to match: ARCH-002, M2.3-REF-001, CANON-0072, T7.1, etc.
+    const tableMatch = line.match(/^\|\s*([\w.-]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/);
+    // Flexible ID pattern: starts with letter, contains alphanumerics/dots/hyphens, ends with digit
+    if (tableMatch && /^[A-Z][A-Z0-9.-]*\d+$/i.test(tableMatch[1].trim())) {
       const itemId = tableMatch[1].trim();
-      const description = tableMatch[2].trim();
-      const fileRef = tableMatch[3].trim();
+      const col2 = tableMatch[2].trim();
+      const col3 = tableMatch[3].trim();
+
+      // Detect if column 2 is a file path (contains / or ends with file extension)
+      const col2IsFilePath = /[/\\]|\.(?:tsx?|jsx?|mjs|cjs|json|md)$/i.test(col2);
+
+      // If col2 is a file path, use it as the file and col3 as description
+      const description = col2IsFilePath ? col3 : col2;
+      const files = [];
+      if (col2IsFilePath) {
+        files.push(col2);
+      } else if (/\.(?:tsx?|jsx?|mjs|cjs|json|md)$/i.test(col3)) {
+        files.push(col3);
+      }
 
       // Check if already added (avoid duplicates)
       if (!items.some((i) => i.id === itemId)) {
@@ -411,7 +425,7 @@ function parseRoadmapItems(filePath) {
           section: currentSection,
           description,
           status: line.includes("✅") ? "complete" : "pending",
-          files: fileRef ? [fileRef] : [],
+          files,
           source: "roadmap",
         });
       }
