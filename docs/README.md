@@ -1,6 +1,6 @@
 # Documentation Inventory
 
-**Document Version:** 1.0 **Created:** 2026-01-05 **Last Updated:** 2026-01-27
+**Document Version:** 1.2 **Created:** 2026-01-05 **Last Updated:** 2026-01-30
 **Status:** ACTIVE
 
 ---
@@ -124,14 +124,15 @@ code reviews and audits:
 
 ### Tier 3: Specialized Guides
 
-| Document                           | Purpose                                           | Location                                                      |
-| ---------------------------------- | ------------------------------------------------- | ------------------------------------------------------------- |
-| **SERVER_SIDE_SECURITY.md**        | Cloud Functions security patterns                 | `docs/SERVER_SIDE_SECURITY.md`                                |
-| **GLOBAL_SECURITY_STANDARDS.md**   | Mandatory security standards for all code         | `docs/GLOBAL_SECURITY_STANDARDS.md`                           |
-| **FIREBASE_CHANGE_POLICY.md**      | Firebase security review requirements             | `docs/FIREBASE_CHANGE_POLICY.md`                              |
-| **INCIDENT_RESPONSE.md**           | Security incident response procedures             | `docs/INCIDENT_RESPONSE.md`                                   |
-| **INTEGRATED_IMPROVEMENT_PLAN.md** | Phased improvement plan (COMPLETE - archived)     | `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md` |
-| **AI_REVIEW_LEARNINGS_LOG.md**     | Historical log of AI review findings and patterns | `docs/AI_REVIEW_LEARNINGS_LOG.md`                             |
+| Document                                     | Purpose                                           | Location                                                      |
+| -------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------- |
+| **SERVER_SIDE_SECURITY.md**                  | Cloud Functions security patterns                 | `docs/SERVER_SIDE_SECURITY.md`                                |
+| **GLOBAL_SECURITY_STANDARDS.md**             | Mandatory security standards for all code         | `docs/GLOBAL_SECURITY_STANDARDS.md`                           |
+| **FIREBASE_CHANGE_POLICY.md**                | Firebase security review requirements             | `docs/FIREBASE_CHANGE_POLICY.md`                              |
+| **INCIDENT_RESPONSE.md**                     | Security incident response procedures             | `docs/INCIDENT_RESPONSE.md`                                   |
+| **TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md** | Unified technical debt consolidation & management | `docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md`         |
+| **INTEGRATED_IMPROVEMENT_PLAN.md**           | Phased improvement plan (COMPLETE - archived)     | `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md` |
+| **AI_REVIEW_LEARNINGS_LOG.md**               | Historical log of AI review findings and patterns | `docs/AI_REVIEW_LEARNINGS_LOG.md`                             |
 
 ---
 
@@ -251,6 +252,8 @@ All templates located in `docs/templates/`:
 - **Fix anti-patterns** → [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)
 - **Understand current session** → [SESSION_CONTEXT.md](../SESSION_CONTEXT.md)
 - **See project roadmap** → [ROADMAP.md](../ROADMAP.md)
+- **Manage technical debt** →
+  [TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md](./plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)
 
 ### Contributing to Documentation
 
@@ -296,6 +299,7 @@ review:** 2026-01-27 (comprehensive compliance audit - 100 errors → 0 errors)
 
 | Version | Date       | Changes                                                                                                             | Author               |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| 1.2     | 2026-01-30 | Added TDMS plan reference to Tier 3 and Quick Reference                                                             | Claude Code          |
 | 1.1     | 2026-01-27 | Updated statistics after comprehensive compliance audit (153 files checked, 100 errors fixed)                       | Claude Code          |
 | 1.0     | 2026-01-05 | Initial documentation inventory creation - 6-category Multi-AI framework, 8 templates, tier structure (Task 4.1.12) | Claude (Session #25) |
 

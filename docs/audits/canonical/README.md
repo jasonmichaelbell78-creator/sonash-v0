@@ -4,11 +4,25 @@
 
 ---
 
+> **MIGRATION NOTICE:** This location will be superseded by
+> `docs/technical-debt/` as part of the
+> [Technical Debt Management System (TDMS)](../../plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md).
+> Once TDMS implementation is complete (Phase 8), this folder will be archived
+> to `docs/archive/technical-debt-sources-2026-01/audits/`.
+>
+> **New canonical location:** `docs/technical-debt/MASTER_DEBT.jsonl` **New ID
+> scheme:** `DEBT-XXXX` (replacing `CANON-XXXX`)
+
+---
+
 ## Purpose
 
 This is the **SINGLE SOURCE OF TRUTH** for all technical debt and audit findings
 across the SoNash project. All audit processes ultimately feed into this
 canonical location.
+
+**Note:** After TDMS migration, this purpose transfers to
+`docs/technical-debt/`.
 
 ## Structure
 

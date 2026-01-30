@@ -97,7 +97,7 @@ _Main documentation directory_
 | [Architecture Decision Records (ADRs)](docs/decisions/README.md)                                                        | This directory contains Architecture Decision Records (ADRs)...   | ↓0 ↑1      | 2026-01-29    |
 | [Audit Findings Procedure](docs/AUDIT_FINDINGS_PROCEDURE.md)                                                            | This document defines the **canonical procedure** for managi...   | ↓3 ↑4      | 2026-01-30    |
 | [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                                  | Track single-session and multi-AI audit completions for thre...   | ↓3 ↑17     | 2026-01-29    |
-| [Canonical Audit Findings Repository](docs/audits/canonical/README.md)                                                  | This is the **SINGLE SOURCE OF TRUTH** for all technical deb...   | ↓2 ↑0      | 2026-01-30    |
+| [Canonical Audit Findings Repository](docs/audits/canonical/README.md)                                                  | This is the **SINGLE SOURCE OF TRUTH** for all technical deb...   | ↓2 ↑1      | 2026-01-30    |
 | [Code Quality Audit Report](docs/audits/comprehensive/audit-code-report.md)                                             | -                                                                 | ↓3 ↑0      | 2026-01-30    |
 | [Code Review Audit - 2026-01-17](docs/audits/single-session/code/audit-2026-01-17.md)                                   | This document provides a single-session code quality audit f...   | ↓1 ↑0      | 2026-01-29    |
 | [Code Review Audit - 2026-01-24](docs/audits/single-session/code/audit-2026-01-24.md)                                   | This document provides a single-session code quality audit f...   | ↓0 ↑1      | 2026-01-29    |
@@ -109,7 +109,7 @@ _Main documentation directory_
 | [Context Preservation Pattern](docs/patterns/context-preservation-pattern.md)                                           | This document describes the Context Preservation Pattern for...   | ↓0 ↑0      | 2026-01-29    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                                                                  | Track template-instance relationships,                            | ↓3 ↑1      | 2026-01-29    |
 | [Documentation Audit - 2026-01-17](docs/audits/single-session/documentation/audit-2026-01-17.md)                        | This document provides a single-session documentation audit ...   | ↓1 ↑0      | 2026-01-29    |
-| [Documentation Inventory](docs/README.md)                                                                               | This document provides a complete inventory of project docum...   | ↓2 ↑11     | 2026-01-29    |
+| [Documentation Inventory](docs/README.md)                                                                               | This document provides a complete inventory of project docum...   | ↓2 ↑12     | 2026-01-30    |
 | [Engineering Productivity Audit - 2026-01-17](docs/audits/single-session/engineering-productivity/audit-2026-01-17.md)  | This audit evaluates the SoNash development experience focus...   | ↓0 ↑0      | 2026-01-29    |
 | [Engineering Productivity Audit Analysis](docs/audits/ENGINEERING_PRODUCTIVITY_AUDIT_ANALYSIS.md)                       | This document analyzes findings from the engineering product...   | ↓0 ↑3      | 2026-01-29    |
 | [Expansion Evaluation Tracker](docs/EXPANSION_EVALUATION_TRACKER.md)                                                    | This document tracks the systematic evaluation of ~280 expan...   | ↓1 ↑0      | 2026-01-29    |
@@ -160,12 +160,12 @@ _Main documentation directory_
 | [SonarCloud Issue Fixes](docs/audits/sonarcloud-fixes.md)                                                               | This document tracks SonarCloud issues that have been fixed,...   | ↓0 ↑1      | 2026-01-29    |
 | [SonarCloud Issue Triage](docs/SONARCLOUD_TRIAGE.md)                                                                    | This document records the triage decisions for 921 SonarClou...   | ↓3 ↑1      | 2026-01-29    |
 | [SoNash Comprehensive Refactoring Audit Report](docs/audits/comprehensive/REFACTORING_AUDIT_REPORT.md)                  | Comprehensive 10-category audit of the SoNash codebase            | ↓2 ↑2      | 2026-01-30    |
-| [SoNash Documentation Plan Map](docs/PLAN_MAP.md)                                                                       | Provide a visual map of documentation relationships, hierarc...   | ↓0 ↑0      | 2026-01-29    |
+| [SoNash Documentation Plan Map](docs/PLAN_MAP.md)                                                                       | Provide a visual map of documentation relationships, hierarc...   | ↓0 ↑0      | 2026-01-30    |
 | [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                                       | -                                                                 | ↓7 ↑1      | 2026-01-29    |
 | [SoNash Engineering Productivity Audit Report](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md) | This audit identifies engineering productivity inefficiencie...   | ↓2 ↑0      | 2026-01-29    |
 | [SoNash Refactoring Audit - Deduplicated Report](docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md)           | Cross-reference of audit findings against existing roadmap i...   | ↓3 ↑3      | 2026-01-30    |
 | [SoNash Security Audit Report](docs/audits/comprehensive/audit-security-report.md)                                      | This document provides a comprehensive security audit of the...   | ↓2 ↑0      | 2026-01-30    |
-| [Technical Debt Management System (TDMS) - Implementation Plan](docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)    | <!-- prettier-ignore-start -->                                    | ↓0 ↑1      | 2026-01-30    |
+| [Technical Debt Management System (TDMS) - Implementation Plan](docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)    | <!-- prettier-ignore-start -->                                    | ↓2 ↑1      | 2026-01-30    |
 | [Technical Debt Master Tracker](docs/TECHNICAL_DEBT_MASTER.md)                                                          | Single source of truth for all technical debt items               | ↓4 ↑0      | 2026-01-29    |
 | [Testing Infrastructure Plan](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)                                                | This document outlines a comprehensive testing infrastructur...   | ↓1 ↑2      | 2026-01-29    |
 | [Testing Plan](docs/TESTING_PLAN.md)                                                                                    | Comprehensive testing guidance for the SoNash application, i...   | ↓5 ↑0      | 2026-01-29    |
@@ -511,8 +511,8 @@ Documents that link to other documents most frequently:
 | [AI Workflow Guide](AI_WORKFLOW.md)                                                                  | 14             |
 | [SoNash - Sober Nashville Recovery Notebook](README.md)                                              | 14             |
 | [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md)                                   | 12             |
+| [Documentation Inventory](docs/README.md)                                                            | 12             |
 | [Comprehensive Audits - Report Index](docs/audits/comprehensive/README.md)                           | 12             |
-| [Documentation Inventory](docs/README.md)                                                            | 11             |
 | [Session Context](SESSION_CONTEXT.md)                                                                | 9              |
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                   | 9              |
 | [AI Context &amp; Rules for SoNash](claude.md)                                                       | 8              |
@@ -533,7 +533,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**194 orphaned documents:**
+**193 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [backend architect](.claude/agents/backend-architect.md)
@@ -705,7 +705,6 @@ Documents with no inbound links (not referenced by any other document):
 - [Architecture Decision Records \(ADRs\)](docs/decisions/README.md)
 - [Context Preservation Pattern](docs/patterns/context-preservation-pattern.md)
 - [SESSION_CONTEXT.md Reduction Plan](docs/plans/SESSION_CONTEXT_REDUCTION_PLAN.md)
-- [Technical Debt Management System \(TDMS\) - Implementation Plan](docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)
 - [Documentation Audit Findings - 2026 Q1](docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_FINDINGS_2026_Q1.md)
 - [SoNash Multi-AI Documentation Audit Plan](docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md)
 - [Multi-AI Audit Retrospective - 2026 Q1](docs/reviews/2026-Q1/MULTI_AI_AUDIT_RETROSPECTIVE_2026_Q1.md)
