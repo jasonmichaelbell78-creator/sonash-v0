@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-01-30 **Active Documents:** 293 **Archived Documents:** 99
+**Generated:** 2026-01-30 **Active Documents:** 294 **Archived Documents:** 99
 
 ---
 
@@ -34,7 +34,7 @@ orphaned documents.
 | Tier   | Count | Description |
 | ------ | ----- | ----------- |
 | Tier 1 | 9     | Essential   |
-| Tier 2 | 91    | Core        |
+| Tier 2 | 92    | Core        |
 | Tier 3 | 138   | Specialized |
 | Tier 4 | 55    | Reference   |
 | Tier 5 | 0     | Archive     |
@@ -44,7 +44,7 @@ orphaned documents.
 | Category            | Count |
 | ------------------- | ----- |
 | Skills              | 92    |
-| Core Documentation  | 91    |
+| Core Documentation  | 92    |
 | .claude > agents    | 24    |
 | analysis            | 15    |
 | 2026 Q1 Reviews     | 15    |
@@ -167,6 +167,7 @@ _Main documentation directory_
 | [SoNash Security Audit Report](docs/audits/comprehensive/audit-security-report.md)                                      | This document provides a comprehensive security audit of the...   | ↓2 ↑0      | 2026-01-30    |
 | [TDMS Phase 1 Audit Report](docs/technical-debt/PHASE_1_AUDIT.md)                                                       | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-01-30    |
 | [TDMS Phase 2 Audit Report](docs/technical-debt/PHASE_2_AUDIT.md)                                                       | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-01-30    |
+| [TDMS Phase 3 Audit Report](docs/technical-debt/PHASE_3_AUDIT.md)                                                       | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-01-30    |
 | [Technical Debt by Category](docs/technical-debt/views/by-category.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-30    |
 | [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-30    |
 | [Technical Debt by Status](docs/technical-debt/views/by-status.md)                                                      | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-30    |
@@ -541,7 +542,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**197 orphaned documents:**
+**198 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [backend architect](.claude/agents/backend-architect.md)
@@ -731,6 +732,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Technical Debt Index](docs/technical-debt/INDEX.md)
 - [TDMS Phase 1 Audit Report](docs/technical-debt/PHASE_1_AUDIT.md)
 - [TDMS Phase 2 Audit Report](docs/technical-debt/PHASE_2_AUDIT.md)
+- [TDMS Phase 3 Audit Report](docs/technical-debt/PHASE_3_AUDIT.md)
 - [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)
 - [\[Document Title\]](docs/templates/CANONICAL_DOC_TEMPLATE.md)
 - [CANON Quick Reference Card](docs/templates/CANON_QUICK_REFERENCE.md)
@@ -1015,34 +1017,35 @@ Documents with no inbound links (not referenced by any other document):
 | 263 | [docs/technical-debt/INDEX.md](docs/technical-debt/INDEX.md)                                                                                                 | Technical Debt Index                                               | 2    | ACTIVE                                                                          |
 | 264 | [docs/technical-debt/PHASE_1_AUDIT.md](docs/technical-debt/PHASE_1_AUDIT.md)                                                                                 | TDMS Phase 1 Audit Report                                          | 2    | ACTIVE                                                                          |
 | 265 | [docs/technical-debt/PHASE_2_AUDIT.md](docs/technical-debt/PHASE_2_AUDIT.md)                                                                                 | TDMS Phase 2 Audit Report                                          | 2    | ACTIVE                                                                          |
-| 266 | [docs/technical-debt/PROCEDURE.md](docs/technical-debt/PROCEDURE.md)                                                                                         | Technical Debt Management System - Procedure Guide                 | 2    | ACTIVE                                                                          |
-| 267 | [docs/technical-debt/views/by-category.md](docs/technical-debt/views/by-category.md)                                                                         | Technical Debt by Category                                         | 2    | ACTIVE                                                                          |
-| 268 | [docs/technical-debt/views/by-severity.md](docs/technical-debt/views/by-severity.md)                                                                         | Technical Debt by Severity                                         | 2    | ACTIVE                                                                          |
-| 269 | [docs/technical-debt/views/by-status.md](docs/technical-debt/views/by-status.md)                                                                             | Technical Debt by Status                                           | 2    | ACTIVE                                                                          |
-| 270 | [docs/technical-debt/views/verification-queue.md](docs/technical-debt/views/verification-queue.md)                                                           | Verification Queue                                                 | 2    | ACTIVE                                                                          |
-| 271 | [docs/templates/CANON_QUICK_REFERENCE.md](docs/templates/CANON_QUICK_REFERENCE.md)                                                                           | CANON Quick Reference Card                                         | 3    | -                                                                               |
-| 272 | [docs/templates/CANONICAL_DOC_TEMPLATE.md](docs/templates/CANONICAL_DOC_TEMPLATE.md)                                                                         | \[Document Title\]                                                 | 3    | -                                                                               |
-| 273 | [docs/templates/FOUNDATION_DOC_TEMPLATE.md](docs/templates/FOUNDATION_DOC_TEMPLATE.md)                                                                       | \[Document Title\]                                                 | 3    | -                                                                               |
-| 274 | [docs/templates/GUIDE_DOC_TEMPLATE.md](docs/templates/GUIDE_DOC_TEMPLATE.md)                                                                                 | How to \[Accomplish Task\]                                         | 3    | -                                                                               |
-| 275 | [docs/templates/JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md)                                                                           | Multi-AI Review JSONL Schema Standard                              | 3    | -                                                                               |
-| 276 | [docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md](docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md)                                                             | Multi-AI Audit Aggregator Template                                 | 3    | -                                                                               |
-| 277 | [docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)                                                 | \[Project Name\] Multi-AI Code Review Plan                         | 3    | PENDING \| IN_PROGRESS \| COMPLETE **Overall Completion:** 0%                   |
-| 278 | [docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md)                                           | \[Project Name\] Multi-AI Documentation Audit Plan                 | 3    | PENDING \| IN_PROGRESS \| COMPLETE **Overall Completion:** 0%                   |
-| 279 | [docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)                                     | \[Project Name\] Multi-AI Performance Audit Plan                   | 3    | PENDING \| IN_PROGRESS \| COMPLETE **Overall Completion:** 0%                   |
-| 280 | [docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md)                                                       | \[Project Name\] Multi-AI Process &amp; Automation Audit Plan      | 3    | PENDING \| IN_PROGRESS \| COMPLETE **Overall Completion:** 0%                   |
-| 281 | [docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md](docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md)                                                         | Multi-AI Refactor Audit Prompt Template                            | 3    | Active **Last Updated:** 2026-01-05                                             |
-| 282 | [docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md)                                                       | \[Project Name\] Multi-AI Refactoring Plan                         | 3    | PENDING \|                                                                      |
-| 283 | [docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)                                           | \[Project Name\] Multi-AI Security Audit Plan                      | 3    | PENDING \| IN_PROGRESS \| COMPLETE **Overall Completion:** 0%                   |
-| 284 | [docs/templates/PLANNING_DOC_TEMPLATE.md](docs/templates/PLANNING_DOC_TEMPLATE.md)                                                                           | \[Feature/Initiative Name\] Plan                                   | 3    | -                                                                               |
-| 285 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md)                                                                         | \[Workflow/Reference Name\]                                        | 3    | -                                                                               |
-| 286 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md)                                                                                                                 | Testing Plan                                                       | 2    | Active **Last Updated:**                                                        |
-| 287 | [docs/TRIGGERS.md](docs/TRIGGERS.md)                                                                                                                         | TRIGGERS.md - Automation &amp; Enforcement Reference               | 2    | DRAFT \| ACTIVE \| DEPRECATED                                                   |
-| 288 | [README.md](README.md)                                                                                                                                       | SoNash - Sober Nashville Recovery Notebook                         | 1    | ACTIVE **Last Updated:** 2026-01-03                                             |
-| 289 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md)                                                                                                                       | SoNash Future Roadmap                                              | 1    | ACTIVE                                                                          |
-| 290 | [ROADMAP_LOG.md](ROADMAP_LOG.md)                                                                                                                             | SoNash Roadmap Log                                                 | 1    | ACTIVE \(append-only archive\) \*\*Last                                         |
-| 291 | [ROADMAP.md](ROADMAP.md)                                                                                                                                     | SoNash Product Roadmap                                             | 1    | ACTIVE                                                                          |
-| 292 | [scripts/README.md](scripts/README.md)                                                                                                                       | Scripts Reference                                                  | 4    | -                                                                               |
-| 293 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                     | Session Context                                                    | 1    | -                                                                               |
+| 266 | [docs/technical-debt/PHASE_3_AUDIT.md](docs/technical-debt/PHASE_3_AUDIT.md)                                                                                 | TDMS Phase 3 Audit Report                                          | 2    | ACTIVE                                                                          |
+| 267 | [docs/technical-debt/PROCEDURE.md](docs/technical-debt/PROCEDURE.md)                                                                                         | Technical Debt Management System - Procedure Guide                 | 2    | ACTIVE                                                                          |
+| 268 | [docs/technical-debt/views/by-category.md](docs/technical-debt/views/by-category.md)                                                                         | Technical Debt by Category                                         | 2    | ACTIVE                                                                          |
+| 269 | [docs/technical-debt/views/by-severity.md](docs/technical-debt/views/by-severity.md)                                                                         | Technical Debt by Severity                                         | 2    | ACTIVE                                                                          |
+| 270 | [docs/technical-debt/views/by-status.md](docs/technical-debt/views/by-status.md)                                                                             | Technical Debt by Status                                           | 2    | ACTIVE                                                                          |
+| 271 | [docs/technical-debt/views/verification-queue.md](docs/technical-debt/views/verification-queue.md)                                                           | Verification Queue                                                 | 2    | ACTIVE                                                                          |
+| 272 | [docs/templates/CANON_QUICK_REFERENCE.md](docs/templates/CANON_QUICK_REFERENCE.md)                                                                           | CANON Quick Reference Card                                         | 3    | -                                                                               |
+| 273 | [docs/templates/CANONICAL_DOC_TEMPLATE.md](docs/templates/CANONICAL_DOC_TEMPLATE.md)                                                                         | \[Document Title\]                                                 | 3    | -                                                                               |
+| 274 | [docs/templates/FOUNDATION_DOC_TEMPLATE.md](docs/templates/FOUNDATION_DOC_TEMPLATE.md)                                                                       | \[Document Title\]                                                 | 3    | -                                                                               |
+| 275 | [docs/templates/GUIDE_DOC_TEMPLATE.md](docs/templates/GUIDE_DOC_TEMPLATE.md)                                                                                 | How to \[Accomplish Task\]                                         | 3    | -                                                                               |
+| 276 | [docs/templates/JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md)                                                                           | Multi-AI Review JSONL Schema Standard                              | 3    | -                                                                               |
+| 277 | [docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md](docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md)                                                             | Multi-AI Audit Aggregator Template                                 | 3    | -                                                                               |
+| 278 | [docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)                                                 | \[Project Name\] Multi-AI Code Review Plan                         | 3    | PENDING \| IN_PROGRESS \| COMPLETE **Overall Completion:** 0%                   |
+| 279 | [docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md)                                           | \[Project Name\] Multi-AI Documentation Audit Plan                 | 3    | PENDING \| IN_PROGRESS \| COMPLETE **Overall Completion:** 0%                   |
+| 280 | [docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)                                     | \[Project Name\] Multi-AI Performance Audit Plan                   | 3    | PENDING \| IN_PROGRESS \| COMPLETE **Overall Completion:** 0%                   |
+| 281 | [docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md)                                                       | \[Project Name\] Multi-AI Process &amp; Automation Audit Plan      | 3    | PENDING \| IN_PROGRESS \| COMPLETE **Overall Completion:** 0%                   |
+| 282 | [docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md](docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md)                                                         | Multi-AI Refactor Audit Prompt Template                            | 3    | Active **Last Updated:** 2026-01-05                                             |
+| 283 | [docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md)                                                       | \[Project Name\] Multi-AI Refactoring Plan                         | 3    | PENDING \|                                                                      |
+| 284 | [docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)                                           | \[Project Name\] Multi-AI Security Audit Plan                      | 3    | PENDING \| IN_PROGRESS \| COMPLETE **Overall Completion:** 0%                   |
+| 285 | [docs/templates/PLANNING_DOC_TEMPLATE.md](docs/templates/PLANNING_DOC_TEMPLATE.md)                                                                           | \[Feature/Initiative Name\] Plan                                   | 3    | -                                                                               |
+| 286 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md)                                                                         | \[Workflow/Reference Name\]                                        | 3    | -                                                                               |
+| 287 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md)                                                                                                                 | Testing Plan                                                       | 2    | Active **Last Updated:**                                                        |
+| 288 | [docs/TRIGGERS.md](docs/TRIGGERS.md)                                                                                                                         | TRIGGERS.md - Automation &amp; Enforcement Reference               | 2    | DRAFT \| ACTIVE \| DEPRECATED                                                   |
+| 289 | [README.md](README.md)                                                                                                                                       | SoNash - Sober Nashville Recovery Notebook                         | 1    | ACTIVE **Last Updated:** 2026-01-03                                             |
+| 290 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md)                                                                                                                       | SoNash Future Roadmap                                              | 1    | ACTIVE                                                                          |
+| 291 | [ROADMAP_LOG.md](ROADMAP_LOG.md)                                                                                                                             | SoNash Roadmap Log                                                 | 1    | ACTIVE \(append-only archive\) \*\*Last                                         |
+| 292 | [ROADMAP.md](ROADMAP.md)                                                                                                                                     | SoNash Product Roadmap                                             | 1    | ACTIVE                                                                          |
+| 293 | [scripts/README.md](scripts/README.md)                                                                                                                       | Scripts Reference                                                  | 4    | -                                                                               |
+| 294 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                     | Session Context                                                    | 1    | -                                                                               |
 
 </details>
 
