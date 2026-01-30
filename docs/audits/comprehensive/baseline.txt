@@ -1,17 +1,21 @@
-# Comprehensive Audit Baseline
-# Generated: 2026-01-24
+Comprehensive Audit Baseline - 2026-01-30 (Session #116)
+=========================================================
 
-## Test Results
-Tests: 277
-Pass: 276
-Fail: 0
-Skipped: 1
+TEST RESULTS:
+- Tests: 294 total
+- Pass: 293
+- Fail: 0
+- Skipped: 1
+- Duration: 69.4s
 
-## Lint Status
-Errors: 0
-Warnings: 539 (pre-existing, non-blocking)
+LINT STATUS:
+- Errors: 0
+- Warnings: 581 (mostly security/detect-non-literal-fs-filename)
 
-## Pattern Compliance
-Violations: 0
-Files Checked: 13
-Patterns: 31
+PATTERN COMPLIANCE:
+- Violations: 0
+- Files checked: 13
+- Patterns: 31
+
+FALSE POSITIVES LOADED:
+- Count: 20 known false positives in docs/audits/FALSE_POSITIVES.jsonl
