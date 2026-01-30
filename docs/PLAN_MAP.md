@@ -1,6 +1,6 @@
 # SoNash Documentation Plan Map
 
-**Last Updated:** 2026-01-30 | **Version:** 1.4
+**Last Updated:** 2026-01-30 | **Version:** 1.5
 
 ---
 
@@ -73,6 +73,7 @@ ROADMAP.md
     │    └─ Phase 1 COMPLETE (2026-01-30) - 867 items consolidated
     │    └─ Phase 2 COMPLETE (2026-01-30) - PROCEDURE.md created
     │    └─ Phase 3 COMPLETE (2026-01-30) - Intake scripts built
+    │    └─ Phase 4 COMPLETE (2026-01-30) - Validation scripts built
     │
     └──► docs/technical-debt/ (Canonical location - ACTIVE)
          ├── MASTER_DEBT.jsonl (867 items, single source of truth)
@@ -213,6 +214,7 @@ docs/archive/
 
 | Version | Date       | Description                                            |
 | ------- | ---------- | ------------------------------------------------------ |
+| 1.5     | 2026-01-30 | TDMS Phase 4 complete, validation scripts built        |
 | 1.4     | 2026-01-30 | TDMS Phase 3 complete, intake scripts built            |
 | 1.3     | 2026-01-30 | TDMS Phase 2 complete, PROCEDURE.md created            |
 | 1.2     | 2026-01-30 | TDMS Phase 1 complete, docs/technical-debt/ now active |
