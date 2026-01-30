@@ -2,7 +2,7 @@
 
 **Generated:** 2026-01-30 **Source:** Aggregated from single-session audits,
 CANON files, and backlogs **Total Items:** 285 (deduplicated from 295 raw
-findings) **NET NEW:** 199 (86 already in ROADMAP/Tech Debt)
+findings) **NET NEW:** 198 (87 already in ROADMAP/Tech Debt)
 
 ---
 
@@ -13,8 +13,8 @@ findings) **NET NEW:** 199 (86 already in ROADMAP/Tech Debt)
 | Metric                | Count   |
 | --------------------- | ------- |
 | Total Unique Findings | 285     |
-| Already in ROADMAP    | 86      |
-| **NET NEW**           | **199** |
+| Already in ROADMAP    | 87      |
+| **NET NEW**           | **198** |
 
 ### By Severity
 
@@ -611,7 +611,7 @@ _...and 185 more items (see MASTER_ISSUE_LIST.jsonl for full list)_
 ## Notes
 
 - Priority scores range from 0-100
-- Score formula: (severity_weight _ 25) + (effort_inverse _ 15) +
+- Score formula: (severity*weight * 25) + (effort*inverse * 15) +
   (roi_multiplier \* 10) + persistence_boost
 - Items found in multiple sources get +10 persistence boost
 - See IMPLEMENTATION_PLAN.md for grouped execution plan

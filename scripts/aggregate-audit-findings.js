@@ -375,7 +375,8 @@ function parseRoadmapItems(filePath) {
     }
 
     // Match checkbox items: - [x] **A1:** Description or - [ ] **A1:** Description
-    const checkboxMatch = line.match(/^[-*]\s*\[([ xX])\]\s*\*\*([A-Z]\d+):\*\*\s*(.+)/);
+    // Extended to match multi-char IDs like EFF-006, BOT-001, etc.
+    const checkboxMatch = line.match(/^[-*]\s*\[([ xX])\]\s*\*\*([A-Z][A-Z0-9-]*\d+):\*\*\s*(.+)/);
     if (checkboxMatch) {
       const isComplete = checkboxMatch[1].toLowerCase() === "x";
       const itemId = checkboxMatch[2];
@@ -394,6 +395,42 @@ function parseRoadmapItems(filePath) {
         files,
         source: "roadmap",
       });
+    }
+
+    // Match emoji-prefixed items: - ⏳ **EFF-006: Description** or - ⏳ **EFF-006:** Description
+    // Handles formats like: - ⏳ **EFF-006: Add Correlation IDs to Logger** (M effort)
+    // Note: Using alternation instead of character class to avoid no-misleading-character-class error
+    const emojiMatch = line.match(
+      /^[-*]\s*(?:\u2705|\u{1F504}|\u{1F4CB}|\u23F3|\u26A0)+\s*\*\*([A-Z][A-Z0-9-]*\d+):?\*?\*?\s*(.+)/u
+    );
+    if (emojiMatch && !checkboxMatch) {
+      const itemId = emojiMatch[1];
+      let description = emojiMatch[2].trim();
+      // Clean up trailing asterisks and effort markers
+      description = description
+        .replace(/\*\*$/, "")
+        .replace(/\s*\([SMLE]\s*effort\)\s*$/i, "")
+        .trim();
+
+      // Detect completion status from emoji
+      const isComplete = line.includes("\u2705"); // ✅
+
+      // Extract file references
+      const fileMatches = description.match(/`([^`]+\.(tsx?|jsx?|mjs|cjs|json|md))`/g);
+      const files = fileMatches ? fileMatches.map((m) => m.replace(/`/g, "")) : [];
+
+      // Avoid duplicates
+      if (!items.some((i) => i.id === itemId)) {
+        items.push({
+          id: itemId,
+          track: currentTrack,
+          section: currentSection,
+          description: description.replace(/[\u2705\u{1F504}\u{1F4CB}\u23F3]/gu, "").trim(),
+          status: isComplete ? "complete" : "pending",
+          files,
+          source: "roadmap",
+        });
+      }
     }
 
     // Also match table rows with IDs: | REACT-001 | Description | file.tsx | ...
