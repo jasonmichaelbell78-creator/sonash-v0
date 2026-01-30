@@ -39,6 +39,10 @@ const CONFIG = {
     "docs/reviews/2026-Q1/canonical/tier2-output/REFACTOR_BACKLOG.md"
   ),
   auditBacklog: join(REPO_ROOT, "docs/AUDIT_FINDINGS_BACKLOG.md"),
+  // Cross-reference sources for NET NEW detection (Session #116)
+  roadmapPath: join(REPO_ROOT, "ROADMAP.md"),
+  techDebtPath: join(REPO_ROOT, "docs/TECHNICAL_DEBT_MASTER.md"),
+  comprehensiveAuditDir: join(REPO_ROOT, "docs/audits/comprehensive"),
 };
 
 // Severity and effort weights for priority calculation
@@ -326,6 +330,296 @@ function parseAuditFindingsBacklog(filePath) {
   }
 
   return items;
+}
+
+/**
+ * Parse ROADMAP.md to extract tracked items for cross-reference (Session #116)
+ * Extracts: checkbox items with IDs (A1, B2, etc.), file references, completion status
+ */
+function parseRoadmapItems(filePath) {
+  if (!existsSync(filePath)) {
+    console.warn(`Warning: ROADMAP.md not found: ${filePath}`);
+    return [];
+  }
+
+  let content;
+  try {
+    content = readFileSync(filePath, "utf-8");
+  } catch (readError) {
+    const errType = readError instanceof Error ? readError.constructor.name : "Error";
+    console.warn(`Warning: ${errType} reading ROADMAP.md: ${filePath}`);
+    return [];
+  }
+
+  const items = [];
+  const lines = content.split("\n");
+
+  // Track current section context
+  let currentTrack = "";
+  let currentSection = "";
+
+  for (const line of lines) {
+    // Detect track headers (### Track A, ### Track B, etc.)
+    const trackMatch = line.match(/^###\s+Track\s+([A-Z])\s*[-–—]?\s*(.+)?/i);
+    if (trackMatch) {
+      currentTrack = trackMatch[1];
+      currentSection = trackMatch[2]?.trim() || "";
+      continue;
+    }
+
+    // Detect section headers (#### Sentry Integration, etc.)
+    const sectionMatch = line.match(/^####\s+(.+)/);
+    if (sectionMatch) {
+      currentSection = sectionMatch[1].trim();
+      continue;
+    }
+
+    // Match checkbox items: - [x] **A1:** Description or - [ ] **A1:** Description
+    const checkboxMatch = line.match(/^[-*]\s*\[([ xX])\]\s*\*\*([A-Z]\d+):\*\*\s*(.+)/);
+    if (checkboxMatch) {
+      const isComplete = checkboxMatch[1].toLowerCase() === "x";
+      const itemId = checkboxMatch[2];
+      const description = checkboxMatch[3].trim();
+
+      // Extract file references from description (e.g., `file.tsx`)
+      const fileMatches = description.match(/`([^`]+\.(tsx?|jsx?|mjs|cjs|json|md))`/g);
+      const files = fileMatches ? fileMatches.map((m) => m.replace(/`/g, "")) : [];
+
+      items.push({
+        id: itemId,
+        track: currentTrack,
+        section: currentSection,
+        description: description.replace(/[\u2705\u{1F504}\u{1F4CB}\u23F3]/gu, "").trim(),
+        status: isComplete ? "complete" : "pending",
+        files,
+        source: "roadmap",
+      });
+    }
+
+    // Also match table rows with IDs: | REACT-001 | Description | file.tsx | ...
+    const tableMatch = line.match(/^\|\s*([\w-]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/);
+    if (tableMatch && /^[A-Z]+-\d+$/.test(tableMatch[1].trim())) {
+      const itemId = tableMatch[1].trim();
+      const description = tableMatch[2].trim();
+      const fileRef = tableMatch[3].trim();
+
+      // Check if already added (avoid duplicates)
+      if (!items.some((i) => i.id === itemId)) {
+        items.push({
+          id: itemId,
+          track: currentTrack,
+          section: currentSection,
+          description,
+          status: line.includes("✅") ? "complete" : "pending",
+          files: fileRef ? [fileRef] : [],
+          source: "roadmap",
+        });
+      }
+    }
+  }
+
+  return items;
+}
+
+/**
+ * Parse TECHNICAL_DEBT_MASTER.md for tracked debt items (Session #116)
+ */
+function parseTechDebtItems(filePath) {
+  if (!existsSync(filePath)) {
+    console.warn(`Warning: TECHNICAL_DEBT_MASTER.md not found: ${filePath}`);
+    return [];
+  }
+
+  let content;
+  try {
+    content = readFileSync(filePath, "utf-8");
+  } catch (readError) {
+    const errType = readError instanceof Error ? readError.constructor.name : "Error";
+    console.warn(`Warning: ${errType} reading TECHNICAL_DEBT_MASTER.md: ${filePath}`);
+    return [];
+  }
+
+  const items = [];
+  const lines = content.split("\n");
+
+  // Parse table rows: | **ID** | Title | Status | Effort | File(s) |
+  for (const line of lines) {
+    // Match table rows with IDs like PERF-001, SEC-003, etc.
+    const tableMatch = line.match(
+      /^\|\s*\*?\*?([\w-]+)\*?\*?\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/
+    );
+    if (tableMatch && /^[A-Z]+-\d+$/.test(tableMatch[1].trim())) {
+      const itemId = tableMatch[1].trim();
+      const title = tableMatch[2].trim();
+      const status = tableMatch[3].trim();
+
+      // Skip header rows and false positive markers
+      if (title.toLowerCase() === "title" || status.includes("FALSE POSITIVE")) {
+        continue;
+      }
+
+      items.push({
+        id: itemId,
+        title,
+        status: status.includes("✅") ? "complete" : "pending",
+        source: "tech-debt",
+      });
+    }
+  }
+
+  return items;
+}
+
+/**
+ * Cross-reference findings against ROADMAP and TECHNICAL_DEBT items (Session #116)
+ * Returns findings with roadmap_status field: "already_tracked" or "net_new"
+ */
+function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
+  // Build lookup indices for fast matching
+  const roadmapByFile = new Map();
+  const roadmapByDescription = new Map();
+  const techDebtById = new Map();
+  const techDebtByTitle = new Map();
+
+  for (const item of roadmapItems) {
+    // Index by files
+    for (const file of item.files || []) {
+      const normalizedFile = file.replace(/^.*\//, ""); // basename only
+      if (!roadmapByFile.has(normalizedFile)) {
+        roadmapByFile.set(normalizedFile, []);
+      }
+      roadmapByFile.get(normalizedFile).push(item);
+    }
+    // Index by description words (for fuzzy matching)
+    const descWords = item.description
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((w) => w.length > 4);
+    for (const word of descWords) {
+      if (!roadmapByDescription.has(word)) {
+        roadmapByDescription.set(word, []);
+      }
+      roadmapByDescription.get(word).push(item);
+    }
+  }
+
+  for (const item of techDebtItems) {
+    techDebtById.set(item.id, item);
+    // Index by title words
+    const titleWords = item.title
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((w) => w.length > 4);
+    for (const word of titleWords) {
+      if (!techDebtByTitle.has(word)) {
+        techDebtByTitle.set(word, []);
+      }
+      techDebtByTitle.get(word).push(item);
+    }
+  }
+
+  const crossRefLog = [];
+  let alreadyTrackedCount = 0;
+  let netNewCount = 0;
+
+  const processedFindings = findings.map((finding) => {
+    let matchedRoadmapItem = null;
+    let matchedTechDebtItem = null;
+    let matchReason = null;
+
+    // Check 1: Direct ID match with tech debt
+    if (finding.original_id && techDebtById.has(finding.original_id)) {
+      matchedTechDebtItem = techDebtById.get(finding.original_id);
+      matchReason = "direct ID match";
+    }
+
+    // Check 2: File-based match with roadmap
+    if (!matchedRoadmapItem && finding.file) {
+      const basename = finding.file.replace(/^.*\//, "");
+      const roadmapMatches = roadmapByFile.get(basename) || [];
+      if (roadmapMatches.length > 0) {
+        matchedRoadmapItem = roadmapMatches[0];
+        matchReason = `file match: ${basename}`;
+      }
+    }
+
+    // Check 3: Title similarity with tech debt
+    if (!matchedTechDebtItem && finding.title) {
+      const titleWords = finding.title
+        .toLowerCase()
+        .split(/\s+/)
+        .filter((w) => w.length > 4);
+      const candidates = new Map();
+      for (const word of titleWords) {
+        for (const item of techDebtByTitle.get(word) || []) {
+          candidates.set(item.id, (candidates.get(item.id) || 0) + 1);
+        }
+      }
+      // Require at least 2 matching words for title match
+      for (const [id, count] of candidates) {
+        if (count >= 2) {
+          matchedTechDebtItem = techDebtById.get(id);
+          matchReason = `title similarity (${count} words)`;
+          break;
+        }
+      }
+    }
+
+    // Check 4: Description similarity with roadmap
+    if (!matchedRoadmapItem && finding.title) {
+      const titleWords = finding.title
+        .toLowerCase()
+        .split(/\s+/)
+        .filter((w) => w.length > 4);
+      const candidates = new Map();
+      for (const word of titleWords) {
+        for (const item of roadmapByDescription.get(word) || []) {
+          candidates.set(item.id, (candidates.get(item.id) || 0) + 1);
+        }
+      }
+      // Require at least 2 matching words
+      for (const [id, count] of candidates) {
+        if (count >= 2) {
+          matchedRoadmapItem = roadmapItems.find((i) => i.id === id);
+          matchReason = `description similarity (${count} words)`;
+          break;
+        }
+      }
+    }
+
+    // Determine status
+    const isAlreadyTracked = matchedRoadmapItem || matchedTechDebtItem;
+    if (isAlreadyTracked) {
+      alreadyTrackedCount++;
+      crossRefLog.push({
+        finding_id: finding.original_id,
+        finding_title: finding.title?.substring(0, 60),
+        roadmap_status: "already_tracked",
+        matched_roadmap_item: matchedRoadmapItem?.id || null,
+        matched_tech_debt_item: matchedTechDebtItem?.id || null,
+        match_reason: matchReason,
+      });
+    } else {
+      netNewCount++;
+    }
+
+    return {
+      ...finding,
+      roadmap_status: isAlreadyTracked ? "already_tracked" : "net_new",
+      matched_roadmap_item: matchedRoadmapItem?.id || null,
+      matched_tech_debt_item: matchedTechDebtItem?.id || null,
+    };
+  });
+
+  return {
+    findings: processedFindings,
+    crossRefLog,
+    stats: {
+      total: findings.length,
+      alreadyTracked: alreadyTrackedCount,
+      netNew: netNewCount,
+    },
+  };
 }
 
 /**
@@ -865,7 +1159,7 @@ function deduplicateFindings(allFindings) {
  * Print final summary statistics
  * (Extracted to reduce cognitive complexity)
  */
-function printSummary(stats, masterList, severityCounts, bucketCounts) {
+function printSummary(stats, masterList, severityCounts, bucketCounts, crossRefStats) {
   console.log("\n=== Aggregation Complete ===");
   console.log(`\nSource Summary:`);
   console.log(`  Single-session audits: ${stats.singleSession}`);
@@ -874,6 +1168,13 @@ function printSummary(stats, masterList, severityCounts, bucketCounts) {
   console.log(`  AUDIT_FINDINGS_BACKLOG: ${stats.auditBacklog}`);
   console.log(`  Total raw: ${stats.total}`);
   console.log(`  After dedup: ${masterList.length}`);
+
+  // Cross-reference summary (Session #116)
+  if (crossRefStats) {
+    console.log(`\n🎯 NET NEW Analysis:`);
+    console.log(`  Already in ROADMAP/Tech Debt: ${crossRefStats.alreadyTracked}`);
+    console.log(`  NET NEW (truly new findings): ${crossRefStats.netNew}`);
+  }
 
   console.log(`\nSeverity Distribution:`);
   console.log(`  S0 Critical: ${severityCounts.S0}`);
@@ -967,11 +1268,40 @@ function aggregate() {
   writeFileSync(uniquePath, uniqueFindings.map((f) => JSON.stringify(f)).join("\n"));
   console.log(`  Wrote: ${uniquePath}`);
 
+  // Phase 3.5: Cross-reference with ROADMAP and TECHNICAL_DEBT (Session #116)
+  console.log("\nPhase 3.5: Cross-referencing with ROADMAP and TECHNICAL_DEBT...");
+  const roadmapItems = parseRoadmapItems(CONFIG.roadmapPath);
+  const techDebtItems = parseTechDebtItems(CONFIG.techDebtPath);
+  console.log(`  - ROADMAP.md: ${roadmapItems.length} tracked items`);
+  console.log(`  - TECHNICAL_DEBT_MASTER.md: ${techDebtItems.length} tracked items`);
+
+  const {
+    findings: crossReferencedFindings,
+    crossRefLog,
+    stats: crossRefStats,
+  } = crossReferenceWithTrackedItems(uniqueFindings, roadmapItems, techDebtItems);
+
+  console.log(`  Cross-reference results:`);
+  console.log(`    Total unique: ${crossRefStats.total}`);
+  console.log(`    Already tracked: ${crossRefStats.alreadyTracked}`);
+  console.log(`    NET NEW: ${crossRefStats.netNew}`);
+
+  // Write cross-reference log
+  const crossRefLogPath = join(CONFIG.outputDir, "crossref-log.jsonl");
+  writeFileSync(crossRefLogPath, crossRefLog.map((l) => JSON.stringify(l)).join("\n"));
+  console.log(`  Wrote: ${crossRefLogPath} (${crossRefLog.length} matches)`);
+
+  // Write NET NEW findings only
+  const netNewFindings = crossReferencedFindings.filter((f) => f.roadmap_status === "net_new");
+  const netNewPath = join(CONFIG.outputDir, "net-new-findings.jsonl");
+  writeFileSync(netNewPath, netNewFindings.map((f) => JSON.stringify(f)).join("\n"));
+  console.log(`  Wrote: ${netNewPath} (${netNewFindings.length} NET NEW items)`);
+
   // Phase 4: Prioritize and categorize
   console.log("\nPhase 4: Prioritizing and categorizing...");
 
   let masterId = 1;
-  const masterList = uniqueFindings.map((finding) => {
+  const masterList = crossReferencedFindings.map((finding) => {
     const priorityScore = calculatePriorityScore(finding);
     const prBucket = determinePrBucket(finding);
 
@@ -991,6 +1321,10 @@ function aggregate() {
       pr_bucket: prBucket,
       original_id: finding.original_id,
       merged_from: finding.merged_from,
+      // Cross-reference fields (Session #116)
+      roadmap_status: finding.roadmap_status,
+      matched_roadmap_item: finding.matched_roadmap_item,
+      matched_tech_debt_item: finding.matched_tech_debt_item,
     };
   });
 
@@ -1022,7 +1356,8 @@ function aggregate() {
     severityCounts,
     categoryCounts,
     bucketCounts,
-    stats
+    stats,
+    crossRefStats
   );
   const masterMdPath = join(CONFIG.outputDir, "MASTER_ISSUE_LIST.md");
   writeFileSync(masterMdPath, masterMd);
@@ -1035,24 +1370,43 @@ function aggregate() {
   console.log(`  Wrote: ${implPlanPath}`);
 
   // Print summary
-  printSummary(stats, masterList, severityCounts, bucketCounts);
+  printSummary(stats, masterList, severityCounts, bucketCounts, crossRefStats);
 
-  return { masterList, stats, severityCounts, categoryCounts, bucketCounts };
+  return { masterList, stats, severityCounts, categoryCounts, bucketCounts, crossRefStats };
 }
 
 /**
  * Generate MASTER_ISSUE_LIST.md
  */
-function generateMasterIssueMd(masterList, severityCounts, categoryCounts, bucketCounts, stats) {
+function generateMasterIssueMd(
+  masterList,
+  severityCounts,
+  categoryCounts,
+  bucketCounts,
+  stats,
+  crossRefStats
+) {
+  const netNewCount = crossRefStats?.netNew || masterList.length;
+  const alreadyTrackedCount = crossRefStats?.alreadyTracked || 0;
+
   let md = `# Master Issue List
 
 **Generated:** ${new Date().toISOString().split("T")[0]}
 **Source:** Aggregated from single-session audits, CANON files, and backlogs
 **Total Items:** ${masterList.length} (deduplicated from ${stats.total} raw findings)
+${crossRefStats ? `**NET NEW:** ${netNewCount} (${alreadyTrackedCount} already in ROADMAP/Tech Debt)` : ""}
 
 ---
 
 ## Summary Statistics
+
+### 🎯 NET NEW Analysis
+
+| Metric | Count |
+|--------|-------|
+| Total Unique Findings | ${masterList.length} |
+| Already in ROADMAP | ${alreadyTrackedCount} |
+| **NET NEW** | **${netNewCount}** |
 
 ### By Severity
 
