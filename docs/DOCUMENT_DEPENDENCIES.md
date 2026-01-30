@@ -1,9 +1,9 @@
 # Document Dependencies
 
-**Document Type:** REFERENCE (Tier 4) **Version:** 1.5 **Created:** 2026-01-08
+**Document Type:** REFERENCE (Tier 4) **Version:** 1.7 **Created:** 2026-01-08
 **Status:** ACTIVE **Purpose:** Track template-instance relationships,
 cross-document dependencies, and synchronization requirements **Last Updated:**
-2026-01-27 (Session #103)
+2026-01-30 (Session #117)
 
 ---
 
@@ -340,6 +340,11 @@ changes in one document affect the accuracy of another.
 | Planning documents added/archived  | `docs/PLAN_MAP.md`                                                                   | Plan map shows documentation hierarchy             | Manual   |
 | `.claude/plans/` files changed     | `docs/PLAN_MAP.md`                                                                   | Keep plan map current with active plans            | Manual   |
 | **Docs added/removed/moved**       | `DOCUMENTATION_INDEX.md` (run `npm run docs:index`)                                  | Auto-generated index must reflect current state    | Manual   |
+| `docs/plans/` files added/changed  | `docs/PLAN_MAP.md`, `docs/README.md`                                                 | Navigation docs must reference new plans           | ✅ BLOCK |
+| `docs/technical-debt/` changed     | `SESSION_CONTEXT.md`                                                                 | Session context tracks tech debt status            | ✅ BLOCK |
+| `docs/audits/canonical/` changed   | `docs/PLAN_MAP.md`                                                                   | TDMS migration status tracking                     | ✅ BLOCK |
+| DEBT-XXXX items resolved           | `docs/technical-debt/MASTER_DEBT.jsonl`, `ROADMAP.md`                                | Both canonical and roadmap must reflect resolution | Manual   |
+| New audit findings generated       | `docs/technical-debt/MASTER_DEBT.jsonl` (via intake scripts)                         | All findings flow to canonical location            | Manual   |
 
 ### Usage
 
@@ -402,6 +407,7 @@ When reviewing documentation PRs:
 
 | Version | Date       | Changes                                                                                                                                          | Author      |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| 1.7     | 2026-01-30 | Added TDMS-related triggers: docs/plans/, docs/technical-debt/, docs/audits/canonical/, DEBT-XXXX resolution; Session #117.                      | Claude Code |
 | 1.6     | 2026-01-29 | Added DEFERRED → TRIAGED trigger: when items move to ROADMAP_FUTURE.md, source entries must be updated; Session #115.                            | Claude Code |
 | 1.5     | 2026-01-27 | Added Track T (Testing Infrastructure) triggers: tests/e2e/ and testing infrastructure changes; Session #103.                                    | Claude Code |
 | 1.4     | 2026-01-27 | Added ROADMAP_FUTURE.md to dependency matrix; added milestone promotion and parallel group sync triggers; 3 new cross-document rules.            | Claude Code |

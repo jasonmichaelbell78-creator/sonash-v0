@@ -111,6 +111,27 @@ const dependencyRules = [
     reason: "Dashboard changes must update sprint status in ROADMAP.md",
     checkDiff: false,
   },
+  // Plan documents → navigation docs (Session #117 - TDMS plan)
+  {
+    trigger: "docs/plans/",
+    dependents: ["docs/PLAN_MAP.md", "docs/README.md"],
+    reason: "New/updated plans must be referenced in navigation docs",
+    checkDiff: false,
+  },
+  // Technical debt canonical → related docs (Session #117 - TDMS)
+  {
+    trigger: "docs/technical-debt/",
+    dependents: ["SESSION_CONTEXT.md"],
+    reason: "Technical debt changes should be noted in session context",
+    checkDiff: false,
+  },
+  // Audit canonical → plan map (Session #117 - TDMS migration tracking)
+  {
+    trigger: "docs/audits/canonical/",
+    dependents: ["docs/PLAN_MAP.md"],
+    reason: "Canonical audit changes affect TDMS migration status",
+    checkDiff: false,
+  },
 ];
 
 /**

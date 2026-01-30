@@ -646,6 +646,38 @@ if (!lastSessionEndRan || commitsSinceLastMetrics >= 5) {
 | **13** | Archive source documents           | Phases 1-9 verified | E1               |
 | **14** | Dev dashboard integration          | Phases 1, 10        | E2               |
 | **15** | Run verification batches           | Phase 9             | E3 (ongoing)     |
+| **16** | **Final doc sync & enforcement**   | All phases          | E1               |
+
+### Phase 16: Final Doc Sync & Enforcement (MANDATORY)
+
+After completing all implementation phases, the following documents MUST be
+updated:
+
+**Navigation & Reference Docs:**
+
+- [ ] `docs/PLAN_MAP.md` - Update Tier 1 hierarchy, Quick Navigation, Sync
+      Triggers
+- [ ] `docs/README.md` - Update Quick Reference, Documentation Statistics
+- [ ] `SESSION_CONTEXT.md` - Add implementation summary
+- [ ] `DOCUMENTATION_INDEX.md` - Regenerate (`npm run docs:index`)
+
+**Process & Dependency Docs:**
+
+- [ ] `docs/DOCUMENT_DEPENDENCIES.md` - Add TDMS sync triggers
+- [ ] `scripts/check-cross-doc-deps.js` - Add enforcement rules for
+      `docs/technical-debt/`
+- [ ] `.claude/COMMAND_REFERENCE.md` - Add new skills reference
+
+**Archive Manifest:**
+
+- [ ] `docs/archive/technical-debt-sources-2026-01/MANIFEST.md` - Document what
+      was archived
+
+**Cross-Reference Updates:**
+
+- [ ] All audit skill files - Verify canonical output references
+- [ ] `docs/audits/canonical/README.md` - Update migration status
+- [ ] `ROADMAP.md` - Update all DEBT-XXXX references
 
 ---
 
