@@ -1,6 +1,6 @@
 # Session Context
 
-**Document Version**: 3.35 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 3.36 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 2026-01-30 (Session #116)
 
@@ -10,12 +10,28 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-29 **Branch**: `claude/new-session-nFHFo` **Working
-On**: Session #115 COMPLETE **Files Modified**: All committed and pushed
+**Last Checkpoint**: 2026-01-30 **Branch**: `claude/new-session-U1Jou` **Working
+On**: Session #116 Canonical Audit Findings **Files Modified**: Multiple
 
-**Next Step**: Create PR #325 for refactoring audit work
+**Next Step**: Run docs sync, commit changes
 
-**Uncommitted Work**: No
+**Uncommitted Work**: Yes - canonical audit findings structure
+
+**Session #116 Summary** (CANONICAL AUDIT FINDINGS & AGGREGATOR ENHANCEMENTS):
+
+- ✅ **Aggregator Enhancements**: Line-based matching + synonym mapping
+- ✅ **Audit Skill Updates**: All 6 audit skills now require file:line fields
+- ✅ **Multi-AI Templates Updated**: All 5 templates require line numbers
+- ✅ **validate-audit.js Updated**: S2/S3 now require line field
+- ✅ **CANONICAL LOCATION CREATED**: `docs/audits/canonical/`
+  - MASTER_FINDINGS.jsonl (172 findings with CANON-0001+ IDs)
+  - MASTER_FINDINGS_INDEX.md (human-readable by severity)
+  - ROADMAP_INTEGRATION.md (copy-paste sections per milestone)
+- ✅ **AUDIT_FINDINGS_PROCEDURE.md**: Complete procedure documentation
+- ✅ **ROADMAP.md v3.16**: Consolidated findings section added
+- ✅ **Cross-reference Updates**: single-session/README, comprehensive/README
+- 📊 **Results**: Already tracked increased 87→113 (+30%), NET NEW reduced
+  198→172
 
 **Session #115 Summary** (REFACTORING AUDIT & QUICK WINS):
 
