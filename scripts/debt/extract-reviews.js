@@ -66,8 +66,9 @@ function getSourceId(item, sourceFile) {
   if (id) {
     return `review:${id}`;
   }
+  // Use base64url for URL-safe IDs (no +, /, = characters)
   const hash = Buffer.from(`${item.title}:${extractFile(item)}:${extractLine(item)}`)
-    .toString("base64")
+    .toString("base64url")
     .substring(0, 12);
   return `review:hash-${hash}`;
 }

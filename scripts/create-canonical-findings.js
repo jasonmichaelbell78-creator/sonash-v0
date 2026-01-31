@@ -41,9 +41,28 @@ if (!rawNetNew) {
   process.exit(0);
 }
 
-const netNew = rawNetNew
-  .split("\n")
-  .map((l) => JSON.parse(l));
+const netNew = [];
+const parseErrors = [];
+
+for (const [idx, line] of rawNetNew.split("\n").entries()) {
+  if (!line.trim()) continue;
+  try {
+    netNew.push(JSON.parse(line));
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    parseErrors.push({ line: idx + 1, message: msg });
+  }
+}
+
+if (parseErrors.length > 0) {
+  console.warn(`Warning: ${parseErrors.length} invalid JSON line(s) in ${NET_NEW_FILE}`);
+  for (const err of parseErrors.slice(0, 5)) {
+    console.warn(`  Line ${err.line}: ${err.message}`);
+  }
+  if (parseErrors.length > 5) {
+    console.warn(`  ... and ${parseErrors.length - 5} more`);
+  }
+}
 
 console.log(`Processing ${netNew.length} NET NEW findings...`);
 
@@ -118,14 +137,19 @@ console.log(
   `Updated: ${MASTER_FILE} (+${newFindings.length} new, total ${canonical.length} findings)`
 );
 
-// Group by severity and category for index
+// Group by severity and category for index (use Map to prevent prototype pollution)
 const bySeverity = { S0: [], S1: [], S2: [], S3: [] };
-const byCategory = {};
+const byCategory = new Map();
 
 canonical.forEach((f) => {
   if (bySeverity[f.severity]) bySeverity[f.severity].push(f);
-  if (!byCategory[f.category]) byCategory[f.category] = [];
-  byCategory[f.category].push(f);
+  const cat = typeof f.category === "string" ? f.category : "unknown";
+  const existing = byCategory.get(cat);
+  if (existing) {
+    existing.push(f);
+  } else {
+    byCategory.set(cat, [f]);
+  }
 });
 
 // Generate MASTER_FINDINGS_INDEX.md
@@ -149,7 +173,7 @@ let index = `# Master Findings Index
 |----------|-------|-----------------|
 `;
 
-Object.entries(byCategory)
+Array.from(byCategory.entries())
   .sort((a, b) => b[1].length - a[1].length)
   .forEach(([cat, items]) => {
     const placement = ROADMAP_PLACEMENT[cat] || { section: "M2" };

@@ -44,7 +44,7 @@ function loadDebtIds() {
       try {
         const item = JSON.parse(line);
         if (item.id) {
-          ids.add(item.id);
+          ids.add(String(item.id).trim().toUpperCase());
         }
       } catch {
         // Skip invalid JSON lines
@@ -75,12 +75,10 @@ function findDebtRefs(filePath) {
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      // IMPORTANT: Reset lastIndex because /g regex keeps state across exec() calls
-      debtPattern.lastIndex = 0;
-      let match;
-      while ((match = debtPattern.exec(line)) !== null) {
+      // Use matchAll for stateless iteration (no need to reset lastIndex)
+      for (const match of line.matchAll(debtPattern)) {
         refs.push({
-          id: match[0],
+          id: match[0].toUpperCase(),
           file: filePath,
           line: i + 1,
           context: line.trim().substring(0, 80),

@@ -187,10 +187,12 @@ function mergeItems(primary, secondary) {
     merged.severity = secondary.severity;
   }
 
-  // Track merge sources (only add valid source_id strings)
+  // Track merge sources (only add valid source_id strings, prevent duplicates)
   if (!merged.merged_from) merged.merged_from = [];
   if (typeof secondary.source_id === "string" && secondary.source_id.trim()) {
-    merged.merged_from.push(secondary.source_id);
+    if (!merged.merged_from.includes(secondary.source_id)) {
+      merged.merged_from.push(secondary.source_id);
+    }
   }
 
   // Merge evidence arrays

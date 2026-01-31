@@ -17,7 +17,7 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const { execSync } = require("child_process");
+const { execFileSync } = require("child_process");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -53,7 +53,8 @@ function generateContentHash(item) {
 // Normalize file path
 function normalizeFilePath(filePath) {
   if (!filePath) return "";
-  let normalized = filePath.replace(/^\.\//, "").replace(/^\//, "");
+  // Convert Windows backslashes to forward slashes for consistent hashing
+  let normalized = filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\//, "");
   // Remove org/repo prefix if present (e.g., "org_repo:path/to/file")
   // But preserve Windows drive letters (e.g., "C:\path\to\file")
   const colonIndex = normalized.indexOf(":");
@@ -324,8 +325,8 @@ async function main() {
   // Regenerate views
   console.log("🔄 Regenerating views...");
   try {
-    // Use process.execPath to ensure same Node.js executable is used
-    execSync(`"${process.execPath}" scripts/debt/generate-views.js`, { stdio: "inherit" });
+    // Use execFileSync with args array to prevent shell injection
+    execFileSync(process.execPath, ["scripts/debt/generate-views.js"], { stdio: "inherit" });
   } catch {
     console.warn(
       "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"

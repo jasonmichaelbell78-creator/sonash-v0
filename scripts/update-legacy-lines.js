@@ -49,11 +49,37 @@ const lineUpdates = {
   "LEGACY-001": { file: "components/notebook/pages/today-page.tsx", line: 89 },
 };
 
-// Read findings
-const findings = readFileSync(MASTER_FILE, "utf-8")
-  .trim()
+// Read findings with robust parsing
+const raw = readFileSync(MASTER_FILE, "utf-8");
+const trimmed = raw.trim();
+
+if (!trimmed) {
+  console.log(`No findings to process (empty file): ${MASTER_FILE}`);
+  process.exit(0);
+}
+
+const findings = [];
+const badLines = [];
+
+trimmed
   .split("\n")
-  .map((l) => JSON.parse(l));
+  .filter((l) => l.trim())
+  .forEach((l, idx) => {
+    try {
+      findings.push(JSON.parse(l));
+    } catch (err) {
+      badLines.push({ line: idx + 1, message: err?.message || String(err) });
+    }
+  });
+
+if (badLines.length > 0) {
+  console.error(`❌ Invalid JSONL: ${badLines.length} bad line(s) in ${MASTER_FILE}`);
+  for (const b of badLines.slice(0, 5)) {
+    console.error(`   Line ${b.line}: ${b.message}`);
+  }
+  if (badLines.length > 5) console.error(`   ... and ${badLines.length - 5} more`);
+  process.exit(1);
+}
 
 console.log(`Processing ${findings.length} findings...`);
 

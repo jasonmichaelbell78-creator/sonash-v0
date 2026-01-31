@@ -60,8 +60,9 @@ function generateContentHash(item) {
 // Normalize file path
 function normalizeFilePath(filePath) {
   if (!filePath) return "";
-  // Remove leading ./ or /
-  let normalized = filePath.replace(/^\.\//, "").replace(/^\//, "");
+  // Convert Windows backslashes to forward slashes for consistent hashing
+  // Then remove leading ./ or /
+  let normalized = filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\//, "");
   // Remove org/repo prefix if present (e.g., "org_repo:path/to/file")
   // But preserve Windows drive letters (e.g., "C:\path\to\file")
   const colonIndex = normalized.indexOf(":");
@@ -94,7 +95,14 @@ function normalizeItem(item) {
     severity: ensureValid(item.severity, VALID_SEVERITIES, "S2"),
     type: ensureValid(item.type, VALID_TYPES, "code-smell"),
     file: normalizeFilePath(item.file),
-    line: typeof item.line === "number" ? item.line : 0,
+    // Parse line numbers from strings (e.g., "123" -> 123), default to 0 for invalid
+    line: (() => {
+      const parsedLine =
+        typeof item.line === "number"
+          ? item.line
+          : Number.parseInt(String(item.line), 10);
+      return Number.isFinite(parsedLine) && parsedLine >= 0 ? parsedLine : 0;
+    })(),
     title: (item.title || "Untitled").substring(0, 500),
     description: item.description || "",
     recommendation: item.recommendation || "",

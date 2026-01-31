@@ -182,8 +182,8 @@ Example:
   // Update the item
   const now = new Date().toISOString().split("T")[0];
 
-  // Backup master file before modification for potential rollback
-  const masterBackup = fs.existsSync(MASTER_FILE) ? fs.readFileSync(MASTER_FILE, "utf8") : "";
+  // Backup master file before modification for potential rollback (use null to detect initially empty)
+  const masterBackup = fs.existsSync(MASTER_FILE) ? fs.readFileSync(MASTER_FILE, "utf8") : null;
 
   if (parsed.falsePositive) {
     // Mark as false positive and move to separate file
@@ -210,7 +210,7 @@ Example:
       });
     } catch (writeError) {
       // Attempt to restore master file if we updated it but subsequent writes failed
-      if (masterUpdated && masterBackup) {
+      if (masterUpdated && masterBackup !== null) {
         try {
           fs.writeFileSync(MASTER_FILE, masterBackup);
         } catch {
@@ -243,7 +243,7 @@ Example:
       });
     } catch (writeError) {
       // Attempt to restore master file
-      if (masterBackup) {
+      if (masterBackup !== null) {
         try {
           fs.writeFileSync(MASTER_FILE, masterBackup);
         } catch {

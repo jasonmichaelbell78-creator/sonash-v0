@@ -27,7 +27,7 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const { execSync } = require("child_process");
+const { execFileSync } = require("child_process");
 const readline = require("readline");
 
 // Try to load dotenv if available
@@ -462,7 +462,8 @@ Environment variables:
   // Regenerate views
   console.log("🔄 Regenerating views...");
   try {
-    execSync("node scripts/debt/generate-views.js", { stdio: "inherit" });
+    // Use execFileSync with args array to prevent shell injection
+    execFileSync(process.execPath, ["scripts/debt/generate-views.js"], { stdio: "inherit" });
   } catch {
     console.warn(
       "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
