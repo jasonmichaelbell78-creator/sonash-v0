@@ -90,6 +90,25 @@ jobs:
         continue-on-error: true
         run: npm run audit:validate -- --all
 
+      - name: Validate technical debt schema
+        # TDMS Phase 8: Validates MASTER_DEBT.jsonl has correct structure
+        if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
+        run: node scripts/debt/validate-schema.js
+
+      - name: Check ROADMAP debt references
+        # TDMS Phase 8: Validates DEBT-XXXX references exist in canonical source
+        if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
+        continue-on-error: true
+        run: node scripts/debt/sync-roadmap-refs.js --check-only
+
+      - name: Verify technical debt views current
+        # TDMS Phase 8: Ensures generated views match MASTER_DEBT.jsonl
+        if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
+        continue-on-error: true
+        run: |
+          node scripts/debt/generate-views.js
+          git diff --exit-code docs/technical-debt/views/ || echo "⚠️ Views are stale - run: node scripts/debt/generate-views.js"
+
       - name: Type check
         run: npx tsc --noEmit
 

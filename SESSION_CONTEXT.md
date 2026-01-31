@@ -11,25 +11,32 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-01-31 **Branch**: `claude/new-session-U1Jou`
-**Working On**: TDMS Phases 1-6 Complete **Files Modified**: 4 skills, audit report
+**Working On**: TDMS Phases 1-8 Complete **Files Modified**: skills, hooks, CI, scripts
 
-**Next Step**: TDMS Phase 7 (Add pre-commit hooks)
+**Next Step**: TDMS Phase 9+ (remaining phases)
 
 **Uncommitted Work**: No
 
-**Session #119 Summary** (TDMS PHASE 6 + FIXES):
+**Session #119 Summary** (TDMS PHASES 6-8 + FIXES):
 
 - ✅ **Audit Trigger Fix**: Updated AUDIT_TRACKER.md with Session #116 dates
   - Root cause: audit-comprehensive skill lacked tracker update step
   - Added Post-Audit (MANDATORY) section to audit-comprehensive skill
   - Updated TDMS plan: AUDIT_TRACKER.md NOT archived (tracks triggers)
 - ✅ **Phase 6 Complete**: Created 4 intake skills
-  - sync-sonarcloud-debt: Import/sync from SonarCloud API
-  - add-manual-debt: Add ad-hoc debt items
-  - add-deferred-debt: Track PR review deferrals
-  - verify-technical-debt: Verify items in queue
+  - sync-sonarcloud-debt, add-manual-debt, add-deferred-debt, verify-technical-debt
   - Audit Status: PASS (no deviations)
-- 📋 **Next**: TDMS Phase 7 (Add pre-commit hooks)
+- ✅ **Phase 7 Complete**: Added pre-commit hooks
+  - Check #12: BLOCKING schema validation for MASTER_DEBT.jsonl
+  - Check #13: WARNING for debt files outside canonical location
+  - Audit Status: PASS (no deviations)
+- ✅ **Phase 8 Complete**: Added CI checks
+  - Validate technical debt schema (blocking)
+  - Check ROADMAP references (non-blocking)
+  - Verify views are current (non-blocking)
+  - Created `sync-roadmap-refs.js` script
+  - Audit Status: PASS (no deviations)
+- 📋 **Next**: TDMS Phases 9-17 (remaining phases)
 
 **Session #118 Summary** (TDMS PHASES 1-5):
 
