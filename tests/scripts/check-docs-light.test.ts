@@ -372,7 +372,19 @@ Old document.
   describe("security", () => {
     test("does not expose sensitive paths", () => {
       const result = runScript(["README.md"]);
-      const output = result.stdout + result.stderr;
+
+      // Filter out Node.js MODULE_TYPELESS_PACKAGE_JSON warnings which include full paths
+      // These warnings span multiple lines and contain absolute paths
+      const filteredStderr = result.stderr
+        .split("\n")
+        .filter(
+          (line) =>
+            !line.includes("[MODULE_TYPELESS_PACKAGE_JSON]") &&
+            !line.includes("To eliminate this warning") &&
+            !line.includes("--trace-warnings")
+        )
+        .join("\n");
+      const output = result.stdout + filteredStderr;
 
       const homeDir = process.env.HOME || "/home";
       const rawHomeExposed = output.includes(homeDir) && !output.includes("[HOME]");

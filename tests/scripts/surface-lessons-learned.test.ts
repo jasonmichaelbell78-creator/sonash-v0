@@ -111,9 +111,21 @@ describe("surface-lessons-learned.js", () => {
       const result = runScript();
 
       // Should not contain actual home paths (sanitization check)
+      // Filter out Node.js MODULE_TYPELESS_PACKAGE_JSON warnings which include full paths
+      // These warnings span multiple lines and contain absolute paths
       const homePath = os.homedir();
+      const filteredStderr = result.stderr
+        .split("\n")
+        .filter(
+          (line) =>
+            !line.includes("[MODULE_TYPELESS_PACKAGE_JSON]") &&
+            !line.includes("To eliminate this warning") &&
+            !line.includes("--trace-warnings")
+        )
+        .join("\n");
+
       assert.ok(
-        !result.stdout.includes(homePath) && !result.stderr.includes(homePath),
+        !result.stdout.includes(homePath) && !filteredStderr.includes(homePath),
         "Should not expose home directory path"
       );
     });

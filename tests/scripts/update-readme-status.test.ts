@@ -129,7 +129,19 @@ describe("update-readme-status.js", () => {
   describe("security", () => {
     test("does not expose sensitive paths in output", () => {
       const result = runScript(["--dry-run"]);
-      const output = result.stdout + result.stderr;
+
+      // Filter out Node.js MODULE_TYPELESS_PACKAGE_JSON warnings which include full paths
+      // These warnings span multiple lines and contain absolute paths
+      const filteredStderr = result.stderr
+        .split("\n")
+        .filter(
+          (line) =>
+            !line.includes("[MODULE_TYPELESS_PACKAGE_JSON]") &&
+            !line.includes("To eliminate this warning") &&
+            !line.includes("--trace-warnings")
+        )
+        .join("\n");
+      const output = result.stdout + filteredStderr;
 
       // Check that raw home paths are not exposed
       const homeDir = process.env.HOME || "/home";
