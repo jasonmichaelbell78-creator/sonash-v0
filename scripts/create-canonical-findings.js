@@ -28,9 +28,20 @@ const ROADMAP_PLACEMENT = {
   dx: { section: "Track E", track: "Solo Dev Automations" },
 };
 
-// Read NET NEW findings
-const netNew = readFileSync(NET_NEW_FILE, "utf-8")
-  .trim()
+// Read NET NEW findings with existence check
+if (!existsSync(NET_NEW_FILE)) {
+  console.error(`Error: NET NEW findings file not found: ${NET_NEW_FILE}`);
+  console.error(`Run scripts/aggregate-audit-findings.js first to generate net-new-findings.jsonl.`);
+  process.exit(1);
+}
+
+const rawNetNew = readFileSync(NET_NEW_FILE, "utf-8").trim();
+if (!rawNetNew) {
+  console.log(`No NET NEW findings found in: ${NET_NEW_FILE}`);
+  process.exit(0);
+}
+
+const netNew = rawNetNew
   .split("\n")
   .map((l) => JSON.parse(l));
 

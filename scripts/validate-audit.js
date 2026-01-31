@@ -82,8 +82,8 @@ const REQUIRED_FIELDS_BY_SEVERITY = {
   ],
   // Session #116: Added line to S2 for deduplication/cross-reference
   S2: ["id", "category", "severity", "file", "line", "title", "description", "recommendation"],
-  // S3: Relaxed - line is optional for low-priority items (Qodo Review #219)
-  S3: ["id", "category", "severity", "file", "title", "description"],
+  // S3: Relaxed - file and line are optional for low-priority items (Qodo Review #219)
+  S3: ["id", "category", "severity", "title", "description"],
 };
 
 function loadFalsePositives() {

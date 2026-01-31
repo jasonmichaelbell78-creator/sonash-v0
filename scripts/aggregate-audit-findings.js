@@ -605,8 +605,8 @@ function parseTechDebtItems(filePath) {
     const tableMatch = line.match(
       /^\|\s*\*?\*?([\w-]+)\*?\*?\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/
     );
-    if (tableMatch && /^[A-Z]+-\d+$/.test(tableMatch[1].trim())) {
-      const itemId = tableMatch[1].trim();
+    if (tableMatch && /^[A-Z]+-\d+$/i.test(tableMatch[1].trim())) {
+      const itemId = tableMatch[1].trim().toUpperCase();
       const title = tableMatch[2].trim();
       const status = tableMatch[3].trim();
 

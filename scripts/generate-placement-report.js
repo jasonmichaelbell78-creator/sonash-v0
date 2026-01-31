@@ -14,9 +14,17 @@ const __dirname = dirname(__filename);
 const NET_NEW_FILE = join(__dirname, "..", "docs/aggregation/net-new-findings.jsonl");
 const OUTPUT_FILE = join(__dirname, "..", "docs/aggregation/NET_NEW_ROADMAP_PLACEMENT.md");
 
-// Get NET NEW findings with safe JSONL parsing
+// Get NET NEW findings with safe JSONL parsing and empty file handling
 const raw = readFileSync(NET_NEW_FILE, "utf-8");
-const lines = raw.split("\n").filter((l) => l.trim().length > 0);
+const trimmedRaw = raw.trim();
+
+// Handle empty or whitespace-only file
+if (!trimmedRaw) {
+  console.log(`No NET NEW findings in: ${NET_NEW_FILE}`);
+  process.exit(0);
+}
+
+const lines = trimmedRaw.split("\n").filter(Boolean);
 const netNew = [];
 
 for (let i = 0; i < lines.length; i++) {
