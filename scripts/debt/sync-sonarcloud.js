@@ -234,10 +234,14 @@ async function fetchSonarCloudIssues(options) {
 // Sanitize string for safe storage (prevent injection, limit length)
 function sanitizeString(str, maxLength = 500) {
   if (typeof str !== "string") return "";
-  return str
-    .replace(/[\x00-\x1f]/g, "") // Remove control characters
-    .substring(0, maxLength)
-    .trim();
+  // Remove control characters (ASCII 0-31) using character class
+  return (
+    str
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\u0000-\u001f]/g, "")
+      .substring(0, maxLength)
+      .trim()
+  );
 }
 
 // Convert SonarCloud issue to TDMS format with input validation

@@ -29,7 +29,6 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const crypto = require("crypto");
 const { execSync } = require("child_process");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
