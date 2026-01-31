@@ -20,13 +20,11 @@ available in Claude Code
 
 ## Slash Commands (Custom)
 
-Custom slash commands defined in `.claude/commands/`. These are project-specific
-commands.
+Custom slash commands are now defined as skills in `.claude/skills/`.
 
-> **Note (2026-01-29):** All custom commands have been migrated to skills format
-> in `.claude/skills/`. The command files in `.claude/commands/` are legacy
-> duplicates. Both `/command-name` and the skill invocation work identically.
-> **Prefer using the skill versions** as they may have additional features. See
+> **Note (2026-01-31):** All custom commands have been migrated to skills
+> format. The legacy command files in `.claude/commands/` have been **deleted**
+> (Session #120). Use `/command-name` which invokes the corresponding skill. See
 > the [Skills](#skills) section for the authoritative list.
 
 ### `/audit-code`

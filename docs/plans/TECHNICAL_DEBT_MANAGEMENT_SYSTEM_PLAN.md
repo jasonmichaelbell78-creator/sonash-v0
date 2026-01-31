@@ -649,6 +649,7 @@ if (!lastSessionEndRan || commitsSinceLastMetrics >= 5) {
 | **7**  | Add pre-commit hooks               | Phase 4             | E1               |
 | **8**  | Add CI checks                      | Phase 4             | E1               |
 | **9**  | Create verification skill          | Phase 1             | E2               |
+| **9b** | **Full Audit TDMS Integration**    | Phases 5, 8         | E2               |
 | **10** | Create GitHub Action               | -                   | E1               |
 | **11** | Update PR template                 | -                   | E0               |
 | **12** | Update pr-review skill             | Phase 6             | E1               |
@@ -657,6 +658,38 @@ if (!lastSessionEndRan || commitsSinceLastMetrics >= 5) {
 | **15** | Run verification batches           | Phase 9             | E3 (ongoing)     |
 | **16** | **Final doc sync & enforcement**   | All phases          | E1               |
 | **17** | **Final System Audit**             | Phase 16            | E1               |
+
+### Phase 9b: Full Audit TDMS Integration
+
+**Goal:** Ensure ALL audit types (single-session, multi-AI, one-off) are fully
+integrated into TDMS with consistent intake workflows.
+
+**Scope:**
+
+1. **Multi-AI Audit Templates** - Add TDMS intake commands to:
+   - `MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md`
+   - `MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md`
+   - `MULTI_AI_PROCESS_AUDIT_TEMPLATE.md` (already done in Session #120)
+
+2. **One-Off Audit Workflow** - Define and document:
+   - How ad-hoc/one-off audits feed into TDMS
+   - Intake script for unstructured findings
+
+3. **Category Field Normalization** - Ensure consistent category values:
+   - Map all audit category fields to TDMS categories
+   - Update intake scripts to handle mapping
+
+4. **Coordinator Update** - Add TDMS references to:
+   - `MULTI_AI_REVIEW_COORDINATOR.md`
+
+5. **Cleanup** - Remove deprecated command files (completed Session #120)
+
+**Deliverables:**
+
+- Updated multi-AI templates with intake commands
+- One-off audit intake procedure in PROCEDURE.md
+- Category mapping table in PROCEDURE.md
+- Updated coordinator with TDMS references
 
 ### Phase Audit Requirements (MANDATORY)
 
@@ -895,10 +928,11 @@ To retrieve in future sessions:
 - [x] **Phase 3 complete** (Intake scripts) - Audited 2026-01-30, PASS
 - [x] **Phase 4 complete** (Validation scripts) - Audited 2026-01-30, PASS
 - [x] **Phase 5 complete** (Update audit skills) - Audited 2026-01-30, PASS
-- [ ] Phase 6 complete (Create intake skills)
-- [ ] Phase 7 complete (Pre-commit hooks)
-- [ ] Phase 8 complete (CI checks)
-- [ ] Phase 9 complete (Verification skill)
+- [x] **Phase 6 complete** (Create intake skills) - Audited 2026-01-31, PASS
+- [x] **Phase 7 complete** (Pre-commit hooks) - Audited 2026-01-31, PASS
+- [x] **Phase 8 complete** (CI checks) - Audited 2026-01-31, PASS
+- [ ] Phase 9 complete (Verification skill) - Note: Already done in Phase 6
+- [ ] **Phase 9b** (Full Audit TDMS Integration) - NEW
 - [ ] Phase 10 complete (GitHub Action)
 - [ ] Phase 11 complete (PR template)
 - [ ] Phase 12 complete (pr-review skill)

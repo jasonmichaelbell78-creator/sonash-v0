@@ -213,11 +213,12 @@ docs/archive/
 
 ## Version History
 
-| Version | Date       | Description                                            |
-| ------- | ---------- | ------------------------------------------------------ |
-| 1.5     | 2026-01-30 | TDMS Phase 4 complete, validation scripts built        |
-| 1.4     | 2026-01-30 | TDMS Phase 3 complete, intake scripts built            |
-| 1.3     | 2026-01-30 | TDMS Phase 2 complete, PROCEDURE.md created            |
-| 1.2     | 2026-01-30 | TDMS Phase 1 complete, docs/technical-debt/ now active |
-| 1.1     | 2026-01-30 | Added TDMS plan references, updated sync triggers      |
-| 1.0     | 2026-01-20 | Initial plan map created after document archival       |
+| Version | Date       | Description                                                  |
+| ------- | ---------- | ------------------------------------------------------------ |
+| 1.6     | 2026-01-31 | TDMS Phases 6-8 complete, Phase 9b added (audit integration) |
+| 1.5     | 2026-01-30 | TDMS Phase 4 complete, validation scripts built              |
+| 1.4     | 2026-01-30 | TDMS Phase 3 complete, intake scripts built                  |
+| 1.3     | 2026-01-30 | TDMS Phase 2 complete, PROCEDURE.md created                  |
+| 1.2     | 2026-01-30 | TDMS Phase 1 complete, docs/technical-debt/ now active       |
+| 1.1     | 2026-01-30 | Added TDMS plan references, updated sync triggers            |
+| 1.0     | 2026-01-20 | Initial plan map created after document archival             |

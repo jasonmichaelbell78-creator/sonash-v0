@@ -229,7 +229,7 @@ All templates located in `docs/templates/`:
 | **Multi-AI Templates**   | 10    | 6 audit types + aggregator + schema + 2 |
 | **Archived Plans**       | 3     | Completed implementation plans          |
 | **Analysis Docs**        | 16    | Multi-AI audit analysis outputs         |
-| **Technical Debt**       | 19+   | TDMS Phases 1-5 complete (867 items)    |
+| **Technical Debt**       | 19+   | TDMS Phases 1-8 complete (867 items)    |
 | **Audit Reports**        | 25+   | Single-session and comprehensive audits |
 | **Total Active Docs**    | ~160+ | Includes subdirectories                 |
 
@@ -300,6 +300,7 @@ review:** 2026-01-27 (comprehensive compliance audit - 100 errors → 0 errors)
 
 | Version | Date       | Changes                                                                                                             | Author               |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| 1.7     | 2026-01-31 | TDMS Phases 6-8 complete, Phase 9b added (audit integration), deprecated commands deleted                           | Claude Code          |
 | 1.6     | 2026-01-30 | TDMS Phase 4 complete, validation scripts built                                                                     | Claude Code          |
 | 1.5     | 2026-01-30 | TDMS Phase 3 complete, intake scripts built                                                                         | Claude Code          |
 | 1.4     | 2026-01-30 | TDMS Phase 2 complete, PROCEDURE.md created                                                                         | Claude Code          |
