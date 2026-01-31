@@ -109,7 +109,7 @@ _Main documentation directory_
 | [Context Preservation Pattern](docs/patterns/context-preservation-pattern.md)                                           | This document describes the Context Preservation Pattern for...   | ↓0 ↑0      | 2026-01-30    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                                                                  | Track template-instance relationships,                            | ↓2 ↑1      | 2026-01-30    |
 | [Documentation Audit - 2026-01-17](docs/audits/single-session/documentation/audit-2026-01-17.md)                        | This document provides a single-session documentation audit ...   | ↓1 ↑0      | 2026-01-30    |
-| [Documentation Inventory](docs/README.md)                                                                               | This document provides a complete inventory of project docum...   | ↓2 ↑12     | 2026-01-30    |
+| [Documentation Inventory](docs/README.md)                                                                               | This document provides a complete inventory of project docum...   | ↓2 ↑12     | 2026-01-31    |
 | [Engineering Productivity Audit - 2026-01-17](docs/audits/single-session/engineering-productivity/audit-2026-01-17.md)  | This audit evaluates the SoNash development experience focus...   | ↓0 ↑0      | 2026-01-30    |
 | [Engineering Productivity Audit Analysis](docs/audits/ENGINEERING_PRODUCTIVITY_AUDIT_ANALYSIS.md)                       | This document analyzes findings from the engineering product...   | ↓0 ↑3      | 2026-01-30    |
 | [Expansion Evaluation Tracker](docs/EXPANSION_EVALUATION_TRACKER.md)                                                    | This document tracks the systematic evaluation of ~280 expan...   | ↓1 ↑0      | 2026-01-30    |
@@ -160,7 +160,7 @@ _Main documentation directory_
 | [SonarCloud Issue Fixes](docs/audits/sonarcloud-fixes.md)                                                               | This document tracks SonarCloud issues that have been fixed,...   | ↓0 ↑1      | 2026-01-30    |
 | [SonarCloud Issue Triage](docs/SONARCLOUD_TRIAGE.md)                                                                    | This document records the triage decisions for 921 SonarClou...   | ↓3 ↑1      | 2026-01-30    |
 | [SoNash Comprehensive Refactoring Audit Report](docs/audits/comprehensive/REFACTORING_AUDIT_REPORT.md)                  | Comprehensive 10-category audit of the SoNash codebase            | ↓2 ↑2      | 2026-01-30    |
-| [SoNash Documentation Plan Map](docs/PLAN_MAP.md)                                                                       | Provide a visual map of documentation relationships, hierarc...   | ↓0 ↑0      | 2026-01-30    |
+| [SoNash Documentation Plan Map](docs/PLAN_MAP.md)                                                                       | Provide a visual map of documentation relationships, hierarc...   | ↓0 ↑0      | 2026-01-31    |
 | [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                                       | -                                                                 | ↓7 ↑1      | 2026-01-30    |
 | [SoNash Engineering Productivity Audit Report](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md) | This audit identifies engineering productivity inefficiencie...   | ↓2 ↑0      | 2026-01-30    |
 | [SoNash Refactoring Audit - Deduplicated Report](docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md)           | Cross-reference of audit findings against existing roadmap i...   | ↓3 ↑3      | 2026-01-30    |
@@ -173,17 +173,17 @@ _Main documentation directory_
 | [TDMS Phase 6 Audit Report](docs/technical-debt/PHASE_6_AUDIT.md)                                                       | -                                                                 | ↓0 ↑0      | 2026-01-31    |
 | [TDMS Phase 7 Audit Report](docs/technical-debt/PHASE_7_AUDIT.md)                                                       | -                                                                 | ↓0 ↑0      | 2026-01-31    |
 | [TDMS Phase 8 Audit Report](docs/technical-debt/PHASE_8_AUDIT.md)                                                       | -                                                                 | ↓0 ↑0      | 2026-01-31    |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-30    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-30    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)                                                      | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-30    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓0 ↑4      | 2026-01-30    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-31    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-31    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)                                                      | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-31    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓0 ↑4      | 2026-01-31    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                                  | This document provides step-by-step procedures for managing ...   | ↓0 ↑1      | 2026-01-30    |
 | [Technical Debt Management System (TDMS) - Implementation Plan](docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)    | <!-- prettier-ignore-start -->                                    | ↓3 ↑1      | 2026-01-31    |
 | [Technical Debt Master Tracker](docs/TECHNICAL_DEBT_MASTER.md)                                                          | Single source of truth for all technical debt items               | ↓4 ↑0      | 2026-01-30    |
 | [Testing Infrastructure Plan](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)                                                | This document outlines a comprehensive testing infrastructur...   | ↓1 ↑2      | 2026-01-30    |
 | [Testing Plan](docs/TESTING_PLAN.md)                                                                                    | Comprehensive testing guidance for the SoNash application, i...   | ↓5 ↑0      | 2026-01-30    |
 | [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)                                                    | -                                                                 | ↓3 ↑1      | 2026-01-30    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)                                                   | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-30    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)                                                   | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-01-31    |
 
 ### 2026 Q1 Reviews (Tier 3)
 
