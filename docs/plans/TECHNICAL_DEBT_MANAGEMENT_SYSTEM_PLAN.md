@@ -1,9 +1,9 @@
 # Technical Debt Management System (TDMS) - Implementation Plan
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2026-01-30 (Session #117)
-**Last Updated:** 2026-01-30
+**Last Updated:** 2026-01-31
 **Status:** APPROVED - Ready for Implementation
 **Related:** [ROADMAP.md](../../ROADMAP.md), [Consolidation Plan Memory](#memory-reference)
 <!-- prettier-ignore-end -->
@@ -218,6 +218,11 @@ docs/technical-debt/
 
 **Move to:** `docs/archive/technical-debt-sources-2026-01/`
 
+> **⚠️ EXCEPTION:** `docs/AUDIT_TRACKER.md` is NOT archived. It remains in place
+> because it tracks **audit trigger thresholds** (when to run next audit), which
+> is separate from debt findings tracking. The `check-review-needed.js` script
+> reads audit dates from this file. See Session #119 decision.
+
 ```
 ├── MANIFEST.md                    # What was archived and why
 ├── aggregation/                   # Former docs/aggregation/
@@ -226,9 +231,13 @@ docs/technical-debt/
 ├── reviews-2026-Q1/               # Former docs/reviews/2026-Q1/
 └── legacy-docs/
     ├── AUDIT_FINDINGS_BACKLOG.md
-    ├── AUDIT_TRACKER.md
     ├── SONARCLOUD_TRIAGE.md
     └── TECHNICAL_DEBT_MASTER.md
+
+# NOTE: AUDIT_TRACKER.md is NOT archived - it remains at docs/AUDIT_TRACKER.md
+# Reason: It tracks audit trigger thresholds (when to run next audit), which is
+# separate from debt findings tracking. The check-review-needed.js script reads
+# audit dates from this file to calculate triggers.
 ```
 
 ### Phase 9: Update Skills & Enforcement
