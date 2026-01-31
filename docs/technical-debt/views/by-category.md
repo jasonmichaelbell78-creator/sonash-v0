@@ -9,7 +9,7 @@
 
 ---
 
-## code-quality (745)
+## code-quality (746)
 
 | ID        | Title                                                          | Severity | File                                                            | Line |
 | --------- | -------------------------------------------------------------- | -------- | --------------------------------------------------------------- | ---- |
@@ -751,6 +751,7 @@
 | DEBT-0847 | Event listener/timer cleanup verification needed across m...   | S3       | components/\*\*                                                 | 0    |
 | DEBT-0848 | Sentry tracesSampleRate is low in production; may miss pe...   | S3       | lib/sentry.client.ts                                            | 0    |
 | DEBT-0849 | Unused dependencies remain in runtime dependencies (tool-...   | S3       | package.json                                                    | 0    |
+| DEBT-0868 | Add type: module to package.json to eliminate NODE warnings    | S3       | package.json                                                    | 1    |
 | DEBT-0851 | 47 CRITICAL cognitive complexity violations in scripts (1...   | S0       | scripts/assign-review-tier.js                                   | 0    |
 | DEBT-0852 | Multiple CI quality gates configured as non-blocking (con...   | S0       | .github/workflows/ci.yml                                        | 0    |
 | DEBT-0853 | useJournal creates redundant auth listener + potential me...   | S0       | hooks/use-journal.ts                                            | 0    |

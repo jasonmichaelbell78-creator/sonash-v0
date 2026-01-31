@@ -36,6 +36,7 @@ const { execSync } = require("child_process");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
+const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
 const LOG_DIR = path.join(DEBT_DIR, "logs");
 const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
 
@@ -309,6 +310,15 @@ Example:
   // Write to MASTER_DEBT.jsonl
   console.log("\n📝 Writing to MASTER_DEBT.jsonl...");
   fs.appendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
+
+  // Also write to raw/deduped.jsonl so generate-views.js doesn't lose the item
+  // (generate-views.js reads from deduped.jsonl and overwrites MASTER_DEBT.jsonl)
+  console.log("📝 Writing to raw/deduped.jsonl (source file)...");
+  const rawDir = path.dirname(DEDUPED_FILE);
+  if (!fs.existsSync(rawDir)) {
+    fs.mkdirSync(rawDir, { recursive: true });
+  }
+  fs.appendFileSync(DEDUPED_FILE, JSON.stringify(newItem) + "\n");
 
   // Log intake activity
   logIntake({

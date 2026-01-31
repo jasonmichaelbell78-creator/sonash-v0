@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (867)
+## NEW (868)
 
 | ID        | Title                                                          | Severity | Category      |
 | --------- | -------------------------------------------------------------- | -------- | ------------- |
@@ -862,6 +862,7 @@
 | DEBT-0847 | Event listener/timer cleanup verification needed across m...   | S3       | code-quality  |
 | DEBT-0848 | Sentry tracesSampleRate is low in production; may miss pe...   | S3       | code-quality  |
 | DEBT-0849 | Unused dependencies remain in runtime dependencies (tool-...   | S3       | code-quality  |
+| DEBT-0868 | Add type: module to package.json to eliminate NODE warnings    | S3       | code-quality  |
 | DEBT-0850 | Legacy journalEntries collection allows direct client wri...   | S0       | security      |
 | DEBT-0851 | 47 CRITICAL cognitive complexity violations in scripts (1...   | S0       | code-quality  |
 | DEBT-0852 | Multiple CI quality gates configured as non-blocking (con...   | S0       | code-quality  |

@@ -594,7 +594,7 @@
 | DEBT-0551 | useJournal filters soft-deleted entries client-side inste... | hooks/use-journal.ts                                        | 0    | code-quality  | E1     |
 | DEBT-0552 | NotebookShell likely bundles most notebook pages because ... | components/notebook/roadmap-modules.tsx                     | 0    | code-quality  | E2     |
 
-## S3 - Low (297)
+## S3 - Low (298)
 
 | ID        | Title                                                          | File                                                          | Line | Category      | Effort |
 | --------- | -------------------------------------------------------------- | ------------------------------------------------------------- | ---- | ------------- | ------ |
@@ -895,3 +895,4 @@
 | DEBT-0847 | Event listener/timer cleanup verification needed across m...   | components/\*\*                                               | 0    | code-quality  | E1     |
 | DEBT-0848 | Sentry tracesSampleRate is low in production; may miss pe...   | lib/sentry.client.ts                                          | 0    | code-quality  | E0     |
 | DEBT-0849 | Unused dependencies remain in runtime dependencies (tool-...   | package.json                                                  | 0    | code-quality  | E1     |
+| DEBT-0868 | Add type: module to package.json to eliminate NODE warnings    | package.json                                                  | 1    | code-quality  | E1     |
