@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 3.35 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 3.38 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-01-29 (Session #115 refactoring audit + quick wins)
+2026-01-31 (Session #119)
 
 ---
 
@@ -10,12 +10,97 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-29 **Branch**: `claude/new-session-nFHFo` **Working
-On**: Session #115 COMPLETE **Files Modified**: All committed and pushed
+**Last Checkpoint**: 2026-01-31 **Branch**: `claude/new-session-U1Jou` **Working
+On**: TDMS Phases 1-8 Complete **Files Modified**: skills, hooks, CI, scripts
 
-**Next Step**: Create PR #325 for refactoring audit work
+**Next Step**: TDMS Phase 9+ (remaining phases)
 
 **Uncommitted Work**: No
+
+**Session #119 Summary** (TDMS PHASES 6-8 + FIXES):
+
+- ✅ **Audit Trigger Fix**: Updated AUDIT_TRACKER.md with Session #116 dates
+  - Root cause: audit-comprehensive skill lacked tracker update step
+  - Added Post-Audit (MANDATORY) section to audit-comprehensive skill
+  - Updated TDMS plan: AUDIT_TRACKER.md NOT archived (tracks triggers)
+- ✅ **Phase 6 Complete**: Created 4 intake skills
+  - sync-sonarcloud-debt, add-manual-debt, add-deferred-debt,
+    verify-technical-debt
+  - Audit Status: PASS (no deviations)
+- ✅ **Phase 7 Complete**: Added pre-commit hooks
+  - Check #12: BLOCKING schema validation for MASTER_DEBT.jsonl
+  - Check #13: WARNING for debt files outside canonical location
+  - Audit Status: PASS (no deviations)
+- ✅ **Phase 8 Complete**: Added CI checks
+  - Validate technical debt schema (blocking)
+  - Check ROADMAP references (non-blocking)
+  - Verify views are current (non-blocking)
+  - Created `sync-roadmap-refs.js` script
+  - Audit Status: PASS (no deviations)
+- 📋 **Next**: TDMS Phases 9-17 (remaining phases)
+
+**Session #118 Summary** (TDMS PHASES 1-5):
+
+- ✅ **Phase 1 Audit Complete**: Created `docs/technical-debt/PHASE_1_AUDIT.md`
+  - Status: PASS with deviations
+  - 7 scripts built, 3 deferred (extract-markdown, extract-roadmap,
+    crossref-roadmap)
+  - 1,894 raw items → 867 unique items (54.2% reduction)
+- ✅ **Plan Updated**: Added Phase Audit Requirements (MANDATORY) section
+  - Phase audit template for all 17 phases
+  - Phase 17 (Final System Audit) added
+  - Approval section expanded with all phase tracking
+- ✅ **Phase 2 Complete**: Created `docs/technical-debt/PROCEDURE.md`
+  - Full system documentation with lifecycle, intake, verification, resolution
+  - Audit Status: PASS (no deviations)
+- ✅ **Phase 3 Complete**: Built intake scripts
+  - intake-audit.js, intake-pr-deferred.js, intake-manual.js, sync-sonarcloud.js
+  - Audit Status: PASS (no deviations)
+- ✅ **Phase 4 Complete**: Built validation scripts
+  - validate-schema.js, resolve-item.js, resolve-bulk.js
+  - Audit Status: PASS (no deviations)
+- ✅ **Phase 5 Complete**: Updated all 6 audit skills
+  - audit-code, audit-security, audit-performance, audit-documentation,
+    audit-process, audit-refactoring
+  - Added TDMS Integration (MANDATORY) step to Post-Audit
+  - Audit Status: PASS (no deviations)
+- 📋 **Next**: TDMS Phase 6 (Create intake skills)
+
+**Session #117 Summary** (TECHNICAL DEBT MANAGEMENT SYSTEM PLAN):
+
+- ✅ **TDMS Plan Created**:
+  `docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md`
+  - Consolidates ~1,700 raw items from 15+ sources
+  - Target: ~400-600 unique verified items
+  - 15 implementation phases defined
+- ✅ **Key Decisions Approved**:
+  - Canonical location: `docs/technical-debt/`
+  - Universal ID scheme: `DEBT-XXXX` (replaces CANON-_, DEDUP-_, etc.)
+  - Verification trigger: Hybrid (>25 items OR >3 days)
+  - Metrics: Session-end hook with session-begin failsafe
+- ✅ **New Skills Planned**: 4 new (sync-sonarcloud-debt, add-manual-debt,
+  add-deferred-debt, verify-technical-debt)
+- ✅ **Skills to Update**: pr-review, all audit-_ skills, multi-ai-_ templates
+- ✅ **GitHub Action Planned**: resolve-debt.yml for PR-based resolution
+  tracking
+- ✅ **Plan saved to Claude memory**: TechnicalDebtConsolidationPlan entity
+- 📋 **Next**: TDMS Phase 1 - Execute consolidation
+
+**Session #116 Summary** (CANONICAL AUDIT FINDINGS & AGGREGATOR ENHANCEMENTS):
+
+- ✅ **Aggregator Enhancements**: Line-based matching + synonym mapping
+- ✅ **Audit Skill Updates**: All 6 audit skills now require file:line fields
+- ✅ **Multi-AI Templates Updated**: All 5 templates require line numbers
+- ✅ **validate-audit.js Updated**: S2/S3 now require line field
+- ✅ **CANONICAL LOCATION CREATED**: `docs/audits/canonical/`
+  - MASTER_FINDINGS.jsonl (172 findings with CANON-0001+ IDs)
+  - MASTER_FINDINGS_INDEX.md (human-readable by severity)
+  - ROADMAP_INTEGRATION.md (copy-paste sections per milestone)
+- ✅ **AUDIT_FINDINGS_PROCEDURE.md**: Complete procedure documentation
+- ✅ **ROADMAP.md v3.16**: Consolidated findings section added
+- ✅ **Cross-reference Updates**: single-session/README, comprehensive/README
+- 📊 **Results**: Already tracked increased 87→113 (+30%), NET NEW reduced
+  198→172
 
 **Session #115 Summary** (REFACTORING AUDIT & QUICK WINS):
 
@@ -155,7 +240,7 @@ productive work.
 
 ## 🔢 Session Tracking
 
-**Current Session Count**: 115 (since Jan 1, 2026)
+**Current Session Count**: 119 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recently Completed" entries; review-focused sessions

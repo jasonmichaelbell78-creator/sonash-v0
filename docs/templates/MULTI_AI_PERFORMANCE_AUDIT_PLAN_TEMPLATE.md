@@ -514,7 +514,11 @@ now", "expected_improvement": "estimated improvement", "affected_metric":
 "LCP|INP|CLS|bundle|render|memory" }, "optimization": { "description": "what to
 do", "code_example": "optional: show pattern", "verification": ["how to verify
 improvement"] }, "evidence": ["measurements or code snippets"], "notes":
-"optional" }
+"optional", "line": 123 }
+
+**⚠️ REQUIRED FIELDS (Session #116):** `files` (at least one path) and `line`
+(primary line number, use 1 if file-wide) are REQUIRED for ROADMAP
+cross-reference.
 
 Severity guide (performance-specific):
 

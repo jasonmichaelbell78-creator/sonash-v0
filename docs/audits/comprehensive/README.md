@@ -1,12 +1,20 @@
 # Comprehensive Audits - Report Index
 
-> **Last Updated:** 2026-01-29
+> **Last Updated:** 2026-01-30
 
 ## Purpose
 
 This folder contains all comprehensive audit reports for the SoNash project.
 Each audit provides detailed findings across multiple categories with actionable
 recommendations.
+
+## Canonical Location
+
+All audit findings consolidate to the **canonical location**:
+[docs/audits/canonical/](../canonical/)
+
+See [AUDIT_FINDINGS_PROCEDURE.md](../../AUDIT_FINDINGS_PROCEDURE.md) for the
+full procedure.
 
 ### Latest Audit (Session #115)
 
@@ -368,7 +376,8 @@ Ready for Implementation
 
 ## Version History
 
-| Version | Date       | Changes                                      |
-| ------- | ---------- | -------------------------------------------- |
-| 1.1     | 2026-01-29 | Added Session #115 Refactoring Audit reports |
-| 1.0     | 2026-01-24 | Initial version                              |
+| Version | Date       | Changes                                           |
+| ------- | ---------- | ------------------------------------------------- |
+| 1.2     | 2026-01-30 | Added canonical location reference (Session #116) |
+| 1.1     | 2026-01-29 | Added Session #115 Refactoring Audit reports      |
+| 1.0     | 2026-01-24 | Initial version                                   |

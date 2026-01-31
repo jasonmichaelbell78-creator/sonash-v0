@@ -52,6 +52,9 @@ const VALID_TOOL_CONFIRMATIONS = new Set([
 ]);
 
 // Required fields by severity
+// S0/S1: Strict requirements including evidence and confidence
+// S2: Standard requirements with line for deduplication
+// S3: Relaxed requirements - line is optional for low-priority items
 const REQUIRED_FIELDS_BY_SEVERITY = {
   S0: [
     "id",
@@ -77,7 +80,9 @@ const REQUIRED_FIELDS_BY_SEVERITY = {
     "evidence",
     "confidence",
   ],
-  S2: ["id", "category", "severity", "file", "title", "description", "recommendation"],
+  // Session #116: Added line to S2 for deduplication/cross-reference
+  S2: ["id", "category", "severity", "file", "line", "title", "description", "recommendation"],
+  // S3: Relaxed - file and line are optional for low-priority items (Qodo Review #219)
   S3: ["id", "category", "severity", "title", "description"],
 };
 

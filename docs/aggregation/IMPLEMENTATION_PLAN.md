@@ -1,24 +1,6 @@
 # Implementation Plan
 
-**Generated:** 2026-01-17 **Total Items:** 291 **PR Buckets:** 34
-
----
-
-## Quick Start
-
-1. **Start with Phase 1**: Critical (S0) items require immediate action
-2. **Check dependencies**: See Dependency Chain section before implementing
-3. **Follow PR sequence**: Use Suggested PR Sequence for optimal ordering
-
-## AI Instructions
-
-When implementing from this plan:
-
-- **Check TECHNICAL_DEBT_MASTER.md first**: This plan is partially superseded
-- **Verify still valid**: Some items may have been resolved since 2026-01-17
-- **Update on completion**: Mark items with [x] when resolved
-- **Respect dependencies**: Don't implement items until their dependencies are
-  done
+**Generated:** 2026-01-30 **Total Items:** 285 **PR Buckets:** 34
 
 ---
 
@@ -31,7 +13,7 @@ implementation.
 
 | Bucket                   | Items | S0  | S1  | S2  | S3  |
 | ------------------------ | ----- | --- | --- | --- | --- |
-| code-quality             | 89    | 0   | 19  | 45  | 25  |
+| code-quality             | 83    | 0   | 19  | 41  | 23  |
 | security-hardening       | 39    | 3   | 15  | 15  | 6   |
 | performance-optimization | 31    | 1   | 7   | 20  | 3   |
 | process-automation       | 24    | 1   | 3   | 9   | 11  |
@@ -142,7 +124,7 @@ implementation.
 - [ ] **MASTER-0243**: Increase security file coverage (E2)
 - [ ] **MASTER-0276**: Add npm audit + CodeQL + Dependabot (E2)
 - [ ] **MASTER-0277**: Add gcloud setup to deploy workflow (E1)
-- [ ] **MASTER-0290**: Missing Security Headers (E0)
+- [ ] **MASTER-0283**: Item Name (E0)
 
 ### security-hardening
 
@@ -340,10 +322,6 @@ implementation.
 - [ ] **MASTER-0278**: Move full tests to pre-push only (E1)
 - [ ] **MASTER-0279**: Pin firebase-tools version (E0)
 - [ ] **MASTER-0280**: Fix auto-label workflow if syntax (E0)
-- [ ] **MASTER-0286**: Fix docs:check False Positives (E1)
-- [ ] **MASTER-0287**: Add Missing Script Triggers to Session Start (E0)
-- [ ] **MASTER-0288**: Add CANON Validation to CI Pipeline (E1)
-- [ ] **MASTER-0291**: No Firebase Storage Rules (E0)
 - [ ] **MASTER-0238**: Decompose Step1WorksheetCard (E3)
 
 ### security-hardening
@@ -576,7 +554,6 @@ implementation.
 - [ ] **MASTER-0273**: Document fragile anchor links (E0)
 - [ ] **MASTER-0274**: Update Husky docs for patterns:check (E0)
 - [ ] **MASTER-0281**: Add explicit permissions block (E0)
-- [ ] **MASTER-0289**: Add npm Commands for Undocumented Scripts (E0)
 - [ ] **MASTER-0011**: Useless assignment to hasMore variable (E1)
 - [ ] **MASTER-0013**: Nested ternary operator (E1)
 - [ ] **MASTER-0014**: Nested template literals (6 occurrences) (E1)
@@ -584,7 +561,6 @@ implementation.
       ts-expect-error, eslint-disable) (E1)
 - [ ] **MASTER-0210**: Replace 'any' with proper types (E1)
 - [ ] **MASTER-0282**: Improve deploy secret handling (E1)
-- [ ] **MASTER-0283**: Retrofit SSR-Safe localStorage (E1)
 - [ ] **MASTER-0285**: Missing "AI Instructions" Sections (E1)
 - [ ] **MASTER-0269**: Fix archive link rot (E2)
 - [ ] **MASTER-0284**: Missing "Quick Start" Sections (E2)
@@ -747,10 +723,4 @@ Based on severity, effort, and dependencies:
 
 ---
 
----
-
-## Version History
-
-| Version | Date       | Changes            |
-| ------- | ---------- | ------------------ |
-| 1.0     | 2026-01-17 | Initial generation |
+**Document Version:** 1.0 **Last Updated:** 2026-01-30

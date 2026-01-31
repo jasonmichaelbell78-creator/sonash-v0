@@ -555,8 +555,13 @@ Schema:
     "verification": ["how to verify improvement"]
   },
   "evidence": ["script output or workflow logs"],
-  "notes": "optional"
+  "notes": "optional",
+  "line": 123
 }
+
+**⚠️ REQUIRED FIELDS (Session #116):** `files` (at least one path) and `line`
+(primary line number, use 1 if file-wide) are REQUIRED for ROADMAP
+cross-reference.
 
 3) SUSPECTED_FINDINGS_JSONL
 (same schema, but confidence <= 40; needs testing to confirm)

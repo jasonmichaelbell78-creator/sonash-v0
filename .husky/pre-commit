@@ -235,5 +235,35 @@ else
   fi
 fi
 
+# 12. Technical debt schema validation (BLOCKING - TDMS Phase 7)
+# Validates MASTER_DEBT.jsonl schema when modified
+# Override with: SKIP_DEBT_VALIDATION=1 git commit ...
+if [ -z "$SKIP_DEBT_VALIDATION" ]; then
+  if printf '%s\n' "$STAGED_FILES" | grep -q "docs/technical-debt/MASTER_DEBT.jsonl"; then
+    echo "  ▶ Validating technical debt schema..."
+    if ! node scripts/debt/validate-schema.js > /dev/null 2>&1; then
+      echo "  ❌ Technical debt schema validation failed"
+      node scripts/debt/validate-schema.js 2>&1 | tail -10
+      echo ""
+      echo "  Fix schema issues before committing. Run:"
+      echo "    node scripts/debt/validate-schema.js"
+      echo "  Override (use sparingly): SKIP_DEBT_VALIDATION=1 git commit ..."
+      exit 1
+    fi
+    echo "  ✅ Technical debt schema passed"
+  fi
+fi
+
+# 13. Technical debt canonical location check (WARNING - TDMS Phase 7)
+# Warns if debt-related files are modified outside docs/technical-debt/
+DEBT_OUTSIDE_CANONICAL=$(printf '%s\n' "$STAGED_FILES" | grep -iE '(findings|issues|debt)' | grep -v 'docs/technical-debt/' | grep -v 'node_modules' || true)
+if [ -n "$DEBT_OUTSIDE_CANONICAL" ]; then
+  echo "  ⚠️  Warning: Debt-related files modified outside canonical location"
+  echo "     Canonical location: docs/technical-debt/MASTER_DEBT.jsonl"
+  echo "     Files:"
+  printf '%s\n' "$DEBT_OUTSIDE_CANONICAL" | head -5 | sed 's/^/       /'
+  node scripts/append-hook-warning.js --hook=pre-commit --type=debt-location --severity=warning --message="Debt files outside canonical location" --action="Move to docs/technical-debt/" 2>/dev/null || true
+fi
+
 echo ""
 echo "✅ All pre-commit checks passed - commit allowed"

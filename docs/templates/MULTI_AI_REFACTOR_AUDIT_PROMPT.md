@@ -182,6 +182,14 @@ Schema (reference only — do not copy formatting):
 - dependencies: [] (array of fingerprints this depends on, or empty)
 - evidence: [] (optional: short grep output or tool summary)
 - notes: "" (optional additional context)
+- line: 123 (REQUIRED: primary line number for deduplication)
+
+**⚠️ REQUIRED FIELDS (for deduplication/cross-reference - Session #116):**
+
+- `files` - REQUIRED: Array with at least one file path from repo root
+- `line` - REQUIRED: Primary line number where issue occurs (use 1 if file-wide)
+- These fields enable the aggregator to match findings against existing ROADMAP
+  items and prevent duplicates across audits
 
 **duplication_cluster format:**
 

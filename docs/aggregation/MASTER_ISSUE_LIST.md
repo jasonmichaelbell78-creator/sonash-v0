@@ -1,51 +1,20 @@
 # Master Issue List
 
-**Last Updated:** 2026-01-27 | **Version:** 1.0
-
----
-
-## Purpose
-
-Consolidated tracking of all technical debt and issues aggregated from
-single-session audits, CANON files, and backlogs. Total Items: 291 (deduplicated
-from 301 raw findings).
-
-**Note:** This document has been superseded by TECHNICAL_DEBT_MASTER.md for
-current tracking.
-
----
-
-## Quick Start
-
-1. **Check TECHNICAL_DEBT_MASTER.md first** - This document is superseded
-2. **Use for cross-reference only** - Map MASTER-\* IDs to current tracking
-3. **Don't add new items here** - Add to TECHNICAL_DEBT_MASTER.md instead
-
-## AI Instructions
-
-When referencing this document:
-
-- **Historical only**: This is preserved for ID cross-reference
-- **Current tracking**: Use
-  [TECHNICAL_DEBT_MASTER.md](../TECHNICAL_DEBT_MASTER.md)
-- **ID mapping**: Cross-reference table in TECHNICAL_DEBT_MASTER.md maps legacy
-  IDs
-
----
-
-> **⚠️ SUPERSEDED (Session #98 - 2026-01-26):** This document has been
-> superseded by [TECHNICAL_DEBT_MASTER.md](../TECHNICAL_DEBT_MASTER.md) which
-> consolidates:
->
-> - This list (cross-referenced, many duplicates identified)
-> - Comprehensive Audit (2026-01-24): 112 valid findings
-> - ROADMAP inline items (CANON, DEDUP, EFF, PERF)
->
-> **Use TECHNICAL_DEBT_MASTER.md for current tech debt tracking.**
+**Generated:** 2026-01-30 **Source:** Aggregated from single-session audits,
+CANON files, and backlogs **Total Items:** 285 (deduplicated from 295 raw
+findings) **NET NEW:** 172 (113 already in ROADMAP/Tech Debt)
 
 ---
 
 ## Summary Statistics
+
+### 🎯 NET NEW Analysis
+
+| Metric                | Count   |
+| --------------------- | ------- |
+| Total Unique Findings | 285     |
+| Already in ROADMAP    | 113     |
+| **NET NEW**           | **172** |
 
 ### By Severity
 
@@ -53,14 +22,14 @@ When referencing this document:
 | -------- | ----- | -------------------------------- |
 | S0       | 10    | Critical - implement immediately |
 | S1       | 75    | High - implement this sprint     |
-| S2       | 139   | Medium - implement next sprint   |
-| S3       | 67    | Low - backlog                    |
+| S2       | 135   | Medium - implement next sprint   |
+| S3       | 65    | Low - backlog                    |
 
 ### By Category
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code                     | 126   |
+| code                     | 120   |
 | refactoring              | 40    |
 | security                 | 36    |
 | performance              | 31    |
@@ -72,7 +41,7 @@ When referencing this document:
 
 | PR Bucket                | Count |
 | ------------------------ | ----- |
-| code-quality             | 89    |
+| code-quality             | 83    |
 | security-hardening       | 39    |
 | performance-optimization | 31    |
 | process-automation       | 24    |
@@ -635,7 +604,7 @@ _...and 45 more S1 items_
 | 99   | MASTER-0111 | reCAPTCHA token missing does not block r...  | S1  | E1     | 100   | security                 |
 | 100  | MASTER-0112 | Rate limiting is incomplete (no IP throt...  | S1  | E2     | 100   | security                 |
 
-_...and 191 more items (see MASTER_ISSUE_LIST.jsonl for full list)_
+_...and 185 more items (see MASTER_ISSUE_LIST.jsonl for full list)_
 
 ---
 
@@ -649,8 +618,4 @@ _...and 191 more items (see MASTER_ISSUE_LIST.jsonl for full list)_
 
 ---
 
-## Version History
-
-| Version | Date       | Changes                                                    |
-| ------- | ---------- | ---------------------------------------------------------- |
-| 1.0     | 2026-01-17 | Initial aggregation from audits, CANON files, and backlogs |
+**Document Version:** 1.0 **Last Updated:** 2026-01-30

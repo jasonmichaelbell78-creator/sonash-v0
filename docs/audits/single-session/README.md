@@ -311,9 +311,27 @@ node scripts/add-false-positive.js --interactive
 
 ---
 
+## Canonical Location
+
+All audit findings ultimately consolidate to the **canonical location**:
+
+```
+docs/audits/canonical/
+├── MASTER_FINDINGS.jsonl        # All active findings
+├── MASTER_FINDINGS_INDEX.md     # Human-readable index
+└── ROADMAP_INTEGRATION.md       # ROADMAP placement guide
+```
+
+See [../canonical/README.md](../canonical/README.md) for the canonical findings
+documentation.
+
+See [../../AUDIT_FINDINGS_PROCEDURE.md](../../AUDIT_FINDINGS_PROCEDURE.md) for
+the full procedure.
+
 ## Version History
 
-| Version | Date       | Changes                                         |
-| ------- | ---------- | ----------------------------------------------- |
-| 1.1     | 2026-01-13 | Added engineering productivity audit categories |
-| 1.0     | 2026-01-08 | Initial single-session audit documentation      |
+| Version | Date       | Changes                                           |
+| ------- | ---------- | ------------------------------------------------- |
+| 1.2     | 2026-01-30 | Added canonical location reference (Session #116) |
+| 1.1     | 2026-01-13 | Added engineering productivity audit categories   |
+| 1.0     | 2026-01-08 | Initial single-session audit documentation        |

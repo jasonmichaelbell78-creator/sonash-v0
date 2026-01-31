@@ -1,6 +1,6 @@
 # SoNash Documentation Plan Map
 
-**Last Updated:** 2026-01-27 | **Version:** 1.0
+**Last Updated:** 2026-01-30 | **Version:** 1.6
 
 ---
 
@@ -68,11 +68,24 @@ ROADMAP.md
     │                                    │
     ├──► MONETIZATION_RESEARCH.md (M10)  │
     │                                    │
-    └──► docs/aggregation/
-         ├── MASTER_ISSUE_LIST.md (283 findings)
-         ├── ROADMAP_INTEGRATION.md
-         └── IMPLEMENTATION_PLAN.md
+    ├──► docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md (TDMS)
+    │    └─ Canonical technical debt process (DEBT-XXXX IDs)
+    │    └─ Phase 1 COMPLETE (2026-01-30) - 867 items consolidated
+    │    └─ Phase 2 COMPLETE (2026-01-30) - PROCEDURE.md created
+    │    └─ Phase 3 COMPLETE (2026-01-30) - Intake scripts built
+    │    └─ Phase 4 COMPLETE (2026-01-30) - Validation scripts built
+    │    └─ Phase 5 COMPLETE (2026-01-30) - Audit skills updated
+    │
+    └──► docs/technical-debt/ (Canonical location - ACTIVE)
+         ├── MASTER_DEBT.jsonl (867 items, single source of truth)
+         ├── INDEX.md (Human-readable summary)
+         ├── PROCEDURE.md (System documentation)
+         ├── PHASE_*_AUDIT.md (Audit reports)
+         └── views/ (by-severity, by-category, by-status)
 ```
+
+> **Note:** `docs/aggregation/` and `docs/audits/canonical/` will be archived
+> once TDMS implementation is complete (see TDMS Plan Phase 8).
 
 ---
 
@@ -171,31 +184,40 @@ docs/archive/
 
 ## Cross-Document Sync Triggers
 
-| When This Changes...          | ...Update These                     |
-| ----------------------------- | ----------------------------------- |
-| ROADMAP.md milestone complete | ROADMAP_LOG.md (archive items)      |
-| ROADMAP.md new feature        | TESTING_PLAN.md (add test coverage) |
-| ROADMAP.md sprint status      | SESSION_CONTEXT.md (current state)  |
-| TESTING_PLAN.md new section   | ROADMAP.md (cross-reference)        |
-| Aggregation findings          | ROADMAP.md backlog items            |
+| When This Changes...          | ...Update These                                    |
+| ----------------------------- | -------------------------------------------------- |
+| ROADMAP.md milestone complete | ROADMAP_LOG.md (archive items)                     |
+| ROADMAP.md new feature        | TESTING_PLAN.md (add test coverage)                |
+| ROADMAP.md sprint status      | SESSION_CONTEXT.md (current state)                 |
+| TESTING_PLAN.md new section   | ROADMAP.md (cross-reference)                       |
+| **TDMS Plan changes**         | **Audit skills, pr-review skill, SESSION_CONTEXT** |
+| **New technical debt found**  | **MASTER_DEBT.jsonl → ROADMAP.md (via DEBT-XXXX)** |
+| **Debt item resolved**        | **MASTER_DEBT.jsonl status, ROADMAP.md checkbox**  |
 
 ---
 
 ## Quick Navigation
 
-| I Need To...              | Go To                                                 |
-| ------------------------- | ----------------------------------------------------- |
-| See current priorities    | ROADMAP.md                                            |
-| Understand current sprint | SESSION_CONTEXT.md → OPERATIONAL_VISIBILITY_SPRINT.md |
-| Find testing guidance     | docs/TESTING_PLAN.md                                  |
-| Check AI rules/patterns   | CLAUDE.md → docs/agent_docs/CODE_PATTERNS.md          |
-| Review completed work     | docs/archive/completed-plans/                         |
-| Find issue backlog        | docs/aggregation/MASTER_ISSUE_LIST.md                 |
+| I Need To...                | Go To                                                      |
+| --------------------------- | ---------------------------------------------------------- |
+| See current priorities      | ROADMAP.md                                                 |
+| Understand current sprint   | SESSION_CONTEXT.md → OPERATIONAL_VISIBILITY_SPRINT.md      |
+| Find testing guidance       | docs/TESTING_PLAN.md                                       |
+| Check AI rules/patterns     | CLAUDE.md → docs/agent_docs/CODE_PATTERNS.md               |
+| Review completed work       | docs/archive/completed-plans/                              |
+| **Manage technical debt**   | **docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md**    |
+| Find issue backlog (legacy) | docs/aggregation/MASTER_ISSUE_LIST.md (→ TDMS migration)   |
+| Find canonical findings     | docs/audits/canonical/ (→ docs/technical-debt/ after TDMS) |
 
 ---
 
 ## Version History
 
-| Version | Date       | Description                                      |
-| ------- | ---------- | ------------------------------------------------ |
-| 1.0     | 2026-01-20 | Initial plan map created after document archival |
+| Version | Date       | Description                                            |
+| ------- | ---------- | ------------------------------------------------------ |
+| 1.5     | 2026-01-30 | TDMS Phase 4 complete, validation scripts built        |
+| 1.4     | 2026-01-30 | TDMS Phase 3 complete, intake scripts built            |
+| 1.3     | 2026-01-30 | TDMS Phase 2 complete, PROCEDURE.md created            |
+| 1.2     | 2026-01-30 | TDMS Phase 1 complete, docs/technical-debt/ now active |
+| 1.1     | 2026-01-30 | Added TDMS plan references, updated sync triggers      |
+| 1.0     | 2026-01-20 | Initial plan map created after document archival       |

@@ -1,1212 +1,790 @@
-# Comprehensive Process & Automation Audit Report
+# PROCESS/AUTOMATION AUDIT REPORT
 
-> **Last Updated:** 2026-01-27
-
-## Purpose
-
-This document provides a comprehensive audit of the SoNash project's CI/CD
-pipeline, test automation, build/deploy scripts, developer experience tooling,
-code review automation, monitoring, alerting, and security automation.
-
----
-
-**Audit Date**: 2026-01-24 **Document Version**: 1.0 **Auditor**: Claude AI -
-Deployment Engineer Specialist **Scope**: Full CI/CD pipeline, test automation,
-build/deploy scripts, developer experience tooling **Status**: COMPLETE - Ready
-for remediation planning
+**Project**: SoNash v0 **Audit Date**: 2026-01-30 **Auditor**: Deployment
+Engineer Agent **Scope**: CI/CD, Testing, Git Hooks, Build Process, Development
+Workflow, Monitoring
 
 ---
 
 ## Executive Summary
 
-The SoNash project demonstrates **mature CI/CD automation** with well-structured
-workflows and comprehensive pre-commit/pre-push gates. However, there are
-**optimization opportunities** in deployment velocity, monitoring coverage, and
-developer experience.
+This comprehensive audit evaluated the automation, testing, and deployment
+infrastructure of the SoNash codebase. The project demonstrates **strong process
+automation** with mature CI/CD pipelines, comprehensive git hooks, and robust
+monitoring. However, several critical gaps exist in test coverage, deployment
+automation, and observability.
 
-### Key Findings
+### Finding Counts by Severity
 
-- **Strengths**: Comprehensive quality gates, security scanning, test coverage
-  automation, documentation validation
-- **Gaps**: No canary/progressive delivery, missing deployment health
-  monitoring, limited test parallelization, weak deployment rollback automation
-- **Opportunities**: Workflow consolidation, notification improvements,
-  environment-specific testing, performance optimization
+| Severity          | Count | Description                            |
+| ----------------- | ----- | -------------------------------------- |
+| **S0 (Critical)** | 3     | Blocking production reliability issues |
+| **S1 (High)**     | 8     | Significant process/quality gaps       |
+| **S2 (Medium)**   | 12    | Process improvements needed            |
+| **S3 (Low)**      | 7     | Nice-to-have enhancements              |
+| **Total**         | 30    |                                        |
 
-### Overall Health Score: 78/100
+### Risk Assessment
 
-| Category                   | Score | Trend         |
-| -------------------------- | ----- | ------------- |
-| CI/CD Pipeline Design      | 82    | ✅ Good       |
-| Test Automation            | 75    | ⚠️ Fair       |
-| Build/Deployment Scripts   | 80    | ✅ Good       |
-| Developer Experience       | 76    | ⚠️ Fair       |
-| Code Review Automation     | 85    | ✅ Excellent  |
-| Monitoring & Observability | 65    | 🔴 Needs Work |
-| Security Automation        | 82    | ✅ Good       |
-
----
-
-## 1. CI/CD Pipeline Efficiency
-
-### 1.1 Workflow Architecture Analysis
-
-**Current State:**
-
-- 9 GitHub Actions workflows (.github/workflows/\*.yml)
-- Trigger patterns: push/PR to main, schedule, manual dispatch
-- Parallel execution: Limited (build depends on lint-typecheck-test)
-- Total CI time: ~8-12 minutes per PR
-
-**Findings:**
-
-| ID           | Severity | Effort | Issue                                          | File                                                  | Details                                                                                                                                                                                           |
-| ------------ | -------- | ------ | ---------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **CICD-001** | S2       | E2     | No workflow concurrency limits                 | `.github/workflows/ci.yml`                            | Multiple workflows (sonarcloud, deploy-firebase, backlog-enforcement) can execute simultaneously without resource constraints, creating potential rate-limit issues with Firebase/SonarCloud APIs |
-| **CICD-002** | S3       | E1     | Dependency graph not optimized                 | `.github/workflows/ci.yml` (lines 105-108)            | Build job depends on lint-typecheck-test, but could run lint and tests in parallel jobs to reduce critical path from 12→8 minutes                                                                 |
-| **CICD-003** | S2       | E2     | Deploy workflow always runs on main            | `.github/workflows/deploy-firebase.yml` (lines 4-7)   | No deployment gates or approval steps; deployment happens automatically on every main push without manual verification or staging validation                                                      |
-| **CICD-004** | S3       | E1     | No workflow input validation                   | `.github/workflows/deploy-firebase.yml`               | `workflow_dispatch` lacks input parameters for targeting specific deployment types (functions only, rules only, hosting only)                                                                     |
-| **CICD-005** | S1       | E2     | Missing canary/progressive deployment strategy | Deploy workflow                                       | No canary deployment, blue-green, or gradual rollout mechanism; 100% traffic shift on deploy                                                                                                      |
-| **CICD-006** | S2       | E1     | No deployment health checks                    | `.github/workflows/deploy-firebase.yml` (post-deploy) | Deployment summary is informational only; no automated health checks, smoke tests, or rollback triggers                                                                                           |
-
-**Recommendations:**
-
-1. **Add workflow concurrency groups** to prevent simultaneous API calls
-
-   ```yaml
-   concurrency:
-     group: firebase-deploy-${{ github.ref }}
-     cancel-in-progress: false
-   ```
-
-2. **Parallelize lint/test jobs** to reduce critical path:
-   - Job A: eslint + prettier + pattern check (~2min)
-   - Job B: tsc + tests (~5min)
-   - Job C: dependency checks (~1min)
-   - Build: depends on A, B, C (parallel not sequential)
-
-3. **Add deployment approval gates** for production:
-
-   ```yaml
-   environment:
-     name: production
-     require-reviewers: true
-   ```
-
-4. **Implement health check post-deploy** (S1 priority):
-   ```bash
-   # After deploy step
-   HEALTH_CHECK=$(curl -s https://sonash-app.web.app/health)
-   if [ "$HEALTH_CHECK" != "ok" ]; then
-     echo "Health check failed, rolling back..."
-     firebase deploy --only functions --project sonash-app --rollback
-   fi
-   ```
+- **Production Deployment**: MEDIUM-HIGH risk due to missing health checks and
+  rollback automation
+- **Test Quality**: MEDIUM risk with 20 test files but unclear coverage metrics
+- **CI/CD Maturity**: HIGH - well-structured with 9 automated workflows
+- **Developer Experience**: HIGH - comprehensive pre-commit/pre-push hooks with
+  clear feedback
 
 ---
 
-### 1.2 Workflow Event Triggers
+## Findings Table
 
-**Current Patterns:**
-
-- Push to main: CI, sonarcloud, deploy-firebase
-- PR to main: CI, sonarcloud, backlog-enforcement, review-check,
-  auto-label-review-tier, docs-lint, validate-plan
-- Schedule: backlog-enforcement (weekly Monday 9 AM UTC)
-- Manual: sonarcloud, deploy-firebase
-
-**Findings:**
-
-| ID           | Severity | Effort | Issue                                    | File                                             | Details                                                                                                              |
-| ------------ | -------- | ------ | ---------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| **CICD-007** | S3       | E1     | No scheduled security scanning           | `.github/workflows/`                             | Only reactive PR/push scans; no scheduled dependency vulnerability checks (npm audit history)                        |
-| **CICD-008** | S2       | E1     | Deploy-firebase runs without manual gate | `.github/workflows/deploy-firebase.yml` (line 7) | `workflow_dispatch` exists but auto-deploy on main push (line 4-6) is unguarded; production should never auto-deploy |
-| **CICD-009** | S3       | E1     | No workflow schedule for maintenance     | `.github/workflows/`                             | No cleanup workflows: expired error logs, old test artifacts, coverage reports cleanup                               |
-
-**Recommendations:**
-
-1. **Change deploy-firebase to manual-only** or add environment approval:
-
-   ```yaml
-   on:
-     workflow_dispatch:
-   # Remove: push to main auto-deploy
-   ```
-
-2. **Add scheduled security audit**:
-   ```yaml
-   on:
-     schedule:
-       - cron: "0 3 * * 1" # Weekly Monday 3 AM UTC
-   jobs:
-     npm-audit:
-       runs-on: ubuntu-latest
-       steps:
-         - uses: actions/checkout@v4
-         - name: Check vulnerabilities
-           run: npm audit --audit-level=moderate
-         - name: Alert on findings
-           if: failure()
-           run: |
-             echo "::error::Security vulnerabilities found"
-             npm audit | mail -s "SoNash Audit Alert"
-   ```
+| ID       | Severity | Effort | File:Line                                            | Category   | Description                                                                                                      |
+| -------- | -------- | ------ | ---------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------- |
+| PROC-001 | S0       | E2     | `.github/workflows/deploy-firebase.yml:1`            | Deployment | No automated health checks after deployment - deployments succeed even if app crashes                            |
+| PROC-002 | S0       | E2     | `.github/workflows/deploy-firebase.yml:1`            | Deployment | No automated rollback mechanism - failed deployments require manual intervention                                 |
+| PROC-003 | S0       | E1     | `.github/workflows/ci.yml:96`                        | Testing    | Test coverage threshold not enforced - no minimum coverage requirement blocks bad PRs                            |
+| PROC-004 | S1       | E1     | `.github/workflows/deploy-firebase.yml:1`            | Deployment | No staging environment deployment - all changes go directly to production                                        |
+| PROC-005 | S1       | E2     | Root directory                                       | CI/CD      | No Dockerfile or containerization - deployment tied to Firebase only, no local dev parity                        |
+| PROC-006 | S1       | E1     | `package.json:96-97`                                 | Testing    | Test coverage shows only 2412 lines of tests for 37 lib + 116 component files - likely <30% coverage             |
+| PROC-007 | S1       | E3     | Root directory                                       | Monitoring | No performance monitoring configured - only error tracking via Sentry                                            |
+| PROC-008 | S1       | E2     | Root directory                                       | CI/CD      | No dependency vulnerability scanning in CI - npm audit only runs in pre-push hook (non-blocking)                 |
+| PROC-009 | S1       | E1     | `.github/workflows/ci.yml:38-40`                     | CI/CD      | Unused dependencies check is non-blocking (continue-on-error: true) - technical debt accumulates                 |
+| PROC-010 | S1       | E2     | Root directory                                       | Deployment | No deployment notifications - team not alerted of deployment success/failure                                     |
+| PROC-011 | S1       | E1     | `.github/workflows/deploy-firebase.yml:67-74`        | Deployment | Hard-coded function deletion list - brittle, error-prone, requires manual maintenance                            |
+| PROC-012 | S2       | E1     | `.github/workflows/ci.yml:107-113`                   | Testing    | Coverage report only kept for 14 days - no long-term trend analysis possible                                     |
+| PROC-013 | S2       | E1     | `package.json:10-13`                                 | Testing    | Test configuration requires manual build step (test:build) - adds friction to TDD workflow                       |
+| PROC-014 | S2       | E1     | `.husky/pre-commit:34-42`                            | Git Hooks  | Pattern compliance check runs twice (pre-commit + CI) - wastes developer time (~5-10s)                           |
+| PROC-015 | S2       | E2     | `.github/workflows/`                                 | CI/CD      | Workflows use mix of pinned SHAs and version tags - inconsistent supply chain security                           |
+| PROC-016 | S2       | E1     | `.github/workflows/sync-readme.yml:1`                | CI/CD      | README sync has race condition handling but uses 3-attempt retry - fragile under high commit velocity            |
+| PROC-017 | S2       | E1     | `.husky/pre-push:92-118`                             | Git Hooks  | npm audit runs in pre-push but is non-blocking - vulnerabilities can reach production                            |
+| PROC-018 | S2       | E1     | `firebase.json:69`                                   | Build      | Firebase Functions predeploy hook doesn't validate build success - can deploy broken code                        |
+| PROC-019 | S2       | E1     | `.github/workflows/ci.yml:78-81`                     | CI/CD      | Documentation check is non-blocking with known issues in templates - masks real problems                         |
+| PROC-020 | S2       | E2     | Root directory                                       | Deployment | No deployment metrics tracking - no visibility into deployment frequency, duration, or MTTR                      |
+| PROC-021 | S2       | E1     | `.github/workflows/backlog-enforcement.yml:51-63`    | CI/CD      | Backlog enforcement uses hard-coded threshold (25 items) - not configurable per project phase                    |
+| PROC-022 | S2       | E1     | `lib/sentry.client.ts:41-42`                         | Monitoring | Performance sampling rate is 10% in production - may miss critical slowdowns                                     |
+| PROC-023 | S2       | E1     | `next.config.mjs:13`                                 | Build      | Next.js static export (output: export) prevents using API routes and SSR - architectural limitation              |
+| PROC-024 | S3       | E0     | `.husky/pre-commit:165-184`                          | Git Hooks  | Learning entry reminder only triggers on file count threshold - misses small but significant changes             |
+| PROC-025 | S3       | E1     | Root directory                                       | CI/CD      | No GitHub Actions cache for node_modules across jobs - slower CI runs (uses npm ci repeatedly)                   |
+| PROC-026 | S3       | E1     | `.github/workflows/auto-label-review-tier.yml:59-75` | CI/CD      | Review tier assignment uses inline bash logic instead of dedicated script - duplicate with assign-review-tier.js |
+| PROC-027 | S3       | E1     | `package.json:53-54`                                 | Scripts    | Prettier format scripts not integrated with lint command - requires two separate commands                        |
+| PROC-028 | S3       | E1     | Root directory                                       | CI/CD      | No automated changelog generation - release notes require manual compilation                                     |
+| PROC-029 | S3       | E1     | Root directory                                       | Monitoring | No uptime monitoring configured - relies on manual checks or user reports                                        |
+| PROC-030 | S3       | E1     | `.github/workflows/`                                 | CI/CD      | No workflow to close stale PRs/issues - technical debt accumulates in backlog                                    |
 
 ---
 
-## 2. Test Automation Coverage & Quality
+## Detailed Findings
 
-### 2.1 Current Test Configuration
+### 1. CI/CD Pipeline Analysis
 
-**Setup:**
+#### Strengths
 
-- Test runner: Node.js built-in `node --test`
-- Coverage tool: c8 (NYC)
-- Test files: 19 .test.ts files in tests/ directory
-- Build: TypeScript → dist-tests/ → tests run
-- Coverage reporting: HTML + text
+- **9 comprehensive workflows** covering CI, deployment, docs, security, backlog
+  enforcement
+- **Sophisticated review trigger system** (review-check.yml) with multi-AI
+  coordination
+- **Supply chain security** with pinned action SHAs (e.g.,
+  `actions/checkout@34e114876b...`)
+- **SonarCloud integration** for continuous code quality monitoring
+- **Pattern compliance checking** integrated into PR workflow
 
-**Test Script Chain** (from package.json):
+#### Critical Issues
 
-```
-test:build → tsc -p tsconfig.test.json → tsc-alias
-test → cross-env NODE_ENV=test → node --test
-test:coverage → c8 + coverage report
-```
+**PROC-001 [S0, E2]** - No Post-Deployment Health Checks
 
-**Findings:**
+- **File**: `.github/workflows/deploy-firebase.yml:85-96`
+- **Issue**: Deployment marked successful even if app crashes after deployment
+- **Impact**: Silent production failures, poor user experience, no automatic
+  detection
+- **Verification**:
+  ```yaml
+  # Current: Only checks deployment command exit code
+  - name: Deploy Hosting
+    run: firebase deploy --only hosting --non-interactive --project sonash-app
+  - name: Deployment Summary
+    if: success() # Only checks if deploy command succeeded, not if app works
+  ```
+- **Fix**: Add health check step after deployment
+  ```yaml
+  - name: Verify Deployment Health
+    run: |
+      sleep 30  # Wait for cold start
+      curl -f https://sonash-app.web.app/api/health || exit 1
+  ```
 
-| ID           | Severity | Effort | Issue                                  | File                                      | Details                                                                                                             |
-| ------------ | -------- | ------ | -------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **TEST-001** | S2       | E3     | No parallelization                     | `package.json` (line 10)                  | Tests run sequentially in single Node process; test:build takes ~3-5 seconds, tests ~2-3 seconds; could parallelize |
-| **TEST-002** | S2       | E2     | Limited test coverage visibility       | `.github/workflows/ci.yml` (lines 86-102) | Coverage uploaded as artifact but no coverage.io integration, PR comments, or trend analysis                        |
-| **TEST-003** | S3       | E2     | No integration test vs unit test split | `tsconfig.test.json`                      | All tests compile together; no separate configurations for unit/integration/e2e test groups                         |
-| **TEST-004** | S3       | E1     | Missing test grouping by module        | `tests/`                                  | Tests scattered by feature (auth, firestore, etc) but no clear group/suite boundaries for reporting                 |
-| **TEST-005** | S1       | E3     | No contract/API testing                | `.github/workflows/ci.yml`                | No tests for Cloud Functions API contracts, data structure validation between frontend/backend                      |
-| **TEST-006** | S2       | E2     | Mock Firestore not in CI               | `tests/firestore-service.test.ts`         | Tests reference services but no emulator initialization; mocking may diverge from actual Firestore behavior         |
-| **TEST-007** | S3       | E1     | No test result reporting to PR         | `.github/workflows/ci.yml`                | Coverage report uploaded but not commented on PR; developers don't see test results in PR context                   |
+**PROC-002 [S0, E2]** - No Automated Rollback
 
-**Current Test Files** (19 files):
+- **File**: `.github/workflows/deploy-firebase.yml:1`
+- **Issue**: No rollback mechanism if deployment succeeds but app is broken
+- **Impact**: Extended downtime requires manual intervention, potential data
+  loss
+- **Fix**: Implement blue-green deployment or version tagging with rollback
+  capability
 
-- auth-provider.test.ts
-- callable-errors.test.ts
-- collections.test.ts
-- error-knowledge-base.test.ts
-- firestore-service.test.ts
-- secure-caller.test.ts
-- time-rotation.test.ts
-- use-daily-quote.test.ts
-- 11 utils, scripts, security tests
+**PROC-004 [S1, E1]** - No Staging Environment
 
-**Recommendations:**
+- **File**: `.github/workflows/deploy-firebase.yml:3-7`
+- **Issue**: All main branch commits deploy directly to production
+- **Impact**: No safe environment for final testing, production is the testing
+  ground
+- **Recommendation**: Add staging deployment trigger on `develop` branch
 
-1. **Add test parallelization** (E3, high ROI):
+#### High-Priority Issues
 
-   ```bash
-   # Split tests into 3 groups, run in parallel
-   npm run test:build
+**PROC-008 [S1, E2]** - Missing CI Vulnerability Scanning
 
-   # Run in parallel (local development)
-   npm run test -- --grep "^auth-" &
-   npm run test -- --grep "^firestore-" &
-   npm run test -- --grep "^utils-" &
-   wait
-   ```
+- **File**: `.github/workflows/ci.yml` (missing step)
+- **Issue**: npm audit only runs in pre-push hook and is non-blocking
+- **Current**: Pre-push hook at `.husky/pre-push:92-118` logs warnings but
+  doesn't block
+- **Impact**: Vulnerable dependencies can reach production
+- **Fix**: Add blocking audit check to CI workflow
+  ```yaml
+  - name: Security audit
+    run: npm audit --audit-level=high
+  ```
 
-2. **Add coverage PR comment** (E2):
+**PROC-009 [S1, E1]** - Non-Blocking Unused Dependencies Check
 
-   ```yaml
-   - name: Comment coverage to PR
-     uses: romeovs/lcov-reporter-action@v0.3.1
-     with:
-       coverage-files: ./coverage/lcov.info
-       github-token: ${{ secrets.GITHUB_TOKEN }}
-   ```
+- **File**: `.github/workflows/ci.yml:38-40`
+- **Code**:
+  ```yaml
+  - name: Check for unused dependencies/exports
+    continue-on-error: true # ⚠️ Technical debt accumulates
+    run: npm run deps:unused
+  ```
+- **Issue**: Unused dependencies flagged but not blocked, accumulates technical
+  debt
+- **Impact**: Larger bundle size, slower installs, security surface area
+  increases
+- **Fix**: Remove `continue-on-error` after cleaning up current violations
 
-3. **Add Firebase Emulator for integration tests**:
+**PROC-011 [S1, E1]** - Hard-Coded Function Deletion List
 
-   ```yaml
-   - name: Start Firebase Emulator
-     run: firebase emulators:start --only firestore,functions &
+- **File**: `.github/workflows/deploy-firebase.yml:67-74`
+- **Code**:
+  ```yaml
+  - name: Delete Old/Deprecated Functions
+    run: |
+      firebase functions:delete adminHealthCheck adminGetDashboardStats \
+        adminGetSentryErrorSummary exportUserData deleteUserAccount \
+        --project sonash-app --force --non-interactive
+  ```
+- **Issue**: Brittle manual list, must update workflow when deprecating
+  functions
+- **Impact**: Forgotten deletions cause deployment errors, requires maintenance
+  coordination
+- **Fix**: Generate deletion list dynamically by comparing deployed vs. source
+  functions
 
-   - name: Run integration tests
-     run: npm run test:integration
-   ```
+#### Medium-Priority Issues
 
-4. **Create test groups** for better organization:
-   ```
-   tests/
-     unit/
-       utils/
-       services/
-     integration/
-       firestore/
-       cloud-functions/
-     e2e/ (future)
-   ```
+**PROC-015 [S2, E2]** - Inconsistent Action Pinning
 
----
+- **Files**: Multiple workflow files
+- **Issue**: Mix of pinned SHAs and version tags
+  - Pinned: `actions/checkout@34e114876b...` (good)
+  - Version tags: `actions/setup-node@v4` (vulnerable to tag rewrite attacks)
+- **Impact**: Inconsistent supply chain security posture
+- **Fix**: Pin all actions to SHAs with comments showing version
+  ```yaml
+  uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+  ```
 
-### 2.2 Coverage Metrics
+**PROC-016 [S2, E1]** - Fragile README Sync Retry Logic
 
-**Current Coverage Status:**
+- **File**: `.github/workflows/sync-readme.yml:63-78`
+- **Issue**: 3-attempt retry with 5s delays may fail under high commit velocity
+- **Current**: Concurrency control prevents parallel runs but retries are basic
+- **Fix**: Implement exponential backoff and increase retry count to 5
 
-- Coverage uploaded to artifact (coverage/)
-- HTML report available
-- No baseline tracking
-- No PR comparison
+**PROC-019 [S2, E1]** - Non-Blocking Documentation Check
 
-**Issue**: Without baseline metrics, improvement is not measurable.
+- **File**: `.github/workflows/ci.yml:78-81`
+- **Code**:
+  ```yaml
+  - name: Documentation check
+    continue-on-error: true # Non-blocking: templates/stubs have expected issues
+    run: npm run docs:check
+  ```
+- **Issue**: Known issues in templates mask real documentation problems
+- **Fix**: Exclude templates from check and make blocking
 
-**Recommendations:**
+**PROC-021 [S2, E1]** - Hard-Coded Backlog Threshold
 
-1. Store coverage baseline in .github/coverage-baseline.json
-2. Compare PRs against baseline
-3. Fail if coverage drops >2%
-4. Use Codecov or Coveralls for history tracking
+- **File**: `.github/workflows/backlog-enforcement.yml:57-61`
+- **Code**:
+  ```yaml
+  if [ "$total" -gt 25 ]; then  # Hard-coded threshold
+    echo "::error::Backlog has $total items (threshold: 25)"
+    exit 1
+  fi
+  ```
+- **Issue**: 25-item limit not configurable, may need adjustment as project
+  matures
+- **Fix**: Move to configuration file (e.g., `.github/backlog-config.json`)
 
----
+#### Low-Priority Issues
 
-## 3. Pre-Commit & Pre-Push Hooks
+**PROC-025 [S3, E1]** - No npm Cache Across Jobs
 
-### 3.1 Hook Configuration
+- **File**: `.github/workflows/ci.yml:21-22`
+- **Current**: Uses `cache: "npm"` per job but jobs run in parallel, no
+  cross-job sharing
+- **Impact**: Slower CI (each job does full npm ci), higher GitHub Actions costs
+- **Fix**: Use `actions/cache@v4` to share node_modules across jobs
+  ```yaml
+  - uses: actions/cache@v4
+    with:
+      path: node_modules
+      key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+  ```
 
-**Current Hooks (.husky/):**
+**PROC-026 [S3, E1]** - Duplicate Review Tier Logic
 
-- `pre-commit`: 8 checks (linting, formatting, tests, patterns, CANON, skills,
-  cross-doc, learnings reminder)
-- `pre-push`: 7 checks (tests, circular deps, patterns, security, type check,
-  audit, triggers)
+- **File**: `.github/workflows/auto-label-review-tier.yml:62-75`
+- **Issue**: Inline bash duplicates logic from `scripts/assign-review-tier.js`
+  (commented out)
+- **Impact**: Two sources of truth, risk of drift
+- **Fix**: Complete `assign-review-tier.js` integration and remove inline logic
 
-**Strengths:**
+**PROC-028 [S3, E1]** - No Automated Changelog
 
-- Blocking gates for critical issues (ESLint, tests, patterns, security)
-- Non-blocking warnings for informational items (unused deps, security audit)
-- Proper error reporting with remediation steps
-- Cross-document dependency validation (excellent feature)
-
-**Findings:**
-
-| ID            | Severity | Effort | Issue                              | File                                                       | Details                                                                                                                |
-| ------------- | -------- | ------ | ---------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **HOOKS-001** | S2       | E2     | Hook execution time not measured   | `.husky/pre-commit`, `.husky/pre-push`                     | No timing output; developers don't know bottleneck phases (tests: 2s? 10s? 30s?)                                       |
-| **HOOKS-002** | S3       | E1     | No hook skip guidance              | `.husky/pre-push` (lines 119-122)                          | SKIP_TRIGGERS documented but no SKIP_ALL for emergency override, only SKIP_TRIGGERS                                    |
-| **HOOKS-003** | S2       | E2     | Test execution duplicated          | `.husky/pre-commit` (line 49) + `.husky/pre-push` (line 9) | npm test runs in both hooks; if pre-commit tests take 5s, pre-push tests take another 5s = 10s lost per push           |
-| **HOOKS-004** | S3       | E1     | Pattern check has two modes        | `.husky/pre-push` (line 34) vs CI                          | Hook uses default file list, CI uses `--all`; inconsistency in what's checked                                          |
-| **HOOKS-005** | S1       | E2     | No hook health dashboard           | `scripts/check-hook-health.js` exists                      | Hook health script exists but not integrated into CI or developer workflow; developers don't know if hooks are working |
-| **HOOKS-006** | S3       | E1     | Security check runs multiple times | `.husky/pre-push` (lines 46-86)                            | File-by-file loop in while loop; 10 changed files = 10 security checks                                                 |
-
-**Recommendations:**
-
-1. **Add hook timing output** (E1):
-
-   ```bash
-   # At start of each check
-   START_TIME=$(date +%s%N)
-
-   # At end
-   END_TIME=$(date +%s%N)
-   ELAPSED=$((($END_TIME - $START_TIME) / 1000000))
-   echo "  ✅ ESLint passed (${ELAPSED}ms)"
-   ```
-
-2. **Deduplicate test execution** (E2):
-   - Remove tests from pre-commit (they already ran)
-   - Keep test in pre-push only
-   - Or cache test results with file hash to avoid re-run
-
-3. **Add hook bypass modes** (E1):
-
-   ```bash
-   # Skip all hooks (for emergency hotfixes)
-   SKIP_HOOKS=1 git push
-
-   # Or skip specific hooks
-   SKIP_TESTS=1 git push
-   ```
-
-4. **Integrate hook health check into CI** (E2):
-   ```yaml
-   - name: Check hook health
-     run: npm run hooks:health
-   ```
-
----
-
-### 3.2 Hook Performance Baseline
-
-**Estimated Times:**
-
-- pre-commit: ~15-20 seconds (tests are slowest)
-- pre-push: ~20-30 seconds (duplicate tests + security checks)
-- Total per developer commit+push: ~35-50 seconds
-
-**Issue**: High friction for frequent commits. Developers may bypass hooks.
-
-**Recommendation**: Target <10s for pre-commit, <15s for pre-push.
+- **Files**: All workflow files
+- **Issue**: No workflow generates CHANGELOG.md from commits or PRs
+- **Impact**: Manual release notes, risk of missing important changes
+- **Fix**: Add conventional commits + release-please workflow
 
 ---
 
-## 4. Build & Deployment Scripts
+### 2. Testing Infrastructure
 
-### 4.1 Build Configuration
+#### Strengths
 
-**Current Setup:**
+- **20 test files** covering critical paths (auth, firestore, security, utils)
+- **Node.js native test runner** (`node --test`) - zero external dependencies
+- **c8 coverage reporting** integrated
+- **Test build process** with TypeScript compilation (tsconfig.test.json)
 
-- Next.js build: `npm run build`
-- Cloud Functions build: `tsc` in functions/
-- Firestore rules: Deployed via firebase-cli
-- Firebase Hosting: Auto-deployed via firebase-cli
+#### Critical Issues
 
-**Scripts** (package.json):
+**PROC-003 [S0, E1]** - No Coverage Threshold Enforcement
 
-```
-build, dev, start, test, lint, format
-```
+- **File**: `.github/workflows/ci.yml:96-97`
+- **Code**:
+  ```yaml
+  - name: Run tests with coverage
+    run: npm run test:coverage
+  # ⚠️ No check for minimum coverage percentage
+  ```
+- **Issue**: Tests can pass with declining coverage, no quality gate
+- **Impact**: Code quality degrades over time, untested code reaches production
+- **Fix**: Add coverage threshold check
+  ```yaml
+  - name: Check coverage thresholds
+    run: |
+      npx c8 check-coverage --lines 70 --functions 70 --branches 60
+  ```
 
-**Functions build** (functions/package.json):
+**PROC-006 [S1, E1]** - Low Test Coverage (Estimated <30%)
 
-```
-build, build:watch, serve, shell, deploy, logs
-```
+- **Evidence**:
+  - 20 test files with 2,412 lines of test code
+  - 37 files in `lib/` + 116 files in `components/` = 153 source files
+  - Ratio: 20 tests / 153 source files = 13% file coverage
+- **Critical Gaps**:
+  - No integration tests found
+  - No E2E tests (no Playwright/Cypress config)
+  - Components largely untested (only auth-provider tested)
+- **Impact**: High risk of regressions, especially in UI layer
+- **Recommendation**:
+  1. Add component tests using React Testing Library
+  2. Add E2E smoke tests for critical flows (login, journal save)
+  3. Target 60% coverage minimum within 2 sprints
 
-**Findings:**
+#### Medium-Priority Issues
 
-| ID            | Severity | Effort | Issue                            | File                                    | Details                                                                                        |
-| ------------- | -------- | ------ | -------------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **BUILD-001** | S3       | E1     | No build output analysis         | `.github/workflows/ci.yml` (line 124)   | `npm run build` succeeds but no size analysis, bundle metrics, or warning on size increase >5% |
-| **BUILD-002** | S2       | E2     | Functions build not tested in CI | `.github/workflows/ci.yml`              | Main CI doesn't build functions; deploy workflow builds and tests first time in production     |
-| **BUILD-003** | S3       | E1     | No cache invalidation strategy   | `.github/workflows/deploy-firebase.yml` | Firebase Hosting deploy doesn't specify cache headers or cache busting for frontend assets     |
-| **BUILD-004** | S2       | E2     | Next.js build may fail silently  | `.github/workflows/ci.yml` (line 124)   | No check for \_next build metadata, unused imports not caught during build                     |
-| **BUILD-005** | S3       | E1     | No build artifact versioning     | `.github/workflows/`                    | Deployed artifacts not tagged with commit hash or version for rollback identification          |
+**PROC-012 [S2, E1]** - Short Coverage Artifact Retention
 
-**Recommendations:**
+- **File**: `.github/workflows/ci.yml:107-113`
+- **Code**:
+  ```yaml
+  - name: Upload coverage report
+    uses: actions/upload-artifact@v4
+    with:
+      retention-days: 14 # Only 2 weeks
+  ```
+- **Issue**: Cannot analyze coverage trends beyond 2 weeks
+- **Fix**: Increase to 90 days or use Codecov/Coveralls for permanent storage
 
-1. **Add Next.js build analysis** (E2):
+**PROC-013 [S2, E1]** - Manual Test Build Step
 
-   ```bash
-   npm run build
+- **File**: `package.json:10-11`
+- **Code**:
+  ```json
+  "test": "npm run test:build && cross-env ... node --test",
+  "test:build": "tsc -p tsconfig.test.json && tsc-alias -p tsconfig.test.json"
+  ```
+- **Issue**: Two-step process slows TDD workflow, easy to forget build step
+- **Impact**: Developers may test outdated code, frustrating debugging
+  experience
+- **Fix**: Use ts-node or tsx for on-the-fly TypeScript execution
+  ```json
+  "test": "cross-env NODE_OPTIONS='--loader tsx' node --test tests/**/*.test.ts"
+  ```
 
-   # Check for size regressions
-   SIZE=$(du -sh .next | awk '{print $1}')
-   BASELINE=45M
-   if [ "$SIZE" -gt "$BASELINE" ]; then
-     echo "::warning::Build size $SIZE exceeds baseline $BASELINE"
-   fi
-   ```
+#### Test Quality Gaps (by file count)
 
-2. **Add Functions build to main CI**:
-
-   ```yaml
-   - name: Build Cloud Functions
-     working-directory: ./functions
-     run: npm run build
-   ```
-
-3. **Version builds** with commit SHA:
-   ```bash
-   # In deploy step
-   COMMIT_SHA=$(git rev-parse --short HEAD)
-   echo "$COMMIT_SHA" > public/build-version.txt
-   ```
-
----
-
-### 4.2 Deployment Scripts
-
-**Current Deployment** (deploy-firebase.yml):
-
-1. Checkout code
-2. Setup Node/cache
-3. Install Firebase CLI
-4. Build Next.js app
-5. Build Cloud Functions
-6. Setup Firebase service account
-7. Delete deprecated functions (force)
-8. Deploy functions
-9. Deploy Firestore rules
-10. Deploy hosting
-11. Cleanup credentials
-
-**Findings:**
-
-| ID             | Severity | Effort | Issue                               | File                                                  | Details                                                                                                    |
-| -------------- | -------- | ------ | ----------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **DEPLOY-001** | S1       | E2     | No pre-deployment smoke tests       | `.github/workflows/deploy-firebase.yml` (lines 79-83) | Functions, rules, hosting deployed without verification; failed deployment not detected until users report |
-| **DEPLOY-002** | S2       | E1     | Function deletion before new deploy | `.github/workflows/deploy-firebase.yml` (lines 67-74) | Deletes functions, then deploys; if deploy fails, functions are gone (no graceful transition)              |
-| **DEPLOY-003** | S1       | E3     | No rollback mechanism               | `.github/workflows/deploy-firebase.yml`               | If deployment fails mid-way, no automated rollback; manual intervention required                           |
-| **DEPLOY-004** | S2       | E2     | Firestore rules deployed last       | `.github/workflows/deploy-firebase.yml` (line 80)     | Rules deploy after functions; if rules deploy fails, functions already updated (state inconsistency)       |
-| **DEPLOY-005** | S3       | E1     | No deployment status tracking       | `.github/workflows/deploy-firebase.yml` (lines 85-96) | Summary is echo statements; no GitHub deployment API, no status page update                                |
-| **DEPLOY-006** | S2       | E1     | Service account stored in secrets   | `.github/workflows/deploy-firebase.yml` (line 58)     | Required for security, but no rotation policy documented                                                   |
-
-**Recommendations:**
-
-1. **Add pre-deployment validation** (S1, E2):
-
-   ```yaml
-   - name: Validate Functions
-     run: |
-       firebase functions:describe --project sonash-app 2>&1 | grep -q "functions:" || exit 1
-       echo "Functions ready for deployment"
-
-   - name: Validate Rules
-     run: |
-       npm run validate:firestore-rules
-
-   - name: Validate Hosting
-     run: npm run build && [ -d ".next" ] || exit 1
-   ```
-
-2. **Implement blue-green deployment** (S1, E3):
-
-   ```bash
-   # Deploy to staging environment first
-   firebase deploy --only functions --project sonash-app-staging
-
-   # Run smoke tests
-   npm run test:smoke -- https://sonash-app-staging.web.app
-
-   # If successful, promote to production
-   firebase deploy --only functions --project sonash-app-prod
-   ```
-
-3. **Reorder deployments** (S2, E1):
-   - Deploy Firestore rules FIRST
-   - Deploy Cloud Functions SECOND
-   - Deploy hosting LAST
-   - This ensures rules are in place before functions can execute
-
-4. **Add automated rollback** (S1, E3):
-
-   ```bash
-   set -e  # Exit on any error
-
-   # Capture previous version before deploying
-   PREV_VERSION=$(firebase functions:list --project sonash-app | grep version)
-
-   # Deploy
-   if ! firebase deploy --only functions --project sonash-app; then
-     echo "Deploy failed, rolling back..."
-     firebase functions:revert --project sonash-app || true
-     exit 1
-   fi
-   ```
+| Category    | Files Tested | Files Exist | Coverage Est. |
+| ----------- | ------------ | ----------- | ------------- |
+| lib/        | 9 tests      | 37 files    | ~24%          |
+| components/ | 1 test       | 116 files   | ~1%           |
+| app/        | 0 tests      | ~20 files   | 0%            |
+| hooks/      | 0 tests      | ~8 files    | 0%            |
 
 ---
 
-## 5. Developer Experience Tooling
+### 3. Git Hooks Analysis
 
-### 5.1 Developer Onboarding
+#### Strengths
 
-**Current Documentation:**
+- **Comprehensive pre-commit hook** (240 lines) with 11 checks
+- **Fast pre-push hook** removed duplicate tests (Review #322 Quick Win)
+- **Clear escape hatches** with documented override flags
+- **Non-blocking warnings** for soft failures (learning reminders, agent
+  compliance)
 
-- DEVELOPMENT.md (setup guide)
-- ARCHITECTURE.md (system design)
-- AI_WORKFLOW.md (session procedures)
-- CLAUDE.md (AI assistant context)
+#### Pre-Commit Hook Checks (11 stages)
 
-**Findings:**
+1. ESLint (blocking)
+2. lint-staged / Prettier (auto-fix)
+3. Pattern compliance (blocking)
+4. Tests (blocking for config changes, skipped for doc-only)
+5. CANON schema validation (non-blocking warning)
+6. Skill config validation (non-blocking warning)
+7. Cross-document dependencies (blocking)
+8. Documentation index staleness (blocking)
+9. Document header validation (blocking for new docs)
+10. Learning entry reminder (non-blocking)
+11. Audit S0/S1 validation (blocking for audit files)
 
-| ID         | Severity | Effort | Issue                                   | File                                  | Details                                                                                                                       |
-| ---------- | -------- | ------ | --------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| **DX-001** | S2       | E2     | No developer quick-start workflow       | `DEVELOPMENT.md`                      | Setup is documented but no "first commit" guide; new developers don't know testing/hook requirements until first commit fails |
-| **DX-002** | S3       | E1     | No IDE configuration guidance           | `.vscode/` exists                     | VSCode settings exist but not documented for developers; no eslint extension guidance                                         |
-| **DX-003** | S2       | E2     | Hook failures not always helpful        | `.husky/pre-commit`                   | When hooks fail, error messages show "tail -10" which may cut off root cause                                                  |
-| **DX-004** | S3       | E1     | No troubleshooting guide                | `docs/`                               | No common issues list (e.g., "why did my commit fail", "how to skip hooks")                                                   |
-| **DX-005** | S2       | E2     | Pattern compliance errors not explained | `scripts/check-pattern-compliance.js` | Script reports violations but no link to CODE_PATTERNS.md fix instructions                                                    |
+#### Pre-Push Hook Checks (7 stages)
 
-**Recommendations:**
+1. ~~Tests (REMOVED - Quick Win Session #113)~~
+2. Circular dependencies (blocking)
+3. Pattern compliance (blocking)
+4. Security pattern check (blocking for CRITICAL/HIGH)
+5. TypeScript type check (blocking)
+6. npm audit (non-blocking warning)
+7. Event-based triggers (blocking for security triggers)
 
-1. **Create developer quick-start** (E2):
+#### Issues
 
-   ```markdown
-   # First Commit Checklist
+**PROC-014 [S2, E1]** - Duplicate Pattern Compliance Checks
 
-   1. Run `npm ci` to install dependencies
-   2. Create feature branch: `git checkout -b feature/my-feature`
-   3. Make changes
-   4. Commit: `git commit -m "..."`
-      - Pre-commit hooks run automatically
-      - If hooks fail, see TROUBLESHOOTING.md
-   5. Push: `git push origin feature/my-feature`
-      - Pre-push hooks run automatically
-   6. Create PR
-   ```
+- **Files**: `.husky/pre-commit:34-42` and `.github/workflows/ci.yml:59-76`
+- **Issue**: Same check runs at commit time and in CI (wasted ~5-10s per commit)
+- **Current Justification**: "Catches issues before PR review tools"
+- **Impact**: Developer friction, especially on large PRs with many commits
+- **Recommendation**: Remove from pre-commit, rely on CI check only
+  - Benefit: Faster commits
+  - Risk: Slightly longer feedback loop (but PR check catches it anyway)
 
-2. **Add troubleshooting guide** (E2):
+**PROC-017 [S2, E1]** - Non-Blocking npm audit in Pre-Push
 
-   ```markdown
-   ## Common Issues
+- **File**: `.husky/pre-push:92-118`
+- **Code**:
+  ```bash
+  audit_output=$(npm audit --audit-level=high 2>&1)
+  audit_exit=$?
+  if [ $audit_exit -ne 0 ]; then
+    echo "  ⚠️ Security vulnerabilities found (not blocking - run: npm audit)"
+    # ⚠️ Does not exit 1 - vulnerabilities can be pushed
+  ```
+- **Issue**: Warns but doesn't block push, vulnerable code reaches CI/production
+- **Impact**: Security debt accumulates
+- **Fix**: Make blocking for HIGH/CRITICAL vulnerabilities
 
-   ### "ESLint has errors"
+**PROC-024 [S3, E0]** - Simplistic Learning Reminder Trigger
 
-   - Run: `npm run lint -- --fix` to auto-fix
-   - For remaining: see docs/LINT_ERRORS.md
-
-   ### "Pattern compliance failed"
-
-   - See: docs/agent_docs/CODE_PATTERNS.md
-   - Run: `npm run patterns:check` for details
-
-   ### "Tests failed"
-
-   - Run locally: `npm test`
-   - Check: tests/ directory for test structure
-   ```
-
-3. **Improve error messages in hooks** (E1):
-   ```bash
-   # Instead of: npm run lint 2>&1 | tail -10
-   if ! npm run lint > "$LINT_OUTPUT" 2>&1; then
-     echo "❌ ESLint has errors"
-     echo ""
-     echo "Full output:"
-     cat "$LINT_OUTPUT"
-     echo ""
-     echo "Quick fix: npm run lint -- --fix"
-     exit 1
-   fi
-   ```
-
----
-
-### 5.2 Local Development Workflow
-
-**Current Tools:**
-
-- Node.js 22
-- Firebase CLI for emulators
-- Next.js dev server
-- TypeScript type checking
-- ESLint + Prettier
-
-**Findings:**
-
-| ID         | Severity | Effort | Issue                                | File             | Details                                                                                         |
-| ---------- | -------- | ------ | ------------------------------------ | ---------------- | ----------------------------------------------------------------------------------------------- |
-| **DX-006** | S3       | E2     | No consolidated dev script           | `package.json`   | Developers must manually start: `firebase emulators:start`, `npm run dev` in separate terminals |
-| **DX-007** | S3       | E1     | IDE integration not mentioned        | `DEVELOPMENT.md` | No guidance on VSCode debugging, breakpoints, integrated terminal setup                         |
-| **DX-008** | S2       | E2     | No environment hot-reload during dev | `package.json`   | Changing .env.local requires server restart; no dotenv watch                                    |
-
-**Recommendations:**
-
-1. **Add consolidated dev script** (E2):
-
-   ```json
-   {
-     "scripts": {
-       "dev:all": "concurrently \"firebase emulators:start\" \"npm run dev\"",
-       "dev:debug": "NODE_OPTIONS='--inspect' npm run dev"
-     }
-   }
-   ```
-
-2. **Add VSCode launch config** (.vscode/launch.json):
-   ```json
-   {
-     "version": "0.2.0",
-     "configurations": [
-       {
-         "name": "Next.js Debug",
-         "type": "node",
-         "request": "launch",
-         "program": "${workspaceFolder}/node_modules/next/dist/bin/next",
-         "args": ["dev"],
-         "console": "integratedTerminal"
-       }
-     ]
-   }
-   ```
+- **File**: `.husky/pre-commit:165-184`
+- **Code**:
+  ```bash
+  if [ "$STAGED_COUNT" -gt 5 ] || [ "$TEMPLATE_CHANGES" -gt 0 ]; then
+    echo "  💡 Reminder: If addressing PR feedback, add Review #N to..."
+  ```
+- **Issue**: Triggers on file count only, misses small but significant changes
+  (e.g., security fix)
+- **Impact**: Misses learning opportunities
+- **Enhancement**: Check commit message for keywords like "fix", "review",
+  "feedback"
 
 ---
 
-## 6. Code Review Automation
+### 4. Build Process
 
-### 6.1 Review Automation Workflows
+#### Configuration Files
 
-**Current Automation:**
+- `next.config.mjs`: Static export configuration
+- `firebase.json`: Hosting, functions, firestore rules config
+- `tsconfig.json`: TypeScript compilation settings
+- `eslint.config.mjs`: Linting rules
+- `postcss.config.mjs`: CSS processing
 
-- `review-check.yml`: Detects when review is needed
-- `auto-label-review-tier.yml`: Assigns tier labels (0-4)
-- PR comment with tier information
-- `backlog-enforcement.yml`: Checks audit backlog health
+#### Issues
 
-**Strengths:**
+**PROC-018 [S2, E1]** - Firebase Functions Build Not Validated
 
-- Intelligent tier assignment based on changed files
-- Automated PR comments with review requirements
-- Consolidation tracking
-- Backlog health monitoring
+- **File**: `firebase.json:69`
+- **Code**:
+  ```json
+  "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
+  ```
+- **Issue**: Build errors don't fail deployment (firebase deploy continues)
+- **Impact**: Can deploy broken functions that fail at runtime
+- **Verification**: Test by introducing TypeScript error in
+  functions/src/index.ts
+- **Fix**: Add explicit build validation step in CI before deploy
+  ```yaml
+  - name: Build and Verify Cloud Functions
+    working-directory: ./functions
+    run: |
+      npm run build
+      test -f lib/index.js || exit 1
+  ```
 
-**Findings:**
+**PROC-023 [S2, E1]** - Next.js Static Export Limitation
 
-| ID             | Severity | Effort | Issue                                     | File                                         | Details                                                                                                      |
-| -------------- | -------- | ------ | ----------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **REVIEW-001** | S2       | E1     | No AI code review integration             | `.github/workflows/`                         | PR review workflow exists but no connection to CodeRabbit, Qodo, or GitHub Copilot for automated suggestions |
-| **REVIEW-002** | S3       | E1     | Tier comments only on open/reopen         | `auto-label-review-tier.yml` (lines 185-192) | Tier information not updated on subsequent pushes; developers don't see update if tier changes               |
-| **REVIEW-003** | S2       | E2     | No review timeline/SLA enforcement        | `.github/workflows/`                         | Reviews can sit indefinitely; no escalation after 24/48 hours without review                                 |
-| **REVIEW-004** | S3       | E1     | Tier thresholds not visible to developers | `auto-label-review-tier.yml` (lines 62-75)   | Tier rules duplicated in workflow; developers can't see why file X triggered tier Y                          |
+- **File**: `next.config.mjs:13`
+- **Code**:
+  ```javascript
+  const nextConfig = {
+    output: "export",  // Static export only
+  ```
+- **Issue**: Prevents using Next.js API routes, middleware, SSR
+- **Impact**: Architectural constraint, requires Cloud Functions for all backend
+  logic
+- **Consideration**: This is a Firebase Hosting requirement, not a bug
+- **Recommendation**: Document limitation in architecture docs
 
-**Recommendations:**
+#### Build Performance
 
-1. **Add AI code review integration** (E2):
-
-   ```yaml
-   - name: Request Copilot Review
-     if: github.event_name == 'pull_request'
-     uses: github-advanced-security/actions/code-review@v1
-     with:
-       github-token: ${{ secrets.GITHUB_TOKEN }}
-   ```
-
-2. **Update tier label on push** (E1):
-
-   ```yaml
-   # Remove condition: only run on open/reopen
-   - name: Add tier label
-     uses: actions/github-script@v7
-     # Always add (will overwrite previous)
-   ```
-
-3. **Add review SLA enforcement** (E2):
-   ```yaml
-   name: Review SLA Check
-   on:
-     schedule:
-       - cron: "0 9 * * *" # Daily at 9 AM
-   jobs:
-     check-sla:
-       runs-on: ubuntu-latest
-       steps:
-         - name: Find old PRs without review
-           run: |
-             PRs=$(gh pr list --search "is:open -review:approved" --json number,createdAt)
-             # Alert if PR > 24 hours without review
-   ```
+- **Next.js build time**: Unknown (not logged in CI)
+- **Functions build time**: Unknown (not logged in CI)
+- **Recommendation**: Add build timing metrics to CI logs
 
 ---
 
-### 6.2 Review Trigger Detection
+### 5. Development Workflow & Scripts
 
-**Current System** (check-review-needed.js):
+#### Script Categories (63 total in /scripts)
 
-- Detects changes >X commits/files
-- Triggers on consolidation milestones
-- Outputs JSON with trigger data
+| Category       | Count | Examples                                                       |
+| -------------- | ----- | -------------------------------------------------------------- |
+| Validation     | 12    | check-pattern-compliance.js, validate-audit.js                 |
+| Documentation  | 7     | check-docs-light.js, generate-documentation-index.js           |
+| Analysis       | 6     | analyze-learning-effectiveness.js, aggregate-audit-findings.js |
+| Git/Session    | 4     | session-end-commit.js, log-session-activity.js                 |
+| Data/Migration | 8     | migrate-to-journal.ts, seed-meetings.ts                        |
+| Security       | 2     | security-check.js, check-agent-compliance.js                   |
+| Other          | 24    | Various utilities                                              |
 
-**Findings:**
+#### Strengths
 
-| ID             | Severity | Effort | Issue                                  | File                             | Details                                                                                         |
-| -------------- | -------- | ------ | -------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **REVIEW-005** | S3       | E1     | Triggers not documented for developers | `scripts/check-review-needed.js` | Developers don't know what causes "review needed" label; threshold values not visible           |
-| **REVIEW-006** | S2       | E2     | No adaptive review request             | `review-check.yml`               | Always comments with standard message; doesn't contextualize for tier level or change magnitude |
+- **Well-organized package.json scripts** (58 script commands)
+- **Namespace conventions** (docs:_, patterns:_, learning:\*, etc.)
+- **Comprehensive documentation scripts** for maintaining internal docs
+- **Learning feedback loops** (surface-lessons-learned.js,
+  analyze-learning-effectiveness.js)
 
-**Recommendations:**
+#### Issues
 
-1. **Document trigger thresholds** in README:
+**PROC-027 [S3, E1]** - Separate Format and Lint Commands
 
-   ```markdown
-   ## Review Triggers
+- **File**: `package.json:8,53-54`
+- **Code**:
+  ```json
+  "lint": "eslint .",
+  "format": "prettier --write .",
+  "format:check": "prettier --check ."
+  ```
+- **Issue**: Developers must run two commands for full validation
+- **Impact**: Easy to forget format check, leads to CI failures
+- **Fix**: Add combined script
+  ```json
+  "lint:all": "npm run format:check && npm run lint"
+  ```
 
-   A "review needed" comment is added when:
+**Script Quality** (spot-checked check-pattern-compliance.js):
 
-   - More than 5 commits in PR
-   - More than 200 lines changed
-   - Consolidation milestone changes detected
-   - Security-related changes
-
-   See scripts/check-review-needed.js for exact thresholds.
-   ```
-
-2. **Customize review comment by tier** (E2):
-   ```javascript
-   // In review-check workflow
-   if (tier === 4) {
-     comment = `This Tier 4 PR requires RFC + multi-AI review + codeowner approval`;
-   } else if (tier === 3) {
-     comment = `This Tier 3 PR requires 2 human reviews + security checklist`;
-   }
-   ```
-
----
-
-## 7. Monitoring & Alerting Setup
-
-### 7.1 Current Monitoring
-
-**Deployment Monitoring:**
-
-- Firebase Console manual checks
-- Sentry for error tracking (optional, disabled)
-- No automated health checks
-- No deployment status tracking
-
-**Code Quality Monitoring:**
-
-- SonarCloud analysis (PR decoration + push)
-- GitHub Code Scanning (configured)
-- Coverage reports (artifact storage only)
-
-**Findings:**
-
-| ID              | Severity | Effort | Issue                                | File                                    | Details                                                                                 |
-| --------------- | -------- | ------ | ------------------------------------ | --------------------------------------- | --------------------------------------------------------------------------------------- |
-| **MONITOR-001** | S1       | E3     | No post-deployment health checks     | `.github/workflows/deploy-firebase.yml` | Deployment succeeds but app health unknown; broken deployments not caught automatically |
-| **MONITOR-002** | S2       | E2     | No deployment performance metrics    | `.github/workflows/`                    | Deployment time not tracked; regressions go unnoticed                                   |
-| **MONITOR-003** | S2       | E2     | No error rate monitoring post-deploy | `INCIDENT_RESPONSE.md`                  | Manual Firebase Console checks required; no alerting on error spikes                    |
-| **MONITOR-004** | S3       | E1     | No Sentry integration in workflows   | `.github/workflows/`                    | Sentry configured but not actively integrated into CI/CD for release tracking           |
-| **MONITOR-005** | S2       | E2     | Coverage trend not tracked           | `.github/workflows/ci.yml`              | Coverage uploaded but not compared across commits; regressions not detected             |
-
-**Recommendations:**
-
-1. **Add post-deployment health checks** (S1, E2):
-
-   ```yaml
-   - name: Health Check
-     run: |
-       MAX_RETRIES=3
-       for i in {1..MAX_RETRIES}; do
-         if curl -sf https://sonash-app.web.app/health; then
-           echo "✅ Health check passed"
-           exit 0
-         fi
-         sleep 5
-       done
-       echo "❌ Health check failed"
-       exit 1
-
-   - name: Rollback on failure
-     if: failure()
-     run: |
-       echo "Initiating rollback..."
-       firebase functions:list --project sonash-app
-       # Restore previous version (requires version control)
-   ```
-
-2. **Track deployment metrics** (E2):
-
-   ```yaml
-   - name: Record deployment metrics
-     run: |
-       DEPLOY_TIME=$(date +%s)
-       COMMIT_SHA=$(git rev-parse --short HEAD)
-
-       # Store in deployment log
-       echo "$COMMIT_SHA,$DEPLOY_TIME,SUCCESS" >> deployments.log
-
-       # Upload to artifact for tracking
-       git add deployments.log
-       git push origin main || true
-   ```
-
-3. **Enable Sentry release tracking** (E1):
-
-   ```yaml
-   - name: Create Sentry Release
-     env:
-       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-     run: |
-       npm install @sentry/cli
-       sentry-cli releases create sonash@$(git rev-parse --short HEAD)
-       sentry-cli releases set-commits --auto sonash@$(git rev-parse --short HEAD)
-   ```
-
-4. **Add coverage trend analysis** (E2):
-
-   ```yaml
-   - name: Compare coverage
-     run: |
-       CURRENT=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
-       PREVIOUS=$(git show origin/main:coverage-baseline.json | jq '.total.lines.pct' || echo "0")
-
-       if (( $(echo "$CURRENT < $PREVIOUS - 2" | bc -l) )); then
-         echo "::error::Coverage dropped from $PREVIOUS% to $CURRENT%"
-         exit 1
-       fi
-   ```
+- ✅ Comprehensive documentation
+- ✅ Clear usage examples
+- ✅ Proper error handling
+- ✅ JSON output mode for CI integration
+- ⚠️ Global excludes list (lines 45-80) is long - could use external config file
 
 ---
 
-### 7.2 Error & Cost Monitoring
+### 6. Monitoring & Observability
 
-**Current Setup:**
+#### Current Setup
 
-- INCIDENT_RESPONSE.md (manual procedures)
-- Cost spike response documented
-- Incident classification defined
+- **Error Tracking**: Sentry client-side only
+- **Performance Monitoring**: Sentry APM at 10% sample rate
+- **Logging**: Console.log in Cloud Functions
+- **Privacy**: PII redaction in place (lib/sentry.client.ts:44-68)
 
-**Findings:**
+#### Critical Gaps
 
-| ID              | Severity | Effort | Issue                     | File                                         | Details                                                                      |
-| --------------- | -------- | ------ | ------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------- |
-| **MONITOR-006** | S1       | E3     | No cost monitoring alerts | `INCIDENT_RESPONSE.md` (Cost Spike Response) | Manual checks required; automatic Firebase cost budget alerts not configured |
-| **MONITOR-007** | S2       | E2     | No error rate alerting    | `INCIDENT_RESPONSE.md`                       | Detection requires manual observation; no automated error spike detection    |
-| **MONITOR-008** | S3       | E1     | No incident dashboard     | `docs/`                                      | Incident procedures documented but no dashboard for real-time metrics        |
+**PROC-007 [S1, E3]** - No Performance Monitoring
 
-**Recommendations:**
+- **Evidence**: Only error tracking configured, no APM beyond basic Sentry
+- **Impact**: Cannot detect:
+  - Slow API responses
+  - Database query performance degradation
+  - Memory leaks
+  - Bundle size regressions
+- **Recommendation**: Implement comprehensive monitoring
+  1. Web Vitals tracking (CLS, FID, LCP)
+  2. Firebase Performance Monitoring SDK
+  3. Lighthouse CI for regression detection
 
-1. **Setup Firebase Budget Alerts** (E1):
-   - Configure in Firebase Console
-   - Email/Slack alerts on thresholds: $50, $100, $500
-   - Estimated effort: 15 minutes in console
+**PROC-010 [S1, E2]** - No Deployment Notifications
 
-2. **Setup Error Rate Monitoring** (E3):
+- **File**: `.github/workflows/deploy-firebase.yml` (missing step)
+- **Issue**: Team not notified of deployment status
+- **Impact**:
+  - Failed deployments may go unnoticed for hours
+  - No audit trail of who deployed what when
+- **Fix**: Add Slack/Discord webhook notification
+  ```yaml
+  - name: Notify Deployment Success
+    if: success()
+    uses: 8398a7/action-slack@v3
+    with:
+      status: ${{ job.status }}
+      text: "Deployed to production: ${{ github.sha }}"
+  ```
 
-   ```yaml
-   # Scheduled job to check error rates
-   - name: Check Error Rates
-     run: |
-       ERROR_RATE=$(firebase functions:log | grep -c "ERROR" || echo "0")
-       if [ "$ERROR_RATE" -gt 10 ]; then
-         echo "::error::High error rate detected ($ERROR_RATE)"
-         # Trigger incident response
-       fi
-   ```
+**PROC-020 [S2, E2]** - No Deployment Metrics
 
-3. **Create monitoring dashboard** (E3):
-   - Use Grafana + Prometheus if self-hosted
-   - Or: Datadog, New Relic for comprehensive APM
-   - Estimated effort: 8-16 hours for production-grade setup
+- **Issue**: No tracking of:
+  - Deployment frequency (DORA metric)
+  - Deployment duration
+  - Failure rate
+  - Mean Time To Recovery (MTTR)
+- **Impact**: Cannot measure DevOps maturity or improvement over time
+- **Fix**: Implement deployment metrics collection
+  - Option 1: GitHub Actions workflow_run webhook to external service
+  - Option 2: Export workflow run data to BigQuery for analysis
 
----
+#### Monitoring Gaps by Layer
 
-## 8. Security Automation
+| Layer          | Current       | Missing                                  |
+| -------------- | ------------- | ---------------------------------------- |
+| Frontend       | Sentry errors | Web Vitals, user sessions, feature flags |
+| API/Functions  | Console logs  | Structured logging, traces, metrics      |
+| Database       | None          | Query performance, connection pool stats |
+| Infrastructure | None          | CPU, memory, cold start metrics          |
+| Business       | None          | User activity, feature usage, conversion |
 
-### 8.1 Current Security Automation
+#### Medium-Priority Issues
 
-**Active Checks:**
+**PROC-022 [S2, E1]** - Low Performance Sample Rate
 
-- ESLint security plugin
-- Pattern compliance (CRITICAL/HIGH patterns blocking)
-- Security pattern validation in pre-push
-- SonarCloud security hotspots
-- Dependency vulnerability scanning (npm audit)
-- False positive exclusions configured
+- **File**: `lib/sentry.client.ts:41-42`
+- **Code**:
+  ```typescript
+  tracesSampleRate: isDev ? 1.0 : 0.1,  // Only 10% in production
+  ```
+- **Issue**: Miss 90% of performance issues, hard to debug intermittent
+  slowdowns
+- **Impact**: Cannot reliably detect performance regressions
+- **Recommendation**: Increase to 20% for first 6 months, then evaluate cost vs.
+  value
 
-**Strengths:**
+**PROC-029 [S3, E1]** - No Uptime Monitoring
 
-- Multiple layers (code-level, configuration-level, dependency-level)
-- Blocking on critical patterns
-- False positive management in sonar-project.properties
-- Security pattern script with file-level checks
-
-**Findings:**
-
-| ID          | Severity | Effort | Issue                                               | File                             | Details                                                                                                           |
-| ----------- | -------- | ------ | --------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **SEC-001** | S1       | E2     | Pattern check only scans critical files in pre-push | `.husky/pre-push` (line 34)      | Full repo patterns:check in CI but pre-push uses default file list; developer may push violations that fail in CI |
-| **SEC-002** | S3       | E1     | No SBOM (Software Bill of Materials) generation     | `.github/workflows/`             | No cyclonedx or syft SBOM generation; supply chain visibility missing                                             |
-| **SEC-003** | S2       | E1     | npm audit warnings only non-blocking                | `.husky/pre-push` (lines 99-114) | npm audit failures are warnings only; developers may ignore audit output                                          |
-| **SEC-004** | S3       | E1     | No secret scanning in commits                       | `.github/workflows/`             | No git-secrets, truffleHog, or GitHub Secret Scanning enabled                                                     |
-| **SEC-005** | S2       | E2     | Security check file-by-file inefficient             | `.husky/pre-push` (lines 58-73)  | While loop over changed files runs security-check.js for each file; could batch check                             |
-
-**Recommendations:**
-
-1. **Align pre-push pattern check with CI** (E1):
-
-   ```bash
-   # In pre-push hook
-   npm run patterns:check --all  # Use same as CI
-   ```
-
-2. **Add SBOM generation** (E2):
-
-   ```yaml
-   - name: Generate SBOM
-     run: |
-       npm install -g @cyclonedx/npm
-       cyclonedx-npm --output-file sbom.json
-       git add sbom.json
-   ```
-
-3. **Make npm audit blocking on CRITICAL** (E1):
-
-   ```bash
-   # In pre-push
-   AUDIT_RESULTS=$(npm audit --json)
-   CRITICAL=$(echo "$AUDIT_RESULTS" | jq '.metadata.vulnerabilities.critical')
-   if [ "$CRITICAL" -gt 0 ]; then
-     echo "::error::$CRITICAL critical vulnerabilities found"
-     exit 1
-   fi
-   ```
-
-4. **Enable GitHub Secret Scanning** (E1):
-   - Go to Settings → Code Security → Secret Scanning
-   - Enable "Push Protection"
-   - Estimated effort: 5 minutes in GitHub UI
+- **Issue**: No external uptime check for https://sonash-app.web.app
+- **Impact**: Rely on user reports to detect downtime
+- **Fix**: Add UptimeRobot or similar service (5-minute checks)
 
 ---
 
-## 9. Gaps Preventing Smooth Developer Workflow
+## Recommendations
 
-### 9.1 Missing Automation Features
+### Immediate Actions (Next Sprint)
 
-| Feature                        | Impact                                 | Effort | Priority    |
-| ------------------------------ | -------------------------------------- | ------ | ----------- |
-| Canary/Progressive Deployments | Reduces deployment risk                | E3     | S1 (High)   |
-| Post-Deploy Health Checks      | Catches broken deployments             | E2     | S1 (High)   |
-| Automated Rollback             | Enables rapid recovery                 | E3     | S1 (High)   |
-| Test Parallelization           | Reduces commit friction                | E2     | S2 (Medium) |
-| Deployment Approval Gates      | Prevents accidental production deploys | E1     | S2 (Medium) |
-| Hook Performance Metrics       | Identifies optimization bottlenecks    | E1     | S3 (Low)    |
-| Coverage Trend Tracking        | Prevents quality regressions           | E2     | S2 (Medium) |
-| Error Rate Alerting            | Detects production issues              | E2     | S2 (Medium) |
-| Incident Dashboard             | Enables rapid response                 | E3     | S3 (Low)    |
-| Developer Quick-Start Guide    | Reduces onboarding time                | E1     | S3 (Low)    |
+1. **[PROC-001] Add Deployment Health Checks** (S0, E2)
+   - Implement `/api/health` endpoint in Next.js
+   - Add curl-based health check after deployment
+   - Block deployment if health check fails
 
-### 9.2 Velocity Impact
+2. **[PROC-002] Implement Rollback Mechanism** (S0, E2)
+   - Tag each deployment with git SHA
+   - Store last-known-good deployment tag
+   - Add manual rollback GitHub Action workflow
 
-**Current State:**
+3. **[PROC-003] Enforce Test Coverage Thresholds** (S0, E1)
+   - Add c8 check-coverage to CI workflow
+   - Start with 30% lines, 25% branches (current baseline)
+   - Increment by 5% per month until 70%/60% target
 
-- Developer commit cycle (commit + push + CI): ~2-3 minutes
-- Hook execution: 35-50 seconds
-- Hook failure troubleshooting: 5-15 minutes
-- Test failures: 3-5 minutes to debug
+4. **[PROC-006] Expand Test Coverage** (S1, E1)
+   - Add React Testing Library for component tests
+   - Target: 10 new tests per sprint
+   - Priority: lib/firestore-service.ts, lib/collections.ts
 
-**With Recommended Changes:**
+5. **[PROC-008] Add Vulnerability Scanning to CI** (S1, E2)
+   - Add `npm audit --audit-level=high` as blocking CI step
+   - Configure Dependabot for automated dependency PRs
+   - Add CODEOWNERS review requirement for package.json changes
 
-- Commit cycle: ~1-2 minutes (parallelized tests, deduped execution)
-- Hook execution: ~10-15 seconds (parallelized, deduped)
-- Hook failures: 1-2 minutes (better error messages)
-- Test failures: 1-2 minutes (faster feedback with PR comments)
+### Short-Term Improvements (1-2 Months)
 
-**Estimated Productivity Gain:** 30-40% faster feedback loops
+6. **[PROC-004] Create Staging Environment** (S1, E1)
+   - Create Firebase project `sonash-app-staging`
+   - Add deployment workflow for `develop` branch
+   - Run smoke tests against staging before production promotion
 
----
+7. **[PROC-007] Implement Performance Monitoring** (S1, E3)
+   - Add Firebase Performance SDK to Next.js app
+   - Implement Web Vitals tracking
+   - Set up Lighthouse CI for bundle size regression detection
 
-## 10. Prioritized Remediation Roadmap
+8. **[PROC-010] Add Deployment Notifications** (S1, E2)
+   - Set up Slack/Discord webhook
+   - Notify on deployment start, success, failure
+   - Include git SHA, deployer, and changelog link
 
-### Phase 1: Critical Fixes (1-2 weeks) - S1 Issues
+9. **[PROC-011] Dynamic Function Deletion** (S1, E1)
+   - Create script to compare deployed functions vs. source
+   - Auto-generate deletion list in workflow
+   - Eliminate manual maintenance
 
-**Effort: ~16 hours | ROI: Prevents production incidents**
+10. **[PROC-005] Containerize Application** (S1, E2)
+    - Create Dockerfile for local development
+    - Use docker-compose for full stack (Next.js + Firebase emulators)
+    - Add container build to CI for deployment portability
 
-1. **Add post-deployment health checks** (4h)
-   - File: `.github/workflows/deploy-firebase.yml`
-   - Test endpoint after deploy
-   - Automatic rollback on failure
+### Medium-Term Enhancements (3-6 Months)
 
-2. **Implement deployment approval gates** (2h)
-   - Requires GitHub environment setup
-   - Prevents auto-deploy to production
+11. **[PROC-020] Implement Deployment Metrics** (S2, E2)
+    - Track DORA metrics (deployment frequency, lead time, MTTR, failure rate)
+    - Export GitHub Actions data to analytics platform
+    - Create deployment dashboard
 
-3. **Add pre-deployment validation** (2h)
-   - Validate functions exist and are callable
-   - Validate Firestore rules syntax
+12. **Blue-Green Deployment Strategy** (S2, E3)
+    - Implement traffic splitting in Firebase Hosting
+    - Automate gradual rollout (10% → 50% → 100%)
+    - Add automatic rollback on error rate spike
 
-4. **Implement automated rollback mechanism** (5h)
-   - Capture previous function versions
-   - Restore on deploy failure
-   - Document rollback procedures
+13. **End-to-End Testing** (S2, E3)
+    - Add Playwright for critical user flows
+    - Run E2E tests against staging before production deploy
+    - Target: 10 critical path tests (auth, journal CRUD, settings)
 
-5. **Setup cost budget alerts** (1h)
-   - Firebase Console configuration
-   - Alert on $50, $100, $500+ spikes
+### Low-Priority Nice-to-Haves
 
-### Phase 2: High-Priority Improvements (2-4 weeks) - S2 Issues
+14. **[PROC-028] Automated Changelog** (S3, E1)
+    - Adopt Conventional Commits
+    - Use release-please for automated releases
+    - Generate CHANGELOG.md from commit messages
 
-**Effort: ~24 hours | ROI: Reduces developer friction, improves quality**
-
-1. **Parallelize test execution** (4h)
-   - Split tests into groups
-   - Run in parallel locally and CI
-   - Reduce from 5s → 2s
-
-2. **Add deployment environment gates** (3h)
-   - Staging environment first
-   - Smoke tests before production
-   - Manual approval for production
-
-3. **Optimize hook execution** (3h)
-   - Remove duplicate test runs
-   - Add timing metrics
-   - Cache test results
-
-4. **Add coverage trend tracking** (4h)
-   - Store baseline metrics
-   - Compare PRs against baseline
-   - Fail if coverage drops >2%
-
-5. **Implement canary deployments** (6h)
-   - Blue-green deployment strategy
-   - 5% → 50% → 100% traffic shift
-   - Automated rollback on errors
-
-6. **Add PR coverage comments** (2h)
-   - Use romeovs/lcov-reporter-action
-   - Show coverage impact in PR
-
-7. **Create developer quick-start guide** (2h)
-   - First commit checklist
-   - Common troubleshooting
-   - Hook bypass procedures
-
-### Phase 3: Medium-Priority Enhancements (4-8 weeks) - S3 Issues
-
-**Effort: ~20 hours | ROI: Improves developer experience**
-
-1. **Add hook performance metrics** (3h)
-   - Time each hook phase
-   - Surface bottleneck identification
-
-2. **Setup Sentry release tracking** (2h)
-   - Create releases on deploy
-   - Track errors by version
-
-3. **Add scheduled security audits** (2h)
-   - Weekly npm audit runs
-   - Email alerts on vulnerabilities
-
-4. **Implement error rate monitoring** (4h)
-   - Track error spikes in production
-   - Alert on thresholds
-
-5. **Setup SBOM generation** (2h)
-   - Cyclonedx SBOM on each release
-   - Supply chain visibility
-
-6. **Create AI code review integration** (3h)
-   - Setup Copilot review requests
-   - Automate PR suggestions
-
-7. **Build monitoring dashboard** (8h estimated)
-   - Deployment status
-   - Error rates
-   - Cost trends
-   - Incident timeline
+15. **[PROC-030] Stale Issue/PR Cleanup** (S3, E1)
+    - Add stale bot workflow
+    - Close issues inactive for 60 days
+    - Close PRs inactive for 30 days
 
 ---
 
-## 11. Implementation Quick Reference
+## Risk Analysis
 
-### Quick Wins (Can do this week)
+### Production Deployment Risks
 
-- Add deployment approval gates (2h)
-- Setup cost budget alerts (1h)
-- Add troubleshooting guide (2h)
-- Enable GitHub Secret Scanning (0.25h)
-- Add hook timing output (1h)
+| Risk                              | Likelihood | Impact   | Mitigation                        |
+| --------------------------------- | ---------- | -------- | --------------------------------- |
+| Silent deployment failure         | Medium     | Critical | [PROC-001] Health checks          |
+| Broken function deployment        | Low        | High     | [PROC-018] Build validation       |
+| Vulnerable dependencies in prod   | Medium     | High     | [PROC-008] CI vulnerability scan  |
+| Performance regression undetected | High       | Medium   | [PROC-007] Performance monitoring |
+| Downtime during bad deploy        | Low        | Critical | [PROC-002] Rollback automation    |
 
-**Total: ~6 hours | Impact: High**
+### Development Velocity Risks
 
-### Medium Effort (2-4 weeks)
-
-- Parallelize tests (4h)
-- Add health checks (4h)
-- Add coverage comments (2h)
-- Optimize hooks (3h)
-- Add canary deployments (6h)
-
-**Total: ~19 hours | Impact: Very High**
-
-### Longer Term (2-3 months)
-
-- Build monitoring dashboard (8h)
-- Error rate alerting (4h)
-- Canary refinement (4h)
-- SBOM integration (2h)
-- Full incident response automation (8h)
-
-**Total: ~26 hours | Impact: High**
+| Risk                         | Likelihood | Impact | Current Mitigation        |
+| ---------------------------- | ---------- | ------ | ------------------------- |
+| Pre-commit hook too slow     | Medium     | Medium | Optimized in Review #322  |
+| False positive blocks commit | Low        | Medium | Override flags documented |
+| CI pipeline timeout          | Low        | Medium | Parallelized jobs         |
+| Test suite becomes too slow  | Medium     | Medium | None currently            |
 
 ---
 
-## 12. Success Metrics
+## Comparison to Industry Standards
 
-After implementing recommendations, track these metrics:
+### DORA Metrics Baseline (Estimated)
 
-| Metric                            | Current | Target          | Measurement          |
-| --------------------------------- | ------- | --------------- | -------------------- |
-| CI/CD cycle time                  | 2-3 min | <2 min          | GitHub Actions logs  |
-| Test execution time               | 5s      | <2s             | test:coverage output |
-| Hook execution time               | 35-50s  | <15s            | Hook timing logs     |
-| Deployment success rate           | 95%     | 99%             | Deployment logs      |
-| MTTR (Mean Time To Recovery)      | 30+ min | <10 min         | Incident logs        |
-| Production error rate             | <0.1%   | <0.05%          | Sentry/Firebase logs |
-| Code coverage trend               | Static  | +2% per quarter | Coverage reports     |
-| Security issues caught pre-commit | ~40%    | >80%            | Pattern check logs   |
-| Developer satisfaction            | TBD     | 4.5/5           | Survey               |
+| Metric                  | Current          | Industry Elite   | Target   |
+| ----------------------- | ---------------- | ---------------- | -------- |
+| Deployment Frequency    | ~Daily           | Multiple per day | Daily+   |
+| Lead Time for Changes   | ~2-4 hours       | <1 hour          | <2 hours |
+| Time to Restore Service | Unknown (manual) | <1 hour          | <1 hour  |
+| Change Failure Rate     | Unknown          | 0-15%            | <10%     |
 
----
+**Assessment**: Current deployment automation is **HIGH PERFORMING** for a small
+team, but lacks observability to measure DORA metrics.
 
-## 13. Appendix: File Inventory
+### Test Coverage Industry Standards
 
-### Workflow Files
+| Type                      | Current    | Industry Standard   | Target   |
+| ------------------------- | ---------- | ------------------- | -------- |
+| Unit Test Coverage        | ~24% (lib) | 70-80%              | 70%      |
+| Integration Test Coverage | ~0%        | 40-60%              | 50%      |
+| E2E Test Coverage         | 0%         | 5-10 critical paths | 10 tests |
+| Component Test Coverage   | ~1%        | 50-70%              | 60%      |
 
-- `.github/workflows/ci.yml` - Main CI pipeline
-- `.github/workflows/deploy-firebase.yml` - Production deployment
-- `.github/workflows/sonarcloud.yml` - Code quality analysis
-- `.github/workflows/review-check.yml` - Review trigger detection
-- `.github/workflows/auto-label-review-tier.yml` - Tier assignment
-- `.github/workflows/backlog-enforcement.yml` - Backlog health
-- `.github/workflows/docs-lint.yml` - Documentation validation
-- `.github/workflows/validate-plan.yml` - Phase completion validation
-- `.github/workflows/sync-readme.yml` - README auto-update
-
-### Hook Files
-
-- `.husky/pre-commit` - Commit-time validations
-- `.husky/pre-push` - Push-time validations
-
-### Configuration Files
-
-- `package.json` - Main scripts and dependencies
-- `functions/package.json` - Cloud Functions dependencies
-- `tsconfig.json` - TypeScript configuration
-- `tsconfig.test.json` - Test-specific TypeScript config
-- `sonar-project.properties` - SonarCloud configuration
-- `knip.json` - Unused dependencies config
-- `.prettierrc` - Code formatting rules
-- `eslint.config.mjs` - Linting rules
-
-### Script Files
-
-- `scripts/check-pattern-compliance.js` - Pattern validation
-- `scripts/security-check.js` - Security pattern scanning
-- `scripts/check-review-needed.js` - Review trigger detection
-- `scripts/check-hook-health.js` - Hook health diagnostic
-- `scripts/check-docs-light.js` - Documentation linting
-
-### Documentation Files
-
-- `DEVELOPMENT.md` - Developer setup guide
-- `ARCHITECTURE.md` - System architecture
-- `INCIDENT_RESPONSE.md` - Incident procedures
-- `docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md` - Monitoring spec
-- `docs/CODE_PATTERNS.md` - Code pattern library
-- `docs/SECURITY_CHECKLIST.md` - Security review checklist
+**Assessment**: Current test coverage is **BELOW STANDARD** and represents
+significant technical debt.
 
 ---
 
-## 14. Conclusion
+## Conclusion
 
-The SoNash project has a **mature, well-designed CI/CD foundation** with strong
-testing, security, and code review automation. The primary opportunity for
-improvement is in **post-deployment monitoring and automated remediation**,
-which would elevate the platform to production-grade reliability standards.
+The SoNash project demonstrates **mature CI/CD practices** with sophisticated
+workflows, comprehensive git hooks, and strong pattern enforcement. However,
+**critical gaps in testing, deployment validation, and observability** create
+production risk.
 
-**Priority Actions:**
+### Top 5 Priorities
 
-1. Add deployment health checks and automated rollback (S1)
-2. Implement canary/progressive deployments (S1)
-3. Add deployment approval gates (S2)
-4. Optimize developer feedback loops through parallelization (S2)
+1. **Add deployment health checks and rollback** - Eliminate silent production
+   failures
+2. **Enforce test coverage thresholds** - Stop quality erosion
+3. **Expand test coverage to 60%+** - Reduce regression risk
+4. **Add CI vulnerability scanning** - Block security issues early
+5. **Implement performance monitoring** - Detect degradation before users
+   complain
 
-These changes would reduce deployment risk, improve developer velocity, and
-enable rapid incident recovery.
+### Success Metrics (6-Month Goals)
 
-**Estimated Total Effort for Full Implementation:** 60-70 hours across 3 phases,
-distributed over 8-12 weeks.
+- ✅ Zero silent deployment failures (health checks in place)
+- ✅ Test coverage >60% (enforced by CI)
+- ✅ MTTR <1 hour (automated rollback)
+- ✅ Vulnerability scan blocks HIGH+ issues
+- ✅ Performance monitoring with alerting
 
 ---
 
-**Report Generated:** 2026-01-24 **Next Review:** 2026-03-24 (8 weeks) or after
-Phase 2 completion
+**Next Steps**:
 
----
+1. Review findings with team
+2. Prioritize S0/S1 fixes into sprint backlog
+3. Create tracking issues for each finding
+4. Schedule monthly audit review to track progress
 
-## Version History
+**Audit Artifacts**:
 
-| Version | Date       | Changes         |
-| ------- | ---------- | --------------- |
-| 1.0     | 2026-01-24 | Initial version |
+- GitHub Actions workflow files: `.github/workflows/*.yml`
+- Git hooks: `.husky/pre-commit`, `.husky/pre-push`
+- Test configuration: `package.json`, `tsconfig.test.json`
+- Monitoring: `lib/sentry.client.ts`, `functions/src/security-logger.ts`

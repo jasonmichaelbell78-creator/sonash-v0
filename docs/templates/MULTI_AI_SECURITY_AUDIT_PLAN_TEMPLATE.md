@@ -547,7 +547,11 @@ it could be attacked", "impact": "what damage could occur", "affected_data":
 "code_example": "optional: show fix pattern", "verification": ["how to verify
 fix"] }, "owasp_category": "A01|A02|...|A10|N/A", "cvss_estimate":
 "LOW|MEDIUM|HIGH|CRITICAL", "evidence": ["grep output or code snippet"],
-"notes": "optional" }
+"notes": "optional", "line": 123 }
+
+**⚠️ REQUIRED FIELDS (Session #116):** `files` (at least one path) and `line`
+(primary line number, use 1 if file-wide) are REQUIRED for ROADMAP
+cross-reference.
 
 3. SUSPECTED_FINDINGS_JSONL (same schema, but confidence <= 40; needs more
    investigation)

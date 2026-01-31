@@ -1,11 +1,17 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.15
-**Last Updated:** 2026-01-29 (Session #115)
+**Document Version:** 3.16
+**Last Updated:** 2026-01-30 (Session #116)
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
+
+> **v3.16 UPDATE:** Created canonical audit findings location (Session #116).
+> 172 NET NEW findings consolidated to
+> [docs/audits/canonical/](./docs/audits/canonical/). Added audit findings
+> procedure documentation and ROADMAP integration guide. See
+> [AUDIT_FINDINGS_PROCEDURE.md](./docs/AUDIT_FINDINGS_PROCEDURE.md).
 
 > **v3.15 UPDATE:** Integrated 94 NET NEW findings from Refactoring Audit
 > (Session #115). Added Track T Phase 7 (Cloud Functions Testing), M2.3-REF (God
@@ -339,6 +345,7 @@ reliability, and solo developer automations.
 - [ ] **A21:** Sentry Error → User Correlation (2-3hr)
   - Link errors to specific user accounts
   - Show user's recent actions before error
+  - **Key lines:** `lib/logger.ts:1`
   - Quick navigation to user details from error
 - [ ] **A22:** GCP Cloud Logging Query Builder (3-4hr)
   - Simple log queries without GCP Console
@@ -411,6 +418,24 @@ reliability, and solo developer automations.
 > **Full spec:** See
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 > Track B
+>
+> **Session #116 Audit Findings:** 18 documentation findings - see
+> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl)
+> (documentation category)
+
+#### Session #116 Documentation Priority Items (S1/S2)
+
+- [ ] **CANON-0011:** 16 broken anchor links `SESSION_CONTEXT.md:47` [E1] - S1
+- [ ] **CANON-0012:** 20 placeholder issues in templates
+      `PERFORMANCE_AUDIT_PLAN_2026_Q1.md` [E1] - S1
+- [ ] **CANON-0077:** Broken relative links in review docs
+      `CODE_REVIEW_2026_Q1.md` [E1] - S1
+- [ ] **CANON-0078:** [X] placeholders in 2026-Q1 plans
+      `CODE_REVIEW_PLAN_2026_Q1.md` [E1] - S1
+- [ ] **CANON-0013:** 99 files fail docs:check (313 errors) `README.md` [E1] -
+      S2
+- [ ] **CANON-0148:** Fix broken relative links [E1] - S1
+- [ ] **CANON-0149:** Replace [X] placeholders [E1] - S1
 
 #### Core Setup ✅ PARTIAL
 
@@ -441,6 +466,23 @@ reliability, and solo developer automations.
 > **Full spec:** See
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 > Track D
+>
+> **Session #116 Audit Findings:** 17 findings - see
+> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl) (process
+> category)
+
+#### Session #116 Priority Items (S1/S2)
+
+- [ ] **CANON-0090:** Script test coverage 2-7% `scripts/` [E2] - S1
+- [ ] **CANON-0091:** Deploy workflow missing gcloud setup `deploy-firebase.yml`
+      [E1] - S1
+- [ ] **CANON-0162:** Convert CI gates to blocking [E2] - S1
+- [ ] **CANON-0163:** Add npm audit + CodeQL + Dependabot [E2] - S1
+- [ ] **CANON-0007:** GitHub Actions using version tags
+      `auto-label-review-tier.yml:18` [E1] - S2
+- [ ] **CANON-0021:** Artifact upload without retention policy `ci.yml:99`
+      [E1] - S2
+- [ ] **CANON-0092:** Pre-commit hook slow (~35-50s) `pre-commit` [E1] - S2
 
 #### Phase 1 - Quick Wins
 
@@ -477,6 +519,14 @@ reliability, and solo developer automations.
 > spec:** See
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 > Track E
+>
+> **Session #116 Audit Findings:** 3 engineering-productivity findings - see
+> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl)
+
+#### Session #116 Priority Items (S2)
+
+- [ ] **CANON-0027:** No scripts/doctor.js for environment validation `scripts/`
+      [E1] - S2
 
 - [ ] **E1:** Warning collector hook (2hr) - Feed B11 Warnings Tab
 - [ ] **E2:** Session health summary (1hr) - JSON output for Dashboard
@@ -532,8 +582,26 @@ reliability, and solo developer automations.
 >
 > **Note:** Renamed from "Track D" to "Track P" to avoid confusion with Track D
 > (CI Reliability) in the Operational Visibility Sprint.
+>
+> **Session #116 Audit Findings:** 11 findings - see
+> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl)
+> (performance category)
 
 **Priority:** P0 - Core Web Vitals failing, 11MB image payload
+
+#### Session #116 Priority Items (S1/S2)
+
+- [ ] **CANON-0056:** Landing page blocks SSR `app/page.tsx` [E2] - S1
+- [ ] **CANON-0057:** Notebook module registry eagerly imports all pages
+      `roadmap-modules.tsx` [E2] - S1
+- [ ] **CANON-0058:** Sentry incomplete - no Web Vitals `sentry.client.ts`
+      [E2] - S2
+- [ ] **CANON-0059:** Celebration animations create 150+ DOM elements
+      `confetti-burst.tsx` [E1] - S2
+- [ ] **CANON-0060:** No React.memo causes unnecessary re-renders
+      `entry-card.tsx` [E1] - S2
+- [ ] **CANON-0064:** Step1WorksheetCard excessive complexity (804 lines)
+      `Step1WorksheetCard.tsx` [E2] - S2
 
 #### P1: Image Optimization (4hr) - **CRITICAL**
 
@@ -1223,6 +1291,27 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 
 Developer tooling, SonarCloud cleanup, and code quality improvements.
 
+> **Session #116 Audit Findings:** 87 code findings - see
+> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl) (code
+> category)
+
+#### Session #116 Priority Items (S0/S1)
+
+- [ ] **CANON-0138:** Reduce 47 CRITICAL complexity functions `scripts/` [E3] -
+      S0
+- [ ] **CANON-0001:** 5 failing tests in check-docs-light
+      `check-docs-light.test.ts:199` [E1] - S1
+- [ ] **CANON-0030:** Console.\* usage bypasses logger `lib/db/library.ts`
+      [E1] - S1
+- [ ] **CANON-0035:** No Firestore rules emulator tests `firestore.rules` [E2] -
+      S1
+- [ ] **CANON-0036:** Security-critical files low test coverage
+      `account-linking.ts` [E2] - S1
+- [ ] **CANON-0106:** Fix journal entry type mismatch [E0] - S1
+- [ ] **CANON-0115:** Remove deprecated saveNotebookJournalEntry [E2] - S1
+- [ ] **CANON-0136:** Add Firestore rules emulator tests [E2] - S1
+- [ ] **CANON-0137:** Increase security file coverage [E2] - S1
+
 ### Deferred Foundation Work
 
 **From M1 - Monitoring & Observability:**
@@ -1565,6 +1654,7 @@ Performance monitoring, incident response, and dashboard enhancements.
 - ⏳ **EFF-006: Add Correlation IDs to Logger** (M effort)
   - Generate unique correlation ID per request
   - Pass through all log calls (frontend + backend)
+  - **Key lines:** `lib/logger.ts:1`, `hooks/use-journal.ts:319`
   - Enables tracing requests across services
   - **Verification:** Make request, find same ID in frontend and backend logs
 
@@ -1586,6 +1676,7 @@ Performance monitoring, incident response, and dashboard enhancements.
 #### Offline Support (CRITICAL)
 
 - ⏳ **EFF-010:** → _Merged into T1.2 (M5 Offline Infrastructure)_
+  - **Key lines:** `hooks/use-journal.ts:319`, `lib/firebase.ts:1`
 
 - ⏳ **EFF-011:** → _Moved to M5 F1: Offline Infrastructure_
 
@@ -1672,6 +1763,23 @@ Architecture refactoring, schema optimization, and infrastructure work.
 > **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md
 > (ARCH-001 through ARCH-005) **Critical:** 4 files exceed 1,000 lines,
 > affecting maintainability and performance
+>
+> **Session #116 Audit Findings:** 19 refactoring findings - see
+> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl)
+> (refactoring category)
+
+#### Session #116 Refactoring Priority Items (S0/S1)
+
+- [ ] **CANON-0067:** 47 CRITICAL cognitive complexity violations `scripts/`
+      [E3] - S0
+- [ ] **CANON-0023:** Deprecated saveNotebookJournalEntry still used in 6+
+      components `firestore-service.ts` [E2] - S1
+- [ ] **CANON-0032:** Critical logic divergence in journal saving
+      `firestore-service.ts` [E1] - S1
+- [ ] **CANON-0068:** Journal entry type definitions diverge between
+      client/server `journal.ts` [E2] - S1
+- [ ] **CANON-0069:** useJournal mixes domain logic with transport
+      `use-journal.ts` [E2] - S1
 
 | ID           | File                                     | Lines | Target | Effort | Priority |
 | ------------ | ---------------------------------------- | ----- | ------ | ------ | -------- |
@@ -1680,6 +1788,17 @@ Architecture refactoring, schema optimization, and infrastructure work.
 | M2.3-REF-003 | components/notebook/pages/today-page.tsx | 1,199 | ~500   | 6hr    | P2       |
 | M2.3-REF-004 | components/admin/dashboard-tab.tsx       | 1,031 | ~500   | 4hr    | P2       |
 | M2.3-REF-005 | Repository pattern violations (multiple) | -     | -      | 4hr    | P2       |
+
+**Key Issue Lines (for audit cross-reference):**
+
+- **M2.3-REF-001:** `admin.ts:143` (ReDoS regex), `admin.ts:1388` (nested
+  templates), `admin.ts:1726` (cognitive complexity), `admin.ts:1835` (cognitive
+  complexity)
+- **M2.3-REF-002:** `users-tab.tsx:1` (god component), `users-tab.tsx:84`
+  (complexity)
+- **M2.3-REF-003:** `today-page.tsx:1` (god component), `today-page.tsx:396`
+  (debug logs)
+- **M2.3-REF-004:** `dashboard-tab.tsx:1` (large component)
 
 **Splitting Strategy:**
 
@@ -1786,6 +1905,61 @@ Architecture refactoring, schema optimization, and infrastructure work.
 reveals performance issues
 
 **Priority:** Low - Foundation is solid, focus on features first
+
+### Consolidated Audit Findings (Session #116)
+
+> **Canonical Location:** [docs/audits/canonical/](docs/audits/canonical/)
+> **Full Index:**
+> [MASTER_FINDINGS_INDEX.md](docs/audits/canonical/MASTER_FINDINGS_INDEX.md)
+> **Procedures:**
+> [AUDIT_FINDINGS_PROCEDURE.md](docs/AUDIT_FINDINGS_PROCEDURE.md)
+
+**Session #116** consolidated 172 NET NEW audit findings from 6-domain
+comprehensive audit.
+
+| Severity    | Count | Action                  |
+| ----------- | ----- | ----------------------- |
+| S0 Critical | 3     | Immediate fix required  |
+| S1 High     | 42    | Fix before next release |
+| S2 Medium   | 78    | Fix when convenient     |
+| S3 Low      | 49    | Nice to have            |
+
+**Top Priority Items (S0/S1):**
+
+| ID         | Title                                       | File                  | Section  |
+| ---------- | ------------------------------------------- | --------------------- | -------- |
+| CANON-0138 | Reduce 47 CRITICAL complexity functions     | scripts/              | M2.3-REF |
+| CANON-0162 | Convert CI gates to blocking                | CI                    | Track D  |
+| CANON-0031 | Client App Check disabled                   | `firebase.ts`         | M4.5     |
+| CANON-0033 | reCAPTCHA not enforced when configured      | `security-wrapper.ts` | M4.5     |
+| CANON-0035 | No Firestore rules tests                    | `firestore.rules`     | Track T  |
+| CANON-0050 | reCAPTCHA missing token logs but continues  | `security-wrapper.ts` | M4.5     |
+| CANON-0056 | Landing page blocks SSR                     | `app/page.tsx`        | Track P  |
+| CANON-0067 | 47 CRITICAL cognitive complexity violations | scripts/              | M2.3-REF |
+| CANON-0077 | Broken relative links in review docs        | docs/                 | Track B  |
+| CANON-0090 | Script test coverage 2-7%                   | scripts/              | Track D  |
+| CANON-0091 | Deploy workflow missing gcloud setup        | `.github/workflows/`  | Track D  |
+
+**By Category:**
+
+| Category                 | Count | ROADMAP Section        |
+| ------------------------ | ----- | ---------------------- |
+| code                     | 87    | M2.1 Code Quality      |
+| refactoring              | 19    | M2.3-REF               |
+| documentation            | 18    | Track B                |
+| security                 | 17    | M4.5 Security          |
+| process                  | 17    | Track D CI Reliability |
+| performance              | 11    | Track P                |
+| engineering-productivity | 3     | Track E                |
+
+**Integration Strategy:**
+
+1. **S0/S1 findings** added to respective track/milestone above
+2. **S2/S3 findings** tracked in
+   [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl)
+3. **Cross-reference** via file:line in aggregator for deduplication
+4. **Resolution workflow** documented in
+   [AUDIT_FINDINGS_PROCEDURE.md](docs/AUDIT_FINDINGS_PROCEDURE.md)
 
 ---
 
@@ -1902,6 +2076,26 @@ _Building on the basic HALT check feature from M1.5_
 
 > **CRITICAL GATE:** This milestone MUST complete before M5 (Offline) can begin.
 > All offline data storage requires encryption infrastructure from M4.5.
+>
+> **Session #116 Audit Findings:** 17 findings - see
+> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl) (security
+> category)
+
+### Session #116 Priority Items (S1/S2)
+
+- [ ] **CANON-0031:** Client App Check disabled `firebase.ts` [E1] - S1
+- [ ] **CANON-0033:** reCAPTCHA not enforced when configured
+      `security-wrapper.ts` [E1] - S1
+- [ ] **CANON-0050:** reCAPTCHA missing token logs but continues
+      `security-wrapper.ts` [E1] - S1
+- [ ] **CANON-0051:** Rate limiting incomplete (no IP throttling)
+      `security-wrapper.ts` [E2] - S1
+- [ ] **CANON-0099:** Restore client App Check init [E1] - S1
+- [ ] **CANON-0100:** Admin-claim rules defense-in-depth `firestore.rules`
+      [E2] - S1
+- [ ] **CANON-0052:** Zod schemas missing .strict() `schemas.ts` [E1] - S2
+- [ ] **CANON-0055:** Some admin collections allow direct client writes
+      `firestore.rules` [E2] - S2
 
 ### Overview
 
