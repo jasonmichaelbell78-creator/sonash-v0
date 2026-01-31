@@ -31,7 +31,9 @@ const ROADMAP_PLACEMENT = {
 // Read NET NEW findings with existence check
 if (!existsSync(NET_NEW_FILE)) {
   console.error(`Error: NET NEW findings file not found: ${NET_NEW_FILE}`);
-  console.error(`Run scripts/aggregate-audit-findings.js first to generate net-new-findings.jsonl.`);
+  console.error(
+    `Run scripts/aggregate-audit-findings.js first to generate net-new-findings.jsonl.`
+  );
   process.exit(1);
 }
 
@@ -323,7 +325,7 @@ console.log(`S1 High: ${bySeverity.S1.length}`);
 console.log(`S2 Medium: ${bySeverity.S2.length}`);
 console.log(`S3 Low: ${bySeverity.S3.length}`);
 console.log(`\nBy Category:`);
-Object.entries(byCategory)
+Array.from(byCategory.entries())
   .sort((a, b) => b[1].length - a[1].length)
   .forEach(([cat, items]) => {
     console.log(`  ${cat}: ${items.length}`);

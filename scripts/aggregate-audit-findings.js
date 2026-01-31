@@ -729,10 +729,13 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
     }
 
     // Normalize line number (0 is valid, but NaN or undefined is not)
-    // Use ?? to correctly handle 0 as a valid value (|| would treat 0 as falsy)
+    // Use strict regex to prevent partial parses like "123abc" -> 123
+    const lineStr = String(finding.line ?? "");
     const findingLine = Number.isFinite(finding.line)
       ? finding.line
-      : parseInt(String(finding.line ?? ""), 10);
+      : /^\d+$/.test(lineStr)
+        ? Number(lineStr)
+        : NaN;
     const hasValidLine = Number.isFinite(findingLine);
 
     // Check 1.5: File:line exact match (highest precision)

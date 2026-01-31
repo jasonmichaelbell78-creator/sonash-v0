@@ -17,7 +17,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { execFileSync } = require("child_process");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -253,7 +253,10 @@ Example:
   // Regenerate views
   console.log("\n🔄 Regenerating views...");
   try {
-    execSync("node scripts/debt/generate-views.js", { stdio: "inherit" });
+    // Use execFileSync with absolute path for robustness
+    execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
+      stdio: "inherit",
+    });
   } catch {
     console.warn(
       "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"

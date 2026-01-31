@@ -462,8 +462,10 @@ Environment variables:
   // Regenerate views
   console.log("🔄 Regenerating views...");
   try {
-    // Use execFileSync with args array to prevent shell injection
-    execFileSync(process.execPath, ["scripts/debt/generate-views.js"], { stdio: "inherit" });
+    // Use execFileSync with absolute path for robustness
+    execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
+      stdio: "inherit",
+    });
   } catch {
     console.warn(
       "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"

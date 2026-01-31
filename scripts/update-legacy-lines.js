@@ -61,16 +61,15 @@ if (!trimmed) {
 const findings = [];
 const badLines = [];
 
-trimmed
-  .split("\n")
-  .filter((l) => l.trim())
-  .forEach((l, idx) => {
-    try {
-      findings.push(JSON.parse(l));
-    } catch (err) {
-      badLines.push({ line: idx + 1, message: err?.message || String(err) });
-    }
-  });
+// Parse JSONL with accurate line numbers (don't filter before iteration)
+trimmed.split("\n").forEach((l, idx) => {
+  if (!l.trim()) return;
+  try {
+    findings.push(JSON.parse(l));
+  } catch (err) {
+    badLines.push({ line: idx + 1, message: err?.message || String(err) });
+  }
+});
 
 if (badLines.length > 0) {
   console.error(`❌ Invalid JSONL: ${badLines.length} bad line(s) in ${MASTER_FILE}`);

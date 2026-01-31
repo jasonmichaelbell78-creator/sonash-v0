@@ -71,7 +71,7 @@ function findDebtRefs(filePath) {
     const content = readFileSync(filePath, "utf8");
     const lines = content.split("\n");
 
-    const debtPattern = /DEBT-\d{4,}/g;
+    const debtPattern = /DEBT-\d{4,}/gi;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];

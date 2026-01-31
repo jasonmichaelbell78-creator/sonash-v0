@@ -4,7 +4,7 @@
  * Session #116 - Full canonicalization
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, appendFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -479,6 +479,26 @@ if (!existsSync(canonicalDir)) {
 writeFileSync(MASTER_FILE, allFindings.map((f) => JSON.stringify(f)).join("\n") + "\n");
 console.log(`\nUpdated: ${MASTER_FILE}`);
 console.log(`Total findings: ${allFindings.length}`);
+
+// Audit logging for compliance
+const LOG_DIR = join(__dirname, "..", "docs/audits/canonical/logs");
+const LOG_FILE = join(LOG_DIR, "migration-log.jsonl");
+if (!existsSync(LOG_DIR)) {
+  mkdirSync(LOG_DIR, { recursive: true });
+}
+const auditEntry = {
+  timestamp: new Date().toISOString(),
+  actor: process.env.USER || process.env.USERNAME || "system",
+  actor_type: "cli-script",
+  action: "migrate-existing-findings",
+  outcome: "success",
+  items_migrated: migratedFindings.length,
+  total_findings: allFindings.length,
+  first_id: migratedFindings[0]?.id || null,
+  last_id: migratedFindings[migratedFindings.length - 1]?.id || null,
+};
+appendFileSync(LOG_FILE, JSON.stringify(auditEntry) + "\n");
+console.log(`\nAudit log: ${LOG_FILE}`);
 
 // Create ID mapping for ROADMAP updates
 const idMapping = {};

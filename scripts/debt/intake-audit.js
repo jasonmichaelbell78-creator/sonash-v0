@@ -54,7 +54,8 @@ function generateContentHash(item) {
 function normalizeFilePath(filePath) {
   if (!filePath) return "";
   // Convert Windows backslashes to forward slashes for consistent hashing
-  let normalized = filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\//, "");
+  // Remove leading ./ and all leading slashes
+  let normalized = filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "");
   // Remove org/repo prefix if present (e.g., "org_repo:path/to/file")
   // But preserve Windows drive letters (e.g., "C:\path\to\file")
   const colonIndex = normalized.indexOf(":");
@@ -305,8 +306,11 @@ async function main() {
     process.exit(0);
   }
 
-  // Append to MASTER_DEBT.jsonl
+  // Append to MASTER_DEBT.jsonl (ensure directory exists for fresh clones/CI)
   console.log("\n📝 Writing new items to MASTER_DEBT.jsonl...");
+  if (!fs.existsSync(DEBT_DIR)) {
+    fs.mkdirSync(DEBT_DIR, { recursive: true });
+  }
   const newLines = newItems.map((item) => JSON.stringify(item));
   fs.appendFileSync(MASTER_FILE, newLines.join("\n") + "\n");
 

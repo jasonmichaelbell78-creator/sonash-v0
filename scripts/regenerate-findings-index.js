@@ -22,14 +22,19 @@ const findings = readFileSync(MASTER_FILE, "utf-8")
 
 console.log(`Processing ${findings.length} findings...`);
 
-// Group by severity and category
+// Group by severity and category (use Map to prevent prototype pollution)
 const bySeverity = { S0: [], S1: [], S2: [], S3: [] };
-const byCategory = {};
+const byCategory = new Map();
 
 findings.forEach((f) => {
   if (bySeverity[f.severity]) bySeverity[f.severity].push(f);
-  if (!byCategory[f.category]) byCategory[f.category] = [];
-  byCategory[f.category].push(f);
+  const cat = typeof f.category === "string" ? f.category : "unknown";
+  const existing = byCategory.get(cat);
+  if (existing) {
+    existing.push(f);
+  } else {
+    byCategory.set(cat, [f]);
+  }
 });
 
 // Placement mapping
@@ -70,7 +75,7 @@ let index = `# Master Findings Index
 |----------|-------|-----------------|
 `;
 
-Object.entries(byCategory)
+Array.from(byCategory.entries())
   .sort((a, b) => b[1].length - a[1].length)
   .forEach(([cat, items]) => {
     const placement = ROADMAP_PLACEMENT[cat] || "M2";
