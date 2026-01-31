@@ -257,12 +257,14 @@ async function fetchSonarCloudIssues(options) {
 // Sanitize string for safe storage (prevent injection, limit length)
 function sanitizeString(str, maxLength = 500) {
   if (typeof str !== "string") return "";
-  // Remove control characters (ASCII 0-31) using character class
+  // Validate maxLength is a safe positive number
+  const safeMaxLength = Number.isFinite(maxLength) ? Math.max(0, Math.floor(maxLength)) : 500;
+  // Remove control characters (ASCII 0-31) and DEL (0x7F) using character class
   return (
     str
       // eslint-disable-next-line no-control-regex
-      .replace(/[\u0000-\u001f]/g, "")
-      .substring(0, maxLength)
+      .replace(/[\u0000-\u001f\u007f]/g, "")
+      .substring(0, safeMaxLength)
       .trim()
   );
 }

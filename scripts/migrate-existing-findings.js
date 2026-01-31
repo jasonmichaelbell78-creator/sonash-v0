@@ -50,7 +50,8 @@ console.log(`Existing canonical findings: ${existingFindings.length}`);
 // Get max CANON ID
 let maxCanonId = 0;
 existingFindings.forEach((f) => {
-  const match = f.id.match(/CANON-(\d+)/);
+  // Guard against missing id field to prevent crash
+  const match = String(f.id || "").match(/CANON-(\d+)/);
   if (match) {
     const num = parseInt(match[1], 10);
     if (num > maxCanonId) maxCanonId = num;

@@ -262,10 +262,11 @@ Example:
   // Regenerate views
   console.log("\n🔄 Regenerating views...");
   try {
-    execSync("node scripts/debt/generate-views.js", { stdio: "inherit" });
+    // Use process.execPath to ensure same Node.js executable is used
+    execSync(`"${process.execPath}" scripts/debt/generate-views.js`, { stdio: "inherit" });
   } catch {
     console.warn(
-      "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
+      `  ⚠️ Failed to regenerate views. Run manually: "${process.execPath}" scripts/debt/generate-views.js`
     );
   }
 

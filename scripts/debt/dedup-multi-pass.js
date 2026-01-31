@@ -385,7 +385,9 @@ function main() {
 
       if (isCrossSourceMatch(current, pass3Items[j])) {
         // Prefer audit findings over SonarCloud (more context)
-        const isSonar = current.source_id.startsWith("sonarcloud:");
+        // Guard against non-string source_id to prevent crash
+        const currentSourceId = typeof current.source_id === "string" ? current.source_id : "";
+        const isSonar = currentSourceId.startsWith("sonarcloud:");
         if (isSonar) {
           current = mergeItems(pass3Items[j], current);
         } else {

@@ -74,15 +74,19 @@ let output = `# NET NEW Findings - Roadmap Placement Suggestions
 
   output += `## ${priority} (${items.length} findings)\n\n`;
 
-  // Group by suggested roadmap placement
-  const byPlacement = {};
+  // Group by suggested roadmap placement (use Map to prevent prototype pollution)
+  const byPlacement = new Map();
   items.forEach((f) => {
     const placement = ROADMAP_PLACEMENT[f.category] || "M2 (General Backlog)";
-    if (byPlacement[placement] === undefined) byPlacement[placement] = [];
-    byPlacement[placement].push(f);
+    const existing = byPlacement.get(placement);
+    if (existing) {
+      existing.push(f);
+    } else {
+      byPlacement.set(placement, [f]);
+    }
   });
 
-  Object.entries(byPlacement).forEach(([placement, findings]) => {
+  for (const [placement, findings] of byPlacement.entries()) {
     output += `### → ${placement}\n\n`;
     findings.slice(0, 8).forEach((f) => {
       // Harden against malformed finding fields
@@ -102,7 +106,7 @@ let output = `# NET NEW Findings - Roadmap Placement Suggestions
       output += `  - ... and ${findings.length - 8} more\n`;
     }
     output += "\n";
-  });
+  }
 });
 
 // Summary by category
@@ -114,12 +118,14 @@ output += `---
 |----------|-------|---------------------------|
 `;
 
-const byCategory = {};
+// Use Map to prevent prototype pollution from external data
+const byCategory = new Map();
 netNew.forEach((f) => {
-  byCategory[f.category] = (byCategory[f.category] || 0) + 1;
+  const key = f.category;
+  byCategory.set(key, (byCategory.get(key) || 0) + 1);
 });
 
-Object.entries(byCategory)
+Array.from(byCategory.entries())
   .sort((a, b) => b[1] - a[1])
   .forEach(([cat, count]) => {
     const placement = ROADMAP_PLACEMENT[cat] || "M2 (General Backlog)";

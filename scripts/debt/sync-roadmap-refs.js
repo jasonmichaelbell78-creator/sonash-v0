@@ -75,6 +75,8 @@ function findDebtRefs(filePath) {
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
+      // IMPORTANT: Reset lastIndex because /g regex keeps state across exec() calls
+      debtPattern.lastIndex = 0;
       let match;
       while ((match = debtPattern.exec(line)) !== null) {
         refs.push({

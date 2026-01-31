@@ -819,7 +819,8 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
       // Require at least 2 matching words
       for (const [id, count] of candidates) {
         if (count >= 2) {
-          matchedRoadmapItem = roadmapItems.find((i) => i.id === id);
+          // Use O(1) Map lookup instead of O(n) find()
+          matchedRoadmapItem = roadmapById.get(id) || null;
           matchReason = `description similarity (${count} words, with synonyms)`;
           break;
         }
