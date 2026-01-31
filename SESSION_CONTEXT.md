@@ -10,8 +10,8 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-31 **Branch**: `claude/new-session-U1Jou`
-**Working On**: TDMS Phases 1-8 Complete **Files Modified**: skills, hooks, CI, scripts
+**Last Checkpoint**: 2026-01-31 **Branch**: `claude/new-session-U1Jou` **Working
+On**: TDMS Phases 1-8 Complete **Files Modified**: skills, hooks, CI, scripts
 
 **Next Step**: TDMS Phase 9+ (remaining phases)
 
@@ -24,7 +24,8 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
   - Added Post-Audit (MANDATORY) section to audit-comprehensive skill
   - Updated TDMS plan: AUDIT_TRACKER.md NOT archived (tracks triggers)
 - ✅ **Phase 6 Complete**: Created 4 intake skills
-  - sync-sonarcloud-debt, add-manual-debt, add-deferred-debt, verify-technical-debt
+  - sync-sonarcloud-debt, add-manual-debt, add-deferred-debt,
+    verify-technical-debt
   - Audit Status: PASS (no deviations)
 - ✅ **Phase 7 Complete**: Added pre-commit hooks
   - Check #12: BLOCKING schema validation for MASTER_DEBT.jsonl

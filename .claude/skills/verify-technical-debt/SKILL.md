@@ -22,8 +22,8 @@ issues, false positives, duplicates, or already resolved.
 This skill walks through items in the verification queue, checking if each issue
 still exists in the codebase and classifying them appropriately.
 
-**Input:** `docs/technical-debt/views/verification-queue.md`
-**Output:** Updated `docs/technical-debt/MASTER_DEBT.jsonl`
+**Input:** `docs/technical-debt/views/verification-queue.md` **Output:** Updated
+`docs/technical-debt/MASTER_DEBT.jsonl`
 
 ---
 

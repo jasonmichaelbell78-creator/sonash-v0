@@ -29,6 +29,19 @@ jobs:
       - name: Check backlog health
         id: backlog
         run: |
+          # NOTE: AUDIT_FINDINGS_BACKLOG.md was archived in TDMS Phase 2 (2026-01-31)
+          # Findings are now tracked in docs/technical-debt/MASTER_DEBT.jsonl
+          # This check gracefully skips if the legacy file doesn't exist
+          if [ ! -f "docs/AUDIT_FINDINGS_BACKLOG.md" ]; then
+            echo "ℹ️ AUDIT_FINDINGS_BACKLOG.md not found (archived in TDMS migration)"
+            echo "   Backlog is now tracked in docs/technical-debt/MASTER_DEBT.jsonl"
+            echo "total=0" >> $GITHUB_OUTPUT
+            echo "s0=0" >> $GITHUB_OUTPUT
+            echo "s1=0" >> $GITHUB_OUTPUT
+            echo "exit_code=0" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           # Run backlog check and capture output
           set +e
           output=$(node scripts/check-backlog-health.js 2>&1)

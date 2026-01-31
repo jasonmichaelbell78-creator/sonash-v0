@@ -138,13 +138,16 @@ function loadMasterDebt() {
   return lines.map((line) => JSON.parse(line));
 }
 
-// Log intake activity
+// Log intake activity with actor context
 function logIntake(activity) {
   if (!fs.existsSync(LOG_DIR)) {
     fs.mkdirSync(LOG_DIR, { recursive: true });
   }
   const logEntry = {
     timestamp: new Date().toISOString(),
+    actor: process.env.USER || process.env.USERNAME || "system",
+    actor_type: "cli-script",
+    outcome: activity.error ? "failure" : "success",
     ...activity,
   };
   fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
@@ -165,56 +168,100 @@ async function confirm(message) {
   });
 }
 
-// Fetch issues from SonarCloud API
+// Fetch issues from SonarCloud API (with pagination)
 async function fetchSonarCloudIssues(options) {
   const { token, org, project, severities, types, statuses } = options;
-
-  const params = new URLSearchParams({
-    componentKeys: `${org}_${project}`,
-    ps: "500", // Page size
-    p: "1", // Page number
-    resolved: "false",
-  });
-
-  if (severities) params.append("severities", severities);
-  if (types) params.append("types", types);
-  if (statuses) params.append("statuses", statuses);
-
-  const url = `${SONARCLOUD_API}/issues/search?${params}`;
 
   console.log(`  📡 Fetching from SonarCloud API...`);
   console.log(`     Project: ${org}_${project}`);
 
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Basic ${Buffer.from(`${token}:`).toString("base64")}`,
-    },
-  });
+  const allIssues = [];
+  const pageSize = 500;
+  let page = 1;
+  let total = null;
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`SonarCloud API error (${response.status}): ${errorText}`);
+  while (total === null || allIssues.length < total) {
+    const params = new URLSearchParams({
+      componentKeys: `${org}_${project}`,
+      ps: String(pageSize),
+      p: String(page),
+      resolved: "false",
+    });
+
+    if (severities) params.append("severities", severities);
+    if (types) params.append("types", types);
+    if (statuses) params.append("statuses", statuses);
+
+    const url = `${SONARCLOUD_API}/issues/search?${params}`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${token}:`).toString("base64")}`,
+      },
+    });
+
+    if (!response.ok) {
+      // Sanitize error text to avoid exposing sensitive API details
+      const rawError = await response.text();
+      const sanitizedError = rawError.substring(0, 200).replace(/token|key|secret/gi, "[REDACTED]");
+      throw new Error(`SonarCloud API error (${response.status}): ${sanitizedError}`);
+    }
+
+    const data = await response.json();
+    total = data.total;
+
+    allIssues.push(...(data.issues || []));
+
+    if (!data.issues || data.issues.length === 0) break;
+
+    if (page === 1) {
+      console.log(`     Total issues: ${total}`);
+    }
+    page++;
+
+    // Safety limit to prevent infinite loops (SonarCloud max is 10,000)
+    if (page > 20) {
+      console.warn(`     ⚠️ Pagination limit reached (${allIssues.length} of ${total} fetched)`);
+      break;
+    }
   }
 
-  const data = await response.json();
+  console.log(`     Fetched ${allIssues.length} issues total`);
 
-  console.log(`     Found ${data.total} issues (returning first ${data.issues.length})`);
-
-  return data.issues;
+  return allIssues;
 }
 
-// Convert SonarCloud issue to TDMS format
+// Sanitize string for safe storage (prevent injection, limit length)
+function sanitizeString(str, maxLength = 500) {
+  if (typeof str !== "string") return "";
+  return str
+    .replace(/[\x00-\x1f]/g, "") // Remove control characters
+    .substring(0, maxLength)
+    .trim();
+}
+
+// Convert SonarCloud issue to TDMS format with input validation
 function convertIssue(issue) {
+  // Validate issue has required fields
+  if (!issue || typeof issue !== "object") {
+    throw new Error("Invalid issue object from SonarCloud");
+  }
+
+  const key = sanitizeString(issue.key, 100);
+  if (!key) {
+    throw new Error("Issue missing required 'key' field");
+  }
+
   return {
-    source_id: `sonarcloud:${issue.key}`,
+    source_id: `sonarcloud:${key}`,
     source_file: "sonarcloud-sync",
     category: mapCategory(issue),
     severity: SEVERITY_MAP[issue.severity] || "S2",
     type: TYPE_MAP[issue.type] || "code-smell",
-    file: normalizeFilePath(issue.component),
-    line: issue.line || 0,
-    title: issue.message?.substring(0, 500) || "Untitled",
-    description: `Rule: ${issue.rule}. ${issue.message || ""}`,
+    file: sanitizeString(normalizeFilePath(issue.component), 500),
+    line: Number.isFinite(issue.line) ? issue.line : 0,
+    title: sanitizeString(issue.message, 500) || "Untitled",
+    description: sanitizeString(`Rule: ${issue.rule || "unknown"}. ${issue.message || ""}`, 1000),
     recommendation: "",
     effort: "E0", // SonarCloud provides effort, could map this
     status: "NEW",
@@ -222,8 +269,8 @@ function convertIssue(issue) {
     created: new Date().toISOString().split("T")[0],
     verified_by: null,
     resolution: null,
-    rule: issue.rule,
-    sonar_key: issue.key,
+    rule: sanitizeString(issue.rule, 100),
+    sonar_key: key,
   };
 }
 

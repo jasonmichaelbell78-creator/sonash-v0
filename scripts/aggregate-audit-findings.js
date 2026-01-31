@@ -176,23 +176,42 @@ const SYNONYM_GROUPS = {
 };
 
 /**
+ * Pre-compute synonym lookup map for O(1) access (Qodo Review #218)
+ */
+function createSynonymLookup() {
+  const lookup = new Map();
+  for (const [key, values] of Object.entries(SYNONYM_GROUPS)) {
+    const normalizedGroup = new Set();
+    // Add the key itself
+    normalizedGroup.add(key.replace(/[-_]/g, ""));
+    // Add all values
+    for (const v of values) {
+      normalizedGroup.add(v.replace(/[-_]/g, ""));
+    }
+    // Map each term to the full group
+    for (const term of normalizedGroup) {
+      lookup.set(term, normalizedGroup);
+    }
+  }
+  return lookup;
+}
+
+// Pre-compute at module load for fast lookup
+const SYNONYM_LOOKUP = createSynonymLookup();
+
+/**
  * Expand a word with its synonyms for matching (Session #116)
+ * Optimized with pre-computed lookup map (Qodo Review #218)
  */
 function expandWithSynonyms(word) {
   const normalized = word.toLowerCase().replace(/[-_]/g, "");
-  const synonyms = new Set([normalized]);
+  const synonymGroup = SYNONYM_LOOKUP.get(normalized);
 
-  for (const [key, values] of Object.entries(SYNONYM_GROUPS)) {
-    const normalizedKey = key.replace(/[-_]/g, "");
-    if (normalizedKey === normalized || values.some((v) => v.replace(/[-_]/g, "") === normalized)) {
-      synonyms.add(normalizedKey);
-      for (const v of values) {
-        synonyms.add(v.replace(/[-_]/g, ""));
-      }
-    }
+  if (synonymGroup) {
+    return Array.from(synonymGroup);
   }
 
-  return Array.from(synonyms);
+  return [normalized];
 }
 
 // PR bucket suggestions based on category
@@ -615,6 +634,7 @@ function parseTechDebtItems(filePath) {
  */
 function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
   // Build lookup indices for fast matching
+  const roadmapById = new Map(); // Direct ID lookup
   const roadmapByFile = new Map();
   const roadmapByFileLine = new Map(); // For file:line exact matching
   const roadmapByDescription = new Map();
@@ -625,6 +645,10 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
   const LINE_PROXIMITY_THRESHOLD = 15;
 
   for (const item of roadmapItems) {
+    // Index by ID for direct lookup
+    if (item.id) {
+      roadmapById.set(item.id, item);
+    }
     // Index by files (basename)
     for (const file of item.files || []) {
       const normalizedFile = file.replace(/^.*\//, ""); // basename only
@@ -698,10 +722,22 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
       matchReason = "direct ID match";
     }
 
+    // Check 1.1: Direct ID match with roadmap items
+    if (!matchedRoadmapItem && finding.original_id && roadmapById.has(finding.original_id)) {
+      matchedRoadmapItem = roadmapById.get(finding.original_id);
+      matchReason = "direct roadmap ID match";
+    }
+
+    // Normalize line number (0 is valid, but NaN or undefined is not)
+    const findingLine = Number.isFinite(finding.line)
+      ? finding.line
+      : parseInt(String(finding.line || ""), 10);
+    const hasValidLine = Number.isFinite(findingLine);
+
     // Check 1.5: File:line exact match (highest precision)
-    if (!matchedRoadmapItem && finding.file && finding.line) {
+    if (!matchedRoadmapItem && finding.file && hasValidLine) {
       const basename = finding.file.replace(/^.*\//, "");
-      const exactKey = `${basename}:${finding.line}`;
+      const exactKey = `${basename}:${findingLine}`;
       const exactMatches = roadmapByFileLine.get(exactKey) || [];
       if (exactMatches.length > 0) {
         matchedRoadmapItem = exactMatches[0];
@@ -710,13 +746,13 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
     }
 
     // Check 1.6: File:line proximity match (within N lines)
-    if (!matchedRoadmapItem && finding.file && finding.line) {
+    if (!matchedRoadmapItem && finding.file && hasValidLine) {
       const basename = finding.file.replace(/^.*\//, "");
       // Check all roadmap items with file:line references
       for (const [key, items] of roadmapByFileLine) {
         if (key.startsWith(basename + ":")) {
           const roadmapLine = parseInt(key.split(":")[1], 10);
-          if (Math.abs(finding.line - roadmapLine) <= LINE_PROXIMITY_THRESHOLD) {
+          if (Number.isFinite(roadmapLine) && Math.abs(findingLine - roadmapLine) <= LINE_PROXIMITY_THRESHOLD) {
             matchedRoadmapItem = items[0];
             matchReason = `file:line proximity (within ${LINE_PROXIMITY_THRESHOLD} lines): ${basename}:${roadmapLine}`;
             break;

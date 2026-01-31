@@ -27,15 +27,15 @@ canonical tracker with proper validation and ID assignment.
 
 Collect the following from the user (or context):
 
-| Field        | Required | Description                                      | Example                       |
-| ------------ | -------- | ------------------------------------------------ | ----------------------------- |
-| `file`       | Yes      | File path (relative to repo root)                | `components/auth/login.tsx`   |
-| `line`       | Yes      | Line number                                      | `145`                         |
-| `title`      | Yes      | Short description (< 80 chars)                   | `Missing error boundary`      |
-| `severity`   | Yes      | S0 (Critical), S1 (High), S2 (Medium), S3 (Low)  | `S2`                          |
-| `category`   | Yes      | security, performance, code-quality, docs, etc.  | `code-quality`                |
-| `effort`     | No       | E0 (<30m), E1 (<2h), E2 (<8h), E3 (>8h)          | `E1`                          |
-| `description`| No       | Detailed description                             | `Component lacks error...`    |
+| Field         | Required | Description                                     | Example                     |
+| ------------- | -------- | ----------------------------------------------- | --------------------------- |
+| `file`        | Yes      | File path (relative to repo root)               | `components/auth/login.tsx` |
+| `line`        | Yes      | Line number                                     | `145`                       |
+| `title`       | Yes      | Short description (< 80 chars)                  | `Missing error boundary`    |
+| `severity`    | Yes      | S0 (Critical), S1 (High), S2 (Medium), S3 (Low) | `S2`                        |
+| `category`    | Yes      | security, performance, code-quality, docs, etc. | `code-quality`              |
+| `effort`      | No       | E0 (<30m), E1 (<2h), E2 (<8h), E3 (>8h)         | `E1`                        |
+| `description` | No       | Detailed description                            | `Component lacks error...`  |
 
 ### Step 2: Validate File Exists
 
@@ -150,12 +150,12 @@ Options:
 
 ## Severity Guidelines
 
-| Severity | Criteria                                          |
-| -------- | ------------------------------------------------- |
-| **S0**   | Security vulnerability, data loss risk, crash     |
-| **S1**   | Major functionality broken, significant perf hit  |
-| **S2**   | Code smell, minor bug, moderate tech debt         |
-| **S3**   | Style issue, documentation, nice-to-have cleanup  |
+| Severity | Criteria                                         |
+| -------- | ------------------------------------------------ |
+| **S0**   | Security vulnerability, data loss risk, crash    |
+| **S1**   | Major functionality broken, significant perf hit |
+| **S2**   | Code smell, minor bug, moderate tech debt        |
+| **S3**   | Style issue, documentation, nice-to-have cleanup |
 
 ---
 

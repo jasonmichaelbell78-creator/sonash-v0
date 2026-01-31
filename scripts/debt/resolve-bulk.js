@@ -54,10 +54,27 @@ function loadMasterDebt() {
   return lines.map((line) => JSON.parse(line));
 }
 
-// Save items to MASTER_DEBT.jsonl
+// Save items to MASTER_DEBT.jsonl with atomic write
 function saveMasterDebt(items) {
   const lines = items.map((item) => JSON.stringify(item));
-  fs.writeFileSync(MASTER_FILE, lines.join("\n") + "\n");
+  const content = lines.join("\n") + "\n";
+
+  // Atomic write: write to temp file then rename
+  const dir = path.dirname(MASTER_FILE);
+  const tmpFile = path.join(dir, `.MASTER_DEBT.jsonl.tmp.${process.pid}`);
+
+  try {
+    fs.writeFileSync(tmpFile, content);
+    fs.renameSync(tmpFile, MASTER_FILE);
+  } catch (err) {
+    // Clean up temp file on error
+    try {
+      fs.unlinkSync(tmpFile);
+    } catch {
+      // Ignore cleanup errors
+    }
+    throw err;
+  }
 }
 
 // Log resolution activity

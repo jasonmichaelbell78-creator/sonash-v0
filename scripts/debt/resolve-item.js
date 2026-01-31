@@ -58,10 +58,27 @@ function loadMasterDebt() {
   return lines.map((line) => JSON.parse(line));
 }
 
-// Save items to MASTER_DEBT.jsonl
+// Save items to MASTER_DEBT.jsonl with atomic write
 function saveMasterDebt(items) {
   const lines = items.map((item) => JSON.stringify(item));
-  fs.writeFileSync(MASTER_FILE, lines.join("\n") + "\n");
+  const content = lines.join("\n") + "\n";
+
+  // Atomic write: write to temp file then rename
+  const dir = path.dirname(MASTER_FILE);
+  const tmpFile = path.join(dir, `.MASTER_DEBT.jsonl.tmp.${process.pid}`);
+
+  try {
+    fs.writeFileSync(tmpFile, content);
+    fs.renameSync(tmpFile, MASTER_FILE);
+  } catch (err) {
+    // Clean up temp file on error
+    try {
+      fs.unlinkSync(tmpFile);
+    } catch {
+      // Ignore cleanup errors
+    }
+    throw err;
+  }
 }
 
 // Append to false positives file
@@ -174,16 +191,24 @@ Example:
       date: now,
     };
 
-    // Remove from master and add to false positives
+    // Remove from master list in memory
     items.splice(itemIndex, 1);
-    saveMasterDebt(items);
-    appendFalsePositive(item);
 
-    logResolution({
-      action: "false_positive",
-      item_id: item.id,
-      reason: parsed.reason,
-    });
+    // Perform all write operations together with error handling
+    try {
+      saveMasterDebt(items);
+      appendFalsePositive(item);
+      logResolution({
+        action: "false_positive",
+        item_id: item.id,
+        reason: parsed.reason,
+      });
+    } catch (writeError) {
+      console.error(`\n❌ Critical Error: Failed to write updates for ${item.id}.`);
+      console.error("   The master file may be out of sync. Please restore from version control.");
+      console.error(`   Error: ${writeError.message}`);
+      process.exit(1);
+    }
 
     console.log(`\n✅ Marked ${item.id} as FALSE_POSITIVE`);
     console.log(`  Moved to FALSE_POSITIVES.jsonl`);

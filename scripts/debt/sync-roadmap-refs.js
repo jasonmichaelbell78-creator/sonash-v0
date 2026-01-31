@@ -71,7 +71,7 @@ function findDebtRefs(filePath) {
     const content = readFileSync(filePath, "utf8");
     const lines = content.split("\n");
 
-    const debtPattern = /DEBT-\d{4}/g;
+    const debtPattern = /DEBT-\d{4,}/g;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -111,10 +111,7 @@ function main() {
   }
 
   // Find all references in ROADMAP files
-  const allRefs = [
-    ...findDebtRefs(ROADMAP_PATH),
-    ...findDebtRefs(ROADMAP_FUTURE_PATH),
-  ];
+  const allRefs = [...findDebtRefs(ROADMAP_PATH), ...findDebtRefs(ROADMAP_FUTURE_PATH)];
 
   if (allRefs.length === 0) {
     console.log("ℹ️  No DEBT-XXXX references found in ROADMAP files");

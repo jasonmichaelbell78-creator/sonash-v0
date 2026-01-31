@@ -4,7 +4,7 @@
  * Session #116 - Full canonicalization
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -19,11 +19,29 @@ const REFACTOR_BACKLOG = join(
   "docs/reviews/2026-Q1/canonical/tier2-output/REFACTOR_BACKLOG.md"
 );
 
-// Read existing canonical findings
-const existingFindings = readFileSync(MASTER_FILE, "utf-8")
-  .trim()
-  .split("\n")
-  .map((l) => JSON.parse(l));
+// Read existing canonical findings with safe parsing
+let existingFindings = [];
+try {
+  if (existsSync(MASTER_FILE)) {
+    const raw = readFileSync(MASTER_FILE, "utf-8");
+    const lines = raw.split("\n").filter((l) => l.trim().length > 0);
+    existingFindings = lines.map((l, idx) => {
+      try {
+        return JSON.parse(l);
+      } catch (e) {
+        console.warn(`Warning: Invalid JSON at line ${idx + 1}, skipping`);
+        return null;
+      }
+    }).filter(Boolean);
+  }
+} catch (e) {
+  if (e && typeof e === "object" && "code" in e && e.code === "ENOENT") {
+    console.log("MASTER_FINDINGS.jsonl not found, starting fresh");
+    existingFindings = [];
+  } else {
+    throw e;
+  }
+}
 
 console.log(`Existing canonical findings: ${existingFindings.length}`);
 

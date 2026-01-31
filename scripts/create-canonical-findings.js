@@ -4,7 +4,7 @@
  * Session #116
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -36,24 +36,62 @@ const netNew = readFileSync(NET_NEW_FILE, "utf-8")
 
 console.log(`Processing ${netNew.length} NET NEW findings...`);
 
-// Assign canonical IDs and ROADMAP sections
-let canonId = 1;
-const canonical = netNew.map((f) => {
-  const placement = ROADMAP_PLACEMENT[f.category] || { section: "M2", track: "General" };
-  return {
-    ...f,
-    id: `CANON-${String(canonId++).padStart(4, "0")}`,
-    roadmap_section: placement.section,
-    roadmap_track: placement.track,
-    status: "active",
-    created: new Date().toISOString().split("T")[0],
-    updated: new Date().toISOString().split("T")[0],
-  };
-});
+// Load existing canonical findings (if any) to avoid overwriting history
+let existingCanonical = [];
+if (existsSync(MASTER_FILE)) {
+  try {
+    const raw = readFileSync(MASTER_FILE, "utf-8");
+    const lines = raw.split("\n").filter((l) => l.trim().length > 0);
+    existingCanonical = lines.map((l, idx) => {
+      try {
+        return JSON.parse(l);
+      } catch (e) {
+        console.warn(`Warning: Invalid JSON at line ${idx + 1} in MASTER_FINDINGS.jsonl, skipping`);
+        return null;
+      }
+    }).filter(Boolean);
+  } catch (e) {
+    console.warn(`Warning: Could not read existing MASTER_FINDINGS.jsonl: ${e.message}`);
+    existingCanonical = [];
+  }
+}
 
-// Write MASTER_FINDINGS.jsonl
+// Build set of existing original_ids for deduplication
+const existingOriginalIds = new Set(
+  existingCanonical.map((f) => f.original_id).filter(Boolean)
+);
+
+// Get max CANON ID to continue numbering
+let maxCanonId = 0;
+for (const f of existingCanonical) {
+  const match = String(f.id || "").match(/CANON-(\d+)/);
+  if (match) maxCanonId = Math.max(maxCanonId, parseInt(match[1], 10));
+}
+
+// Filter out duplicates and assign canonical IDs
+let canonId = maxCanonId + 1;
+const newFindings = netNew
+  .filter((f) => !f.original_id || !existingOriginalIds.has(f.original_id))
+  .map((f) => {
+    const placement = ROADMAP_PLACEMENT[f.category] || { section: "M2", track: "General" };
+    const today = new Date().toISOString().split("T")[0];
+    return {
+      ...f,
+      id: `CANON-${String(canonId++).padStart(4, "0")}`,
+      roadmap_section: placement.section,
+      roadmap_track: placement.track,
+      status: "active",
+      created: today,
+      updated: today,
+    };
+  });
+
+// Merge existing and new (append-only pattern)
+const canonical = [...existingCanonical, ...newFindings];
+
+// Write MASTER_FINDINGS.jsonl (merged)
 writeFileSync(MASTER_FILE, canonical.map((f) => JSON.stringify(f)).join("\n") + "\n");
-console.log(`Created: ${MASTER_FILE} (${canonical.length} findings)`);
+console.log(`Updated: ${MASTER_FILE} (+${newFindings.length} new, total ${canonical.length} findings)`);
 
 // Group by severity and category for index
 const bySeverity = { S0: [], S1: [], S2: [], S3: [] };

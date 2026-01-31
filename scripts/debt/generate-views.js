@@ -69,6 +69,40 @@ function generateHeader(title, today) {
 `;
 }
 
+// Load existing items to preserve their IDs
+function loadExistingIds() {
+  const idMap = new Map(); // content_hash/source_id -> existing DEBT-XXXX
+  let maxId = 0;
+
+  if (fs.existsSync(MASTER_FILE)) {
+    try {
+      const content = fs.readFileSync(MASTER_FILE, "utf8");
+      const lines = content.split("\n").filter((line) => line.trim());
+      for (const line of lines) {
+        try {
+          const item = JSON.parse(line);
+          if (item.id) {
+            const match = item.id.match(/DEBT-(\d+)/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num > maxId) maxId = num;
+            }
+            // Map by both content_hash and source_id for stable ID lookup
+            if (item.content_hash) idMap.set(`hash:${item.content_hash}`, item.id);
+            if (item.source_id) idMap.set(`source:${item.source_id}`, item.id);
+          }
+        } catch {
+          // Skip invalid lines
+        }
+      }
+    } catch {
+      // File doesn't exist or can't be read - start fresh
+    }
+  }
+
+  return { idMap, maxId };
+}
+
 function main() {
   console.log("📝 Generating TDMS views and final output...\n");
 
@@ -78,25 +112,45 @@ function main() {
     process.exit(1);
   }
 
+  // Load existing IDs to preserve them (IDs must be stable)
+  const { idMap, maxId } = loadExistingIds();
+  let nextId = maxId + 1;
+  let preservedCount = 0;
+  let newCount = 0;
+
   // Read deduped items
   const content = fs.readFileSync(INPUT_FILE, "utf8");
   const lines = content.split("\n").filter((line) => line.trim());
-  const items = lines.map((line, index) => {
+  const items = lines.map((line) => {
     const item = JSON.parse(line);
-    // Assign DEBT-XXXX ID
-    item.id = generateDebtId(index + 1);
+
+    // Try to find existing ID (preserve stable IDs)
+    let existingId = null;
+    if (item.content_hash) {
+      existingId = idMap.get(`hash:${item.content_hash}`);
+    }
+    if (!existingId && item.source_id) {
+      existingId = idMap.get(`source:${item.source_id}`);
+    }
+
+    if (existingId) {
+      item.id = existingId;
+      preservedCount++;
+    } else {
+      // Assign new ID only for truly new items
+      item.id = generateDebtId(nextId);
+      nextId++;
+      newCount++;
+    }
+
     return item;
   });
 
-  console.log(`  📊 Processing ${items.length} items\n`);
+  console.log(`  📊 Processing ${items.length} items`);
+  console.log(`     Preserved IDs: ${preservedCount}, New IDs: ${newCount}\n`);
 
-  // Sort by severity for consistent ordering
+  // Sort by severity for consistent view ordering (but DO NOT reassign IDs!)
   items.sort(severitySort);
-
-  // Reassign IDs after sorting (S0 items get lowest numbers)
-  items.forEach((item, index) => {
-    item.id = generateDebtId(index + 1);
-  });
 
   // Ensure directories exist
   if (!fs.existsSync(VIEWS_DIR)) {

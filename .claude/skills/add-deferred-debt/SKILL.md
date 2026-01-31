@@ -45,15 +45,15 @@ Use during PR review when:
 
 Collect from the user or current context:
 
-| Field       | Required | Description                    | Example                   |
-| ----------- | -------- | ------------------------------ | ------------------------- |
-| `pr_number` | Yes      | PR number                      | `325`                     |
-| `file`      | Yes      | File path                      | `components/auth/login.tsx` |
-| `line`      | Yes      | Line number                    | `145`                     |
-| `title`     | Yes      | Short description              | `Missing input validation`|
-| `severity`  | Yes      | S1, S2, or S3 (NOT S0)         | `S2`                      |
-| `category`  | Yes      | security, performance, etc.    | `security`                |
-| `reason`    | Yes      | Why deferred (out of scope, etc.) | `Pre-existing issue`   |
+| Field       | Required | Description                       | Example                     |
+| ----------- | -------- | --------------------------------- | --------------------------- |
+| `pr_number` | Yes      | PR number                         | `325`                       |
+| `file`      | Yes      | File path                         | `components/auth/login.tsx` |
+| `line`      | Yes      | Line number                       | `145`                       |
+| `title`     | Yes      | Short description                 | `Missing input validation`  |
+| `severity`  | Yes      | S1, S2, or S3 (NOT S0)            | `S2`                        |
+| `category`  | Yes      | security, performance, etc.       | `security`                  |
+| `reason`    | Yes      | Why deferred (out of scope, etc.) | `Pre-existing issue`        |
 
 ### Step 2: Validate Severity
 

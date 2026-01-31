@@ -116,28 +116,42 @@ const SONAR_TO_CATEGORY = {
 };
 
 function isCrossSourceMatch(a, b) {
+  // Defensive: ensure both items have valid source_id
+  const aSourceId = typeof a?.source_id === "string" ? a.source_id : "";
+  const bSourceId = typeof b?.source_id === "string" ? b.source_id : "";
+
+  if (!aSourceId || !bSourceId) return false;
+
   // One must be SonarCloud, other must be audit
-  const aIsSonar = a.source_id.startsWith("sonarcloud:");
-  const bIsSonar = b.source_id.startsWith("sonarcloud:");
+  const aIsSonar = aSourceId.startsWith("sonarcloud:");
+  const bIsSonar = bSourceId.startsWith("sonarcloud:");
 
   if (aIsSonar === bIsSonar) return false;
 
   const sonarItem = aIsSonar ? a : b;
   const auditItem = aIsSonar ? b : a;
 
+  if (!sonarItem || !auditItem) return false;
+
+  // Defensive: validate file fields
+  const sonarFile = typeof sonarItem.file === "string" ? sonarItem.file : "";
+  const auditFile = typeof auditItem.file === "string" ? auditItem.file : "";
+  if (!sonarFile || !auditFile) return false;
+
   // Same file
-  if (sonarItem.file !== auditItem.file) return false;
-  if (!sonarItem.file) return false;
+  if (sonarFile !== auditFile) return false;
+
+  // Defensive: validate line numbers
+  const sonarLine = Number.isFinite(sonarItem.line) ? sonarItem.line : 0;
+  const auditLine = Number.isFinite(auditItem.line) ? auditItem.line : 0;
 
   // Close line numbers
-  const lineDiff = Math.abs(sonarItem.line - auditItem.line);
+  const lineDiff = Math.abs(sonarLine - auditLine);
   if (lineDiff > 10) return false;
 
-  // Similar descriptions
+  // Similar titles
   const descSim = stringSimilarity(normalizeText(sonarItem.title), normalizeText(auditItem.title));
-  if (descSim > 0.7) return true;
-
-  return false;
+  return descSim > 0.7;
 }
 
 // Merge two items, preferring more detailed one
@@ -187,10 +201,31 @@ function main() {
     process.exit(1);
   }
 
-  // Read normalized items
+  // Read normalized items with safe JSON parsing
   const content = fs.readFileSync(INPUT_FILE, "utf8");
   const lines = content.split("\n").filter((line) => line.trim());
-  let items = lines.map((line) => JSON.parse(line));
+
+  let items = [];
+  const parseErrors = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    try {
+      items.push(JSON.parse(lines[i]));
+    } catch (err) {
+      parseErrors.push({ line: i + 1, message: err.message });
+    }
+  }
+
+  if (parseErrors.length > 0) {
+    console.error(`⚠️ Warning: ${parseErrors.length} invalid JSON line(s) in input file`);
+    for (const e of parseErrors.slice(0, 5)) {
+      console.error(`   Line ${e.line}: ${e.message}`);
+    }
+    if (parseErrors.length > 5) {
+      console.error(`   ... and ${parseErrors.length - 5} more`);
+    }
+    console.log();
+  }
 
   console.log(`  📊 Starting with ${items.length} normalized items\n`);
 
@@ -201,9 +236,28 @@ function main() {
   console.log("  Pass 1: Exact content hash match...");
   const hashMap = new Map();
   const pass1Items = [];
+  let noHashCount = 0;
 
   for (const item of items) {
-    const hash = item.content_hash;
+    const hash =
+      typeof item.content_hash === "string" && item.content_hash.trim()
+        ? item.content_hash
+        : null;
+
+    // CRITICAL: Never merge items without valid content_hash together
+    // Items without hash are passed through individually and flagged for review
+    if (!hash) {
+      pass1Items.push(item);
+      noHashCount++;
+      reviewNeeded.push({
+        reason: "missing_content_hash",
+        item_a: item,
+        item_b: null,
+        note: "Item has no content_hash - cannot deduplicate safely",
+      });
+      continue;
+    }
+
     if (hashMap.has(hash)) {
       const existing = hashMap.get(hash);
       const merged = mergeItems(existing, item);
@@ -221,6 +275,9 @@ function main() {
   }
 
   pass1Items.push(...hashMap.values());
+  if (noHashCount > 0) {
+    console.log(`    ⚠️ ${noHashCount} items skipped (missing content_hash)`);
+  }
   console.log(
     `    Reduced ${items.length} → ${pass1Items.length} (${items.length - pass1Items.length} exact duplicates)`
   );

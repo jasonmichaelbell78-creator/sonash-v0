@@ -236,4 +236,7 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+main().catch((err) => {
+  console.error("Fatal error:", err.message);
+  process.exit(1);
+});

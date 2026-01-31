@@ -1,13 +1,16 @@
 ---
 name: sync-sonarcloud-debt
-description: Sync technical debt items from SonarCloud API into MASTER_DEBT.jsonl
+description:
+  Sync technical debt items from SonarCloud API into MASTER_DEBT.jsonl
 ---
 
 # SonarCloud Debt Sync
 
-**Purpose:** Synchronize SonarCloud issues with the canonical technical debt tracker.
+**Purpose:** Synchronize SonarCloud issues with the canonical technical debt
+tracker.
 
-**When to Use:** On-demand when you want to import/update issues from SonarCloud.
+**When to Use:** On-demand when you want to import/update issues from
+SonarCloud.
 
 ---
 

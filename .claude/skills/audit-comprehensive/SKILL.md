@@ -249,13 +249,14 @@ reports.
 
 Add an entry to **each of the 6 category tables** in `docs/AUDIT_TRACKER.md`:
 
-| Date | Session | Commits Covered | Files Covered | Findings | Reset Threshold |
-|------|---------|-----------------|---------------|----------|-----------------|
-| {TODAY} | Comprehensive | Full codebase | All | Session #{N} - [report link] | ✅ (all) |
+| Date    | Session       | Commits Covered | Files Covered | Findings                     | Reset Threshold |
+| ------- | ------------- | --------------- | ------------- | ---------------------------- | --------------- |
+| {TODAY} | Comprehensive | Full codebase   | All           | Session #{N} - [report link] | ✅ (all)        |
 
 ### 2. Update Threshold Summary Table
 
 In the "Current Thresholds" section, update all 6 categories:
+
 - Set "Last Audit" to today's date with "(Comprehensive)"
 - Reset "Commits Since" to 0
 - Reset "Files Since" to 0
@@ -263,10 +264,12 @@ In the "Current Thresholds" section, update all 6 categories:
 ### 3. Update Multi-AI Thresholds
 
 In the "Multi-AI Audit Thresholds" section:
+
 - Update "Total commits" reset date to today
 - Update "Time elapsed" to "0 days (comprehensive audit {TODAY})"
 
-**This step ensures `npm run review:check` correctly shows no triggers after the audit.**
+**This step ensures `npm run review:check` correctly shows no triggers after the
+audit.**
 
 ---
 

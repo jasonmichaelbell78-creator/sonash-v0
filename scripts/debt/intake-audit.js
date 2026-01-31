@@ -125,14 +125,36 @@ function validateAndNormalize(item, sourceFile) {
   return { valid: true, item: normalized };
 }
 
-// Load existing items from MASTER_DEBT.jsonl
+// Load existing items from MASTER_DEBT.jsonl with safe JSON parsing
 function loadMasterDebt() {
   if (!fs.existsSync(MASTER_FILE)) {
     return [];
   }
   const content = fs.readFileSync(MASTER_FILE, "utf8");
   const lines = content.split("\n").filter((line) => line.trim());
-  return lines.map((line) => JSON.parse(line));
+
+  const items = [];
+  const badLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    try {
+      items.push(JSON.parse(lines[i]));
+    } catch (err) {
+      badLines.push({ line: i + 1, message: err.message });
+    }
+  }
+
+  if (badLines.length > 0) {
+    console.error(`⚠️ Warning: ${badLines.length} invalid JSON line(s) in MASTER_DEBT.jsonl`);
+    for (const b of badLines.slice(0, 5)) {
+      console.error(`   Line ${b.line}: ${b.message}`);
+    }
+    if (badLines.length > 5) {
+      console.error(`   ... and ${badLines.length - 5} more`);
+    }
+  }
+
+  return items;
 }
 
 // Check for duplicate by content hash
@@ -195,8 +217,10 @@ async function main() {
   const existingItems = loadMasterDebt();
   console.log(`  📊 Existing MASTER_DEBT.jsonl: ${existingItems.length} items\n`);
 
-  // Build set of existing content hashes for fast lookup
-  const existingHashes = new Set(existingItems.map((item) => item.content_hash));
+  // Build map of existing content hashes to IDs for O(1) lookup
+  const existingHashMap = new Map(
+    existingItems.map((item) => [item.content_hash, item.id])
+  );
 
   // Process input items
   const newItems = [];
@@ -217,12 +241,11 @@ async function main() {
 
       const normalizedItem = result.item;
 
-      // Check for duplicate
-      if (existingHashes.has(normalizedItem.content_hash)) {
-        const duplicate = findDuplicate(normalizedItem, existingItems);
+      // Check for duplicate using Map for O(1) lookup
+      if (existingHashMap.has(normalizedItem.content_hash)) {
         duplicates.push({
           input: normalizedItem.title.substring(0, 50),
-          existingId: duplicate?.id || "unknown",
+          existingId: existingHashMap.get(normalizedItem.content_hash) || "unknown",
         });
         continue;
       }
@@ -232,7 +255,7 @@ async function main() {
       nextId++;
 
       newItems.push(normalizedItem);
-      existingHashes.add(normalizedItem.content_hash);
+      existingHashMap.set(normalizedItem.content_hash, normalizedItem.id);
     } catch (err) {
       errors.push({ line: i + 1, errors: [`JSON parse error: ${err.message}`] });
     }

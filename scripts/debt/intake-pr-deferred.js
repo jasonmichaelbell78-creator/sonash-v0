@@ -29,6 +29,7 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const crypto = require("crypto");
 const { execSync } = require("child_process");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
@@ -193,13 +194,9 @@ Example:
   const existingItems = loadMasterDebt();
   const existingHashes = new Set(existingItems.map((item) => item.content_hash));
 
-  // Generate item counter for this PR (for unique source_id)
-  const prItems = existingItems.filter((item) => item.source_id?.startsWith(`PR-${parsed.pr}-`));
-  const itemNum = prItems.length + 1;
-
-  // Create the new item
+  // Create the new item with unique source_id using UUID
   const newItem = {
-    source_id: `PR-${parsed.pr}-${itemNum}`,
+    source_id: `pr-deferred:${crypto.randomUUID()}`,
     source_file: `PR #${parsed.pr}`,
     category: category,
     severity: parsed.severity,
