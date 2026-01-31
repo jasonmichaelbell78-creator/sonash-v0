@@ -359,7 +359,7 @@ _Document and audit templates_
 | [[Project Name] Multi-AI Code Review Plan](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)             | -                                                               | ↓6 ↑1      | 2026-01-30    |
 | [[Project Name] Multi-AI Documentation Audit Plan](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md)  | This document serves as the **execution plan** for running a... | ↓1 ↑5      | 2026-01-30    |
 | [[Project Name] Multi-AI Performance Audit Plan](docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | This document serves as the **execution plan** for running a... | ↓4 ↑2      | 2026-01-30    |
-| [[Project Name] Multi-AI Process & Automation Audit Plan](docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md) | This document serves as the **execution plan** for running a... | ↓1 ↑1      | 2026-01-30    |
+| [[Project Name] Multi-AI Process & Automation Audit Plan](docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md) | -                                                               | ↓1 ↑1      | 2026-01-31    |
 | [[Project Name] Multi-AI Refactoring Plan](docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md)                | This document serves as the **execution plan** for running a... | ↓2 ↑2      | 2026-01-30    |
 | [[Project Name] Multi-AI Security Audit Plan](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)       | This document serves as the **execution plan** for running a... | ↓5 ↑3      | 2026-01-30    |
 | [[Workflow/Reference Name]](docs/templates/REFERENCE_DOC_TEMPLATE.md)                                        | -                                                               | ↓0 ↑0      | 2026-01-30    |
