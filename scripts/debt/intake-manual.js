@@ -105,14 +105,36 @@ function getNextDebtId(existingItems) {
   return maxId + 1;
 }
 
-// Load existing items from MASTER_DEBT.jsonl
+// Load existing items from MASTER_DEBT.jsonl with safe parsing
 function loadMasterDebt() {
   if (!fs.existsSync(MASTER_FILE)) {
     return [];
   }
   const content = fs.readFileSync(MASTER_FILE, "utf8");
   const lines = content.split("\n").filter((line) => line.trim());
-  return lines.map((line) => JSON.parse(line));
+
+  const items = [];
+  const badLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    try {
+      items.push(JSON.parse(lines[i]));
+    } catch (err) {
+      badLines.push({ line: i + 1, message: err.message });
+    }
+  }
+
+  if (badLines.length > 0) {
+    console.error(`⚠️ Warning: ${badLines.length} invalid JSON line(s) in MASTER_DEBT.jsonl`);
+    for (const b of badLines.slice(0, 5)) {
+      console.error(`   Line ${b.line}: ${b.message}`);
+    }
+    if (badLines.length > 5) {
+      console.error(`   ... and ${badLines.length - 5} more`);
+    }
+  }
+
+  return items;
 }
 
 // Log intake activity

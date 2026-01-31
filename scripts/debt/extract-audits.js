@@ -80,7 +80,8 @@ function getSourceId(item, sourceFile) {
 // Map effort strings
 function normalizeEffort(effort) {
   if (!effort) return "E1";
-  if (effort.match(/E[0-3]/)) return effort;
+  // Use anchored regex to prevent partial matches like "E10" or "XE1Y"
+  if (/^E[0-3]$/.test(String(effort))) return effort;
   // Try to parse
   const map = {
     trivial: "E0",
@@ -101,7 +102,8 @@ function normalizeEffort(effort) {
 // Map severity
 function normalizeSeverity(severity) {
   if (!severity) return "S2";
-  if (severity.match(/S[0-3]/)) return severity;
+  // Use anchored regex to prevent partial matches like "S10" or "XS1Y"
+  if (/^S[0-3]$/.test(String(severity))) return severity;
   const map = {
     critical: "S0",
     blocker: "S0",

@@ -54,9 +54,16 @@ function generateContentHash(item) {
 function normalizeFilePath(filePath) {
   if (!filePath) return "";
   let normalized = filePath.replace(/^\.\//, "").replace(/^\//, "");
+  // Remove org/repo prefix if present (e.g., "org_repo:path/to/file")
+  // But preserve Windows drive letters (e.g., "C:\path\to\file")
   const colonIndex = normalized.indexOf(":");
   if (colonIndex > 0) {
-    normalized = normalized.substring(colonIndex + 1);
+    // Check if this looks like a Windows drive letter (single letter before colon)
+    const beforeColon = normalized.substring(0, colonIndex);
+    const isWindowsDrive = beforeColon.length === 1 && /^[A-Za-z]$/.test(beforeColon);
+    if (!isWindowsDrive) {
+      normalized = normalized.substring(colonIndex + 1);
+    }
   }
   return normalized;
 }
@@ -103,7 +110,8 @@ function validateAndNormalize(item, sourceFile) {
     severity: ensureValid(item.severity, VALID_SEVERITIES, "S2"),
     type: ensureValid(item.type, VALID_TYPES, "code-smell"),
     file: normalizeFilePath(item.file || ""),
-    line: typeof item.line === "number" ? item.line : 0,
+    // Preserve numeric line info - parse strings, keep numbers, default to 0
+    line: typeof item.line === "number" ? item.line : parseInt(String(item.line), 10) || 0,
     title: (item.title || "Untitled").substring(0, 500),
     description: item.description || "",
     recommendation: item.recommendation || "",
@@ -218,9 +226,7 @@ async function main() {
   console.log(`  📊 Existing MASTER_DEBT.jsonl: ${existingItems.length} items\n`);
 
   // Build map of existing content hashes to IDs for O(1) lookup
-  const existingHashMap = new Map(
-    existingItems.map((item) => [item.content_hash, item.id])
-  );
+  const existingHashMap = new Map(existingItems.map((item) => [item.content_hash, item.id]));
 
   // Process input items
   const newItems = [];

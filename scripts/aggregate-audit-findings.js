@@ -182,11 +182,11 @@ function createSynonymLookup() {
   const lookup = new Map();
   for (const [key, values] of Object.entries(SYNONYM_GROUPS)) {
     const normalizedGroup = new Set();
-    // Add the key itself
-    normalizedGroup.add(key.replace(/[-_]/g, ""));
-    // Add all values
+    // Add the key itself (lowercase for consistent matching)
+    normalizedGroup.add(key.toLowerCase().replace(/[-_]/g, ""));
+    // Add all values (lowercase for consistent matching)
     for (const v of values) {
-      normalizedGroup.add(v.replace(/[-_]/g, ""));
+      normalizedGroup.add(v.toLowerCase().replace(/[-_]/g, ""));
     }
     // Map each term to the full group
     for (const term of normalizedGroup) {
@@ -752,7 +752,10 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
       for (const [key, items] of roadmapByFileLine) {
         if (key.startsWith(basename + ":")) {
           const roadmapLine = parseInt(key.split(":")[1], 10);
-          if (Number.isFinite(roadmapLine) && Math.abs(findingLine - roadmapLine) <= LINE_PROXIMITY_THRESHOLD) {
+          if (
+            Number.isFinite(roadmapLine) &&
+            Math.abs(findingLine - roadmapLine) <= LINE_PROXIMITY_THRESHOLD
+          ) {
             matchedRoadmapItem = items[0];
             matchReason = `file:line proximity (within ${LINE_PROXIMITY_THRESHOLD} lines): ${basename}:${roadmapLine}`;
             break;

@@ -4,7 +4,7 @@
  * Session #116 - Full canonicalization
  */
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,14 +25,16 @@ try {
   if (existsSync(MASTER_FILE)) {
     const raw = readFileSync(MASTER_FILE, "utf-8");
     const lines = raw.split("\n").filter((l) => l.trim().length > 0);
-    existingFindings = lines.map((l, idx) => {
-      try {
-        return JSON.parse(l);
-      } catch (e) {
-        console.warn(`Warning: Invalid JSON at line ${idx + 1}, skipping`);
-        return null;
-      }
-    }).filter(Boolean);
+    existingFindings = lines
+      .map((l, idx) => {
+        try {
+          return JSON.parse(l);
+        } catch (e) {
+          console.warn(`Warning: Invalid JSON at line ${idx + 1}, skipping`);
+          return null;
+        }
+      })
+      .filter(Boolean);
   }
 } catch (e) {
   if (e && typeof e === "object" && "code" in e && e.code === "ENOENT") {
@@ -447,13 +449,13 @@ const migratedFindings = newFindings.map((f) => ({
   category: f.category,
   severity: f.severity,
   effort: f.effort,
-  file: f.file || "N/A",
-  line: f.line || 1,
+  file: f.file ?? "N/A",
+  line: f.line ?? 1,
   title: f.title,
   description: f.description,
   roadmap_section: f.roadmap_section,
   roadmap_track: f.roadmap_section,
-  status: f.status || "active",
+  status: f.status ?? "active",
   sources: [{ type: "legacy-migration", id: f.original_id, date: "2026-01-30" }],
   created: "2026-01-30",
   updated: "2026-01-30",
@@ -461,6 +463,16 @@ const migratedFindings = newFindings.map((f) => ({
 
 // Merge with existing
 const allFindings = [...existingFindings, ...migratedFindings];
+
+// Ensure canonical output directory exists (fresh clone / CI)
+const canonicalDir = dirname(MASTER_FILE);
+if (!existsSync(canonicalDir)) {
+  try {
+    mkdirSync(canonicalDir, { recursive: true });
+  } catch {
+    // Let the subsequent write throw a clearer error
+  }
+}
 
 // Write updated MASTER_FINDINGS.jsonl
 writeFileSync(MASTER_FILE, allFindings.map((f) => JSON.stringify(f)).join("\n") + "\n");

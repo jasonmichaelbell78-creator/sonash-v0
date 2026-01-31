@@ -62,10 +62,16 @@ function normalizeFilePath(filePath) {
   if (!filePath) return "";
   // Remove leading ./ or /
   let normalized = filePath.replace(/^\.\//, "").replace(/^\//, "");
-  // Remove org/repo prefix if present
+  // Remove org/repo prefix if present (e.g., "org_repo:path/to/file")
+  // But preserve Windows drive letters (e.g., "C:\path\to\file")
   const colonIndex = normalized.indexOf(":");
   if (colonIndex > 0) {
-    normalized = normalized.substring(colonIndex + 1);
+    // Check if this looks like a Windows drive letter (single letter before colon)
+    const beforeColon = normalized.substring(0, colonIndex);
+    const isWindowsDrive = beforeColon.length === 1 && /^[A-Za-z]$/.test(beforeColon);
+    if (!isWindowsDrive) {
+      normalized = normalized.substring(colonIndex + 1);
+    }
   }
   return normalized;
 }

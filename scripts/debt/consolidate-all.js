@@ -65,7 +65,7 @@ function runStep(step, index) {
   console.log(`${"═".repeat(60)}\n`);
 
   try {
-    execFileSync("node", [scriptPath], {
+    execFileSync(process.execPath, [scriptPath], {
       stdio: "inherit",
       cwd: path.join(__dirname, "../.."),
     });
@@ -90,10 +90,13 @@ function main() {
 
   const startTime = Date.now();
   let successCount = 0;
+  let failedCount = 0;
 
   for (let i = 0; i < STEPS.length; i++) {
     if (runStep(STEPS[i], i)) {
       successCount++;
+    } else {
+      failedCount++;
     }
   }
 
@@ -105,6 +108,11 @@ function main() {
 
   console.log(`✅ ${successCount}/${STEPS.length} steps completed successfully`);
   console.log(`⏱️ Total time: ${duration}s`);
+
+  // Set non-zero exit code if any step failed (for CI)
+  if (failedCount > 0) {
+    process.exitCode = 1;
+  }
 
   console.log(`\n📁 Output location: docs/technical-debt/`);
   console.log(`   - MASTER_DEBT.jsonl    (canonical source)`);

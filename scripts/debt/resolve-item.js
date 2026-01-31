@@ -182,6 +182,9 @@ Example:
   // Update the item
   const now = new Date().toISOString().split("T")[0];
 
+  // Backup master file before modification for potential rollback
+  const masterBackup = fs.existsSync(MASTER_FILE) ? fs.readFileSync(MASTER_FILE, "utf8") : "";
+
   if (parsed.falsePositive) {
     // Mark as false positive and move to separate file
     item.status = "FALSE_POSITIVE";
@@ -195,8 +198,10 @@ Example:
     items.splice(itemIndex, 1);
 
     // Perform all write operations together with error handling
+    let masterUpdated = false;
     try {
       saveMasterDebt(items);
+      masterUpdated = true;
       appendFalsePositive(item);
       logResolution({
         action: "false_positive",
@@ -204,6 +209,14 @@ Example:
         reason: parsed.reason,
       });
     } catch (writeError) {
+      // Attempt to restore master file if we updated it but subsequent writes failed
+      if (masterUpdated && masterBackup) {
+        try {
+          fs.writeFileSync(MASTER_FILE, masterBackup);
+        } catch {
+          // Ignore restore errors; user will need to recover from VCS
+        }
+      }
       console.error(`\n❌ Critical Error: Failed to write updates for ${item.id}.`);
       console.error("   The master file may be out of sync. Please restore from version control.");
       console.error(`   Error: ${writeError.message}`);
@@ -221,13 +234,27 @@ Example:
       date: now,
     };
 
-    saveMasterDebt(items);
-
-    logResolution({
-      action: "resolved",
-      item_id: item.id,
-      pr: parsed.pr || null,
-    });
+    try {
+      saveMasterDebt(items);
+      logResolution({
+        action: "resolved",
+        item_id: item.id,
+        pr: parsed.pr || null,
+      });
+    } catch (writeError) {
+      // Attempt to restore master file
+      if (masterBackup) {
+        try {
+          fs.writeFileSync(MASTER_FILE, masterBackup);
+        } catch {
+          // Ignore restore errors; user will need to recover from VCS
+        }
+      }
+      console.error(`\n❌ Critical Error: Failed to write updates for ${item.id}.`);
+      console.error("   The master file may be out of sync. Please restore from version control.");
+      console.error(`   Error: ${writeError.message}`);
+      process.exit(1);
+    }
 
     console.log(`\n✅ Marked ${item.id} as RESOLVED`);
   }

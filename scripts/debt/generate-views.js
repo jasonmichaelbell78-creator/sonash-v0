@@ -118,11 +118,24 @@ function main() {
   let preservedCount = 0;
   let newCount = 0;
 
-  // Read deduped items
+  // Read deduped items with safe JSON parsing
   const content = fs.readFileSync(INPUT_FILE, "utf8");
   const lines = content.split("\n").filter((line) => line.trim());
-  const items = lines.map((line) => {
-    const item = JSON.parse(line);
+
+  // Track used IDs to prevent duplicates in current run
+  const usedIds = new Set();
+
+  const items = [];
+  const parseErrors = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    let item;
+    try {
+      item = JSON.parse(lines[i]);
+    } catch (err) {
+      parseErrors.push({ line: i + 1, message: err.message });
+      continue;
+    }
 
     // Try to find existing ID (preserve stable IDs)
     let existingId = null;
@@ -133,18 +146,33 @@ function main() {
       existingId = idMap.get(`source:${item.source_id}`);
     }
 
-    if (existingId) {
+    // Check if existingId is already used in this run to prevent duplicates
+    if (existingId && !usedIds.has(existingId)) {
       item.id = existingId;
+      usedIds.add(existingId);
       preservedCount++;
     } else {
-      // Assign new ID only for truly new items
+      // Assign new ID if no stable ID exists OR the stable ID is already used
       item.id = generateDebtId(nextId);
+      usedIds.add(item.id);
       nextId++;
       newCount++;
     }
 
-    return item;
-  });
+    items.push(item);
+  }
+
+  // Report parse errors
+  if (parseErrors.length > 0) {
+    console.error(`⚠️ Warning: ${parseErrors.length} invalid JSON line(s) in input file`);
+    for (const e of parseErrors.slice(0, 5)) {
+      console.error(`   Line ${e.line}: ${e.message}`);
+    }
+    if (parseErrors.length > 5) {
+      console.error(`   ... and ${parseErrors.length - 5} more`);
+    }
+    console.log();
+  }
 
   console.log(`  📊 Processing ${items.length} items`);
   console.log(`     Preserved IDs: ${preservedCount}, New IDs: ${newCount}\n`);

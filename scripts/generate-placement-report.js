@@ -4,7 +4,7 @@
  * Session #116
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -14,11 +14,18 @@ const __dirname = dirname(__filename);
 const NET_NEW_FILE = join(__dirname, "..", "docs/aggregation/net-new-findings.jsonl");
 const OUTPUT_FILE = join(__dirname, "..", "docs/aggregation/NET_NEW_ROADMAP_PLACEMENT.md");
 
-// Get NET NEW findings
-const netNew = readFileSync(NET_NEW_FILE, "utf-8")
-  .trim()
-  .split("\n")
-  .map((l) => JSON.parse(l));
+// Get NET NEW findings with safe JSONL parsing
+const raw = readFileSync(NET_NEW_FILE, "utf-8");
+const lines = raw.split("\n").filter((l) => l.trim().length > 0);
+const netNew = [];
+
+for (let i = 0; i < lines.length; i++) {
+  try {
+    netNew.push(JSON.parse(lines[i]));
+  } catch (err) {
+    throw new Error(`Invalid JSONL in ${NET_NEW_FILE} at line ${i + 1}: ${err.message}`);
+  }
+}
 
 // Categorize by severity
 const byPriority = {
@@ -78,9 +85,17 @@ let output = `# NET NEW Findings - Roadmap Placement Suggestions
   Object.entries(byPlacement).forEach(([placement, findings]) => {
     output += `### → ${placement}\n\n`;
     findings.slice(0, 8).forEach((f) => {
-      const basename = f.file ? f.file.replace(/^.*\//, "") : "N/A";
-      const fileInfo = f.line ? `${basename}:${f.line}` : basename;
-      output += `- **${f.original_id}**: ${(f.title || "").slice(0, 70)}...\n`;
+      // Harden against malformed finding fields
+      const fileStr = typeof f.file === "string" ? f.file : "";
+      const basename = fileStr ? fileStr.replace(/^.*\//, "") : "N/A";
+
+      const lineNum = Number.isFinite(f.line) && f.line > 0 ? f.line : null;
+      const fileInfo = lineNum ? `${basename}:${lineNum}` : basename;
+
+      const title = typeof f.title === "string" ? f.title : "";
+      const titleShort = title.length > 70 ? `${title.slice(0, 70)}...` : title;
+
+      output += `- **${f.original_id}**: ${titleShort}\n`;
       output += `  - File: \`${fileInfo}\` | Effort: ${f.effort || "TBD"}\n`;
     });
     if (findings.length > 8) {
@@ -110,6 +125,14 @@ Object.entries(byCategory)
     const placement = ROADMAP_PLACEMENT[cat] || "M2 (General Backlog)";
     output += `| ${cat} | ${count} | ${placement} |\n`;
   });
+
+// Ensure output directory exists (fresh clone / CI)
+const outDir = dirname(OUTPUT_FILE);
+try {
+  mkdirSync(outDir, { recursive: true });
+} catch {
+  // If mkdir fails, let the subsequent write throw a clearer error
+}
 
 writeFileSync(OUTPUT_FILE, output);
 console.log(`Generated: ${OUTPUT_FILE}`);

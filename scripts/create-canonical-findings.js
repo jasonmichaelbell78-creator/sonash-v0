@@ -4,7 +4,7 @@
  * Session #116
  */
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -42,14 +42,18 @@ if (existsSync(MASTER_FILE)) {
   try {
     const raw = readFileSync(MASTER_FILE, "utf-8");
     const lines = raw.split("\n").filter((l) => l.trim().length > 0);
-    existingCanonical = lines.map((l, idx) => {
-      try {
-        return JSON.parse(l);
-      } catch (e) {
-        console.warn(`Warning: Invalid JSON at line ${idx + 1} in MASTER_FINDINGS.jsonl, skipping`);
-        return null;
-      }
-    }).filter(Boolean);
+    existingCanonical = lines
+      .map((l, idx) => {
+        try {
+          return JSON.parse(l);
+        } catch (e) {
+          console.warn(
+            `Warning: Invalid JSON at line ${idx + 1} in MASTER_FINDINGS.jsonl, skipping`
+          );
+          return null;
+        }
+      })
+      .filter(Boolean);
   } catch (e) {
     console.warn(`Warning: Could not read existing MASTER_FINDINGS.jsonl: ${e.message}`);
     existingCanonical = [];
@@ -57,9 +61,7 @@ if (existsSync(MASTER_FILE)) {
 }
 
 // Build set of existing original_ids for deduplication
-const existingOriginalIds = new Set(
-  existingCanonical.map((f) => f.original_id).filter(Boolean)
-);
+const existingOriginalIds = new Set(existingCanonical.map((f) => f.original_id).filter(Boolean));
 
 // Get max CANON ID to continue numbering
 let maxCanonId = 0;
@@ -89,9 +91,21 @@ const newFindings = netNew
 // Merge existing and new (append-only pattern)
 const canonical = [...existingCanonical, ...newFindings];
 
+// Ensure canonical output directory exists before writing
+const canonicalDir = dirname(MASTER_FILE);
+if (!existsSync(canonicalDir)) {
+  try {
+    mkdirSync(canonicalDir, { recursive: true });
+  } catch {
+    // Let the subsequent write throw a clearer error if mkdir fails
+  }
+}
+
 // Write MASTER_FINDINGS.jsonl (merged)
 writeFileSync(MASTER_FILE, canonical.map((f) => JSON.stringify(f)).join("\n") + "\n");
-console.log(`Updated: ${MASTER_FILE} (+${newFindings.length} new, total ${canonical.length} findings)`);
+console.log(
+  `Updated: ${MASTER_FILE} (+${newFindings.length} new, total ${canonical.length} findings)`
+);
 
 // Group by severity and category for index
 const bySeverity = { S0: [], S1: [], S2: [], S3: [] };

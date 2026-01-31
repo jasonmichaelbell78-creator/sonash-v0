@@ -79,6 +79,10 @@ function isNearMatch(a, b) {
   if (a.file !== b.file) return false;
   if (!a.file) return false;
 
+  // CRITICAL: Require valid positive line numbers to avoid NaN-based false merges
+  if (!Number.isFinite(a.line) || !Number.isFinite(b.line)) return false;
+  if (a.line <= 0 || b.line <= 0) return false;
+
   // Line numbers within ±5
   const lineDiff = Math.abs(a.line - b.line);
   if (lineDiff > 5) return false;
@@ -95,6 +99,10 @@ function isSemanticMatch(a, b) {
   // Must be same file
   if (a.file !== b.file) return false;
   if (!a.file) return false;
+
+  // CRITICAL: Require valid positive line numbers to avoid over-merging large files
+  if (!Number.isFinite(a.line) || !Number.isFinite(b.line)) return false;
+  if (a.line <= 0 || b.line <= 0) return false;
 
   // Title similarity > 90%
   const titleSim = stringSimilarity(normalizeText(a.title), normalizeText(b.title));
@@ -141,12 +149,12 @@ function isCrossSourceMatch(a, b) {
   // Same file
   if (sonarFile !== auditFile) return false;
 
-  // Defensive: validate line numbers
-  const sonarLine = Number.isFinite(sonarItem.line) ? sonarItem.line : 0;
-  const auditLine = Number.isFinite(auditItem.line) ? auditItem.line : 0;
+  // CRITICAL: Don't treat missing lines as "0" (causes false merges)
+  if (!Number.isFinite(sonarItem.line) || !Number.isFinite(auditItem.line)) return false;
+  if (sonarItem.line <= 0 || auditItem.line <= 0) return false;
 
   // Close line numbers
-  const lineDiff = Math.abs(sonarLine - auditLine);
+  const lineDiff = Math.abs(sonarItem.line - auditItem.line);
   if (lineDiff > 10) return false;
 
   // Similar titles
@@ -171,15 +179,19 @@ function mergeItems(primary, secondary) {
     merged.recommendation = secondary.recommendation;
   }
 
-  // Keep more severe severity
+  // Keep more severe severity (unknown severities should not win)
   const sevRank = { S0: 0, S1: 1, S2: 2, S3: 3 };
-  if (sevRank[secondary.severity] < sevRank[primary.severity]) {
+  const primaryRank = sevRank[primary.severity] ?? 99;
+  const secondaryRank = sevRank[secondary.severity] ?? 99;
+  if (secondaryRank < primaryRank) {
     merged.severity = secondary.severity;
   }
 
-  // Track merge sources
+  // Track merge sources (only add valid source_id strings)
   if (!merged.merged_from) merged.merged_from = [];
-  merged.merged_from.push(secondary.source_id);
+  if (typeof secondary.source_id === "string" && secondary.source_id.trim()) {
+    merged.merged_from.push(secondary.source_id);
+  }
 
   // Merge evidence arrays
   if (secondary.evidence) {
@@ -240,9 +252,7 @@ function main() {
 
   for (const item of items) {
     const hash =
-      typeof item.content_hash === "string" && item.content_hash.trim()
-        ? item.content_hash
-        : null;
+      typeof item.content_hash === "string" && item.content_hash.trim() ? item.content_hash : null;
 
     // CRITICAL: Never merge items without valid content_hash together
     // Items without hash are passed through individually and flagged for review

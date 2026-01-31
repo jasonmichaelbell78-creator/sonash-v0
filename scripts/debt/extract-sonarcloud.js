@@ -42,7 +42,8 @@ const CATEGORY_MAP = {
 // Effort string -> E-scale mapping (5min = E0, 1h = E1, 4h = E2, 8h+ = E3)
 function parseEffort(effortStr) {
   if (!effortStr) return "E1";
-  const match = effortStr.match(/(\d+)(min|h|d)/);
+  // Coerce to string to prevent crashes on non-string values
+  const match = String(effortStr).match(/(\d+)(min|h|d)/);
   if (!match) return "E1";
 
   const value = parseInt(match[1], 10);

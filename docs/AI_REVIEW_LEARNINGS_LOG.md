@@ -1147,17 +1147,20 @@ total (Critical: 2, Major: 5, Minor: 2, Trivial: 1, Deferred: 2, Rejected: 1)
 
 #### Review #218: TDMS Phase 1-8 PR - Qodo Compliance + CI (2026-01-31)
 
-**Source:** Qodo Compliance + CI Feedback
-**PR/Branch:** claude/new-session-U1Jou (TDMS Technical Debt Management System)
+**Source:** Qodo Compliance + CI Feedback **PR/Branch:**
+claude/new-session-U1Jou (TDMS Technical Debt Management System)
 **Suggestions:** 26 total (Critical: 4, Major: 9, Minor: 11, Trivial: 2)
 
 **Patterns Identified:**
 
-1. **Append-only canonical files**: Scripts that write to canonical JSONL files must append, not overwrite
-   - Root cause: Initial implementation used writeFileSync without reading existing data
+1. **Append-only canonical files**: Scripts that write to canonical JSONL files
+   must append, not overwrite
+   - Root cause: Initial implementation used writeFileSync without reading
+     existing data
    - Prevention: Always read existing, merge, then write
 
-2. **API pagination required**: External API integrations must paginate to get all results
+2. **API pagination required**: External API integrations must paginate to get
+   all results
    - Root cause: SonarCloud API defaults to 500 results per page
    - Prevention: Always check for pagination in API docs, implement fetch loops
 
@@ -1165,7 +1168,8 @@ total (Critical: 2, Major: 5, Minor: 2, Trivial: 1, Deferred: 2, Rejected: 1)
    - Root cause: generate-views.js reassigned IDs after sorting
    - Prevention: IDs assigned once at creation, never modified
 
-4. **Guard against missing hash fields**: Deduplication logic must handle missing content_hash
+4. **Guard against missing hash fields**: Deduplication logic must handle
+   missing content_hash
    - Root cause: Items without hash would all be merged together
    - Prevention: Skip dedup for items without hash, flag for manual review
 
@@ -1173,26 +1177,83 @@ total (Critical: 2, Major: 5, Minor: 2, Trivial: 1, Deferred: 2, Rejected: 1)
    - Root cause: Single corrupt line crashes entire script
    - Prevention: Parse line-by-line with error collection
 
-6. **Atomic file writes**: Use write-to-temp-then-rename pattern for critical files
+6. **Atomic file writes**: Use write-to-temp-then-rename pattern for critical
+   files
    - Root cause: Interrupted write leaves corrupt file
    - Prevention: fs.writeFileSync to .tmp, then fs.renameSync
 
 **Resolution:**
+
 - Fixed: 26 items
 - Deferred: 1 item (SQLite migration - architectural, needs separate RFC)
 - Rejected: 0 items
 
 **Key Learnings:**
+
 - Internal tooling scripts need same rigor as production code
 - Pagination is easy to miss in API integrations
 - Stable IDs are architectural decisions that affect downstream consumers
 
 ---
 
+#### Review #219: TDMS PR Follow-up - Qodo Compliance + CI (2026-01-31)
+
+**Source:** Qodo Compliance + PR Code Suggestions + CI Feedback **PR/Branch:**
+claude/new-session-U1Jou (TDMS Phase 1-8 follow-up) **Suggestions:** 25 total
+(Critical: 0, Major: 9, Minor: 14, Trivial: 2)
+
+**Patterns Identified:**
+
+1. [Safe JSONL parsing consistency]: Multiple scripts had unhandled JSON.parse
+   that would crash on malformed data
+   - Root cause: Copy-paste without consistent error handling patterns
+   - Prevention: All loadMasterDebt/loadItems functions need try-catch with line
+     numbers
+
+2. [Line number validation for deduplication]: Missing/invalid line numbers (0,
+   NaN) should not be used for proximity matching
+   - Root cause: Line 0 treated as valid when comparing distances
+   - Prevention: Require positive finite line numbers before proximity checks
+
+3. [Duplicate ID prevention]: ID assignment from lookup maps can assign same ID
+   to multiple items
+   - Root cause: No tracking of already-used IDs in current run
+   - Prevention: Track usedIds set during ID assignment
+
+4. [Nullish coalescing for defaults]: Using || instead of ?? corrupts valid
+   falsy values (0, "")
+   - Root cause: JavaScript || returns right side for any falsy value
+   - Prevention: Use ?? when 0 or empty string are valid values
+
+5. [CI exit codes for partial failures]: Non-required step failures should still
+   set non-zero exit code
+   - Root cause: Success count tracks completion but exit code not set
+   - Prevention: Track failedCount and set process.exitCode = 1
+
+6. [Stricter regex for codes]: E[0-3] matches E12 - need anchored ^E[0-3]$
+   - Root cause: Regex matches partial strings
+   - Prevention: Always anchor enums with ^ and $
+
+**Resolution:**
+
+- Fixed: 25 items (9 Major, 14 Minor, 2 Trivial)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- JSONL parsing robustness is a recurring theme - consider extracting to shared
+  helper
+- Deduplication logic is complex and needs defensive validation at every
+  comparison step
+- Scripts that call multiple sub-scripts need proper exit code propagation
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #219: PR #XXX Title - Review Source (DATE)
+#### Review #220: PR #XXX Title - Review Source (DATE)
 
 
 -->
