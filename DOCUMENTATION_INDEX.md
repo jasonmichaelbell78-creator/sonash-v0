@@ -152,7 +152,7 @@ _Main documentation directory_
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                                                       | This document captures important decisions, options presente...   | ↓2 ↑0      | 2026-01-30    |
 | [Session History Log](docs/SESSION_HISTORY.md)                                                                          | This document archives detailed session summaries from SESSI...   | ↓0 ↑1      | 2026-01-30    |
 | [SESSION_CONTEXT.md Reduction Plan](docs/plans/SESSION_CONTEXT_REDUCTION_PLAN.md)                                       | -                                                                 | ↓0 ↑0      | 2026-01-30    |
-| [Single-Session Audit Results](docs/audits/single-session/README.md)                                                    | This document serves as the index and guide for single-sessi...   | ↓3 ↑2      | 2026-01-30    |
+| [Single-Session Audit Results](docs/audits/single-session/README.md)                                                    | This document serves as the index and guide for single-sessi...   | ↓3 ↑2      | 2026-01-31    |
 | [Slash Commands Reference](docs/SLASH_COMMANDS_REFERENCE.md)                                                            | -                                                                 | ↓1 ↑2      | 2026-01-30    |
 | [SonarCloud Cleanup Sprint Runbook](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                                                 | This runbook provides a repeatable process for SonarCloud an...   | ↓1 ↑2      | 2026-01-30    |
 | [SonarCloud Full Analysis Snapshot](docs/audits/sonarcloud-snapshots/20260119-full.md)                                  | This document provides a point-in-time snapshot of SonarClou...   | ↓0 ↑1      | 2026-01-30    |
@@ -247,6 +247,7 @@ _Claude Code skills_
 | [Code Reviewer](.claude/skills/code-reviewer/SKILL.md)                                                                              | Complete toolkit for code reviewer with modern tools and bes...   | ↓0 ↑0      | 2026-01-30    |
 | [Coding Standards](.claude/skills/code-reviewer/references/coding_standards.md)                                                     | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-30    |
 | [Common Antipatterns](.claude/skills/code-reviewer/references/common_antipatterns.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-30    |
+| [Comprehensive Automation Audit](.claude/skills/audit-process/SKILL.md)                                                             | -                                                                 | ↓0 ↑0      | 2026-01-31    |
 | [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)                                        | -                                                                 | ↓0 ↑0      | 2026-01-31    |
 | [Condition-Based Waiting](.claude/skills/systematic-debugging/condition-based-waiting.md)                                           | Flaky tests often guess at timing with arbitrary delays. Thi...   | ↓0 ↑0      | 2026-01-30    |
 | [Content Research Writer](.claude/skills/content-research-writer/SKILL.md)                                                          | This skill acts as your writing partner, helping you researc...   | ↓0 ↑0      | 2026-01-30    |
@@ -306,12 +307,11 @@ _Claude Code skills_
 | [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)                                                              | -                                                                 | ↓0 ↑0      | 2026-01-30    |
 | [Single-Session Documentation Audit](.claude/skills/audit-documentation/SKILL.md)                                                   | -                                                                 | ↓0 ↑0      | 2026-01-30    |
 | [Single-Session Performance Audit](.claude/skills/audit-performance/SKILL.md)                                                       | -                                                                 | ↓0 ↑0      | 2026-01-30    |
-| [Single-Session Process/Automation Audit](.claude/skills/audit-process/SKILL.md)                                                    | -                                                                 | ↓0 ↑0      | 2026-01-30    |
 | [Single-Session Refactoring Audit](.claude/skills/audit-refactoring/SKILL.md)                                                       | -                                                                 | ↓0 ↑0      | 2026-01-30    |
 | [Single-Session Security Audit](.claude/skills/audit-security/SKILL.md)                                                             | -                                                                 | ↓0 ↑0      | 2026-01-30    |
 | [SKILL](.claude/skills/frontend-design/SKILL.md)                                                                                    | -                                                                 | ↓0 ↑0      | 2026-01-30    |
 | [Skill Creator](.claude/skills/skill-creator/SKILL.md)                                                                              | This skill provides guidance for creating effective skills.       | ↓0 ↑0      | 2026-01-30    |
-| [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-01-30    |
+| [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-01-31    |
 | [SonarCloud Cleanup Sprint](.claude/skills/sonarcloud-sprint/SKILL.md)                                                              | Automate the SonarCloud analysis and cleanup workflow:            | ↓0 ↑0      | 2026-01-30    |
 | [SonarCloud Debt Sync](.claude/skills/sync-sonarcloud-debt/SKILL.md)                                                                | -                                                                 | ↓0 ↑0      | 2026-01-31    |
 | [System Design Workflows](.claude/skills/senior-architect/references/system_design_workflows.md)                                    | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-30    |
@@ -386,7 +386,7 @@ _Uncategorized_
 | [AI Review Output Examples](.claude/review-examples.md)                  | Real-world examples of what each review type produces. Use t... | ↓0 ↑0      | 2026-01-30    |
 | [AI Review Prompts - Quick Reference](.claude/review-quick-reference.md) | Quick lookup for specialized review prompts. See full detail... | ↓0 ↑0      | 2026-01-30    |
 | [AI Review Prompts for Non-Code Artifacts](.claude/review-prompts.md)    | Specialized review prompts optimized for Claude Code integra... | ↓0 ↑0      | 2026-01-30    |
-| [Claude Code Command Reference](.claude/COMMAND_REFERENCE.md)            | Comprehensive                                                   | ↓3 ↑0      | 2026-01-30    |
+| [Claude Code Command Reference](.claude/COMMAND_REFERENCE.md)            | Comprehensive                                                   | ↓3 ↑0      | 2026-01-31    |
 | [Claude Hooks Documentation](.claude/HOOKS.md)                           | Prepare development environment for new session                 | ↓2 ↑3      | 2026-01-30    |
 
 ### .claude > agents (Tier 4)
@@ -605,7 +605,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)
 - [Single-Session Documentation Audit](.claude/skills/audit-documentation/SKILL.md)
 - [Single-Session Performance Audit](.claude/skills/audit-performance/SKILL.md)
-- [Single-Session Process/Automation Audit](.claude/skills/audit-process/SKILL.md)
+- [Comprehensive Automation Audit](.claude/skills/audit-process/SKILL.md)
 - [Single-Session Refactoring Audit](.claude/skills/audit-refactoring/SKILL.md)
 - [Single-Session Security Audit](.claude/skills/audit-security/SKILL.md)
 - [Session Checkpoint](.claude/skills/checkpoint/SKILL.md)
@@ -823,7 +823,7 @@ Documents with no inbound links (not referenced by any other document):
 | 50  | [.claude/skills/audit-comprehensive/SKILL.md](.claude/skills/audit-comprehensive/SKILL.md)                                                                   | Comprehensive Multi-Domain Audit Orchestrator                      | 3    | -                                                                               |
 | 51  | [.claude/skills/audit-documentation/SKILL.md](.claude/skills/audit-documentation/SKILL.md)                                                                   | Single-Session Documentation Audit                                 | 3    | -                                                                               |
 | 52  | [.claude/skills/audit-performance/SKILL.md](.claude/skills/audit-performance/SKILL.md)                                                                       | Single-Session Performance Audit                                   | 3    | -                                                                               |
-| 53  | [.claude/skills/audit-process/SKILL.md](.claude/skills/audit-process/SKILL.md)                                                                               | Single-Session Process/Automation Audit                            | 3    | -                                                                               |
+| 53  | [.claude/skills/audit-process/SKILL.md](.claude/skills/audit-process/SKILL.md)                                                                               | Comprehensive Automation Audit                                     | 3    | -                                                                               |
 | 54  | [.claude/skills/audit-refactoring/SKILL.md](.claude/skills/audit-refactoring/SKILL.md)                                                                       | Single-Session Refactoring Audit                                   | 3    | -                                                                               |
 | 55  | [.claude/skills/audit-security/SKILL.md](.claude/skills/audit-security/SKILL.md)                                                                             | Single-Session Security Audit                                      | 3    | -                                                                               |
 | 56  | [.claude/skills/checkpoint/SKILL.md](.claude/skills/checkpoint/SKILL.md)                                                                                     | Session Checkpoint                                                 | 3    | -                                                                               |

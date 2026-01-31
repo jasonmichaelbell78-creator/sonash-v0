@@ -1,6 +1,6 @@
 # Skill Index
 
-**Version**: 1.1 **Last Updated**: 2026-01-28 **Total Skills**: 45
+**Version**: 1.2 **Last Updated**: 2026-01-31 **Total Skills**: 49
 
 Quick reference for all available Claude Code skills organized by category.
 
@@ -18,18 +18,18 @@ Quick reference for all available Claude Code skills organized by category.
 
 ### Audit & Code Quality (10 skills)
 
-| Skill                  | Description                               |
-| ---------------------- | ----------------------------------------- |
-| `/audit-comprehensive` | Run all 6 audit domains in parallel       |
-| `/audit-code`          | Code quality audit (complexity, patterns) |
-| `/audit-documentation` | Documentation coverage and quality        |
-| `/audit-performance`   | Performance bottlenecks and optimization  |
-| `/audit-process`       | Development process audit                 |
-| `/audit-refactoring`   | Refactoring opportunities                 |
-| `/audit-security`      | Security vulnerability audit              |
-| `/audit-aggregator`    | Aggregate multiple audit results          |
-| `/code-reviewer`       | Run code review on recent changes         |
-| `/quick-fix`           | Auto-suggest fixes for common issues      |
+| Skill                  | Description                                       |
+| ---------------------- | ------------------------------------------------- |
+| `/audit-comprehensive` | Run all 6 audit domains in parallel               |
+| `/audit-code`          | Code quality audit (complexity, patterns)         |
+| `/audit-documentation` | Documentation coverage and quality                |
+| `/audit-performance`   | Performance bottlenecks and optimization          |
+| `/audit-process`       | Multi-stage automation audit (16 types, 7 stages) |
+| `/audit-refactoring`   | Refactoring opportunities                         |
+| `/audit-security`      | Security vulnerability audit                      |
+| `/audit-aggregator`    | Aggregate multiple audit results                  |
+| `/code-reviewer`       | Run code review on recent changes                 |
+| `/quick-fix`           | Auto-suggest fixes for common issues              |
 
 ### Session Management (5 skills)
 

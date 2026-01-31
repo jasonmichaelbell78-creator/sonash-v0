@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 2.3 **Last Updated:** 2026-01-29 **Purpose:** Comprehensive
+**Version:** 2.4 **Last Updated:** 2026-01-31 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -51,10 +51,14 @@ severity ratings
 
 ### `/audit-process`
 
-**Description:** Run a single-session process/automation audit **When to use:**
-Check CI/CD pipelines, hooks, scripts effectiveness **Example:**
-`/audit-process` **Parameters:** None **Output:** Process improvement
-recommendations
+**Description:** Run a comprehensive multi-stage automation audit with parallel
+agents **When to use:** Full automation health check covering 16 types across 12
+categories **Example:** `/audit-process` or `/audit-process stage 1`
+**Parameters:** Optional stage number (1-7) or "full" **Output:** Staged
+findings with TDMS integration, dependency graph, priority action plan **Note:**
+v2.0 (Session #120)
+
+- Expanded from single-session to 7-stage parallel audit
 
 ### `/audit-refactoring`
 
