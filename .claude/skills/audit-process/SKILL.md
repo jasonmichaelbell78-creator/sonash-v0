@@ -29,6 +29,30 @@ This audit covers **16 automation types** across **12 audit categories** using a
 
 ---
 
+## CRITICAL: Persistence Rules
+
+**EVERY agent MUST write outputs directly to files. NEVER rely on conversation
+context.**
+
+1. **Agent outputs go to files, not conversation**
+   - Each agent prompt MUST include:
+     `Write findings to: ${AUDIT_DIR}/[filename].jsonl`
+   - Agents must use Write tool or Bash to create files
+   - If agent returns text instead of writing file, RE-RUN with explicit file
+     instruction
+
+2. **Verify after each stage**
+   - After parallel agents complete, verify all output files exist
+   - Check file sizes are non-zero: `wc -l ${AUDIT_DIR}/*.jsonl`
+   - If any file missing, do NOT proceed to next stage
+
+3. **Why this matters**
+   - Context compaction is EXPECTED and can happen at any time
+   - Conversation text is ephemeral; only files persist
+   - 150+ findings lost to compaction = real cost to user
+
+---
+
 ## Scope: 16 Automation Types
 
 | #   | Type                     | Location                    | Count    |
@@ -118,7 +142,11 @@ For each hook, document:
 - What it calls/executes
 - Dependencies on other scripts
 
-Output as structured markdown table.
+CRITICAL: You MUST write your findings directly to this file:
+  ${AUDIT_DIR}/stage-1a-hooks.md
+
+Use the Write tool to create this file. Do NOT return findings as text.
+Verify the file exists after writing.
 """)
 ```
 
@@ -138,7 +166,11 @@ For each script, document:
 - What calls it (npm script, hook, CI, manual)
 - What it calls (other scripts, external commands)
 
-Output as structured markdown table.
+CRITICAL: You MUST write your findings directly to this file:
+  ${AUDIT_DIR}/stage-1b-scripts.md
+
+Use the Write tool to create this file. Do NOT return findings as text.
+Verify the file exists after writing.
 """)
 ```
 
@@ -157,7 +189,11 @@ For each skill/command, document:
 - Scripts it uses (if any)
 - Dependencies
 
-Output as structured markdown table.
+CRITICAL: You MUST write your findings directly to this file:
+  ${AUDIT_DIR}/stage-1c-skills.md
+
+Use the Write tool to create this file. Do NOT return findings as text.
+Verify the file exists after writing.
 """)
 ```
 
@@ -178,7 +214,11 @@ For each, document:
 - Triggers (for workflows)
 - What it validates/enforces
 
-Output as structured markdown table.
+CRITICAL: You MUST write your findings directly to this file:
+  ${AUDIT_DIR}/stage-1d-ci-config.md
+
+Use the Write tool to create this file. Do NOT return findings as text.
+Verify the file exists after writing.
 """)
 ```
 
@@ -200,7 +240,11 @@ For each function, document:
 - Schedule (if applicable)
 - What it does
 
-Output as structured markdown table.
+CRITICAL: You MUST write your findings directly to this file:
+  ${AUDIT_DIR}/stage-1e-firebase.md
+
+Use the Write tool to create this file. Do NOT return findings as text.
+Verify the file exists after writing.
 """)
 ```
 
@@ -220,7 +264,11 @@ For each server, document:
 - Purpose
 - Status (enabled/disabled)
 
-Output as structured markdown table.
+CRITICAL: You MUST write your findings directly to this file:
+  ${AUDIT_DIR}/stage-1f-mcp.md
+
+Use the Write tool to create this file. Do NOT return findings as text.
+Verify the file exists after writing.
 """)
 ```
 
@@ -232,6 +280,24 @@ After all 6 agents complete:
 2. Build dependency graph showing what calls what
 3. Identify orphans (things nothing calls)
 4. **No JSONL findings yet** - this is discovery only
+
+### Stage 1 Verification (MANDATORY)
+
+Before proceeding to Stage 2:
+
+```bash
+# Verify all stage 1 files exist and have content
+STAGE1_FILES="stage-1a-hooks.md stage-1b-scripts.md stage-1c-skills.md stage-1d-ci-config.md stage-1e-firebase.md stage-1f-mcp.md"
+for f in $STAGE1_FILES; do
+  if [ ! -s "${AUDIT_DIR}/$f" ]; then
+    echo "ERROR: Missing or empty: ${AUDIT_DIR}/$f"
+    echo "Re-run the failed agent before continuing"
+    exit 1
+  fi
+done
+echo "Stage 1 verified - all inventory files present"
+ls -la ${AUDIT_DIR}/stage-1*.md
+```
 
 ---
 
@@ -255,7 +321,7 @@ Using the Stage 1 inventory, find orphaned automation:
 
 Cross-reference the dependency graph from Stage 1.
 
-For each orphan found, output JSONL:
+For each orphan found, create a JSONL entry with format:
 {
   "title": "Orphaned: [name]",
   "severity": "S2",
@@ -265,6 +331,12 @@ For each orphan found, output JSONL:
   "description": "This [script/skill/function] is never called by anything",
   "recommendation": "Remove if unused, or document intended use"
 }
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-2a-orphans.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -280,7 +352,7 @@ Find duplicated logic across automation:
 4. Pattern checks duplicated between hook and script
 5. Similar error handling code copy-pasted
 
-For each duplication found, output JSONL:
+For each duplication found, create a JSONL entry with format:
 {
   "title": "Duplicated: [description]",
   "severity": "S2",
@@ -290,6 +362,12 @@ For each duplication found, output JSONL:
   "description": "Same logic exists in [other locations]",
   "recommendation": "Consolidate into single source, call from both places"
 }
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-2b-duplications.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -305,7 +383,7 @@ Find automation that never executes:
 4. Firebase scheduled jobs that are disabled
 5. Dead code paths in scripts (unreachable conditions)
 
-For each finding, output JSONL:
+For each finding, create a JSONL entry with format:
 {
   "title": "Never executes: [name]",
   "severity": "S3",
@@ -315,12 +393,39 @@ For each finding, output JSONL:
   "description": "This automation never runs because [reason]",
   "recommendation": "Remove or fix trigger condition"
 }
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-2c-unused.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
+```
+
+### Stage 2 Verification (MANDATORY)
+
+Before proceeding to Stage 3:
+
+```bash
+# Verify all stage 2 files exist and have content
+STAGE2_FILES="stage-2a-orphans.jsonl stage-2b-duplications.jsonl stage-2c-unused.jsonl"
+for f in $STAGE2_FILES; do
+  if [ ! -s "${AUDIT_DIR}/$f" ]; then
+    echo "ERROR: Missing or empty: ${AUDIT_DIR}/$f"
+    echo "Re-run the failed agent before continuing"
+    exit 1
+  fi
+done
+echo "Stage 2 verified:"
+wc -l ${AUDIT_DIR}/stage-2*.jsonl
 ```
 
 ### Stage 2 Output
 
-1. Merge agent outputs into `stage-2-redundancy.jsonl`
+1. Merge agent outputs into `stage-2-redundancy.jsonl`:
+   ```bash
+   cat ${AUDIT_DIR}/stage-2*.jsonl > ${AUDIT_DIR}/stage-2-redundancy.jsonl
+   ```
 2. Run TDMS intake:
    ```bash
    node scripts/debt/intake-audit.js ${AUDIT_DIR}/stage-2-redundancy.jsonl
@@ -350,7 +455,13 @@ Test methodology:
 - Determine if checks are robust or easily bypassed
 - Check if error messages help developers fix issues
 
-For each ineffective hook, output JSONL with severity S1-S2.
+For each ineffective hook, create a JSONL entry with severity S1-S2.
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-3a-hook-effectiveness.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -370,7 +481,13 @@ For each workflow, verify:
 - Steps actually validate what they claim
 - Failure modes are handled
 
-For each issue, output JSONL with severity S0-S2.
+For each issue, create a JSONL entry with severity S0-S2.
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-3b-ci-effectiveness.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -388,7 +505,13 @@ Verify script functionality:
 For high-complexity scripts (check MASTER_DEBT.jsonl for complexity findings),
 pay extra attention to logic correctness.
 
-For each issue, output JSONL with severity S1-S3.
+For each issue, create a JSONL entry with severity S1-S3.
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-3c-script-functionality.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -403,13 +526,40 @@ Verify skill and command functionality:
 3. Do commands reference files that don't exist?
 4. Are skill dependencies satisfied?
 
-For each issue, output JSONL with severity S2-S3.
+For each issue, create a JSONL entry with severity S2-S3.
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-3d-skill-functionality.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
+```
+
+### Stage 3 Verification (MANDATORY)
+
+Before proceeding to Stage 4:
+
+```bash
+# Verify all stage 3 files exist and have content
+STAGE3_FILES="stage-3a-hook-effectiveness.jsonl stage-3b-ci-effectiveness.jsonl stage-3c-script-functionality.jsonl stage-3d-skill-functionality.jsonl"
+for f in $STAGE3_FILES; do
+  if [ ! -s "${AUDIT_DIR}/$f" ]; then
+    echo "ERROR: Missing or empty: ${AUDIT_DIR}/$f"
+    echo "Re-run the failed agent before continuing"
+    exit 1
+  fi
+done
+echo "Stage 3 verified:"
+wc -l ${AUDIT_DIR}/stage-3*.jsonl
 ```
 
 ### Stage 3 Output
 
-1. Merge agent outputs into `stage-3-effectiveness.jsonl`
+1. Merge agent outputs into `stage-3-effectiveness.jsonl`:
+   ```bash
+   cat ${AUDIT_DIR}/stage-3*.jsonl > ${AUDIT_DIR}/stage-3-effectiveness.jsonl
+   ```
 2. Run TDMS intake:
    ```bash
    node scripts/debt/intake-audit.js ${AUDIT_DIR}/stage-3-effectiveness.jsonl
@@ -435,7 +585,7 @@ Analyze pre-commit and pre-push performance:
 4. Are there checks that could be skipped for certain file types?
 5. Is there unnecessary work (full scans when partial would do)?
 
-For each performance issue, output JSONL:
+For each performance issue, create a JSONL entry with format:
 {
   "title": "Slow: [check name]",
   "severity": "S2",
@@ -445,6 +595,12 @@ For each performance issue, output JSONL:
   "description": "Takes [X]s, could be [Y]s with [optimization]",
   "recommendation": "[specific optimization]"
 }
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-4a-hook-performance.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -460,7 +616,13 @@ Analyze CI workflow performance:
 4. Are there redundant installs or builds?
 5. Could any jobs be skipped based on changed files?
 
-For each issue, output JSONL with severity S2-S3.
+For each issue, create a JSONL entry with severity S2-S3.
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-4b-ci-performance.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -478,13 +640,40 @@ Analyze script performance:
 
 Focus on scripts in the critical path (hooks, CI).
 
-For each issue, output JSONL with severity S2-S3.
+For each issue, create a JSONL entry with severity S2-S3.
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-4c-script-performance.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
+```
+
+### Stage 4 Verification (MANDATORY)
+
+Before proceeding to Stage 5:
+
+```bash
+# Verify all stage 4 files exist and have content
+STAGE4_FILES="stage-4a-hook-performance.jsonl stage-4b-ci-performance.jsonl stage-4c-script-performance.jsonl"
+for f in $STAGE4_FILES; do
+  if [ ! -s "${AUDIT_DIR}/$f" ]; then
+    echo "ERROR: Missing or empty: ${AUDIT_DIR}/$f"
+    echo "Re-run the failed agent before continuing"
+    exit 1
+  fi
+done
+echo "Stage 4 verified:"
+wc -l ${AUDIT_DIR}/stage-4*.jsonl
 ```
 
 ### Stage 4 Output
 
-1. Merge agent outputs into `stage-4-performance.jsonl`
+1. Merge agent outputs into `stage-4-performance.jsonl`:
+   ```bash
+   cat ${AUDIT_DIR}/stage-4*.jsonl > ${AUDIT_DIR}/stage-4-performance.jsonl
+   ```
 2. Run TDMS intake:
    ```bash
    node scripts/debt/intake-audit.js ${AUDIT_DIR}/stage-4-performance.jsonl
@@ -510,11 +699,17 @@ Audit error handling in automation:
 4. continueOnError overuse in hooks
 5. Missing error messages or unhelpful ones
 
-For each issue, output JSONL:
+For each issue, create a JSONL entry:
 {
   "severity": "S1" for silent failures that hide real problems,
   "severity": "S2" for poor error messages
 }
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-5a-error-handling.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -532,7 +727,13 @@ Audit code quality in scripts and hooks:
 
 Use patterns from docs/agent_docs/CODE_PATTERNS.md as reference.
 
-For each issue, output JSONL with appropriate severity.
+For each issue, create a JSONL entry with appropriate severity.
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-5b-code-quality.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -548,13 +749,40 @@ Audit consistency across automation:
 4. Some async, some sync for similar operations
 5. Different logging approaches
 
-For each inconsistency, output JSONL with severity S3.
+For each inconsistency, create a JSONL entry with severity S3.
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-5c-consistency.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
+```
+
+### Stage 5 Verification (MANDATORY)
+
+Before proceeding to Stage 6:
+
+```bash
+# Verify all stage 5 files exist and have content
+STAGE5_FILES="stage-5a-error-handling.jsonl stage-5b-code-quality.jsonl stage-5c-consistency.jsonl"
+for f in $STAGE5_FILES; do
+  if [ ! -s "${AUDIT_DIR}/$f" ]; then
+    echo "ERROR: Missing or empty: ${AUDIT_DIR}/$f"
+    echo "Re-run the failed agent before continuing"
+    exit 1
+  fi
+done
+echo "Stage 5 verified:"
+wc -l ${AUDIT_DIR}/stage-5*.jsonl
 ```
 
 ### Stage 5 Output
 
-1. Merge agent outputs into `stage-5-quality.jsonl`
+1. Merge agent outputs into `stage-5-quality.jsonl`:
+   ```bash
+   cat ${AUDIT_DIR}/stage-5*.jsonl > ${AUDIT_DIR}/stage-5-quality.jsonl
+   ```
 2. Run TDMS intake:
    ```bash
    node scripts/debt/intake-audit.js ${AUDIT_DIR}/stage-5-quality.jsonl
@@ -580,7 +808,7 @@ Identify coverage gaps:
 4. Firebase functions without integration tests
 5. Skills without usage documentation
 
-For each gap, output JSONL:
+For each gap, create a JSONL entry with format:
 {
   "title": "Gap: [description]",
   "severity": "S2",
@@ -590,6 +818,12 @@ For each gap, output JSONL:
   "description": "[what's missing]",
   "recommendation": "[how to add coverage]"
 }
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-6a-coverage-gaps.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -605,7 +839,7 @@ Identify improvement opportunities:
 4. Hooks that could provide better DX
 5. CI optimizations (caching, parallelization)
 
-For each opportunity, output JSONL:
+For each opportunity, create a JSONL entry with format:
 {
   "title": "Improve: [description]",
   "severity": "S3",
@@ -613,6 +847,12 @@ For each opportunity, output JSONL:
   "description": "[current state] -> [improved state]",
   "recommendation": "[specific implementation suggestion]"
 }
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-6b-improvements.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
 ```
 
@@ -628,13 +868,40 @@ Audit documentation and maintainability:
 4. Outdated documentation (references non-existent files)
 5. TRIGGERS.md missing entries for new automation
 
-For each issue, output JSONL with severity S3.
+For each issue, create a JSONL entry with severity S3.
+
+CRITICAL: You MUST write findings directly to this file:
+  ${AUDIT_DIR}/stage-6c-documentation.jsonl
+
+Use the Write tool to create this file. Write one JSON object per line.
+Do NOT return findings as text. Verify the file exists after writing.
 """)
+```
+
+### Stage 6 Verification (MANDATORY)
+
+Before proceeding to Stage 7:
+
+```bash
+# Verify all stage 6 files exist and have content
+STAGE6_FILES="stage-6a-coverage-gaps.jsonl stage-6b-improvements.jsonl stage-6c-documentation.jsonl"
+for f in $STAGE6_FILES; do
+  if [ ! -s "${AUDIT_DIR}/$f" ]; then
+    echo "ERROR: Missing or empty: ${AUDIT_DIR}/$f"
+    echo "Re-run the failed agent before continuing"
+    exit 1
+  fi
+done
+echo "Stage 6 verified:"
+wc -l ${AUDIT_DIR}/stage-6*.jsonl
 ```
 
 ### Stage 6 Output
 
-1. Merge agent outputs into `stage-6-improvements.jsonl`
+1. Merge agent outputs into `stage-6-improvements.jsonl`:
+   ```bash
+   cat ${AUDIT_DIR}/stage-6*.jsonl > ${AUDIT_DIR}/stage-6-improvements.jsonl
+   ```
 2. Run TDMS intake:
    ```bash
    node scripts/debt/intake-audit.js ${AUDIT_DIR}/stage-6-improvements.jsonl
@@ -651,8 +918,20 @@ For each issue, output JSONL with severity S3.
 ### Step 7.1: Merge All Stage Findings
 
 ```bash
+# Verify all stage files exist before merging
+STAGE_FILES=$(ls ${AUDIT_DIR}/stage-*.jsonl 2>/dev/null)
+if [ -z "$STAGE_FILES" ]; then
+  echo "ERROR: No stage JSONL files found. Re-run stages 2-6."
+  exit 1
+fi
+
+# Count findings before merge
+echo "Merging findings from:"
+wc -l ${AUDIT_DIR}/stage-*.jsonl
+
 # Combine all JSONL files
 cat ${AUDIT_DIR}/stage-*.jsonl > ${AUDIT_DIR}/all-findings-raw.jsonl
+echo "Total findings: $(wc -l < ${AUDIT_DIR}/all-findings-raw.jsonl)"
 ```
 
 ### Step 7.2: Deduplicate
@@ -820,5 +1099,6 @@ This audit **resets the process category threshold** in `docs/AUDIT_TRACKER.md`.
 
 | Version | Date       | Changes                                                      |
 | ------- | ---------- | ------------------------------------------------------------ |
+| 2.1     | 2026-01-31 | Added CRITICAL persistence rules: agents MUST write to files |
 | 2.0     | 2026-01-31 | Expanded: 16 types, 12 categories, 7 stages, parallel agents |
 | 1.0     | 2026-01-17 | Initial single-session process audit                         |
