@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 12.2 **Created:** 2026-01-02 **Last Updated:** 2026-01-29
+**Document Version:** 12.3 **Created:** 2026-01-02 **Last Updated:** 2026-01-31
 
 ## Purpose
 
@@ -1250,10 +1250,54 @@ claude/new-session-U1Jou (TDMS Phase 1-8 follow-up) **Suggestions:** 25 total
 
 ---
 
+#### Review #221: PR #327 Process Audit System - CI + Qodo (2026-01-31)
+
+**Source:** CI Pattern Compliance + Qodo Compliance + Qodo Code Suggestions +
+SonarCloud **PR/Branch:** PR #327 (7-stage process audit system + recovery)
+**Suggestions:** 27 total (Critical: 3 CI blockers, Major: 6, Minor: 11,
+Deferred: 7)
+
+**Patterns Identified:**
+
+1. [False Positive readFileSync Pattern]: Pattern checker flags
+   readFileSync+existsSync combo even when properly wrapped in try/catch
+   - Root cause: Line-based regex detection can't parse AST
+   - Prevention: Add verified files to pathExcludeList with audit comment
+
+2. [JSONL Format Strict]: JSONL files must not have blank lines or EOF markers
+   - Root cause: Context compaction can corrupt file formats
+   - Prevention: Validate JSONL before commit, remove blank lines
+
+3. [Glob Self-Overwriting]: `cat stage-*.jsonl > stage-merged.jsonl` includes
+   output in input if file exists
+   - Root cause: Glob patterns match the output file on re-runs
+   - Prevention: Use explicit input filenames in merge commands
+
+4. [Phase Identifier Casing]: toUpperCase() on phase identifiers like "9b"
+   creates incorrect filenames
+   - Root cause: Assumption all phase IDs are numeric
+   - Prevention: Don't transform case for alphanumeric identifiers
+
+**Resolution:**
+
+- Fixed: 20 items (3 CRITICAL CI, 6 MAJOR, 11 MINOR)
+- Deferred: 7 items (SonarCloud duplication in audit docs, test helper
+  extraction)
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Pattern checker pathExcludeList needs regular maintenance as code evolves
+- Audit/documentation files contribute to SonarCloud duplication metrics
+- Shell script safety: use explicit file lists, not globs for merges
+- realpath provides stronger path validation than simple string checks
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #220: PR #XXX Title - Review Source (DATE)
+#### Review #222: PR #XXX Title - Review Source (DATE)
 
 
 -->

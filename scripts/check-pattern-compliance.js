@@ -474,6 +474,11 @@ const ANTI_PATTERNS = [
       // - session-end-commit.js: readFileSync at L86 IS in try/catch (L85-90)
       "check-doc-headers.js",
       "session-end-commit.js",
+      // 2026-01-31 audit (Review #221):
+      // - check-phase-status.js: readFileSync at L53 IS in try/catch (L49-68)
+      // - intake-manual.js: readFileSync at L119 IS in try/catch (L118-124)
+      "check-phase-status.js",
+      "intake-manual.js",
     ],
   },
   {

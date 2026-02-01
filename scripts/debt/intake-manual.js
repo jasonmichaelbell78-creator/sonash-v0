@@ -108,10 +108,21 @@ function getNextDebtId(existingItems) {
 
 // Load existing items from MASTER_DEBT.jsonl with safe parsing
 function loadMasterDebt() {
+  // Note: existsSync doesn't guarantee read success (race conditions, permissions)
+  // Always wrap in try/catch per CODE_PATTERNS.md #36
   if (!fs.existsSync(MASTER_FILE)) {
     return [];
   }
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (readError) {
+    const errorMessage = readError instanceof Error ? readError.message : String(readError);
+    console.error(`Error reading ${MASTER_FILE}: ${errorMessage}`);
+    return [];
+  }
+
   const lines = content.split("\n").filter((line) => line.trim());
 
   const items = [];
@@ -121,7 +132,9 @@ function loadMasterDebt() {
     try {
       items.push(JSON.parse(lines[i]));
     } catch (err) {
-      badLines.push({ line: i + 1, message: err.message });
+      // Safe error.message access per CODE_PATTERNS.md #17
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      badLines.push({ line: i + 1, message: errorMessage });
     }
   }
 
@@ -307,18 +320,17 @@ Example:
     process.exit(0);
   }
 
-  // Write to MASTER_DEBT.jsonl
-  console.log("\n📝 Writing to MASTER_DEBT.jsonl...");
-  fs.appendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
-
-  // Also write to raw/deduped.jsonl so generate-views.js doesn't lose the item
+  // Write to source file FIRST to prevent data loss if script fails mid-write
   // (generate-views.js reads from deduped.jsonl and overwrites MASTER_DEBT.jsonl)
-  console.log("📝 Writing to raw/deduped.jsonl (source file)...");
+  console.log("\n📝 Writing to raw/deduped.jsonl (source file)...");
   const rawDir = path.dirname(DEDUPED_FILE);
-  if (!fs.existsSync(rawDir)) {
-    fs.mkdirSync(rawDir, { recursive: true });
-  }
+  // mkdirSync with recursive:true handles existing dirs - no existsSync needed
+  fs.mkdirSync(rawDir, { recursive: true });
   fs.appendFileSync(DEDUPED_FILE, JSON.stringify(newItem) + "\n");
+
+  // Then write to derived file
+  console.log("📝 Writing to MASTER_DEBT.jsonl...");
+  fs.appendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
 
   // Log intake activity
   logIntake({

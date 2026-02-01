@@ -15,7 +15,7 @@ const DEBT_DIR = "docs/technical-debt";
 
 const PHASES = [
   { num: "1", name: "Consolidation" },
-  { num: "2", name: "PROCEDURE.md" },
+  { num: "2", name: "Procedure", file: "PROCEDURE.md" },
   { num: "3", name: "Intake scripts" },
   { num: "4", name: "Validation scripts" },
   { num: "5", name: "Update audit skills" },
@@ -36,32 +36,36 @@ const PHASES = [
 
 function getAuditFile(phase) {
   if (phase.file) return phase.file;
-  return `PHASE_${phase.num.toUpperCase()}_AUDIT.md`;
+  // Don't use toUpperCase() - phase.num like "9b" should stay as-is
+  return `PHASE_${phase.num}_AUDIT.md`;
 }
 
 function checkPhaseStatus(phase) {
   const file = getAuditFile(phase);
   const path = join(DEBT_DIR, file);
 
-  if (existsSync(path)) {
-    // Read file to get status
-    try {
-      const content = readFileSync(path, "utf-8");
-      const statusMatch = content.match(/\*\*Status:\*\*\s*(PASS|FAIL)/i);
-      const dateMatch = content.match(/\*\*Audit Date:\*\*\s*(\d{4}-\d{2}-\d{2})/i);
-
-      return {
-        complete: true,
-        status: statusMatch ? statusMatch[1] : "UNKNOWN",
-        date: dateMatch ? dateMatch[1] : "UNKNOWN",
-        file,
-      };
-    } catch {
-      return { complete: true, status: "EXISTS", file };
+  // Note: existsSync doesn't guarantee read success (race conditions, permissions)
+  // Always wrap in try/catch per CODE_PATTERNS.md #36
+  try {
+    if (!existsSync(path)) {
+      return { complete: false, file };
     }
-  }
+    const content = readFileSync(path, "utf-8");
+    const statusMatch = content.match(/\*\*Status:\*\*\s*(PASS|FAIL)/i);
+    const dateMatch = content.match(/\*\*Audit Date:\*\*\s*(\d{4}-\d{2}-\d{2})/i);
 
-  return { complete: false, file };
+    return {
+      complete: true,
+      status: statusMatch ? statusMatch[1] : "UNKNOWN",
+      date: dateMatch ? dateMatch[1] : "UNKNOWN",
+      file,
+    };
+  } catch (error) {
+    // Log error for diagnostics but don't fail - file exists but couldn't be read
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.warn(`Warning: Could not read ${file}: ${errorMessage}`);
+    return { complete: true, status: "READ_ERROR", file };
+  }
 }
 
 function main() {

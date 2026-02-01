@@ -122,9 +122,11 @@ Before running ANY agent, verify AUDIT_DIR is set correctly:
 echo "AUDIT_DIR is: ${AUDIT_DIR}"
 ls -la "${AUDIT_DIR}" || echo "ERROR: AUDIT_DIR does not exist"
 
-# FAIL if path is root directory
-if [ "${AUDIT_DIR}" = "." ] || [ "${AUDIT_DIR}" = "/" ] || [ -z "${AUDIT_DIR}" ]; then
-  echo "FATAL: AUDIT_DIR must be a proper subdirectory, not root"
+# FAIL if path is root directory - use realpath to prevent symlink/relative bypasses
+AUDIT_PATH=$(realpath "${AUDIT_DIR}" 2>/dev/null || echo "${AUDIT_DIR}")
+REPO_ROOT=$(realpath "." 2>/dev/null || echo ".")
+if [ -z "${AUDIT_DIR}" ] || [ "${AUDIT_PATH}" = "/" ] || [ "${AUDIT_PATH}" = "${REPO_ROOT}" ]; then
+  echo "FATAL: AUDIT_DIR must be a proper subdirectory under the repo, not root"
   exit 1
 fi
 ```
@@ -460,7 +462,10 @@ wc -l ${AUDIT_DIR}/stage-2*.jsonl
 
 1. Merge agent outputs into `stage-2-redundancy.jsonl`:
    ```bash
-   cat ${AUDIT_DIR}/stage-2*.jsonl > ${AUDIT_DIR}/stage-2-redundancy.jsonl
+   # Use explicit filenames to avoid self-overwriting on re-runs
+   cat ${AUDIT_DIR}/stage-2a-orphans.jsonl \
+       ${AUDIT_DIR}/stage-2b-duplications.jsonl \
+       ${AUDIT_DIR}/stage-2c-unused.jsonl > ${AUDIT_DIR}/stage-2-redundancy.jsonl
    ```
 2. Run TDMS intake:
    ```bash
@@ -601,7 +606,11 @@ wc -l ${AUDIT_DIR}/stage-3*.jsonl
 
 1. Merge agent outputs into `stage-3-effectiveness.jsonl`:
    ```bash
-   cat ${AUDIT_DIR}/stage-3*.jsonl > ${AUDIT_DIR}/stage-3-effectiveness.jsonl
+   # Use explicit filenames to avoid self-overwriting on re-runs
+   cat ${AUDIT_DIR}/stage-3a-hook-effectiveness.jsonl \
+       ${AUDIT_DIR}/stage-3b-ci-effectiveness.jsonl \
+       ${AUDIT_DIR}/stage-3c-script-functionality.jsonl \
+       ${AUDIT_DIR}/stage-3d-skill-functionality.jsonl > ${AUDIT_DIR}/stage-3-effectiveness.jsonl
    ```
 2. Run TDMS intake:
    ```bash
@@ -722,7 +731,10 @@ wc -l ${AUDIT_DIR}/stage-4*.jsonl
 
 1. Merge agent outputs into `stage-4-performance.jsonl`:
    ```bash
-   cat ${AUDIT_DIR}/stage-4*.jsonl > ${AUDIT_DIR}/stage-4-performance.jsonl
+   # Use explicit filenames to avoid self-overwriting on re-runs
+   cat ${AUDIT_DIR}/stage-4a-hook-performance.jsonl \
+       ${AUDIT_DIR}/stage-4b-ci-performance.jsonl \
+       ${AUDIT_DIR}/stage-4c-script-performance.jsonl > ${AUDIT_DIR}/stage-4-performance.jsonl
    ```
 2. Run TDMS intake:
    ```bash
@@ -1178,8 +1190,8 @@ ls *.jsonl AUDIT*.txt AUDIT*.md AUTOMATION*.md ERROR*.md SECURITY*.md 2>/dev/nul
 AUDIT_DIR="docs/audits/single-session/process/audit-$(date +%Y-%m-%d)"
 mkdir -p "${AUDIT_DIR}"
 
-# Move JSONL files
-mv *.jsonl "${AUDIT_DIR}/" 2>/dev/null || true
+# Move audit JSONL files only (not package-lock.jsonl, tsconfig.jsonl, etc.)
+mv stage-*.jsonl *-audit*.jsonl *-findings*.jsonl "${AUDIT_DIR}/" 2>/dev/null || true
 
 # Move summary files
 mv AUDIT*.txt AUDIT*.md AUTOMATION*.md ERROR*.md SECURITY*.md "${AUDIT_DIR}/" 2>/dev/null || true
