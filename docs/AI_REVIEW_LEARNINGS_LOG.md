@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 12.4 **Created:** 2026-01-02 **Last Updated:** 2026-01-31
+**Document Version:** 12.5 **Created:** 2026-01-02 **Last Updated:** 2026-01-31
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 12.3    | 2026-01-31 | Review #223: PR #327 Process Audit System Round 3 - Qodo Security (4 items - 2 HIGH, 2 MEDIUM). **HIGH**: sanitizeError() for check-phase-status.js and intake-manual.js error messages. **MEDIUM**: rollback mechanism for multi-file writes, generic path in error messages. **NEW PATTERNS**: (70) sanitizeError() for user-visible errors; (71) Multi-file write rollback. Active reviews #180-223.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 12.2    | 2026-01-31 | Review #222: PR #327 Process Audit System Round 2 - Qodo (8 items - 6 HIGH, 2 MEDIUM). **HIGH**: (1) intake-manual.js appendFileSync try/catch; (2-4) check-phase-status.js: complete:false on READ_ERROR, only PASS=complete, readdirSync try/catch; (5-6) SKILL.md: Stage 5/6 glob self-inclusion fix, all-findings-raw.jsonl canonical rollups only. **NEW PATTERNS**: (66) Append writes need try/catch; (67) Phase verification = exists AND readable AND PASS; (68) Glob-to-file self-inclusion; (69) Aggregate files use canonical rollups. Active reviews #180-222.                                                                                                                                                                                                                                                                                                                                         |
 | 12.1    | 2026-01-31 | Review #221: PR #327 Process Audit System - CI + Qodo (12 items - 4 CRITICAL CI, 6 MAJOR, 2 MINOR). **CRITICAL CI**: (1) JSONL blank lines/EOF markers; (2) check-phase-status.js syntax error; (3) pathExcludeList false positives for verified try/catch files. **MAJOR**: SKILL.md fixes - AUDIT_DIR realpath validation, explicit file lists for stage 2/3/4 merges. Active reviews #180-221.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 11.0    | 2026-01-24 | **SECURITY INFRASTRUCTURE**: Created proactive security prevention framework after Review #201 required 6 rounds of fixes. **NEW FILES**: (1) `docs/agent_docs/SECURITY_CHECKLIST.md` - Pre-write checklist with 180+ patterns from CODE_PATTERNS.md; (2) `scripts/lib/security-helpers.js` - Reusable secure implementations (sanitizeError, escapeMd, refuseSymlinkWithParents, validatePathInDir, safeWriteFile, safeGitAdd, safeGitCommit, sanitizeFilename, parseCliArgs, safeReadFile, validateUrl, safeRegexExec, maskEmail); (3) `scripts/check-pattern-sync.js` - Verifies consistency between docs and automation. **NEW SCRIPT**: `npm run patterns:sync`. **FEEDBACK LOOP**: PR review → Learnings log → Consolidation → Pattern sync → Checklist/helpers update → Automation.                                                                                                                          |
@@ -1333,10 +1334,40 @@ Deferred: 7)
 
 ---
 
+#### Review #223: PR #327 Process Audit System Round 3 - Qodo Security (2026-01-31)
+
+**Category**: Secure Error Handling | **Items**: 4 (2 HIGH, 2 MEDIUM)
+
+**HIGH - Secure Error Handling** (Qodo Generic Compliance):
+
+1. `check-phase-status.js`: Raw error.message exposes absolute paths - use
+   sanitizeError()
+2. `intake-manual.js`: Error messages expose MASTER_FILE path - use
+   sanitizeError()
+
+**MEDIUM - Data Consistency** (importance 9):
+
+3. `intake-manual.js`: Add rollback mechanism - if MASTER_FILE write fails after
+   DEDUPED_FILE write succeeds, remove appended line to maintain consistency
+4. `intake-manual.js`: Replace hardcoded path in error message with generic
+   "MASTER_DEBT.jsonl"
+
+**New Patterns**:
+
+- (70) Always use sanitizeError() from security-helpers.js for user-visible
+  error messages - never expose raw error.message which may contain absolute
+  paths
+- (71) Multi-file writes need rollback mechanism - if second write fails, undo
+  first write to maintain consistency
+
+**Fixes Applied**: Commit a8da889 - all 4 items fixed.
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #223: PR #XXX Title - Review Source (DATE)
+#### Review #224: PR #XXX Title - Review Source (DATE)
 
 
 -->
