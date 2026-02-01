@@ -6,7 +6,7 @@ description:
 
 # Comprehensive Automation Audit
 
-**Version:** 2.0 (Expanded - Session #120)
+**Version:** 2.2 (Recovery Safeguards - Session #122)
 
 This audit covers **16 automation types** across **12 audit categories** using a
 **7-stage approach** with parallel agent execution.
@@ -113,6 +113,25 @@ AUDIT_DATE=$(date +%Y-%m-%d)
 AUDIT_DIR="docs/audits/single-session/process/audit-${AUDIT_DATE}"
 mkdir -p "${AUDIT_DIR}"
 ```
+
+### Step 2.5: Verify Output Directory Variable (CRITICAL)
+
+Before running ANY agent, verify AUDIT_DIR is set correctly:
+
+```bash
+echo "AUDIT_DIR is: ${AUDIT_DIR}"
+ls -la "${AUDIT_DIR}" || echo "ERROR: AUDIT_DIR does not exist"
+
+# FAIL if path is root directory
+if [ "${AUDIT_DIR}" = "." ] || [ "${AUDIT_DIR}" = "/" ] || [ -z "${AUDIT_DIR}" ]; then
+  echo "FATAL: AUDIT_DIR must be a proper subdirectory, not root"
+  exit 1
+fi
+```
+
+**Why this matters:** Context compaction can cause AUDIT_DIR variable to be
+lost, resulting in agents writing to the root directory instead of the audit
+folder.
 
 ### Step 3: Load False Positives
 
@@ -286,6 +305,16 @@ After all 6 agents complete:
 Before proceeding to Stage 2:
 
 ```bash
+# Check for misplaced files in root (context compaction recovery)
+ROOT_AUDIT_FILES=$(ls *.jsonl *.md 2>/dev/null | grep -E "(stage-|AUDIT|audit-)" | wc -l)
+if [ "$ROOT_AUDIT_FILES" -gt 0 ]; then
+  echo "WARNING: Found audit files in root directory!"
+  echo "Moving to ${AUDIT_DIR}..."
+  mv stage-*.md "${AUDIT_DIR}/" 2>/dev/null || true
+  mv stage-*.jsonl "${AUDIT_DIR}/" 2>/dev/null || true
+  mv AUDIT*.txt AUDIT*.md "${AUDIT_DIR}/" 2>/dev/null || true
+fi
+
 # Verify all stage 1 files exist and have content
 STAGE1_FILES="stage-1a-hooks.md stage-1b-scripts.md stage-1c-skills.md stage-1d-ci-config.md stage-1e-firebase.md stage-1f-mcp.md"
 for f in $STAGE1_FILES; do
@@ -407,6 +436,13 @@ Do NOT return findings as text. Verify the file exists after writing.
 Before proceeding to Stage 3:
 
 ```bash
+# Check for misplaced files in root (context compaction recovery)
+ROOT_AUDIT_FILES=$(ls *.jsonl 2>/dev/null | grep -E "stage-2" | wc -l)
+if [ "$ROOT_AUDIT_FILES" -gt 0 ]; then
+  echo "WARNING: Found stage-2 files in root directory!"
+  mv stage-2*.jsonl "${AUDIT_DIR}/" 2>/dev/null || true
+fi
+
 # Verify all stage 2 files exist and have content
 STAGE2_FILES="stage-2a-orphans.jsonl stage-2b-duplications.jsonl stage-2c-unused.jsonl"
 for f in $STAGE2_FILES; do
@@ -541,6 +577,13 @@ Do NOT return findings as text. Verify the file exists after writing.
 Before proceeding to Stage 4:
 
 ```bash
+# Check for misplaced files in root (context compaction recovery)
+ROOT_AUDIT_FILES=$(ls *.jsonl 2>/dev/null | grep -E "stage-3|ci-workflow|skill-audit|audit-findings" | wc -l)
+if [ "$ROOT_AUDIT_FILES" -gt 0 ]; then
+  echo "WARNING: Found stage-3 files in root directory!"
+  mv stage-3*.jsonl ci-workflow*.jsonl skill-audit*.jsonl audit-findings*.jsonl "${AUDIT_DIR}/" 2>/dev/null || true
+fi
+
 # Verify all stage 3 files exist and have content
 STAGE3_FILES="stage-3a-hook-effectiveness.jsonl stage-3b-ci-effectiveness.jsonl stage-3c-script-functionality.jsonl stage-3d-skill-functionality.jsonl"
 for f in $STAGE3_FILES; do
@@ -655,6 +698,13 @@ Do NOT return findings as text. Verify the file exists after writing.
 Before proceeding to Stage 5:
 
 ```bash
+# Check for misplaced files in root (context compaction recovery)
+ROOT_AUDIT_FILES=$(ls *.jsonl 2>/dev/null | grep -E "stage-4" | wc -l)
+if [ "$ROOT_AUDIT_FILES" -gt 0 ]; then
+  echo "WARNING: Found stage-4 files in root directory!"
+  mv stage-4*.jsonl "${AUDIT_DIR}/" 2>/dev/null || true
+fi
+
 # Verify all stage 4 files exist and have content
 STAGE4_FILES="stage-4a-hook-performance.jsonl stage-4b-ci-performance.jsonl stage-4c-script-performance.jsonl"
 for f in $STAGE4_FILES; do
@@ -764,6 +814,13 @@ Do NOT return findings as text. Verify the file exists after writing.
 Before proceeding to Stage 6:
 
 ```bash
+# Check for misplaced files in root (context compaction recovery)
+ROOT_AUDIT_FILES=$(ls *.jsonl 2>/dev/null | grep -E "stage-5|AUDIT_ERROR|ERROR_HANDLING" | wc -l)
+if [ "$ROOT_AUDIT_FILES" -gt 0 ]; then
+  echo "WARNING: Found stage-5 files in root directory!"
+  mv stage-5*.jsonl AUDIT_ERROR*.jsonl "${AUDIT_DIR}/" 2>/dev/null || true
+fi
+
 # Verify all stage 5 files exist and have content
 STAGE5_FILES="stage-5a-error-handling.jsonl stage-5b-code-quality.jsonl stage-5c-consistency.jsonl"
 for f in $STAGE5_FILES; do
@@ -883,6 +940,13 @@ Do NOT return findings as text. Verify the file exists after writing.
 Before proceeding to Stage 7:
 
 ```bash
+# Check for misplaced files in root (context compaction recovery)
+ROOT_AUDIT_FILES=$(ls *.jsonl *.md 2>/dev/null | grep -E "stage-6|automation-findings|AUTOMATION" | wc -l)
+if [ "$ROOT_AUDIT_FILES" -gt 0 ]; then
+  echo "WARNING: Found stage-6 files in root directory!"
+  mv stage-6*.jsonl automation-findings*.jsonl AUTOMATION*.md "${AUDIT_DIR}/" 2>/dev/null || true
+fi
+
 # Verify all stage 6 files exist and have content
 STAGE6_FILES="stage-6a-coverage-gaps.jsonl stage-6b-improvements.jsonl stage-6c-documentation.jsonl"
 for f in $STAGE6_FILES; do
@@ -1095,10 +1159,73 @@ This audit **resets the process category threshold** in `docs/AUDIT_TRACKER.md`.
 
 ---
 
+---
+
+## Recovery from Context Compaction
+
+If context compaction occurs during the audit:
+
+### 1. Check Root Directory for Misplaced Files
+
+```bash
+# List any audit files that ended up in root
+ls *.jsonl AUDIT*.txt AUDIT*.md AUTOMATION*.md ERROR*.md SECURITY*.md 2>/dev/null
+```
+
+### 2. Move Files to Proper Location
+
+```bash
+AUDIT_DIR="docs/audits/single-session/process/audit-$(date +%Y-%m-%d)"
+mkdir -p "${AUDIT_DIR}"
+
+# Move JSONL files
+mv *.jsonl "${AUDIT_DIR}/" 2>/dev/null || true
+
+# Move summary files
+mv AUDIT*.txt AUDIT*.md AUTOMATION*.md ERROR*.md SECURITY*.md "${AUDIT_DIR}/" 2>/dev/null || true
+```
+
+### 3. Identify Completed vs Missing Stages
+
+Check which stage files exist:
+
+```bash
+for stage in 1 2 3 4 5 6; do
+  count=$(ls ${AUDIT_DIR}/stage-${stage}*.* 2>/dev/null | wc -l)
+  if [ "$count" -gt 0 ]; then
+    echo "Stage $stage: FOUND ($count files)"
+  else
+    echo "Stage $stage: MISSING"
+  fi
+done
+```
+
+### 4. Resume from Last Completed Stage
+
+- Re-run missing stages with explicit `AUDIT_DIR` variable
+- Each agent prompt MUST include the full path:
+  `Write to: ${AUDIT_DIR}/filename.jsonl`
+- Verify files exist after each stage before proceeding
+
+### 5. Merge and Ingest
+
+After all stages complete:
+
+```bash
+# Merge all JSONL findings
+cat ${AUDIT_DIR}/stage-*.jsonl | grep -v '^$' > ${AUDIT_DIR}/all-findings-raw.jsonl
+
+# Run TDMS intake
+node scripts/debt/intake-audit.js ${AUDIT_DIR}/all-findings-raw.jsonl
+```
+
+---
+
 ## Version History
 
 | Version | Date       | Changes                                                      |
 | ------- | ---------- | ------------------------------------------------------------ |
+| 2.2     | 2026-01-31 | Added recovery procedures, root check safeguards, Step 2.5   |
 | 2.1     | 2026-01-31 | Added CRITICAL persistence rules: agents MUST write to files |
 | 2.0     | 2026-01-31 | Expanded: 16 types, 12 categories, 7 stages, parallel agents |
 | 1.0     | 2026-01-17 | Initial single-session process audit                         |
