@@ -649,6 +649,7 @@ if (!lastSessionEndRan || commitsSinceLastMetrics >= 5) {
 | **7**  | Add pre-commit hooks               | Phase 4             | E1               |
 | **8**  | Add CI checks                      | Phase 4             | E1               |
 | **9**  | Create verification skill          | Phase 1             | E2               |
+| **9b** | **Full Audit TDMS Integration**    | Phases 5, 8         | E2               |
 | **10** | Create GitHub Action               | -                   | E1               |
 | **11** | Update PR template                 | -                   | E0               |
 | **12** | Update pr-review skill             | Phase 6             | E1               |
@@ -657,6 +658,38 @@ if (!lastSessionEndRan || commitsSinceLastMetrics >= 5) {
 | **15** | Run verification batches           | Phase 9             | E3 (ongoing)     |
 | **16** | **Final doc sync & enforcement**   | All phases          | E1               |
 | **17** | **Final System Audit**             | Phase 16            | E1               |
+
+### Phase 9b: Full Audit TDMS Integration
+
+**Goal:** Ensure ALL audit types (single-session, multi-AI, one-off) are fully
+integrated into TDMS with consistent intake workflows.
+
+**Scope:**
+
+1. **Multi-AI Audit Templates** - Add TDMS intake commands to:
+   - `MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md`
+   - `MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md`
+   - `MULTI_AI_PROCESS_AUDIT_TEMPLATE.md` (already done in Session #120)
+
+2. **One-Off Audit Workflow** - Define and document:
+   - How ad-hoc/one-off audits feed into TDMS
+   - Intake script for unstructured findings
+
+3. **Category Field Normalization** - Ensure consistent category values:
+   - Map all audit category fields to TDMS categories
+   - Update intake scripts to handle mapping
+
+4. **Coordinator Update** - Add TDMS references to:
+   - `MULTI_AI_REVIEW_COORDINATOR.md`
+
+5. **Cleanup** - Remove deprecated command files (completed Session #120)
+
+**Deliverables:**
+
+- Updated multi-AI templates with intake commands
+- One-off audit intake procedure in PROCEDURE.md
+- Category mapping table in PROCEDURE.md
+- Updated coordinator with TDMS references
 
 ### Phase Audit Requirements (MANDATORY)
 
@@ -883,30 +916,52 @@ To retrieve in future sessions:
 
 ## Approval & Sign-off
 
-- [x] Consolidation approach approved (2026-01-30)
-- [x] ID scheme (DEBT-XXXX) approved (2026-01-30)
-- [x] Verification trigger (hybrid: >25 items OR >3 days) approved (2026-01-30)
-- [x] Metrics trigger (session-end + failsafe) approved (2026-01-30)
-- [x] Dev dashboard integration approved (2026-01-30)
-- [x] Implementation started (2026-01-30)
-- [x] **Phase 1 complete** (Consolidation) - Audited 2026-01-30, PASS with
-      deviations
-- [x] **Phase 2 complete** (PROCEDURE.md) - Audited 2026-01-30, PASS
-- [x] **Phase 3 complete** (Intake scripts) - Audited 2026-01-30, PASS
-- [x] **Phase 4 complete** (Validation scripts) - Audited 2026-01-30, PASS
-- [x] **Phase 5 complete** (Update audit skills) - Audited 2026-01-30, PASS
-- [ ] Phase 6 complete (Create intake skills)
-- [ ] Phase 7 complete (Pre-commit hooks)
-- [ ] Phase 8 complete (CI checks)
-- [ ] Phase 9 complete (Verification skill)
-- [ ] Phase 10 complete (GitHub Action)
-- [ ] Phase 11 complete (PR template)
-- [ ] Phase 12 complete (pr-review skill)
-- [ ] Phase 13 complete (Archive)
-- [ ] Phase 14 complete (Dev dashboard)
-- [ ] Phase 15 ongoing (Verification batches)
-- [ ] Phase 16 complete (Final doc sync)
-- [ ] **Phase 17 complete** (Final System Audit)
+### Design Decisions (Approved 2026-01-30)
+
+- [x] Consolidation approach
+- [x] ID scheme (DEBT-XXXX)
+- [x] Verification trigger (hybrid: >25 items OR >3 days)
+- [x] Metrics trigger (session-end + failsafe)
+- [x] Dev dashboard integration
+
+### Implementation Progress
+
+**Source of Truth:** `docs/technical-debt/PHASE_N_AUDIT.md` files
+
+Phase completion is determined by the existence and status of audit reports, not
+this checklist. To check current progress:
+
+```bash
+# List completed phases
+ls docs/technical-debt/PHASE_*_AUDIT.md
+
+# Or run the status check
+node scripts/debt/check-phase-status.js
+```
+
+| Phase | Description                 | Audit Report               |
+| ----- | --------------------------- | -------------------------- |
+| 1     | Consolidation               | `PHASE_1_AUDIT.md` ✅      |
+| 2     | PROCEDURE.md                | `PHASE_2_AUDIT.md` ✅      |
+| 3     | Intake scripts              | `PHASE_3_AUDIT.md` ✅      |
+| 4     | Validation scripts          | `PHASE_4_AUDIT.md` ✅      |
+| 5     | Update audit skills         | `PHASE_5_AUDIT.md` ✅      |
+| 6     | Create intake skills        | `PHASE_6_AUDIT.md` ✅      |
+| 7     | Pre-commit hooks            | `PHASE_7_AUDIT.md` ✅      |
+| 8     | CI checks                   | `PHASE_8_AUDIT.md` ✅      |
+| 9     | Verification skill          | (Done in Phase 6)          |
+| 9b    | Full Audit TDMS Integration | `PHASE_9B_AUDIT.md` ⬜     |
+| 10    | GitHub Action               | `PHASE_10_AUDIT.md` ⬜     |
+| 11    | PR template                 | `PHASE_11_AUDIT.md` ⬜     |
+| 12    | pr-review skill             | `PHASE_12_AUDIT.md` ⬜     |
+| 13    | Archive                     | `PHASE_13_AUDIT.md` ⬜     |
+| 14    | Dev dashboard               | `PHASE_14_AUDIT.md` ⬜     |
+| 15    | Verification batches        | `PHASE_15_AUDIT.md` ⬜     |
+| 16    | Final doc sync              | `PHASE_16_AUDIT.md` ⬜     |
+| 17    | Final System Audit          | `FINAL_SYSTEM_AUDIT.md` ⬜ |
+
+✅ = Audit report exists (phase complete) ⬜ = Audit report not yet created
+(phase pending)
 
 ---
 

@@ -1,0 +1,5 @@
+{"timestamp":"2026-01-31T19:05:30.631Z","action":"intake-manual","item_id":"DEBT-0869","file":"package.json","severity":"S3","category":"code-quality"}
+{"timestamp":"2026-01-31T19:10:44.068Z","action":"intake-manual","item_id":"DEBT-0868","file":"package.json","severity":"S3","category":"code-quality"}
+{"timestamp":"2026-01-31T19:13:43.399Z","action":"intake-manual","item_id":"DEBT-0868","file":"package.json","severity":"S3","category":"code-quality"}
+{"timestamp":"2026-02-01T01:11:25.662Z","action":"intake-audit","input_file":"docs/audits/single-session/process/audit-2026-01-31/all-findings-raw.jsonl","items_processed":81,"items_added":63,"duplicates_skipped":0,"errors":18,"first_id":"DEBT-0869","last_id":"DEBT-0931"}
+{"timestamp":"2026-02-01T01:31:39.025Z","action":"intake-audit","input_file":"docs/audits/single-session/process/audit-2026-01-31/all-findings-raw.jsonl","items_processed":167,"items_added":63,"duplicates_skipped":0,"errors":104,"first_id":"DEBT-0869","last_id":"DEBT-0931"}

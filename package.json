@@ -136,5 +136,8 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.49.0",
     "unified": "^11.0.5"
+  },
+  "overrides": {
+    "fast-xml-parser": "5.3.4"
   }
 }

@@ -33,9 +33,11 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { execSync } = require("child_process");
+const { sanitizeError } = require("../lib/security-helpers.js");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
+const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
 const LOG_DIR = path.join(DEBT_DIR, "logs");
 const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
 
@@ -107,10 +109,21 @@ function getNextDebtId(existingItems) {
 
 // Load existing items from MASTER_DEBT.jsonl with safe parsing
 function loadMasterDebt() {
+  // Note: existsSync doesn't guarantee read success (race conditions, permissions)
+  // Always wrap in try/catch per CODE_PATTERNS.md #36
   if (!fs.existsSync(MASTER_FILE)) {
     return [];
   }
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (readError) {
+    // Use sanitizeError to prevent path leaks in error messages
+    console.error(`Error reading MASTER_DEBT.jsonl: ${sanitizeError(readError)}`);
+    return [];
+  }
+
   const lines = content.split("\n").filter((line) => line.trim());
 
   const items = [];
@@ -120,7 +133,9 @@ function loadMasterDebt() {
     try {
       items.push(JSON.parse(lines[i]));
     } catch (err) {
-      badLines.push({ line: i + 1, message: err.message });
+      // Safe error.message access per CODE_PATTERNS.md #17
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      badLines.push({ line: i + 1, message: errorMessage });
     }
   }
 
@@ -306,9 +321,47 @@ Example:
     process.exit(0);
   }
 
-  // Write to MASTER_DEBT.jsonl
-  console.log("\n📝 Writing to MASTER_DEBT.jsonl...");
-  fs.appendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
+  // Write to source file FIRST to prevent data loss if script fails mid-write
+  // (generate-views.js reads from deduped.jsonl and overwrites MASTER_DEBT.jsonl)
+  console.log("\n📝 Writing to raw/deduped.jsonl (source file)...");
+  const rawDir = path.dirname(DEDUPED_FILE);
+  // mkdirSync with recursive:true handles existing dirs - no existsSync needed
+  fs.mkdirSync(rawDir, { recursive: true });
+  const newItemJson = JSON.stringify(newItem) + "\n";
+  try {
+    fs.appendFileSync(DEDUPED_FILE, newItemJson);
+  } catch (writeError) {
+    // Use sanitizeError to prevent path leaks in error messages
+    console.error(`Error writing to deduped file: ${sanitizeError(writeError)}`);
+    process.exit(1);
+  }
+
+  // Then write to derived file
+  console.log("📝 Writing to MASTER_DEBT.jsonl...");
+  try {
+    fs.appendFileSync(MASTER_FILE, newItemJson);
+  } catch (writeError) {
+    // Use sanitizeError to prevent path leaks in error messages
+    console.error(`Error writing to master file: ${sanitizeError(writeError)}`);
+
+    // Rollback: remove the line we just appended to DEDUPED_FILE
+    // to maintain consistency between the two files
+    try {
+      const deduped = fs.readFileSync(DEDUPED_FILE, "utf8");
+      const lines = deduped.split("\n");
+      // Remove trailing empty line (from final newline) and the appended item line
+      if (lines.length >= 2 && lines[lines.length - 1] === "") {
+        lines.pop();
+      }
+      lines.pop();
+      fs.writeFileSync(DEDUPED_FILE, lines.length ? lines.join("\n") + "\n" : "");
+      console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
+    } catch (rollbackError) {
+      console.error(`  ⚠️ Failed to rollback deduped file: ${sanitizeError(rollbackError)}`);
+    }
+
+    process.exit(1);
+  }
 
   // Log intake activity
   logIntake({

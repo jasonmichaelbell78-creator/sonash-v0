@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 3.38 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 3.40 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-01-31 (Session #119)
+2026-01-31 (Session #122)
 
 ---
 
@@ -11,11 +11,36 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-01-31 **Branch**: `claude/new-session-U1Jou` **Working
-On**: TDMS Phases 1-8 Complete **Files Modified**: skills, hooks, CI, scripts
+On**: TDMS - intake script fix + debt item **Files Modified**: scripts/debt,
+docs/technical-debt
 
-**Next Step**: TDMS Phase 9+ (remaining phases)
+**Next Step**: TDMS Phase 9b (Full Audit TDMS Integration)
 
 **Uncommitted Work**: No
+
+**Session #121 Summary** (INTAKE SCRIPT FIX):
+
+- ✅ **Bug Fix**: `intake-manual.js` now writes to both MASTER_DEBT.jsonl AND
+  raw/deduped.jsonl
+  - Root cause: `generate-views.js` reads from deduped.jsonl and overwrites
+    MASTER_DEBT.jsonl
+  - Manual entries were lost when views regenerated
+- ✅ **DEBT-0868 Added**: Add type:module to package.json (S3 code-quality)
+  - Node.js MODULE_TYPELESS_PACKAGE_JSON warnings include full paths
+  - Triggered false positives in security tests
+- 📋 **Next**: TDMS Phase 9b (Full Audit TDMS Integration)
+
+**Session #120 Summary** (TDMS PHASE 9A + CLEANUP):
+
+- ✅ **Deprecated Commands Deleted**: 11 old .claude/commands/ files removed
+  - Commands were migrated to skills but files never deleted
+- ✅ **TDMS Plan Progress Fixed**: Approval section now shows Phases 6-8
+  complete
+- ✅ **Phase 9b Added**: Full Audit TDMS Integration (multi-AI templates)
+- ✅ **Single Source of Truth**: Audit files determine progress, not checklist
+  - Created `scripts/debt/check-phase-status.js`
+- ✅ **Test Fixes**: Filter Node.js MODULE_TYPELESS warnings in path tests
+- 📋 **Next**: Phase 9b implementation
 
 **Session #119 Summary** (TDMS PHASES 6-8 + FIXES):
 
@@ -240,7 +265,7 @@ productive work.
 
 ## 🔢 Session Tracking
 
-**Current Session Count**: 119 (since Jan 1, 2026)
+**Current Session Count**: 122 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recently Completed" entries; review-focused sessions

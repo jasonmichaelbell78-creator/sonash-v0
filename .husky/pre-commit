@@ -43,12 +43,15 @@ echo "  ✅ Pattern compliance passed"
 
 # 4. Run tests - stream output using temp file
 # Review #322: Run tests for config files that can break builds; skip for doc-only
+# Override with: SKIP_TESTS=1 git commit ... (use sparingly)
 STAGED_FILES=$(git diff --cached --name-only)
 DOC_ONLY_COMMIT=0
 
+if [ -n "$SKIP_TESTS" ]; then
+  echo "  ⏭️ Skipping tests (SKIP_TESTS=1)"
 # Always run tests for risky config changes that can break builds/tests
 # Review #322 Round 4: Include lockfiles (package-lock.json, yarn.lock, pnpm-lock.yaml)
-if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|tsconfig.*\.json|next\.config\.(js|mjs|ts)|\.husky/|\.github/)'; then
+elif printf '%s\n' "$STAGED_FILES" | grep -Eq '^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|tsconfig.*\.json|next\.config\.(js|mjs|ts)|\.husky/|\.github/)'; then
   echo "  ▶ Running tests (config changes detected)..."
   TEST_TMPFILE=$(mktemp)
   trap 'rm -f "$TEST_TMPFILE"' EXIT
@@ -64,7 +67,8 @@ if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(package\.json|package-lock\.json|
 else
   # Review #322 Round 3: More conservative doc-only detection
   # Only skip tests if ALL staged files are documentation-like
-  NON_DOC_FILES=$(printf '%s\n' "$STAGED_FILES" | grep -Ev '^(docs/|\.claude/).+|.*\.(md|mdx|txt|png|jpg|jpeg|gif|svg)$' || true)
+  # Session #121: Expanded to include JSONL (debt tracking), JSON (mappings), and common doc paths
+  NON_DOC_FILES=$(printf '%s\n' "$STAGED_FILES" | grep -Ev '^(docs/|\.claude/|DOCUMENTATION_INDEX|SESSION_CONTEXT|ROADMAP|CLAUDE|ARCHITECTURE|DEVELOPMENT|AI_WORKFLOW).+|.*\.(md|mdx|txt|png|jpg|jpeg|gif|svg|jsonl)$' || true)
   if [ -z "$NON_DOC_FILES" ]; then
     DOC_ONLY_COMMIT=1
     echo "  ⏭️ Skipping tests (doc-only commit)"

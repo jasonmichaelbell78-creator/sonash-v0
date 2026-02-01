@@ -1,6 +1,6 @@
 # Single-Session Audit Results
 
-**Created:** 2026-01-08 **Last Updated:** 2026-01-27
+**Created:** 2026-01-08 **Last Updated:** 2026-01-31
 
 ---
 
@@ -55,14 +55,14 @@ single-session/
 
 ## Available Commands
 
-| Command                | Description              | Focus Areas                                                                                       |
-| ---------------------- | ------------------------ | ------------------------------------------------------------------------------------------------- |
-| `/audit-code`          | Code review audit        | Hygiene, Types, Framework, Testing, Security, **AI-Code Failure Modes**, **Debugging Ergonomics** |
-| `/audit-security`      | Security audit           | Auth, Injection, Data, Firebase, Deps, OWASP, **Headers, Framework, Crypto, Agent Security**      |
-| `/audit-performance`   | Performance audit        | Bundle, Rendering, Data Fetch, Memory, Web Vitals, **Offline Support**                            |
-| `/audit-refactoring`   | Refactoring audit        | God Objects, Duplication, Complexity, Architecture, Tech Debt                                     |
-| `/audit-documentation` | Documentation audit      | Links, Stale Content, Coverage, Tier, Frontmatter, Sync                                           |
-| `/audit-process`       | Process/Automation audit | CI/CD, Git Hooks, Claude Hooks, Scripts, Triggers, **Golden Path & DX**                           |
+| Command                | Description                               | Focus Areas                                                                                                                                                          |
+| ---------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/audit-code`          | Code review audit                         | Hygiene, Types, Framework, Testing, Security, **AI-Code Failure Modes**, **Debugging Ergonomics**                                                                    |
+| `/audit-security`      | Security audit                            | Auth, Injection, Data, Firebase, Deps, OWASP, **Headers, Framework, Crypto, Agent Security**                                                                         |
+| `/audit-performance`   | Performance audit                         | Bundle, Rendering, Data Fetch, Memory, Web Vitals, **Offline Support**                                                                                               |
+| `/audit-refactoring`   | Refactoring audit                         | God Objects, Duplication, Complexity, Architecture, Tech Debt                                                                                                        |
+| `/audit-documentation` | Documentation audit                       | Links, Stale Content, Coverage, Tier, Frontmatter, Sync                                                                                                              |
+| `/audit-process`       | **Comprehensive Automation Audit (v2.0)** | **16 types**, **12 categories**, **7 stages** with parallel agents. Covers CI/CD, Git Hooks, Claude Hooks, Scripts, Skills, MCP, Firebase, configs. TDMS integrated. |
 
 ### Engineering Productivity Audit Additions (2026-01-13)
 
@@ -91,6 +91,50 @@ added:
 - Doctor/diagnostic scripts
 - DX friction assessment
 - Onboarding friction evaluation
+
+### Process Audit v2.0 Expansion (2026-01-31)
+
+The `/audit-process` command has been significantly expanded to a comprehensive
+multi-stage automation audit:
+
+**Scope: 16 Automation Types**
+
+- Claude Code Hooks, Skills, Commands
+- npm Scripts, Standalone Scripts, Script Libraries
+- GitHub Actions Workflows, Git Hooks (Husky), lint-staged
+- ESLint, Prettier, TypeScript Configs
+- Firebase Cloud Functions, Scheduled Jobs, Rules
+- MCP Servers
+
+**Audit Categories: 12 Dimensions**
+
+1. Redundancy & Duplication
+2. Dead/Orphaned Code
+3. Effectiveness
+4. Performance & Bloat
+5. Error Handling
+6. Dependency & Call Chain
+7. Consistency
+8. Coverage Gaps
+9. Maintainability
+10. Functionality Verification
+11. Improvement Opportunities
+12. Code Quality (Limited)
+
+**7-Stage Approach with Parallel Agents:**
+
+1. Inventory & Dependency Mapping (6 parallel agents)
+2. Redundancy & Dead Code Analysis (3 parallel agents)
+3. Effectiveness & Functionality (4 parallel agents)
+4. Performance & Bloat (3 parallel agents)
+5. Quality & Consistency (3 parallel agents)
+6. Coverage Gaps & Improvements (3 parallel agents)
+7. Synthesis & Prioritization (sequential)
+
+**TDMS Integration:** Each stage outputs JSONL findings that are automatically
+ingested into the Technical Debt Management System (MASTER_DEBT.jsonl).
+
+See `.claude/skills/audit-process/SKILL.md` for full documentation.
 
 ### Security Audit Extended Coverage (2026-01-13)
 
@@ -330,8 +374,9 @@ the full procedure.
 
 ## Version History
 
-| Version | Date       | Changes                                           |
-| ------- | ---------- | ------------------------------------------------- |
-| 1.2     | 2026-01-30 | Added canonical location reference (Session #116) |
-| 1.1     | 2026-01-13 | Added engineering productivity audit categories   |
-| 1.0     | 2026-01-08 | Initial single-session audit documentation        |
+| Version | Date       | Changes                                                                                                   |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 1.3     | 2026-01-31 | **audit-process v2.0**: Expanded to 16 types, 12 categories, 7 stages with parallel agents (Session #120) |
+| 1.2     | 2026-01-30 | Added canonical location reference (Session #116)                                                         |
+| 1.1     | 2026-01-13 | Added engineering productivity audit categories                                                           |
+| 1.0     | 2026-01-08 | Initial single-session audit documentation                                                                |

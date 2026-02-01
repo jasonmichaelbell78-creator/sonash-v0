@@ -1,29 +1,22 @@
 ---
-description: Commands Folder - DEPRECATED
+description: Commands Folder - DEPRECATED (Files Removed)
 ---
 
 # Commands Folder - DEPRECATED
 
-**Status:** DEPRECATED as of 2026-01-21 **Replacement:** `.claude/skills/`
-folder
+**Status:** DEPRECATED and CLEANED UP (2026-01-31, Session #120)
+**Replacement:** `.claude/skills/` folder
 
 ---
 
-## Migration Notice
+## Migration Complete
 
-All commands in this folder have been migrated to the skills format in
-`.claude/skills/`.
-
-The skill format provides:
-
-- Better discoverability by Claude
-- Richer metadata (name, description in frontmatter)
-- Support for reference files and helper scripts
-- Cleaner organization
+All command files have been **deleted** from this folder. The skills in
+`.claude/skills/` are now the only source.
 
 ## Command → Skill Mapping
 
-| Command (deprecated)   | Skill (use this)            |
+| Former Command         | Use This Skill              |
 | ---------------------- | --------------------------- |
 | `/audit-code`          | `audit-code` skill          |
 | `/audit-documentation` | `audit-documentation` skill |
@@ -37,18 +30,11 @@ The skill format provides:
 | `/session-begin`       | `session-begin` skill       |
 | `/session-end`         | `session-end` skill         |
 
-## Usage
+## Why This Folder Exists
 
-Both formats currently work identically:
-
-- `/session-begin` (old) → invokes same content
-- Skill tool with `session-begin` → invokes same content
-
-## Planned Removal
-
-These command files will be removed in a future update once skill-only
-invocation is confirmed stable.
+This README remains as a redirect notice. The folder may be fully removed in a
+future cleanup.
 
 ---
 
-**Do not add new commands here.** Create skills in `.claude/skills/` instead.
+**Do not add commands here.** Create skills in `.claude/skills/` instead.
