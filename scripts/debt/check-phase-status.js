@@ -54,17 +54,20 @@ function checkPhaseStatus(phase) {
     const statusMatch = content.match(/\*\*Status:\*\*\s*(PASS|FAIL)/i);
     const dateMatch = content.match(/\*\*Audit Date:\*\*\s*(\d{4}-\d{2}-\d{2})/i);
 
+    const status = statusMatch ? statusMatch[1].toUpperCase() : "UNKNOWN";
+    // Only mark complete if we successfully read AND status is PASS
     return {
-      complete: true,
-      status: statusMatch ? statusMatch[1] : "UNKNOWN",
+      complete: status === "PASS",
+      status,
       date: dateMatch ? dateMatch[1] : "UNKNOWN",
       file,
     };
   } catch (error) {
-    // Log error for diagnostics but don't fail - file exists but couldn't be read
+    // Log error for diagnostics - file exists but couldn't be read
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.warn(`Warning: Could not read ${file}: ${errorMessage}`);
-    return { complete: true, status: "READ_ERROR", file };
+    // READ_ERROR means incomplete - we can't verify the phase passed
+    return { complete: false, status: "READ_ERROR", file };
   }
 }
 
@@ -100,12 +103,17 @@ function main() {
 
   // List existing audit files
   if (existsSync(DEBT_DIR)) {
-    const files = readdirSync(DEBT_DIR).filter(
-      (f) => f.startsWith("PHASE_") && f.endsWith("_AUDIT.md")
-    );
-    if (files.length > 0) {
-      console.log("📁 Audit files found:");
-      files.forEach((f) => console.log(`   - ${f}`));
+    try {
+      const files = readdirSync(DEBT_DIR).filter(
+        (f) => f.startsWith("PHASE_") && f.endsWith("_AUDIT.md")
+      );
+      if (files.length > 0) {
+        console.log("📁 Audit files found:");
+        files.forEach((f) => console.log(`   - ${f}`));
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.warn(`Warning: Could not list ${DEBT_DIR}: ${errorMessage}`);
     }
   }
 }

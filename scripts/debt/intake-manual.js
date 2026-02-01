@@ -326,11 +326,23 @@ Example:
   const rawDir = path.dirname(DEDUPED_FILE);
   // mkdirSync with recursive:true handles existing dirs - no existsSync needed
   fs.mkdirSync(rawDir, { recursive: true });
-  fs.appendFileSync(DEDUPED_FILE, JSON.stringify(newItem) + "\n");
+  try {
+    fs.appendFileSync(DEDUPED_FILE, JSON.stringify(newItem) + "\n");
+  } catch (writeError) {
+    const errorMessage = writeError instanceof Error ? writeError.message : String(writeError);
+    console.error(`Error writing to deduped file: ${errorMessage}`);
+    process.exit(1);
+  }
 
   // Then write to derived file
   console.log("📝 Writing to MASTER_DEBT.jsonl...");
-  fs.appendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
+  try {
+    fs.appendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
+  } catch (writeError) {
+    const errorMessage = writeError instanceof Error ? writeError.message : String(writeError);
+    console.error(`Error writing to master file: ${errorMessage}`);
+    process.exit(1);
+  }
 
   // Log intake activity
   logIntake({

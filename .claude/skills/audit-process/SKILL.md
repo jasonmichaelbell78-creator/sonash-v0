@@ -850,7 +850,11 @@ wc -l ${AUDIT_DIR}/stage-5*.jsonl
 
 1. Merge agent outputs into `stage-5-quality.jsonl`:
    ```bash
-   cat ${AUDIT_DIR}/stage-5*.jsonl > ${AUDIT_DIR}/stage-5-quality.jsonl
+   # Use explicit file list to avoid glob self-inclusion
+   cat "${AUDIT_DIR}/stage-5a-error-handling.jsonl" \
+       "${AUDIT_DIR}/stage-5b-code-quality.jsonl" \
+       "${AUDIT_DIR}/stage-5c-consistency.jsonl" \
+       > "${AUDIT_DIR}/stage-5-quality.jsonl"
    ```
 2. Run TDMS intake:
    ```bash
@@ -976,7 +980,11 @@ wc -l ${AUDIT_DIR}/stage-6*.jsonl
 
 1. Merge agent outputs into `stage-6-improvements.jsonl`:
    ```bash
-   cat ${AUDIT_DIR}/stage-6*.jsonl > ${AUDIT_DIR}/stage-6-improvements.jsonl
+   # Use explicit file list to avoid glob self-inclusion
+   cat "${AUDIT_DIR}/stage-6a-coverage-gaps.jsonl" \
+       "${AUDIT_DIR}/stage-6b-improvements.jsonl" \
+       "${AUDIT_DIR}/stage-6c-documentation.jsonl" \
+       > "${AUDIT_DIR}/stage-6-improvements.jsonl"
    ```
 2. Run TDMS intake:
    ```bash
@@ -1001,13 +1009,22 @@ if [ -z "$STAGE_FILES" ]; then
   exit 1
 fi
 
-# Count findings before merge
-echo "Merging findings from:"
-wc -l ${AUDIT_DIR}/stage-*.jsonl
+# Count findings before merge (use canonical rollups only, not sub-stage files)
+echo "Merging findings from canonical rollups:"
+wc -l "${AUDIT_DIR}/stage-2-redundancy.jsonl" \
+      "${AUDIT_DIR}/stage-3-effectiveness.jsonl" \
+      "${AUDIT_DIR}/stage-4-performance.jsonl" \
+      "${AUDIT_DIR}/stage-5-quality.jsonl" \
+      "${AUDIT_DIR}/stage-6-improvements.jsonl"
 
-# Combine all JSONL files
-cat ${AUDIT_DIR}/stage-*.jsonl > ${AUDIT_DIR}/all-findings-raw.jsonl
-echo "Total findings: $(wc -l < ${AUDIT_DIR}/all-findings-raw.jsonl)"
+# Combine canonical rollup files only (avoid double-counting sub-stage files)
+cat "${AUDIT_DIR}/stage-2-redundancy.jsonl" \
+    "${AUDIT_DIR}/stage-3-effectiveness.jsonl" \
+    "${AUDIT_DIR}/stage-4-performance.jsonl" \
+    "${AUDIT_DIR}/stage-5-quality.jsonl" \
+    "${AUDIT_DIR}/stage-6-improvements.jsonl" \
+    > "${AUDIT_DIR}/all-findings-raw.jsonl"
+echo "Total findings: $(wc -l < "${AUDIT_DIR}/all-findings-raw.jsonl")"
 ```
 
 ### Step 7.2: Deduplicate
@@ -1224,11 +1241,16 @@ done
 After all stages complete:
 
 ```bash
-# Merge all JSONL findings
-cat ${AUDIT_DIR}/stage-*.jsonl | grep -v '^$' > ${AUDIT_DIR}/all-findings-raw.jsonl
+# Merge canonical rollup files only (avoid double-counting sub-stage files)
+cat "${AUDIT_DIR}/stage-2-redundancy.jsonl" \
+    "${AUDIT_DIR}/stage-3-effectiveness.jsonl" \
+    "${AUDIT_DIR}/stage-4-performance.jsonl" \
+    "${AUDIT_DIR}/stage-5-quality.jsonl" \
+    "${AUDIT_DIR}/stage-6-improvements.jsonl" \
+    | grep -v '^$' > "${AUDIT_DIR}/all-findings-raw.jsonl"
 
 # Run TDMS intake
-node scripts/debt/intake-audit.js ${AUDIT_DIR}/all-findings-raw.jsonl
+node scripts/debt/intake-audit.js "${AUDIT_DIR}/all-findings-raw.jsonl"
 ```
 
 ---
