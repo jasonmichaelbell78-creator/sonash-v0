@@ -33,6 +33,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { execSync } = require("child_process");
+const { sanitizeError } = require("../lib/security-helpers.js");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -118,8 +119,8 @@ function loadMasterDebt() {
   try {
     content = fs.readFileSync(MASTER_FILE, "utf8");
   } catch (readError) {
-    const errorMessage = readError instanceof Error ? readError.message : String(readError);
-    console.error(`Error reading ${MASTER_FILE}: ${errorMessage}`);
+    // Use sanitizeError to prevent path leaks in error messages
+    console.error(`Error reading MASTER_DEBT.jsonl: ${sanitizeError(readError)}`);
     return [];
   }
 
@@ -326,21 +327,39 @@ Example:
   const rawDir = path.dirname(DEDUPED_FILE);
   // mkdirSync with recursive:true handles existing dirs - no existsSync needed
   fs.mkdirSync(rawDir, { recursive: true });
+  const newItemJson = JSON.stringify(newItem) + "\n";
   try {
-    fs.appendFileSync(DEDUPED_FILE, JSON.stringify(newItem) + "\n");
+    fs.appendFileSync(DEDUPED_FILE, newItemJson);
   } catch (writeError) {
-    const errorMessage = writeError instanceof Error ? writeError.message : String(writeError);
-    console.error(`Error writing to deduped file: ${errorMessage}`);
+    // Use sanitizeError to prevent path leaks in error messages
+    console.error(`Error writing to deduped file: ${sanitizeError(writeError)}`);
     process.exit(1);
   }
 
   // Then write to derived file
   console.log("📝 Writing to MASTER_DEBT.jsonl...");
   try {
-    fs.appendFileSync(MASTER_FILE, JSON.stringify(newItem) + "\n");
+    fs.appendFileSync(MASTER_FILE, newItemJson);
   } catch (writeError) {
-    const errorMessage = writeError instanceof Error ? writeError.message : String(writeError);
-    console.error(`Error writing to master file: ${errorMessage}`);
+    // Use sanitizeError to prevent path leaks in error messages
+    console.error(`Error writing to master file: ${sanitizeError(writeError)}`);
+
+    // Rollback: remove the line we just appended to DEDUPED_FILE
+    // to maintain consistency between the two files
+    try {
+      const deduped = fs.readFileSync(DEDUPED_FILE, "utf8");
+      const lines = deduped.split("\n");
+      // Remove trailing empty line (from final newline) and the appended item line
+      if (lines.length >= 2 && lines[lines.length - 1] === "") {
+        lines.pop();
+      }
+      lines.pop();
+      fs.writeFileSync(DEDUPED_FILE, lines.length ? lines.join("\n") + "\n" : "");
+      console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
+    } catch (rollbackError) {
+      console.error(`  ⚠️ Failed to rollback deduped file: ${sanitizeError(rollbackError)}`);
+    }
+
     process.exit(1);
   }
 

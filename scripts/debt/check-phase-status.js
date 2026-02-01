@@ -10,6 +10,7 @@
 
 import { existsSync, readdirSync, readFileSync } from "fs";
 import { join } from "path";
+import { sanitizeError } from "../lib/sanitize-error.js";
 
 const DEBT_DIR = "docs/technical-debt";
 
@@ -64,8 +65,8 @@ function checkPhaseStatus(phase) {
     };
   } catch (error) {
     // Log error for diagnostics - file exists but couldn't be read
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.warn(`Warning: Could not read ${file}: ${errorMessage}`);
+    // Use sanitizeError to prevent path leaks in error messages
+    console.warn(`Warning: Could not read ${file}: ${sanitizeError(error)}`);
     // READ_ERROR means incomplete - we can't verify the phase passed
     return { complete: false, status: "READ_ERROR", file };
   }
@@ -112,8 +113,8 @@ function main() {
         files.forEach((f) => console.log(`   - ${f}`));
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      console.warn(`Warning: Could not list ${DEBT_DIR}: ${errorMessage}`);
+      // Use sanitizeError to prevent path leaks in error messages
+      console.warn(`Warning: Could not list directory: ${sanitizeError(error)}`);
     }
   }
 }
