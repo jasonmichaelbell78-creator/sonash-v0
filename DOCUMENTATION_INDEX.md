@@ -101,7 +101,7 @@ _Main documentation directory_
 | [Context Preservation Pattern](docs/patterns/context-preservation-pattern.md)                                                                            | This document describes the Context Preservation Pattern for...   | ↓0 ↑0      | 2026-01-23    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                                                                                                   | Track template-instance relationships,                            | ↓2 ↑1      | 2026-02-02    |
 | [Documentation Audit - 2026-01-17](docs/audits/single-session/documentation/audit-2026-01-17.md)                                                         | This document provides a single-session documentation audit ...   | ↓1 ↑0      | 2026-02-02    |
-| [Documentation Inventory](docs/README.md)                                                                                                                | This document provides a complete inventory of project docum...   | ↓1 ↑12     | 2026-02-02    |
+| [Documentation Inventory](docs/README.md)                                                                                                                | This document provides a complete inventory of project docum...   | ↓0 ↑12     | 2026-02-02    |
 | [Engineering Productivity Audit - 2026-01-17](docs/audits/single-session/engineering-productivity/audit-2026-01-17.md)                                   | This audit evaluates the SoNash development experience focus...   | ↓0 ↑0      | 2026-02-02    |
 | [Expansion Evaluation Tracker](docs/EXPANSION_EVALUATION_TRACKER.md)                                                                                     | This document tracks the systematic evaluation of ~280 expan...   | ↓1 ↑0      | 2026-02-02    |
 | [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                                                                                 | This document defines the mandatory security review process ...   | ↓2 ↑6      | 2026-01-17    |
@@ -249,7 +249,7 @@ _Claude Code skills_
 | [MCP Server Development Best Practices and Guidelines](.claude/skills/mcp-builder/reference/mcp_best_practices.md)                  | This document compiles essential best practices and guidelin...   | ↓1 ↑0      | 2026-01-17    |
 | [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md)                                                                 | To create high-quality MCP (Model Context Protocol) servers ...   | ↓0 ↑4      | 2026-01-17    |
 | [MCP Server Evaluation Guide](.claude/skills/mcp-builder/reference/evaluation.md)                                                   | This document provides guidance on creating comprehensive ev...   | ↓1 ↑0      | 2026-01-17    |
-| [Multi-Stage Parallel Documentation Audit](.claude/skills/audit-documentation/SKILL.md)                                             | -                                                                 | ↓0 ↑0      | 2026-02-02    |
+| [Multi-Stage Parallel Documentation Audit](.claude/skills/audit-documentation/SKILL.md)                                             | -                                                                 | ↓1 ↑0      | 2026-02-02    |
 | [Nextjs Optimization Guide](.claude/skills/senior-frontend/references/nextjs_optimization_guide.md)                                 | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Node/TypeScript MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/node_mcp_server.md)                          | This document provides Node/TypeScript-specific best practic...   | ↓1 ↑0      | 2026-01-17    |
 | [OpenRouter Integration for MarkItDown](.claude/skills/markitdown/OPENROUTER_INTEGRATION.md)                                        | This MarkItDown skill has been configured to use \*\*OpenRoute... | ↓0 ↑0      | 2026-01-17    |
@@ -586,7 +586,6 @@ Documents with no inbound links (not referenced by any other document):
 - [Audit Aggregator Agent](.claude/skills/audit-aggregator/SKILL.md)
 - [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)
 - [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)
-- [Multi-Stage Parallel Documentation Audit](.claude/skills/audit-documentation/SKILL.md)
 - [Single-Session Performance Audit](.claude/skills/audit-performance/SKILL.md)
 - [Comprehensive Automation Audit](.claude/skills/audit-process/SKILL.md)
 - [Single-Session Refactoring Audit](.claude/skills/audit-refactoring/SKILL.md)
@@ -692,6 +691,7 @@ Documents with no inbound links (not referenced by any other document):
 - [MCP Server Usage Audit](docs/MCP_SERVER_AUDIT.md)
 - [MCP Server Setup Guide](docs/MCP_SETUP.md)
 - [SoNash Documentation Plan Map](docs/PLAN_MAP.md)
+- [Documentation Inventory](docs/README.md)
 - [reCAPTCHA &amp; App Check - Complete Removal and Fresh Setup Guide](docs/RECAPTCHA_REMOVAL_GUIDE.md)
 - [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)
 - [Session History Log](docs/SESSION_HISTORY.md)

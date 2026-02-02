@@ -1,6 +1,6 @@
 # Slash Commands Reference
 
-**Document Version:** 2.0 **Created:** 2026-01-05 **Last Updated:** 2026-01-15
+**Document Version:** 2.2 **Created:** 2026-01-05 **Last Updated:** 2026-02-02
 **Status:** ACTIVE
 
 ---
@@ -370,20 +370,45 @@ cognitive complexity, architecture violations, and technical debt markers.
 ### `/audit-documentation`
 
 **File:** `.claude/commands/audit-documentation.md` **Created:** Session #37
+**Updated:** Session #116 (v2.0 - 6-stage parallel architecture)
 
 #### Description
 
-Single-session documentation audit. Checks broken links, stale content, coverage
-gaps, tier compliance, frontmatter consistency, and template-instance sync.
+Multi-stage parallel documentation audit using 18 specialized agents across 6
+stages. Produces JSONL findings with TDMS integration, prioritized remediation
+plans, and actionable fix commands.
 
-#### Focus Areas
+#### Audit Stages
 
-- Broken Links
-- Stale Content
-- Coverage Gaps
-- Tier Compliance
-- Frontmatter Consistency
-- Template-Instance Sync
+| Stage | Name                  | Agents | Focus                                 |
+| ----- | --------------------- | ------ | ------------------------------------- |
+| 1     | Inventory & Baseline  | 3      | Document catalog, metrics, link graph |
+| 2     | Link Validation       | 4      | Internal, external, cross-ref, orphan |
+| 3     | Content Quality       | 4      | Accuracy, completeness, coherence     |
+| 4     | Format & Structure    | 3      | Lint, prettier, structure standards   |
+| 5     | Placement & Lifecycle | 4      | Location, archive, cleanup candidates |
+| 6     | Synthesis             | 1      | Merge, dedupe, prioritize, report     |
+
+#### New npm Scripts
+
+```bash
+npm run docs:external-links  # Check external URLs (HTTP HEAD, 10s timeout)
+npm run docs:accuracy        # Version/path/npm script validation
+npm run docs:lint            # Markdownlint checks
+npm run docs:placement       # Location and staleness checks
+```
+
+#### Staleness Thresholds (Tier-Specific)
+
+- **Tier 1 (Canonical):** >60 days = stale
+- **Tier 2 (Foundation):** >90 days = stale
+- **Tier 3+ (Planning/Reference/Guides):** >120 days = stale
+
+#### Output
+
+- JSONL findings with TDMS-compatible schema
+- FINAL_REPORT.md with prioritized action plan
+- Archive/cleanup recommendations with justification
 
 ---
 
@@ -788,13 +813,14 @@ args: arg1 - Description of argument
 
 ## Version History
 
-| Version | Date       | Changes                                                                   |
-| ------- | ---------- | ------------------------------------------------------------------------- |
-| 2.1     | 2026-01-19 | Removed /fetch-pr-feedback (copy/paste more thorough), updated /pr-review |
-| 2.0     | 2026-01-15 | Combined SLASH_COMMANDS.md and CUSTOM_SLASH_COMMANDS_GUIDE.md             |
-| 1.2     | 2026-01-09 | Added /fetch-pr-feedback command documentation                            |
-| 1.1     | 2026-01-08 | Added 6 single-session audit commands with AUDIT_TRACKER.md integration   |
-| 1.0     | 2026-01-05 | Initial creation - comprehensive slash command reference                  |
+| Version | Date       | Changes                                                                      |
+| ------- | ---------- | ---------------------------------------------------------------------------- |
+| 2.2     | 2026-02-02 | Updated /audit-documentation to 6-stage parallel architecture with 18 agents |
+| 2.1     | 2026-01-19 | Removed /fetch-pr-feedback (copy/paste more thorough), updated /pr-review    |
+| 2.0     | 2026-01-15 | Combined SLASH_COMMANDS.md and CUSTOM_SLASH_COMMANDS_GUIDE.md                |
+| 1.2     | 2026-01-09 | Added /fetch-pr-feedback command documentation                               |
+| 1.1     | 2026-01-08 | Added 6 single-session audit commands with AUDIT_TRACKER.md integration      |
+| 1.0     | 2026-01-05 | Initial creation - comprehensive slash command reference                     |
 
 ---
 
