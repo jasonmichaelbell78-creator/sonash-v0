@@ -1,7 +1,7 @@
 # Code Review Patterns Reference
 
-**Document Version:** 2.4 **Source:** Distilled from 212 AI code reviews **Last
-Updated:** 2026-01-29
+**Document Version:** 2.5 **Source:** Distilled from 224 AI code reviews **Last
+Updated:** 2026-02-02
 
 ---
 
@@ -285,20 +285,22 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ## GitHub Actions
 
-| Priority | Pattern              | Rule                                                       | Why                                      |
-| -------- | -------------------- | ---------------------------------------------------------- | ---------------------------------------- |
-| 🔴       | Supply chain pinning | Pin third-party actions to full SHA: `action@SHA # vX.Y.Z` | Tag retargeting attacks (CVE-2025-30066) |
-| 🔴       | JS template literals | `process.env.VAR` NOT `${{ }}`                             | Injection risk                           |
-| 🟡       | Command failure      | Use exit codes, not output parsing                         | Reliable detection                       |
-| 🟡       | File list separator  | `separator: "\n"` with `while IFS= read -r`                | Proper iteration                         |
-| 🟡       | Separate stderr      | `cmd 2>err.log`                                            | Keep JSON parseable                      |
-| 🟡       | if conditions        | Explicit `${{ }}`                                          | YAML parser issues                       |
-| 🟡       | Retry loops          | Track success explicitly                                   | Don't assume loop exit = success         |
-| ⚪       | Output comparison    | `== '4'` not `== 4`                                        | Outputs are strings                      |
-| ⚪       | Label auto-creation  | Check getLabel, create on 404                              | Fresh repos/forks                        |
-| ⚪       | Event-specific       | `context.payload.action === 'opened'`                      | Avoid spam on synchronize                |
-| 🟡       | API error tolerance  | Catch 404/422 on removeLabel                               | Label may be gone                        |
-| 🟡       | Boolean outputs      | Use dedicated boolean output instead of multiline string   | Multiline values break string comparison |
+| Priority | Pattern              | Rule                                                       | Why                                                |
+| -------- | -------------------- | ---------------------------------------------------------- | -------------------------------------------------- |
+| 🔴       | Supply chain pinning | Pin third-party actions to full SHA: `action@SHA # vX.Y.Z` | Tag retargeting attacks (CVE-2025-30066)           |
+| 🔴       | JS template literals | `process.env.VAR` NOT `${{ }}`                             | Injection risk                                     |
+| 🟡       | Command failure      | Use exit codes, not output parsing                         | Reliable detection                                 |
+| 🟡       | File list separator  | `separator: "\n"` with `while IFS= read -r`                | Proper iteration                                   |
+| 🟡       | Separate stderr      | `cmd 2>err.log`                                            | Keep JSON parseable                                |
+| 🟡       | if conditions        | Explicit `${{ }}`                                          | YAML parser issues                                 |
+| 🟡       | Retry loops          | Track success explicitly                                   | Don't assume loop exit = success                   |
+| ⚪       | Output comparison    | `== '4'` not `== 4`                                        | Outputs are strings                                |
+| ⚪       | Label auto-creation  | Check getLabel, create on 404                              | Fresh repos/forks                                  |
+| ⚪       | Event-specific       | `context.payload.action === 'opened'`                      | Avoid spam on synchronize                          |
+| 🟡       | API error tolerance  | Catch 404/422 on removeLabel                               | Label may be gone                                  |
+| 🟡       | Boolean outputs      | Use dedicated boolean output instead of multiline string   | Multiline values break string comparison           |
+| 🔴       | Script injection     | Pass user inputs via `env:` not `${{ }}` interpolation     | PR body/issue title injection (Review #224 S7630)  |
+| 🔴       | User input env vars  | `env: PR_BODY: ${{ github.event.pull_request.body }}`      | Shell escaping automatic in env vars (Review #224) |
 
 ---
 
@@ -357,29 +359,44 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | Deterministic Set iteration  | Sort after `Array.from(set)` for reproducible order                          | Set iteration order is undefined in JS (Review #190)                  |
 | 🟡       | Firestore Timestamp safety   | Check `typeof x?.toDate === "function"` before calling `.toDate()`           | Timestamps may be null, undefined, or plain objects (Review #189)     |
 | 🟡       | Cross-platform newline split | Use `/\r?\n/` regex for splitting subprocess output                          | Windows uses CRLF, Unix uses LF (Review #199)                         |
+| 🟡       | Math.max empty array         | Check `arr.length > 0` before `Math.max(...arr)`                             | `Math.max(...[])` returns -Infinity (Review #216)                     |
+| 🟡       | Spread operator limits       | Use `reduce()` for large arrays, not `Math.max(...arr)`                      | Spread can overflow call stack (~65k args) (Review #216)              |
+| 🟡       | Nullish coalescing           | Use `??` not `\|\|` when 0 or "" are valid values                            | `\|\|` treats 0/"" as falsy (Review #219)                             |
+| 🟡       | Gap-safe counting            | Use Set-based counting, not arithmetic subtraction                           | Gaps in numbering break `highest - last` (Review #215)                |
+| 🟡       | statSync race condition      | Wrap statSync in try/catch after readdirSync                                 | File can be deleted between readdir and stat (Review #224)            |
+| 🟡       | Range clamping               | Clamp values before operations: `Math.max(0, Math.min(100, value))`          | Out-of-range values crash `.repeat()` etc (Review #224)               |
+| 🟡       | Platform root detection      | Use `path.parse(dir).root` not hardcoded "/"                                 | Windows root is `C:\` not `/` (Review #214)                           |
+| 🟡       | Regex anchoring for enums    | Use `^E[0-3]$` not `E[0-3]` for enum validation                              | Unanchored matches partial strings like E12 (Review #219)             |
 
 ---
 
 ## CI/Automation
 
-| Priority | Pattern                 | Rule                                          | Why                                        |
-| -------- | ----------------------- | --------------------------------------------- | ------------------------------------------ |
-| 🟡       | CI mode                 | Check ALL, no truncation                      | Limits for interactive only                |
-| 🟡       | Invalid files           | Fail on exists && !valid && required          | Not just missing                           |
-| 🟡       | Explicit flags          | Fail explicitly if flag target missing        | Even interactive                           |
-| 🟡       | Readline close          | Create helper, call on all paths              | Prevent hang                               |
-| 🟡       | File moves              | grep for filename in .github/, scripts/       | Update CI refs                             |
-| 🟡       | JSON output isolation   | Guard all console.error when JSON mode active | Mixed output breaks parsers                |
-| 🟡       | Empty-state guards      | Handle "no prior data" case in triggers       | Prevents false positives on fresh projects |
-| 🟡       | Unimplemented CLI flags | Block with error message, exit code 2         | Silent acceptance = false confidence       |
-| 🔴       | CLI arg separator       | Use `--` before file args: `script -- $FILES` | Prevents `-filename` injection             |
-| 🔴       | Quote shell arguments   | Always quote `$ARGS` in shell hook settings   | Command injection prevention               |
-| 🔴       | Project dir validation  | Validate cwd is within expected project root  | Prevent traversal in hooks                 |
-| 🟡       | Cross-platform paths    | Use `path.sep` and normalize backslashes      | Windows compatibility                      |
-| 🟡       | Exit code best practice | Use `process.exitCode` not `process.exit()`   | Allows buffer flush                        |
-| 🟡       | Per-item error handling | try/catch around individual job items         | One failure shouldn't abort entire job     |
-| 🟡       | Complete cleanup loops  | Loop until no documents match, not one batch  | Cleanup jobs may have more than 500 items  |
-| 🟡       | Pre-push file selection | Use `git diff @{u}...HEAD` for pushed commits | Pre-commit uses staged, pre-push uses diff |
+| Priority | Pattern                 | Rule                                                        | Why                                                        |
+| -------- | ----------------------- | ----------------------------------------------------------- | ---------------------------------------------------------- |
+| 🟡       | CI mode                 | Check ALL, no truncation                                    | Limits for interactive only                                |
+| 🟡       | Invalid files           | Fail on exists && !valid && required                        | Not just missing                                           |
+| 🟡       | Explicit flags          | Fail explicitly if flag target missing                      | Even interactive                                           |
+| 🟡       | Readline close          | Create helper, call on all paths                            | Prevent hang                                               |
+| 🟡       | File moves              | grep for filename in .github/, scripts/                     | Update CI refs                                             |
+| 🟡       | JSON output isolation   | Guard all console.error when JSON mode active               | Mixed output breaks parsers                                |
+| 🟡       | Empty-state guards      | Handle "no prior data" case in triggers                     | Prevents false positives on fresh projects                 |
+| 🟡       | Unimplemented CLI flags | Block with error message, exit code 2                       | Silent acceptance = false confidence                       |
+| 🔴       | CLI arg separator       | Use `--` before file args: `script -- $FILES`               | Prevents `-filename` injection                             |
+| 🔴       | Quote shell arguments   | Always quote `$ARGS` in shell hook settings                 | Command injection prevention                               |
+| 🔴       | Project dir validation  | Validate cwd is within expected project root                | Prevent traversal in hooks                                 |
+| 🟡       | Cross-platform paths    | Use `path.sep` and normalize backslashes                    | Windows compatibility                                      |
+| 🟡       | Exit code best practice | Use `process.exitCode` not `process.exit()`                 | Allows buffer flush                                        |
+| 🟡       | Per-item error handling | try/catch around individual job items                       | One failure shouldn't abort entire job                     |
+| 🟡       | Complete cleanup loops  | Loop until no documents match, not one batch                | Cleanup jobs may have more than 500 items                  |
+| 🟡       | Pre-push file selection | Use `git diff @{u}...HEAD` for pushed commits               | Pre-commit uses staged, pre-push uses diff                 |
+| 🟡       | JSONL line parsing      | Parse line-by-line with try/catch, track line numbers       | Single corrupt line shouldn't crash script (Review #218)   |
+| 🔴       | Atomic file writes      | Write to `.tmp` then `fs.renameSync` for critical files     | Interrupted write leaves corrupt file (Review #218, #224)  |
+| 🟡       | Stable ID preservation  | Never reassign IDs once allocated; IDs are immutable        | Downstream consumers depend on stable refs (Review #218)   |
+| 🟡       | API pagination          | Always check for pagination in external APIs; fetch all     | APIs default to partial results (Review #218)              |
+| 🟡       | Multi-file rollback     | If second write fails, undo first to maintain consistency   | Partial writes leave inconsistent state (Review #223)      |
+| 🟡       | Glob self-inclusion     | Use explicit file lists, not globs that include output file | `cat *.jsonl > merged.jsonl` includes output (Review #221) |
+| 🟡       | Windows atomic rename   | Use `fs.rmSync()` before `fs.renameSync()` on Windows       | Windows rename fails if destination exists (Review #224)   |
 
 ---
 
@@ -427,6 +444,9 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | Stale review detection       | <code>git log --oneline COMMIT..HEAD &#124; wc -l</code> - if >5, verify each | Review may be outdated                                     |
 | 🟡       | Relative path depth          | Test links from actual file location; count `../` for each level up           | Most common link breakage source (8+ occurrences #73-82)   |
 | 🟡       | Metadata synchronization     | Update ranges/counts/dates atomically with content changes                    | 6 consecutive reviews caught drift (#73-79)                |
+| 🟡       | Unicode property escapes     | Use `\p{Extended_Pictographic}` not emoji character lists                     | Reduces regex complexity (SonarCloud, Review #213)         |
+| 🟡       | Markdown parentheses         | `encodeURI()` doesn't encode `()` - use custom encoding                       | Breaks `[text](url)` markdown links (Review #213)          |
+| 🟡       | Pre-commit ADM filter        | Use `--diff-filter=ADM` not just `A` for doc checks                           | Catch modified/deleted docs too (Review #213)              |
 | ⚪       | Model name consistency       | Use API identifiers: `gpt-4o` not `GPT-4o` or `ChatGPT-4o`                    | Standardization across all docs                            |
 | 🟡       | JSON/JSONL validity          | All schema examples must be valid, parseable JSON/JSONL                       | Enable copy-paste testing with jq                          |
 | ⚪       | NO-REPO MODE output          | Specify "header + zero lines" not placeholder text                            | Prevents parser-breaking invalid JSONL                     |
@@ -521,6 +541,8 @@ for the pattern details and fix guidance.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 2.5     | 2026-02-02 | **CONSOLIDATION #16: Reviews #213-224** (12 reviews). Added 22 patterns: 2 GitHub Actions CRITICAL (script injection via env vars); 9 JS/TS (Math.max empty array, spread limits, nullish coalescing, gap-safe counting, statSync race, range clamping, platform root, regex anchoring); 8 CI/Automation (JSONL line parsing, atomic writes, stable IDs, API pagination, multi-file rollback, glob self-inclusion, Windows atomic rename); 3 Documentation (Unicode property escapes, Markdown parentheses, ADM filter). Source: TDMS PR #328, Cross-Platform Config, Process Audit, Doc Compliance reviews.                                                                                           |
+| 2.4     | 2026-01-29 | **CONSOLIDATION #15: Reviews #202-212** (11 reviews). Added React/Frontend patterns (11 new patterns), Security patterns (12 new patterns). Source: Audit sessions #114-#115, Learning Effectiveness Analyzer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 2.3     | 2026-01-24 | **CONSOLIDATION #14: Reviews #180-201** (22 reviews). Added 50 new patterns across 6 categories: NEW Process Management section (12 patterns - cross-platform termination, allowlist validation, audit trails, graceful shutdown); Security (20 patterns - Unicode sanitization, input DoS, git injection, temp file hardening, Markdown injection, symlink parent traversal); JS/TS (11 patterns - args arrays, signal semantics, PowerShell JSON, Set migration, Timestamp safety); Documentation (6 patterns - cross-doc sync, linked-list IDs, controlled vocabulary). Source: Reviews #180-201 from SonarCloud Sprint, Hookify Infrastructure, Expansion Evaluation, Security Hardening sessions. |
 | 2.2     | 2026-01-19 | Added 2 TypeScript patterns from PR #2 SonarCloud Sprint: Union type property access (cast to specific type), Discriminated union helpers (use specific types in helper props). Source: Review #185 TypeScript S3776 complexity reduction.                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 2.1     | 2026-01-18 | RESTRUCTURE: Removed 2 duplicates (URL allowlist, cognitive complexity). Fixed 12 corrupted table rows. Added priority tiers (🔴/🟡/⚪) to all 180+ patterns. Added Quick Reference section with 5 critical patterns + code examples extracted from codebase. Updated 7 dependent docs/hooks.                                                                                                                                                                                                                                                                                                                                                                                                          |
