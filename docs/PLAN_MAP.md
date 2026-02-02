@@ -1,6 +1,6 @@
 # SoNash Documentation Plan Map
 
-**Last Updated:** 2026-01-30 | **Version:** 1.6
+**Last Updated:** 2026-02-02 | **Version:** 1.8
 
 ---
 
@@ -70,22 +70,26 @@ ROADMAP.md
     │                                    │
     ├──► docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md (TDMS)
     │    └─ Canonical technical debt process (DEBT-XXXX IDs)
-    │    └─ Phase 1 COMPLETE (2026-01-30) - 867 items consolidated
-    │    └─ Phase 2 COMPLETE (2026-01-30) - PROCEDURE.md created
-    │    └─ Phase 3 COMPLETE (2026-01-30) - Intake scripts built
-    │    └─ Phase 4 COMPLETE (2026-01-30) - Validation scripts built
-    │    └─ Phase 5 COMPLETE (2026-01-30) - Audit skills updated
+    │    └─ **ALL 18 PHASES COMPLETE** (2026-02-02)
+    │    └─ 868 items consolidated into MASTER_DEBT.jsonl
+    │    └─ Full intake, verification, resolution workflow
+    │    └─ GitHub Action for auto-resolution on PR merge
+    │
+    ├──► docs/plans/CI_GATES_BLOCKING_PLAN.md (CI Quality Gates)
+    │    └─ Plan to convert non-blocking CI checks to blocking
+    │    └─ Phase 1 complete: 2/6 gates now blocking (2026-02-02)
     │
     └──► docs/technical-debt/ (Canonical location - ACTIVE)
-         ├── MASTER_DEBT.jsonl (867 items, single source of truth)
+         ├── MASTER_DEBT.jsonl (868 items, single source of truth)
          ├── INDEX.md (Human-readable summary)
          ├── PROCEDURE.md (System documentation)
-         ├── PHASE_*_AUDIT.md (Audit reports)
-         └── views/ (by-severity, by-category, by-status)
+         ├── METRICS.md / metrics.json (Dashboard integration)
+         ├── PHASE_*_AUDIT.md (Audit reports for all 17 phases)
+         └── views/ (by-severity, by-category, by-status, verification-queue)
 ```
 
-> **Note:** `docs/aggregation/` and `docs/audits/canonical/` will be archived
-> once TDMS implementation is complete (see TDMS Plan Phase 8).
+> **Note:** `docs/aggregation/` and `docs/audits/canonical/` have been archived
+> to `docs/archive/technical-debt-sources-2026-01/` (TDMS Phase 13 complete).
 
 ---
 
@@ -198,16 +202,16 @@ docs/archive/
 
 ## Quick Navigation
 
-| I Need To...                | Go To                                                      |
-| --------------------------- | ---------------------------------------------------------- |
-| See current priorities      | ROADMAP.md                                                 |
-| Understand current sprint   | SESSION_CONTEXT.md → OPERATIONAL_VISIBILITY_SPRINT.md      |
-| Find testing guidance       | docs/TESTING_PLAN.md                                       |
-| Check AI rules/patterns     | CLAUDE.md → docs/agent_docs/CODE_PATTERNS.md               |
-| Review completed work       | docs/archive/completed-plans/                              |
-| **Manage technical debt**   | **docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md**    |
-| Find issue backlog (legacy) | docs/aggregation/MASTER_ISSUE_LIST.md (→ TDMS migration)   |
-| Find canonical findings     | docs/audits/canonical/ (→ docs/technical-debt/ after TDMS) |
+| I Need To...              | Go To                                                   |
+| ------------------------- | ------------------------------------------------------- |
+| See current priorities    | ROADMAP.md                                              |
+| Understand current sprint | SESSION_CONTEXT.md → OPERATIONAL_VISIBILITY_SPRINT.md   |
+| Find testing guidance     | docs/TESTING_PLAN.md                                    |
+| Check AI rules/patterns   | CLAUDE.md → docs/agent_docs/CODE_PATTERNS.md            |
+| Review completed work     | docs/archive/completed-plans/                           |
+| **Manage technical debt** | **docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md** |
+| Find technical debt       | docs/technical-debt/MASTER_DEBT.jsonl (canonical)       |
+| View debt metrics         | docs/technical-debt/METRICS.md or metrics.json          |
 
 ---
 
@@ -215,6 +219,7 @@ docs/archive/
 
 | Version | Date       | Description                                                  |
 | ------- | ---------- | ------------------------------------------------------------ |
+| 1.7     | 2026-02-01 | TDMS ALL 17 PHASES COMPLETE - System fully operational       |
 | 1.6     | 2026-01-31 | TDMS Phases 6-8 complete, Phase 9b added (audit integration) |
 | 1.5     | 2026-01-30 | TDMS Phase 4 complete, validation scripts built              |
 | 1.4     | 2026-01-30 | TDMS Phase 3 complete, intake scripts built                  |

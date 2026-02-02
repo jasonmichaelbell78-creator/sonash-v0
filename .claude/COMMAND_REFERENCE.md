@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 2.4 **Last Updated:** 2026-01-31 **Purpose:** Comprehensive
+**Version:** 2.5 **Last Updated:** 2026-02-01 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -612,6 +612,42 @@ use:** Code quality assessment **Example:** Technical debt review
 **Description:** Run single-session security audit on the codebase **When to
 use:** Security review **Example:** Pre-production security check
 **Parameters:** None
+
+### Technical Debt Management (TDMS)
+
+#### `verify-technical-debt`
+
+**Description:** Verify technical debt items in the verification queue **When to
+use:** Verifying NEW items in MASTER_DEBT.jsonl to determine if they are real
+issues or false positives **Example:** `/verify-technical-debt` **Parameters:**
+None - processes items from verification queue **Output:** Updates
+MASTER_DEBT.jsonl with VERIFIED, FALSE_POSITIVE, DUPLICATE, or RESOLVED status
+**Added:** TDMS Phase 9
+
+#### `sync-sonarcloud-debt`
+
+**Description:** Sync technical debt items from SonarCloud API into
+MASTER_DEBT.jsonl **When to use:** On-demand sync when SonarCloud has new issues
+to import **Example:** `/sync-sonarcloud-debt` **Parameters:** None - fetches
+from SonarCloud API **Output:** Reports new items, resolved items, unchanged;
+user confirms additions **Requires:** `SONAR_TOKEN` in `.env.local` **Added:**
+TDMS Phase 6
+
+#### `add-manual-debt`
+
+**Description:** Manually add a technical debt item to MASTER_DEBT.jsonl **When
+to use:** Adding ad-hoc technical debt discovered during development
+**Example:** `/add-manual-debt` **Parameters:** Prompts for file, line, title,
+severity, category **Output:** New DEBT-XXXX entry in MASTER_DEBT.jsonl
+**Added:** TDMS Phase 6
+
+#### `add-deferred-debt`
+
+**Description:** Add deferred technical debt items identified during PR review
+**When to use:** During PR review when items are deferred for later **Example:**
+`/add-deferred-debt` **Parameters:** Prompts for PR number, file, line,
+description, severity **Output:** New DEBT-XXXX entry with `source_id: PR-N-X`
+**Added:** TDMS Phase 6
 
 ### Session Management
 
@@ -1816,6 +1852,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                                                                                                                         |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.5     | 2026-02-01 | Session #123: Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt) - TDMS all 17 phases complete         |
 | 2.3     | 2026-01-29 | Session #115: Added auto-commit mechanism to session-end skill (`npm run session:end`) to prevent forgetting session-end commits                                |
 | 2.2     | 2026-01-29 | Session #114: Added 3 missing skills (audit-aggregator, audit-comprehensive, checkpoint), documented 14 undocumented hooks, clarified commands→skills migration |
 | 2.1     | 2026-01-27 | Updated session-end checklist to include DOCUMENTATION_INDEX.md                                                                                                 |

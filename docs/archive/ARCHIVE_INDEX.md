@@ -7,6 +7,28 @@ deprecated files from the SoNash project.
 
 ## 🗂️ Archive Organization
 
+### February 1, 2026 - Technical Debt Source Documents
+
+**Location:** `/docs/archive/technical-debt-sources-2026-01/`
+
+**Purpose:** Archive of source documents consolidated into TDMS (Technical Debt
+Management System)
+
+**Archived Contents:**
+
+- `aggregation/` - Former `docs/aggregation/` (284 aggregated issues)
+- `analysis/` - Former `docs/analysis/` (SonarCloud JSON exports)
+- `reviews-2026-Q1/` - Former `docs/reviews/2026-Q1/` (118 canonical items)
+- `audits/` - Former `docs/audits/` contents (except single-session)
+- `legacy-docs/` - Superseded technical debt documents
+
+**Canonical Location:** `docs/technical-debt/MASTER_DEBT.jsonl`
+
+**Details:** See
+[technical-debt-sources-2026-01/MANIFEST.md](./technical-debt-sources-2026-01/MANIFEST.md)
+
+---
+
 ### January 13, 2026 - Deprecated Documents
 
 **Location:** `/docs/archive/2026-jan-deprecated/`

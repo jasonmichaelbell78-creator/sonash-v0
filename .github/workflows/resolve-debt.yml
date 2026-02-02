@@ -1,0 +1,103 @@
+name: Resolve Technical Debt
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  resolve-debt:
+    name: Resolve Debt Items
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract DEBT IDs from PR body
+        id: extract
+        run: |
+          # Extract DEBT-XXXX patterns from PR body
+          DEBT_IDS=$(echo "${{ github.event.pull_request.body }}" | \
+            grep -oE 'DEBT-[0-9]+' | sort -u | tr '\n' ' ' || true)
+
+          # Trim whitespace
+          DEBT_IDS=$(echo "$DEBT_IDS" | xargs)
+
+          echo "Found DEBT IDs: $DEBT_IDS"
+          echo "debt_ids=$DEBT_IDS" >> "$GITHUB_OUTPUT"
+
+          # Count IDs
+          if [ -z "$DEBT_IDS" ]; then
+            echo "count=0" >> "$GITHUB_OUTPUT"
+          else
+            COUNT=$(echo "$DEBT_IDS" | wc -w)
+            echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node.js
+        if: steps.extract.outputs.count != '0'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        if: steps.extract.outputs.count != '0'
+        run: npm ci
+
+      - name: Resolve debt items
+        if: steps.extract.outputs.count != '0'
+        id: resolve
+        run: |
+          echo "Resolving debt items: ${{ steps.extract.outputs.debt_ids }}"
+
+          # Run bulk resolution with PR number
+          node scripts/debt/resolve-bulk.js \
+            --pr ${{ github.event.pull_request.number }} \
+            ${{ steps.extract.outputs.debt_ids }}
+
+          # Check if any files changed
+          if git diff --quiet docs/technical-debt/; then
+            echo "changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push updates
+        if: steps.extract.outputs.count != '0' && steps.resolve.outputs.changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add docs/technical-debt/
+          git commit -m "chore(tdms): resolve debt items from PR #${{ github.event.pull_request.number }}
+
+          Resolved: ${{ steps.extract.outputs.debt_ids }}
+
+          [skip ci]"
+
+          git push
+
+      - name: Summary
+        run: |
+          echo "## Technical Debt Resolution" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**PR:** #${{ github.event.pull_request.number }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "**DEBT IDs found:** ${{ steps.extract.outputs.count }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ steps.extract.outputs.count }}" != "0" ]; then
+            echo "**IDs:** ${{ steps.extract.outputs.debt_ids }}" >> "$GITHUB_STEP_SUMMARY"
+            if [ "${{ steps.resolve.outputs.changes }}" == "true" ]; then
+              echo "**Status:** ✅ Resolved and committed" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "**Status:** ⚠️ No changes (items may already be resolved)" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          else
+            echo "**Status:** ℹ️ No DEBT-XXXX IDs found in PR body" >> "$GITHUB_STEP_SUMMARY"
+          fi

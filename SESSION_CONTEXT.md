@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 3.40 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 3.43 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-01-31 (Session #122)
+2026-02-02 (Session #125)
 
 ---
 
@@ -10,13 +10,68 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-31 **Branch**: `claude/new-session-U1Jou` **Working
-On**: TDMS - intake script fix + debt item **Files Modified**: scripts/debt,
-docs/technical-debt
+**Last Checkpoint**: 2026-02-02 **Branch**: `claude/new-session-U1Jou` **Working
+On**: TDMS Phase 18b (Critical Debt Sprint) **Files Modified**:
+.github/workflows/ci.yml, docs/technical-debt/\*,
+docs/plans/CI_GATES_BLOCKING_PLAN.md
 
-**Next Step**: TDMS Phase 9b (Full Audit TDMS Integration)
+**Next Step**: None - S0 critical debt resolved or tracked
 
-**Uncommitted Work**: No
+**Uncommitted Work**: No - pending commit
+
+**Session #125 Summary** (TDMS PHASE 18B - CRITICAL DEBT SPRINT):
+
+- ✅ **S0 Debt Triage**: Resolved 12 items, consolidated 4 duplicates, 2 remain
+  - journalEntries write path: RESOLVED (firestore.rules already blocks direct
+    writes)
+  - useJournal memory leak: RESOLVED (already uses useAuthCore() instead of own
+    listener)
+  - CI gates non-blocking: RESOLVED (2/6 now blocking, plan for remainder)
+  - App Check disabled: NEW → on roadmap (Track S/M4.5), kept as canonical
+    DEBT-0854
+  - Cognitive complexity: NEW → requires refactoring (DEBT-0851)
+- ✅ **CI Gates**: Made 2 of 6 checks blocking
+  - deps:unused (knip) - now blocking
+  - sync-roadmap-refs.js - now blocking
+  - Created CI_GATES_BLOCKING_PLAN.md for remaining 4 gates
+- ✅ **TDMS Views**: Updated with status breakdown (852 NEW, 12 RESOLVED, 4
+  DUPLICATE)
+- 📋 **S0 Critical Reduced**: 18 → 2 unique open issues
+
+**Session #124 Summary** (TDMS PHASE 18 - CORRECTIVE):
+
+- ✅ **Phase 18 Complete**: ROADMAP Placement (corrective)
+  - Gap identified: Phase 6/6.5 were deferred, 825/868 items had null
+    roadmap_ref
+  - Created Track S (Security) in ROADMAP.md for 58 security items
+  - Created assign-roadmap-refs.js script for bulk assignments
+  - Assigned roadmap_ref to all 825 unplaced items:
+    - M2.1: 465 (components/lib/app/hooks code quality)
+    - Track-E: 207 (scripts/.claude automation)
+    - Track-S: 48 (security)
+    - M2.2: 28 (functions/)
+    - Track-D/T/P/M1.5/M2.3-REF: remaining items
+  - Created unplaced-items.md view (Phase 6 deliverable)
+  - Updated FINAL_SYSTEM_AUDIT.md with gap documentation
+  - Updated TDMS plan to v1.4 (All 18 phases complete)
+  - Audit Status: PASS
+- 📋 **TDMS Now Complete**: All 868 items have roadmap_ref assigned
+
+**Session #123 Summary** (TDMS PHASES 9B + 10):
+
+- ✅ **Phase 9b Complete**: Full Audit TDMS Integration
+  - Updated MULTI_AI_CODE_REVIEW template (v1.3→v1.4) with TDMS section
+  - Updated MULTI_AI_SECURITY_AUDIT template (v1.4→v1.5) with TDMS section
+  - Added Section 2.5 (One-Off Audits) to PROCEDURE.md
+  - Added Section 11 (Category Normalization) to PROCEDURE.md
+  - Updated MULTI_AI_REVIEW_COORDINATOR (v1.6→v1.7) with TDMS section
+  - Audit Status: PASS (no deviations)
+- ✅ **Phase 10 Complete**: GitHub Action for debt resolution
+  - Created `.github/workflows/resolve-debt.yml`
+  - Triggers on PR merge, extracts DEBT-XXXX IDs from body
+  - Uses resolve-bulk.js for efficient batch processing
+  - Audit Status: PASS (no deviations)
+- 📋 **Next**: Phase 11 (PR template update)
 
 **Session #121 Summary** (INTAKE SCRIPT FIX):
 
@@ -265,7 +320,7 @@ productive work.
 
 ## 🔢 Session Tracking
 
-**Current Session Count**: 122 (since Jan 1, 2026)
+**Current Session Count**: 123 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recently Completed" entries; review-focused sessions

@@ -1,9 +1,9 @@
 # Document Dependencies
 
-**Document Type:** REFERENCE (Tier 4) **Version:** 1.7 **Created:** 2026-01-08
+**Document Type:** REFERENCE (Tier 4) **Version:** 1.8 **Created:** 2026-01-08
 **Status:** ACTIVE **Purpose:** Track template-instance relationships,
 cross-document dependencies, and synchronization requirements **Last Updated:**
-2026-01-30 (Session #117)
+2026-02-01 (Session #123 - TDMS Complete)
 
 ---
 
@@ -407,6 +407,7 @@ When reviewing documentation PRs:
 
 | Version | Date       | Changes                                                                                                                                          | Author      |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| 1.8     | 2026-02-01 | TDMS ALL 17 PHASES COMPLETE - Updated to note docs/audits/canonical/ was archived to docs/archive/technical-debt-sources-2026-01/; Session #123. | Claude Code |
 | 1.7     | 2026-01-30 | Added TDMS-related triggers: docs/plans/, docs/technical-debt/, docs/audits/canonical/, DEBT-XXXX resolution; Session #117.                      | Claude Code |
 | 1.6     | 2026-01-29 | Added DEFERRED → TRIAGED trigger: when items move to ROADMAP_FUTURE.md, source entries must be updated; Session #115.                            | Claude Code |
 | 1.5     | 2026-01-27 | Added Track T (Testing Infrastructure) triggers: tests/e2e/ and testing infrastructure changes; Session #103.                                    | Claude Code |

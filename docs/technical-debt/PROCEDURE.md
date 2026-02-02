@@ -1,8 +1,8 @@
 # Technical Debt Management System - Procedure Guide
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-01-30
+**Document Version:** 1.1
+**Last Updated:** 2026-02-01
 **Status:** ACTIVE
 **Parent Plan:** [TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md](../plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)
 <!-- prettier-ignore-end -->
@@ -166,6 +166,79 @@ node scripts/debt/intake-manual.js \
   --severity S1 \
   --category code-quality
 ```
+
+### 2.5 From One-Off/Ad-Hoc Audits
+
+For audits performed outside the standard skills (e.g., manual code review,
+ad-hoc security assessment, third-party audit results):
+
+#### When to Use This Workflow
+
+- Results from external security consultants
+- Manual code review findings
+- Performance profiling discoveries
+- One-time focused audits (e.g., reviewing a specific subsystem)
+- Audit findings from third-party tools not integrated into TDMS
+
+#### Process
+
+1. **Document findings** in a temporary JSONL file:
+
+```bash
+# Create temporary findings file
+touch /tmp/adhoc-audit-YYYYMMDD.jsonl
+```
+
+2. **Format each finding** as valid JSONL (one JSON object per line):
+
+```json
+{
+  "title": "Issue description",
+  "severity": "S1",
+  "category": "security",
+  "file": "path/to/file.ts",
+  "line": 42,
+  "description": "Detailed explanation",
+  "recommendation": "How to fix",
+  "source": "external-audit-vendor"
+}
+```
+
+3. **Ingest to TDMS:**
+
+```bash
+node scripts/debt/intake-audit.js \
+  /tmp/adhoc-audit-YYYYMMDD.jsonl \
+  --source "adhoc-DESCRIPTION" \
+  --batch-id "adhoc-YYYYMMDD"
+```
+
+4. **Verify ingestion** - Check INDEX.md for new items
+
+5. **Clean up** - Delete temporary file after successful intake
+
+#### Handling Unstructured Findings
+
+If audit results are in prose/narrative format (not JSONL):
+
+1. **Extract actionable items** manually into JSONL format
+2. **Ensure each item has**:
+   - `title`: Short description
+   - `severity`: S0/S1/S2/S3 (use mapping below)
+   - `category`: One of the 6 TDMS categories
+   - `file`: Specific file path (required)
+   - `line`: Line number (use 1 if file-wide)
+   - `description`: Full explanation
+3. **Use --source flag** to track origin (e.g., `"vendor-securitycorp-2026Q1"`)
+
+#### Severity Mapping for External Audits
+
+| External Severity       | TDMS Severity |
+| ----------------------- | ------------- |
+| Critical/Blocker        | S0            |
+| High/Major              | S1            |
+| Medium/Moderate         | S2            |
+| Low/Minor/Informational | S3            |
 
 ---
 
@@ -366,11 +439,108 @@ Reports:
 
 ---
 
+## 11. Category Field Normalization
+
+Different audit types use different category names. Use this mapping table when
+ingesting findings from various sources to ensure consistent TDMS categories.
+
+### Multi-AI Code Review Categories
+
+| Audit Category | TDMS Category | Notes                         |
+| -------------- | ------------- | ----------------------------- |
+| Hygiene        | code-quality  | Duplication, dead code        |
+| Types          | code-quality  | Type correctness, safety      |
+| Framework      | code-quality  | Next.js/React boundaries      |
+| Security       | security      | Auth, validation, secrets     |
+| Testing        | code-quality  | Test coverage, quality        |
+| AICode         | code-quality  | AI-generated code issues      |
+| Debugging      | code-quality  | Debugging ergonomics, logging |
+
+### Multi-AI Security Audit Categories
+
+| Audit Category    | TDMS Category | Notes                           |
+| ----------------- | ------------- | ------------------------------- |
+| RateLimiting      | security      | Rate limiting & throttling      |
+| InputValidation   | security      | Input validation & sanitization |
+| SecretsManagement | security      | API keys, secrets               |
+| Authentication    | security      | Auth & authorization            |
+| Firebase          | security      | Firebase security rules         |
+| OWASP             | security      | OWASP Top 10 compliance         |
+| Headers           | security      | CSP, HSTS, X-Frame-Options      |
+| Framework         | security      | Framework-specific security     |
+| FileHandling      | security      | File uploads, path traversal    |
+| Crypto            | security      | Cryptography, randomness        |
+| ProductUXRisk     | security      | UX-related security risks       |
+| AgentSecurity     | security      | AI agent security               |
+
+### Multi-AI Process Audit Categories
+
+| Audit Category  | TDMS Category | Notes                      |
+| --------------- | ------------- | -------------------------- |
+| Redundancy      | process       | Duplicated automation      |
+| DeadCode        | process       | Orphaned scripts/hooks     |
+| Effectiveness   | process       | Automation effectiveness   |
+| Performance     | process       | Execution time, bloat      |
+| ErrorHandling   | process       | Error handling gaps        |
+| Dependency      | process       | Call chain, dependencies   |
+| Consistency     | process       | Naming, patterns           |
+| CoverageGap     | process       | Missing automation         |
+| Maintainability | process       | Maintenance burden         |
+| Functionality   | process       | Functional correctness     |
+| Improvement     | process       | Enhancement opportunities  |
+| CodeQuality     | code-quality  | Script code quality issues |
+
+### Single-Session Audit Categories
+
+| Audit Skill         | Output Category                     | TDMS Category |
+| ------------------- | ----------------------------------- | ------------- |
+| audit-code          | code, testing, architecture         | code-quality  |
+| audit-security      | security (all subcategories)        | security      |
+| audit-performance   | performance, bundle, runtime        | performance   |
+| audit-documentation | documentation, README, inline       | documentation |
+| audit-process       | process, automation, CI/CD          | process       |
+| audit-refactoring   | refactoring, architecture, patterns | refactoring   |
+
+### SonarCloud Issue Types
+
+| SonarCloud Type  | TDMS Category |
+| ---------------- | ------------- |
+| BUG              | code-quality  |
+| VULNERABILITY    | security      |
+| SECURITY_HOTSPOT | security      |
+| CODE_SMELL       | code-quality  |
+| MAINTAINABILITY  | code-quality  |
+| RELIABILITY      | code-quality  |
+
+### Intake Script Auto-Mapping
+
+The `intake-audit.js` script automatically normalizes categories when the
+`--source` flag indicates a known source type:
+
+```bash
+# Source-based auto-mapping
+node scripts/debt/intake-audit.js findings.jsonl --source "multi-ai-code-review"
+node scripts/debt/intake-audit.js findings.jsonl --source "multi-ai-security-audit"
+node scripts/debt/intake-audit.js findings.jsonl --source "multi-ai-process-audit"
+node scripts/debt/intake-audit.js findings.jsonl --source "sonarcloud"
+```
+
+For unknown sources, use `--category-mapping` to specify explicit mappings:
+
+```bash
+node scripts/debt/intake-audit.js findings.jsonl \
+  --source "external-vendor" \
+  --category-mapping "Critical=security,Major=code-quality,Minor=code-quality"
+```
+
+---
+
 ## Version History
 
-| Version | Date       | Changes                                     |
-| ------- | ---------- | ------------------------------------------- |
-| 1.0     | 2026-01-30 | Initial PROCEDURE.md created (TDMS Phase 2) |
+| Version | Date       | Changes                                                                                                                              |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 1.1     | 2026-02-01 | **TDMS Phase 9b**: Added Section 2.5 (One-Off/Ad-Hoc Audits), Section 11 (Category Normalization mapping tables for all audit types) |
+| 1.0     | 2026-01-30 | Initial PROCEDURE.md created (TDMS Phase 2)                                                                                          |
 
 ---
 

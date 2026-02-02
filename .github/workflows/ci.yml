@@ -35,8 +35,7 @@ jobs:
         run: npm run deps:circular
 
       - name: Check for unused dependencies/exports
-        # Non-blocking: 1 CSS import flagged (leaflet.markercluster) - acceptable
-        continue-on-error: true
+        # Now blocking - knip passes clean (2026-02-02)
         run: npm run deps:unused
 
       - name: Get changed files for pattern check
@@ -97,8 +96,8 @@ jobs:
 
       - name: Check ROADMAP debt references
         # TDMS Phase 8: Validates DEBT-XXXX references exist in canonical source
+        # Now blocking - prevents orphaned DEBT-XXXX references (2026-02-02)
         if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
-        continue-on-error: true
         run: node scripts/debt/sync-roadmap-refs.js --check-only
 
       - name: Verify technical debt views current

@@ -46,6 +46,14 @@ For full conventions, see: docs/PR_WORKFLOW_CHECKLIST.md
 
 Closes # Related to #
 
+## Technical Debt
+
+<!-- If this PR resolves any technical debt items, list their DEBT-XXXX IDs below.
+     The resolve-debt workflow will automatically mark them as resolved when merged.
+     See: docs/technical-debt/PROCEDURE.md for TDMS reference -->
+
+Resolves: <!-- DEBT-XXXX, DEBT-YYYY or "none" -->
+
 ## Pre-Merge Checklist
 
 - [ ] All tests passing

@@ -1,6 +1,6 @@
 # [Project Name] Multi-AI Code Review Plan
 
-**Document Version:** 1.3 **Created:** YYYY-MM-DD **Last Updated:** 2026-01-13
+**Document Version:** 1.4 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-01
 **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
 
 ---
@@ -27,7 +27,7 @@ quality review on [Project Name]. Use this template when:
 7. Debugging Ergonomics (NEW - 2026-01-13)
 
 **Expected Output:** Ranked list of canonical findings with PR implementation
-plan.
+plan, ingested to TDMS for tracking.
 
 ---
 
@@ -41,8 +41,9 @@ plan.
 | Step 4 | Run aggregation                  | PENDING | 0%         |
 | Step 5 | Create canonical findings doc    | PENDING | 0%         |
 | Step 6 | Generate PR plan                 | PENDING | 0%         |
+| Step 7 | Ingest to TDMS                   | PENDING | 0%         |
 
-**Overall Progress:** 0/6 steps complete
+**Overall Progress:** 0/7 steps complete
 
 ---
 
@@ -723,9 +724,58 @@ Do this after every PR merge:
 
 ## 📋 Review History
 
-| Date   | Type         | Trigger          | Models Used  | Findings        | Plan Created  |
-| ------ | ------------ | ---------------- | ------------ | --------------- | ------------- |
-| [Date] | Code Quality | [Trigger reason] | [Model list] | [X CANON items] | [Link to doc] |
+| Date   | Type         | Trigger          | Models Used  | Findings        | TDMS Items   | Plan Created  |
+| ------ | ------------ | ---------------- | ------------ | --------------- | ------------ | ------------- |
+| [Date] | Code Quality | [Trigger reason] | [Model list] | [X CANON items] | [X ingested] | [Link to doc] |
+
+---
+
+## 📦 TDMS Integration
+
+### Automatic Intake
+
+After aggregation, ingest findings to TDMS:
+
+```bash
+node scripts/debt/intake-audit.js \
+  docs/audits/single-session/code/CODE_REVIEW_YYYY_QX.jsonl \
+  --source "multi-ai-code-review" \
+  --batch-id "code-review-YYYYMMDD"
+```
+
+### Required TDMS Fields
+
+Ensure all findings include these fields for TDMS compatibility:
+
+| Audit Field     | TDMS Field    | Notes                                              |
+| --------------- | ------------- | -------------------------------------------------- |
+| `category`      | `category`    | Map: Hygiene→code-quality, Security→security, etc. |
+| `severity`      | `severity`    | S0/S1/S2/S3 (unchanged)                            |
+| `files[0]`      | `file`        | Primary file path                                  |
+| `line`          | `line`        | Line number (use 1 if file-wide)                   |
+| `title`         | `title`       | Short description                                  |
+| `suggested_fix` | `description` | Full description with recommendation               |
+
+### Category Mapping (Code Review → TDMS)
+
+| Code Review Category | TDMS Category |
+| -------------------- | ------------- |
+| Hygiene              | code-quality  |
+| Types                | code-quality  |
+| Framework            | code-quality  |
+| Security             | security      |
+| Testing              | code-quality  |
+| AICode               | code-quality  |
+| Debugging            | code-quality  |
+
+### Completion Checklist
+
+After TDMS intake:
+
+- [ ] Findings ingested without errors
+- [ ] DEBT-XXXX IDs assigned
+- [ ] Views regenerated (`node scripts/debt/generate-views.js`)
+- [ ] Review History updated with TDMS Items count
 
 ---
 
@@ -740,8 +790,9 @@ When using this template:
 5. **Collect outputs** in JSONL format
 6. **Run aggregation** using aggregator prompt
 7. **Create canonical findings doc** from aggregated output
-8. **Update Review History** in this file
-9. **Update MULTI_AI_REVIEW_COORDINATOR.md** with review date and trigger reset
+8. **Ingest to TDMS** using `node scripts/debt/intake-audit.js`
+9. **Update Review History** in this file (include TDMS Items count)
+10. **Update MULTI_AI_REVIEW_COORDINATOR.md** with review date and trigger reset
 
 **Quality checks before finalizing:**
 
@@ -750,6 +801,8 @@ When using this template:
 - [ ] Aggregation completed without errors
 - [ ] PR plan is actionable with clear acceptance tests
 - [ ] Canonical findings doc follows template
+- [ ] TDMS intake completed without errors
+- [ ] DEBT-XXXX IDs assigned to all findings
 
 ---
 
@@ -757,6 +810,8 @@ When using this template:
 
 - **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL
   schema for all review templates
+- **[docs/technical-debt/PROCEDURE.md](../technical-debt/PROCEDURE.md)** - TDMS
+  intake and tracking procedures
 - **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
 - **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md** - Security-focused reviews
 - **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** - Performance-focused reviews
@@ -771,6 +826,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                     | Author |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.4     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added Step 7 for TDMS intake, TDMS Integration section with intake commands, category mapping table, and completion checklist. Updated AI Instructions and Quality checks. Added PROCEDURE.md to Related Documents.                                        | Claude |
 | 1.3     | 2026-01-13 | Added Category 7: Debugging Ergonomics (correlation IDs, structured logging, Sentry integration, error context, repro path quality). From Engineering Productivity audit recommendations.                                                                                                   | Claude |
 | 1.2     | 2026-01-13 | Added Category 6: AI-Generated Code Failure Modes (happy-path only logic, trivial test assertions, hallucinated dependencies, copy/paste anti-patterns, inconsistent architecture, overly complex functions). Aligns with single-session audit-code.md updates for vibe-coded app coverage. | Claude |
 | 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro)                                                   | Claude |

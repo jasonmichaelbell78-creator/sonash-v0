@@ -659,6 +659,63 @@ reliability, and solo developer automations.
 
 **Track P Total: ~24 hours** (was ~18 hours, +6hr from Audit)
 
+### Track S - Security Technical Debt (NEW - Phase 18)
+
+> **Source:** TDMS MASTER_DEBT.jsonl security category (58 items) **Goal:**
+> Address security-related technical debt for production hardening **Priority:**
+> P0 - Security issues should be resolved before M4.5 Security & Privacy
+> milestone
+
+**Note:** This track addresses **technical debt** related to security (e.g., App
+Check disabled, reCAPTCHA fail-open, missing headers). For security **features**
+(encryption, privacy controls), see M4.5 Security & Privacy milestone.
+
+#### S0 Critical Security (4 unique issues - deduplicated from 18 items)
+
+| ID         | Issue                                                 | File                     | Effort |
+| ---------- | ----------------------------------------------------- | ------------------------ | ------ |
+| DEBT-0854+ | App Check disabled on Cloud Functions                 | functions/src/index.ts   | E1     |
+| DEBT-0850+ | Legacy journalEntries allows direct writes            | firestore.rules          | E2     |
+| DEBT-0087  | Missing security headers (CSP, X-Frame-Options, etc.) | firebase.json            | E1     |
+| DEBT-0852+ | CI security gates non-blocking                        | .github/workflows/ci.yml | E1     |
+
+**S0 Action Items:**
+
+- [ ] **S1:** Re-enable App Check on Cloud Functions (DEBT-0854, 0856,
+      0860, 0865)
+- [ ] **S2:** Close direct client write path to journalEntries (DEBT-0850,
+      0855, 0857)
+- [ ] **S3:** Add security headers to firebase.json (DEBT-0087)
+- [ ] **S4:** Convert CI security checks to blocking (DEBT-0852, 0859, 0864)
+
+#### S1 High Priority Security (12 items)
+
+| Pattern                   | IDs                               | Description                         | Effort |
+| ------------------------- | --------------------------------- | ----------------------------------- | ------ |
+| reCAPTCHA fail-open       | DEBT-0045, 0071, 0080, 0100, 0110 | Logs missing token but continues    | E1     |
+| Client App Check disabled | DEBT-0068, 0108                   | Client-side not sending tokens      | E1     |
+| Rate limiting incomplete  | DEBT-0046, 0081, 0101, 0111       | No IP throttling, admin unthrottled | E2     |
+| Admin claim defense       | DEBT-0073, 0109                   | Direct writes expand blast radius   | E2     |
+
+**S1 Action Items:**
+
+- [ ] **S5:** Make reCAPTCHA fail-closed when configured
+- [ ] **S6:** Restore client App Check initialization
+- [ ] **S7:** Add IP-based rate limiting, throttle admin endpoints
+- [ ] **S8:** Add Cloud Function wrappers for admin mutations
+
+#### S2 Medium Priority Security (27 items)
+
+Security hotspots and lower-severity items tracked in MASTER_DEBT.jsonl with
+category="security". Review and address as part of ongoing security hardening.
+
+#### S3 Low Priority Security (15 items)
+
+Security-related code improvements, documentation needs tracked in
+MASTER_DEBT.jsonl.
+
+**Track S Total:** 58 items | ~30 hours estimated
+
 ### Track T - Testing Infrastructure (NEW - Session #103)
 
 > **Spec:**

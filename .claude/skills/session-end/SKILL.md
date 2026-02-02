@@ -31,7 +31,20 @@ git log --oneline -5
 npm run hooks:health -- --end
 ```
 
-## 5. Final Commit & Push (MANDATORY)
+## 5. TDMS Metrics Update
+
+Regenerate technical debt metrics for dashboard integration:
+
+```bash
+node scripts/debt/generate-metrics.js
+```
+
+This generates:
+
+- `docs/technical-debt/metrics.json` - Machine-readable for dashboard
+- `docs/technical-debt/METRICS.md` - Human-readable summary
+
+## 6. Final Commit & Push (MANDATORY)
 
 ```bash
 npm run session:end
