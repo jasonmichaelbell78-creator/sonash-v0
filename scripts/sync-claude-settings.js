@@ -127,16 +127,22 @@ function filterSettings(settings, exclude = EXCLUDED_SETTINGS_KEYS) {
   return filtered;
 }
 
+// Qodo R13: Helper to safely get object for spreading
+function safeObj(value) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+}
+
 function mergeSettings(local, repo) {
   // Deep merge with repo taking precedence for enabledPlugins
   const merged = { ...local };
 
+  // Qodo R13: Guard against null/undefined/array before spreading
   if (repo.enabledPlugins) {
-    merged.enabledPlugins = { ...local.enabledPlugins, ...repo.enabledPlugins };
+    merged.enabledPlugins = { ...safeObj(local.enabledPlugins), ...safeObj(repo.enabledPlugins) };
   }
 
   if (repo.hooks) {
-    merged.hooks = { ...local.hooks, ...repo.hooks };
+    merged.hooks = { ...safeObj(local.hooks), ...safeObj(repo.hooks) };
   }
 
   if (repo.statusLine) {
@@ -378,9 +384,11 @@ function diffCommand() {
       for (const d of diffs) {
         const symbol = d.type === "added" ? "+" : d.type === "removed" ? "-" : "~";
         console.log(`  ${symbol} ${d.path}`);
+        // Qodo R12: Don't log full values - may contain secrets/tokens
         if (d.type === "changed") {
-          console.log(`      local: ${JSON.stringify(d.local)}`);
-          console.log(`      repo:  ${JSON.stringify(d.repo)}`);
+          const localType = typeof d.local;
+          const repoType = typeof d.repo;
+          console.log(`      local: (${localType}) repo: (${repoType})`);
         }
       }
       console.log();

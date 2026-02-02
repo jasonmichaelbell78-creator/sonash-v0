@@ -320,7 +320,8 @@ function logMetricsGeneration(metrics) {
       s1_alerts: metrics.alerts.s1_count,
     };
 
-    fs.appendFileSync(METRICS_LOG, JSON.stringify(logEntry) + "\n");
+    // Qodo R15: Explicit utf8 encoding for consistent output
+    fs.appendFileSync(METRICS_LOG, JSON.stringify(logEntry) + "\n", "utf8");
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     console.warn(`⚠️ Failed to write metrics log: ${errMsg}`);

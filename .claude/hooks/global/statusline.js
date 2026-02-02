@@ -76,7 +76,12 @@ process.stdin.on("end", () => {
             // Review #224 Qodo R3: Array.isArray guard for todos
             if (Array.isArray(todos)) {
               const inProgress = todos.find((t) => t.status === "in_progress");
-              if (inProgress) task = inProgress.activeForm || "";
+              if (inProgress) {
+                // Qodo R11: Sanitize terminal escape sequences to prevent injection
+                const rawTask = inProgress.activeForm || "";
+                // eslint-disable-next-line no-control-regex -- Intentional control char sanitization
+                task = rawTask.replace(/[\x00-\x1f\x7f-\x9f]/g, "");
+              }
             }
           }
         } catch (_e) {

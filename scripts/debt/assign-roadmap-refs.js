@@ -259,9 +259,15 @@ function main() {
     console.log("\n⚠️  DRY RUN - no changes made");
     console.log("   Run without --dry-run to apply changes");
   } else {
-    // Create backup
-    fs.copyFileSync(MASTER_FILE, BACKUP_FILE);
-    console.log(`\n💾 Backup created: ${BACKUP_FILE}`);
+    // Qodo R14: Handle backup creation failures
+    try {
+      fs.copyFileSync(MASTER_FILE, BACKUP_FILE);
+      console.log(`\n💾 Backup created: ${BACKUP_FILE}`);
+    } catch (backupErr) {
+      const errMsg = backupErr instanceof Error ? backupErr.message : String(backupErr);
+      console.error(`❌ Failed to create backup file: ${errMsg}`);
+      process.exit(4);
+    }
 
     // Review #224 Qodo R6: Atomic write to prevent data corruption
     // Qodo R8: Windows-safe replace - remove destination before rename
