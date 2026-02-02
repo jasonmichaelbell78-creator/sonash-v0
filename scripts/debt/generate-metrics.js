@@ -304,21 +304,27 @@ ${Object.entries(metrics.by_source)
 }
 
 // Log metrics generation
+// Qodo R9: Guard metrics log writes to prevent crashes after successful metric generation
 function logMetricsGeneration(metrics) {
-  if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(LOG_DIR)) {
+      fs.mkdirSync(LOG_DIR, { recursive: true });
+    }
+
+    const logEntry = {
+      timestamp: metrics.generated,
+      total: metrics.summary.total,
+      open: metrics.summary.open,
+      resolved: metrics.summary.resolved,
+      s0_alerts: metrics.alerts.s0_count,
+      s1_alerts: metrics.alerts.s1_count,
+    };
+
+    fs.appendFileSync(METRICS_LOG, JSON.stringify(logEntry) + "\n");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn(`⚠️ Failed to write metrics log: ${errMsg}`);
   }
-
-  const logEntry = {
-    timestamp: metrics.generated,
-    total: metrics.summary.total,
-    open: metrics.summary.open,
-    resolved: metrics.summary.resolved,
-    s0_alerts: metrics.alerts.s0_count,
-    s1_alerts: metrics.alerts.s1_count,
-  };
-
-  fs.appendFileSync(METRICS_LOG, JSON.stringify(logEntry) + "\n");
 }
 
 // Main function
@@ -333,9 +339,12 @@ function main() {
   const metrics = calculateMetrics(items);
 
   // Review #224 Qodo R7: Handle write failures gracefully
+  // Qodo R10: Ensure output directory exists before writes
   try {
+    fs.mkdirSync(BASE_DIR, { recursive: true });
+
     // Write metrics.json
-    fs.writeFileSync(METRICS_JSON, JSON.stringify(metrics, null, 2));
+    fs.writeFileSync(METRICS_JSON, JSON.stringify(metrics, null, 2) + "\n");
     console.log(`  ✅ ${METRICS_JSON}`);
 
     // Write METRICS.md

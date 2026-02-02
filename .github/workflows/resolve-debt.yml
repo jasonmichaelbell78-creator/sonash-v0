@@ -8,7 +8,7 @@ on:
 jobs:
   resolve-debt:
     name: Resolve Debt Items
-    if: github.event.pull_request.merged == true
+    if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -46,18 +46,18 @@ jobs:
           fi
 
       - name: Setup Node.js
-        if: steps.extract.outputs.count != '0'
+        if: ${{ steps.extract.outputs.count != '0' }}
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "npm"
 
       - name: Install dependencies
-        if: steps.extract.outputs.count != '0'
+        if: ${{ steps.extract.outputs.count != '0' }}
         run: npm ci
 
       - name: Resolve debt items
-        if: steps.extract.outputs.count != '0'
+        if: ${{ steps.extract.outputs.count != '0' }}
         id: resolve
         run: |
           echo "Resolving debt items: ${{ steps.extract.outputs.debt_ids }}"
@@ -75,7 +75,7 @@ jobs:
           fi
 
       - name: Commit and push updates
-        if: steps.extract.outputs.count != '0' && steps.resolve.outputs.changes == 'true'
+        if: ${{ steps.extract.outputs.count != '0' && steps.resolve.outputs.changes == 'true' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

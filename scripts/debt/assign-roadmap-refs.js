@@ -264,9 +264,12 @@ function main() {
     console.log(`\n💾 Backup created: ${BACKUP_FILE}`);
 
     // Review #224 Qodo R6: Atomic write to prevent data corruption
+    // Qodo R8: Windows-safe replace - remove destination before rename
     const TEMP_FILE = MASTER_FILE + ".tmp";
     try {
       fs.writeFileSync(TEMP_FILE, updatedLines.join("\n") + "\n", "utf8");
+      // Windows doesn't allow rename over existing file - remove first (backup already exists)
+      fs.rmSync(MASTER_FILE, { force: true });
       fs.renameSync(TEMP_FILE, MASTER_FILE);
       console.log("✅ MASTER_DEBT.jsonl updated successfully");
     } catch (writeErr) {

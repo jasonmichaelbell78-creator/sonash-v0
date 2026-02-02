@@ -216,6 +216,9 @@ const ANTI_PATTERNS = [
     fix: "Always use explicit ${{ }} in if: conditions",
     review: "#17, #21",
     fileTypes: [".yml", ".yaml"],
+    // Review #224: ci.yml verified - all if: conditions use ${{ }} syntax
+    // Pattern has false positives on multiline files/with blocks containing github/steps refs
+    pathExclude: /(?:^|[\\/])ci\.yml$/,
   },
   {
     id: "fragile-bot-detection",
@@ -485,10 +488,12 @@ const ANTI_PATTERNS = [
       // - assign-roadmap-refs.js: readFileSync at L140 IS in try/catch (L139-145)
       // - sync-claude-settings.js: readFileSync at L84 IS in try/catch (L83-91) via readJson helper
       // - statusline.js (hooks/global): readFileSync at L67 IS in try/catch (L59-73), L82 IS in try/catch (L81-88)
+      // - gsd-check-update.js: readFileSync at L37 IS in try/catch (L36-38) in spawned child process code
       "generate-metrics.js",
       "assign-roadmap-refs.js",
       "sync-claude-settings.js",
       "statusline.js",
+      "gsd-check-update.js",
     ],
   },
   {
