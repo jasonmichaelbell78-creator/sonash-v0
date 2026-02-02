@@ -1,6 +1,6 @@
 # Claude Hooks Documentation
 
-**Last Updated:** 2026-01-21 **Configuration:** `.claude/settings.json`
+**Last Updated:** 2026-02-02 **Configuration:** `.claude/settings.json`
 
 ---
 
@@ -200,8 +200,40 @@ console.log("Hook result message");
 
 ---
 
+## Global Hooks (Cross-Platform)
+
+**Location:** `.claude/hooks/global/`
+
+Cross-platform Node.js hooks that can be synced between Windows CLI and Claude
+Code Web environments.
+
+| File                  | Event        | Purpose                                    |
+| --------------------- | ------------ | ------------------------------------------ |
+| `gsd-check-update.js` | SessionStart | Check for GSD package updates              |
+| `statusline.js`       | StatusLine   | Custom status showing model, task, context |
+
+**Sync with local environment:**
+
+```bash
+# Import from repo to local (~/.claude/)
+node scripts/sync-claude-settings.js --import
+
+# Export from local to repo
+node scripts/sync-claude-settings.js --export
+
+# Compare differences
+node scripts/sync-claude-settings.js --diff
+```
+
+**See:** [CROSS_PLATFORM_SETUP.md](./CROSS_PLATFORM_SETUP.md) for full setup
+guide.
+
+---
+
 ## Related Documentation
 
 - [AI_WORKFLOW.md](../AI_WORKFLOW.md) - Session workflows
 - [DEVELOPMENT.md](../DEVELOPMENT.md) - Git hooks
 - [COMMAND_REFERENCE.md](./COMMAND_REFERENCE.md) - Full command reference
+- [CROSS_PLATFORM_SETUP.md](./CROSS_PLATFORM_SETUP.md) - Cross-platform setup
+- [REQUIRED_PLUGINS.md](./REQUIRED_PLUGINS.md) - Plugin configuration

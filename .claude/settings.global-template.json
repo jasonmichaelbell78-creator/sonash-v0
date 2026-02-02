@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings",
+  "_comment": "Global Claude Code settings template. To use: copy or merge into ~/.claude/settings.json",
+  "_usage": {
+    "export": "node scripts/sync-claude-settings.js --export",
+    "import": "node scripts/sync-claude-settings.js --import",
+    "diff": "node scripts/sync-claude-settings.js --diff"
+  },
+  "model": "opus",
+  "alwaysThinkingEnabled": true,
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/global/gsd-check-update.js\""
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/global/statusline.js\""
+  },
+  "enabledPlugins": {
+    "_comment": "Claude Code Workflows",
+    "debugging-toolkit@claude-code-workflows": true,
+    "git-pr-workflows@claude-code-workflows": true,
+    "frontend-mobile-development@claude-code-workflows": true,
+    "full-stack-orchestration@claude-code-workflows": true,
+    "backend-development@claude-code-workflows": true,
+    "unit-testing@claude-code-workflows": true,
+    "code-review-ai@claude-code-workflows": true,
+    "multi-platform-apps@claude-code-workflows": true,
+    "tdd-workflows@claude-code-workflows": true,
+    "comprehensive-review@claude-code-workflows": true,
+    "code-refactoring@claude-code-workflows": true,
+    "error-debugging@claude-code-workflows": true,
+    "llm-application-dev@claude-code-workflows": true,
+    "agent-orchestration@claude-code-workflows": true,
+    "context-management@claude-code-workflows": true,
+    "database-cloud-optimization@claude-code-workflows": true,
+    "deployment-strategies@claude-code-workflows": true,
+    "backend-api-security@claude-code-workflows": true,
+    "framework-migration@claude-code-workflows": true,
+    "seo-content-creation@claude-code-workflows": true,
+    "seo-technical-optimization@claude-code-workflows": true,
+    "seo-analysis-monitoring@claude-code-workflows": true,
+    "content-marketing@claude-code-workflows": true,
+
+    "_comment2": "Superpowers Marketplace",
+    "superpowers@superpowers-marketplace": true,
+    "episodic-memory@superpowers-marketplace": true,
+    "superpowers-chrome@superpowers-marketplace": true,
+
+    "_comment3": "Claude Plugins Official",
+    "code-simplifier@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "serena@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true,
+    "sentry@claude-plugins-official": true,
+    "firebase@claude-plugins-official": true,
+
+    "_comment4": "Disabled plugins",
+    "ralph-wiggum@claude-plugins-official": false,
+    "ralph-loop@claude-plugins-official": false,
+    "hookify@claude-code-plugins": false
+  }
+}
