@@ -143,7 +143,16 @@ function main() {
     console.error(`❌ Failed to read MASTER_DEBT.jsonl: ${errMsg}`);
     process.exit(2);
   }
-  const lines = content.trim().split("\n");
+  const lines = content
+    .trim()
+    .split("\n")
+    .filter((line) => line.trim());
+
+  // Review #224 Qodo R4: Handle empty input files gracefully
+  if (lines.length === 0) {
+    console.log("\n⚠️ MASTER_DEBT.jsonl is empty - nothing to process");
+    process.exit(0);
+  }
 
   // Track statistics
   const stats = {
@@ -254,9 +263,23 @@ function main() {
     fs.copyFileSync(MASTER_FILE, BACKUP_FILE);
     console.log(`\n💾 Backup created: ${BACKUP_FILE}`);
 
-    // Write updated file
-    fs.writeFileSync(MASTER_FILE, updatedLines.join("\n") + "\n", "utf8");
-    console.log("✅ MASTER_DEBT.jsonl updated successfully");
+    // Review #224 Qodo R6: Atomic write to prevent data corruption
+    const TEMP_FILE = MASTER_FILE + ".tmp";
+    try {
+      fs.writeFileSync(TEMP_FILE, updatedLines.join("\n") + "\n", "utf8");
+      fs.renameSync(TEMP_FILE, MASTER_FILE);
+      console.log("✅ MASTER_DEBT.jsonl updated successfully");
+    } catch (writeErr) {
+      // Clean up temp file on failure
+      try {
+        fs.unlinkSync(TEMP_FILE);
+      } catch (_e) {
+        /* ignore cleanup errors */
+      }
+      const errMsg = writeErr instanceof Error ? writeErr.message : String(writeErr);
+      console.error(`❌ Failed to write MASTER_DEBT.jsonl: ${errMsg}`);
+      process.exit(4);
+    }
     console.log("\n📌 Next steps:");
     console.log("   1. Run: node scripts/debt/validate-schema.js");
     console.log("   2. Run: node scripts/debt/generate-views.js");

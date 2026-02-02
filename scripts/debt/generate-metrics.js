@@ -134,11 +134,14 @@ function calculateMetrics(items) {
         const createdMs = createdDate.getTime();
         if (Number.isFinite(createdMs)) {
           const ageDays = Math.floor((now.getTime() - createdMs) / (1000 * 60 * 60 * 24));
-          totalAgeDays += ageDays;
-          openCount++;
-          if (ageDays > oldestAge) {
-            oldestAge = ageDays;
-            oldestItem = item;
+          // Review #224 Qodo R5: Prevent negative age metrics (future timestamps)
+          if (ageDays >= 0) {
+            totalAgeDays += ageDays;
+            openCount++;
+            if (ageDays > oldestAge) {
+              oldestAge = ageDays;
+              oldestItem = item;
+            }
           }
         }
       }
@@ -329,14 +332,21 @@ function main() {
   // Calculate metrics
   const metrics = calculateMetrics(items);
 
-  // Write metrics.json
-  fs.writeFileSync(METRICS_JSON, JSON.stringify(metrics, null, 2));
-  console.log(`  ✅ ${METRICS_JSON}`);
+  // Review #224 Qodo R7: Handle write failures gracefully
+  try {
+    // Write metrics.json
+    fs.writeFileSync(METRICS_JSON, JSON.stringify(metrics, null, 2));
+    console.log(`  ✅ ${METRICS_JSON}`);
 
-  // Write METRICS.md
-  const metricsMd = generateMetricsMd(metrics);
-  fs.writeFileSync(METRICS_MD, metricsMd);
-  console.log(`  ✅ ${METRICS_MD}`);
+    // Write METRICS.md
+    const metricsMd = generateMetricsMd(metrics);
+    fs.writeFileSync(METRICS_MD, metricsMd);
+    console.log(`  ✅ ${METRICS_MD}`);
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Failed to write metrics files: ${errMsg}`);
+    process.exit(2);
+  }
 
   // Log generation
   logMetricsGeneration(metrics);

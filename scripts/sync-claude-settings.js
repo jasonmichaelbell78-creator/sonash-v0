@@ -156,12 +156,15 @@ function mergeSettings(local, repo) {
 
 function diffObjects(a, b, path = "") {
   const diffs = [];
-  const allKeys = new Set([...Object.keys(a || {}), ...Object.keys(b || {})]);
+  // Review #224 Qodo R1: Guard against null - Object.keys(null) throws
+  const aObj = a && typeof a === "object" && !Array.isArray(a) ? a : {};
+  const bObj = b && typeof b === "object" && !Array.isArray(b) ? b : {};
+  const allKeys = new Set([...Object.keys(aObj), ...Object.keys(bObj)]);
 
   for (const key of allKeys) {
     const fullPath = path ? `${path}.${key}` : key;
-    const aVal = a?.[key];
-    const bVal = b?.[key];
+    const aVal = aObj[key];
+    const bVal = bObj[key];
 
     if (aVal === undefined && bVal !== undefined) {
       diffs.push({ path: fullPath, local: undefined, repo: bVal, type: "added" });

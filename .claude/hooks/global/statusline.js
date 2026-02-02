@@ -49,10 +49,18 @@ process.stdin.on("end", () => {
     const homeDir = os.homedir();
     const todosDir = path.join(homeDir, ".claude", "todos");
     if (session && fs.existsSync(todosDir)) {
+      // Review #224 Qodo R2: Wrap statSync in try/catch for file race conditions
       const files = fs
         .readdirSync(todosDir)
         .filter((f) => f.startsWith(session) && f.includes("-agent-") && f.endsWith(".json"))
-        .map((f) => ({ name: f, mtime: fs.statSync(path.join(todosDir, f)).mtime }))
+        .map((f) => {
+          try {
+            return { name: f, mtime: fs.statSync(path.join(todosDir, f)).mtime };
+          } catch (_e) {
+            return null; // File may have been deleted between readdir and stat
+          }
+        })
+        .filter((f) => f !== null)
         .sort((a, b) => b.mtime - a.mtime);
 
       if (files.length > 0) {
@@ -65,8 +73,11 @@ process.stdin.on("end", () => {
             // Path escapes todosDir - skip
           } else {
             const todos = JSON.parse(fs.readFileSync(resolved, "utf8"));
-            const inProgress = todos.find((t) => t.status === "in_progress");
-            if (inProgress) task = inProgress.activeForm || "";
+            // Review #224 Qodo R3: Array.isArray guard for todos
+            if (Array.isArray(todos)) {
+              const inProgress = todos.find((t) => t.status === "in_progress");
+              if (inProgress) task = inProgress.activeForm || "";
+            }
           }
         } catch (_e) {
           /* ignore parse errors */

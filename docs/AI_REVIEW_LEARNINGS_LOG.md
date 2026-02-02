@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 12.5 **Created:** 2026-01-02 **Last Updated:** 2026-01-31
+**Document Version:** 12.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-02
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 12.6    | 2026-02-02 | Review #224: Cross-Platform Config PR - CI Pattern Compliance + SonarCloud + Qodo (27 fixes - 1 CRITICAL, 5 MAJOR, 21 MINOR). **CRITICAL**: GitHub Actions script injection in resolve-debt.yml (S7630) - pass PR body via env var. **MAJOR**: Path containment validation (5 locations). **MINOR**: readFileSync try/catch (8), unsafe error.message (1), percentage clamping (1), MCP null check (1), timestamp validation (1), agent diff content (1), JSON.parse try/catch (1), null object diffing (1), statSync race (1), empty input (1), negative age (1), Array.isArray (1), atomic writes (1), write failures (1). **NEW PATTERNS**: (72) GitHub Actions script injection prevention; (73) env var for user input. 7 false positives rejected. Active reviews #180-224.                                                                                                                                   |
 | 12.3    | 2026-01-31 | Review #223: PR #327 Process Audit System Round 3 - Qodo Security (4 items - 2 HIGH, 2 MEDIUM). **HIGH**: sanitizeError() for check-phase-status.js and intake-manual.js error messages. **MEDIUM**: rollback mechanism for multi-file writes, generic path in error messages. **NEW PATTERNS**: (70) sanitizeError() for user-visible errors; (71) Multi-file write rollback. Active reviews #180-223.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 12.2    | 2026-01-31 | Review #222: PR #327 Process Audit System Round 2 - Qodo (8 items - 6 HIGH, 2 MEDIUM). **HIGH**: (1) intake-manual.js appendFileSync try/catch; (2-4) check-phase-status.js: complete:false on READ_ERROR, only PASS=complete, readdirSync try/catch; (5-6) SKILL.md: Stage 5/6 glob self-inclusion fix, all-findings-raw.jsonl canonical rollups only. **NEW PATTERNS**: (66) Append writes need try/catch; (67) Phase verification = exists AND readable AND PASS; (68) Glob-to-file self-inclusion; (69) Aggregate files use canonical rollups. Active reviews #180-222.                                                                                                                                                                                                                                                                                                                                         |
 | 12.1    | 2026-01-31 | Review #221: PR #327 Process Audit System - CI + Qodo (12 items - 4 CRITICAL CI, 6 MAJOR, 2 MINOR). **CRITICAL CI**: (1) JSONL blank lines/EOF markers; (2) check-phase-status.js syntax error; (3) pathExcludeList false positives for verified try/catch files. **MAJOR**: SKILL.md fixes - AUDIT_DIR realpath validation, explicit file lists for stage 2/3/4 merges. Active reviews #180-221.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -1454,9 +1455,46 @@ sync-claude-settings.js. existsSync does NOT guarantee read success.
 - (73) **Environment variable for user input**: In GitHub Actions, pass
   user-controlled strings through env vars where shell escaping is automatic
 
+**QODO ROUND 2 FIXES (7):**
+
+21. **Null object diffing** - sync-claude-settings.js:157-163.
+    `Object.keys(null)` throws.
+
+- Fix: Guard with `typeof a === "object" && !Array.isArray(a) ? a : {}`
+
+22. **statSync race condition** - statusline.js:52-56. File may be deleted
+    between readdirSync and statSync.
+
+- Fix: Wrap statSync in try/catch, filter null results
+
+23. **Empty input file** - assign-roadmap-refs.js:146. Empty MASTER_DEBT.jsonl
+    causes confusing behavior.
+
+- Fix: Check lines.length === 0 and exit gracefully
+
+24. **Negative age metrics** - generate-metrics.js:136-143. Future timestamps
+    produce negative ages.
+
+- Fix: Skip items with ageDays < 0
+
+25. **Array.isArray guard for todos** - statusline.js:67-69. JSON may parse to
+    non-array.
+
+- Fix: Add Array.isArray(todos) check before .find()
+
+26. **Atomic writes** - assign-roadmap-refs.js:253-266. Interrupted writes
+    corrupt MASTER_DEBT.jsonl.
+
+- Fix: Write to .tmp file first, then rename atomically
+
+27. **Write failure handling** - generate-metrics.js:332-341. writeFileSync can
+    fail silently.
+
+- Fix: Wrap in try/catch with error message and exit code
+
 **Resolution:**
 
-- To Fix: 20 items (1 Critical, 5 Major, 14 Minor)
+- Fixed: 27 items (1 Critical, 5 Major, 21 Minor)
 - Rejected: 7 items (false positives - verified via code inspection)
 - Deferred: 0 items
 
