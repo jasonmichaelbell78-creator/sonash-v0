@@ -305,6 +305,8 @@ Launch these 3 agents in parallel:
 **Task:** Run markdownlint on all docs
 
 ```bash
+# Note: docs:lint should lint all markdown locations:
+# "*.md" "docs/**/*.md" ".claude/**/*.md"
 npm run docs:lint > ${AUDIT_DIR}/markdownlint-raw.txt 2>&1
 
 # Parse output into JSONL findings
@@ -453,6 +455,7 @@ cat ${AUDIT_DIR}/stage-2-*.jsonl \
     ${AUDIT_DIR}/stage-3-*.jsonl \
     ${AUDIT_DIR}/stage-4-*.jsonl \
     ${AUDIT_DIR}/stage-5-location.jsonl \
+    ${AUDIT_DIR}/stage-5-archive-candidates-raw.jsonl \
     ${AUDIT_DIR}/stage-5-cleanup-candidates.jsonl \
     ${AUDIT_DIR}/stage-5-lifecycle-analysis.jsonl > ${AUDIT_DIR}/all-findings-raw.jsonl
 ```

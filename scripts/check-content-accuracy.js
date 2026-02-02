@@ -53,8 +53,8 @@ try {
 
 // Extract versions from package.json
 const dependencyVersions = {
-  ...packageJson.dependencies,
-  ...packageJson.devDependencies,
+  ...(packageJson.dependencies ?? {}),
+  ...(packageJson.devDependencies ?? {}),
 };
 
 // Extract npm scripts
@@ -233,6 +233,12 @@ function checkPathReferences(content, filePath) {
           path.startsWith("./") || path.startsWith("../")
             ? resolve(docDir, path)
             : resolve(ROOT, path);
+
+        // Security: prevent path traversal outside repository root
+        const relToRoot = relative(ROOT, resolvedPath).replaceAll(/\\/g, "/");
+        if (relToRoot.startsWith("../") || relToRoot === "..") {
+          continue;
+        }
 
         // Check if file exists
         if (!existsSync(resolvedPath)) {

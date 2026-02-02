@@ -43,13 +43,13 @@ const VERBOSE = args.includes("--verbose");
 const QUIET = args.includes("--quiet");
 const JSON_OUTPUT = args.includes("--json");
 const outputIdx = args.indexOf("--output");
-const OUTPUT_FILE = outputIdx !== -1 ? args[outputIdx + 1] : null;
+const OUTPUT_FILE = outputIdx >= 0 ? args[outputIdx + 1] : null;
 const timeoutIdx = args.indexOf("--timeout");
-const TIMEOUT_MS = timeoutIdx !== -1 ? Number.parseInt(args[timeoutIdx + 1], 10) : 10000;
+const TIMEOUT_MS = timeoutIdx >= 0 ? Number.parseInt(args[timeoutIdx + 1], 10) : 10000;
 
 // Validate timeout is a positive finite integer
 if (
-  timeoutIdx !== -1 &&
+  timeoutIdx >= 0 &&
   (!Number.isFinite(TIMEOUT_MS) || TIMEOUT_MS <= 0 || !Number.isInteger(TIMEOUT_MS))
 ) {
   console.error("Error: --timeout must be a positive integer");
@@ -73,6 +73,7 @@ const RATE_LIMIT_MS = 100;
  * @param {string} ip - IP address to check
  * @returns {boolean} - true if IP is internal/blocked
  */
+// TODO: Refactor to reduce cognitive complexity (currently 34, target 15)
 function isInternalIP(ip) {
   // IPv4 checks
   if (ip.includes(".")) {
@@ -81,7 +82,7 @@ function isInternalIP(ip) {
       return true; // Invalid IP format, block it
     }
 
-    const [a, b, c, d] = parts;
+    const [a, b] = parts;
 
     // 127.0.0.0/8 - Loopback (localhost)
     if (a === 127) return true;
@@ -146,6 +147,17 @@ function isInternalIP(ip) {
  * @returns {Promise<{safe: boolean, error?: string}>}
  */
 async function checkHostnameSafe(hostname) {
+  // SSRF Protection: If hostname is an IP literal, validate directly
+  // This prevents bypass where attacker uses http://127.0.0.1/ or http://169.254.169.254/
+  const ipv4Literal = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname);
+  const ipv6Literal = hostname.includes(":") && /^[0-9a-fA-F:]+$/.test(hostname);
+  if (ipv4Literal || ipv6Literal) {
+    if (isInternalIP(hostname)) {
+      return { safe: false, error: `SSRF blocked: URL targets internal IP ${hostname}` };
+    }
+    return { safe: true };
+  }
+
   try {
     // Resolve hostname to IP addresses
     const addresses = await dns.resolve4(hostname).catch(() => []);
@@ -170,6 +182,8 @@ async function checkHostnameSafe(hostname) {
     return { safe: true };
   } catch (err) {
     // DNS resolution error - let the actual request handle it
+    // Empty catch is intentional: DNS errors shouldn't block URL checking,
+    // as the actual HTTP request will properly report the DNS failure
     return { safe: true };
   }
 }
@@ -267,7 +281,7 @@ function makeRequest(url, method, startTime) {
       rejectUnauthorized: true,
     };
 
-    const req = httpModule.request(options, (res) => {
+    const req = httpModule.request(options, async (res) => {
       const responseTime = Date.now() - startTime;
       const status = res.statusCode;
       const isRedirect = status >= 300 && status < 400;
@@ -276,6 +290,49 @@ function makeRequest(url, method, startTime) {
       // Redirects (3xx) are valid responses - the link works, it just redirects
       // We note the redirect destination but mark it as ok: true
       if (isRedirect && redirect) {
+        // SSRF Protection: Validate redirect target to prevent redirect-based SSRF attacks
+        // An attacker could use a safe-looking URL that redirects to 169.254.169.254
+        try {
+          const redirectUrl = new URL(redirect, url.href);
+          const redirectHostname = redirectUrl.hostname;
+
+          // Check if redirect hostname is an IP literal
+          const ipv4Literal = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(redirectHostname);
+          const ipv6Literal =
+            redirectHostname.includes(":") && /^[0-9a-fA-F:]+$/.test(redirectHostname);
+
+          if (ipv4Literal || ipv6Literal) {
+            // Direct IP literal - check immediately
+            if (isInternalIP(redirectHostname)) {
+              resolve({
+                status: "SSRF_BLOCKED",
+                ok: false,
+                responseTime,
+                redirect,
+                error: `SSRF blocked: Redirect targets internal IP ${redirectHostname}`,
+              });
+              res.resume();
+              return;
+            }
+          } else {
+            // Hostname - resolve and check
+            const ssrfCheck = await checkHostnameSafe(redirectHostname);
+            if (!ssrfCheck.safe) {
+              resolve({
+                status: "SSRF_BLOCKED",
+                ok: false,
+                responseTime,
+                redirect,
+                error: ssrfCheck.error,
+              });
+              res.resume();
+              return;
+            }
+          }
+        } catch {
+          // Invalid redirect URL - let it fail naturally
+        }
+
         resolve({
           status,
           ok: true,
@@ -465,6 +522,7 @@ function generateFinding(urlInfo, checkResult) {
 /**
  * Main function
  */
+// TODO: Refactor to reduce cognitive complexity (currently 39, target 15)
 async function main() {
   if (!QUIET) {
     console.log("🔗 Checking external links in documentation...\n");

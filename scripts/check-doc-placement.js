@@ -146,7 +146,7 @@ function countWords(content) {
 
 /**
  * Determine the tier of a document
- * TODO: Refactor to reduce cognitive complexity
+ * TODO: Refactor to reduce cognitive complexity (currently 23, target 15)
  */
 function determineTier(filePath) {
   const fileName = basename(filePath);
@@ -217,7 +217,7 @@ function checkFileLocation(filePath) {
 
 /**
  * Check for archive candidates
- * TODO: Refactor to reduce cognitive complexity
+ * TODO: Refactor to reduce cognitive complexity (currently 16, target 15)
  */
 function checkArchiveCandidate(filePath, content) {
   const findings = [];
@@ -516,7 +516,7 @@ function checkDocument(filePath) {
 
 /**
  * Main function
- * TODO: Refactor to reduce cognitive complexity
+ * TODO: Refactor to reduce cognitive complexity (currently 19, target 15)
  */
 function main() {
   if (!QUIET) {
