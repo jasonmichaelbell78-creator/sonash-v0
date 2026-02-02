@@ -62,6 +62,10 @@
     "hooks:test": "node scripts/test-hooks.js",
     "hooks:health": "node scripts/check-hook-health.js",
     "docs:headers": "node scripts/check-doc-headers.js --all",
+    "docs:lint": "npx markdownlint docs/ --config .markdownlint.json",
+    "docs:external-links": "node scripts/check-external-links.js",
+    "docs:accuracy": "node scripts/check-content-accuracy.js",
+    "docs:placement": "node scripts/check-doc-placement.js",
     "session:end": "node scripts/session-end-commit.js"
   },
   "lint-staged": {
