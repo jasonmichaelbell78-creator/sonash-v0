@@ -39,7 +39,7 @@ const VERBOSE = args.includes("--verbose");
 const QUIET = args.includes("--quiet");
 const JSON_OUTPUT = args.includes("--json");
 const outputIdx = args.indexOf("--output");
-const OUTPUT_FILE = outputIdx !== -1 ? args[outputIdx + 1] : null;
+const OUTPUT_FILE = outputIdx >= 0 ? args[outputIdx + 1] : null;
 const fileArgs = args.filter((a, i) => !a.startsWith("--") && args[i - 1] !== "--output");
 
 // Load package.json for version checking
@@ -134,7 +134,7 @@ function checkVersionAccuracy(content, filePath) {
       let match;
 
       while ((match = pattern.exec(line)) !== null) {
-        const rawPackageName = match[1].toLowerCase().replace(/\./g, "");
+        const rawPackageName = match[1].toLowerCase().replaceAll(".", "");
         const packageName = packageNameMap[rawPackageName] || rawPackageName;
         const mentionedVersion = match[2];
 
@@ -179,6 +179,7 @@ function checkVersionAccuracy(content, filePath) {
 /**
  * Check file path references
  * Looks for paths in backticks or quotes that look like file paths
+ * TODO: Refactor to reduce cognitive complexity (currently 29, target 15)
  */
 function checkPathReferences(content, filePath) {
   const findings = [];
@@ -228,38 +229,32 @@ function checkPathReferences(content, filePath) {
         }
 
         // Try to resolve the path
-        let resolvedPath;
-        if (path.startsWith("./") || path.startsWith("../")) {
-          resolvedPath = resolve(docDir, path);
-        } else {
-          resolvedPath = resolve(ROOT, path);
-        }
+        const resolvedPath =
+          path.startsWith("./") || path.startsWith("../")
+            ? resolve(docDir, path)
+            : resolve(ROOT, path);
 
         // Check if file exists
         if (!existsSync(resolvedPath)) {
-          // Also try from ROOT if relative didn't work
-          const fromRoot = resolve(ROOT, path);
-          if (!existsSync(fromRoot)) {
-            findings.push({
-              id: `DOC-CONTENT-PATH-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-              category: "documentation",
-              severity: "S2",
-              effort: "E1",
-              confidence: "MEDIUM",
-              verified: "TOOL_VALIDATED",
-              file: relPath,
-              line: i + 1,
-              title: `Broken file path reference`,
-              description: `Referenced file path "${path}" does not exist`,
-              recommendation: "Update or remove the broken file reference",
-              evidence: [
-                `Path: ${path}`,
-                `Resolved: ${relative(ROOT, resolvedPath)}`,
-                `Line: ${line.trim().substring(0, 100)}`,
-              ],
-              cross_ref: "path_check",
-            });
-          }
+          findings.push({
+            id: `DOC-CONTENT-PATH-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+            category: "documentation",
+            severity: "S2",
+            effort: "E1",
+            confidence: "MEDIUM",
+            verified: "TOOL_VALIDATED",
+            file: relPath,
+            line: i + 1,
+            title: `Broken file path reference`,
+            description: `Referenced file path "${path}" does not exist`,
+            recommendation: "Update or remove the broken file reference",
+            evidence: [
+              `Path: ${path}`,
+              `Resolved: ${relative(ROOT, resolvedPath)}`,
+              `Line: ${line.trim().substring(0, 100)}`,
+            ],
+            cross_ref: "path_check",
+          });
         }
       }
     }
@@ -280,17 +275,25 @@ function checkNpmScriptReferences(content, filePath) {
   // Patterns for npm script references
   const npmPatterns = [
     // npm run script
-    /npm\s+run\s+([\w:_-]+)/g,
+    /npm\s+run\s+([\w:-]+)/g,
     // npm script (built-in like test, start, build)
     /npm\s+(test|start|build|dev|lint)(?:\s|$|[,)])/g,
     // yarn script
-    /yarn\s+([\w:_-]+)/g,
+    /yarn\s+([\w:-]+)/g,
     // pnpm script
-    /pnpm\s+([\w:_-]+)/g,
+    /pnpm\s+([\w:-]+)/g,
   ];
 
   // Built-in npm scripts that don't need to be in package.json
-  const builtInScripts = ["install", "uninstall", "update", "init", "publish", "help", "version"];
+  const builtInScripts = new Set([
+    "install",
+    "uninstall",
+    "update",
+    "init",
+    "publish",
+    "help",
+    "version",
+  ]);
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -303,7 +306,7 @@ function checkNpmScriptReferences(content, filePath) {
         const scriptName = match[1];
 
         // Skip built-in commands
-        if (builtInScripts.includes(scriptName)) {
+        if (builtInScripts.has(scriptName)) {
           continue;
         }
 
@@ -383,7 +386,6 @@ function checkCodeBlockSyntax(content, filePath) {
     // Check for code block end
     if (line === "```" && inCodeBlock) {
       inCodeBlock = false;
-      continue;
     }
   }
 
@@ -404,10 +406,12 @@ function checkDocument(filePath) {
     }
 
     // Run all checks
-    findings.push(...checkVersionAccuracy(content, filePath));
-    findings.push(...checkPathReferences(content, filePath));
-    findings.push(...checkNpmScriptReferences(content, filePath));
-    findings.push(...checkCodeBlockSyntax(content, filePath));
+    findings.push(
+      ...checkVersionAccuracy(content, filePath),
+      ...checkPathReferences(content, filePath),
+      ...checkNpmScriptReferences(content, filePath),
+      ...checkCodeBlockSyntax(content, filePath)
+    );
   } catch (err) {
     if (!QUIET) {
       console.warn(`Warning: Could not check ${relative(ROOT, filePath)}: ${sanitizeError(err)}`);
@@ -419,6 +423,7 @@ function checkDocument(filePath) {
 
 /**
  * Main function
+ * TODO: Refactor to reduce cognitive complexity (currently 19, target 15)
  */
 function main() {
   if (!QUIET) {

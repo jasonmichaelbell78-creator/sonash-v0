@@ -42,7 +42,7 @@ const VERBOSE = args.includes("--verbose");
 const QUIET = args.includes("--quiet");
 const JSON_OUTPUT = args.includes("--json");
 const outputIdx = args.indexOf("--output");
-const OUTPUT_FILE = outputIdx !== -1 ? args[outputIdx + 1] : null;
+const OUTPUT_FILE = outputIdx === -1 ? null : args[outputIdx + 1];
 const fileArgs = args.filter((a, i) => !a.startsWith("--") && args[i - 1] !== "--output");
 
 // Tier definitions with expected locations
@@ -88,7 +88,7 @@ const EXPECTED_LOCATIONS = {
     message: "Plan documents should be in docs/plans/ or .planning/",
   },
   archive: {
-    pattern: /^archive-|archived-|\.archive$/i,
+    pattern: /^(archive-|archived-|\.archive)$/i,
     expected: ["docs/archive/"],
     message: "Archived documents should be in docs/archive/",
   },
@@ -135,26 +135,27 @@ function getGitLastModified(filePath) {
  */
 function countWords(content) {
   // Remove code blocks
-  const withoutCode = content.replace(/```[\s\S]*?```/g, "");
+  const withoutCode = content.replaceAll(/```[\s\S]*?```/g, "");
   // Remove markdown syntax
   const text = withoutCode
-    .replace(/[#*_`[\]()]/g, "")
-    .replace(/\s+/g, " ")
+    .replaceAll(/[#*_`[\]()]/g, "")
+    .replaceAll(/\s+/g, " ")
     .trim();
   return text ? text.split(" ").length : 0;
 }
 
 /**
  * Determine the tier of a document
+ * TODO: Refactor to reduce cognitive complexity
  */
 function determineTier(filePath) {
   const fileName = basename(filePath);
-  const relativePath = relative(ROOT, filePath).replace(/\\/g, "/");
+  const relativePath = relative(ROOT, filePath).replaceAll(/\\/g, "/");
 
   // Check explicit file matches first
   for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
     if (def.locations && def.locations.includes(fileName)) {
-      return parseInt(tier, 10);
+      return Number.parseInt(tier, 10);
     }
   }
 
@@ -163,14 +164,14 @@ function determineTier(filePath) {
     if (def.patterns) {
       for (const pattern of def.patterns) {
         if (pattern.test(relativePath) || pattern.test(fileName)) {
-          return parseInt(tier, 10);
+          return Number.parseInt(tier, 10);
         }
       }
     }
     if (def.locations) {
       for (const loc of def.locations) {
         if (relativePath.startsWith(loc)) {
-          return parseInt(tier, 10);
+          return Number.parseInt(tier, 10);
         }
       }
     }
@@ -184,7 +185,7 @@ function determineTier(filePath) {
  */
 function checkFileLocation(filePath) {
   const findings = [];
-  const relativePath = relative(ROOT, filePath).replace(/\\/g, "/");
+  const relativePath = relative(ROOT, filePath).replaceAll(/\\/g, "/");
   const fileName = basename(filePath);
 
   for (const [type, config] of Object.entries(EXPECTED_LOCATIONS)) {
@@ -216,10 +217,11 @@ function checkFileLocation(filePath) {
 
 /**
  * Check for archive candidates
+ * TODO: Refactor to reduce cognitive complexity
  */
 function checkArchiveCandidate(filePath, content) {
   const findings = [];
-  const relativePath = relative(ROOT, filePath).replace(/\\/g, "/");
+  const relativePath = relative(ROOT, filePath).replaceAll(/\\/g, "/");
   const fileName = basename(filePath);
 
   // Skip if already in archive
@@ -324,7 +326,7 @@ function checkArchiveCandidate(filePath, content) {
  */
 function checkCleanupCandidate(filePath, content) {
   const findings = [];
-  const relativePath = relative(ROOT, filePath).replace(/\\/g, "/");
+  const relativePath = relative(ROOT, filePath).replaceAll(/\\/g, "/");
   const fileName = basename(filePath);
 
   // Skip archives and templates
@@ -410,7 +412,7 @@ function checkCleanupCandidate(filePath, content) {
  */
 function checkStaleness(filePath, content) {
   const findings = [];
-  const relativePath = relative(ROOT, filePath).replace(/\\/g, "/");
+  const relativePath = relative(ROOT, filePath).replaceAll(/\\/g, "/");
 
   // Skip archives
   if (relativePath.includes("archive/")) {
@@ -459,7 +461,12 @@ function findMarkdownFiles(dir, files = []) {
   for (const entry of entries) {
     const fullPath = join(dir, entry);
 
-    if (entry.startsWith(".") || entry === "node_modules" || entry === "out" || entry === "dist") {
+    if (
+      (entry.startsWith(".") && entry !== ".planning") ||
+      entry === "node_modules" ||
+      entry === "out" ||
+      entry === "dist"
+    ) {
       continue;
     }
 
@@ -492,10 +499,12 @@ function checkDocument(filePath) {
     }
 
     // Run all checks
-    findings.push(...checkFileLocation(filePath));
-    findings.push(...checkArchiveCandidate(filePath, content));
-    findings.push(...checkCleanupCandidate(filePath, content));
-    findings.push(...checkStaleness(filePath, content));
+    findings.push(
+      ...checkFileLocation(filePath),
+      ...checkArchiveCandidate(filePath, content),
+      ...checkCleanupCandidate(filePath, content),
+      ...checkStaleness(filePath, content)
+    );
   } catch (err) {
     if (!QUIET) {
       console.warn(`Warning: Could not check ${relative(ROOT, filePath)}: ${sanitizeError(err)}`);
@@ -507,6 +516,7 @@ function checkDocument(filePath) {
 
 /**
  * Main function
+ * TODO: Refactor to reduce cognitive complexity
  */
 function main() {
   if (!QUIET) {

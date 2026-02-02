@@ -74,9 +74,9 @@ Format: Markdown summary with counts and file list
 
 ```bash
 # Run these commands and capture output:
-npm run docs:check 2>&1 > ${AUDIT_DIR}/baseline-docs-check.txt
-npm run docs:sync-check 2>&1 > ${AUDIT_DIR}/baseline-sync-check.txt
-npm run format:check -- docs/ 2>&1 > ${AUDIT_DIR}/baseline-format-check.txt
+npm run docs:check > ${AUDIT_DIR}/baseline-docs-check.txt 2>&1
+npm run docs:sync-check > ${AUDIT_DIR}/baseline-sync-check.txt 2>&1
+npm run format:check -- docs/ > ${AUDIT_DIR}/baseline-format-check.txt 2>&1
 
 # Check DOCUMENTATION_INDEX.md for orphans
 grep -c "orphan" docs/DOCUMENTATION_INDEX.md || echo "0"
@@ -152,7 +152,7 @@ JSONL schema per finding:
 
 ```bash
 # Use the new script for external link checking
-node scripts/check-external-links.js --output ${AUDIT_DIR}/stage-2-external-links.jsonl
+npm run docs:external-links -- --output ${AUDIT_DIR}/stage-2-external-links.jsonl
 ```
 
 Or manually check each URL from stage-1-links.json with:
@@ -270,7 +270,7 @@ Output: ${AUDIT_DIR}/stage-3-coherence.jsonl
 
 ```bash
 # Use the new script for placement/staleness
-node scripts/check-doc-placement.js --output ${AUDIT_DIR}/stage-3-freshness.jsonl
+npm run docs:placement -- --output ${AUDIT_DIR}/stage-3-freshness.jsonl
 ```
 
 Tier-specific staleness thresholds:
@@ -305,7 +305,7 @@ Launch these 3 agents in parallel:
 **Task:** Run markdownlint on all docs
 
 ```bash
-npm run docs:lint 2>&1 > ${AUDIT_DIR}/markdownlint-raw.txt
+npm run docs:lint > ${AUDIT_DIR}/markdownlint-raw.txt 2>&1
 
 # Parse output into JSONL findings
 # Each markdownlint violation becomes a finding
@@ -318,7 +318,7 @@ Convert violations to JSONL format in `${AUDIT_DIR}/stage-4-markdownlint.jsonl`
 **Task:** Check Prettier formatting
 
 ```bash
-npm run format:check -- docs/ 2>&1 > ${AUDIT_DIR}/prettier-raw.txt
+npm run format:check -- docs/ > ${AUDIT_DIR}/prettier-raw.txt 2>&1
 
 # Parse output for files that need formatting
 ```
@@ -452,7 +452,9 @@ This stage runs sequentially after all parallel stages complete.
 cat ${AUDIT_DIR}/stage-2-*.jsonl \
     ${AUDIT_DIR}/stage-3-*.jsonl \
     ${AUDIT_DIR}/stage-4-*.jsonl \
-    ${AUDIT_DIR}/stage-5-*.jsonl > ${AUDIT_DIR}/all-findings-raw.jsonl
+    ${AUDIT_DIR}/stage-5-location.jsonl \
+    ${AUDIT_DIR}/stage-5-cleanup-candidates.jsonl \
+    ${AUDIT_DIR}/stage-5-lifecycle-analysis.jsonl > ${AUDIT_DIR}/all-findings-raw.jsonl
 ```
 
 ### Step 6.2: Deduplicate
@@ -607,7 +609,7 @@ Verify all files saved to `${AUDIT_DIR}/`:
 
 ```bash
 node scripts/debt/intake-audit.js ${AUDIT_DIR}/all-findings.jsonl --source "audit-documentation-$(date +%Y-%m-%d)"
-````
+```
 
 ### 3. Update AUDIT_TRACKER.md
 
@@ -678,3 +680,4 @@ When modifying this skill, also update:
 | ------- | ---------- | ------------------------------------------------------- |
 | 2.0     | 2026-02-02 | Complete rewrite: 6-stage parallel audit with 18 agents |
 | 1.0     | 2025-xx-xx | Original single-session sequential audit                |
+````

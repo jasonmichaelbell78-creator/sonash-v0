@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 12.7 **Created:** 2026-01-02 **Last Updated:** 2026-02-02
+**Document Version:** 12.8 **Created:** 2026-01-02 **Last Updated:** 2026-02-02
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 12.8    | 2026-02-02 | Review #225: PR #329 Audit Documentation Enhancement - SonarCloud + Qodo (57 items - 1 CRITICAL SSRF, 6 HIGH, ~45 MEDIUM/LOW). **CRITICAL**: SSRF vulnerability in check-external-links.js - block internal IPs (RFC1918, localhost, cloud metadata). **HIGH**: (1) Timeout validation for CLI args; (2) HTTP redirect handling (3xx = success); (3) 405 Method Not Allowed retry with GET; (4) .planning directory exclusion from archive candidates; (5) Regex operator precedence fix; (6) Shell redirection order fix. **CODE QUALITY**: Number.parseInt, replaceAll, Set for O(1) lookups, batched Array.push, removed unused imports, simplified duplicate checks in regex. **PARALLEL AGENT APPROACH**: Used 4 specialized agents (security-auditor, 2×code-reviewer, technical-writer) in parallel for different file types. Active reviews #180-225.                                                       |
 | 12.6    | 2026-02-02 | Review #224: Cross-Platform Config PR - CI Pattern Compliance + SonarCloud + Qodo (27 fixes - 1 CRITICAL, 5 MAJOR, 21 MINOR). **CRITICAL**: GitHub Actions script injection in resolve-debt.yml (S7630) - pass PR body via env var. **MAJOR**: Path containment validation (5 locations). **MINOR**: readFileSync try/catch (8), unsafe error.message (1), percentage clamping (1), MCP null check (1), timestamp validation (1), agent diff content (1), JSON.parse try/catch (1), null object diffing (1), statSync race (1), empty input (1), negative age (1), Array.isArray (1), atomic writes (1), write failures (1). **NEW PATTERNS**: (72) GitHub Actions script injection prevention; (73) env var for user input. 7 false positives rejected. Active reviews #180-224.                                                                                                                                   |
 | 12.3    | 2026-01-31 | Review #223: PR #327 Process Audit System Round 3 - Qodo Security (4 items - 2 HIGH, 2 MEDIUM). **HIGH**: sanitizeError() for check-phase-status.js and intake-manual.js error messages. **MEDIUM**: rollback mechanism for multi-file writes, generic path in error messages. **NEW PATTERNS**: (70) sanitizeError() for user-visible errors; (71) Multi-file write rollback. Active reviews #180-223.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 12.2    | 2026-01-31 | Review #222: PR #327 Process Audit System Round 2 - Qodo (8 items - 6 HIGH, 2 MEDIUM). **HIGH**: (1) intake-manual.js appendFileSync try/catch; (2-4) check-phase-status.js: complete:false on READ_ERROR, only PASS=complete, readdirSync try/catch; (5-6) SKILL.md: Stage 5/6 glob self-inclusion fix, all-findings-raw.jsonl canonical rollups only. **NEW PATTERNS**: (66) Append writes need try/catch; (67) Phase verification = exists AND readable AND PASS; (68) Glob-to-file self-inclusion; (69) Aggregate files use canonical rollups. Active reviews #180-222.                                                                                                                                                                                                                                                                                                                                         |
@@ -1235,10 +1236,100 @@ sync-claude-settings.js. existsSync does NOT guarantee read success.
 
 ---
 
+#### Review #225: PR #329 Audit Documentation Enhancement - SonarCloud + Qodo (2026-02-02)
+
+**Category**: Security & Code Quality | **Items**: 57 identified (1 CRITICAL, 6
+HIGH, ~45 MEDIUM/LOW, 5 DEFERRED)
+
+**Source:** SonarCloud Security Analysis + Qodo Compliance + Qodo Code
+Suggestions
+
+**CRITICAL (1):** 1. **SSRF vulnerability** - check-external-links.js allowed
+requests to internal/private IPs. Attacker-controlled URLs could probe internal
+network, cloud metadata (169.254.169.254), localhost services.
+
+- Fix: Added `isInternalIP()` function blocking RFC1918, localhost, link-local,
+  cloud metadata IPs for both IPv4 and IPv6
+
+**HIGH (6):**
+
+2. **Timeout validation missing** - check-external-links.js accepted arbitrary
+   `--timeout` values including NaN, negative numbers, or malformed strings.
+
+- Fix: Added validation with Number.isFinite() and range clamping
+
+3. **HTTP redirects marked as failures** - check-external-links.js treated 3xx
+   status codes as `ok: false`, incorrectly flagging valid redirect responses.
+
+- Fix: Changed 3xx responses to `ok: true` with redirect info preserved
+
+4. **405 Method Not Allowed not retried** - HEAD requests returning 405 weren't
+   retried with GET, causing false positives for servers that don't support
+   HEAD.
+
+- Fix: Extracted `makeRequest()` helper, retry with GET on 405 response
+
+5. **.planning directory excluded** - check-doc-placement.js filtered out all
+   dotfiles including `.planning/` which contains valid project files.
+
+- Fix: Changed filter to `entry.startsWith(".") && entry !== ".planning"`
+
+6. **Regex operator precedence bug** - check-doc-placement.js regex
+   `/^archive-|archived-|\.archive$/i` matches unintended strings due to
+   precedence (matches "^archive-" OR "archived-" anywhere OR "\.archive$").
+
+- Fix: Changed to `/^(archive-|archived-|\.archive)$/i` with proper grouping
+
+7. **Shell redirection order** - SKILL.md had `2>&1 > file` which discards
+   stderr. Order matters: stderr redirected to original stdout (terminal), then
+   stdout goes to file.
+
+- Fix: Changed to `> file 2>&1` (stdout to file first, then stderr follows)
+
+**MEDIUM/LOW (~45 - Code Quality):**
+
+- `Number.parseInt()` instead of global `parseInt()` (explicit radix handling)
+- `replaceAll()` instead of `.replace(/pattern/g, ...)` (cleaner)
+- Set instead of Array for `builtInScripts` (O(1) lookup vs O(n))
+- Batched `Array.push(...items)` instead of loop with individual pushes
+- Removed unused imports (basename from path)
+- Simplified nested template literals
+- Removed duplicate chars in regex character classes (`[\w:_-]` → `[\w:-]`)
+- Removed redundant path validation fallback logic
+- Added TODO comments for cognitive complexity refactoring candidates
+- Fixed code block language tags (4-backtick → 3-backtick)
+- Changed direct node calls to npm scripts for consistency
+
+**DEFERRED (5):**
+
+- Cognitive complexity refactoring for `checkPlacement()` (38 complexity)
+- Cognitive complexity refactoring for `checkStaleness()` (28 complexity)
+- Cognitive complexity refactoring for `validatePath()` (25 complexity)
+
+**NEW PATTERNS:**
+
+- (74) **SSRF protection**: Block private/internal IP ranges in URL fetchers -
+  RFC1918, localhost, link-local (169.254.x.x), cloud metadata. Check both
+  hostname and resolved IP.
+- (75) **Regex operator precedence**: In patterns like `^a|b|c$`, alternation
+  has lowest precedence. Use grouping `^(a|b|c)$` for intended behavior.
+- (76) **Shell redirection order**: `> file 2>&1` (correct) vs `2>&1 > file`
+  (wrong). Redirections are processed left-to-right.
+- (77) **Parallel agent PR review**: For large reviews (50+ items), spawn
+  specialized agents in parallel by file type/concern area.
+
+**Resolution:**
+
+- Fixed: ~52 items across 4 files
+- Deferred: 5 items (cognitive complexity - tracked in MASTER_DEBT.jsonl)
+- Rejected: 0 items
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #225: PR #XXX Title - Review Source (DATE)
+#### Review #226: PR #XXX Title - Review Source (DATE)
 
 
 -->

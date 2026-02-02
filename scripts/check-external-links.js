@@ -26,8 +26,9 @@
  */
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "node:fs";
-import { join, dirname, basename, relative, extname } from "node:path";
+import { join, dirname, relative, extname } from "node:path";
 import { fileURLToPath } from "node:url";
+import dns from "node:dns/promises";
 import https from "node:https";
 import http from "node:http";
 import { sanitizeError } from "./lib/sanitize-error.js";
@@ -44,7 +45,17 @@ const JSON_OUTPUT = args.includes("--json");
 const outputIdx = args.indexOf("--output");
 const OUTPUT_FILE = outputIdx !== -1 ? args[outputIdx + 1] : null;
 const timeoutIdx = args.indexOf("--timeout");
-const TIMEOUT_MS = timeoutIdx !== -1 ? parseInt(args[timeoutIdx + 1], 10) : 10000;
+const TIMEOUT_MS = timeoutIdx !== -1 ? Number.parseInt(args[timeoutIdx + 1], 10) : 10000;
+
+// Validate timeout is a positive finite integer
+if (
+  timeoutIdx !== -1 &&
+  (!Number.isFinite(TIMEOUT_MS) || TIMEOUT_MS <= 0 || !Number.isInteger(TIMEOUT_MS))
+) {
+  console.error("Error: --timeout must be a positive integer");
+  process.exit(2);
+}
+
 const fileArgs = args.filter(
   (a, i) => !a.startsWith("--") && args[i - 1] !== "--output" && args[i - 1] !== "--timeout"
 );
@@ -55,6 +66,113 @@ const urlCache = new Map();
 // Domain rate limiting - track last request time per domain
 const domainLastRequest = new Map();
 const RATE_LIMIT_MS = 100;
+
+/**
+ * SSRF Protection: Check if an IP address is in a private/internal range
+ * Blocks: localhost, RFC1918, link-local (cloud metadata), IPv6 equivalents
+ * @param {string} ip - IP address to check
+ * @returns {boolean} - true if IP is internal/blocked
+ */
+function isInternalIP(ip) {
+  // IPv4 checks
+  if (ip.includes(".")) {
+    const parts = ip.split(".").map(Number);
+    if (parts.length !== 4 || parts.some((p) => Number.isNaN(p))) {
+      return true; // Invalid IP format, block it
+    }
+
+    const [a, b, c, d] = parts;
+
+    // 127.0.0.0/8 - Loopback (localhost)
+    if (a === 127) return true;
+
+    // 10.0.0.0/8 - RFC1918 Private
+    if (a === 10) return true;
+
+    // 172.16.0.0/12 - RFC1918 Private (172.16.x.x - 172.31.x.x)
+    if (a === 172 && b >= 16 && b <= 31) return true;
+
+    // 192.168.0.0/16 - RFC1918 Private
+    if (a === 192 && b === 168) return true;
+
+    // 169.254.0.0/16 - Link-local (AWS/GCP/Azure metadata at 169.254.169.254)
+    if (a === 169 && b === 254) return true;
+
+    // 0.0.0.0/8 - Current network
+    if (a === 0) return true;
+
+    // 224.0.0.0/4 - Multicast
+    if (a >= 224 && a <= 239) return true;
+
+    // 240.0.0.0/4 - Reserved
+    if (a >= 240) return true;
+  }
+
+  // IPv6 checks
+  if (ip.includes(":")) {
+    const normalized = ip.toLowerCase();
+
+    // ::1 - IPv6 loopback
+    if (normalized === "::1" || normalized === "0:0:0:0:0:0:0:1") return true;
+
+    // fc00::/7 - Unique local addresses (fd00::/8 and fc00::/8)
+    if (normalized.startsWith("fc") || normalized.startsWith("fd")) return true;
+
+    // fe80::/10 - Link-local
+    if (
+      normalized.startsWith("fe8") ||
+      normalized.startsWith("fe9") ||
+      normalized.startsWith("fea") ||
+      normalized.startsWith("feb")
+    )
+      return true;
+
+    // :: - Unspecified address
+    if (normalized === "::" || normalized === "0:0:0:0:0:0:0:0") return true;
+
+    // IPv4-mapped IPv6 (::ffff:x.x.x.x)
+    const ipv4MappedMatch = normalized.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+    if (ipv4MappedMatch) {
+      return isInternalIP(ipv4MappedMatch[1]);
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Resolve hostname and check if it resolves to an internal IP (SSRF protection)
+ * @param {string} hostname - Hostname to check
+ * @returns {Promise<{safe: boolean, error?: string}>}
+ */
+async function checkHostnameSafe(hostname) {
+  try {
+    // Resolve hostname to IP addresses
+    const addresses = await dns.resolve4(hostname).catch(() => []);
+    const addresses6 = await dns.resolve6(hostname).catch(() => []);
+    const allAddresses = [...addresses, ...addresses6];
+
+    if (allAddresses.length === 0) {
+      // Could not resolve - will fail later with DNS error
+      return { safe: true };
+    }
+
+    // Check all resolved IPs
+    for (const ip of allAddresses) {
+      if (isInternalIP(ip)) {
+        return {
+          safe: false,
+          error: `SSRF blocked: ${hostname} resolves to internal IP ${ip}`,
+        };
+      }
+    }
+
+    return { safe: true };
+  } catch (err) {
+    // DNS resolution error - let the actual request handle it
+    return { safe: true };
+  }
+}
 
 /**
  * Extract external URLs from markdown content
@@ -124,7 +242,102 @@ async function rateLimitDomain(domain) {
 }
 
 /**
- * Check a single URL with HTTP HEAD request
+ * Make an HTTP request with the specified method
+ * @param {URL} url - Parsed URL object
+ * @param {string} method - HTTP method (HEAD or GET)
+ * @param {number} startTime - Request start timestamp for timing
+ * @returns {Promise<{status: number|string, ok: boolean, redirect?: string, responseTime: number, error?: string}>}
+ */
+function makeRequest(url, method, startTime) {
+  const isHttps = url.protocol === "https:";
+  const httpModule = isHttps ? https : http;
+
+  return new Promise((resolve) => {
+    const options = {
+      hostname: url.hostname,
+      port: url.port || (isHttps ? 443 : 80),
+      path: url.pathname + url.search,
+      method,
+      timeout: TIMEOUT_MS,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; DocLinkChecker/1.0)",
+        Accept: "*/*",
+      },
+      // Allow self-signed certs in non-production
+      rejectUnauthorized: true,
+    };
+
+    const req = httpModule.request(options, (res) => {
+      const responseTime = Date.now() - startTime;
+      const status = res.statusCode;
+      const isRedirect = status >= 300 && status < 400;
+      const redirect = isRedirect ? res.headers.location : undefined;
+
+      // Redirects (3xx) are valid responses - the link works, it just redirects
+      // We note the redirect destination but mark it as ok: true
+      if (isRedirect && redirect) {
+        resolve({
+          status,
+          ok: true,
+          redirect,
+          responseTime,
+          note: `Redirects to: ${redirect}`,
+        });
+      } else {
+        resolve({
+          status,
+          ok: status >= 200 && status < 400,
+          responseTime,
+        });
+      }
+
+      // Consume response data to free up memory
+      res.resume();
+    });
+
+    req.on("timeout", () => {
+      req.destroy();
+      resolve({
+        status: "TIMEOUT",
+        ok: false,
+        responseTime: TIMEOUT_MS,
+        error: `Request timed out after ${TIMEOUT_MS}ms`,
+      });
+    });
+
+    req.on("error", (err) => {
+      const responseTime = Date.now() - startTime;
+      let error = err.message;
+
+      // Categorize common errors
+      if (err.code === "ENOTFOUND") {
+        error = "DNS lookup failed";
+      } else if (err.code === "ECONNREFUSED") {
+        error = "Connection refused";
+      } else if (err.code === "ECONNRESET") {
+        error = "Connection reset";
+      } else if (err.code === "CERT_HAS_EXPIRED") {
+        error = "SSL certificate expired";
+      } else if (err.code === "UNABLE_TO_VERIFY_LEAF_SIGNATURE") {
+        error = "SSL certificate verification failed";
+      } else if (err.code === "DEPTH_ZERO_SELF_SIGNED_CERT") {
+        error = "Self-signed certificate";
+      }
+
+      resolve({
+        status: err.code || "ERROR",
+        ok: false,
+        responseTime,
+        error,
+      });
+    });
+
+    req.end();
+  });
+}
+
+/**
+ * Check a single URL with HTTP HEAD request (falls back to GET on 405)
  * @param {string} urlString - URL to check
  * @returns {Promise<{status: number|string, ok: boolean, redirect?: string, responseTime: number, error?: string}>}
  */
@@ -139,90 +352,33 @@ async function checkUrl(urlString) {
 
   try {
     const url = new URL(urlString);
-    const isHttps = url.protocol === "https:";
-    const httpModule = isHttps ? https : http;
+
+    // SSRF Protection: Check if hostname resolves to internal IP
+    const ssrfCheck = await checkHostnameSafe(url.hostname);
+    if (!ssrfCheck.safe) {
+      result = {
+        status: "SSRF_BLOCKED",
+        ok: false,
+        responseTime: Date.now() - startTime,
+        error: ssrfCheck.error,
+      };
+      urlCache.set(urlString, result);
+      return result;
+    }
 
     // Apply rate limiting
     await rateLimitDomain(url.hostname);
 
-    result = await new Promise((resolve) => {
-      const options = {
-        hostname: url.hostname,
-        port: url.port || (isHttps ? 443 : 80),
-        path: url.pathname + url.search,
-        method: "HEAD",
-        timeout: TIMEOUT_MS,
-        headers: {
-          "User-Agent": "Mozilla/5.0 (compatible; DocLinkChecker/1.0)",
-          Accept: "*/*",
-        },
-        // Allow self-signed certs in non-production
-        rejectUnauthorized: true,
-      };
+    // Try HEAD first
+    result = await makeRequest(url, "HEAD", startTime);
 
-      const req = httpModule.request(options, (res) => {
-        const responseTime = Date.now() - startTime;
-        const status = res.statusCode;
-        const isRedirect = status >= 300 && status < 400;
-        const redirect = isRedirect ? res.headers.location : undefined;
-
-        // Follow one redirect to check final destination
-        if (isRedirect && redirect) {
-          resolve({
-            status,
-            ok: false,
-            redirect,
-            responseTime,
-            note: `Redirects to: ${redirect}`,
-          });
-        } else {
-          resolve({
-            status,
-            ok: status >= 200 && status < 400,
-            responseTime,
-          });
-        }
-      });
-
-      req.on("timeout", () => {
-        req.destroy();
-        resolve({
-          status: "TIMEOUT",
-          ok: false,
-          responseTime: TIMEOUT_MS,
-          error: `Request timed out after ${TIMEOUT_MS}ms`,
-        });
-      });
-
-      req.on("error", (err) => {
-        const responseTime = Date.now() - startTime;
-        let error = err.message;
-
-        // Categorize common errors
-        if (err.code === "ENOTFOUND") {
-          error = "DNS lookup failed";
-        } else if (err.code === "ECONNREFUSED") {
-          error = "Connection refused";
-        } else if (err.code === "ECONNRESET") {
-          error = "Connection reset";
-        } else if (err.code === "CERT_HAS_EXPIRED") {
-          error = "SSL certificate expired";
-        } else if (err.code === "UNABLE_TO_VERIFY_LEAF_SIGNATURE") {
-          error = "SSL certificate verification failed";
-        } else if (err.code === "DEPTH_ZERO_SELF_SIGNED_CERT") {
-          error = "Self-signed certificate";
-        }
-
-        resolve({
-          status: err.code || "ERROR",
-          ok: false,
-          responseTime,
-          error,
-        });
-      });
-
-      req.end();
-    });
+    // If server returns 405 Method Not Allowed, retry with GET
+    if (result.status === 405) {
+      if (VERBOSE) {
+        console.log(`  HEAD rejected (405), retrying with GET...`);
+      }
+      result = await makeRequest(url, "GET", Date.now());
+    }
   } catch (err) {
     result = {
       status: "INVALID_URL",
@@ -289,7 +445,9 @@ function generateFinding(urlInfo, checkResult) {
     file: urlInfo.file,
     line: urlInfo.line,
     title: `Broken external link: ${checkResult.status}`,
-    description: `External link to ${urlInfo.url} ${checkResult.error ? `failed: ${checkResult.error}` : `returned status ${checkResult.status}`}`,
+    description: checkResult.error
+      ? `External link to ${urlInfo.url} failed: ${checkResult.error}`
+      : `External link to ${urlInfo.url} returned status ${checkResult.status}`,
     recommendation: checkResult.redirect
       ? `Update link to: ${checkResult.redirect}`
       : "Remove or update the broken link",
@@ -384,9 +542,8 @@ async function main() {
     }
 
     if (!checkResult.ok && !QUIET) {
-      console.log(
-        `  ❌ ${url.substring(0, 50)}... → ${checkResult.status}${checkResult.error ? ` (${checkResult.error})` : ""}`
-      );
+      const errorSuffix = checkResult.error ? ` (${checkResult.error})` : "";
+      console.log(`  ❌ ${url.substring(0, 50)}... → ${checkResult.status}${errorSuffix}`);
     }
   }
 
@@ -432,10 +589,10 @@ async function main() {
   process.exit(failed > 0 ? 1 : 0);
 }
 
-// Run main function
+// Run main function with top-level await (ESM)
 try {
-  main();
+  await main();
 } catch (error) {
-  console.error("❌ Unexpected error:", sanitizeError(error));
+  console.error("Unexpected error:", sanitizeError(error));
   process.exit(2);
 }
