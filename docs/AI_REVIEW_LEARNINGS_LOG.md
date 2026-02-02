@@ -291,8 +291,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #222
+**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #232
 
 ### When to Consolidate
 
@@ -1364,10 +1364,108 @@ Deferred: 7)
 
 ---
 
+#### Review #224: Cross-Platform Config PR - CI Pattern Compliance + SonarCloud + Qodo (2026-02-02)
+
+**Category**: Security & Robustness | **Items**: 29 identified (1 CRITICAL, 5
+MAJOR, 17 MINOR, 7 REJECTED false positives)
+
+**Source:** CI Pattern Compliance Failure + SonarCloud Security Hotspot + Qodo
+PR Compliance **PR/Branch:** claude/cross-platform-config-session100
+
+**FILES TO FIX:**
+
+- `.github/workflows/resolve-debt.yml` - Script injection vulnerability
+  (CRITICAL)
+- `.claude/hooks/global/statusline.js` - Path containment, try/catch, percentage
+  clamping
+- `.claude/hooks/global/gsd-check-update.js` - try/catch for readFileSync
+- `scripts/sync-claude-settings.js` - Path containment (4 locations), try/catch
+  (3 locations), MCP null check, agent diff content comparison
+- `scripts/debt/assign-roadmap-refs.js` - try/catch for readFileSync and
+  JSON.parse
+- `scripts/debt/generate-metrics.js` - try/catch, unsafe error.message, invalid
+  timestamp handling
+
+**CRITICAL (1):**
+
+1. `resolve-debt.yml:27`: **GitHub Actions Script Injection** - SonarCloud
+   BLOCKER (S7630). PR body is user-controlled and used directly in shell
+   `echo "${{ github.event.pull_request.body }}"`. Malicious PR body can inject
+   arbitrary shell commands.
+   - Fix: Pass PR body via environment variable instead of interpolation
+
+**MAJOR (5):** 2-6. **Path joined without containment check** -
+statusline.js:58, sync-claude-settings.js:226,227,310,311. Filenames from
+readdirSync are joined with path.join but not validated for traversal.
+
+- Fix: Add containment validation using path.relative check
+
+**MINOR (17):** 7-14. **readFileSync without try/catch** - 8 locations across
+gsd-check-update.js, statusline.js, assign-roadmap-refs.js, generate-metrics.js,
+sync-claude-settings.js. existsSync does NOT guarantee read success.
+
+- Fix: Wrap all file reads in try/catch
+
+15. **Unsafe error.message access** - generate-metrics.js:52. Non-Error throws
+    crash the script.
+
+- Fix: Use `error instanceof Error ? error.message : String(error)`
+
+16. **Clamp percentages** - statusline.js:25-31. Out-of-range remaining
+    percentage causes RangeError in progress bar.
+
+- Fix: Clamp to [0, 100] range, validate numeric
+
+17. **Crash on missing mcpServers** - sync-claude-settings.js:281-282. Spreading
+    undefined mcpServers crashes.
+
+- Fix: Check objects exist before spreading
+
+18. **Invalid timestamps corrupt metrics** - generate-metrics.js:120-129.
+    Invalid created_at dates produce NaN age.
+
+- Fix: Validate Date.getTime() is finite before calculations
+
+19. **Agent diff compares names not content** - sync-claude-settings.js:395-408.
+    Files in both locations reported "in sync" without content comparison.
+
+- Fix: Compare file contents when both exist
+
+20. **JSON.parse without try/catch** - assign-roadmap-refs.js:152. Invalid JSON
+    line crashes script.
+
+- Fix: Wrap in try/catch with line number for debugging
+
+**REJECTED (7 - FALSE POSITIVES):**
+
+- ci.yml:45,52,56,74 - "Implicit expression in if" - These lines are NOT if
+  conditions. Line 45 is `uses:`, lines 52/56 are in `files:` block, line 74 is
+  `continue-on-error:`.
+- sync-claude-settings.js secret leakage - filterSettings already excludes `env`
+  and `permissions`. Template files don't contain actual secrets.
+- RESOLUTION_LOG.jsonl missing audit context - Internal automation log, not
+  security audit trail.
+
+**NEW PATTERNS:**
+
+- (72) **GitHub Actions script injection**: Never interpolate user-controlled
+  inputs (PR body, issue title, etc.) directly in shell run blocks. Use
+  environment variables: `env: PR_BODY: ${{ github.event.pull_request.body }}`
+- (73) **Environment variable for user input**: In GitHub Actions, pass
+  user-controlled strings through env vars where shell escaping is automatic
+
+**Resolution:**
+
+- To Fix: 20 items (1 Critical, 5 Major, 14 Minor)
+- Rejected: 7 items (false positives - verified via code inspection)
+- Deferred: 0 items
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #224: PR #XXX Title - Review Source (DATE)
+#### Review #225: PR #XXX Title - Review Source (DATE)
 
 
 -->

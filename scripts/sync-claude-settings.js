@@ -39,6 +39,14 @@ const REPO_PATHS = {
 const HOOKS_TO_SYNC = ["gsd-check-update.js", "statusline.js"];
 const AGENTS_PATTERN = /^gsd-.*\.md$/;
 
+// Review #224: Helper for path containment validation
+function isPathContained(basePath, filePath) {
+  const resolved = path.resolve(basePath, filePath);
+  const rel = path.relative(basePath, resolved);
+  // Reject if: empty, starts with .., or is absolute
+  return rel !== "" && !/^\.\.(?:[\\/]|$)/.test(rel) && !path.isAbsolute(rel);
+}
+
 // Keys to exclude from settings sync (sensitive or machine-specific)
 const EXCLUDED_SETTINGS_KEYS = ["env", "permissions"];
 
@@ -76,7 +84,9 @@ function readJson(filepath) {
     const content = fs.readFileSync(filepath, "utf8");
     return JSON.parse(content);
   } catch (e) {
-    console.error(`Error reading ${filepath}:`, e.message);
+    // Review #224: Safe error message access
+    const errMsg = e instanceof Error ? e.message : String(e);
+    console.error(`Error reading ${filepath}:`, errMsg);
     return null;
   }
 }
@@ -222,15 +232,22 @@ function exportCommand() {
   // Export agents
   if (fileExists(LOCAL_PATHS.agents)) {
     const files = fs.readdirSync(LOCAL_PATHS.agents).filter((f) => AGENTS_PATTERN.test(f));
+    let exportedCount = 0;
     for (const file of files) {
+      // Review #224: Path containment validation
+      if (!isPathContained(LOCAL_PATHS.agents, file) || !isPathContained(REPO_PATHS.agents, file)) {
+        console.warn(`⚠ Skipping agent with invalid path: ${file}`);
+        continue;
+      }
       const src = path.join(LOCAL_PATHS.agents, file);
       const dest = path.join(REPO_PATHS.agents, file);
 
       if (copyFile(src, dest)) {
         console.log(`✓ Agent exported: ${file}`);
+        exportedCount++;
       }
     }
-    console.log(`✓ ${files.length} agents exported`);
+    console.log(`✓ ${exportedCount} agents exported`);
   }
 
   console.log("\nExport complete!");
@@ -278,8 +295,16 @@ function importCommand() {
       delete repo.$schema;
       delete repo._comment;
 
-      // Merge MCP servers
-      local.mcpServers = { ...local.mcpServers, ...repo.mcpServers };
+      // Merge MCP servers (Review #224: Handle missing/invalid mcpServers)
+      const localServers =
+        local && typeof local.mcpServers === "object" && !Array.isArray(local.mcpServers)
+          ? local.mcpServers
+          : {};
+      const repoServers =
+        repo && typeof repo.mcpServers === "object" && !Array.isArray(repo.mcpServers)
+          ? repo.mcpServers
+          : {};
+      local.mcpServers = { ...localServers, ...repoServers };
 
       if (writeJson(LOCAL_PATHS.mcp, local)) {
         console.log(`✓ MCP config merged into ${LOCAL_PATHS.mcp}`);
@@ -306,15 +331,22 @@ function importCommand() {
   // Import agents
   if (fileExists(REPO_PATHS.agents)) {
     const files = fs.readdirSync(REPO_PATHS.agents).filter((f) => AGENTS_PATTERN.test(f));
+    let importedCount = 0;
     for (const file of files) {
+      // Review #224: Path containment validation
+      if (!isPathContained(REPO_PATHS.agents, file) || !isPathContained(LOCAL_PATHS.agents, file)) {
+        console.warn(`⚠ Skipping agent with invalid path: ${file}`);
+        continue;
+      }
       const src = path.join(REPO_PATHS.agents, file);
       const dest = path.join(LOCAL_PATHS.agents, file);
 
       if (copyFile(src, dest)) {
         console.log(`✓ Agent imported: ${file}`);
+        importedCount++;
       }
     }
-    console.log(`✓ ${files.length} agents imported`);
+    console.log(`✓ ${importedCount} agents imported`);
   }
 
   console.log("\nImport complete!");
@@ -362,14 +394,20 @@ function diffCommand() {
     const repoExists = fileExists(repoPath);
 
     if (localExists && repoExists) {
-      const localContent = fs.readFileSync(localPath, "utf8");
-      const repoContent = fs.readFileSync(repoPath, "utf8");
+      // Review #224: Wrap file reads in try/catch
+      try {
+        const localContent = fs.readFileSync(localPath, "utf8");
+        const repoContent = fs.readFileSync(repoPath, "utf8");
 
-      if (localContent !== repoContent) {
+        if (localContent !== repoContent) {
+          hasDiffs = true;
+          console.log(`  ~ ${hook} (content differs)`);
+        } else {
+          console.log(`  = ${hook} (in sync)`);
+        }
+      } catch (e) {
         hasDiffs = true;
-        console.log(`  ~ ${hook} (content differs)`);
-      } else {
-        console.log(`  = ${hook} (in sync)`);
+        console.log(`  ? ${hook} (read error)`);
       }
     } else if (localExists) {
       hasDiffs = true;
@@ -397,7 +435,24 @@ function diffCommand() {
     const inRepo = repoAgents.includes(agent);
 
     if (inLocal && inRepo) {
-      console.log(`  = ${agent} (in sync)`);
+      // Review #224: Compare file contents, not just filenames
+      const localPath = path.join(LOCAL_PATHS.agents, agent);
+      const repoPath = path.join(REPO_PATHS.agents, agent);
+
+      try {
+        const localContent = fs.readFileSync(localPath, "utf8");
+        const repoContent = fs.readFileSync(repoPath, "utf8");
+
+        if (localContent !== repoContent) {
+          hasDiffs = true;
+          console.log(`  ~ ${agent} (content differs)`);
+        } else {
+          console.log(`  = ${agent} (in sync)`);
+        }
+      } catch (_e) {
+        hasDiffs = true;
+        console.log(`  ? ${agent} (read error)`);
+      }
     } else if (inLocal) {
       hasDiffs = true;
       console.log(`  - ${agent} (only in local)`);

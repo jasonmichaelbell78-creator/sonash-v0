@@ -22,9 +22,13 @@ jobs:
 
       - name: Extract DEBT IDs from PR body
         id: extract
+        env:
+          # Pass user-controlled input via env var to prevent script injection
+          # See: Review #224 - SonarCloud S7630 script injection vulnerability
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          # Extract DEBT-XXXX patterns from PR body
-          DEBT_IDS=$(echo "${{ github.event.pull_request.body }}" | \
+          # Extract DEBT-XXXX patterns from PR body (using env var, not interpolation)
+          DEBT_IDS=$(echo "$PR_BODY" | \
             grep -oE 'DEBT-[0-9]+' | sort -u | tr '\n' ' ' || true)
 
           # Trim whitespace

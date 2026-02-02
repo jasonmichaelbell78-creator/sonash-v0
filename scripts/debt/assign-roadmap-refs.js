@@ -134,7 +134,15 @@ function main() {
     process.exit(2);
   }
 
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+  // Review #224: Wrap readFileSync in try/catch (existsSync doesn't guarantee read success)
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Failed to read MASTER_DEBT.jsonl: ${errMsg}`);
+    process.exit(2);
+  }
   const lines = content.trim().split("\n");
 
   // Track statistics
@@ -149,7 +157,17 @@ function main() {
 
   for (const line of lines) {
     stats.total++;
-    const item = JSON.parse(line);
+
+    // Review #224: Wrap JSON.parse in try/catch for robustness
+    let item;
+    try {
+      item = JSON.parse(line);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.error(`❌ Invalid JSON at line ${stats.total}: ${errMsg}`);
+      console.error(`   Line: ${line.slice(0, 200)}${line.length > 200 ? "..." : ""}`);
+      process.exit(3);
+    }
 
     // Check if already has roadmap_ref - normalize if needed
     if (item.roadmap_ref && item.roadmap_ref !== null) {

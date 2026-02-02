@@ -41,7 +41,16 @@ function loadMasterDebt() {
     process.exit(1);
   }
 
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+  // Review #224: Wrap readFileSync in try/catch (existsSync doesn't guarantee read success)
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Failed to read master file: ${errMsg}`);
+    process.exit(1);
+  }
+
   const lines = content.split("\n").filter((line) => line.trim());
   const items = [];
   const errors = [];
@@ -50,7 +59,9 @@ function loadMasterDebt() {
     try {
       items.push(JSON.parse(lines[i]));
     } catch (err) {
-      errors.push({ line: i + 1, error: err.message });
+      // Review #224: Safe error message access
+      const errMsg = err instanceof Error ? err.message : String(err);
+      errors.push({ line: i + 1, error: errMsg });
     }
   }
 
@@ -119,12 +130,16 @@ function calculateMetrics(items) {
       // Calculate age for open items
       if (item.created_at) {
         const createdDate = new Date(item.created_at);
-        const ageDays = Math.floor((now - createdDate) / (1000 * 60 * 60 * 24));
-        totalAgeDays += ageDays;
-        openCount++;
-        if (ageDays > oldestAge) {
-          oldestAge = ageDays;
-          oldestItem = item;
+        // Review #224: Validate timestamp is valid before age calculation
+        const createdMs = createdDate.getTime();
+        if (Number.isFinite(createdMs)) {
+          const ageDays = Math.floor((now.getTime() - createdMs) / (1000 * 60 * 60 * 24));
+          totalAgeDays += ageDays;
+          openCount++;
+          if (ageDays > oldestAge) {
+            oldestAge = ageDays;
+            oldestItem = item;
+          }
         }
       }
     }

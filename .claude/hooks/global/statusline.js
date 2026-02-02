@@ -23,11 +23,13 @@ process.stdin.on("end", () => {
     // Context window display (shows USED percentage)
     let ctx = "";
     if (remaining != null) {
-      const rem = Math.round(remaining);
+      // Review #224: Clamp to [0, 100] to prevent RangeError in repeat()
+      const remRaw = Math.round(Number(remaining));
+      const rem = Number.isFinite(remRaw) ? Math.max(0, Math.min(100, remRaw)) : 0;
       const used = 100 - rem;
 
       // Build progress bar (10 segments)
-      const filled = Math.floor(used / 10);
+      const filled = Math.max(0, Math.min(10, Math.floor(used / 10)));
       const bar = "█".repeat(filled) + "░".repeat(10 - filled);
 
       // Color based on usage
@@ -55,9 +57,17 @@ process.stdin.on("end", () => {
 
       if (files.length > 0) {
         try {
-          const todos = JSON.parse(fs.readFileSync(path.join(todosDir, files[0].name), "utf8"));
-          const inProgress = todos.find((t) => t.status === "in_progress");
-          if (inProgress) task = inProgress.activeForm || "";
+          // Review #224: Validate path containment (defense-in-depth)
+          const todoFilePath = path.join(todosDir, files[0].name);
+          const resolved = path.resolve(todoFilePath);
+          const rel = path.relative(todosDir, resolved);
+          if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+            // Path escapes todosDir - skip
+          } else {
+            const todos = JSON.parse(fs.readFileSync(resolved, "utf8"));
+            const inProgress = todos.find((t) => t.status === "in_progress");
+            if (inProgress) task = inProgress.activeForm || "";
+          }
         } catch (_e) {
           /* ignore parse errors */
         }
