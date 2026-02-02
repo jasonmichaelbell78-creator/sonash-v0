@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.5 **Status:** ACTIVE **Last Updated:** 2026-01-26
+**Document Version:** 2.5 **Status:** ACTIVE **Last Updated:** 2026-02-02
 
 ---
 
@@ -21,6 +21,8 @@ project.
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
 - [SECURITY.md](./docs/SECURITY.md) - Security requirements
 - [TESTING_PLAN.md](docs/TESTING_PLAN.md) - Testing strategy and QA procedures
+- [.claude/CROSS_PLATFORM_SETUP.md](.claude/CROSS_PLATFORM_SETUP.md) -
+  Cross-platform Claude Code setup
 
 ---
 
@@ -457,22 +459,25 @@ npm audit fix
 
 ### Code Quality Commands
 
-| Command                               | Purpose                    | Notes                                    |
-| ------------------------------------- | -------------------------- | ---------------------------------------- |
-| `npm run lint`                        | ESLint check               | Must pass (0 errors)                     |
-| `npm run format`                      | Prettier auto-format       | Formats all files                        |
-| `npm run format:check`                | Prettier check             | For CI (no changes)                      |
-| `npm run deps:circular`               | Check circular deps        | Uses madge                               |
-| `npm run deps:unused`                 | Find unused exports        | Uses knip                                |
-| `npm test`                            | Run all tests              | 116 tests (1 skipped)                    |
-| `npm run test:coverage`               | Test with coverage         | Uses c8                                  |
-| `npm run validate:canon`              | Validate CANON files       | Checks audit output schema               |
-| `npm run crossdoc:check`              | Cross-doc deps             | Blocks if deps missing                   |
-| `npm run consolidation:check`         | Check consolidation status | Warns if 10+ reviews pending             |
-| `npm run consolidation:run`           | Run consolidation          | Extract patterns to CODE_PATTERNS.md     |
-| `npm run consolidation:run -- --auto` | Auto-consolidation         | Runs silently, used by SessionStart hook |
-| `npm run patterns:check`              | Pattern compliance         | Check for anti-patterns in staged files  |
-| `npm run patterns:sync`               | Pattern sync check         | Verify docs/automation consistency       |
+| Command                                         | Purpose                    | Notes                                        |
+| ----------------------------------------------- | -------------------------- | -------------------------------------------- |
+| `npm run lint`                                  | ESLint check               | Must pass (0 errors)                         |
+| `npm run format`                                | Prettier auto-format       | Formats all files                            |
+| `npm run format:check`                          | Prettier check             | For CI (no changes)                          |
+| `npm run deps:circular`                         | Check circular deps        | Uses madge                                   |
+| `npm run deps:unused`                           | Find unused exports        | Uses knip                                    |
+| `npm test`                                      | Run all tests              | 116 tests (1 skipped)                        |
+| `npm run test:coverage`                         | Test with coverage         | Uses c8                                      |
+| `npm run validate:canon`                        | Validate CANON files       | Checks audit output schema                   |
+| `npm run crossdoc:check`                        | Cross-doc deps             | Blocks if deps missing                       |
+| `npm run consolidation:check`                   | Check consolidation status | Warns if 10+ reviews pending                 |
+| `npm run consolidation:run`                     | Run consolidation          | Extract patterns to CODE_PATTERNS.md         |
+| `npm run consolidation:run -- --auto`           | Auto-consolidation         | Runs silently, used by SessionStart hook     |
+| `npm run patterns:check`                        | Pattern compliance         | Check for anti-patterns in staged files      |
+| `npm run patterns:sync`                         | Pattern sync check         | Verify docs/automation consistency           |
+| `node scripts/sync-claude-settings.js --import` | Claude settings sync       | Import global Claude Code settings from repo |
+| `node scripts/sync-claude-settings.js --export` | Claude settings sync       | Export local settings to repo template       |
+| `node scripts/sync-claude-settings.js --diff`   | Claude settings sync       | Compare local vs repo settings               |
 
 ### Prettier (Code Formatting)
 
@@ -553,27 +558,20 @@ TypeScript rules)
 
 **Pre-commit hook (`.husky/pre-commit`) runs:**
 
-| Step               | Command                           | Blocking?                          |
-| ------------------ | --------------------------------- | ---------------------------------- |
-| ESLint             | `npm run lint`                    | YES - blocks commit                |
-| lint-staged        | `npx --no-install lint-staged`    | YES - auto-formats                 |
-| Pattern compliance | `npm run patterns:check`          | YES - blocks commit                |
-| Tests              | `npm test`                        | YES - blocks commit                |
-| CANON validation   | `npm run validate:canon`          | NO - warning only                  |
-| Skill validation   | `npm run skills:validate`         | NO - warning only                  |
-| Cross-doc deps     | `npm run crossdoc:check`          | YES - blocks commit                |
-| Doc Index check    | (checks for new .md files)        | YES - blocks commit (Session #103) |
-| Doc Header check   | `npm run docs:headers`            | YES - blocks commit (Session #115) |
-| Learning reminder  | (checks staged files)             | NO - reminder only                 |
-| Audit S0/S1        | `validate-audit.js --strict-s0s1` | YES - blocks commit (Session #98)  |
-| Agent compliance   | `check-agent-compliance.js`       | NO - warning only (Session #101)   |
+| Step               | Command                           | Blocking?                         |
+| ------------------ | --------------------------------- | --------------------------------- |
+| ESLint             | `npm run lint`                    | YES - blocks commit               |
+| lint-staged        | `npx --no-install lint-staged`    | YES - auto-formats                |
+| Pattern compliance | `npm run patterns:check`          | YES - blocks commit               |
+| Tests              | `npm test`                        | YES - blocks commit               |
+| CANON validation   | `npm run validate:canon`          | NO - warning only                 |
+| Skill validation   | `npm run skills:validate`         | NO - warning only                 |
+| Cross-doc deps     | `npm run crossdoc:check`          | YES - blocks commit               |
+| Learning reminder  | (checks staged files)             | NO - reminder only                |
+| Audit S0/S1        | `validate-audit.js --strict-s0s1` | YES - blocks commit (Session #98) |
 
 > **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
 > staged. Validates schema compliance for audit output files.
->
-> **Doc Header Check**: When new `.md` files are added, validates they have
-> required headers (Document Version, Last Updated, Status). Exempt: README.md,
-> CHANGELOG.md, archive/. Override: `SKIP_DOC_HEADER_CHECK=1`
 >
 > **Learning Entry Reminder**: If 5+ files are staged or template/hook changes
 > are detected, the hook reminds you to update `docs/AI_REVIEW_LEARNINGS_LOG.md`
@@ -603,12 +601,11 @@ Configured in `.claude/settings.json`.
 
 **SessionStart Hooks:**
 
-| Hook                            | Action    | Purpose                                            |
-| ------------------------------- | --------- | -------------------------------------------------- |
-| session-start.js                | Setup     | Verify dependencies, build functions, run tests    |
-| check-mcp-servers.js            | Check     | Verify MCP server availability                     |
-| check-remote-session-context.js | Check     | Find newer SESSION_CONTEXT.md in remote branches   |
-| stop-serena-dashboard.js        | Terminate | Safely stop Serena dashboard process on port 24282 |
+| Hook                     | Action    | Purpose                                            |
+| ------------------------ | --------- | -------------------------------------------------- |
+| stop-serena-dashboard.js | Terminate | Safely stop Serena dashboard process on port 24282 |
+| session-start.js         | Setup     | Verify dependencies, build functions, run tests    |
+| check-mcp-servers.js     | Check     | Verify MCP server availability                     |
 
 > **Security Controls (stop-serena-dashboard.js)**: Cross-platform process
 > termination with defense-in-depth security: process allowlist validation,
@@ -644,12 +641,6 @@ Configured in `.claude/settings.json`.
 | analyze-user-request.js | Prompt | Check PRE-TASK triggers       |
 | session-end-reminder.js | Prompt | Detect session ending phrases |
 | plan-mode-suggestion.js | Prompt | Suggest Plan mode for complex |
-
-**PostToolUse Hooks (Task):**
-
-| Hook                      | Action | Purpose                                 |
-| ------------------------- | ------ | --------------------------------------- |
-| track-agent-invocation.js | Track  | Record agent invocations for compliance |
 
 > **BLOCKING hooks**: firestore-write-block.js and test-mocking-validator.js
 > will prevent operations that violate security patterns. All other hooks
@@ -1075,6 +1066,8 @@ When maintaining this document:
 
 | Version | Date       | Changes                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------- |
+| 2.5     | 2026-02-02 | Added Claude Code settings sync commands and cross-platform setup reference  |
+| 2.4     | 2026-01-24 | Previous version                                                             |
 | 2.3     | 2026-01-16 | Updated pre-commit hook: lint-staged auto-formats staged files (Session #70) |
 | 2.2     | 2026-01-13 | Updated pre-commit hook table (pattern compliance, learning entry reminder)  |
 | 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip)                      |

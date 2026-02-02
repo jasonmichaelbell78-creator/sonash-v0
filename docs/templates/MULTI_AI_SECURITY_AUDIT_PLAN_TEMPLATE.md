@@ -1,6 +1,6 @@
 # [Project Name] Multi-AI Security Audit Plan
 
-**Document Version:** 1.4 **Created:** YYYY-MM-DD **Last Updated:** 2026-01-13
+**Document Version:** 1.5 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-01
 **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
 
 ---
@@ -38,7 +38,7 @@ security-focused audit on [Project Name]. Use this template when:
 12. AI Agent Security (prompt injection in configs, agent manipulation surfaces)
 
 **Expected Output:** Security findings with remediation plan, compliance status
-for each mandatory standard.
+for each mandatory standard, ingested to TDMS for tracking.
 
 ---
 
@@ -52,8 +52,9 @@ for each mandatory standard.
 | Step 4 | Run aggregation                          | PENDING | 0%         |
 | Step 5 | Create canonical findings doc            | PENDING | 0%         |
 | Step 6 | Generate remediation plan                | PENDING | 0%         |
+| Step 7 | Ingest to TDMS                           | PENDING | 0%         |
 
-**Overall Progress:** 0/6 steps complete
+**Overall Progress:** 0/7 steps complete
 
 ---
 
@@ -706,9 +707,63 @@ Use R1, R2, and Between-PR checklist from MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
 
 ## Audit History
 
-| Date   | Type           | Trigger  | Models Used | Findings     | Compliance Status                 |
-| ------ | -------------- | -------- | ----------- | ------------ | --------------------------------- |
-| [Date] | Security Audit | [Reason] | [Models]    | [X findings] | [COMPLIANT/PARTIAL/NON_COMPLIANT] |
+| Date   | Type           | Trigger  | Models Used | Findings     | TDMS Items   | Compliance Status                 |
+| ------ | -------------- | -------- | ----------- | ------------ | ------------ | --------------------------------- |
+| [Date] | Security Audit | [Reason] | [Models]    | [X findings] | [X ingested] | [COMPLIANT/PARTIAL/NON_COMPLIANT] |
+
+---
+
+## TDMS Integration
+
+### Automatic Intake
+
+After aggregation, ingest findings to TDMS:
+
+```bash
+node scripts/debt/intake-audit.js \
+  docs/audits/single-session/security/SECURITY_AUDIT_YYYY_QX.jsonl \
+  --source "multi-ai-security-audit" \
+  --batch-id "security-audit-YYYYMMDD"
+```
+
+### Required TDMS Fields
+
+Ensure all findings include these fields for TDMS compatibility:
+
+| Audit Field             | TDMS Field    | Notes                                   |
+| ----------------------- | ------------- | --------------------------------------- |
+| `category`              | `category`    | Map to TDMS category (see table below)  |
+| `severity`              | `severity`    | S0/S1/S2/S3 (unchanged)                 |
+| `files[0]`              | `file`        | Primary file path                       |
+| `line`                  | `line`        | Line number (use 1 if file-wide)        |
+| `title`                 | `title`       | Short description                       |
+| `vulnerability_details` | `description` | Full description with exploitation info |
+
+### Category Mapping (Security Audit → TDMS)
+
+| Security Audit Category | TDMS Category |
+| ----------------------- | ------------- |
+| RateLimiting            | security      |
+| InputValidation         | security      |
+| SecretsManagement       | security      |
+| Authentication          | security      |
+| Firebase                | security      |
+| OWASP                   | security      |
+| Headers                 | security      |
+| Framework               | security      |
+| FileHandling            | security      |
+| Crypto                  | security      |
+| ProductUXRisk           | security      |
+| AgentSecurity           | security      |
+
+### Completion Checklist
+
+After TDMS intake:
+
+- [ ] Findings ingested without errors
+- [ ] DEBT-XXXX IDs assigned
+- [ ] Views regenerated (`node scripts/debt/generate-views.js`)
+- [ ] Audit History updated with TDMS Items count
 
 ---
 
@@ -722,8 +777,10 @@ When using this template:
 4. **Collect outputs** in specified formats
 5. **Run aggregation** for consolidated findings
 6. **Create canonical findings doc**
-7. **Prioritize and remediate** based on severity
-8. **Update MULTI_AI_REVIEW_COORDINATOR.md** with audit results
+7. **Ingest to TDMS** using `node scripts/debt/intake-audit.js`
+8. **Prioritize and remediate** based on severity
+9. **Update Audit History** in this file (include TDMS Items count)
+10. **Update MULTI_AI_REVIEW_COORDINATOR.md** with audit results
 
 **Quality checks before finalizing:**
 
@@ -732,6 +789,8 @@ When using this template:
 - [ ] Severity ratings justified
 - [ ] Remediation steps actionable
 - [ ] Compliance status accurate
+- [ ] TDMS intake completed without errors
+- [ ] DEBT-XXXX IDs assigned to all findings
 
 ---
 
@@ -739,6 +798,8 @@ When using this template:
 
 - **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL
   schema for all review templates
+- **[docs/technical-debt/PROCEDURE.md](../technical-debt/PROCEDURE.md)** - TDMS
+  intake and tracking procedures
 - **[GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md)** -
   Mandatory standards being verified
 - **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
@@ -752,6 +813,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.5     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added Step 7 for TDMS intake, TDMS Integration section with intake commands, category mapping table, and completion checklist. Updated AI Instructions and Quality checks. Added PROCEDURE.md to Related Documents.                                                     | Claude |
 | 1.4     | 2026-01-13 | Expanded from 7 to 12 categories: Added Hosting & Headers Security (CSP, HSTS, COOP, COEP), Framework-Specific Security (Next.js boundary leaks), File Handling Security, Crypto & Randomness, AI Agent Security. Aligns with single-session audit-security.md updates for vibe-coded app coverage.      | Claude |
 | 1.3     | 2026-01-06 | Review #68: Replaced --binary-files=without-match with portable -I flag; Updated document header to 1.2                                                                                                                                                                                                  | Claude |
 | 1.2     | 2026-01-06 | Review #67: Added -E flag for extended regex; Made grep --exclude-dir portable (repeated flags vs brace expansion)                                                                                                                                                                                       | Claude |

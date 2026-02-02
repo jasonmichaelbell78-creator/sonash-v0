@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 12.5 **Created:** 2026-01-02 **Last Updated:** 2026-01-31
+**Document Version:** 12.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-02
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 12.6    | 2026-02-02 | Review #224: Cross-Platform Config PR - CI Pattern Compliance + SonarCloud + Qodo (27 fixes - 1 CRITICAL, 5 MAJOR, 21 MINOR). **CRITICAL**: GitHub Actions script injection in resolve-debt.yml (S7630) - pass PR body via env var. **MAJOR**: Path containment validation (5 locations). **MINOR**: readFileSync try/catch (8), unsafe error.message (1), percentage clamping (1), MCP null check (1), timestamp validation (1), agent diff content (1), JSON.parse try/catch (1), null object diffing (1), statSync race (1), empty input (1), negative age (1), Array.isArray (1), atomic writes (1), write failures (1). **NEW PATTERNS**: (72) GitHub Actions script injection prevention; (73) env var for user input. 7 false positives rejected. Active reviews #180-224.                                                                                                                                   |
 | 12.3    | 2026-01-31 | Review #223: PR #327 Process Audit System Round 3 - Qodo Security (4 items - 2 HIGH, 2 MEDIUM). **HIGH**: sanitizeError() for check-phase-status.js and intake-manual.js error messages. **MEDIUM**: rollback mechanism for multi-file writes, generic path in error messages. **NEW PATTERNS**: (70) sanitizeError() for user-visible errors; (71) Multi-file write rollback. Active reviews #180-223.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 12.2    | 2026-01-31 | Review #222: PR #327 Process Audit System Round 2 - Qodo (8 items - 6 HIGH, 2 MEDIUM). **HIGH**: (1) intake-manual.js appendFileSync try/catch; (2-4) check-phase-status.js: complete:false on READ_ERROR, only PASS=complete, readdirSync try/catch; (5-6) SKILL.md: Stage 5/6 glob self-inclusion fix, all-findings-raw.jsonl canonical rollups only. **NEW PATTERNS**: (66) Append writes need try/catch; (67) Phase verification = exists AND readable AND PASS; (68) Glob-to-file self-inclusion; (69) Aggregate files use canonical rollups. Active reviews #180-222.                                                                                                                                                                                                                                                                                                                                         |
 | 12.1    | 2026-01-31 | Review #221: PR #327 Process Audit System - CI + Qodo (12 items - 4 CRITICAL CI, 6 MAJOR, 2 MINOR). **CRITICAL CI**: (1) JSONL blank lines/EOF markers; (2) check-phase-status.js syntax error; (3) pathExcludeList false positives for verified try/catch files. **MAJOR**: SKILL.md fixes - AUDIT_DIR realpath validation, explicit file lists for stage 2/3/4 merges. Active reviews #180-221.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -291,8 +292,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #222
+**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #232
 
 ### When to Consolidate
 
@@ -1364,10 +1365,145 @@ Deferred: 7)
 
 ---
 
+#### Review #224: Cross-Platform Config PR - CI Pattern Compliance + SonarCloud + Qodo (2026-02-02)
+
+**Category**: Security & Robustness | **Items**: 29 identified (1 CRITICAL, 5
+MAJOR, 17 MINOR, 7 REJECTED false positives)
+
+**Source:** CI Pattern Compliance Failure + SonarCloud Security Hotspot + Qodo
+PR Compliance **PR/Branch:** claude/cross-platform-config-session100
+
+**FILES TO FIX:**
+
+- `.github/workflows/resolve-debt.yml` - Script injection vulnerability
+  (CRITICAL)
+- `.claude/hooks/global/statusline.js` - Path containment, try/catch, percentage
+  clamping
+- `.claude/hooks/global/gsd-check-update.js` - try/catch for readFileSync
+- `scripts/sync-claude-settings.js` - Path containment (4 locations), try/catch
+  (3 locations), MCP null check, agent diff content comparison
+- `scripts/debt/assign-roadmap-refs.js` - try/catch for readFileSync and
+  JSON.parse
+- `scripts/debt/generate-metrics.js` - try/catch, unsafe error.message, invalid
+  timestamp handling
+
+**CRITICAL (1):**
+
+1. `resolve-debt.yml:27`: **GitHub Actions Script Injection** - SonarCloud
+   BLOCKER (S7630). PR body is user-controlled and used directly in shell
+   `echo "${{ github.event.pull_request.body }}"`. Malicious PR body can inject
+   arbitrary shell commands.
+   - Fix: Pass PR body via environment variable instead of interpolation
+
+**MAJOR (5):** 2-6. **Path joined without containment check** -
+statusline.js:58, sync-claude-settings.js:226,227,310,311. Filenames from
+readdirSync are joined with path.join but not validated for traversal.
+
+- Fix: Add containment validation using path.relative check
+
+**MINOR (17):** 7-14. **readFileSync without try/catch** - 8 locations across
+gsd-check-update.js, statusline.js, assign-roadmap-refs.js, generate-metrics.js,
+sync-claude-settings.js. existsSync does NOT guarantee read success.
+
+- Fix: Wrap all file reads in try/catch
+
+15. **Unsafe error.message access** - generate-metrics.js:52. Non-Error throws
+    crash the script.
+
+- Fix: Use `error instanceof Error ? error.message : String(error)`
+
+16. **Clamp percentages** - statusline.js:25-31. Out-of-range remaining
+    percentage causes RangeError in progress bar.
+
+- Fix: Clamp to [0, 100] range, validate numeric
+
+17. **Crash on missing mcpServers** - sync-claude-settings.js:281-282. Spreading
+    undefined mcpServers crashes.
+
+- Fix: Check objects exist before spreading
+
+18. **Invalid timestamps corrupt metrics** - generate-metrics.js:120-129.
+    Invalid created_at dates produce NaN age.
+
+- Fix: Validate Date.getTime() is finite before calculations
+
+19. **Agent diff compares names not content** - sync-claude-settings.js:395-408.
+    Files in both locations reported "in sync" without content comparison.
+
+- Fix: Compare file contents when both exist
+
+20. **JSON.parse without try/catch** - assign-roadmap-refs.js:152. Invalid JSON
+    line crashes script.
+
+- Fix: Wrap in try/catch with line number for debugging
+
+**REJECTED (7 - FALSE POSITIVES):**
+
+- ci.yml:45,52,56,74 - "Implicit expression in if" - These lines are NOT if
+  conditions. Line 45 is `uses:`, lines 52/56 are in `files:` block, line 74 is
+  `continue-on-error:`.
+- sync-claude-settings.js secret leakage - filterSettings already excludes `env`
+  and `permissions`. Template files don't contain actual secrets.
+- RESOLUTION_LOG.jsonl missing audit context - Internal automation log, not
+  security audit trail.
+
+**NEW PATTERNS:**
+
+- (72) **GitHub Actions script injection**: Never interpolate user-controlled
+  inputs (PR body, issue title, etc.) directly in shell run blocks. Use
+  environment variables: `env: PR_BODY: ${{ github.event.pull_request.body }}`
+- (73) **Environment variable for user input**: In GitHub Actions, pass
+  user-controlled strings through env vars where shell escaping is automatic
+
+**QODO ROUND 2 FIXES (7):**
+
+21. **Null object diffing** - sync-claude-settings.js:157-163.
+    `Object.keys(null)` throws.
+
+- Fix: Guard with `typeof a === "object" && !Array.isArray(a) ? a : {}`
+
+22. **statSync race condition** - statusline.js:52-56. File may be deleted
+    between readdirSync and statSync.
+
+- Fix: Wrap statSync in try/catch, filter null results
+
+23. **Empty input file** - assign-roadmap-refs.js:146. Empty MASTER_DEBT.jsonl
+    causes confusing behavior.
+
+- Fix: Check lines.length === 0 and exit gracefully
+
+24. **Negative age metrics** - generate-metrics.js:136-143. Future timestamps
+    produce negative ages.
+
+- Fix: Skip items with ageDays < 0
+
+25. **Array.isArray guard for todos** - statusline.js:67-69. JSON may parse to
+    non-array.
+
+- Fix: Add Array.isArray(todos) check before .find()
+
+26. **Atomic writes** - assign-roadmap-refs.js:253-266. Interrupted writes
+    corrupt MASTER_DEBT.jsonl.
+
+- Fix: Write to .tmp file first, then rename atomically
+
+27. **Write failure handling** - generate-metrics.js:332-341. writeFileSync can
+    fail silently.
+
+- Fix: Wrap in try/catch with error message and exit code
+
+**Resolution:**
+
+- Fixed: 27 items (1 Critical, 5 Major, 21 Minor)
+- Rejected: 7 items (false positives - verified via code inspection)
+- Deferred: 0 items
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #224: PR #XXX Title - Review Source (DATE)
+#### Review #225: PR #XXX Title - Review Source (DATE)
 
 
 -->

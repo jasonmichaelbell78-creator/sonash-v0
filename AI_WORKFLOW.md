@@ -2,7 +2,7 @@
 
 **Document Version**: 2.0 **Purpose**: Master navigation and workflow guide for
 AI assistants **When to Use**: Start of EVERY session **Last Updated**:
-2026-01-27
+2026-02-02
 
 ---
 
@@ -146,6 +146,10 @@ Recovery Notebook project. It provides:
    - [DEVELOPMENT.md](./DEVELOPMENT.md) - Development procedures, Git hooks,
      CI/CD workflows
    - [.claude/HOOKS.md](./.claude/HOOKS.md) - Claude hooks documentation
+   - [.claude/CROSS_PLATFORM_SETUP.md](./.claude/CROSS_PLATFORM_SETUP.md) -
+     Cross-platform Claude Code setup
+   - [.claude/REQUIRED_PLUGINS.md](./.claude/REQUIRED_PLUGINS.md) - Plugin
+     installation and troubleshooting
 
 8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
@@ -348,6 +352,14 @@ standards → [SECURITY.md](./docs/SECURITY.md) - Additional security docs
 
 **Documentation Standards**: →
 [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md)
+
+**Cross-Platform Setup**: →
+[.claude/CROSS_PLATFORM_SETUP.md](./.claude/CROSS_PLATFORM_SETUP.md) - Windows
+CLI and Web setup
+
+**Plugin Configuration**: →
+[.claude/REQUIRED_PLUGINS.md](./.claude/REQUIRED_PLUGINS.md) - Plugin
+installation guide
 
 **Specific Feature Plans**: → Check `docs/` for feature-specific plans
 
@@ -760,89 +772,6 @@ Use this template when completing any phase/milestone:
 
 ---
 
-## 🧠 Context Preservation
-
-### Purpose
-
-Long conversations and automatic compaction can cause **context rot** - loss of
-critical information that affects decision quality. MCP Memory provides
-persistent storage that survives compaction events.
-
-### MCP Memory Server
-
-The `memory` MCP server maintains a knowledge graph that persists across
-sessions and compaction events.
-
-**Available Commands:**
-
-- `mcp__memory__read_graph` - Read entire knowledge graph
-- `mcp__memory__search_nodes` - Search for specific entities
-- `mcp__memory__create_entities` - Store new entities with observations
-- `mcp__memory__create_relations` - Create relationships between entities
-- `mcp__memory__add_observations` - Add new facts to existing entities
-
-### What to Store in Memory
-
-**Always Store:**
-
-- Project metadata (tech stack, architecture decisions)
-- Document relationships and cross-update requirements
-- Active blockers and their resolution status
-- Patterns learned from reviews/debugging
-- Session handoff context (what was worked on, what's pending)
-
-**When to Update Memory:**
-
-- New pattern discovered during debugging/review
-- Blocker status changes
-- Document relationships change
-- Significant architectural decision made
-- Session end (store pending work context)
-
-### How to Use Memory
-
-**At Session Start (after compaction):**
-
-```
-1. Query: mcp__memory__read_graph
-2. Review stored entities and relations
-3. Restore critical context before proceeding
-```
-
-**During Work:**
-
-```
-# Search for relevant context
-mcp__memory__search_nodes(query: "ROADMAP")
-
-# Add new observation to existing entity
-mcp__memory__add_observations(observations: [{
-  entityName: "sonash-v0",
-  contents: ["New pattern: always run validation before commit"]
-}])
-```
-
-**At Session End:**
-
-```
-# Store pending work and handoff context
-mcp__memory__create_entities(entities: [{
-  name: "Session103-Handoff",
-  entityType: "SessionContext",
-  observations: ["Completed: X, Y, Z", "Pending: A, B", "Blockers: None"]
-}])
-```
-
-### Best Practices
-
-- Keep observations concise but complete
-- Use consistent entity naming (PascalCase)
-- Create relations to show dependencies
-- Query memory when context seems incomplete
-- Combine with TodoWrite for task tracking
-
----
-
 ## 🔄 Maintenance
 
 ### When to Update This Document
@@ -877,7 +806,7 @@ mcp__memory__create_entities(entities: [{
 
 | Version | Date       | Changes                                                                                                                                                                                              | Author      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| 2.0     | 2026-01-27 | Added Context Preservation section with MCP Memory usage guidelines; documents how to persist critical context across compaction events                                                              | Claude      |
+| 2.0     | 2026-02-02 | Added cross-platform setup and plugin documentation references to hierarchy and navigation map                                                                                                       | Claude      |
 | 1.9     | 2026-01-13 | Documented automated session-start checks (lessons:surface, docs:sync-check, pattern compliance, consolidation status); added time estimate for automated checks                                     | Claude      |
 | 1.8     | 2026-01-08 | Added AUDIT_TRACKER.md to hierarchy (step 4); added .claude/HOOKS.md and SLASH_COMMANDS.md references; updated startup checklist for per-category audit tracking                                     | Claude      |
 | 1.7     | 2026-01-03 | Added database-architect, debugger to PRE-TASK; split documentation triggers in POST-TASK; aligned with claude.md                                                                                    | Claude      |

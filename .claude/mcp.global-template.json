@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/mcp-servers",
+  "_comment": "Global MCP server template. To use: copy or merge into ~/.claude/mcp.json",
+  "mcpServers": {
+    "ccusage": {
+      "_comment": "Claude Code usage tracking",
+      "command": "bunx",
+      "args": ["@ccusage/mcp@latest"]
+    },
+    "puppeteer": {
+      "_comment": "Browser automation for testing and screenshots",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+    }
+  }
+}

@@ -216,6 +216,9 @@ const ANTI_PATTERNS = [
     fix: "Always use explicit ${{ }} in if: conditions",
     review: "#17, #21",
     fileTypes: [".yml", ".yaml"],
+    // Review #224: ci.yml verified - all if: conditions use ${{ }} syntax
+    // Pattern has false positives on multiline files/with blocks containing github/steps refs
+    pathExclude: /(?:^|[\\/])ci\.yml$/,
   },
   {
     id: "fragile-bot-detection",
@@ -310,7 +313,8 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     // Review #190: phase-complete-check.js L171 has containment via safeStatCheck→isWithinArchive
     // Review #217 R4: check-doc-headers.js L112 has containment check on L117 (rel === "" || regex || isAbsolute)
-    pathExclude: /(?:^|[\\/])(?:phase-complete-check|check-doc-headers)\.js$/,
+    // Review #224: sync-claude-settings.js uses isPathContained helper (L43-48) for all path joins
+    pathExclude: /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings)\.js$/,
   },
   {
     id: "error-without-first-line",
@@ -479,6 +483,17 @@ const ANTI_PATTERNS = [
       // - intake-manual.js: readFileSync at L119 IS in try/catch (L118-124)
       "check-phase-status.js",
       "intake-manual.js",
+      // 2026-02-02 audit (Review #224):
+      // - generate-metrics.js: readFileSync at L47 IS in try/catch (L45-52), loadMasterDebt validated
+      // - assign-roadmap-refs.js: readFileSync at L140 IS in try/catch (L139-145)
+      // - sync-claude-settings.js: readFileSync at L84 IS in try/catch (L83-91) via readJson helper
+      // - statusline.js (hooks/global): readFileSync at L67 IS in try/catch (L59-73), L82 IS in try/catch (L81-88)
+      // - gsd-check-update.js: readFileSync at L37 IS in try/catch (L36-38) in spawned child process code
+      "generate-metrics.js",
+      "assign-roadmap-refs.js",
+      "sync-claude-settings.js",
+      "statusline.js",
+      "gsd-check-update.js",
     ],
   },
   {
@@ -519,8 +534,11 @@ const ANTI_PATTERNS = [
     // - check-roadmap-health.js: L175 has `rel === "" ||` at start of condition
     // 2026-01-29 audit (Review #217 R4):
     // - check-doc-headers.js: L117 has `rel === "" ||` at start of condition
+    // 2026-02-02 audit (Review #224):
+    // - statusline.js (hooks/global): L64 has `rel === "" ||` at start of condition
+    // - sync-claude-settings.js: L47 has `rel === "" ||` in isPathContained helper
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings)\.js$/,
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)

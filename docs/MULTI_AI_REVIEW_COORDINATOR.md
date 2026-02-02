@@ -1,6 +1,6 @@
 # Multi-AI Review Coordinator
 
-**Document Version:** 1.6 **Created:** 2026-01-01 **Last Updated:** 2026-01-11
+**Document Version:** 1.7 **Created:** 2026-01-01 **Last Updated:** 2026-02-01
 **Document Tier:** Tier 2 (Foundation) **Purpose:** Master index and
 coordination for multi-AI code review system
 
@@ -59,6 +59,45 @@ START
   │
   └─ Otherwise → Code Review Template
 ```
+
+---
+
+## TDMS Integration
+
+All multi-AI audit findings are tracked through the Technical Debt Management
+System (TDMS). After completing any audit, findings must be ingested into TDMS.
+
+### Post-Audit Workflow
+
+1. **Complete audit** using appropriate template
+2. **Aggregate findings** to produce final JSONL
+3. **Ingest to TDMS:**
+
+```bash
+node scripts/debt/intake-audit.js \
+  <findings-file>.jsonl \
+  --source "multi-ai-<audit-type>" \
+  --batch-id "<audit-type>-YYYYMMDD"
+```
+
+4. **Verify intake** - Check `docs/technical-debt/INDEX.md` for new items
+5. **Update Audit History** table with TDMS Items count
+
+### TDMS Resources
+
+| Resource                                                          | Purpose                             |
+| ----------------------------------------------------------------- | ----------------------------------- |
+| [docs/technical-debt/PROCEDURE.md](./technical-debt/PROCEDURE.md) | Full intake/verification procedures |
+| [docs/technical-debt/INDEX.md](./technical-debt/INDEX.md)         | View all tracked technical debt     |
+| [docs/technical-debt/views/](./technical-debt/views/)             | Filtered views by severity/category |
+| `scripts/debt/intake-audit.js`                                    | Audit intake script                 |
+| `scripts/debt/generate-views.js`                                  | Regenerate MD views                 |
+
+### Category Mapping
+
+See
+[PROCEDURE.md Section 11](./technical-debt/PROCEDURE.md#11-category-field-normalization)
+for complete mapping tables from audit categories to TDMS categories.
 
 ---
 
@@ -562,6 +601,8 @@ It should NOT be used for:
 
 - **[AI_WORKFLOW.md](../AI_WORKFLOW.md)** - Master workflow guide (references
   this coordinator)
+- **[docs/technical-debt/PROCEDURE.md](./technical-debt/PROCEDURE.md)** - TDMS
+  intake and tracking procedures
 - **[GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - Mandatory
   security standards
 - **[DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)** - Document
@@ -583,6 +624,7 @@ It should NOT be used for:
 
 | Version | Date       | Changes                                                                                                                                                                                                                            | Author |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.7     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added TDMS Integration section with post-audit workflow, resources table, and category mapping reference. Added PROCEDURE.md to Related Documents.                                                | Claude |
 | 1.6     | 2026-01-11 | Updated SonarQube baseline (778→941 issues, 47→61 CRITICAL); delta due to new audit scripts; updated batch fix estimates                                                                                                           | Claude |
 | 1.5     | 2026-01-10 | Updated baseline metrics (lint warnings 181→224, baseline date to 2026-01-10); added note about +43 false positive warnings                                                                                                        | Claude |
 | 1.4     | 2026-01-06 | Review #68: Added structured remediation fields (risk, release_gate, owner, target_date) for App Check and SonarQube CRITICAL; Fixed EIGHT_PHASE path to archive location; Fixed stale test pass rate                              | Claude |

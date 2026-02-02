@@ -1,0 +1,121 @@
+{
+  "generated": "2026-02-02T01:11:02.902Z",
+  "generated_date": "2026-02-02",
+  "summary": {
+    "total": 868,
+    "open": 852,
+    "resolved": 16,
+    "false_positives": 0,
+    "resolution_rate_pct": 2
+  },
+  "by_status": {
+    "NEW": 852,
+    "VERIFIED": 0,
+    "IN_PROGRESS": 0,
+    "RESOLVED": 16,
+    "FALSE_POSITIVE": 0
+  },
+  "by_severity": {
+    "S0": 18,
+    "S1": 139,
+    "S2": 413,
+    "S3": 298
+  },
+  "by_category": {
+    "code-quality": 746,
+    "security": 58,
+    "performance": 21,
+    "documentation": 10,
+    "refactoring": 14,
+    "process": 19
+  },
+  "by_source": {
+    "unknown": 868
+  },
+  "alerts": {
+    "s0_count": 2,
+    "s1_count": 139,
+    "s0_items": [
+      {
+        "id": "DEBT-0851",
+        "title": "47 CRITICAL cognitive complexity violations in scripts (19 f",
+        "file": "scripts/assign-review-tier.js",
+        "line": 0
+      },
+      {
+        "id": "DEBT-0854",
+        "title": "App Check disabled on all production Cloud Functions",
+        "file": "functions/src/index.ts",
+        "line": 0
+      }
+    ],
+    "s1_items": [
+      {
+        "id": "DEBT-0001",
+        "title": "Provide a compare function to avoid sorting elements alphabe",
+        "file": "app/meetings/all/page.tsx",
+        "line": 164
+      },
+      {
+        "id": "DEBT-0002",
+        "title": "Provide a compare function to avoid sorting elements alphabe",
+        "file": "components/notebook/pages/resources-page.tsx",
+        "line": 306
+      },
+      {
+        "id": "DEBT-0003",
+        "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
+        "file": ".claude/hooks/session-start.sh",
+        "line": 264
+      },
+      {
+        "id": "DEBT-0004",
+        "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
+        "file": ".claude/hooks/pattern-check.sh",
+        "line": 89
+      },
+      {
+        "id": "DEBT-0005",
+        "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
+        "file": "scripts/check-review-triggers.sh",
+        "line": 44
+      },
+      {
+        "id": "DEBT-0006",
+        "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
+        "file": ".claude/skills/artifacts-builder/scripts/bundle-artifact.sh",
+        "line": 7
+      },
+      {
+        "id": "DEBT-0007",
+        "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
+        "file": ".claude/skills/artifacts-builder/scripts/init-artifact.sh",
+        "line": 11
+      },
+      {
+        "id": "DEBT-0008",
+        "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
+        "file": ".claude/skills/systematic-debugging/find-polluter.sh",
+        "line": 8
+      },
+      {
+        "id": "DEBT-0009",
+        "title": "Exporting mutable 'let' binding, use 'const' instead.",
+        "file": "lib/firebase.ts",
+        "line": 137
+      },
+      {
+        "id": "DEBT-0010",
+        "title": "Refactor this function to reduce its Cognitive Complexity fr",
+        "file": "lib/db/meetings.ts",
+        "line": 21
+      }
+    ]
+  },
+  "health": {
+    "avg_age_days": 0,
+    "oldest_age_days": 0,
+    "oldest_item_id": null,
+    "verification_queue_size": 852
+  }
+}

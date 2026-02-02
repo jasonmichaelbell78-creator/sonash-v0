@@ -36,6 +36,8 @@ STEP 5: FIX (Priority order, verify each)
     ↓
 STEP 6: DOCUMENT (Deferred/rejected decisions)
     ↓
+STEP 6.5: TDMS (Ingest deferred items to debt tracker)
+    ↓
 STEP 7: LEARNING (Complete entry - MANDATORY)
     ↓
 STEP 8: SUMMARY (Final verification status)
@@ -337,6 +339,57 @@ trivial items should be fixed.
 
 ---
 
+## STEP 6.5: TDMS INTEGRATION (Deferred Items)
+
+When items are deferred during PR review, they MUST be ingested into the
+Technical Debt Management System (TDMS) for tracking.
+
+### 6.5.1 For Each Deferred Item
+
+Use the `/add-deferred-debt` skill to create TDMS entries:
+
+```
+/add-deferred-debt
+```
+
+The skill will prompt for required fields:
+
+- **ID**: Auto-generated DEBT-XXXX
+- **Title**: Brief description of the issue
+- **File/Line**: Location from the review
+- **Severity**: Map from review category:
+  - CRITICAL → S0 (Blocker)
+  - MAJOR → S1 (Critical)
+  - MINOR → S2 (Major)
+  - TRIVIAL → S3 (Minor)
+- **Source**: `pr-review-#N` (review number)
+- **Reason**: Why deferred
+
+### 6.5.2 Tracking Resolution
+
+When the deferred issue is later fixed:
+
+1. Include `DEBT-XXXX` in the PR body's "Technical Debt" section
+2. The `resolve-debt.yml` workflow auto-resolves it on merge
+3. Or use: `node scripts/debt/resolve-item.js DEBT-XXXX --pr <PR#>`
+
+### 6.5.3 Quick Reference
+
+```bash
+# Add deferred item manually
+node scripts/debt/intake-pr-deferred.js <JSONL_FILE>
+
+# View all PR-review sourced items
+grep '"source":"pr-review' docs/technical-debt/MASTER_DEBT.jsonl
+
+# Resolve when fixed
+node scripts/debt/resolve-item.js DEBT-XXXX --pr 123
+```
+
+**See**: `docs/technical-debt/PROCEDURE.md` for full TDMS workflow.
+
+---
+
 ## STEP 7: LEARNING CAPTURE (MANDATORY)
 
 ### 7.1 Determine Next Review Number
@@ -450,6 +503,11 @@ Provide structured output:
 ### Learning Entry
 
 - Added Review #N to AI_REVIEW_LEARNINGS_LOG.md
+
+### TDMS Items
+
+- Deferred: X items added as DEBT-XXXX (or "none")
+- See: `docs/technical-debt/MASTER_DEBT.jsonl`
 
 ### Verification Status
 

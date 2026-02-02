@@ -1,0 +1,119 @@
+#!/usr/bin/env node
+/* global process, require */
+/* eslint-disable @typescript-eslint/no-require-imports, no-empty */
+// Claude Code Statusline - GSD Edition
+// Shows: model | current task | directory | context usage
+
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
+
+// Read JSON from stdin
+let input = "";
+process.stdin.setEncoding("utf8");
+process.stdin.on("data", (chunk) => (input += chunk));
+process.stdin.on("end", () => {
+  try {
+    const data = JSON.parse(input);
+    const model = data.model?.display_name || "Claude";
+    const dir = data.workspace?.current_dir || process.cwd();
+    const session = data.session_id || "";
+    const remaining = data.context_window?.remaining_percentage;
+
+    // Context window display (shows USED percentage)
+    let ctx = "";
+    if (remaining != null) {
+      // Review #224: Clamp to [0, 100] to prevent RangeError in repeat()
+      const remRaw = Math.round(Number(remaining));
+      const rem = Number.isFinite(remRaw) ? Math.max(0, Math.min(100, remRaw)) : 0;
+      const used = 100 - rem;
+
+      // Build progress bar (10 segments)
+      const filled = Math.max(0, Math.min(10, Math.floor(used / 10)));
+      const bar = "█".repeat(filled) + "░".repeat(10 - filled);
+
+      // Color based on usage
+      if (used < 50) {
+        ctx = ` \x1b[32m${bar} ${used}%\x1b[0m`;
+      } else if (used < 65) {
+        ctx = ` \x1b[33m${bar} ${used}%\x1b[0m`;
+      } else if (used < 80) {
+        ctx = ` \x1b[38;5;208m${bar} ${used}%\x1b[0m`;
+      } else {
+        ctx = ` \x1b[5;31m💀 ${bar} ${used}%\x1b[0m`;
+      }
+    }
+
+    // Current task from todos
+    let task = "";
+    const homeDir = os.homedir();
+    const todosDir = path.join(homeDir, ".claude", "todos");
+    if (session && fs.existsSync(todosDir)) {
+      // Review #224 Qodo R2: Wrap statSync in try/catch for file race conditions
+      const files = fs
+        .readdirSync(todosDir)
+        .filter((f) => f.startsWith(session) && f.includes("-agent-") && f.endsWith(".json"))
+        .map((f) => {
+          try {
+            return { name: f, mtime: fs.statSync(path.join(todosDir, f)).mtime };
+          } catch (_e) {
+            return null; // File may have been deleted between readdir and stat
+          }
+        })
+        .filter((f) => f !== null)
+        .sort((a, b) => b.mtime - a.mtime);
+
+      if (files.length > 0) {
+        try {
+          // Review #224: Validate path containment (defense-in-depth)
+          const todoFilePath = path.join(todosDir, files[0].name);
+          const resolved = path.resolve(todoFilePath);
+          const rel = path.relative(todosDir, resolved);
+          if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+            // Path escapes todosDir - skip
+          } else {
+            const todos = JSON.parse(fs.readFileSync(resolved, "utf8"));
+            // Review #224 Qodo R3: Array.isArray guard for todos
+            if (Array.isArray(todos)) {
+              const inProgress = todos.find((t) => t.status === "in_progress");
+              if (inProgress) {
+                // Qodo R11: Sanitize terminal escape sequences to prevent injection
+                const rawTask = inProgress.activeForm || "";
+                // eslint-disable-next-line no-control-regex -- Intentional control char sanitization
+                task = rawTask.replace(/[\x00-\x1f\x7f-\x9f]/g, "");
+              }
+            }
+          }
+        } catch (_e) {
+          /* ignore parse errors */
+        }
+      }
+    }
+
+    // GSD update available?
+    let gsdUpdate = "";
+    const cacheFile = path.join(homeDir, ".claude", "cache", "gsd-update-check.json");
+    if (fs.existsSync(cacheFile)) {
+      try {
+        const cache = JSON.parse(fs.readFileSync(cacheFile, "utf8"));
+        if (cache.update_available) {
+          gsdUpdate = "\x1b[33m⬆ /gsd:update\x1b[0m │ ";
+        }
+      } catch (_e) {
+        /* ignore parse errors */
+      }
+    }
+
+    // Output
+    const dirname = path.basename(dir);
+    if (task) {
+      process.stdout.write(
+        `${gsdUpdate}\x1b[2m${model}\x1b[0m │ \x1b[1m${task}\x1b[0m │ \x1b[2m${dirname}\x1b[0m${ctx}`
+      );
+    } else {
+      process.stdout.write(`${gsdUpdate}\x1b[2m${model}\x1b[0m │ \x1b[2m${dirname}\x1b[0m${ctx}`);
+    }
+  } catch (_e) {
+    // Silent fail - don't break statusline on parse errors
+  }
+});
