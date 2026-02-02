@@ -392,23 +392,34 @@ try {
 
 console.log("");
 
-// Backlog health check
-console.log("🔍 Checking backlog health...");
+// Technical Debt health check (TDMS)
+console.log("🔍 Checking technical debt status...");
 try {
-  const output = execSync("node scripts/check-backlog-health.js", {
-    encoding: "utf8",
-    timeout: 30000,
-    maxBuffer: 10 * 1024 * 1024,
-  });
-  console.log(output.trim());
-} catch (error) {
-  const exitCode = error.status || 1;
-  if (exitCode === 1) {
-    console.log(error.stdout || "");
-    console.log("   ⚠️ Backlog needs attention - see output above");
+  const metricsPath = path.join(projectDir, "docs", "technical-debt", "metrics.json");
+  if (fs.existsSync(metricsPath)) {
+    const metrics = JSON.parse(fs.readFileSync(metricsPath, "utf8"));
+    const s0Count = metrics.by_severity?.S0 ?? 0;
+    const s1Count = metrics.by_severity?.S1 ?? 0;
+    const total = metrics.summary?.total ?? 0;
+    const resolved = metrics.summary?.resolved ?? 0;
+    console.log(`   📊 Total: ${total} items (${resolved} resolved)`);
+    if (s0Count > 0) {
+      console.log(`   🔴 S0 Critical: ${s0Count} items need attention`);
+      warnings++;
+    } else {
+      console.log(`   ✅ No S0 critical items`);
+    }
+    if (s1Count > 10) {
+      console.log(`   🟡 S1 High: ${s1Count} items (threshold: 10)`);
+    }
   } else {
-    console.log(`   ❌ Backlog checker failed (exit ${exitCode})`);
+    console.log("   ⚠️ TDMS metrics not found - run: npm run debt:metrics");
+    warnings++;
   }
+} catch (error) {
+  console.log(
+    `   ❌ TDMS check failed: ${error instanceof Error ? error.message : "Unknown error"}`
+  );
   warnings++;
 }
 
