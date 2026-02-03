@@ -48,23 +48,40 @@ function loadPackageJson(packageJsonPath) {
 }
 
 /**
- * Validate and resolve package.json path
+ * Validate and resolve package.json path with symlink protection
  *
  * @param {string} packageJsonPath - Path to validate
  * @returns {string|null} Resolved safe path or null if invalid
  */
 function validatePackageJsonPath(packageJsonPath) {
   try {
+    const { realpathSync, lstatSync } = require("node:fs");
     const resolved = path.resolve(packageJsonPath);
     const cwd = process.cwd();
 
+    // Resolve symlinks to get canonical path (prevents symlink-based traversal)
+    let real;
+    try {
+      real = realpathSync(resolved);
+    } catch {
+      return null; // File doesn't exist or unreadable
+    }
+
+    // Ensure it's a regular file (not directory/special file)
+    try {
+      const st = lstatSync(real);
+      if (!st.isFile()) return null;
+    } catch {
+      return null;
+    }
+
     // Check path doesn't escape project directory using path.relative()
-    const rel = path.relative(cwd, resolved);
+    const rel = path.relative(cwd, real);
     if (/^\.\.(?:[\\/]|$)/.test(rel)) {
       return null; // Path traversal attempt
     }
 
-    return resolved;
+    return real;
   } catch {
     return null;
   }
@@ -130,11 +147,19 @@ function checkImportExists(importName, packageJsonPath = "package.json") {
   }
 
   // Handle common path aliases (e.g., Next.js/TS "@/..." or "~/...")
-  // Addresses [12] path aliases
+  // Addresses [12] path aliases with containment check (R2 security fix)
   // Using regex instead of startsWith() to avoid pattern compliance false positives
   if (/^@\//.test(importName) || /^~\//.test(importName)) {
+    const cwd = process.cwd();
     const rel = importName.slice(2);
-    const base = path.join(process.cwd(), rel);
+    const base = path.resolve(cwd, rel);
+
+    // Prevent path traversal outside project root (e.g., @/../.ssh/id_rsa)
+    const baseRel = path.relative(cwd, base);
+    if (/^\.\.(?:[\\/]|$)/.test(baseRel)) {
+      return { exists: false, type: null };
+    }
+
     const candidates = [
       base,
       `${base}.ts`,
@@ -158,10 +183,20 @@ function checkImportExists(importName, packageJsonPath = "package.json") {
     return { exists: true, type: "relative" };
   }
 
-  // Absolute path imports (using regex instead of startsWith for CI compliance)
-  // Addresses [10] validate absolute-path import specifiers
+  // Absolute path imports - treat as project-root-relative, not filesystem-absolute
+  // Addresses [10] with containment check (R2 security fix)
   if (/^[/\\]/.test(importName)) {
-    const abs = path.join(process.cwd(), importName);
+    const cwd = process.cwd();
+    // Strip leading slashes and treat as project-relative
+    const spec = importName.replace(/^[/\\]+/, "");
+    const abs = path.resolve(cwd, spec);
+
+    // Prevent path traversal outside project root
+    const absRel = path.relative(cwd, abs);
+    if (/^\.\.(?:[\\/]|$)/.test(absRel)) {
+      return { exists: false, type: null };
+    }
+
     const candidates = [
       abs,
       `${abs}.ts`,
