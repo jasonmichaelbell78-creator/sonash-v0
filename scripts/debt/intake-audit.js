@@ -32,7 +32,21 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const os = require("os");
 const { execFileSync } = require("child_process");
+
+// Prototype pollution protection - filter dangerous keys from untrusted objects
+const DANGEROUS_KEYS = ["__proto__", "constructor", "prototype"];
+function safeCloneObject(obj) {
+  if (obj === null || typeof obj !== "object") return obj;
+  const result = {};
+  for (const key of Object.keys(obj)) {
+    if (!DANGEROUS_KEYS.includes(key)) {
+      result[key] = obj[key];
+    }
+  }
+  return result;
+}
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -100,7 +114,8 @@ function normalizeFilePath(filePath) {
  * @returns {Object} - Item normalized to TDMS format with metadata
  */
 function mapDocStandardsToTdms(item) {
-  const mapped = { ...item };
+  // Use safe clone to prevent prototype pollution from untrusted JSONL input
+  const mapped = safeCloneObject(item);
   const metadata = { format_detected: "tdms", mappings_applied: [] };
 
   // Detect Doc Standards format by presence of Doc Standards-specific fields
@@ -124,19 +139,26 @@ function mapDocStandardsToTdms(item) {
     // Map files[0] → file (with optional line extraction)
     if (Array.isArray(item.files) && item.files.length > 0 && !item.file) {
       const firstFile = item.files[0];
-      // Check for file:line format
-      const lineMatch = firstFile.match(/^(.+):(\d+)$/);
-      if (lineMatch) {
-        mapped.file = lineMatch[1];
-        if (!item.line) {
-          mapped.line = parseInt(lineMatch[2], 10);
-          metadata.mappings_applied.push("files[0]→file+line");
+      // Type guard: ensure firstFile is a string before calling .match()
+      if (typeof firstFile !== "string") {
+        // Non-string file entry - convert to string or skip
+        mapped.file = String(firstFile);
+        metadata.mappings_applied.push("files[0]→file(coerced)");
+      } else {
+        // Check for file:line format
+        const lineMatch = firstFile.match(/^(.+):(\d+)$/);
+        if (lineMatch) {
+          mapped.file = lineMatch[1];
+          if (!item.line) {
+            mapped.line = parseInt(lineMatch[2], 10);
+            metadata.mappings_applied.push("files[0]→file+line");
+          } else {
+            metadata.mappings_applied.push("files[0]→file");
+          }
         } else {
+          mapped.file = firstFile;
           metadata.mappings_applied.push("files[0]→file");
         }
-      } else {
-        mapped.file = firstFile;
-        metadata.mappings_applied.push("files[0]→file");
       }
     }
 
@@ -257,7 +279,19 @@ function loadMasterDebt() {
   if (!fs.existsSync(MASTER_FILE)) {
     return [];
   }
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+
+  // Wrap readFileSync in try/catch - existsSync doesn't guarantee read success
+  // (race conditions, permissions, encoding errors)
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (readErr) {
+    console.error(
+      `⚠️ Warning: Failed to read MASTER_DEBT.jsonl: ${readErr instanceof Error ? readErr.message : String(readErr)}`
+    );
+    return [];
+  }
+
   const lines = content.split("\n").filter((line) => line.trim());
 
   const items = [];
@@ -267,7 +301,11 @@ function loadMasterDebt() {
     try {
       items.push(JSON.parse(lines[i]));
     } catch (err) {
-      badLines.push({ line: i + 1, message: err.message });
+      // Safe error message access - err may not be an Error instance
+      badLines.push({
+        line: i + 1,
+        message: err instanceof Error ? err.message : String(err),
+      });
     }
   }
 
@@ -329,8 +367,16 @@ async function main() {
   console.log(`  Input file: ${inputFile}`);
   if (dryRun) console.log("  Mode: DRY RUN (no changes will be written)\n");
 
-  // Load input file
-  const inputContent = fs.readFileSync(inputFile, "utf8");
+  // Load input file - wrap in try/catch for race conditions and permission errors
+  let inputContent;
+  try {
+    inputContent = fs.readFileSync(inputFile, "utf8");
+  } catch (readErr) {
+    console.error(
+      `Error: Failed to read input file: ${readErr instanceof Error ? readErr.message : String(readErr)}`
+    );
+    process.exit(1);
+  }
   const inputLines = inputContent.split("\n").filter((line) => line.trim());
 
   if (inputLines.length === 0) {
@@ -406,7 +452,11 @@ async function main() {
       newItems.push(normalizedItem);
       existingHashMap.set(normalizedItem.content_hash, normalizedItem.id);
     } catch (err) {
-      errors.push({ line: i + 1, errors: [`JSON parse error: ${err.message}`] });
+      // Safe error message access - err may not be an Error instance
+      errors.push({
+        line: i + 1,
+        errors: [`JSON parse error: ${err instanceof Error ? err.message : String(err)}`],
+      });
     }
   }
 
@@ -474,8 +524,18 @@ async function main() {
   fs.appendFileSync(MASTER_FILE, newLines.join("\n") + "\n");
 
   // Log intake activity (including format statistics and confidence values)
+  // Include user context for audit trail reconstruction (Qodo compliance)
+  let operatorContext;
+  try {
+    operatorContext =
+      os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
+  } catch {
+    operatorContext = process.env.USER || process.env.USERNAME || "unknown";
+  }
+
   logIntake({
     action: "intake-audit",
+    operator: operatorContext,
     input_file: inputFile,
     items_processed: inputLines.length,
     items_added: newItems.length,

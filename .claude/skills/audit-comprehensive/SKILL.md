@@ -113,8 +113,9 @@ Before running ANY agent, verify AUDIT_DIR is valid:
 ```bash
 AUDIT_DIR="docs/audits/comprehensive"
 AUDIT_PATH=$(realpath "${AUDIT_DIR}" 2>/dev/null || echo "${AUDIT_DIR}")
-if [ -z "${AUDIT_DIR}" ] || [ "${AUDIT_PATH}" = "/" ]; then
-  echo "FATAL: Invalid AUDIT_DIR"
+# Check for empty, root path, or path traversal attempts
+if [ -z "${AUDIT_DIR}" ] || [ "${AUDIT_PATH}" = "/" ] || [[ "${AUDIT_DIR}" == ".."* ]]; then
+  echo "FATAL: Invalid or unsafe AUDIT_DIR"
   exit 1
 fi
 echo "Output directory: ${AUDIT_DIR}"
