@@ -1,6 +1,6 @@
 # Slash Commands Reference
 
-**Document Version:** 2.2 **Created:** 2026-01-05 **Last Updated:** 2026-02-02
+**Document Version:** 2.3 **Created:** 2026-01-05 **Last Updated:** 2026-02-02
 **Status:** ACTIVE
 
 ---
@@ -283,21 +283,31 @@ Quick save of current session state for recovery after failures.
 
 ### `/audit-code`
 
-**File:** `.claude/commands/audit-code.md` **Created:** Session #37 (2026-01-08)
+**File:** `.claude/skills/audit-code/SKILL.md` **Created:** Session #37
+(2026-01-08) **Updated:** Session #125 (parallel architecture + AI Code
+Patterns)
 
 #### Description
 
-Single-session code review audit. Checks code hygiene, types, framework
-patterns, testing, and security surface.
+Code review audit with 3-agent parallel architecture. Checks code hygiene,
+types, framework patterns, testing, security surface, and AI-specific code
+patterns.
+
+#### Parallel Architecture
+
+| Agent                  | Focus Areas                                        |
+| ---------------------- | -------------------------------------------------- |
+| hygiene-and-types      | Code Hygiene, TypeScript Strictness                |
+| framework-and-testing  | Framework Patterns, Test Coverage                  |
+| security-and-debugging | Security Smells, AI Code Patterns, Debug Artifacts |
 
 #### Features
 
-1. Checks category-specific thresholds (25 commits OR 15 files)
-2. Gathers current baselines (test counts, lint status, versions)
-3. Performs focused audit with file:line evidence
-4. Outputs markdown summary + JSONL findings
+1. Parallel execution with 3 specialized agents (2.5x faster)
+2. Sequential fallback mode with checkpointing for recovery
+3. AI Health Score calculation (hallucinations, test validity, consistency)
+4. JSONL findings with TDMS-compatible schema
 5. Saves to `docs/audits/single-session/code/`
-6. Updates AUDIT_TRACKER.md to reset category threshold
 
 #### Focus Areas
 
@@ -306,17 +316,37 @@ patterns, testing, and security surface.
 - Framework Best Practices (React patterns, Next.js conventions)
 - Testing Coverage (untested functions, missing edge cases)
 - Security Surface (input validation, auth checks)
+- **AI Code Patterns** (hallucinated imports/APIs, trivial tests, session
+  inconsistencies, AI TODO markers)
 
 ---
 
 ### `/audit-security`
 
-**File:** `.claude/commands/audit-security.md` **Created:** Session #37
+**File:** `.claude/skills/audit-security/SKILL.md` **Created:** Session #37
+**Updated:** Session #125 (parallel architecture + AI Security Patterns)
 
 #### Description
 
-Single-session security audit. Checks authentication, input validation, data
-protection, Firebase security, dependencies, and OWASP coverage.
+Security audit with 4-agent parallel architecture. Checks authentication, input
+validation, data protection, Firebase security, dependencies, OWASP coverage,
+and AI-specific security patterns.
+
+#### Parallel Architecture
+
+| Agent                      | Focus Areas                                    |
+| -------------------------- | ---------------------------------------------- |
+| vulnerability-scanner      | Auth, Input Validation, OWASP Top 10           |
+| supply-chain-auditor       | Dependencies, CVE scanning, License compliance |
+| framework-security-auditor | Next.js, Firebase, React security patterns     |
+| ai-code-security-auditor   | AI-generated code patterns, prompt injection   |
+
+#### Features
+
+1. Parallel execution with 4 specialized agents (3x faster)
+2. Sequential fallback mode with checkpointing for recovery
+3. Category 13: AI Security Patterns (prompt injection S0, hallucinated APIs S1)
+4. JSONL findings with TDMS-compatible schema
 
 #### Focus Areas
 
@@ -326,17 +356,35 @@ protection, Firebase security, dependencies, and OWASP coverage.
 - Firebase/Firestore Security
 - Dependency Security
 - OWASP Top 10 Coverage
+- **AI Security Patterns** (prompt injection, hallucinated security APIs,
+  AI-suggested insecure defaults, inconsistent auth patterns)
 
 ---
 
 ### `/audit-performance`
 
-**File:** `.claude/commands/audit-performance.md` **Created:** Session #37
+**File:** `.claude/skills/audit-performance/SKILL.md` **Created:** Session #37
+**Updated:** Session #125 (parallel architecture + AI Performance Patterns)
 
 #### Description
 
-Single-session performance audit. Checks bundle size, rendering performance,
-data fetching, memory management, and Core Web Vitals optimization.
+Performance audit with 2-agent parallel architecture. Checks bundle size,
+rendering performance, data fetching, memory management, Core Web Vitals, and
+AI-specific performance patterns.
+
+#### Parallel Architecture
+
+| Agent                | Focus Areas                                    |
+| -------------------- | ---------------------------------------------- |
+| bundle-and-rendering | Bundle Size, Rendering Performance, Web Vitals |
+| data-and-memory      | Data Fetching, Memory Management, Caching      |
+
+#### Features
+
+1. Parallel execution with 2 specialized agents (2x faster)
+2. Sequential fallback mode with checkpointing for recovery
+3. Category 7: AI Performance Patterns (naive data fetching, missing pagination)
+4. JSONL findings with TDMS-compatible schema
 
 #### Focus Areas
 
@@ -345,6 +393,8 @@ data fetching, memory management, and Core Web Vitals optimization.
 - Data Fetching & Caching
 - Memory Management
 - Core Web Vitals
+- **AI Performance Patterns** (naive data fetching S1, missing pagination S2,
+  unbounded queries S1, redundant re-renders S2)
 
 ---
 
@@ -813,14 +863,15 @@ args: arg1 - Description of argument
 
 ## Version History
 
-| Version | Date       | Changes                                                                      |
-| ------- | ---------- | ---------------------------------------------------------------------------- |
-| 2.2     | 2026-02-02 | Updated /audit-documentation to 6-stage parallel architecture with 18 agents |
-| 2.1     | 2026-01-19 | Removed /fetch-pr-feedback (copy/paste more thorough), updated /pr-review    |
-| 2.0     | 2026-01-15 | Combined SLASH_COMMANDS.md and CUSTOM_SLASH_COMMANDS_GUIDE.md                |
-| 1.2     | 2026-01-09 | Added /fetch-pr-feedback command documentation                               |
-| 1.1     | 2026-01-08 | Added 6 single-session audit commands with AUDIT_TRACKER.md integration      |
-| 1.0     | 2026-01-05 | Initial creation - comprehensive slash command reference                     |
+| Version | Date       | Changes                                                                                           |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| 2.3     | 2026-02-02 | Updated /audit-security, /audit-code, /audit-performance with parallel architecture + AI patterns |
+| 2.2     | 2026-02-02 | Updated /audit-documentation to 6-stage parallel architecture with 18 agents                      |
+| 2.1     | 2026-01-19 | Removed /fetch-pr-feedback (copy/paste more thorough), updated /pr-review                         |
+| 2.0     | 2026-01-15 | Combined SLASH_COMMANDS.md and CUSTOM_SLASH_COMMANDS_GUIDE.md                                     |
+| 1.2     | 2026-01-09 | Added /fetch-pr-feedback command documentation                                                    |
+| 1.1     | 2026-01-08 | Added 6 single-session audit commands with AUDIT_TRACKER.md integration                           |
+| 1.0     | 2026-01-05 | Initial creation - comprehensive slash command reference                                          |
 
 ---
 

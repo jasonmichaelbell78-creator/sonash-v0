@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 2.6 **Last Updated:** 2026-02-02 **Purpose:** Comprehensive
+**Version:** 2.7 **Last Updated:** 2026-02-02 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -575,9 +575,13 @@ performance audits **Parameters:** None **Added:** Session #114
 
 #### `audit-code`
 
-**Description:** Run single-session code review audit on the codebase **When to
-use:** Quick code quality check **Example:** Pre-commit review **Parameters:**
-None
+**Description:** Run code review audit with 3-agent parallel architecture
+(hygiene-and-types, framework-and-testing, security-and-debugging). Includes
+enhanced AICode patterns for hallucination detection, session consistency, and
+test validity. **When to use:** Code quality check, AI-codebase health
+assessment **Example:** Pre-commit review or AI Health Score calculation
+**Parameters:** None **Updated:** Session #125 - parallel architecture + AI Code
+Patterns
 
 #### `audit-comprehensive`
 
@@ -597,8 +601,12 @@ Session #124 - rewritten with parallel agent architecture
 
 #### `audit-performance`
 
-**Description:** Run single-session performance audit on the codebase **When to
-use:** Performance analysis **Example:** Before release **Parameters:** None
+**Description:** Run performance audit with 2-agent parallel architecture
+(bundle-and-rendering, data-and-memory). Includes Category 7: AI Performance
+Patterns for naive data fetching, missing pagination, and unbounded queries.
+**When to use:** Performance analysis, AI-generated code optimization
+**Example:** Before release or AI Health Score calculation **Parameters:** None
+**Updated:** Session #125 - parallel architecture + AI Performance Patterns
 
 #### `audit-process`
 
@@ -614,9 +622,13 @@ use:** Code quality assessment **Example:** Technical debt review
 
 #### `audit-security`
 
-**Description:** Run single-session security audit on the codebase **When to
-use:** Security review **Example:** Pre-production security check
-**Parameters:** None
+**Description:** Run security audit with 4-agent parallel architecture
+(vulnerability-scanner, supply-chain-auditor, framework-security-auditor,
+ai-code-security-auditor). Includes Category 13: AI Security Patterns for prompt
+injection, hallucinated APIs, and AI-suggested insecure defaults. **When to
+use:** Security review, AI-codebase security assessment **Example:**
+Pre-production security check or AI Health Score calculation **Parameters:**
+None **Updated:** Session #125 - parallel architecture + AI Security Patterns
 
 ### Technical Debt Management (TDMS)
 
@@ -1857,6 +1869,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                                                                                                                         |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.7     | 2026-02-02 | Session #125: Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture + AI-specific patterns          |
 | 2.6     | 2026-02-02 | Session #124: Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents), added 3 new scripts and 4 npm scripts                   |
 | 2.5     | 2026-02-01 | Session #123: Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt) - TDMS all 17 phases complete         |
 | 2.3     | 2026-01-29 | Session #115: Added auto-commit mechanism to session-end skill (`npm run session:end`) to prevent forgetting session-end commits                                |
