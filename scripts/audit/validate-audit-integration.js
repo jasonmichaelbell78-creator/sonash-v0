@@ -25,6 +25,29 @@ const path = require("path");
 const crypto = require("crypto");
 const { execFileSync } = require("child_process");
 
+// Import error sanitization helper
+let sanitizeError;
+try {
+  sanitizeError = require("../lib/sanitize-error.js");
+} catch {
+  // Fallback if sanitize-error.js not available
+  sanitizeError = (err) => (err instanceof Error ? err.message : String(err)).replace(/[^\w\s.,:-]/g, "");
+}
+
+// Repository root for path validation
+const REPO_ROOT = path.resolve(__dirname, "../..");
+
+/**
+ * Validate file path is within repository root (security constraint)
+ * @param {string} filePath - Path to validate
+ * @returns {boolean} True if path is safe
+ */
+function isPathWithinRepo(filePath) {
+  if (!filePath || typeof filePath !== "string") return false;
+  const resolved = path.resolve(filePath);
+  return resolved.startsWith(REPO_ROOT + path.sep) || resolved === REPO_ROOT;
+}
+
 // Paths
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_DEBT_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -77,20 +100,27 @@ const VALID_TOOL_CONFIRMATIONS = [
  */
 function loadJsonlFile(filePath) {
   if (!fs.existsSync(filePath)) {
-    return { items: [], errors: [{ type: "FILE_NOT_FOUND", message: `File not found: ${filePath}` }] };
+    return { items: [], errors: [{ type: "FILE_NOT_FOUND", message: `File not found: ${path.basename(filePath)}` }] };
+  }
+
+  // Security: validate path is within repo
+  if (!isPathWithinRepo(filePath)) {
+    return { items: [], errors: [{ type: "INVALID_PATH", message: "Path must be within repository" }] };
   }
 
   let content;
   try {
     content = fs.readFileSync(filePath, "utf8");
   } catch (err) {
+    // Sanitize error to prevent sensitive info leakage
     return {
       items: [],
-      errors: [{ type: "READ_ERROR", message: `Failed to read file: ${err.message}` }],
+      errors: [{ type: "READ_ERROR", message: `Failed to read file: ${sanitizeError(err)}` }],
     };
   }
 
-  const lines = content.split("\n").filter((line) => line.trim());
+  // Support both Unix (LF) and Windows (CRLF) line endings
+  const lines = content.split(/\r?\n/).filter((line) => line.trim());
   const items = [];
   const errors = [];
 
@@ -98,11 +128,11 @@ function loadJsonlFile(filePath) {
     try {
       items.push({ ...JSON.parse(lines[i]), _lineNumber: i + 1 });
     } catch (err) {
+      // Don't include raw content in errors (may contain sensitive data)
       errors.push({
         type: "PARSE_ERROR",
         line: i + 1,
-        message: `Invalid JSON: ${err.message}`,
-        raw: lines[i].substring(0, 100),
+        message: `Invalid JSON on line ${i + 1}`,
       });
     }
   }
@@ -128,6 +158,21 @@ function validateJsonlSchema(item) {
         field,
         message: `Missing required field: ${field}`,
       });
+    }
+  }
+
+  // Validate non-empty string fields
+  const stringFields = ["title", "why_it_matters", "suggested_fix"];
+  for (const field of stringFields) {
+    if (item[field] !== undefined && item[field] !== null) {
+      if (typeof item[field] !== "string" || item[field].trim() === "") {
+        issues.push({
+          type: "INVALID_STRING_FIELD",
+          findingId,
+          field,
+          message: `Field '${field}' must be a non-empty string`,
+        });
+      }
     }
   }
 
@@ -177,41 +222,55 @@ function validateJsonlSchema(item) {
     }
   }
 
-  // Validate files is non-empty array
-  if (item.files !== undefined) {
-    if (!Array.isArray(item.files) || item.files.length === 0) {
-      issues.push({
-        type: "INVALID_FILES",
-        findingId,
-        field: "files",
-        message: "Field 'files' must be a non-empty array",
-      });
-    }
+  // Validate files is non-empty array (check always, not just when defined)
+  if (!Array.isArray(item.files) || item.files.length === 0) {
+    issues.push({
+      type: "INVALID_FILES",
+      findingId,
+      field: "files",
+      message: "Field 'files' must be a non-empty array",
+    });
   }
 
-  // Validate acceptance_tests is non-empty array
-  if (item.acceptance_tests !== undefined) {
-    if (!Array.isArray(item.acceptance_tests) || item.acceptance_tests.length === 0) {
-      issues.push({
-        type: "INVALID_ACCEPTANCE_TESTS",
-        findingId,
-        field: "acceptance_tests",
-        message: "Field 'acceptance_tests' must be a non-empty array",
-      });
-    }
+  // Validate acceptance_tests is non-empty array (check always, not just when defined)
+  if (!Array.isArray(item.acceptance_tests) || item.acceptance_tests.length === 0) {
+    issues.push({
+      type: "INVALID_ACCEPTANCE_TESTS",
+      findingId,
+      field: "acceptance_tests",
+      message: "Field 'acceptance_tests' must be a non-empty array",
+    });
   }
 
   // Validate fingerprint format: <category>::<file>::<identifier>
-  if (item.fingerprint) {
-    const parts = item.fingerprint.split("::");
-    if (parts.length < 3) {
+  if (item.fingerprint !== undefined) {
+    if (typeof item.fingerprint !== "string" || item.fingerprint.trim() === "") {
       issues.push({
         type: "INVALID_FINGERPRINT_FORMAT",
         findingId,
         field: "fingerprint",
-        value: item.fingerprint,
-        message: "Fingerprint must follow format: <category>::<file>::<identifier>",
+        message: "Fingerprint must be a non-empty string",
       });
+    } else {
+      const parts = item.fingerprint.split("::").map((p) => p.trim());
+      const hasEnoughParts = parts.length >= 3;
+      const hasEmptyPart = parts.some((p) => p.length === 0);
+
+      if (!hasEnoughParts || hasEmptyPart) {
+        issues.push({
+          type: "INVALID_FINGERPRINT_FORMAT",
+          findingId,
+          field: "fingerprint",
+          message: "Fingerprint must follow format: <category>::<file>::<identifier>",
+        });
+      } else if (item.category && parts[0] !== item.category) {
+        issues.push({
+          type: "FINGERPRINT_CATEGORY_MISMATCH",
+          findingId,
+          field: "fingerprint",
+          message: `Fingerprint category '${parts[0]}' must match item category '${item.category}'`,
+        });
+      }
     }
   }
 
@@ -430,16 +489,26 @@ function captureBaseline() {
     return baseline;
   }
 
+  // Load and validate file
+  const { items, errors } = loadJsonlFile(MASTER_DEBT_FILE);
+
+  // Per SKILL.md: Abort if MASTER_DEBT.jsonl is unreadable
+  if (errors.length > 0) {
+    console.error("CRITICAL: MASTER_DEBT.jsonl contains invalid or unreadable content.");
+    for (const err of errors.slice(0, 5)) {
+      console.error(`  - ${err.type}: ${err.message}`);
+    }
+    if (errors.length > 5) {
+      console.error(`  ... and ${errors.length - 5} more errors`);
+    }
+    console.error("Aborting audit as per failure handling protocol.");
+    process.exit(1);
+  }
+
   try {
     const content = fs.readFileSync(MASTER_DEBT_FILE, "utf8");
     baseline.exists = true;
     baseline.fileHash = crypto.createHash("sha256").update(content).digest("hex").substring(0, 16);
-
-    const { items, errors } = loadJsonlFile(MASTER_DEBT_FILE);
-
-    if (errors.length > 0) {
-      console.warn(`  Warning: ${errors.length} parse errors in MASTER_DEBT.jsonl`);
-    }
 
     baseline.itemCount = items.length;
 
@@ -460,7 +529,8 @@ function captureBaseline() {
     }
     baseline.lastDebtId = maxId > 0 ? `DEBT-${String(maxId).padStart(4, "0")}` : null;
   } catch (err) {
-    console.error(`  Error reading MASTER_DEBT.jsonl: ${err.message}`);
+    console.error(`CRITICAL: Error processing MASTER_DEBT.jsonl: ${sanitizeError(err)}`);
+    process.exit(1);
   }
 
   return baseline;
@@ -514,6 +584,9 @@ function validateJsonlFile(filePath) {
 
   const { items, errors: parseErrors } = loadJsonlFile(filePath);
 
+  // Use local Set for dedup, but store array for JSON serialization
+  const fingerprintSet = new Set();
+
   const results = {
     file: filePath,
     itemCount: items.length,
@@ -521,7 +594,7 @@ function validateJsonlFile(filePath) {
     schemaIssues: [],
     s0s1Issues: [],
     tdmsMappingIssues: [],
-    fingerprints: new Set(),
+    uniqueFingerprints: [], // Array for JSON serialization (not Set)
     duplicateFingerprints: [],
     summary: {
       total: items.length,
@@ -549,12 +622,13 @@ function validateJsonlFile(filePath) {
     const tdmsIssues = validateTdmsMapping(item);
     results.tdmsMappingIssues.push(...tdmsIssues);
 
-    // Check for duplicate fingerprints
+    // Check for duplicate fingerprints (use Set internally, store array)
     if (item.fingerprint) {
-      if (results.fingerprints.has(item.fingerprint)) {
+      if (fingerprintSet.has(item.fingerprint)) {
         results.duplicateFingerprints.push(item.fingerprint);
       } else {
-        results.fingerprints.add(item.fingerprint);
+        fingerprintSet.add(item.fingerprint);
+        results.uniqueFingerprints.push(item.fingerprint);
       }
     }
 
@@ -995,14 +1069,21 @@ async function main() {
       }
 
       // Determine overall status
+      // Require all stages AND intake validation to be run for PASS
       const allStagesRun = state.stage1 && state.stage2 && state.stage3;
+      const intakeValidated = Boolean(state.tdmsIntake);
       const allPassed =
         (state.stage1?.passed ?? true) &&
         (state.stage2?.passed ?? true) &&
         (state.stage3?.passed ?? true) &&
-        (state.tdmsIntake?.dryRunSuccess ?? true);
+        (state.tdmsIntake?.dryRunSuccess === true); // Explicit true check
 
-      state.overallStatus = allStagesRun && allPassed ? "PASS" : allStagesRun ? "BLOCKED" : "INCOMPLETE";
+      state.overallStatus =
+        allStagesRun && intakeValidated && allPassed
+          ? "PASS"
+          : allStagesRun && intakeValidated
+            ? "BLOCKED"
+            : "INCOMPLETE";
 
       const report = generateValidationReport(state);
       fs.writeFileSync(VALIDATION_REPORT_FILE, report);

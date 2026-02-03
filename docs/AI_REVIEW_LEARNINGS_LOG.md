@@ -1556,10 +1556,45 @@ MAJOR, 4 MINOR, 1 DEFERRED)
 
 ---
 
+#### Review #236: PR #333 Audit Validation Wrapper - Qodo/CI (2026-02-03)
+
+**Source:** Qodo PR Compliance + CI Feedback + Code Suggestions **PR/Branch:**
+feature/audit-documentation-6-stage PR #333 **Suggestions:** 15 total (Critical:
+0, Major: 5, Minor: 6, Trivial: 3, Deferred: 1)
+
+**Patterns Identified:**
+
+1. **Secure error handling compliance**: Don't expose raw error messages or
+   content that may contain sensitive data (PII, secrets). Use sanitize-error.js
+   helper.
+2. **JSON serialization of Set objects**: JavaScript Set is not
+   JSON-serializable. Use array internally and convert, or store array directly.
+3. **Path validation for CLI tools**: Even local CLI tools should validate file
+   paths are within repository root to prevent path traversal.
+4. **Documentation lint requirements**: Tier 4 docs need Purpose/Overview
+   section, Last Updated date, and AI Instructions section.
+5. **Strict overall status logic**: When validating a workflow, require ALL
+   steps to be explicitly run (not default true).
+
+**Resolution:**
+
+- Fixed: 14 items
+- Deferred: 1 item (ajv schema validator - architectural change)
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Use sanitizeError() helper for all error messages in scripts
+- Store unique fingerprints as array not Set for JSON serialization
+- Add isPathWithinRepo() validation for CLI file inputs
+- Support CRLF line endings with `/\r?\n/` split pattern
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #236: PR #XXX Title - Review Source (DATE)
+#### Review #237: PR #XXX Title - Review Source (DATE)
 
 
 -->

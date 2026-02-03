@@ -1,10 +1,29 @@
 # Validation Checks Reference
 
 **Source:** Extracted from `docs/templates/JSONL_SCHEMA_STANDARD.md` **Version:**
-1.0
+1.0 **Last Updated:** 2026-02-03
 
-This document lists all validation rules enforced by the audit validation
-wrapper.
+---
+
+## Purpose
+
+This document provides a comprehensive reference for all validation rules
+enforced by the `audit-validation-wrapper` skill. It serves as the authoritative
+specification for JSONL schema compliance, S0/S1 verification requirements, and
+TDMS field mapping validation.
+
+---
+
+## AI Instructions
+
+When validating audit JSONL outputs:
+
+1. **Schema Compliance** - Check all required fields exist with correct types
+2. **S0/S1 Verification** - Enforce verification_steps for critical/high findings
+3. **TDMS Compatibility** - Ensure field mapping will work during intake
+4. **Fingerprint Uniqueness** - Detect duplicates across findings
+
+Reference this document when implementing or debugging validation logic.
 
 ---
 
