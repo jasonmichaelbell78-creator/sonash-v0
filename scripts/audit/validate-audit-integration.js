@@ -41,13 +41,32 @@ const REPO_ROOT = path.resolve(__dirname, "../..");
 
 /**
  * Validate file path is within repository root (security constraint)
+ * Uses fs.realpathSync to prevent symlink escapes
  * @param {string} filePath - Path to validate
  * @returns {boolean} True if path is safe
  */
 function isPathWithinRepo(filePath) {
   if (!filePath || typeof filePath !== "string") return false;
-  const resolved = path.resolve(filePath);
-  return resolved.startsWith(REPO_ROOT + path.sep) || resolved === REPO_ROOT;
+
+  // Resolve relative paths from repo root for stability
+  const absPath = path.isAbsolute(filePath) ? filePath : path.join(REPO_ROOT, filePath);
+
+  let resolved;
+  try {
+    // realpathSync prevents symlink escapes outside the repo
+    resolved = fs.realpathSync(path.resolve(absPath));
+  } catch {
+    return false;
+  }
+
+  let repoReal;
+  try {
+    repoReal = fs.realpathSync(REPO_ROOT);
+  } catch {
+    return false;
+  }
+
+  return resolved === repoReal || resolved.startsWith(repoReal + path.sep);
 }
 
 // Paths
@@ -134,7 +153,19 @@ function loadJsonlFile(filePath) {
 
   for (let i = 0; i < lines.length; i++) {
     try {
-      items.push({ ...JSON.parse(lines[i]), _lineNumber: i + 1 });
+      const parsed = JSON.parse(lines[i]);
+
+      // JSONL findings must be objects; reject primitives and arrays
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+        errors.push({
+          type: "PARSE_ERROR",
+          line: i + 1,
+          message: `Invalid JSON object on line ${i + 1} (expected object, got ${Array.isArray(parsed) ? "array" : typeof parsed})`,
+        });
+        continue;
+      }
+
+      items.push({ ...parsed, _lineNumber: i + 1 });
     } catch (err) {
       // Don't include raw content in errors (may contain sensitive data)
       errors.push({
@@ -799,9 +830,11 @@ function validateTdmsIntake(jsonlFile) {
     console.log(`    Duplicates skipped: ${results.duplicatesSkipped}`);
   } catch (err) {
     results.dryRunSuccess = false;
-    const safeMessage = sanitizeError(err);
-    results.errors.push(`Dry-run failed: ${safeMessage}`);
-    console.log(`  Dry-run FAILED: ${safeMessage}`);
+    // Only expose exit code, not potentially sensitive error details
+    const exitCode = typeof err?.status === "number" ? err.status : "unknown";
+    const safeSummary = `Dry-run failed (exit code: ${exitCode})`;
+    results.errors.push(safeSummary);
+    console.log(`  Dry-run FAILED: ${safeSummary}`);
   }
 
   return results;
@@ -1090,10 +1123,10 @@ async function main() {
       const allStagesRun = state.stage1 && state.stage2 && state.stage3;
       const intakeValidated = Boolean(state.tdmsIntake);
       const allPassed =
-        (state.stage1?.passed ?? true) &&
-        (state.stage2?.passed ?? true) &&
-        (state.stage3?.passed ?? true) &&
-        state.tdmsIntake?.dryRunSuccess === true; // Explicit true check
+        state.stage1?.passed === true &&
+        state.stage2?.passed === true &&
+        state.stage3?.passed === true &&
+        state.tdmsIntake?.dryRunSuccess === true;
 
       state.overallStatus =
         allStagesRun && intakeValidated && allPassed
