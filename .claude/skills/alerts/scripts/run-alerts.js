@@ -151,7 +151,14 @@ function checkCodeHealth() {
   const missingScript = /Missing script/i.test(circularFullOutput);
 
   if (missingScript) {
-    // Script doesn't exist - skip silently
+    // Script doesn't exist - alert to prompt setup (PR #332 Review #235)
+    addAlert(
+      "code",
+      "info",
+      "Circular dependency script not configured",
+      null,
+      "Add deps:circular script to package.json for dependency analysis"
+    );
   } else if (!circularResult.success) {
     // Non-zero exit code means circular deps were found (or script error)
     // Check if it processed files successfully (script ran but found issues)

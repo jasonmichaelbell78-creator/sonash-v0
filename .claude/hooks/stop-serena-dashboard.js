@@ -223,6 +223,11 @@ function isAllowedProcess(processInfo) {
   const isGenericNode = name === "node" || name === "node.exe";
   if (isGenericNode) return cmdLineMatch;
 
+  // Never allow killing generic Python processes unless running serena-dashboard.py
+  // (Qodo PR #332 Review #235 - prevent terminating unrelated Python processes)
+  const isGenericPython = name === "python" || name === "python.exe";
+  if (isGenericPython) return /\bserena-dashboard\.py\b/.test(cmdLine);
+
   return nameAllowed && cmdLineMatch;
 }
 

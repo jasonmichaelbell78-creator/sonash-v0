@@ -263,7 +263,8 @@ fi
 #   - docs/technical-debt/ (MASTER_DEBT.jsonl + views)
 #   - docs/audits/single-session/ (audit output files)
 # Warn if debt-like files (.jsonl) appear elsewhere in docs/
-DEBT_CANONICAL_PATHS="docs/technical-debt/|docs/audits/single-session/"
+# PR #332 Review #235: Anchor regex for robustness
+DEBT_CANONICAL_PATHS="^docs/technical-debt/|^docs/audits/single-session/"
 DEBT_OUTSIDE_CANONICAL=$(printf '%s\n' "$STAGED_FILES" | grep -E '^docs/.*\.(jsonl)$' | grep -Ev "$DEBT_CANONICAL_PATHS" || true)
 if [ -n "$DEBT_OUTSIDE_CANONICAL" ]; then
   echo "  ⚠️  Warning: JSONL data files outside canonical debt locations"
