@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global __dirname */
 /**
  * validate-audit-integration.js - Validation wrapper for comprehensive audit
  *
@@ -433,7 +434,7 @@ function validateTdmsMapping(item) {
   }
 
   // Check fingerprint can be converted to source_id
-  if (item.fingerprint) {
+  if (typeof item.fingerprint === "string" && item.fingerprint.trim() !== "") {
     // fingerprint format: category::file::id -> audit:category-file-id
     const converted = `audit:${item.fingerprint.replace(/::/g, "-")}`;
     if (converted.length > 255) {
@@ -447,7 +448,7 @@ function validateTdmsMapping(item) {
   }
 
   // Check why_it_matters exists for description mapping
-  if (!item.why_it_matters || item.why_it_matters.trim() === "") {
+  if (typeof item.why_it_matters !== "string" || item.why_it_matters.trim() === "") {
     issues.push({
       type: "TDMS_MAPPING_WARNING",
       findingId,
@@ -457,7 +458,7 @@ function validateTdmsMapping(item) {
   }
 
   // Check suggested_fix exists for recommendation mapping
-  if (!item.suggested_fix || item.suggested_fix.trim() === "") {
+  if (typeof item.suggested_fix !== "string" || item.suggested_fix.trim() === "") {
     issues.push({
       type: "TDMS_MAPPING_WARNING",
       findingId,
@@ -752,8 +753,14 @@ function validateTdmsIntake(jsonlFile) {
     return results;
   }
 
+  // Security: validate input path is within repository
+  if (!isPathWithinRepo(jsonlFile)) {
+    results.errors.push("Input path must be within repository");
+    return results;
+  }
+
   if (!fs.existsSync(jsonlFile)) {
-    results.errors.push(`Input file not found: ${jsonlFile}`);
+    results.errors.push(`Input file not found: ${path.basename(jsonlFile)}`);
     return results;
   }
 
@@ -783,11 +790,9 @@ function validateTdmsIntake(jsonlFile) {
     console.log(`    Duplicates skipped: ${results.duplicatesSkipped}`);
   } catch (err) {
     results.dryRunSuccess = false;
-    results.errors.push(`Dry-run failed: ${err.message}`);
-    if (err.stderr) {
-      results.errors.push(err.stderr.toString());
-    }
-    console.log(`  Dry-run FAILED: ${err.message}`);
+    const safeMessage = sanitizeError(err);
+    results.errors.push(`Dry-run failed: ${safeMessage}`);
+    console.log(`  Dry-run FAILED: ${safeMessage}`);
   }
 
   return results;
@@ -804,7 +809,7 @@ function loadValidationState() {
   try {
     return JSON.parse(fs.readFileSync(VALIDATION_STATE_FILE, "utf8"));
   } catch (err) {
-    console.warn(`Warning: Could not load validation state: ${err.message}`);
+    console.warn(`Warning: Could not load validation state: ${sanitizeError(err)}`);
     return null;
   }
 }
@@ -1008,6 +1013,7 @@ async function main() {
       console.log(`  Invalid: ${results.summary.invalid}`);
       console.log(`  Blocking: ${results.summary.blocking}`);
       process.exit(results.summary.blocking > 0 ? 1 : 0);
+      break;
     }
 
     case "validate-stage": {
@@ -1024,6 +1030,7 @@ async function main() {
       saveValidationState(state);
 
       process.exit(stageResults.passed ? 0 : 1);
+      break;
     }
 
     case "validate-tdms-intake": {
@@ -1040,6 +1047,7 @@ async function main() {
       saveValidationState(state);
 
       process.exit(intakeResults.dryRunSuccess ? 0 : 1);
+      break;
     }
 
     case "compare-baseline": {
@@ -1121,7 +1129,7 @@ Workflow:
 }
 
 main().catch((err) => {
-  console.error("Error:", err.message);
+  console.error("Error:", sanitizeError(err));
   process.exit(1);
 });
 
