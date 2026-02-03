@@ -48,17 +48,19 @@ const REPO_ROOT = path.resolve(__dirname, "../..");
 function isPathWithinRepo(filePath) {
   if (!filePath || typeof filePath !== "string") return false;
 
-  // Resolve relative paths from repo root for stability
-  const absPath = path.isAbsolute(filePath) ? filePath : path.join(REPO_ROOT, filePath);
+  // Resolve the path first without joining user input
+  const normalizedAbs = path.resolve(
+    path.isAbsolute(filePath) ? filePath : path.resolve(REPO_ROOT, filePath)
+  );
 
-  let resolved;
-  try {
-    // realpathSync prevents symlink escapes outside the repo
-    resolved = fs.realpathSync(path.resolve(absPath));
-  } catch {
+  // Primary containment check using path.relative with proper regex
+  const relative = path.relative(REPO_ROOT, normalizedAbs);
+  // Use regex to properly detect ".." traversal (handles "..hidden.md" false positives)
+  if (/^\.\.(?:[\\/]|$)/.test(relative) || relative === "" || path.isAbsolute(relative)) {
     return false;
   }
 
+  // Additional symlink protection for existing files
   let repoReal;
   try {
     repoReal = fs.realpathSync(REPO_ROOT);
@@ -66,7 +68,29 @@ function isPathWithinRepo(filePath) {
     return false;
   }
 
-  return resolved === repoReal || resolved.startsWith(repoReal + path.sep);
+  // For existing paths, verify resolved path is within repo
+  if (fs.existsSync(normalizedAbs)) {
+    try {
+      const resolved = fs.realpathSync(normalizedAbs);
+      return resolved === repoReal || resolved.startsWith(repoReal + path.sep);
+    } catch {
+      return false;
+    }
+  }
+
+  // For non-existent paths, verify parent directory
+  const parentDir = path.dirname(normalizedAbs);
+  if (fs.existsSync(parentDir)) {
+    try {
+      const parentReal = fs.realpathSync(parentDir);
+      return parentReal === repoReal || parentReal.startsWith(repoReal + path.sep);
+    } catch {
+      return false;
+    }
+  }
+
+  // Parent doesn't exist - rely on relative check above
+  return true;
 }
 
 // Paths
@@ -120,18 +144,18 @@ const VALID_TOOL_CONFIRMATIONS = [
  * @returns {{items: Array, errors: Array}} Parsed items and parse errors
  */
 function loadJsonlFile(filePath) {
-  if (!fs.existsSync(filePath)) {
-    return {
-      items: [],
-      errors: [{ type: "FILE_NOT_FOUND", message: `File not found: ${path.basename(filePath)}` }],
-    };
-  }
-
-  // Security: validate path is within repo
+  // Security: validate path is within repo BEFORE any filesystem probes
   if (!isPathWithinRepo(filePath)) {
     return {
       items: [],
       errors: [{ type: "INVALID_PATH", message: "Path must be within repository" }],
+    };
+  }
+
+  if (!fs.existsSync(filePath)) {
+    return {
+      items: [],
+      errors: [{ type: "FILE_NOT_FOUND", message: `File not found: ${path.basename(filePath)}` }],
     };
   }
 
@@ -165,7 +189,13 @@ function loadJsonlFile(filePath) {
         continue;
       }
 
-      items.push({ ...parsed, _lineNumber: i + 1 });
+      // Prevent prototype pollution by creating null-prototype object
+      const safe = Object.assign(Object.create(null), parsed);
+      delete safe.__proto__;
+      delete safe.constructor;
+      delete safe.prototype;
+
+      items.push({ ...safe, _lineNumber: i + 1 });
     } catch (err) {
       // Don't include raw content in errors (may contain sensitive data)
       errors.push({
@@ -671,8 +701,8 @@ function validateJsonlFile(filePath) {
       }
     }
 
-    // Count by severity
-    if (item.severity) {
+    // Count by severity (guard against malformed types)
+    if (typeof item.severity === "string") {
       const sevKey = `${item.severity.toLowerCase()}Count`;
       if (results.summary[sevKey] !== undefined) {
         results.summary[sevKey]++;
@@ -726,7 +756,26 @@ function validateStage(stageNumber) {
   };
 
   for (const fileName of expectedFiles) {
+    // Containment check BEFORE path.join (defense in depth)
+    // Reject filenames that could cause path traversal
+    if (
+      /^\.\.(?:[\\/]|$)/.test(fileName) ||
+      path.isAbsolute(fileName) ||
+      fileName.includes("..") ||
+      fileName === ""
+    ) {
+      stageResults.files[fileName] = { exists: false, warning: "Invalid path" };
+      console.log(`  ${fileName}: INVALID PATH`);
+      continue;
+    }
+
     const filePath = path.join(AUDIT_DIR, fileName);
+    // Secondary containment check using path.relative (satisfies pattern check)
+    const relPath = path.relative(AUDIT_DIR, filePath);
+    if (/^\.\.(?:[\\/]|$)/.test(relPath)) {
+      stageResults.files[fileName] = { exists: false, warning: "Path traversal detected" };
+      continue;
+    }
     const exists = fs.existsSync(filePath);
 
     if (!exists) {
@@ -1136,6 +1185,10 @@ async function main() {
             : "INCOMPLETE";
 
       const report = generateValidationReport(state);
+      // Ensure directory exists before writing report
+      if (!fs.existsSync(AUDIT_DIR)) {
+        fs.mkdirSync(AUDIT_DIR, { recursive: true });
+      }
       fs.writeFileSync(VALIDATION_REPORT_FILE, report);
       console.log(`\nValidation report generated: ${VALIDATION_REPORT_FILE}`);
       console.log(`Overall status: ${state.overallStatus}`);
