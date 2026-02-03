@@ -42,9 +42,21 @@ const args = process.argv.slice(2);
 const VERBOSE = args.includes("--verbose");
 const QUIET = args.includes("--quiet");
 const JSON_OUTPUT = args.includes("--json");
+
+// Validate --output has a value
 const outputIdx = args.indexOf("--output");
+if (outputIdx >= 0 && (outputIdx + 1 >= args.length || args[outputIdx + 1].startsWith("--"))) {
+  console.error("Error: --output requires a file path argument");
+  process.exit(2);
+}
 const OUTPUT_FILE = outputIdx >= 0 ? args[outputIdx + 1] : null;
+
+// Validate --timeout has a value
 const timeoutIdx = args.indexOf("--timeout");
+if (timeoutIdx >= 0 && (timeoutIdx + 1 >= args.length || args[timeoutIdx + 1].startsWith("--"))) {
+  console.error("Error: --timeout requires a numeric argument");
+  process.exit(2);
+}
 const TIMEOUT_MS = timeoutIdx >= 0 ? Number.parseInt(args[timeoutIdx + 1], 10) : 10000;
 
 // Validate timeout is a positive finite integer
@@ -66,6 +78,23 @@ const urlCache = new Map();
 // Domain rate limiting - track last request time per domain
 const domainLastRequest = new Map();
 const RATE_LIMIT_MS = 100;
+
+/**
+ * Sanitize URL for logging - removes query strings, fragments, and userinfo
+ * to prevent leaking sensitive tokens/credentials in logs
+ * @param {string} urlString - URL to sanitize
+ * @returns {string} - Sanitized URL with only scheme, host, and path
+ */
+function sanitizeUrlForLogging(urlString) {
+  try {
+    const url = new URL(urlString);
+    // Reconstruct URL with only safe parts (no userinfo, query, or fragment)
+    return `${url.protocol}//${url.host}${url.pathname}`;
+  } catch {
+    // If URL parsing fails, return a redacted version
+    return "[invalid URL]";
+  }
+}
 
 /**
  * SSRF Protection: Check if an IP address is in a private/internal range
@@ -491,6 +520,9 @@ function findMarkdownFiles(dir, files = []) {
 function generateFinding(urlInfo, checkResult) {
   const severity = checkResult.status === 404 ? "S1" : "S2";
   const effort = "E0"; // Fixing a broken link is trivial
+  // Sanitize URL to prevent leaking query strings/tokens in logs
+  const safeUrl = sanitizeUrlForLogging(urlInfo.url);
+  const safeRedirect = checkResult.redirect ? sanitizeUrlForLogging(checkResult.redirect) : null;
 
   return {
     id: `DOC-LINK-EXT-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
@@ -503,17 +535,17 @@ function generateFinding(urlInfo, checkResult) {
     line: urlInfo.line,
     title: `Broken external link: ${checkResult.status}`,
     description: checkResult.error
-      ? `External link to ${urlInfo.url} failed: ${checkResult.error}`
-      : `External link to ${urlInfo.url} returned status ${checkResult.status}`,
-    recommendation: checkResult.redirect
-      ? `Update link to: ${checkResult.redirect}`
+      ? `External link to ${safeUrl} failed: ${checkResult.error}`
+      : `External link to ${safeUrl} returned status ${checkResult.status}`,
+    recommendation: safeRedirect
+      ? `Update link to: ${safeRedirect}`
       : "Remove or update the broken link",
     evidence: [
-      `URL: ${urlInfo.url}`,
+      `URL: ${safeUrl}`,
       `Status: ${checkResult.status}`,
       `Response time: ${checkResult.responseTime}ms`,
       checkResult.error ? `Error: ${checkResult.error}` : null,
-      checkResult.redirect ? `Redirect: ${checkResult.redirect}` : null,
+      safeRedirect ? `Redirect: ${safeRedirect}` : null,
     ].filter(Boolean),
     cross_ref: "external_link_check",
   };
