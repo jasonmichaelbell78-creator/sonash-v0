@@ -504,6 +504,10 @@ const ANTI_PATTERNS = [
       // 2026-02-03 audit (Review #127):
       // - ai-pattern-checks.js: readFileSync at L34 IS in try/catch (L33-38)
       "ai-pattern-checks.js",
+      // 2026-02-03 audit (PR #333):
+      // - validate-audit-integration.js: readFileSync at L164 IS in try/catch (L163-171),
+      //   L578 IS in try/catch (L577-603), L901 IS in try/catch (L900-905)
+      "validate-audit-integration.js",
     ],
   },
   {
