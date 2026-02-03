@@ -1,6 +1,8 @@
 ---
 name: audit-validation-wrapper
-description: Validation wrapper that tests TDMS and Documentation Standards integration during comprehensive audit
+description:
+  Validation wrapper that tests TDMS and Documentation Standards integration
+  during comprehensive audit
 ---
 
 # Audit Validation Wrapper
@@ -91,12 +93,12 @@ node scripts/audit/validate-audit-integration.js validate-stage 1
 
 **What gets validated:**
 
-| File                              | Checks                                          |
-| --------------------------------- | ----------------------------------------------- |
-| audit-code-findings.jsonl         | Schema compliance, S0/S1 verification_steps     |
-| audit-security-findings.jsonl     | Schema compliance, S0/S1 verification_steps     |
-| audit-performance-findings.jsonl  | Schema compliance, TDMS field mapping           |
-| audit-refactoring-findings.jsonl  | Schema compliance, unique fingerprints          |
+| File                             | Checks                                      |
+| -------------------------------- | ------------------------------------------- |
+| audit-code-findings.jsonl        | Schema compliance, S0/S1 verification_steps |
+| audit-security-findings.jsonl    | Schema compliance, S0/S1 verification_steps |
+| audit-performance-findings.jsonl | Schema compliance, TDMS field mapping       |
+| audit-refactoring-findings.jsonl | Schema compliance, unique fingerprints      |
 
 **Exit Codes:**
 
@@ -122,10 +124,10 @@ node scripts/audit/validate-audit-integration.js validate-stage 2
 
 **What gets validated:**
 
-| File                                | Checks                                     |
-| ----------------------------------- | ------------------------------------------ |
-| audit-documentation-findings.jsonl  | Schema compliance, unique fingerprints     |
-| audit-process-findings.jsonl        | Schema compliance, S0/S1 verification_steps|
+| File                               | Checks                                      |
+| ---------------------------------- | ------------------------------------------- |
+| audit-documentation-findings.jsonl | Schema compliance, unique fingerprints      |
+| audit-process-findings.jsonl       | Schema compliance, S0/S1 verification_steps |
 
 **Same failure handling as Stage 1.**
 
@@ -141,9 +143,9 @@ node scripts/audit/validate-audit-integration.js validate-stage 3
 
 **What gets validated:**
 
-| File                       | Checks                                        |
-| -------------------------- | --------------------------------------------- |
-| aggregated-findings.jsonl  | Deduplication worked, no duplicate fingerprints |
+| File                      | Checks                                          |
+| ------------------------- | ----------------------------------------------- |
+| aggregated-findings.jsonl | Deduplication worked, no duplicate fingerprints |
 
 **Then validate TDMS intake will work:**
 
@@ -259,16 +261,16 @@ Claude: Starting validated comprehensive audit...
 
 ## Failure Handling Matrix
 
-| Checkpoint              | Failure                          | Action               |
-| ----------------------- | -------------------------------- | -------------------- |
-| Pre-Audit               | MASTER_DEBT.jsonl unreadable     | ABORT                |
-| Stage 1-2               | Missing JSONL output             | WARN, continue       |
-| Stage 1-2               | S0/S1 without verification_steps | BLOCK until fixed    |
-| Stage 1-2               | Schema validation errors         | WARN, log to report  |
-| Stage 3                 | Aggregator fails                 | WARN, individual OK  |
-| Stage 3                 | Duplicate fingerprints           | INFO (expected)      |
-| Post-Audit              | Intake dry-run fails             | BLOCK actual intake  |
-| Post-Audit              | Content hash collision           | INFO (dedup working) |
+| Checkpoint | Failure                          | Action               |
+| ---------- | -------------------------------- | -------------------- |
+| Pre-Audit  | MASTER_DEBT.jsonl unreadable     | ABORT                |
+| Stage 1-2  | Missing JSONL output             | WARN, continue       |
+| Stage 1-2  | S0/S1 without verification_steps | BLOCK until fixed    |
+| Stage 1-2  | Schema validation errors         | WARN, log to report  |
+| Stage 3    | Aggregator fails                 | WARN, individual OK  |
+| Stage 3    | Duplicate fingerprints           | INFO (expected)      |
+| Post-Audit | Intake dry-run fails             | BLOCK actual intake  |
+| Post-Audit | Content hash collision           | INFO (dedup working) |
 
 ---
 
@@ -312,6 +314,6 @@ Commands:
 
 ## Version History
 
-| Version | Date       | Description                                 |
-| ------- | ---------- | ------------------------------------------- |
-| 1.0     | 2026-02-03 | Initial version for TDMS/DocStd validation  |
+| Version | Date       | Description                                |
+| ------- | ---------- | ------------------------------------------ |
+| 1.0     | 2026-02-03 | Initial version for TDMS/DocStd validation |

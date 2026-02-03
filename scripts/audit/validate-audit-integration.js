@@ -32,7 +32,8 @@ try {
   sanitizeError = require("../lib/sanitize-error.js");
 } catch {
   // Fallback if sanitize-error.js not available
-  sanitizeError = (err) => (err instanceof Error ? err.message : String(err)).replace(/[^\w\s.,:-]/g, "");
+  sanitizeError = (err) =>
+    (err instanceof Error ? err.message : String(err)).replace(/[^\w\s.,:-]/g, "");
 }
 
 // Repository root for path validation
@@ -101,12 +102,18 @@ const VALID_TOOL_CONFIRMATIONS = [
  */
 function loadJsonlFile(filePath) {
   if (!fs.existsSync(filePath)) {
-    return { items: [], errors: [{ type: "FILE_NOT_FOUND", message: `File not found: ${path.basename(filePath)}` }] };
+    return {
+      items: [],
+      errors: [{ type: "FILE_NOT_FOUND", message: `File not found: ${path.basename(filePath)}` }],
+    };
   }
 
   // Security: validate path is within repo
   if (!isPathWithinRepo(filePath)) {
-    return { items: [], errors: [{ type: "INVALID_PATH", message: "Path must be within repository" }] };
+    return {
+      items: [],
+      errors: [{ type: "INVALID_PATH", message: "Path must be within repository" }],
+    };
   }
 
   let content;
@@ -721,7 +728,9 @@ function validateStage(stageNumber) {
   }
 
   console.log(`\nStage ${stageNumber} Summary:`);
-  console.log(`  Files found: ${Object.values(stageResults.files).filter((f) => f.exists !== false).length}/${expectedFiles.length}`);
+  console.log(
+    `  Files found: ${Object.values(stageResults.files).filter((f) => f.exists !== false).length}/${expectedFiles.length}`
+  );
   console.log(`  Total findings: ${stageResults.totalFindings}`);
   console.log(`  Blocking issues: ${stageResults.totalBlocking}`);
   console.log(`  Status: ${stageResults.passed ? "PASS" : "BLOCKED"}`);
@@ -1084,7 +1093,7 @@ async function main() {
         (state.stage1?.passed ?? true) &&
         (state.stage2?.passed ?? true) &&
         (state.stage3?.passed ?? true) &&
-        (state.tdmsIntake?.dryRunSuccess === true); // Explicit true check
+        state.tdmsIntake?.dryRunSuccess === true; // Explicit true check
 
       state.overallStatus =
         allStagesRun && intakeValidated && allPassed

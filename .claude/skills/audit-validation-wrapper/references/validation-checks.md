@@ -1,7 +1,7 @@
 # Validation Checks Reference
 
-**Source:** Extracted from `docs/templates/JSONL_SCHEMA_STANDARD.md` **Version:**
-1.0 **Last Updated:** 2026-02-03
+**Source:** Extracted from `docs/templates/JSONL_SCHEMA_STANDARD.md`
+**Version:** 1.0 **Last Updated:** 2026-02-03
 
 ---
 
@@ -19,7 +19,8 @@ TDMS field mapping validation.
 When validating audit JSONL outputs:
 
 1. **Schema Compliance** - Check all required fields exist with correct types
-2. **S0/S1 Verification** - Enforce verification_steps for critical/high findings
+2. **S0/S1 Verification** - Enforce verification_steps for critical/high
+   findings
 3. **TDMS Compatibility** - Ensure field mapping will work during intake
 4. **Fingerprint Uniqueness** - Detect duplicates across findings
 
@@ -31,18 +32,18 @@ Reference this document when implementing or debugging validation logic.
 
 Every finding in JSONL output MUST include these fields:
 
-| Field              | Type   | Validation                                   |
-| ------------------ | ------ | -------------------------------------------- |
-| `category`         | string | Must be valid enum (see Section 2)           |
-| `title`            | string | Non-empty, short and specific                |
+| Field              | Type   | Validation                                    |
+| ------------------ | ------ | --------------------------------------------- |
+| `category`         | string | Must be valid enum (see Section 2)            |
+| `title`            | string | Non-empty, short and specific                 |
 | `fingerprint`      | string | Must follow format `<category>::<file>::<id>` |
-| `severity`         | enum   | Must be S0, S1, S2, or S3                    |
-| `effort`           | enum   | Must be E0, E1, E2, or E3                    |
-| `confidence`       | number | Integer 0-100                                |
-| `files`            | array  | Non-empty array of file paths                |
-| `why_it_matters`   | string | Non-empty impact explanation                 |
-| `suggested_fix`    | string | Non-empty remediation direction              |
-| `acceptance_tests` | array  | Non-empty array of verification steps        |
+| `severity`         | enum   | Must be S0, S1, S2, or S3                     |
+| `effort`           | enum   | Must be E0, E1, E2, or E3                     |
+| `confidence`       | number | Integer 0-100                                 |
+| `files`            | array  | Non-empty array of file paths                 |
+| `why_it_matters`   | string | Non-empty impact explanation                  |
+| `suggested_fix`    | string | Non-empty remediation direction               |
+| `acceptance_tests` | array  | Non-empty array of verification steps         |
 
 ---
 
@@ -51,26 +52,33 @@ Every finding in JSONL output MUST include these fields:
 ### Categories
 
 ```javascript
-["security", "performance", "code-quality", "documentation", "process", "refactoring"]
+[
+  "security",
+  "performance",
+  "code-quality",
+  "documentation",
+  "process",
+  "refactoring",
+];
 ```
 
 ### Severities
 
-| Level | Name     | Definition                                       |
-| ----- | -------- | ------------------------------------------------ |
-| S0    | Critical | Security breach, data loss, production breaking  |
-| S1    | High     | Likely bugs, significant risk, major tech debt   |
-| S2    | Medium   | Maintainability drag, inconsistency, friction    |
-| S3    | Low      | Polish, cosmetic, minor improvements             |
+| Level | Name     | Definition                                      |
+| ----- | -------- | ----------------------------------------------- |
+| S0    | Critical | Security breach, data loss, production breaking |
+| S1    | High     | Likely bugs, significant risk, major tech debt  |
+| S2    | Medium   | Maintainability drag, inconsistency, friction   |
+| S3    | Low      | Polish, cosmetic, minor improvements            |
 
 ### Efforts
 
-| Level | Name    | Definition                   |
-| ----- | ------- | ---------------------------- |
-| E0    | Minutes | Quick fix, trivial change    |
-| E1    | Hours   | Single-session work          |
-| E2    | Days    | 1-3 days or staged PR        |
-| E3    | Weeks   | Multi-PR, multi-week effort  |
+| Level | Name    | Definition                  |
+| ----- | ------- | --------------------------- |
+| E0    | Minutes | Quick fix, trivial change   |
+| E1    | Hours   | Single-session work         |
+| E2    | Days    | 1-3 days or staged PR       |
+| E3    | Weeks   | Multi-PR, multi-week effort |
 
 ---
 
@@ -169,18 +177,18 @@ performance::hooks/useData.ts::unnecessary-rerender-deps
 
 When findings are ingested into TDMS via `intake-audit.js`, fields map as:
 
-| Doc Standards Field | TDMS Field       | Mapping Notes                             |
-| ------------------- | ---------------- | ----------------------------------------- |
+| Doc Standards Field | TDMS Field       | Mapping Notes                                    |
+| ------------------- | ---------------- | ------------------------------------------------ |
 | `fingerprint`       | `source_id`      | Converted: `cat::file::id` → `audit:cat-file-id` |
-| `files[0]`          | `file`           | First file path extracted                 |
-| `files[0]`          | `line`           | Line extracted if format `file:123`       |
-| `why_it_matters`    | `description`    | Direct mapping                            |
-| `suggested_fix`     | `recommendation` | Direct mapping                            |
-| `acceptance_tests`  | `evidence`       | Appended with `[Acceptance]` prefix       |
-| `confidence`        | (logged)         | Logged to intake-log.jsonl only           |
-| `severity`          | `severity`       | Direct mapping (S0/S1/S2/S3)              |
-| `effort`            | `effort`         | Direct mapping (E0/E1/E2/E3)              |
-| `category`          | `category`       | Direct mapping                            |
+| `files[0]`          | `file`           | First file path extracted                        |
+| `files[0]`          | `line`           | Line extracted if format `file:123`              |
+| `why_it_matters`    | `description`    | Direct mapping                                   |
+| `suggested_fix`     | `recommendation` | Direct mapping                                   |
+| `acceptance_tests`  | `evidence`       | Appended with `[Acceptance]` prefix              |
+| `confidence`        | (logged)         | Logged to intake-log.jsonl only                  |
+| `severity`          | `severity`       | Direct mapping (S0/S1/S2/S3)                     |
+| `effort`            | `effort`         | Direct mapping (E0/E1/E2/E3)                     |
+| `category`          | `category`       | Direct mapping                                   |
 
 **Validation Warnings:**
 
@@ -208,31 +216,31 @@ Errors returned by `validate-audit-integration.js`:
 
 ### Schema Errors (Non-blocking)
 
-| Code                          | Description                          |
-| ----------------------------- | ------------------------------------ |
-| `MISSING_REQUIRED_FIELD`      | Required base field missing          |
-| `INVALID_CATEGORY`            | Category not in valid enum           |
-| `INVALID_SEVERITY`            | Severity not S0/S1/S2/S3             |
-| `INVALID_EFFORT`              | Effort not E0/E1/E2/E3               |
-| `INVALID_CONFIDENCE`          | Confidence not number 0-100          |
-| `INVALID_FILES`               | Files not non-empty array            |
-| `INVALID_ACCEPTANCE_TESTS`    | Acceptance tests not non-empty array |
-| `INVALID_FINGERPRINT_FORMAT`  | Fingerprint doesn't match format     |
+| Code                         | Description                          |
+| ---------------------------- | ------------------------------------ |
+| `MISSING_REQUIRED_FIELD`     | Required base field missing          |
+| `INVALID_CATEGORY`           | Category not in valid enum           |
+| `INVALID_SEVERITY`           | Severity not S0/S1/S2/S3             |
+| `INVALID_EFFORT`             | Effort not E0/E1/E2/E3               |
+| `INVALID_CONFIDENCE`         | Confidence not number 0-100          |
+| `INVALID_FILES`              | Files not non-empty array            |
+| `INVALID_ACCEPTANCE_TESTS`   | Acceptance tests not non-empty array |
+| `INVALID_FINGERPRINT_FORMAT` | Fingerprint doesn't match format     |
 
 ### S0/S1 Errors (BLOCKING)
 
-| Code                         | Description                          |
-| ---------------------------- | ------------------------------------ |
-| `MISSING_VERIFICATION_STEPS` | S0/S1 missing verification_steps     |
-| `MISSING_FIRST_PASS`         | Missing first_pass object            |
-| `INVALID_FIRST_PASS_METHOD`  | first_pass.method not valid          |
-| `EMPTY_FIRST_PASS_EVIDENCE`  | evidence_collected empty             |
-| `MISSING_SECOND_PASS`        | Missing second_pass object           |
-| `INVALID_SECOND_PASS_METHOD` | second_pass.method not valid         |
-| `SECOND_PASS_NOT_CONFIRMED`  | confirmed !== true                   |
-| `MISSING_TOOL_CONFIRMATION`  | Missing tool_confirmation object     |
-| `INVALID_TOOL_CONFIRMATION`  | tool not valid                       |
-| `MISSING_TOOL_REFERENCE`     | reference empty                      |
+| Code                         | Description                      |
+| ---------------------------- | -------------------------------- |
+| `MISSING_VERIFICATION_STEPS` | S0/S1 missing verification_steps |
+| `MISSING_FIRST_PASS`         | Missing first_pass object        |
+| `INVALID_FIRST_PASS_METHOD`  | first_pass.method not valid      |
+| `EMPTY_FIRST_PASS_EVIDENCE`  | evidence_collected empty         |
+| `MISSING_SECOND_PASS`        | Missing second_pass object       |
+| `INVALID_SECOND_PASS_METHOD` | second_pass.method not valid     |
+| `SECOND_PASS_NOT_CONFIRMED`  | confirmed !== true               |
+| `MISSING_TOOL_CONFIRMATION`  | Missing tool_confirmation object |
+| `INVALID_TOOL_CONFIRMATION`  | tool not valid                   |
+| `MISSING_TOOL_REFERENCE`     | reference empty                  |
 
 ### TDMS Mapping Warnings
 
@@ -247,25 +255,25 @@ Errors returned by `validate-audit-integration.js`:
 
 ### Stage 1 (Technical Core)
 
-| Audit              | Expected JSONL File                  |
-| ------------------ | ------------------------------------ |
-| audit-code         | `audit-code-findings.jsonl`          |
-| audit-security     | `audit-security-findings.jsonl`      |
-| audit-performance  | `audit-performance-findings.jsonl`   |
-| audit-refactoring  | `audit-refactoring-findings.jsonl`   |
+| Audit             | Expected JSONL File                |
+| ----------------- | ---------------------------------- |
+| audit-code        | `audit-code-findings.jsonl`        |
+| audit-security    | `audit-security-findings.jsonl`    |
+| audit-performance | `audit-performance-findings.jsonl` |
+| audit-refactoring | `audit-refactoring-findings.jsonl` |
 
 ### Stage 2 (Supporting)
 
-| Audit               | Expected JSONL File                    |
-| ------------------- | -------------------------------------- |
-| audit-documentation | `audit-documentation-findings.jsonl`   |
-| audit-process       | `audit-process-findings.jsonl`         |
+| Audit               | Expected JSONL File                  |
+| ------------------- | ------------------------------------ |
+| audit-documentation | `audit-documentation-findings.jsonl` |
+| audit-process       | `audit-process-findings.jsonl`       |
 
 ### Stage 3 (Aggregation)
 
-| Audit            | Expected JSONL File             |
-| ---------------- | ------------------------------- |
-| audit-aggregator | `aggregated-findings.jsonl`     |
+| Audit            | Expected JSONL File         |
+| ---------------- | --------------------------- |
+| audit-aggregator | `aggregated-findings.jsonl` |
 
 ---
 
@@ -359,6 +367,6 @@ const VALID_TOOL_CONFIRMATIONS = [
 
 ## Version History
 
-| Version | Date       | Description                                 |
-| ------- | ---------- | ------------------------------------------- |
+| Version | Date       | Description                                      |
+| ------- | ---------- | ------------------------------------------------ |
 | 1.0     | 2026-02-03 | Initial extraction from JSONL_SCHEMA_STANDARD.md |
