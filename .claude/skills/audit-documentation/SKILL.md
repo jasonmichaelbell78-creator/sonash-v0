@@ -596,8 +596,6 @@ node scripts/archive-doc.js "path/to/doc.md"
 1. ...
 2. ...
 
-````
-
 ---
 
 ## Post-Audit Actions
@@ -689,4 +687,3 @@ When modifying this skill, also update:
 | ------- | ---------- | ------------------------------------------------------- |
 | 2.0     | 2026-02-02 | Complete rewrite: 6-stage parallel audit with 18 agents |
 | 1.0     | 2025-xx-xx | Original single-session sequential audit                |
-````
