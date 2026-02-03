@@ -146,6 +146,37 @@ before continuing. This protects against context loss.
 
 ## Pre-Audit Validation
 
+**Step 0: Episodic Memory Search (Session #128)**
+
+Before running security audit, search for context from past security sessions:
+
+```javascript
+// Search for past security audit findings
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["security audit", "S0", "vulnerability"],
+    limit: 5,
+  });
+
+// Search for specific vulnerability patterns addressed before
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["OWASP", "injection", "auth bypass"],
+    limit: 5,
+  });
+```
+
+**Why this matters:**
+
+- Compare against previous security findings (regression detection)
+- Identify recurring vulnerabilities (may indicate architectural issue)
+- Track which S0/S1 issues were resolved vs still open
+- Prevent re-flagging known false positives
+
+---
+
 **Step 1: Check Thresholds**
 
 Run `npm run review:check` and report results. Check for security-sensitive file

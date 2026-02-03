@@ -259,14 +259,21 @@ if [ -z "$SKIP_DEBT_VALIDATION" ]; then
 fi
 
 # 13. Technical debt canonical location check (WARNING - TDMS Phase 7)
-# Warns if debt-related files are modified outside docs/technical-debt/
-DEBT_OUTSIDE_CANONICAL=$(printf '%s\n' "$STAGED_FILES" | grep -iE '(findings|issues|debt)' | grep -v 'docs/technical-debt/' | grep -v 'node_modules' || true)
+# Session #128: Canonical locations for debt data:
+#   - docs/technical-debt/ (MASTER_DEBT.jsonl + views)
+#   - docs/audits/single-session/ (audit output files)
+# Warn if debt-like files (.jsonl) appear elsewhere in docs/
+# PR #332 Review #235: Anchor regex for robustness
+DEBT_CANONICAL_PATHS="^docs/technical-debt/|^docs/audits/single-session/"
+DEBT_OUTSIDE_CANONICAL=$(printf '%s\n' "$STAGED_FILES" | grep -E '^docs/.*\.(jsonl)$' | grep -Ev "$DEBT_CANONICAL_PATHS" || true)
 if [ -n "$DEBT_OUTSIDE_CANONICAL" ]; then
-  echo "  ⚠️  Warning: Debt-related files modified outside canonical location"
-  echo "     Canonical location: docs/technical-debt/MASTER_DEBT.jsonl"
-  echo "     Files:"
+  echo "  ⚠️  Warning: JSONL data files outside canonical debt locations"
+  echo "     Canonical locations:"
+  echo "       - docs/technical-debt/MASTER_DEBT.jsonl"
+  echo "       - docs/audits/single-session/"
+  echo "     Files found elsewhere:"
   printf '%s\n' "$DEBT_OUTSIDE_CANONICAL" | head -5 | sed 's/^/       /'
-  node scripts/append-hook-warning.js --hook=pre-commit --type=debt-location --severity=warning --message="Debt files outside canonical location" --action="Move to docs/technical-debt/" 2>/dev/null || true
+  node scripts/append-hook-warning.js --hook=pre-commit --type=debt-location --severity=warning --message="Debt files outside canonical location" --action="Move to docs/technical-debt/ or docs/audits/single-session/" 2>/dev/null || true
 fi
 
 echo ""

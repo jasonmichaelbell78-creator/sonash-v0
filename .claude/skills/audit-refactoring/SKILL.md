@@ -7,6 +7,37 @@ description: Run a single-session refactoring audit on the codebase
 
 ## Pre-Audit Validation
 
+**Step 0: Episodic Memory Search (Session #128)**
+
+Before running refactoring audit, search for context from past sessions:
+
+```javascript
+// Search for past refactoring audit findings
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["refactoring audit", "god object", "complexity"],
+    limit: 5,
+  });
+
+// Search for specific tech debt discussions
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["cognitive complexity", "duplicate code", "circular"],
+    limit: 5,
+  });
+```
+
+**Why this matters:**
+
+- Compare against previous refactoring targets
+- Identify recurring complexity hotspots (may need architectural fix)
+- Track which files were flagged before and why
+- Prevent re-flagging intentional design decisions
+
+---
+
 **Step 1: Check Thresholds**
 
 Run `npm run review:check` and report results.

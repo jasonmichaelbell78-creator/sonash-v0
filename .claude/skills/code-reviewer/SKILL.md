@@ -12,6 +12,44 @@ description:
 
 Complete toolkit for code reviewer with modern tools and best practices.
 
+## Pre-Review: Episodic Memory Search (Session #128)
+
+**BEFORE starting any code review, search episodic memory for relevant
+context:**
+
+```javascript
+// Search for established patterns in this codebase
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["code patterns", "review", "conventions"],
+    limit: 5,
+  });
+
+// Search for past reviews on the same module/area
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: "module-name or feature area",
+    limit: 5,
+  });
+```
+
+**Why this matters:**
+
+- Reveals established code patterns and conventions
+- Shows past review decisions that set precedent
+- Identifies recurring issues that need root cause fixes
+- Prevents contradicting previous review guidance
+
+**Use findings to:**
+
+1. Apply consistent standards with past reviews
+2. Reference prior decisions when giving feedback
+3. Escalate patterns that keep recurring (architectural issues)
+
+---
+
 ## Quick Start
 
 ### Main Capabilities

@@ -1,6 +1,6 @@
 # SoNash Documentation Standards
 
-**Document Version**: 1.2 **Created**: 2025-12-31 **Last Updated**: 2026-01-01
+**Document Version**: 1.4 **Created**: 2025-12-31 **Last Updated**: 2026-02-03
 **Status**: ACTIVE **Overall Completion**: 100% (Standards established and
 operational)
 
@@ -251,8 +251,13 @@ Under Review | Deprecated **Applies To**: [Version/Release/All]
 ```markdown
 **Document Version**: X.Y **Created**: YYYY-MM-DD **Last Updated**: YYYY-MM-DD
 **Status**: PLANNING | IN_PROGRESS | COMPLETE | ON_HOLD **Overall Completion**:
-X% **Target Completion**: YYYY-MM-DD
+X% **Phase**: [Foundation | Core | Enhancement | Advanced | Future]
+**Priority**: [P0 | P1 | P2 | P3]
 ```
+
+> **Note:** As of v3.17, ROADMAP.md uses Phase + Priority instead of target
+> dates. Planning documents should follow the same pattern. See
+> [Timing System Standards](#-timing-system-standards) below.
 
 **Tier 4 (Reference)**:
 
@@ -622,7 +627,7 @@ Before committing **any** documentation:
 - [ ] Document Version present
 - [ ] Status present
 - [ ] Overall Completion present
-- [ ] Target Completion present
+- [ ] Phase/Priority present (not Target Completion date - see Timing System)
 
 **Status Synchronization Protocol**
 
@@ -734,6 +739,62 @@ docs: Update SESSION_CONTEXT.md - add Dec 31 session work
 
 ---
 
+## 📅 Timing System Standards
+
+> **Introduced:** Session #128 (ROADMAP.md v3.17)
+
+### Overview
+
+SoNash documentation uses **Priority + Phase Buckets + Relative Ordering**
+instead of calendar dates for scheduling. This prevents artificial deadlines
+while maintaining clear execution order.
+
+### Phase Buckets (Execution Order)
+
+| Phase       | Description                     | Examples       |
+| ----------- | ------------------------------- | -------------- |
+| Foundation  | Must complete first             | M0, M1, Active |
+| Core        | Core features after foundation  | M3, M4, M4.5   |
+| Enhancement | Enhancements after core         | M5, M6, M7     |
+| Advanced    | Advanced features after enhance | M8             |
+| Future      | Long-term vision                | M9, M10        |
+| Parallel    | Can run alongside any phase     | M2 (optional)  |
+
+### Priority Levels (Urgency)
+
+| Priority | Meaning          | Action                    |
+| -------- | ---------------- | ------------------------- |
+| P0       | Critical/Urgent  | Work on immediately       |
+| P1       | Next Sprint      | Plan for upcoming work    |
+| P2       | Backlog          | Queue when capacity opens |
+| P3       | Future/Nice-Have | Consider after P0-P2      |
+
+### Session References
+
+Use session numbers instead of dates for traceability:
+
+- ✅ **Correct**: "Added in Session #128", "DONE (Session #77)"
+- ❌ **Avoid**: "Target: Q2 2026", "Due: 2026-03-15"
+
+**Exception**: Version History tables may keep dates for audit trail purposes.
+
+### Applying to Documents
+
+**Tier 1 (Canonical)**: Use Phase/Priority in milestone tables
+
+**Tier 3 (Planning)**: Use Phase/Priority instead of "Target Completion" date
+
+**ROADMAP references**: Use relative ordering ("after M3", "blocks M5") not
+dates
+
+### Cross-Reference
+
+- [ROADMAP.md](../ROADMAP.md) - Timing System section for full details
+- Phase Buckets define WHAT order to execute
+- Priority defines HOW URGENTLY within that phase
+
+---
+
 ## 🤖 AI Instructions
 
 ### For AI Assistants
@@ -784,6 +845,7 @@ Before committing documentation changes, verify:
 
 | Version | Date       | Changes                                                                                                                                                              | Author      |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1.4     | 2026-02-03 | Added Timing System Standards section (Session #128); updated Tier 3 metadata to use Phase/Priority instead of Target Completion date                                | Claude      |
 | 1.3     | 2026-02-02 | Added Technical Debt Integration section clarifying TDMS authority and schema relationship                                                                           | Claude      |
 | 1.2     | 2026-01-01 | Added MANDATORY Deliverable Audit as global standard for phase/milestone completion in Quality Protocols                                                             | Claude      |
 | 1.1     | 2026-01-01 | Added Quality Protocols section with 4 new protocols: Pre-Commit Validation Checklist, Status Synchronization Protocol, Cross-Reference Validation, Template Testing | Claude Code |

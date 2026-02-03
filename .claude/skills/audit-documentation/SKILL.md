@@ -24,6 +24,37 @@ produces JSONL output that feeds into the final synthesis.
 
 ## Pre-Audit Setup
 
+**Step 0: Episodic Memory Search (Session #128)**
+
+Before running documentation audit, search for context from past sessions:
+
+```javascript
+// Search for past documentation audit findings
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["documentation audit", "stale docs", "broken links"],
+    limit: 5,
+  });
+
+// Search for doc structure decisions
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["DOCUMENTATION_STANDARDS", "tier", "lifecycle"],
+    limit: 5,
+  });
+```
+
+**Why this matters:**
+
+- Compare against previous doc health metrics
+- Identify recurring documentation gaps
+- Track which docs were flagged for updates before
+- Prevent re-flagging known orphans or intentional gaps
+
+---
+
 **Step 1: Create Output Directory**
 
 ```bash

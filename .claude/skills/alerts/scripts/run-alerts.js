@@ -143,29 +143,46 @@ function checkCodeHealth() {
   }
 
   // Circular dependencies
-  // Review #214: More specific check - only alert on actual circular detection
-  const circularResult = runCommand("npm run check:circular", { timeout: 60000 });
+  // Session #128: Fixed script name (deps:circular, not check:circular)
+  // Session #128: Success is determined by exit code 0, not output text
+  // (madge outputs "No circular dependency found!" to TTY, not captured stdout)
+  const circularResult = runCommand("npm run deps:circular", { timeout: 60000 });
   const circularFullOutput = `${circularResult.output || ""}\n${circularResult.stderr || ""}`;
-  const circularDetected = /\bcircular\b/i.test(circularFullOutput);
   const missingScript = /Missing script/i.test(circularFullOutput);
 
-  if (circularDetected) {
+  if (missingScript) {
+    // Script doesn't exist - alert to prompt setup (PR #332 Review #235)
     addAlert(
       "code",
-      "warning",
-      "Circular dependencies detected",
+      "info",
+      "Circular dependency script not configured",
       null,
-      "Run: npm run check:circular"
+      "Add deps:circular script to package.json for dependency analysis"
     );
-  } else if (!circularResult.success && !missingScript) {
-    addAlert(
-      "code",
-      "warning",
-      "Circular dependency check failed to run",
-      (circularResult.output || circularResult.stderr || "").split("\n").slice(0, 10),
-      "Run: npm run check:circular"
-    );
+  } else if (!circularResult.success) {
+    // Non-zero exit code means circular deps were found (or script error)
+    // Check if it processed files successfully (script ran but found issues)
+    const hasResults = /Processed \d+ files/i.test(circularFullOutput);
+    if (hasResults) {
+      addAlert(
+        "code",
+        "warning",
+        "Circular dependencies detected",
+        null,
+        "Run: npm run deps:circular"
+      );
+    } else {
+      // Script failed to run
+      addAlert(
+        "code",
+        "warning",
+        "Circular dependency check failed to run",
+        (circularResult.output || circularResult.stderr || "").split("\n").slice(0, 10),
+        "Run: npm run deps:circular"
+      );
+    }
   }
+  // If circularResult.success is true (exit code 0), no circular deps - no alert needed
 }
 
 // ============================================================================
@@ -283,14 +300,9 @@ function checkSessionContext() {
     // File doesn't exist or can't be read - skip
   }
 
-  // MCP memory status (informational)
-  addAlert(
-    "session",
-    "info",
-    "MCP memory should be checked",
-    null,
-    "Run: mcp__memory__read_graph() to check for persisted context"
-  );
+  // Session #128: Removed MCP memory check
+  // Episodic Memory (automatic) handles conversation archival
+  // Serena Memory (explicit) can be used via mcp__serena__write_memory/read_memory if needed
 }
 
 // ============================================================================

@@ -97,6 +97,37 @@ context.**
 
 ## Pre-Audit Setup
 
+### Step 0: Episodic Memory Search (Session #128)
+
+Before running process/automation audit, search for context from past sessions:
+
+```javascript
+// Search for past automation audit findings
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["process audit", "automation", "hooks"],
+    limit: 5,
+  });
+
+// Search for specific workflow discussions
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["GitHub Actions", "npm scripts", "redundant"],
+    limit: 5,
+  });
+```
+
+**Why this matters:**
+
+- Compare against previous automation inventory
+- Identify recurring issues (dead scripts, redundancy)
+- Track which automations were flagged for removal
+- Prevent re-flagging intentional design decisions
+
+---
+
 ### Step 1: Check Thresholds
 
 ```bash

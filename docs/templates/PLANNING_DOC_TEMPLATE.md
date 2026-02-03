@@ -2,7 +2,8 @@
 
 **Document Version**: 1.0 **Created**: YYYY-MM-DD **Status**: PLANNING |
 IN_PROGRESS | COMPLETE | ON_HOLD | CANCELLED **Overall Completion**: X% (Y/Z
-tasks complete) **Target Completion**: YYYY-MM-DD **Last Updated**: YYYY-MM-DD
+tasks complete) **Phase**: [Foundation | Core | Enhancement | Advanced | Future]
+**Priority**: [P0 | P1 | P2 | P3] **Last Updated**: YYYY-MM-DD
 
 ---
 
@@ -44,10 +45,11 @@ for [feature/initiative name].
 
 **Timeline**:
 
-- **Started**: YYYY-MM-DD
+- **Started**: Session #[N] (YYYY-MM-DD)
 - **Current Sprint**: [Sprint name/number]
-- **Target Completion**: YYYY-MM-DD
-- **Actual Completion**: YYYY-MM-DD or "TBD"
+- **Phase**: [Foundation | Core | Enhancement | Advanced | Future]
+- **Priority**: [P0 | P1 | P2 | P3]
+- **Actual Completion**: Session #[N] or "In Progress"
 
 ---
 

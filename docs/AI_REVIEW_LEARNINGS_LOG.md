@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 13.1    | 2026-02-03 | Review #235: PR #332 Audit Documentation 6-Stage - Qodo/CI (8 items - 2 CRITICAL CI, 1 MAJOR, 4 MINOR, 1 DEFERRED). **CRITICAL CI**: YAML syntax (project.yml indentation + empty arrays), Prettier breaking episodic memory function names in 10 skills. **MAJOR**: Python process filtering tightened in stop-serena-dashboard.js. **DEFERRED**: Episodic memory systemic redesign (DEBT-0869). Active reviews #213-235.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 13.0    | 2026-02-03 | Review #227: PR #331 Audit Comprehensive Staged Execution - Qodo + CI (12 items - 4 CRITICAL CI, 5 MAJOR, 2 MINOR, 1 DEFERRED). **CRITICAL CI**: Unsafe error.message access (2), readFileSync without try/catch (2). **MAJOR**: Prototype pollution protection (safeCloneObject helper), type guard for files[0].match(), user context in audit logs, path traversal check in SKILL.md. **DEFERRED**: Unify TDMS schema (architectural). **FALSE POSITIVES**: 2 (pattern checker multi-line try/catch detection). Active reviews #180-227.                                                                                                                                                                                                                                                                                                                                                                         |
 | 12.9    | 2026-02-03 | Review #226: ai-pattern-checks.js Enhancement - CI + SonarCloud + Qodo (22 items - 3 CRITICAL CI, 7 MAJOR, 10 MINOR, 2 TRIVIAL). **CRITICAL CI**: (1) startsWith() path validation → regex; (2) Regex /g flag with .test() in loop; (3) readFileSync pattern compliance. **MAJOR**: (4-5) SonarCloud S5852 regex DoS fixes - bounded quantifiers; (6) Division by zero safePercent(); (7) File path validation; (8-10) Multi-line detection, scoped packages, query patterns. **NEW PATTERNS**: (78-81) Pattern compliance startsWith→regex, bounded quantifiers, safe percentage, exec() loop. Active reviews #180-226.                                                                                                                                                                                                                                                                                            |
 | 12.8    | 2026-02-02 | Review #225: PR #329 Audit Documentation Enhancement - SonarCloud + Qodo (57 items - 1 CRITICAL SSRF, 6 HIGH, ~45 MEDIUM/LOW). **CRITICAL**: SSRF vulnerability in check-external-links.js - block internal IPs (RFC1918, localhost, cloud metadata). **HIGH**: (1) Timeout validation for CLI args; (2) HTTP redirect handling (3xx = success); (3) 405 Method Not Allowed retry with GET; (4) .planning directory exclusion from archive candidates; (5) Regex operator precedence fix; (6) Shell redirection order fix. **CODE QUALITY**: Number.parseInt, replaceAll, Set for O(1) lookups, batched Array.push, removed unused imports, simplified duplicate checks in regex. **PARALLEL AGENT APPROACH**: Used 4 specialized agents (security-auditor, 2×code-reviewer, technical-writer) in parallel for different file types. Active reviews #180-225.                                                       |
@@ -295,8 +296,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #234
+**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #244
 
 ### When to Consolidate
 
@@ -1495,10 +1496,70 @@ Compliance + Qodo Code Suggestions
 
 ---
 
+#### Review #235: PR #332 Audit Documentation 6-Stage - Qodo/CI (2026-02-03)
+
+**Source:** Qodo/CI Review Feedback **PR:** #332
+(feature/audit-documentation-6-stage) **Suggestions:** 8 total (2 CRITICAL CI, 1
+MAJOR, 4 MINOR, 1 DEFERRED)
+
+**CRITICAL CI (2 items - CI blocking):**
+
+1. `.serena/project.yml` - YAML syntax errors: improper list indentation for
+   `languages:` array (list items must be indented under parent), and undefined
+   `base_modes`/`default_modes` values (should be explicit `[]` for empty
+   arrays)
+2. 10 skill files - Episodic memory function name broken by Prettier across
+   lines: `mcp__plugin_episodic -` / `memory_episodic -` / `memory__search` →
+   fixed with sed batch replacement
+
+**MAJOR (1 item):**
+
+4. `stop-serena-dashboard.js` - Python process filtering too broad. Generic
+   Python processes in PROCESS_ALLOWLIST could terminate unrelated Python
+   scripts. Added specific cmdLine check for `serena-dashboard.py`:
+   ```javascript
+   const isGenericPython = name === "python" || name === "python.exe";
+   if (isGenericPython) return /\bserena-dashboard\.py\b/.test(cmdLine);
+   ```
+
+**MINOR (4 items):**
+
+5. `run-alerts.js` - JSON output for cycle detection (DEFERRED - current text
+   parsing works, JSON would change expected output)
+6. `run-alerts.js` - Alert on missing circular dependency script instead of
+   silent skip → added info-level alert prompting setup
+7. `.husky/pre-commit` - Anchor canonical paths regex for robustness:
+   `docs/technical-debt/` → `^docs/technical-debt/`
+
+**DEFERRED (1 item):**
+
+8. **Redesign episodic memory as systemic feature** - Current ad-hoc integration
+   across 10+ skills. Consider: (a) pre-commit hook, (b) CLAUDE.md instruction,
+   (c) SessionStart hook. Added to DEBT-0869.
+
+**Patterns Identified:**
+
+1. **YAML list indentation**: List items (`- value`) must be indented under
+   their parent key, not at same level
+2. **YAML explicit empty arrays**: Use `key: []` not just `key:` for empty
+   arrays to avoid null/undefined parsing issues
+3. **Prettier function name splitting**: Long function names can be broken
+   across lines by Prettier - verify function call syntax after formatting
+4. **Process filtering precision**: When filtering process names (Node, Python),
+   add cmdLine pattern matching to avoid terminating unrelated processes
+
+**Resolution:**
+
+- Fixed: 6 items (2 CRITICAL, 1 MAJOR, 3 MINOR)
+- Deferred: 2 items (JSON output change, episodic memory redesign)
+- Rejected: 0 items
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #228: PR #XXX Title - Review Source (DATE)
+#### Review #236: PR #XXX Title - Review Source (DATE)
 
 
 -->

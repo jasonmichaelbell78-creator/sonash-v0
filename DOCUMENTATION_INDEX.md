@@ -71,14 +71,14 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                       | References | Last Modified |
 | ------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](CLAUDE.md)              | This document provides essential context and rules for AI as...   | ↓0 ↑8      | 2026-02-03    |
+| [AI Context & Rules for SoNash](claude.md)              | This document provides essential context and rules for AI as...   | ↓4 ↑8      | 2026-02-03    |
 | [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓10 ↑16    | 2026-02-02    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓12 ↑5     | 2026-01-17    |
 | [Development Guide](DEVELOPMENT.md)                     | -                                                                 | ↓12 ↑7     | 2026-02-02    |
-| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-02    |
-| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑13     | 2026-02-02    |
-| [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑3      | 2026-02-02    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | Unified dev dashboard for monitoring session activity, error      | ↓18 ↑17    | 2026-02-02    |
+| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-03    |
+| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑14     | 2026-02-02    |
+| [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑3      | 2026-02-03    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | Unified dev dashboard for monitoring session activity, error      | ↓19 ↑17    | 2026-02-03    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                 | ↓4 ↑5      | 2026-01-17    |
 
 ### Core Documentation (Tier 2)
@@ -91,7 +91,7 @@ _Main documentation directory_
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                                                                   | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-02-02    |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                                                   | -                                                                 | ↓3 ↑4      | 2026-02-02    |
 | [ADR-NNN: [Short Title]](docs/decisions/TEMPLATE.md)                                                                                                     | [Briefly describe the purpose of this ADR - what decision do...   | ↓1 ↑0      | 2026-01-17    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                               | This document is the **audit trail** of all AI code review l...   | ↓4 ↑2      | 2026-02-03    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                               | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-03    |
 | [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                                                                          | This guide covers Firebase App Check configuration for the S...   | ↓2 ↑0      | 2026-01-17    |
 | [Architecture Decision Records (ADRs)](docs/decisions/README.md)                                                                                         | This directory contains Architecture Decision Records (ADRs)...   | ↓0 ↑1      | 2026-02-02    |
 | [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                                                                   | Track single-session and multi-AI audit completions for thre...   | ↓1 ↑7      | 2026-02-02    |
@@ -139,7 +139,7 @@ _Main documentation directory_
 | [Session History Log](docs/SESSION_HISTORY.md)                                                                                                           | This document archives detailed session summaries from SESSI...   | ↓0 ↑1      | 2026-02-02    |
 | [SESSION_CONTEXT.md Reduction Plan](docs/plans/SESSION_CONTEXT_REDUCTION_PLAN.md)                                                                        | -                                                                 | ↓0 ↑0      | 2026-02-02    |
 | [Single-Session Audit Results](docs/audits/single-session/README.md)                                                                                     | This document serves as the index and guide for single-sessi...   | ↓0 ↑0      | 2026-02-02    |
-| [Slash Commands Reference](docs/SLASH_COMMANDS_REFERENCE.md)                                                                                             | -                                                                 | ↓1 ↑1      | 2026-02-03    |
+| [Slash Commands Reference](docs/SLASH_COMMANDS_REFERENCE.md)                                                                                             | -                                                                 | ↓1 ↑2      | 2026-02-03    |
 | [SonarCloud Cleanup Sprint Runbook](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                                                                                  | This runbook provides a repeatable process for SonarCloud an...   | ↓0 ↑0      | 2026-02-02    |
 | [SoNash Automation Audit - Improvement Opportunities](docs/audits/single-session/process/audit-2026-01-31/AUTOMATION_AUDIT_SUMMARY.md)                   | -                                                                 | ↓0 ↑0      | 2026-02-02    |
 | [SoNash Automation Audit - Improvement Opportunities](docs/audits/single-session/process/audit-2026-01-31-recovery/backup/AUTOMATION_AUDIT_SUMMARY.md)   | -                                                                 | ↓0 ↑0      | 2026-02-02    |
@@ -148,7 +148,7 @@ _Main documentation directory_
 | [SoNash Automation Improvements - Quick Reference](docs/audits/single-session/process/audit-2026-01-31/AUTOMATION_IMPROVEMENTS_INDEX.md)                 | Complete automation audit identifying 20 S3 (medium) severit...   | ↓0 ↑0      | 2026-02-02    |
 | [SoNash Automation Improvements - Quick Reference](docs/audits/single-session/process/audit-2026-01-31-recovery/backup/AUTOMATION_IMPROVEMENTS_INDEX.md) | Complete automation audit identifying 20 S3 (medium) severit...   | ↓0 ↑0      | 2026-02-02    |
 | [SoNash Documentation Plan Map](docs/PLAN_MAP.md)                                                                                                        | Provide a visual map of documentation relationships, hierarc...   | ↓0 ↑0      | 2026-02-02    |
-| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                                                                        | -                                                                 | ↓7 ↑3      | 2026-02-03    |
+| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                                                                        | -                                                                 | ↓7 ↑4      | 2026-02-03    |
 | [SoNash Engineering Productivity Audit Report](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)                                  | This audit identifies engineering productivity inefficiencie...   | ↓1 ↑0      | 2026-01-17    |
 | [SoNash Security Audit - Quick Reference Card](docs/audits/single-session/process/audit-2026-01-31/AUDIT_FINDINGS_QUICK_REFERENCE.md)                    | ```javascript                                                     | ↓0 ↑0      | 2026-02-02    |
 | [SoNash Security Audit - Quick Reference Card](docs/audits/single-session/process/audit-2026-01-31-recovery/backup/AUDIT_FINDINGS_QUICK_REFERENCE.md)    | ```javascript                                                     | ↓0 ↑0      | 2026-02-02    |
@@ -189,7 +189,7 @@ _AI agent reference docs_
 
 | Document                                                                | Description                                                     | References | Last Modified |
 | ----------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)      | This document contains detailed code patterns and anti-patte... | ↓6 ↑0      | 2026-02-02    |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)      | This document contains detailed code patterns and anti-patte... | ↓6 ↑1      | 2026-02-02    |
 | [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md) | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-02-02    |
 | [Skill and Agent Usage Policy](docs/agent_docs/SKILL_AGENT_POLICY.md)   | This document defines the policy for creating, using, and ov... | ↓0 ↑3      | 2026-01-17    |
 
@@ -212,7 +212,7 @@ _Claude Code skills_
 | [Cicd Pipeline Guide](.claude/skills/senior-devops/references/cicd_pipeline_guide.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Code Review Agent](.claude/skills/requesting-code-review/code-reviewer.md)                                                         | You are reviewing code changes for production readiness.          | ↓0 ↑0      | 2026-01-17    |
 | [Code Review Checklist](.claude/skills/code-reviewer/references/code_review_checklist.md)                                           | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
-| [Code Reviewer](.claude/skills/code-reviewer/SKILL.md)                                                                              | Complete toolkit for code reviewer with modern tools and bes...   | ↓0 ↑0      | 2026-01-17    |
+| [Code Reviewer](.claude/skills/code-reviewer/SKILL.md)                                                                              | Complete toolkit for code reviewer with modern tools and bes...   | ↓0 ↑0      | 2026-02-03    |
 | [Coding Standards](.claude/skills/code-reviewer/references/coding_standards.md)                                                     | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Common Antipatterns](.claude/skills/code-reviewer/references/common_antipatterns.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Comprehensive Automation Audit](.claude/skills/audit-process/SKILL.md)                                                             | -                                                                 | ↓0 ↑0      | 2026-02-03    |
@@ -270,7 +270,7 @@ _Claude Code skills_
 | [Senior Frontend](.claude/skills/senior-frontend/SKILL.md)                                                                          | Complete toolkit for senior frontend with modern tools and b...   | ↓0 ↑0      | 2026-01-17    |
 | [Senior Fullstack](.claude/skills/senior-fullstack/SKILL.md)                                                                        | Complete toolkit for senior fullstack with modern tools and ...   | ↓0 ↑0      | 2026-01-17    |
 | [Senior Qa](.claude/skills/senior-qa/SKILL.md)                                                                                      | Complete toolkit for senior qa with modern tools and best pr...   | ↓0 ↑0      | 2026-01-17    |
-| [Session Begin Checklist](.claude/skills/session-begin/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-02    |
+| [Session Begin Checklist](.claude/skills/session-begin/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-03    |
 | [Session Checkpoint](.claude/skills/checkpoint/SKILL.md)                                                                            | -                                                                 | ↓0 ↑0      | 2026-01-21    |
 | [Session End Checklist](.claude/skills/session-end/SKILL.md)                                                                        | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-02-02    |
 | [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)                                                              | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-03    |
@@ -283,7 +283,7 @@ _Claude Code skills_
 | [SonarCloud Cleanup Sprint](.claude/skills/sonarcloud-sprint/SKILL.md)                                                              | Automate the SonarCloud analysis and cleanup workflow:            | ↓0 ↑0      | 2026-01-21    |
 | [SonarCloud Debt Sync](.claude/skills/sync-sonarcloud-debt/SKILL.md)                                                                | -                                                                 | ↓0 ↑0      | 2026-02-02    |
 | [System Design Workflows](.claude/skills/senior-architect/references/system_design_workflows.md)                                    | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
-| [Systematic Debugging](.claude/skills/systematic-debugging/SKILL.md)                                                                | Random fixes waste time and create new bugs. Quick patches m...   | ↓0 ↑0      | 2026-01-17    |
+| [Systematic Debugging](.claude/skills/systematic-debugging/SKILL.md)                                                                | Random fixes waste time and create new bugs. Quick patches m...   | ↓0 ↑0      | 2026-02-03    |
 | [Tech Decision Guide](.claude/skills/senior-architect/references/tech_decision_guide.md)                                            | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Tech Stack Guide](.claude/skills/senior-fullstack/references/tech_stack_guide.md)                                                  | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Test Automation Patterns](.claude/skills/senior-qa/references/test_automation_patterns.md)                                         | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
@@ -310,9 +310,9 @@ _Document and audit templates_
 
 | Document                                                                                                     | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
-| [[Document Title]](docs/templates/CANONICAL_DOC_TEMPLATE.md)                                                 | -                                                               | ↓0 ↑0      | 2026-01-17    |
+| [[Document Title]](docs/templates/CANONICAL_DOC_TEMPLATE.md)                                                 | -                                                               | ↓0 ↑0      | 2026-02-03    |
 | [[Document Title]](docs/templates/FOUNDATION_DOC_TEMPLATE.md)                                                | -                                                               | ↓0 ↑4      | 2026-01-17    |
-| [[Feature/Initiative Name] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md)                                    | -                                                               | ↓0 ↑4      | 2026-01-17    |
+| [[Feature/Initiative Name] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md)                                    | -                                                               | ↓0 ↑4      | 2026-02-03    |
 | [[Project Name] Multi-AI Code Review Plan](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)             | -                                                               | ↓4 ↑2      | 2026-02-03    |
 | [[Project Name] Multi-AI Documentation Audit Plan](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md)  | This document serves as the **execution plan** for running a... | ↓1 ↑5      | 2026-02-03    |
 | [[Project Name] Multi-AI Performance Audit Plan](docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | This document serves as the **execution plan** for running a... | ↓3 ↑2      | 2026-02-03    |
@@ -452,7 +452,7 @@ _Uncategorized_
 
 | Document                                                           | Description | References | Last Modified |
 | ------------------------------------------------------------------ | ----------- | ---------- | ------------- |
-| [Generated TypeScript README](src/dataconnect-generated/README.md) | -           | ↓1 ↑1      | 2026-02-02    |
+| [Generated TypeScript README](src/dataconnect-generated/README.md) | -           | ↓1 ↑1      | 2026-02-03    |
 
 ### src > dataconnect-generated > .guides (Tier 4)
 
@@ -460,8 +460,8 @@ _Uncategorized_
 
 | Document                                                  | Description                                                     | References | Last Modified |
 | --------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Basic Usage](src/dataconnect-generated/.guides/usage.md) | Always prioritize using a supported framework over using the... | ↓0 ↑0      | 2026-02-02    |
-| [Setup](src/dataconnect-generated/.guides/setup.md)       | If the user hasn't already installed the SDK, always run the... | ↓0 ↑0      | 2026-02-02    |
+| [Basic Usage](src/dataconnect-generated/.guides/usage.md) | Always prioritize using a supported framework over using the... | ↓0 ↑0      | 2026-02-03    |
+| [Setup](src/dataconnect-generated/.guides/setup.md)       | If the user hasn't already installed the SDK, always run the... | ↓0 ↑0      | 2026-02-03    |
 
 ### src > dataconnect-generated > react (Tier 4)
 
@@ -469,7 +469,7 @@ _Uncategorized_
 
 | Document                                                            | Description | References | Last Modified |
 | ------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Generated React README](src/dataconnect-generated/react/README.md) | -           | ↓1 ↑1      | 2026-02-02    |
+| [Generated React README](src/dataconnect-generated/react/README.md) | -           | ↓1 ↑1      | 2026-02-03    |
 
 ---
 
@@ -481,26 +481,26 @@ Documents that are linked to most frequently:
 
 | Document                                                                                                               | Inbound Links | Referenced By                                                                    |
 | ---------------------------------------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------------- |
-| [SoNash Product Roadmap](ROADMAP.md)                                                                                   | 18            | AI_WORKFLOW, ARCHITECTURE, CLAUDE +15 more                                       |
+| [SoNash Product Roadmap](ROADMAP.md)                                                                                   | 19            | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +16 more                                  |
 | [Security &amp; Privacy Guide](docs/SECURITY.md)                                                                       | 13            | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +10 more                                  |
-| [Architecture Documentation](ARCHITECTURE.md)                                                                          | 12            | AI_WORKFLOW, CLAUDE, DEVELOPMENT +9 more                                         |
+| [Architecture Documentation](ARCHITECTURE.md)                                                                          | 12            | AI_WORKFLOW, DEVELOPMENT, README +9 more                                         |
 | [Development Guide](DEVELOPMENT.md)                                                                                    | 12            | HOOKS, AI_WORKFLOW, ARCHITECTURE +9 more                                         |
 | [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                                         | 12            | AI_WORKFLOW, README, FIREBASE_CHANGE_POLICY +9 more                              |
-| [AI Workflow Guide](AI_WORKFLOW.md)                                                                                    | 10            | HOOKS, CLAUDE, README +7 more                                                    |
+| [AI Workflow Guide](AI_WORKFLOW.md)                                                                                    | 10            | HOOKS, README, SESSION_CONTEXT +7 more                                           |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                                 | 8             | AI_WORKFLOW, README, SESSION_CONTEXT +5 more                                     |
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                                       | 8             | DOCUMENTATION_STANDARDS, PROCEDURE, MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE +5 more   |
 | [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                                      | 7             | AI_WORKFLOW, DOCUMENT_DEPENDENCIES, MULTI_AI_REVIEW_COORDINATOR +4 more          |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                                 | 7             | ARCHITECTURE, DEVELOPMENT, README +4 more                                        |
-| [Session Context](SESSION_CONTEXT.md)                                                                                  | 6             | AI_WORKFLOW, CLAUDE, ROADMAP +3 more                                             |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                                     | 6             | CLAUDE, README, AI_REVIEW_LEARNINGS_LOG +3 more                                  |
+| [Session Context](SESSION_CONTEXT.md)                                                                                  | 6             | AI_WORKFLOW, ROADMAP, claude +3 more                                             |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                                     | 6             | README, claude, AI_REVIEW_LEARNINGS_LOG +3 more                                  |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                                 | 6             | DOCUMENTATION_STANDARDS, MULTI_AI_REVIEW_COORDINATOR, FINAL_SYSTEM_AUDIT +3 more |
 | [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                                              | 5             | README, ROADMAP, ROADMAP_LOG +2 more                                             |
 | [Testing Plan](docs/TESTING_PLAN.md)                                                                                   | 5             | ARCHITECTURE, DEVELOPMENT, README +2 more                                        |
 | [Technical Debt Management System \(TDMS\) - Implementation Plan](docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md) | 5             | README, FINAL_SYSTEM_AUDIT, PHASE_18_AUDIT +2 more                               |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                                                                                   | 4             | AI_WORKFLOW, README, ROADMAP +1 more                                             |
+| [AI Context &amp; Rules for SoNash](claude.md)                                                                         | 4             | README, AI_REVIEW_LEARNINGS_LOG, SLASH_COMMANDS_REFERENCE +1 more                |
 | [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                             | 4             | AI_REVIEW_PROCESS, MULTI_AI_REVIEW_COORDINATOR, REVIEW_POLICY_INDEX +1 more      |
 | [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md)                                                     | 4             | AI_WORKFLOW, README, JSONL_SCHEMA_STANDARD +1 more                               |
-| [PR Workflow Checklist - MANDATORY FOR ALL PHASES](docs/PR_WORKFLOW_CHECKLIST.md)                                      | 4             | AI_WORKFLOW, README, REVIEW_POLICY_INDEX +1 more                                 |
 
 ### Most Linking Documents (Outbound Links)
 
@@ -510,12 +510,12 @@ Documents that link to other documents most frequently:
 | ------------------------------------------------------------------------------------------------------------- | -------------- |
 | [SoNash Product Roadmap](ROADMAP.md)                                                                          | 17             |
 | [AI Workflow Guide](AI_WORKFLOW.md)                                                                           | 16             |
+| [SoNash - Sober Nashville Recovery Notebook](README.md)                                                       | 14             |
 | [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md)                                            | 14             |
-| [SoNash - Sober Nashville Recovery Notebook](README.md)                                                       | 13             |
 | [Documentation Inventory](docs/README.md)                                                                     | 12             |
 | [Session Context](SESSION_CONTEXT.md)                                                                         | 9              |
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                            | 9              |
-| [AI Context &amp; Rules for SoNash](CLAUDE.md)                                                                | 8              |
+| [AI Context &amp; Rules for SoNash](claude.md)                                                                | 8              |
 | [Development Guide](DEVELOPMENT.md)                                                                           | 7              |
 | [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                        | 7              |
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                              | 7              |
@@ -526,8 +526,8 @@ Documents that link to other documents most frequently:
 | [\[Project Name\] Multi-AI Documentation Audit Plan](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md) | 5              |
 | [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md)                                           | 4              |
 | [Admin Panel Security &amp; Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)    | 4              |
+| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                             | 4              |
 | [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md)                                              | 4              |
-| [Security &amp; Privacy Guide](docs/SECURITY.md)                                                              | 4              |
 
 ---
 
@@ -535,7 +535,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**209 orphaned documents:**
+**208 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [backend architect](.claude/agents/backend-architect.md)
@@ -672,7 +672,6 @@ Documents with no inbound links (not referenced by any other document):
 - [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)
 - [Copilot Instructions - SoNash Recovery Notebook](.github/copilot-instructions.md)
 - [pull request template](.github/pull_request_template.md)
-- [AI Context &amp; Rules for SoNash](CLAUDE.md)
 - [SoNash - Sober Nashville Recovery Notebook](README.md)
 - [ROADMAP Full Analysis Summary](analysis/FULL_ANALYSIS_SUMMARY.md)
 - [ROADMAP Deep Analysis - Integration Summary](analysis/INTEGRATION_SUMMARY.md)
@@ -917,13 +916,13 @@ Documents with no inbound links (not referenced by any other document):
 | 159 | [analysis/pass5_effort.md](analysis/pass5_effort.md)                                                                                                                                                           | Pass 5: Effort Estimation Alignment                                | 4    | COMPLETE \| **Last Updated:** 2026-01-27                                        |
 | 160 | [analysis/README.md](analysis/README.md)                                                                                                                                                                       | ROADMAP Analysis                                                   | 4    | -                                                                               |
 | 161 | [ARCHITECTURE.md](ARCHITECTURE.md)                                                                                                                                                                             | Architecture Documentation                                         | 1    | ACTIVE **Last Updated:** 2026-01-02                                             |
-| 162 | [CLAUDE.md](CLAUDE.md)                                                                                                                                                                                         | AI Context &amp; Rules for SoNash                                  | 1    | -                                                                               |
+| 162 | [claude.md](claude.md)                                                                                                                                                                                         | AI Context &amp; Rules for SoNash                                  | 1    | -                                                                               |
 | 163 | [DEVELOPMENT.md](DEVELOPMENT.md)                                                                                                                                                                               | Development Guide                                                  | 1    | ACTIVE **Last Updated:** 2026-02-02                                             |
 | 164 | [docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                                                                                                   | Admin Panel Security &amp; Monitoring Requirements                 | 2    | -                                                                               |
 | 165 | [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md)                                                                                                                                           | Code Review Patterns Reference                                     | 3    | -                                                                               |
 | 166 | [docs/agent_docs/SECURITY_CHECKLIST.md](docs/agent_docs/SECURITY_CHECKLIST.md)                                                                                                                                 | Security Checklist for Scripts                                     | 3    | -                                                                               |
 | 167 | [docs/agent_docs/SKILL_AGENT_POLICY.md](docs/agent_docs/SKILL_AGENT_POLICY.md)                                                                                                                                 | Skill and Agent Usage Policy                                       | 3    | Active **Last Updated:** 2026-01-15                                             |
-| 168 | [docs/AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                                                                             | AI Review Learnings Log                                            | 2    | ✅ Current **Next consolidation due:** After Review #234                        |
+| 168 | [docs/AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                                                                             | AI Review Learnings Log                                            | 2    | ✅ Current **Next consolidation due:** After Review #244                        |
 | 169 | [docs/AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)                                                                                                                                                         | 🤖 AI Code Review Process                                          | 2    | -                                                                               |
 | 170 | [docs/APPCHECK_SETUP.md](docs/APPCHECK_SETUP.md)                                                                                                                                                               | App Check Setup Guide                                              | 2    | Active **Last Updated:**                                                        |
 | 171 | [docs/AUDIT_TRACKER.md](docs/AUDIT_TRACKER.md)                                                                                                                                                                 | Audit Tracker                                                      | 2    | -                                                                               |

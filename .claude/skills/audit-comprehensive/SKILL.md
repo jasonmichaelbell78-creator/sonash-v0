@@ -88,6 +88,43 @@ This skill orchestrates a complete codebase audit across all 6 domains:
 
 ## Pre-Flight Validation
 
+**Step 0: Episodic Memory Search (Session #128)**
+
+Before running audits, search for context from past audit sessions:
+
+```javascript
+// Search for past comprehensive audits
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["comprehensive audit", "findings", "patterns"],
+    limit: 5,
+  });
+
+// Search for specific domain context
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["security audit", "S0", "critical"],
+    limit: 5,
+  });
+```
+
+**Why this matters:**
+
+- Compare against previous audit findings
+- Identify recurring issues (may indicate architectural debt)
+- Avoid flagging known false positives
+- Track improvement/regression trends
+
+**Use findings to:**
+
+1. Note which S0/S1 issues from past audits are still open
+2. Identify patterns that keep appearing (root cause needed)
+3. Set context for aggregator on known false positives
+
+---
+
 **Step 1: Verify Skills Exist**
 
 Check that all 6 audit skills are available:

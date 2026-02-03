@@ -148,8 +148,9 @@ Every update should:
 | [Item 3]   | [ID3] | [Brief description] | **[STATUS]** | Z%       | P2       | [Deps]       |
 
 **Overall Progress**: X/Y items complete (Z%) **Estimated Total Effort**: [X-Y
-hours | weeks | months] **Target Completion**: YYYY-MM-DD **Highest Risk
-Items**: [List critical items]
+hours | weeks | months] **Phase**: [Foundation | Core | Enhancement | Advanced |
+Future] **Priority**: [P0 | P1 | P2 | P3] **Highest Risk Items**: [List critical
+items]
 
 ---
 

@@ -28,7 +28,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const PORT = 24282;
-const PROCESS_ALLOWLIST = ["node", "node.exe", "serena", "claude"];
+const PROCESS_ALLOWLIST = ["node", "node.exe", "serena", "claude", "python", "python.exe"];
 const LOG_FILE = path.join(__dirname, ".serena-termination.log");
 
 // User context for audit trail (Qodo Review #198 follow-up - comprehensive audit trails)
@@ -222,6 +222,11 @@ function isAllowedProcess(processInfo) {
   // (Qodo Review #198 follow-up - prevent terminating unrelated Node.js processes)
   const isGenericNode = name === "node" || name === "node.exe";
   if (isGenericNode) return cmdLineMatch;
+
+  // Never allow killing generic Python processes unless running serena-dashboard.py
+  // (Qodo PR #332 Review #235 - prevent terminating unrelated Python processes)
+  const isGenericPython = name === "python" || name === "python.exe";
+  if (isGenericPython) return /\bserena-dashboard\.py\b/.test(cmdLine);
 
   return nameAllowed && cmdLineMatch;
 }
