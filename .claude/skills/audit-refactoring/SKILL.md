@@ -249,36 +249,60 @@ Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or
 
 Create file: `docs/audits/single-session/refactoring/audit-[YYYY-MM-DD].jsonl`
 
-Each line (UPDATED SCHEMA with confidence and verification):
+**CRITICAL - Use JSONL_SCHEMA_STANDARD.md format:**
 
 ```json
 {
-  "id": "REF-001",
-  "category": "GodObject|Duplication|Complexity|Architecture|TechDebt",
+  "category": "refactoring",
+  "title": "Short specific title",
+  "fingerprint": "refactoring::path/to/file.ts::identifier",
   "severity": "S0|S1|S2|S3",
   "effort": "E0|E1|E2|E3",
-  "confidence": "HIGH|MEDIUM|LOW",
-  "verified": "DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY",
-  "file": "path/to/file.ts",
-  "line": 123,
-  "title": "Short description",
-  "description": "Detailed issue",
-  "metrics": { "lines": 450, "functions": 25, "complexity": 45 },
-  "recommendation": "How to refactor",
-  "batch_fixable": true,
+  "confidence": 90,
+  "files": ["path/to/file.ts:123"],
+  "why_it_matters": "1-3 sentences explaining refactoring need",
+  "suggested_fix": "Concrete refactoring direction",
+  "acceptance_tests": ["Array of verification steps"],
   "evidence": ["code structure info", "wc -l output", "deps:circular output"],
-  "cross_ref": "sonarqube|deps_circular|deps_unused|MANUAL_ONLY"
+  "symbols": ["ClassName", "functionName"],
+  "duplication_cluster": {
+    "is_cluster": true,
+    "cluster_summary": "Pattern description",
+    "instances": [{ "file": "path1.ts", "symbol": "name" }]
+  }
 }
 ```
 
-**⚠️ REQUIRED FIELDS (for deduplication/cross-reference):**
+**For S0/S1 findings, ALSO include verification_steps:**
 
-- `file` - REQUIRED: Full path from repo root (e.g.,
-  `components/admin/users-tab.tsx`)
-- `line` - REQUIRED: Specific line number where issue occurs (use line 1 if
-  file-wide)
-- These fields enable the aggregator to match findings against existing ROADMAP
-  items
+```json
+{
+  "verification_steps": {
+    "first_pass": {
+      "method": "grep|tool_output|file_read|code_search",
+      "evidence_collected": ["initial evidence"]
+    },
+    "second_pass": {
+      "method": "contextual_review|exploitation_test|manual_verification",
+      "confirmed": true,
+      "notes": "Confirmation notes"
+    },
+    "tool_confirmation": {
+      "tool": "sonarcloud|typescript|patterns_check|NONE",
+      "reference": "Tool output or NONE justification"
+    }
+  }
+}
+```
+
+**⚠️ REQUIRED FIELDS (per JSONL_SCHEMA_STANDARD.md):**
+
+- `category` - MUST be `refactoring` (normalized from
+  GodObject/Duplication/etc.)
+- `fingerprint` - Format: `<category>::<primary_file>::<identifier>`
+- `files` - Array with file paths (include line as `file.ts:123`)
+- `confidence` - Number 0-100 (not string)
+- `acceptance_tests` - Non-empty array of verification steps
 
 **3. Markdown Report (save to file):**
 

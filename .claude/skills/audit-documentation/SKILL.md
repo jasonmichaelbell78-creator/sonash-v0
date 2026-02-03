@@ -161,18 +161,18 @@ For each internal link from stage-1-links.json:
 3. Detect circular references (A→B→C→A)
 
 Output: ${AUDIT_DIR}/stage-2-internal-links.jsonl
-JSONL schema per finding:
+JSONL schema per finding (JSONL_SCHEMA_STANDARD.md format):
 {
-  "id": "DOC-LINK-INT-...",
   "category": "documentation",
+  "title": "Broken internal link to target.md",
+  "fingerprint": "documentation::source.md::broken-link-target",
   "severity": "S1|S2",
   "effort": "E0",
-  "confidence": "HIGH",
-  "file": "source.md",
-  "line": 123,
-  "title": "Broken internal link",
-  "description": "Link to [target.md] not found",
-  "recommendation": "Update or remove broken link",
+  "confidence": 90,
+  "files": ["source.md:123"],
+  "why_it_matters": "Broken links frustrate readers and indicate stale documentation",
+  "suggested_fix": "Update link to correct path or remove if target no longer exists",
+  "acceptance_tests": ["Link resolves correctly", "No 404 when clicking"],
   "evidence": ["target: path.md", "resolved: /full/path.md"]
 }
 ```

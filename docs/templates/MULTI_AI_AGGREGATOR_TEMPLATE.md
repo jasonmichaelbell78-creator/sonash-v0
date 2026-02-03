@@ -1,6 +1,6 @@
 # Multi-AI Audit Aggregator Template
 
-**Document Version:** 2.5 **Last Updated:** 2026-02-02
+**Document Version:** 2.6 **Last Updated:** 2026-02-03
 
 ---
 
@@ -565,10 +565,96 @@ After completing aggregation (either Tier-1 or Tier-2), perform these updates:
 
 ---
 
+## Triage & Roadmap Integration
+
+After TDMS intake, triage new items into the roadmap:
+
+### 1. Review New Items
+
+Check newly added DEBT-XXXX items:
+
+```bash
+# View recent additions
+tail -50 docs/technical-debt/MASTER_DEBT.jsonl | jq -r '[.id, .severity, .category, .title[:60]] | @tsv'
+```
+
+### 2. Priority Scoring
+
+Beyond S0-S3 severity, use composite scoring:
+
+| Factor         | Weight | Calculation                  |
+| -------------- | ------ | ---------------------------- |
+| Severity       | 40%    | S0=100, S1=50, S2=20, S3=5   |
+| Cross-domain   | 20%    | +50% per additional domain   |
+| Effort inverse | 20%    | E0=4x, E1=2x, E2=1x, E3=0.5x |
+| Dependency     | 10%    | +25% if blocks other items   |
+| File hotspot   | 10%    | +25% if file has 3+ findings |
+
+**Formula:**
+
+```
+priority = severity_score × cross_domain_mult × effort_inv × dep_mult × hotspot_mult
+```
+
+### 3. Track Assignment Rules
+
+Items auto-assign based on category + file patterns:
+
+| Category      | File Pattern            | Track    |
+| ------------- | ----------------------- | -------- |
+| security      | \*                      | Track-S  |
+| performance   | \*                      | Track-P  |
+| process       | \*                      | Track-D  |
+| refactoring   | \*                      | M2.3-REF |
+| documentation | \*                      | M1.5     |
+| code-quality  | scripts/, .claude/      | Track-E  |
+| code-quality  | .github/                | Track-D  |
+| code-quality  | tests/                  | Track-T  |
+| code-quality  | functions/              | M2.2     |
+| code-quality  | components/, lib/, app/ | M2.1     |
+
+See `docs/technical-debt/views/unplaced-items.md` for current assignments.
+
+### 4. Update ROADMAP.md
+
+Add DEBT-XXXX references to appropriate tracks:
+
+**Individual items:**
+
+```markdown
+- [ ] DEBT-0875: Firebase credentials written to disk (S1)
+```
+
+**Bulk items:**
+
+```markdown
+- [ ] DEBT-0869 through DEBT-0880: Process automation gaps (S2, bulk)
+```
+
+### 5. Consistency Check
+
+```bash
+node scripts/debt/sync-roadmap-refs.js --check-only
+```
+
+Reports orphaned refs, unplaced items, and status mismatches.
+
+### 6. Review Cadence
+
+| Trigger                  | Action                            |
+| ------------------------ | --------------------------------- |
+| After multi-AI audit     | Full triage of all new items      |
+| After single-model audit | Triage items from that audit      |
+| Weekly                   | Check unplaced-items.md for drift |
+| Before sprint planning   | Review S0/S1 items for inclusion  |
+
+---
+
 ## Version History
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                   | Author   |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 2.6     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula, track assignment rules, and review cadence                                                                                                                                                                                                                                                      | Claude   |
 | 2.5     | 2026-02-02 | Added AI_HEALTH_SCORE.json output with factor weights (hallucination rate, test validity, error handling, consistency, documentation drift). Added cross-reference AI findings section.                                                                                                                                                                                   | Claude   |
 | 2.4     | 2026-01-17 | Added Post-Aggregation Actions section with roadmap update instructions; linked to `npm run aggregate:audit-findings` for automatic MASTER_ISSUE_LIST.md and ROADMAP.md updates                                                                                                                                                                                           | Claude   |
 | 2.3     | 2026-01-06 | Review #68: Added empty files[] fallback to sorting; Varied bullet starters in output format section; Capitalized Markdown consistently                                                                                                                                                                                                                                   | Claude   |

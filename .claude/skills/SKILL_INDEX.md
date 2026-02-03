@@ -20,7 +20,7 @@ Quick reference for all available Claude Code skills organized by category.
 
 | Skill                  | Description                                       |
 | ---------------------- | ------------------------------------------------- |
-| `/audit-comprehensive` | Run all 6 audit domains in parallel               |
+| `/audit-comprehensive` | Run all 7 audit domains in parallel               |
 | `/audit-code`          | Code quality audit (complexity, patterns)         |
 | `/audit-documentation` | Documentation coverage and quality                |
 | `/audit-performance`   | Performance bottlenecks and optimization          |

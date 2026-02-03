@@ -62,10 +62,10 @@ Our documentation follows a 5-tier hierarchy (see
 
 ### Overview
 
-The project uses a **6-category, 2-tier aggregation framework** for multi-AI
+The project uses a **7-category, 2-tier aggregation framework** for multi-AI
 code reviews and audits:
 
-**6 Audit Categories:**
+**7 Audit Categories:**
 
 1. Code Review (general code quality, duplication, complexity)
 2. Security Audit (including dependency security & supply chain)
@@ -73,6 +73,8 @@ code reviews and audits:
 4. Refactoring Audit (technical debt, SonarQube issues)
 5. Documentation Audit (cross-references, staleness, coverage)
 6. Process/Automation Audit (CI/CD, hooks, scripts, triggers)
+7. Engineering-Productivity Audit (developer experience, tooling, offline
+   support)
 
 **2-Tier Aggregation:**
 

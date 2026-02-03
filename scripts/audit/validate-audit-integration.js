@@ -108,6 +108,7 @@ const VALID_CATEGORIES = [
   "documentation",
   "process",
   "refactoring",
+  "engineering-productivity",
 ];
 const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
 const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
