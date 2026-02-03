@@ -76,9 +76,14 @@ function validatePackageJsonPath(packageJsonPath) {
     }
 
     // Check path doesn't escape project directory using path.relative()
+    // On Windows, different-drive paths yield absolute "rel" (e.g., "C:\foo")
+    // Empty rel means same dir - OK; add explicit check per pattern compliance
     const rel = path.relative(cwd, real);
-    if (/^\.\.(?:[\\/]|$)/.test(rel)) {
-      return null; // Path traversal attempt
+    if (
+      rel !== "" &&
+      (path.isAbsolute(rel) || /^[A-Za-z]:[\\/]/.test(rel) || /^\.\.(?:[\\/]|$)/.test(rel))
+    ) {
+      return null; // Path traversal / cross-drive attempt
     }
 
     return real;
@@ -147,16 +152,21 @@ function checkImportExists(importName, packageJsonPath = "package.json") {
   }
 
   // Handle common path aliases (e.g., Next.js/TS "@/..." or "~/...")
-  // Addresses [12] path aliases with containment check (R2 security fix)
+  // Addresses [12] path aliases with containment check (R2/R3 security fix)
   // Using regex instead of startsWith() to avoid pattern compliance false positives
   if (/^@\//.test(importName) || /^~\//.test(importName)) {
+    const { realpathSync } = require("node:fs");
     const cwd = process.cwd();
     const rel = importName.slice(2);
     const base = path.resolve(cwd, rel);
 
-    // Prevent path traversal outside project root (e.g., @/../.ssh/id_rsa)
+    // Prevent path traversal outside project root (R3: Windows cross-drive check)
     const baseRel = path.relative(cwd, base);
-    if (/^\.\.(?:[\\/]|$)/.test(baseRel)) {
+    if (
+      path.isAbsolute(baseRel) ||
+      /^[A-Za-z]:[\\/]/.test(baseRel) ||
+      /^\.\.(?:[\\/]|$)/.test(baseRel)
+    ) {
       return { exists: false, type: null };
     }
 
@@ -171,7 +181,23 @@ function checkImportExists(importName, packageJsonPath = "package.json") {
       path.join(base, "index.js"),
       path.join(base, "index.jsx"),
     ];
-    if (candidates.some((p) => existsSync(p))) {
+
+    // R3: Check symlink targets stay within project root
+    const isContainedRealPath = (p) => {
+      try {
+        const real = realpathSync(p);
+        const relReal = path.relative(cwd, real);
+        return (
+          !path.isAbsolute(relReal) &&
+          !/^[A-Za-z]:[\\/]/.test(relReal) &&
+          !/^\.\.(?:[\\/]|$)/.test(relReal)
+        );
+      } catch {
+        return false;
+      }
+    };
+
+    if (candidates.some((p) => existsSync(p) && isContainedRealPath(p))) {
       return { exists: true, type: "path-alias" };
     }
     return { exists: false, type: null };
@@ -184,16 +210,21 @@ function checkImportExists(importName, packageJsonPath = "package.json") {
   }
 
   // Absolute path imports - treat as project-root-relative, not filesystem-absolute
-  // Addresses [10] with containment check (R2 security fix)
+  // Addresses [10] with containment check (R2/R3 security fix)
   if (/^[/\\]/.test(importName)) {
+    const { realpathSync } = require("node:fs");
     const cwd = process.cwd();
     // Strip leading slashes and treat as project-relative
     const spec = importName.replace(/^[/\\]+/, "");
     const abs = path.resolve(cwd, spec);
 
-    // Prevent path traversal outside project root
+    // Prevent path traversal outside project root (R3: Windows cross-drive check)
     const absRel = path.relative(cwd, abs);
-    if (/^\.\.(?:[\\/]|$)/.test(absRel)) {
+    if (
+      path.isAbsolute(absRel) ||
+      /^[A-Za-z]:[\\/]/.test(absRel) ||
+      /^\.\.(?:[\\/]|$)/.test(absRel)
+    ) {
       return { exists: false, type: null };
     }
 
@@ -208,7 +239,23 @@ function checkImportExists(importName, packageJsonPath = "package.json") {
       path.join(abs, "index.js"),
       path.join(abs, "index.jsx"),
     ];
-    if (candidates.some((p) => existsSync(p))) {
+
+    // R3: Check symlink targets stay within project root
+    const isContainedRealPath = (p) => {
+      try {
+        const real = realpathSync(p);
+        const relReal = path.relative(cwd, real);
+        return (
+          !path.isAbsolute(relReal) &&
+          !/^[A-Za-z]:[\\/]/.test(relReal) &&
+          !/^\.\.(?:[\\/]|$)/.test(relReal)
+        );
+      } catch {
+        return false;
+      }
+    };
+
+    if (candidates.some((p) => existsSync(p) && isContainedRealPath(p))) {
       return { exists: true, type: "absolute-path" };
     }
     return { exists: false, type: null };
