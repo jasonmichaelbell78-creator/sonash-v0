@@ -1,9 +1,104 @@
 ---
 name: audit-performance
 description: Run a single-session performance audit on the codebase
+supports_parallel: true
+fallback_available: true
+estimated_time_parallel: 20 min
+estimated_time_sequential: 50 min
 ---
 
 # Single-Session Performance Audit
+
+## Execution Mode Selection
+
+| Condition                                 | Mode       | Time    |
+| ----------------------------------------- | ---------- | ------- |
+| Task tool available + no context pressure | Parallel   | ~20 min |
+| Task tool unavailable                     | Sequential | ~50 min |
+| Context running low (<20% remaining)      | Sequential | ~50 min |
+| User requests sequential                  | Sequential | ~50 min |
+
+---
+
+## Section A: Parallel Architecture (2 Agents)
+
+**When to use:** Task tool available, sufficient context budget
+
+### Agent 1: bundle-and-rendering
+
+**Focus Areas:**
+
+- Bundle Size & Loading (large deps, code splitting, dynamic imports)
+- Rendering Performance (re-renders, memoization, virtualization)
+- Core Web Vitals (LCP, INP, CLS optimization)
+
+**Files:**
+
+- `app/**/*.tsx` (pages, layouts)
+- `components/**/*.tsx`
+- `package.json` (dependencies)
+- `next.config.mjs`
+
+### Agent 2: data-and-memory
+
+**Focus Areas:**
+
+- Data Fetching & Caching (query optimization, caching strategy)
+- Memory Management (effect cleanup, subscription leaks)
+- Offline Support (offline state, sync strategy)
+
+**Files:**
+
+- `lib/**/*.ts` (services, utilities)
+- `hooks/**/*.ts` (custom hooks)
+- Components with `useEffect`, `onSnapshot`
+- Service worker, cache configurations
+
+### Parallel Execution Command
+
+```markdown
+Invoke both agents in a SINGLE Task message:
+
+Task 1: bundle-and-rendering agent - audit bundle size, rendering, Core Web
+Vitals Task 2: data-and-memory agent - audit data fetching, memory, offline
+support
+```
+
+### Coordination Rules
+
+1. Each agent writes findings to separate JSONL section
+2. Bundle findings include estimated KB savings
+3. Memory findings include leak detection results
+4. Both agents note cross-cutting concerns
+
+---
+
+## Section B: Sequential Fallback (Single Agent)
+
+**When to use:** Task tool unavailable, context limits, or user preference
+
+**Execution Order:**
+
+1. AI Performance Patterns (high-impact AI-generated issues) - 10 min
+2. Bundle & Loading - 15 min
+3. Data Fetching - 10 min
+4. Remaining categories - 15 min
+
+**Total:** ~50 min (vs ~20 min parallel)
+
+### Checkpoint Format
+
+```json
+{
+  "started_at": "ISO timestamp",
+  "categories_completed": ["Bundle", "Rendering"],
+  "current_category": "DataFetch",
+  "findings_count": 12,
+  "last_file_written": "stage-2-findings.jsonl"
+}
+```
+
+---
 
 ## Pre-Audit Validation
 
@@ -76,6 +171,16 @@ If outdated, note discrepancies but proceed with current values.
    - Offline-first data patterns (queue writes, batch sync)
    - Service worker caching strategy
    - Offline testability (can app function without network?)
+
+7. AI Performance Patterns (AI-Codebase Specific - NEW 2026-02-02):
+   - Naive Data Fetching: AI defaults to fetch-all then filter client-side (S1)
+   - Missing Pagination: AI often forgets pagination for lists (S2)
+   - Redundant Re-Renders: AI-generated components without memo/useMemo (S2)
+   - Duplicate API Calls: Same data fetched in multiple places (S2)
+   - Sync Where Async Needed: AI sometimes uses sync file ops in Node.js (S2)
+   - Over-Fetching: Fetching entire documents when only fields needed (S2)
+   - Missing Loading States: No suspense boundaries or loading indicators (S2)
+   - Unbounded Queries: Firestore queries without limit() (S1)
 
 **For each category:**
 

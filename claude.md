@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.6 **Last Updated:** 2026-01-28
+**Document Version:** 3.7 **Last Updated:** 2026-02-02
 
 ---
 
@@ -124,24 +124,113 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 
 ### PRE-TASK (before starting work)
 
-| Trigger                       | Action                       | Tool  |
-| ----------------------------- | ---------------------------- | ----- |
-| Bug/error/unexpected behavior | `systematic-debugging`       | Skill |
-| Exploring unfamiliar code     | `Explore` agent              | Task  |
-| Multi-step implementation     | `Plan` agent                 | Task  |
-| Security/auth/sensitive data  | `security-auditor` agent     | Task  |
-| New documentation             | `documentation-expert` agent | Task  |
-| UI/frontend work              | `frontend-design` skill      | Skill |
+| Trigger                       | Action                       | Tool  | Parallel? |
+| ----------------------------- | ---------------------------- | ----- | --------- |
+| Bug/error/unexpected behavior | `systematic-debugging`       | Skill | No        |
+| Exploring unfamiliar code     | `Explore` agent              | Task  | No        |
+| Multi-step implementation     | `Plan` agent                 | Task  | No        |
+| Security/auth (no S0/S1)      | `security-auditor` agent     | Task  | Yes       |
+| New documentation             | `documentation-expert` agent | Task  | Yes       |
+| UI/frontend work              | `frontend-design` skill      | Skill | Yes       |
+| Code review <12 items         | `code-reviewer` agent        | Task  | No        |
+| Code review ≥12 items         | Multiple agents              | Task  | Yes       |
+| Audits (comprehensive)        | Domain audits                | Task  | Yes       |
 
 ### POST-TASK (before committing)
 
-| What You Did        | Action                       | Tool |
-| ------------------- | ---------------------------- | ---- |
-| Wrote/modified code | `code-reviewer` agent        | Task |
-| New documentation   | `documentation-expert` agent | Task |
-| Security changes    | `security-auditor` agent     | Task |
+| What You Did        | Action                       | Tool | Parallel? |
+| ------------------- | ---------------------------- | ---- | --------- |
+| Wrote/modified code | `code-reviewer` agent        | Task | See above |
+| New documentation   | `documentation-expert` agent | Task | Yes       |
+| Security changes    | `security-auditor` agent     | Task | See above |
 
 **Session End**: Run `/session-end` for full audit checklist.
+
+### 6.3 Parallelization Decision Matrix
+
+**When to Use Parallel Agents:**
+
+Use PARALLEL execution when **ALL** criteria are met:
+
+| Criterion         | Threshold           |
+| ----------------- | ------------------- |
+| Total items       | ≥ 12                |
+| Distinct files    | ≥ 3                 |
+| Concern areas     | ≥ 2                 |
+| Security severity | None are S0/S1      |
+| Dependencies      | Items are unrelated |
+
+**Max concurrent agents:** 4 (prevents context overload)
+
+**When to Use Sequential:**
+
+- < 12 items total
+- Issues in 1-2 files only
+- S0/S1 security issues present (require immediate, focused attention)
+- Items have dependencies (A → B → C)
+- Simple/straightforward fixes
+
+### 6.4 Agent Grouping Strategy
+
+**Group by Concern Area:**
+
+| Concern       | Primary Agent          |
+| ------------- | ---------------------- |
+| Security      | `security-auditor`     |
+| Testing       | `test-engineer`        |
+| Performance   | `performance-engineer` |
+| Documentation | `documentation-expert` |
+| Architecture  | `backend-architect`    |
+| Code Quality  | `code-reviewer`        |
+| UI/Frontend   | `frontend-developer`   |
+
+**Batching Algorithm:**
+
+1. Count items per concern area
+2. If 1 area has ≥60% of items → single agent
+3. Otherwise, distribute across 2-4 agents
+4. Target 4-8 items per agent
+
+### 6.5 Parallel Agent Coordination
+
+**Execution Protocol:**
+
+1. **Invoke** all agents in SINGLE Task message (parallel)
+2. **Each agent** receives: file list, issue numbers, awareness of other agents
+3. **Agents work independently** (no inter-agent communication)
+4. **Collect results** when all complete
+5. **Verify** no overlapping file edits
+6. **Merge** in priority order (CRITICAL first)
+
+**Conflict Resolution:**
+
+If 2+ agents modified same file:
+
+1. Re-read original file
+2. Apply CRITICAL fixes first
+3. Re-read, apply remaining fixes
+4. Verify merged result compiles/tests pass
+
+**Escalation Triggers:**
+
+| Situation            | Action              |
+| -------------------- | ------------------- |
+| Agent exceeds 30 min | Resume next session |
+| 3+ file conflicts    | Re-run sequentially |
+| Agent returns errors | Log, defer, notify  |
+
+### 6.6 Agent Capacity Reference
+
+| Agent                  | Items/Session | Speed  | Best For          |
+| ---------------------- | ------------- | ------ | ----------------- |
+| `security-auditor`     | 8-12          | Fast   | Critical path     |
+| `code-reviewer`        | 10-15         | Medium | Broadest scope    |
+| `test-engineer`        | 5-8           | Slow   | Deep analysis     |
+| `documentation-expert` | 8-12          | Fast   | Low risk          |
+| `backend-architect`    | 3-5           | Slow   | Complex decisions |
+| `frontend-developer`   | 6-10          | Medium | UI components     |
+| `performance-engineer` | 3-7           | Slow   | Optimization      |
+| `debugger`             | 5-9           | Medium | Forensic work     |
 
 ## 7. Context Preservation
 
@@ -183,18 +272,19 @@ Choice:** What was selected **Implementation:** Link to PR/commit/roadmap
 
 ## Version History
 
-| Version | Date       | Description                                                                         |
-| ------- | ---------- | ----------------------------------------------------------------------------------- |
-| 3.6     | 2026-01-28 | Promoted Session Start Protocol to top, fixed table formatting, added save reminder |
-| 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                   |
-| 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)               |
-| 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md |
-| 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)     |
-| 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md                  |
-| 2.9     | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60                                                    |
-| 2.8     | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50                                                    |
-| 2.7     | 2026-01-03 | Added mandatory session-end audit                                                   |
-| 2.6     | 2026-01-03 | Added CodeRabbit CLI integration                                                    |
+| Version | Date       | Description                                                                                        |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------- |
+| 3.7     | 2026-02-02 | Added sections 6.3-6.6: Parallelization guidance, agent grouping, coordination, capacity reference |
+| 3.6     | 2026-01-28 | Promoted Session Start Protocol to top, fixed table formatting, added save reminder                |
+| 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                                  |
+| 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)                              |
+| 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md                |
+| 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)                    |
+| 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md                                 |
+| 2.9     | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60                                                                   |
+| 2.8     | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50                                                                   |
+| 2.7     | 2026-01-03 | Added mandatory session-end audit                                                                  |
+| 2.6     | 2026-01-03 | Added CodeRabbit CLI integration                                                                   |
 
 ---
 

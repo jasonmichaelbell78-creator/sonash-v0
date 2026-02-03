@@ -501,6 +501,9 @@ const ANTI_PATTERNS = [
       "check-content-accuracy.js",
       "check-doc-placement.js",
       "check-external-links.js",
+      // 2026-02-03 audit (Review #127):
+      // - ai-pattern-checks.js: readFileSync at L34 IS in try/catch (L33-38)
+      "ai-pattern-checks.js",
     ],
   },
   {
@@ -544,8 +547,10 @@ const ANTI_PATTERNS = [
     // 2026-02-02 audit (Review #224):
     // - statusline.js (hooks/global): L64 has `rel === "" ||` at start of condition
     // - sync-claude-settings.js: L47 has `rel === "" ||` in isPathContained helper
+    // 2026-02-03 audit (Review #226 R3):
+    // - ai-pattern-checks.js: L82 uses `rel !== "" && (isAbsolute || regex)` - equivalent logic, handles empty
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings|ai-pattern-checks)\.js$/,
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)

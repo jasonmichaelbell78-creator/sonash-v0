@@ -1,9 +1,148 @@
 ---
 name: audit-security
 description: Run a single-session security audit on the codebase
+supports_parallel: true
+fallback_available: true
+estimated_time_parallel: 15 min
+estimated_time_sequential: 60 min
 ---
 
 # Single-Session Security Audit
+
+## Execution Mode Selection
+
+| Condition                                 | Mode       | Time    |
+| ----------------------------------------- | ---------- | ------- |
+| Task tool available + no context pressure | Parallel   | ~15 min |
+| Task tool unavailable                     | Sequential | ~60 min |
+| Context running low (<20% remaining)      | Sequential | ~60 min |
+| User requests sequential                  | Sequential | ~60 min |
+
+---
+
+## Section A: Parallel Architecture (4 Agents)
+
+**When to use:** Task tool available, sufficient context budget, no S0/S1 in
+scope
+
+### Agent 1: vulnerability-scanner
+
+**Focus Areas:**
+
+- Authentication & Authorization
+- Input Validation & Injection Prevention
+- OWASP Top 10 Coverage
+
+**Files:**
+
+- `app/api/**/*.ts` (API routes)
+- `middleware.ts`
+- `lib/auth*.ts`
+- Form handlers, input components
+
+### Agent 2: supply-chain-auditor
+
+**Focus Areas:**
+
+- Dependency Security & Supply Chain
+- Package vulnerabilities (npm audit)
+- License compliance
+- Unpinned versions, risky postinstall scripts
+
+**Files:**
+
+- `package.json`, `package-lock.json`
+- All import statements
+- `functions/package.json`
+
+### Agent 3: framework-security-auditor
+
+**Focus Areas:**
+
+- Firebase/Firestore Security (rules, Cloud Functions)
+- Next.js/Framework-Specific Security
+- Hosting & Headers Security
+- Server/client boundary leaks
+
+**Files:**
+
+- `firestore.rules`, `storage.rules`
+- `firebase.json`
+- `functions/src/**/*.ts`
+- `next.config.mjs`
+
+### Agent 4: ai-code-security-auditor
+
+**Focus Areas:**
+
+- AI-Generated Code & Agent Security
+- Crypto & Randomness
+- File Handling Security
+- Product/UX Security Risks
+
+**Files:**
+
+- `.claude/` configs
+- Files with `crypto`, `random`, `hash` patterns
+- File upload handlers
+- Admin UI components
+
+### Parallel Execution Command
+
+```markdown
+Invoke all 4 agents in a SINGLE Task message:
+
+Task 1: vulnerability-scanner agent - audit auth, input validation, OWASP Task
+2: supply-chain-auditor agent - audit dependencies, npm packages Task 3:
+framework-security-auditor agent - audit Firebase, Next.js, headers Task 4:
+ai-code-security-auditor agent - audit AI patterns, crypto, files
+```
+
+### Coordination Rules
+
+1. Each agent writes findings to separate JSONL section
+2. S0/S1 findings trigger immediate notification
+3. File conflicts resolved by framework-security-auditor (highest authority)
+4. All agents respect rate-limiting and App Check patterns
+
+---
+
+## Section B: Sequential Fallback (Single Agent)
+
+**When to use:** Task tool unavailable, context limits, or user preference
+
+**Execution Order (priority-first):**
+
+1. AI Security Patterns (S0 potential) - 15 min
+2. Auth & Authorization - 10 min
+3. Input Validation - 10 min
+4. Supply Chain (npm audit) - 5 min
+5. Remaining categories - 20 min
+
+**Total:** ~60 min (vs ~15 min parallel)
+
+**Checkpointing:** After each category, write intermediate findings to file
+before continuing. This protects against context loss.
+
+### Checkpoint Format
+
+```json
+{
+  "started_at": "ISO timestamp",
+  "categories_completed": ["Auth", "Input"],
+  "current_category": "DataProtection",
+  "findings_count": 24,
+  "last_file_written": "stage-2-findings.jsonl"
+}
+```
+
+### Write Checkpoint After Each Category
+
+- Update `${AUDIT_DIR}/checkpoint.json`
+- Append findings to `.jsonl` file (not overwrite)
+- This enables recovery regardless of agent capability
+
+---
 
 ## Pre-Audit Validation
 
@@ -116,6 +255,19 @@ If outdated, note discrepancies but proceed with current values.
     - Prompt-injection surfaces in scripts/configs
     - Agent config files with unsafe patterns
     - Suspicious strings/comments that could manipulate AI agents
+
+13. AI Security Patterns (AI-Codebase Specific):
+    - Prompt Injection Surfaces: `.claude/` configs, agent prompts, LLM
+      integrations with user input (S0)
+    - Hallucinated Security APIs: Security functions that don't exist or have
+      wrong signatures (S1)
+    - AI-Suggested Insecure Defaults: Default `any` types, `*` CORS, overly
+      permissive rules (S1)
+    - Inconsistent Auth Patterns: Different auth approaches across AI sessions
+      (S2)
+    - Over-Confident Comments: "This is secure because..." without actual
+      security (S2)
+    - AI-Generated Crypto: Homegrown crypto patterns AI might generate (S0)
 
 **For each category:**
 

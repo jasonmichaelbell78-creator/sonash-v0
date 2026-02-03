@@ -1,6 +1,6 @@
 # [Project Name] Multi-AI Security Audit Plan
 
-**Document Version:** 1.5 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-01
+**Document Version:** 1.6 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-02
 **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
 
 ---
@@ -20,7 +20,7 @@ security-focused audit on [Project Name]. Use this template when:
 **This template enforces the mandatory standards from
 [GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md).**
 
-**Review Focus Areas (12 Mandatory Categories):**
+**Review Focus Areas (13 Mandatory Categories):**
 
 1. Rate Limiting & Throttling
 2. Input Validation & Sanitization (including template injection, eval/Function,
@@ -36,6 +36,8 @@ security-focused audit on [Project Name]. Use this template when:
 10. File Handling Security (uploads, path traversal, MIME validation)
 11. Crypto & Randomness (weak randomness, broken hashing, homegrown crypto)
 12. AI Agent Security (prompt injection in configs, agent manipulation surfaces)
+13. AI-Generated Code Security (NEW - hallucinated APIs, prompt injection
+    surfaces, session inconsistencies)
 
 **Expected Output:** Security findings with remediation plan, compliance status
 for each mandatory standard, ingested to TDMS for tracking.
@@ -469,6 +471,48 @@ VERIFICATION COMMANDS:
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
 
+Category 13: AI-Generated Code Security (NEW - 2026-02-02)
+
+**AI instances:** 2 recommended (prompt-security-specialist, ai-pattern-auditor)
+
+This category addresses security patterns unique to AI-generated codebases.
+
+REQUIRED CHECKS: [ ] No prompt injection surfaces - Scan `.claude/` for
+unescaped user input in prompts [ ] No system prompt leakage in error messages [
+] Hallucinated security functions cross-referenced against actual APIs [ ]
+Crypto implementations use standard libraries (not AI-generated) [ ] Auth
+patterns consistent across files (no session boundary conflicts) [ ] No
+"security theater" comments ("This is secure because...") [ ] Validation
+approaches consistent for same data types [ ] No AI-suggested insecure defaults
+(`any` types, `*` CORS, permissive rules)
+
+VERIFICATION COMMANDS:
+
+- grep -rni "this is secure\|security guaranteed\|fully protected"
+  --include="\_.ts" (over-confident comments)
+- grep -rn "TODO.*AI\|FIXME.*claude\|TODO.\*LLM" --include="\_.ts"
+  --include="\*.tsx" (AI TODO markers)
+- grep -rn "// Session\|// Added in session" --include="\*.ts" (session boundary
+  markers)
+- Cross-reference all security function calls against package.json and library
+  docs
+- Compare auth patterns in similar files for inconsistencies
+
+HALLUCINATED SECURITY PATTERNS TO DETECT:
+
+- `crypto.secureHash()` - doesn't exist
+- `firebase.verifyAppCheck()` on client - wrong location
+- Custom JWT implementations instead of Firebase Auth
+- `sanitize()` functions that don't actually sanitize
+
+SEVERITY GUIDE:
+
+- S0: Prompt injection surfaces, AI-generated crypto
+- S1: Hallucinated security APIs, inconsistent auth patterns
+- S2: Over-confident comments, AI-suggested insecure defaults
+
+Mark each check: PASS | FAIL | PARTIAL | N/A
+
 After each category: "Category X complete - Issues found: [number]"
 
 PHASE 4: DRAFT SECURITY FINDINGS
@@ -813,6 +857,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.6     | 2026-02-02 | Added Category 13: AI-Generated Code Security with hallucinated API detection, prompt injection surfaces, session boundary inconsistencies. Expanded from 12 to 13 mandatory categories.                                                                                                                 | Claude |
 | 1.5     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added Step 7 for TDMS intake, TDMS Integration section with intake commands, category mapping table, and completion checklist. Updated AI Instructions and Quality checks. Added PROCEDURE.md to Related Documents.                                                     | Claude |
 | 1.4     | 2026-01-13 | Expanded from 7 to 12 categories: Added Hosting & Headers Security (CSP, HSTS, COOP, COEP), Framework-Specific Security (Next.js boundary leaks), File Handling Security, Crypto & Randomness, AI Agent Security. Aligns with single-session audit-security.md updates for vibe-coded app coverage.      | Claude |
 | 1.3     | 2026-01-06 | Review #68: Replaced --binary-files=without-match with portable -I flag; Updated document header to 1.2                                                                                                                                                                                                  | Claude |

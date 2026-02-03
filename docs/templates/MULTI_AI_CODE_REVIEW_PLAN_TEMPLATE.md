@@ -1,6 +1,6 @@
 # [Project Name] Multi-AI Code Review Plan
 
-**Document Version:** 1.4 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-01
+**Document Version:** 1.5 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-02
 **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
 
 ---
@@ -24,7 +24,9 @@ quality review on [Project Name]. Use this template when:
 4. Security
 5. Testing
 6. AI-Generated Code Failure Modes (vibe-coded app anti-patterns)
-7. Debugging Ergonomics (NEW - 2026-01-13)
+7. Debugging Ergonomics
+8. AI Code Patterns (NEW - 2026-02-02) - hallucination detection, test validity,
+   session consistency, AI Health Score
 
 **Expected Output:** Ranked list of canonical findings with PR implementation
 plan, ingested to TDMS for tracking.
@@ -196,6 +198,7 @@ FOCUS AREAS (use ONLY these categories)
 5. Testing
 6. AI-Generated Code Failure Modes
 7. Debugging Ergonomics
+8. AI Code Patterns
 ```
 
 ### Part 3: Review Phases
@@ -321,6 +324,61 @@ VERIFICATION COMMANDS (if run_commands=yes):
 - grep -E -rn "expect\(true\)|expect\(1\)" tests/ --include="\*.test.ts"
 - Find functions >50 lines: use AST analysis or manual review
 - Check package.json imports match actual dependencies
+
+Category 8: AI Code Patterns (NEW - 2026-02-02)
+
+**AI instances:** 2 recommended (ai-pattern-auditor, consistency-checker)
+
+Purpose: Detect patterns unique to AI-generated codebases that affect quality.
+
+CHECKS:
+
+1. **Hallucination Detection**
+   - Cross-reference ALL imports against package.json dependencies
+   - Verify all API calls exist on target objects
+   - Check for non-existent methods being called
+
+2. **Test Validity**
+   - Flag tests with trivial assertions (`expect(true).toBe(true)`)
+   - Identify tests that can never fail
+   - Find tests that don't actually test the function they claim to
+
+3. **Session Consistency**
+   - Compare similar files for pattern divergence
+   - Flag conflicting implementations of same concept
+   - Identify naming convention inconsistencies
+
+4. **AI Health Score Calculation**
+   - Calculate per-file and aggregate scores
+   - Identify highest-risk AI-generated areas
+
+HALLUCINATION DETECTION PATTERNS:
+
+- Import from packages not in package.json
+- Call methods that don't exist on React/Next.js/Firebase APIs
+- Reference environment variables that don't exist
+- Use TypeScript types from wrong packages
+
+VERIFICATION COMMANDS (if run_commands=yes):
+
+- Extract all imports and cross-reference with package.json
+- grep -rn "import.\*from" --include="_.ts" --include="_.tsx" | head -50
+- Compare auth patterns: grep -rn "useAuth\|getAuth\|onAuthStateChanged"
+  --include="\*.tsx"
+- Find test assertions: grep -E -rn "expect\(" tests/ --include="\*.test.ts" |
+  head -30
+
+AI HEALTH SCORE FACTORS:
+
+| Factor              | Weight | Description                           |
+| ------------------- | ------ | ------------------------------------- |
+| Hallucination Rate  | 30%    | % of imports/APIs that don't exist    |
+| Test Validity       | 25%    | % of tests with meaningful assertions |
+| Error Handling      | 20%    | % of functions with proper try/catch  |
+| Consistency Score   | 15%    | Pattern similarity across files       |
+| Documentation Drift | 10%    | % of docs matching actual code        |
+
+OUTPUT: Include AI Health Score (0-100) in audit summary.
 
 As you work:
 
@@ -826,6 +884,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                     | Author |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.5     | 2026-02-02 | Added Category 8: AI Code Patterns with hallucination detection, test validity, session consistency, AI Health Score calculation. Expanded from 7 to 8 focus areas.                                                                                                                         | Claude |
 | 1.4     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added Step 7 for TDMS intake, TDMS Integration section with intake commands, category mapping table, and completion checklist. Updated AI Instructions and Quality checks. Added PROCEDURE.md to Related Documents.                                        | Claude |
 | 1.3     | 2026-01-13 | Added Category 7: Debugging Ergonomics (correlation IDs, structured logging, Sentry integration, error context, repro path quality). From Engineering Productivity audit recommendations.                                                                                                   | Claude |
 | 1.2     | 2026-01-13 | Added Category 6: AI-Generated Code Failure Modes (happy-path only logic, trivial test assertions, hallucinated dependencies, copy/paste anti-patterns, inconsistent architecture, overly complex functions). Aligns with single-session audit-code.md updates for vibe-coded app coverage. | Claude |

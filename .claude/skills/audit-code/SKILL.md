@@ -1,9 +1,115 @@
 ---
 name: audit-code
 description: Run a single-session code review audit on the codebase
+supports_parallel: true
+fallback_available: true
+estimated_time_parallel: 15 min
+estimated_time_sequential: 50 min
 ---
 
 # Single-Session Code Review Audit
+
+## Execution Mode Selection
+
+| Condition                                 | Mode       | Time    |
+| ----------------------------------------- | ---------- | ------- |
+| Task tool available + no context pressure | Parallel   | ~15 min |
+| Task tool unavailable                     | Sequential | ~50 min |
+| Context running low (<20% remaining)      | Sequential | ~50 min |
+| User requests sequential                  | Sequential | ~50 min |
+
+---
+
+## Section A: Parallel Architecture (3 Agents)
+
+**When to use:** Task tool available, sufficient context budget
+
+### Agent 1: hygiene-and-types
+
+**Focus Areas:**
+
+- Code Hygiene (unused imports, dead code, console.logs)
+- Types & Correctness (any types, type safety, null checks)
+
+**Files:**
+
+- `app/**/*.tsx`, `components/**/*.tsx`
+- `lib/**/*.ts`, `hooks/**/*.ts`
+- `types/**/*.ts`
+
+### Agent 2: framework-and-testing
+
+**Focus Areas:**
+
+- Framework Best Practices (React patterns, Next.js conventions)
+- Testing Coverage (untested functions, missing edge cases)
+
+**Files:**
+
+- `app/**/*.tsx` (routing, layouts)
+- `components/**/*.tsx` (component patterns)
+- `tests/**/*.test.ts`
+
+### Agent 3: security-and-debugging
+
+**Focus Areas:**
+
+- Security Surface (input validation, auth checks)
+- AI-Generated Code Failure Modes
+- Debugging Ergonomics
+
+**Files:**
+
+- `lib/auth*.ts`, `middleware.ts`
+- `functions/src/**/*.ts`
+- Error handling code, logging patterns
+
+### Parallel Execution Command
+
+```markdown
+Invoke all 3 agents in a SINGLE Task message:
+
+Task 1: hygiene-and-types agent - audit code hygiene and TypeScript patterns
+Task 2: framework-and-testing agent - audit React/Next.js patterns and test
+coverage Task 3: security-and-debugging agent - audit security, AI patterns,
+debugging
+```
+
+### Coordination Rules
+
+1. Each agent writes findings to separate JSONL section
+2. Hygiene findings have lowest priority in conflicts
+3. Security findings have highest priority
+4. Framework agent handles boundary issues
+
+---
+
+## Section B: Sequential Fallback (Single Agent)
+
+**When to use:** Task tool unavailable, context limits, or user preference
+
+**Execution Order:**
+
+1. AICode Patterns (catches hallucinations early) - 15 min
+2. Types & Correctness - 10 min
+3. Testing Coverage - 10 min
+4. Remaining categories - 15 min
+
+**Total:** ~50 min (vs ~15 min parallel)
+
+### Checkpoint Format
+
+```json
+{
+  "started_at": "ISO timestamp",
+  "categories_completed": ["Hygiene", "Types"],
+  "current_category": "Framework",
+  "findings_count": 18,
+  "last_file_written": "stage-2-findings.jsonl"
+}
+```
+
+---
 
 ## Pre-Audit Validation
 
@@ -76,12 +182,19 @@ If outdated, note discrepancies but proceed with current values.
 4. Testing Coverage (untested functions, missing edge cases)
 5. Security Surface (input validation, auth checks)
 6. AICode (AI-Generated Code Failure Modes):
-   - "Happy-path only" logic, missing edge cases and error handling
-   - Tests that exist but don't assert meaningful behavior
-   - Hallucinated dependencies/APIs that don't exist
+   - "Happy-path only" logic, missing edge cases and error handling (S1)
+   - Tests that exist but don't assert meaningful behavior (S1)
+   - Hallucinated dependencies/APIs that don't exist (S1)
    - Copy/paste anti-patterns (similar code blocks that should be abstracted)
-   - Inconsistent architecture patterns across files
-   - Overly complex functions (deep nesting, >50 lines)
+     (S2)
+   - Inconsistent architecture patterns across files (S2)
+   - Overly complex functions (deep nesting, >50 lines) (S2)
+   - Session Boundary Inconsistencies: Conflicting patterns from different AI
+     sessions (S2)
+   - Dead Code from Iterations: Commented code, unused variables from AI
+     iterations (S3)
+   - AI TODO Markers: "TODO: AI should fix this", "FIXME: Claude" patterns (S3)
+   - Over-Engineering: Unnecessary abstractions, premature optimization (S2)
 7. Debugging (Debugging Ergonomics) (NEW - 2026-01-13):
    - Correlation IDs / request tracing (frontend to backend)
    - Structured logging with context (not just console.log)
