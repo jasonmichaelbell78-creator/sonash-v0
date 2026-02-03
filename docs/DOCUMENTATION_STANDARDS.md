@@ -31,6 +31,29 @@ Non-compliant docs will be flagged during reviews.
 2. Include required sections for document tier
 3. Run `npm run docs:check` before committing
 
+---
+
+## Technical Debt Integration
+
+> **TDMS Authority:** For technical debt findings from audits, the
+> [Technical Debt Management System (TDMS)](./technical-debt/PROCEDURE.md) is
+> the authoritative system. Documentation Standards defines the JSONL output
+> format for audits; TDMS defines the canonical storage format.
+
+**Data Flow:**
+
+```
+Audit Skill → JSONL Output → intake-audit.js → MASTER_DEBT.jsonl
+(Doc Standards)              (Mapping)         (TDMS Authority)
+```
+
+**Schema Relationship:**
+
+- **Doc Standards JSONL** = audit output format (input to TDMS)
+- **TDMS MASTER_DEBT.jsonl** = canonical storage (output of intake)
+- **Field mapping** defined in
+  [JSONL_SCHEMA_STANDARD.md](./templates/JSONL_SCHEMA_STANDARD.md)
+
 ## AI Instructions
 
 When creating documentation:
@@ -761,6 +784,7 @@ Before committing documentation changes, verify:
 
 | Version | Date       | Changes                                                                                                                                                              | Author      |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1.3     | 2026-02-02 | Added Technical Debt Integration section clarifying TDMS authority and schema relationship                                                                           | Claude      |
 | 1.2     | 2026-01-01 | Added MANDATORY Deliverable Audit as global standard for phase/milestone completion in Quality Protocols                                                             | Claude      |
 | 1.1     | 2026-01-01 | Added Quality Protocols section with 4 new protocols: Pre-Commit Validation Checklist, Status Synchronization Protocol, Cross-Reference Validation, Template Testing | Claude Code |
 | 1.0     | 2025-12-31 | Initial documentation standards created                                                                                                                              | Claude Code |

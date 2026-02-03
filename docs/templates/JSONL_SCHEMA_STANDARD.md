@@ -294,10 +294,59 @@ When aggregating:
 
 ## Version History
 
-| Version | Date       | Changes                                                | Author |
-| ------- | ---------- | ------------------------------------------------------ | ------ |
-| 1.1     | 2026-01-24 | Added S0/S1 verification_steps extension (Session #98) | Claude |
-| 1.0     | 2026-01-03 | Initial schema standard creation (Task 6.7)            | Claude |
+| Version | Date       | Changes                                                 | Author |
+| ------- | ---------- | ------------------------------------------------------- | ------ |
+| 1.2     | 2026-02-02 | Added TDMS Field Mapping section for intake integration | Claude |
+| 1.1     | 2026-01-24 | Added S0/S1 verification_steps extension (Session #98)  | Claude |
+| 1.0     | 2026-01-03 | Initial schema standard creation (Task 6.7)             | Claude |
+
+---
+
+## TDMS Field Mapping
+
+When audit findings are ingested into TDMS via `intake-audit.js`, fields are
+mapped as follows:
+
+### Doc Standards JSONL → TDMS MASTER_DEBT.jsonl
+
+| Doc Standards Field | TDMS Field       | Mapping Notes                                            |
+| ------------------- | ---------------- | -------------------------------------------------------- |
+| `fingerprint`       | `source_id`      | Converted: `category::file::id` → `audit:UUID`           |
+| `fingerprint`       | `content_hash`   | Used for deduplication (SHA256 of normalized content)    |
+| `files[0]`          | `file`           | First file path extracted (TDMS stores single file)      |
+| `files[0]`          | `line`           | Line extracted if present in path, else 0                |
+| `why_it_matters`    | `description`    | Direct mapping                                           |
+| `suggested_fix`     | `recommendation` | Direct mapping                                           |
+| `acceptance_tests`  | `evidence`       | Appended to evidence array                               |
+| `confidence`        | (logged)         | Logged to intake-log.jsonl but not stored in MASTER_DEBT |
+| `severity`          | `severity`       | Direct mapping (S0/S1/S2/S3)                             |
+| `effort`            | `effort`         | Direct mapping (E0/E1/E2/E3)                             |
+| `category`          | `category`       | Normalized per Section 11 of PROCEDURE.md                |
+| (auto)              | `id`             | Generated as DEBT-XXXX by intake script                  |
+| (auto)              | `status`         | Set to "NEW"                                             |
+| (auto)              | `created`        | Set to current date                                      |
+
+### Handling Optional Fields
+
+| Doc Standards Field   | Handling                                       |
+| --------------------- | ---------------------------------------------- |
+| `verification_steps`  | Stored in `evidence` as JSON string if present |
+| `evidence`            | Merged into TDMS `evidence` array              |
+| `notes`               | Appended to `description` if present           |
+| `symbols`             | Stored in `evidence` as reference              |
+| `duplication_cluster` | Preserved in finding metadata                  |
+
+### Ingestion Command
+
+```bash
+# Standard intake from audit JSONL
+node scripts/debt/intake-audit.js <audit-output.jsonl> --source "audit-<type>-<date>"
+
+# With explicit category mapping (for external sources)
+node scripts/debt/intake-audit.js <audit-output.jsonl> \
+  --source "external-vendor" \
+  --category-mapping "Critical=security,Major=code-quality"
+```
 
 ---
 
@@ -308,6 +357,10 @@ When aggregating:
 - [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)
 - [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)
 - [MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md)
+- [TDMS PROCEDURE.md](../technical-debt/PROCEDURE.md) - Canonical debt
+  management
+- [DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md) - 5-tier doc
+  system
 
 ---
 

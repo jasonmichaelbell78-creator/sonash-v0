@@ -499,3 +499,24 @@ Automatically invoked after all 6 parallel audits complete.
 
 - `/audit-comprehensive` - Orchestrator that calls this aggregator
 - Individual audit skills - Generate the input reports this aggregator processes
+
+---
+
+## Documentation References
+
+Before running this aggregator, review:
+
+### TDMS Integration (Required)
+
+- [PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - Full TDMS workflow
+- [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) - Canonical debt
+  store
+- The aggregated findings should be ingested via:
+  `node scripts/debt/intake-audit.js <output.jsonl> --source "audit-comprehensive-<date>"`
+
+### Documentation Standards (Required)
+
+- [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Output
+  format requirements, field mapping, and deduplication logic
+- [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) - 5-tier doc
+  hierarchy

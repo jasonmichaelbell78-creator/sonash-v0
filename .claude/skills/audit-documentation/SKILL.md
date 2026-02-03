@@ -687,3 +687,25 @@ When modifying this skill, also update:
 | ------- | ---------- | ------------------------------------------------------- |
 | 2.0     | 2026-02-02 | Complete rewrite: 6-stage parallel audit with 18 agents |
 | 1.0     | 2025-xx-xx | Original single-session sequential audit                |
+
+---
+
+## Documentation References
+
+Before running this audit, review:
+
+### TDMS Integration (Required)
+
+- [PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - Full TDMS workflow
+- [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) - Canonical debt
+  store
+- Intake command:
+  `node scripts/debt/intake-audit.js <output.jsonl> --source "audit-documentation-<date>"`
+
+### Documentation Standards (Critical for This Audit)
+
+- [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Output
+  format requirements and TDMS field mapping
+- [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) - **The
+  canonical guide** this audit validates against (5-tier hierarchy, metadata
+  requirements, quality protocols)
