@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-env node */
 /* global __dirname */
 /**
  * transform-jsonl-schema.js - Transform audit JSONL files to JSONL_SCHEMA_STANDARD.md format
@@ -23,45 +22,84 @@
 const fs = require("fs");
 const path = require("path");
 
-// Category normalization map
+// Project root for path containment validation
+const PROJECT_ROOT = path.resolve(__dirname, "../..");
+
+/**
+ * Validate that a resolved path is contained within the project root
+ * Prevents path traversal attacks
+ * @param {string} resolvedPath - Absolute path to validate
+ * @returns {boolean} true if path is within project root
+ */
+function isPathContained(resolvedPath) {
+  const relative = path.relative(PROJECT_ROOT, resolvedPath);
+  // Path is escaped if:
+  // - Empty string (same as root - allowed)
+  // - Starts with ".." followed by separator or end (escaped)
+  // - Is absolute path (escaped on Windows with different drive)
+  // Use regex to avoid false positives like "..hidden.md"
+  const isEscaped = /^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative);
+  return !isEscaped;
+}
+
+/**
+ * Validate and resolve a file path, ensuring it's within project bounds
+ * @param {string} inputPath - User-provided path
+ * @param {string} label - Label for error messages (e.g., "input", "output")
+ * @returns {string} Resolved absolute path
+ * @throws {Error} If path is invalid or escapes project root
+ */
+function validatePath(inputPath, label) {
+  if (!inputPath || typeof inputPath !== "string") {
+    throw new Error(`${label} path is required`);
+  }
+
+  const resolved = path.resolve(PROJECT_ROOT, inputPath);
+
+  if (!isPathContained(resolved)) {
+    throw new Error(`${label} path "${inputPath}" escapes project root (path traversal blocked)`);
+  }
+
+  return resolved;
+}
+
+// Category normalization map - all keys lowercase for consistent lookup
 const CATEGORY_MAP = {
   // Code audit categories
-  Types: "code-quality",
-  Hygiene: "code-quality",
-  Framework: "code-quality",
-  Testing: "code-quality",
-  Security: "security",
-  AICode: "code-quality",
-  // Security audit (already correct)
-  Auth: "security",
-  Headers: "security",
-  Data: "security",
-  Deps: "security",
-  // Performance audit
-  Rendering: "performance",
-  Bundle: "performance",
-  DataFetching: "performance",
-  DataFetch: "performance",
-  Memory: "performance",
-  CoreWebVitals: "performance",
-  WebVitals: "performance",
-  // Refactoring audit
-  GodObject: "refactoring",
-  Duplication: "refactoring",
-  Complexity: "refactoring",
-  Architecture: "refactoring",
-  TechDebt: "refactoring",
-  // Documentation audit (already correct)
-  documentation: "documentation",
-  // Process audit (already correct)
-  process: "process",
-  testing: "process",
+  types: "code-quality",
+  hygiene: "code-quality",
+  framework: "code-quality",
+  testing: "code-quality",
+  aicode: "code-quality",
+  // Security audit
   security: "security",
+  auth: "security",
+  headers: "security",
+  data: "security",
+  deps: "security",
+  // Performance audit
+  rendering: "performance",
+  bundle: "performance",
+  datafetching: "performance",
+  datafetch: "performance",
+  memory: "performance",
+  corewebvitals: "performance",
+  webvitals: "performance",
   performance: "performance",
+  // Refactoring audit
+  godobject: "refactoring",
+  duplication: "refactoring",
+  complexity: "refactoring",
+  architecture: "refactoring",
+  techdebt: "refactoring",
+  // Documentation audit
+  documentation: "documentation",
+  // Process audit
+  process: "process",
   // Engineering productivity
-  GoldenPath: "engineering-productivity",
-  Debugging: "engineering-productivity",
-  OfflineSupport: "engineering-productivity",
+  goldenpath: "engineering-productivity",
+  debugging: "engineering-productivity",
+  offlinesupport: "engineering-productivity",
 };
 
 // Confidence string to number
@@ -72,7 +110,13 @@ const CONFIDENCE_MAP = {
 };
 
 function normalizeCategory(category) {
-  // Check if already normalized
+  // Guard against missing/invalid category
+  if (typeof category !== "string" || category.trim() === "") {
+    console.warn(`  Warning: Missing/invalid category, defaulting to "code-quality"`);
+    return "code-quality";
+  }
+
+  // Valid normalized categories
   const validCategories = [
     "security",
     "performance",
@@ -82,15 +126,16 @@ function normalizeCategory(category) {
     "refactoring",
     "engineering-productivity",
   ];
+
+  // Check if already normalized
   if (validCategories.includes(category)) return category;
 
-  // Try to map
-  if (CATEGORY_MAP[category]) return CATEGORY_MAP[category];
-
-  // Lowercase check
+  // Try lowercase lookup in map
   const lower = category.toLowerCase();
-  if (validCategories.includes(lower)) return lower;
   if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
+
+  // Check if lowercase is a valid category
+  if (validCategories.includes(lower)) return lower;
 
   // Default fallback
   console.warn(`  Warning: Unknown category "${category}", defaulting to "code-quality"`);
@@ -217,22 +262,33 @@ function transformItem(item, index) {
   if (item.severity === "S0" || item.severity === "S1") {
     // Convert array-style verification_steps to object structure
     if (Array.isArray(item.verification_steps) && item.verification_steps.length > 0) {
-      // Extract evidence from array items for first_pass
-      const evidenceItems = item.verification_steps.filter(
-        (v) =>
-          v.includes("grep") || v.includes("search") || v.includes("Run") || v.includes("Check")
-      );
-      const reviewItems = item.verification_steps.filter(
-        (v) => v.includes("Review") || v.includes("verify") || v.includes("confirm")
-      );
-      const toolRefs = item.verification_steps.filter(
-        (v) =>
-          v.includes("eslint") ||
-          v.includes("lint") ||
-          v.includes("npm") ||
-          v.includes("typescript") ||
-          v.includes("sonar")
-      );
+      // Filter to only valid strings before processing
+      const steps = item.verification_steps.filter((v) => typeof v === "string" && v.trim());
+
+      // Extract evidence from array items for first_pass (case-insensitive)
+      const evidenceItems = steps.filter((v) => {
+        const lower = v.toLowerCase();
+        return (
+          lower.includes("grep") ||
+          lower.includes("search") ||
+          lower.includes("run") ||
+          lower.includes("check")
+        );
+      });
+      const reviewItems = steps.filter((v) => {
+        const lower = v.toLowerCase();
+        return lower.includes("review") || lower.includes("verify") || lower.includes("confirm");
+      });
+      const toolRefs = steps.filter((v) => {
+        const lower = v.toLowerCase();
+        return (
+          lower.includes("eslint") ||
+          lower.includes("lint") ||
+          lower.includes("npm") ||
+          lower.includes("typescript") ||
+          lower.includes("sonar")
+        );
+      });
 
       transformed.verification_steps = {
         first_pass: {
@@ -241,9 +297,7 @@ function transformItem(item, index) {
               ? "grep"
               : "code_search",
           evidence_collected:
-            evidenceItems.length > 0
-              ? evidenceItems
-              : [item.verification_steps[0] || "Initial code review"],
+            evidenceItems.length > 0 ? evidenceItems : [steps[0] || "Initial code review"],
         },
         second_pass: {
           method: reviewItems.length > 0 ? "contextual_review" : "manual_verification",
@@ -308,8 +362,20 @@ function transformItem(item, index) {
 function processFile(inputPath, outputPath, dryRun) {
   console.log(`\nProcessing: ${path.basename(inputPath)}`);
 
-  // Read file
-  const content = fs.readFileSync(inputPath, "utf8");
+  // Read file with error handling
+  let content;
+  try {
+    if (!fs.existsSync(inputPath)) {
+      console.error(`  ERROR: File not found: ${inputPath}`);
+      return 0;
+    }
+    content = fs.readFileSync(inputPath, "utf8");
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`  ERROR: Unable to read file "${inputPath}": ${msg}`);
+    return 0;
+  }
+
   const lines = content
     .trim()
     .split(/\r?\n/)
@@ -340,10 +406,16 @@ function processFile(inputPath, outputPath, dryRun) {
   console.log(`  Transformations: ${totalIssues} field changes`);
 
   if (!dryRun) {
-    // Write output
-    const output = results.map((r) => JSON.stringify(r)).join("\n") + "\n";
-    fs.writeFileSync(outputPath, output, "utf8");
-    console.log(`  Written to: ${outputPath}`);
+    // Write output with error handling
+    try {
+      const output = results.map((r) => JSON.stringify(r)).join("\n") + "\n";
+      fs.writeFileSync(outputPath, output, "utf8");
+      console.log(`  Written to: ${outputPath}`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`  ERROR: Unable to write file "${outputPath}": ${msg}`);
+      return 0;
+    }
   } else {
     console.log(`  (dry-run - no changes written)`);
   }
@@ -370,8 +442,22 @@ const dryRun = args.includes("--dry-run");
 const processAll = args.includes("--all");
 
 if (processAll) {
+  // --all mode: process all JSONL files in docs/audits/comprehensive/
+  // This path is hardcoded relative to script location, not user input
   const auditDir = path.join(__dirname, "../../docs/audits/comprehensive");
-  const files = fs.readdirSync(auditDir).filter((f) => f.endsWith("-findings.jsonl"));
+
+  let files;
+  try {
+    if (!fs.existsSync(auditDir)) {
+      console.error(`Error: Audit directory not found: ${auditDir}`);
+      process.exit(1);
+    }
+    files = fs.readdirSync(auditDir).filter((f) => f.endsWith("-findings.jsonl"));
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`Error: Unable to read audit directory "${auditDir}": ${msg}`);
+    process.exit(1);
+  }
 
   console.log(`\n=== JSONL Schema Transformation ===`);
   console.log(`Processing ${files.length} files in docs/audits/comprehensive/`);
@@ -379,20 +465,46 @@ if (processAll) {
 
   let totalFindings = 0;
   for (const file of files) {
+    // Validate each file path is contained (defense in depth)
     const inputPath = path.join(auditDir, file);
-    const outputPath = inputPath; // Overwrite
-    totalFindings += processFile(inputPath, outputPath, dryRun);
+    const resolvedInput = path.resolve(inputPath);
+    if (!isPathContained(resolvedInput)) {
+      console.error(`  Skipping suspicious file path: ${file}`);
+      continue;
+    }
+    totalFindings += processFile(resolvedInput, resolvedInput, dryRun);
   }
 
   console.log(`\n=== Summary ===`);
   console.log(`Total findings processed: ${totalFindings}`);
 } else {
-  const inputPath = args.find((a) => !a.startsWith("--"));
+  // Single file mode: validate user-provided paths
+  const inputArg = args.find((a) => !a.startsWith("--"));
   const outputIdx = args.indexOf("--output");
-  const outputPath = outputIdx >= 0 ? args[outputIdx + 1] : inputPath;
 
-  if (!inputPath) {
+  // Validate --output has a value
+  let outputArg = null;
+  if (outputIdx >= 0) {
+    if (args.length <= outputIdx + 1 || args[outputIdx + 1].startsWith("--")) {
+      console.error("Error: --output flag requires a file path");
+      process.exit(1);
+    }
+    outputArg = args[outputIdx + 1];
+  }
+
+  if (!inputArg) {
     console.error("Error: No input file specified");
+    process.exit(1);
+  }
+
+  // Validate and resolve paths with containment check
+  let inputPath, outputPath;
+  try {
+    inputPath = validatePath(inputArg, "Input");
+    outputPath = outputArg ? validatePath(outputArg, "Output") : inputPath;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`Error: ${msg}`);
     process.exit(1);
   }
 

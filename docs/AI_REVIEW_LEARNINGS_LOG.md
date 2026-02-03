@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 13.0 **Created:** 2026-01-02 **Last Updated:** 2026-02-03
+**Document Version:** 13.2 **Created:** 2026-01-02 **Last Updated:** 2026-02-03
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 13.2    | 2026-02-03 | Review #237: PR #334 transform-jsonl-schema.js Security Hardening - Qodo/CI (15 items - 2 CRITICAL CI, 5 MAJOR, 5 MINOR, 3 DEFERRED). **CRITICAL CI**: Path traversal prevention (startsWith→regex), readFileSync try/catch compliance. **MAJOR**: Path containment validation, safe error.message access, category map normalization, --output flag validation, input type guards. **FALSE POSITIVES**: 2 pattern checker items (multi-line try/catch detection). Active reviews #213-237.                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 13.1    | 2026-02-03 | Review #235: PR #332 Audit Documentation 6-Stage - Qodo/CI (8 items - 2 CRITICAL CI, 1 MAJOR, 4 MINOR, 1 DEFERRED). **CRITICAL CI**: YAML syntax (project.yml indentation + empty arrays), Prettier breaking episodic memory function names in 10 skills. **MAJOR**: Python process filtering tightened in stop-serena-dashboard.js. **DEFERRED**: Episodic memory systemic redesign (DEBT-0869). Active reviews #213-235.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 13.0    | 2026-02-03 | Review #227: PR #331 Audit Comprehensive Staged Execution - Qodo + CI (12 items - 4 CRITICAL CI, 5 MAJOR, 2 MINOR, 1 DEFERRED). **CRITICAL CI**: Unsafe error.message access (2), readFileSync without try/catch (2). **MAJOR**: Prototype pollution protection (safeCloneObject helper), type guard for files[0].match(), user context in audit logs, path traversal check in SKILL.md. **DEFERRED**: Unify TDMS schema (architectural). **FALSE POSITIVES**: 2 (pattern checker multi-line try/catch detection). Active reviews #180-227.                                                                                                                                                                                                                                                                                                                                                                         |
 | 12.9    | 2026-02-03 | Review #226: ai-pattern-checks.js Enhancement - CI + SonarCloud + Qodo (22 items - 3 CRITICAL CI, 7 MAJOR, 10 MINOR, 2 TRIVIAL). **CRITICAL CI**: (1) startsWith() path validation → regex; (2) Regex /g flag with .test() in loop; (3) readFileSync pattern compliance. **MAJOR**: (4-5) SonarCloud S5852 regex DoS fixes - bounded quantifiers; (6) Division by zero safePercent(); (7) File path validation; (8-10) Multi-line detection, scoped packages, query patterns. **NEW PATTERNS**: (78-81) Pattern compliance startsWith→regex, bounded quantifiers, safe percentage, exec() loop. Active reviews #180-226.                                                                                                                                                                                                                                                                                            |
@@ -1591,10 +1592,53 @@ feature/audit-documentation-6-stage PR #333 **Suggestions:** 15 total (Critical:
 
 ---
 
+#### Review #237: PR #334 transform-jsonl-schema.js Security Hardening - Qodo/CI (2026-02-03)
+
+**Source:** Qodo PR Compliance + CI Pattern Check **PR/Branch:**
+feature/audit-documentation-6-stage PR #334 **Suggestions:** 15 total (Critical:
+2, Major: 5, Minor: 5, Trivial: 0, Deferred: 3)
+
+**Patterns Identified:**
+
+1. **Path traversal prevention with regex**: Use `/^\.\.(?:[\\/]|$)/.test(rel)`
+   instead of `startsWith("..")` to avoid false positives on files like
+   "..hidden.md".
+2. **Path containment validation**: Implement `isPathContained()` +
+   `validatePath()` helpers for all user-provided paths in CLI tools.
+3. **Safe error message access**: Always use
+   `err instanceof Error ? err.message : String(err)` pattern.
+4. **Category map key normalization**: Use lowercase keys in category maps for
+   case-insensitive lookup consistency.
+5. **Guard against invalid input types**: Check `typeof category !== "string"`
+   before string operations.
+6. **--output flag validation**: Verify flag has a value and doesn't start with
+   "--" (another flag).
+7. **readFileSync try/catch compliance**: Wrap ALL fs.readFileSync calls in
+   try/catch, even after existsSync.
+8. **File existence check before read**: Use existsSync before readFileSync for
+   better error messages.
+
+**Resolution:**
+
+- Fixed: 12 items (2 CRITICAL CI, 5 MAJOR, 5 MINOR)
+- Deferred: 3 items (ajv schema validation - architectural, intentional PII in
+  notes, category bucket optimization)
+- False Positives: 2 (readFileSync IS in try/catch at line 374, file at line 471
+  comes from readdirSync not user input)
+
+**Key Learnings:**
+
+- Pattern checker may have false positives for multi-line try/catch blocks
+- File paths from `fs.readdirSync()` are system-provided, not user input
+- Lowercase category map keys eliminate case-sensitivity bugs
+- Defense-in-depth: existsSync + try/catch + containment validation
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #237: PR #XXX Title - Review Source (DATE)
+#### Review #238: PR #XXX Title - Review Source (DATE)
 
 
 -->
