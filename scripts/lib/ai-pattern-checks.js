@@ -1,0 +1,402 @@
+/**
+ * AI Pattern Checks Library
+ *
+ * Shared utilities for detecting AI-generated code patterns across audits.
+ * These patterns are unique to AI-generated codebases and target failure
+ * modes that human-authored codebases rarely exhibit.
+ *
+ * Used by: audit-security, audit-code, audit-performance skills
+ *
+ * @module ai-pattern-checks
+ */
+
+const { existsSync, readFileSync } = require("node:fs");
+const path = require("node:path");
+
+/**
+ * Check if an import exists in package.json dependencies
+ *
+ * @param {string} importName - Package name from import statement
+ * @param {string} packageJsonPath - Path to package.json
+ * @returns {{ exists: boolean, type: string|null }} Import status
+ */
+function checkImportExists(importName, packageJsonPath = "package.json") {
+  try {
+    if (!existsSync(packageJsonPath)) {
+      return { exists: false, type: null };
+    }
+
+    const content = readFileSync(packageJsonPath, "utf8");
+    const pkg = JSON.parse(content);
+
+    // Check dependencies, devDependencies, peerDependencies
+    const deps = pkg.dependencies || {};
+    const devDeps = pkg.devDependencies || {};
+    const peerDeps = pkg.peerDependencies || {};
+
+    if (deps[importName]) return { exists: true, type: "dependency" };
+    if (devDeps[importName]) return { exists: true, type: "devDependency" };
+    if (peerDeps[importName]) return { exists: true, type: "peerDependency" };
+
+    // Check for scoped packages
+    const scopedName = importName.split("/")[0];
+    if (scopedName.startsWith("@")) {
+      if (deps[scopedName]) return { exists: true, type: "dependency" };
+      if (devDeps[scopedName]) return { exists: true, type: "devDependency" };
+    }
+
+    // Built-in Node.js modules
+    const builtins = [
+      "fs",
+      "path",
+      "os",
+      "crypto",
+      "http",
+      "https",
+      "url",
+      "util",
+      "events",
+      "stream",
+      "buffer",
+      "child_process",
+      "assert",
+      "node:fs",
+      "node:path",
+      "node:os",
+      "node:crypto",
+      "node:http",
+      "node:https",
+      "node:url",
+      "node:util",
+      "node:events",
+      "node:stream",
+      "node:buffer",
+      "node:child_process",
+      "node:assert",
+    ];
+
+    if (builtins.includes(importName)) {
+      return { exists: true, type: "builtin" };
+    }
+
+    // Relative imports
+    if (importName.startsWith(".") || importName.startsWith("/")) {
+      return { exists: true, type: "relative" };
+    }
+
+    return { exists: false, type: null };
+  } catch {
+    return { exists: false, type: null };
+  }
+}
+
+/**
+ * AI-specific patterns to detect
+ */
+const AI_PATTERNS = {
+  // Happy-path only logic patterns
+  HAPPY_PATH_ONLY: {
+    name: "Happy-path only logic",
+    severity: "S1",
+    patterns: [
+      // Function without try/catch that calls async operation
+      /async\s+function\s+\w+[^}]+(?!try)/,
+      // Arrow function without error handling
+      /=>\s*\{[^}]*await[^}]*\}(?![^}]*catch)/,
+    ],
+    description: "Function handles only success path, no error handling",
+  },
+
+  // Trivial test assertions
+  TRIVIAL_ASSERTIONS: {
+    name: "Trivial test assertions",
+    severity: "S1",
+    patterns: [
+      /expect\(true\)\.toBe\(true\)/,
+      /expect\(1\)\.toBe\(1\)/,
+      /expect\(false\)\.toBe\(false\)/,
+      /expect\(".*"\)\.toBe\(".*"\)/, // Hardcoded string equality
+      /assert\.ok\(true\)/,
+      /assert\.equal\(1,\s*1\)/,
+    ],
+    description: "Test that always passes without testing real behavior",
+  },
+
+  // AI TODO markers
+  AI_TODO_MARKERS: {
+    name: "AI TODO markers",
+    severity: "S3",
+    patterns: [
+      /TODO.*AI/i,
+      /FIXME.*[Cc]laude/,
+      /TODO.*LLM/i,
+      /FIXME.*GPT/i,
+      /TODO.*[Cc]laude/,
+      /AI should fix/i,
+      /Claude will/i,
+    ],
+    description: "TODO comment referencing AI that was never resolved",
+  },
+
+  // Session boundary markers
+  SESSION_BOUNDARY: {
+    name: "Session boundary markers",
+    severity: "S2",
+    patterns: [
+      /\/\/\s*Session\s*\d+/i,
+      /\/\/\s*Added in session/i,
+      /\/\/\s*From session/i,
+      /\/\*\s*Session\s*\d+/i,
+    ],
+    description: "Comment marking AI session boundary (potential inconsistency)",
+  },
+
+  // Over-confident security comments
+  OVERCONFIDENT_SECURITY: {
+    name: "Over-confident security comments",
+    severity: "S2",
+    patterns: [
+      /this is secure/i,
+      /security guaranteed/i,
+      /fully protected/i,
+      /completely safe/i,
+      /no vulnerabilities/i,
+      /unhackable/i,
+    ],
+    description: "Comment claiming security without evidence",
+  },
+
+  // Hallucinated APIs (common examples)
+  HALLUCINATED_APIS: {
+    name: "Hallucinated API calls",
+    severity: "S1",
+    patterns: [
+      /crypto\.secureHash\(/,
+      /firebase\.verifyAppCheck\(/,
+      /React\.useServerState\(/,
+      /next\.getServerAuth\(/,
+      /firestore\.atomicUpdate\(/,
+    ],
+    description: "Call to API method that doesn't exist",
+  },
+
+  // Naive data fetching
+  NAIVE_DATA_FETCH: {
+    name: "Naive data fetching",
+    severity: "S1",
+    patterns: [
+      /\.get\(\)\.then\([^)]*\.filter\(/,
+      /await.*\.get\(\)[^;]*\n[^;]*\.filter\(/,
+      /getDocs\([^)]*\)[^;]*\.filter\(/,
+    ],
+    description: "Fetching all data then filtering client-side",
+  },
+
+  // Missing pagination
+  UNBOUNDED_QUERY: {
+    name: "Unbounded query",
+    severity: "S2",
+    patterns: [
+      /collection\([^)]+\)\.get\(\)(?!.*limit)/,
+      /getDocs\([^)]+\)(?!.*limit)/,
+      /\.onSnapshot\([^)]+\)(?!.*limit)/,
+    ],
+    description: "Query without limit() on potentially large collection",
+  },
+};
+
+/**
+ * Check a file for AI-specific patterns
+ *
+ * @param {string} content - File content to check
+ * @param {string} filePath - Path to file (for reporting)
+ * @returns {Array<object>} Array of detected patterns
+ */
+function detectAIPatterns(content, filePath) {
+  const findings = [];
+
+  for (const [key, pattern] of Object.entries(AI_PATTERNS)) {
+    for (const regex of pattern.patterns) {
+      const matches = content.match(new RegExp(regex.source, "gm"));
+      if (matches) {
+        // Find line numbers for matches
+        const lines = content.split("\n");
+        for (let i = 0; i < lines.length; i++) {
+          if (regex.test(lines[i])) {
+            findings.push({
+              pattern: key,
+              name: pattern.name,
+              severity: pattern.severity,
+              file: filePath,
+              line: i + 1,
+              description: pattern.description,
+              evidence: lines[i].trim().substring(0, 100),
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return findings;
+}
+
+/**
+ * Calculate AI Health Score for a codebase
+ *
+ * @param {object} metrics - Collected metrics
+ * @returns {object} Health score breakdown
+ */
+function calculateAIHealthScore(metrics) {
+  const weights = {
+    hallucination_rate: 0.3,
+    test_validity: 0.25,
+    error_handling: 0.2,
+    consistency_score: 0.15,
+    documentation_drift: 0.1,
+  };
+
+  // Calculate individual scores (100 = perfect, 0 = worst)
+  const scores = {
+    hallucination_rate: metrics.hallucinations
+      ? Math.max(0, 100 - (metrics.hallucinations.count / metrics.hallucinations.total) * 100)
+      : 100,
+
+    test_validity: metrics.tests ? (metrics.tests.meaningful / metrics.tests.total) * 100 : 100,
+
+    error_handling: metrics.errorHandling
+      ? (metrics.errorHandling.withHandling / metrics.errorHandling.total) * 100
+      : 100,
+
+    consistency_score: metrics.consistency ? metrics.consistency.score : 100,
+
+    documentation_drift: metrics.documentation
+      ? (metrics.documentation.accurate / metrics.documentation.total) * 100
+      : 100,
+  };
+
+  // Calculate weighted overall score
+  const overall = Object.entries(scores).reduce((total, [key, score]) => {
+    return total + score * weights[key];
+  }, 0);
+
+  return {
+    overall_score: Math.round(overall),
+    factors: Object.entries(scores).reduce((acc, [key, score]) => {
+      acc[key] = {
+        score: Math.round(score),
+        weight: weights[key],
+      };
+      return acc;
+    }, {}),
+  };
+}
+
+/**
+ * Extract import statements from TypeScript/JavaScript file
+ *
+ * @param {string} content - File content
+ * @returns {Array<string>} List of imported package names
+ */
+function extractImports(content) {
+  const imports = [];
+
+  // ES6 imports
+  const es6Regex = /import\s+(?:[\w{},\s*]+\s+from\s+)?['"]([^'"]+)['"]/g;
+  let match;
+  while ((match = es6Regex.exec(content)) !== null) {
+    imports.push(match[1]);
+  }
+
+  // CommonJS requires
+  const cjsRegex = /require\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
+  while ((match = cjsRegex.exec(content)) !== null) {
+    imports.push(match[1]);
+  }
+
+  // Dynamic imports
+  const dynamicRegex = /import\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
+  while ((match = dynamicRegex.exec(content)) !== null) {
+    imports.push(match[1]);
+  }
+
+  return [...new Set(imports)];
+}
+
+/**
+ * Cross-session consistency check
+ * Compare patterns in similar files to detect AI session inconsistencies
+ *
+ * @param {Array<{file: string, content: string}>} files - Files to compare
+ * @returns {Array<object>} Inconsistency findings
+ */
+function checkCrossSessionConsistency(files) {
+  const findings = [];
+
+  // Group files by similar names/purposes
+  const authFiles = files.filter((f) => /auth/i.test(f.file));
+  const apiFiles = files.filter((f) => /api|route/i.test(f.file));
+  const componentFiles = files.filter((f) => /component|\.tsx$/i.test(f.file));
+
+  // Check for pattern inconsistencies in auth files
+  if (authFiles.length > 1) {
+    const patterns = {
+      useAuth: 0,
+      getAuth: 0,
+      onAuthStateChanged: 0,
+    };
+
+    for (const file of authFiles) {
+      if (/useAuth/.test(file.content)) patterns.useAuth++;
+      if (/getAuth/.test(file.content)) patterns.getAuth++;
+      if (/onAuthStateChanged/.test(file.content)) patterns.onAuthStateChanged++;
+    }
+
+    // If multiple auth patterns used, flag inconsistency
+    const usedPatterns = Object.entries(patterns).filter(([, count]) => count > 0);
+    if (usedPatterns.length > 1) {
+      findings.push({
+        type: "auth_pattern_inconsistency",
+        severity: "S2",
+        description: `Multiple auth patterns used: ${usedPatterns.map(([p]) => p).join(", ")}`,
+        files: authFiles.map((f) => f.file),
+      });
+    }
+  }
+
+  // Check for error handling inconsistencies
+  const errorPatterns = {
+    tryCatch: 0,
+    catchClause: 0,
+    resultType: 0,
+    throwError: 0,
+  };
+
+  for (const file of files) {
+    if (/try\s*\{/.test(file.content)) errorPatterns.tryCatch++;
+    if (/\.catch\(/.test(file.content)) errorPatterns.catchClause++;
+    if (/Result</.test(file.content)) errorPatterns.resultType++;
+    if (/throw new Error/.test(file.content)) errorPatterns.throwError++;
+  }
+
+  const usedErrorPatterns = Object.entries(errorPatterns).filter(([, count]) => count > 0);
+  if (usedErrorPatterns.length > 2) {
+    findings.push({
+      type: "error_handling_inconsistency",
+      severity: "S2",
+      description: `Inconsistent error handling: ${usedErrorPatterns.map(([p]) => p).join(", ")}`,
+      files: files.map((f) => f.file).slice(0, 5),
+    });
+  }
+
+  return findings;
+}
+
+module.exports = {
+  checkImportExists,
+  detectAIPatterns,
+  calculateAIHealthScore,
+  extractImports,
+  checkCrossSessionConsistency,
+  AI_PATTERNS,
+};

@@ -1,6 +1,6 @@
 # [Project Name] Multi-AI Performance Audit Plan
 
-**Document Version:** 1.2 **Created:** YYYY-MM-DD **Last Updated:** 2026-01-13
+**Document Version:** 1.3 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-02
 **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
 
 ---
@@ -17,14 +17,16 @@ performance-focused audit on [Project Name]. Use this template when:
 - After adding significant new features
 - Quarterly performance review
 
-**Review Focus Areas (6 Categories):**
+**Review Focus Areas (7 Categories):**
 
 1. Bundle Size & Loading
 2. Rendering Performance
 3. Data Fetching & Caching
 4. Memory Management
 5. Core Web Vitals
-6. Offline Support (NEW - 2026-01-13)
+6. Offline Support
+7. AI Performance Patterns (NEW - 2026-02-02) - naive data fetching, missing
+   pagination, redundant re-renders
 
 **Expected Output:** Performance findings with optimization plan, baseline
 metrics, and improvement targets.
@@ -442,6 +444,50 @@ FAILURE MODES TO DOCUMENT:
 
 Mark each check: ISSUE | OK | N/A Quote specific evidence.
 
+Category 7: AI Performance Patterns (NEW - 2026-02-02)
+
+Purpose: Detect performance anti-patterns common in AI-generated code.
+
+CHECKS: [ ] No naive data fetching (fetch-all then filter client-side) [ ]
+Pagination implemented for all lists (no unbounded queries) [ ]
+React.memo/useMemo used where appropriate (no redundant re-renders) [ ] No
+duplicate API calls (same data fetched in multiple components) [ ] Async
+operations used for I/O (no sync where async needed) [ ] Only necessary fields
+fetched (no over-fetching) [ ] Loading states present (Suspense boundaries,
+loading indicators) [ ] Firestore queries have limit() clauses
+
+PATTERNS TO FIND:
+
+- Fetch entire collection then `.filter()` client-side
+- `.get()` without `.limit()` on potentially large collections
+- Same `onSnapshot` or `useQuery` in multiple sibling components
+- Missing `React.memo` on components that receive same props
+- No `useMemo` for expensive computed values
+- No `useCallback` for functions passed to memoized children
+- `fs.readFileSync` in API routes (should be async)
+- Fetching entire document when only 2-3 fields needed
+
+VERIFICATION COMMANDS (if run_commands=yes):
+
+- grep -rn "\.get()" --include="\_.ts" | grep -v "\.limit(" (unbounded gets)
+- grep -rn "\.filter(" --include="\_.tsx" (client-side filtering)
+- grep -rn "onSnapshot" --include="\_.ts" | wc -l (count real-time listeners)
+- grep -rn "React\.memo\|useMemo\|useCallback" --include="\_.tsx" | wc -l
+  (memoization usage)
+- grep -rn "readFileSync\|writeFileSync" --include="\*.ts" (sync I/O)
+
+AI PERFORMANCE HEALTH INDICATORS:
+
+| Indicator          | Warning Threshold | Description                       |
+| ------------------ | ----------------- | --------------------------------- |
+| Unbounded queries  | > 0               | Queries without limit()           |
+| Client-side filter | > 5               | Filter after fetch                |
+| Missing memo       | > 20%             | Components without memoization    |
+| Sync I/O           | > 0               | Sync file operations in Node.js   |
+| Duplicate fetches  | > 3               | Same data fetched multiple places |
+
+Mark each check: ISSUE | OK | N/A Quote specific evidence.
+
 After each category: "Category X complete - Issues found: [number]"
 
 PHASE 4: DRAFT PERFORMANCE FINDINGS
@@ -698,6 +744,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                | Author   |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 1.3     | 2026-02-02 | Added Category 7: AI Performance Patterns with naive data fetching, missing pagination, redundant re-renders, AI performance health indicators. Expanded from 6 to 7 focus areas.                                                                                      | Claude   |
 | 1.2     | 2026-01-13 | Added Category 6: Offline Support (offline state detection, sync queue, pending/synced/failed states, conflict resolution, failure modes). From Engineering Productivity audit recommendations.                                                                        | Claude   |
 | 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added path adaptation notes | Claude   |
 | 1.0     | YYYY-MM-DD | Initial template creation                                                                                                                                                                                                                                              | [Author] |

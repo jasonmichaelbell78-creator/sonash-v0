@@ -1,6 +1,6 @@
 # Multi-AI Audit Aggregator Template
 
-**Document Version:** 2.4 **Last Updated:** 2026-01-17
+**Document Version:** 2.5 **Last Updated:** 2026-02-02
 
 ---
 
@@ -490,7 +490,52 @@ Goal: small, reviewable PRs.
 - Top 5 high-risk/high-payoff refactors
 - Key duplication clusters to consolidate
 - Items demoted as hallucinations
-- Recommended implementation order (with dependencies)
+- Recommended implementation order
+
+5. AI_HEALTH_SCORE.json (NEW - 2026-02-02)
+
+For AI-generated codebases, calculate and output:
+
+```json
+{
+  "overall_score": 0-100,
+  "factors": {
+    "hallucination_rate": {
+      "score": 0-100,
+      "weight": 0.30,
+      "details": "X imports verified, Y APIs validated"
+    },
+    "test_validity": {
+      "score": 0-100,
+      "weight": 0.25,
+      "details": "X tests with meaningful assertions"
+    },
+    "error_handling": {
+      "score": 0-100,
+      "weight": 0.20,
+      "details": "X% of functions have try/catch"
+    },
+    "consistency_score": {
+      "score": 0-100,
+      "weight": 0.15,
+      "details": "Pattern consistency across files"
+    },
+    "documentation_drift": {
+      "score": 0-100,
+      "weight": 0.10,
+      "details": "X% of docs match actual code"
+    }
+  },
+  "high_risk_areas": ["file1.ts", "file2.tsx"],
+  "recommendations": ["Fix hallucinated imports", "Add error handling"]
+}
+```
+
+**Cross-Reference AI Findings:**
+
+- Deduplicate hallucinations found by multiple audits
+- Merge consistency findings across code/security/performance
+- Calculate composite AI Health Score (with dependencies)
 
 ---
 
@@ -524,6 +569,7 @@ After completing aggregation (either Tier-1 or Tier-2), perform these updates:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                   | Author   |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 2.5     | 2026-02-02 | Added AI_HEALTH_SCORE.json output with factor weights (hallucination rate, test validity, error handling, consistency, documentation drift). Added cross-reference AI findings section.                                                                                                                                                                                   | Claude   |
 | 2.4     | 2026-01-17 | Added Post-Aggregation Actions section with roadmap update instructions; linked to `npm run aggregate:audit-findings` for automatic MASTER_ISSUE_LIST.md and ROADMAP.md updates                                                                                                                                                                                           | Claude   |
 | 2.3     | 2026-01-06 | Review #68: Added empty files[] fallback to sorting; Varied bullet starters in output format section; Capitalized Markdown consistently                                                                                                                                                                                                                                   | Claude   |
 | 2.2     | 2026-01-06 | Review #67: Added deterministic tiebreaker (files[0]) to ID sorting; Clarified verification for non-file locators; Capitalized Markdown proper noun                                                                                                                                                                                                                       | Claude   |
