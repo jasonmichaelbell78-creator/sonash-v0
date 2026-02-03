@@ -115,6 +115,7 @@ const STALE_THRESHOLDS = {
 
 /**
  * Get git last modified date for a file
+ * Falls back to filesystem mtime if git command fails (e.g., untracked files)
  */
 function getGitLastModified(filePath) {
   try {
@@ -124,7 +125,15 @@ function getGitLastModified(filePath) {
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
     });
-    return result.trim() ? new Date(result.trim()) : null;
+    if (result.trim()) {
+      return new Date(result.trim());
+    }
+  } catch {
+    // Git command failed - fall through to mtime fallback
+  }
+  // Fallback to filesystem modification time for untracked/new files
+  try {
+    return statSync(filePath).mtime;
   } catch {
     return null;
   }

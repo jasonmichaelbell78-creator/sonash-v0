@@ -462,6 +462,9 @@ cat ${AUDIT_DIR}/stage-2-*.jsonl \
 
 ### Step 6.2: Deduplicate
 
+**Input:** `${AUDIT_DIR}/all-findings-raw.jsonl` **Output:**
+`${AUDIT_DIR}/all-findings-deduped.jsonl`
+
 ```
 Remove duplicates where same file:line appears from multiple agents.
 Keep the finding with:
@@ -471,6 +474,9 @@ Keep the finding with:
 ```
 
 ### Step 6.3: Cross-Reference FALSE_POSITIVES.jsonl
+
+**Input:** `${AUDIT_DIR}/all-findings-deduped.jsonl` **Output:**
+`${AUDIT_DIR}/all-findings.jsonl` (final file for TDMS intake)
 
 ```
 Filter out findings matching patterns in docs/audits/FALSE_POSITIVES.jsonl:
