@@ -451,10 +451,14 @@ function main() {
   const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 
   if (args.length === 0) {
-    args.push("docs/reviews");
+    // Default to docs/reviews if it exists, otherwise no files to validate
+    const defaultPath = resolve(REPO_ROOT, "docs/reviews");
+    if (existsSync(defaultPath)) {
+      args.push("docs/reviews");
+    }
   }
 
-  const files = collectFilesFromArgs(args);
+  const files = args.length > 0 ? collectFilesFromArgs(args) : [];
 
   if (files.length === 0) {
     console.log("No CANON-*.jsonl files found.");

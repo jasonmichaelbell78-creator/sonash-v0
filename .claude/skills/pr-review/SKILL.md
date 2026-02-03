@@ -14,8 +14,11 @@ documented.
 1. **Fix Everything** - Including trivial items
 2. **Learning First** - Create log entry before fixes
 3. **Multi-Pass Verification** - Never miss an issue
-4. **Agent Augmentation** - Invoke specialists when needed
-5. **Full Documentation** - Every decision tracked
+4. **Parallel Agent Execution** - For 20+ items, spawn specialized agents in
+   parallel
+5. **Agent Augmentation** - Invoke domain specialists (security, docs, code
+   quality)
+6. **Full Documentation** - Every decision tracked
 
 ## Protocol Overview
 
@@ -30,7 +33,7 @@ STEP 2: CATEGORIZE (ALWAYS - Critical/Major/Minor/Trivial)
     ↓
 STEP 3: PLAN (TodoWrite - learning entry FIRST)
     ↓
-STEP 4: AGENTS (Invoke specialists per issue type)
+STEP 4: AGENTS (20+ items? → PARALLEL specialists, else sequential)
     ↓
 STEP 5: FIX (Priority order, verify each)
     ↓
@@ -268,7 +271,24 @@ todos:
 
 ## STEP 4: INVOKE SPECIALIZED AGENTS
 
-Based on the issues identified, invoke appropriate agents:
+### 4.1 Single vs Parallel Execution
+
+**Use PARALLEL agents when:**
+
+- Total suggestions ≥ 20 items
+- Multiple distinct files affected (3+ files)
+- Issues span multiple concern areas (security + code quality + docs)
+- User explicitly requests "multiple agents" or "parallel"
+- **No S0/S1 security issues are in scope** (S0/S1 security must run
+  focused/sequential)
+
+**Use SEQUENTIAL agents when:**
+
+- Total suggestions < 20 items
+- All issues in same file or same concern area
+- Simple/straightforward fixes
+
+### 4.2 Agent Selection Matrix
 
 | Issue Type               | Agent to Invoke                                   |
 | ------------------------ | ------------------------------------------------- |
@@ -278,8 +298,66 @@ Based on the issues identified, invoke appropriate agents:
 | Documentation issues     | `technical-writer` agent                          |
 | Complex debugging        | `debugger` agent                                  |
 | Architecture concerns    | `backend-architect` or `frontend-developer` agent |
+| General code quality     | `code-reviewer` agent                             |
 
-**Invoke using Task tool** with the specific issues to address.
+### 4.3 Parallel Agent Strategy (for 20+ items)
+
+**Step 1: Group issues by concern area:**
+
+```
+Security Issues:      [1, 5, 12] → security-auditor agent
+Documentation Issues: [3, 8]     → technical-writer agent
+Script Files:         [2, 4, 6]  → code-reviewer agent (scripts)
+TypeScript Files:     [7, 9-11]  → code-reviewer agent (TS/React)
+```
+
+**Step 2: Create parallel batches:**
+
+- Batch by file type OR concern area (whichever produces fewer batches)
+- Maximum 4 parallel agents at once (avoid context overload)
+- Each agent gets specific file list + issue numbers
+
+**Step 3: Launch agents in parallel:**
+
+```
+Use Task tool with MULTIPLE invocations in SINGLE message:
+
+Agent 1: security-auditor
+- Prompt: "Fix security issues [1, 5, 12] in files: check-external-links.js
+  Issues: SSRF vulnerability, timeout validation, ..."
+
+Agent 2: code-reviewer
+- Prompt: "Fix code quality issues [2, 4, 6] in files: check-doc-placement.js
+  Issues: Regex precedence, .planning exclusion, ..."
+
+Agent 3: technical-writer
+- Prompt: "Fix documentation issues [3, 8] in file: SKILL.md
+  Issues: Shell redirection order, code fence syntax, ..."
+```
+
+**Step 4: Collect and verify results:**
+
+- All agents return to orchestrator when complete
+- Run verification: `npm run lint && npm run patterns:check`
+- Check for any merge conflicts in overlapping files
+
+### 4.4 Parallel Execution Benefits
+
+| Metric     | Sequential        | Parallel (4 agents) |
+| ---------- | ----------------- | ------------------- |
+| Speed      | N issues × T time | ~N/4 × T time       |
+| Accuracy   | Context fatigue   | Fresh context each  |
+| Expertise  | Generalist        | Domain specialists  |
+| Throughput | ~20 items/session | ~80+ items/session  |
+
+### 4.5 When NOT to Parallelize
+
+- ❌ Issues have dependencies (fix A before B)
+- ❌ All issues in single file (one agent is sufficient)
+- ❌ User requests sequential processing
+- ❌ Critical security issues (need focused attention)
+
+**Invoke using Task tool** with specific issues to address.
 
 ---
 
@@ -541,8 +619,10 @@ Create commit(s) following project conventions:
 4. **ALWAYS verify fixes** - Multiple passes
 5. **ALWAYS use TodoWrite** - Track every item
 6. **ALWAYS invoke specialized agents** - When issue matches their domain
-7. **NEVER silently ignore** - Document all decisions
-8. **MONITOR document health** - Archive when all criteria in Step 7.5 are met
+7. **USE PARALLEL AGENTS for 20+ items** - Group by file/concern, launch 2-4
+   simultaneously
+8. **NEVER silently ignore** - Document all decisions
+9. **MONITOR document health** - Archive when all criteria in Step 7.5 are met
 
 ## Anti-Patterns to Avoid
 
@@ -552,8 +632,10 @@ Create commit(s) following project conventions:
 - ❌ Forgetting learning entry
 - ❌ Not using TodoWrite for tracking
 - ❌ Not invoking specialist agents when applicable
+- ❌ Sequential processing of 50+ items when parallel is feasible
 - ❌ Single-pass parsing of large reviews (200+ lines)
 - ❌ Trusting AI claims about "missing data" without git verification
+- ❌ Running more than 4 parallel agents (context overload)
 
 ---
 

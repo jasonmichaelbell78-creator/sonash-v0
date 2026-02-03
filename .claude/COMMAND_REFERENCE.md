@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 2.5 **Last Updated:** 2026-02-01 **Purpose:** Comprehensive
+**Version:** 2.6 **Last Updated:** 2026-02-02 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -36,9 +36,11 @@ output **Note:** S0/S1 findings require `verification_steps` (Session #98)
 
 ### `/audit-documentation`
 
-**Description:** Run a single-session documentation audit **When to use:** Check
-for broken links, stale docs, coverage gaps **Example:** `/audit-documentation`
-**Parameters:** None **Output:** Documentation issues and recommendations
+**Description:** Run multi-stage parallel documentation audit with 18 agents
+**When to use:** Check for broken links, stale docs, coverage gaps, content
+accuracy, lifecycle issues **Example:** `/audit-documentation` **Parameters:**
+None **Output:** Staged findings with TDMS integration, priority action plan
+**Note:** v2.0 (Session #124) - 6-stage parallel audit architecture
 
 ### `/audit-performance`
 
@@ -586,9 +588,12 @@ codebase health assessment **Example:** Before major release or quarterly review
 
 #### `audit-documentation`
 
-**Description:** Run single-session documentation audit on the codebase **When
-to use:** Documentation health check **Example:** Quarterly doc review
-**Parameters:** None
+**Description:** Run multi-stage parallel documentation audit with 18
+specialized agents across 6 stages (Inventory, Link Validation, Content Quality,
+Format & Structure, Placement & Lifecycle, Synthesis) **When to use:**
+Documentation health check, quarterly doc review, link validation, staleness
+detection **Example:** `/audit-documentation` **Parameters:** None **Updated:**
+Session #124 - rewritten with parallel agent architecture
 
 #### `audit-performance`
 
@@ -1852,6 +1857,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                                                                                                                         |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.6     | 2026-02-02 | Session #124: Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents), added 3 new scripts and 4 npm scripts                   |
 | 2.5     | 2026-02-01 | Session #123: Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt) - TDMS all 17 phases complete         |
 | 2.3     | 2026-01-29 | Session #115: Added auto-commit mechanism to session-end skill (`npm run session:end`) to prevent forgetting session-end commits                                |
 | 2.2     | 2026-01-29 | Session #114: Added 3 missing skills (audit-aggregator, audit-comprehensive, checkpoint), documented 14 undocumented hooks, clarified commands→skills migration |
