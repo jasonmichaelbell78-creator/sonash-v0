@@ -465,7 +465,13 @@ function checkStaleness(filePath, content) {
  * Find all markdown files recursively
  */
 function findMarkdownFiles(dir, files = []) {
-  const entries = readdirSync(dir);
+  let entries;
+  try {
+    entries = readdirSync(dir);
+  } catch {
+    // Skip directories we can't read (permissions, etc.)
+    return files;
+  }
 
   for (const entry of entries) {
     const fullPath = join(dir, entry);

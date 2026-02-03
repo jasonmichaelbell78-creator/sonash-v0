@@ -279,6 +279,8 @@ todos:
 - Multiple distinct files affected (3+ files)
 - Issues span multiple concern areas (security + code quality + docs)
 - User explicitly requests "multiple agents" or "parallel"
+- **No S0/S1 security issues are in scope** (S0/S1 security must run
+  focused/sequential)
 
 **Use SEQUENTIAL agents when:**
 

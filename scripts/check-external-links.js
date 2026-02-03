@@ -178,6 +178,13 @@ function isInternalIP(ip) {
 async function checkHostnameSafe(hostname) {
   // SSRF Protection: If hostname is an IP literal, validate directly
   // This prevents bypass where attacker uses http://127.0.0.1/ or http://169.254.169.254/
+  //
+  // Known limitation: DNS rebinding attacks
+  // This pre-flight check resolves DNS once, but the actual HTTP request resolves again.
+  // An attacker could theoretically have a DNS record that alternates between external and
+  // internal IPs (rebinding). Mitigating this fully would require making requests to the
+  // resolved IP directly with Host header override, which is more complex and breaks some
+  // sites. For a documentation link checker, this risk is acceptable.
   const ipv4Literal = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname);
   const ipv6Literal = hostname.includes(":") && /^[0-9a-fA-F:]+$/.test(hostname);
   if (ipv4Literal || ipv6Literal) {
@@ -483,7 +490,13 @@ async function checkUrl(urlString) {
  * Find all markdown files recursively
  */
 function findMarkdownFiles(dir, files = []) {
-  const entries = readdirSync(dir);
+  let entries;
+  try {
+    entries = readdirSync(dir);
+  } catch {
+    // Skip directories we can't read (permissions, etc.)
+    return files;
+  }
 
   for (const entry of entries) {
     const fullPath = join(dir, entry);
@@ -603,7 +616,7 @@ async function main() {
     checked++;
 
     if (VERBOSE) {
-      console.log(`[${checked}/${uniqueUrls.length}] Checking: ${url.substring(0, 60)}...`);
+      console.log(`[${checked}/${uniqueUrls.length}] Checking: ${sanitizeUrlForLogging(url)}...`);
     }
 
     const checkResult = await checkUrl(url);
@@ -633,7 +646,7 @@ async function main() {
 
     if (!checkResult.ok && !QUIET) {
       const errorSuffix = checkResult.error ? ` (${checkResult.error})` : "";
-      console.log(`  ❌ ${url.substring(0, 50)}... → ${checkResult.status}${errorSuffix}`);
+      console.log(`  ❌ ${sanitizeUrlForLogging(url)} → ${checkResult.status}${errorSuffix}`);
     }
   }
 
