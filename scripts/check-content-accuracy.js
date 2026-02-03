@@ -70,7 +70,7 @@ function findMarkdownFiles(dir, files = []) {
     const fullPath = join(dir, entry);
 
     if (
-      entry.startsWith(".") ||
+      entry[0] === "." ||
       entry === "node_modules" ||
       entry === "out" ||
       entry === "dist" ||
@@ -228,15 +228,13 @@ function checkPathReferences(content, filePath) {
           continue;
         }
 
-        // Try to resolve the path
-        const resolvedPath =
-          path.startsWith("./") || path.startsWith("../")
-            ? resolve(docDir, path)
-            : resolve(ROOT, path);
+        // Try to resolve the path (check for relative path prefix)
+        const isRelativePath = /^\.\.?[\\/]/.test(path);
+        const resolvedPath = isRelativePath ? resolve(docDir, path) : resolve(ROOT, path);
 
         // Security: prevent path traversal outside repository root
         const relToRoot = relative(ROOT, resolvedPath).replaceAll(/\\/g, "/");
-        if (relToRoot.startsWith("../") || relToRoot === "..") {
+        if (/^\.\.(?:[\\/]|$)/.test(relToRoot)) {
           continue;
         }
 

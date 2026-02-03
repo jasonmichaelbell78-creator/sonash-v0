@@ -494,6 +494,13 @@ const ANTI_PATTERNS = [
       "sync-claude-settings.js",
       "statusline.js",
       "gsd-check-update.js",
+      // 2026-02-02 audit (PR #329):
+      // - check-content-accuracy.js: readFileSync at L49 IS in try/catch (L47-52), L408 IS in try/catch (L407)
+      // - check-doc-placement.js: readFileSync at L504 IS in try/catch (L503)
+      // - check-external-links.js: readFileSync at L580 IS in try/catch (L579-587)
+      "check-content-accuracy.js",
+      "check-doc-placement.js",
+      "check-external-links.js",
     ],
   },
   {

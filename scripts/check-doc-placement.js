@@ -471,7 +471,7 @@ function findMarkdownFiles(dir, files = []) {
     const fullPath = join(dir, entry);
 
     if (
-      (entry.startsWith(".") && entry !== ".planning") ||
+      (entry[0] === "." && entry !== ".planning") ||
       entry === "node_modules" ||
       entry === "out" ||
       entry === "dist"

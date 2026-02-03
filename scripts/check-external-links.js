@@ -488,9 +488,9 @@ function findMarkdownFiles(dir, files = []) {
   for (const entry of entries) {
     const fullPath = join(dir, entry);
 
-    // Skip excluded directories
+    // Skip excluded directories (hidden files/folders start with .)
     if (
-      entry.startsWith(".") ||
+      entry[0] === "." ||
       entry === "node_modules" ||
       entry === "out" ||
       entry === "dist" ||
