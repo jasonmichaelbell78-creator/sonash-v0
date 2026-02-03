@@ -577,8 +577,8 @@ performance audits **Parameters:** None **Added:** Session #114
 
 **Description:** Run code review audit with 3-agent parallel architecture
 (hygiene-and-types, framework-and-testing, security-and-debugging). Includes
-enhanced AICode patterns for hallucination detection, session consistency, and
-test validity. **When to use:** Code quality check, AI-codebase health
+enhanced AI Code Patterns for hallucination detection, session consistency, and
+test validity. **When to use:** Code quality check, AI codebase health
 assessment **Example:** Pre-commit review or AI Health Score calculation
 **Parameters:** None **Updated:** Session #125 - parallel architecture + AI Code
 Patterns

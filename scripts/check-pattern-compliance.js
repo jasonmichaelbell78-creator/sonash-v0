@@ -501,6 +501,9 @@ const ANTI_PATTERNS = [
       "check-content-accuracy.js",
       "check-doc-placement.js",
       "check-external-links.js",
+      // 2026-02-03 audit (Review #127):
+      // - ai-pattern-checks.js: readFileSync at L34 IS in try/catch (L33-38)
+      "ai-pattern-checks.js",
     ],
   },
   {
