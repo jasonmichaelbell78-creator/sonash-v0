@@ -244,7 +244,44 @@ If audit results are in prose/narrative format (not JSONL):
 
 ## 3. Verification Process
 
-### 3.1 When to Verify
+### 3.1 S0/S1 Verification Requirements
+
+For S0 (Critical) and S1 (High) severity findings, additional verification is
+**REQUIRED** before moving to VERIFIED status. This aligns with the
+`verification_steps` requirement in
+[JSONL_SCHEMA_STANDARD.md](../templates/JSONL_SCHEMA_STANDARD.md).
+
+**Verification Steps for S0/S1:**
+
+1. **First Pass:** Review the finding and confirm initial evidence
+2. **Second Pass:** Re-read the code in context to confirm issue exists
+3. **Tool Confirmation:** Cross-reference with available tools (ESLint, npm
+   audit, patterns:check, SonarCloud)
+
+**Documentation Required:**
+
+When verifying S0/S1 items, add verification details to the `evidence` field:
+
+```json
+{
+  "evidence": [
+    "Original evidence...",
+    "VERIFICATION: First pass confirmed at file.ts:45 on 2026-02-02",
+    "VERIFICATION: Second pass - no existing mitigation found",
+    "VERIFICATION: Tool confirmed by eslint rule no-unsafe-return"
+  ]
+}
+```
+
+**Downgrade Path:**
+
+If verification reveals the issue is less severe than initially reported:
+
+- Downgrade from S0/S1 to S2/S3
+- Add downgrade reason to evidence
+- Update `verified_by` field with verifier identity
+
+### 3.2 When to Verify
 
 Verification is triggered when:
 
@@ -252,7 +289,7 @@ Verification is triggered when:
 - > 3 days since last verification
 - Session-start hook will alert you
 
-### 3.2 Running Verification
+### 3.3 Running Verification
 
 ```
 Use the verify-technical-debt skill
@@ -266,7 +303,7 @@ For each item, the skill will:
 4. Update MASTER_DEBT.jsonl
 5. Generate verification report
 
-### 3.3 Verification Batching
+### 3.4 Verification Batching
 
 Verify items by priority:
 
@@ -277,7 +314,7 @@ Verify items by priority:
 | 3     | S2 (Medium)   | ~150-250 |
 | 4     | S3 (Low)      | ~200-300 |
 
-### 3.4 Marking False Positives
+### 3.5 Marking False Positives
 
 If an item is not actual technical debt:
 
@@ -539,6 +576,7 @@ node scripts/debt/intake-audit.js findings.jsonl \
 
 | Version | Date       | Changes                                                                                                                              |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 1.2     | 2026-02-02 | Added Section 3.1 (S0/S1 Verification Requirements) aligning with JSONL_SCHEMA_STANDARD verification_steps                           |
 | 1.1     | 2026-02-01 | **TDMS Phase 9b**: Added Section 2.5 (One-Off/Ad-Hoc Audits), Section 11 (Category Normalization mapping tables for all audit types) |
 | 1.0     | 2026-01-30 | Initial PROCEDURE.md created (TDMS Phase 2)                                                                                          |
 

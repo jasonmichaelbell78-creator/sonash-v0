@@ -346,3 +346,25 @@ node scripts/add-false-positive.js \
   --reason "Explanation of why this is intentional complexity" \
   --source "AI_REVIEW_LEARNINGS_LOG.md#review-XXX"
 ```
+
+---
+
+## Documentation References
+
+Before running this audit, review:
+
+### TDMS Integration (Required)
+
+- [PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - Full TDMS workflow
+- [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) - Canonical debt
+  store
+- Intake command:
+  `node scripts/debt/intake-audit.js <output.jsonl> --source "audit-refactoring-<date>"`
+
+### Documentation Standards (Required)
+
+- [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Output
+  format requirements and TDMS field mapping
+- [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) - 5-tier doc
+  hierarchy
+- [CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) - Anti-patterns to check

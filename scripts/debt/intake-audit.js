@@ -7,11 +7,26 @@
  *
  * Process:
  * 1. Validates input file schema
- * 2. Checks for duplicates against MASTER_DEBT.jsonl
- * 3. Assigns DEBT-XXXX IDs to new items
- * 4. Appends to MASTER_DEBT.jsonl
- * 5. Regenerates views
- * 6. Logs intake activity
+ * 2. Maps Doc Standards JSONL format to TDMS format (if detected)
+ * 3. Checks for duplicates against MASTER_DEBT.jsonl
+ * 4. Assigns DEBT-XXXX IDs to new items
+ * 5. Appends to MASTER_DEBT.jsonl
+ * 6. Regenerates views
+ * 7. Logs intake activity (including confidence values from Doc Standards)
+ *
+ * Supports two input formats:
+ * - TDMS format (native): Uses fields like source_id, file, description, recommendation
+ * - Doc Standards format: Uses fields like fingerprint, files[], why_it_matters, suggested_fix
+ *
+ * Doc Standards → TDMS field mapping (automatic):
+ *   fingerprint      → source_id (converted: category::file::id → audit:category-file-id)
+ *   files[0]         → file (first path extracted, with optional :line extraction)
+ *   why_it_matters   → description
+ *   suggested_fix    → recommendation
+ *   acceptance_tests → evidence (appended with [Acceptance] prefix)
+ *   confidence       → logged to intake-log.jsonl (not stored in MASTER_DEBT)
+ *
+ * See: docs/templates/JSONL_SCHEMA_STANDARD.md for field mapping documentation
  */
 
 const fs = require("fs");
@@ -70,6 +85,101 @@ function normalizeFilePath(filePath) {
   return normalized;
 }
 
+/**
+ * Map Documentation Standards JSONL format to TDMS format
+ *
+ * Doc Standards fields → TDMS fields:
+ *   fingerprint    → source_id (converted)
+ *   files[0]       → file (first file path extracted)
+ *   why_it_matters → description
+ *   suggested_fix  → recommendation
+ *   acceptance_tests → evidence (appended)
+ *   confidence     → (logged only, not stored)
+ *
+ * @param {Object} item - Raw input item (may be Doc Standards or TDMS format)
+ * @returns {Object} - Item normalized to TDMS format with metadata
+ */
+function mapDocStandardsToTdms(item) {
+  const mapped = { ...item };
+  const metadata = { format_detected: "tdms", mappings_applied: [] };
+
+  // Detect Doc Standards format by presence of Doc Standards-specific fields
+  const hasDocStandardsFields =
+    item.fingerprint ||
+    item.files ||
+    item.why_it_matters ||
+    item.suggested_fix ||
+    item.acceptance_tests;
+
+  if (hasDocStandardsFields) {
+    metadata.format_detected = "doc-standards";
+
+    // Map fingerprint → source_id
+    if (item.fingerprint && !item.source_id) {
+      // fingerprint format: "category::file::id" → convert to audit:UUID format
+      mapped.source_id = `audit:${item.fingerprint.replace(/::/g, "-")}`;
+      metadata.mappings_applied.push("fingerprint→source_id");
+    }
+
+    // Map files[0] → file (with optional line extraction)
+    if (Array.isArray(item.files) && item.files.length > 0 && !item.file) {
+      const firstFile = item.files[0];
+      // Check for file:line format
+      const lineMatch = firstFile.match(/^(.+):(\d+)$/);
+      if (lineMatch) {
+        mapped.file = lineMatch[1];
+        if (!item.line) {
+          mapped.line = parseInt(lineMatch[2], 10);
+          metadata.mappings_applied.push("files[0]→file+line");
+        } else {
+          metadata.mappings_applied.push("files[0]→file");
+        }
+      } else {
+        mapped.file = firstFile;
+        metadata.mappings_applied.push("files[0]→file");
+      }
+    }
+
+    // Map why_it_matters → description
+    if (item.why_it_matters && !item.description) {
+      mapped.description = item.why_it_matters;
+      metadata.mappings_applied.push("why_it_matters→description");
+    }
+
+    // Map suggested_fix → recommendation
+    if (item.suggested_fix && !item.recommendation) {
+      mapped.recommendation = item.suggested_fix;
+      metadata.mappings_applied.push("suggested_fix→recommendation");
+    }
+
+    // Map acceptance_tests → append to evidence
+    if (Array.isArray(item.acceptance_tests) && item.acceptance_tests.length > 0) {
+      const existingEvidence = Array.isArray(item.evidence) ? item.evidence : [];
+      mapped.evidence = [
+        ...existingEvidence,
+        ...item.acceptance_tests.map((t) => `[Acceptance] ${t}`),
+      ];
+      metadata.mappings_applied.push("acceptance_tests→evidence");
+    }
+
+    // Extract confidence for logging (not stored in MASTER_DEBT)
+    if (item.confidence !== undefined) {
+      metadata.confidence = item.confidence;
+      metadata.mappings_applied.push("confidence→logged");
+    }
+
+    // Clean up Doc Standards-specific fields that shouldn't be in TDMS
+    delete mapped.fingerprint;
+    delete mapped.files;
+    delete mapped.why_it_matters;
+    delete mapped.suggested_fix;
+    delete mapped.acceptance_tests;
+    delete mapped.confidence;
+  }
+
+  return { item: mapped, metadata };
+}
+
 // Ensure value is in valid set
 function ensureValid(value, validSet, defaultValue) {
   if (validSet.includes(value)) return value;
@@ -95,10 +205,13 @@ function getNextDebtId(existingItems) {
 function validateAndNormalize(item, sourceFile) {
   const errors = [];
 
-  // Required fields check
-  if (!item.title) errors.push("Missing required field: title");
-  if (!item.severity) errors.push("Missing required field: severity");
-  if (!item.category) errors.push("Missing required field: category");
+  // First, apply Doc Standards → TDMS field mapping
+  const { item: mappedItem, metadata: mappingMetadata } = mapDocStandardsToTdms(item);
+
+  // Required fields check (after mapping)
+  if (!mappedItem.title) errors.push("Missing required field: title");
+  if (!mappedItem.severity) errors.push("Missing required field: severity");
+  if (!mappedItem.category) errors.push("Missing required field: category");
 
   if (errors.length > 0) {
     return { valid: false, errors };
@@ -106,20 +219,23 @@ function validateAndNormalize(item, sourceFile) {
 
   // Normalize the item
   const normalized = {
-    source_id: item.source_id || `audit:${crypto.randomUUID()}`,
+    source_id: mappedItem.source_id || `audit:${crypto.randomUUID()}`,
     source_file: sourceFile,
-    category: ensureValid(item.category, VALID_CATEGORIES, "code-quality"),
-    severity: ensureValid(item.severity, VALID_SEVERITIES, "S2"),
-    type: ensureValid(item.type, VALID_TYPES, "code-smell"),
-    file: normalizeFilePath(item.file || ""),
+    category: ensureValid(mappedItem.category, VALID_CATEGORIES, "code-quality"),
+    severity: ensureValid(mappedItem.severity, VALID_SEVERITIES, "S2"),
+    type: ensureValid(mappedItem.type, VALID_TYPES, "code-smell"),
+    file: normalizeFilePath(mappedItem.file || ""),
     // Preserve numeric line info - parse strings, keep numbers, default to 0
-    line: typeof item.line === "number" ? item.line : parseInt(String(item.line), 10) || 0,
-    title: (item.title || "Untitled").substring(0, 500),
-    description: item.description || "",
-    recommendation: item.recommendation || "",
-    effort: ensureValid(item.effort, VALID_EFFORTS, "E1"),
+    line:
+      typeof mappedItem.line === "number"
+        ? mappedItem.line
+        : parseInt(String(mappedItem.line), 10) || 0,
+    title: (mappedItem.title || "Untitled").substring(0, 500),
+    description: mappedItem.description || "",
+    recommendation: mappedItem.recommendation || "",
+    effort: ensureValid(mappedItem.effort, VALID_EFFORTS, "E1"),
     status: "NEW",
-    roadmap_ref: item.roadmap_ref || null,
+    roadmap_ref: mappedItem.roadmap_ref || null,
     created: new Date().toISOString().split("T")[0],
     verified_by: null,
     resolution: null,
@@ -129,10 +245,11 @@ function validateAndNormalize(item, sourceFile) {
   normalized.content_hash = generateContentHash(normalized);
 
   // Preserve optional metadata
-  if (item.rule) normalized.rule = item.rule;
-  if (item.evidence && item.evidence.length > 0) normalized.evidence = item.evidence;
+  if (mappedItem.rule) normalized.rule = mappedItem.rule;
+  if (mappedItem.evidence && mappedItem.evidence.length > 0)
+    normalized.evidence = mappedItem.evidence;
 
-  return { valid: true, item: normalized };
+  return { valid: true, item: normalized, mappingMetadata };
 }
 
 // Load existing items from MASTER_DEBT.jsonl with safe JSON parsing
@@ -236,6 +353,14 @@ async function main() {
   const errors = [];
   let nextId = getNextDebtId(existingItems);
 
+  // Track Doc Standards format statistics
+  const formatStats = {
+    tdms: 0,
+    "doc-standards": 0,
+    mappings: {},
+    confidenceLogs: [],
+  };
+
   for (let i = 0; i < inputLines.length; i++) {
     const line = inputLines[i];
     try {
@@ -248,6 +373,22 @@ async function main() {
       }
 
       const normalizedItem = result.item;
+      const mappingMetadata = result.mappingMetadata;
+
+      // Track format statistics
+      if (mappingMetadata) {
+        formatStats[mappingMetadata.format_detected]++;
+        for (const mapping of mappingMetadata.mappings_applied || []) {
+          formatStats.mappings[mapping] = (formatStats.mappings[mapping] || 0) + 1;
+        }
+        // Log confidence values for analysis (not stored in MASTER_DEBT)
+        if (mappingMetadata.confidence !== undefined) {
+          formatStats.confidenceLogs.push({
+            title: normalizedItem.title.substring(0, 50),
+            confidence: mappingMetadata.confidence,
+          });
+        }
+      }
 
       // Check for duplicate using Map for O(1) lookup
       if (existingHashMap.has(normalizedItem.content_hash)) {
@@ -274,6 +415,24 @@ async function main() {
   console.log(`  ✅ New items to add: ${newItems.length}`);
   console.log(`  ⏭️  Duplicates skipped: ${duplicates.length}`);
   console.log(`  ❌ Validation errors: ${errors.length}`);
+
+  // Report format detection statistics
+  if (formatStats["doc-standards"] > 0) {
+    console.log(`\n  📋 Format Detection:`);
+    console.log(`    - TDMS format: ${formatStats.tdms} items`);
+    console.log(
+      `    - Doc Standards format: ${formatStats["doc-standards"]} items (mapped to TDMS)`
+    );
+    if (Object.keys(formatStats.mappings).length > 0) {
+      console.log(`    - Field mappings applied:`);
+      for (const [mapping, count] of Object.entries(formatStats.mappings)) {
+        console.log(`        ${mapping}: ${count}`);
+      }
+    }
+    if (formatStats.confidenceLogs.length > 0) {
+      console.log(`    - Confidence values logged: ${formatStats.confidenceLogs.length} items`);
+    }
+  }
 
   if (duplicates.length > 0 && duplicates.length <= 10) {
     console.log("\n  Skipped duplicates:");
@@ -314,7 +473,7 @@ async function main() {
   const newLines = newItems.map((item) => JSON.stringify(item));
   fs.appendFileSync(MASTER_FILE, newLines.join("\n") + "\n");
 
-  // Log intake activity
+  // Log intake activity (including format statistics and confidence values)
   logIntake({
     action: "intake-audit",
     input_file: inputFile,
@@ -324,6 +483,13 @@ async function main() {
     errors: errors.length,
     first_id: newItems[0]?.id,
     last_id: newItems[newItems.length - 1]?.id,
+    format_stats: {
+      tdms_format: formatStats.tdms,
+      doc_standards_format: formatStats["doc-standards"],
+      mappings_applied: formatStats.mappings,
+    },
+    // Log confidence values for analysis (per JSONL_SCHEMA_STANDARD.md)
+    confidence_logs: formatStats.confidenceLogs.length > 0 ? formatStats.confidenceLogs : undefined,
   });
 
   // Regenerate views

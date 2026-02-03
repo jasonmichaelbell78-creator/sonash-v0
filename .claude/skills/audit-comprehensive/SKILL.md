@@ -395,3 +395,23 @@ Use individual skills instead:
 - `/audit-refactoring` - Individual refactoring audit
 - `/audit-process` - Individual process/automation audit
 - `/audit-aggregator` - Standalone aggregation (if you have existing reports)
+
+---
+
+## Documentation References
+
+Before running this audit, review:
+
+### TDMS Integration (Required)
+
+- [PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - Full TDMS workflow
+- [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) - Canonical debt
+  store
+- All individual audits automatically run TDMS intake after completion
+
+### Documentation Standards (Required)
+
+- [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Output
+  format requirements and TDMS field mapping (used by aggregator)
+- [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) - 5-tier doc
+  hierarchy

@@ -1263,3 +1263,25 @@ node scripts/debt/intake-audit.js "${AUDIT_DIR}/all-findings-raw.jsonl"
 | 2.1     | 2026-01-31 | Added CRITICAL persistence rules: agents MUST write to files |
 | 2.0     | 2026-01-31 | Expanded: 16 types, 12 categories, 7 stages, parallel agents |
 | 1.0     | 2026-01-17 | Initial single-session process audit                         |
+
+---
+
+## Documentation References
+
+Before running this audit, review:
+
+### TDMS Integration (Required)
+
+- [PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - Full TDMS workflow
+- [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) - Canonical debt
+  store
+- Intake command:
+  `node scripts/debt/intake-audit.js <output.jsonl> --source "audit-process-<date>"`
+
+### Documentation Standards (Required)
+
+- [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Output
+  format requirements and TDMS field mapping
+- [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) - 5-tier doc
+  hierarchy
+- [CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) - Anti-patterns to check
