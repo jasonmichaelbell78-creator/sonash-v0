@@ -67,6 +67,46 @@ and context.
 
 ## STEP 0: CONTEXT LOADING (Tiered Access)
 
+### 0.1 Episodic Memory Search (Session #128)
+
+**BEFORE loading tiered docs, search episodic memory for relevant past
+reviews:**
+
+```javascript
+// Search for past reviews on similar files/patterns
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["pr-review", "CodeRabbit", "pattern"],
+    limit: 5,
+  });
+
+// Or search for specific error patterns you're about to address
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: "key phrase from review feedback",
+    limit: 5,
+  });
+```
+
+**Why this matters:**
+
+- Same patterns may have been addressed in prior PRs
+- Past reviews contain root cause analysis and learnings
+- Prevents re-investigating issues that were resolved before
+- Reveals recurring patterns that need architectural attention
+
+**If memory shows prior occurrence:**
+
+1. Read the past conversation for context
+2. Check if the same pattern/fix applies
+3. Note if this is a recurring issue (should escalate)
+
+**If no memory found:** Proceed to tiered document loading.
+
+### 0.2 Tiered Document Loading
+
 Before processing, load context using the tiered model:
 
 **Tier 1 (Always):**

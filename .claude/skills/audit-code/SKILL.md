@@ -113,6 +113,37 @@ debugging
 
 ## Pre-Audit Validation
 
+**Step 0: Episodic Memory Search (Session #128)**
+
+Before running code audit, search for context from past code review sessions:
+
+```javascript
+// Search for past code audit findings
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["code audit", "patterns", "quality"],
+    limit: 5,
+  });
+
+// Search for AI-generated code issues addressed before
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["AICode", "hallucinated", "dead code"],
+    limit: 5,
+  });
+```
+
+**Why this matters:**
+
+- Compare against previous code quality findings
+- Identify recurring anti-patterns (may indicate architectural debt)
+- Track which issues were resolved vs regressed
+- Prevent re-flagging known patterns
+
+---
+
 **Step 1: Check Thresholds**
 
 Run `npm run review:check` and report results. If no thresholds are triggered:

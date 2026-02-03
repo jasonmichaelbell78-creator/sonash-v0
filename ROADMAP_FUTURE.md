@@ -1,11 +1,14 @@
 # SoNash Future Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.2
-**Last Updated:** 2026-01-29
+**Document Version:** 1.3
+**Last Updated:** Session #128 (2026-02-03)
 **Status:** ACTIVE
 **Parent Document:** [ROADMAP.md](./ROADMAP.md)
 <!-- prettier-ignore-end -->
+
+> **v1.3 UPDATE:** Aligned with ROADMAP.md v3.17 timing system. Uses Phase +
+> Priority instead of target dates.
 
 > **Purpose:** Detailed specifications for future milestones (M2-M10). For
 > active sprint work and current priorities, see [ROADMAP.md](./ROADMAP.md).
@@ -133,8 +136,8 @@ sessions.
 
 ## 🏛️ M2 - Architecture Refactor (⏸️ Optional)
 
-**Story Points:** ~200 SP | **Priority:** P2 | **Items:** ~72 | **Target:** As
-needed
+**Story Points:** ~200 SP | **Priority:** P2 | **Items:** ~72 | **Phase:**
+Parallel (can run alongside any phase)
 
 > **Status:** Optional maintenance milestone. Items can be pulled into active
 > sprints as needed without activating entire milestone.
@@ -243,9 +246,9 @@ needed
 
 ---
 
-## 🗓️ M3 - Meetings & Location (📋 Planned - Q2 2026)
+## 🗓️ M3 - Meetings & Location (📋 Planned)
 
-**Story Points:** ~45 SP | **Priority:** P1 | **Items:** 6 | **Target:** Q2 2026
+**Story Points:** ~45 SP | **Priority:** P1 | **Items:** 6 | **Phase:** Core
 
 ### Features
 
@@ -263,10 +266,9 @@ needed
 
 ---
 
-## 🎯 M4 - Feature Expansion (📋 Planned - Q2 2026)
+## 🎯 M4 - Feature Expansion (📋 Planned)
 
-**Story Points:** ~60 SP | **Priority:** P1 | **Items:** ~8 | **Target:** Q2
-2026
+**Story Points:** ~60 SP | **Priority:** P1 | **Items:** ~8 | **Phase:** Core
 
 ### Features
 
@@ -281,10 +283,9 @@ needed
 
 ---
 
-## 🔐 M4.5 - Security & Privacy (📋 Planned - Q2 2026)
+## 🔐 M4.5 - Security & Privacy (📋 Planned)
 
-**Story Points:** ~85 SP | **Priority:** P0 | **Items:** 13 | **Target:** Q2
-2026
+**Story Points:** ~85 SP | **Priority:** P0 | **Items:** 13 | **Phase:** Core
 
 > **CRITICAL GATE:** This milestone MUST complete before M5 (Offline) can begin.
 > All offline data storage requires encryption infrastructure from M4.5.
@@ -333,10 +334,10 @@ These can start immediately (no encryption dependency):
 
 ---
 
-## 📝 M5 - Offline + Steps (📋 Planned - Q3 2026)
+## 📝 M5 - Offline + Steps (📋 Planned)
 
-**Story Points:** ~150 SP | **Priority:** P1 | **Items:** 23 | **Target:** Q3
-2026
+**Story Points:** ~150 SP | **Priority:** P1 | **Items:** 23 | **Phase:**
+Enhancement
 
 > **Prerequisite:** M4.5 (Encryption) must complete first
 
@@ -379,10 +380,10 @@ Core offline-first architecture (sequential - has dependencies):
 
 ---
 
-## 🙏 M6 - Journaling + Safety (📋 Planned - Q3 2026)
+## 🙏 M6 - Journaling + Safety (📋 Planned)
 
-**Story Points:** ~180 SP | **Priority:** P1 | **Items:** 26 | **Target:** Q3
-2026
+**Story Points:** ~180 SP | **Priority:** P1 | **Items:** 26 | **Phase:**
+Enhancement
 
 > **Prerequisite:** M5 (Offline) must complete first for offline journaling
 
@@ -421,10 +422,10 @@ Core offline-first architecture (sequential - has dependencies):
 
 ---
 
-## 🤝 M7 - Fellowship Suite (📋 Planned - Q4 2026)
+## 🤝 M7 - Fellowship Suite (📋 Planned)
 
-**Story Points:** ~350 SP | **Priority:** P1 | **Items:** ~55 | **Target:** Q4
-2026
+**Story Points:** ~350 SP | **Priority:** P1 | **Items:** ~55 | **Phase:**
+Enhancement
 
 ### 👥 M7.1 - Sponsor & Sharing (~15 items)
 
@@ -471,9 +472,9 @@ Sequential work (has dependencies on T2.2 from M5):
 
 ---
 
-## 🎤 M8 - Speaker Recordings (📋 Planned - Q4 2026)
+## 🎤 M8 - Speaker Recordings (📋 Planned)
 
-**Story Points:** ~30 SP | **Priority:** P2 | **Items:** 3 | **Target:** Q4 2026
+**Story Points:** ~30 SP | **Priority:** P2 | **Items:** 3 | **Phase:** Advanced
 
 ### Features
 
@@ -491,9 +492,9 @@ Sequential work (has dependencies on T2.2 from M5):
 
 ---
 
-## 📱 M9 - Native App Features (📋 Planned - 2027)
+## 📱 M9 - Native App Features (📋 Planned)
 
-**Story Points:** ~120 SP | **Priority:** P2 | **Items:** 15 | **Target:** 2027
+**Story Points:** ~120 SP | **Priority:** P2 | **Items:** 15 | **Phase:** Future
 
 ### Overview
 
@@ -516,9 +517,9 @@ Native mobile features via Capacitor wrapper. All features depend on T8.1.
 
 ---
 
-## 💰 M10 - Monetization + Future (🔬 Research - 2027+)
+## 💰 M10 - Monetization + Future (🔬 Research)
 
-**Story Points:** TBD | **Priority:** P2 | **Items:** ~15 | **Target:** 2027+
+**Story Points:** TBD | **Priority:** P2 | **Items:** ~15 | **Phase:** Future
 
 > Research phase - not yet scheduled
 
@@ -563,6 +564,7 @@ See TECHNICAL_DEBT_MASTER.md for full breakdown and prioritization.
 
 | Version | Date       | Changes                                                                                                 | Author |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------- | ------ |
+| 1.3     | 2026-02-03 | Session #128: Aligned with ROADMAP.md v3.17 timing system; replaced all Target dates with Phase buckets | Claude |
 | 1.2     | 2026-01-29 | PR #324 review: Added DT-007 (JSON state for consolidation tracking)                                    | Claude |
 | 1.1     | 2026-01-29 | Session #114: Added 4 deferred PR review items (DT-004 to DT-006, CTX-004) from Reviews #51, #211, #213 | Claude |
 | 1.0     | 2026-01-27 | Initial creation - split from ROADMAP.md; added Parallel Group markers; comprehensive AI Instructions   | Claude |

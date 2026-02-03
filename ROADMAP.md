@@ -1,11 +1,14 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.16
-**Last Updated:** 2026-01-30 (Session #116)
+**Document Version:** 3.17
+**Last Updated:** Session #128
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
+
+> **v3.17 UPDATE:** Removed all date-based scheduling. Now uses Priority + Phase
+> Buckets + Relative Ordering system. See Timing System section below.
 
 > **v3.16 UPDATE:** Created canonical audit findings location (Session #116).
 > 172 NET NEW findings consolidated to
@@ -76,31 +79,49 @@ recovery practices.
 
 ## 📊 Milestones Overview
 
-| Milestone                       | Status      | Progress         | Target    | Priority   | Items |
-| ------------------------------- | ----------- | ---------------- | --------- | ---------- | ----- |
-| **M0 - Baseline**               | ✅ Complete | 100%             | Q4 2025   | Foundation | -     |
-| **M1 - Foundation**             | ✅ Complete | 100%             | Q1 2026   | P0         | -     |
-| **Integrated Improvement Plan** | ✅ Complete | 100% (9/9 steps) | Q1 2026   | DONE       | -     |
-| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~30%             | Q1 2026   | **P0**     | ~56   |
-| **M1.5 - Quick Wins**           | ⏸️ Paused   | ~50%             | Q1 2026   | P1         | ~19   |
-| **M1.6 - Admin Panel + UX**     | ⏸️ Paused   | ~75%             | Q1 2026   | P1         | ~15   |
-| **M2 - Architecture**           | ⏸️ Optional | 0%               | As needed | P2         | ~72   |
-| ↳ M2.1 Code Quality             |             |                  |           | P2         | ~25   |
-| ↳ M2.2 Monitoring               |             |                  |           | P2         | ~25   |
-| ↳ M2.3 Infrastructure           |             |                  |           | P2         | ~22   |
-| **M3 - Meetings**               | 📋 Planned  | 0%               | Q2 2026   | P1         | 6     |
-| **M4 - Expansion**              | 📋 Planned  | 0%               | Q2 2026   | P1         | ~8    |
-| **M4.5 - Security & Privacy**   | 📋 Planned  | 0%               | Q2 2026   | **P0**     | 13    |
-| **M5 - Offline + Steps**        | 📋 Planned  | 0%               | Q3 2026   | P1         | 23    |
-| **M6 - Journaling + Safety**    | 📋 Planned  | 0%               | Q3 2026   | P1         | 26    |
-| **M7 - Fellowship Suite**       | 📋 Planned  | 0%               | Q4 2026   | P1         | ~55   |
-| ↳ M7.1 Sponsor & Sharing        |             |                  |           | P1         | ~15   |
-| ↳ M7.2 Exports & Reports        |             |                  |           | P1         | ~14   |
-| ↳ M7.3 Nashville & Knowledge    |             |                  |           | P1         | ~21   |
-| ↳ M7.4 Personalization          |             |                  |           | P2         | ~17   |
-| **M8 - Speakers**               | 📋 Planned  | 0%               | Q4 2026   | P2         | 3     |
-| **M9 - Native App**             | 📋 Planned  | 0%               | 2027      | P2         | 15    |
-| **M10 - Monetization + Future** | 🔬 Research | 0%               | 2027+     | P2         | ~15   |
+| Milestone                       | Status      | Progress         | Phase       | Priority   | Items |
+| ------------------------------- | ----------- | ---------------- | ----------- | ---------- | ----- |
+| **M0 - Baseline**               | ✅ Complete | 100%             | Foundation  | Foundation | -     |
+| **M1 - Foundation**             | ✅ Complete | 100%             | Foundation  | P0         | -     |
+| **Integrated Improvement Plan** | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -     |
+| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~30%             | Foundation  | **P0**     | ~56   |
+| **M1.5 - Quick Wins**           | ⏸️ Paused   | ~50%             | Foundation  | P1         | ~19   |
+| **M1.6 - Admin Panel + UX**     | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15   |
+| **M2 - Architecture**           | ⏸️ Optional | 0%               | Parallel    | P2         | ~72   |
+| ↳ M2.1 Code Quality             |             |                  | Parallel    | P2         | ~25   |
+| ↳ M2.2 Monitoring               |             |                  | Parallel    | P2         | ~25   |
+| ↳ M2.3 Infrastructure           |             |                  | Parallel    | P2         | ~22   |
+| **M3 - Meetings**               | 📋 Planned  | 0%               | Core        | P1         | 6     |
+| **M4 - Expansion**              | 📋 Planned  | 0%               | Core        | P1         | ~8    |
+| **M4.5 - Security & Privacy**   | 📋 Planned  | 0%               | Core        | **P0**     | 13    |
+| **M5 - Offline + Steps**        | 📋 Planned  | 0%               | Enhancement | P1         | 23    |
+| **M6 - Journaling + Safety**    | 📋 Planned  | 0%               | Enhancement | P1         | 26    |
+| **M7 - Fellowship Suite**       | 📋 Planned  | 0%               | Enhancement | P1         | ~55   |
+| ↳ M7.1 Sponsor & Sharing        |             |                  | Enhancement | P1         | ~15   |
+| ↳ M7.2 Exports & Reports        |             |                  | Enhancement | P1         | ~14   |
+| ↳ M7.3 Nashville & Knowledge    |             |                  | Enhancement | P1         | ~21   |
+| ↳ M7.4 Personalization          |             |                  | Enhancement | P2         | ~17   |
+| **M8 - Speakers**               | 📋 Planned  | 0%               | Advanced    | P2         | 3     |
+| **M9 - Native App**             | 📋 Planned  | 0%               | Advanced    | P2         | 15    |
+| **M10 - Monetization + Future** | 🔬 Research | 0%               | Future      | P2         | ~15   |
+
+### Timing System (Session #128)
+
+**Phase Buckets** (execution order):
+
+- **Foundation**: M0, M1, M1.5, M1.6, Operational Visibility
+- **Core**: M3, M4, M4.5 (after Foundation complete)
+- **Enhancement**: M5, M6, M7 (after Core complete)
+- **Advanced**: M8, M9 (after Enhancement complete)
+- **Future**: M10+ (research/long-term)
+- **Parallel**: M2 (can run alongside any phase as needed)
+
+**Priority Levels**:
+
+- **P0**: Critical path, blocks other work
+- **P1**: Next sprint after current P0 completes
+- **P2**: Backlog, opportunistic
+- **P3**: Future consideration
 
 **Overall Progress:** ~40% (Improvement Plan complete, feature work ready to
 resume)
@@ -127,20 +148,26 @@ flowchart TD
         M16[M1.6 - Admin Panel]
     end
 
-    subgraph Future["📋 Planned"]
-        M2[M2 - Architecture\nOptional]
-        M3[M3 - Meetings\nQ2 2026]
-        M4[M4 - Expansion\nQ2 2026]
-        M45[M4.5 - Security & Privacy\nQ2 2026]
-        M5[M5 - Offline + Steps\nQ3 2026]
-        M6[M6 - Journaling + Safety\nQ3 2026]
-        M7[M7 - Fellowship Suite\nQ4 2026]
-        M8[M8 - Speakers\nQ4 2026]
-        M9[M9 - Native App\n2027]
+    subgraph Core["📋 Core Phase"]
+        M2[M2 - Architecture\nParallel]
+        M3[M3 - Meetings]
+        M4[M4 - Expansion]
+        M45[M4.5 - Security & Privacy]
+    end
+
+    subgraph Enhancement["📋 Enhancement Phase"]
+        M5[M5 - Offline + Steps]
+        M6[M6 - Journaling + Safety]
+        M7[M7 - Fellowship Suite]
+    end
+
+    subgraph Advanced["📋 Advanced Phase"]
+        M8[M8 - Speakers]
+        M9[M9 - Native App]
     end
 
     subgraph Research["🔬 Research"]
-        M10[M10 - Monetization + Future\n2027+]
+        M10[M10 - Monetization + Future]
     end
 
     M0 --> M1
@@ -221,7 +248,8 @@ Planned | 🟣 Research
 > **Spec:**
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 > **Goal:** Full operational visibility with sustainable automations for solo
-> dev **Status:** 🔄 ACTIVE | **Started:** 2026-01-14 | **Updated:** 2026-01-26
+> dev **Status:** 🔄 ACTIVE | **Started:** Session #64 | **Updated:** Session
+> #98
 
 > **✅ SonarCloud Sprint Partially Complete (Session #85)**
 >
@@ -237,8 +265,8 @@ Planned | 🟣 Research
 > **📋 Process Audit Integration (Session #101)**
 >
 > This sprint now includes CI/CD reliability and solo developer automation work
-> from Process Audit CANON-0105-0118 and Comprehensive Audit 2026-01-24. Total
-> sprint effort: ~65 hours across 5 tracks.
+> from Process Audit CANON-0105-0118 and Comprehensive Audit (Session #98).
+> Total sprint effort: ~65 hours across 5 tracks.
 
 This sprint consolidates Admin Panel completion, Development Dashboard, CI/CD
 reliability, and solo developer automations.
@@ -389,7 +417,7 @@ reliability, and solo developer automations.
 
 #### Track A Blockers - Firestore Indexes ✅ RESOLVED
 
-> **Status:** All required indexes are now deployed (verified 2026-01-18).
+> **Status:** All required indexes are now deployed (verified Session #77).
 
 | Job | Index Required                                     | Status      |
 | --- | -------------------------------------------------- | ----------- |
@@ -407,9 +435,9 @@ reliability, and solo developer automations.
 
 - [x] Deploy latest functions to Firebase
 - [x] Fix job visibility (Session #74 - added all jobs to registeredJobs)
-- [x] Create missing Firestore indexes (A10, A14) - **DONE 2026-01-18**
-- [x] Fix A11 storage bucket name - **DONE 2026-01-18**
-- [x] Re-test all jobs A10-A14 - **ALL PASSING 2026-01-18**
+- [x] Create missing Firestore indexes (A10, A14) - **DONE** (Session #77)
+- [x] Fix A11 storage bucket name - **DONE** (Session #77)
+- [x] Re-test all jobs A10-A14 - **ALL PASSING** (Session #77)
 - [ ] Verify Sentry env vars configured
 - [ ] Create test user accounts (admin, premium, free)
 
@@ -462,7 +490,7 @@ reliability, and solo developer automations.
 
 ### Track D - CI Reliability & Automation (NEW)
 
-> **Source:** Process Audit CANON-0105-0118 + Comprehensive Audit 2026-01-24
+> **Source:** Process Audit CANON-0105-0118 + Comprehensive Audit (Session #98)
 > **Full spec:** See
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 > Track D
@@ -577,7 +605,7 @@ reliability, and solo developer automations.
 ### Track P - Performance Critical (NEW - Session #98)
 
 > **Source:**
-> [Comprehensive Audit 2026-01-24](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)
+> [Comprehensive Audit (Session #98)](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)
 > **Tracking:** [TECHNICAL_DEBT_MASTER.md](docs/TECHNICAL_DEBT_MASTER.md)
 >
 > **Note:** Renamed from "Track D" to "Track P" to avoid confusion with Track D
@@ -984,7 +1012,7 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
    - Privacy layer for device sharing
    - "Journal" or neutral branding
 
-#### Engineering Productivity Quick Wins (from 2026-01-13 Audit)
+#### Engineering Productivity Quick Wins (from Session #64 Audit)
 
 > **Source:**
 > [Engineering Productivity Audit](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)
@@ -1010,7 +1038,7 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
     - [ ] Saves ~60s per CI run
     - **Verification:** CI time decreases by ~60s
 
-#### Process Automation Quick Wins (from 2026-01-13 Gap Analysis)
+#### Process Automation Quick Wins (from Session #64 Gap Analysis)
 
 > **Source:** Process Automation Gap Analysis (Session #60)
 
@@ -1265,16 +1293,16 @@ experience
 
 > **Primary Source:** [TECHNICAL_DEBT_MASTER.md](docs/TECHNICAL_DEBT_MASTER.md)
 > ← **NEW (Session #98)** **Legacy Source:**
-> [MASTER_ISSUE_LIST.md](docs/aggregation/MASTER_ISSUE_LIST.md) (2026-01-17,
-> superseded) **Comprehensive Audit:**
+> [MASTER_ISSUE_LIST.md](docs/aggregation/MASTER_ISSUE_LIST.md) (superseded)
+> **Comprehensive Audit:**
 > [COMPREHENSIVE_AUDIT_REPORT.md](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)
-> (2026-01-24) **Last Updated:** 2026-01-26 (Session #98)
+> **Last Updated:** Session #98
 
 ### Overview
 
 Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 
-- Comprehensive Audit (2026-01-24): 112 valid findings (2 false positives
+- Comprehensive Audit (Session #98): 112 valid findings (2 false positives
   removed)
 - MASTER_ISSUE_LIST legacy items (cross-referenced, many duplicates)
 - ROADMAP inline items (CANON-, DEDUP-, EFF-, PERF-)
@@ -1405,7 +1433,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
   - Schedule: Weekly on Saturdays at 1 AM CT
   - Priority: P3 - implement when backup strategy formalized
 
-### SonarCloud Deferred Work (Added 2026-01-20 - Session #85)
+### SonarCloud Deferred Work (Session #85)
 
 > **Source:**
 > [sonarcloud-cleanup-sprint.md](docs/archive/completed-plans/sonarcloud-cleanup-sprint.md)
@@ -1434,7 +1462,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 - Remaining issues are stylistic or low-risk code smells
 - Feature development can proceed without Quality Gate blocking
 
-### Developer Tooling (Added 2026-01-14 - Step 6.1)
+### Developer Tooling (Step 6.1)
 
 > **Source:**
 > [INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)
@@ -1445,7 +1473,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 - ✅ **Prettier** - Code formatting (`npm run format`, `npm run format:check`)
   - Configured in `.prettierrc`
   - Pre-commit hook runs format check (non-blocking warning)
-  - 518+ files formatted as of 2026-01-12
+  - 518+ files formatted (see Session #64)
 - ✅ **ESLint** - Code linting (`npm run lint`)
   - Configured in `eslint.config.mjs`
   - Pre-commit hook blocks on errors
@@ -1498,7 +1526,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 
 **License Review:** Add LICENSE file to project (currently UNLICENSED)
 
-### Context Optimization & Agent Infrastructure (Added 2026-01-23 - Session #90)
+### Context Optimization & Agent Infrastructure (Session #90)
 
 > **Source:** Context optimization analysis (Session #90) **Quick Wins
 > Completed:** 3/3 (file-size filtering, hook analysis, shared path validation
@@ -1663,7 +1691,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
   - **Effort:** 15 minutes (revert to original implementation)
   - **Priority:** P3 - Nice-to-have optimization, current solution works well
 
-### Code Quality Issues (CI Flagged - 2026-01-12)
+### Code Quality Issues (CI Flagged)
 
 These pre-existing issues were identified during PR review CI:
 
@@ -1700,7 +1728,7 @@ These pre-existing issues were identified during PR review CI:
 
 Performance monitoring, incident response, and dashboard enhancements.
 
-### Engineering Productivity - Observability & Offline (from 2026-01-13 Audit)
+### Engineering Productivity - Observability & Offline (from Session #64 Audit)
 
 > **Source:**
 > [Engineering Productivity Audit](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)
@@ -1738,8 +1766,7 @@ Performance monitoring, incident response, and dashboard enhancements.
 - ⏳ **EFF-011:** → _Moved to M5 F1: Offline Infrastructure_
 
 - ⏳ **EFF-012: Network Failure Error Handling Tests** (M effort)
-  - **Deferred from:** Track A Admin Panel testing (Session #77, archived
-    2026-01-20)
+  - **Deferred from:** Track A Admin Panel testing (Session #77)
   - Test admin panel network failure scenarios:
     - [ ] Logs tab error state on network failure
     - [ ] Privilege save error handling and revert
@@ -1752,7 +1779,7 @@ Performance monitoring, incident response, and dashboard enhancements.
   - Test graceful degradation patterns
   - **Verification:** Simulate offline, verify error states and recovery
 
-#### Lighthouse Performance Monitoring (from 2026-01-14 Planning)
+#### Lighthouse Performance Monitoring
 
 > **Source:** Lighthouse integration planning session (Session #66)
 > **Prerequisite:** PERF-001/PERF-002 from M1.5 complete **Spec:**
@@ -1791,7 +1818,7 @@ Performance monitoring, incident response, and dashboard enhancements.
 
 Architecture refactoring, schema optimization, and infrastructure work.
 
-### Validated Refactor Backlog (from Step 4.3 Audit - 2026-01-14)
+### Validated Refactor Backlog (from Step 4.3 Audit)
 
 > **Full Backlog:**
 > [REFACTOR_BACKLOG.md](docs/reviews/2026-Q1/canonical/tier2-output/REFACTOR_BACKLOG.md)
@@ -1908,7 +1935,7 @@ Architecture refactoring, schema optimization, and infrastructure work.
   - **Priority:** LOW - consistency improvement, custom auth logic works
     correctly
 
-### SonarCloud Issue Backlog (Step 4C Triage - 2026-01-13)
+### SonarCloud Issue Backlog (Step 4C Triage)
 
 > **IMPORTANT**: Before production deployment, re-run SonarCloud scan and
 > address ACCEPT-RISK items. See
@@ -2877,8 +2904,8 @@ Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
 
 ### Development Dashboard (Planned - Near-term)
 
-**Status:** 📋 Planned **Priority:** P1 (Development Tooling) **Added:**
-2026-01-13 (Session #64)
+**Status:** 📋 Planned **Priority:** P1 (Development Tooling) **Added:** Session
+#64
 
 **Purpose:** Unified dev dashboard for monitoring session activity, error
 tracing, and development metrics. Not for production - strictly development
@@ -2922,8 +2949,7 @@ summary command; full dashboard is larger scope.
 
 ### Cross-Document Dependency Map
 
-**Status:** ✅ COMPLETE **Priority:** P1 **Added:** 2026-01-13 **Completed:**
-2026-01-14 (Session #64)
+**Status:** ✅ COMPLETE **Priority:** P1 **Completed:** Session #64
 
 **What Was Done:**
 
@@ -2934,14 +2960,14 @@ summary command; full dashboard is larger scope.
 **Trigger Matrix Location:**
 [DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers](docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
 
-> **Note:** INTEGRATED_IMPROVEMENT_PLAN.md is now archived (2026-01-14). See the
-> canonical trigger matrix in DOCUMENT_DEPENDENCIES.md for current triggers.
+> **Note:** INTEGRATED_IMPROVEMENT_PLAN.md is now archived (Session #64). See
+> the canonical trigger matrix in DOCUMENT_DEPENDENCIES.md for current triggers.
 
 ---
 
 ### Document Dependency Automation (Future Enhancement)
 
-**Current State (Session #35 - 2026-01-08):**
+**Current State (Session #35):**
 
 - ✅ Manual validation via `/docs-sync` slash command (wrapper that executes
   `npm run docs:sync-check`)
@@ -3139,6 +3165,9 @@ npm run roadmap:validate      # Check consistency (when available)
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.17    | 2026-02-03 | **Session #128**: TIMING SYSTEM CHANGE - Removed all date-based scheduling from roadmap; introduced Priority + Phase Buckets + Relative Ordering system; updated Milestones Overview table (Target → Phase column); converted inline date references to session numbers; added episodic memory integration to all audit skills                                                              |
+| 3.16    | 2026-02-01 | **Session #116**: Created canonical audit findings location (`docs/audits/canonical/`); consolidated 172 NET NEW findings; added AUDIT_FINDINGS_PROCEDURE.md for roadmap integration workflow                                                                                                                                                                                               |
+| 3.15    | 2026-01-29 | **Session #115**: Integrated 94 NET NEW findings from Refactoring Audit; added Track T Phase 7 (Cloud Functions Testing), M2.3-REF (God Object Refactoring), M4.5-F3 (Security Hardening), and Quick Wins                                                                                                                                                                                   |
 | 3.14    | 2026-01-27 | **Session #103**: Added Track T (Testing Infrastructure) with 6 phases (~45hr); consolidated D5.5, AUTO-004, TEST-001, TEST-002 into Track T; Playwright-based E2E, component, and visual regression testing; Dev Dashboard integration; CLI Chrome extension support                                                                                                                       |
 | 3.13    | 2026-01-27 | **ROADMAP RESTRUCTURE**: Split into ROADMAP.md (active) + ROADMAP_FUTURE.md (M2-M10 details); fixed percentage inconsistency (removed duplicate 35%); renamed Track D Performance → Track P (avoid collision); added 7 Parallel Groups with `⏸ PG#` markers; comprehensive AI Instructions with specific update triggers; added DOCUMENT_DEPENDENCIES cross-references                      |
 | 3.10    | 2026-01-26 | **Session #98**: Added Track D (Performance Critical) with 18hr of urgent fixes; created TECHNICAL_DEBT_MASTER.md as single source of truth; verified SEC-001/SEC-002 as false positives; updated Technical Debt Backlog section with corrected counts (7 S0, 28 S1, 45 S2, 32 S3)                                                                                                          |

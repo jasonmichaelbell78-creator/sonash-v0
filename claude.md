@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.7 **Last Updated:** 2026-02-02
+**Document Version:** 3.8 **Last Updated:** 2026-02-03
 
 ---
 
@@ -29,13 +29,17 @@ violations and ensure consistency across sessions.
    first response. Example: "You have 3 deferred PR items and 2 S1 backlog
    items. Want details?"
 
-2. **Run `mcp__memory__read_graph()`** - Retrieve context saved from previous
-   sessions. Summarize relevant entities for the user.
+2. **Search Episodic Memory** - Use
+   `mcp__plugin_episodic-memory_episodic-memory__search` to find relevant
+   context from past sessions:
+   - Query current branch/feature name + "decisions"
+   - Query recent error patterns if debugging
+   - Summarize relevant findings for the user
 
-3. **Before compaction** - Save important context with
-   `mcp__memory__create_entities()` to preserve decisions and progress.
+3. **Follow checklist** - SESSION_CONTEXT.md, ROADMAP.md, active blockers
 
-4. **Follow checklist** - SESSION_CONTEXT.md, ROADMAP.md, active blockers
+4. **Before compaction** - Use `mcp__serena__write_memory()` to save critical
+   decisions that must survive context reset (optional, for important decisions)
 
 ---
 

@@ -50,9 +50,46 @@ Use for ANY technical issue:
 - You're in a hurry (rushing guarantees rework)
 - Manager wants it fixed NOW (systematic is faster than thrashing)
 
-## The Four Phases
+## The Five Phases
 
 You MUST complete each phase before proceeding to the next.
+
+### Phase 0: Memory Check (NEW - Session #128)
+
+**BEFORE investigating, search episodic memory for prior occurrences:**
+
+```javascript
+// Search for this error in past conversations
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: "key part of error message",
+    limit: 5,
+  });
+
+// Or search for issues in the affected module
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["module-name", "error", "fix"],
+    limit: 5,
+  });
+```
+
+**Why this matters:**
+
+- Same error may have been fixed before
+- Past debugging sessions contain root cause analysis
+- Avoids re-investigating known issues
+- May reveal patterns across multiple occurrences
+
+**If memory shows prior occurrence:**
+
+1. Read the past conversation for context
+2. Check if the fix is still applicable
+3. Verify the fix wasn't reverted or broken by other changes
+
+**If no memory found:** Proceed to Phase 1.
 
 ### Phase 1: Root Cause Investigation
 

@@ -28,7 +28,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const PORT = 24282;
-const PROCESS_ALLOWLIST = ["node", "node.exe", "serena", "claude"];
+const PROCESS_ALLOWLIST = ["node", "node.exe", "serena", "claude", "python", "python.exe"];
 const LOG_FILE = path.join(__dirname, ".serena-termination.log");
 
 // User context for audit trail (Qodo Review #198 follow-up - comprehensive audit trails)

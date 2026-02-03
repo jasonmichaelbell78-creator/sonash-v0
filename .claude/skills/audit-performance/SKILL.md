@@ -73,6 +73,37 @@ support
 
 ---
 
+## Pre-Audit: Episodic Memory Search (Session #128)
+
+Before running performance audit, search for context from past sessions:
+
+```javascript
+// Search for past performance audit findings
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["performance audit", "bundle size", "rendering"],
+    limit: 5,
+  });
+
+// Search for specific optimization work done before
+mcp__plugin_episodic -
+  memory_episodic -
+  memory__search({
+    query: ["Core Web Vitals", "LCP", "memory leak"],
+    limit: 5,
+  });
+```
+
+**Why this matters:**
+
+- Compare against previous performance baselines
+- Identify recurring bottlenecks (may need architectural fixes)
+- Track optimization progress over time
+- Prevent re-flagging already-addressed issues
+
+---
+
 ## Section B: Sequential Fallback (Single Agent)
 
 **When to use:** Task tool unavailable, context limits, or user preference
