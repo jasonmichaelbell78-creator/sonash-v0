@@ -10,13 +10,28 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-02-03 **Branch**:
-`feature/audit-documentation-6-stage` **Working On**: Timing system canonization
-complete **Files Modified**: 22 files (see Session #128 summary)
+**Last Checkpoint**: 2026-02-04 **Branch**: `claude/new-session-6XecT` **Working
+On**: A19 User Analytics Tab complete **Files Modified**: 6 files (admin.ts,
+index.ts, analytics-tab.tsx, admin-tabs.tsx, admin-tab-context.tsx, ROADMAP.md)
 
-**Next Step**: Feature development ready - choose from ROADMAP.md priorities
+**Next Step**: Continue Track A Phase 2 (A20-A22) or start Track B
 
-**Uncommitted Work**: No - committing now
+**Uncommitted Work**: Yes - A19 implementation
+
+**Session #129 Summary** (A19 USER ANALYTICS TAB + CONSOLIDATION FIX):
+
+- ✅ **A19: User Analytics Tab** - New admin panel tab with:
+  - DAU/WAU/MAU metrics cards
+  - 14-day activity trend chart
+  - Feature usage tracking (journal, check-ins, meetings, resources)
+  - Cohort retention table (week 1/2/4 retention percentages)
+  - Cloud Function `adminGetUserAnalytics` using existing `analytics_daily` data
+- ✅ **Consolidation Counter Fix**: Fixed drift between manual and computed
+  counts
+  - Root cause: pr-review skill lacked INCREMENT instruction
+  - Added Review #236 missing from version history table
+  - Created `npm run consolidation:sync` script for future drift fixes
+  - Updated pr-review skill with MANDATORY increment instructions
 
 **Session #128 Summary** (TIMING SYSTEM + EPISODIC MEMORY):
 

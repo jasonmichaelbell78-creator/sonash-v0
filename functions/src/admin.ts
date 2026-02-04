@@ -3109,3 +3109,271 @@ export const adminGetCollectionStats = onCall(async (request) => {
     throw new HttpsError("internal", "Failed to get collection statistics");
   }
 });
+
+// ============================================================================
+// A19: User Analytics Tab - Cloud Function
+// ============================================================================
+
+/**
+ * Analytics trend data point
+ */
+interface AnalyticsTrendPoint {
+  date: string;
+  activeUsers: number;
+  newUsers: number;
+  journalEntries: number;
+  checkIns: number;
+}
+
+/**
+ * Cohort retention data
+ */
+interface CohortRetention {
+  cohortWeek: string; // YYYY-WW format
+  cohortSize: number;
+  week1Retention: number; // percentage
+  week2Retention: number;
+  week4Retention: number;
+}
+
+/**
+ * Feature usage summary
+ */
+interface FeatureUsage {
+  feature: string;
+  last7Days: number;
+  last30Days: number;
+  trend: "up" | "down" | "stable";
+}
+
+/**
+ * Admin: Get User Analytics
+ * Returns DAU/WAU/MAU trends, retention metrics, and feature usage
+ * A19: User Analytics Tab implementation
+ */
+export const adminGetUserAnalytics = onCall(async (request) => {
+  await requireAdmin(request, "adminGetUserAnalytics");
+
+  try {
+    const db = admin.firestore();
+    const now = new Date();
+
+    // ========================================
+    // 1. Fetch historical analytics data (last 90 days)
+    // ========================================
+    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split("T")[0];
+
+    const analyticsSnapshot = await db
+      .collection("analytics_daily")
+      .where("date", ">=", ninetyDaysAgoStr)
+      .orderBy("date", "asc")
+      .get();
+
+    const dailyTrends: AnalyticsTrendPoint[] = analyticsSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        date: data.date || doc.id,
+        activeUsers: data.activeUsers || 0,
+        newUsers: data.newUsers || 0,
+        journalEntries: data.journalEntries || 0,
+        checkIns: data.checkIns || 0,
+      };
+    });
+
+    // ========================================
+    // 2. Calculate WAU/MAU from daily data
+    // ========================================
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    // Current DAU/WAU/MAU
+    const [dauQuery, wauQuery, mauQuery] = await Promise.all([
+      db
+        .collection("users")
+        .where(
+          "lastActive",
+          ">=",
+          admin.firestore.Timestamp.fromDate(new Date(now.getTime() - 24 * 60 * 60 * 1000))
+        )
+        .count()
+        .get(),
+      db
+        .collection("users")
+        .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+        .count()
+        .get(),
+      db
+        .collection("users")
+        .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(thirtyDaysAgo))
+        .count()
+        .get(),
+    ]);
+
+    const currentMetrics = {
+      dau: dauQuery.data().count,
+      wau: wauQuery.data().count,
+      mau: mauQuery.data().count,
+    };
+
+    // ========================================
+    // 3. Calculate cohort retention (simplified)
+    // ========================================
+    const cohortRetention: CohortRetention[] = [];
+
+    // Get users grouped by signup week for last 8 weeks
+    for (let weekOffset = 8; weekOffset >= 1; weekOffset--) {
+      const weekStart = new Date(now.getTime() - weekOffset * 7 * 24 * 60 * 60 * 1000);
+      const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+      // Get cohort size (users who signed up in this week)
+      const cohortQuery = await db
+        .collection("users")
+        .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(weekStart))
+        .where("createdAt", "<", admin.firestore.Timestamp.fromDate(weekEnd))
+        .count()
+        .get();
+
+      const cohortSize = cohortQuery.data().count;
+      if (cohortSize === 0) continue;
+
+      // Calculate retention for week 1, 2, and 4 (users still active)
+      const week1Threshold = new Date(weekEnd.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const week2Threshold = new Date(weekEnd.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const week4Threshold = new Date(weekEnd.getTime() + 28 * 24 * 60 * 60 * 1000);
+
+      // Only calculate retention for weeks that have passed
+      let week1Retention = 0;
+      let week2Retention = 0;
+      let week4Retention = 0;
+
+      if (week1Threshold <= now) {
+        const week1Active = await db
+          .collection("users")
+          .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(weekStart))
+          .where("createdAt", "<", admin.firestore.Timestamp.fromDate(weekEnd))
+          .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(week1Threshold))
+          .count()
+          .get();
+        week1Retention = Math.round((week1Active.data().count / cohortSize) * 100);
+      }
+
+      if (week2Threshold <= now) {
+        const week2Active = await db
+          .collection("users")
+          .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(weekStart))
+          .where("createdAt", "<", admin.firestore.Timestamp.fromDate(weekEnd))
+          .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(week2Threshold))
+          .count()
+          .get();
+        week2Retention = Math.round((week2Active.data().count / cohortSize) * 100);
+      }
+
+      if (week4Threshold <= now) {
+        const week4Active = await db
+          .collection("users")
+          .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(weekStart))
+          .where("createdAt", "<", admin.firestore.Timestamp.fromDate(weekEnd))
+          .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(week4Threshold))
+          .count()
+          .get();
+        week4Retention = Math.round((week4Active.data().count / cohortSize) * 100);
+      }
+
+      // Format cohort week as YYYY-WW
+      const weekNumber = Math.ceil(
+        ((weekStart.getTime() - new Date(weekStart.getFullYear(), 0, 1).getTime()) / 86400000 + 1) /
+          7
+      );
+      const cohortWeek = `${weekStart.getFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
+
+      cohortRetention.push({
+        cohortWeek,
+        cohortSize,
+        week1Retention,
+        week2Retention,
+        week4Retention,
+      });
+    }
+
+    // ========================================
+    // 4. Feature usage from security logs
+    // ========================================
+    const featureUsage: FeatureUsage[] = [];
+
+    const featureQueries = [
+      { name: "Journal Entries", type: "SAVE_SUCCESS", fn: "saveJournalEntry" },
+      { name: "Daily Check-ins", type: "SAVE_SUCCESS", fn: "saveDailyLog" },
+      { name: "Meetings Viewed", type: "READ_SUCCESS", fn: "getMeetings" },
+      { name: "Resources Accessed", type: "READ_SUCCESS", fn: "getLibraryItems" },
+    ];
+
+    for (const feature of featureQueries) {
+      const [last7Query, last30Query, prev7Query] = await Promise.all([
+        db
+          .collection("security_logs")
+          .where("type", "==", feature.type)
+          .where("functionName", "==", feature.fn)
+          .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+          .count()
+          .get(),
+        db
+          .collection("security_logs")
+          .where("type", "==", feature.type)
+          .where("functionName", "==", feature.fn)
+          .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(thirtyDaysAgo))
+          .count()
+          .get(),
+        // Previous 7 days for trend calculation
+        db
+          .collection("security_logs")
+          .where("type", "==", feature.type)
+          .where("functionName", "==", feature.fn)
+          .where(
+            "timestamp",
+            ">=",
+            admin.firestore.Timestamp.fromDate(
+              new Date(sevenDaysAgo.getTime() - 7 * 24 * 60 * 60 * 1000)
+            )
+          )
+          .where("timestamp", "<", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+          .count()
+          .get(),
+      ]);
+
+      const last7 = last7Query.data().count;
+      const last30 = last30Query.data().count;
+      const prev7 = prev7Query.data().count;
+
+      // Calculate trend
+      let trend: "up" | "down" | "stable" = "stable";
+      if (last7 > prev7 * 1.1) trend = "up";
+      else if (last7 < prev7 * 0.9) trend = "down";
+
+      featureUsage.push({
+        feature: feature.name,
+        last7Days: last7,
+        last30Days: last30,
+        trend,
+      });
+    }
+
+    // ========================================
+    // 5. Return analytics data
+    // ========================================
+    return {
+      currentMetrics,
+      dailyTrends,
+      cohortRetention,
+      featureUsage,
+      generatedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetUserAnalytics", "Failed to get user analytics", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get user analytics");
+  }
+});

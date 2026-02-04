@@ -796,6 +796,8 @@ export {
   adminGetRateLimitStatus,
   adminClearRateLimit,
   adminGetCollectionStats,
+  // A19: User Analytics Tab
+  adminGetUserAnalytics,
 } from "./admin";
 
 // Export scheduled jobs
