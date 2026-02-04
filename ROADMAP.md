@@ -961,6 +961,8 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 - [ ] DEBT-0878: Missing CONTRIBUTING.md at root level (S1, CONTRIBUTING.md)
 - [ ] DEBT-0895: Archive docs never checked for link rot (S2,
       docs-lint.yml:77-80)
+- [ ] DEBT-0899: Fix 36 broken links to legacy canonical audit files (S2,
+      ROADMAP.md, ROADMAP_FUTURE.md, AUDIT_TRACKER.md, SKILL_AGENT_POLICY.md)
 
 **Completed in Session #99:**
 
@@ -1396,6 +1398,7 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 | ----------------------------------- | ------ | -------------- | ------------ |
 | Remove hardcoded reCAPTCHA fallback | 15min  | Security       | Track D - D6 |
 | Add HTTP cache headers              | 30min  | Caching        | Track D - D5 |
+| Add type:module to package.json     | 5min   | DX (S3)        | Backlog      |
 | Add security headers (CSP)          | 2hr    | XSS protection | Track D - D6 |
 | Tree-shake framer-motion            | 2hr    | -25KB bundle   | Track D - D2 |
 | Lazy load images                    | 2hr    | LCP            | Track D - D1 |
