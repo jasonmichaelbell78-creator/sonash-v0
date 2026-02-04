@@ -318,7 +318,10 @@ export function LogsTab() {
     const a = document.createElement("a");
     a.href = url;
     a.download = `security-logs-${new Date().toISOString().split("T")[0]}.json`;
+    // ISSUE [15]: Append to DOM for cross-browser compatibility
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, [filteredLogs, severityFilter, typeFilter, searchQuery]);
 

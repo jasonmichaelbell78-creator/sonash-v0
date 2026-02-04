@@ -10,6 +10,40 @@ import { defineSecret, defineString } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { z } from "zod";
 import { logSecurityEvent, hashUserId, redactSensitiveMetadata } from "./security-logger";
+
+/**
+ * SEC-REVIEW: Validate that a value looks like a valid userIdHash (12-char hex)
+ * Prevents leaking raw user IDs if security_logs contains unhashed data
+ * @param value - Value to validate as hash
+ * @returns true if value matches expected hash format
+ */
+function isValidUserIdHash(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  // hashUserId produces exactly 12 hex characters
+  return /^[a-f0-9]{12}$/i.test(value);
+}
+
+/**
+ * SEC-REVIEW: Ensure a userId value is properly hashed before returning
+ * If already a valid hash, return as-is. Otherwise, hash it.
+ * This prevents accidental exposure of raw user IDs.
+ * @param value - Potential userId or userIdHash from security_logs
+ * @returns Validated hash or null
+ */
+function ensureUserIdHash(value: unknown): string | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value !== "string" || value.length === 0) return null;
+
+  // If it looks like a valid hash, return it
+  if (isValidUserIdHash(value)) {
+    return value;
+  }
+
+  // Otherwise, treat as raw userId and hash it (defensive measure)
+  // Log a warning since this indicates data inconsistency
+  console.warn("[SEC] Found non-hash userId in security_logs, hashing for safety");
+  return hashUserId(value);
+}
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 
 /**
@@ -1893,6 +1927,15 @@ interface JobRunHistoryResponse {
   triggeredBy: "schedule" | "manual";
 }
 
+// ISSUE [4]: Add parameter validation for admin functions
+const getJobRunHistorySchema = z.object({
+  jobId: z.string().min(1).max(100).optional(),
+  status: z.enum(["success", "failed"]).optional(),
+  limit: z.number().int().min(1).max(200).optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
+
 /**
  * A20: Admin: Get Job Run History
  * Returns detailed history of job executions with filtering options
@@ -1900,10 +1943,19 @@ interface JobRunHistoryResponse {
 export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (request) => {
   await requireAdmin(request, "adminGetJobRunHistory");
 
-  const { jobId, status, limit = 50, startDate, endDate } = request.data ?? {};
+  // ISSUE [4]: Validate input parameters
+  const validationResult = getJobRunHistorySchema.safeParse(request.data ?? {});
+  if (!validationResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      validationResult.error.issues[0]?.message ?? "Invalid input"
+    );
+  }
+
+  const { jobId, status, limit = 50, startDate, endDate } = validationResult.data;
 
   // Validate limit
-  const safeLimit = Math.min(Math.max(1, limit), 200);
+  const safeLimit = Math.min(Math.max(1, limit ?? 50), 200);
 
   try {
     const db = admin.firestore();
@@ -1911,18 +1963,28 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
 
     // Get job IDs to query
     let jobIds: string[] = [];
+    const jobNames: Map<string, string> = new Map();
+
     if (jobId) {
       jobIds = [jobId];
+      // Fetch single job name
+      const jobDoc = await db.doc(`admin_jobs/${jobId}`).get();
+      jobNames.set(jobId, jobDoc.exists ? (jobDoc.data()?.name as string) || jobId : jobId);
     } else {
       // Get all job IDs from admin_jobs collection
       const jobsSnapshot = await db.collection("admin_jobs").get();
       jobIds = jobsSnapshot.docs.map((doc) => doc.id);
+      // ISSUE [13]: Batch read job names to avoid N+1 queries
+      for (const doc of jobsSnapshot.docs) {
+        jobNames.set(doc.id, (doc.data()?.name as string) || doc.id);
+      }
     }
 
     // Query run history for each job
+    // NOTE: Cannot fully eliminate N queries here due to subcollection structure
+    // Each job's run_history is in a separate subcollection
     for (const jId of jobIds) {
-      const jobDoc = await db.doc(`admin_jobs/${jId}`).get();
-      const jobName = jobDoc.exists ? (jobDoc.data()?.name as string) || jId : jId;
+      const jobName = jobNames.get(jId) || jId;
 
       let query: FirebaseFirestore.Query = db
         .collection(`admin_jobs/${jId}/run_history`)
@@ -1934,13 +1996,22 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
       }
 
       // Apply date filters
+      // ISSUE [16]: Validate date inputs before using in queries
       if (startDate) {
-        const startTimestamp = admin.firestore.Timestamp.fromDate(new Date(startDate));
+        const startDateObj = new Date(startDate);
+        if (Number.isNaN(startDateObj.getTime())) {
+          throw new HttpsError("invalid-argument", "Invalid startDate format");
+        }
+        const startTimestamp = admin.firestore.Timestamp.fromDate(startDateObj);
         query = query.where("startTime", ">=", startTimestamp);
       }
 
       if (endDate) {
-        const endTimestamp = admin.firestore.Timestamp.fromDate(new Date(endDate));
+        const endDateObj = new Date(endDate);
+        if (Number.isNaN(endDateObj.getTime())) {
+          throw new HttpsError("invalid-argument", "Invalid endDate format");
+        }
+        const endTimestamp = admin.firestore.Timestamp.fromDate(endDateObj);
         query = query.where("startTime", "<=", endTimestamp);
       }
 
@@ -2301,7 +2372,7 @@ export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (
         message: data.message || "",
         timestamp: safeToIso(data.timestamp, ""),
         functionName: data.functionName || "unknown",
-        userIdHash: data.userId || null, // Already hashed in security_logs
+        userIdHash: ensureUserIdHash(data.userId), // SEC-REVIEW: Validate hash format to prevent raw UID leakage
         severity: data.severity === "ERROR" ? "ERROR" : "WARNING",
         metadata: data.metadata
           ? (toJsonSafe(redactSensitiveMetadata(data.metadata)) as Record<string, unknown>)
@@ -2352,6 +2423,13 @@ interface UserActivityEntry {
   severity: "INFO" | "WARNING" | "ERROR";
 }
 
+// ISSUE [4]: Add parameter validation for admin functions
+const getUserActivitySchema = z.object({
+  userIdHash: z.string().regex(/^[0-9a-f]{12}$/, "Must be a 12-character hex hash"),
+  hoursBack: z.number().int().min(1).max(168).optional(),
+  limit: z.number().int().min(1).max(100).optional(),
+});
+
 /**
  * A21: Admin: Get User Activity Timeline
  * Returns recent actions for a user (by hashed ID) to help correlate with errors
@@ -2359,22 +2437,27 @@ interface UserActivityEntry {
 export const adminGetUserActivityByHash = onCall<GetUserActivityRequest>(async (request) => {
   await requireAdmin(request, "adminGetUserActivityByHash");
 
-  const { userIdHash, hoursBack = 24, limit: rawLimit = 50 } = request.data ?? {};
-
-  if (!userIdHash || typeof userIdHash !== "string" || userIdHash.length < 8) {
-    throw new HttpsError("invalid-argument", "Valid userIdHash is required");
+  // ISSUE [4]: Validate input parameters
+  const validationResult = getUserActivitySchema.safeParse(request.data ?? {});
+  if (!validationResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      validationResult.error.issues[0]?.message ?? "Invalid input"
+    );
   }
 
-  // Validate inputs
-  const safeLimit = Math.min(Math.max(1, rawLimit), 100);
-  const safeHoursBack = Math.min(Math.max(1, hoursBack), 168);
+  const { userIdHash, hoursBack = 24, limit: rawLimit = 50 } = validationResult.data;
+
+  // Validate inputs (already validated by Zod schema, but keeping safe defaults)
+  const safeLimit = Math.min(Math.max(1, rawLimit ?? 50), 100);
+  const safeHoursBack = Math.min(Math.max(1, hoursBack ?? 24), 168);
 
   try {
     const db = admin.firestore();
     const cutoff = new Date(Date.now() - safeHoursBack * 60 * 60 * 1000);
     const cutoffTimestamp = admin.firestore.Timestamp.fromDate(cutoff);
 
-    // Query for user's activity
+    // Query for user's activity (userIdHash already validated above)
     const snapshot = await db
       .collection("security_logs")
       .where("userId", "==", userIdHash)
@@ -2432,6 +2515,11 @@ interface FindUserByHashRequest {
   userIdHash: string;
 }
 
+// ISSUE [4]: Add parameter validation for admin functions
+const findUserByHashSchema = z.object({
+  userIdHash: z.string().regex(/^[0-9a-f]{12}$/, "Must be a 12-character hex hash"),
+});
+
 /**
  * A21: Admin: Find User by Hash
  * Attempts to find a user by their hashed ID (matches first 12 chars)
@@ -2440,18 +2528,24 @@ interface FindUserByHashRequest {
 export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request) => {
   await requireAdmin(request, "adminFindUserByHash");
 
-  const { userIdHash } = request.data ?? {};
-
-  if (!userIdHash || typeof userIdHash !== "string" || userIdHash.length < 8) {
-    throw new HttpsError("invalid-argument", "Valid userIdHash is required");
+  // ISSUE [4]: Validate input parameters
+  const validationResult = findUserByHashSchema.safeParse(request.data ?? {});
+  if (!validationResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      validationResult.error.issues[0]?.message ?? "Invalid input"
+    );
   }
+
+  const { userIdHash } = validationResult.data;
 
   try {
     const db = admin.firestore();
 
     // Get all users and compute their hashes
-    // NOTE: This is O(n) but necessary since we store hashes not UIDs in logs
-    // In production with many users, consider a userIdHash → uid lookup collection
+    // ISSUE [12]: This is O(n) but necessary since we store hashes not UIDs in logs
+    // TODO: Create a userIdHash → uid lookup collection for better performance
+    // SAFEGUARD: Limited to 1000 users to prevent excessive memory usage and timeouts
     const usersSnapshot = await db.collection("users").limit(1000).get();
 
     for (const userDoc of usersSnapshot.docs) {
@@ -3588,6 +3682,9 @@ export const adminGetUserAnalytics = onCall(async (request) => {
     // ========================================
     // 3. Calculate cohort retention (simplified)
     // ========================================
+    // ISSUE [14]: This section makes multiple queries per cohort (up to 4 * 8 = 32 queries)
+    // OPTIMIZATION TODO: Consider pre-computing cohort retention in a daily job
+    // and storing results in analytics_cohorts collection to avoid real-time computation
     const cohortRetention: CohortRetention[] = [];
 
     // Get users grouped by signup week for last 8 weeks

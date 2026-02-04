@@ -6,8 +6,9 @@
 **Last Updated:** 2026-02-04
 <!-- prettier-ignore-end -->
 
-**Time Required:** ~30-45 minutes **Prerequisites:** Deployed app URL and admin
-account credentials
+**Time Required:** ~30-45 minutes
+
+**Prerequisites:** Deployed app URL and admin account credentials
 
 ---
 
@@ -19,7 +20,7 @@ account credentials
 4. Navigate to `/admin` (e.g., `https://your-app.web.app/admin`)
 5. You should see the Admin Panel with tabs across the top
 
-**Your App URL:** ******\*\*******\_\_******\*\******* (fill this in)
+**Your App URL:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ (fill this in)
 
 ---
 
@@ -42,8 +43,7 @@ account credentials
 ### What to Report:
 
 - [ ] **PASS** - All metrics load, refresh works, layout adjusts on resize
-- [ ] **FAIL** - Note what's broken:
-      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
+- [ ] **FAIL** - Note what's broken: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -69,8 +69,7 @@ account credentials
 ### What to Report:
 
 - [ ] **PASS** - Jobs list loads, history expands, badges display correctly
-- [ ] **FAIL** - Note what's broken:
-      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
+- [ ] **FAIL** - Note what's broken: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -95,8 +94,7 @@ account credentials
 
 - [ ] **PASS** - User hashes display, modal opens with activity, navigation
       works
-- [ ] **FAIL** - Note what's broken:
-      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
+- [ ] **FAIL** - Note what's broken: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 - [ ] **N/A** - No errors in system to test with
 
 ---
@@ -120,8 +118,7 @@ account credentials
 ### What to Report:
 
 - [ ] **PASS** - Search filters work, type dropdown works, export downloads
-- [ ] **FAIL** - Note what's broken:
-      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
+- [ ] **FAIL** - Note what's broken: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -148,8 +145,7 @@ account credentials
 ### What to Report:
 
 - [ ] **PASS** - No PII visible in network, unauthorized access blocked
-- [ ] **FAIL** - Note what's broken:
-      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
+- [ ] **FAIL** - Note what's broken: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -166,8 +162,7 @@ account credentials
 ### What to Report:
 
 - [ ] **PASS** - Empty states show friendly messages
-- [ ] **FAIL** - Shows error or crashes:
-      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
+- [ ] **FAIL** - Shows error or crashes: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 - [ ] **N/A** - Could not test (have existing data)
 
 ---
@@ -185,9 +180,11 @@ account credentials
 
 **Overall Result:** [ ] ALL PASS / [ ] SOME FAILURES
 
-**Tester Name:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\*** **Date
-Tested:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\*** **Browser
-Used:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***
+**Tester Name:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Date Tested:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Browser Used:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 

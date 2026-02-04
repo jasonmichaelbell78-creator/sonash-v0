@@ -401,8 +401,8 @@ export function AnalyticsTab() {
 
       {/* Footer */}
       <div className="text-xs text-amber-700 text-center">
-        Last updated:{" "}
-        {data.generatedAt
+        Last updated: {/* ISSUE [21]: Validate date before formatting */}
+        {data.generatedAt && !Number.isNaN(new Date(data.generatedAt).getTime())
           ? formatDistanceToNow(new Date(data.generatedAt), { addSuffix: true })
           : "Unknown"}
       </div>

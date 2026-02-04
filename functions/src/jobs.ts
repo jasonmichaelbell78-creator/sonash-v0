@@ -14,7 +14,8 @@
 
 import * as admin from "firebase-admin";
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { logSecurityEvent, hashUserId } from "./security-logger";
+import { logSecurityEvent, hashUserId, redactSensitiveMetadata } from "./security-logger";
+import { randomBytes } from "crypto";
 import type { File, Bucket } from "@google-cloud/storage";
 
 // ============================================================================
@@ -345,7 +346,9 @@ export async function runJob(
   const db = admin.firestore();
   const jobRef = db.doc(`admin_jobs/${jobId}`);
   const startTime = Date.now();
-  const runId = `${startTime}-${Math.random().toString(36).slice(2, 8)}`;
+  // SEC-REVIEW: Use cryptographically secure random bytes instead of Math.random()
+  // This prevents predictable run IDs (OWASP: Insufficient Randomness)
+  const runId = `${startTime}-${randomBytes(4).toString("hex")}`;
   const triggeredBy = options.triggeredBy ?? "schedule";
 
   // Initialize job document (handles first-run case)
@@ -365,7 +368,8 @@ export async function runJob(
     const result = await jobFn();
 
     const duration = Date.now() - startTime;
-    const resultSummary = (result as Record<string, unknown>) ?? {};
+    // ISSUE [22]: Sanitize job result before persisting to prevent sensitive data leaks
+    const resultSummary = redactSensitiveMetadata((result as Record<string, unknown>) ?? {});
 
     // Update with success status
     await jobRef.set(
@@ -395,7 +399,15 @@ export async function runJob(
       .doc(runId)
       .set(historyEntry)
       .catch((err) => {
-        console.error(`Failed to save run history for ${jobId}:${runId}`, err);
+        // ISSUE [3]: Use sanitized error logging to prevent sensitive data exposure
+        const errorType = err instanceof Error ? err.name : "UnknownError";
+        const structuredLog = {
+          severity: "WARNING",
+          message: `Failed to save run history for ${jobId}:${runId}`,
+          error: { type: errorType },
+          timestamp: new Date().toISOString(),
+        };
+        console.error(JSON.stringify(structuredLog));
       });
 
     logSecurityEvent("JOB_SUCCESS", jobId, `Job completed successfully in ${duration}ms`, {
@@ -435,10 +447,26 @@ export async function runJob(
         .doc(runId)
         .set(historyEntry)
         .catch((err) => {
-          console.error(`Failed to save run history for ${jobId}:${runId}`, err);
+          // ISSUE [3]: Use sanitized error logging to prevent sensitive data exposure
+          const errorType = err instanceof Error ? err.name : "UnknownError";
+          const structuredLog = {
+            severity: "WARNING",
+            message: `Failed to save run history for ${jobId}:${runId}`,
+            error: { type: errorType },
+            timestamp: new Date().toISOString(),
+          };
+          console.error(JSON.stringify(structuredLog));
         });
     } catch (updateError) {
-      console.error(`Failed to update job status for ${jobId}`, updateError);
+      // ISSUE [3]: Use sanitized error logging to prevent sensitive data exposure
+      const errorType = updateError instanceof Error ? updateError.name : "UnknownError";
+      const structuredLog = {
+        severity: "ERROR",
+        message: `Failed to update job status for ${jobId}`,
+        error: { type: errorType },
+        timestamp: new Date().toISOString(),
+      };
+      console.error(JSON.stringify(structuredLog));
     }
 
     logSecurityEvent("JOB_FAILURE", jobId, `Job failed: ${errorMessage}`, {

@@ -58,6 +58,34 @@ interface JobRunHistoryResponse {
 }
 
 // ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * ISSUE [6]: Sanitize error messages to prevent exposing internal details
+ */
+function sanitizeErrorMessage(error: string): string {
+  // Remove stack traces
+  const stackTracePattern = /\s+at\s+.*/g;
+  let sanitized = error.replace(stackTracePattern, "");
+
+  // Remove file paths
+  const filePathPattern = /\/[\w\-./]+\.(js|ts|tsx|jsx):\d+:\d+/g;
+  sanitized = sanitized.replace(filePathPattern, "");
+
+  // Remove Firebase-specific error prefixes
+  sanitized = sanitized.replace(/^Firebase: Error \(auth\/[^)]+\)\.?/i, "Authentication error.");
+  sanitized = sanitized.replace(/^Error: /i, "");
+
+  // Limit length
+  if (sanitized.length > 200) {
+    sanitized = sanitized.substring(0, 200) + "...";
+  }
+
+  return sanitized.trim() || "An error occurred.";
+}
+
+// ============================================================================
 // Subcomponents
 // ============================================================================
 
@@ -157,7 +185,8 @@ function JobRunHistoryPanel({
       setHistory(result.data.runs);
     } catch (err) {
       logger.error("Failed to load job history", { error: err, jobId });
-      setError(err instanceof Error ? err.message : "Failed to load history");
+      // ISSUE [6]: Sanitize error - never show raw Firebase/server errors to users
+      setError("Failed to load job history. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -174,7 +203,10 @@ function JobRunHistoryPanel({
     const a = document.createElement("a");
     a.href = url;
     a.download = `job-history-${jobId}-${new Date().toISOString().split("T")[0]}.json`;
+    // ISSUE [15]: Append to DOM for cross-browser compatibility
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
@@ -246,7 +278,8 @@ function JobRunHistoryPanel({
                   <StatusBadge status={run.status} />
                   <TriggerBadge triggeredBy={run.triggeredBy} />
                   <span className="text-sm text-amber-700">
-                    {run.startTime
+                    {/* ISSUE [20]: Validate date before formatting */}
+                    {run.startTime && !Number.isNaN(new Date(run.startTime).getTime())
                       ? format(new Date(run.startTime), "MMM d, yyyy HH:mm:ss")
                       : "Unknown"}
                   </span>
@@ -271,13 +304,19 @@ function JobRunHistoryPanel({
                       <div>
                         <span className="font-medium text-amber-700">Started:</span>{" "}
                         <span className="text-amber-900">
-                          {run.startTime ? format(new Date(run.startTime), "PPpp") : "Unknown"}
+                          {/* ISSUE [20]: Validate date before formatting */}
+                          {run.startTime && !Number.isNaN(new Date(run.startTime).getTime())
+                            ? format(new Date(run.startTime), "PPpp")
+                            : "Unknown"}
                         </span>
                       </div>
                       <div>
                         <span className="font-medium text-amber-700">Ended:</span>{" "}
                         <span className="text-amber-900">
-                          {run.endTime ? format(new Date(run.endTime), "PPpp") : "Unknown"}
+                          {/* ISSUE [20]: Validate date before formatting */}
+                          {run.endTime && !Number.isNaN(new Date(run.endTime).getTime())
+                            ? format(new Date(run.endTime), "PPpp")
+                            : "Unknown"}
                         </span>
                       </div>
                     </div>
@@ -286,7 +325,8 @@ function JobRunHistoryPanel({
                       <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded">
                         <div className="font-medium text-red-900 mb-1">Error:</div>
                         <div className="text-red-700 font-mono text-xs whitespace-pre-wrap">
-                          {run.error}
+                          {/* ISSUE [6]: Sanitize error messages */}
+                          {sanitizeErrorMessage(run.error)}
                         </div>
                       </div>
                     )}
@@ -350,7 +390,8 @@ function JobCard({
                 <span className="font-medium">Last Run</span>
               </div>
               <div className="text-amber-900">
-                {job.lastRun
+                {/* ISSUE [20]: Validate date before formatting */}
+                {job.lastRun && !Number.isNaN(new Date(job.lastRun).getTime())
                   ? formatDistanceToNow(new Date(job.lastRun), { addSuffix: true })
                   : "Never"}
               </div>
@@ -362,7 +403,8 @@ function JobCard({
                 <span className="font-medium">Last Success</span>
               </div>
               <div className="text-amber-900">
-                {job.lastSuccessRun
+                {/* ISSUE [20]: Validate date before formatting */}
+                {job.lastSuccessRun && !Number.isNaN(new Date(job.lastSuccessRun).getTime())
                   ? formatDistanceToNow(new Date(job.lastSuccessRun), { addSuffix: true })
                   : "Never"}
               </div>
@@ -382,7 +424,10 @@ function JobCard({
           {job.lastError && (
             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded text-sm">
               <div className="font-medium text-red-900 mb-1">Last Error:</div>
-              <div className="text-red-700 font-mono text-xs">{job.lastError}</div>
+              <div className="text-red-700 font-mono text-xs">
+                {/* ISSUE [6]: Sanitize error messages */}
+                {sanitizeErrorMessage(job.lastError)}
+              </div>
             </div>
           )}
         </div>
@@ -446,7 +491,8 @@ export function JobsTab() {
       setJobs(result.data.jobs);
     } catch (err) {
       logger.error("Failed to load jobs", { error: err });
-      setError(err instanceof Error ? err.message : "Failed to load jobs");
+      // ISSUE [6]: Sanitize error - never show raw Firebase/server errors to users
+      setError("Failed to load jobs. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -480,8 +526,10 @@ export function JobsTab() {
       alert(result.data.message);
     } catch (err) {
       logger.error("Failed to trigger job", { error: err, jobId });
-      setError(err instanceof Error ? err.message : "Failed to trigger job");
-      alert(`Failed to trigger job: ${err instanceof Error ? err.message : "Unknown error"}`);
+      // ISSUE [6]: Sanitize error - never show raw Firebase/server errors to users
+      const sanitizedError = "Failed to trigger job. Please try again later.";
+      setError(sanitizedError);
+      alert(sanitizedError);
     } finally {
       setRunningJobs((prev) => {
         const next = new Set(prev);
