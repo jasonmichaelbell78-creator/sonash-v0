@@ -276,8 +276,13 @@ export function LogsTab() {
     // Type filter
     if (typeFilter !== "all") {
       const typeCategory = EVENT_TYPE_CATEGORIES.find((c) => c.id === typeFilter);
-      if (typeCategory && typeCategory.pattern) {
-        filtered = filtered.filter((log) => log.type.includes(typeCategory.pattern));
+      if (typeCategory?.pattern) {
+        const pattern = typeCategory.pattern.toLowerCase();
+        filtered = filtered.filter((log) =>
+          String(log.type ?? "")
+            .toLowerCase()
+            .includes(pattern)
+        );
       }
     }
 
@@ -308,7 +313,20 @@ export function LogsTab() {
       const redact = (value: string) =>
         value
           .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "[REDACTED_EMAIL]")
-          .replace(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, "[REDACTED_PHONE]");
+          .replace(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, "[REDACTED_PHONE]")
+          .replace(/\bBearer\s+[A-Za-z0-9._-]+\b/gi, "Bearer [REDACTED_TOKEN]")
+          .replace(/\b(eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)\b/g, "[REDACTED_JWT]");
+
+      const deepRedact = (input: unknown): unknown => {
+        if (typeof input === "string") return redact(input);
+        if (Array.isArray(input)) return input.map(deepRedact);
+        if (input && typeof input === "object") {
+          return Object.fromEntries(
+            Object.entries(input as Record<string, unknown>).map(([k, v]) => [k, deepRedact(v)])
+          );
+        }
+        return input;
+      };
 
       const exportData = {
         exportedAt: new Date().toISOString(),
@@ -318,10 +336,7 @@ export function LogsTab() {
           search: searchQuery || null,
         },
         totalCount: filteredLogs.length,
-        logs: filteredLogs.map((l) => ({
-          ...l,
-          message: redact(String(l.message ?? "")),
-        })),
+        logs: filteredLogs.map((l) => deepRedact(l)),
       };
       const dataStr = JSON.stringify(exportData, null, 2);
       const blob = new Blob([dataStr], { type: "application/json" });

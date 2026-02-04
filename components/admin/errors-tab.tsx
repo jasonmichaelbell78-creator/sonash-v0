@@ -327,7 +327,7 @@ function UserActivityModal({
         const functions = getFunctions();
 
         // Load activity and user lookup in parallel
-        const [activityResult, userResult] = await Promise.all([
+        const [activityRes, userRes] = await Promise.allSettled([
           httpsCallable<{ userIdHash: string; limit: number }, UserActivityData>(
             functions,
             "adminGetUserActivityByHash"
@@ -339,9 +339,21 @@ function UserActivityModal({
         ]);
 
         if (!isMounted) return;
-        setActivity(activityResult.data);
-        if (userResult.data.found && userResult.data.user) {
-          setFoundUser(userResult.data.user);
+
+        if (activityRes.status === "fulfilled") {
+          setActivity(activityRes.value.data);
+        } else {
+          logger.error("Failed to load user activity timeline", {
+            error: activityRes.reason,
+            userIdHash,
+          });
+          setError("Failed to load activity. Please try again later.");
+        }
+
+        if (userRes.status === "fulfilled" && userRes.value.data.found && userRes.value.data.user) {
+          setFoundUser(userRes.value.data.user);
+        } else if (userRes.status === "rejected") {
+          logger.error("Failed to resolve user from hash", { error: userRes.reason, userIdHash });
         }
       } catch (err) {
         logger.error("Failed to load user activity", { error: err, userIdHash });

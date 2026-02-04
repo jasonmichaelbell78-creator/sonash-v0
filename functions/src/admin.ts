@@ -46,7 +46,12 @@ function ensureUserIdHash(value: unknown): string | null {
 
   // Otherwise, treat as raw userId and hash it (defensive measure)
   // Log a warning since this indicates data inconsistency
-  console.warn("[SEC] Found non-hash userId in security_logs, hashing for safety");
+  logSecurityEvent(
+    "ADMIN_ACTION",
+    "ensureUserIdHash",
+    "Found non-hash userId in security_logs, hashing for safety",
+    { severity: "WARNING", metadata: { rawValue: hashUserId(value) } }
+  );
   return hashUserId(value).toLowerCase();
 }
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
@@ -722,7 +727,7 @@ export const adminSaveMeeting = onCall<SaveMeetingRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSaveMeeting", "Failed to save meeting", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to save meeting");
@@ -754,7 +759,7 @@ export const adminDeleteMeeting = onCall<DeleteMeetingRequest>(async (request) =
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminDeleteMeeting", "Failed to delete meeting", {
       userId: request.auth?.uid,
-      metadata: { meetingId, error: String(error) },
+      metadata: { meetingId, error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to delete meeting");
@@ -816,7 +821,7 @@ export const adminSaveSoberLiving = onCall<SaveSoberLivingRequest>(async (reques
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSaveSoberLiving", "Failed to save sober living home", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to save sober living home");
@@ -853,7 +858,7 @@ export const adminDeleteSoberLiving = onCall<DeleteSoberLivingRequest>(async (re
       "Failed to delete sober living home",
       {
         userId: request.auth?.uid,
-        metadata: { homeId, error: String(error) },
+        metadata: { homeId, error: sanitizeErrorMessage(error) },
         captureToSentry: true,
       }
     );
@@ -911,7 +916,7 @@ export const adminSaveQuote = onCall<SaveQuoteRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSaveQuote", "Failed to save quote", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to save quote");
@@ -943,7 +948,7 @@ export const adminDeleteQuote = onCall<DeleteQuoteRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminDeleteQuote", "Failed to delete quote", {
       userId: request.auth?.uid,
-      metadata: { quoteId, error: String(error) },
+      metadata: { quoteId, error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to delete quote");
@@ -974,7 +979,7 @@ export const adminHealthCheck = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("HEALTH_CHECK_FAILURE", "adminHealthCheck", "Firestore health check failed", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
     });
   }
 
@@ -992,7 +997,7 @@ export const adminHealthCheck = onCall(async (request) => {
         // Auth service is down
         logSecurityEvent("HEALTH_CHECK_FAILURE", "adminHealthCheck", "Auth health check failed", {
           userId: request.auth?.uid,
-          metadata: { error: String(error) },
+          metadata: { error: sanitizeErrorMessage(error) },
         });
       }
     }
@@ -1117,7 +1122,7 @@ export const adminGetDashboardStats = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetDashboardStats", "Failed to get dashboard stats", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get dashboard stats");
@@ -1191,7 +1196,7 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSearchUsers", "Failed to search users", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to search users");
@@ -1329,7 +1334,7 @@ export const adminGetUserDetail = onCall<GetUserDetailRequest>(async (request) =
 
     logSecurityEvent("ADMIN_ERROR", "adminGetUserDetail", "Failed to get user detail", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get user detail");
@@ -1390,7 +1395,7 @@ export const adminUpdateUser = onCall<UpdateUserRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminUpdateUser", "Failed to update user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to update user");
@@ -1457,7 +1462,7 @@ export const adminDisableUser = onCall<DisableUserRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminDisableUser", "Failed to disable/enable user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to update user status");
@@ -1576,7 +1581,7 @@ export const adminSoftDeleteUser = onCall<SoftDeleteUserRequest>(async (request)
 
     logSecurityEvent("ADMIN_ERROR", "adminSoftDeleteUser", "Failed to soft-delete user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to soft-delete user");
@@ -1726,7 +1731,7 @@ export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => 
 
     logSecurityEvent("ADMIN_ERROR", "adminUndeleteUser", "Failed to restore soft-deleted user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to restore user");
@@ -1833,7 +1838,7 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
 
     logSecurityEvent("ADMIN_ERROR", "adminTriggerJob", "Failed to trigger job", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), jobId },
+      metadata: { error: sanitizeErrorMessage(error), jobId },
       captureToSentry: true,
     });
 
@@ -1925,7 +1930,7 @@ export const adminGetJobsStatus = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetJobsStatus", "Failed to get jobs status", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get jobs status");
@@ -2038,7 +2043,10 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
       ? safeLimit
       : Math.max(5, Math.ceil(safeLimit / Math.max(1, jobIds.length)));
 
-    for (const jId of jobIds) {
+    // Hard cap on fan-out to keep reads bounded even when many jobs have no history.
+    const maxJobsToQuery = jobId ? jobIds.length : Math.min(jobIds.length, 25);
+
+    for (const jId of jobIds.slice(0, maxJobsToQuery)) {
       // ISSUE [6]: Break early if we've hit the total results cap
       if (results.length >= maxTotalResults) break;
 
@@ -2233,7 +2241,11 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
       "ADMIN_ERROR",
       "adminGetSentryErrorSummary",
       "Failed to fetch Sentry error summary",
-      { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
+      {
+        userId: request.auth?.uid,
+        metadata: { error: sanitizeErrorMessage(error) },
+        captureToSentry: true,
+      }
     );
     throw new HttpsError("internal", "Failed to fetch Sentry error summary");
   }
@@ -2391,7 +2403,7 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetLogs", "Failed to get logs", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get logs");
@@ -2471,7 +2483,7 @@ export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (
       return {
         id: doc.id,
         type: data.type || "UNKNOWN",
-        message: data.message || "",
+        message: sanitizeErrorMessage(data.message || ""),
         timestamp: safeToIso(data.timestamp, ""),
         functionName: data.functionName || "unknown",
         userIdHash: ensureUserIdHash(data.userId), // SEC-REVIEW: Validate hash format to prevent raw UID leakage
@@ -2512,7 +2524,7 @@ export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetErrorsWithUsers", "Failed to get errors with users", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get errors with user correlation");
@@ -2637,7 +2649,7 @@ export const adminGetUserActivityByHash = onCall<GetUserActivityRequest>(async (
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetUserActivityByHash", "Failed to get user activity", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUserHash: userIdHash },
+      metadata: { error: sanitizeErrorMessage(error), targetUserHash: userIdHash },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get user activity");
@@ -2716,10 +2728,20 @@ export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request)
     // ISSUE [12]: If we scanned the maximum allowed users without finding a match,
     // throw resource-exhausted to prevent false negatives
     if (usersSnapshot.size === 1000) {
-      throw new HttpsError(
-        "resource-exhausted",
-        "User lookup scanned 1000 users without a match; please refine lookup or add a hash→uid index."
-      );
+      const last = usersSnapshot.docs[usersSnapshot.docs.length - 1];
+      const hasMoreSnapshot = await db
+        .collection("users")
+        .orderBy(admin.firestore.FieldPath.documentId())
+        .startAfter(last.id)
+        .limit(1)
+        .get();
+
+      if (!hasMoreSnapshot.empty) {
+        throw new HttpsError(
+          "resource-exhausted",
+          "User lookup scanned 1000 users without a match; please refine lookup or add a hash→uid index."
+        );
+      }
     }
 
     // ISSUE [3]: Log successful admin access (user not found)
@@ -2740,7 +2762,7 @@ export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request)
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminFindUserByHash", "Failed to find user by hash", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to find user");
@@ -2840,7 +2862,7 @@ export const adminGetPrivilegeTypes = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetPrivilegeTypes", "Failed to get privilege types", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get privilege types");
@@ -2965,7 +2987,7 @@ export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (re
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSavePrivilegeType", "Failed to save privilege type", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to save privilege type");
@@ -3039,7 +3061,7 @@ export const adminDeletePrivilegeType = onCall<DeletePrivilegeTypeRequest>(async
     if (error instanceof HttpsError) throw error;
     logSecurityEvent("ADMIN_ERROR", "adminDeletePrivilegeType", "Failed to delete privilege type", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to delete privilege type");
@@ -3149,7 +3171,7 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
     if (error instanceof HttpsError) throw error;
     logSecurityEvent("ADMIN_ERROR", "adminSetUserPrivilege", "Failed to set user privilege", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to set user privilege");
@@ -3248,7 +3270,7 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminListUsers", "Failed to list users", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to list users");
@@ -3471,7 +3493,7 @@ export const adminGetStorageStats = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetStorageStats", "Failed to get storage stats", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get storage statistics");
@@ -3580,7 +3602,7 @@ export const adminGetRateLimitStatus = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetRateLimitStatus", "Failed to get rate limit status", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get rate limit status");
@@ -3634,7 +3656,7 @@ export const adminClearRateLimit = onCall<ClearRateLimitRequest>(async (request)
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminClearRateLimit", "Failed to clear rate limit", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), rateLimitKeyHash: hashedKey },
+      metadata: { error: sanitizeErrorMessage(error), rateLimitKeyHash: hashedKey },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to clear rate limit");
@@ -3733,7 +3755,7 @@ export const adminGetCollectionStats = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetCollectionStats", "Failed to get collection stats", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get collection statistics");
@@ -4009,7 +4031,7 @@ export const adminGetUserAnalytics = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetUserAnalytics", "Failed to get user analytics", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get user analytics");
