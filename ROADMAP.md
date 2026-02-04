@@ -398,11 +398,13 @@ reliability, and solo developer automations.
   - scheduledHardDeleteSoftDeletedUsers job (daily 5AM UTC)
   - Visual indicators: "Pending Deletion" badge with days remaining
 
-### Track A-Test - Testing & Validation ✅ COMPLETE
+### Track A-Test - Testing & Validation 🔄 IN PROGRESS
 
-> **Checklist:**
+> **Original Checklist:**
 > [TRACK_A_TESTING_CHECKLIST.md](docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md)
-> **Total Tests:** 131 | **Categories:** 8
+> **A19-A22 Testing Plan:**
+> [TRACK_A_TESTING_PLAN.md](docs/plans/TRACK_A_TESTING_PLAN.md) (Session #130)
+> **Total Tests:** 131 original + A19-A22 additions | **Categories:** 9
 
 | Category            | Tests | Passed | Skipped | Status        |
 | ------------------- | ----- | ------ | ------- | ------------- |
@@ -414,6 +416,13 @@ reliability, and solo developer automations.
 | Integration Tests   | 26    | 25     | 1       | ✅ Complete   |
 | Performance Tests   | 5     | 4      | 1       | ✅ Complete   |
 | Error Handling      | 6     | 0      | 6       | ⏳ Pending    |
+| **A19-A22 Testing** | ~40   | 0      | 0       | 📋 Planned    |
+
+**A19-A22 Testing Plan (Session #130):**
+
+- **Automated (Section A):** Unit tests, Playwright MCP integration
+- **Manual (Section B):** Visual/UX, functional validation, security
+- **Tool Requirements:** See Track T Phase 1 for Playwright installation
 
 #### Track A Blockers - Firestore Indexes ✅ RESOLVED
 
@@ -803,7 +812,13 @@ MASTER_DEBT.jsonl.
 
 #### Phase 1: Playwright Foundation (8hr)
 
+> **Dependency:** Required for Track A-Test A19-A22 automated testing **See:**
+> [TRACK_A_TESTING_PLAN.md](docs/plans/TRACK_A_TESTING_PLAN.md) for immediate
+> Playwright MCP usage
+
 - [ ] **T1.1:** Install and configure Playwright (2hr)
+  - `npm i -D @playwright/test && npx playwright install`
+  - Additional: `@firebase/rules-unit-testing`, `msw` (optional)
 - [ ] **T1.2:** Create test fixtures (auth, emulator, test users) (2hr)
 - [ ] **T1.3:** Create base page objects (HomePage, AdminPage, etc.) (2hr)
 - [ ] **T1.4:** Configure CI integration (GitHub Actions) (2hr)
@@ -3247,6 +3262,7 @@ npm run roadmap:validate      # Check consistency (when available)
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.18    | 2026-02-04 | **Session #130**: Added Track A-Test A19-A22 testing plan (TRACK_A_TESTING_PLAN.md); linked Track T Phase 1 as dependency for automated testing; updated test category count to 9; added tool installation details (Playwright, firebase rules testing, msw)                                                                                                                                |
 | 3.17    | 2026-02-03 | **Session #128**: TIMING SYSTEM CHANGE - Removed all date-based scheduling from roadmap; introduced Priority + Phase Buckets + Relative Ordering system; updated Milestones Overview table (Target → Phase column); converted inline date references to session numbers; added episodic memory integration to all audit skills                                                              |
 | 3.16    | 2026-02-01 | **Session #116**: Created canonical audit findings location (`docs/audits/canonical/`); consolidated 172 NET NEW findings; added AUDIT_FINDINGS_PROCEDURE.md for roadmap integration workflow                                                                                                                                                                                               |
 | 3.15    | 2026-01-29 | **Session #115**: Integrated 94 NET NEW findings from Refactoring Audit; added Track T Phase 7 (Cloud Functions Testing), M2.3-REF (God Object Refactoring), M4.5-F3 (Security Hardening), and Quick Wins                                                                                                                                                                                   |
