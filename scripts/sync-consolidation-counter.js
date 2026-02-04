@@ -73,7 +73,10 @@ function main() {
   try {
     content = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
   } catch (readErr) {
-    if (readErr.code === "ENOENT") {
+    const code =
+      readErr && typeof readErr === "object" && "code" in readErr ? readErr.code : undefined;
+
+    if (code === "ENOENT") {
       console.error("❌ AI_REVIEW_LEARNINGS_LOG.md not found");
     } else {
       console.error(

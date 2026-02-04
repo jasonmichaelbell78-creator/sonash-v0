@@ -541,6 +541,8 @@ function UserCorrelationSection({
     }
   }, []);
 
+  useTabRefresh("errors", loadData);
+
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -664,7 +666,9 @@ export function ErrorsTab() {
     (uid: string) => {
       // Store the target user ID for the users tab to pick up
       try {
-        sessionStorage.setItem("admin_navigate_to_user", uid);
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("admin_navigate_to_user", uid);
+        }
       } catch (err) {
         logger.warn("Failed to persist admin user navigation target", { error: err });
       }

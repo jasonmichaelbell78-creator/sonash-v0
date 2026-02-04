@@ -45,14 +45,8 @@ function ensureUserIdHash(value: unknown): string | null {
   }
 
   // Otherwise, treat as raw userId and hash it (defensive measure)
-  // Log a warning since this indicates data inconsistency
   const hashed = hashUserId(value).toLowerCase();
-  logSecurityEvent(
-    "ADMIN_ACTION",
-    "ensureUserIdHash",
-    "Found non-hash userId in security_logs, hashing for safety",
-    { severity: "WARNING", metadata: { userIdHash: hashed } }
-  );
+  // NOTE: No logging here - this helper is used on read paths
   return hashed;
 }
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
@@ -157,7 +151,8 @@ function getIsoWeekString(date: Date): string {
   const firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
   firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
 
-  const weekNum = 1 + Math.round((d.getTime() - firstThursday.getTime()) / 86400000 / 7);
+  const diffMs = d.getTime() - firstThursday.getTime();
+  const weekNum = 1 + Math.floor(diffMs / 604800000);
 
   return `${isoWeekYear}-W${String(weekNum).padStart(2, "0")}`;
 }
@@ -2499,9 +2494,10 @@ export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (
     // ISSUE [3]: Log successful admin access
     logSecurityEvent(
       "ADMIN_ACTION",
-      request.auth?.uid || "unknown",
+      "adminGetErrorsWithUsers",
       "Retrieved errors with user correlation",
       {
+        userId: request.auth?.uid,
         severity: "INFO",
         metadata: {
           action: "adminGetErrorsWithUsers",

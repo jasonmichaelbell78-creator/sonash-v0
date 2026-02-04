@@ -394,7 +394,7 @@ export async function runJob(
     const historyEntry: JobRunHistoryEntry = {
       runId,
       startTime: admin.firestore.Timestamp.fromMillis(startTime),
-      endTime: admin.firestore.Timestamp.fromMillis(startTime + duration),
+      endTime: admin.firestore.Timestamp.fromMillis(Date.now()),
       status: "success",
       durationMs: duration,
       resultSummary,

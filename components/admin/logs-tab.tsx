@@ -322,6 +322,9 @@ export function LogsTab() {
 
         const walk = (input: unknown): unknown => {
           if (typeof input === "string") return redact(input);
+          if (typeof input === "bigint") return input.toString();
+          if (typeof input === "function") return "[REDACTED_FUNCTION]";
+          if (typeof input === "symbol") return "[REDACTED_SYMBOL]";
           if (Array.isArray(input)) return input.map(walk);
 
           if (input && typeof input === "object") {

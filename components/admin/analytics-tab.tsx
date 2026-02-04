@@ -187,6 +187,13 @@ function DailyTrendsChart({ trends }: Readonly<{ trends: AnalyticsTrendPoint[] }
 
   const maxValue = Math.max(...recentTrends.map((t) => t.activeUsers), 1);
 
+  const formatTrendLabel = (raw: string) => {
+    if (typeof raw !== "string") return "Unknown";
+    // Prefer YYYY-MM-DD -> MM-DD; otherwise fall back to a safe prefix
+    if (raw.length >= 10 && raw[4] === "-" && raw[7] === "-") return raw.slice(5, 10);
+    return raw.length > 10 ? raw.slice(0, 10) : raw;
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex items-end gap-1 h-32">
@@ -207,8 +214,8 @@ function DailyTrendsChart({ trends }: Readonly<{ trends: AnalyticsTrendPoint[] }
         })}
       </div>
       <div className="flex justify-between text-xs text-amber-600">
-        <span>{recentTrends[0]?.date.slice(5)}</span>
-        <span>{recentTrends[recentTrends.length - 1]?.date.slice(5)}</span>
+        <span>{formatTrendLabel(recentTrends[0]?.date ?? "")}</span>
+        <span>{formatTrendLabel(recentTrends[recentTrends.length - 1]?.date ?? "")}</span>
       </div>
       <div className="text-center text-xs text-amber-600">Daily Active Users (last 14 days)</div>
     </div>
