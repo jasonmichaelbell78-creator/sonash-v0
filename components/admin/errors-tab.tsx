@@ -340,8 +340,20 @@ function UserActivityModal({
 
         if (!isMounted) return;
 
+        // Clear stale state for this hash before applying results
+        setActivity(null);
+        setFoundUser(null);
+
         if (activityRes.status === "fulfilled") {
-          setActivity(activityRes.value.data);
+          const next = activityRes.value.data;
+          setActivity({
+            ...next,
+            activities: Array.isArray(next.activities) ? next.activities : [],
+            activityByType:
+              next.activityByType && typeof next.activityByType === "object"
+                ? next.activityByType
+                : {},
+          });
         } else {
           logger.error("Failed to load user activity timeline", {
             error: activityRes.reason,
@@ -651,7 +663,11 @@ export function ErrorsTab() {
   const navigateToUser = useCallback(
     (uid: string) => {
       // Store the target user ID for the users tab to pick up
-      sessionStorage.setItem("admin_navigate_to_user", uid);
+      try {
+        sessionStorage.setItem("admin_navigate_to_user", uid);
+      } catch (err) {
+        logger.warn("Failed to persist admin user navigation target", { error: err });
+      }
       setActiveTab("users");
     },
     [setActiveTab]

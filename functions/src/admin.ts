@@ -46,13 +46,14 @@ function ensureUserIdHash(value: unknown): string | null {
 
   // Otherwise, treat as raw userId and hash it (defensive measure)
   // Log a warning since this indicates data inconsistency
+  const hashed = hashUserId(value).toLowerCase();
   logSecurityEvent(
     "ADMIN_ACTION",
     "ensureUserIdHash",
     "Found non-hash userId in security_logs, hashing for safety",
-    { severity: "WARNING", metadata: { rawValue: hashUserId(value) } }
+    { severity: "WARNING", metadata: { userIdHash: hashed } }
   );
-  return hashUserId(value).toLowerCase();
+  return hashed;
 }
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 
@@ -142,26 +143,23 @@ function safeToIso(value: unknown, fallback: string | null = null): string | nul
  * @returns ISO week string in format YYYY-Www (e.g., "2024-W01")
  */
 function getIsoWeekString(date: Date): string {
-  // Copy date to avoid mutating the original
-  const target = new Date(date.getTime());
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
 
-  // Set to nearest Thursday: current date + 4 - current day number
-  // Make Sunday's day number 7
-  const dayNum = (target.getDay() + 6) % 7;
-  target.setDate(target.getDate() - dayNum + 3);
+  // ISO week date weeks start on Monday, so correct the day number (Mon=0..Sun=6)
+  const dayNum = (d.getUTCDay() + 6) % 7;
+  // Set to nearest Thursday (ISO week-year is the year of that Thursday)
+  d.setUTCDate(d.getUTCDate() - dayNum + 3);
 
-  // January 4 is always in week 1
-  const firstThursday = new Date(target.getFullYear(), 0, 4);
-  // Set to nearest Thursday
-  const firstThursdayDayNum = (firstThursday.getDay() + 6) % 7;
-  firstThursday.setDate(firstThursday.getDate() - firstThursdayDayNum + 3);
+  const isoWeekYear = d.getUTCFullYear();
 
-  // Calculate week number
-  const weekNumRaw = 1 + Math.floor((target.getTime() - firstThursday.getTime()) / 86400000 / 7);
-  const weekNum = weekNumRaw < 1 ? 1 : weekNumRaw;
+  // Find first Thursday of the ISO week-year
+  const firstThursday = new Date(Date.UTC(isoWeekYear, 0, 4));
+  const firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
 
-  // Return ISO week string
-  return `${target.getFullYear()}-W${String(weekNum).padStart(2, "0")}`;
+  const weekNum = 1 + Math.round((d.getTime() - firstThursday.getTime()) / 86400000 / 7);
+
+  return `${isoWeekYear}-W${String(weekNum).padStart(2, "0")}`;
 }
 
 // ============================================================================
@@ -2127,7 +2125,8 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
     });
 
     // ISSUE [3]: Log successful admin access
-    logSecurityEvent("ADMIN_ACTION", request.auth?.uid || "unknown", "Retrieved job run history", {
+    logSecurityEvent("ADMIN_ACTION", "adminGetJobRunHistory", "Retrieved job run history", {
+      userId: request.auth?.uid,
       severity: "INFO",
       metadata: {
         action: "adminGetJobRunHistory",
@@ -2605,7 +2604,7 @@ export const adminGetUserActivityByHash = onCall<GetUserActivityRequest>(async (
         id: doc.id,
         type: data.type || "UNKNOWN",
         functionName: data.functionName || "unknown",
-        message: data.message || "",
+        message: sanitizeErrorMessage(data.message || ""),
         timestamp: safeToIso(data.timestamp, ""),
         severity:
           data.severity === "ERROR" ? "ERROR" : data.severity === "WARNING" ? "WARNING" : "INFO",
@@ -2624,9 +2623,10 @@ export const adminGetUserActivityByHash = onCall<GetUserActivityRequest>(async (
     // ISSUE [3]: Log successful admin access
     logSecurityEvent(
       "ADMIN_ACTION",
-      request.auth?.uid || "unknown",
+      "adminGetUserActivityByHash",
       "Retrieved user activity by hash",
       {
+        userId: request.auth?.uid,
         severity: "INFO",
         metadata: {
           action: "adminGetUserActivityByHash",
@@ -2707,7 +2707,8 @@ export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request)
         const data = userDoc.data();
 
         // ISSUE [3]: Log successful admin access
-        logSecurityEvent("ADMIN_ACTION", request.auth?.uid || "unknown", "Found user by hash", {
+        logSecurityEvent("ADMIN_ACTION", "adminFindUserByHash", "Found user by hash", {
+          userId: request.auth?.uid,
           severity: "INFO",
           metadata: { action: "adminFindUserByHash", targetUserHash: userIdHash, found: true },
         });
@@ -2728,32 +2729,18 @@ export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request)
     // ISSUE [12]: If we scanned the maximum allowed users without finding a match,
     // throw resource-exhausted to prevent false negatives
     if (usersSnapshot.size === 1000) {
-      const last = usersSnapshot.docs[usersSnapshot.docs.length - 1];
-      const hasMoreSnapshot = await db
-        .collection("users")
-        .orderBy(admin.firestore.FieldPath.documentId())
-        .startAfter(last.id)
-        .limit(1)
-        .get();
-
-      if (!hasMoreSnapshot.empty) {
-        throw new HttpsError(
-          "resource-exhausted",
-          "User lookup scanned 1000 users without a match; please refine lookup or add a hash→uid index."
-        );
-      }
+      throw new HttpsError(
+        "resource-exhausted",
+        "User lookup scanned 1000 users without a match; results may be incomplete. Please add a hash→uid index."
+      );
     }
 
     // ISSUE [3]: Log successful admin access (user not found)
-    logSecurityEvent(
-      "ADMIN_ACTION",
-      request.auth?.uid || "unknown",
-      "User lookup by hash - not found",
-      {
-        severity: "INFO",
-        metadata: { action: "adminFindUserByHash", targetUserHash: userIdHash, found: false },
-      }
-    );
+    logSecurityEvent("ADMIN_ACTION", "adminFindUserByHash", "User lookup by hash - not found", {
+      userId: request.auth?.uid,
+      severity: "INFO",
+      metadata: { action: "adminFindUserByHash", targetUserHash: userIdHash, found: false },
+    });
 
     return {
       found: false,
@@ -4016,7 +4003,8 @@ export const adminGetUserAnalytics = onCall(async (request) => {
     // ========================================
 
     // ISSUE [3]: Log successful admin access
-    logSecurityEvent("ADMIN_ACTION", request.auth?.uid || "unknown", "Retrieved user analytics", {
+    logSecurityEvent("ADMIN_ACTION", "adminGetUserAnalytics", "Retrieved user analytics", {
+      userId: request.auth?.uid,
       severity: "INFO",
       metadata: { action: "adminGetUserAnalytics", trendPoints: dailyTrends.length },
     });

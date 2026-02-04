@@ -317,16 +317,34 @@ export function LogsTab() {
           .replace(/\bBearer\s+[A-Za-z0-9._-]+\b/gi, "Bearer [REDACTED_TOKEN]")
           .replace(/\b(eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)\b/g, "[REDACTED_JWT]");
 
-      const deepRedact = (input: unknown): unknown => {
-        if (typeof input === "string") return redact(input);
-        if (Array.isArray(input)) return input.map(deepRedact);
-        if (input && typeof input === "object") {
-          return Object.fromEntries(
-            Object.entries(input as Record<string, unknown>).map(([k, v]) => [k, deepRedact(v)])
-          );
-        }
-        return input;
-      };
+      const deepRedact = (() => {
+        const seen = new WeakSet<object>();
+
+        const walk = (input: unknown): unknown => {
+          if (typeof input === "string") return redact(input);
+          if (Array.isArray(input)) return input.map(walk);
+
+          if (input && typeof input === "object") {
+            // Avoid infinite recursion on circular structures
+            if (seen.has(input)) return "[REDACTED_CIRCULAR]";
+            seen.add(input);
+
+            // Only serialize enumerable props; treat exotic objects as strings
+            const proto = Object.getPrototypeOf(input);
+            if (proto !== Object.prototype && proto !== null) {
+              return redact(String(input));
+            }
+
+            return Object.fromEntries(
+              Object.entries(input as Record<string, unknown>).map(([k, v]) => [k, walk(v)])
+            );
+          }
+
+          return input;
+        };
+
+        return walk;
+      })();
 
       const exportData = {
         exportedAt: new Date().toISOString(),
