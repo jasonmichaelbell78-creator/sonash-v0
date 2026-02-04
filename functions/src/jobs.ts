@@ -309,18 +309,44 @@ async function performHardDeleteForUser(
 }
 
 /**
+ * A20: Job run history entry structure
+ */
+interface JobRunHistoryEntry {
+  runId: string;
+  startTime: FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue;
+  endTime: FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue;
+  status: "success" | "failed";
+  durationMs: number;
+  error?: string;
+  resultSummary?: Record<string, unknown>;
+  triggeredBy: "schedule" | "manual";
+}
+
+/**
+ * Options for runJob function
+ */
+interface RunJobOptions {
+  /** How the job was triggered */
+  triggeredBy?: "schedule" | "manual";
+}
+
+/**
  * Job wrapper for status tracking
  * Uses set({ merge: true }) to handle first-run case when document doesn't exist
+ * A20: Also saves run history to admin_jobs/{jobId}/run_history subcollection
  * Includes nested error handling to preserve original errors
  */
 export async function runJob(
   jobId: string,
   jobName: string,
-  jobFn: () => Promise<void>
+  jobFn: () => Promise<Record<string, unknown> | void>,
+  options: RunJobOptions = {}
 ): Promise<void> {
   const db = admin.firestore();
   const jobRef = db.doc(`admin_jobs/${jobId}`);
   const startTime = Date.now();
+  const runId = `${startTime}-${Math.random().toString(36).slice(2, 8)}`;
+  const triggeredBy = options.triggeredBy ?? "schedule";
 
   // Initialize job document (handles first-run case)
   await jobRef.set(
@@ -335,10 +361,11 @@ export async function runJob(
   let jobError: unknown = null;
 
   try {
-    // Execute the job
-    await jobFn();
+    // Execute the job and capture result
+    const result = await jobFn();
 
     const duration = Date.now() - startTime;
+    const resultSummary = (result as Record<string, unknown>) ?? {};
 
     // Update with success status
     await jobRef.set(
@@ -351,9 +378,29 @@ export async function runJob(
       { merge: true }
     );
 
+    // A20: Save to run history subcollection
+    const historyEntry: JobRunHistoryEntry = {
+      runId,
+      startTime: admin.firestore.Timestamp.fromMillis(startTime),
+      endTime: admin.firestore.FieldValue.serverTimestamp(),
+      status: "success",
+      durationMs: duration,
+      resultSummary,
+      triggeredBy,
+    };
+
+    // Non-blocking history save (don't fail job if history write fails)
+    jobRef
+      .collection("run_history")
+      .doc(runId)
+      .set(historyEntry)
+      .catch((err) => {
+        console.error(`Failed to save run history for ${jobId}:${runId}`, err);
+      });
+
     logSecurityEvent("JOB_SUCCESS", jobId, `Job completed successfully in ${duration}ms`, {
       severity: "INFO",
-      metadata: { duration, jobName },
+      metadata: { duration, jobName, runId, triggeredBy },
     });
   } catch (error) {
     jobError = error; // Capture the original error
@@ -370,13 +417,33 @@ export async function runJob(
         },
         { merge: true }
       );
+
+      // A20: Save failed run to history
+      const historyEntry: JobRunHistoryEntry = {
+        runId,
+        startTime: admin.firestore.Timestamp.fromMillis(startTime),
+        endTime: admin.firestore.FieldValue.serverTimestamp(),
+        status: "failed",
+        durationMs: duration,
+        error: errorMessage,
+        triggeredBy,
+      };
+
+      // Non-blocking history save
+      jobRef
+        .collection("run_history")
+        .doc(runId)
+        .set(historyEntry)
+        .catch((err) => {
+          console.error(`Failed to save run history for ${jobId}:${runId}`, err);
+        });
     } catch (updateError) {
       console.error(`Failed to update job status for ${jobId}`, updateError);
     }
 
     logSecurityEvent("JOB_FAILURE", jobId, `Job failed: ${errorMessage}`, {
       severity: "ERROR",
-      metadata: { duration, jobName, error: errorMessage },
+      metadata: { duration, jobName, error: errorMessage, runId, triggeredBy },
       captureToSentry: true,
     });
 

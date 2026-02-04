@@ -1750,8 +1750,8 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
       throw new HttpsError("not-found", `Job not found: ${jobId}`);
     }
 
-    // Run the job with tracking
-    await runJob(jobId, job.name, job.fn);
+    // Run the job with tracking (A20: pass triggeredBy for history)
+    await runJob(jobId, job.name, job.fn, { triggeredBy: "manual" });
 
     return {
       success: true,
@@ -1859,6 +1859,129 @@ export const adminGetJobsStatus = onCall(async (request) => {
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get jobs status");
+  }
+});
+
+// ============================================================================
+// A20: Job Run History Functions
+// ============================================================================
+
+/**
+ * Request parameters for job run history
+ */
+interface GetJobRunHistoryRequest {
+  jobId?: string; // Optional - if not provided, returns all jobs
+  status?: "success" | "failed"; // Optional filter
+  limit?: number; // Max results (default 50, max 200)
+  startDate?: string; // ISO date string
+  endDate?: string; // ISO date string
+}
+
+/**
+ * Job run history entry (returned to client)
+ */
+interface JobRunHistoryResponse {
+  runId: string;
+  jobId: string;
+  jobName: string;
+  startTime: string;
+  endTime: string;
+  status: "success" | "failed";
+  durationMs: number;
+  error?: string;
+  resultSummary?: Record<string, unknown>;
+  triggeredBy: "schedule" | "manual";
+}
+
+/**
+ * A20: Admin: Get Job Run History
+ * Returns detailed history of job executions with filtering options
+ */
+export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (request) => {
+  await requireAdmin(request, "adminGetJobRunHistory");
+
+  const { jobId, status, limit = 50, startDate, endDate } = request.data ?? {};
+
+  // Validate limit
+  const safeLimit = Math.min(Math.max(1, limit), 200);
+
+  try {
+    const db = admin.firestore();
+    const results: JobRunHistoryResponse[] = [];
+
+    // Get job IDs to query
+    let jobIds: string[] = [];
+    if (jobId) {
+      jobIds = [jobId];
+    } else {
+      // Get all job IDs from admin_jobs collection
+      const jobsSnapshot = await db.collection("admin_jobs").get();
+      jobIds = jobsSnapshot.docs.map((doc) => doc.id);
+    }
+
+    // Query run history for each job
+    for (const jId of jobIds) {
+      const jobDoc = await db.doc(`admin_jobs/${jId}`).get();
+      const jobName = jobDoc.exists ? (jobDoc.data()?.name as string) || jId : jId;
+
+      let query: FirebaseFirestore.Query = db
+        .collection(`admin_jobs/${jId}/run_history`)
+        .orderBy("startTime", "desc");
+
+      // Apply status filter
+      if (status) {
+        query = query.where("status", "==", status);
+      }
+
+      // Apply date filters
+      if (startDate) {
+        const startTimestamp = admin.firestore.Timestamp.fromDate(new Date(startDate));
+        query = query.where("startTime", ">=", startTimestamp);
+      }
+
+      if (endDate) {
+        const endTimestamp = admin.firestore.Timestamp.fromDate(new Date(endDate));
+        query = query.where("startTime", "<=", endTimestamp);
+      }
+
+      // Limit per job (we'll re-sort and limit the combined results)
+      query = query.limit(safeLimit);
+
+      const historySnapshot = await query.get();
+
+      for (const doc of historySnapshot.docs) {
+        const data = doc.data();
+        results.push({
+          runId: data.runId || doc.id,
+          jobId: jId,
+          jobName,
+          startTime: safeToIso(data.startTime, ""),
+          endTime: safeToIso(data.endTime, ""),
+          status: data.status,
+          durationMs: data.durationMs || 0,
+          error: data.error,
+          resultSummary: data.resultSummary,
+          triggeredBy: data.triggeredBy || "schedule",
+        });
+      }
+    }
+
+    // Sort by startTime descending and limit total results
+    results.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+    const limitedResults = results.slice(0, safeLimit);
+
+    return {
+      runs: limitedResults,
+      totalCount: limitedResults.length,
+      hasMore: results.length > safeLimit,
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetJobRunHistory", "Failed to get job run history", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error), jobId },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get job run history");
   }
 });
 
@@ -2114,6 +2237,252 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get logs");
+  }
+});
+
+// ============================================================================
+// A21: Error → User Correlation Functions
+// ============================================================================
+
+/**
+ * A21: Request for errors with user correlation
+ */
+interface GetErrorsWithUsersRequest {
+  limit?: number;
+  hoursBack?: number;
+}
+
+/**
+ * A21: Error with user correlation data
+ */
+interface ErrorWithUserCorrelation {
+  id: string;
+  type: string;
+  message: string;
+  timestamp: string;
+  functionName: string;
+  userIdHash: string | null;
+  severity: "ERROR" | "WARNING";
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * A21: Admin: Get Errors with User Correlation
+ * Returns errors from security_logs with userIdHash for correlation
+ */
+export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (request) => {
+  await requireAdmin(request, "adminGetErrorsWithUsers");
+
+  const { limit: rawLimit = 50, hoursBack = 24 } = request.data ?? {};
+
+  // Validate inputs
+  const safeLimit = Math.min(Math.max(1, rawLimit), 100);
+  const safeHoursBack = Math.min(Math.max(1, hoursBack), 168); // Max 7 days
+
+  try {
+    const db = admin.firestore();
+    const cutoff = new Date(Date.now() - safeHoursBack * 60 * 60 * 1000);
+    const cutoffTimestamp = admin.firestore.Timestamp.fromDate(cutoff);
+
+    // Query for ERROR events in the time range
+    const snapshot = await db
+      .collection("security_logs")
+      .where("severity", "in", ["ERROR", "WARNING"])
+      .where("timestamp", ">=", cutoffTimestamp)
+      .orderBy("timestamp", "desc")
+      .limit(safeLimit)
+      .get();
+
+    const errors: ErrorWithUserCorrelation[] = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        type: data.type || "UNKNOWN",
+        message: data.message || "",
+        timestamp: safeToIso(data.timestamp, ""),
+        functionName: data.functionName || "unknown",
+        userIdHash: data.userId || null, // Already hashed in security_logs
+        severity: data.severity === "ERROR" ? "ERROR" : "WARNING",
+        metadata: data.metadata
+          ? (toJsonSafe(redactSensitiveMetadata(data.metadata)) as Record<string, unknown>)
+          : undefined,
+      };
+    });
+
+    // Group by userIdHash to count affected users
+    const userHashes = new Set(errors.filter((e) => e.userIdHash).map((e) => e.userIdHash));
+
+    return {
+      errors,
+      totalCount: errors.length,
+      uniqueUsers: userHashes.size,
+      timeRange: {
+        from: cutoff.toISOString(),
+        to: new Date().toISOString(),
+      },
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetErrorsWithUsers", "Failed to get errors with users", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get errors with user correlation");
+  }
+});
+
+/**
+ * A21: Request for user activity timeline
+ */
+interface GetUserActivityRequest {
+  userIdHash: string;
+  hoursBack?: number;
+  limit?: number;
+}
+
+/**
+ * A21: User activity entry
+ */
+interface UserActivityEntry {
+  id: string;
+  type: string;
+  functionName: string;
+  message: string;
+  timestamp: string;
+  severity: "INFO" | "WARNING" | "ERROR";
+}
+
+/**
+ * A21: Admin: Get User Activity Timeline
+ * Returns recent actions for a user (by hashed ID) to help correlate with errors
+ */
+export const adminGetUserActivityByHash = onCall<GetUserActivityRequest>(async (request) => {
+  await requireAdmin(request, "adminGetUserActivityByHash");
+
+  const { userIdHash, hoursBack = 24, limit: rawLimit = 50 } = request.data ?? {};
+
+  if (!userIdHash || typeof userIdHash !== "string" || userIdHash.length < 8) {
+    throw new HttpsError("invalid-argument", "Valid userIdHash is required");
+  }
+
+  // Validate inputs
+  const safeLimit = Math.min(Math.max(1, rawLimit), 100);
+  const safeHoursBack = Math.min(Math.max(1, hoursBack), 168);
+
+  try {
+    const db = admin.firestore();
+    const cutoff = new Date(Date.now() - safeHoursBack * 60 * 60 * 1000);
+    const cutoffTimestamp = admin.firestore.Timestamp.fromDate(cutoff);
+
+    // Query for user's activity
+    const snapshot = await db
+      .collection("security_logs")
+      .where("userId", "==", userIdHash)
+      .where("timestamp", ">=", cutoffTimestamp)
+      .orderBy("timestamp", "desc")
+      .limit(safeLimit)
+      .get();
+
+    const activities: UserActivityEntry[] = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        type: data.type || "UNKNOWN",
+        functionName: data.functionName || "unknown",
+        message: data.message || "",
+        timestamp: safeToIso(data.timestamp, ""),
+        severity:
+          data.severity === "ERROR" ? "ERROR" : data.severity === "WARNING" ? "WARNING" : "INFO",
+      };
+    });
+
+    // Group by type for summary
+    const activityByType = activities.reduce(
+      (acc, a) => {
+        acc[a.type] = (acc[a.type] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
+    return {
+      userIdHash,
+      activities,
+      totalCount: activities.length,
+      activityByType,
+      timeRange: {
+        from: cutoff.toISOString(),
+        to: new Date().toISOString(),
+      },
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetUserActivityByHash", "Failed to get user activity", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error), targetUserHash: userIdHash },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get user activity");
+  }
+});
+
+/**
+ * A21: Request to find user by hash prefix (for navigation)
+ */
+interface FindUserByHashRequest {
+  userIdHash: string;
+}
+
+/**
+ * A21: Admin: Find User by Hash
+ * Attempts to find a user by their hashed ID (matches first 12 chars)
+ * Returns basic user info for navigation to user details
+ */
+export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request) => {
+  await requireAdmin(request, "adminFindUserByHash");
+
+  const { userIdHash } = request.data ?? {};
+
+  if (!userIdHash || typeof userIdHash !== "string" || userIdHash.length < 8) {
+    throw new HttpsError("invalid-argument", "Valid userIdHash is required");
+  }
+
+  try {
+    const db = admin.firestore();
+
+    // Get all users and compute their hashes
+    // NOTE: This is O(n) but necessary since we store hashes not UIDs in logs
+    // In production with many users, consider a userIdHash → uid lookup collection
+    const usersSnapshot = await db.collection("users").limit(1000).get();
+
+    for (const userDoc of usersSnapshot.docs) {
+      const uid = userDoc.id;
+      const computed = hashUserId(uid);
+      if (computed === userIdHash) {
+        const data = userDoc.data();
+        return {
+          found: true,
+          user: {
+            uid,
+            nickname: data.nickname || "Unknown",
+            email: data.email ? `${data.email.slice(0, 3)}***` : null, // Partially redact
+            createdAt: safeToIso(data.createdAt, null),
+            lastActive: safeToIso(data.lastActive, null),
+          },
+        };
+      }
+    }
+
+    return {
+      found: false,
+      user: null,
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminFindUserByHash", "Failed to find user by hash", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to find user");
   }
 });
 

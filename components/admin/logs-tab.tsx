@@ -16,6 +16,9 @@ import {
   Filter,
   ChevronDown,
   ChevronRight,
+  Download,
+  Search,
+  Calendar,
 } from "lucide-react";
 
 interface LogEntry {
@@ -224,6 +227,20 @@ function LogRow({ log, isExpanded, onToggle }: LogRowProps) {
   );
 }
 
+// A22: Event type categories for filtering
+const EVENT_TYPE_CATEGORIES = [
+  { id: "all", label: "All Types", pattern: "" },
+  { id: "auth", label: "Auth", pattern: "AUTH" },
+  { id: "admin", label: "Admin", pattern: "ADMIN" },
+  { id: "job", label: "Jobs", pattern: "JOB" },
+  { id: "ratelimit", label: "Rate Limit", pattern: "RATE_LIMIT" },
+  { id: "recaptcha", label: "reCAPTCHA", pattern: "RECAPTCHA" },
+  { id: "save", label: "Save", pattern: "SAVE" },
+  { id: "delete", label: "Delete", pattern: "DELETE" },
+] as const;
+
+type TypeFilterId = (typeof EVENT_TYPE_CATEGORIES)[number]["id"];
+
 export function LogsTab() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [gcpLinks, setGcpLinks] = useState<LogsResponse["gcpLinks"] | null>(null);
@@ -231,6 +248,9 @@ export function LogsTab() {
   const [error, setError] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [severityFilter, setSeverityFilter] = useState<"all" | "ERROR" | "WARNING" | "INFO">("all");
+  // A22: Additional filters
+  const [typeFilter, setTypeFilter] = useState<TypeFilterId>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleRow = (id: string) => {
     setExpandedRows((prev) => {
@@ -244,15 +264,63 @@ export function LogsTab() {
     });
   };
 
+  // A22: Enhanced filtering with type and search
   const filteredLogs = useMemo(() => {
-    if (severityFilter === "all") return logs;
-    return logs.filter((log) => log.severity === severityFilter);
-  }, [logs, severityFilter]);
+    let filtered = logs;
+
+    // Severity filter
+    if (severityFilter !== "all") {
+      filtered = filtered.filter((log) => log.severity === severityFilter);
+    }
+
+    // Type filter
+    if (typeFilter !== "all") {
+      const typeCategory = EVENT_TYPE_CATEGORIES.find((c) => c.id === typeFilter);
+      if (typeCategory && typeCategory.pattern) {
+        filtered = filtered.filter((log) => log.type.includes(typeCategory.pattern));
+      }
+    }
+
+    // Search query (matches message, type, or functionName)
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (log) =>
+          log.message.toLowerCase().includes(query) ||
+          log.type.toLowerCase().includes(query) ||
+          log.functionName.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }, [logs, severityFilter, typeFilter, searchQuery]);
 
   // Reset expanded rows when filter changes to prevent stale expanded state
   useEffect(() => {
     setExpandedRows(new Set());
-  }, [severityFilter]);
+  }, [severityFilter, typeFilter, searchQuery]);
+
+  // A22: Export filtered logs as JSON
+  const exportLogs = useCallback(() => {
+    const exportData = {
+      exportedAt: new Date().toISOString(),
+      filters: {
+        severity: severityFilter,
+        type: typeFilter,
+        search: searchQuery || null,
+      },
+      totalCount: filteredLogs.length,
+      logs: filteredLogs,
+    };
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `security-logs-${new Date().toISOString().split("T")[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [filteredLogs, severityFilter, typeFilter, searchQuery]);
 
   // ROBUSTNESS: Accept isActive function to guard against state updates on unmounted component
   const refresh = useCallback(async (isActive: () => boolean = () => true) => {
@@ -456,24 +524,92 @@ export function LogsTab() {
         </div>
       </div>
 
-      {/* Filter */}
-      <div className="flex items-center gap-3">
-        <Filter className="h-4 w-4 text-amber-600" />
-        <span className="text-sm font-medium text-amber-900">Filter:</span>
-        <div className="flex gap-2">
-          {(["all", "ERROR", "WARNING", "INFO"] as const).map((level) => (
-            <button
-              key={level}
-              onClick={() => setSeverityFilter(level)}
-              className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                severityFilter === level
-                  ? "bg-amber-500 text-white"
-                  : "bg-amber-100 text-amber-700 hover:bg-amber-200"
-              }`}
+      {/* A22: Query Builder / Filters */}
+      <div className="rounded-lg border border-amber-100 bg-white p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-amber-900 flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            Query Builder
+          </h3>
+          <button
+            onClick={exportLogs}
+            disabled={filteredLogs.length === 0}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 disabled:opacity-50"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export ({filteredLogs.length})
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search messages, types, or functions..."
+            className="w-full pl-9 pr-4 py-2 text-sm border border-amber-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+        </div>
+
+        {/* Filter Row */}
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Severity Filter */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-amber-700">Severity:</span>
+            <div className="flex gap-1">
+              {(["all", "ERROR", "WARNING", "INFO"] as const).map((level) => (
+                <button
+                  key={level}
+                  onClick={() => setSeverityFilter(level)}
+                  className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+                    severityFilter === level
+                      ? "bg-amber-500 text-white"
+                      : "bg-amber-100 text-amber-700 hover:bg-amber-200"
+                  }`}
+                >
+                  {level === "all" ? "All" : level}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Type Filter */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-amber-700">Type:</span>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value as TypeFilterId)}
+              className="text-xs border border-amber-200 rounded px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
-              {level === "all" ? "All" : level}
-            </button>
-          ))}
+              {EVENT_TYPE_CATEGORIES.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Active Filters Summary */}
+          {(severityFilter !== "all" || typeFilter !== "all" || searchQuery) && (
+            <div className="flex items-center gap-2 text-xs text-amber-600">
+              <Calendar className="h-3.5 w-3.5" />
+              <span>
+                Showing {filteredLogs.length} of {logs.length} logs
+              </span>
+              <button
+                onClick={() => {
+                  setSeverityFilter("all");
+                  setTypeFilter("all");
+                  setSearchQuery("");
+                }}
+                className="text-amber-700 hover:text-amber-900 underline"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

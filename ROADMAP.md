@@ -366,16 +366,16 @@ reliability, and solo developer automations.
   - DAU/WAU/MAU trends visualization
   - Retention metrics from Firestore session data
   - Feature usage breakdown
-- [ ] **A20:** Job Results Detailed Viewer (2-3hr)
+- [x] **A20:** Job Results Detailed Viewer (2-3hr) ✅ Session #129
   - View full job output logs in-app
   - Filter by job type, status, date range
   - Download job logs as JSON
-- [ ] **A21:** Sentry Error → User Correlation (2-3hr)
+- [x] **A21:** Sentry Error → User Correlation (2-3hr) ✅ Session #129
   - Link errors to specific user accounts
   - Show user's recent actions before error
   - **Key lines:** `lib/logger.ts:1`
   - Quick navigation to user details from error
-- [ ] **A22:** GCP Cloud Logging Query Builder (3-4hr)
+- [x] **A22:** GCP Cloud Logging Query Builder (3-4hr) ✅ Session #129
   - Simple log queries without GCP Console
   - Pre-built query templates (errors, security events, auth)
   - Export filtered results

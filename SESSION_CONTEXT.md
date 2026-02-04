@@ -11,27 +11,36 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-02-04 **Branch**: `claude/new-session-6XecT` **Working
-On**: A19 User Analytics Tab complete **Files Modified**: 6 files (admin.ts,
-index.ts, analytics-tab.tsx, admin-tabs.tsx, admin-tab-context.tsx, ROADMAP.md)
+On**: Track A Phase 2 COMPLETE (A19-A22) **Files Modified**: 7 files (admin.ts,
+index.ts, jobs.ts, jobs-tab.tsx, errors-tab.tsx, logs-tab.tsx, ROADMAP.md)
 
-**Next Step**: Continue Track A Phase 2 (A20-A22) or start Track B
+**Next Step**: Track A Phase 2 complete - start Track B or other work
 
-**Uncommitted Work**: Yes - A19 implementation
+**Uncommitted Work**: No - all committed
 
-**Session #129 Summary** (A19 USER ANALYTICS TAB + CONSOLIDATION FIX):
+**Session #129 Summary** (TRACK A PHASE 2 COMPLETE - A19-A22):
 
 - ✅ **A19: User Analytics Tab** - New admin panel tab with:
-  - DAU/WAU/MAU metrics cards
-  - 14-day activity trend chart
-  - Feature usage tracking (journal, check-ins, meetings, resources)
-  - Cohort retention table (week 1/2/4 retention percentages)
-  - Cloud Function `adminGetUserAnalytics` using existing `analytics_daily` data
+  - DAU/WAU/MAU metrics cards, 14-day activity trend chart
+  - Feature usage tracking, cohort retention table
+  - Cloud Function `adminGetUserAnalytics`
+- ✅ **A20: Job Results Detailed Viewer**:
+  - Added `run_history` subcollection for job execution tracking
+  - Cloud Function `adminGetJobRunHistory` with filtering
+  - Enhanced jobs-tab with expandable history panel per job
+  - Filter by status, download history as JSON
+- ✅ **A21: Sentry Error → User Correlation**:
+  - Cloud Functions: `adminGetErrorsWithUsers`, `adminGetUserActivityByHash`,
+    `adminFindUserByHash`
+  - errors-tab: User Correlation section with activity modal
+  - Navigate to user details from error view
+- ✅ **A22: GCP Cloud Logging Query Builder**:
+  - Enhanced logs-tab with query builder UI
+  - Search across messages, types, functions
+  - Type category filter (Auth, Admin, Jobs, etc.)
+  - Export filtered logs as JSON
 - ✅ **Consolidation Counter Fix**: Fixed drift between manual and computed
   counts
-  - Root cause: pr-review skill lacked INCREMENT instruction
-  - Added Review #236 missing from version history table
-  - Created `npm run consolidation:sync` script for future drift fixes
-  - Updated pr-review skill with MANDATORY increment instructions
 
 **Session #128 Summary** (TIMING SYSTEM + EPISODIC MEMORY):
 
