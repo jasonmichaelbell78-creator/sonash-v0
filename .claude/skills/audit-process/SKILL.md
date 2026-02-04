@@ -383,15 +383,18 @@ Using the Stage 1 inventory, find orphaned automation:
 
 Cross-reference the dependency graph from Stage 1.
 
-For each orphan found, create a JSONL entry with format:
+For each orphan found, create a JSONL entry (JSONL_SCHEMA_STANDARD.md format):
 {
-  "title": "Orphaned: [name]",
-  "severity": "S2",
   "category": "process",
-  "file": "path/to/file",
-  "line": 1,
-  "description": "This [script/skill/function] is never called by anything",
-  "recommendation": "Remove if unused, or document intended use"
+  "title": "Orphaned: [name]",
+  "fingerprint": "process::path/to/file::orphaned-name",
+  "severity": "S2",
+  "effort": "E1",
+  "confidence": 90,
+  "files": ["path/to/file:1"],
+  "why_it_matters": "Orphaned code increases maintenance burden and confusion",
+  "suggested_fix": "Remove if unused, or document intended use",
+  "acceptance_tests": ["Verify no callers exist", "Remove and confirm no breakage"]
 }
 
 CRITICAL: You MUST write findings directly to this file:
@@ -414,15 +417,18 @@ Find duplicated logic across automation:
 4. Pattern checks duplicated between hook and script
 5. Similar error handling code copy-pasted
 
-For each duplication found, create a JSONL entry with format:
+For each duplication found, create a JSONL entry (JSONL_SCHEMA_STANDARD.md format):
 {
-  "title": "Duplicated: [description]",
-  "severity": "S2",
   "category": "process",
-  "file": "path/to/file",
-  "line": 123,
-  "description": "Same logic exists in [other locations]",
-  "recommendation": "Consolidate into single source, call from both places"
+  "title": "Duplicated: [description]",
+  "fingerprint": "process::path/to/file::duplicated-logic-name",
+  "severity": "S2",
+  "effort": "E1",
+  "confidence": 85,
+  "files": ["path/to/file:123", "other/location:456"],
+  "why_it_matters": "Duplicated logic leads to inconsistent behavior and double maintenance",
+  "suggested_fix": "Consolidate into single source, call from both places",
+  "acceptance_tests": ["Single source of truth exists", "Both callers use shared implementation"]
 }
 
 CRITICAL: You MUST write findings directly to this file:
@@ -445,15 +451,18 @@ Find automation that never executes:
 4. Firebase scheduled jobs that are disabled
 5. Dead code paths in scripts (unreachable conditions)
 
-For each finding, create a JSONL entry with format:
+For each finding, create a JSONL entry (JSONL_SCHEMA_STANDARD.md format):
 {
-  "title": "Never executes: [name]",
-  "severity": "S3",
   "category": "process",
-  "file": "path/to/file",
-  "line": 1,
-  "description": "This automation never runs because [reason]",
-  "recommendation": "Remove or fix trigger condition"
+  "title": "Never executes: [name]",
+  "fingerprint": "process::path/to/file::never-executes-name",
+  "severity": "S3",
+  "effort": "E0",
+  "confidence": 80,
+  "files": ["path/to/file:1"],
+  "why_it_matters": "Dead automation clutters codebase and misleads developers",
+  "suggested_fix": "Remove or fix trigger condition",
+  "acceptance_tests": ["Removed from codebase", "OR trigger condition now fires correctly"]
 }
 
 CRITICAL: You MUST write findings directly to this file:
@@ -668,15 +677,18 @@ Analyze pre-commit and pre-push performance:
 4. Are there checks that could be skipped for certain file types?
 5. Is there unnecessary work (full scans when partial would do)?
 
-For each performance issue, create a JSONL entry with format:
+For each performance issue, create a JSONL entry (JSONL_SCHEMA_STANDARD.md format):
 {
-  "title": "Slow: [check name]",
-  "severity": "S2",
   "category": "process",
-  "file": ".husky/pre-commit",
-  "line": [line],
-  "description": "Takes [X]s, could be [Y]s with [optimization]",
-  "recommendation": "[specific optimization]"
+  "title": "Slow: [check name]",
+  "fingerprint": "process::.husky/pre-commit::slow-check-name",
+  "severity": "S2",
+  "effort": "E1",
+  "confidence": 85,
+  "files": [".husky/pre-commit:[line]"],
+  "why_it_matters": "Slow hooks degrade developer experience and encourage bypassing",
+  "suggested_fix": "[specific optimization]",
+  "acceptance_tests": ["Hook completes in <[Y]s", "No functionality lost"]
 }
 
 CRITICAL: You MUST write findings directly to this file:
@@ -912,15 +924,18 @@ Identify coverage gaps:
 4. Firebase functions without integration tests
 5. Skills without usage documentation
 
-For each gap, create a JSONL entry with format:
+For each gap, create a JSONL entry (JSONL_SCHEMA_STANDARD.md format):
 {
-  "title": "Gap: [description]",
-  "severity": "S2",
   "category": "process",
-  "file": "[relevant file or 'N/A']",
-  "line": 1,
-  "description": "[what's missing]",
-  "recommendation": "[how to add coverage]"
+  "title": "Gap: [description]",
+  "fingerprint": "process::[file or N/A]::coverage-gap-identifier",
+  "severity": "S2",
+  "effort": "E2",
+  "confidence": 80,
+  "files": ["[relevant file or 'N/A']:1"],
+  "why_it_matters": "[what's missing and why it matters]",
+  "suggested_fix": "[how to add coverage]",
+  "acceptance_tests": ["Coverage added", "Validation passes"]
 }
 
 CRITICAL: You MUST write findings directly to this file:
@@ -943,13 +958,18 @@ Identify improvement opportunities:
 4. Hooks that could provide better DX
 5. CI optimizations (caching, parallelization)
 
-For each opportunity, create a JSONL entry with format:
+For each opportunity, create a JSONL entry (JSONL_SCHEMA_STANDARD.md format):
 {
-  "title": "Improve: [description]",
-  "severity": "S3",
   "category": "process",
-  "description": "[current state] -> [improved state]",
-  "recommendation": "[specific implementation suggestion]"
+  "title": "Improve: [description]",
+  "fingerprint": "process::automation::improvement-identifier",
+  "severity": "S3",
+  "effort": "E2",
+  "confidence": 75,
+  "files": ["[relevant file or N/A]"],
+  "why_it_matters": "[current state] -> [improved state]",
+  "suggested_fix": "[specific implementation suggestion]",
+  "acceptance_tests": ["Improvement implemented", "Verified working"]
 }
 
 CRITICAL: You MUST write findings directly to this file:

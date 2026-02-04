@@ -1,15 +1,15 @@
 ---
 name: audit-comprehensive
-description: Run all 6 domain audits in staged waves and aggregate results
+description: Run all 7 domain audits in staged waves and aggregate results
 ---
 
 # Comprehensive Multi-Domain Audit Orchestrator
 
-**Version:** 2.0 (Staged Execution with S0/S1 Escalation) **Time Savings:** 70%
-faster than sequential (150min → 45min) **Stages:** 3 stages with 4+2+1 agent
+**Version:** 2.1 (7-Domain Coverage with S0/S1 Escalation) **Time Savings:** 70%
+faster than sequential (175min → 50min) **Stages:** 3 stages with 4+3+1 agent
 configuration
 
-**What This Does:** Spawns 6 specialized audit agents in staged waves
+**What This Does:** Spawns 7 specialized audit agents in staged waves
 (respecting max 4 concurrent limit), with verification checkpoints and S0/S1
 escalation, then aggregates findings into a comprehensive report.
 
@@ -17,7 +17,7 @@ escalation, then aggregates findings into a comprehensive report.
 
 ## Overview
 
-This skill orchestrates a complete codebase audit across all 6 domains:
+This skill orchestrates a complete codebase audit across all 7 domains:
 
 1. **Code Quality** (`audit-code`) - Code hygiene, types, framework patterns
 2. **Security** (`audit-security`) - Auth, input validation, OWASP compliance
@@ -25,6 +25,8 @@ This skill orchestrates a complete codebase audit across all 6 domains:
 4. **Documentation** (`audit-documentation`) - README, API docs, architecture
 5. **Refactoring** (`audit-refactoring`) - Technical debt, complexity, DRY
 6. **Process/Automation** (`audit-process`) - CI/CD, testing, workflows
+7. **Engineering Productivity** (`audit-engineering-productivity`) - DX,
+   debugging, offline support
 
 **Output:** Single unified report in
 `docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md`
@@ -36,7 +38,7 @@ This skill orchestrates a complete codebase audit across all 6 domains:
 ```
 ┌─────────────────────────────────────────────────────┐
 │ Pre-Flight Validation                               │
-│   - Verify all 6 audit skills exist                 │
+│   - Verify all 7 audit skills exist                 │
 │   - Create output directory                         │
 │   - Gather baselines (tests, lint, patterns)        │
 │   - Load false positives database                   │
@@ -58,12 +60,13 @@ This skill orchestrates a complete codebase audit across all 6 domains:
                           │
                           ▼
 ┌─────────────────────────────────────────────────────┐
-│ Stage 2: Supporting (2 agents parallel)             │
+│ Stage 2: Supporting (3 agents parallel)             │
 │   - audit-documentation                             │
 │   - audit-process                                   │
+│   - audit-engineering-productivity                  │
 │                                                     │
 │ Checkpoint:                                         │
-│   ✓ Verify 2 report files exist and non-empty      │
+│   ✓ Verify 3 report files exist and non-empty      │
 └─────────────────────────────────────────────────────┘
                           │
                           ▼
@@ -127,11 +130,11 @@ mcp__plugin_episodic -
 
 **Step 1: Verify Skills Exist**
 
-Check that all 6 audit skills are available:
+Check that all 7 audit skills are available:
 
 ```bash
 ls -1 .claude/skills/audit-*/SKILL.md | wc -l
-# Should return 6
+# Should return 7
 ```
 
 If not all present, notify user which audits are missing and ask whether to
@@ -217,12 +220,13 @@ Stage 1: Technical Core (4 parallel)
 Stage 2: Supporting (waiting)
   ⏸️ Documentation
   ⏸️ Process/Automation
+  ⏸️ Engineering Productivity
 
 Stage 3: Aggregation (waiting)
   ⏸️ Aggregator
 
-Estimated time: 40-45 minutes
-(vs 150 minutes if run sequentially - 70% faster!)
+Estimated time: 45-50 minutes
+(vs 175 minutes if run sequentially - 70% faster!)
 ```
 
 ### Stage 1 Checkpoint (MANDATORY)
@@ -283,27 +287,28 @@ Proceeding to Stage 2...
 
 ---
 
-## Stage 2: Supporting Audits (2 Parallel)
+## Stage 2: Supporting Audits (3 Parallel)
 
-**Launch 2 agents IN PARALLEL using Task tool with `run_in_background: true`:**
+**Launch 3 agents IN PARALLEL using Task tool with `run_in_background: true`:**
 
-| Agent | Skill               | Output File                     |
-| ----- | ------------------- | ------------------------------- |
-| 2A    | audit-documentation | `audit-documentation-report.md` |
-| 2B    | audit-process       | `audit-process-report.md`       |
+| Agent | Skill                          | Output File                                |
+| ----- | ------------------------------ | ------------------------------------------ |
+| 2A    | audit-documentation            | `audit-documentation-report.md`            |
+| 2B    | audit-process                  | `audit-process-report.md`                  |
+| 2C    | audit-engineering-productivity | `audit-engineering-productivity-report.md` |
 
 **Why these in Stage 2:**
 
 - Supporting audits that can use Stage 1 context
 - Lower priority than technical core
-- Completes the full 6-domain coverage
+- Completes the full 7-domain coverage
 
 ### Stage 2 Checkpoint (MANDATORY)
 
 **1. Verify output files exist:**
 
 ```bash
-for f in audit-documentation-report.md audit-process-report.md; do
+for f in audit-documentation-report.md audit-process-report.md audit-engineering-productivity-report.md; do
   if [ ! -s "docs/audits/comprehensive/$f" ]; then
     echo "❌ MISSING: $f - re-run agent"
   else
@@ -318,10 +323,11 @@ done
 ✅ Stage 2 Complete (Supporting)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  ✅ Documentation   (X findings)
-  ✅ Process/Auto    (X findings)
+  ✅ Documentation         (X findings)
+  ✅ Process/Auto          (X findings)
+  ✅ Engineering Productivity (X findings)
 
-All 6 audits complete. Proceeding to aggregation...
+All 7 audits complete. Proceeding to aggregation...
 ```
 
 ---
@@ -337,7 +343,7 @@ Task({
   subagent_type: "audit-aggregator",
   description: "Aggregate and deduplicate audit results",
   prompt: `
-Read all 6 audit reports from docs/audits/comprehensive/
+Read all 7 audit reports from docs/audits/comprehensive/
 
 Perform:
 1. Deduplicate findings (same file:line across multiple audits → merge)
@@ -442,6 +448,102 @@ In the "Multi-AI Audit Thresholds" section:
 
 **This step ensures `npm run review:check` correctly shows no triggers after the
 audit.**
+
+---
+
+## Triage & Roadmap Integration (MANDATORY)
+
+After TDMS intake completes, triage new items into the roadmap:
+
+### 1. Review New Items
+
+Check the newly added DEBT-XXXX items:
+
+```bash
+# View recent additions (last 50 items by ID)
+tail -50 docs/technical-debt/MASTER_DEBT.jsonl | jq -r '[.id, .severity, .category, .title[:60]] | @tsv'
+```
+
+### 2. Priority Scoring
+
+Beyond S0-S3 severity, consider these factors for prioritization:
+
+| Factor         | Weight | Description                                     |
+| -------------- | ------ | ----------------------------------------------- |
+| Severity       | 40%    | S0=100, S1=50, S2=20, S3=5                      |
+| Cross-domain   | 20%    | Items flagged by multiple audits get +50%       |
+| Effort inverse | 20%    | E0=4x, E1=2x, E2=1x, E3=0.5x (quick wins first) |
+| Dependency     | 10%    | Blockers for other items get +25%               |
+| File hotspot   | 10%    | Files with 3+ findings get +25%                 |
+
+**Priority Score Formula:**
+
+```
+score = (severity × 0.4) × (cross_domain_mult × 0.2) × (effort_inv × 0.2) × (dep_mult × 0.1) × (hotspot_mult × 0.1)
+```
+
+### 3. Track Assignment
+
+New items are auto-assigned based on category + file patterns:
+
+| Category      | File Pattern            | Track    |
+| ------------- | ----------------------- | -------- |
+| security      | \*                      | Track-S  |
+| performance   | \*                      | Track-P  |
+| process       | \*                      | Track-D  |
+| refactoring   | \*                      | M2.3-REF |
+| documentation | \*                      | M1.5     |
+| code-quality  | scripts/, .claude/      | Track-E  |
+| code-quality  | .github/                | Track-D  |
+| code-quality  | tests/                  | Track-T  |
+| code-quality  | functions/              | M2.2     |
+| code-quality  | components/, lib/, app/ | M2.1     |
+
+**View current assignments:**
+
+```bash
+cat docs/technical-debt/views/unplaced-items.md
+```
+
+### 4. Update ROADMAP.md
+
+For S0/S1 items that need immediate attention:
+
+```markdown
+## Track-S: Security Technical Debt
+
+- [ ] DEBT-0875: Firebase credentials written to disk (S1) **NEW**
+- [ ] DEBT-0876: Missing App Check validation (S1) **NEW**
+```
+
+For bulk items by track:
+
+```markdown
+- [ ] DEBT-0869 through DEBT-0880: Process automation gaps (S2, bulk)
+```
+
+### 5. Consistency Check
+
+Verify all references are valid:
+
+```bash
+node scripts/debt/sync-roadmap-refs.js --check-only
+```
+
+Reports:
+
+- Orphaned refs (in ROADMAP but not in MASTER_DEBT)
+- Unplaced items (in MASTER_DEBT but not in ROADMAP)
+- Status mismatches (marked done but not RESOLVED)
+
+### 6. Review Cadence
+
+| Trigger                   | Action                             |
+| ------------------------- | ---------------------------------- |
+| After comprehensive audit | Full triage of all new items       |
+| After single-domain audit | Triage items in that category only |
+| Weekly (if no audits)     | Check unplaced-items.md for drift  |
+| Before sprint planning    | Review S0/S1 items for inclusion   |
 
 ---
 
@@ -633,5 +735,6 @@ Before running this audit, review:
 
 | Version | Date       | Description                                                               |
 | ------- | ---------- | ------------------------------------------------------------------------- |
+| 2.1     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula  |
 | 2.0     | 2026-02-02 | Staged execution (4+2+1), S0/S1 escalation, checkpoints, context recovery |
 | 1.0     | 2026-01-28 | Initial version - flat parallel execution of all 6 audits                 |

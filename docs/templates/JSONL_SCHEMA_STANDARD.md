@@ -210,6 +210,30 @@ require additional scrutiny and may be blocked by pre-commit hooks.
 - Memory
 - Core Web Vitals
 
+### Engineering Productivity Audit Extensions
+
+```json
+{
+  "symbols": ["array of affected scripts/components"],
+  "dx_details": {
+    "current_state": "string (what exists)",
+    "friction_point": "string (what causes friction)",
+    "impact_area": "GoldenPath|Debugging|Offline"
+  },
+  "improvement": {
+    "description": "string (what to do)",
+    "code_example": "string (optional pattern)",
+    "verification": ["array of verification steps"]
+  }
+}
+```
+
+**Categories for Engineering Productivity:**
+
+- GoldenPath (setup, scripts, onboarding, dev workflow)
+- Debugging (logging, tracing, error handling, messages)
+- Offline (persistence, service workers, queues, sync)
+
 ---
 
 ## Aggregated/Canonical Schema

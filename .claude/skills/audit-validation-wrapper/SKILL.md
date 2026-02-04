@@ -37,9 +37,10 @@ audit-validation-wrapper (this skill)
             │   └── audit-refactoring
             │   └── [VALIDATE domain JSONL outputs]
             │
-            ├── Stage 2 (2 domain audits in parallel)
+            ├── Stage 2 (3 domain audits in parallel)
             │   ├── audit-documentation
-            │   └── audit-process
+            │   ├── audit-process
+            │   └── audit-engineering-productivity
             │   └── [VALIDATE domain JSONL outputs]
             │
             └── Stage 3 (sequential)

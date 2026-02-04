@@ -87,6 +87,9 @@ serviceAccountKey.json
 # Lighthouse audit reports (generated, not tracked)
 .lighthouse/
 
+# Audit validation state (contains local absolute paths)
+docs/audits/comprehensive/validation-state.json
+
 # Windows artifact file (created from command redirects)
 nul
 

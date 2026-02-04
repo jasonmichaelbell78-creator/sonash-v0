@@ -346,36 +346,58 @@ Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or
 
 Create file: `docs/audits/single-session/performance/audit-[YYYY-MM-DD].jsonl`
 
-Each line (UPDATED SCHEMA with confidence and verification):
+**CRITICAL - Use JSONL_SCHEMA_STANDARD.md format:**
 
 ```json
 {
-  "id": "PERF-001",
-  "category": "Bundle|Rendering|DataFetch|Memory|WebVitals|Offline",
+  "category": "performance",
+  "title": "Short specific title",
+  "fingerprint": "performance::path/to/file.ts::identifier",
   "severity": "S0|S1|S2|S3",
   "effort": "E0|E1|E2|E3",
-  "confidence": "HIGH|MEDIUM|LOW",
-  "verified": "DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY",
-  "file": "path/to/file.ts",
-  "line": 123,
-  "title": "Short description",
-  "description": "Detailed issue",
-  "affected_metric": "LCP|INP|CLS|bundle|render|memory",
-  "estimated_improvement": "X%",
-  "recommendation": "How to fix",
+  "confidence": 90,
+  "files": ["path/to/file.ts:123"],
+  "why_it_matters": "1-3 sentences explaining performance impact",
+  "suggested_fix": "Concrete optimization direction",
+  "acceptance_tests": ["Array of verification steps"],
   "evidence": ["code snippet", "build output", "profiling data"],
-  "cross_ref": "build|lighthouse|profiler|MANUAL_ONLY"
+  "performance_details": {
+    "affected_metric": "LCP|INP|CLS|bundle|render|memory",
+    "current_metric": "current value",
+    "expected_improvement": "estimated improvement"
+  }
 }
 ```
 
-**⚠️ REQUIRED FIELDS (for deduplication/cross-reference):**
+**For S0/S1 findings, ALSO include verification_steps:**
 
-- `file` - REQUIRED: Full path from repo root (e.g.,
-  `components/notebook/pages/today-page.tsx`)
-- `line` - REQUIRED: Specific line number where issue occurs (use line 1 if
-  file-wide)
-- These fields enable the aggregator to match findings against existing ROADMAP
-  items
+```json
+{
+  "verification_steps": {
+    "first_pass": {
+      "method": "grep|tool_output|file_read|code_search",
+      "evidence_collected": ["initial evidence"]
+    },
+    "second_pass": {
+      "method": "contextual_review|exploitation_test|manual_verification",
+      "confirmed": true,
+      "notes": "Confirmation notes"
+    },
+    "tool_confirmation": {
+      "tool": "lighthouse|typescript|webpack|NONE",
+      "reference": "Tool output or NONE justification"
+    }
+  }
+}
+```
+
+**⚠️ REQUIRED FIELDS (per JSONL_SCHEMA_STANDARD.md):**
+
+- `category` - MUST be `performance` (normalized)
+- `fingerprint` - Format: `<category>::<primary_file>::<identifier>`
+- `files` - Array with file paths (include line as `file.ts:123`)
+- `confidence` - Number 0-100 (not string)
+- `acceptance_tests` - Non-empty array of verification steps
 
 **3. Markdown Report (save to file):**
 

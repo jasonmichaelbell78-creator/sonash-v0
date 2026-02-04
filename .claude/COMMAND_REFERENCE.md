@@ -585,12 +585,13 @@ Patterns
 
 #### `audit-comprehensive`
 
-**Description:** Run all 6 audit types in staged waves (4+2+1 agents) with
+**Description:** Run all 7 audit types in staged waves (4+2+1 agents) with
 checkpoints, S0/S1 escalation, and aggregated results. Stage 1: code, security,
-performance, refactoring (4 parallel). Stage 2: documentation, process (2
-parallel). Stage 3: aggregation. **When to use:** Full codebase health
-assessment **Example:** Before major release or quarterly review **Parameters:**
-None **Updated:** Session #127 - v2.0 staged execution with CLAUDE.md compliance
+performance, refactoring (4 parallel). Stage 2: documentation, process,
+engineering-productivity (3 parallel). Stage 3: aggregation. **When to use:**
+Full codebase health assessment **Example:** Before major release or quarterly
+review **Parameters:** None **Updated:** Session #127 - v2.0 staged execution
+with CLAUDE.md compliance
 
 #### `audit-documentation`
 
