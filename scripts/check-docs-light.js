@@ -645,6 +645,10 @@ function findMarkdownFiles(dir, files = []) {
         if (entry === "INDEX.md" && fullPath.includes("technical-debt")) {
           continue;
         }
+        // Skip auto-generated view files in technical-debt/views (managed by generate-views.js)
+        if (fullPath.includes("technical-debt") && fullPath.includes("views")) {
+          continue;
+        }
         files.push(fullPath);
       }
     } catch {
