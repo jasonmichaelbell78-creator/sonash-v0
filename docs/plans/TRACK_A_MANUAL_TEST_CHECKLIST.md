@@ -6,21 +6,20 @@
 **Last Updated:** 2026-02-04
 <!-- prettier-ignore-end -->
 
-**Time Required:** ~30-45 minutes **Prerequisites:** App running locally
-(`npm run dev`) and logged in as admin
+**Time Required:** ~30-45 minutes **Prerequisites:** Deployed app URL and admin
+account credentials
 
 ---
 
 ## Before You Start
 
-1. Open your terminal and run:
-   ```bash
-   npm run dev
-   ```
-2. Wait for "Ready" message
-3. Open browser to `http://localhost:3000`
-4. Sign in with your admin account
-5. Navigate to `http://localhost:3000/admin`
+1. Open your browser
+2. Go to your deployed app URL (e.g., `https://your-app.web.app`)
+3. Sign in with your **admin account**
+4. Navigate to `/admin` (e.g., `https://your-app.web.app/admin`)
+5. You should see the Admin Panel with tabs across the top
+
+**Your App URL:** ******\*\*******\_\_******\*\******* (fill this in)
 
 ---
 
@@ -43,7 +42,8 @@
 ### What to Report:
 
 - [ ] **PASS** - All metrics load, refresh works, layout adjusts on resize
-- [ ] **FAIL** - Note what's broken: ******\*\*******\_\_\_\_******\*\*******
+- [ ] **FAIL** - Note what's broken:
+      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
 
 ---
 
@@ -69,7 +69,8 @@
 ### What to Report:
 
 - [ ] **PASS** - Jobs list loads, history expands, badges display correctly
-- [ ] **FAIL** - Note what's broken: ******\*\*******\_\_\_\_******\*\*******
+- [ ] **FAIL** - Note what's broken:
+      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
 
 ---
 
@@ -94,7 +95,8 @@
 
 - [ ] **PASS** - User hashes display, modal opens with activity, navigation
       works
-- [ ] **FAIL** - Note what's broken: ******\*\*******\_\_\_\_******\*\*******
+- [ ] **FAIL** - Note what's broken:
+      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
 - [ ] **N/A** - No errors in system to test with
 
 ---
@@ -118,7 +120,8 @@
 ### What to Report:
 
 - [ ] **PASS** - Search filters work, type dropdown works, export downloads
-- [ ] **FAIL** - Note what's broken: ******\*\*******\_\_\_\_******\*\*******
+- [ ] **FAIL** - Note what's broken:
+      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
 
 ---
 
@@ -138,14 +141,15 @@
 ### Open a New Browser Tab (Incognito/Private):
 
 6. [ ] Open a new **incognito/private** browser window
-7. [ ] Go to `http://localhost:3000/admin` WITHOUT logging in
+7. [ ] Go to your app's `/admin` page WITHOUT logging in
 8. [ ] You should see a **"Not authorized"** or login prompt
 9. [ ] You should NOT be able to see the admin panel
 
 ### What to Report:
 
 - [ ] **PASS** - No PII visible in network, unauthorized access blocked
-- [ ] **FAIL** - Note what's broken: ******\*\*******\_\_\_\_******\*\*******
+- [ ] **FAIL** - Note what's broken:
+      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
 
 ---
 
@@ -163,7 +167,7 @@
 
 - [ ] **PASS** - Empty states show friendly messages
 - [ ] **FAIL** - Shows error or crashes:
-      ******\*\*******\_\_\_\_******\*\*******
+      **\*\***\*\***\*\***\_\_\_\_**\*\***\*\***\*\***
 - [ ] **N/A** - Could not test (have existing data)
 
 ---
@@ -181,9 +185,9 @@
 
 **Overall Result:** [ ] ALL PASS / [ ] SOME FAILURES
 
-**Tester Name:** ****\*\*\*\*****\_****\*\*\*\***** **Date Tested:**
-****\*\*\*\*****\_****\*\*\*\***** **Browser Used:**
-****\*\*\*\*****\_****\*\*\*\*****
+**Tester Name:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\*** **Date
+Tested:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\*** **Browser
+Used:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***
 
 ---
 
