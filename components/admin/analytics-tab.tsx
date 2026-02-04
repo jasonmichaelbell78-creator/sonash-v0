@@ -302,8 +302,8 @@ export function AnalyticsTab() {
   }, [loadAnalytics]);
 
   if (loading) return <AnalyticsLoading />;
-  if (error) return <AnalyticsError error={error} onRetry={loadAnalytics} />;
-  if (!data) return <AnalyticsError error="No data available" onRetry={loadAnalytics} />;
+  if (error) return <AnalyticsError error={error} onRetry={() => loadAnalytics()} />;
+  if (!data) return <AnalyticsError error="No data available" onRetry={() => loadAnalytics()} />;
 
   return (
     <div className="space-y-6">

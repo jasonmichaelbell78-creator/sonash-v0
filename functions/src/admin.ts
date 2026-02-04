@@ -2492,8 +2492,23 @@ export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (
       .limit(safeLimit)
       .get();
 
+    // Cap metadata payload size to prevent large responses (2KB per item)
+    const MAX_METADATA_SIZE = 2048;
+    const capMetadata = (
+      metadata: Record<string, unknown> | undefined
+    ): Record<string, unknown> | undefined => {
+      if (!metadata) return undefined;
+      const str = JSON.stringify(metadata);
+      if (str.length <= MAX_METADATA_SIZE) return metadata;
+      // Truncate and indicate overflow
+      return { _truncated: true, _originalSize: str.length };
+    };
+
     const errors: ErrorWithUserCorrelation[] = snapshot.docs.map((doc) => {
       const data = doc.data();
+      const processedMetadata = data.metadata
+        ? capMetadata(toJsonSafe(redactSensitiveMetadata(data.metadata)) as Record<string, unknown>)
+        : undefined;
       return {
         id: doc.id,
         type: data.type || "UNKNOWN",
@@ -2502,9 +2517,7 @@ export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (
         functionName: data.functionName || "unknown",
         userIdHash: ensureUserIdHash(data.userId), // SEC-REVIEW: Validate hash format to prevent raw UID leakage
         severity: data.severity === "ERROR" ? "ERROR" : "WARNING",
-        metadata: data.metadata
-          ? (toJsonSafe(redactSensitiveMetadata(data.metadata)) as Record<string, unknown>)
-          : undefined,
+        metadata: processedMetadata,
       };
     });
 
@@ -3953,10 +3966,8 @@ export const adminGetUserAnalytics = onCall(async (request) => {
     }
 
     // ========================================
-    // 4. Feature usage from security logs
+    // 4. Feature usage from security logs (parallelized)
     // ========================================
-    const featureUsage: FeatureUsage[] = [];
-
     const featureQueries = [
       { name: "Journal Entries", type: "SAVE_SUCCESS", fn: "saveJournalEntry" },
       { name: "Daily Check-ins", type: "SAVE_SUCCESS", fn: "saveDailyLog" },
@@ -3964,55 +3975,58 @@ export const adminGetUserAnalytics = onCall(async (request) => {
       { name: "Resources Accessed", type: "READ_SUCCESS", fn: "getLibraryItems" },
     ];
 
-    for (const feature of featureQueries) {
-      const [last7Query, last30Query, prev7Query] = await Promise.all([
-        db
-          .collection("security_logs")
-          .where("type", "==", feature.type)
-          .where("functionName", "==", feature.fn)
-          .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
-          .count()
-          .get(),
-        db
-          .collection("security_logs")
-          .where("type", "==", feature.type)
-          .where("functionName", "==", feature.fn)
-          .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(thirtyDaysAgo))
-          .count()
-          .get(),
-        // Previous 7 days for trend calculation
-        db
-          .collection("security_logs")
-          .where("type", "==", feature.type)
-          .where("functionName", "==", feature.fn)
-          .where(
-            "timestamp",
-            ">=",
-            admin.firestore.Timestamp.fromDate(
-              new Date(sevenDaysAgo.getTime() - 7 * 24 * 60 * 60 * 1000)
+    // Run all feature queries in parallel for better performance
+    const featureUsage: FeatureUsage[] = await Promise.all(
+      featureQueries.map(async (feature) => {
+        const [last7Query, last30Query, prev7Query] = await Promise.all([
+          db
+            .collection("security_logs")
+            .where("type", "==", feature.type)
+            .where("functionName", "==", feature.fn)
+            .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+            .count()
+            .get(),
+          db
+            .collection("security_logs")
+            .where("type", "==", feature.type)
+            .where("functionName", "==", feature.fn)
+            .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(thirtyDaysAgo))
+            .count()
+            .get(),
+          // Previous 7 days for trend calculation
+          db
+            .collection("security_logs")
+            .where("type", "==", feature.type)
+            .where("functionName", "==", feature.fn)
+            .where(
+              "timestamp",
+              ">=",
+              admin.firestore.Timestamp.fromDate(
+                new Date(sevenDaysAgo.getTime() - 7 * 24 * 60 * 60 * 1000)
+              )
             )
-          )
-          .where("timestamp", "<", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
-          .count()
-          .get(),
-      ]);
+            .where("timestamp", "<", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+            .count()
+            .get(),
+        ]);
 
-      const last7 = last7Query.data().count;
-      const last30 = last30Query.data().count;
-      const prev7 = prev7Query.data().count;
+        const last7 = last7Query.data().count;
+        const last30 = last30Query.data().count;
+        const prev7 = prev7Query.data().count;
 
-      // Calculate trend
-      let trend: "up" | "down" | "stable" = "stable";
-      if (last7 > prev7 * 1.1) trend = "up";
-      else if (last7 < prev7 * 0.9) trend = "down";
+        // Calculate trend
+        let trend: "up" | "down" | "stable" = "stable";
+        if (last7 > prev7 * 1.1) trend = "up";
+        else if (last7 < prev7 * 0.9) trend = "down";
 
-      featureUsage.push({
-        feature: feature.name,
-        last7Days: last7,
-        last30Days: last30,
-        trend,
-      });
-    }
+        return {
+          feature: feature.name,
+          last7Days: last7,
+          last30Days: last30,
+          trend,
+        };
+      })
+    );
 
     // ========================================
     // 5. Return analytics data

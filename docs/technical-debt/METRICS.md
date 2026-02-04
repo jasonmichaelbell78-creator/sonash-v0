@@ -9,6 +9,14 @@
 
 ---
 
+## Overview
+
+This document provides automated metrics and statistics for the Technical Debt
+Management System (TDMS). It tracks debt items by status, severity, and category
+to support prioritization and resolution efforts.
+
+---
+
 ## Summary
 
 | Metric          | Value |
@@ -115,3 +123,11 @@ _...and 149 more S1 items_
 **Machine-Readable:** See `metrics.json` for dashboard integration.
 
 **Canonical Source:** `MASTER_DEBT.jsonl`
+
+---
+
+## Version History
+
+| Version | Date       | Changes                    |
+| ------- | ---------- | -------------------------- |
+| 1.0     | 2026-02-04 | Initial metrics generation |

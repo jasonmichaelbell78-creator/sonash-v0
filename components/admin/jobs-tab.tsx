@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
 import {
@@ -166,6 +166,14 @@ function JobRunHistoryPanel({
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<"" | "success" | "failed">("");
   const [expandedRun, setExpandedRun] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  // Track mounted state
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const loadHistory = useCallback(async () => {
     setLoading(true);
@@ -186,13 +194,17 @@ function JobRunHistoryPanel({
       }
 
       const result = await fn(params);
+      // Guard against state update after unmount
+      if (!isMountedRef.current) return;
       setHistory(result.data.runs);
     } catch (err) {
       logger.error("Failed to load job history", { error: err, jobId });
+      // Guard against state update after unmount
+      if (!isMountedRef.current) return;
       // ISSUE [6]: Sanitize error - never show raw Firebase/server errors to users
       setError("Failed to load job history. Please try again later.");
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) setLoading(false);
     }
   }, [jobId, statusFilter]);
 
