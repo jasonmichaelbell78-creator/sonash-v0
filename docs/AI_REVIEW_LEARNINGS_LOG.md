@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 13.2 **Created:** 2026-01-02 **Last Updated:** 2026-02-03
+**Document Version:** 13.3 **Created:** 2026-01-02 **Last Updated:** 2026-02-03
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 13.3    | 2026-02-03 | Review #238: PR #334 Round 2 - Qodo (19 items - 5 CRITICAL, 4 MAJOR, 4 MINOR, 3 TRIVIAL). **CRITICAL**: Symlink path traversal (realpathSync.native), parse error data loss (abort on failures), atomic writes (tmp+rename). **MAJOR**: Deep merge verification_steps, severity/effort validation. **MINOR**: Fingerprint sanitization, files/acceptance_tests validation, confidence clamping, BOM handling. **FALSE POSITIVES**: 3 (readFileSync IS in try/catch, readdirSync file vars not user input). Active reviews #213-238.                                                                                                                                                                                                                                                                                                                                                                                 |
 | 13.2    | 2026-02-03 | Review #237: PR #334 transform-jsonl-schema.js Security Hardening - Qodo/CI (15 items - 2 CRITICAL CI, 5 MAJOR, 5 MINOR, 3 DEFERRED). **CRITICAL CI**: Path traversal prevention (startsWith→regex), readFileSync try/catch compliance. **MAJOR**: Path containment validation, safe error.message access, category map normalization, --output flag validation, input type guards. **FALSE POSITIVES**: 2 pattern checker items (multi-line try/catch detection). Active reviews #213-237.                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 13.1    | 2026-02-03 | Review #235: PR #332 Audit Documentation 6-Stage - Qodo/CI (8 items - 2 CRITICAL CI, 1 MAJOR, 4 MINOR, 1 DEFERRED). **CRITICAL CI**: YAML syntax (project.yml indentation + empty arrays), Prettier breaking episodic memory function names in 10 skills. **MAJOR**: Python process filtering tightened in stop-serena-dashboard.js. **DEFERRED**: Episodic memory systemic redesign (DEBT-0869). Active reviews #213-235.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 13.0    | 2026-02-03 | Review #227: PR #331 Audit Comprehensive Staged Execution - Qodo + CI (12 items - 4 CRITICAL CI, 5 MAJOR, 2 MINOR, 1 DEFERRED). **CRITICAL CI**: Unsafe error.message access (2), readFileSync without try/catch (2). **MAJOR**: Prototype pollution protection (safeCloneObject helper), type guard for files[0].match(), user context in audit logs, path traversal check in SKILL.md. **DEFERRED**: Unify TDMS schema (architectural). **FALSE POSITIVES**: 2 (pattern checker multi-line try/catch detection). Active reviews #180-227.                                                                                                                                                                                                                                                                                                                                                                         |
@@ -1635,10 +1636,58 @@ feature/audit-documentation-6-stage PR #334 **Suggestions:** 15 total (Critical:
 
 ---
 
+#### Review #238: PR #334 Round 2 transform-jsonl-schema.js Hardening - Qodo (2026-02-03)
+
+**Source:** Qodo PR Compliance + Code Suggestions + CI Pattern Check
+**PR/Branch:** feature/audit-documentation-6-stage PR #334 (commit 89300d6)
+**Suggestions:** 19 total (Critical: 5, Major: 4, Minor: 8, Trivial: 3)
+
+**Patterns Identified:**
+
+1. **Symlink path traversal prevention**: Use `fs.realpathSync.native()` to
+   resolve symlinks before validating path containment. For non-existent output
+   files, validate parent directory instead.
+2. **Atomic file writes**: Write to `.filename.tmp` first, then
+   `fs.renameSync()` to final destination. Prevents data corruption on write
+   failures.
+3. **Parse error data loss prevention**: Track JSON parse errors and refuse to
+   write output if any lines failed - prevents silent data loss.
+4. **Fingerprint delimiter sanitization**: Replace `::` delimiters in
+   fingerprint components to prevent parsing issues; regenerate malformed
+   fingerprints.
+5. **Field validation with defaults**: Validate severity (S0-S3), effort
+   (E0-E3), title, files array, acceptance_tests against known values; default
+   gracefully.
+6. **Confidence normalization**: Trim/uppercase string lookup, clamp numeric
+   0-100, check `Number.isFinite()` for invalid values.
+7. **UTF-8 BOM handling**: Strip `\uFEFF` from JSONL lines before JSON.parse.
+8. **Deep merge for nested structures**: When normalizing verification_steps
+   object, use spread with defaults to ensure all required nested keys present.
+
+**Resolution:**
+
+- Fixed: 16 items (5 CRITICAL, 4 MAJOR, 4 MINOR, 3 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+- False Positives: 3 (readFileSync at L497 IS in try/catch L496-502, file paths
+  at L621 come from readdirSync not user input with containment check at L623)
+
+**Key Learnings:**
+
+- Pattern checker may flag false positives for variable names like `file` even
+  when they come from `readdirSync()` not user input
+- Symlink resolution must happen BEFORE containment validation, not after
+- For non-existent output files, validate parent directory containment instead
+- Atomic writes prevent partial/corrupt output on failure mid-write
+- Never silently skip invalid JSONL lines when transforming - abort to prevent
+  data loss
+
+---
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #238: PR #XXX Title - Review Source (DATE)
+#### Review #239: PR #XXX Title - Review Source (DATE)
 
 
 -->

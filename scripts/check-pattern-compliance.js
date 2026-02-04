@@ -314,7 +314,10 @@ const ANTI_PATTERNS = [
     // Review #190: phase-complete-check.js L171 has containment via safeStatCheck→isWithinArchive
     // Review #217 R4: check-doc-headers.js L112 has containment check on L117 (rel === "" || regex || isAbsolute)
     // Review #224: sync-claude-settings.js uses isPathContained helper (L43-48) for all path joins
-    pathExclude: /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings)\.js$/,
+    // Review #238: transform-jsonl-schema.js L621 `file` comes from readdirSync (not user input),
+    //   containment check at L623, symlink check at L627-640
+    pathExclude:
+      /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings|transform-jsonl-schema)\.js$/,
   },
   {
     id: "error-without-first-line",
@@ -508,6 +511,11 @@ const ANTI_PATTERNS = [
       // - validate-audit-integration.js: readFileSync at L164 IS in try/catch (L163-171),
       //   L578 IS in try/catch (L577-603), L901 IS in try/catch (L900-905)
       "validate-audit-integration.js",
+      // 2026-02-03 audit (Review #238 PR #334):
+      // - transform-jsonl-schema.js: readFileSync at L497 IS in try/catch (L496-502),
+      //   File paths in --all mode at L621 come from fs.readdirSync(), containment check at L623,
+      //   symlink check at L627-640 after line additions
+      "transform-jsonl-schema.js",
     ],
   },
   {

@@ -44,6 +44,7 @@ function isPathContained(resolvedPath) {
 
 /**
  * Validate and resolve a file path, ensuring it's within project bounds
+ * Also resolves symlinks to prevent symlink-based path traversal
  * @param {string} inputPath - User-provided path
  * @param {string} label - Label for error messages (e.g., "input", "output")
  * @returns {string} Resolved absolute path
@@ -56,11 +57,39 @@ function validatePath(inputPath, label) {
 
   const resolved = path.resolve(PROJECT_ROOT, inputPath);
 
+  // Basic containment check first
   if (!isPathContained(resolved)) {
     throw new Error(`${label} path "${inputPath}" escapes project root (path traversal blocked)`);
   }
 
-  return resolved;
+  // Resolve symlinks to prevent symlink-based traversal
+  let realResolved;
+  try {
+    realResolved = fs.realpathSync.native(resolved);
+  } catch {
+    // Path doesn't exist - for output files, validate parent directory instead
+    const parent = path.dirname(resolved);
+    try {
+      const realParent = fs.realpathSync.native(parent);
+      if (!isPathContained(realParent)) {
+        throw new Error(
+          `${label} path "${inputPath}" escapes project root via symlink (path traversal blocked)`
+        );
+      }
+    } catch {
+      // Parent doesn't exist either - allow (will fail later on actual access)
+    }
+    return resolved;
+  }
+
+  // Check containment after symlink resolution
+  if (!isPathContained(realResolved)) {
+    throw new Error(
+      `${label} path "${inputPath}" escapes project root via symlink (path traversal blocked)`
+    );
+  }
+
+  return realResolved;
 }
 
 // Category normalization map - all keys lowercase for consistent lookup
@@ -116,6 +145,10 @@ function normalizeCategory(category) {
     return "code-quality";
   }
 
+  // Normalize whitespace and case upfront
+  const trimmed = category.trim();
+  const lower = trimmed.toLowerCase();
+
   // Valid normalized categories
   const validCategories = [
     "security",
@@ -127,42 +160,53 @@ function normalizeCategory(category) {
     "engineering-productivity",
   ];
 
-  // Check if already normalized
-  if (validCategories.includes(category)) return category;
-
-  // Try lowercase lookup in map
-  const lower = category.toLowerCase();
-  if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
-
-  // Check if lowercase is a valid category
+  // Check if already normalized (case/whitespace tolerant)
   if (validCategories.includes(lower)) return lower;
+
+  // Try lookup in category map
+  if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
 
   // Default fallback
   console.warn(`  Warning: Unknown category "${category}", defaulting to "code-quality"`);
   return "code-quality";
 }
 
+/**
+ * Sanitize a fingerprint component to prevent delimiter collisions
+ * @param {*} value - Value to sanitize
+ * @returns {string} Sanitized string
+ */
+function sanitizeFingerprintPart(value) {
+  return String(value ?? "unknown")
+    .replaceAll("::", "--")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 200);
+}
+
 function generateFingerprint(item, normalizedCategory) {
-  // If fingerprint already exists, validate and return
+  // If fingerprint already exists, validate and update
   if (item.fingerprint && typeof item.fingerprint === "string") {
-    // Update category in fingerprint if needed
     const parts = item.fingerprint.split("::");
     if (parts.length >= 3) {
+      // Update category and sanitize all parts
       parts[0] = normalizedCategory;
-      return parts.join("::");
+      return parts.map(sanitizeFingerprintPart).join("::");
     }
-    return item.fingerprint;
+    // Malformed fingerprint (less than 3 parts) - regenerate
   }
 
   // Generate from available fields
-  const file = item.file || (item.files && item.files[0]) || "unknown";
-  const id =
+  const rawFile = item.file || (item.files && item.files[0]) || "unknown";
+  const file = sanitizeFingerprintPart(rawFile);
+  const id = sanitizeFingerprintPart(
     item.id ||
-    item.title
-      ?.substring(0, 30)
-      .replace(/[^a-zA-Z0-9-]/g, "-")
-      .toLowerCase() ||
-    "finding";
+      item.title
+        ?.substring(0, 30)
+        .replace(/[^a-zA-Z0-9-]/g, "-")
+        .toLowerCase() ||
+      "finding"
+  );
 
   return `${normalizedCategory}::${file}::${id}`;
 }
@@ -190,16 +234,32 @@ function transformItem(item, index) {
       files = ["unknown"];
       issues.push(`missing files`);
     }
+  } else {
+    // Normalize existing array to non-empty strings only
+    files = files.filter((v) => typeof v === "string" && v.trim()).map((v) => v.trim());
+    if (files.length === 0) {
+      files = ["unknown"];
+      issues.push(`normalized empty files → ["unknown"]`);
+    }
   }
 
   // Transform confidence
   let confidence = item.confidence;
   if (typeof confidence === "string") {
-    confidence = CONFIDENCE_MAP[confidence] || 70;
+    // Normalize string: trim and uppercase for lookup
+    const normalized = confidence.trim().toUpperCase();
+    confidence = CONFIDENCE_MAP[normalized] || 70;
     issues.push(`confidence: "${item.confidence}" → ${confidence}`);
-  } else if (typeof confidence !== "number") {
+  } else if (typeof confidence !== "number" || !Number.isFinite(confidence)) {
     confidence = 70;
-    issues.push(`confidence: missing → 70`);
+    issues.push(`confidence: missing/invalid → 70`);
+  } else {
+    // Clamp numeric confidence to valid range 0-100
+    const clamped = Math.max(0, Math.min(100, confidence));
+    if (clamped !== confidence) {
+      issues.push(`confidence: out-of-range ${confidence} → ${clamped}`);
+      confidence = clamped;
+    }
   }
 
   // Transform description → why_it_matters
@@ -231,21 +291,63 @@ function transformItem(item, index) {
       Array.isArray(item.verification_steps) &&
       item.verification_steps.length > 0
     ) {
-      acceptance_tests = item.verification_steps;
+      acceptance_tests = item.verification_steps
+        .filter((v) => typeof v === "string" && v.trim())
+        .map((v) => v.trim());
       issues.push(`verification_steps → acceptance_tests`);
     } else {
       acceptance_tests = ["Verify the fix addresses the issue", "Run relevant tests"];
       issues.push(`added default acceptance_tests`);
     }
+  } else {
+    // Validate existing acceptance_tests array
+    acceptance_tests = acceptance_tests
+      .filter((v) => typeof v === "string" && v.trim())
+      .map((v) => v.trim());
+  }
+
+  // Fallback if all entries were invalid
+  if (acceptance_tests.length === 0) {
+    acceptance_tests = ["Verify the fix addresses the issue", "Run relevant tests"];
+    issues.push(`normalized empty acceptance_tests → defaults`);
+  }
+
+  // Validate severity
+  const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
+  let severity =
+    typeof item.severity === "string" && VALID_SEVERITIES.includes(item.severity.trim())
+      ? item.severity.trim()
+      : "S2";
+  if (severity !== item.severity) {
+    issues.push(`severity: "${item.severity}" → ${severity}`);
+  }
+
+  // Validate effort
+  const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
+  let effort =
+    typeof item.effort === "string" && VALID_EFFORTS.includes(item.effort.trim())
+      ? item.effort.trim()
+      : "E2";
+  if (effort !== item.effort) {
+    issues.push(`effort: "${item.effort}" → ${effort}`);
+  }
+
+  // Guarantee non-empty title
+  const title =
+    typeof item.title === "string" && item.title.trim()
+      ? item.title.trim()
+      : `Untitled finding #${index + 1}`;
+  if (title !== item.title) {
+    issues.push(`title: missing/blank → default`);
   }
 
   // Build transformed item
   const transformed = {
     category: normalizedCategory,
-    title: item.title,
+    title: title,
     fingerprint: fingerprint,
-    severity: item.severity,
-    effort: item.effort,
+    severity: severity,
+    effort: effort,
     confidence: confidence,
     files: files,
     why_it_matters: why_it_matters,
@@ -259,7 +361,27 @@ function transformItem(item, index) {
   }
 
   // Convert and preserve verification_steps for S0/S1 (required structure per JSONL_SCHEMA_STANDARD.md)
-  if (item.severity === "S0" || item.severity === "S1") {
+  // Use normalized severity variable, not item.severity
+  if (severity === "S0" || severity === "S1") {
+    // Default verification_steps structure
+    const defaultVerificationSteps = {
+      first_pass: {
+        method: "code_search",
+        evidence_collected: [
+          (item.evidence && item.evidence[0]) || "See files array for affected locations",
+        ],
+      },
+      second_pass: {
+        method: "manual_verification",
+        confirmed: true,
+        notes: "Confirmed during audit review",
+      },
+      tool_confirmation: {
+        tool: "NONE",
+        reference: "No automated tool confirmation available",
+      },
+    };
+
     // Convert array-style verification_steps to object structure
     if (Array.isArray(item.verification_steps) && item.verification_steps.length > 0) {
       // Filter to only valid strings before processing
@@ -322,27 +444,28 @@ function transformItem(item, index) {
       typeof item.verification_steps === "object" &&
       !Array.isArray(item.verification_steps)
     ) {
-      // Already in correct object format
-      transformed.verification_steps = item.verification_steps;
-    } else {
-      // Generate default verification_steps for S0/S1 without existing ones
+      // Already in object format - deep merge with defaults to ensure all required fields
+      const provided = item.verification_steps;
       transformed.verification_steps = {
+        ...defaultVerificationSteps,
+        ...provided,
         first_pass: {
-          method: "code_search",
-          evidence_collected: [
-            (item.evidence && item.evidence[0]) || "See files array for affected locations",
-          ],
+          ...defaultVerificationSteps.first_pass,
+          ...(provided.first_pass || {}),
         },
         second_pass: {
-          method: "manual_verification",
-          confirmed: true,
-          notes: "Confirmed during audit review",
+          ...defaultVerificationSteps.second_pass,
+          ...(provided.second_pass || {}),
         },
         tool_confirmation: {
-          tool: "NONE",
-          reference: "No automated tool confirmation available",
+          ...defaultVerificationSteps.tool_confirmation,
+          ...(provided.tool_confirmation || {}),
         },
       };
+      issues.push("verification_steps: normalized object structure");
+    } else {
+      // Generate default verification_steps for S0/S1 without existing ones
+      transformed.verification_steps = defaultVerificationSteps;
       issues.push("added default verification_steps for S0/S1");
     }
   }
@@ -362,13 +485,15 @@ function transformItem(item, index) {
 function processFile(inputPath, outputPath, dryRun) {
   console.log(`\nProcessing: ${path.basename(inputPath)}`);
 
-  // Read file with error handling
+  // Read file with error handling - check existence first for better error message
+  if (!fs.existsSync(inputPath)) {
+    console.error(`  ERROR: File not found: ${inputPath}`);
+    return 0;
+  }
+
+  // Separate try/catch for readFileSync (pattern compliance)
   let content;
   try {
-    if (!fs.existsSync(inputPath)) {
-      console.error(`  ERROR: File not found: ${inputPath}`);
-      return 0;
-    }
     content = fs.readFileSync(inputPath, "utf8");
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -385,10 +510,13 @@ function processFile(inputPath, outputPath, dryRun) {
 
   const results = [];
   let totalIssues = 0;
+  let parseErrors = 0;
 
   for (let i = 0; i < lines.length; i++) {
     try {
-      const item = JSON.parse(lines[i]);
+      // Strip UTF-8 BOM if present (handles BOM-prefixed files)
+      const rawLine = lines[i].replace(/^\uFEFF/, "");
+      const item = JSON.parse(rawLine);
       const { transformed, issues } = transformItem(item, i);
       results.push(transformed);
 
@@ -399,21 +527,45 @@ function processFile(inputPath, outputPath, dryRun) {
         }
       }
     } catch (err) {
-      console.error(`  ERROR Line ${i + 1}: Invalid JSON - ${err.message}`);
+      parseErrors += 1;
+      // Safe error message access (Qodo compliance)
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`  ERROR Line ${i + 1}: Invalid JSON - ${msg}`);
     }
   }
 
   console.log(`  Transformations: ${totalIssues} field changes`);
 
+  // Abort on parse errors to prevent data loss (don't silently drop invalid lines)
+  if (parseErrors > 0) {
+    console.error(
+      `  ERROR: ${parseErrors} invalid JSON line(s) found; refusing to write output to avoid data loss.`
+    );
+    return 0;
+  }
+
   if (!dryRun) {
-    // Write output with error handling
+    // Write output atomically (tmp file + rename) to prevent corruption
+    const dir = path.dirname(outputPath);
+    const base = path.basename(outputPath);
+    const tmpPath = path.join(dir, `.${base}.tmp`);
+
     try {
       const output = results.map((r) => JSON.stringify(r)).join("\n") + "\n";
-      fs.writeFileSync(outputPath, output, "utf8");
+      fs.writeFileSync(tmpPath, output, "utf8");
+      fs.renameSync(tmpPath, outputPath);
       console.log(`  Written to: ${outputPath}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`  ERROR: Unable to write file "${outputPath}": ${msg}`);
+      // Clean up temp file if it exists
+      try {
+        if (fs.existsSync(tmpPath)) {
+          fs.unlinkSync(tmpPath);
+        }
+      } catch {
+        // Ignore cleanup errors
+      }
       return 0;
     }
   } else {
@@ -472,6 +624,26 @@ if (processAll) {
       console.error(`  Skipping suspicious file path: ${file}`);
       continue;
     }
+
+    // Block symlink-based traversal (in-place overwrite would follow symlink)
+    try {
+      const stat = fs.lstatSync(resolvedInput);
+      if (stat.isSymbolicLink()) {
+        console.error(`  Skipping symlink file: ${file}`);
+        continue;
+      }
+      // Resolve symlink and verify containment
+      const realResolved = fs.realpathSync.native(resolvedInput);
+      if (!isPathContained(realResolved)) {
+        console.error(`  Skipping file resolving outside project root: ${file}`);
+        continue;
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`  Skipping unreadable file "${file}": ${msg}`);
+      continue;
+    }
+
     totalFindings += processFile(resolvedInput, resolvedInput, dryRun);
   }
 
