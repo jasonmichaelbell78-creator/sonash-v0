@@ -137,13 +137,18 @@ function safeToIso(value: unknown, fallback: string | null = null): string | nul
  * @throws HttpsError if date format is invalid
  */
 function parseDateBoundaryUtc(raw: string, boundary: "start" | "end"): FirebaseFirestore.Timestamp {
-  // If caller passes YYYY-MM-DD, treat it as a whole-day boundary in UTC
-  const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(raw);
-  const iso = isDateOnly
-    ? boundary === "start"
-      ? `${raw}T00:00:00.000Z`
-      : `${raw}T23:59:59.999Z`
-    : raw;
+  const trimmed = raw.trim();
+  const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(trimmed);
+
+  let iso: string;
+  if (isDateOnly) {
+    // If caller passes YYYY-MM-DD, treat it as a whole-day boundary in UTC
+    iso = boundary === "start" ? `${trimmed}T00:00:00.000Z` : `${trimmed}T23:59:59.999Z`;
+  } else {
+    // If caller provides datetime without timezone, treat as UTC to avoid env-dependent parsing
+    const hasTimezone = /([zZ]|[+-]\d{2}:\d{2})$/.test(trimmed);
+    iso = hasTimezone ? trimmed : `${trimmed}Z`;
+  }
 
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) {
@@ -2111,20 +2116,40 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
         const data = doc.data();
         // ISSUE [5]: Store timestamp before converting to ISO string for stable sorting
         const startTimeMillis = data.startTime?.toMillis ? data.startTime.toMillis() : 0;
+
+        // ISSUE [8]: Coerce invalid persisted values safely
+        // Defense-in-depth: validate fields read from Firestore to handle legacy/corrupted data
+        const validStatuses = ["success", "failed"] as const;
+        const validTriggers = ["schedule", "manual"] as const;
+        const rawStatus = data.status;
+        const rawDuration = data.durationMs;
+        const rawTriggeredBy = data.triggeredBy;
+
+        const status: "success" | "failed" = validStatuses.includes(rawStatus)
+          ? rawStatus
+          : "failed"; // Default to failed for unknown status (safer assumption)
+        const durationMs =
+          typeof rawDuration === "number" && rawDuration >= 0 && Number.isFinite(rawDuration)
+            ? rawDuration
+            : 0;
+        const triggeredBy: "schedule" | "manual" = validTriggers.includes(rawTriggeredBy)
+          ? rawTriggeredBy
+          : "schedule";
+
         results.push({
           runId: data.runId || doc.id,
           jobId: jId,
           jobName,
           startTime: safeToIso(data.startTime, ""),
           endTime: safeToIso(data.endTime, ""),
-          status: data.status,
-          durationMs: data.durationMs || 0,
+          status,
+          durationMs,
           // ISSUE [2]: Sanitize error message before returning to client
           // Defense-in-depth: sanitize on read in case data was stored before sanitization was added
           // OWASP A01:2021 - Prevents sensitive data exposure via error messages
           error: data.error ? sanitizeErrorMessage(data.error) : undefined,
           resultSummary: data.resultSummary,
-          triggeredBy: data.triggeredBy || "schedule",
+          triggeredBy,
           _startTimeMillis: startTimeMillis, // Internal field for sorting
         });
       }
@@ -2498,17 +2523,27 @@ export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (
       metadata: Record<string, unknown> | undefined
     ): Record<string, unknown> | undefined => {
       if (!metadata) return undefined;
-      const str = JSON.stringify(metadata);
-      if (str.length <= MAX_METADATA_SIZE) return metadata;
-      // Truncate and indicate overflow
-      return { _truncated: true, _originalSize: str.length };
+      try {
+        const str = JSON.stringify(metadata);
+        if (str.length <= MAX_METADATA_SIZE) return metadata;
+        // Truncate and indicate overflow
+        return { _truncated: true, _originalSize: str.length };
+      } catch {
+        // If metadata isn't serializable (e.g., circular), don't fail the request
+        return { _truncated: true, _reason: "non_serializable" };
+      }
     };
 
     const errors: ErrorWithUserCorrelation[] = snapshot.docs.map((doc) => {
       const data = doc.data();
-      const processedMetadata = data.metadata
-        ? capMetadata(toJsonSafe(redactSensitiveMetadata(data.metadata)) as Record<string, unknown>)
+      // Guard metadata shape before processing
+      const jsonSafe = data.metadata
+        ? toJsonSafe(redactSensitiveMetadata(data.metadata))
         : undefined;
+      const processedMetadata =
+        jsonSafe && typeof jsonSafe === "object" && !Array.isArray(jsonSafe)
+          ? capMetadata(jsonSafe as Record<string, unknown>)
+          : undefined;
       return {
         id: doc.id,
         type: data.type || "UNKNOWN",
@@ -3914,43 +3949,32 @@ export const adminGetUserAnalytics = onCall(async (request) => {
       const week2Threshold = new Date(weekStart.getTime() + 14 * 24 * 60 * 60 * 1000);
       const week4Threshold = new Date(weekStart.getTime() + 28 * 24 * 60 * 60 * 1000);
 
-      // Only calculate retention for weeks that have passed
-      let week1Retention = 0;
-      let week2Retention = 0;
-      let week4Retention = 0;
-
-      if (week1Threshold <= now) {
-        const week1Active = await db
+      // Helper to create retention count query
+      const makeRetentionCountQuery = (threshold: Date) =>
+        db
           .collection("users")
           .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(weekStart))
           .where("createdAt", "<", admin.firestore.Timestamp.fromDate(weekEnd))
-          .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(week1Threshold))
+          .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(threshold))
           .count()
           .get();
-        week1Retention = Math.round((week1Active.data().count / cohortSize) * 100);
-      }
 
-      if (week2Threshold <= now) {
-        const week2Active = await db
-          .collection("users")
-          .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(weekStart))
-          .where("createdAt", "<", admin.firestore.Timestamp.fromDate(weekEnd))
-          .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(week2Threshold))
-          .count()
-          .get();
-        week2Retention = Math.round((week2Active.data().count / cohortSize) * 100);
-      }
+      // Run retention queries in parallel for better performance
+      const [week1Active, week2Active, week4Active] = await Promise.all([
+        week1Threshold <= now ? makeRetentionCountQuery(week1Threshold) : Promise.resolve(null),
+        week2Threshold <= now ? makeRetentionCountQuery(week2Threshold) : Promise.resolve(null),
+        week4Threshold <= now ? makeRetentionCountQuery(week4Threshold) : Promise.resolve(null),
+      ]);
 
-      if (week4Threshold <= now) {
-        const week4Active = await db
-          .collection("users")
-          .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(weekStart))
-          .where("createdAt", "<", admin.firestore.Timestamp.fromDate(weekEnd))
-          .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(week4Threshold))
-          .count()
-          .get();
-        week4Retention = Math.round((week4Active.data().count / cohortSize) * 100);
-      }
+      const week1Retention = week1Active
+        ? Math.round((week1Active.data().count / cohortSize) * 100)
+        : 0;
+      const week2Retention = week2Active
+        ? Math.round((week2Active.data().count / cohortSize) * 100)
+        : 0;
+      const week4Retention = week4Active
+        ? Math.round((week4Active.data().count / cohortSize) * 100)
+        : 0;
 
       // ISSUE [14]: Format cohort week as YYYY-WW using proper ISO-8601 week calculation
       // ISO-8601: Week starts Monday, Week 1 contains Jan 4

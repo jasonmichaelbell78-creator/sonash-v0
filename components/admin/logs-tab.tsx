@@ -349,6 +349,10 @@ export function LogsTab() {
         return walk;
       })();
 
+      // Cap export size to prevent UI freezes with large datasets
+      const MAX_EXPORT_ROWS = 2000;
+      const logsToExport = filteredLogs.slice(0, MAX_EXPORT_ROWS);
+
       const exportData = {
         exportedAt: new Date().toISOString(),
         filters: {
@@ -357,7 +361,9 @@ export function LogsTab() {
           search: searchQuery || null,
         },
         totalCount: filteredLogs.length,
-        logs: filteredLogs.map((l) => deepRedact(l)),
+        exportedCount: logsToExport.length,
+        truncated: filteredLogs.length > MAX_EXPORT_ROWS,
+        logs: logsToExport.map((l) => deepRedact(l)),
       };
       const dataStr = JSON.stringify(exportData, null, 2);
       const blob = new Blob([dataStr], { type: "application/json" });

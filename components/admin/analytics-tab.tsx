@@ -197,11 +197,12 @@ function DailyTrendsChart({ trends }: Readonly<{ trends: AnalyticsTrendPoint[] }
   return (
     <div className="space-y-2">
       <div className="flex items-end gap-1 h-32">
-        {recentTrends.map((trend) => {
+        {/* ISSUE [14]: Use index suffix for unique keys in case of duplicate dates */}
+        {recentTrends.map((trend, idx) => {
           const height = (trend.activeUsers / maxValue) * 100;
           return (
             <div
-              key={trend.date}
+              key={`${trend.date}-${idx}`}
               className="flex-1 flex flex-col items-center group"
               title={`${trend.date}: ${trend.activeUsers} active users`}
             >
@@ -272,7 +273,22 @@ export function AnalyticsTab() {
       const fn = httpsCallable<void, UserAnalyticsData>(functions, "adminGetUserAnalytics");
       const result = await fn();
       if (!isActive()) return;
-      setData(result.data);
+
+      // ISSUE [13]: Normalize analytics payload defensively
+      // Defense-in-depth: ensure safe defaults for arrays and nested objects
+      const raw = result.data;
+      const normalized: UserAnalyticsData = {
+        currentMetrics: {
+          dau: typeof raw?.currentMetrics?.dau === "number" ? raw.currentMetrics.dau : 0,
+          wau: typeof raw?.currentMetrics?.wau === "number" ? raw.currentMetrics.wau : 0,
+          mau: typeof raw?.currentMetrics?.mau === "number" ? raw.currentMetrics.mau : 0,
+        },
+        dailyTrends: Array.isArray(raw?.dailyTrends) ? raw.dailyTrends : [],
+        cohortRetention: Array.isArray(raw?.cohortRetention) ? raw.cohortRetention : [],
+        featureUsage: Array.isArray(raw?.featureUsage) ? raw.featureUsage : [],
+        generatedAt: typeof raw?.generatedAt === "string" ? raw.generatedAt : "",
+      };
+      setData(normalized);
     } catch (err) {
       logger.error("Failed to load user analytics", { error: err });
       if (!isActive()) return;
@@ -302,8 +318,17 @@ export function AnalyticsTab() {
   }, [loadAnalytics]);
 
   if (loading) return <AnalyticsLoading />;
-  if (error) return <AnalyticsError error={error} onRetry={() => loadAnalytics()} />;
-  if (!data) return <AnalyticsError error="No data available" onRetry={() => loadAnalytics()} />;
+  if (error)
+    return (
+      <AnalyticsError error={error} onRetry={() => loadAnalytics(() => isMountedRef.current)} />
+    );
+  if (!data)
+    return (
+      <AnalyticsError
+        error="No data available"
+        onRetry={() => loadAnalytics(() => isMountedRef.current)}
+      />
+    );
 
   return (
     <div className="space-y-6">

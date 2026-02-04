@@ -317,9 +317,13 @@ function UserActivityModal({
   const [foundUser, setFoundUser] = useState<FoundUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Request ID to prevent stale async responses from overwriting newer data
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
+    const requestId = ++requestIdRef.current;
     let isMounted = true;
+
     async function loadData() {
       setLoading(true);
       setError(null);
@@ -338,7 +342,8 @@ function UserActivityModal({
           )({ userIdHash }),
         ]);
 
-        if (!isMounted) return;
+        // Guard against unmount and stale requests
+        if (!isMounted || requestId !== requestIdRef.current) return;
 
         // Clear stale state for this hash before applying results
         setActivity(null);
@@ -369,10 +374,10 @@ function UserActivityModal({
         }
       } catch (err) {
         logger.error("Failed to load user activity", { error: err, userIdHash });
-        if (!isMounted) return;
+        if (!isMounted || requestId !== requestIdRef.current) return;
         setError("Failed to load activity. Please try again later.");
       } finally {
-        if (isMounted) {
+        if (isMounted && requestId === requestIdRef.current) {
           setLoading(false);
         }
       }
@@ -521,8 +526,16 @@ function UserCorrelationSection({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedUserHash, setSelectedUserHash] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
 
-  const loadData = useCallback(async () => {
+  // Track mounted state for async callbacks
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const loadData = useCallback(async (isActive: () => boolean = () => true) => {
     setLoading(true);
     setError(null);
     try {
@@ -532,19 +545,25 @@ function UserCorrelationSection({
         "adminGetErrorsWithUsers"
       );
       const result = await fn({ limit: 50, hoursBack: 24 });
+      if (!isActive()) return;
       setData(result.data);
     } catch (err) {
       logger.error("Failed to load error-user correlation", { error: err });
+      if (!isActive()) return;
       setError("Failed to load correlation data. Please try again later.");
     } finally {
-      setLoading(false);
+      if (isActive()) setLoading(false);
     }
   }, []);
 
-  useTabRefresh("errors", loadData);
+  useTabRefresh("errors", () => loadData(() => isMountedRef.current));
 
   useEffect(() => {
-    loadData();
+    let isActive = true;
+    loadData(() => isActive);
+    return () => {
+      isActive = false;
+    };
   }, [loadData]);
 
   const getSeverityBadge = (severity: "ERROR" | "WARNING") => {
@@ -573,7 +592,7 @@ function UserCorrelationSection({
             <span className="text-xs text-amber-600">{data.uniqueUsers} unique users affected</span>
           )}
           <button
-            onClick={loadData}
+            onClick={() => loadData(() => isMountedRef.current)}
             className="text-xs text-amber-700 hover:text-amber-900 flex items-center gap-1"
           >
             <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} />
