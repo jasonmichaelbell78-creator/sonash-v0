@@ -66,7 +66,18 @@ function validatePath(inputPath, label) {
   let realResolved;
   try {
     realResolved = fs.realpathSync.native(resolved);
-  } catch {
+
+    // Reject directories early for better error messages
+    const st = fs.statSync(realResolved);
+    if (st.isDirectory()) {
+      throw new Error(`${label} path "${inputPath}" points to a directory`);
+    }
+  } catch (e) {
+    // If it's our directory error, rethrow it (safe error message access)
+    const errMsg = e instanceof Error ? e.message : String(e);
+    if (errMsg.includes("points to a directory")) {
+      throw e;
+    }
     // Path doesn't exist - for output files, validate parent directory instead
     const parent = path.dirname(resolved);
     try {
@@ -312,22 +323,18 @@ function transformItem(item, index) {
     issues.push(`normalized empty acceptance_tests → defaults`);
   }
 
-  // Validate severity
+  // Validate severity (case-insensitive - normalize to uppercase)
   const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
-  let severity =
-    typeof item.severity === "string" && VALID_SEVERITIES.includes(item.severity.trim())
-      ? item.severity.trim()
-      : "S2";
+  const severityInput = typeof item.severity === "string" ? item.severity.trim().toUpperCase() : "";
+  let severity = VALID_SEVERITIES.includes(severityInput) ? severityInput : "S2";
   if (severity !== item.severity) {
     issues.push(`severity: "${item.severity}" → ${severity}`);
   }
 
-  // Validate effort
+  // Validate effort (case-insensitive - normalize to uppercase)
   const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
-  let effort =
-    typeof item.effort === "string" && VALID_EFFORTS.includes(item.effort.trim())
-      ? item.effort.trim()
-      : "E2";
+  const effortInput = typeof item.effort === "string" ? item.effort.trim().toUpperCase() : "";
+  let effort = VALID_EFFORTS.includes(effortInput) ? effortInput : "E2";
   if (effort !== item.effort) {
     issues.push(`effort: "${item.effort}" → ${effort}`);
   }
@@ -488,6 +495,7 @@ function processFile(inputPath, outputPath, dryRun) {
   // Read file with error handling - check existence first for better error message
   if (!fs.existsSync(inputPath)) {
     console.error(`  ERROR: File not found: ${inputPath}`);
+    process.exitCode = 1;
     return 0;
   }
 
@@ -498,6 +506,7 @@ function processFile(inputPath, outputPath, dryRun) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error(`  ERROR: Unable to read file "${inputPath}": ${msg}`);
+    process.exitCode = 1;
     return 0;
   }
 
@@ -541,19 +550,68 @@ function processFile(inputPath, outputPath, dryRun) {
     console.error(
       `  ERROR: ${parseErrors} invalid JSON line(s) found; refusing to write output to avoid data loss.`
     );
+    process.exitCode = 1;
     return 0;
   }
 
   if (!dryRun) {
     // Write output atomically (tmp file + rename) to prevent corruption
+    // Use unique temp file name with PID/timestamp to prevent race conditions
     const dir = path.dirname(outputPath);
     const base = path.basename(outputPath);
-    const tmpPath = path.join(dir, `.${base}.tmp`);
+    const tmpPath = path.join(dir, `.${base}.tmp.${process.pid}.${Date.now()}`);
 
     try {
+      // Check for pre-existing symlink at temp path (security hardening)
+      try {
+        const st = fs.lstatSync(tmpPath);
+        if (st.isSymbolicLink()) {
+          throw new Error(`Refusing to write through symlink temp file: ${tmpPath}`);
+        }
+        // Pre-existing temp file - remove it
+        fs.unlinkSync(tmpPath);
+      } catch (e) {
+        // lstatSync/unlinkSync failing because it doesn't exist is OK
+        if (e && typeof e === "object" && "code" in e && e.code !== "ENOENT") throw e;
+      }
+
       const output = results.map((r) => JSON.stringify(r)).join("\n") + "\n";
-      fs.writeFileSync(tmpPath, output, "utf8");
-      fs.renameSync(tmpPath, outputPath);
+
+      // Use exclusive write flag for security (wx = write exclusive)
+      const fd = fs.openSync(tmpPath, "wx", 0o600);
+      try {
+        fs.writeFileSync(fd, output, "utf8");
+      } finally {
+        fs.closeSync(fd);
+      }
+
+      // Atomic rename (with Windows fallback)
+      try {
+        fs.renameSync(tmpPath, outputPath);
+      } catch (renameErr) {
+        // Windows can fail to overwrite existing destination; fall back to unlink+rename
+        try {
+          const st = fs.statSync(outputPath);
+          if (st.isDirectory()) {
+            throw new Error(`Output path is a directory: ${outputPath}`);
+          }
+          fs.unlinkSync(outputPath);
+        } catch (unlinkErr) {
+          // Ignore ENOENT (missing destination is fine); rethrow other errors
+          if (
+            !(
+              unlinkErr &&
+              typeof unlinkErr === "object" &&
+              "code" in unlinkErr &&
+              unlinkErr.code === "ENOENT"
+            )
+          ) {
+            throw unlinkErr;
+          }
+        }
+        fs.renameSync(tmpPath, outputPath);
+      }
+
       console.log(`  Written to: ${outputPath}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -566,6 +624,7 @@ function processFile(inputPath, outputPath, dryRun) {
       } catch {
         // Ignore cleanup errors
       }
+      process.exitCode = 1;
       return 0;
     }
   } else {
@@ -622,6 +681,7 @@ if (processAll) {
     const resolvedInput = path.resolve(inputPath);
     if (!isPathContained(resolvedInput)) {
       console.error(`  Skipping suspicious file path: ${file}`);
+      process.exitCode = 1;
       continue;
     }
 
@@ -630,17 +690,20 @@ if (processAll) {
       const stat = fs.lstatSync(resolvedInput);
       if (stat.isSymbolicLink()) {
         console.error(`  Skipping symlink file: ${file}`);
+        process.exitCode = 1;
         continue;
       }
       // Resolve symlink and verify containment
       const realResolved = fs.realpathSync.native(resolvedInput);
       if (!isPathContained(realResolved)) {
         console.error(`  Skipping file resolving outside project root: ${file}`);
+        process.exitCode = 1;
         continue;
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`  Skipping unreadable file "${file}": ${msg}`);
+      process.exitCode = 1;
       continue;
     }
 
