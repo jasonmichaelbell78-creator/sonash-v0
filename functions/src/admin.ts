@@ -39,15 +39,15 @@ function ensureUserIdHash(value: unknown): string | null {
   if (value === null || value === undefined) return null;
   if (typeof value !== "string" || value.length === 0) return null;
 
-  // If it looks like a valid hash, return it
+  // If it looks like a valid hash, return it (normalized to lowercase)
   if (isValidUserIdHash(value)) {
-    return value;
+    return value.toLowerCase();
   }
 
   // Otherwise, treat as raw userId and hash it (defensive measure)
   // Log a warning since this indicates data inconsistency
   console.warn("[SEC] Found non-hash userId in security_logs, hashing for safety");
-  return hashUserId(value);
+  return hashUserId(value).toLowerCase();
 }
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 
@@ -152,7 +152,8 @@ function getIsoWeekString(date: Date): string {
   firstThursday.setDate(firstThursday.getDate() - firstThursdayDayNum + 3);
 
   // Calculate week number
-  const weekNum = 1 + Math.round((target.getTime() - firstThursday.getTime()) / 86400000 / 7);
+  const weekNumRaw = 1 + Math.floor((target.getTime() - firstThursday.getTime()) / 86400000 / 7);
+  const weekNum = weekNumRaw < 1 ? 1 : weekNumRaw;
 
   // Return ISO week string
   return `${target.getFullYear()}-W${String(weekNum).padStart(2, "0")}`;
@@ -1992,6 +1993,9 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
   // Validate limit
   const safeLimit = Math.min(Math.max(1, limit ?? 50), 200);
 
+  // ISSUE [6]: Cap total results to prevent excessive Firestore reads
+  const maxTotalResults = safeLimit * 2;
+
   try {
     const db = admin.firestore();
     // ISSUE [5]: Use temporary type with sorting field for stable timestamp-based sorting
@@ -2029,7 +2033,15 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
     // Query run history for each job
     // NOTE: Cannot fully eliminate N queries here due to subcollection structure
     // Each job's run_history is in a separate subcollection
+    // ISSUE [6]: Dynamic per-job limit to balance between single-job and multi-job queries
+    const perJobLimit = jobId
+      ? safeLimit
+      : Math.max(5, Math.ceil(safeLimit / Math.max(1, jobIds.length)));
+
     for (const jId of jobIds) {
+      // ISSUE [6]: Break early if we've hit the total results cap
+      if (results.length >= maxTotalResults) break;
+
       const jobName = jobNames.get(jId) || jId;
 
       let query: FirebaseFirestore.Query = db
@@ -2069,8 +2081,8 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
         throw new HttpsError("invalid-argument", "endDate must be after startDate");
       }
 
-      // Limit per job (we'll re-sort and limit the combined results)
-      query = query.limit(safeLimit);
+      // ISSUE [6]: Use dynamic per-job limit
+      query = query.limit(perJobLimit);
 
       const historySnapshot = await query.get();
 
@@ -2124,7 +2136,7 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetJobRunHistory", "Failed to get job run history", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), jobId },
+      metadata: { error: sanitizeErrorMessage(error), jobId },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get job run history");
@@ -2699,6 +2711,15 @@ export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request)
           },
         };
       }
+    }
+
+    // ISSUE [12]: If we scanned the maximum allowed users without finding a match,
+    // throw resource-exhausted to prevent false negatives
+    if (usersSnapshot.size === 1000) {
+      throw new HttpsError(
+        "resource-exhausted",
+        "User lookup scanned 1000 users without a match; please refine lookup or add a hash→uid index."
+      );
     }
 
     // ISSUE [3]: Log successful admin access (user not found)
@@ -3850,9 +3871,10 @@ export const adminGetUserAnalytics = onCall(async (request) => {
       if (cohortSize === 0) continue;
 
       // Calculate retention for week 1, 2, and 4 (users still active)
-      const week1Threshold = new Date(weekEnd.getTime() + 7 * 24 * 60 * 60 * 1000);
-      const week2Threshold = new Date(weekEnd.getTime() + 14 * 24 * 60 * 60 * 1000);
-      const week4Threshold = new Date(weekEnd.getTime() + 28 * 24 * 60 * 60 * 1000);
+      // ISSUE [7]: Use weekStart instead of weekEnd for correct threshold calculation
+      const week1Threshold = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const week2Threshold = new Date(weekStart.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const week4Threshold = new Date(weekStart.getTime() + 28 * 24 * 60 * 60 * 1000);
 
       // Only calculate retention for weeks that have passed
       let week1Retention = 0;

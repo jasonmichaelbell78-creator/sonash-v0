@@ -372,7 +372,15 @@ function UserActivityModal({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="User activity timeline"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-amber-100">
@@ -503,7 +511,7 @@ function UserCorrelationSection({
       setData(result.data);
     } catch (err) {
       logger.error("Failed to load error-user correlation", { error: err });
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      setError("Failed to load correlation data. Please try again later.");
     } finally {
       setLoading(false);
     }

@@ -17,7 +17,7 @@
  *   2 = Error
  */
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -69,15 +69,22 @@ function getManualCount(content) {
 }
 
 function main() {
+  let content;
   try {
-    if (!existsSync(LOG_FILE)) {
+    content = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
+  } catch (readErr) {
+    if (readErr.code === "ENOENT") {
       console.error("❌ AI_REVIEW_LEARNINGS_LOG.md not found");
-      process.exitCode = 2;
-      return;
+    } else {
+      console.error(
+        `❌ Failed to read file: ${readErr instanceof Error ? readErr.message : String(readErr)}`
+      );
     }
+    process.exitCode = 2;
+    return;
+  }
 
-    const content = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
-
+  try {
     const lastConsolidated = getLastConsolidatedReview(content);
     const computedCount = getComputedCount(content, lastConsolidated);
     const manualCount = getManualCount(content);

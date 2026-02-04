@@ -444,9 +444,9 @@ export function sanitizeErrorMessage(error: string | unknown, maxLength = 500): 
     message = message.slice(0, MAX_INPUT_LEN);
   }
 
-  // Remove stack traces - SECURITY: Use [^\n]* instead of .* to prevent ReDoS (SonarCloud S5852)
-  // The greedy .* can cause catastrophic backtracking; [^\n]* is bounded by line
-  message = message.replace(/\s+at\s+[^\n]*/g, "");
+  // Remove stack traces - SECURITY: Use bounded quantifier to prevent ReDoS (SonarCloud S5852)
+  // Unbounded \s+ can cause catastrophic backtracking; [ \t]{1,50} limits whitespace matching
+  message = message.replace(/[ \t]{1,50}at[ \t]+[^\n]*/g, "");
 
   // Remove file paths - SECURITY: Use {1,500} limit to prevent ReDoS (SonarCloud S5852)
   // Unbounded [\w\-./]+ can cause catastrophic backtracking on malicious input

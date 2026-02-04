@@ -480,9 +480,9 @@ export async function runJob(
       console.error(JSON.stringify(structuredLog));
     }
 
-    logSecurityEvent("JOB_FAILURE", jobId, `Job failed: ${errorMessage}`, {
+    logSecurityEvent("JOB_FAILURE", jobId, `Job failed: ${sanitizedError}`, {
       severity: "ERROR",
-      metadata: { duration, jobName, error: errorMessage, runId, triggeredBy },
+      metadata: { duration, jobName, error: sanitizedError, runId, triggeredBy },
       captureToSentry: true,
     });
 

@@ -284,12 +284,12 @@ export function LogsTab() {
     // Search query (matches message, type, or functionName)
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (log) =>
-          log.message.toLowerCase().includes(query) ||
-          log.type.toLowerCase().includes(query) ||
-          log.functionName.toLowerCase().includes(query)
-      );
+      filtered = filtered.filter((log) => {
+        const message = String(log.message ?? "").toLowerCase();
+        const type = String(log.type ?? "").toLowerCase();
+        const functionName = String(log.functionName ?? "").toLowerCase();
+        return message.includes(query) || type.includes(query) || functionName.includes(query);
+      });
     }
 
     return filtered;
@@ -305,6 +305,11 @@ export function LogsTab() {
     let url: string | null = null;
     let a: HTMLAnchorElement | null = null;
     try {
+      const redact = (value: string) =>
+        value
+          .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "[REDACTED_EMAIL]")
+          .replace(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, "[REDACTED_PHONE]");
+
       const exportData = {
         exportedAt: new Date().toISOString(),
         filters: {
@@ -313,7 +318,10 @@ export function LogsTab() {
           search: searchQuery || null,
         },
         totalCount: filteredLogs.length,
-        logs: filteredLogs,
+        logs: filteredLogs.map((l) => ({
+          ...l,
+          message: redact(String(l.message ?? "")),
+        })),
       };
       const dataStr = JSON.stringify(exportData, null, 2);
       const blob = new Blob([dataStr], { type: "application/json" });

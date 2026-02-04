@@ -66,9 +66,9 @@ interface JobRunHistoryResponse {
  */
 function sanitizeErrorMessage(error: string): string {
   // Remove stack traces
-  // SECURITY: Use [^\n]* instead of .* to prevent ReDoS (SonarCloud S5852)
-  // The greedy .* can cause catastrophic backtracking on malicious input
-  const stackTracePattern = /\s+at\s+[^\n]*/g;
+  // SECURITY: Use bounded quantifier [ \t]{1,50} to prevent ReDoS (SonarCloud S5852)
+  // Unbounded \s+ can cause catastrophic backtracking on malicious input
+  const stackTracePattern = /[ \t]{1,50}at[ \t]+[^\n]*/g;
   let sanitized = error.replace(stackTracePattern, "");
 
   // Remove file paths
@@ -204,7 +204,11 @@ function JobRunHistoryPanel({
     let url: string | null = null;
     let a: HTMLAnchorElement | null = null;
     try {
-      const dataStr = JSON.stringify(history, null, 2);
+      const exportRuns = history.map((run) => ({
+        ...run,
+        error: run.error ? sanitizeErrorMessage(run.error) : undefined,
+      }));
+      const dataStr = JSON.stringify(exportRuns, null, 2);
       const blob = new Blob([dataStr], { type: "application/json" });
       url = URL.createObjectURL(blob);
       a = document.createElement("a");

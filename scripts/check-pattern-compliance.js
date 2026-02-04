@@ -516,6 +516,9 @@ const ANTI_PATTERNS = [
       //   File paths in --all mode at L621 come from fs.readdirSync(), containment check at L623,
       //   symlink check at L627-640 after line additions
       "transform-jsonl-schema.js",
+      // 2026-02-04 audit (Review #242):
+      // - sync-consolidation-counter.js: readFileSync at L74 IS in try/catch (L73-83)
+      "sync-consolidation-counter.js",
     ],
   },
   {
