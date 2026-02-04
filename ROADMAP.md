@@ -1179,10 +1179,10 @@ experience for Today page
 > Enhancement, see
 > [ROADMAP_LOG.md](./ROADMAP_LOG.md#m16---admin-panel--today-page-enhancement)
 
-### Phase 4: Error Tracking - Sentry Integration (✅ ~90% Complete)
+### Phase 4: Error Tracking - Sentry Integration (✅ Complete via Track A)
 
 **Priority:** High | **Effort:** Low-Medium | **Value:** High | **Status:**
-Moved to Active Sprint
+Complete (Session #129)
 
 **Approach:** Hybrid summary + deep links via Cloud Function (token never
 exposed to client)
@@ -1191,33 +1191,34 @@ exposed to client)
 - [x] Error summary card on Dashboard (count + trend) ✅
 - [x] Errors tab with recent errors in plain English ✅
 - [x] Deep links to Sentry for each error ✅
-- [ ] User ID correlation (link to user detail if available) - **In Sprint
-      A3.1**
+- [x] User ID correlation (link to user detail if available) ✅ **Track A21**
 
 **Environment Variables (Cloud Functions only):** `SENTRY_API_TOKEN`,
 `SENTRY_ORG`, `SENTRY_PROJECT`
 
-> **Note:** Phase 4 tasks moved to Active Sprint Track A. See Sprint section for
-> remaining work (A3.1: User correlation).
+> **Completed:** All Phase 4 tasks done via Track A (A1-A4, A21). User
+> correlation implemented in Session #129 with activity timeline and navigation.
 
-### Phase 5: System Logs - GCP Integration (🔄 In Sprint)
+### Phase 5: System Logs - GCP Integration (✅ Complete via Track A)
 
-**Priority:** High | **Effort:** Low | **Value:** Medium | **Status:** Moved to
-Active Sprint
+**Priority:** High | **Effort:** Low | **Value:** Medium | **Status:** Complete
+(Session #129)
 
 **Approach:** Recent events + deep links (don't rebuild GCP logging UI)
 
-- [ ] Recent security events display (from existing `logSecurityEvent()`) -
-      **Sprint A4**
-- [ ] Deep link to GCP Cloud Logging Console (pre-filtered)
-- [ ] Verify log retention configured (90+ days)
-- [ ] Optional: Log sink for long-term archival
+- [x] Recent security events display (from existing `logSecurityEvent()`) ✅
+      **Track A4**
+- [x] Deep link to GCP Cloud Logging Console (pre-filtered) ✅ **Track A4**
+- [x] Query builder with pre-built templates ✅ **Track A22**
+- [x] Export filtered results as JSON ✅ **Track A22**
+- [ ] Verify log retention configured (90+ days) - **Deferred to ops checklist**
+- [ ] Optional: Log sink for long-term archival - **Deferred to M2**
 
 **Note:** Security/audit logs remain in GCP Cloud Logging (immutable, compliant)
 — no Firestore `admin_logs` collection.
 
-> **Note:** Phase 5 moved into Active Sprint per Session #69 planning. See
-> Sprint Track A task A4.
+> **Completed:** Core functionality done via Track A (A4, A22). Log retention
+> verification and archival are operational tasks, not feature development.
 
 ### Phase 5.5: Local Recovery Resources Directory (📋 Planned - MOVED UP)
 
