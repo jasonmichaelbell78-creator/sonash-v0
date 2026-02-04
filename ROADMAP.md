@@ -362,20 +362,20 @@ reliability, and solo developer automations.
 > **Next batch** from Firebase/GCP Console integration (Session #75). Implement
 > after Track A-Test validation complete.
 
-- [ ] **A19:** User Analytics Tab (3-4hr)
+- [x] **A19:** User Analytics Tab (3-4hr) ✅ Session #129
   - DAU/WAU/MAU trends visualization
   - Retention metrics from Firestore session data
   - Feature usage breakdown
-- [ ] **A20:** Job Results Detailed Viewer (2-3hr)
+- [x] **A20:** Job Results Detailed Viewer (2-3hr) ✅ Session #129
   - View full job output logs in-app
   - Filter by job type, status, date range
   - Download job logs as JSON
-- [ ] **A21:** Sentry Error → User Correlation (2-3hr)
+- [x] **A21:** Sentry Error → User Correlation (2-3hr) ✅ Session #129
   - Link errors to specific user accounts
   - Show user's recent actions before error
   - **Key lines:** `lib/logger.ts:1`
   - Quick navigation to user details from error
-- [ ] **A22:** GCP Cloud Logging Query Builder (3-4hr)
+- [x] **A22:** GCP Cloud Logging Query Builder (3-4hr) ✅ Session #129
   - Simple log queries without GCP Console
   - Pre-built query templates (errors, security events, auth)
   - Export filtered results
@@ -398,22 +398,34 @@ reliability, and solo developer automations.
   - scheduledHardDeleteSoftDeletedUsers job (daily 5AM UTC)
   - Visual indicators: "Pending Deletion" badge with days remaining
 
-### Track A-Test - Testing & Validation ✅ COMPLETE
+### Track A-Test - Testing & Validation 🔄 IN PROGRESS
 
-> **Checklist:**
+> **Original Checklist:**
 > [TRACK_A_TESTING_CHECKLIST.md](docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md)
-> **Total Tests:** 131 | **Categories:** 8
+> **A19-A22 Testing Plan:**
+> [TRACK_A_TESTING_PLAN.md](docs/plans/TRACK_A_TESTING_PLAN.md) (Session #130)
+> **Total Tests:** 131 original + A19-A22 additions | **Categories:** 9
 
-| Category            | Tests | Passed | Skipped | Status        |
-| ------------------- | ----- | ------ | ------- | ------------- |
-| Logs Tab UI         | 24    | 24     | 0       | ✅ Complete   |
-| Privileges Backend  | 16    | 5      | 11      | 🔄 Partial    |
-| Privileges Frontend | 14    | 10     | 4       | 🔄 Partial    |
-| Background Jobs     | 30    | 4      | 25      | 🔄 Re-testing |
-| Security Testing    | 10    | 6      | 4       | 🔄 Partial    |
-| Integration Tests   | 26    | 25     | 1       | ✅ Complete   |
-| Performance Tests   | 5     | 4      | 1       | ✅ Complete   |
-| Error Handling      | 6     | 0      | 6       | ⏳ Pending    |
+| Category            | Tests | Passed | Skipped | Status         |
+| ------------------- | ----- | ------ | ------- | -------------- |
+| Logs Tab UI         | 24    | 24     | 0       | ✅ Complete    |
+| Privileges Backend  | 16    | 5      | 11      | 🔄 Partial     |
+| Privileges Frontend | 14    | 10     | 4       | 🔄 Partial     |
+| Background Jobs     | 30    | 4      | 25      | 🔄 Re-testing  |
+| Security Testing    | 10    | 6      | 4       | 🔄 Partial     |
+| Integration Tests   | 26    | 25     | 1       | ✅ Complete    |
+| Performance Tests   | 5     | 4      | 1       | ✅ Complete    |
+| Error Handling      | 6     | 0      | 6       | ⏳ Pending     |
+| **A19-A22 Testing** | ~40   | 5      | 0       | 🔄 In Progress |
+
+**A19-A22 Testing Status (Session #130):**
+
+- ✅ **Automated Tests Complete:** 293/294 unit tests passing (1 skipped)
+- ✅ **TypeScript Build:** All types compile correctly
+- ✅ **ESLint:** No linting errors
+- ⏳ **Manual Tests:** Pending user verification (see TRACK_A_TESTING_PLAN.md)
+- **Tool Requirements:** Testing deps installed (`@playwright/test`, `msw`,
+  `@firebase/rules-unit-testing`)
 
 #### Track A Blockers - Firestore Indexes ✅ RESOLVED
 
@@ -803,7 +815,13 @@ MASTER_DEBT.jsonl.
 
 #### Phase 1: Playwright Foundation (8hr)
 
+> **Dependency:** Required for Track A-Test A19-A22 automated testing **See:**
+> [TRACK_A_TESTING_PLAN.md](docs/plans/TRACK_A_TESTING_PLAN.md) for immediate
+> Playwright MCP usage
+
 - [ ] **T1.1:** Install and configure Playwright (2hr)
+  - `npm i -D @playwright/test && npx playwright install`
+  - Additional: `@firebase/rules-unit-testing`, `msw` (optional)
 - [ ] **T1.2:** Create test fixtures (auth, emulator, test users) (2hr)
 - [ ] **T1.3:** Create base page objects (HomePage, AdminPage, etc.) (2hr)
 - [ ] **T1.4:** Configure CI integration (GitHub Actions) (2hr)
@@ -1179,10 +1197,10 @@ experience for Today page
 > Enhancement, see
 > [ROADMAP_LOG.md](./ROADMAP_LOG.md#m16---admin-panel--today-page-enhancement)
 
-### Phase 4: Error Tracking - Sentry Integration (✅ ~90% Complete)
+### Phase 4: Error Tracking - Sentry Integration (✅ Complete via Track A)
 
 **Priority:** High | **Effort:** Low-Medium | **Value:** High | **Status:**
-Moved to Active Sprint
+Complete (Session #129)
 
 **Approach:** Hybrid summary + deep links via Cloud Function (token never
 exposed to client)
@@ -1191,33 +1209,34 @@ exposed to client)
 - [x] Error summary card on Dashboard (count + trend) ✅
 - [x] Errors tab with recent errors in plain English ✅
 - [x] Deep links to Sentry for each error ✅
-- [ ] User ID correlation (link to user detail if available) - **In Sprint
-      A3.1**
+- [x] User ID correlation (link to user detail if available) ✅ **Track A21**
 
 **Environment Variables (Cloud Functions only):** `SENTRY_API_TOKEN`,
 `SENTRY_ORG`, `SENTRY_PROJECT`
 
-> **Note:** Phase 4 tasks moved to Active Sprint Track A. See Sprint section for
-> remaining work (A3.1: User correlation).
+> **Completed:** All Phase 4 tasks done via Track A (A1-A4, A21). User
+> correlation implemented in Session #129 with activity timeline and navigation.
 
-### Phase 5: System Logs - GCP Integration (🔄 In Sprint)
+### Phase 5: System Logs - GCP Integration (✅ Complete via Track A)
 
-**Priority:** High | **Effort:** Low | **Value:** Medium | **Status:** Moved to
-Active Sprint
+**Priority:** High | **Effort:** Low | **Value:** Medium | **Status:** Complete
+(Session #129)
 
 **Approach:** Recent events + deep links (don't rebuild GCP logging UI)
 
-- [ ] Recent security events display (from existing `logSecurityEvent()`) -
-      **Sprint A4**
-- [ ] Deep link to GCP Cloud Logging Console (pre-filtered)
-- [ ] Verify log retention configured (90+ days)
-- [ ] Optional: Log sink for long-term archival
+- [x] Recent security events display (from existing `logSecurityEvent()`) ✅
+      **Track A4**
+- [x] Deep link to GCP Cloud Logging Console (pre-filtered) ✅ **Track A4**
+- [x] Query builder with pre-built templates ✅ **Track A22**
+- [x] Export filtered results as JSON ✅ **Track A22**
+- [ ] Verify log retention configured (90+ days) - **Deferred to ops checklist**
+- [ ] Optional: Log sink for long-term archival - **Deferred to M2**
 
 **Note:** Security/audit logs remain in GCP Cloud Logging (immutable, compliant)
 — no Firestore `admin_logs` collection.
 
-> **Note:** Phase 5 moved into Active Sprint per Session #69 planning. See
-> Sprint Track A task A4.
+> **Completed:** Core functionality done via Track A (A4, A22). Log retention
+> verification and archival are operational tasks, not feature development.
 
 ### Phase 5.5: Local Recovery Resources Directory (📋 Planned - MOVED UP)
 
@@ -3246,6 +3265,7 @@ npm run roadmap:validate      # Check consistency (when available)
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.18    | 2026-02-04 | **Session #130**: Added Track A-Test A19-A22 testing plan (TRACK_A_TESTING_PLAN.md); linked Track T Phase 1 as dependency for automated testing; updated test category count to 9; added tool installation details (Playwright, firebase rules testing, msw)                                                                                                                                |
 | 3.17    | 2026-02-03 | **Session #128**: TIMING SYSTEM CHANGE - Removed all date-based scheduling from roadmap; introduced Priority + Phase Buckets + Relative Ordering system; updated Milestones Overview table (Target → Phase column); converted inline date references to session numbers; added episodic memory integration to all audit skills                                                              |
 | 3.16    | 2026-02-01 | **Session #116**: Created canonical audit findings location (`docs/audits/canonical/`); consolidated 172 NET NEW findings; added AUDIT_FINDINGS_PROCEDURE.md for roadmap integration workflow                                                                                                                                                                                               |
 | 3.15    | 2026-01-29 | **Session #115**: Integrated 94 NET NEW findings from Refactoring Audit; added Track T Phase 7 (Cloud Functions Testing), M2.3-REF (God Object Refactoring), M4.5-F3 (Security Hardening), and Quick Wins                                                                                                                                                                                   |

@@ -46,7 +46,7 @@ const TRIGGERS = {
   consolidation: {
     severity: "warning",
     description: "Review consolidation may be needed",
-    threshold: 8, // Warn when 2 away from 10 threshold
+    threshold: 2, // Warn when 2 or fewer reviews remaining until 10 threshold
     action: "Check: npm run consolidation:check",
   },
   skill_validation: {

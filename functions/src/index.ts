@@ -784,7 +784,12 @@ export {
   adminUndeleteUser,
   adminTriggerJob,
   adminGetJobsStatus,
+  adminGetJobRunHistory, // A20: Job run history viewer
   adminGetSentryErrorSummary,
+  // A21: Error → User Correlation
+  adminGetErrorsWithUsers,
+  adminGetUserActivityByHash,
+  adminFindUserByHash,
   adminGetLogs,
   adminGetPrivilegeTypes,
   adminSavePrivilegeType,
@@ -796,6 +801,8 @@ export {
   adminGetRateLimitStatus,
   adminClearRateLimit,
   adminGetCollectionStats,
+  // A19: User Analytics Tab
+  adminGetUserAnalytics,
 } from "./admin";
 
 // Export scheduled jobs

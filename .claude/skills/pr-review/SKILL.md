@@ -569,10 +569,17 @@ Minor: X, Trivial: X)
 
 If a new pattern category emerges, add it to the Quick Pattern Index section.
 
-### 7.4 Update Consolidation Counter
+### 7.4 Update Consolidation Counter (MANDATORY)
 
-If "Reviews since last consolidation" reaches 10+, note that consolidation is
-due.
+**After adding a review entry, ALWAYS increment the counter:**
+
+1. Find `**Reviews since last consolidation:** N` in AI_REVIEW_LEARNINGS_LOG.md
+2. Increment N by 1 (e.g., 6 → 7)
+3. If the new value reaches 10+, consolidation is due
+
+**Why this matters:** The counter drifts if not incremented (Session #129 fix).
+The compute-based check catches drift but the manual counter should stay in
+sync.
 
 ### 7.5 Health Check (Every 10 Reviews)
 
@@ -697,7 +704,7 @@ npm run patterns:check
 
 1. All files mentioned in review (fixes)
 2. `docs/AI_REVIEW_LEARNINGS_LOG.md` (learning entry - MANDATORY)
-3. Update consolidation counter if reviews since last > 10
+3. **INCREMENT** consolidation counter by 1 (ALWAYS)
 
 ### Agents Available
 

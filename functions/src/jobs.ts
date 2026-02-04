@@ -14,7 +14,13 @@
 
 import * as admin from "firebase-admin";
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { logSecurityEvent, hashUserId } from "./security-logger";
+import {
+  logSecurityEvent,
+  hashUserId,
+  redactSensitiveMetadata,
+  sanitizeErrorMessage,
+} from "./security-logger";
+import { randomBytes } from "crypto";
 import type { File, Bucket } from "@google-cloud/storage";
 
 // ============================================================================
@@ -309,18 +315,46 @@ async function performHardDeleteForUser(
 }
 
 /**
+ * A20: Job run history entry structure
+ */
+interface JobRunHistoryEntry {
+  runId: string;
+  startTime: FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue;
+  endTime: FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue;
+  status: "success" | "failed";
+  durationMs: number;
+  error?: string;
+  resultSummary?: Record<string, unknown>;
+  triggeredBy: "schedule" | "manual";
+}
+
+/**
+ * Options for runJob function
+ */
+interface RunJobOptions {
+  /** How the job was triggered */
+  triggeredBy?: "schedule" | "manual";
+}
+
+/**
  * Job wrapper for status tracking
  * Uses set({ merge: true }) to handle first-run case when document doesn't exist
+ * A20: Also saves run history to admin_jobs/{jobId}/run_history subcollection
  * Includes nested error handling to preserve original errors
  */
 export async function runJob(
   jobId: string,
   jobName: string,
-  jobFn: () => Promise<void>
+  jobFn: () => Promise<Record<string, unknown> | void>,
+  options: RunJobOptions = {}
 ): Promise<void> {
   const db = admin.firestore();
   const jobRef = db.doc(`admin_jobs/${jobId}`);
   const startTime = Date.now();
+  // SEC-REVIEW: Use cryptographically secure random bytes instead of Math.random()
+  // This prevents predictable run IDs (OWASP: Insufficient Randomness)
+  const runId = `${startTime}-${randomBytes(4).toString("hex")}`;
+  const triggeredBy = options.triggeredBy ?? "schedule";
 
   // Initialize job document (handles first-run case)
   await jobRef.set(
@@ -335,10 +369,15 @@ export async function runJob(
   let jobError: unknown = null;
 
   try {
-    // Execute the job
-    await jobFn();
+    // Execute the job and capture result
+    const result = await jobFn();
 
     const duration = Date.now() - startTime;
+    // ISSUE [22]: Sanitize job result before persisting to prevent sensitive data leaks
+    const resultSummary =
+      result && typeof result === "object"
+        ? (redactSensitiveMetadata(result as Record<string, unknown>) as Record<string, unknown>)
+        : undefined;
 
     // Update with success status
     await jobRef.set(
@@ -351,14 +390,45 @@ export async function runJob(
       { merge: true }
     );
 
+    // A20: Save to run history subcollection
+    const historyEntry: JobRunHistoryEntry = {
+      runId,
+      startTime: admin.firestore.Timestamp.fromMillis(startTime),
+      endTime: admin.firestore.Timestamp.fromMillis(Date.now()),
+      status: "success",
+      durationMs: duration,
+      resultSummary,
+      triggeredBy,
+    };
+
+    // Best-effort history save (don't fail job if history write fails)
+    await jobRef
+      .collection("run_history")
+      .doc(runId)
+      .set(historyEntry)
+      .catch((err) => {
+        // ISSUE [3]: Use sanitized error logging to prevent sensitive data exposure
+        const errorType = err instanceof Error ? err.name : "UnknownError";
+        const structuredLog = {
+          severity: "WARNING",
+          message: `Failed to save run history for ${jobId}:${runId}`,
+          error: { type: errorType },
+          timestamp: new Date().toISOString(),
+        };
+        console.error(JSON.stringify(structuredLog));
+      });
+
     logSecurityEvent("JOB_SUCCESS", jobId, `Job completed successfully in ${duration}ms`, {
       severity: "INFO",
-      metadata: { duration, jobName },
+      metadata: { duration, jobName, runId, triggeredBy },
     });
   } catch (error) {
     jobError = error; // Capture the original error
     const duration = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : String(error);
+    // ISSUE [1,2]: Sanitize error message before persisting to prevent PII/secrets exposure
+    // OWASP A01:2021 - Prevents sensitive data in error messages from being stored
+    const sanitizedError = sanitizeErrorMessage(errorMessage);
 
     // Nested try/catch to prevent losing original error
     try {
@@ -366,17 +436,53 @@ export async function runJob(
         {
           lastRunStatus: "failed",
           lastRunDuration: duration,
-          lastError: errorMessage,
+          lastError: sanitizedError,
         },
         { merge: true }
       );
+
+      // A20: Save failed run to history
+      const historyEntry: JobRunHistoryEntry = {
+        runId,
+        startTime: admin.firestore.Timestamp.fromMillis(startTime),
+        endTime: admin.firestore.Timestamp.fromMillis(startTime + duration),
+        status: "failed",
+        durationMs: duration,
+        error: sanitizedError,
+        triggeredBy,
+      };
+
+      // Best-effort history save
+      await jobRef
+        .collection("run_history")
+        .doc(runId)
+        .set(historyEntry)
+        .catch((err) => {
+          // ISSUE [3]: Use sanitized error logging to prevent sensitive data exposure
+          const errorType = err instanceof Error ? err.name : "UnknownError";
+          const structuredLog = {
+            severity: "WARNING",
+            message: `Failed to save run history for ${jobId}:${runId}`,
+            error: { type: errorType },
+            timestamp: new Date().toISOString(),
+          };
+          console.error(JSON.stringify(structuredLog));
+        });
     } catch (updateError) {
-      console.error(`Failed to update job status for ${jobId}`, updateError);
+      // ISSUE [3]: Use sanitized error logging to prevent sensitive data exposure
+      const errorType = updateError instanceof Error ? updateError.name : "UnknownError";
+      const structuredLog = {
+        severity: "ERROR",
+        message: `Failed to update job status for ${jobId}`,
+        error: { type: errorType },
+        timestamp: new Date().toISOString(),
+      };
+      console.error(JSON.stringify(structuredLog));
     }
 
-    logSecurityEvent("JOB_FAILURE", jobId, `Job failed: ${errorMessage}`, {
+    logSecurityEvent("JOB_FAILURE", jobId, `Job failed: ${sanitizedError}`, {
       severity: "ERROR",
-      metadata: { duration, jobName, error: errorMessage },
+      metadata: { duration, jobName, error: sanitizedError, runId, triggeredBy },
       captureToSentry: true,
     });
 

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
 import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
+import { useAdminTabContext } from "@/lib/contexts/admin-tab-context";
 import {
   findErrorKnowledge,
   getSeverityColor,
@@ -34,6 +35,10 @@ import {
   Users,
   Wrench,
   Check,
+  UserSearch,
+  Activity,
+  Loader2,
+  X,
 } from "lucide-react";
 
 interface SentryIssueSummary {
@@ -46,6 +51,47 @@ interface SentryIssueSummary {
   level: string | null;
   status: string | null;
   permalink: string;
+}
+
+// A21: User correlation types
+interface ErrorWithUser {
+  id: string;
+  type: string;
+  message: string;
+  timestamp: string;
+  functionName: string;
+  userIdHash: string | null;
+  severity: "ERROR" | "WARNING";
+}
+
+interface UserActivity {
+  id: string;
+  type: string;
+  functionName: string;
+  message: string;
+  timestamp: string;
+  severity: "INFO" | "WARNING" | "ERROR";
+}
+
+interface UserCorrelationData {
+  errors: ErrorWithUser[];
+  totalCount: number;
+  uniqueUsers: number;
+}
+
+interface UserActivityData {
+  userIdHash: string;
+  activities: UserActivity[];
+  totalCount: number;
+  activityByType: Record<string, number>;
+}
+
+interface FoundUser {
+  uid: string;
+  nickname: string;
+  email: string | null;
+  createdAt: string | null;
+  lastActive: string | null;
 }
 
 interface SentryErrorSummaryResponse {
@@ -251,12 +297,404 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
   );
 }
 
+// ============================================================================
+// A21: User Correlation Components
+// ============================================================================
+
+/**
+ * A21: User Activity Modal - Shows activity timeline for a user hash
+ */
+function UserActivityModal({
+  userIdHash,
+  onClose,
+  onNavigateToUser,
+}: Readonly<{
+  userIdHash: string;
+  onClose: () => void;
+  onNavigateToUser: (uid: string) => void;
+}>) {
+  const [activity, setActivity] = useState<UserActivityData | null>(null);
+  const [foundUser, setFoundUser] = useState<FoundUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  // Request ID to prevent stale async responses from overwriting newer data
+  const requestIdRef = useRef(0);
+
+  useEffect(() => {
+    const requestId = ++requestIdRef.current;
+    let isMounted = true;
+
+    async function loadData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const functions = getFunctions();
+
+        // Load activity and user lookup in parallel
+        const [activityRes, userRes] = await Promise.allSettled([
+          httpsCallable<{ userIdHash: string; limit: number }, UserActivityData>(
+            functions,
+            "adminGetUserActivityByHash"
+          )({ userIdHash, limit: 50 }),
+          httpsCallable<{ userIdHash: string }, { found: boolean; user: FoundUser | null }>(
+            functions,
+            "adminFindUserByHash"
+          )({ userIdHash }),
+        ]);
+
+        // Guard against unmount and stale requests
+        if (!isMounted || requestId !== requestIdRef.current) return;
+
+        // Clear stale state for this hash before applying results
+        setActivity(null);
+        setFoundUser(null);
+
+        if (activityRes.status === "fulfilled") {
+          const next = activityRes.value.data;
+          setActivity({
+            ...next,
+            activities: Array.isArray(next.activities) ? next.activities : [],
+            activityByType:
+              next.activityByType && typeof next.activityByType === "object"
+                ? next.activityByType
+                : {},
+          });
+        } else {
+          logger.error("Failed to load user activity timeline", {
+            error: activityRes.reason,
+            userIdHash,
+          });
+          setError("Failed to load activity. Please try again later.");
+        }
+
+        if (userRes.status === "fulfilled" && userRes.value.data.found && userRes.value.data.user) {
+          setFoundUser(userRes.value.data.user);
+        } else if (userRes.status === "rejected") {
+          logger.error("Failed to resolve user from hash", { error: userRes.reason, userIdHash });
+        }
+      } catch (err) {
+        logger.error("Failed to load user activity", { error: err, userIdHash });
+        if (!isMounted || requestId !== requestIdRef.current) return;
+        setError("Failed to load activity. Please try again later.");
+      } finally {
+        if (isMounted && requestId === requestIdRef.current) {
+          setLoading(false);
+        }
+      }
+    }
+    loadData();
+    return () => {
+      isMounted = false;
+    };
+  }, [userIdHash]);
+
+  // ISSUE [17]: Add Escape key handler for modal accessibility
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="User activity timeline"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-amber-100">
+          <div className="flex items-center gap-3">
+            <UserSearch className="w-5 h-5 text-amber-600" />
+            <div>
+              <h3 className="font-medium text-amber-900">User Activity Timeline</h3>
+              <p className="text-xs text-amber-600 font-mono">{userIdHash}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-amber-600 hover:text-amber-900 p-1">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* User Info (if found) */}
+        {foundUser && (
+          <div className="p-4 bg-amber-50 border-b border-amber-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-amber-900">{foundUser.nickname}</p>
+                <p className="text-xs text-amber-600">
+                  {foundUser.email || "No email"} | Last active:{" "}
+                  {foundUser.lastActive ? safeFormatDate(foundUser.lastActive) : "Unknown"}
+                </p>
+              </div>
+              <button
+                onClick={() => onNavigateToUser(foundUser.uid)}
+                className="px-3 py-1 text-sm bg-amber-500 text-white rounded hover:bg-amber-600"
+              >
+                View User Details
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="p-4 overflow-y-auto max-h-96">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-5 h-5 animate-spin text-amber-600" />
+              <span className="ml-2 text-amber-600">Loading activity...</span>
+            </div>
+          ) : error ? (
+            <div className="text-red-600 text-sm py-4">{error}</div>
+          ) : activity && activity.activities.length > 0 ? (
+            <div className="space-y-2">
+              {/* Activity Summary */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {Object.entries(activity.activityByType).map(([type, count]) => (
+                  <span
+                    key={type}
+                    className="px-2 py-1 text-xs rounded bg-amber-100 text-amber-700"
+                  >
+                    {type}: {count}
+                  </span>
+                ))}
+              </div>
+
+              {/* Activity List */}
+              {activity.activities.map((a) => (
+                <div
+                  key={a.id}
+                  className={`p-3 rounded border ${
+                    a.severity === "ERROR"
+                      ? "border-red-200 bg-red-50"
+                      : a.severity === "WARNING"
+                        ? "border-yellow-200 bg-yellow-50"
+                        : "border-amber-100 bg-white"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span
+                      className={`text-xs font-medium ${
+                        a.severity === "ERROR"
+                          ? "text-red-700"
+                          : a.severity === "WARNING"
+                            ? "text-yellow-700"
+                            : "text-amber-700"
+                      }`}
+                    >
+                      {a.type}
+                    </span>
+                    <span className="text-xs text-amber-500">{safeFormatDate(a.timestamp)}</span>
+                  </div>
+                  <p className="text-sm text-amber-900">{a.functionName}</p>
+                  <p className="text-xs text-amber-600 mt-1 truncate">{a.message}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-amber-600 text-sm py-4 text-center">
+              No recent activity found for this user.
+            </p>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-3 bg-amber-50 border-t border-amber-100 text-xs text-amber-600 text-center">
+          Showing last 24 hours of activity
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A21: User Correlation Section
+ */
+function UserCorrelationSection({
+  onNavigateToUser,
+}: Readonly<{ onNavigateToUser: (uid: string) => void }>) {
+  const [data, setData] = useState<UserCorrelationData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedUserHash, setSelectedUserHash] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  // Track mounted state for async callbacks
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const loadData = useCallback(async (isActive: () => boolean = () => true) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const functions = getFunctions();
+      const fn = httpsCallable<{ limit: number; hoursBack: number }, UserCorrelationData>(
+        functions,
+        "adminGetErrorsWithUsers"
+      );
+      const result = await fn({ limit: 50, hoursBack: 24 });
+      if (!isActive()) return;
+      setData(result.data);
+    } catch (err) {
+      logger.error("Failed to load error-user correlation", { error: err });
+      if (!isActive()) return;
+      setError("Failed to load correlation data. Please try again later.");
+    } finally {
+      if (isActive()) setLoading(false);
+    }
+  }, []);
+
+  useTabRefresh("errors", () => loadData(() => isMountedRef.current));
+
+  useEffect(() => {
+    let isActive = true;
+    loadData(() => isActive);
+    return () => {
+      isActive = false;
+    };
+  }, [loadData]);
+
+  const getSeverityBadge = (severity: "ERROR" | "WARNING") => {
+    if (severity === "ERROR") {
+      return <span className="px-2 py-0.5 text-xs rounded bg-red-100 text-red-700">ERROR</span>;
+    }
+    return (
+      <span className="px-2 py-0.5 text-xs rounded bg-yellow-100 text-yellow-700">WARNING</span>
+    );
+  };
+
+  return (
+    <div className="rounded-lg border border-amber-100 bg-white">
+      <div className="flex items-center justify-between border-b border-amber-100 px-6 py-4">
+        <div>
+          <h3 className="text-sm font-semibold text-amber-900 flex items-center gap-2">
+            <Activity className="w-4 h-4" />
+            Error-User Correlation
+          </h3>
+          <p className="text-xs text-amber-600 mt-0.5">
+            Recent errors from security logs with user identification
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          {data && (
+            <span className="text-xs text-amber-600">{data.uniqueUsers} unique users affected</span>
+          )}
+          <button
+            onClick={() => loadData(() => isMountedRef.current)}
+            className="text-xs text-amber-700 hover:text-amber-900 flex items-center gap-1"
+          >
+            <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="p-6 flex items-center justify-center">
+          <Loader2 className="w-5 h-5 animate-spin text-amber-600" />
+          <span className="ml-2 text-amber-600 text-sm">Loading...</span>
+        </div>
+      ) : error ? (
+        <div className="p-4 text-sm text-red-700">{error}</div>
+      ) : data && data.errors.length > 0 ? (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-amber-100 text-sm">
+            <thead className="bg-amber-50 text-left text-amber-800">
+              <tr>
+                <th className="px-4 py-3 font-medium">Time</th>
+                <th className="px-4 py-3 font-medium">Severity</th>
+                <th className="px-4 py-3 font-medium">Type</th>
+                <th className="px-4 py-3 font-medium">Function</th>
+                <th className="px-4 py-3 font-medium">User</th>
+                <th className="px-4 py-3 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-amber-100">
+              {data.errors.map((err) => (
+                <tr key={err.id} className="hover:bg-amber-50">
+                  <td className="px-4 py-3 text-amber-700">{safeFormatDate(err.timestamp)}</td>
+                  <td className="px-4 py-3">{getSeverityBadge(err.severity)}</td>
+                  <td className="px-4 py-3 text-amber-900">{err.type}</td>
+                  <td className="px-4 py-3 text-amber-600 font-mono text-xs">{err.functionName}</td>
+                  <td className="px-4 py-3">
+                    {err.userIdHash ? (
+                      <span className="font-mono text-xs text-amber-700">{err.userIdHash}</span>
+                    ) : (
+                      <span className="text-amber-400 text-xs">System</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    {err.userIdHash && (
+                      <button
+                        onClick={() => setSelectedUserHash(err.userIdHash)}
+                        className="text-xs text-amber-700 hover:text-amber-900 hover:underline flex items-center gap-1"
+                      >
+                        <UserSearch className="w-3 h-3" />
+                        View Activity
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="p-6 text-sm text-amber-700 text-center">
+          No errors with user correlation in the last 24 hours.
+        </div>
+      )}
+
+      {/* User Activity Modal */}
+      {selectedUserHash && (
+        <UserActivityModal
+          userIdHash={selectedUserHash}
+          onClose={() => setSelectedUserHash(null)}
+          onNavigateToUser={(uid) => {
+            setSelectedUserHash(null);
+            onNavigateToUser(uid);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 export function ErrorsTab() {
   const [summary, setSummary] = useState<SentryErrorSummaryResponse["summary"] | null>(null);
   const [issues, setIssues] = useState<SentryIssueSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  // A21: Navigation for user correlation
+  const { setActiveTab } = useAdminTabContext();
+  const navigateToUser = useCallback(
+    (uid: string) => {
+      // Store the target user ID for the users tab to pick up
+      try {
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("admin_navigate_to_user", uid);
+        }
+      } catch (err) {
+        logger.warn("Failed to persist admin user navigation target", { error: err });
+      }
+      setActiveTab("users");
+    },
+    [setActiveTab]
+  );
 
   // Export state
   const [exportTimeframe, setExportTimeframe] = useState<TimeframePreset>("24h");
@@ -643,6 +1081,9 @@ export function ErrorsTab() {
               </div>
             </div>
           </div>
+
+          {/* A21: User Correlation Section */}
+          <UserCorrelationSection onNavigateToUser={navigateToUser} />
         </>
       ) : (
         <div className="rounded-lg border border-amber-100 bg-white p-6 text-amber-700">

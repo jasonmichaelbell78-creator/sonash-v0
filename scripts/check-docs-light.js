@@ -645,6 +645,10 @@ function findMarkdownFiles(dir, files = []) {
         if (entry === "INDEX.md" && fullPath.includes("technical-debt")) {
           continue;
         }
+        // Skip auto-generated view files in technical-debt/views (managed by generate-views.js)
+        if (fullPath.includes("technical-debt") && fullPath.includes("views")) {
+          continue;
+        }
         files.push(fullPath);
       }
     } catch {
@@ -704,6 +708,11 @@ function resolveFileArgs(files) {
       // Review #193: Deduplicate to prevent linting same file multiple times
       if (seen.has(realResolved)) continue;
       seen.add(realResolved);
+
+      // Skip auto-generated view files in technical-debt/views (managed by generate-views.js)
+      if (resolvedPath.includes("technical-debt") && resolvedPath.includes("views")) {
+        continue;
+      }
 
       // Review #195: Return project-local canonical path for stable relative() output/logging
       resolved.push(resolvedPath);

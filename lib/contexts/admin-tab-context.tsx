@@ -12,6 +12,7 @@ export type AdminTabId =
   | "jobs"
   | "errors"
   | "logs"
+  | "analytics"
   | "meetings"
   | "sober-living"
   | "quotes"
@@ -75,6 +76,7 @@ export function AdminTabProvider({ children, defaultTab = "dashboard" }: AdminTa
       jobs: 0,
       errors: 0,
       logs: 0,
+      analytics: 0,
       meetings: 0,
       "sober-living": 0,
       quotes: 0,

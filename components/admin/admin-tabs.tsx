@@ -14,6 +14,7 @@ import { JobsTab } from "./jobs-tab";
 import { ErrorsTab } from "./errors-tab";
 import { LogsTab } from "./logs-tab";
 import { PrivilegesTab } from "./privileges-tab";
+import { AnalyticsTab } from "./analytics-tab";
 import { useAdminTabContext, type AdminTabId } from "@/lib/contexts/admin-tab-context";
 import {
   LayoutDashboard,
@@ -28,6 +29,7 @@ import {
   AlertTriangle,
   FileText,
   Shield,
+  BarChart3,
 } from "lucide-react";
 
 export function AdminTabs() {
@@ -44,6 +46,7 @@ export function AdminTabs() {
     { id: "jobs", label: "Jobs", icon: Clock },
     { id: "errors", label: "Errors", icon: AlertTriangle },
     { id: "logs", label: "Logs", icon: FileText },
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
   ];
 
   // Content tabs - content management
@@ -179,6 +182,15 @@ export function AdminTabs() {
           hidden={activeTab !== "logs"}
         >
           {activeTab === "logs" && <LogsTab />}
+        </div>
+
+        <div
+          role="tabpanel"
+          id="admin-panel-analytics"
+          aria-labelledby="admin-tab-analytics"
+          hidden={activeTab !== "analytics"}
+        >
+          {activeTab === "analytics" && <AnalyticsTab />}
         </div>
 
         <div

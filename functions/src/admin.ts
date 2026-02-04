@@ -9,7 +9,46 @@ import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https
 import { defineSecret, defineString } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { z } from "zod";
-import { logSecurityEvent, hashUserId, redactSensitiveMetadata } from "./security-logger";
+import {
+  logSecurityEvent,
+  hashUserId,
+  redactSensitiveMetadata,
+  sanitizeErrorMessage,
+} from "./security-logger";
+
+/**
+ * SEC-REVIEW: Validate that a value looks like a valid userIdHash (12-char hex)
+ * Prevents leaking raw user IDs if security_logs contains unhashed data
+ * @param value - Value to validate as hash
+ * @returns true if value matches expected hash format
+ */
+function isValidUserIdHash(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  // hashUserId produces exactly 12 hex characters
+  return /^[a-f0-9]{12}$/i.test(value);
+}
+
+/**
+ * SEC-REVIEW: Ensure a userId value is properly hashed before returning
+ * Only accept values that already look like a valid hash (normalized to lowercase).
+ * If historical data contains raw UIDs, returning a computed hash would not match
+ * the stored value in Firestore queries and would produce misleading correlations.
+ * @param value - Potential userId or userIdHash from security_logs
+ * @returns Validated hash or null
+ */
+function ensureUserIdHash(value: unknown): string | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value !== "string" || value.length === 0) return null;
+
+  // Only accept values that already look like a valid hash (normalized to lowercase).
+  // If historical data contains raw UIDs, returning a computed hash would not match
+  // the stored value in Firestore queries and would produce misleading correlations.
+  if (isValidUserIdHash(value)) {
+    return value.toLowerCase();
+  }
+
+  return null;
+}
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 
 /**
@@ -87,6 +126,67 @@ function safeToIso(value: unknown, fallback: string | null = null): string | nul
     }
   }
   return fallback;
+}
+
+/**
+ * Parse a date boundary (start or end) for inclusive range filtering
+ * If caller passes YYYY-MM-DD, treat it as a whole-day boundary in UTC
+ * @param raw - ISO date string (with or without time component)
+ * @param boundary - "start" for beginning of day, "end" for end of day
+ * @returns Firestore Timestamp
+ * @throws HttpsError if date format is invalid
+ */
+function parseDateBoundaryUtc(raw: string, boundary: "start" | "end"): FirebaseFirestore.Timestamp {
+  const trimmed = raw.trim();
+  const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(trimmed);
+
+  let iso: string;
+  if (isDateOnly) {
+    // If caller passes YYYY-MM-DD, treat it as a whole-day boundary in UTC
+    iso = boundary === "start" ? `${trimmed}T00:00:00.000Z` : `${trimmed}T23:59:59.999Z`;
+  } else {
+    // If caller provides datetime without timezone, treat as UTC to avoid env-dependent parsing
+    const hasTimezone = /([zZ]|[+-]\d{2}:\d{2})$/.test(trimmed);
+    iso = hasTimezone ? trimmed : `${trimmed}Z`;
+  }
+
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) {
+    throw new HttpsError(
+      "invalid-argument",
+      `Invalid ${boundary === "start" ? "startDate" : "endDate"} format`
+    );
+  }
+  return admin.firestore.Timestamp.fromDate(d);
+}
+
+/**
+ * ISSUE [14]: Get ISO-8601 week string (YYYY-Www) for a given date
+ * ISO-8601 week rules:
+ * - Week starts on Monday
+ * - Week 1 of a year is the week containing January 4 (or the first Thursday)
+ * @param date - Date to get the ISO week for
+ * @returns ISO week string in format YYYY-Www (e.g., "2024-W01")
+ */
+function getIsoWeekString(date: Date): string {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+
+  // ISO week date weeks start on Monday, so correct the day number (Mon=0..Sun=6)
+  const dayNum = (d.getUTCDay() + 6) % 7;
+  // Set to nearest Thursday (ISO week-year is the year of that Thursday)
+  d.setUTCDate(d.getUTCDate() - dayNum + 3);
+
+  const isoWeekYear = d.getUTCFullYear();
+
+  // Find first Thursday of the ISO week-year
+  const firstThursday = new Date(Date.UTC(isoWeekYear, 0, 4));
+  const firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
+
+  const diffMs = d.getTime() - firstThursday.getTime();
+  const weekNum = 1 + Math.floor(diffMs / 604800000);
+
+  return `${isoWeekYear}-W${String(weekNum).padStart(2, "0")}`;
 }
 
 // ============================================================================
@@ -652,7 +752,7 @@ export const adminSaveMeeting = onCall<SaveMeetingRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSaveMeeting", "Failed to save meeting", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to save meeting");
@@ -684,7 +784,7 @@ export const adminDeleteMeeting = onCall<DeleteMeetingRequest>(async (request) =
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminDeleteMeeting", "Failed to delete meeting", {
       userId: request.auth?.uid,
-      metadata: { meetingId, error: String(error) },
+      metadata: { meetingId, error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to delete meeting");
@@ -746,7 +846,7 @@ export const adminSaveSoberLiving = onCall<SaveSoberLivingRequest>(async (reques
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSaveSoberLiving", "Failed to save sober living home", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to save sober living home");
@@ -783,7 +883,7 @@ export const adminDeleteSoberLiving = onCall<DeleteSoberLivingRequest>(async (re
       "Failed to delete sober living home",
       {
         userId: request.auth?.uid,
-        metadata: { homeId, error: String(error) },
+        metadata: { homeId, error: sanitizeErrorMessage(error) },
         captureToSentry: true,
       }
     );
@@ -841,7 +941,7 @@ export const adminSaveQuote = onCall<SaveQuoteRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSaveQuote", "Failed to save quote", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to save quote");
@@ -873,7 +973,7 @@ export const adminDeleteQuote = onCall<DeleteQuoteRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminDeleteQuote", "Failed to delete quote", {
       userId: request.auth?.uid,
-      metadata: { quoteId, error: String(error) },
+      metadata: { quoteId, error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to delete quote");
@@ -904,7 +1004,7 @@ export const adminHealthCheck = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("HEALTH_CHECK_FAILURE", "adminHealthCheck", "Firestore health check failed", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
     });
   }
 
@@ -922,7 +1022,7 @@ export const adminHealthCheck = onCall(async (request) => {
         // Auth service is down
         logSecurityEvent("HEALTH_CHECK_FAILURE", "adminHealthCheck", "Auth health check failed", {
           userId: request.auth?.uid,
-          metadata: { error: String(error) },
+          metadata: { error: sanitizeErrorMessage(error) },
         });
       }
     }
@@ -1047,7 +1147,7 @@ export const adminGetDashboardStats = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetDashboardStats", "Failed to get dashboard stats", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get dashboard stats");
@@ -1121,7 +1221,7 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSearchUsers", "Failed to search users", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to search users");
@@ -1259,7 +1359,7 @@ export const adminGetUserDetail = onCall<GetUserDetailRequest>(async (request) =
 
     logSecurityEvent("ADMIN_ERROR", "adminGetUserDetail", "Failed to get user detail", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get user detail");
@@ -1320,7 +1420,7 @@ export const adminUpdateUser = onCall<UpdateUserRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminUpdateUser", "Failed to update user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to update user");
@@ -1387,7 +1487,7 @@ export const adminDisableUser = onCall<DisableUserRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminDisableUser", "Failed to disable/enable user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to update user status");
@@ -1506,7 +1606,7 @@ export const adminSoftDeleteUser = onCall<SoftDeleteUserRequest>(async (request)
 
     logSecurityEvent("ADMIN_ERROR", "adminSoftDeleteUser", "Failed to soft-delete user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to soft-delete user");
@@ -1656,7 +1756,7 @@ export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => 
 
     logSecurityEvent("ADMIN_ERROR", "adminUndeleteUser", "Failed to restore soft-deleted user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to restore user");
@@ -1750,8 +1850,8 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
       throw new HttpsError("not-found", `Job not found: ${jobId}`);
     }
 
-    // Run the job with tracking
-    await runJob(jobId, job.name, job.fn);
+    // Run the job with tracking (A20: pass triggeredBy for history)
+    await runJob(jobId, job.name, job.fn, { triggeredBy: "manual" });
 
     return {
       success: true,
@@ -1763,7 +1863,7 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
 
     logSecurityEvent("ADMIN_ERROR", "adminTriggerJob", "Failed to trigger job", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), jobId },
+      metadata: { error: sanitizeErrorMessage(error), jobId },
       captureToSentry: true,
     });
 
@@ -1855,10 +1955,238 @@ export const adminGetJobsStatus = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetJobsStatus", "Failed to get jobs status", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get jobs status");
+  }
+});
+
+// ============================================================================
+// A20: Job Run History Functions
+// ============================================================================
+
+/**
+ * Request parameters for job run history
+ */
+interface GetJobRunHistoryRequest {
+  jobId?: string; // Optional - if not provided, returns all jobs
+  status?: "success" | "failed"; // Optional filter
+  limit?: number; // Max results (default 50, max 200)
+  startDate?: string; // ISO date string
+  endDate?: string; // ISO date string
+}
+
+/**
+ * Job run history entry (returned to client)
+ */
+interface JobRunHistoryResponse {
+  runId: string;
+  jobId: string;
+  jobName: string;
+  startTime: string;
+  endTime: string;
+  status: "success" | "failed";
+  durationMs: number;
+  error?: string;
+  resultSummary?: Record<string, unknown>;
+  triggeredBy: "schedule" | "manual";
+}
+
+// ISSUE [4]: Add parameter validation for admin functions
+const getJobRunHistorySchema = z.object({
+  jobId: z.string().min(1).max(100).optional(),
+  status: z.enum(["success", "failed"]).optional(),
+  limit: z.number().int().min(1).max(200).optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
+
+/**
+ * A20: Admin: Get Job Run History
+ * Returns detailed history of job executions with filtering options
+ */
+export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (request) => {
+  await requireAdmin(request, "adminGetJobRunHistory");
+
+  // ISSUE [4]: Validate input parameters
+  const validationResult = getJobRunHistorySchema.safeParse(request.data ?? {});
+  if (!validationResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      validationResult.error.issues[0]?.message ?? "Invalid input"
+    );
+  }
+
+  const { jobId, status, limit = 50, startDate, endDate } = validationResult.data;
+
+  // Validate limit
+  const safeLimit = Math.min(Math.max(1, limit ?? 50), 200);
+
+  // ISSUE [6]: Cap total results to prevent excessive Firestore reads
+  const maxTotalResults = safeLimit * 2;
+
+  try {
+    const db = admin.firestore();
+    // ISSUE [5]: Use temporary type with sorting field for stable timestamp-based sorting
+    type JobRunWithSortKey = JobRunHistoryResponse & { _startTimeMillis: number };
+    const results: JobRunWithSortKey[] = [];
+
+    // Get job IDs to query
+    let jobIds: string[] = [];
+    const jobNames: Map<string, string> = new Map();
+
+    if (jobId) {
+      jobIds = [jobId];
+      // Fetch single job name
+      const jobDoc = await db.doc(`admin_jobs/${jobId}`).get();
+      jobNames.set(jobId, jobDoc.exists ? (jobDoc.data()?.name as string) || jobId : jobId);
+    } else {
+      // Get all job IDs from admin_jobs collection
+      // ISSUE [13]: Add limit to prevent unbounded query fan-out
+      const jobsSnapshot = await db.collection("admin_jobs").limit(200).get();
+
+      if (jobsSnapshot.size >= 200) {
+        throw new HttpsError(
+          "resource-exhausted",
+          "Too many jobs (200+). Please specify a jobId to query."
+        );
+      }
+
+      jobIds = jobsSnapshot.docs.map((doc) => doc.id);
+      // ISSUE [13]: Batch read job names to avoid N+1 queries
+      for (const doc of jobsSnapshot.docs) {
+        jobNames.set(doc.id, (doc.data()?.name as string) || doc.id);
+      }
+    }
+
+    // Query run history for each job
+    // NOTE: Cannot fully eliminate N queries here due to subcollection structure
+    // Each job's run_history is in a separate subcollection
+    // ISSUE [6]: Dynamic per-job limit to balance between single-job and multi-job queries
+    const perJobLimit = jobId
+      ? safeLimit
+      : Math.max(5, Math.ceil(safeLimit / Math.max(1, jobIds.length)));
+
+    // Hard cap on fan-out to keep reads bounded even when many jobs have no history.
+    const maxJobsToQuery = jobId ? jobIds.length : Math.min(jobIds.length, 25);
+
+    for (const jId of jobIds.slice(0, maxJobsToQuery)) {
+      // ISSUE [6]: Break early if we've hit the total results cap
+      if (results.length >= maxTotalResults) break;
+
+      const jobName = jobNames.get(jId) || jId;
+
+      let query: FirebaseFirestore.Query = db
+        .collection(`admin_jobs/${jId}/run_history`)
+        .orderBy("startTime", "desc");
+
+      // Apply status filter
+      if (status) {
+        query = query.where("status", "==", status);
+      }
+
+      // Apply date filters
+      // ISSUE [16]: Validate date inputs before using in queries
+      // ISSUE [1]: Use inclusive date range filtering
+      let startTimestamp: FirebaseFirestore.Timestamp | undefined;
+      let endTimestamp: FirebaseFirestore.Timestamp | undefined;
+
+      if (startDate) {
+        startTimestamp = parseDateBoundaryUtc(startDate, "start");
+        query = query.where("startTime", ">=", startTimestamp);
+      }
+
+      if (endDate) {
+        endTimestamp = parseDateBoundaryUtc(endDate, "end");
+        query = query.where("startTime", "<=", endTimestamp);
+      }
+
+      // ISSUE [9]: Reject invalid date ranges
+      if (startTimestamp && endTimestamp && endTimestamp.toMillis() < startTimestamp.toMillis()) {
+        throw new HttpsError("invalid-argument", "endDate must be after startDate");
+      }
+
+      // ISSUE [6]: Use dynamic per-job limit
+      query = query.limit(perJobLimit);
+
+      const historySnapshot = await query.get();
+
+      for (const doc of historySnapshot.docs) {
+        const data = doc.data();
+        // ISSUE [5]: Store timestamp before converting to ISO string for stable sorting
+        const startTimeMillis = data.startTime?.toMillis ? data.startTime.toMillis() : 0;
+
+        // ISSUE [8]: Coerce invalid persisted values safely
+        // Defense-in-depth: validate fields read from Firestore to handle legacy/corrupted data
+        const validStatuses = ["success", "failed"] as const;
+        const validTriggers = ["schedule", "manual"] as const;
+        const rawStatus = data.status;
+        const rawDuration = data.durationMs;
+        const rawTriggeredBy = data.triggeredBy;
+
+        const status: "success" | "failed" = validStatuses.includes(rawStatus)
+          ? rawStatus
+          : "failed"; // Default to failed for unknown status (safer assumption)
+        const durationMs =
+          typeof rawDuration === "number" && rawDuration >= 0 && Number.isFinite(rawDuration)
+            ? rawDuration
+            : 0;
+        const triggeredBy: "schedule" | "manual" = validTriggers.includes(rawTriggeredBy)
+          ? rawTriggeredBy
+          : "schedule";
+
+        results.push({
+          runId: data.runId || doc.id,
+          jobId: jId,
+          jobName,
+          startTime: safeToIso(data.startTime, ""),
+          endTime: safeToIso(data.endTime, ""),
+          status,
+          durationMs,
+          // ISSUE [2]: Sanitize error message before returning to client
+          // Defense-in-depth: sanitize on read in case data was stored before sanitization was added
+          // OWASP A01:2021 - Prevents sensitive data exposure via error messages
+          error: data.error ? sanitizeErrorMessage(data.error) : undefined,
+          resultSummary: data.resultSummary,
+          triggeredBy,
+          _startTimeMillis: startTimeMillis, // Internal field for sorting
+        });
+      }
+    }
+
+    // ISSUE [5]: Sort by Firestore timestamp (milliseconds) instead of ISO string
+    results.sort((a, b) => (b._startTimeMillis || 0) - (a._startTimeMillis || 0));
+
+    // Remove internal sorting field before returning
+    const limitedResults: JobRunHistoryResponse[] = results.slice(0, safeLimit).map((r) => {
+      const { _startTimeMillis, ...rest } = r;
+      return rest;
+    });
+
+    // ISSUE [3]: Log successful admin access
+    logSecurityEvent("ADMIN_ACTION", "adminGetJobRunHistory", "Retrieved job run history", {
+      userId: request.auth?.uid,
+      severity: "INFO",
+      metadata: {
+        action: "adminGetJobRunHistory",
+        jobId: jobId || "all",
+        runCount: limitedResults.length,
+      },
+    });
+
+    return {
+      runs: limitedResults,
+      totalCount: limitedResults.length,
+      hasMore: results.length > safeLimit,
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetJobRunHistory", "Failed to get job run history", {
+      userId: request.auth?.uid,
+      metadata: { error: sanitizeErrorMessage(error), jobId },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get job run history");
   }
 });
 
@@ -1952,7 +2280,11 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
       "ADMIN_ERROR",
       "adminGetSentryErrorSummary",
       "Failed to fetch Sentry error summary",
-      { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
+      {
+        userId: request.auth?.uid,
+        metadata: { error: sanitizeErrorMessage(error) },
+        captureToSentry: true,
+      }
     );
     throw new HttpsError("internal", "Failed to fetch Sentry error summary");
   }
@@ -2110,10 +2442,387 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetLogs", "Failed to get logs", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get logs");
+  }
+});
+
+// ============================================================================
+// A21: Error → User Correlation Functions
+// ============================================================================
+
+/**
+ * A21: Request for errors with user correlation
+ */
+interface GetErrorsWithUsersRequest {
+  limit?: number;
+  hoursBack?: number;
+}
+
+/**
+ * A21: Error with user correlation data
+ */
+interface ErrorWithUserCorrelation {
+  id: string;
+  type: string;
+  message: string;
+  timestamp: string;
+  functionName: string;
+  userIdHash: string | null;
+  severity: "ERROR" | "WARNING";
+  metadata?: Record<string, unknown>;
+}
+
+// ISSUE [4]: Add parameter validation for adminGetErrorsWithUsers
+const getErrorsWithUsersSchema = z.object({
+  limit: z.number().int().min(1).max(100).optional(),
+  hoursBack: z.number().int().min(1).max(168).optional(),
+});
+
+/**
+ * A21: Admin: Get Errors with User Correlation
+ * Returns errors from security_logs with userIdHash for correlation
+ */
+export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (request) => {
+  await requireAdmin(request, "adminGetErrorsWithUsers");
+
+  // ISSUE [4]: Validate input parameters
+  const validationResult = getErrorsWithUsersSchema.safeParse(request.data ?? {});
+  if (!validationResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      validationResult.error.issues[0]?.message ?? "Invalid input"
+    );
+  }
+
+  const { limit = 50, hoursBack = 24 } = validationResult.data;
+
+  // Validate inputs (already validated by Zod schema, but keeping safe defaults)
+  const safeLimit = Math.min(Math.max(1, limit ?? 50), 100);
+  const safeHoursBack = Math.min(Math.max(1, hoursBack ?? 24), 168); // Max 7 days
+
+  try {
+    const db = admin.firestore();
+    const cutoff = new Date(Date.now() - safeHoursBack * 60 * 60 * 1000);
+    const cutoffTimestamp = admin.firestore.Timestamp.fromDate(cutoff);
+
+    // Query for ERROR events in the time range
+    const snapshot = await db
+      .collection("security_logs")
+      .where("severity", "in", ["ERROR", "WARNING"])
+      .where("timestamp", ">=", cutoffTimestamp)
+      .orderBy("timestamp", "desc")
+      .limit(safeLimit)
+      .get();
+
+    // Cap metadata payload size to prevent large responses (2KB per item)
+    const MAX_METADATA_SIZE = 2048;
+    const capMetadata = (
+      metadata: Record<string, unknown> | undefined
+    ): Record<string, unknown> | undefined => {
+      if (!metadata) return undefined;
+      try {
+        const str = JSON.stringify(metadata);
+        if (str.length <= MAX_METADATA_SIZE) return metadata;
+        // Truncate and indicate overflow
+        return { _truncated: true, _originalSize: str.length };
+      } catch {
+        // If metadata isn't serializable (e.g., circular), don't fail the request
+        return { _truncated: true, _reason: "non_serializable" };
+      }
+    };
+
+    const errors: ErrorWithUserCorrelation[] = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      // Guard metadata shape before processing with try/catch for corrupted data
+      let processedMetadata: Record<string, unknown> | undefined;
+      try {
+        const jsonSafe = data.metadata
+          ? toJsonSafe(redactSensitiveMetadata(data.metadata))
+          : undefined;
+        processedMetadata =
+          jsonSafe && typeof jsonSafe === "object" && !Array.isArray(jsonSafe)
+            ? capMetadata(jsonSafe as Record<string, unknown>)
+            : undefined;
+      } catch {
+        // Best-effort: don't fail the whole response on bad/corrupt metadata
+        processedMetadata = { _truncated: true, _reason: "metadata_processing_failed" };
+      }
+      return {
+        id: doc.id,
+        type: data.type || "UNKNOWN",
+        message: sanitizeErrorMessage(data.message || ""),
+        timestamp: safeToIso(data.timestamp, ""),
+        functionName: data.functionName || "unknown",
+        userIdHash: ensureUserIdHash(data.userId), // SEC-REVIEW: Validate hash format to prevent raw UID leakage
+        severity: data.severity === "ERROR" ? "ERROR" : "WARNING",
+        metadata: processedMetadata,
+      };
+    });
+
+    // Group by userIdHash to count affected users
+    const userHashes = new Set(errors.filter((e) => e.userIdHash).map((e) => e.userIdHash));
+
+    // ISSUE [3]: Log successful admin access
+    logSecurityEvent(
+      "ADMIN_ACTION",
+      "adminGetErrorsWithUsers",
+      "Retrieved errors with user correlation",
+      {
+        userId: request.auth?.uid,
+        severity: "INFO",
+        metadata: {
+          action: "adminGetErrorsWithUsers",
+          errorCount: errors.length,
+          uniqueUsers: userHashes.size,
+        },
+      }
+    );
+
+    return {
+      errors,
+      totalCount: errors.length,
+      uniqueUsers: userHashes.size,
+      timeRange: {
+        from: cutoff.toISOString(),
+        to: new Date().toISOString(),
+      },
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetErrorsWithUsers", "Failed to get errors with users", {
+      userId: request.auth?.uid,
+      metadata: { error: sanitizeErrorMessage(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get errors with user correlation");
+  }
+});
+
+/**
+ * A21: Request for user activity timeline
+ */
+interface GetUserActivityRequest {
+  userIdHash: string;
+  hoursBack?: number;
+  limit?: number;
+}
+
+/**
+ * A21: User activity entry
+ */
+interface UserActivityEntry {
+  id: string;
+  type: string;
+  functionName: string;
+  message: string;
+  timestamp: string;
+  severity: "INFO" | "WARNING" | "ERROR";
+}
+
+// ISSUE [4]: Add parameter validation for admin functions
+// ISSUE [7]: Make regex case-insensitive to accept uppercase hex
+const getUserActivitySchema = z.object({
+  userIdHash: z.string().regex(/^[0-9a-fA-F]{12}$/, "Must be a 12-character hex hash"),
+  hoursBack: z.number().int().min(1).max(168).optional(),
+  limit: z.number().int().min(1).max(100).optional(),
+});
+
+/**
+ * A21: Admin: Get User Activity Timeline
+ * Returns recent actions for a user (by hashed ID) to help correlate with errors
+ */
+export const adminGetUserActivityByHash = onCall<GetUserActivityRequest>(async (request) => {
+  await requireAdmin(request, "adminGetUserActivityByHash");
+
+  // ISSUE [4]: Validate input parameters
+  const validationResult = getUserActivitySchema.safeParse(request.data ?? {});
+  if (!validationResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      validationResult.error.issues[0]?.message ?? "Invalid input"
+    );
+  }
+
+  const { userIdHash: rawUserIdHash, hoursBack = 24, limit: rawLimit = 50 } = validationResult.data;
+
+  // ISSUE [7]: Normalize userIdHash to lowercase for consistent lookups
+  const userIdHash = rawUserIdHash.toLowerCase();
+
+  // Validate inputs (already validated by Zod schema, but keeping safe defaults)
+  const safeLimit = Math.min(Math.max(1, rawLimit ?? 50), 100);
+  const safeHoursBack = Math.min(Math.max(1, hoursBack ?? 24), 168);
+
+  try {
+    const db = admin.firestore();
+    const cutoff = new Date(Date.now() - safeHoursBack * 60 * 60 * 1000);
+    const cutoffTimestamp = admin.firestore.Timestamp.fromDate(cutoff);
+
+    // Query for user's activity (userIdHash already validated above)
+    const snapshot = await db
+      .collection("security_logs")
+      .where("userId", "==", userIdHash)
+      .where("timestamp", ">=", cutoffTimestamp)
+      .orderBy("timestamp", "desc")
+      .limit(safeLimit)
+      .get();
+
+    const activities: UserActivityEntry[] = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        type: data.type || "UNKNOWN",
+        functionName: data.functionName || "unknown",
+        message: sanitizeErrorMessage(data.message || ""),
+        timestamp: safeToIso(data.timestamp, ""),
+        severity:
+          data.severity === "ERROR" ? "ERROR" : data.severity === "WARNING" ? "WARNING" : "INFO",
+      };
+    });
+
+    // Group by type for summary
+    const activityByType = activities.reduce(
+      (acc, a) => {
+        acc[a.type] = (acc[a.type] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
+    // ISSUE [3]: Log successful admin access
+    logSecurityEvent(
+      "ADMIN_ACTION",
+      "adminGetUserActivityByHash",
+      "Retrieved user activity by hash",
+      {
+        userId: request.auth?.uid,
+        severity: "INFO",
+        metadata: {
+          action: "adminGetUserActivityByHash",
+          targetUserHash: userIdHash,
+          activityCount: activities.length,
+        },
+      }
+    );
+
+    return {
+      userIdHash,
+      activities,
+      totalCount: activities.length,
+      activityByType,
+      timeRange: {
+        from: cutoff.toISOString(),
+        to: new Date().toISOString(),
+      },
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetUserActivityByHash", "Failed to get user activity", {
+      userId: request.auth?.uid,
+      metadata: { error: sanitizeErrorMessage(error), targetUserHash: userIdHash },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get user activity");
+  }
+});
+
+/**
+ * A21: Request to find user by hash prefix (for navigation)
+ */
+interface FindUserByHashRequest {
+  userIdHash: string;
+}
+
+// ISSUE [4]: Add parameter validation for admin functions
+// ISSUE [7]: Make regex case-insensitive to accept uppercase hex
+const findUserByHashSchema = z.object({
+  userIdHash: z.string().regex(/^[0-9a-fA-F]{12}$/, "Must be a 12-character hex hash"),
+});
+
+/**
+ * A21: Admin: Find User by Hash
+ * Attempts to find a user by their hashed ID (matches first 12 chars)
+ * Returns basic user info for navigation to user details
+ */
+export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request) => {
+  await requireAdmin(request, "adminFindUserByHash");
+
+  // ISSUE [4]: Validate input parameters
+  const validationResult = findUserByHashSchema.safeParse(request.data ?? {});
+  if (!validationResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      validationResult.error.issues[0]?.message ?? "Invalid input"
+    );
+  }
+
+  const { userIdHash: rawUserIdHash } = validationResult.data;
+
+  // ISSUE [7]: Normalize userIdHash to lowercase for consistent lookups
+  const userIdHash = rawUserIdHash.toLowerCase();
+
+  try {
+    const db = admin.firestore();
+
+    // Get all users and compute their hashes
+    // ISSUE [12]: This is O(n) but necessary since we store hashes not UIDs in logs
+    // TODO: Create a userIdHash → uid lookup collection for better performance
+    // SAFEGUARD: Limited to 1000 users to prevent excessive memory usage and timeouts
+    const usersSnapshot = await db.collection("users").limit(1000).get();
+
+    for (const userDoc of usersSnapshot.docs) {
+      const uid = userDoc.id;
+      const computed = hashUserId(uid).toLowerCase();
+      if (computed === userIdHash) {
+        const data = userDoc.data();
+
+        // ISSUE [3]: Log successful admin access
+        logSecurityEvent("ADMIN_ACTION", "adminFindUserByHash", "Found user by hash", {
+          userId: request.auth?.uid,
+          severity: "INFO",
+          metadata: { action: "adminFindUserByHash", targetUserHash: userIdHash, found: true },
+        });
+
+        return {
+          found: true,
+          user: {
+            uid,
+            nickname: data.nickname || "Unknown",
+            email: data.email ? `${data.email.slice(0, 3)}***` : null, // Partially redact
+            createdAt: safeToIso(data.createdAt, null),
+            lastActive: safeToIso(data.lastActive, null),
+          },
+        };
+      }
+    }
+
+    // ISSUE [12]: If we scanned the maximum allowed users without finding a match,
+    // throw resource-exhausted to prevent false negatives
+    if (usersSnapshot.size === 1000) {
+      throw new HttpsError(
+        "resource-exhausted",
+        "User lookup scanned 1000 users without a match; results may be incomplete. Please add a hash→uid index."
+      );
+    }
+
+    // ISSUE [3]: Log successful admin access (user not found)
+    logSecurityEvent("ADMIN_ACTION", "adminFindUserByHash", "User lookup by hash - not found", {
+      userId: request.auth?.uid,
+      severity: "INFO",
+      metadata: { action: "adminFindUserByHash", targetUserHash: userIdHash, found: false },
+    });
+
+    return {
+      found: false,
+      user: null,
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminFindUserByHash", "Failed to find user by hash", {
+      userId: request.auth?.uid,
+      metadata: { error: sanitizeErrorMessage(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to find user");
   }
 });
 
@@ -2210,7 +2919,7 @@ export const adminGetPrivilegeTypes = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetPrivilegeTypes", "Failed to get privilege types", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get privilege types");
@@ -2335,7 +3044,7 @@ export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (re
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSavePrivilegeType", "Failed to save privilege type", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to save privilege type");
@@ -2409,7 +3118,7 @@ export const adminDeletePrivilegeType = onCall<DeletePrivilegeTypeRequest>(async
     if (error instanceof HttpsError) throw error;
     logSecurityEvent("ADMIN_ERROR", "adminDeletePrivilegeType", "Failed to delete privilege type", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to delete privilege type");
@@ -2519,7 +3228,7 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
     if (error instanceof HttpsError) throw error;
     logSecurityEvent("ADMIN_ERROR", "adminSetUserPrivilege", "Failed to set user privilege", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      metadata: { error: sanitizeErrorMessage(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to set user privilege");
@@ -2618,7 +3327,7 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminListUsers", "Failed to list users", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to list users");
@@ -2841,7 +3550,7 @@ export const adminGetStorageStats = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetStorageStats", "Failed to get storage stats", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get storage statistics");
@@ -2950,7 +3659,7 @@ export const adminGetRateLimitStatus = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetRateLimitStatus", "Failed to get rate limit status", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get rate limit status");
@@ -3004,7 +3713,7 @@ export const adminClearRateLimit = onCall<ClearRateLimitRequest>(async (request)
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminClearRateLimit", "Failed to clear rate limit", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), rateLimitKeyHash: hashedKey },
+      metadata: { error: sanitizeErrorMessage(error), rateLimitKeyHash: hashedKey },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to clear rate limit");
@@ -3103,9 +3812,297 @@ export const adminGetCollectionStats = onCall(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetCollectionStats", "Failed to get collection stats", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
+      metadata: { error: sanitizeErrorMessage(error) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get collection statistics");
+  }
+});
+
+// ============================================================================
+// A19: User Analytics Tab - Cloud Function
+// ============================================================================
+
+/**
+ * Analytics trend data point
+ */
+interface AnalyticsTrendPoint {
+  date: string;
+  activeUsers: number;
+  newUsers: number;
+  journalEntries: number;
+  checkIns: number;
+}
+
+/**
+ * Cohort retention data
+ */
+interface CohortRetention {
+  cohortWeek: string; // YYYY-WW format
+  cohortSize: number;
+  week1Retention: number; // percentage
+  week2Retention: number;
+  week4Retention: number;
+}
+
+/**
+ * Feature usage summary
+ */
+interface FeatureUsage {
+  feature: string;
+  last7Days: number;
+  last30Days: number;
+  trend: "up" | "down" | "stable";
+}
+
+/**
+ * Admin: Get User Analytics
+ * Returns DAU/WAU/MAU trends, retention metrics, and feature usage
+ * A19: User Analytics Tab implementation
+ */
+export const adminGetUserAnalytics = onCall(async (request) => {
+  await requireAdmin(request, "adminGetUserAnalytics");
+
+  try {
+    const db = admin.firestore();
+    const now = new Date();
+
+    // ========================================
+    // 1. Fetch historical analytics data (last 90 days)
+    // ========================================
+    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split("T")[0];
+
+    const analyticsSnapshot = await db
+      .collection("analytics_daily")
+      .where("date", ">=", ninetyDaysAgoStr)
+      .orderBy("date", "asc")
+      .get();
+
+    // Helper to safely coerce Firestore values to non-negative numbers
+    const asNumber = (v: unknown): number =>
+      typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : 0;
+
+    const dailyTrends: AnalyticsTrendPoint[] = analyticsSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        date: typeof data.date === "string" && data.date.length > 0 ? data.date : doc.id,
+        activeUsers: asNumber(data.activeUsers),
+        newUsers: asNumber(data.newUsers),
+        journalEntries: asNumber(data.journalEntries),
+        checkIns: asNumber(data.checkIns),
+      };
+    });
+
+    // ========================================
+    // 2. Calculate WAU/MAU from daily data
+    // ========================================
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    // Current DAU/WAU/MAU
+    const [dauQuery, wauQuery, mauQuery] = await Promise.all([
+      db
+        .collection("users")
+        .where(
+          "lastActive",
+          ">=",
+          admin.firestore.Timestamp.fromDate(new Date(now.getTime() - 24 * 60 * 60 * 1000))
+        )
+        .count()
+        .get(),
+      db
+        .collection("users")
+        .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+        .count()
+        .get(),
+      db
+        .collection("users")
+        .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(thirtyDaysAgo))
+        .count()
+        .get(),
+    ]);
+
+    const currentMetrics = {
+      dau: dauQuery.data().count,
+      wau: wauQuery.data().count,
+      mau: mauQuery.data().count,
+    };
+
+    // ========================================
+    // 3. Calculate cohort retention (simplified)
+    // ========================================
+    // ISSUE [14]: This section makes multiple queries per cohort (up to 4 * 8 = 32 queries)
+    // OPTIMIZATION TODO: Consider pre-computing cohort retention in a daily job
+    // and storing results in analytics_cohorts collection to avoid real-time computation
+    const cohortRetention: CohortRetention[] = [];
+
+    // Get users grouped by signup week for last 8 weeks
+    for (let weekOffset = 8; weekOffset >= 1; weekOffset--) {
+      const weekStart = new Date(now.getTime() - weekOffset * 7 * 24 * 60 * 60 * 1000);
+      const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+      // Get cohort size (users who signed up in this week)
+      const cohortQuery = await db
+        .collection("users")
+        .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(weekStart))
+        .where("createdAt", "<", admin.firestore.Timestamp.fromDate(weekEnd))
+        .count()
+        .get();
+
+      const cohortSize = cohortQuery.data().count;
+      if (cohortSize === 0) continue;
+
+      // Calculate retention for week 1, 2, and 4 (users still active)
+      // ISSUE [7]: Use weekStart instead of weekEnd for correct threshold calculation
+      const week1Threshold = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const week2Threshold = new Date(weekStart.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const week4Threshold = new Date(weekStart.getTime() + 28 * 24 * 60 * 60 * 1000);
+
+      // Helper to create retention count query
+      const makeRetentionCountQuery = (threshold: Date) =>
+        db
+          .collection("users")
+          .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(weekStart))
+          .where("createdAt", "<", admin.firestore.Timestamp.fromDate(weekEnd))
+          .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(threshold))
+          .count()
+          .get();
+
+      // Run retention queries in parallel for better performance
+      // Wrapped in try/catch to make this best-effort (missing indexes shouldn't crash analytics)
+      let retentionResults: [
+        Awaited<ReturnType<typeof makeRetentionCountQuery>> | null,
+        Awaited<ReturnType<typeof makeRetentionCountQuery>> | null,
+        Awaited<ReturnType<typeof makeRetentionCountQuery>> | null,
+      ] = [null, null, null];
+
+      try {
+        retentionResults = await Promise.all([
+          week1Threshold <= now ? makeRetentionCountQuery(week1Threshold) : Promise.resolve(null),
+          week2Threshold <= now ? makeRetentionCountQuery(week2Threshold) : Promise.resolve(null),
+          week4Threshold <= now ? makeRetentionCountQuery(week4Threshold) : Promise.resolve(null),
+        ]);
+      } catch (err) {
+        logSecurityEvent("ADMIN_ERROR", "adminGetUserAnalytics", "Cohort retention query failed", {
+          userId: request.auth?.uid,
+          severity: "WARNING",
+          metadata: { error: sanitizeErrorMessage(err), cohortWeek: weekStart.toISOString() },
+        });
+      }
+
+      const [week1Active, week2Active, week4Active] = retentionResults;
+
+      const week1Retention = week1Active
+        ? Math.round((week1Active.data().count / cohortSize) * 100)
+        : 0;
+      const week2Retention = week2Active
+        ? Math.round((week2Active.data().count / cohortSize) * 100)
+        : 0;
+      const week4Retention = week4Active
+        ? Math.round((week4Active.data().count / cohortSize) * 100)
+        : 0;
+
+      // ISSUE [14]: Format cohort week as YYYY-WW using proper ISO-8601 week calculation
+      // ISO-8601: Week starts Monday, Week 1 contains Jan 4
+      const cohortWeek = getIsoWeekString(weekStart);
+
+      cohortRetention.push({
+        cohortWeek,
+        cohortSize,
+        week1Retention,
+        week2Retention,
+        week4Retention,
+      });
+    }
+
+    // ========================================
+    // 4. Feature usage from security logs (parallelized)
+    // ========================================
+    const featureQueries = [
+      { name: "Journal Entries", type: "SAVE_SUCCESS", fn: "saveJournalEntry" },
+      { name: "Daily Check-ins", type: "SAVE_SUCCESS", fn: "saveDailyLog" },
+      { name: "Meetings Viewed", type: "READ_SUCCESS", fn: "getMeetings" },
+      { name: "Resources Accessed", type: "READ_SUCCESS", fn: "getLibraryItems" },
+    ];
+
+    // Run all feature queries in parallel for better performance
+    const featureUsage: FeatureUsage[] = await Promise.all(
+      featureQueries.map(async (feature) => {
+        const [last7Query, last30Query, prev7Query] = await Promise.all([
+          db
+            .collection("security_logs")
+            .where("type", "==", feature.type)
+            .where("functionName", "==", feature.fn)
+            .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+            .count()
+            .get(),
+          db
+            .collection("security_logs")
+            .where("type", "==", feature.type)
+            .where("functionName", "==", feature.fn)
+            .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(thirtyDaysAgo))
+            .count()
+            .get(),
+          // Previous 7 days for trend calculation
+          db
+            .collection("security_logs")
+            .where("type", "==", feature.type)
+            .where("functionName", "==", feature.fn)
+            .where(
+              "timestamp",
+              ">=",
+              admin.firestore.Timestamp.fromDate(
+                new Date(sevenDaysAgo.getTime() - 7 * 24 * 60 * 60 * 1000)
+              )
+            )
+            .where("timestamp", "<", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+            .count()
+            .get(),
+        ]);
+
+        const last7 = last7Query.data().count;
+        const last30 = last30Query.data().count;
+        const prev7 = prev7Query.data().count;
+
+        // Calculate trend
+        let trend: "up" | "down" | "stable" = "stable";
+        if (last7 > prev7 * 1.1) trend = "up";
+        else if (last7 < prev7 * 0.9) trend = "down";
+
+        return {
+          feature: feature.name,
+          last7Days: last7,
+          last30Days: last30,
+          trend,
+        };
+      })
+    );
+
+    // ========================================
+    // 5. Return analytics data
+    // ========================================
+
+    // ISSUE [3]: Log successful admin access
+    logSecurityEvent("ADMIN_ACTION", "adminGetUserAnalytics", "Retrieved user analytics", {
+      userId: request.auth?.uid,
+      severity: "INFO",
+      metadata: { action: "adminGetUserAnalytics", trendPoints: dailyTrends.length },
+    });
+
+    return {
+      currentMetrics,
+      dailyTrends,
+      cohortRetention,
+      featureUsage,
+      generatedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetUserAnalytics", "Failed to get user analytics", {
+      userId: request.auth?.uid,
+      metadata: { error: sanitizeErrorMessage(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get user analytics");
   }
 });
