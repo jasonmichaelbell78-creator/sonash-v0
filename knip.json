@@ -28,7 +28,9 @@
     "react-resizable-panels",
     "recharts",
     "vaul",
-    "lint-staged"
+    "lint-staged",
+    "@firebase/rules-unit-testing",
+    "msw"
   ],
   "ignoreBinaries": ["printf", "report"],
   "next": {

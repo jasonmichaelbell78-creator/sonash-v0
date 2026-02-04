@@ -266,7 +266,7 @@ export function AnalyticsTab() {
       setData(result.data);
     } catch (err) {
       logger.error("Failed to load user analytics", { error: err });
-      setError(err instanceof Error ? err.message : "Failed to load analytics");
+      setError("Failed to load analytics. Please try again later.");
     } finally {
       setLoading(false);
     }

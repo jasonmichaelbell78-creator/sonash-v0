@@ -66,11 +66,15 @@ interface JobRunHistoryResponse {
  */
 function sanitizeErrorMessage(error: string): string {
   // Remove stack traces
-  const stackTracePattern = /\s+at\s+.*/g;
+  // SECURITY: Use [^\n]* instead of .* to prevent ReDoS (SonarCloud S5852)
+  // The greedy .* can cause catastrophic backtracking on malicious input
+  const stackTracePattern = /\s+at\s+[^\n]*/g;
   let sanitized = error.replace(stackTracePattern, "");
 
   // Remove file paths
-  const filePathPattern = /\/[\w\-./]+\.(js|ts|tsx|jsx):\d+:\d+/g;
+  // SECURITY: Use {1,500} length limit to prevent ReDoS (SonarCloud S5852)
+  // Unbounded [\w\-./]+ can cause catastrophic backtracking on malicious input
+  const filePathPattern = /\/[\w\-./]{1,500}\.(js|ts|tsx|jsx):\d+:\d+/g;
   sanitized = sanitized.replace(filePathPattern, "");
 
   // Remove Firebase-specific error prefixes
@@ -197,17 +201,21 @@ function JobRunHistoryPanel({
   }, [loadHistory]);
 
   const downloadHistory = () => {
-    const dataStr = JSON.stringify(history, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `job-history-${jobId}-${new Date().toISOString().split("T")[0]}.json`;
-    // ISSUE [15]: Append to DOM for cross-browser compatibility
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    let url: string | null = null;
+    let a: HTMLAnchorElement | null = null;
+    try {
+      const dataStr = JSON.stringify(history, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      url = URL.createObjectURL(blob);
+      a = document.createElement("a");
+      a.href = url;
+      a.download = `job-history-${jobId}-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+    } finally {
+      if (a?.parentNode) document.body.removeChild(a);
+      if (url) URL.revokeObjectURL(url);
+    }
   };
 
   return (

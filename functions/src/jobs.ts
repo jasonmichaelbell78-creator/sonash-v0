@@ -14,7 +14,12 @@
 
 import * as admin from "firebase-admin";
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { logSecurityEvent, hashUserId, redactSensitiveMetadata } from "./security-logger";
+import {
+  logSecurityEvent,
+  hashUserId,
+  redactSensitiveMetadata,
+  sanitizeErrorMessage,
+} from "./security-logger";
 import { randomBytes } from "crypto";
 import type { File, Bucket } from "@google-cloud/storage";
 
@@ -369,7 +374,10 @@ export async function runJob(
 
     const duration = Date.now() - startTime;
     // ISSUE [22]: Sanitize job result before persisting to prevent sensitive data leaks
-    const resultSummary = redactSensitiveMetadata((result as Record<string, unknown>) ?? {});
+    const resultSummary =
+      result && typeof result === "object"
+        ? redactSensitiveMetadata(result as Record<string, unknown>)
+        : {};
 
     // Update with success status
     await jobRef.set(
@@ -393,8 +401,8 @@ export async function runJob(
       triggeredBy,
     };
 
-    // Non-blocking history save (don't fail job if history write fails)
-    jobRef
+    // Best-effort history save (don't fail job if history write fails)
+    await jobRef
       .collection("run_history")
       .doc(runId)
       .set(historyEntry)
@@ -418,6 +426,9 @@ export async function runJob(
     jobError = error; // Capture the original error
     const duration = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : String(error);
+    // ISSUE [1,2]: Sanitize error message before persisting to prevent PII/secrets exposure
+    // OWASP A01:2021 - Prevents sensitive data in error messages from being stored
+    const sanitizedError = sanitizeErrorMessage(errorMessage);
 
     // Nested try/catch to prevent losing original error
     try {
@@ -425,7 +436,7 @@ export async function runJob(
         {
           lastRunStatus: "failed",
           lastRunDuration: duration,
-          lastError: errorMessage,
+          lastError: sanitizedError,
         },
         { merge: true }
       );
@@ -437,12 +448,12 @@ export async function runJob(
         endTime: admin.firestore.FieldValue.serverTimestamp(),
         status: "failed",
         durationMs: duration,
-        error: errorMessage,
+        error: sanitizedError,
         triggeredBy,
       };
 
-      // Non-blocking history save
-      jobRef
+      // Best-effort history save
+      await jobRef
         .collection("run_history")
         .doc(runId)
         .set(historyEntry)

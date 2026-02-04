@@ -319,6 +319,7 @@ function UserActivityModal({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
     async function loadData() {
       setLoading(true);
       setError(null);
@@ -337,18 +338,25 @@ function UserActivityModal({
           )({ userIdHash }),
         ]);
 
+        if (!isMounted) return;
         setActivity(activityResult.data);
         if (userResult.data.found && userResult.data.user) {
           setFoundUser(userResult.data.user);
         }
       } catch (err) {
         logger.error("Failed to load user activity", { error: err, userIdHash });
-        setError(err instanceof Error ? err.message : "Failed to load activity");
+        if (!isMounted) return;
+        setError("Failed to load activity. Please try again later.");
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
     loadData();
+    return () => {
+      isMounted = false;
+    };
   }, [userIdHash]);
 
   // ISSUE [17]: Add Escape key handler for modal accessibility

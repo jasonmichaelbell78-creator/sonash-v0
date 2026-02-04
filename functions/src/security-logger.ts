@@ -413,3 +413,77 @@ export function initSentry(dsn: string): void {
 export async function flushSentry(): Promise<void> {
   await Sentry.close(2000);
 }
+
+/**
+ * Sanitize error messages before persisting to Firestore or returning to clients
+ * SECURITY: Prevents sensitive data (stack traces, file paths, PII) from being exposed
+ * OWASP: A01:2021 - Broken Access Control (information disclosure)
+ *
+ * @param error - Error message string to sanitize
+ * @param maxLength - Maximum length of the sanitized message (default: 500)
+ * @returns Sanitized error message safe for storage/display
+ */
+export function sanitizeErrorMessage(error: string | unknown, maxLength = 500): string {
+  // Handle non-string input
+  if (error === null || error === undefined) {
+    return "An error occurred";
+  }
+
+  let message: string;
+  if (typeof error === "string") {
+    message = error;
+  } else if (error instanceof Error) {
+    message = error.message;
+  } else {
+    message = String(error);
+  }
+
+  // SECURITY: Cap input length first to prevent ReDoS on large payloads
+  const MAX_INPUT_LEN = 10000;
+  if (message.length > MAX_INPUT_LEN) {
+    message = message.slice(0, MAX_INPUT_LEN);
+  }
+
+  // Remove stack traces - SECURITY: Use [^\n]* instead of .* to prevent ReDoS (SonarCloud S5852)
+  // The greedy .* can cause catastrophic backtracking; [^\n]* is bounded by line
+  message = message.replace(/\s+at\s+[^\n]*/g, "");
+
+  // Remove file paths - SECURITY: Use {1,500} limit to prevent ReDoS (SonarCloud S5852)
+  // Unbounded [\w\-./]+ can cause catastrophic backtracking on malicious input
+  message = message.replace(/\/[\w\-./]{1,500}\.(js|ts|tsx|jsx|mjs|cjs):\d+:\d+/g, "[PATH]");
+  message = message.replace(
+    /[A-Z]:\\[\w\-.\\]{1,500}\.(js|ts|tsx|jsx|mjs|cjs):\d+:\d+/gi,
+    "[PATH]"
+  );
+
+  // Remove common sensitive patterns
+  // Email addresses
+  message = message.replace(/[\w.+-]{1,64}@[\w.-]{1,255}\.[a-z]{2,63}/gi, "[EMAIL]");
+  // Phone numbers
+  message = message.replace(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, "[PHONE]");
+  // JWT tokens
+  message = message.replace(/eyJ[\w-]+\.eyJ[\w-]+\.[\w-]+/g, "[JWT]");
+  // API keys (common patterns)
+  message = message.replace(/\b[A-Za-z0-9_-]{32,}\b/g, "[KEY]");
+  // Firebase-specific error prefixes (expose error type but not internal details)
+  message = message.replace(/^Firebase: Error \([^)]+\)\.?\s*/i, "Firebase error: ");
+
+  // Remove internal Firebase/GCP paths
+  message = message.replace(/\/workspace\/[\w\-./]{1,500}/g, "[INTERNAL_PATH]");
+  message = message.replace(/\/srv\/[\w\-./]{1,500}/g, "[INTERNAL_PATH]");
+
+  // Collapse multiple whitespace/newlines
+  message = message.replace(/\s+/g, " ").trim();
+
+  // Truncate to max length
+  if (message.length > maxLength) {
+    message = message.slice(0, maxLength - 3) + "...";
+  }
+
+  // Return generic message if result is empty or too short
+  if (!message || message.length < 3) {
+    return "An error occurred";
+  }
+
+  return message;
+}

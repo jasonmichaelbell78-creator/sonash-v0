@@ -9,7 +9,12 @@ import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https
 import { defineSecret, defineString } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { z } from "zod";
-import { logSecurityEvent, hashUserId, redactSensitiveMetadata } from "./security-logger";
+import {
+  logSecurityEvent,
+  hashUserId,
+  redactSensitiveMetadata,
+  sanitizeErrorMessage,
+} from "./security-logger";
 
 /**
  * SEC-REVIEW: Validate that a value looks like a valid userIdHash (12-char hex)
@@ -121,6 +126,36 @@ function safeToIso(value: unknown, fallback: string | null = null): string | nul
     }
   }
   return fallback;
+}
+
+/**
+ * ISSUE [14]: Get ISO-8601 week string (YYYY-Www) for a given date
+ * ISO-8601 week rules:
+ * - Week starts on Monday
+ * - Week 1 of a year is the week containing January 4 (or the first Thursday)
+ * @param date - Date to get the ISO week for
+ * @returns ISO week string in format YYYY-Www (e.g., "2024-W01")
+ */
+function getIsoWeekString(date: Date): string {
+  // Copy date to avoid mutating the original
+  const target = new Date(date.getTime());
+
+  // Set to nearest Thursday: current date + 4 - current day number
+  // Make Sunday's day number 7
+  const dayNum = (target.getDay() + 6) % 7;
+  target.setDate(target.getDate() - dayNum + 3);
+
+  // January 4 is always in week 1
+  const firstThursday = new Date(target.getFullYear(), 0, 4);
+  // Set to nearest Thursday
+  const firstThursdayDayNum = (firstThursday.getDay() + 6) % 7;
+  firstThursday.setDate(firstThursday.getDate() - firstThursdayDayNum + 3);
+
+  // Calculate week number
+  const weekNum = 1 + Math.round((target.getTime() - firstThursday.getTime()) / 86400000 / 7);
+
+  // Return ISO week string
+  return `${target.getFullYear()}-W${String(weekNum).padStart(2, "0")}`;
 }
 
 // ============================================================================
@@ -1959,7 +1994,9 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
 
   try {
     const db = admin.firestore();
-    const results: JobRunHistoryResponse[] = [];
+    // ISSUE [5]: Use temporary type with sorting field for stable timestamp-based sorting
+    type JobRunWithSortKey = JobRunHistoryResponse & { _startTimeMillis: number };
+    const results: JobRunWithSortKey[] = [];
 
     // Get job IDs to query
     let jobIds: string[] = [];
@@ -1972,7 +2009,16 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
       jobNames.set(jobId, jobDoc.exists ? (jobDoc.data()?.name as string) || jobId : jobId);
     } else {
       // Get all job IDs from admin_jobs collection
-      const jobsSnapshot = await db.collection("admin_jobs").get();
+      // ISSUE [13]: Add limit to prevent unbounded query fan-out
+      const jobsSnapshot = await db.collection("admin_jobs").limit(200).get();
+
+      if (jobsSnapshot.size >= 200) {
+        throw new HttpsError(
+          "resource-exhausted",
+          "Too many jobs (200+). Please specify a jobId to query."
+        );
+      }
+
       jobIds = jobsSnapshot.docs.map((doc) => doc.id);
       // ISSUE [13]: Batch read job names to avoid N+1 queries
       for (const doc of jobsSnapshot.docs) {
@@ -1997,12 +2043,15 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
 
       // Apply date filters
       // ISSUE [16]: Validate date inputs before using in queries
+      let startTimestamp: FirebaseFirestore.Timestamp | undefined;
+      let endTimestamp: FirebaseFirestore.Timestamp | undefined;
+
       if (startDate) {
         const startDateObj = new Date(startDate);
         if (Number.isNaN(startDateObj.getTime())) {
           throw new HttpsError("invalid-argument", "Invalid startDate format");
         }
-        const startTimestamp = admin.firestore.Timestamp.fromDate(startDateObj);
+        startTimestamp = admin.firestore.Timestamp.fromDate(startDateObj);
         query = query.where("startTime", ">=", startTimestamp);
       }
 
@@ -2011,8 +2060,13 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
         if (Number.isNaN(endDateObj.getTime())) {
           throw new HttpsError("invalid-argument", "Invalid endDate format");
         }
-        const endTimestamp = admin.firestore.Timestamp.fromDate(endDateObj);
+        endTimestamp = admin.firestore.Timestamp.fromDate(endDateObj);
         query = query.where("startTime", "<=", endTimestamp);
+      }
+
+      // ISSUE [9]: Reject invalid date ranges
+      if (startTimestamp && endTimestamp && endTimestamp.toMillis() < startTimestamp.toMillis()) {
+        throw new HttpsError("invalid-argument", "endDate must be after startDate");
       }
 
       // Limit per job (we'll re-sort and limit the combined results)
@@ -2022,6 +2076,8 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
 
       for (const doc of historySnapshot.docs) {
         const data = doc.data();
+        // ISSUE [5]: Store timestamp before converting to ISO string for stable sorting
+        const startTimeMillis = data.startTime?.toMillis ? data.startTime.toMillis() : 0;
         results.push({
           runId: data.runId || doc.id,
           jobId: jId,
@@ -2030,16 +2086,35 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
           endTime: safeToIso(data.endTime, ""),
           status: data.status,
           durationMs: data.durationMs || 0,
-          error: data.error,
+          // ISSUE [2]: Sanitize error message before returning to client
+          // Defense-in-depth: sanitize on read in case data was stored before sanitization was added
+          // OWASP A01:2021 - Prevents sensitive data exposure via error messages
+          error: data.error ? sanitizeErrorMessage(data.error) : undefined,
           resultSummary: data.resultSummary,
           triggeredBy: data.triggeredBy || "schedule",
+          _startTimeMillis: startTimeMillis, // Internal field for sorting
         });
       }
     }
 
-    // Sort by startTime descending and limit total results
-    results.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
-    const limitedResults = results.slice(0, safeLimit);
+    // ISSUE [5]: Sort by Firestore timestamp (milliseconds) instead of ISO string
+    results.sort((a, b) => (b._startTimeMillis || 0) - (a._startTimeMillis || 0));
+
+    // Remove internal sorting field before returning
+    const limitedResults: JobRunHistoryResponse[] = results.slice(0, safeLimit).map((r) => {
+      const { _startTimeMillis, ...rest } = r;
+      return rest;
+    });
+
+    // ISSUE [3]: Log successful admin access
+    logSecurityEvent("ADMIN_ACTION", request.auth?.uid || "unknown", "Retrieved job run history", {
+      severity: "INFO",
+      metadata: {
+        action: "adminGetJobRunHistory",
+        jobId: jobId || "all",
+        runCount: limitedResults.length,
+      },
+    });
 
     return {
       runs: limitedResults,
@@ -2337,6 +2412,12 @@ interface ErrorWithUserCorrelation {
   metadata?: Record<string, unknown>;
 }
 
+// ISSUE [4]: Add parameter validation for adminGetErrorsWithUsers
+const getErrorsWithUsersSchema = z.object({
+  limit: z.number().int().min(1).max(100).optional(),
+  hoursBack: z.number().int().min(1).max(168).optional(),
+});
+
 /**
  * A21: Admin: Get Errors with User Correlation
  * Returns errors from security_logs with userIdHash for correlation
@@ -2344,11 +2425,20 @@ interface ErrorWithUserCorrelation {
 export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (request) => {
   await requireAdmin(request, "adminGetErrorsWithUsers");
 
-  const { limit: rawLimit = 50, hoursBack = 24 } = request.data ?? {};
+  // ISSUE [4]: Validate input parameters
+  const validationResult = getErrorsWithUsersSchema.safeParse(request.data ?? {});
+  if (!validationResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      validationResult.error.issues[0]?.message ?? "Invalid input"
+    );
+  }
 
-  // Validate inputs
-  const safeLimit = Math.min(Math.max(1, rawLimit), 100);
-  const safeHoursBack = Math.min(Math.max(1, hoursBack), 168); // Max 7 days
+  const { limit = 50, hoursBack = 24 } = validationResult.data;
+
+  // Validate inputs (already validated by Zod schema, but keeping safe defaults)
+  const safeLimit = Math.min(Math.max(1, limit ?? 50), 100);
+  const safeHoursBack = Math.min(Math.max(1, hoursBack ?? 24), 168); // Max 7 days
 
   try {
     const db = admin.firestore();
@@ -2382,6 +2472,21 @@ export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (
 
     // Group by userIdHash to count affected users
     const userHashes = new Set(errors.filter((e) => e.userIdHash).map((e) => e.userIdHash));
+
+    // ISSUE [3]: Log successful admin access
+    logSecurityEvent(
+      "ADMIN_ACTION",
+      request.auth?.uid || "unknown",
+      "Retrieved errors with user correlation",
+      {
+        severity: "INFO",
+        metadata: {
+          action: "adminGetErrorsWithUsers",
+          errorCount: errors.length,
+          uniqueUsers: userHashes.size,
+        },
+      }
+    );
 
     return {
       errors,
@@ -2424,8 +2529,9 @@ interface UserActivityEntry {
 }
 
 // ISSUE [4]: Add parameter validation for admin functions
+// ISSUE [7]: Make regex case-insensitive to accept uppercase hex
 const getUserActivitySchema = z.object({
-  userIdHash: z.string().regex(/^[0-9a-f]{12}$/, "Must be a 12-character hex hash"),
+  userIdHash: z.string().regex(/^[0-9a-fA-F]{12}$/, "Must be a 12-character hex hash"),
   hoursBack: z.number().int().min(1).max(168).optional(),
   limit: z.number().int().min(1).max(100).optional(),
 });
@@ -2446,7 +2552,10 @@ export const adminGetUserActivityByHash = onCall<GetUserActivityRequest>(async (
     );
   }
 
-  const { userIdHash, hoursBack = 24, limit: rawLimit = 50 } = validationResult.data;
+  const { userIdHash: rawUserIdHash, hoursBack = 24, limit: rawLimit = 50 } = validationResult.data;
+
+  // ISSUE [7]: Normalize userIdHash to lowercase for consistent lookups
+  const userIdHash = rawUserIdHash.toLowerCase();
 
   // Validate inputs (already validated by Zod schema, but keeping safe defaults)
   const safeLimit = Math.min(Math.max(1, rawLimit ?? 50), 100);
@@ -2488,6 +2597,21 @@ export const adminGetUserActivityByHash = onCall<GetUserActivityRequest>(async (
       {} as Record<string, number>
     );
 
+    // ISSUE [3]: Log successful admin access
+    logSecurityEvent(
+      "ADMIN_ACTION",
+      request.auth?.uid || "unknown",
+      "Retrieved user activity by hash",
+      {
+        severity: "INFO",
+        metadata: {
+          action: "adminGetUserActivityByHash",
+          targetUserHash: userIdHash,
+          activityCount: activities.length,
+        },
+      }
+    );
+
     return {
       userIdHash,
       activities,
@@ -2516,8 +2640,9 @@ interface FindUserByHashRequest {
 }
 
 // ISSUE [4]: Add parameter validation for admin functions
+// ISSUE [7]: Make regex case-insensitive to accept uppercase hex
 const findUserByHashSchema = z.object({
-  userIdHash: z.string().regex(/^[0-9a-f]{12}$/, "Must be a 12-character hex hash"),
+  userIdHash: z.string().regex(/^[0-9a-fA-F]{12}$/, "Must be a 12-character hex hash"),
 });
 
 /**
@@ -2537,7 +2662,10 @@ export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request)
     );
   }
 
-  const { userIdHash } = validationResult.data;
+  const { userIdHash: rawUserIdHash } = validationResult.data;
+
+  // ISSUE [7]: Normalize userIdHash to lowercase for consistent lookups
+  const userIdHash = rawUserIdHash.toLowerCase();
 
   try {
     const db = admin.firestore();
@@ -2553,6 +2681,13 @@ export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request)
       const computed = hashUserId(uid);
       if (computed === userIdHash) {
         const data = userDoc.data();
+
+        // ISSUE [3]: Log successful admin access
+        logSecurityEvent("ADMIN_ACTION", request.auth?.uid || "unknown", "Found user by hash", {
+          severity: "INFO",
+          metadata: { action: "adminFindUserByHash", targetUserHash: userIdHash, found: true },
+        });
+
         return {
           found: true,
           user: {
@@ -2565,6 +2700,17 @@ export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request)
         };
       }
     }
+
+    // ISSUE [3]: Log successful admin access (user not found)
+    logSecurityEvent(
+      "ADMIN_ACTION",
+      request.auth?.uid || "unknown",
+      "User lookup by hash - not found",
+      {
+        severity: "INFO",
+        metadata: { action: "adminFindUserByHash", targetUserHash: userIdHash, found: false },
+      }
+    );
 
     return {
       found: false,
@@ -3746,12 +3892,9 @@ export const adminGetUserAnalytics = onCall(async (request) => {
         week4Retention = Math.round((week4Active.data().count / cohortSize) * 100);
       }
 
-      // Format cohort week as YYYY-WW
-      const weekNumber = Math.ceil(
-        ((weekStart.getTime() - new Date(weekStart.getFullYear(), 0, 1).getTime()) / 86400000 + 1) /
-          7
-      );
-      const cohortWeek = `${weekStart.getFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
+      // ISSUE [14]: Format cohort week as YYYY-WW using proper ISO-8601 week calculation
+      // ISO-8601: Week starts Monday, Week 1 contains Jan 4
+      const cohortWeek = getIsoWeekString(weekStart);
 
       cohortRetention.push({
         cohortWeek,
@@ -3827,6 +3970,13 @@ export const adminGetUserAnalytics = onCall(async (request) => {
     // ========================================
     // 5. Return analytics data
     // ========================================
+
+    // ISSUE [3]: Log successful admin access
+    logSecurityEvent("ADMIN_ACTION", request.auth?.uid || "unknown", "Retrieved user analytics", {
+      severity: "INFO",
+      metadata: { action: "adminGetUserAnalytics", trendPoints: dailyTrends.length },
+    });
+
     return {
       currentMetrics,
       dailyTrends,

@@ -302,27 +302,31 @@ export function LogsTab() {
 
   // A22: Export filtered logs as JSON
   const exportLogs = useCallback(() => {
-    const exportData = {
-      exportedAt: new Date().toISOString(),
-      filters: {
-        severity: severityFilter,
-        type: typeFilter,
-        search: searchQuery || null,
-      },
-      totalCount: filteredLogs.length,
-      logs: filteredLogs,
-    };
-    const dataStr = JSON.stringify(exportData, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `security-logs-${new Date().toISOString().split("T")[0]}.json`;
-    // ISSUE [15]: Append to DOM for cross-browser compatibility
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    let url: string | null = null;
+    let a: HTMLAnchorElement | null = null;
+    try {
+      const exportData = {
+        exportedAt: new Date().toISOString(),
+        filters: {
+          severity: severityFilter,
+          type: typeFilter,
+          search: searchQuery || null,
+        },
+        totalCount: filteredLogs.length,
+        logs: filteredLogs,
+      };
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      url = URL.createObjectURL(blob);
+      a = document.createElement("a");
+      a.href = url;
+      a.download = `security-logs-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+    } finally {
+      if (a?.parentNode) document.body.removeChild(a);
+      if (url) URL.revokeObjectURL(url);
+    }
   }, [filteredLogs, severityFilter, typeFilter, searchQuery]);
 
   // ROBUSTNESS: Accept isActive function to guard against state updates on unmounted component
