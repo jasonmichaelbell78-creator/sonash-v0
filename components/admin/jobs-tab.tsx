@@ -167,6 +167,7 @@ function JobRunHistoryPanel({
   const [statusFilter, setStatusFilter] = useState<"" | "success" | "failed">("");
   const [expandedRun, setExpandedRun] = useState<string | null>(null);
   const isMountedRef = useRef(true);
+  const requestIdRef = useRef(0);
 
   // Track mounted state
   useEffect(() => {
@@ -176,6 +177,7 @@ function JobRunHistoryPanel({
   }, []);
 
   const loadHistory = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
     setLoading(true);
     setError(null);
     try {
@@ -194,17 +196,17 @@ function JobRunHistoryPanel({
       }
 
       const result = await fn(params);
-      // Guard against state update after unmount
-      if (!isMountedRef.current) return;
+      // Guard against unmount and stale requests
+      if (!isMountedRef.current || requestId !== requestIdRef.current) return;
       setHistory(result.data.runs);
     } catch (err) {
       logger.error("Failed to load job history", { error: err, jobId });
-      // Guard against state update after unmount
-      if (!isMountedRef.current) return;
+      // Guard against unmount and stale requests
+      if (!isMountedRef.current || requestId !== requestIdRef.current) return;
       // ISSUE [6]: Sanitize error - never show raw Firebase/server errors to users
       setError("Failed to load job history. Please try again later.");
     } finally {
-      if (isMountedRef.current) setLoading(false);
+      if (isMountedRef.current && requestId === requestIdRef.current) setLoading(false);
     }
   }, [jobId, statusFilter]);
 

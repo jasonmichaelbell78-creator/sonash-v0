@@ -2536,14 +2536,20 @@ export const adminGetErrorsWithUsers = onCall<GetErrorsWithUsersRequest>(async (
 
     const errors: ErrorWithUserCorrelation[] = snapshot.docs.map((doc) => {
       const data = doc.data();
-      // Guard metadata shape before processing
-      const jsonSafe = data.metadata
-        ? toJsonSafe(redactSensitiveMetadata(data.metadata))
-        : undefined;
-      const processedMetadata =
-        jsonSafe && typeof jsonSafe === "object" && !Array.isArray(jsonSafe)
-          ? capMetadata(jsonSafe as Record<string, unknown>)
+      // Guard metadata shape before processing with try/catch for corrupted data
+      let processedMetadata: Record<string, unknown> | undefined;
+      try {
+        const jsonSafe = data.metadata
+          ? toJsonSafe(redactSensitiveMetadata(data.metadata))
           : undefined;
+        processedMetadata =
+          jsonSafe && typeof jsonSafe === "object" && !Array.isArray(jsonSafe)
+            ? capMetadata(jsonSafe as Record<string, unknown>)
+            : undefined;
+      } catch {
+        // Best-effort: don't fail the whole response on bad/corrupt metadata
+        processedMetadata = { _truncated: true, _reason: "metadata_processing_failed" };
+      }
       return {
         id: doc.id,
         type: data.type || "UNKNOWN",
@@ -3873,14 +3879,18 @@ export const adminGetUserAnalytics = onCall(async (request) => {
       .orderBy("date", "asc")
       .get();
 
+    // Helper to safely coerce Firestore values to non-negative numbers
+    const asNumber = (v: unknown): number =>
+      typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : 0;
+
     const dailyTrends: AnalyticsTrendPoint[] = analyticsSnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
-        date: data.date || doc.id,
-        activeUsers: data.activeUsers || 0,
-        newUsers: data.newUsers || 0,
-        journalEntries: data.journalEntries || 0,
-        checkIns: data.checkIns || 0,
+        date: typeof data.date === "string" && data.date.length > 0 ? data.date : doc.id,
+        activeUsers: asNumber(data.activeUsers),
+        newUsers: asNumber(data.newUsers),
+        journalEntries: asNumber(data.journalEntries),
+        checkIns: asNumber(data.checkIns),
       };
     });
 
@@ -3960,11 +3970,28 @@ export const adminGetUserAnalytics = onCall(async (request) => {
           .get();
 
       // Run retention queries in parallel for better performance
-      const [week1Active, week2Active, week4Active] = await Promise.all([
-        week1Threshold <= now ? makeRetentionCountQuery(week1Threshold) : Promise.resolve(null),
-        week2Threshold <= now ? makeRetentionCountQuery(week2Threshold) : Promise.resolve(null),
-        week4Threshold <= now ? makeRetentionCountQuery(week4Threshold) : Promise.resolve(null),
-      ]);
+      // Wrapped in try/catch to make this best-effort (missing indexes shouldn't crash analytics)
+      let retentionResults: [
+        Awaited<ReturnType<typeof makeRetentionCountQuery>> | null,
+        Awaited<ReturnType<typeof makeRetentionCountQuery>> | null,
+        Awaited<ReturnType<typeof makeRetentionCountQuery>> | null,
+      ] = [null, null, null];
+
+      try {
+        retentionResults = await Promise.all([
+          week1Threshold <= now ? makeRetentionCountQuery(week1Threshold) : Promise.resolve(null),
+          week2Threshold <= now ? makeRetentionCountQuery(week2Threshold) : Promise.resolve(null),
+          week4Threshold <= now ? makeRetentionCountQuery(week4Threshold) : Promise.resolve(null),
+        ]);
+      } catch (err) {
+        logSecurityEvent("ADMIN_ERROR", "adminGetUserAnalytics", "Cohort retention query failed", {
+          userId: request.auth?.uid,
+          severity: "WARNING",
+          metadata: { error: sanitizeErrorMessage(err), cohortWeek: weekStart.toISOString() },
+        });
+      }
+
+      const [week1Active, week2Active, week4Active] = retentionResults;
 
       const week1Retention = week1Active
         ? Math.round((week1Active.data().count / cohortSize) * 100)
