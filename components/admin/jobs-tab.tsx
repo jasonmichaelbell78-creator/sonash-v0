@@ -217,8 +217,12 @@ function JobRunHistoryPanel({
       document.body.appendChild(a);
       a.click();
     } finally {
-      if (a?.parentNode) document.body.removeChild(a);
-      if (url) URL.revokeObjectURL(url);
+      const cleanupUrl = url;
+      const cleanupAnchor = a;
+      setTimeout(() => {
+        if (cleanupAnchor?.parentNode) cleanupAnchor.parentNode.removeChild(cleanupAnchor);
+        if (cleanupUrl) URL.revokeObjectURL(cleanupUrl);
+      }, 0);
     }
   };
 

@@ -30,8 +30,9 @@ function isValidUserIdHash(value: unknown): value is string {
 
 /**
  * SEC-REVIEW: Ensure a userId value is properly hashed before returning
- * If already a valid hash, return as-is. Otherwise, hash it.
- * This prevents accidental exposure of raw user IDs.
+ * Only accept values that already look like a valid hash (normalized to lowercase).
+ * If historical data contains raw UIDs, returning a computed hash would not match
+ * the stored value in Firestore queries and would produce misleading correlations.
  * @param value - Potential userId or userIdHash from security_logs
  * @returns Validated hash or null
  */
@@ -39,15 +40,14 @@ function ensureUserIdHash(value: unknown): string | null {
   if (value === null || value === undefined) return null;
   if (typeof value !== "string" || value.length === 0) return null;
 
-  // If it looks like a valid hash, return it (normalized to lowercase)
+  // Only accept values that already look like a valid hash (normalized to lowercase).
+  // If historical data contains raw UIDs, returning a computed hash would not match
+  // the stored value in Firestore queries and would produce misleading correlations.
   if (isValidUserIdHash(value)) {
     return value.toLowerCase();
   }
 
-  // Otherwise, treat as raw userId and hash it (defensive measure)
-  const hashed = hashUserId(value).toLowerCase();
-  // NOTE: No logging here - this helper is used on read paths
-  return hashed;
+  return null;
 }
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 
@@ -126,6 +126,33 @@ function safeToIso(value: unknown, fallback: string | null = null): string | nul
     }
   }
   return fallback;
+}
+
+/**
+ * Parse a date boundary (start or end) for inclusive range filtering
+ * If caller passes YYYY-MM-DD, treat it as a whole-day boundary in UTC
+ * @param raw - ISO date string (with or without time component)
+ * @param boundary - "start" for beginning of day, "end" for end of day
+ * @returns Firestore Timestamp
+ * @throws HttpsError if date format is invalid
+ */
+function parseDateBoundaryUtc(raw: string, boundary: "start" | "end"): FirebaseFirestore.Timestamp {
+  // If caller passes YYYY-MM-DD, treat it as a whole-day boundary in UTC
+  const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(raw);
+  const iso = isDateOnly
+    ? boundary === "start"
+      ? `${raw}T00:00:00.000Z`
+      : `${raw}T23:59:59.999Z`
+    : raw;
+
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) {
+    throw new HttpsError(
+      "invalid-argument",
+      `Invalid ${boundary === "start" ? "startDate" : "endDate"} format`
+    );
+  }
+  return admin.firestore.Timestamp.fromDate(d);
 }
 
 /**
@@ -2056,24 +2083,17 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
 
       // Apply date filters
       // ISSUE [16]: Validate date inputs before using in queries
+      // ISSUE [1]: Use inclusive date range filtering
       let startTimestamp: FirebaseFirestore.Timestamp | undefined;
       let endTimestamp: FirebaseFirestore.Timestamp | undefined;
 
       if (startDate) {
-        const startDateObj = new Date(startDate);
-        if (Number.isNaN(startDateObj.getTime())) {
-          throw new HttpsError("invalid-argument", "Invalid startDate format");
-        }
-        startTimestamp = admin.firestore.Timestamp.fromDate(startDateObj);
+        startTimestamp = parseDateBoundaryUtc(startDate, "start");
         query = query.where("startTime", ">=", startTimestamp);
       }
 
       if (endDate) {
-        const endDateObj = new Date(endDate);
-        if (Number.isNaN(endDateObj.getTime())) {
-          throw new HttpsError("invalid-argument", "Invalid endDate format");
-        }
-        endTimestamp = admin.firestore.Timestamp.fromDate(endDateObj);
+        endTimestamp = parseDateBoundaryUtc(endDate, "end");
         query = query.where("startTime", "<=", endTimestamp);
       }
 
@@ -2698,7 +2718,7 @@ export const adminFindUserByHash = onCall<FindUserByHashRequest>(async (request)
 
     for (const userDoc of usersSnapshot.docs) {
       const uid = userDoc.id;
-      const computed = hashUserId(uid);
+      const computed = hashUserId(uid).toLowerCase();
       if (computed === userIdHash) {
         const data = userDoc.data();
 

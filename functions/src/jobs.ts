@@ -376,8 +376,8 @@ export async function runJob(
     // ISSUE [22]: Sanitize job result before persisting to prevent sensitive data leaks
     const resultSummary =
       result && typeof result === "object"
-        ? redactSensitiveMetadata(result as Record<string, unknown>)
-        : {};
+        ? (redactSensitiveMetadata(result as Record<string, unknown>) as Record<string, unknown>)
+        : undefined;
 
     // Update with success status
     await jobRef.set(

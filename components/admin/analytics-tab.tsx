@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
 import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
@@ -262,29 +262,43 @@ export function AnalyticsTab() {
   const [data, setData] = useState<UserAnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
 
-  const loadAnalytics = useCallback(async () => {
+  const loadAnalytics = useCallback(async (isActive: () => boolean = () => true) => {
     setLoading(true);
     setError(null);
     try {
       const functions = getFunctions();
       const fn = httpsCallable<void, UserAnalyticsData>(functions, "adminGetUserAnalytics");
       const result = await fn();
+      if (!isActive()) return;
       setData(result.data);
     } catch (err) {
       logger.error("Failed to load user analytics", { error: err });
+      if (!isActive()) return;
       setError("Failed to load analytics. Please try again later.");
     } finally {
-      setLoading(false);
+      if (isActive()) setLoading(false);
     }
   }, []);
 
+  // Track mounted state for useTabRefresh callbacks
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   // Auto-refresh when tab becomes active
-  useTabRefresh("analytics", loadAnalytics);
+  useTabRefresh("analytics", () => loadAnalytics(() => isMountedRef.current));
 
   // Load on mount
   useEffect(() => {
-    loadAnalytics();
+    let isActive = true;
+    loadAnalytics(() => isActive);
+    return () => {
+      isActive = false;
+    };
   }, [loadAnalytics]);
 
   if (loading) return <AnalyticsLoading />;
@@ -300,7 +314,7 @@ export function AnalyticsTab() {
           User Analytics
         </h2>
         <button
-          onClick={loadAnalytics}
+          onClick={() => loadAnalytics()}
           className="text-sm text-amber-700 hover:text-amber-900 flex items-center gap-2"
         >
           <RefreshCw className="w-4 h-4" />
