@@ -1872,6 +1872,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                                                                                                                         |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.8     | 2026-02-04 | Session #129: pr-review skill now MANDATES incrementing consolidation counter; added `npm run consolidation:sync` script for drift fixes                        |
 | 2.7     | 2026-02-02 | Session #125: Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture + AI-specific patterns          |
 | 2.6     | 2026-02-02 | Session #124: Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents), added 3 new scripts and 4 npm scripts                   |
 | 2.5     | 2026-02-01 | Session #123: Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt) - TDMS all 17 phases complete         |
