@@ -6,6 +6,12 @@
 
 ---
 
+## Purpose
+
+This report documents the performance audit findings for the SoNash project,
+covering bundle size, rendering optimization, data fetching, memory management,
+and Core Web Vitals.
+
 ## Executive Summary
 
 This audit identified **15 performance findings** across bundle size, rendering,
@@ -408,3 +414,11 @@ None - no `docs/audits/FALSE_POSITIVES.jsonl` file exists.
 - **Categories Covered:** Bundle, Rendering, DataFetch, Memory, WebVitals
 - **Tool Validation:** MANUAL_ONLY (no build/Lighthouse data available)
 - **Duration:** Single session (~25 min)
+
+---
+
+## Version History
+
+| Version | Date       | Description          |
+| ------- | ---------- | -------------------- |
+| 1.0     | 2026-02-03 | Initial audit report |

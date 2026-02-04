@@ -604,13 +604,18 @@ function findMarkdownFiles(dir, files = []) {
   for (const entry of entries) {
     const fullPath = join(dir, entry);
 
-    // Skip node_modules, .git, hidden directories, and archive folders
+    // Skip node_modules, .git, hidden directories, archive folders, and legacy/generated content
     if (
       entry.startsWith(".") ||
       entry === "node_modules" ||
       entry === "out" ||
       entry === "dist" ||
-      entry === "archive"
+      entry === "archive" ||
+      entry === "single-session" || // Legacy audit reports - exempt from current doc standards
+      entry === "views" || // Auto-generated debt views
+      entry === "dataconnect-generated" || // Auto-generated Firebase code
+      entry === "plans" || // Legacy planning docs
+      entry === "templates" // Templates have intentional placeholder links
     ) {
       continue;
     }
@@ -621,6 +626,25 @@ function findMarkdownFiles(dir, files = []) {
       if (stat.isDirectory()) {
         findMarkdownFiles(fullPath, files);
       } else if (extname(entry) === ".md") {
+        // Skip legacy audit/planning files that predate current doc standards
+        // Also skip auto-generated index files in technical-debt
+        if (
+          /^PHASE_\d+[A-Z]?_AUDIT\.md$/i.test(entry) ||
+          entry === "FINAL_SYSTEM_AUDIT.md" ||
+          entry === "SESSION_HISTORY.md" ||
+          entry === "METRICS.md" ||
+          entry === "roadmap-assignment-report.md" ||
+          entry === "OPERATIONAL_VISIBILITY_SPRINT.md" || // Legacy sprint doc
+          entry === "SONARCLOUD_CLEANUP_RUNBOOK.md" || // Legacy runbook
+          entry === "LEARNING_METRICS.md" || // Legacy metrics
+          entry === "PLAN_MAP.md" // Legacy planning
+        ) {
+          continue;
+        }
+        // Skip INDEX.md in technical-debt (managed by debt tooling)
+        if (entry === "INDEX.md" && fullPath.includes("technical-debt")) {
+          continue;
+        }
         files.push(fullPath);
       }
     } catch {

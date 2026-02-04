@@ -6,6 +6,12 @@ Comprehensive (single-session)
 
 ---
 
+## Purpose
+
+This report documents the engineering productivity audit findings for the SoNash
+project, covering developer experience, debugging ergonomics, and offline
+support capabilities.
+
 ## Executive Summary
 
 This audit evaluates the SoNash codebase for engineering productivity, focusing
