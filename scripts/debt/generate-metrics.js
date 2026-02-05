@@ -197,6 +197,23 @@ function generateMetricsMd(metrics) {
 
 ---
 
+## Purpose
+
+This document provides a real-time dashboard of technical debt metrics for the
+sonash-v0 project. It is automatically regenerated during session-end and CI
+pipelines to track debt accumulation, resolution progress, and severity
+distribution.
+
+---
+
+## Version History
+
+| Version | Date       | Changes                  |
+| ------- | ---------- | ------------------------ |
+| 1.0     | 2026-01-15 | Initial metrics tracking |
+
+---
+
 `;
 
   let content = header;
