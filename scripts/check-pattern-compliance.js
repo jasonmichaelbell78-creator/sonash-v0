@@ -551,6 +551,8 @@ const ANTI_PATTERNS = [
       "generate-views.js",
       // 2026-02-05 (Review #249): extract-sonarcloud.js readFileSync at L147 IS in try/catch (L146-151)
       "extract-sonarcloud.js",
+      // 2026-02-05 (Review #249): validate-schema.js readFileSync at L181 IS in try/catch (L180-185)
+      "validate-schema.js",
     ],
   },
   {
