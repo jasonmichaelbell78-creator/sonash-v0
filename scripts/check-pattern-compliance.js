@@ -416,7 +416,7 @@ const ANTI_PATTERNS = [
     // - aggregate-audit-findings.js: readFileSync at L145, L181, L246 all in try/catch blocks
     // 2026-01-19 audit (Review #181):
     // - generate-detailed-sonar-report.js: readFileSync at L27, L43, L76 all in try/catch blocks
-    // - generate-sonar-report-with-snippets.js: readFileSync at L18 in try/catch (L17-23), L54 in try/catch (L52-70)
+    // - generate-sonar-report-with-snippets.js: ARCHIVED to docs/archive/obsolete-scripts-2026-02/
     // - verify-sonar-phase.js: readFileSync at L135, L195, L215 all in try/catch blocks
     // 2026-01-20 audit (PR #286):
     // - check-backlog-health.js: readFileSync at L250 IS in try/catch (L242-292)
@@ -447,7 +447,7 @@ const ANTI_PATTERNS = [
       "run-consolidation.js",
       "aggregate-audit-findings.js",
       "generate-detailed-sonar-report.js",
-      "generate-sonar-report-with-snippets.js",
+      // generate-sonar-report-with-snippets.js - ARCHIVED to docs/archive/obsolete-scripts-2026-02/
       "verify-sonar-phase.js",
       "check-backlog-health.js",
       "security-check.js",
@@ -549,8 +549,7 @@ const ANTI_PATTERNS = [
       // 2026-02-05 (Review #249): generate-views.js readFileSync at L79 IS in try/catch (L78-108),
       //   L129 now IS in try/catch (L129-135)
       "generate-views.js",
-      // 2026-02-05 (Review #249): extract-sonarcloud.js readFileSync at L147 IS in try/catch (L146-151)
-      "extract-sonarcloud.js",
+      // extract-sonarcloud.js - ARCHIVED to docs/archive/obsolete-scripts-2026-02/
       // 2026-02-05 (Review #249): validate-schema.js readFileSync at L181 IS in try/catch (L180-185)
       "validate-schema.js",
     ],

@@ -17,9 +17,9 @@ const SCRIPTS_DIR = __dirname;
 
 const STEPS = [
   {
-    name: "Extract SonarCloud issues",
+    name: "Extract SonarCloud issues (DEPRECATED - use sync-sonarcloud.js for live API sync)",
     script: "extract-sonarcloud.js",
-    required: true,
+    required: false,
   },
   {
     name: "Extract audit findings",

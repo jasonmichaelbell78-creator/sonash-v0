@@ -11,6 +11,8 @@
  *   --severity <list>   Filter by severity (comma-separated: BLOCKER,CRITICAL,MAJOR,MINOR,INFO)
  *   --type <list>       Filter by type (comma-separated: BUG,VULNERABILITY,CODE_SMELL)
  *   --status <list>     Filter by status (default: OPEN,CONFIRMED,REOPENED)
+ *   --resolve           Detect and mark RESOLVED items no longer in SonarCloud
+ *   --full              Sync new items AND resolve old items in one pass
  *   --dry-run           Preview changes without writing
  *   --force             Skip confirmation prompt
  *
@@ -41,6 +43,7 @@ const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
 const LOG_DIR = path.join(DEBT_DIR, "logs");
 const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
+const RESOLUTION_LOG = path.join(LOG_DIR, "resolution-log.jsonl");
 
 const SONARCLOUD_API = "https://sonarcloud.io/api";
 
@@ -81,6 +84,10 @@ function parseArgs(args) {
       parsed.dryRun = true;
     } else if (arg === "--force") {
       parsed.force = true;
+    } else if (arg === "--resolve") {
+      parsed.resolve = true;
+    } else if (arg === "--full") {
+      parsed.full = true;
     } else if (arg.startsWith("--")) {
       const key = arg.substring(2);
       const value = args[i + 1];
@@ -303,6 +310,118 @@ function convertIssue(issue) {
   };
 }
 
+// Log resolution activity
+function logResolution(activity) {
+  if (!fs.existsSync(LOG_DIR)) {
+    fs.mkdirSync(LOG_DIR, { recursive: true });
+  }
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    actor: process.env.USER || process.env.USERNAME || "system",
+    actor_type: "cli-script",
+    outcome: activity.error ? "failure" : "success",
+    ...activity,
+  };
+  fs.appendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
+}
+
+// Resolve items no longer present in SonarCloud
+async function resolveStaleItems(options) {
+  const { token, org, project, dryRun, force } = options;
+
+  console.log("🔍 Resolve: Checking for stale SonarCloud items...\n");
+
+  // Fetch all open issues from SonarCloud
+  let activeIssues;
+  try {
+    activeIssues = await fetchSonarCloudIssues({
+      token,
+      org,
+      project,
+      statuses: "OPEN,CONFIRMED,REOPENED",
+    });
+  } catch (err) {
+    console.error(`Error fetching from SonarCloud: ${err.message}`);
+    return { resolved: 0 };
+  }
+
+  const activeKeys = new Set(activeIssues.map((issue) => issue.key));
+  console.log(`  📡 Active SonarCloud issues: ${activeKeys.size}`);
+
+  // Load existing items
+  const existingItems = loadMasterDebt();
+  const sonarItems = existingItems.filter(
+    (item) => item.source_file === "sonarcloud-sync" && item.status === "NEW" && item.sonar_key
+  );
+
+  console.log(`  📋 Tracked SonarCloud items (NEW status): ${sonarItems.length}`);
+
+  // Find items whose sonar_key is no longer active
+  const staleItems = sonarItems.filter((item) => !activeKeys.has(item.sonar_key));
+
+  console.log(`\n📊 Resolution Results:\n`);
+  console.log(`  ✅ Still active in SonarCloud: ${sonarItems.length - staleItems.length}`);
+  console.log(`  🗑️  No longer in SonarCloud:   ${staleItems.length}`);
+
+  if (staleItems.length === 0) {
+    console.log("\n✅ No stale items found. Nothing to resolve.");
+    return { resolved: 0 };
+  }
+
+  // Show sample of stale items
+  console.log("\n  Stale items (will be marked RESOLVED):");
+  for (const item of staleItems.slice(0, 5)) {
+    console.log(`    - ${item.id}: ${item.title.substring(0, 50)}...`);
+  }
+  if (staleItems.length > 5) {
+    console.log(`    ... and ${staleItems.length - 5} more items`);
+  }
+
+  if (dryRun) {
+    console.log("\n🔍 DRY RUN: No changes written.");
+    return { resolved: 0 };
+  }
+
+  if (!force) {
+    const confirmed = await confirm(`\nMark ${staleItems.length} items as RESOLVED?`);
+    if (!confirmed) {
+      console.log("Cancelled.");
+      return { resolved: 0 };
+    }
+  }
+
+  // Update items in MASTER_DEBT.jsonl
+  const staleIds = new Set(staleItems.map((item) => item.id));
+  const today = new Date().toISOString().split("T")[0];
+  let resolvedCount = 0;
+
+  const updatedLines = existingItems.map((item) => {
+    if (staleIds.has(item.id)) {
+      item.status = "RESOLVED";
+      item.resolution = "Fixed in SonarCloud (no longer reported)";
+      item.resolved_date = today;
+      resolvedCount++;
+    }
+    return JSON.stringify(item);
+  });
+
+  console.log("\n📝 Updating MASTER_DEBT.jsonl...");
+  fs.writeFileSync(MASTER_FILE, updatedLines.join("\n") + "\n");
+
+  // Log resolutions
+  logResolution({
+    action: "resolve-sonarcloud-stale",
+    project: `${org}_${project}`,
+    items_checked: sonarItems.length,
+    items_resolved: resolvedCount,
+    first_id: staleItems[0]?.id,
+    last_id: staleItems[staleItems.length - 1]?.id,
+  });
+
+  console.log(`\n✅ Resolved ${resolvedCount} stale items.`);
+  return { resolved: resolvedCount };
+}
+
 // Main function
 async function main() {
   const args = process.argv.slice(2);
@@ -317,6 +436,8 @@ Options:
   --severity <list>   Filter by severity (BLOCKER,CRITICAL,MAJOR,MINOR,INFO)
   --type <list>       Filter by type (BUG,VULNERABILITY,CODE_SMELL)
   --status <list>     Filter by status (default: OPEN,CONFIRMED,REOPENED)
+  --resolve           Detect and mark RESOLVED items no longer in SonarCloud
+  --full              Sync new items AND resolve old items in one pass
   --dry-run           Preview changes without writing
   --force             Skip confirmation prompt
 
@@ -345,6 +466,34 @@ Environment variables:
     console.error("Error: SonarCloud organization is required");
     console.error("  Use --org flag or set SONAR_ORG environment variable");
     process.exit(1);
+  }
+
+  const resolveOnly = parsed.resolve && !parsed.full;
+  const doResolve = parsed.resolve || parsed.full;
+
+  // Handle resolve-only mode
+  if (resolveOnly) {
+    const result = await resolveStaleItems({
+      token,
+      org,
+      project,
+      dryRun: parsed.dryRun,
+      force: parsed.force,
+    });
+
+    if (result.resolved > 0 && !parsed.dryRun) {
+      console.log("🔄 Regenerating views...");
+      try {
+        execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
+          stdio: "inherit",
+        });
+      } catch {
+        console.warn(
+          "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
+        );
+      }
+    }
+    process.exit(0);
   }
 
   console.log("🔄 Sync: Fetching from SonarCloud...\n");
@@ -478,6 +627,31 @@ Environment variables:
     `  📈 Added ${newItems.length} new items (${newItems[0]?.id} - ${newItems[newItems.length - 1]?.id})`
   );
   console.log(`  📊 New MASTER_DEBT.jsonl total: ${existingItems.length + newItems.length} items`);
+
+  // Handle --full mode: also resolve stale items
+  if (doResolve) {
+    console.log("\n" + "═".repeat(60));
+    const result = await resolveStaleItems({
+      token,
+      org,
+      project,
+      dryRun: parsed.dryRun,
+      force: parsed.force,
+    });
+
+    if (result.resolved > 0 && !parsed.dryRun) {
+      console.log("🔄 Regenerating views (post-resolve)...");
+      try {
+        execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
+          stdio: "inherit",
+        });
+      } catch {
+        console.warn(
+          "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
+        );
+      }
+    }
+  }
 }
 
 main().catch((err) => {
