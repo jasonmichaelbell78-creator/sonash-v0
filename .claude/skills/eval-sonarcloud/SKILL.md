@@ -112,14 +112,16 @@ Run all stage validations:
 node scripts/eval/eval-sonarcloud-stage.js "$SESSION_PATH" all
 ```
 
-This validates: | Stage | Name | What It Checks |
-|-------|------|----------------| | E1 | API Fetch | Intake log entry, items
-fetched > 0, no API errors | | E2 | Deduplication | No duplicate content hashes,
-no duplicate sonar_keys | | E3 | Resolve Logic | Resolution log entry, stale
-items marked RESOLVED | | E4 | View Regeneration | All 4 view files updated,
-valid markdown | | E5 | Report Generation | Report file exists, has expected
-sections | | E6 | Schema Integrity | All items have required fields, valid
-values |
+This validates:
+
+| Stage | Name              | What It Checks                                       |
+| ----- | ----------------- | ---------------------------------------------------- |
+| E1    | API Fetch         | Intake log entry, items fetched > 0, no API errors   |
+| E2    | Deduplication     | No duplicate content hashes, no duplicate sonar_keys |
+| E3    | Resolve Logic     | Resolution log entry, stale items marked RESOLVED    |
+| E4    | View Regeneration | All 4 view files updated, valid markdown             |
+| E5    | Report Generation | Report file exists, has expected sections            |
+| E6    | Schema Integrity  | All items have required fields, valid values         |
 
 ### Phase 7: Post-Snapshot
 
@@ -199,8 +201,8 @@ cat "$SESSION/eval/EVALUATION-REPORT.md"
 
 - Check SONAR_TOKEN: `echo $SONAR_TOKEN | head -c 10`
 - Verify project key: `grep projectKey sonar-project.properties`
-- Test API:
-  `curl -s -u "$SONAR_TOKEN:" "https://sonarcloud.io/api/projects/search" | jq .`
+- Test API (token from env var, safer than command-line arg):
+  `curl -s -H "Authorization: Bearer $SONAR_TOKEN" "https://sonarcloud.io/api/projects/search" | jq .`
 
 ### E2 Fails: Deduplication
 

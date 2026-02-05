@@ -305,6 +305,9 @@ function checkE3(sessionPath) {
 
   const preSnapshot = loadSnapshot(sessionPath, "pre");
 
+  // Load items once for all checks (avoid duplicate file read)
+  const { items } = loadJsonlFile(MASTER_FILE);
+
   // Check resolution log for resolve operation
   const resolutionLog = path.join(LOGS_DIR, "resolution-log.jsonl");
   const resolveEntry = getLatestLogEntry(resolutionLog, "resolve-sonarcloud-stale");
@@ -321,7 +324,6 @@ function checkE3(sessionPath) {
     }
 
     // Check that resolved items were actually updated
-    const { items } = loadJsonlFile(MASTER_FILE);
     const resolvedItems = items.filter(
       (i) => i.source_file === "sonarcloud-sync" && i.status === "RESOLVED"
     );
@@ -345,7 +347,6 @@ function checkE3(sessionPath) {
   }
 
   // Check that active sonarcloud items still have status NEW or VERIFIED
-  const { items } = loadJsonlFile(MASTER_FILE);
   const sonarItems = items.filter((i) => i.source_file === "sonarcloud-sync");
   const statusBreakdown = {};
   for (const item of sonarItems) {

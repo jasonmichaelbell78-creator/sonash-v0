@@ -311,7 +311,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 7 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 8 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After Review #252
 
 ### When to Consolidate
@@ -470,7 +470,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 7     | <10    | ✅     |
+| Reviews since last consolidation | 8     | <10    | ✅     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -1862,10 +1862,44 @@ claude/new-session-x1MF5 PR #336 **Suggestions:** 60+ total (Critical: 2, Major:
 - Archived files should be globally excluded from compliance checks
 - curl commands in skill documentation expose tokens on command line
 
+#### Review #251: PR #338 eval-sonarcloud Skill - Qodo + CI (2026-02-05)
+
+**Source:** Qodo Compliance + CI Pattern Check + SonarCloud **PR/Branch:**
+claude/new-session-x1MF5 (PR #338) **Suggestions:** 26 total (Critical: 2,
+Major: 12, Minor: 8, Trivial: 2, Rejected: 2)
+
+**Patterns Identified:**
+
+1. [Path Traversal in CLI Scripts]: New CLI scripts accepting session-path args
+   - Root cause: eval-sonarcloud-report.js lacked validateSessionPath() unlike
+     siblings
+   - Prevention: Copy validateSessionPath pattern to ALL scripts accepting paths
+
+2. [readFileSync after existsSync]: Pattern compliance requires try/catch
+   - Root cause: Wrote code assuming existsSync guarantees read success
+   - Prevention: ALWAYS wrap readFileSync in try/catch, even after existsSync
+
+3. [Duplicate File Reads]: checkE3 loaded MASTER_FILE twice
+   - Root cause: Copy-paste from different sections without refactoring
+   - Prevention: Hoist shared file reads to function start
+
+**Resolution:**
+
+- Fixed: 24 items
+- Deferred: 0 items
+- Rejected: 2 items (Jest migration - out of scope; allow root path - security
+  risk)
+
+**Key Learnings:**
+
+- Every script accepting CLI path args needs validateSessionPath()
+- Pattern compliance gate catches readFileSync without try/catch
+- Sibling scripts should share validation patterns consistently
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #251: PR #XXX Title - Review Source (DATE)
+#### Review #252: PR #XXX Title - Review Source (DATE)
 
 
 -->

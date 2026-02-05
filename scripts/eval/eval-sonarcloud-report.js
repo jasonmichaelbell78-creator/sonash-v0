@@ -20,8 +20,28 @@
  *   - Overall pass: all stages ≥70 and overall ≥75
  */
 
+/* global __dirname */
 const fs = require("fs");
 const path = require("path");
+
+const ROOT = path.resolve(__dirname, "../..");
+
+/**
+ * Validate that a user-provided path is contained within the project root.
+ * Prevents path traversal attacks (CWE-22).
+ */
+function validateSessionPath(sessionPath) {
+  const projectRoot = ROOT;
+  const resolved = path.resolve(sessionPath);
+  const relative = path.relative(projectRoot, resolved);
+  if (relative === "" || /^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative)) {
+    console.error(`Error: session path "${sessionPath}" resolves outside the project root.`);
+    console.error(`  Resolved: ${resolved}`);
+    console.error(`  Project root: ${projectRoot}`);
+    process.exit(1);
+  }
+  return resolved;
+}
 
 // Stage weights for overall score
 const STAGE_WEIGHTS = {
@@ -99,6 +119,11 @@ function getGrade(score) {
 
 function generateReport(sessionPath) {
   const evalDir = path.join(sessionPath, "eval");
+  // Ensure eval directory exists before writing
+  if (!fs.existsSync(evalDir)) {
+    fs.mkdirSync(evalDir, { recursive: true });
+  }
+
   const resultsFile = path.join(evalDir, "stage-results.jsonl");
   const preSnapshot = loadSnapshot(path.join(evalDir, "pre-snapshot.json"));
   const postSnapshot = loadSnapshot(path.join(evalDir, "post-snapshot.json"));
@@ -118,6 +143,17 @@ function generateReport(sessionPath) {
     console.error("No stage results found; cannot generate evaluation report.");
     console.error(
       "Run stage checks first: node scripts/eval/eval-sonarcloud-stage.js <session> all"
+    );
+    process.exit(1);
+  }
+
+  // Verify all required stages are present
+  const requiredStages = Object.keys(STAGE_WEIGHTS);
+  const missingStages = requiredStages.filter((s) => !latestByStage.has(s));
+  if (missingStages.length > 0) {
+    console.error(`Missing stage result(s): ${missingStages.join(", ")}`);
+    console.error(
+      "Run all stage checks first: node scripts/eval/eval-sonarcloud-stage.js <session> all"
     );
     process.exit(1);
   }
@@ -457,14 +493,14 @@ function main() {
     process.exit(1);
   }
 
-  // Validate path
-  const resolved = path.resolve(sessionPath);
-  if (!fs.existsSync(resolved)) {
-    console.error(`Session path does not exist: ${resolved}`);
+  // Validate path stays within project root (CWE-22 path traversal prevention)
+  const safeSessionPath = validateSessionPath(sessionPath);
+  if (!fs.existsSync(safeSessionPath)) {
+    console.error(`Session path does not exist: ${safeSessionPath}`);
     process.exit(1);
   }
 
-  generateReport(resolved);
+  generateReport(safeSessionPath);
 }
 
 main();

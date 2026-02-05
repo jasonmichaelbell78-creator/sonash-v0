@@ -176,6 +176,11 @@ function getViewsState() {
     const files = fs.readdirSync(VIEWS_DIR).filter((f) => f.endsWith(".md"));
     for (const file of files) {
       const filePath = path.join(VIEWS_DIR, file);
+      // Validate path stays within VIEWS_DIR (defense against symlink attacks)
+      const relative = path.relative(VIEWS_DIR, filePath);
+      if (relative === "" || /^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative)) {
+        continue; // Skip files that escape the views directory
+      }
       views[file] = {
         mtime: getFileMtime(filePath),
         hash: getFileHash(filePath),

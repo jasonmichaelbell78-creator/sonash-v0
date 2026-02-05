@@ -565,6 +565,17 @@ const ANTI_PATTERNS = [
       "state-utils.js",
       "agent-trigger-enforcer.js",
       "sync-sonarcloud.js",
+      // 2026-02-05 audit (Review #251 PR #338):
+      // - eval-sonarcloud-snapshot.js: readFileSync at L52 IS in try/catch (L51-55),
+      //   L80 IS in try/catch (L79-83), L103 IS in try/catch (L102-106)
+      // - eval-sonarcloud-stage.js: readFileSync at L49 IS in try/catch (L48-52),
+      //   L59 IS in try/catch (L58-62), L88 IS in try/catch (L86-91),
+      //   L447 IS in try/catch (L446-450), L510 IS in try/catch (L509-513)
+      // - eval-sonarcloud-report.js: readFileSync at L69 IS in try/catch (L68-72),
+      //   L88 IS in try/catch (L87-91)
+      "eval-sonarcloud-snapshot.js",
+      "eval-sonarcloud-stage.js",
+      "eval-sonarcloud-report.js",
     ],
   },
   {
