@@ -287,6 +287,8 @@ const ANTI_PATTERNS = [
     fix: 'Use parameterized queries with placeholders (e.g., db.query("SELECT * FROM users WHERE id = ?", [userId]))',
     review: "Security Standards",
     fileTypes: [".js", ".ts"],
+    // 2026-02-05 (Review #249): generate-views.js uses .get() on Map objects with template strings, not SQL queries
+    pathExclude: /(?:^|[\\/])generate-views\.js$/,
   },
   {
     id: "unsanitized-error-response",
@@ -544,6 +546,9 @@ const ANTI_PATTERNS = [
       "eval-report.js",
       "fix-schema.js",
       "state-manager.js",
+      // 2026-02-05 (Review #249): generate-views.js readFileSync at L79 IS in try/catch (L78-108),
+      //   L129 now IS in try/catch (L129-135)
+      "generate-views.js",
     ],
   },
   {
