@@ -641,14 +641,18 @@ format (JSONL, JSON arrays, markdown tables, numbered lists, headed sections,
 prose) and normalizes them into a unified canonical schema. Features
 category-by-category progression, per-category aggregation with deduplication
 and consensus scoring, cross-category unification with cross-cutting file
-detection, and context compaction survival via file-based state. **When to
-use:** Multi-AI consensus audits across 7 categories (code, security,
-performance, refactoring, documentation, process, engineering-productivity)
-**Example:** `/multi-ai-audit` then follow interactive prompts **Parameters:**
-None - interactive workflow **Commands:** `add <source>` (add findings from an
-AI), `done` (aggregate category), `skip` (skip category), `finish` (unify all),
-`status` (show progress) **Output:** Unified findings in
-`docs/audits/multi-ai/<session>/final/` **Added:** Session #130
+detection, automated TDMS intake (MASTER_DEBT.jsonl integration with DEBT-XXXX
+ID assignment), automated roadmap track assignment and validation, and context
+compaction survival via file-based state. **When to use:** Multi-AI consensus
+audits across 7 categories (code, security, performance, refactoring,
+documentation, process, engineering-productivity) **Example:** `/multi-ai-audit`
+then follow interactive prompts **Parameters:** None - interactive workflow
+**Commands:** `add <source>` (add findings from an AI), `done` (aggregate
+category), `skip` (skip category), `finish` (unify all), `status` (show
+progress) **Output:** Unified findings in
+`docs/audits/multi-ai/<session>/final/`, DEBT items in MASTER_DEBT.jsonl,
+roadmap track assignments, metrics update **Added:** Session #130 **Updated:**
+Session #132 (v1.1 - added Phases 6-8)
 
 ### Technical Debt Management (TDMS)
 

@@ -6,8 +6,8 @@ description:
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-04
+**Document Version:** 1.1
+**Last Updated:** 2026-02-05
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -21,6 +21,8 @@ audit workflow with:
 - Schema fixing/normalization for messy AI outputs
 - Per-category aggregation with verification
 - Final cross-category unification
+- Automated TDMS intake (MASTER_DEBT.jsonl integration)
+- Automated roadmap track assignment and validation
 - Context compaction survival via file-based state
 
 **Invocation:** `/multi-ai-audit`
@@ -38,7 +40,7 @@ Select Category → Output Template → Await Findings
 Await Findings → [User: "add <source>"] → Prompt for Paste → Process Findings → Await Findings
               → [User: "done"] → Aggregate Category → Select Next Category
               → [User: "skip"] → Select Next Category
-              → [User: "finish"] → Unify All Categories → COMPLETE
+              → [User: "finish"] → Unify All Categories → TDMS Intake → Roadmap Integration → COMPLETE
               → [User: "status"] → Show Status → Await Findings
 ```
 
@@ -369,7 +371,7 @@ This:
 ### Step 5.3: Final Report
 
 ```
-=== MULTI-AI AUDIT COMPLETE ===
+=== Unification Complete ===
 
 Session: [session_id]
 Categories completed: [count]/7
@@ -392,16 +394,227 @@ Output Files:
   • Unified findings: docs/audits/multi-ai/<session>/final/UNIFIED-FINDINGS.jsonl
   • Summary report: docs/audits/multi-ai/<session>/final/SUMMARY.md
 
-Next Steps:
-  1. Review SUMMARY.md for priority findings
-  2. Ingest to TDMS: node scripts/debt/intake-audit.js <path-to-unified>
-  3. Archive session when done
+Proceeding to TDMS intake...
 ```
 
-### Step 5.4: Complete Session
+### Step 5.4: Transition to Intake
+
+Do NOT mark the session as complete yet. Proceed directly to Phase 6.
+
+---
+
+## Phase 6: TDMS Intake (Automated)
+
+**Immediately after unification completes:**
+
+### Step 6.1: Dry-Run Preview
+
+```bash
+node scripts/debt/intake-audit.js docs/audits/multi-ai/<session>/final/UNIFIED-FINDINGS.jsonl --dry-run
+```
+
+### Step 6.2: Report Preview to User
+
+```
+=== TDMS Intake Preview ===
+
+Input: UNIFIED-FINDINGS.jsonl ([count] items)
+Existing MASTER_DEBT.jsonl: [count] items
+
+Preview:
+  ✅ New items to add: [count]
+  ⏭️  Duplicates to skip: [count]
+  ❌ Validation errors: [count]
+
+Proceed with intake? (yes/no)
+```
+
+Wait for user confirmation before proceeding.
+
+### Step 6.3: Execute Intake
+
+```bash
+node scripts/debt/intake-audit.js docs/audits/multi-ai/<session>/final/UNIFIED-FINDINGS.jsonl
+```
+
+This will:
+
+- Validate schema compliance
+- Check for duplicates against existing MASTER_DEBT.jsonl
+- Assign DEBT-XXXX IDs to new items
+- Append to MASTER_DEBT.jsonl
+- Regenerate views automatically
+
+### Step 6.4: Report Intake Results
+
+```
+=== TDMS Intake Complete ===
+
+  📈 Added [count] new items ([first_id] - [last_id])
+  ⏭️  Skipped [count] duplicates
+  📊 New MASTER_DEBT.jsonl total: [count] items
+
+Proceeding to roadmap integration...
+```
+
+### Step 6.5: Update State
 
 ```javascript
-completeSession(sessionId, finalOutputPath);
+updateSession(sessionId, {
+  workflow_phase: "intake_complete",
+  intake_results: {
+    items_added: count,
+    first_id: firstId,
+    last_id: lastId,
+    duplicates_skipped: dupCount,
+  },
+});
+```
+
+---
+
+## Phase 7: Roadmap Integration (Automated)
+
+**Immediately after TDMS intake completes:**
+
+### Step 7.1: Assign Roadmap References (Dry-Run)
+
+```bash
+node scripts/debt/assign-roadmap-refs.js --dry-run --verbose --report
+```
+
+This maps each new DEBT item to a roadmap track/milestone using:
+
+| Category                | Track Assignment |
+| ----------------------- | ---------------- |
+| security                | Track-S          |
+| performance             | Track-P          |
+| process                 | Track-D          |
+| refactoring             | M2.3-REF         |
+| documentation           | M1.5             |
+| code-quality (scripts/) | Track-E          |
+| code-quality (.github/) | Track-D          |
+| code-quality (tests/)   | Track-T          |
+| code-quality (app/)     | M2.1             |
+| code-quality (default)  | M2.1             |
+
+### Step 7.2: Report Track Assignments
+
+```
+=== Roadmap Reference Assignment Preview ===
+
+  Newly assigned: [count] items
+  Already assigned: [count] items
+
+  By Track:
+    Track-S      [count]
+    Track-P      [count]
+    Track-D      [count]
+    Track-E      [count]
+    Track-T      [count]
+    M2.1         [count]
+    M2.3-REF     [count]
+    M1.5         [count]
+
+Apply roadmap assignments? (yes/no)
+```
+
+Wait for user confirmation.
+
+### Step 7.3: Apply Assignments
+
+```bash
+node scripts/debt/assign-roadmap-refs.js --report
+```
+
+### Step 7.4: Validate References
+
+```bash
+node scripts/debt/sync-roadmap-refs.js --check-only
+```
+
+Report any orphaned references to the user.
+
+### Step 7.5: Regenerate Metrics
+
+```bash
+node scripts/debt/generate-metrics.js
+```
+
+### Step 7.6: Update State
+
+```javascript
+updateSession(sessionId, {
+  workflow_phase: "roadmap_complete",
+  roadmap_results: {
+    newly_assigned: count,
+    tracks: trackBreakdown,
+  },
+});
+```
+
+---
+
+## Phase 8: Final Summary & Session Complete
+
+### Step 8.1: Generate Final Report
+
+```
+══════════════════════════════════════════════════
+  MULTI-AI AUDIT COMPLETE: [session_id]
+══════════════════════════════════════════════════
+
+Pipeline Summary:
+  ┌─────────────────────┬──────────┐
+  │ Stage               │ Result   │
+  ├─────────────────────┼──────────┤
+  │ Categories audited  │ [X]/7    │
+  │ AI sources used     │ [count]  │
+  │ Raw findings        │ [count]  │
+  │ After dedup         │ [count]  │
+  │ Unified findings    │ [count]  │
+  │ Ingested to TDMS    │ [count]  │
+  │ Duplicates skipped  │ [count]  │
+  │ Roadmap assigned    │ [count]  │
+  └─────────────────────┴──────────┘
+
+DEBT IDs Assigned: [first_id] through [last_id]
+
+⚠️  High-Priority Items Requiring Attention:
+
+  S0 Critical ([count]):
+    • [DEBT-XXXX]: [title] → [track]
+    • ...
+
+  S1 High ([count]):
+    • [DEBT-XXXX]: [title] → [track]
+    • ...
+
+Track Distribution:
+  [Track-S]: [count] items
+  [Track-P]: [count] items
+  ...
+
+Output Files:
+  • Unified findings: docs/audits/multi-ai/<session>/final/UNIFIED-FINDINGS.jsonl
+  • Summary report: docs/audits/multi-ai/<session>/final/SUMMARY.md
+  • TDMS intake log: docs/technical-debt/logs/intake-log.jsonl
+  • Assignment report: docs/technical-debt/roadmap-assignment-report.md
+
+Remaining Manual Steps:
+  1. Review S0/S1 items above for immediate action
+  2. Verify S0/S1 findings: use 'verify-technical-debt' skill
+  3. Archive session when satisfied: move to docs/audits/multi-ai/archive/
+```
+
+### Step 8.2: Complete Session
+
+```javascript
+completeSession(sessionId, {
+  unified_findings_path: finalOutputPath,
+  intake_results: intakeResults,
+  roadmap_results: roadmapResults,
+});
 ```
 
 ---
@@ -414,7 +627,7 @@ completeSession(sessionId, finalOutputPath);
 === Session Status: [session_id] ===
 
 Created: [date]
-Phase: [collecting|aggregating|unifying]
+Phase: [collecting|aggregating|unifying|intake|roadmap|complete]
 Current category: [category or none]
 
 Category Progress:
@@ -487,15 +700,19 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 
 ## Files Created by This Skill
 
-| File                                                          | Purpose                        |
-| ------------------------------------------------------------- | ------------------------------ |
-| `.claude/multi-ai-audit/session-state.json`                   | Primary state file             |
-| `docs/audits/multi-ai/<session>/state.json`                   | Backup state                   |
-| `docs/audits/multi-ai/<session>/raw/*.jsonl`                  | Normalized findings per source |
-| `docs/audits/multi-ai/<session>/raw/*.original.txt`           | Original pasted content        |
-| `docs/audits/multi-ai/<session>/canon/CANON-*.jsonl`          | Aggregated per category        |
-| `docs/audits/multi-ai/<session>/final/UNIFIED-FINDINGS.jsonl` | Final unified output           |
-| `docs/audits/multi-ai/<session>/final/SUMMARY.md`             | Summary report                 |
+| File                                                          | Purpose                               |
+| ------------------------------------------------------------- | ------------------------------------- |
+| `.claude/multi-ai-audit/session-state.json`                   | Primary state file                    |
+| `docs/audits/multi-ai/<session>/state.json`                   | Backup state                          |
+| `docs/audits/multi-ai/<session>/raw/*.jsonl`                  | Normalized findings per source        |
+| `docs/audits/multi-ai/<session>/raw/*.original.txt`           | Original pasted content               |
+| `docs/audits/multi-ai/<session>/canon/CANON-*.jsonl`          | Aggregated per category               |
+| `docs/audits/multi-ai/<session>/final/UNIFIED-FINDINGS.jsonl` | Final unified output                  |
+| `docs/audits/multi-ai/<session>/final/SUMMARY.md`             | Summary report                        |
+| `docs/technical-debt/MASTER_DEBT.jsonl`                       | Updated with new DEBT-XXXX items      |
+| `docs/technical-debt/logs/intake-log.jsonl`                   | Intake activity log                   |
+| `docs/technical-debt/roadmap-assignment-report.md`            | Track assignment report               |
+| `docs/technical-debt/views/*.md`                              | Regenerated views (by-severity, etc.) |
 
 ---
 
@@ -505,14 +722,24 @@ Users can paste whatever the AI outputs - the skill handles conversion.
   definitions
 - [docs/multi-ai-audit/templates/](docs/multi-ai-audit/templates/) - Audit
   templates
-- [scripts/multi-ai/](scripts/multi-ai/) - Processing scripts
+- [scripts/multi-ai/](scripts/multi-ai/) - Processing scripts (normalize,
+  aggregate, unify)
+- [scripts/debt/intake-audit.js](scripts/debt/intake-audit.js) - TDMS intake
+  (Phase 6)
+- [scripts/debt/assign-roadmap-refs.js](scripts/debt/assign-roadmap-refs.js) -
+  Roadmap assignment (Phase 7)
+- [scripts/debt/sync-roadmap-refs.js](scripts/debt/sync-roadmap-refs.js) -
+  Roadmap validation (Phase 7)
+- [scripts/debt/generate-metrics.js](scripts/debt/generate-metrics.js) - Metrics
+  regeneration (Phase 7)
 - [docs/technical-debt/PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - TDMS
-  intake
+  procedures
 
 ---
 
 ## Version History
 
-| Version | Date       | Changes                |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-02-04 | Initial skill creation |
+| Version | Date       | Changes                                                                                                                                                                                  |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.1     | 2026-02-05 | Added Phase 6 (TDMS intake), Phase 7 (roadmap integration), Phase 8 (summary) — automates the full pipeline from unified findings through MASTER_DEBT.jsonl and roadmap track assignment |
+| 1.0     | 2026-02-04 | Initial skill creation                                                                                                                                                                   |
