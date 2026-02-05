@@ -311,7 +311,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 9 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After Review #252
 
 ### When to Consolidate
@@ -470,7 +470,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 8     | <10    | ✅     |
+| Reviews since last consolidation | 9     | <10    | ✅     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -1899,7 +1899,44 @@ Major: 12, Minor: 8, Trivial: 2, Rejected: 2)
 <!--
 Next review entry will go here. Use format:
 
-#### Review #252: PR #XXX Title - Review Source (DATE)
+#### Review #253: PR #XXX Title - Review Source (DATE)
 
 
 -->
+
+#### Review #252: PR #338 eval-sonarcloud Skill Follow-up - Qodo (2026-02-05)
+
+**Source:** Qodo Compliance + Qodo PR Code Suggestions **PR/Branch:**
+claude/new-session-x1MF5 (PR #338) **Suggestions:** 9 total (Critical: 0, Major:
+4, Minor: 2, Trivial: 0, Rejected: 3)
+
+**Patterns Identified:**
+
+1. [Token Exposure in Documentation]: echo and curl commands showing secrets
+   - Root cause: Debug commands reveal partial/full tokens in process
+     lists/history
+   - Prevention: Use stdin-based patterns like `curl --config -` for sensitive
+     headers
+
+2. [Symlink Defense]: path.relative() doesn't resolve symlinks
+   - Root cause: Path validation used logical paths, not real paths
+   - Prevention: Use fs.realpathSync() to resolve symlinks before path
+     validation
+
+3. [Silent Parse Errors]: loadJsonlFile errors ignored in validation
+   - Root cause: Destructuring only `items`, ignoring `errors` return value
+   - Prevention: Always check `errors` when calling loadJsonlFile
+
+**Resolution:**
+
+- Fixed: 6 items
+- Deferred: 0 items
+- Rejected: 3 items (allow root path - security risk; /sonarcloud as shell cmd -
+  invalid)
+
+**Key Learnings:**
+
+- Token exposure in docs is a security issue even if "just documentation"
+- Symlink attacks require realpathSync, not just path.relative()
+- Validation functions should surface all error conditions, not just check
+  success

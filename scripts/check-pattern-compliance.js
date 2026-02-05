@@ -329,8 +329,9 @@ const ANTI_PATTERNS = [
     // Review #249: eval-check-stage.js L254,369 `file` from readdirSync; validated sessionPath upstream
     // Review #249: eval-snapshot.js L137 `file` from readdirSync; VIEWS_DIR is constant
     // Review #250: state-utils.js has validateFilename() basename check before all path.join calls
+    // Review #252: eval-sonarcloud-snapshot.js L186 `file` from readdirSync; containment check at L200-201
     pathExclude:
-      /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings|transform-jsonl-schema|eval-check-stage|eval-snapshot|state-utils)\.js$/,
+      /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings|transform-jsonl-schema|eval-check-stage|eval-snapshot|eval-sonarcloud-snapshot|state-utils)\.js$/,
   },
   {
     id: "error-without-first-line",

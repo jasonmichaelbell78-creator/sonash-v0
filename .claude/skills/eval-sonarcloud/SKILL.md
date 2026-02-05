@@ -199,10 +199,14 @@ cat "$SESSION/eval/EVALUATION-REPORT.md"
 
 ### E1 Fails: API Fetch
 
-- Check SONAR_TOKEN: `echo $SONAR_TOKEN | head -c 10`
-- Verify project key: `grep projectKey sonar-project.properties`
-- Test API (token from env var, safer than command-line arg):
-  `curl -s -H "Authorization: Bearer $SONAR_TOKEN" "https://sonarcloud.io/api/projects/search" | jq .`
+- Check SONAR_TOKEN is set:
+  `[ -n "$SONAR_TOKEN" ] && echo "Token set (${#SONAR_TOKEN} chars)" || echo "Token NOT set"`
+- Verify project key:
+  `grep -E '^\s*sonar\.projectKey\s*=' sonar-project.properties`
+- Test API (token via stdin to avoid process list exposure):
+  ```bash
+  curl -s --config - "https://sonarcloud.io/api/projects/search" <<< "header = \"Authorization: Bearer $SONAR_TOKEN\"" | jq .
+  ```
 
 ### E2 Fails: Deduplication
 

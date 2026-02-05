@@ -75,11 +75,18 @@ function loadJsonlFile(filePath) {
 
 function appendResult(sessionPath, result) {
   const evalDir = path.join(sessionPath, "eval");
-  if (!fs.existsSync(evalDir)) {
-    fs.mkdirSync(evalDir, { recursive: true });
+  try {
+    if (!fs.existsSync(evalDir)) {
+      fs.mkdirSync(evalDir, { recursive: true });
+    }
+    const resultsFile = path.join(evalDir, "stage-results.jsonl");
+    fs.appendFileSync(resultsFile, JSON.stringify(result) + "\n");
+  } catch (err) {
+    console.error(
+      `Failed to write stage result: ${err instanceof Error ? err.message : String(err)}`
+    );
+    // Continue execution - result logging is non-critical
   }
-  const resultsFile = path.join(evalDir, "stage-results.jsonl");
-  fs.appendFileSync(resultsFile, JSON.stringify(result) + "\n");
 }
 
 function getLatestLogEntry(logFile, actionFilter) {
@@ -306,7 +313,14 @@ function checkE3(sessionPath) {
   const preSnapshot = loadSnapshot(sessionPath, "pre");
 
   // Load items once for all checks (avoid duplicate file read)
-  const { items } = loadJsonlFile(MASTER_FILE);
+  const { items, errors } = loadJsonlFile(MASTER_FILE);
+
+  // Surface JSONL parse errors if any
+  if (errors > 0) {
+    issues.push(`${errors} JSON parse error(s) in MASTER_DEBT.jsonl`);
+    score -= Math.min(30, errors * 5);
+    recommendations.push("Fix malformed JSON lines in MASTER_DEBT.jsonl before evaluating");
+  }
 
   // Check resolution log for resolve operation
   const resolutionLog = path.join(LOGS_DIR, "resolution-log.jsonl");

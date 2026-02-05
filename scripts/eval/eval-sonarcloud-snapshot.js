@@ -172,19 +172,45 @@ function getViewsState() {
   const views = {};
   if (!fs.existsSync(VIEWS_DIR)) return views;
 
+  // Resolve VIEWS_DIR to real path for symlink-safe comparison
+  let viewsRoot;
+  try {
+    viewsRoot = fs.realpathSync(VIEWS_DIR);
+  } catch {
+    return views;
+  }
+
   try {
     const files = fs.readdirSync(VIEWS_DIR).filter((f) => f.endsWith(".md"));
     for (const file of files) {
       const filePath = path.join(VIEWS_DIR, file);
-      // Validate path stays within VIEWS_DIR (defense against symlink attacks)
-      const relative = path.relative(VIEWS_DIR, filePath);
-      if (relative === "" || /^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative)) {
+
+      // Check if file is a symlink and skip it
+      let stat;
+      try {
+        stat = fs.lstatSync(filePath);
+      } catch {
+        continue;
+      }
+      if (stat.isSymbolicLink()) continue;
+
+      // Resolve to real path and validate it stays within views directory
+      let realFilePath;
+      try {
+        realFilePath = fs.realpathSync(filePath);
+      } catch {
+        continue;
+      }
+
+      const relative = path.relative(viewsRoot, realFilePath);
+      if (/^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative)) {
         continue; // Skip files that escape the views directory
       }
+
       views[file] = {
-        mtime: getFileMtime(filePath),
-        hash: getFileHash(filePath),
-        size: getFileSize(filePath),
+        mtime: getFileMtime(realFilePath),
+        hash: getFileHash(realFilePath),
+        size: getFileSize(realFilePath),
       };
     }
   } catch {
