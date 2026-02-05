@@ -413,11 +413,11 @@ All scripts are located in `scripts/debt/`.
 
 ### Logs
 
-| File                        | Purpose                     |
-| --------------------------- | --------------------------- |
-| `logs/dedup-log.jsonl`      | Merge/deduplication history |
-| `logs/intake-log.jsonl`     | Intake activity log         |
-| `logs/resolution-log.jsonl` | Resolution activity log     |
+| File                        | Purpose                                                                                   |
+| --------------------------- | ----------------------------------------------------------------------------------------- |
+| `logs/dedup-log.jsonl`      | Merge/deduplication history (archived to `docs/archive/tdms-intermediates-2026-02/logs/`) |
+| `logs/intake-log.jsonl`     | Intake activity log                                                                       |
+| `logs/resolution-log.jsonl` | Resolution activity log                                                                   |
 
 ---
 

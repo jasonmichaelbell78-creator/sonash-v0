@@ -7,6 +7,29 @@ deprecated files from the SoNash project.
 
 ## 🗂️ Archive Organization
 
+### February 5, 2026 - TDMS Pipeline Intermediates & Phase Reports
+
+**Location:** `/docs/archive/tdms-intermediates-2026-02/`
+
+**Purpose:** Archive of TDMS Phase 1 pipeline intermediate files and 17 phase
+audit reports. All findings consolidated into `MASTER_DEBT.jsonl` (899 items).
+
+**Archived Contents:**
+
+- `raw/` - Pipeline intermediate outputs (audits.jsonl, sonarcloud.jsonl,
+  reviews.jsonl, normalized-all.jsonl, review-needed.jsonl)
+- `logs/` - Pipeline logs (dedup-log.jsonl)
+- `phase-reports/` - 17 PHASE\_\*\_AUDIT.md reports (Phases 1-16, 18, 9B)
+
+**Still Active:** `raw/deduped.jsonl` (input to generate-views.js),
+`LEGACY_ID_MAPPING.json`, `FINAL_SYSTEM_AUDIT.md`,
+`roadmap-assignment-report.md`
+
+**Details:** See
+[tdms-intermediates-2026-02/MANIFEST.md](./tdms-intermediates-2026-02/MANIFEST.md)
+
+---
+
 ### February 1, 2026 - Technical Debt Source Documents
 
 **Location:** `/docs/archive/technical-debt-sources-2026-01/`
