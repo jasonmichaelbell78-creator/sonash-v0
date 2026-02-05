@@ -547,7 +547,7 @@ See [MONETIZATION_RESEARCH.md](docs/MONETIZATION_RESEARCH.md) for full analysis.
 
 ## 📊 Technical Debt Backlog
 
-> **Source:** [TECHNICAL_DEBT_MASTER.md](docs/TECHNICAL_DEBT_MASTER.md)
+> **Source:** [TECHNICAL_DEBT_MASTER.md](docs/technical-debt/INDEX.md)
 
 | Severity    | Count | Hours |
 | ----------- | ----- | ----- |

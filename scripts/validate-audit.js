@@ -147,7 +147,7 @@ function isLikelyUnsafeRegex(pattern) {
   // Length limit to prevent very large patterns
   if (pattern.length > 500) return true;
   // Nested quantifiers like (a+)+, (.*)+, ([\s\S]*)* etc.
-  if (/\((?:[^()]|\\.)*[+*?](?:[^()]|\\.)*\)[+*?]/.test(pattern)) return true;
+  if (/\((?:[^()]|\\.){0,200}[+*?](?:[^()]|\\.){0,200}\)[+*?]/.test(pattern)) return true;
   // Extremely broad dot-star with additional quantifiers
   if (/(?:\.\*|\[\s\S\]\*)[+*?]/.test(pattern)) return true;
   return false;

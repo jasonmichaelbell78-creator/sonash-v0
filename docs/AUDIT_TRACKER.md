@@ -4,7 +4,7 @@
 **Purpose:** Track single-session and multi-AI audit completions for threshold
 management
 
-> **Related:** [TECHNICAL_DEBT_MASTER.md](./TECHNICAL_DEBT_MASTER.md) ← Single
+> **Related:** [TECHNICAL_DEBT_MASTER.md](./technical-debt/INDEX.md) ← Single
 > source of truth for all technical debt items (Session #98)
 
 ---
@@ -147,12 +147,12 @@ When tracking audits:
 | ---------- | ------------- | -------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------- |
 | 2026-02-03 | **ALL 7**     | Claude Opus 4.5 (7 specialized agents)                               | 132 raw → 30 unique (0 S0, 13 S1, 12 S2, 5 S3)  | [aggregated-findings.jsonl](./audits/comprehensive/aggregated-findings.jsonl)         |
 | 2026-01-24 | **ALL 6**     | Claude Opus 4.5 (6 specialized agents)                               | 115 (9 S0, 28 S1, 46 S2, 32 S3)                 | [COMPREHENSIVE_AUDIT_REPORT.md](./audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md) |
-| 2026-01-10 | Process       | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 14 canonical                                    | [CANON-PROCESS.jsonl](./reviews/2026-Q1/canonical/CANON-PROCESS.jsonl)                |
-| 2026-01-10 | Documentation | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 14 canonical                                    | [CANON-DOCS.jsonl](./reviews/2026-Q1/canonical/CANON-DOCS.jsonl)                      |
-| 2026-01-10 | Refactoring   | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 27 canonical                                    | [CANON-REFACTOR.jsonl](./reviews/2026-Q1/canonical/CANON-REFACTOR.jsonl)              |
-| 2026-01-08 | Performance   | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 28 raw → 20 canonical (1 S0, 7 S1, 17 S2, 3 S3) | [CANON-PERF.jsonl](./reviews/2026-Q1/canonical/CANON-PERF.jsonl)                      |
-| 2026-01-07 | Security      | Claude Opus 4.5, ChatGPT 5.2                                         | 10 canonical                                    | [CANON-SECURITY.jsonl](./reviews/2026-Q1/canonical/CANON-SECURITY.jsonl)              |
-| 2026-01-06 | Code Review   | Claude Opus 4.5, ChatGPT 5.2                                         | 33 canonical                                    | [CANON-CODE.jsonl](./reviews/2026-Q1/canonical/CANON-CODE.jsonl)                      |
+| 2026-01-10 | Process       | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 14 canonical                                    | [CANON-PROCESS.jsonl](./technical-debt/MASTER_DEBT.jsonl)                             |
+| 2026-01-10 | Documentation | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 14 canonical                                    | [CANON-DOCS.jsonl](./technical-debt/MASTER_DEBT.jsonl)                                |
+| 2026-01-10 | Refactoring   | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 27 canonical                                    | [CANON-REFACTOR.jsonl](./technical-debt/MASTER_DEBT.jsonl)                            |
+| 2026-01-08 | Performance   | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 28 raw → 20 canonical (1 S0, 7 S1, 17 S2, 3 S3) | [CANON-PERF.jsonl](./technical-debt/MASTER_DEBT.jsonl)                                |
+| 2026-01-07 | Security      | Claude Opus 4.5, ChatGPT 5.2                                         | 10 canonical                                    | [CANON-SECURITY.jsonl](./technical-debt/MASTER_DEBT.jsonl)                            |
+| 2026-01-06 | Code Review   | Claude Opus 4.5, ChatGPT 5.2                                         | 33 canonical                                    | [CANON-CODE.jsonl](./technical-debt/MASTER_DEBT.jsonl)                                |
 
 ---
 
@@ -162,7 +162,7 @@ When tracking audits:
 | ---------- | ------------ | --------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | 2026-02-03 | 132          | 30              | 77%       | [aggregated-findings.jsonl](./audits/comprehensive/aggregated-findings.jsonl), TDMS intake: DEBT-0869 to DEBT-0898 (898 total) |
 | 2026-01-24 | 115          | 109             | 5%        | [COMPREHENSIVE_AUDIT_REPORT.md](./audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)                                          |
-| 2026-01-17 | 292          | 283             | 3%        | [MASTER_ISSUE_LIST.md](./aggregation/MASTER_ISSUE_LIST.md), [IMPLEMENTATION_PLAN.md](./aggregation/IMPLEMENTATION_PLAN.md)     |
+| 2026-01-17 | 292          | 283             | 3%        | [MASTER_ISSUE_LIST.md](./technical-debt/INDEX.md), [IMPLEMENTATION_PLAN.md](./technical-debt/INDEX.md)                         |
 
 **Latest Aggregation Summary (2026-02-03 Comprehensive):**
 

@@ -57,7 +57,7 @@ Recovery Notebook project. It provides:
 ```
 ☐ 1. Read SESSION_CONTEXT.md (current status, next goals)
 ☐ 2. Read GLOBAL_SECURITY_STANDARDS.md (MANDATORY before any coding)
-☐ 3. Check MULTI_AI_REVIEW_COORDINATOR.md:
+☐ 3. Check docs/multi-ai-audit/COORDINATOR.md:
      - Increment session counter
      - Note any health issues
 ☐ 4. Check AUDIT_TRACKER.md:
@@ -83,7 +83,7 @@ Recovery Notebook project. It provides:
 > [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md).
 >
 > **IMPORTANT**: Step 3 tracks session count for health triggers. Increment the
-> counter in MULTI_AI_REVIEW_COORDINATOR.md → "Session Counter" section.
+> counter in docs/multi-ai-audit/COORDINATOR.md → "Session Counter" section.
 >
 > **AUDIT TRACKING**: Step 4 tracks audit thresholds by category. Single-session
 > audits can be run via `/audit-code`, `/audit-security`, etc. See
@@ -114,8 +114,8 @@ Recovery Notebook project. It provides:
    - Secrets management rules
    - OWASP compliance checklist
 
-3. **[MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)** -
-   Project health & reviews
+3. **[COORDINATOR.md](./docs/multi-ai-audit/COORDINATOR.md)** - Project health &
+   reviews
    - Session counter (increment each session)
    - Project Health Dashboard
    - Compliance log
@@ -843,7 +843,7 @@ Use this template when completing any phase/milestone:
 1. Update SESSION_CONTEXT.md
 2. Update relevant planning docs
 3. Add entry to compliance log in
-   [MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)
+   [COORDINATOR.md](./docs/multi-ai-audit/COORDINATOR.md)
 4. Commit documentation changes
 5. Verify all work documented
 

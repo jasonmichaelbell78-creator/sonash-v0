@@ -176,7 +176,7 @@ with no exclusions.
 
 **Step 4: Check Template Currency**
 
-Read `docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md` and verify:
+Read `docs/multi-ai-audit/templates/PERFORMANCE_AUDIT_PLAN.md` and verify:
 
 - [ ] Stack versions match package.json
 - [ ] Bundle size baseline is recent

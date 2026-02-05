@@ -104,7 +104,7 @@ function checkMilestoneItemCounts(content, fileName) {
   // Extract claimed item counts from overview table
   // Use \r?\n for cross-platform CRLF compatibility (Review #211)
   const overviewTableMatch = content.match(
-    /## 📊 Milestones Overview[\s\S]*?\|[\s\S]*?(?=\r?\n\r?\n|\r?\n##|\r?\n---)/
+    /## 📊 Milestones Overview[\s\S]{0,10000}?\|[\s\S]{0,10000}?(?=\r?\n\r?\n|\r?\n##|\r?\n---)/
   );
 
   if (!overviewTableMatch) {
@@ -123,7 +123,7 @@ function checkMilestoneItemCounts(content, fileName) {
  */
 function checkLinkedDocuments(content, fileName) {
   // Find all relative markdown links
-  const linkMatches = content.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g);
+  const linkMatches = content.matchAll(/\[([^\]]{1,2000})\]\(([^)]{1,2000})\)/g);
 
   for (const match of linkMatches) {
     const linkText = match[1];

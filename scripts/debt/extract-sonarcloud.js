@@ -43,7 +43,7 @@ const CATEGORY_MAP = {
 function parseEffort(effortStr) {
   if (!effortStr) return "E1";
   // Coerce to string to prevent crashes on non-string values
-  const match = String(effortStr).match(/(\d+)(min|h|d)/);
+  const match = String(effortStr).match(/(\d{1,10})(min|h|d)/);
   if (!match) return "E1";
 
   const value = parseInt(match[1], 10);
@@ -142,7 +142,14 @@ function main() {
     process.exit(1);
   }
 
-  const rawData = fs.readFileSync(INPUT_FILE, "utf8");
+  let rawData;
+  try {
+    rawData = fs.readFileSync(INPUT_FILE, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Cannot read input file: ${errMsg}`);
+    process.exit(1);
+  }
   const data = JSON.parse(rawData);
 
   const items = [];

@@ -192,7 +192,7 @@ Note patterns to exclude from final findings.
 
 **Step 4: Check Template Currency**
 
-Read `docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md` and verify:
+Read `docs/multi-ai-audit/templates/CODE_REVIEW_PLAN.md` and verify:
 
 - [ ] Stack versions match package.json
 - [ ] Test count baseline is accurate

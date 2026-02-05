@@ -71,7 +71,7 @@ function generateHeader(title, today) {
 
 // Load existing items to preserve their IDs
 function loadExistingIds() {
-  const idMap = new Map(); // content_hash/source_id -> existing DEBT-XXXX
+  const idMap = new Map(); // content_hash/source_id/fingerprint -> existing DEBT-XXXX
   let maxId = 0;
 
   if (fs.existsSync(MASTER_FILE)) {
@@ -87,9 +87,16 @@ function loadExistingIds() {
               const num = parseInt(match[1], 10);
               if (num > maxId) maxId = num;
             }
-            // Map by both content_hash and source_id for stable ID lookup
+            // Map by content_hash, source_id, AND fingerprint for stable ID lookup
             if (item.content_hash) idMap.set(`hash:${item.content_hash}`, item.id);
             if (item.source_id) idMap.set(`source:${item.source_id}`, item.id);
+            if (item.fingerprint) idMap.set(`fp:${item.fingerprint}`, item.id);
+            // Also map merged source IDs so dedup merges preserve the original ID
+            if (Array.isArray(item.merged_from)) {
+              for (const srcId of item.merged_from) {
+                idMap.set(`source:${srcId}`, item.id);
+              }
+            }
           }
         } catch {
           // Skip invalid lines
@@ -119,7 +126,14 @@ function main() {
   let newCount = 0;
 
   // Read deduped items with safe JSON parsing
-  const content = fs.readFileSync(INPUT_FILE, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(INPUT_FILE, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Cannot read input file: ${errMsg}`);
+    process.exit(1);
+  }
   const lines = content.split("\n").filter((line) => line.trim());
 
   // Track used IDs to prevent duplicates in current run
@@ -133,17 +147,28 @@ function main() {
     try {
       item = JSON.parse(lines[i]);
     } catch (err) {
-      parseErrors.push({ line: i + 1, message: err.message });
+      parseErrors.push({ line: i + 1, message: err instanceof Error ? err.message : String(err) });
       continue;
     }
 
     // Try to find existing ID (preserve stable IDs)
+    // Priority: fingerprint > content_hash > source_id (fingerprint is most stable)
     let existingId = null;
-    if (item.content_hash) {
+    if (item.fingerprint) {
+      existingId = idMap.get(`fp:${item.fingerprint}`);
+    }
+    if (!existingId && item.content_hash) {
       existingId = idMap.get(`hash:${item.content_hash}`);
     }
     if (!existingId && item.source_id) {
       existingId = idMap.get(`source:${item.source_id}`);
+    }
+    // Also check merged_from source IDs as fallback
+    if (!existingId && Array.isArray(item.merged_from)) {
+      for (const srcId of item.merged_from) {
+        existingId = idMap.get(`source:${srcId}`);
+        if (existingId) break;
+      }
     }
 
     // Check if existingId is already used in this run to prevent duplicates
@@ -157,6 +182,14 @@ function main() {
       usedIds.add(item.id);
       nextId++;
       newCount++;
+    }
+
+    // Ensure required fields have defaults (intake items may lack source_id/status)
+    if (!item.source_id) {
+      item.source_id = item.fingerprint ? `intake:${item.fingerprint}` : `intake:${item.id}`;
+    }
+    if (!item.status) {
+      item.status = "NEW";
     }
 
     items.push(item);
@@ -177,7 +210,25 @@ function main() {
   console.log(`  📊 Processing ${items.length} items`);
   console.log(`     Preserved IDs: ${preservedCount}, New IDs: ${newCount}\n`);
 
-  // Sort by severity for consistent view ordering (but DO NOT reassign IDs!)
+  // Write MASTER_DEBT.jsonl in stable ID order (prevents gratuitous diffs)
+  const idSorted = [...items].sort((a, b) => {
+    const aNum = parseInt((a.id || "").replace("DEBT-", ""), 10) || 0;
+    const bNum = parseInt((b.id || "").replace("DEBT-", ""), 10) || 0;
+    return aNum - bNum;
+  });
+  const masterLines = idSorted.map((item) => JSON.stringify(item));
+  fs.writeFileSync(MASTER_FILE, masterLines.join("\n") + "\n");
+  console.log(`  ✅ ${MASTER_FILE}`);
+
+  // Warn if many new IDs were assigned (potential instability)
+  if (newCount > 0 && preservedCount > 0) {
+    const newPct = ((newCount / items.length) * 100).toFixed(1);
+    if (newCount > 10) {
+      console.log(`  ⚠️  ${newCount} new IDs assigned (${newPct}%) - check for ID drift`);
+    }
+  }
+
+  // Sort by severity for view file ordering
   items.sort(severitySort);
 
   // Ensure directories exist
@@ -195,11 +246,6 @@ function main() {
       legacyMapping[item.source_id] = item.id;
     }
   }
-
-  // Write MASTER_DEBT.jsonl
-  const masterLines = items.map((item) => JSON.stringify(item));
-  fs.writeFileSync(MASTER_FILE, masterLines.join("\n") + "\n");
-  console.log(`  ✅ ${MASTER_FILE}`);
 
   // Write LEGACY_ID_MAPPING.json
   fs.writeFileSync(LEGACY_MAP_FILE, JSON.stringify(legacyMapping, null, 2));

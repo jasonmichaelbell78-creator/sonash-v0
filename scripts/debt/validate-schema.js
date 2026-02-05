@@ -30,6 +30,7 @@ const VALID_CATEGORIES = [
   "documentation",
   "process",
   "refactoring",
+  "engineering-productivity",
 ];
 
 const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
@@ -175,7 +176,13 @@ Exit codes:
   }
 
   // Read and parse file
-  const content = fs.readFileSync(filePath, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(filePath, "utf8");
+  } catch (err) {
+    console.error(`Error reading file: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(2);
+  }
   const lines = content.split("\n").filter((line) => line.trim());
 
   if (!parsed.quiet) {

@@ -146,7 +146,7 @@ if [[ "$TRIGGERS_FOUND" -gt 0 ]]; then
   echo -e "${YELLOW}Triggers found: $TRIGGERS_FOUND${NC}"
   echo ""
   echo "Recommended actions:"
-  echo "  1. Check MULTI_AI_REVIEW_COORDINATOR.md for review types"
+  echo "  1. Check docs/multi-ai-audit/COORDINATOR.md for review types"
   echo "  2. Select appropriate template"
   echo "  3. Run multi-AI review if significant"
 else
@@ -155,5 +155,5 @@ else
 fi
 
 echo ""
-echo "See docs/MULTI_AI_REVIEW_COORDINATOR.md for full trigger checklist"
+echo "See docs/multi-ai-audit/COORDINATOR.md for full trigger checklist"
 echo "$SEPARATOR_LINE"

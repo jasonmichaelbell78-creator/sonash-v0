@@ -1,6 +1,11 @@
 # Multi-AI Refactor Audit Prompt Template
 
-**Document Tier:** 3 (Template) **Status:** Active **Last Updated:** 2026-01-05
+**Document Tier:** 3 (Template) **Status:** Active **Last Updated:** 2026-02-04
+
+> **⚠️ Multi-Agent Capability Note:** This template assumes orchestration by
+> Claude Code which can spawn parallel agents via the Task tool. Other AI
+> systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
+> sections sequentially or use external orchestration.
 
 ---
 
@@ -12,12 +17,9 @@ inconsistencies, and tech debt in the codebase.
 
 **Related Templates:**
 
-- [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) -
-  Code review audits
-- [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) -
-  Security audits
-- [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) -
-  Performance audits
+- [CODE_REVIEW_PLAN.md](./CODE_REVIEW_PLAN.md) - Code review audits
+- [SECURITY_AUDIT_PLAN.md](./SECURITY_AUDIT_PLAN.md) - Security audits
+- [PERFORMANCE_AUDIT_PLAN.md](./PERFORMANCE_AUDIT_PLAN.md) - Performance audits
 
 ---
 
@@ -272,6 +274,7 @@ below.
 
 | Version | Date       | Changes                                                                                                        |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------- |
+| 1.2     | 2026-02-04 | Added multi-agent capability caveat for non-Claude systems                                                     |
 | 1.1     | 2026-01-05 | Added template structure (H1, Purpose, Quick Start, AI Instructions, Version History) for docs-lint compliance |
 | 1.0     | 2025-12-30 | Initial prompt created                                                                                         |
 

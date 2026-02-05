@@ -7,8 +7,8 @@
 ## Purpose
 
 One-page quick reference for Multi-AI audits. Distilled from the 400+ line
-MULTI_AI_AGGREGATOR_TEMPLATE.md to provide essential schema, format rules, and
-validation commands at a glance.
+docs/multi-ai-audit/templates/AGGREGATOR.md to provide essential schema, format
+rules, and validation commands at a glance.
 
 ## AI Instructions
 
@@ -172,6 +172,6 @@ Before starting a new category audit:
 
 ---
 
-**Full Template:** `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md` (400+ lines)
-**Schema Definition:** `docs/standards/JSONL_SCHEMA_STANDARD.md` **Validation
-Script:** `scripts/validate-canon-schema.js`
+**Full Template:** `docs/templates/docs/multi-ai-audit/templates/AGGREGATOR.md`
+(400+ lines) **Schema Definition:** `docs/standards/JSONL_SCHEMA_STANDARD.md`
+**Validation Script:** `scripts/validate-canon-schema.js`

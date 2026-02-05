@@ -448,7 +448,9 @@ function parseRoadmapItems(filePath) {
 
     // Match checkbox items: - [x] **A1:** Description or - [ ] **A1:** Description
     // Extended to match multi-char IDs like EFF-006, BOT-001, etc.
-    const checkboxMatch = line.match(/^[-*]\s*\[([ xX])\]\s*\*\*([A-Z][A-Z0-9-]*\d+):\*\*\s*(.+)/);
+    const checkboxMatch = line.match(
+      /^[-*]\s*\[([ xX])\]\s*\*\*([A-Z][A-Z0-9-]*\d+):\*\*\s*(.{1,1000})/
+    );
     if (checkboxMatch) {
       const isComplete = checkboxMatch[1].toLowerCase() === "x";
       const itemId = checkboxMatch[2];
@@ -491,7 +493,7 @@ function parseRoadmapItems(filePath) {
       // Clean up trailing asterisks and effort markers
       description = description
         .replace(/\*\*$/, "")
-        .replace(/\s*\([SMLE]\s*effort\)\s*$/i, "")
+        .replace(/\s{0,100}\([SMLE]\s{0,100}effort\)\s{0,100}$/i, "")
         .trim();
 
       // Detect completion status from emoji
@@ -527,9 +529,9 @@ function parseRoadmapItems(filePath) {
 
     // Also match table rows with IDs: | REACT-001 | Description | file.tsx | ...
     // Extended pattern to match: ARCH-002, M2.3-REF-001, CANON-0072, T7.1, etc.
-    const tableMatch = line.match(/^\|\s*([\w.-]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/);
+    const tableMatch = line.match(/^\|\s*([\w.-]+)\s*\|\s*([^|]{1,500})\s*\|\s*([^|]{1,500})\s*\|/);
     // Flexible ID pattern: starts with letter, contains alphanumerics/dots/hyphens, ends with digit
-    if (tableMatch && /^[A-Z][A-Z0-9.-]*\d+$/i.test(tableMatch[1].trim())) {
+    if (tableMatch && /^[A-Z][A-Z0-9.-]{0,200}\d+$/i.test(tableMatch[1].trim())) {
       const itemId = tableMatch[1].trim();
       const col2 = tableMatch[2].trim();
       const col3 = tableMatch[3].trim();
@@ -603,7 +605,7 @@ function parseTechDebtItems(filePath) {
   for (const line of lines) {
     // Match table rows with IDs like PERF-001, SEC-003, etc.
     const tableMatch = line.match(
-      /^\|\s*\*?\*?([\w-]+)\*?\*?\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/
+      /^\|\s*\*?\*?([\w-]+)\*?\*?\s*\|\s*([^|]{1,500})\s*\|\s*([^|]{1,500})\s*\|\s*([^|]{1,500})\s*\|/
     );
     if (tableMatch && /^[A-Z]+-\d+$/i.test(tableMatch[1].trim())) {
       const itemId = tableMatch[1].trim().toUpperCase();

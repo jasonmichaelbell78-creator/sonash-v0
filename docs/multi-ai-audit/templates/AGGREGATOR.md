@@ -1,6 +1,11 @@
 # Multi-AI Audit Aggregator Template
 
-**Document Version:** 2.6 **Last Updated:** 2026-02-03
+**Document Version:** 2.7 **Last Updated:** 2026-02-04 **Tier:** 3 (Planning)
+
+> **⚠️ Multi-Agent Capability Note:** This template assumes orchestration by
+> Claude Code which can spawn parallel agents via the Task tool. Other AI
+> systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
+> sections sequentially or use external orchestration.
 
 ---
 
@@ -72,7 +77,7 @@ This template supports TWO distinct aggregation modes:
 **Purpose:** Deduplicate and verify findings within ONE audit category before
 moving to next category.
 
-**Categories (6 total):**
+**Categories (7 total):**
 
 1. Code Review (Hygiene, Types, Boundaries, Security, Testing)
 2. Security Audit (Rate Limiting, Validation, Secrets, Auth, Firebase,
@@ -83,10 +88,12 @@ moving to next category.
    Frontmatter)
 6. Process/Automation (CI/CD, Hooks, Scripts, Pattern Checker, Triggers,
    Documentation)
+7. Engineering Productivity (Golden Path, Debugging Ergonomics, Offline Support,
+   CI/CD Efficiency, Test Infrastructure)
 
 ### Tier-2 Mode: Cross-Category Unification
 
-**Input:** 6 category-level CANON files (NOT raw AI outputs)
+**Input:** 7 category-level CANON files (NOT raw AI outputs)
 
 - CANON-CODE.jsonl
 - CANON-SECURITY.jsonl
@@ -94,13 +101,14 @@ moving to next category.
 - CANON-REFACTOR.jsonl
 - CANON-DOCS.jsonl
 - CANON-PROCESS.jsonl
+- CANON-ENG-PROD.jsonl
 
 **Output:** Final unified DEDUPED_FINDINGS_JSONL + PR_PLAN_JSON
 
 **Purpose:** Deduplicate across categories, identify cross-cutting issues,
 produce coordinated PR plan.
 
-**Important:** Tier-2 runs ONCE after ALL 6 categories complete Tier-1.
+**Important:** Tier-2 runs ONCE after ALL 7 categories complete Tier-1.
 
 ---
 
@@ -654,6 +662,7 @@ Reports orphaned refs, unplaced items, and status mismatches.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                   | Author   |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 2.7     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat; Added Engineering Productivity as 7th category (CANON-ENG-PROD.jsonl)                                                                                                                                                                                                                                         | Claude   |
 | 2.6     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula, track assignment rules, and review cadence                                                                                                                                                                                                                                                      | Claude   |
 | 2.5     | 2026-02-02 | Added AI_HEALTH_SCORE.json output with factor weights (hallucination rate, test validity, error handling, consistency, documentation drift). Added cross-reference AI findings section.                                                                                                                                                                                   | Claude   |
 | 2.4     | 2026-01-17 | Added Post-Aggregation Actions section with roadmap update instructions; linked to `npm run aggregate:audit-findings` for automatic MASTER_ISSUE_LIST.md and ROADMAP.md updates                                                                                                                                                                                           | Claude   |
@@ -665,4 +674,4 @@ Reports orphaned refs, unplaced items, and status mismatches.
 
 ---
 
-**END OF MULTI_AI_AGGREGATOR_TEMPLATE.md**
+**END OF AGGREGATOR.md**

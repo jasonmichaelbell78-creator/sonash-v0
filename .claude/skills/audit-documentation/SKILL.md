@@ -705,10 +705,10 @@ is recommended. Track in AUDIT_TRACKER.md "Single audits completed" counter.
 
 When modifying this skill, also update:
 
-| Document                                                  | Section                        |
-| --------------------------------------------------------- | ------------------------------ |
-| `docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md` | Sync category list             |
-| `docs/SLASH_COMMANDS_REFERENCE.md`                        | /audit-documentation reference |
+| Document                                               | Section                        |
+| ------------------------------------------------------ | ------------------------------ |
+| `docs/multi-ai-audit/templates/DOCUMENTATION_AUDIT.md` | Sync category list             |
+| `docs/SLASH_COMMANDS_REFERENCE.md`                     | /audit-documentation reference |
 
 ---
 

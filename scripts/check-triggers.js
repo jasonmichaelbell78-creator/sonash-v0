@@ -203,7 +203,7 @@ function checkConsolidationTrigger() {
     const output = `${result.stdout || ""}\n${result.stderr || ""}`;
 
     // Look for "X reviews until next consolidation"
-    const match = output.match(/(\d+) reviews? until next consolidation/);
+    const match = output.match(/(\d{1,10}) reviews? until next consolidation/);
     if (match) {
       const remaining = Number.parseInt(match[1], 10);
       if (remaining <= trigger.threshold) {

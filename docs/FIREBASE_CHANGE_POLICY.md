@@ -642,7 +642,7 @@ All Firebase changes are tracked via:
 - **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System architecture and data model
 - **[SECURITY.md](./SECURITY.md)** - Security vulnerability reporting and key
   rotation
-- **[MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)** -
+- **[SECURITY_AUDIT_PLAN.md](./multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md)** -
   Security audit template (references this policy)
 - **[DEVELOPMENT.md](../DEVELOPMENT.md)** - Development workflow and testing
   procedures

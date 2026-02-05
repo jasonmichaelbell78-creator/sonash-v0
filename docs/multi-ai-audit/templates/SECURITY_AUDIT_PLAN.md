@@ -1,7 +1,13 @@
 # [Project Name] Multi-AI Security Audit Plan
 
-**Document Version:** 1.6 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-02
-**Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
+**Document Version:** 1.7 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-04
+**Tier:** 3 (Planning) **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall
+Completion:** 0%
+
+> **⚠️ Multi-Agent Capability Note:** This template assumes orchestration by
+> Claude Code which can spawn parallel agents via the Task tool. Other AI
+> systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
+> sections sequentially or use external orchestration.
 
 ---
 
@@ -18,7 +24,7 @@ security-focused audit on [Project Name]. Use this template when:
 - Compliance requirements demand audit
 
 **This template enforces the mandatory standards from
-[GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md).**
+[GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md).**
 
 **Review Focus Areas (13 Mandatory Categories):**
 
@@ -824,7 +830,7 @@ When using this template:
 7. **Ingest to TDMS** using `node scripts/debt/intake-audit.js`
 8. **Prioritize and remediate** based on severity
 9. **Update Audit History** in this file (include TDMS Items count)
-10. **Update MULTI_AI_REVIEW_COORDINATOR.md** with audit results
+10. **Update [COORDINATOR.md](../COORDINATOR.md)** with audit results
 
 **Quality checks before finalizing:**
 
@@ -840,15 +846,16 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL
-  schema for all review templates
-- **[docs/technical-debt/PROCEDURE.md](../technical-debt/PROCEDURE.md)** - TDMS
-  intake and tracking procedures
-- **[GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md)** -
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** -
+  Canonical JSONL schema for all review templates
+- **[docs/technical-debt/PROCEDURE.md](../../technical-debt/PROCEDURE.md)** -
+  TDMS intake and tracking procedures
+- **[GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md)** -
   Mandatory standards being verified
-- **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
-- **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template
-- **[SECURITY.md](../SECURITY.md)** - Additional security documentation
+- **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
+- **[CODE_REVIEW_PLAN.md](./CODE_REVIEW_PLAN.md)** - General code review
+  template
+- **[SECURITY.md](../../SECURITY.md)** - Additional security documentation
 - **firestore.rules** - Firebase security rules
 
 ---
@@ -857,6 +864,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.7     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems                                                                                                                                                                                                                        | Claude |
 | 1.6     | 2026-02-02 | Added Category 13: AI-Generated Code Security with hallucinated API detection, prompt injection surfaces, session boundary inconsistencies. Expanded from 12 to 13 mandatory categories.                                                                                                                 | Claude |
 | 1.5     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added Step 7 for TDMS intake, TDMS Integration section with intake commands, category mapping table, and completion checklist. Updated AI Instructions and Quality checks. Added PROCEDURE.md to Related Documents.                                                     | Claude |
 | 1.4     | 2026-01-13 | Expanded from 7 to 12 categories: Added Hosting & Headers Security (CSP, HSTS, COOP, COEP), Framework-Specific Security (Next.js boundary leaks), File Handling Security, Crypto & Randomness, AI Agent Security. Aligns with single-session audit-security.md updates for vibe-coded app coverage.      | Claude |
@@ -867,4 +875,4 @@ When using this template:
 
 ---
 
-**END OF MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md**
+**END OF SECURITY_AUDIT_PLAN.md**

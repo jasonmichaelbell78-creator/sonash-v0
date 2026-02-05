@@ -237,7 +237,7 @@ function extractExternalUrls(content, filePath) {
 
   for (let i = 0; i < lines.length; i++) {
     // Match [text](url) links
-    const linkPattern = /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g;
+    const linkPattern = /\[([^\]]{0,1000})\]\((https?:\/\/[^)\s]{1,1000})\)/g;
     linkPattern.lastIndex = 0;
     let match;
 

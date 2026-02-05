@@ -1,7 +1,13 @@
 # [Project Name] Multi-AI Process & Automation Audit Plan
 
-**Document Version:** 2.0 **Created:** 2026-01-05 **Last Updated:** 2026-01-31
-**Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
+**Document Version:** 2.1 **Created:** 2026-01-05 **Last Updated:** 2026-02-04
+**Tier:** 3 (Planning) **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall
+Completion:** 0%
+
+> **⚠️ Multi-Agent Capability Note:** This template assumes orchestration by
+> Claude Code which can spawn parallel agents via the Task tool. Other AI
+> systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
+> sections sequentially or use external orchestration.
 
 ---
 
@@ -872,7 +878,7 @@ When using this template:
 7. **Ingest to TDMS** using intake script
 8. **Create canonical findings doc**
 9. **Prioritize by impact/effort**
-10. **Update MULTI_AI_REVIEW_COORDINATOR.md** with audit results
+10. **Update [COORDINATOR.md](../COORDINATOR.md)** with audit results
 
 **Quality checks before finalizing:**
 
@@ -890,14 +896,17 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL
-  schema for all review templates
-- **[.claude/skills/audit-process/SKILL.md]** - Single-session audit skill
-  (v2.0)
-- **[docs/technical-debt/PROCEDURE.md]** - TDMS intake procedure
-- **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
-- **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template
-- **AI_WORKFLOW.md** - AI development workflow documentation
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** -
+  Canonical JSONL schema for all review templates
+- **[.claude/skills/audit-process/SKILL.md](../../../.claude/skills/audit-process/SKILL.md)** -
+  Single-session audit skill (v2.0)
+- **[docs/technical-debt/PROCEDURE.md](../../technical-debt/PROCEDURE.md)** -
+  TDMS intake procedure
+- **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
+- **[CODE_REVIEW_PLAN.md](./CODE_REVIEW_PLAN.md)** - General code review
+  template
+- **[AI_WORKFLOW.md](../../../AI_WORKFLOW.md)** - AI development workflow
+  documentation
 - **GitHub workflows** - CI/CD workflow files (`.github/workflows/`)
 
 ---
@@ -906,6 +915,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                | Author |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2.1     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems                                                      | Claude |
 | 2.0     | 2026-01-31 | **Major expansion**: 16 automation types, 12 categories, 7-stage approach, TDMS integration, parallel agents (Session #120)            | Claude |
 | 1.4     | 2026-01-13 | Added Category 7 "Golden Path & Developer Experience" - from Engineering Productivity audit recommendations                            | Claude |
 | 1.3     | 2026-01-11 | Session #48: Added Category 3b "Script Trigger Coverage" - checks for orphan scripts, missing npm commands, and automatic trigger gaps | Claude |
@@ -915,4 +925,4 @@ When using this template:
 
 ---
 
-**END OF MULTI_AI_PROCESS_AUDIT_TEMPLATE.md**
+**END OF PROCESS_AUDIT.md**

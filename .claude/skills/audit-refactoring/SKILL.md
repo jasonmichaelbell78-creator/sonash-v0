@@ -1,6 +1,10 @@
 ---
 name: audit-refactoring
 description: Run a single-session refactoring audit on the codebase
+supports_parallel: true
+fallback_available: true
+estimated_time_parallel: 20 min
+estimated_time_sequential: 60 min
 ---
 
 # Single-Session Refactoring Audit
@@ -92,7 +96,7 @@ Note patterns to exclude from final findings.
 
 **Step 4: Check Template Currency**
 
-Read `docs/templates/MULTI_AI_REFACTORING_PLAN_TEMPLATE.md` and verify:
+Read `docs/multi-ai-audit/templates/REFACTOR_PLAN.md` and verify:
 
 - [ ] SonarQube baseline is current (778 issues, 47 CRITICAL)
 - [ ] Known god objects are listed

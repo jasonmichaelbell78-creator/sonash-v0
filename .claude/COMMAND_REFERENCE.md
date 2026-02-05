@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 2.7 **Last Updated:** 2026-02-02 **Purpose:** Comprehensive
+**Version:** 2.9 **Last Updated:** 2026-02-04 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -632,6 +632,43 @@ injection, hallucinated APIs, and AI-suggested insecure defaults. **When to
 use:** Security review, AI-codebase security assessment **Example:**
 Pre-production security check or AI Health Score calculation **Parameters:**
 None **Updated:** Session #125 - parallel architecture + AI Security Patterns
+
+#### `multi-ai-audit`
+
+**Description:** Interactive orchestrator for multi-AI consensus audits with
+any-format input support. Accepts findings from Claude, GPT, Gemini, etc. in any
+format (JSONL, JSON arrays, markdown tables, numbered lists, headed sections,
+prose) and normalizes them into a unified canonical schema. Features
+category-by-category progression, per-category aggregation with deduplication
+and consensus scoring, cross-category unification with cross-cutting file
+detection, automated TDMS intake (MASTER_DEBT.jsonl integration with DEBT-XXXX
+ID assignment), automated roadmap track assignment and validation, and context
+compaction survival via file-based state. **When to use:** Multi-AI consensus
+audits across 7 categories (code, security, performance, refactoring,
+documentation, process, engineering-productivity) **Example:** `/multi-ai-audit`
+then follow interactive prompts **Parameters:** None - interactive workflow
+**Commands:** `add <source>` (add findings from an AI), `done` (aggregate
+category), `skip` (skip category), `finish` (unify all), `status` (show
+progress) **Output:** Unified findings in
+`docs/audits/multi-ai/<session>/final/`, DEBT items in MASTER_DEBT.jsonl,
+roadmap track assignments, metrics update **Added:** Session #130 **Updated:**
+Session #132 (v1.1 - added Phases 6-8)
+
+#### `eval-multi-ai-audit`
+
+**Description:** Evaluation wrapper that instruments a live multi-AI audit run
+and scores each pipeline stage. Runs a real `/multi-ai-audit` session with
+instrumentation to measure reliability, correctness, and data integrity across
+all 8 stages (session init, template output, format normalization, schema
+fixing, category aggregation, unification, TDMS intake, roadmap integration).
+Generates a scored evaluation report with actionable improvement
+recommendations. **When to use:** Validating the multi-ai-audit system works
+end-to-end, after making changes to audit scripts, or periodically for quality
+assurance **Example:** `/eval-multi-ai-audit` then proceed with a real audit
+**Parameters:** None - wraps the standard /multi-ai-audit workflow **Output:**
+Evaluation report at `docs/audits/multi-ai/<session>/eval/EVALUATION-REPORT.md`
+with per-stage scoring, data integrity checks, and recommendations **Added:**
+Session #132 **Note:** Temporary skill — remove after validation complete
 
 ### Technical Debt Management (TDMS)
 
@@ -1872,6 +1909,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                                                                                                                         |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.9     | 2026-02-04 | Session #130: Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits with any-format input normalization                           |
 | 2.8     | 2026-02-04 | Session #129: pr-review skill now MANDATES incrementing consolidation counter; added `npm run consolidation:sync` script for drift fixes                        |
 | 2.7     | 2026-02-02 | Session #125: Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture + AI-specific patterns          |
 | 2.6     | 2026-02-02 | Session #124: Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents), added 3 new scripts and 4 npm scripts                   |

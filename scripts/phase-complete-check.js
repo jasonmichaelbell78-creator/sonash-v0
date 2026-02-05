@@ -9,6 +9,7 @@
  *   node scripts/phase-complete-check.js                    # Interactive mode
  *   node scripts/phase-complete-check.js --auto             # Fully automated (CI)
  *   node scripts/phase-complete-check.js --plan <path>      # Check specific plan
+ *   node scripts/phase-complete-check.js --auto --dry-run   # Skip lint/test subprocesses
  *
  * Exit codes:
  *   0 = All checks passed, safe to mark complete
@@ -24,6 +25,7 @@ import { pathToFileURL } from "node:url";
 // Parse command line arguments
 const args = process.argv.slice(2);
 const isAutoMode = args.includes("--auto");
+const isDryRun = args.includes("--dry-run");
 const planIndex = args.indexOf("--plan");
 
 // Validate --plan flag has a valid value
@@ -226,7 +228,7 @@ function normalizeDeliverablePath(d) {
       .replace(/^'(.+)'$/, "$1")
       // S5852: Character class [xyz]+ is linear (no backtracking) - safe pattern
       // Input bounded to 500 chars above for defense in depth
-      .replace(/[)"'.,;:]+$/, ""),
+      .replace(/[)"'.,;:]{1,50}$/, ""),
   };
 }
 
@@ -494,62 +496,67 @@ async function main() {
   // Lint check - capture and sanitize output to avoid exposing paths
   // Note: Using stdio: 'pipe' for cross-platform compatibility (avoids shell-dependent 2>&1)
   // Using maxBuffer: 10MB to prevent buffer overflow on large output
-  console.log("▶ Running ESLint...");
-  try {
-    const lintOutput = execSync("npm run lint", {
-      encoding: "utf-8",
-      stdio: "pipe",
-      maxBuffer: 10 * 1024 * 1024,
-    });
-    console.log(sanitizeOutput(lintOutput));
-    console.log("  ✅ ESLint passed");
-  } catch (err) {
-    // ESLint failed - show sanitized output (err.stdout/stderr captured by stdio: 'pipe')
-    if (err.stdout) console.log(sanitizeOutput(err.stdout));
-    if (err.stderr) console.error(sanitizeOutput(err.stderr));
-    console.log("  ❌ ESLint has errors");
-    failures.push("ESLint errors must be fixed");
-    allPassed = false;
-  }
+  if (isDryRun) {
+    console.log("▶ ESLint: skipped (--dry-run)");
+    console.log("▶ Tests: skipped (--dry-run)");
+  } else {
+    console.log("▶ Running ESLint...");
+    try {
+      const lintOutput = execSync("npm run lint", {
+        encoding: "utf-8",
+        stdio: "pipe",
+        maxBuffer: 10 * 1024 * 1024,
+      });
+      console.log(sanitizeOutput(lintOutput));
+      console.log("  ✅ ESLint passed");
+    } catch (err) {
+      // ESLint failed - show sanitized output (err.stdout/stderr captured by stdio: 'pipe')
+      if (err.stdout) console.log(sanitizeOutput(err.stdout));
+      if (err.stderr) console.error(sanitizeOutput(err.stderr));
+      console.log("  ❌ ESLint has errors");
+      failures.push("ESLint errors must be fixed");
+      allPassed = false;
+    }
 
-  // Test check - capture and sanitize output
-  // Note: Using stdio: 'pipe' for cross-platform compatibility
-  // Using maxBuffer: 10MB to prevent buffer overflow on large output
-  console.log("▶ Running tests...");
-  try {
-    const testOutput = execSync("npm test", {
-      encoding: "utf-8",
-      stdio: "pipe",
-      maxBuffer: 10 * 1024 * 1024,
-    });
-    // Only show summary, not full output (too verbose)
-    // Use case-insensitive matching to catch PASS/FAIL/Tests: etc.
-    const lines = testOutput.split("\n");
-    const summaryLines = lines.filter((l) => {
-      const lower = l.toLowerCase();
-      return (
-        lower.includes("tests") ||
-        lower.includes("pass") ||
-        lower.includes("fail") ||
-        lower.includes("skip")
-      );
-    });
-    if (summaryLines.length > 0) {
-      console.log(sanitizeOutput(summaryLines.join("\n")));
+    // Test check - capture and sanitize output
+    // Note: Using stdio: 'pipe' for cross-platform compatibility
+    // Using maxBuffer: 10MB to prevent buffer overflow on large output
+    console.log("▶ Running tests...");
+    try {
+      const testOutput = execSync("npm test", {
+        encoding: "utf-8",
+        stdio: "pipe",
+        maxBuffer: 10 * 1024 * 1024,
+      });
+      // Only show summary, not full output (too verbose)
+      // Use case-insensitive matching to catch PASS/FAIL/Tests: etc.
+      const lines = testOutput.split("\n");
+      const summaryLines = lines.filter((l) => {
+        const lower = l.toLowerCase();
+        return (
+          lower.includes("tests") ||
+          lower.includes("pass") ||
+          lower.includes("fail") ||
+          lower.includes("skip")
+        );
+      });
+      if (summaryLines.length > 0) {
+        console.log(sanitizeOutput(summaryLines.join("\n")));
+      }
+      console.log("  ✅ Tests passed");
+    } catch (err) {
+      // Tests failed - show sanitized error output (err.stdout/stderr captured by stdio: 'pipe')
+      if (err.stdout) {
+        const sanitized = sanitizeOutput(err.stdout);
+        // Show last 20 lines to see failure info
+        const lines = sanitized.split("\n").slice(-20);
+        console.log(lines.join("\n"));
+      }
+      if (err.stderr) console.error(sanitizeOutput(err.stderr));
+      console.log("  ❌ Tests failed");
+      failures.push("Tests must pass");
+      allPassed = false;
     }
-    console.log("  ✅ Tests passed");
-  } catch (err) {
-    // Tests failed - show sanitized error output (err.stdout/stderr captured by stdio: 'pipe')
-    if (err.stdout) {
-      const sanitized = sanitizeOutput(err.stdout);
-      // Show last 20 lines to see failure info
-      const lines = sanitized.split("\n").slice(-20);
-      console.log(lines.join("\n"));
-    }
-    if (err.stderr) console.error(sanitizeOutput(err.stderr));
-    console.log("  ❌ Tests failed");
-    failures.push("Tests must pass");
-    allPassed = false;
   }
 
   console.log("");

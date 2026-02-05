@@ -1,7 +1,13 @@
 # [Project Name] Multi-AI Documentation Audit Plan
 
-**Document Version:** 2.0 **Created:** 2026-01-05 **Last Updated:** 2026-02-02
-**Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
+**Document Version:** 2.1 **Created:** 2026-01-05 **Last Updated:** 2026-02-04
+**Tier:** 3 (Planning) **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall
+Completion:** 0%
+
+> **⚠️ Multi-Agent Capability Note:** This template assumes orchestration by
+> Claude Code which can spawn parallel agents via the Task tool. Other AI
+> systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
+> sections sequentially or use external orchestration.
 
 ---
 
@@ -711,15 +717,14 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL
-  schema for all review templates
-- **[MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md)** -
-  Master index and trigger tracking
-- **[MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)** -
-  General code review template
-- **[.claude/skills/audit-documentation/SKILL.md](../../.claude/skills/audit-documentation/SKILL.md)** -
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** -
+  Canonical JSONL schema for all review templates
+- **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
+- **[CODE_REVIEW_PLAN.md](./CODE_REVIEW_PLAN.md)** - General code review
+  template
+- **[.claude/skills/audit-documentation/SKILL.md](../../../.claude/skills/audit-documentation/SKILL.md)** -
   Single-session skill (Claude Code)
-- **[docs/DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md)** -
+- **[docs/DOCUMENTATION_STANDARDS.md](../../DOCUMENTATION_STANDARDS.md)** -
   Documentation standards (if exists)
 
 ---
@@ -743,6 +748,7 @@ documents to maintain consistency.
 
 | Version | Date       | Changes                                                                                                                           | Author |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2.1     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems                                                 | Claude |
 | 2.0     | 2026-02-02 | Complete rewrite: Aligned with 6-stage parallel audit architecture, added execution mode selection, TDMS integration, npm scripts | Claude |
 | 1.2     | 2026-01-09 | Added Category 6: Content Quality covering circular docs, bloat detection, contradiction checking                                 | Claude |
 | 1.1     | 2026-01-06 | Review #68: Fixed link extraction regex to use grep -E for extended regex                                                         | Claude |
@@ -750,4 +756,4 @@ documents to maintain consistency.
 
 ---
 
-**END OF MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md**
+**END OF DOCUMENTATION_AUDIT.md**
