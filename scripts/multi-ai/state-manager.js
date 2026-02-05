@@ -193,7 +193,10 @@ function recoverFromBackup() {
         let content;
         try {
           content = readFileSync(backupPath, "utf-8");
-        } catch {
+        } catch (err) {
+          // Expected for missing/inaccessible backup files
+          const msg = err instanceof Error ? err.message : String(err);
+          if (process.env.VERBOSE) console.warn(`  Skipped: ${msg}`);
           continue;
         }
         const session = JSON.parse(content);

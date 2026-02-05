@@ -1,7 +1,11 @@
 # Multi-AI Audit System
 
-**Document Version:** 1.0 | **Created:** 2026-02-04 | **Last Updated:**
-2026-02-04 **Document Tier:** 2 (Foundation)
+<!-- prettier-ignore-start -->
+**Document Version:** 1.0
+**Created:** 2026-02-04
+**Last Updated:** 2026-02-04
+**Document Tier:** 2 (Foundation)
+<!-- prettier-ignore-end -->
 
 ---
 

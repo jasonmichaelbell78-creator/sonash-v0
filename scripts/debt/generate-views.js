@@ -184,6 +184,14 @@ function main() {
       newCount++;
     }
 
+    // Ensure required fields have defaults (intake items may lack source_id/status)
+    if (!item.source_id) {
+      item.source_id = item.fingerprint ? `intake:${item.fingerprint}` : `intake:${item.id}`;
+    }
+    if (!item.status) {
+      item.status = "NEW";
+    }
+
     items.push(item);
   }
 

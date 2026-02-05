@@ -30,11 +30,10 @@
 | documentation            | 14    |
 | engineering-productivity | 3     |
 
-| Status    | Count |
-| --------- | ----- |
-| NEW       | 853   |
-| undefined | 30    |
-| RESOLVED  | 16    |
+| Status   | Count |
+| -------- | ----- |
+| NEW      | 883   |
+| RESOLVED | 16    |
 
 ## Views
 

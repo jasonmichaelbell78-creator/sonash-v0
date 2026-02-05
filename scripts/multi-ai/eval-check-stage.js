@@ -62,7 +62,10 @@ function loadJsonlFile(filePath) {
   let content;
   try {
     content = fs.readFileSync(filePath, "utf8");
-  } catch {
+  } catch (err) {
+    // Expected for missing/inaccessible files
+    const msg = err instanceof Error ? err.message : String(err);
+    if (process.env.VERBOSE) console.warn(`  Skipped ${filePath}: ${msg}`);
     return { items: [], errors: 1 };
   }
   const lines = content.split("\n").filter((l) => l.trim());
@@ -71,7 +74,10 @@ function loadJsonlFile(filePath) {
   for (const line of lines) {
     try {
       items.push(JSON.parse(line));
-    } catch {
+    } catch (err) {
+      // Skip malformed JSONL lines - log for debugging
+      if (process.env.VERBOSE)
+        console.warn(`Warning: ${err instanceof Error ? err.message : String(err)}`);
       errors++;
     }
   }
@@ -168,7 +174,9 @@ function checkE2() {
     let content;
     try {
       content = fs.readFileSync(templateFile, "utf8");
-    } catch {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (process.env.VERBOSE) console.warn(`  Skipped template ${TEMPLATE_MAP[category]}: ${msg}`);
       issues.push(`Cannot read template: ${TEMPLATE_MAP[category]}`);
       score -= Math.floor(100 / categories.length);
       templateResults[category] = { exists: true, readable: false, promptLength: 0 };
@@ -227,13 +235,21 @@ function checkE3(sessionPath) {
     rawFiles = fs
       .readdirSync(rawDir)
       .filter((f) => f.endsWith(".jsonl") && !f.includes(".original"));
-  } catch {
+  } catch (err) {
+    // Expected if directory is inaccessible
+    const msg = err instanceof Error ? err.message : String(err);
+    if (process.env.VERBOSE) console.warn(`  Skipped reading rawDir: ${msg}`);
     rawFiles = [];
   }
   const originalFiles = (() => {
     try {
       return fs.readdirSync(rawDir).filter((f) => f.endsWith(".original.txt"));
-    } catch {
+    } catch (err) {
+      // Expected if directory is inaccessible
+      if (process.env.VERBOSE)
+        console.warn(
+          `  Skipped reading rawDir originals: ${err instanceof Error ? err.message : String(err)}`
+        );
       return [];
     }
   })();
@@ -343,7 +359,10 @@ function checkE4(sessionPath) {
     rawFiles = fs
       .readdirSync(rawDir)
       .filter((f) => f.endsWith(".jsonl") && !f.includes(".original"));
-  } catch {
+  } catch (err) {
+    // Expected if directory is inaccessible
+    const msg = err instanceof Error ? err.message : String(err);
+    if (process.env.VERBOSE) console.warn(`  Skipped reading rawDir: ${msg}`);
     rawFiles = [];
   }
 
@@ -467,7 +486,10 @@ function checkE5(sessionPath) {
     canonFiles = fs
       .readdirSync(canonDir)
       .filter((f) => f.startsWith("CANON-") && f.endsWith(".jsonl"));
-  } catch {
+  } catch (err) {
+    // Expected if directory is inaccessible
+    const msg = err instanceof Error ? err.message : String(err);
+    if (process.env.VERBOSE) console.warn(`  Skipped reading canonDir: ${msg}`);
     canonFiles = [];
   }
 
@@ -511,7 +533,12 @@ function checkE5(sessionPath) {
           .filter(
             (f) => f.startsWith(category + "-") && f.endsWith(".jsonl") && !f.includes(".original")
           );
-      } catch {
+      } catch (err) {
+        // Expected if directory is inaccessible
+        if (process.env.VERBOSE)
+          console.warn(
+            `  Skipped reading rawDir for ${category}: ${err instanceof Error ? err.message : String(err)}`
+          );
         rawFiles = [];
       }
       sourceCount = rawFiles.length;
@@ -699,7 +726,9 @@ function checkE7(sessionPath) {
   if (fs.existsSync(preSnapshotFile)) {
     try {
       preSnapshot = JSON.parse(fs.readFileSync(preSnapshotFile, "utf8"));
-    } catch {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (process.env.VERBOSE) console.warn(`  Skipped pre-snapshot: ${msg}`);
       issues.push("pre-snapshot.json is not valid JSON");
       score -= 20;
     }
@@ -778,12 +807,16 @@ function checkE7(sessionPath) {
             intakeLogEntry = entry;
             break;
           }
-        } catch {
-          // Skip invalid lines
+        } catch (err) {
+          // Skip invalid log lines - log for debugging
+          if (process.env.VERBOSE)
+            console.warn(`Warning: ${err instanceof Error ? err.message : String(err)}`);
         }
       }
-    } catch {
+    } catch (err) {
       // Log file read failed
+      if (process.env.VERBOSE)
+        console.warn(`  Skipped intake log: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
@@ -806,8 +839,10 @@ function checkE7(sessionPath) {
           break;
         }
       }
-    } catch {
+    } catch (err) {
       // Views check failed
+      if (process.env.VERBOSE)
+        console.warn(`  Skipped views check: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
@@ -876,8 +911,10 @@ function checkE8(sessionPath) {
   if (fs.existsSync(preSnapshotFile)) {
     try {
       preSnapshot = JSON.parse(fs.readFileSync(preSnapshotFile, "utf8"));
-    } catch {
-      // Skip
+    } catch (err) {
+      // Expected for missing/malformed snapshot files
+      if (process.env.VERBOSE)
+        console.warn(`  Skipped pre-snapshot: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
@@ -928,8 +965,12 @@ function checkE8(sessionPath) {
     try {
       const currentMtime = fs.statSync(metricsFile).mtime.toISOString();
       metricsUpdated = preSnapshot.metrics.mtime ? currentMtime > preSnapshot.metrics.mtime : true;
-    } catch {
-      // Skip
+    } catch (err) {
+      // Expected if metrics file is inaccessible
+      if (process.env.VERBOSE)
+        console.warn(
+          `  Skipped metrics check: ${err instanceof Error ? err.message : String(err)}`
+        );
     }
   }
 

@@ -129,8 +129,10 @@ function parseJsonlFile(filePath) {
   let content;
   try {
     content = readFileSync(filePath, "utf-8");
-  } catch {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.warn(`Cannot read file: ${filePath}`);
+    if (process.env.VERBOSE) console.warn(`  Reason: ${msg}`);
     return [];
   }
   const lines = content.split("\n").filter((l) => l.trim());
@@ -542,7 +544,10 @@ export function getCategorySources(sessionPath, category) {
     let content;
     try {
       content = readFileSync(join(rawDir, file), "utf-8");
-    } catch {
+    } catch (err) {
+      // Expected for missing/inaccessible source files
+      const msg = err instanceof Error ? err.message : String(err);
+      if (process.env.VERBOSE) console.warn(`  Skipped: ${msg}`);
       sources.push({ name: sourceName, file, count: 0 });
       continue;
     }

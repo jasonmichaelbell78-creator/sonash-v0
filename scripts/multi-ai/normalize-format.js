@@ -151,8 +151,10 @@ export function detectFormat(input) {
     try {
       JSON.parse(trimmed);
       return FORMAT_TYPES.JSON_ARRAY;
-    } catch {
-      // Not valid JSON array, continue checking
+    } catch (err) {
+      // Not valid JSON array, continue checking other formats
+      if (process.env.VERBOSE)
+        console.warn(`Warning: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
@@ -163,7 +165,10 @@ export function detectFormat(input) {
       try {
         const parsed = JSON.parse(line.trim());
         return typeof parsed === "object" && !Array.isArray(parsed);
-      } catch {
+      } catch (err) {
+        // Expected for non-JSON lines during format detection
+        if (process.env.VERBOSE)
+          console.warn(`Warning: ${err instanceof Error ? err.message : String(err)}`);
         return false;
       }
     });

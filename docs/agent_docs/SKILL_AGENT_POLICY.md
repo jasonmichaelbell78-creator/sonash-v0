@@ -309,7 +309,7 @@ High override counts for specific checks may indicate:
 - [CODE_PATTERNS.md](./CODE_PATTERNS.md) - Anti-patterns to avoid
 - [AI_WORKFLOW.md](../../AI_WORKFLOW.md) - Session workflow guidelines
 - [DEVELOPMENT.md](../../DEVELOPMENT.md) - Development setup and hooks
-- [FALSE_POSITIVES.jsonl](../audits/FALSE_POSITIVES.jsonl) - Known false
+- [FALSE_POSITIVES.jsonl](../technical-debt/MASTER_DEBT.jsonl) - Known false
   positives
 
 ---

@@ -12,14 +12,14 @@
 
 > **v3.16 UPDATE:** Created canonical audit findings location (Session #116).
 > 172 NET NEW findings consolidated to
-> [docs/audits/canonical/](./docs/audits/canonical/). Added audit findings
+> [docs/audits/canonical/](./docs/technical-debt/). Added audit findings
 > procedure documentation and ROADMAP integration guide. See
-> [AUDIT_FINDINGS_PROCEDURE.md](./docs/AUDIT_FINDINGS_PROCEDURE.md).
+> AUDIT_FINDINGS_PROCEDURE.md (archived).
 
 > **v3.15 UPDATE:** Integrated 94 NET NEW findings from Refactoring Audit
 > (Session #115). Added Track T Phase 7 (Cloud Functions Testing), M2.3-REF (God
 > Object Refactoring), M4.5-F3 (Security Hardening), and Quick Wins. See
-> [docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md](./docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md)
+> docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md (archived)
 
 > **v3.0 MAJOR UPDATE:** Integrated 76 expansion items from
 > EXPANSION_EVALUATION_TRACKER.md. Added M4.5 (Security & Privacy) and M9
@@ -460,8 +460,8 @@ reliability, and solo developer automations.
 > Track B
 >
 > **Session #116 Audit Findings:** 18 documentation findings - see
-> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl)
-> (documentation category)
+> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (documentation
+> category)
 
 #### Session #116 Documentation Priority Items (S1/S2)
 
@@ -508,7 +508,7 @@ reliability, and solo developer automations.
 > Track D
 >
 > **Session #116 Audit Findings:** 17 findings - see
-> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl) (process
+> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (process
 > category)
 
 #### Session #116 Priority Items (S1/S2)
@@ -576,7 +576,7 @@ reliability, and solo developer automations.
 > Track E
 >
 > **Session #116 Audit Findings:** 3 engineering-productivity findings - see
-> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl)
+> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl)
 
 #### Session #116 Priority Items (S2)
 
@@ -641,14 +641,14 @@ reliability, and solo developer automations.
 
 > **Source:**
 > [Comprehensive Audit (Session #98)](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)
-> **Tracking:** [TECHNICAL_DEBT_MASTER.md](docs/TECHNICAL_DEBT_MASTER.md)
+> **Tracking:** [TECHNICAL_DEBT_MASTER.md](docs/technical-debt/INDEX.md)
 >
 > **Note:** Renamed from "Track D" to "Track P" to avoid confusion with Track D
 > (CI Reliability) in the Operational Visibility Sprint.
 >
 > **Session #116 Audit Findings:** 11 findings - see
-> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl)
-> (performance category)
+> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (performance
+> category)
 
 **Priority:** P0 - Core Web Vitals failing, 11MB image payload
 
@@ -961,7 +961,7 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 > **Status:** Session #99 completed 7 items. Only 2 documentation items remain,
 > deferred to documentation sprint. See
-> [AUDIT_FINDINGS_BACKLOG.md](docs/AUDIT_FINDINGS_BACKLOG.md)
+> [AUDIT_FINDINGS_BACKLOG.md](docs/technical-debt/INDEX.md)
 
 **Current backlog:** 2 items (deferred to documentation sprint)
 
@@ -1374,9 +1374,9 @@ experience
 
 ## 📊 Technical Debt Backlog (Aggregated)
 
-> **Primary Source:** [TECHNICAL_DEBT_MASTER.md](docs/TECHNICAL_DEBT_MASTER.md)
-> ← **NEW (Session #98)** **Legacy Source:**
-> [MASTER_ISSUE_LIST.md](docs/aggregation/MASTER_ISSUE_LIST.md) (superseded)
+> **Primary Source:** [TECHNICAL_DEBT_MASTER.md](docs/technical-debt/INDEX.md) ←
+> **NEW (Session #98)** **Legacy Source:**
+> [MASTER_ISSUE_LIST.md](docs/technical-debt/INDEX.md) (superseded)
 > **Comprehensive Audit:**
 > [COMPREHENSIVE_AUDIT_REPORT.md](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)
 > **Last Updated:** Session #98
@@ -1443,7 +1443,7 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 - Comprehensive audit runs → Regenerate findings, verify false positives
 - Items resolved → Mark status in TECHNICAL_DEBT_MASTER.md
 
-**Full Tracking:** See [TECHNICAL_DEBT_MASTER.md](docs/TECHNICAL_DEBT_MASTER.md)
+**Full Tracking:** See [TECHNICAL_DEBT_MASTER.md](docs/technical-debt/INDEX.md)
 
 ---
 
@@ -1461,8 +1461,7 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 Developer tooling, SonarCloud cleanup, and code quality improvements.
 
 > **Session #116 Audit Findings:** 87 code findings - see
-> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl) (code
-> category)
+> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (code category)
 
 #### Session #116 Priority Items (S0/S1)
 
@@ -1753,8 +1752,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
   - **Files:** See commits `b6fe5e9`, `9e83e86`, `a818bea`, `b402f41`, `16b5deb`
 - ❌ **Firebase App Check** (Dec 30, 2025) - **DEDUP-0001** → _Moved to M4.5 F2:
   Privacy Controls_
-  - See
-    [APP_CHECK_REENABLE_PLAN.md](docs/reviews/2026-Q1/canonical/tier2-output/APP_CHECK_REENABLE_PLAN.md)
+  - See APP_CHECK_REENABLE_PLAN.md (archived)
 
 **Data Quality & Operations:**
 
@@ -1911,9 +1909,8 @@ Architecture refactoring, schema optimization, and infrastructure work.
 
 ### Validated Refactor Backlog (from Step 4.3 Audit)
 
-> **Full Backlog:**
-> [REFACTOR_BACKLOG.md](docs/reviews/2026-Q1/canonical/tier2-output/REFACTOR_BACKLOG.md)
-> (97 validated items, prioritized by severity/effort)
+> **Full Backlog:** REFACTOR_BACKLOG.md (archived) (97 validated items,
+> prioritized by severity/effort)
 
 **S0 Critical Items:**
 
@@ -1940,8 +1937,8 @@ Architecture refactoring, schema optimization, and infrastructure work.
 > affecting maintainability and performance
 >
 > **Session #116 Audit Findings:** 19 refactoring findings - see
-> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl)
-> (refactoring category)
+> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (refactoring
+> category)
 
 #### Session #116 Refactoring Priority Items (S0/S1)
 
@@ -2038,8 +2035,7 @@ Architecture refactoring, schema optimization, and infrastructure work.
 ### SonarCloud Issue Backlog (Step 4C Triage)
 
 > **IMPORTANT**: Before production deployment, re-run SonarCloud scan and
-> address ACCEPT-RISK items. See
-> [SONARCLOUD_TRIAGE.md](docs/SONARCLOUD_TRIAGE.md) for details.
+> address ACCEPT-RISK items. See SONARCLOUD_TRIAGE.md (archived) for details.
 
 #### ACCEPT-RISK Items (23 total) - Requires Production Re-evaluation
 
@@ -2092,11 +2088,9 @@ reveals performance issues
 
 ### Consolidated Audit Findings (Session #116)
 
-> **Canonical Location:** [docs/audits/canonical/](docs/audits/canonical/)
-> **Full Index:**
-> [MASTER_FINDINGS_INDEX.md](docs/audits/canonical/MASTER_FINDINGS_INDEX.md)
-> **Procedures:**
-> [AUDIT_FINDINGS_PROCEDURE.md](docs/AUDIT_FINDINGS_PROCEDURE.md)
+> **Canonical Location:** [docs/audits/canonical/](docs/technical-debt/) **Full
+> Index:** [MASTER_FINDINGS_INDEX.md](docs/technical-debt/INDEX.md)
+> **Procedures:** AUDIT_FINDINGS_PROCEDURE.md (archived)
 
 **Session #116** consolidated 172 NET NEW audit findings from 6-domain
 comprehensive audit.
@@ -2140,10 +2134,9 @@ comprehensive audit.
 
 1. **S0/S1 findings** added to respective track/milestone above
 2. **S2/S3 findings** tracked in
-   [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl)
+   [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl)
 3. **Cross-reference** via file:line in aggregator for deduplication
-4. **Resolution workflow** documented in
-   [AUDIT_FINDINGS_PROCEDURE.md](docs/AUDIT_FINDINGS_PROCEDURE.md)
+4. **Resolution workflow** documented in AUDIT_FINDINGS_PROCEDURE.md (archived)
 
 ---
 
@@ -2262,7 +2255,7 @@ _Building on the basic HALT check feature from M1.5_
 > All offline data storage requires encryption infrastructure from M4.5.
 >
 > **Session #116 Audit Findings:** 17 findings - see
-> [MASTER_FINDINGS.jsonl](docs/audits/canonical/MASTER_FINDINGS.jsonl) (security
+> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (security
 > category)
 
 ### Session #116 Priority Items (S1/S2)
@@ -2314,8 +2307,7 @@ entries) will be encrypted at rest using AES-256-GCM with PBKDF2 key derivation.
 - [ ] **DEDUP-0001** - Re-enable Firebase App Check _(moved from M2)_
   - Prerequisites: DEDUP-0003 (reCAPTCHA fail-closed), DEDUP-0004 (rate
     limiting)
-  - See
-    [APP_CHECK_REENABLE_PLAN.md](docs/reviews/2026-Q1/canonical/tier2-output/APP_CHECK_REENABLE_PLAN.md)
+  - See APP_CHECK_REENABLE_PLAN.md (archived)
 
 ### F3: Security Hardening (5 items) **NEW - Refactoring Audit**
 

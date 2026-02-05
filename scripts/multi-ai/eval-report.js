@@ -39,7 +39,10 @@ function loadJsonlResults(filePath) {
   let content;
   try {
     content = fs.readFileSync(filePath, "utf8");
-  } catch {
+  } catch (err) {
+    // Expected for missing/inaccessible files
+    const msg = err instanceof Error ? err.message : String(err);
+    if (process.env.VERBOSE) console.warn(`  Skipped ${filePath}: ${msg}`);
     return [];
   }
   const lines = content.split("\n").filter((l) => l.trim());
@@ -47,8 +50,10 @@ function loadJsonlResults(filePath) {
   for (const line of lines) {
     try {
       results.push(JSON.parse(line));
-    } catch {
-      // Skip
+    } catch (err) {
+      // Skip malformed lines - log for debugging
+      if (process.env.VERBOSE)
+        console.warn(`Warning: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
   return results;
@@ -58,7 +63,10 @@ function loadSnapshot(filePath) {
   if (!fs.existsSync(filePath)) return null;
   try {
     return JSON.parse(fs.readFileSync(filePath, "utf8"));
-  } catch {
+  } catch (err) {
+    // Expected for missing/malformed snapshot files
+    const msg = err instanceof Error ? err.message : String(err);
+    if (process.env.VERBOSE) console.warn(`  Skipped ${filePath}: ${msg}`);
     return null;
   }
 }
