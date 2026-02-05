@@ -25,7 +25,7 @@
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 853   |
+| NEW            | 883   |
 | VERIFIED       | 0     |
 | IN_PROGRESS    | 0     |
 | RESOLVED       | 16    |
@@ -98,7 +98,7 @@ _...and 149 more S1 items_
 
 | Metric               | Value     |
 | -------------------- | --------- |
-| Verification Queue   | 853 items |
+| Verification Queue   | 883 items |
 | Avg Age (Open Items) | 0 days    |
 | Oldest Item Age      | 0 days    |
 | Oldest Item          | N/A       |
