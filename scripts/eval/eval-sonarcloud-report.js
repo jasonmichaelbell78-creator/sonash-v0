@@ -29,15 +29,27 @@ const ROOT = path.resolve(__dirname, "../..");
 /**
  * Validate that a user-provided path is contained within the project root.
  * Prevents path traversal attacks (CWE-22).
+ * Uses realpathSync to resolve symlinks and prevent symlink-based traversal.
  */
 function validateSessionPath(sessionPath) {
-  const projectRoot = ROOT;
-  const resolved = path.resolve(sessionPath);
+  // Resolve symlinks to get canonical paths
+  let projectRoot, resolved;
+  try {
+    projectRoot = fs.realpathSync(ROOT);
+  } catch {
+    console.error("Error: Cannot resolve project root path.");
+    process.exit(1);
+  }
+  try {
+    resolved = fs.realpathSync(path.resolve(sessionPath));
+  } catch {
+    console.error(`Error: session path "${sessionPath}" does not exist or cannot be resolved.`);
+    process.exit(1);
+  }
+
   const relative = path.relative(projectRoot, resolved);
   if (relative === "" || /^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative)) {
-    console.error(`Error: session path "${sessionPath}" resolves outside the project root.`);
-    console.error(`  Resolved: ${resolved}`);
-    console.error(`  Project root: ${projectRoot}`);
+    console.error("Error: session path resolves outside the project root.");
     process.exit(1);
   }
   return resolved;
@@ -86,7 +98,10 @@ function loadSnapshot(filePath) {
   if (!fs.existsSync(filePath)) return null;
   try {
     return JSON.parse(fs.readFileSync(filePath, "utf8"));
-  } catch {
+  } catch (err) {
+    console.error(
+      `Warning: Failed to parse snapshot: ${err instanceof Error ? err.message : String(err)}`
+    );
     return null;
   }
 }
@@ -422,9 +437,12 @@ function generateReport(sessionPath) {
 
       switch (result.stage) {
         case "E1":
-          report += `1. Verify SONAR_TOKEN is set: \`echo $SONAR_TOKEN\`\n`;
-          report += `2. Check SonarCloud connectivity: \`curl -s -H "Authorization: Bearer $SONAR_TOKEN" "https://sonarcloud.io/api/projects/search" | jq .\`\n`;
-          report += `3. Verify project key in \`sonar-project.properties\`\n`;
+          report += `1. Verify SONAR_TOKEN is set: \`[ -n "$SONAR_TOKEN" ] && echo "Token set" || echo "Token NOT set"\`\n`;
+          report += `2. Check SonarCloud connectivity (token via stdin):\n`;
+          report += `   \`\`\`bash\n`;
+          report += `   curl -s --config - "https://sonarcloud.io/api/projects/search" <<< 'header = "Authorization: Bearer '"$SONAR_TOKEN"'"' | jq .\n`;
+          report += `   \`\`\`\n`;
+          report += `3. Verify project key: \`grep -E '^\\s*sonar\\.projectKey' sonar-project.properties\`\n`;
           report += `4. Re-run: \`node scripts/debt/sync-sonarcloud.js\`\n\n`;
           break;
         case "E2":

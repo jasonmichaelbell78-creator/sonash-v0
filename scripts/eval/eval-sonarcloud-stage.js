@@ -30,13 +30,27 @@ const REPORT_FILE = path.join(ROOT, "docs/audits/sonarcloud-issues-detailed.md")
 /**
  * Validate that a user-provided path is contained within the project root.
  * Prevents path traversal attacks (CWE-22).
+ * Uses realpathSync to resolve symlinks and prevent symlink-based traversal.
  */
 function validateSessionPath(sessionPath) {
-  const projectRoot = ROOT;
-  const resolved = path.resolve(sessionPath);
+  // Resolve symlinks to get canonical paths
+  let projectRoot, resolved;
+  try {
+    projectRoot = fs.realpathSync(ROOT);
+  } catch {
+    console.error("Error: Cannot resolve project root path.");
+    process.exit(1);
+  }
+  try {
+    resolved = fs.realpathSync(path.resolve(sessionPath));
+  } catch {
+    console.error(`Error: session path "${sessionPath}" does not exist or cannot be resolved.`);
+    process.exit(1);
+  }
+
   const relative = path.relative(projectRoot, resolved);
   if (relative === "" || /^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative)) {
-    console.error(`Error: session path "${sessionPath}" resolves outside the project root.`);
+    console.error("Error: session path resolves outside the project root.");
     process.exit(1);
   }
   return resolved;
@@ -47,7 +61,10 @@ function loadSnapshot(sessionPath, mode) {
   if (!fs.existsSync(snapshotFile)) return null;
   try {
     return JSON.parse(fs.readFileSync(snapshotFile, "utf8"));
-  } catch {
+  } catch (err) {
+    console.error(
+      `Warning: Failed to parse ${mode}-snapshot.json: ${err instanceof Error ? err.message : String(err)}`
+    );
     return null;
   }
 }
@@ -721,6 +738,7 @@ function main() {
 
     const result = stageMap[s]();
     result.checked_at = new Date().toISOString();
+    result.checked_by = process.env.USER || process.env.LOGNAME || "unknown";
     appendResult(safeSessionPath, result);
 
     const icon = result.passed ? "✅" : "❌";

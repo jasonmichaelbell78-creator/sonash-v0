@@ -30,17 +30,30 @@ const REPORT_FILE = path.join(ROOT, "docs/audits/sonarcloud-issues-detailed.md")
 /**
  * Validate that a user-provided path is contained within the project root.
  * Prevents path traversal attacks (CWE-22, OWASP A01:2021 Broken Access Control).
+ * Uses realpathSync to resolve symlinks and prevent symlink-based traversal.
  * @param {string} sessionPath - User-provided session path from CLI args
  * @returns {string} - Resolved absolute path (safe to use)
  */
 function validateSessionPath(sessionPath) {
-  const projectRoot = ROOT;
-  const resolved = path.resolve(sessionPath);
+  // Resolve symlinks to get canonical paths
+  let projectRoot, resolved;
+  try {
+    projectRoot = fs.realpathSync(ROOT);
+  } catch {
+    console.error("Error: Cannot resolve project root path.");
+    process.exit(1);
+  }
+  try {
+    resolved = fs.realpathSync(path.resolve(sessionPath));
+  } catch {
+    // Path doesn't exist or can't be resolved
+    console.error(`Error: session path "${sessionPath}" does not exist or cannot be resolved.`);
+    process.exit(1);
+  }
+
   const relative = path.relative(projectRoot, resolved);
   if (relative === "" || /^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative)) {
-    console.error(`Error: session path "${sessionPath}" resolves outside the project root.`);
-    console.error(`  Resolved: ${resolved}`);
-    console.error(`  Project root: ${projectRoot}`);
+    console.error("Error: session path resolves outside the project root.");
     process.exit(1);
   }
   return resolved;
