@@ -47,6 +47,8 @@ const GLOBAL_EXCLUDE = [
   /^docs\/AI_REVIEW_LEARNINGS_LOG\.md$/,
   // This file contains pattern definitions as strings (meta-detection false positives)
   /^scripts\/check-pattern-compliance\.js$/,
+  // Archived/obsolete scripts - not actively maintained (Review #250)
+  /^docs\/archive\//,
   // Development/build utility scripts (pre-existing debt - Review #136)
   /^scripts\/ai-review\.js$/,
   /^scripts\/assign-review-tier\.js$/,
@@ -326,8 +328,9 @@ const ANTI_PATTERNS = [
     //   containment check at L623, symlink check at L627-640
     // Review #249: eval-check-stage.js L254,369 `file` from readdirSync; validated sessionPath upstream
     // Review #249: eval-snapshot.js L137 `file` from readdirSync; VIEWS_DIR is constant
+    // Review #250: state-utils.js has validateFilename() basename check before all path.join calls
     pathExclude:
-      /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings|transform-jsonl-schema|eval-check-stage|eval-snapshot)\.js$/,
+      /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings|transform-jsonl-schema|eval-check-stage|eval-snapshot|state-utils)\.js$/,
   },
   {
     id: "error-without-first-line",
@@ -416,7 +419,7 @@ const ANTI_PATTERNS = [
     // - aggregate-audit-findings.js: readFileSync at L145, L181, L246 all in try/catch blocks
     // 2026-01-19 audit (Review #181):
     // - generate-detailed-sonar-report.js: readFileSync at L27, L43, L76 all in try/catch blocks
-    // - generate-sonar-report-with-snippets.js: readFileSync at L18 in try/catch (L17-23), L54 in try/catch (L52-70)
+    // - generate-sonar-report-with-snippets.js: ARCHIVED to docs/archive/obsolete-scripts-2026-02/
     // - verify-sonar-phase.js: readFileSync at L135, L195, L215 all in try/catch blocks
     // 2026-01-20 audit (PR #286):
     // - check-backlog-health.js: readFileSync at L250 IS in try/catch (L242-292)
@@ -447,7 +450,7 @@ const ANTI_PATTERNS = [
       "run-consolidation.js",
       "aggregate-audit-findings.js",
       "generate-detailed-sonar-report.js",
-      "generate-sonar-report-with-snippets.js",
+      // generate-sonar-report-with-snippets.js - ARCHIVED to docs/archive/obsolete-scripts-2026-02/
       "verify-sonar-phase.js",
       "check-backlog-health.js",
       "security-check.js",
@@ -549,10 +552,19 @@ const ANTI_PATTERNS = [
       // 2026-02-05 (Review #249): generate-views.js readFileSync at L79 IS in try/catch (L78-108),
       //   L129 now IS in try/catch (L129-135)
       "generate-views.js",
-      // 2026-02-05 (Review #249): extract-sonarcloud.js readFileSync at L147 IS in try/catch (L146-151)
-      "extract-sonarcloud.js",
+      // extract-sonarcloud.js - ARCHIVED to docs/archive/obsolete-scripts-2026-02/
       // 2026-02-05 (Review #249): validate-schema.js readFileSync at L181 IS in try/catch (L180-185)
       "validate-schema.js",
+      // 2026-02-05 (Review #250 PR #337):
+      // - compaction-handoff.js: readFileSync at L63 IS in try/catch (L62-66 in loadJson)
+      // - state-utils.js: readFileSync at L56 IS in try/catch (L55-59 in readState)
+      // - agent-trigger-enforcer.js: readFileSync at L118 IS in try/catch (L116-121),
+      //   L258 IS in try/catch (L257-262)
+      // - sync-sonarcloud.js: readFileSync at L144 now IS in try/catch (L143-150)
+      "compaction-handoff.js",
+      "state-utils.js",
+      "agent-trigger-enforcer.js",
+      "sync-sonarcloud.js",
     ],
   },
   {

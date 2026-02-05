@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 2.9 **Last Updated:** 2026-02-04 **Purpose:** Comprehensive
+**Version:** 3.2 **Last Updated:** 2026-02-05 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -347,17 +347,22 @@ before merging to verify work meets requirements **When to use:** Before merging
 significant changes **Example:** Feature complete, ready for final review
 **Parameters:** None
 
-#### `sonarcloud-sprint`
+#### `sonarcloud`
 
-**Description:** Run a SonarCloud cleanup sprint. Fetches fresh issues via
-public API (with dynamic pagination), generates a detailed report with code
-snippets, creates cleanup branches following 5-PR structure, tracks fixes with
-TodoWrite, runs pre-commit verification, and extracts post-PR learnings to
-AI_LESSONS_LOG.md. Requires: `jq` for JSON parsing. **When to use:** Starting a
-code quality cleanup sprint or when you need current snapshot of SonarCloud
-issues **Example:** `/sonarcloud-sprint` or `/sonarcloud-sprint --report`
-**Parameters:** Optional `--report` flag for report-only mode (no branch
-creation)
+**Description:** Unified SonarCloud integration skill for fetching, syncing,
+reporting, and resolving code quality issues. Consolidates `sonarcloud-sprint`
+and `sync-sonarcloud-debt` into a single entry point. **When to use:** Any
+SonarCloud workflow: syncing new issues to TDMS, generating reports with code
+snippets, marking resolved items, running cleanup sprints, or checking quality
+gate status **Example:** `/sonarcloud` **Parameters:** Modes: sync (default),
+resolve, full, report, status, sprint **Added:** Session #133
+
+#### `sonarcloud-sprint` _(deprecated)_
+
+**Description:** Run a SonarCloud cleanup sprint. **Deprecated:** Use
+`/sonarcloud` instead, which consolidates sync, resolve, report, and sprint
+modes in a unified interface. **When to use:** Use `/sonarcloud --mode sprint`
+instead **Example:** `/sonarcloud` **Parameters:** None
 
 #### `skill-creator`
 
@@ -681,14 +686,12 @@ None - processes items from verification queue **Output:** Updates
 MASTER_DEBT.jsonl with VERIFIED, FALSE_POSITIVE, DUPLICATE, or RESOLVED status
 **Added:** TDMS Phase 9
 
-#### `sync-sonarcloud-debt`
+#### `sync-sonarcloud-debt` _(deprecated)_
 
 **Description:** Sync technical debt items from SonarCloud API into
-MASTER_DEBT.jsonl **When to use:** On-demand sync when SonarCloud has new issues
-to import **Example:** `/sync-sonarcloud-debt` **Parameters:** None - fetches
-from SonarCloud API **Output:** Reports new items, resolved items, unchanged;
-user confirms additions **Requires:** `SONAR_TOKEN` in `.env.local` **Added:**
-TDMS Phase 6
+MASTER_DEBT.jsonl. **Deprecated:** Use `/sonarcloud` instead. **When to use:**
+Use `/sonarcloud --mode sync` instead **Example:** `/sonarcloud` **Parameters:**
+None **Added:** TDMS Phase 6
 
 #### `add-manual-debt`
 
@@ -711,10 +714,21 @@ description, severity **Output:** New DEBT-XXXX entry with `source_id: PR-N-X`
 #### `checkpoint`
 
 **Description:** Create a checkpoint for the current session state. Saves
-progress markers and context for session recovery or handoff. **When to use:**
-Before complex operations, mid-session saves, or preparing for handoff
+progress markers and context for session recovery or handoff. Also writes task
+state to `.claude/state/task-*.state.json` for compaction recovery. **When to
+use:** Before complex operations, mid-session saves, or preparing for handoff
 **Example:** `/checkpoint` before major refactoring **Parameters:** None
-**Added:** Session #114
+**Added:** Session #114 (enhanced Session #133)
+
+#### `pre-commit-fixer`
+
+**Description:** Automatically fix pre-commit hook failures and retry the
+commit. Classifies failures into Category A (auto-fixable: doc index, cross-doc
+deps) and Category B (subagent-fixable: ESLint, pattern violations). Reduces
+context waste from manual fix-commit-retry cycles. **When to use:** When
+`git commit` fails due to pre-commit hook errors **Example:**
+`/pre-commit-fixer` after commit failure **Parameters:** None **Added:** Session
+#133
 
 #### `session-begin`
 
@@ -1888,7 +1902,7 @@ prompt **What it does:**
 | `code-reviewer`        | Comprehensive code review   |
 | `frontend-design`      | Build polished UI           |
 | `senior-fullstack`     | Full-stack development      |
-| `sonarcloud-sprint`    | SonarCloud cleanup sprint   |
+| `sonarcloud`           | Unified SonarCloud workflow |
 | `/session-begin`       | Session validation          |
 | `/session-end`         | Session completion          |
 
@@ -1907,27 +1921,30 @@ prompt **What it does:**
 
 ## Version History
 
-| Version | Date       | Changes                                                                                                                                                         |
-| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2.9     | 2026-02-04 | Session #130: Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits with any-format input normalization                           |
-| 2.8     | 2026-02-04 | Session #129: pr-review skill now MANDATES incrementing consolidation counter; added `npm run consolidation:sync` script for drift fixes                        |
-| 2.7     | 2026-02-02 | Session #125: Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture + AI-specific patterns          |
-| 2.6     | 2026-02-02 | Session #124: Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents), added 3 new scripts and 4 npm scripts                   |
-| 2.5     | 2026-02-01 | Session #123: Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt) - TDMS all 17 phases complete         |
-| 2.3     | 2026-01-29 | Session #115: Added auto-commit mechanism to session-end skill (`npm run session:end`) to prevent forgetting session-end commits                                |
-| 2.2     | 2026-01-29 | Session #114: Added 3 missing skills (audit-aggregator, audit-comprehensive, checkpoint), documented 14 undocumented hooks, clarified commands→skills migration |
-| 2.1     | 2026-01-27 | Updated session-end checklist to include DOCUMENTATION_INDEX.md                                                                                                 |
-| 2.0     | 2026-01-22 | Fix expansion-evaluation template per PR review (Review #195)                                                                                                   |
-| 1.9     | 2026-01-22 | Add detailed presentation format to expansion-evaluation skill                                                                                                  |
-| 1.8     | 2026-01-22 | Refine expansion-evaluation skill command examples (Review #196)                                                                                                |
-| 1.7     | 2026-01-22 | Add agent-trigger-enforcer hook with phase notifications                                                                                                        |
-| 1.6     | 2026-01-22 | Add plan-mode-suggestion hook for complex task detection                                                                                                        |
-| 1.5     | 2026-01-21 | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook                                                                                                 |
-| 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas                                                                                                                   |
-| 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions                                                                                                                 |
-| 1.2     | 2026-01-20 | Note custom commands migrated to skills format                                                                                                                  |
-| 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction                                                                                                              |
-| 1.0     | 2026-01-10 | Initial comprehensive command reference created                                                                                                                 |
+| Version | Date       | Changes                                                                                                                                                           |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.2     | 2026-02-05 | Review #250: Removed duplicate `/sonarcloud` entry; fixed deprecated command examples; updated `/sonarcloud` report mode (no inline curl)                         |
+| 3.1     | 2026-02-05 | Session #133: Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff               |
+| 3.0     | 2026-02-05 | Session #133: Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills; archived obsolete scripts |
+| 2.9     | 2026-02-04 | Session #130: Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits with any-format input normalization                             |
+| 2.8     | 2026-02-04 | Session #129: pr-review skill now MANDATES incrementing consolidation counter; added `npm run consolidation:sync` script for drift fixes                          |
+| 2.7     | 2026-02-02 | Session #125: Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture + AI-specific patterns            |
+| 2.6     | 2026-02-02 | Session #124: Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents), added 3 new scripts and 4 npm scripts                     |
+| 2.5     | 2026-02-01 | Session #123: Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt) - TDMS all 17 phases complete           |
+| 2.3     | 2026-01-29 | Session #115: Added auto-commit mechanism to session-end skill (`npm run session:end`) to prevent forgetting session-end commits                                  |
+| 2.2     | 2026-01-29 | Session #114: Added 3 missing skills (audit-aggregator, audit-comprehensive, checkpoint), documented 14 undocumented hooks, clarified commands→skills migration   |
+| 2.1     | 2026-01-27 | Updated session-end checklist to include DOCUMENTATION_INDEX.md                                                                                                   |
+| 2.0     | 2026-01-22 | Fix expansion-evaluation template per PR review (Review #195)                                                                                                     |
+| 1.9     | 2026-01-22 | Add detailed presentation format to expansion-evaluation skill                                                                                                    |
+| 1.8     | 2026-01-22 | Refine expansion-evaluation skill command examples (Review #196)                                                                                                  |
+| 1.7     | 2026-01-22 | Add agent-trigger-enforcer hook with phase notifications                                                                                                          |
+| 1.6     | 2026-01-22 | Add plan-mode-suggestion hook for complex task detection                                                                                                          |
+| 1.5     | 2026-01-21 | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook                                                                                                   |
+| 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas                                                                                                                     |
+| 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions                                                                                                                   |
+| 1.2     | 2026-01-20 | Note custom commands migrated to skills format                                                                                                                    |
+| 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction                                                                                                                |
+| 1.0     | 2026-01-10 | Initial comprehensive command reference created                                                                                                                   |
 
 ---
 

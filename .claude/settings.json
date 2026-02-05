@@ -198,6 +198,11 @@
             "type": "command",
             "command": "node .claude/hooks/auto-save-context.js $ARGUMENTS",
             "statusMessage": "Checking context preservation..."
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/compaction-handoff.js $ARGUMENTS",
+            "statusMessage": "Checking compaction handoff..."
           }
         ]
       },

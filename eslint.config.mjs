@@ -24,6 +24,7 @@ export default [
       "functions/lib/**",
       "*.config.mjs",
       ".claude/hooks/backup/**",
+      "docs/archive/**",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },

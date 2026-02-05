@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 3.48 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 3.49 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-05 (Session #132)
+2026-02-05 (Session #133)
 
 ---
 
@@ -10,13 +10,37 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-02-04 **Branch**: `claude/new-session-6XecT` **Working
-On**: Track A Testing Plan Created **Files Modified**: 2 files
-(TRACK_A_TESTING_PLAN.md, ROADMAP.md)
+**Last Checkpoint**: 2026-02-05 **Branch**: `claude/new-session-x1MF5` **Working
+On**: Agent QoL improvements + SonarCloud unified skill **Files Modified**: 14
+files (QoL improvements)
 
-**Next Step**: Install Playwright or start Track A-Test execution
+**Next Step**: Push and verify all changes
 
-**Uncommitted Work**: ROADMAP.md and SESSION_CONTEXT.md updates
+**Uncommitted Work**: QoL improvements commit in progress
+
+**Session #133 Summary** (TDMS ARCHIVAL + SONARCLOUD + AGENT QOL):
+
+- ✅ **TDMS Archival**: Moved 23 files to
+  `docs/archive/tdms-intermediates-2026-02/`
+  - 5 raw pipeline intermediates, 1 pipeline log, 17 PHASE\_\*\_AUDIT.md reports
+  - Kept active: raw/deduped.jsonl, LEGACY_ID_MAPPING.json,
+    FINAL_SYSTEM_AUDIT.md
+- ✅ **SonarCloud Unified Skill**: Created `/sonarcloud` with 6 modes (sync,
+  resolve, full, report, status, sprint)
+  - Added --resolve and --full flags to sync-sonarcloud.js
+  - Archived 2 obsolete scripts to docs/archive/obsolete-scripts-2026-02/
+  - Deprecated sonarcloud-sprint and sync-sonarcloud-debt skills
+- ✅ **Agent QoL Improvements** (4 implemented):
+  - QoL #2: `.claude/state/` directory + `state-utils.js` for task persistence
+  - QoL #5: `compaction-handoff.js` hook for automatic handoff.json on Read
+  - QoL #1: `/pre-commit-fixer` skill for automated commit failure recovery
+  - QoL #4: Delegated code review queue in agent-trigger-enforcer.js
+- ✅ **Roadmap Updated**: Added Phase 1.5 QoL Agent Infrastructure; placed
+  remaining QoL items (3, 6, 7, 8) in Phase 2-3
+- ✅ **PR #336 CI Fixes** (from session #132 continuation):
+  - Fixed validate-schema.js BLOCKER (63 errors → 0)
+  - Fixed 35 broken doc links, 3 FILE_NOT_FOUND audit refs
+  - Fixed 31 orphaned DEBT-\* IDs in ROADMAP.md
 
 **Session #130 Summary** (TRACK A TESTING PLAN):
 

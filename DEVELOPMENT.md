@@ -625,14 +625,16 @@ Configured in `.claude/settings.json`.
 | app-check-validator.js      | Warn    | Cloud Function App Check verification             |
 | typescript-strict-check.js  | Warn    | Detect `any` type usage                           |
 | repository-pattern-check.js | Warn    | Firestore queries in components                   |
-| agent-trigger-enforcer.js   | Suggest | Recommend agents for code changes                 |
+| agent-trigger-enforcer.js   | Suggest | Recommend agents + delegated review queue (#250)  |
 | audit-s0s1-validator.js     | Warn    | S0/S1 verification_steps validation (Session #98) |
 
 **PostToolUse Hooks (Read):**
 
-| Hook                     | Action | Purpose                           |
-| ------------------------ | ------ | --------------------------------- |
-| large-context-warning.js | Warn   | Track file reads for context size |
+| Hook                     | Action | Purpose                                  |
+| ------------------------ | ------ | ---------------------------------------- |
+| large-context-warning.js | Warn   | Track file reads for context size        |
+| auto-save-context.js     | Save   | Auto-save context to MCP on threshold    |
+| compaction-handoff.js    | Save   | Write handoff.json for compaction (#133) |
 
 **UserPromptSubmit Hooks:**
 

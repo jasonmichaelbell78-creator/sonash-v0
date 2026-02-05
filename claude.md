@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.8 **Last Updated:** 2026-02-03
+**Document Version:** 3.9 **Last Updated:** 2026-02-05
 
 ---
 
@@ -150,6 +150,17 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 
 **Session End**: Run `/session-end` for full audit checklist.
 
+### 6.2 Delegated Code Review
+
+After modifying 5+ code files, the `agent-trigger-enforcer.js` hook queues a
+delegated review to `.claude/state/pending-reviews.json`. When this triggers:
+
+1. Spawn a `code-reviewer` subagent with the diff of changes
+2. The subagent writes findings to a file (not inline in conversation)
+3. Main conversation reads the summary — saves 1000+ tokens of review output
+
+This keeps the orchestrating conversation lean and compaction-safe.
+
 ### 6.3 Parallelization Decision Matrix
 
 **When to Use Parallel Agents:**
@@ -236,9 +247,11 @@ If 2+ agents modified same file:
 | `performance-engineer` | 3-7           | Slow   | Optimization      |
 | `debugger`             | 5-9           | Medium | Forensic work     |
 
-## 7. Context Preservation
+## 7. Context Preservation & Compaction Safety
 
 > [!IMPORTANT] Prevent loss of important decisions during context compaction.
+
+### 7.1 Decision Logging
 
 **Auto-save to `docs/SESSION_DECISIONS.md` when:**
 
@@ -256,13 +269,56 @@ If 2+ agents modified same file:
 Choice:** What was selected **Implementation:** Link to PR/commit/roadmap
 ```
 
-**Also consider:**
+### 7.2 File-Based State Persistence
+
+**For any multi-step task (3+ steps)**, write progress to
+`.claude/state/task-{name}.state.json`:
+
+```json
+{
+  "task": "task-name",
+  "started": "ISO datetime",
+  "lastUpdated": "ISO datetime",
+  "steps": [
+    { "name": "Step 1", "status": "completed", "output": "file.md" },
+    { "name": "Step 2", "status": "in_progress" },
+    { "name": "Step 3", "status": "pending" }
+  ],
+  "context": { "branch": "branch-name", "notes": "key info" }
+}
+```
+
+This file survives compaction and enables clean resumption. Update it after
+completing each step. The `.claude/state/` directory is gitignored for ephemeral
+session data.
+
+### 7.3 Compaction Handoff
+
+The `compaction-handoff.js` hook automatically writes
+`.claude/state/handoff.json` when context thresholds are exceeded (25+ files
+read). This file contains git state, agent invocations, and files read.
+
+**On session resume after compaction:**
+
+1. Read `.claude/state/handoff.json` for structured recovery context
+2. Read any `.claude/state/task-*.state.json` for in-progress tasks
+3. Check `mcp__memory__search_nodes("Session_")` for MCP memory
+4. Cross-reference with `git log --oneline -5` and `git status`
+
+### 7.4 Other Preservation Tools
 
 - Writing detailed plans to `.claude/plans/` before implementation
 - Using `/checkpoint` before risky operations
 - **MCP Memory for cross-session context** - Save important context with
   `mcp__memory__create_entities()` before compaction, retrieve with
   `mcp__memory__read_graph()` at session start
+
+### 7.5 Pre-Commit Failure Recovery
+
+When `git commit` fails on pre-commit hooks, use `/pre-commit-fixer` to classify
+and fix failures efficiently instead of manual fix-retry cycles. Category A
+errors (doc index, cross-doc deps) are auto-fixable inline. Category B errors
+(ESLint, pattern violations) should be delegated to a focused subagent.
 
 ## 8. Coding Standards
 
@@ -276,19 +332,20 @@ Choice:** What was selected **Implementation:** Link to PR/commit/roadmap
 
 ## Version History
 
-| Version | Date       | Description                                                                                        |
-| ------- | ---------- | -------------------------------------------------------------------------------------------------- |
-| 3.7     | 2026-02-02 | Added sections 6.3-6.6: Parallelization guidance, agent grouping, coordination, capacity reference |
-| 3.6     | 2026-01-28 | Promoted Session Start Protocol to top, fixed table formatting, added save reminder                |
-| 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                                  |
-| 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)                              |
-| 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md                |
-| 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)                    |
-| 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md                                 |
-| 2.9     | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60                                                                   |
-| 2.8     | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50                                                                   |
-| 2.7     | 2026-01-03 | Added mandatory session-end audit                                                                  |
-| 2.6     | 2026-01-03 | Added CodeRabbit CLI integration                                                                   |
+| Version | Date       | Description                                                                                                         |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| 3.9     | 2026-02-05 | Added 7.2-7.5: File-based state persistence, compaction handoff, pre-commit fixer; Added 6.2: Delegated code review |
+| 3.7     | 2026-02-02 | Added sections 6.3-6.6: Parallelization guidance, agent grouping, coordination, capacity reference                  |
+| 3.6     | 2026-01-28 | Promoted Session Start Protocol to top, fixed table formatting, added save reminder                                 |
+| 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                                                   |
+| 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)                                               |
+| 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md                                 |
+| 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)                                     |
+| 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md                                                  |
+| 2.9     | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60                                                                                    |
+| 2.8     | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50                                                                                    |
+| 2.7     | 2026-01-03 | Added mandatory session-end audit                                                                                   |
+| 2.6     | 2026-01-03 | Added CodeRabbit CLI integration                                                                                    |
 
 ---
 

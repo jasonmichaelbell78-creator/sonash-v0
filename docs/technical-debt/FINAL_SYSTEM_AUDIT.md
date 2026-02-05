@@ -26,26 +26,30 @@ across all 17 phases. The system is now fully operational with:
 
 ## Phase Completion Checklist
 
-| Phase | Description                 | Audit Report        | Status |
-| ----- | --------------------------- | ------------------- | ------ |
-| 1     | Execute Consolidation       | `PHASE_1_AUDIT.md`  | ✅     |
-| 2     | Create PROCEDURE.md         | `PHASE_2_AUDIT.md`  | ✅     |
-| 3     | Build intake scripts        | `PHASE_3_AUDIT.md`  | ✅     |
-| 4     | Build validation scripts    | `PHASE_4_AUDIT.md`  | ✅     |
-| 5     | Update audit skills         | `PHASE_5_AUDIT.md`  | ✅     |
-| 6     | Create intake skills        | `PHASE_6_AUDIT.md`  | ✅     |
-| 7     | Add pre-commit hooks        | `PHASE_7_AUDIT.md`  | ✅     |
-| 8     | Add CI checks               | `PHASE_8_AUDIT.md`  | ✅     |
-| 9     | Create verification skill   | (Done in Phase 6)   | ✅     |
-| 9b    | Full Audit TDMS Integration | `PHASE_9B_AUDIT.md` | ✅     |
-| 10    | Create GitHub Action        | `PHASE_10_AUDIT.md` | ✅     |
-| 11    | Update PR template          | `PHASE_11_AUDIT.md` | ✅     |
-| 12    | Update pr-review skill      | `PHASE_12_AUDIT.md` | ✅     |
-| 13    | Archive source documents    | `PHASE_13_AUDIT.md` | ✅     |
-| 14    | Dev dashboard integration   | `PHASE_14_AUDIT.md` | ✅     |
-| 15    | Verification batches        | `PHASE_15_AUDIT.md` | ✅     |
-| 16    | Final doc sync              | `PHASE_16_AUDIT.md` | ✅     |
-| 17    | Final System Audit          | This document       | ✅     |
+| Phase | Description                 | Audit Report (archived)                       | Status |
+| ----- | --------------------------- | --------------------------------------------- | ------ |
+| 1     | Execute Consolidation       | `archive/.../phase-reports/PHASE_1_AUDIT.md`  | ✅     |
+| 2     | Create PROCEDURE.md         | `archive/.../phase-reports/PHASE_2_AUDIT.md`  | ✅     |
+| 3     | Build intake scripts        | `archive/.../phase-reports/PHASE_3_AUDIT.md`  | ✅     |
+| 4     | Build validation scripts    | `archive/.../phase-reports/PHASE_4_AUDIT.md`  | ✅     |
+| 5     | Update audit skills         | `archive/.../phase-reports/PHASE_5_AUDIT.md`  | ✅     |
+| 6     | Create intake skills        | `archive/.../phase-reports/PHASE_6_AUDIT.md`  | ✅     |
+| 7     | Add pre-commit hooks        | `archive/.../phase-reports/PHASE_7_AUDIT.md`  | ✅     |
+| 8     | Add CI checks               | `archive/.../phase-reports/PHASE_8_AUDIT.md`  | ✅     |
+| 9     | Create verification skill   | (Done in Phase 6)                             | ✅     |
+| 9b    | Full Audit TDMS Integration | `archive/.../phase-reports/PHASE_9B_AUDIT.md` | ✅     |
+| 10    | Create GitHub Action        | `archive/.../phase-reports/PHASE_10_AUDIT.md` | ✅     |
+| 11    | Update PR template          | `archive/.../phase-reports/PHASE_11_AUDIT.md` | ✅     |
+| 12    | Update pr-review skill      | `archive/.../phase-reports/PHASE_12_AUDIT.md` | ✅     |
+| 13    | Archive source documents    | `archive/.../phase-reports/PHASE_13_AUDIT.md` | ✅     |
+| 14    | Dev dashboard integration   | `archive/.../phase-reports/PHASE_14_AUDIT.md` | ✅     |
+| 15    | Verification batches        | `archive/.../phase-reports/PHASE_15_AUDIT.md` | ✅     |
+| 16    | Final doc sync              | `archive/.../phase-reports/PHASE_16_AUDIT.md` | ✅     |
+| 17    | Final System Audit          | This document                                 | ✅     |
+
+> **Note:** Phase reports archived 2026-02-05 to
+> `docs/archive/tdms-intermediates-2026-02/phase-reports/`. See
+> [MANIFEST.md](../archive/tdms-intermediates-2026-02/MANIFEST.md) for details.
 
 ---
 

@@ -74,6 +74,8 @@ Skills are automatically validated by `npm run skills:validate` which checks:
 | Bug investigation            | `systematic-debugging` | Warning   |
 | Starting a work session      | `/session-begin`       | Required  |
 | Ending a work session        | `/session-end`         | Required  |
+| Commit failure (pre-commit)  | `/pre-commit-fixer`    | Suggested |
+| 5+ code files modified       | Delegated code review  | Suggested |
 
 ### Skill Usage Verification
 

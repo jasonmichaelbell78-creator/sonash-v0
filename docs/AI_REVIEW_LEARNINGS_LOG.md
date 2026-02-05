@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 14.4 **Created:** 2026-01-02 **Last Updated:** 2026-02-05
+**Document Version:** 14.5 **Created:** 2026-01-02 **Last Updated:** 2026-02-05
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 14.5    | 2026-02-05 | Review #250: PR #337 Agent QoL Infrastructure - Qodo + CI (22 items - 1 CRITICAL, 7 MAJOR, 10 MINOR, 4 TRIVIAL, 0 REJECTED). **CRITICAL**: Path traversal in state-utils.js (basename validation). **MAJOR**: sync-sonarcloud.js readFileSync try/catch, 3× unsafe error.message, title guard, non-fatal logging, atomic write; state-utils.js updateTaskState step concat. **MINOR**: 4 false positive readFileSync exclusions, docs/archive/ GLOBAL_EXCLUDE, sonarcloud SKILL.md curl secret, agent-trigger-enforcer path normalization, COMMAND_REFERENCE.md duplicate removal. **TRIVIAL**: session-end handoff preservation, pre-commit-fixer commit -F, deprecated command examples. Active reviews #213-250.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 14.4    | 2026-02-05 | Review #249: PR #336 Multi-AI Audit System - Qodo Compliance + Code Suggestions + SonarCloud + CI (60+ items - 2 CRITICAL, 9 MAJOR, 7 MINOR, 1 TRIVIAL, 4 REJECTED + 41 S5852 DoS regex hotspots). **CRITICAL**: [1] Path traversal via unvalidated sessionPath in 4 eval scripts (regex-based containment), [2] Broken link CI blocker SECURITY_AUDIT_PLAN.md. **MAJOR**: [3] docs/docs/ prefix, [4] Cross-cutting sources not combined, [5] Empty results false PASS, [6] DEBT ID instability (deferred - pipeline issue), [7] Missing snapshot field guard, [8] NaN confidence, [9] Division by zero, [10] Empty fields pass validation, [11] Broken shell &; syntax. **MINOR**: readFileSync try/catch (17 locs), unsafe error.message (6 locs), file path regex, orphaned refs halt, flag consistency, session ID constant, CRLF regex. **S5852 DoS**: 41 regex backtracking hotspots across 23 scripts - added bounds to all unbounded quantifiers. **REJECTED**: Unstructured logs (CLI intentional), missing actor context (CLI), ETL framework (architectural), streaming for eval-report (files too small). **PARALLEL AGENTS**: Used 7+ agents (security-auditor, code-reviewer×2, technical-writer, fullstack-developer×3). Active reviews #213-249. |
 | 14.3    | 2026-02-04 | Review #248: PR #335 Round 9 - Qodo Compliance + Code Suggestions (14 items - 0 CRITICAL, 2 MAJOR, 8 MINOR, 1 TRIVIAL, 3 REJECTED). **REJECTED FALSE POSITIVES**: [1,2] userIdHash field suggestions - userId field IS the hash (security-logger.ts:137), [3] METRICS.md version history - intentional for Tier 2 compliance. **MAJOR**: [4] analytics-tab onRetry unmount guard, [5] errors-tab UserCorrelationSection unmount guard. **MINOR**: [6] UTC date parsing determinism, [7] Export size cap (2000 rows), [8] Request ID pattern for UserActivityModal, [9] Parallelize retention queries (Promise.all), [10-12] admin.ts robustness (metadata shape, persisted value coercion, capMetadata try/catch). **TRIVIAL**: [14] Unique chart keys. **COMPLIANCE INFORMATIONAL**: Resource exhaustion (already mitigated), Zod messages (admin-only), partially redacted email (intentional). Active reviews #213-248.                                                                                                                                                                                                                                                                                                                                       |
 | 14.2    | 2026-02-04 | Review #247: PR #335 Round 8 - Qodo Code Suggestions (6 items - 0 CRITICAL, 1 HIGH, 3 MEDIUM, 1 LOW, 1 REJECTED). **CI BLOCKER**: METRICS.md missing required sections (added Overview + Version History for Tier 2 compliance). **HIGH**: [1] Wrap loadAnalytics in arrow function for onRetry prop (prevents event object injection). **MEDIUM**: [2] Add isActive guard to JobRunHistoryPanel (unmount safety). [3] Parallelize feature usage aggregation (Promise.all for 4 features). **LOW**: [4] Cap large metadata payloads in adminGetErrorsWithUsers (2KB limit). **REJECTED**: [5] Consolidation threshold suggestion (incorrectly wanted to revert 2→8 - we just fixed this in #246). Active reviews #213-247.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -310,7 +311,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 7 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After Review #252
 
 ### When to Consolidate
@@ -469,7 +470,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 6     | <10    | ✅     |
+| Reviews since last consolidation | 7     | <10    | ✅     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -1823,10 +1824,48 @@ claude/new-session-x1MF5 PR #336 **Suggestions:** 60+ total (Critical: 2, Major:
 
 ---
 
+#### Review #250: PR #337 Agent QoL Infrastructure - Qodo + CI (2026-02-05)
+
+**Source:** Qodo PR Compliance + Code Suggestions + CI Pattern Compliance
+**PR/Branch:** claude/new-session-x1MF5 PR #337 **Suggestions:** 22 total
+(Critical: 1, Major: 7, Minor: 10, Trivial: 4)
+
+**Patterns Identified:**
+
+1. [Path traversal in utility modules]: state-utils.js accepted raw filenames
+   without basename validation, enabling directory escape
+   - Root cause: Utility functions trusted caller input
+   - Prevention: Always validate filenames are simple basenames in shared utils
+2. [updateTaskState step data loss]: Steps array was overwritten instead of
+   concatenated, losing historical step entries
+   - Root cause: Shallow spread operator replaced arrays
+   - Prevention: Use array concat for append-only collections
+3. [Archived files in CI pattern check]: Obsolete scripts in docs/archive/
+   triggered CI failures despite being intentionally archived
+   - Root cause: Pattern check ran on all changed files including archived ones
+   - Prevention: Add docs/archive/ to GLOBAL_EXCLUDE
+4. [readFileSync false positives]: Pattern checker flagged readFileSync inside
+   try/catch blocks (4 locations in new hooks)
+   - Root cause: Regex-based detection cannot parse AST/scope context
+   - Prevention: Add verified files to pathExcludeList with audit comments
+
+**Resolution:**
+
+- Fixed: 22 items
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- New utility modules need defensive input validation from day 1
+- Array-type fields in merge operations need explicit concat, not overwrite
+- Archived files should be globally excluded from compliance checks
+- curl commands in skill documentation expose tokens on command line
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #250: PR #XXX Title - Review Source (DATE)
+#### Review #251: PR #XXX Title - Review Source (DATE)
 
 
 -->

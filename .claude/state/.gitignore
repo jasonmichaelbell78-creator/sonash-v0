@@ -1,0 +1,8 @@
+# Ephemeral session state - do not track
+# These files are generated per-session and should not be committed
+*.state.json
+handoff.json
+pending-reviews.json
+
+# Keep this .gitignore tracked
+!.gitignore
