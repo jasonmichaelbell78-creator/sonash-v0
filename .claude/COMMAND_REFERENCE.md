@@ -654,6 +654,22 @@ progress) **Output:** Unified findings in
 roadmap track assignments, metrics update **Added:** Session #130 **Updated:**
 Session #132 (v1.1 - added Phases 6-8)
 
+#### `eval-multi-ai-audit`
+
+**Description:** Evaluation wrapper that instruments a live multi-AI audit run
+and scores each pipeline stage. Runs a real `/multi-ai-audit` session with
+instrumentation to measure reliability, correctness, and data integrity across
+all 8 stages (session init, template output, format normalization, schema
+fixing, category aggregation, unification, TDMS intake, roadmap integration).
+Generates a scored evaluation report with actionable improvement
+recommendations. **When to use:** Validating the multi-ai-audit system works
+end-to-end, after making changes to audit scripts, or periodically for quality
+assurance **Example:** `/eval-multi-ai-audit` then proceed with a real audit
+**Parameters:** None - wraps the standard /multi-ai-audit workflow **Output:**
+Evaluation report at `docs/audits/multi-ai/<session>/eval/EVALUATION-REPORT.md`
+with per-stage scoring, data integrity checks, and recommendations **Added:**
+Session #132 **Note:** Temporary skill — remove after validation complete
+
 ### Technical Debt Management (TDMS)
 
 #### `verify-technical-debt`
