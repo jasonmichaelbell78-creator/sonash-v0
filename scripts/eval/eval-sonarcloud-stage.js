@@ -19,6 +19,7 @@
 /* global __dirname */
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const ROOT = path.resolve(__dirname, "../..");
 const DEBT_DIR = path.join(ROOT, "docs/technical-debt");
@@ -738,7 +739,9 @@ function main() {
 
     const result = stageMap[s]();
     result.checked_at = new Date().toISOString();
-    result.checked_by = process.env.USER || process.env.LOGNAME || "unknown";
+    // Hash username to avoid PII in logs while preserving audit trail traceability
+    const rawUser = process.env.USER || process.env.LOGNAME || "unknown";
+    result.checked_by = crypto.createHash("sha256").update(rawUser).digest("hex").substring(0, 8);
     appendResult(safeSessionPath, result);
 
     const icon = result.passed ? "✅" : "❌";

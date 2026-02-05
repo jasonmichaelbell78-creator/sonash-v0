@@ -79,17 +79,24 @@ function loadJsonlResults(filePath) {
   let content;
   try {
     content = fs.readFileSync(filePath, "utf8");
-  } catch {
+  } catch (err) {
+    console.error(
+      `Warning: Failed to read ${filePath}: ${err instanceof Error ? err.message : String(err)}`
+    );
     return [];
   }
   const lines = content.split("\n").filter((l) => l.trim());
   const results = [];
+  let parseErrors = 0;
   for (const line of lines) {
     try {
       results.push(JSON.parse(line));
     } catch {
-      // Skip malformed lines
+      parseErrors++;
     }
+  }
+  if (parseErrors > 0) {
+    console.error(`Warning: ${parseErrors} malformed JSON line(s) skipped in ${filePath}`);
   }
   return results;
 }
@@ -437,13 +444,11 @@ function generateReport(sessionPath) {
 
       switch (result.stage) {
         case "E1":
-          report += `1. Verify SONAR_TOKEN is set: \`[ -n "$SONAR_TOKEN" ] && echo "Token set" || echo "Token NOT set"\`\n`;
-          report += `2. Check SonarCloud connectivity (token via stdin):\n`;
-          report += `   \`\`\`bash\n`;
-          report += `   curl -s --config - "https://sonarcloud.io/api/projects/search" <<< 'header = "Authorization: Bearer '"$SONAR_TOKEN"'"' | jq .\n`;
-          report += `   \`\`\`\n`;
+          report += `1. Verify SONAR_TOKEN is set: \`[ -n "$SONAR_TOKEN" ] && echo "Token set (length: \${#SONAR_TOKEN})" || echo "Token NOT set"\`\n`;
+          report += `2. Test API connectivity via sync script (handles auth internally):\n`;
+          report += `   \`node scripts/debt/sync-sonarcloud.js --dry-run\`\n`;
           report += `3. Verify project key: \`grep -E '^\\s*sonar\\.projectKey' sonar-project.properties\`\n`;
-          report += `4. Re-run: \`node scripts/debt/sync-sonarcloud.js\`\n\n`;
+          report += `4. Re-run full sync: \`node scripts/debt/sync-sonarcloud.js\`\n\n`;
           break;
         case "E2":
           report += `1. Check for duplicate entries: \`grep -o '"content_hash":"[^"]*"' docs/technical-debt/MASTER_DEBT.jsonl | sort | uniq -d\`\n`;

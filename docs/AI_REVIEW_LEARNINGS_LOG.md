@@ -311,8 +311,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 10 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** NOW
+**Reviews since last consolidation:** 11 **Consolidation threshold:** 10 reviews
+**Status:** ⚠️ CONSOLIDATION OVERDUE **Next consolidation due:** NOW
 
 ### When to Consolidate
 
@@ -470,7 +470,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 10    | <10    | ⚠️     |
+| Reviews since last consolidation | 11    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -1899,10 +1899,46 @@ Major: 12, Minor: 8, Trivial: 2, Rejected: 2)
 <!--
 Next review entry will go here. Use format:
 
-#### Review #254: PR #XXX Title - Review Source (DATE)
+#### Review #255: PR #XXX Title - Review Source (DATE)
 
 
 -->
+
+#### Review #254: PR #338 Token Exposure + Parse Logging - Qodo (2026-02-05)
+
+**Source:** Qodo Compliance **PR/Branch:** claude/new-session-x1MF5 (PR #338)
+**Suggestions:** 3 total (Critical: 1, Major: 1, Minor: 1, Trivial: 0,
+Rejected: 0)
+
+**Patterns Identified:**
+
+1. [Here-string Token Interpolation]: `<<<` pattern still expands variables
+   - Root cause: Thought heredoc avoided expansion but `$VAR` outside quotes
+     expands
+   - Prevention: Remove manual curl commands; use scripts that handle auth
+     internally
+
+2. [Multiple Similar Functions]: Fixed loadSnapshot but missed loadJsonlResults
+   - Root cause: Same pattern in same file, different function name
+   - Prevention: When fixing a pattern, grep for ALL functions with similar code
+
+3. [PII in Audit Logs]: Raw username stored in evaluation logs
+   - Root cause: Added user context for audit trail without considering PII
+   - Prevention: Hash identifiers in logs to preserve traceability without
+     exposing PII
+
+**Resolution:**
+
+- Fixed: 3 items
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- `<<<` here-strings still interpolate `$VAR` - not safe for secrets
+- Best practice: use scripts that handle secrets internally, never expose in
+  docs
+- Audit trail identifiers should be hashed, not raw usernames
 
 #### Review #253: PR #338 eval-sonarcloud Symlink Defense - Qodo (2026-02-05)
 

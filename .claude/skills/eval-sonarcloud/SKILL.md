@@ -200,13 +200,11 @@ cat "$SESSION/eval/EVALUATION-REPORT.md"
 ### E1 Fails: API Fetch
 
 - Check SONAR_TOKEN is set:
-  `[ -n "$SONAR_TOKEN" ] && echo "Token set (${#SONAR_TOKEN} chars)" || echo "Token NOT set"`
+  `[ -n "$SONAR_TOKEN" ] && echo "Token set (length: ${#SONAR_TOKEN})" || echo "Token NOT set"`
 - Verify project key:
   `grep -E '^\s*sonar\.projectKey\s*=' sonar-project.properties`
-- Test API (token via stdin to avoid process list exposure):
-  ```bash
-  curl -s --config - "https://sonarcloud.io/api/projects/search" <<< "header = \"Authorization: Bearer $SONAR_TOKEN\"" | jq .
-  ```
+- Test API connectivity via sync script (handles auth internally, avoids token
+  exposure): `node scripts/debt/sync-sonarcloud.js --dry-run`
 
 ### E2 Fails: Deduplication
 
