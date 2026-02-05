@@ -22,6 +22,18 @@ const path = require("node:path");
 const STATE_DIR = ".claude/state";
 
 /**
+ * Validate filename is a simple basename (no path traversal).
+ * Rejects: ../foo, sub/dir/foo, absolute paths, empty strings.
+ */
+function validateFilename(filename) {
+  if (typeof filename !== "string" || !filename) return false;
+  // Must be a simple basename - no directory separators or traversal
+  if (path.basename(filename) !== filename) return false;
+  if (/^\.\.(?:[\\/]|$)/.test(filename)) return false;
+  return true;
+}
+
+/**
  * Get the resolved state directory path
  */
 function getStateDir(projectDir) {
@@ -38,6 +50,7 @@ function getStateDir(projectDir) {
  * Read a state file. Returns null if not found or invalid.
  */
 function readState(projectDir, filename) {
+  if (!validateFilename(filename)) return null;
   const filePath = path.join(getStateDir(projectDir), filename);
   try {
     return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -51,6 +64,7 @@ function readState(projectDir, filename) {
  * Returns true on success, false on failure.
  */
 function writeState(projectDir, filename, data) {
+  if (!validateFilename(filename)) return false;
   const dir = getStateDir(projectDir);
   const filePath = path.join(dir, filename);
   const tmpPath = `${filePath}.tmp`;
@@ -73,6 +87,7 @@ function writeState(projectDir, filename, data) {
  * Delete a state file. Returns true on success, false if not found.
  */
 function deleteState(projectDir, filename) {
+  if (!validateFilename(filename)) return false;
   const filePath = path.join(getStateDir(projectDir), filename);
   try {
     fs.rmSync(filePath, { force: true });
@@ -131,9 +146,9 @@ function updateTaskState(projectDir, taskName, update) {
     lastUpdated: new Date().toISOString(),
   };
 
-  // Deep merge steps if provided
-  if (update.steps && existing.steps) {
-    merged.steps = update.steps;
+  // Append new steps to existing (prevent data loss from overwrite)
+  if (update.steps && Array.isArray(update.steps)) {
+    merged.steps = (existing.steps || []).concat(update.steps);
   }
   if (update.context) {
     merged.context = { ...existing.context, ...update.context };
@@ -179,6 +194,7 @@ function readHandoff(projectDir) {
 
 module.exports = {
   getStateDir,
+  validateFilename,
   readState,
   writeState,
   deleteState,

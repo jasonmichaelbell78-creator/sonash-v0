@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 3.1 **Last Updated:** 2026-02-05 **Purpose:** Comprehensive
+**Version:** 3.2 **Last Updated:** 2026-02-05 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -361,8 +361,8 @@ resolve, full, report, status, sprint **Added:** Session #133
 
 **Description:** Run a SonarCloud cleanup sprint. **Deprecated:** Use
 `/sonarcloud` instead, which consolidates sync, resolve, report, and sprint
-modes in a unified interface. **When to use:** Use `/sonarcloud` with `--sprint`
-mode instead **Example:** `/sonarcloud` **Parameters:** None
+modes in a unified interface. **When to use:** Use `/sonarcloud --mode sprint`
+instead **Example:** `/sonarcloud` **Parameters:** None
 
 #### `skill-creator`
 
@@ -686,22 +686,12 @@ None - processes items from verification queue **Output:** Updates
 MASTER_DEBT.jsonl with VERIFIED, FALSE_POSITIVE, DUPLICATE, or RESOLVED status
 **Added:** TDMS Phase 9
 
-#### `sonarcloud`
-
-**Description:** Unified SonarCloud integration skill for syncing, resolving,
-reporting, and running cleanup sprints. Consolidates `sonarcloud-sprint` and
-`sync-sonarcloud-debt`. **When to use:** Any SonarCloud operation against TDMS
-**Example:** `/sonarcloud` **Parameters:** Modes: sync (default), resolve, full,
-report, status, sprint **Output:** Depends on mode - sync adds items, resolve
-marks stale items, report generates markdown, sprint runs full cleanup workflow
-**Requires:** `SONAR_TOKEN` in `.env.local` **Added:** Session #133
-
 #### `sync-sonarcloud-debt` _(deprecated)_
 
 **Description:** Sync technical debt items from SonarCloud API into
 MASTER_DEBT.jsonl. **Deprecated:** Use `/sonarcloud` instead. **When to use:**
-Use `/sonarcloud` with sync mode instead **Example:** `/sonarcloud`
-**Parameters:** None **Added:** TDMS Phase 6
+Use `/sonarcloud --mode sync` instead **Example:** `/sonarcloud` **Parameters:**
+None **Added:** TDMS Phase 6
 
 #### `add-manual-debt`
 
@@ -1933,6 +1923,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                                                                                                                           |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.2     | 2026-02-05 | Review #250: Removed duplicate `/sonarcloud` entry; fixed deprecated command examples; updated `/sonarcloud` report mode (no inline curl)                         |
 | 3.1     | 2026-02-05 | Session #133: Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff               |
 | 3.0     | 2026-02-05 | Session #133: Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills; archived obsolete scripts |
 | 2.9     | 2026-02-04 | Session #130: Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits with any-format input normalization                             |

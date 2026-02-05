@@ -47,6 +47,8 @@ const GLOBAL_EXCLUDE = [
   /^docs\/AI_REVIEW_LEARNINGS_LOG\.md$/,
   // This file contains pattern definitions as strings (meta-detection false positives)
   /^scripts\/check-pattern-compliance\.js$/,
+  // Archived/obsolete scripts - not actively maintained (Review #250)
+  /^docs\/archive\//,
   // Development/build utility scripts (pre-existing debt - Review #136)
   /^scripts\/ai-review\.js$/,
   /^scripts\/assign-review-tier\.js$/,
@@ -326,8 +328,9 @@ const ANTI_PATTERNS = [
     //   containment check at L623, symlink check at L627-640
     // Review #249: eval-check-stage.js L254,369 `file` from readdirSync; validated sessionPath upstream
     // Review #249: eval-snapshot.js L137 `file` from readdirSync; VIEWS_DIR is constant
+    // Review #250: state-utils.js has validateFilename() basename check before all path.join calls
     pathExclude:
-      /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings|transform-jsonl-schema|eval-check-stage|eval-snapshot)\.js$/,
+      /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings|transform-jsonl-schema|eval-check-stage|eval-snapshot|state-utils)\.js$/,
   },
   {
     id: "error-without-first-line",
@@ -552,6 +555,16 @@ const ANTI_PATTERNS = [
       // extract-sonarcloud.js - ARCHIVED to docs/archive/obsolete-scripts-2026-02/
       // 2026-02-05 (Review #249): validate-schema.js readFileSync at L181 IS in try/catch (L180-185)
       "validate-schema.js",
+      // 2026-02-05 (Review #250 PR #337):
+      // - compaction-handoff.js: readFileSync at L63 IS in try/catch (L62-66 in loadJson)
+      // - state-utils.js: readFileSync at L56 IS in try/catch (L55-59 in readState)
+      // - agent-trigger-enforcer.js: readFileSync at L118 IS in try/catch (L116-121),
+      //   L258 IS in try/catch (L257-262)
+      // - sync-sonarcloud.js: readFileSync at L144 now IS in try/catch (L143-150)
+      "compaction-handoff.js",
+      "state-utils.js",
+      "agent-trigger-enforcer.js",
+      "sync-sonarcloud.js",
     ],
   },
   {

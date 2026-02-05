@@ -58,11 +58,19 @@ npm run hooks:health -- --end
 
 ## 6. Clean Up State Files
 
-Remove ephemeral session state that should not persist:
+Remove ephemeral session state that should not persist.
 
 ```bash
+# Always remove the pending reviews queue for the session
 rm -f .claude/state/pending-reviews.json
-rm -f .claude/state/handoff.json
+
+# Only remove handoff if no tasks are still in progress
+if ! grep -q '"status": "in_progress"' .claude/state/task-*.state.json 2>/dev/null; then
+  echo "No in-progress tasks found. Cleaning up handoff file."
+  rm -f .claude/state/handoff.json
+else
+  echo "In-progress tasks found. Preserving handoff.json for session recovery."
+fi
 ```
 
 Keep `task-*.state.json` files only if they have `in_progress` steps (the user

@@ -141,7 +141,15 @@ function loadMasterDebt() {
     return [];
   }
 
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (err) {
+    console.error(
+      `⚠️ Warning: Could not read ${MASTER_FILE}: ${err instanceof Error ? err.message : String(err)}`
+    );
+    return [];
+  }
   const lines = content.split("\n").filter((line) => line.trim());
 
   const items = [];
@@ -151,7 +159,7 @@ function loadMasterDebt() {
     try {
       items.push(JSON.parse(lines[i]));
     } catch (err) {
-      badLines.push({ line: i + 1, message: err.message });
+      badLines.push({ line: i + 1, message: err instanceof Error ? err.message : String(err) });
     }
   }
 
@@ -310,19 +318,25 @@ function convertIssue(issue) {
   };
 }
 
-// Log resolution activity
+// Log resolution activity (non-fatal - logging failure should not crash script)
 function logResolution(activity) {
-  if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(LOG_DIR)) {
+      fs.mkdirSync(LOG_DIR, { recursive: true });
+    }
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      actor: process.env.USER || process.env.USERNAME || "system",
+      actor_type: "cli-script",
+      outcome: activity.error ? "failure" : "success",
+      ...activity,
+    };
+    fs.appendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
+  } catch (err) {
+    console.warn(
+      `  ⚠️ Failed to write resolution log: ${err instanceof Error ? err.message : String(err)}`
+    );
   }
-  const logEntry = {
-    timestamp: new Date().toISOString(),
-    actor: process.env.USER || process.env.USERNAME || "system",
-    actor_type: "cli-script",
-    outcome: activity.error ? "failure" : "success",
-    ...activity,
-  };
-  fs.appendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
 }
 
 // Resolve items no longer present in SonarCloud
@@ -341,7 +355,9 @@ async function resolveStaleItems(options) {
       statuses: "OPEN,CONFIRMED,REOPENED",
     });
   } catch (err) {
-    console.error(`Error fetching from SonarCloud: ${err.message}`);
+    console.error(
+      `Error fetching from SonarCloud: ${err instanceof Error ? err.message : String(err)}`
+    );
     return { resolved: 0 };
   }
 
@@ -371,7 +387,9 @@ async function resolveStaleItems(options) {
   // Show sample of stale items
   console.log("\n  Stale items (will be marked RESOLVED):");
   for (const item of staleItems.slice(0, 5)) {
-    console.log(`    - ${item.id}: ${item.title.substring(0, 50)}...`);
+    const title = typeof item.title === "string" ? item.title : "(no title)";
+    const preview = title.length > 50 ? `${title.slice(0, 50)}...` : title;
+    console.log(`    - ${item.id}: ${preview}`);
   }
   if (staleItems.length > 5) {
     console.log(`    ... and ${staleItems.length - 5} more items`);
@@ -406,7 +424,9 @@ async function resolveStaleItems(options) {
   });
 
   console.log("\n📝 Updating MASTER_DEBT.jsonl...");
-  fs.writeFileSync(MASTER_FILE, updatedLines.join("\n") + "\n");
+  const tmpMaster = `${MASTER_FILE}.tmp`;
+  fs.writeFileSync(tmpMaster, updatedLines.join("\n") + "\n");
+  fs.renameSync(tmpMaster, MASTER_FILE);
 
   // Log resolutions
   logResolution({
@@ -510,7 +530,9 @@ Environment variables:
       statuses: parsed.status || "OPEN,CONFIRMED,REOPENED",
     });
   } catch (err) {
-    console.error(`Error fetching from SonarCloud: ${err.message}`);
+    console.error(
+      `Error fetching from SonarCloud: ${err instanceof Error ? err.message : String(err)}`
+    );
     process.exit(1);
   }
 

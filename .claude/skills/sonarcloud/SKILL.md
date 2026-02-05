@@ -140,22 +140,17 @@ rule references. Requires fetching data from the SonarCloud API first.
 ### Execution
 
 ```bash
-# Step 1: Fetch data pages from SonarCloud API
-mkdir -p .sonar
-for PAGE in 1 2 3 4; do
-  curl -s -u "$SONAR_TOKEN:" \
-    "https://sonarcloud.io/api/issues/search?componentKeys=jasonmichaelbell78_sonash-v0&ps=500&p=$PAGE&resolved=false" \
-    > ".sonar/sonar_all_p${PAGE}.json"
-done
+# Step 1: Fetch data from SonarCloud API using the sync script
+# (Avoids exposing SONAR_TOKEN on the command line)
+node scripts/debt/sync-sonarcloud.js --dry-run
 
-# Fetch security hotspots
-curl -s -u "$SONAR_TOKEN:" \
-  "https://sonarcloud.io/api/hotspots/search?projectKey=jasonmichaelbell78_sonash-v0&ps=500" \
-  > .sonar/sonar_hotspots.json
-
-# Step 2: Generate report
+# Step 2: Generate detailed report with code snippets
 node scripts/generate-detailed-sonar-report.js
 ```
+
+> **Security Note:** Never use inline `curl -u "$SONAR_TOKEN:"` commands, as
+> tokens may appear in shell history and process listings. The sync script reads
+> the token from environment variables internally.
 
 ### Output
 

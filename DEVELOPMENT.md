@@ -625,7 +625,7 @@ Configured in `.claude/settings.json`.
 | app-check-validator.js      | Warn    | Cloud Function App Check verification             |
 | typescript-strict-check.js  | Warn    | Detect `any` type usage                           |
 | repository-pattern-check.js | Warn    | Firestore queries in components                   |
-| agent-trigger-enforcer.js   | Suggest | Recommend agents for code changes                 |
+| agent-trigger-enforcer.js   | Suggest | Recommend agents + delegated review queue (#250)  |
 | audit-s0s1-validator.js     | Warn    | S0/S1 verification_steps validation (Session #98) |
 
 **PostToolUse Hooks (Read):**

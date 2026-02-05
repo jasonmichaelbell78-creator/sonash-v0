@@ -78,8 +78,8 @@ npm run docs:index && git add DOCUMENTATION_INDEX.md
 # Cross-doc dependency (example)
 git add .claude/COMMAND_REFERENCE.md
 
-# Re-commit (same message)
-git commit -m "original message"
+# Re-commit using the original message (preserved by git after hook failure)
+git commit -F .git/COMMIT_EDITMSG
 ```
 
 **For Category B (subagent fix):**

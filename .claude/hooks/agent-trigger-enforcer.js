@@ -262,9 +262,15 @@ if (applicableAgents.some((a) => a.agent === "code-reviewer")) {
     // Use default
   }
 
+  // Normalize to relative path for consistent deduplication
+  const normalizedFile = path
+    .relative(projectDir, path.resolve(projectDir, filePath))
+    .split(path.sep)
+    .join("/");
+
   // Add this file to the review queue (deduplicate)
-  if (!reviewQueue.files.includes(filePath)) {
-    reviewQueue.files.push(filePath);
+  if (!reviewQueue.files.includes(normalizedFile)) {
+    reviewQueue.files.push(normalizedFile);
   }
 
   // Check if threshold reached for queuing a delegated review

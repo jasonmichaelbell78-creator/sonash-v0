@@ -601,7 +601,7 @@ feedback on code quality, security, and best practices.
 | app-check-validator.js      | Write/Edit  | Warn    | Cloud Function App Check verification             |
 | typescript-strict-check.js  | Write/Edit  | Warn    | Detect `any` type usage                           |
 | repository-pattern-check.js | Write/Edit  | Warn    | Firestore queries in components                   |
-| agent-trigger-enforcer.js   | Write/Edit  | Suggest | Recommend agents for code changes                 |
+| agent-trigger-enforcer.js   | Write/Edit  | Suggest | Recommend agents + delegated review queue (#250)  |
 | large-context-warning.js    | Read        | Warn    | Track file reads for context bloat                |
 | decision-save-prompt.js     | AskQuestion | Prompt  | Remind to document decisions                      |
 | audit-s0s1-validator.js     | Write       | Warn    | S0/S1 verification_steps validation (Session #98) |
