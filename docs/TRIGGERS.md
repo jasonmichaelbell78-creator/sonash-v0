@@ -606,6 +606,8 @@ feedback on code quality, security, and best practices.
 | decision-save-prompt.js     | AskQuestion | Prompt  | Remind to document decisions                      |
 | audit-s0s1-validator.js     | Write       | Warn    | S0/S1 verification_steps validation (Session #98) |
 | track-agent-invocation.js   | Task        | Track   | Record agent invocations for compliance (#101)    |
+| auto-save-context.js        | Read        | Save    | Auto-save context to MCP memory on threshold      |
+| compaction-handoff.js       | Read        | Save    | Write handoff.json for compaction recovery (#133) |
 
 ### Verification
 

@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 3.0 **Last Updated:** 2026-02-05 **Purpose:** Comprehensive
+**Version:** 3.1 **Last Updated:** 2026-02-05 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -724,10 +724,21 @@ description, severity **Output:** New DEBT-XXXX entry with `source_id: PR-N-X`
 #### `checkpoint`
 
 **Description:** Create a checkpoint for the current session state. Saves
-progress markers and context for session recovery or handoff. **When to use:**
-Before complex operations, mid-session saves, or preparing for handoff
+progress markers and context for session recovery or handoff. Also writes task
+state to `.claude/state/task-*.state.json` for compaction recovery. **When to
+use:** Before complex operations, mid-session saves, or preparing for handoff
 **Example:** `/checkpoint` before major refactoring **Parameters:** None
-**Added:** Session #114
+**Added:** Session #114 (enhanced Session #133)
+
+#### `pre-commit-fixer`
+
+**Description:** Automatically fix pre-commit hook failures and retry the
+commit. Classifies failures into Category A (auto-fixable: doc index, cross-doc
+deps) and Category B (subagent-fixable: ESLint, pattern violations). Reduces
+context waste from manual fix-commit-retry cycles. **When to use:** When
+`git commit` fails due to pre-commit hook errors **Example:**
+`/pre-commit-fixer` after commit failure **Parameters:** None **Added:** Session
+#133
 
 #### `session-begin`
 
@@ -1922,6 +1933,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                                                                                                                           |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.1     | 2026-02-05 | Session #133: Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff               |
 | 3.0     | 2026-02-05 | Session #133: Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills; archived obsolete scripts |
 | 2.9     | 2026-02-04 | Session #130: Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits with any-format input normalization                             |
 | 2.8     | 2026-02-04 | Session #129: pr-review skill now MANDATES incrementing consolidation counter; added `npm run consolidation:sync` script for drift fixes                          |

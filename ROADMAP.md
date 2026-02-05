@@ -1644,7 +1644,43 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
   - Time savings: 77% (150 minutes → 35 minutes)
   - Cross-domain insights through deduplication and priority ranking
 
+**Phase 1.5: QoL Agent Infrastructure ✅ COMPLETE (Session #133)**
+
+- ✅ **File-Based State Persistence** (E0 effort, High ROI) — QoL #2
+  - `.claude/state/` directory with `.gitignore` for ephemeral session data
+  - `state-utils.js` shared module for atomic read/write
+  - Convention: `task-{name}.state.json` for multi-step task tracking
+  - **Context savings:** Survives compaction, eliminates re-explanation
+- ✅ **Compaction-Safe Handoff Protocol** (E0 effort, High ROI) — QoL #5
+  - `compaction-handoff.js` PostToolUse hook writes structured handoff.json
+  - Auto-triggers when 25+ files read in session
+  - Captures git state, agent invocations, files read
+  - Enhanced `/save-context`, `/checkpoint` with handoff integration
+- ✅ **Pre-Commit Fixer Skill** (E1 effort, High ROI) — QoL #1
+  - `/pre-commit-fixer` skill for automated commit failure recovery
+  - Category A (auto-fixable) vs Category B (subagent-delegated) classification
+  - Eliminates 2-5 context-heavy round-trips per commit failure
+- ✅ **Delegated Code Review Pipeline** (E1 effort, High ROI) — QoL #4
+  - Enhanced `agent-trigger-enforcer.js` with review queue tracking
+  - Writes to `.claude/state/pending-reviews.json` after 5+ code files modified
+  - `/session-end` reconciles suggested vs invoked agents
+  - Findings written to files, not inline — saves 1000+ tokens
+
 **Phase 2: Agent Infrastructure (Medium Priority)**
+
+- ⏳ **Parallel Research Agents on Session Start** (E1 effort) — QoL #3
+  - Spawn 3-4 background Explore agents at session start
+  - Pre-gather: recent changes, S0/S1 debt items, branch/PR status
+  - Write summaries to `.claude/state/session-context-{date}.md`
+  - **Context savings:** 1000-2000 tokens of exploration pre-built
+  - **Priority:** P1 - Every session benefits
+
+- ⏳ **Batch Operations via Agent Farms** (E2 effort) — QoL #6
+  - Pattern for bulk operations: chunk items, spawn parallel agents per chunk
+  - Each agent writes results to `.claude/state/batch-{n}.json`
+  - Apply to: debt verification, bulk fixes, doc updates, test fixing
+  - **Context savings:** N \* per-item tokens compressed to parallel execution
+  - **Priority:** P2 - High value for bulk operations
 
 - ⏳ **Create `codebase-explorer` Agent** (E2 effort)
   - Specialized agent for codebase navigation and context gathering
@@ -1675,6 +1711,19 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 
 **Phase 3: Advanced Optimization (Lower Priority)**
 
+- ⏳ **Smart Agent Selection via Hook Enhancement** (E1 effort) — QoL #7
+  - Upgrade `analyze-user-request.js` with complexity scoring
+  - Count action verbs; score >= 3 suggests Plan agent first
+  - Score >= 5 suggests breaking into subagent tasks
+  - **Context savings:** Prevents unplanned complexity from bloating context
+  - **Priority:** P3 - Incremental improvement
+
+- ⏳ **Session End Agent Compliance Report** (E1 effort) — QoL #8
+  - Reconcile agents suggested vs agents invoked at session end
+  - Read `.agent-trigger-state.json` and `.session-agents.json`
+  - Report gaps for trend analysis over time
+  - **Priority:** P3 - Accountability improvement
+
 - ⏳ **Build `documentation-enforcement` Agent** (E2 effort)
   - Automated enforcement of documentation standards
   - Triggered by SessionStart or PostToolUse for doc files
@@ -1698,10 +1747,14 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 
 **Implementation Strategy:**
 
-1. **Phase 2 (Q2 2026):** Implement codebase-explorer and code-reviewer refactor
-2. **Phase 3 (Q3 2026):** Create agent-router and extract shared utilities
-3. **Phase 4 (Q4 2026):** Build documentation-enforcement and context-optimizer
-4. **Continuous:** Audit skills for parallelization opportunities during routine
+1. **Phase 1.5 (Session #133):** ✅ State persistence, handoff, pre-commit
+   fixer, delegated review
+2. **Phase 2 (Next sprint):** Parallel session-start agents, batch agent farms,
+   codebase-explorer, code-reviewer refactor
+3. **Phase 3 (Q3 2026):** Smart agent selection, compliance report,
+   agent-router, shared utilities
+4. **Phase 4 (Q4 2026):** Build documentation-enforcement and context-optimizer
+5. **Continuous:** Audit skills for parallelization opportunities during routine
    maintenance
 
 **Success Metrics:**
@@ -1709,6 +1762,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 - Context token usage reduction: >40% on exploratory tasks
 - Session latency reduction: >30% on multi-file operations
 - Developer productivity: Fewer "context rot" incidents
+- Compaction recovery rate: >90% successful handoff-based resumptions
 
 ### Dev Dashboard Future Enhancements (Session #69)
 
@@ -3256,6 +3310,7 @@ npm run roadmap:validate      # Check consistency (when available)
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.19    | 2026-02-05 | **Session #133**: Added Phase 1.5 QoL Agent Infrastructure (4 items complete); placed QoL #3, #6, #7, #8 in Phase 2-3; unified /sonarcloud skill; archived obsolete scripts                                                                                                                                                                                                                 |
 | 3.18    | 2026-02-04 | **Session #130**: Added Track A-Test A19-A22 testing plan (TRACK_A_TESTING_PLAN.md); linked Track T Phase 1 as dependency for automated testing; updated test category count to 9; added tool installation details (Playwright, firebase rules testing, msw)                                                                                                                                |
 | 3.17    | 2026-02-03 | **Session #128**: TIMING SYSTEM CHANGE - Removed all date-based scheduling from roadmap; introduced Priority + Phase Buckets + Relative Ordering system; updated Milestones Overview table (Target → Phase column); converted inline date references to session numbers; added episodic memory integration to all audit skills                                                              |
 | 3.16    | 2026-02-01 | **Session #116**: Created canonical audit findings location (`docs/audits/canonical/`); consolidated 172 NET NEW findings; added AUDIT_FINDINGS_PROCEDURE.md for roadmap integration workflow                                                                                                                                                                                               |

@@ -32,6 +32,31 @@ On**: [brief task description] **Files Modified**: [list or "none"] **Next
 Step**: [what to do next] **Uncommitted Work**: yes/no
 ```
 
+## Also Update State Files
+
+Write current task state to `.claude/state/` for compaction recovery:
+
+1. If working on a multi-step task, write/update
+   `.claude/state/task-{name}.state.json`:
+
+   ```json
+   {
+     "task": "task-name",
+     "started": "ISO datetime",
+     "lastUpdated": "ISO datetime",
+     "steps": [
+       { "name": "Step 1", "status": "completed" },
+       { "name": "Step 2", "status": "in_progress" },
+       { "name": "Step 3", "status": "pending" }
+     ],
+     "context": { "branch": "branch-name", "notes": "key info" }
+   }
+   ```
+
+2. Update `.claude/state/handoff.json` with current progress (the
+   `compaction-handoff.js` hook does this automatically, but manual updates add
+   richer task-specific context).
+
 ## Also Consider
 
 - If uncommitted work exists, consider committing now:

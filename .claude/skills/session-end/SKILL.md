@@ -25,13 +25,50 @@ Review what was done this session:
 git log --oneline -5
 ```
 
-## 4. Update Session State
+## 4. Agent Compliance Review
+
+Check if agents suggested during the session were actually invoked:
+
+```bash
+# Check agent tracking state
+cat .claude/hooks/.session-agents.json 2>/dev/null
+cat .claude/hooks/.agent-trigger-state.json 2>/dev/null
+```
+
+Compare `agentsInvoked` from `.session-agents.json` against suggestions in
+`.agent-trigger-state.json`. Report any gaps:
+
+- Which agents were suggested but never invoked?
+- Were code-reviewer agents used after code modifications?
+
+Also check the delegated review queue:
+
+```bash
+cat .claude/state/pending-reviews.json 2>/dev/null
+```
+
+If `pending-reviews.json` shows `queued: true` but no code-reviewer was invoked,
+flag this as a compliance gap and suggest the user run a review before merging.
+
+## 5. Update Session State
 
 ```bash
 npm run hooks:health -- --end
 ```
 
-## 5. TDMS Metrics Update
+## 6. Clean Up State Files
+
+Remove ephemeral session state that should not persist:
+
+```bash
+rm -f .claude/state/pending-reviews.json
+rm -f .claude/state/handoff.json
+```
+
+Keep `task-*.state.json` files only if they have `in_progress` steps (the user
+may resume them next session).
+
+## 7. TDMS Metrics Update
 
 Regenerate technical debt metrics for dashboard integration:
 
@@ -44,7 +81,7 @@ This generates:
 - `docs/technical-debt/metrics.json` - Machine-readable for dashboard
 - `docs/technical-debt/METRICS.md` - Human-readable summary
 
-## 6. Final Commit & Push (MANDATORY)
+## 8. Final Commit & Push (MANDATORY)
 
 ```bash
 npm run session:end

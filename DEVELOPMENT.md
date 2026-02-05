@@ -630,9 +630,11 @@ Configured in `.claude/settings.json`.
 
 **PostToolUse Hooks (Read):**
 
-| Hook                     | Action | Purpose                           |
-| ------------------------ | ------ | --------------------------------- |
-| large-context-warning.js | Warn   | Track file reads for context size |
+| Hook                     | Action | Purpose                                  |
+| ------------------------ | ------ | ---------------------------------------- |
+| large-context-warning.js | Warn   | Track file reads for context size        |
+| auto-save-context.js     | Save   | Auto-save context to MCP on threshold    |
+| compaction-handoff.js    | Save   | Write handoff.json for compaction (#133) |
 
 **UserPromptSubmit Hooks:**
 

@@ -11,32 +11,36 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-02-05 **Branch**: `claude/new-session-x1MF5` **Working
-On**: TDMS archival + SonarCloud analysis **Files Modified**: 28 files
+On**: Agent QoL improvements + SonarCloud unified skill **Files Modified**: 14
+files (QoL improvements)
 
-**Next Step**: SonarCloud unified skill discussion
+**Next Step**: Push and verify all changes
 
-**Uncommitted Work**: None (archival commit in progress)
+**Uncommitted Work**: QoL improvements commit in progress
 
-**Session #133 Summary** (TDMS ARCHIVAL + SONARCLOUD ANALYSIS):
+**Session #133 Summary** (TDMS ARCHIVAL + SONARCLOUD + AGENT QOL):
 
 - ✅ **TDMS Archival**: Moved 23 files to
   `docs/archive/tdms-intermediates-2026-02/`
-  - 5 raw pipeline intermediates (audits, sonarcloud, reviews, normalized-all,
-    review-needed)
-  - 1 pipeline log (dedup-log.jsonl)
-  - 17 PHASE\_\*\_AUDIT.md reports (all consolidated into MASTER_DEBT.jsonl)
+  - 5 raw pipeline intermediates, 1 pipeline log, 17 PHASE\_\*\_AUDIT.md reports
   - Kept active: raw/deduped.jsonl, LEGACY_ID_MAPPING.json,
     FINAL_SYSTEM_AUDIT.md
-- ✅ **SonarCloud Integration Analysis**: Full inventory of SonarCloud ecosystem
-  - 2 active skills, 4 active scripts, MCP server, GH Actions workflow
-  - 2 obsolete scripts identified (extract-sonarcloud.js,
-    generate-sonar-report-with-snippets.js)
-  - Gap analysis: no unified end-to-end skill, no resolution tracking
+- ✅ **SonarCloud Unified Skill**: Created `/sonarcloud` with 6 modes (sync,
+  resolve, full, report, status, sprint)
+  - Added --resolve and --full flags to sync-sonarcloud.js
+  - Archived 2 obsolete scripts to docs/archive/obsolete-scripts-2026-02/
+  - Deprecated sonarcloud-sprint and sync-sonarcloud-debt skills
+- ✅ **Agent QoL Improvements** (4 implemented):
+  - QoL #2: `.claude/state/` directory + `state-utils.js` for task persistence
+  - QoL #5: `compaction-handoff.js` hook for automatic handoff.json on Read
+  - QoL #1: `/pre-commit-fixer` skill for automated commit failure recovery
+  - QoL #4: Delegated code review queue in agent-trigger-enforcer.js
+- ✅ **Roadmap Updated**: Added Phase 1.5 QoL Agent Infrastructure; placed
+  remaining QoL items (3, 6, 7, 8) in Phase 2-3
 - ✅ **PR #336 CI Fixes** (from session #132 continuation):
   - Fixed validate-schema.js BLOCKER (63 errors → 0)
   - Fixed 35 broken doc links, 3 FILE_NOT_FOUND audit refs
   - Fixed 31 orphaned DEBT-\* IDs in ROADMAP.md
-  - Fixed pattern compliance false positive on validate-schema.js
 
 **Session #130 Summary** (TRACK A TESTING PLAN):
 

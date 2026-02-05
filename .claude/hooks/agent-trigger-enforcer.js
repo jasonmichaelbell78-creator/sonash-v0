@@ -23,10 +23,14 @@ const path = require("node:path");
 
 // Configuration
 const STATE_FILE = ".claude/hooks/.agent-trigger-state.json";
+const REVIEW_QUEUE_FILE = ".claude/state/pending-reviews.json";
 const PHASE_2_THRESHOLD_USES = 50;
 const PHASE_2_THRESHOLD_DAYS = 30;
 const PHASE_3_THRESHOLD_USES = 100;
 const PHASE_3_THRESHOLD_DAYS = 60;
+
+// Track modified files for delegated review queue (QoL #4)
+const REVIEW_CHANGE_THRESHOLD = 5; // Queue review after N code file modifications
 
 // Agent recommendations based on file patterns
 const AGENT_TRIGGERS = [
@@ -239,6 +243,58 @@ if (phaseTransition) {
   console.error("");
   console.error("To upgrade, update agent-trigger-enforcer.js phase config");
   console.error("\u2501".repeat(35));
+}
+
+// --- Delegated Code Review Queue (QoL #4) ---
+// Track code file modifications and queue a review when threshold is reached.
+// Reviews are written to .claude/state/pending-reviews.json for the session-end
+// skill to reconcile, or for the orchestrator to spawn a code-reviewer subagent
+// that writes findings to a file instead of inline in conversation.
+
+if (applicableAgents.some((a) => a.agent === "code-reviewer")) {
+  const reviewQueuePath = path.join(projectDir, REVIEW_QUEUE_FILE);
+  let reviewQueue = { files: [], queued: false, lastQueued: null };
+  try {
+    reviewQueue = JSON.parse(fs.readFileSync(reviewQueuePath, "utf8"));
+    // Normalize shape
+    if (!Array.isArray(reviewQueue.files)) reviewQueue.files = [];
+  } catch {
+    // Use default
+  }
+
+  // Add this file to the review queue (deduplicate)
+  if (!reviewQueue.files.includes(filePath)) {
+    reviewQueue.files.push(filePath);
+  }
+
+  // Check if threshold reached for queuing a delegated review
+  if (reviewQueue.files.length >= REVIEW_CHANGE_THRESHOLD && !reviewQueue.queued) {
+    reviewQueue.queued = true;
+    reviewQueue.lastQueued = new Date().toISOString();
+
+    console.error("");
+    console.error("\u{1F4CB}  DELEGATED REVIEW QUEUED");
+    console.error("\u2501".repeat(30));
+    console.error(`  ${reviewQueue.files.length} code files modified this session.`);
+    console.error("  Consider spawning a code-reviewer subagent:");
+    console.error("");
+    console.error("  Task({ subagent_type: 'code-reviewer',");
+    console.error("    description: 'Review session changes',");
+    console.error("    prompt: '<diff of changes>' })");
+    console.error("");
+    console.error("  Or run /requesting-code-review before committing.");
+    console.error("  Review queue: .claude/state/pending-reviews.json");
+    console.error("\u2501".repeat(30));
+  }
+
+  // Write review queue (ensure directory exists)
+  try {
+    const reviewDir = path.dirname(reviewQueuePath);
+    fs.mkdirSync(reviewDir, { recursive: true });
+    fs.writeFileSync(reviewQueuePath, JSON.stringify(reviewQueue, null, 2));
+  } catch {
+    // Non-critical - ignore write failures
+  }
 }
 
 // Always succeed - Phase 1 is non-blocking
