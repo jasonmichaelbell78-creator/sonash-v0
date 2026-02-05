@@ -675,6 +675,21 @@ Evaluation report at `docs/audits/multi-ai/<session>/eval/EVALUATION-REPORT.md`
 with per-stage scoring, data integrity checks, and recommendations **Added:**
 Session #132 **Note:** Temporary skill — remove after validation complete
 
+#### `eval-sonarcloud`
+
+**Description:** Evaluation wrapper for the /sonarcloud skill that validates the
+end-to-end pipeline: API fetch, deduplication, resolve logic, view regeneration,
+report generation, and schema integrity. Runs the REAL sonarcloud skill (not
+dry-run), instruments each stage, and produces a graded evaluation report with
+remediation guidance. No manual steps required. **When to use:** Validating the
+sonarcloud skill works as designed, after making changes to sync-sonarcloud.js,
+or periodically for quality assurance **Example:** `/eval-sonarcloud` then
+follow the automated flow **Parameters:** None - fully automated execution
+**Output:** Evaluation report at
+`docs/audits/eval-sonarcloud-<timestamp>/eval/EVALUATION-REPORT.md` with
+per-stage scoring, pre/post comparison, and remediation guidance **Added:**
+Session #133 **Note:** Temporary skill — remove after validation complete
+
 ### Technical Debt Management (TDMS)
 
 #### `verify-technical-debt`

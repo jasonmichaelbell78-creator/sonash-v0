@@ -311,8 +311,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 7 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #252
+**Reviews since last consolidation:** 11 **Consolidation threshold:** 10 reviews
+**Status:** ⚠️ CONSOLIDATION OVERDUE **Next consolidation due:** NOW
 
 ### When to Consolidate
 
@@ -470,7 +470,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 7     | <10    | ✅     |
+| Reviews since last consolidation | 11    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -1862,10 +1862,154 @@ claude/new-session-x1MF5 PR #336 **Suggestions:** 60+ total (Critical: 2, Major:
 - Archived files should be globally excluded from compliance checks
 - curl commands in skill documentation expose tokens on command line
 
+#### Review #251: PR #338 eval-sonarcloud Skill - Qodo + CI (2026-02-05)
+
+**Source:** Qodo Compliance + CI Pattern Check + SonarCloud **PR/Branch:**
+claude/new-session-x1MF5 (PR #338) **Suggestions:** 26 total (Critical: 2,
+Major: 12, Minor: 8, Trivial: 2, Rejected: 2)
+
+**Patterns Identified:**
+
+1. [Path Traversal in CLI Scripts]: New CLI scripts accepting session-path args
+   - Root cause: eval-sonarcloud-report.js lacked validateSessionPath() unlike
+     siblings
+   - Prevention: Copy validateSessionPath pattern to ALL scripts accepting paths
+
+2. [readFileSync after existsSync]: Pattern compliance requires try/catch
+   - Root cause: Wrote code assuming existsSync guarantees read success
+   - Prevention: ALWAYS wrap readFileSync in try/catch, even after existsSync
+
+3. [Duplicate File Reads]: checkE3 loaded MASTER_FILE twice
+   - Root cause: Copy-paste from different sections without refactoring
+   - Prevention: Hoist shared file reads to function start
+
+**Resolution:**
+
+- Fixed: 24 items
+- Deferred: 0 items
+- Rejected: 2 items (Jest migration - out of scope; allow root path - security
+  risk)
+
+**Key Learnings:**
+
+- Every script accepting CLI path args needs validateSessionPath()
+- Pattern compliance gate catches readFileSync without try/catch
+- Sibling scripts should share validation patterns consistently
+
 <!--
 Next review entry will go here. Use format:
 
-#### Review #251: PR #XXX Title - Review Source (DATE)
+#### Review #255: PR #XXX Title - Review Source (DATE)
 
 
 -->
+
+#### Review #254: PR #338 Token Exposure + Parse Logging - Qodo (2026-02-05)
+
+**Source:** Qodo Compliance **PR/Branch:** claude/new-session-x1MF5 (PR #338)
+**Suggestions:** 3 total (Critical: 1, Major: 1, Minor: 1, Trivial: 0,
+Rejected: 0)
+
+**Patterns Identified:**
+
+1. [Here-string Token Interpolation]: `<<<` pattern still expands variables
+   - Root cause: Thought heredoc avoided expansion but `$VAR` outside quotes
+     expands
+   - Prevention: Remove manual curl commands; use scripts that handle auth
+     internally
+
+2. [Multiple Similar Functions]: Fixed loadSnapshot but missed loadJsonlResults
+   - Root cause: Same pattern in same file, different function name
+   - Prevention: When fixing a pattern, grep for ALL functions with similar code
+
+3. [PII in Audit Logs]: Raw username stored in evaluation logs
+   - Root cause: Added user context for audit trail without considering PII
+   - Prevention: Hash identifiers in logs to preserve traceability without
+     exposing PII
+
+**Resolution:**
+
+- Fixed: 3 items
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- `<<<` here-strings still interpolate `$VAR` - not safe for secrets
+- Best practice: use scripts that handle secrets internally, never expose in
+  docs
+- Audit trail identifiers should be hashed, not raw usernames
+
+#### Review #253: PR #338 eval-sonarcloud Symlink Defense - Qodo (2026-02-05)
+
+**Source:** Qodo Compliance **PR/Branch:** claude/new-session-x1MF5 (PR #338)
+**Suggestions:** 8 total (Critical: 3, Major: 1, Minor: 4, Trivial: 0,
+Rejected: 0)
+
+**Patterns Identified:**
+
+1. [Incomplete Symlink Defense]: Fixed getViewsState but missed
+   validateSessionPath
+   - Root cause: Applied fix to one function but not sibling functions with same
+     pattern
+   - Prevention: When fixing security pattern, grep for ALL instances across ALL
+     files
+
+2. [Token Exposure in Generated Content]: Report remediation text had unsafe
+   commands
+   - Root cause: Hardcoded debug commands in generated report, separate from
+     docs
+   - Prevention: Audit ALL output strings for sensitive command patterns
+
+3. [Silent Error Swallowing]: loadSnapshot returned null without logging
+   - Root cause: Brevity prioritized over debuggability
+   - Prevention: Always log parse failures, even when returning fallback
+
+**Resolution:**
+
+- Fixed: 8 items (3 critical, 1 major, 4 minor)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Security patterns must be applied UNIFORMLY across all sibling functions
+- Generated content (reports, logs) needs same security review as docs
+- "Graceful degradation" should still log WHY it degraded
+
+#### Review #252: PR #338 eval-sonarcloud Skill Follow-up - Qodo (2026-02-05)
+
+**Source:** Qodo Compliance + Qodo PR Code Suggestions **PR/Branch:**
+claude/new-session-x1MF5 (PR #338) **Suggestions:** 9 total (Critical: 0, Major:
+4, Minor: 2, Trivial: 0, Rejected: 3)
+
+**Patterns Identified:**
+
+1. [Token Exposure in Documentation]: echo and curl commands showing secrets
+   - Root cause: Debug commands reveal partial/full tokens in process
+     lists/history
+   - Prevention: Use stdin-based patterns like `curl --config -` for sensitive
+     headers
+
+2. [Symlink Defense]: path.relative() doesn't resolve symlinks
+   - Root cause: Path validation used logical paths, not real paths
+   - Prevention: Use fs.realpathSync() to resolve symlinks before path
+     validation
+
+3. [Silent Parse Errors]: loadJsonlFile errors ignored in validation
+   - Root cause: Destructuring only `items`, ignoring `errors` return value
+   - Prevention: Always check `errors` when calling loadJsonlFile
+
+**Resolution:**
+
+- Fixed: 6 items
+- Deferred: 0 items
+- Rejected: 3 items (allow root path - security risk; /sonarcloud as shell cmd -
+  invalid)
+
+**Key Learnings:**
+
+- Token exposure in docs is a security issue even if "just documentation"
+- Symlink attacks require realpathSync, not just path.relative()
+- Validation functions should surface all error conditions, not just check
+  success
