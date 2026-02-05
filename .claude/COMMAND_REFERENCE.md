@@ -675,6 +675,21 @@ Evaluation report at `docs/audits/multi-ai/<session>/eval/EVALUATION-REPORT.md`
 with per-stage scoring, data integrity checks, and recommendations **Added:**
 Session #132 **Note:** Temporary skill — remove after validation complete
 
+#### `eval-sonarcloud-improvements`
+
+**Description:** Evaluation wrapper that validates PR #337 / Review #250
+security fixes, error handling improvements, and infrastructure changes. Runs 50
+automated test checks across 10 stages (skill structure, path traversal, steps
+concat, error handling, pattern compliance, ESLint archive exclusion, archive
+references, atomic writes, path normalization, COMMAND_REFERENCE dedup). Also
+supports interactive tests and full SonarCloud run mode. **When to use:**
+Validating the SonarCloud improvements from PR #337 work correctly end-to-end
+**Example:** `/eval-sonarcloud-improvements` or
+`node scripts/eval/eval-sonarcloud-improvements.js all` **Parameters:** Modes:
+automated (default), stage (T1-T10), interactive, full-run **Output:** Results
+at `/tmp/eval-sonarcloud-results.jsonl` **Added:** Session #134 **Note:**
+Temporary skill — remove after PR #337 validation complete
+
 ### Technical Debt Management (TDMS)
 
 #### `verify-technical-debt`
