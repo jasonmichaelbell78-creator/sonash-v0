@@ -84,22 +84,25 @@ code reviews and audits:
 
 ### Framework Documents
 
-| Document                            | Purpose                                            | Location                                         |
-| ----------------------------------- | -------------------------------------------------- | ------------------------------------------------ |
-| **MULTI_AI_REVIEW_COORDINATOR.md**  | Central coordination hub, baselines, audit history | `docs/MULTI_AI_REVIEW_COORDINATOR.md`            |
-| **MULTI_AI_AGGREGATOR_TEMPLATE.md** | 2-tier aggregation process, deduplication rules    | `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md` |
-| **JSONL_SCHEMA_STANDARD.md**        | Canonical JSONL schema for all findings            | `docs/templates/JSONL_SCHEMA_STANDARD.md`        |
+| Document                     | Purpose                                            | Location                                      |
+| ---------------------------- | -------------------------------------------------- | --------------------------------------------- |
+| **COORDINATOR.md**           | Central coordination hub, baselines, audit history | `docs/multi-ai-audit/COORDINATOR.md`          |
+| **AGGREGATOR.md**            | 2-tier aggregation process, deduplication rules    | `docs/multi-ai-audit/templates/AGGREGATOR.md` |
+| **JSONL_SCHEMA_STANDARD.md** | Canonical JSONL schema for all findings            | `docs/templates/JSONL_SCHEMA_STANDARD.md`     |
 
 ### Audit Templates
 
-| Template                                        | Category           | Description                                             | Location          |
-| ----------------------------------------------- | ------------------ | ------------------------------------------------------- | ----------------- |
-| **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md**       | Code Review        | General code quality, duplication, complexity           | `docs/templates/` |
-| **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md**    | Security           | Auth, input validation, dependencies, supply chain      | `docs/templates/` |
-| **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** | Performance        | Runtime perf, memory, bundle size, load times           | `docs/templates/` |
-| **MULTI_AI_REFACTOR_PLAN_TEMPLATE.md**          | Refactoring        | Technical debt, SonarQube issues, large-scale refactors | `docs/templates/` |
-| **MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md**    | Documentation      | Cross-refs, staleness, coverage, tier compliance        | `docs/templates/` |
-| **MULTI_AI_PROCESS_AUDIT_TEMPLATE.md**          | Process/Automation | CI/CD, hooks, scripts, triggers, guardrails             | `docs/templates/` |
+All templates now in `docs/multi-ai-audit/templates/`:
+
+| Template                              | Category                 | Description                                             |
+| ------------------------------------- | ------------------------ | ------------------------------------------------------- |
+| **CODE_REVIEW_PLAN.md**               | Code Review              | General code quality, duplication, complexity           |
+| **SECURITY_AUDIT_PLAN.md**            | Security                 | Auth, input validation, dependencies, supply chain      |
+| **PERFORMANCE_AUDIT_PLAN.md**         | Performance              | Runtime perf, memory, bundle size, load times           |
+| **REFACTOR_PLAN.md**                  | Refactoring              | Technical debt, SonarQube issues, large-scale refactors |
+| **DOCUMENTATION_AUDIT.md**            | Documentation            | Cross-refs, staleness, coverage, tier compliance        |
+| **PROCESS_AUDIT.md**                  | Process/Automation       | CI/CD, hooks, scripts, triggers, guardrails             |
+| **ENGINEERING_PRODUCTIVITY_AUDIT.md** | Engineering Productivity | DX friction, debugging, offline gaps                    |
 
 ---
 
@@ -174,18 +177,22 @@ code reviews and audits:
 
 ### Multi-AI Review Templates
 
-All templates located in `docs/templates/`:
+All templates now located in `docs/multi-ai-audit/templates/`:
 
-| Template                                        | Version | Purpose                                              |
-| ----------------------------------------------- | ------- | ---------------------------------------------------- |
-| **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md**       | v1.1    | Code review audit execution plan                     |
-| **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md**    | v1.1    | Security audit (7 categories including dependencies) |
-| **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** | v1.1    | Performance audit execution plan                     |
-| **MULTI_AI_REFACTOR_PLAN_TEMPLATE.md**          | v1.1    | Large-scale refactoring execution plan               |
-| **MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md**    | v1.0    | Documentation quality audit (5 categories)           |
-| **MULTI_AI_PROCESS_AUDIT_TEMPLATE.md**          | v1.0    | Process/automation audit (6 categories)              |
-| **MULTI_AI_AGGREGATOR_TEMPLATE.md**             | v2.0    | 2-tier aggregation process                           |
-| **JSONL_SCHEMA_STANDARD.md**                    | v1.0    | Canonical JSONL schema for findings                  |
+| Template                              | Purpose                                               |
+| ------------------------------------- | ----------------------------------------------------- |
+| **CODE_REVIEW_PLAN.md**               | Code review audit execution plan                      |
+| **SECURITY_AUDIT_PLAN.md**            | Security audit (13 categories including dependencies) |
+| **PERFORMANCE_AUDIT_PLAN.md**         | Performance audit execution plan                      |
+| **REFACTOR_PLAN.md**                  | Large-scale refactoring execution plan                |
+| **DOCUMENTATION_AUDIT.md**            | Documentation quality audit (6 categories)            |
+| **PROCESS_AUDIT.md**                  | Process/automation audit (12 categories)              |
+| **ENGINEERING_PRODUCTIVITY_AUDIT.md** | DX, debugging, offline gaps audit                     |
+| **AGGREGATOR.md**                     | 2-tier aggregation process                            |
+| **REFACTOR_AUDIT_PROMPT.md**          | Refactor audit prompt for multi-AI execution          |
+
+See [docs/multi-ai-audit/README.md](./multi-ai-audit/README.md) for full
+navigation.
 
 ### Other Templates
 
@@ -252,7 +259,7 @@ All templates located in `docs/templates/`:
   [FIREBASE_CHANGE_POLICY.md](./FIREBASE_CHANGE_POLICY.md)
 - **Submit a PR** → [PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md)
 - **Run a multi-AI audit** →
-  [MULTI_AI_REVIEW_COORDINATOR.md](./MULTI_AI_REVIEW_COORDINATOR.md)
+  [docs/multi-ai-audit/README.md](./multi-ai-audit/README.md)
 - **Fix anti-patterns** → [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)
 - **Understand current session** → [SESSION_CONTEXT.md](../SESSION_CONTEXT.md)
 - **See project roadmap** → [ROADMAP.md](../ROADMAP.md)

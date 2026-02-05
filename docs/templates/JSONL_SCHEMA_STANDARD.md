@@ -376,11 +376,11 @@ node scripts/debt/intake-audit.js <audit-output.jsonl> \
 
 ## Related Documents
 
-- [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)
-- [MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](./MULTI_AI_REFACTOR_PLAN_TEMPLATE.md)
-- [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)
-- [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)
-- [MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md)
+- [CODE_REVIEW_PLAN.md](../multi-ai-audit/templates/CODE_REVIEW_PLAN.md)
+- [REFACTOR_PLAN.md](../multi-ai-audit/templates/REFACTOR_PLAN.md)
+- [SECURITY_AUDIT_PLAN.md](../multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md)
+- [PERFORMANCE_AUDIT_PLAN.md](../multi-ai-audit/templates/PERFORMANCE_AUDIT_PLAN.md)
+- [COORDINATOR.md](../multi-ai-audit/COORDINATOR.md)
 - [TDMS PROCEDURE.md](../technical-debt/PROCEDURE.md) - Canonical debt
   management
 - [DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md) - 5-tier doc

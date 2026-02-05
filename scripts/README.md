@@ -132,14 +132,14 @@ npm run review:check
 
 **Options:**
 
-- `--update` - Update MULTI_AI_REVIEW_COORDINATOR.md with current metrics
+- `--update` - Update docs/multi-ai-audit/COORDINATOR.md with current metrics
 - `--json` - Output as JSON instead of human-readable table
 - `--dry-run` - Show what would change without writing
 - `--verbose` - Show detailed logging
 
 **What it does:**
 
-1. Reads MULTI_AI_REVIEW_COORDINATOR.md for baseline metrics
+1. Reads docs/multi-ai-audit/COORDINATOR.md for baseline metrics
 2. Checks git history for commits, lines changed, files modified since last
    review
 3. Counts new files and new components

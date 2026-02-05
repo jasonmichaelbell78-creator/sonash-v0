@@ -1,7 +1,13 @@
 # [Project Name] Multi-AI Performance Audit Plan
 
-**Document Version:** 1.3 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-02
-**Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
+**Document Version:** 1.4 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-04
+**Tier:** 3 (Planning) **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall
+Completion:** 0%
+
+> **⚠️ Multi-Agent Capability Note:** This template assumes orchestration by
+> Claude Code which can spawn parallel agents via the Task tool. Other AI
+> systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
+> sections sequentially or use external orchestration.
 
 ---
 
@@ -717,7 +723,7 @@ When using this template:
 5. **Run aggregation** for consolidated findings
 6. **Create canonical findings doc**
 7. **Prioritize by impact/effort**
-8. **Update MULTI_AI_REVIEW_COORDINATOR.md** with audit results
+8. **Update [COORDINATOR.md](../COORDINATOR.md)** with audit results
 
 **Quality checks before finalizing:**
 
@@ -731,12 +737,14 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL
-  schema for all review templates
-- **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
-- **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template
-- **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md** - Security-focused reviews
-- **[ARCHITECTURE.md](../../ARCHITECTURE.md)** - System architecture
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** -
+  Canonical JSONL schema for all review templates
+- **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
+- **[CODE_REVIEW_PLAN.md](./CODE_REVIEW_PLAN.md)** - General code review
+  template
+- **[SECURITY_AUDIT_PLAN.md](./SECURITY_AUDIT_PLAN.md)** - Security-focused
+  reviews
+- **[ARCHITECTURE.md](../../../ARCHITECTURE.md)** - System architecture
 
 ---
 
@@ -744,6 +752,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                | Author   |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 1.4     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems                                                                                                                                                                                      | Claude   |
 | 1.3     | 2026-02-02 | Added Category 7: AI Performance Patterns with naive data fetching, missing pagination, redundant re-renders, AI performance health indicators. Expanded from 6 to 7 focus areas.                                                                                      | Claude   |
 | 1.2     | 2026-01-13 | Added Category 6: Offline Support (offline state detection, sync queue, pending/synced/failed states, conflict resolution, failure modes). From Engineering Productivity audit recommendations.                                                                        | Claude   |
 | 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added path adaptation notes | Claude   |
@@ -751,4 +760,4 @@ When using this template:
 
 ---
 
-**END OF MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md**
+**END OF PERFORMANCE_AUDIT_PLAN.md**

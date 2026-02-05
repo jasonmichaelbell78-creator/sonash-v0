@@ -68,8 +68,8 @@ jobs:
               continue
             fi
 
-            # Skip template files
-            if [[ "$file" =~ _TEMPLATE\.md$ ]]; then
+            # Skip template files (both TEMPLATE.md and _TEMPLATE.md patterns)
+            if [[ "$file" =~ (TEMPLATE|_TEMPLATE)\.md$ ]]; then
               echo "  Skipping template file"
               continue
             fi

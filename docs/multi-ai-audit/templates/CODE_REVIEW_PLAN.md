@@ -1,7 +1,13 @@
 # [Project Name] Multi-AI Code Review Plan
 
-**Document Version:** 1.5 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-02
-**Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
+**Document Version:** 1.6 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-04
+**Tier:** 3 (Planning) **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall
+Completion:** 0%
+
+> **⚠️ Multi-Agent Capability Note:** This template assumes orchestration by
+> Claude Code which can spawn parallel agents via the Task tool. Other AI
+> systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
+> sections sequentially or use external orchestration.
 
 ---
 
@@ -850,7 +856,8 @@ When using this template:
 7. **Create canonical findings doc** from aggregated output
 8. **Ingest to TDMS** using `node scripts/debt/intake-audit.js`
 9. **Update Review History** in this file (include TDMS Items count)
-10. **Update MULTI_AI_REVIEW_COORDINATOR.md** with review date and trigger reset
+10. **Update [COORDINATOR.md](../COORDINATOR.md)** with review date and trigger
+    reset
 
 **Quality checks before finalizing:**
 
@@ -866,16 +873,18 @@ When using this template:
 
 ## 🔗 Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL
-  schema for all review templates
-- **[docs/technical-debt/PROCEDURE.md](../technical-debt/PROCEDURE.md)** - TDMS
-  intake and tracking procedures
-- **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
-- **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md** - Security-focused reviews
-- **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** - Performance-focused reviews
-- **MULTI_AI_REFACTOR_PLAN_TEMPLATE.md** - Large-scale refactoring plans
-- **AI_REVIEW_PROCESS.md** - Process for individual PR reviews (CodeRabbit,
-  Qodo)
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** -
+  Canonical JSONL schema for all review templates
+- **[docs/technical-debt/PROCEDURE.md](../../technical-debt/PROCEDURE.md)** -
+  TDMS intake and tracking procedures
+- **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
+- **[SECURITY_AUDIT_PLAN.md](./SECURITY_AUDIT_PLAN.md)** - Security-focused
+  reviews
+- **[PERFORMANCE_AUDIT_PLAN.md](./PERFORMANCE_AUDIT_PLAN.md)** -
+  Performance-focused reviews
+- **[REFACTOR_PLAN.md](./REFACTOR_PLAN.md)** - Large-scale refactoring plans
+- **[AI_REVIEW_PROCESS.md](../../AI_REVIEW_PROCESS.md)** - Process for
+  individual PR reviews (CodeRabbit, Qodo)
 - **EIGHT_PHASE_REFACTOR_PLAN.md** - Example of review output in action
 
 ---
@@ -884,6 +893,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                     | Author |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.6     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems                                                                                                                                                                                                           | Claude |
 | 1.5     | 2026-02-02 | Added Category 8: AI Code Patterns with hallucination detection, test validity, session consistency, AI Health Score calculation. Expanded from 7 to 8 focus areas.                                                                                                                         | Claude |
 | 1.4     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added Step 7 for TDMS intake, TDMS Integration section with intake commands, category mapping table, and completion checklist. Updated AI Instructions and Quality checks. Added PROCEDURE.md to Related Documents.                                        | Claude |
 | 1.3     | 2026-01-13 | Added Category 7: Debugging Ergonomics (correlation IDs, structured logging, Sentry integration, error context, repro path quality). From Engineering Productivity audit recommendations.                                                                                                   | Claude |
@@ -893,4 +903,4 @@ When using this template:
 
 ---
 
-**END OF MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md**
+**END OF CODE_REVIEW_PLAN.md**

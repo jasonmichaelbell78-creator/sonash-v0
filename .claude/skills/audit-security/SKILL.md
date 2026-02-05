@@ -236,7 +236,7 @@ Note patterns to exclude from final findings.
 
 **Step 4: Check Template Currency**
 
-Read `docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md` and verify:
+Read `docs/multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md` and verify:
 
 - [ ] FIREBASE_CHANGE_POLICY.md reference is valid
 - [ ] Security-sensitive file list is current

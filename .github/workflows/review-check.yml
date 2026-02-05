@@ -109,7 +109,7 @@ jobs:
               `**Recommendation:** ${data.recommendation}`,
               '',
               'Consider running a multi-AI code review before merging.',
-              'See [MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md) for review templates.',
+              'See [Multi-AI Audit System](./docs/multi-ai-audit/README.md) for review templates.',
               '',
               '---',
               '*This check runs automatically on every PR.*'

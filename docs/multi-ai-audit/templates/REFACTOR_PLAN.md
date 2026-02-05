@@ -1,8 +1,13 @@
 # [Project Name] Multi-AI Refactoring Plan
 
-**Document Version:** 1.0 **Created:** YYYY-MM-DD **Status:** PENDING |
-IN_PROGRESS | COMPLETE **Overall Completion:** 0/X phases complete (0%) **Last
-Updated:** YYYY-MM-DD
+**Document Version:** 1.1 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-04
+**Tier:** 3 (Planning) **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall
+Completion:** 0/X phases complete (0%)
+
+> **⚠️ Multi-Agent Capability Note:** This template assumes orchestration by
+> Claude Code which can spawn parallel agents via the Task tool. Other AI
+> systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
+> sections sequentially or use external orchestration.
 
 ---
 
@@ -612,7 +617,7 @@ When using this template:
    structure
 8. **Execute phases** using 4-step workflow
 9. **Track progress** in this document
-10. **Update MULTI_AI_REVIEW_COORDINATOR.md** with audit results
+10. **Update [COORDINATOR.md](../COORDINATOR.md)** with audit results
 
 **Quality checks before finalizing:**
 
@@ -626,16 +631,18 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL
-  schema for all review templates
-- **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
-- **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - Tactical code review (smaller
-  issues)
-- **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md** - Security-focused reviews
-- **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** - Performance-focused reviews
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** -
+  Canonical JSONL schema for all review templates
+- **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
+- **[CODE_REVIEW_PLAN.md](./CODE_REVIEW_PLAN.md)** - Tactical code review
+  (smaller issues)
+- **[SECURITY_AUDIT_PLAN.md](./SECURITY_AUDIT_PLAN.md)** - Security-focused
+  reviews
+- **[PERFORMANCE_AUDIT_PLAN.md](./PERFORMANCE_AUDIT_PLAN.md)** -
+  Performance-focused reviews
 - **EIGHT_PHASE_REFACTOR_PLAN.md** - Example of this template in action
-- **[GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md)** - Security
-  standards to maintain during refactoring
+- **[GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md)** -
+  Security standards to maintain during refactoring
 
 ---
 
@@ -643,9 +650,10 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                     | Author |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.2     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems; Fixed YYYY-MM-DD placeholder in header                                                                                                                                   | Claude |
 | 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT with SonarQube CRITICAL focus; Added batch fix opportunities; Referenced archived EIGHT_PHASE_REFACTOR_PLAN.md; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added staleness warning for SonarQube metrics | Claude |
 | 1.0     | 2026-01-01 | Initial template creation                                                                                                                                                                                                                                   | Claude |
 
 ---
 
-**END OF MULTI_AI_REFACTOR_PLAN_TEMPLATE.md**
+**END OF REFACTOR_PLAN.md**
