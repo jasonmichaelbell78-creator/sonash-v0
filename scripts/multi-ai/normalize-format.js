@@ -12,13 +12,34 @@
  */
 
 import { writeFileSync, readFileSync, existsSync } from "node:fs";
-import { join, resolve, dirname } from "node:path";
+import { join, resolve, relative, isAbsolute, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const REPO_ROOT = resolve(__dirname, "../..");
+
+/**
+ * Validate that a user-provided file path is contained within the project root.
+ * Uses path.relative() instead of startsWith() for cross-platform correctness.
+ * Prevents path traversal attacks (CWE-22, OWASP A01:2021 Broken Access Control).
+ * @param {string} inputPath - User-provided file path from CLI args
+ * @param {string} root - Project root to validate against
+ * @returns {string} - Resolved absolute path (safe to use)
+ */
+function validateContainedPath(inputPath, root) {
+  const resolved = resolve(inputPath);
+  const rel = relative(root, resolved);
+  // Reject if: relative path escapes root (..), is empty (equals root), or is absolute (different drive on Windows)
+  if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || isAbsolute(rel)) {
+    console.error(`Error: path "${inputPath}" resolves outside the project root.`);
+    console.error(`  Resolved: ${resolved}`);
+    console.error(`  Project root: ${root}`);
+    process.exit(1);
+  }
+  return resolved;
+}
 
 // Format type constants
 const FORMAT_TYPES = {
@@ -203,7 +224,7 @@ function parseJsonl(input) {
         errors.push(`Line ${i + 1}: Not a JSON object`);
       }
     } catch (error) {
-      errors.push(`Line ${i + 1}: ${error.message}`);
+      errors.push(`Line ${i + 1}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -234,7 +255,10 @@ function parseJsonArray(input) {
 
     return { findings, errors };
   } catch (error) {
-    return { findings: [], errors: [`JSON parse error: ${error.message}`] };
+    return {
+      findings: [],
+      errors: [`JSON parse error: ${error instanceof Error ? error.message : String(error)}`],
+    };
   }
 }
 
@@ -712,8 +736,8 @@ function parseFileList(value) {
 
   // Filter to valid-looking file paths
   return parts.filter((p) => {
-    // Must have a file extension or be a directory path
-    return /\.[a-z]{1,4}(?::\d+)?$/i.test(p) || /^[./]/.test(p);
+    if (!p) return false;
+    return p.includes("/") || p.includes("\\") || /^[a-zA-Z]:\\/.test(p) || /\.\w+/.test(p);
   });
 }
 
@@ -787,7 +811,7 @@ export function processFile(inputPath, outputPath, category) {
   try {
     input = readFileSync(inputPath, "utf-8");
   } catch (error) {
-    console.error(`Error reading input: ${error.message}`);
+    console.error(`Error reading input: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
   }
 
@@ -837,10 +861,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
   const [inputPath, outputPath, category = "general"] = args;
 
-  if (!existsSync(inputPath)) {
-    console.error(`Input file not found: ${inputPath}`);
+  // Validate both paths stay within project root (CWE-22 path traversal prevention)
+  const safeInputPath = validateContainedPath(inputPath, REPO_ROOT);
+  const safeOutputPath = validateContainedPath(outputPath, REPO_ROOT);
+
+  if (!existsSync(safeInputPath)) {
+    console.error(`Input file not found: ${safeInputPath}`);
     process.exit(1);
   }
 
-  processFile(inputPath, outputPath, category);
+  processFile(safeInputPath, safeOutputPath, category);
 }

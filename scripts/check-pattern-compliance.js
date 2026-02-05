@@ -92,7 +92,7 @@ const ANTI_PATTERNS = [
   // Bash/Shell patterns
   {
     id: "exit-code-capture",
-    pattern: /\$\(\s*[^)]+\s*\)\s*;\s*if\s+\[\s*\$\?\s/g,
+    pattern: /\$\(\s*[^)]{1,500}\s*\)\s*;\s*if\s+\[\s*\$\?\s/g,
     message:
       "Exit code capture bug: $? after assignment captures assignment exit (always 0), not command exit",
     fix: "Use: if ! OUT=$(cmd); then",
@@ -101,7 +101,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "for-file-iteration",
-    pattern: /for\s+\w+\s+in\s+\$\{?\w+\}?\s*;?\s*do/g,
+    pattern: /for\s+\w{1,200}\s+in\s+\$\{?\w{1,200}\}?\s{0,50};?\s{0,50}do/g,
     message: "File iteration with for loop breaks on spaces in filenames",
     fix: "Use: while IFS= read -r file; do ... done < file_list",
     review: "#4, #14",
@@ -179,12 +179,15 @@ const ANTI_PATTERNS = [
     // - phase-complete-check.js: uses path.relative() THEN startsWith('..') which is correct
     // 2026-01-12 (Review #134):
     // - pattern-check.js: L61,64 check for absolute paths (/, //, drive letters) before path.relative() containment at L98
+    // 2026-02-05 (Review #249):
+    // - normalize-format.js: L219 startsWith("//") is comment detection, not path validation
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check|pattern-check)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check|pattern-check|normalize-format)\.js$/,
   },
   {
     id: "regex-global-test-loop",
-    pattern: /new\s+RegExp\s*\([^)]+,\s*['"`][^'"]*g[^'"]*['"`]\s*\)[\s\S]{0,200}\.test\s*\(/g,
+    pattern:
+      /new\s+RegExp\s*\([^)]{1,500},\s*['"`][^'"]{0,200}g[^'"]{0,200}['"`]\s*\)[\s\S]{0,200}\.test\s*\(/g,
     message:
       "Regex with global flag used with .test() in loop - stateful lastIndex causes missed matches",
     fix: 'Remove "g" flag when using .test(), or reset lastIndex between iterations',
@@ -211,7 +214,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "implicit-if-expression",
-    pattern: /^\s*if:\s+(?!.*\$\{\{).*(?:steps|github|env|inputs|needs)\./gm,
+    pattern: /^\s*if:\s+(?!.{0,500}\$\{\{).{0,500}(?:steps|github|env|inputs|needs)\./gm,
     message: "Implicit expression in if: condition can cause YAML parser issues",
     fix: "Always use explicit ${{ }} in if: conditions",
     review: "#17, #21",
@@ -241,7 +244,10 @@ const ANTI_PATTERNS = [
     // path.relative() CAN return just ".." (no separator) for parent directories.
     // All files must use the proper regex check: /^\.\.(?:[\/\\]|$)/.test(rel)
     // Exclude check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    // 2026-02-05 (Review #249): eval-check-stage.js, eval-snapshot.js, unify-findings.js, normalize-format.js
+    //   all use /^\.\.(?:[\\/]|$)/.test(relative) in validateSessionPath (not startsWith)
+    pathExclude:
+      /(?:^|[\\/])(?:check-pattern-compliance|eval-check-stage|eval-snapshot|unify-findings|normalize-format)\.js$/,
   },
   {
     id: "hardcoded-api-key",
@@ -306,7 +312,7 @@ const ANTI_PATTERNS = [
   {
     id: "path-join-without-containment",
     pattern:
-      /path\.join\s*\([^)]*,\s*(?:deliverable|user|input|arg|param|file)\w*(?:\.path)?[^)]*\)(?![\s\S]{0,100}(?:relative|isWithin|contains|startsWith))/g,
+      /path\.join\s*\([^)]{0,500},\s*(?:deliverable|user|input|arg|param|file)\w*(?:\.path)?[^)]{0,500}\)(?![\s\S]{0,100}(?:relative|isWithin|contains|startsWith))/g,
     message: "Path joined with user input without containment check",
     fix: 'Verify path.relative(root, resolved) does not start with ".." or equal ""',
     review: "#33, #34, #38, #39, #40",
@@ -316,8 +322,10 @@ const ANTI_PATTERNS = [
     // Review #224: sync-claude-settings.js uses isPathContained helper (L43-48) for all path joins
     // Review #238: transform-jsonl-schema.js L621 `file` comes from readdirSync (not user input),
     //   containment check at L623, symlink check at L627-640
+    // Review #249: eval-check-stage.js L254,369 `file` from readdirSync; validated sessionPath upstream
+    // Review #249: eval-snapshot.js L137 `file` from readdirSync; VIEWS_DIR is constant
     pathExclude:
-      /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings|transform-jsonl-schema)\.js$/,
+      /(?:^|[\\/])(?:phase-complete-check|check-doc-headers|sync-claude-settings|transform-jsonl-schema|eval-check-stage|eval-snapshot)\.js$/,
   },
   {
     id: "error-without-first-line",
@@ -519,6 +527,23 @@ const ANTI_PATTERNS = [
       // 2026-02-04 audit (Review #242):
       // - sync-consolidation-counter.js: readFileSync at L74 IS in try/catch (L73-83)
       "sync-consolidation-counter.js",
+      // 2026-02-05 audit (Review #249 PR #336):
+      // - eval-check-stage.js: all readFileSync in try/catch (L65-68, L122-132, L171-178, L702-707, L765-772, L876-880)
+      // - eval-snapshot.js: all readFileSync in try/catch (L55-58, L76-80, L121-126, L152-155)
+      // - unify-findings.js: readFileSync at L67 IS in try/catch (L66-70)
+      // - normalize-format.js: readFileSync at L811 IS in try/catch (L810-815)
+      // - aggregate-category.js: readFileSync at L131 IS in try/catch (L130-134), L544 IS in try/catch (L543-547)
+      // - eval-report.js: readFileSync at L41 IS in try/catch (L40-44), L60 IS in try/catch (L59-63)
+      // - fix-schema.js: readFileSync at L520 IS in try/catch (L519-524)
+      // - state-manager.js: readFileSync at L157 IS in try/catch (L156-161), L193 IS in try/catch (L192-196)
+      "eval-check-stage.js",
+      "eval-snapshot.js",
+      "unify-findings.js",
+      "normalize-format.js",
+      "aggregate-category.js",
+      "eval-report.js",
+      "fix-schema.js",
+      "state-manager.js",
     ],
   },
   {
@@ -564,8 +589,10 @@ const ANTI_PATTERNS = [
     // - sync-claude-settings.js: L47 has `rel === "" ||` in isPathContained helper
     // 2026-02-03 audit (Review #226 R3):
     // - ai-pattern-checks.js: L82 uses `rel !== "" && (isAbsolute || regex)` - equivalent logic, handles empty
+    // 2026-02-05 (Review #249): eval-check-stage.js, eval-snapshot.js, unify-findings.js, normalize-format.js
+    //   all have `rel === "" ||` in validateSessionPath
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings|ai-pattern-checks)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings|ai-pattern-checks|eval-check-stage|eval-snapshot|unify-findings|normalize-format)\.js$/,
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)

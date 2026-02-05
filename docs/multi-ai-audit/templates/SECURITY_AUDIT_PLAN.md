@@ -24,7 +24,7 @@ security-focused audit on [Project Name]. Use this template when:
 - Compliance requirements demand audit
 
 **This template enforces the mandatory standards from
-[GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md).**
+[GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md).**
 
 **Review Focus Areas (13 Mandatory Categories):**
 

@@ -87,7 +87,7 @@ const SECURITY_PATTERNS = [
   {
     id: "SEC-007",
     name: "Unbounded regex quantifier on user input",
-    pattern: /new\s+RegExp\s*\([^)]*[+*][^)]*\)/g,
+    pattern: /new\s+RegExp\s*\([^)]{0,500}[+*][^)]{0,500}\)/g,
     severity: "MEDIUM",
     message: "Use bounded quantifiers {1,N} to prevent ReDoS",
     fileTypes: [".js", ".ts", ".tsx"],

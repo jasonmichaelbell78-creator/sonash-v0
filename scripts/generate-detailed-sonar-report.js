@@ -108,7 +108,7 @@ function getCodeSnippet(filePath, line, textRange, contextLines = 3) {
 // Strip HTML tags from code (SonarCloud returns HTML-formatted code)
 function stripHtml(html) {
   return html
-    .replace(/<[^>]+>/g, "")
+    .replace(/<[^>]{1,1000}>/g, "")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&amp;/g, "&")

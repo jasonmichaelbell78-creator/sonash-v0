@@ -26,6 +26,26 @@ const ROOT = path.resolve(__dirname, "../..");
 const MASTER_FILE = path.join(ROOT, "docs/technical-debt/MASTER_DEBT.jsonl");
 const TEMPLATE_DIR = path.join(ROOT, "docs/multi-ai-audit/templates");
 
+/**
+ * Validate that a user-provided path is contained within the project root.
+ * Prevents path traversal attacks (CWE-22, OWASP A01:2021 Broken Access Control).
+ * @param {string} sessionPath - User-provided session path from CLI args
+ * @returns {string} - Resolved absolute path (safe to use)
+ */
+function validateSessionPath(sessionPath) {
+  const projectRoot = ROOT;
+  const resolved = path.resolve(sessionPath);
+  const relative = path.relative(projectRoot, resolved);
+  // Reject if: relative path escapes root (..), is empty (equals root), or is absolute (different drive on Windows)
+  if (relative === "" || /^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative)) {
+    console.error(`Error: session path "${sessionPath}" resolves outside the project root.`);
+    console.error(`  Resolved: ${resolved}`);
+    console.error(`  Project root: ${projectRoot}`);
+    process.exit(1);
+  }
+  return resolved;
+}
+
 // Category → template file mapping
 const TEMPLATE_MAP = {
   code: "CODE_REVIEW_PLAN.md",
@@ -107,7 +127,7 @@ function checkE1(sessionPath) {
         }
       }
     } catch (e) {
-      issues.push(`State file is not valid JSON: ${e.message}`);
+      issues.push(`State file is not valid JSON: ${e instanceof Error ? e.message : String(e)}`);
       score -= 30;
     }
   }
@@ -156,7 +176,7 @@ function checkE2() {
     }
 
     // Check for extractable prompt section
-    const promptMatch = content.match(/## (?:Review|Audit) Prompt[\s\S]*?(?=\n## |\n---|$)/);
+    const promptMatch = content.match(/## (?:Review|Audit) Prompt[\s\S]*?(?=\r?\n## |\r?\n---|$)/);
     const promptLength = promptMatch ? promptMatch[0].length : 0;
 
     if (promptLength < 100) {
@@ -699,8 +719,11 @@ function checkE7(sessionPath) {
   }
 
   const { items: currentItems } = loadJsonlFile(MASTER_FILE);
-  const preCount = preSnapshot ? preSnapshot.master_debt.item_count : 0;
-  const newItems = currentItems.length - preCount;
+  const preCount =
+    typeof preSnapshot?.master_debt?.item_count === "number"
+      ? preSnapshot.master_debt.item_count
+      : 0;
+  const newItems = Math.max(0, currentItems.length - preCount);
 
   // Load unified findings to compare expected vs actual intake
   const unifiedFile = path.join(sessionPath, "final/UNIFIED-FINDINGS.jsonl");
@@ -957,15 +980,18 @@ function main() {
     process.exit(1);
   }
 
+  // Validate session path stays within project root (CWE-22 path traversal prevention)
+  const safeSessionPath = validateSessionPath(sessionPath);
+
   const stageMap = {
-    E1: () => checkE1(sessionPath),
+    E1: () => checkE1(safeSessionPath),
     E2: () => checkE2(),
-    E3: () => checkE3(sessionPath),
-    E4: () => checkE4(sessionPath),
-    E5: () => checkE5(sessionPath),
-    E6: () => checkE6(sessionPath),
-    E7: () => checkE7(sessionPath),
-    E8: () => checkE8(sessionPath),
+    E3: () => checkE3(safeSessionPath),
+    E4: () => checkE4(safeSessionPath),
+    E5: () => checkE5(safeSessionPath),
+    E6: () => checkE6(safeSessionPath),
+    E7: () => checkE7(safeSessionPath),
+    E8: () => checkE8(safeSessionPath),
   };
 
   const stagesToRun = stage === "all" ? Object.keys(stageMap) : [stage.toUpperCase()];
@@ -978,7 +1004,7 @@ function main() {
 
     const result = stageMap[s]();
     result.checked_at = new Date().toISOString();
-    appendResult(sessionPath, result);
+    appendResult(safeSessionPath, result);
 
     const icon = result.passed ? "✅" : "❌";
     console.log(`${icon} ${result.stage}: ${result.name} — Score: ${result.score}/100`);

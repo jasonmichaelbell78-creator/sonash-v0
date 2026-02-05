@@ -170,7 +170,7 @@ function extractLessons(content) {
   // Pattern: Review #XX: Title (uses #### headings in AI_REVIEW_LEARNINGS_LOG.md)
   // Use [\s\S]*? to capture content including ## subheadings within a review section
   // Handle both Unix (\n) and Windows (\r\n) line endings in lookahead
-  const reviewPattern = /#### Review #(\d+):?\s*([\s\S]*?)(?=\r?\n#### Review #|$)/g;
+  const reviewPattern = /#### Review #(\d+):?\s*([\s\S]{0,50000}?)(?=\r?\n#### Review #|$)/g;
   let match;
 
   while ((match = reviewPattern.exec(content)) !== null) {

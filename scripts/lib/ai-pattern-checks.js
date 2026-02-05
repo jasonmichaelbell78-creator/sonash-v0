@@ -528,26 +528,27 @@ function extractImports(content) {
 
   // ES6 imports - using more specific quantifiers to avoid backtracking
   // Changed from [\w{},\s*]+ to [^'"]{0,500} with limit
-  const es6Regex = /import\s+(?:[^'"]{0,500}\s+from\s+)?['"]([^'"]+)['"]/g;
+  const es6Regex = /import\s+(?:[^'"]{0,500}\s+from\s+)?['"]([^'"]{1,500})['"]/g;
   let match;
   while ((match = es6Regex.exec(content)) !== null) {
     imports.push(match[1]);
   }
 
   // Re-exports (also import a module specifier) - addresses [16]
-  const reExportRegex = /export\s+(?:type\s+)?(?:\*|\{[^}]{0,500}\})\s+from\s+['"]([^'"]+)['"]/g;
+  const reExportRegex =
+    /export\s+(?:type\s+)?(?:\*|\{[^}]{0,500}\})\s+from\s+['"]([^'"]{1,500})['"]/g;
   while ((match = reExportRegex.exec(content)) !== null) {
     imports.push(match[1]);
   }
 
   // CommonJS requires
-  const cjsRegex = /require\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
+  const cjsRegex = /require\s*\(\s*['"]([^'"]{1,500})['"]\s*\)/g;
   while ((match = cjsRegex.exec(content)) !== null) {
     imports.push(match[1]);
   }
 
   // Dynamic imports
-  const dynamicRegex = /import\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
+  const dynamicRegex = /import\s*\(\s*['"]([^'"]{1,500})['"]\s*\)/g;
   while ((match = dynamicRegex.exec(content)) !== null) {
     imports.push(match[1]);
   }

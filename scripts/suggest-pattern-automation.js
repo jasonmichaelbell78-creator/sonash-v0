@@ -46,7 +46,7 @@ const EXTRACTABLE_PATTERNS = [
   },
   {
     // Code blocks after "Wrong:" headers
-    regex: /#+\s*(?:Wrong|Bad|INCORRECT)[^\n]*\n```[\w]*\n([\s\S]*?)```/gi,
+    regex: /#+\s*(?:Wrong|Bad|INCORRECT)[^\n]*\n```[\w]*\n([\s\S]{0,5000}?)```/gi,
     type: "wrong_block",
   },
 ];
@@ -123,7 +123,7 @@ function extractPatternsFromLearnings() {
   const seen = new Set(); // Deduplication
 
   // Find review sections while preserving the review number for traceability
-  const sectionRegex = /####\s+Review\s+#(\d+)([\s\S]*?)(?=####\s+Review\s+#\d+|$)/gi;
+  const sectionRegex = /####\s+Review\s+#(\d+)([\s\S]{0,50000}?)(?=####\s+Review\s+#\d+|$)/gi;
   let sectionMatch;
   while ((sectionMatch = sectionRegex.exec(content)) !== null) {
     const reviewNumber = sectionMatch[1];

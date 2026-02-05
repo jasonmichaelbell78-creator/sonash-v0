@@ -461,7 +461,7 @@ grep -rn "\"use client\"" --include="*.tsx" | wc -l
 
 ```bash
 # Dev server startup time
-time npm run dev &; sleep 30; pkill -f "next dev"
+time npm run dev & sleep 30; pkill -f "next dev"
 
 # Test execution time
 time npm test

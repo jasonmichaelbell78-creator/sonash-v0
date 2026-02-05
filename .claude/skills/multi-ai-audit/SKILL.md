@@ -524,7 +524,7 @@ Wait for user confirmation.
 ### Step 7.3: Apply Assignments
 
 ```bash
-node scripts/debt/assign-roadmap-refs.js --report
+node scripts/debt/assign-roadmap-refs.js --report --verbose
 ```
 
 ### Step 7.4: Validate References
@@ -533,7 +533,8 @@ node scripts/debt/assign-roadmap-refs.js --report
 node scripts/debt/sync-roadmap-refs.js --check-only
 ```
 
-Report any orphaned references to the user.
+If orphaned references are detected, HALT the workflow. Report errors to the
+user and do not proceed until data is corrected.
 
 ### Step 7.5: Regenerate Metrics
 

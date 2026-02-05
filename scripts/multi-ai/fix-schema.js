@@ -462,7 +462,14 @@ export function validateFinding(finding) {
 
   // Check required fields
   for (const field of REQUIRED_FIELDS) {
-    if (!(field in finding)) {
+    const value = finding?.[field];
+    const isMissing = !(field in (finding || {}));
+    const isEmpty =
+      (typeof value === "string" && value.trim() === "") ||
+      (Array.isArray(value) && value.length === 0) ||
+      value === undefined ||
+      value === null;
+    if (isMissing || isEmpty) {
       issues.push(`Missing required field: ${field}`);
     }
   }
@@ -516,7 +523,7 @@ export function processFile(inputPath, outputPath, category) {
   try {
     content = readFileSync(inputPath, "utf-8");
   } catch (error) {
-    console.error(`Error reading input: ${error.message}`);
+    console.error(`Error reading input: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
   }
 

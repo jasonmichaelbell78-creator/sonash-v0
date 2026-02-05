@@ -68,7 +68,7 @@ function parseDocumentDependencies() {
   // Fixed ReDoS: bounded quantifiers {1,500} prevent exponential backtracking
   // Sync status column increased to {1,100} to accommodate longer descriptions
   const tableRegex =
-    /\|\s*\*\*([^*]{1,200})\*\*\s*\|\s*([^|]{1,500})\s*\|\s*([^|]{1,200})\s*\|\s*([^|]{1,50})\s*\|\s*([^|]{1,100})\s*\|/g;
+    /\|\s{0,50}\*\*([^*]{1,200})\*\*\s{0,50}\|\s{0,50}([^|]{1,500})\s{0,50}\|\s{0,50}([^|]{1,200})\s{0,50}\|\s{0,50}([^|]{1,50})\s{0,50}\|\s{0,50}([^|]{1,100})\s{0,50}\|/g;
   let match;
 
   while ((match = tableRegex.exec(section1Content)) !== null) {

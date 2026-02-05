@@ -123,7 +123,7 @@ function validateSkillFile(filePath) {
   }
 
   // Check 2: Title heading
-  const titleMatch = content.match(/^#\s+(.+)$/m);
+  const titleMatch = content.match(/^#\s+(.{1,500})$/m);
   if (!titleMatch) {
     errors.push("Missing title heading (# Title)");
   }

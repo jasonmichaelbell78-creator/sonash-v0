@@ -168,7 +168,7 @@ function extractHeadings(content) {
   const lines = normalizeLineEndings(content).split("\n");
 
   for (let i = 0; i < lines.length; i++) {
-    const match = lines[i].match(/^(#{1,6})\s+(.+)$/);
+    const match = lines[i].match(/^(#{1,6})\s+(.{1,500})$/);
     if (match) {
       headings.push({
         level: match[1].length,
@@ -195,7 +195,7 @@ function extractMetadata(content) {
 
   // Look for "Last Updated" in various formats
   const lastUpdatedPatterns = [
-    /\*\*Last Updated[:*]*\**\s*[:]*\s*(.+)/i,
+    /\*\*Last Updated[:*]{0,20}\*{0,10}\s{0,100}[:]{0,10}\s{0,100}(.{1,500})/i,
     /Last Updated[:\s]+(.+)/i,
     /Updated[:\s]+(.+)/i,
   ];
@@ -210,7 +210,7 @@ function extractMetadata(content) {
 
   // Look for version number
   const versionPatterns = [
-    /\*\*(?:Document )?Version[:*]*\**\s*[:]*\s*(\d+\.?\d*)/i,
+    /\*\*(?:Document )?Version[:*]{0,20}\*{0,10}\s{0,100}[:]{0,10}\s{0,100}(\d+\.?\d*)/i,
     /Version[:\s]+(\d+\.?\d*)/i,
     /\| (\d+\.\d+) \|.*\|.*\|/, // Version history table
   ];
@@ -317,7 +317,7 @@ function extractLinks(content) {
 
   for (let i = 0; i < lines.length; i++) {
     // Match [text](target) links
-    const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const linkPattern = /\[([^\]]{1,2000})\]\(([^)]{1,2000})\)/g;
     let match;
 
     while ((match = linkPattern.exec(lines[i])) !== null) {

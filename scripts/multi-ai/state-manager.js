@@ -46,6 +46,10 @@ const VALID_STATUS = ["pending", "collecting", "aggregated", "skipped"];
 // Workflow phases
 const VALID_PHASES = ["starting", "collecting", "aggregating", "unifying", "complete"];
 
+// Session ID format
+const SESSION_ID_PREFIX = "maa";
+const SESSION_ID_REGEX = new RegExp(`^${SESSION_ID_PREFIX}-\\d{4}-\\d{2}-\\d{2}-[a-f0-9]{6}$`);
+
 /**
  * Generate a unique session ID
  * Format: maa-YYYY-MM-DD-<random6>
@@ -53,7 +57,7 @@ const VALID_PHASES = ["starting", "collecting", "aggregating", "unifying", "comp
 function generateSessionId() {
   const date = new Date().toISOString().split("T")[0];
   const random = randomBytes(3).toString("hex");
-  return `maa-${date}-${random}`;
+  return `${SESSION_ID_PREFIX}-${date}-${random}`;
 }
 
 /**
@@ -73,7 +77,7 @@ export function getSessionPath(sessionId) {
     throw new Error("Invalid session ID");
   }
   // Validate session ID format to prevent path traversal
-  if (!/^maa-\d{4}-\d{2}-\d{2}-[a-f0-9]{6}$/.test(sessionId)) {
+  if (!SESSION_ID_REGEX.test(sessionId)) {
     throw new Error(`Invalid session ID format: ${sessionId}`);
   }
   return join(CONFIG.outputBaseDir, sessionId);
@@ -161,7 +165,9 @@ export function loadSession() {
 
     return session;
   } catch (error) {
-    console.warn(`Error loading session state: ${error.message}`);
+    console.warn(
+      `Error loading session state: ${error instanceof Error ? error.message : String(error)}`
+    );
     return recoverFromBackup();
   }
 }
@@ -184,7 +190,12 @@ function recoverFromBackup() {
     for (const sessionDir of sessions) {
       const backupPath = join(CONFIG.outputBaseDir, sessionDir, "state.json");
       if (existsSync(backupPath)) {
-        const content = readFileSync(backupPath, "utf-8");
+        let content;
+        try {
+          content = readFileSync(backupPath, "utf-8");
+        } catch {
+          continue;
+        }
         const session = JSON.parse(content);
 
         // Only recover incomplete sessions
@@ -197,7 +208,9 @@ function recoverFromBackup() {
       }
     }
   } catch (error) {
-    console.warn(`Error recovering from backup: ${error.message}`);
+    console.warn(
+      `Error recovering from backup: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 
   return null;

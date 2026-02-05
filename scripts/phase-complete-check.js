@@ -228,7 +228,7 @@ function normalizeDeliverablePath(d) {
       .replace(/^'(.+)'$/, "$1")
       // S5852: Character class [xyz]+ is linear (no backtracking) - safe pattern
       // Input bounded to 500 chars above for defense in depth
-      .replace(/[)"'.,;:]+$/, ""),
+      .replace(/[)"'.,;:]{1,50}$/, ""),
   };
 }
 

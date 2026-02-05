@@ -186,7 +186,7 @@ function loadIssuesFromReport() {
     }
 
     // Check for issue header
-    const issueMatch = line.match(/^#### .*? Line (\d+|N\/A):\s*(.*)$/u);
+    const issueMatch = line.match(/^#### .{0,500}? Line (\d+|N\/A):\s{0,50}(.{0,500})$/u);
     if (issueMatch && currentFile) {
       const lineNum = issueMatch[1] === "N/A" ? null : parseInt(issueMatch[1], 10);
       const message = issueMatch[2];

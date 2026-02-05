@@ -155,5 +155,5 @@ else
 fi
 
 echo ""
-echo "See docs/docs/multi-ai-audit/COORDINATOR.md for full trigger checklist"
+echo "See docs/multi-ai-audit/COORDINATOR.md for full trigger checklist"
 echo "$SEPARATOR_LINE"

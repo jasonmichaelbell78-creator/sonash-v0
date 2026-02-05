@@ -28,6 +28,26 @@ const VIEWS_DIR = path.join(DEBT_DIR, "views");
 const METRICS_FILE = path.join(DEBT_DIR, "METRICS.md");
 const ROADMAP_FILE = path.join(ROOT, "ROADMAP.md");
 
+/**
+ * Validate that a user-provided path is contained within the project root.
+ * Prevents path traversal attacks (CWE-22, OWASP A01:2021 Broken Access Control).
+ * @param {string} sessionPath - User-provided session path from CLI args
+ * @returns {string} - Resolved absolute path (safe to use)
+ */
+function validateSessionPath(sessionPath) {
+  const projectRoot = ROOT;
+  const resolved = path.resolve(sessionPath);
+  const relative = path.relative(projectRoot, resolved);
+  // Reject if: relative path escapes root (..), is empty (equals root), or is absolute (different drive on Windows)
+  if (relative === "" || /^\.\.(?:[\\/]|$)/.test(relative) || path.isAbsolute(relative)) {
+    console.error(`Error: session path "${sessionPath}" resolves outside the project root.`);
+    console.error(`  Resolved: ${resolved}`);
+    console.error(`  Project root: ${projectRoot}`);
+    process.exit(1);
+  }
+  return resolved;
+}
+
 function getFileHash(filePath) {
   if (!fs.existsSync(filePath)) return null;
   try {
@@ -149,8 +169,11 @@ function main() {
     process.exit(1);
   }
 
+  // Validate session path stays within project root (CWE-22 path traversal prevention)
+  const safeSessionPath = validateSessionPath(sessionPath);
+
   // Ensure eval directory exists
-  const evalDir = path.join(sessionPath, "eval");
+  const evalDir = path.join(safeSessionPath, "eval");
   if (!fs.existsSync(evalDir)) {
     fs.mkdirSync(evalDir, { recursive: true });
   }
@@ -159,7 +182,7 @@ function main() {
   const snapshot = {
     mode,
     timestamp: new Date().toISOString(),
-    session_path: sessionPath,
+    session_path: safeSessionPath,
     master_debt: {
       item_count: masterDebt.count,
       last_id: masterDebt.lastId,
@@ -178,12 +201,12 @@ function main() {
       hash: getFileHash(METRICS_FILE),
     },
     views: getViewsState(),
-    session_state: getSessionState(sessionPath),
+    session_state: getSessionState(safeSessionPath),
     // Capture which dirs exist in the session
     session_dirs: {
-      raw: fs.existsSync(path.join(sessionPath, "raw")),
-      canon: fs.existsSync(path.join(sessionPath, "canon")),
-      final: fs.existsSync(path.join(sessionPath, "final")),
+      raw: fs.existsSync(path.join(safeSessionPath, "raw")),
+      canon: fs.existsSync(path.join(safeSessionPath, "canon")),
+      final: fs.existsSync(path.join(safeSessionPath, "final")),
       eval: true,
     },
   };

@@ -106,9 +106,22 @@ function generateReport(sessionPath) {
     a.stage.localeCompare(b.stage)
   );
 
+  const hasNoStages = stageResults.length === 0;
+  const hasInvalidStages = stageResults.some(
+    (r) => !r?.stage || typeof r.score !== "number" || Number.isNaN(r.score)
+  );
   const overallScore = computeOverallScore(stageResults);
   const overallGrade = getGrade(overallScore);
-  const allPassed = stageResults.every((r) => r.passed);
+  const allPassed = !hasNoStages && !hasInvalidStages && stageResults.every((r) => r.passed);
+
+  if (hasNoStages) {
+    console.error("No stage results found; cannot generate a valid evaluation report.");
+    process.exit(1);
+  }
+  if (hasInvalidStages) {
+    console.error("Invalid stage results found (missing stage and/or non-numeric score).");
+    process.exit(1);
+  }
 
   // Collect all issues and recommendations
   const allIssues = [];

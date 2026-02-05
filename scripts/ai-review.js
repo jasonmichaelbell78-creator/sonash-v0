@@ -157,7 +157,7 @@ function extractPrompt(type) {
   const section = promptsFile.substring(sectionStart, sectionEnd);
 
   // Extract the system prompt (between first ``` and next ```)
-  const systemPromptMatch = section.match(/### System Prompt\s+```\s+([\s\S]+?)\s+```/);
+  const systemPromptMatch = section.match(/### System Prompt\s+```\s+([\s\S]{1,50000}?)\s+```/);
   if (!systemPromptMatch) {
     throw new Error(`System prompt not found in section: ${reviewTypeConfig.section}`);
   }

@@ -154,7 +154,7 @@ function findMilestonesTable(content) {
 
   // Find the milestones table (starts after "## 📊 Milestones Overview")
   const tableMatch = content.match(
-    /## 📊 Milestones Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/
+    /## 📊 Milestones Overview[\s\S]{0,5000}?\n\|[^\n]+\|[\s\S]{0,5000}?\n\|[-|\s]+\|[\s\S]{0,5000}?\n((?:\|[^\n]+\|\n?)+)/
   );
 
   if (tableMatch?.[1]) {
@@ -163,7 +163,7 @@ function findMilestonesTable(content) {
 
   // Try alternative heading formats
   const altMatch = content.match(
-    /## .*Milestones.*Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/i
+    /## .*Milestones.*Overview[\s\S]{0,5000}?\n\|[^\n]+\|[\s\S]{0,5000}?\n\|[-|\s]+\|[\s\S]{0,5000}?\n((?:\|[^\n]+\|\n?)+)/i
   );
 
   if (altMatch?.[1]) {
@@ -189,7 +189,12 @@ function parseTableRow(row, rowIndex) {
   // Review #188: Handle missing trailing pipe - pattern allows optional trailing |
   // Pattern: |------|-------|...|? (with optional : for alignment)
   const trimmedRow = row.trim();
-  if (!trimmedRow.includes("|") || /^\|\s*[-:]+\s*(\|\s*[-:]+\s*)+\|?\s*$/.test(trimmedRow)) {
+  if (
+    !trimmedRow.includes("|") ||
+    /^\|\s{0,100}[-:]{1,200}\s{0,100}(\|\s{0,100}[-:]{1,200}\s{0,100}){1,50}\|?\s{0,100}$/.test(
+      trimmedRow
+    )
+  ) {
     return { skip: true };
   }
 
@@ -217,7 +222,7 @@ function parseTableRow(row, rowIndex) {
   const priority = (cells[4] || "").trim();
 
   // Parse progress percentage (handle "~50%", "100%", "0%")
-  const progressMatch = progressStr.match(/~?(\d+)%/);
+  const progressMatch = progressStr.match(/~?(\d{1,4})%/);
   const progress = progressMatch ? parseInt(progressMatch[1], 10) : 0;
 
   return { milestone: { name, status, progress, target, priority } };

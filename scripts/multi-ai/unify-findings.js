@@ -17,13 +17,33 @@
  */
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from "node:fs";
-import { join, resolve, dirname, basename } from "node:path";
+import { join, resolve, relative, isAbsolute, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const REPO_ROOT = resolve(__dirname, "../..");
+
+/**
+ * Validate that a user-provided path is contained within the project root.
+ * Prevents path traversal attacks (CWE-22, OWASP A01:2021 Broken Access Control).
+ * @param {string} sessionPath - User-provided session path
+ * @returns {string} - Resolved absolute path (safe to use)
+ */
+function validateSessionPath(sessionPath) {
+  const projectRoot = REPO_ROOT;
+  const resolved = resolve(sessionPath);
+  const rel = relative(projectRoot, resolved);
+  // Reject if: relative path escapes root (..), is empty (equals root), or is absolute (different drive on Windows)
+  if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || isAbsolute(rel)) {
+    const msg =
+      `Error: session path "${sessionPath}" resolves outside the project root.\n` +
+      `  Resolved: ${resolved}\n  Project root: ${projectRoot}`;
+    throw new Error(msg);
+  }
+  return resolved;
+}
 
 // Severity and effort weights for priority scoring
 const SEVERITY_WEIGHTS = { S0: 100, S1: 50, S2: 20, S3: 5 };
@@ -43,7 +63,13 @@ function parseJsonlFile(filePath) {
     return [];
   }
 
-  const content = readFileSync(filePath, "utf-8");
+  let content;
+  try {
+    content = readFileSync(filePath, "utf-8");
+  } catch {
+    console.warn(`Cannot read file: ${filePath}`);
+    return [];
+  }
   const lines = content.split("\n").filter((l) => l.trim());
   const findings = [];
 
@@ -281,10 +307,14 @@ function mergeRelatedFindings(allFindings, fileMap) {
         return (sevRank[curr.severity] || 2) < (sevRank[best.severity] || 2) ? curr : best;
       });
 
+      const combinedSources = representativeFindings.flatMap((f) => f.sources || []);
+      const uniqueSources = Array.from(new Map(combinedSources.map((s) => [s.source, s])).values());
+
       const crossCuttingFinding = {
         ...primaryFinding,
         cross_cutting: true,
         categories: Array.from(categories),
+        sources: uniqueSources,
         related_findings: representativeFindings.map((f) => ({
           id: f.canonical_id,
           category: f.category,
@@ -372,10 +402,10 @@ ${Object.entries(categoryStats)
 
 | Severity | Count | % |
 |----------|------:|--:|
-| S0 Critical | ${severityStats.S0} | ${Math.round((severityStats.S0 / uniqueFindings) * 100)}% |
-| S1 High | ${severityStats.S1} | ${Math.round((severityStats.S1 / uniqueFindings) * 100)}% |
-| S2 Medium | ${severityStats.S2} | ${Math.round((severityStats.S2 / uniqueFindings) * 100)}% |
-| S3 Low | ${severityStats.S3} | ${Math.round((severityStats.S3 / uniqueFindings) * 100)}% |
+| S0 Critical | ${severityStats.S0} | ${uniqueFindings > 0 ? Math.round((severityStats.S0 / uniqueFindings) * 100) : 0}% |
+| S1 High | ${severityStats.S1} | ${uniqueFindings > 0 ? Math.round((severityStats.S1 / uniqueFindings) * 100) : 0}% |
+| S2 Medium | ${severityStats.S2} | ${uniqueFindings > 0 ? Math.round((severityStats.S2 / uniqueFindings) * 100) : 0}% |
+| S3 Low | ${severityStats.S3} | ${uniqueFindings > 0 ? Math.round((severityStats.S3 / uniqueFindings) * 100) : 0}% |
 
 ---
 
@@ -487,8 +517,11 @@ ${
  * @returns {{ findings: object[], summary: object }}
  */
 export async function unifyFindings(sessionPath) {
-  const canonDir = join(sessionPath, "canon");
-  const finalDir = join(sessionPath, "final");
+  // Validate session path stays within project root (CWE-22 path traversal prevention)
+  const safeSessionPath = validateSessionPath(sessionPath);
+
+  const canonDir = join(safeSessionPath, "canon");
+  const finalDir = join(safeSessionPath, "final");
 
   if (!existsSync(canonDir)) {
     return {
@@ -586,7 +619,7 @@ export async function unifyFindings(sessionPath) {
   }
 
   // Extract session ID from path
-  const sessionId = basename(sessionPath);
+  const sessionId = basename(safeSessionPath);
 
   // Write unified findings
   const outputPath = join(finalDir, "UNIFIED-FINDINGS.jsonl");
@@ -659,12 +692,21 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
   const [sessionPath] = args;
 
-  if (!existsSync(sessionPath)) {
-    console.error(`Session path not found: ${sessionPath}`);
+  // Validate session path stays within project root (CWE-22 path traversal prevention)
+  let safeSessionPath;
+  try {
+    safeSessionPath = validateSessionPath(sessionPath);
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   }
 
-  unifyFindings(sessionPath).then(({ findings, summary }) => {
+  if (!existsSync(safeSessionPath)) {
+    console.error(`Session path not found: ${safeSessionPath}`);
+    process.exit(1);
+  }
+
+  unifyFindings(safeSessionPath).then(({ findings, summary }) => {
     if (summary.error) {
       console.error(`Error: ${summary.error}`);
       process.exit(1);

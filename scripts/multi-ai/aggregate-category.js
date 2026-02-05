@@ -38,28 +38,22 @@ const MAX_LEVENSHTEIN_LENGTH = 200;
  * @returns {number} - Edit distance
  */
 function levenshteinDistance(str1, str2) {
-  // Truncate to prevent performance issues
-  const s1 = str1.length > MAX_LEVENSHTEIN_LENGTH ? str1.slice(0, MAX_LEVENSHTEIN_LENGTH) : str1;
-  const s2 = str2.length > MAX_LEVENSHTEIN_LENGTH ? str2.slice(0, MAX_LEVENSHTEIN_LENGTH) : str2;
-
+  let s1 = str1.length > MAX_LEVENSHTEIN_LENGTH ? str1.slice(0, MAX_LEVENSHTEIN_LENGTH) : str1;
+  let s2 = str2.length > MAX_LEVENSHTEIN_LENGTH ? str2.slice(0, MAX_LEVENSHTEIN_LENGTH) : str2;
+  if (s1.length < s2.length) [s1, s2] = [s2, s1];
   const m = s1.length;
   const n = s2.length;
-  const dp = new Array(m + 1).fill(null).map(() => new Array(n + 1).fill(0));
-
-  for (let i = 0; i <= m; i++) dp[i][0] = i;
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
-
+  let prevRow = Array.from({ length: n + 1 }, (_, i) => i);
+  let currentRow = new Array(n + 1).fill(0);
   for (let i = 1; i <= m; i++) {
+    currentRow[0] = i;
     for (let j = 1; j <= n; j++) {
-      if (s1[i - 1] === s2[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1];
-      } else {
-        dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
-      }
+      const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+      currentRow[j] = Math.min(currentRow[j - 1] + 1, prevRow[j] + 1, prevRow[j - 1] + cost);
     }
+    prevRow = [...currentRow];
   }
-
-  return dp[m][n];
+  return prevRow[n];
 }
 
 /**
@@ -132,7 +126,13 @@ function parseJsonlFile(filePath) {
     return [];
   }
 
-  const content = readFileSync(filePath, "utf-8");
+  let content;
+  try {
+    content = readFileSync(filePath, "utf-8");
+  } catch {
+    console.warn(`Cannot read file: ${filePath}`);
+    return [];
+  }
   const lines = content.split("\n").filter((l) => l.trim());
   const findings = [];
 
@@ -219,7 +219,9 @@ function mergeFindings(primary, secondary) {
       : secondary.effort;
 
   // Average confidence
-  const confidence = Math.round((primary.confidence + secondary.confidence) / 2);
+  const pConf = Number.isFinite(primary.confidence) ? primary.confidence : 70;
+  const sConf = Number.isFinite(secondary.confidence) ? secondary.confidence : 70;
+  const confidence = Math.round((pConf + sConf) / 2);
 
   return {
     ...primary,
@@ -537,7 +539,13 @@ export function getCategorySources(sessionPath, category) {
 
   for (const file of files) {
     const sourceName = file.replace(`${category}-`, "").replace(".jsonl", "");
-    const content = readFileSync(join(rawDir, file), "utf-8");
+    let content;
+    try {
+      content = readFileSync(join(rawDir, file), "utf-8");
+    } catch {
+      sources.push({ name: sourceName, file, count: 0 });
+      continue;
+    }
     const count = content.split("\n").filter((l) => l.trim()).length;
 
     sources.push({ name: sourceName, file, count });

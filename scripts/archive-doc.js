@@ -226,10 +226,10 @@ function ensureArchiveDir() {
  */
 function extractLastUpdated(content) {
   const patterns = [
-    /\*\*Last Updated:\*\*\s*(.+?)(?:\n|$)/i,
-    /Last Updated:\s*(.+?)(?:\n|$)/i,
-    /Updated:\s*(.+?)(?:\n|$)/i,
-    /Date:\s*(.+?)(?:\n|$)/i,
+    /\*\*Last Updated:\*\*\s{0,100}(.{1,500}?)(?:\n|$)/i,
+    /Last Updated:\s{0,100}(.{1,500}?)(?:\n|$)/i,
+    /Updated:\s{0,100}(.{1,500}?)(?:\n|$)/i,
+    /Date:\s{0,100}(.{1,500}?)(?:\n|$)/i,
   ];
 
   for (const pattern of patterns) {

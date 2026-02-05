@@ -117,7 +117,7 @@ function checkVersionAccuracy(content, filePath) {
     // Prose format: "Next.js 15.0.0" or "React v19.0.0"
     /(next\.?js|react|firebase|tailwind(?:css)?|zod|typescript|node|npm)\s+v?(\d+\.\d+\.\d+)/gi,
     // Package@version format
-    /([\w@/-]+)@(\d+\.\d+\.\d+)/g,
+    /([\w@/-]{1,200})@(\d+\.\d+\.\d+)/g,
   ];
 
   // Known package name mappings
