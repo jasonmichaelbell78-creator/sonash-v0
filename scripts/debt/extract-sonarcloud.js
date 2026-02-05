@@ -142,7 +142,14 @@ function main() {
     process.exit(1);
   }
 
-  const rawData = fs.readFileSync(INPUT_FILE, "utf8");
+  let rawData;
+  try {
+    rawData = fs.readFileSync(INPUT_FILE, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Cannot read input file: ${errMsg}`);
+    process.exit(1);
+  }
   const data = JSON.parse(rawData);
 
   const items = [];
