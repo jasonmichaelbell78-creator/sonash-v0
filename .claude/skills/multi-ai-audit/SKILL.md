@@ -473,9 +473,11 @@ updateSession(sessionId, {
 
 ---
 
-## Phase 7: Roadmap Integration (Automated)
+## Phase 7: Roadmap Integration (Interactive Placement)
 
-**Immediately after TDMS intake completes:**
+**Immediately after TDMS intake completes.** This phase presents the user with a
+rich placement analysis — suggestions, pros/cons, must-fix items, and options —
+before auto-assigning roadmap references.
 
 ### Step 7.1: Assign Roadmap References (Dry-Run)
 
@@ -498,36 +500,72 @@ This maps each new DEBT item to a roadmap track/milestone using:
 | code-quality (app/)     | M2.1             |
 | code-quality (default)  | M2.1             |
 
-### Step 7.2: Report Track Assignments
+### Step 7.2: Severity-Weighted Placement Summary
+
+Compute and present **inline** (severity weights: S0=10, S1=5, S2=2, S3=1):
 
 ```
-=== Roadmap Reference Assignment Preview ===
-
-  Newly assigned: [count] items
-  Already assigned: [count] items
-
-  By Track:
-    Track-S      [count]
-    Track-P      [count]
-    Track-D      [count]
-    Track-E      [count]
-    Track-T      [count]
-    M2.1         [count]
-    M2.3-REF     [count]
-    M1.5         [count]
-
-Apply roadmap assignments? (yes/no)
+| Track           | Total |  S0 |  S1 |  S2 |  S3 | Weight |
+|-----------------|-------|-----|-----|-----|-----|--------|
+| Track-E         |   870 | ... | ... | ... | ... |  2,965 |
+| M2.1            |   663 | ... | ... | ... | ... |  1,589 |
+| ...             |       |     |     |     |     |        |
+| TOTAL           | 1,850 | ... | ... | ... | ... |  5,527 |
 ```
 
-Wait for user confirmation.
+### Step 7.3: Must-Fix-Now Analysis
 
-### Step 7.3: Apply Assignments
+Present separately:
+
+- **S0 Vulnerabilities & Bugs**: List each with DEBT ID, track, and title —
+  these are genuine critical items requiring immediate attention
+- **S0 Code-Smells**: Show count per track — complexity/style issues that may
+  warrant severity downgrade
+- **Quick Wins**: E0-E1 items that can be batch-fixed easily
+
+### Step 7.4: Concentration Risk & Suggestions
+
+For any track carrying >40% of total weight:
+
+- Show file-pattern breakdown of S0/S1 items in that track
+- **Pros** of keeping current assignment
+- **Cons** of keeping current assignment
+- **Suggestion**: Downgrade, split sub-track, or keep as-is
+
+### Step 7.5: Present Options to User
+
+Use `AskUserQuestion` to offer placement decisions:
+
+1. **Approve as-is** — accept auto-assignments
+2. **Downgrade S0 code-smells** — reclassify non-vulnerability S0s to S1 in
+   heavy tracks
+3. **Show more detail** — deeper breakdown before deciding
+4. **Custom adjustment** — user specifies track reassignments
+
+### Step 7.6: Apply Canonical Severity Rules
+
+These severity adjustments are standing policy (apply automatically after user
+approves placement):
+
+| Condition                      | Action          | Rationale                                    |
+| ------------------------------ | --------------- | -------------------------------------------- |
+| Track-E + S0 + type=code-smell | Downgrade to S1 | Script complexity is not production-critical |
+
+Additional rules may be added to this table as the team establishes patterns.
+
+### Step 7.7: Apply Assignments
 
 ```bash
 node scripts/debt/assign-roadmap-refs.js --report --verbose
 ```
 
-### Step 7.4: Validate References
+Then sync `raw/deduped.jsonl` from MASTER_DEBT.jsonl:
+
+```bash
+cp docs/technical-debt/MASTER_DEBT.jsonl docs/technical-debt/raw/deduped.jsonl
+```
+
+### Step 7.8: Validate References
 
 ```bash
 node scripts/debt/sync-roadmap-refs.js --check-only
@@ -536,13 +574,14 @@ node scripts/debt/sync-roadmap-refs.js --check-only
 If orphaned references are detected, HALT the workflow. Report errors to the
 user and do not proceed until data is corrected.
 
-### Step 7.5: Regenerate Metrics
+### Step 7.9: Regenerate Metrics
 
 ```bash
+node scripts/debt/generate-views.js
 node scripts/debt/generate-metrics.js
 ```
 
-### Step 7.6: Update State
+### Step 7.10: Update State
 
 ```javascript
 updateSession(sessionId, {
