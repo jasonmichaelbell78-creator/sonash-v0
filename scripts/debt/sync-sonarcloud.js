@@ -31,6 +31,7 @@ const path = require("path");
 const crypto = require("crypto");
 const { execFileSync } = require("child_process");
 const readline = require("readline");
+const os = require("os");
 
 // Try to load dotenv if available
 try {
@@ -410,11 +411,19 @@ async function resolveStaleItems(options) {
 
   if (staleItems.length === 0) {
     console.log("\n✅ No stale items found. Nothing to resolve.");
+    let operatorContext;
+    try {
+      operatorContext =
+        os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
+    } catch {
+      operatorContext = process.env.USER || process.env.USERNAME || "unknown";
+    }
     logResolution({
       action: "resolve-sonarcloud-stale",
       project: `${org}_${project}`,
       items_checked: sonarItems.length,
       items_resolved: 0,
+      operator: operatorContext,
     });
     return { resolved: 0 };
   }
@@ -466,12 +475,21 @@ async function resolveStaleItems(options) {
 
   // Also update raw/deduped.jsonl to stay in sync
   const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
+  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
   console.log("📝 Updating raw/deduped.jsonl...");
   const tmpDeduped = `${DEDUPED_FILE}.tmp`;
   fs.writeFileSync(tmpDeduped, updatedContent);
+  fs.rmSync(DEDUPED_FILE, { force: true });
   fs.renameSync(tmpDeduped, DEDUPED_FILE);
 
   // Log resolutions
+  let operatorContext;
+  try {
+    operatorContext =
+      os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
+  } catch {
+    operatorContext = process.env.USER || process.env.USERNAME || "unknown";
+  }
   logResolution({
     action: "resolve-sonarcloud-stale",
     project: `${org}_${project}`,
@@ -479,6 +497,7 @@ async function resolveStaleItems(options) {
     items_resolved: resolvedCount,
     first_id: staleItems[0]?.id,
     last_id: staleItems[staleItems.length - 1]?.id,
+    operator: operatorContext,
   });
 
   console.log(`\n✅ Resolved ${resolvedCount} stale items.`);
@@ -518,7 +537,10 @@ Environment variables:
   const sonarProps = readSonarProperties();
   const token = process.env.SONAR_TOKEN;
   const org = parsed.org || process.env.SONAR_ORG || sonarProps.org;
-  const project = parsed.project || process.env.SONAR_PROJECT || sonarProps.project || "sonash";
+  const projectInput =
+    parsed.project || process.env.SONAR_PROJECT || sonarProps.project || "sonash";
+  const project =
+    org && projectInput.startsWith(`${org}_`) ? projectInput.slice(org.length + 1) : projectInput;
 
   if (!token) {
     console.error("Error: SONAR_TOKEN environment variable is required");

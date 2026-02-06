@@ -526,9 +526,8 @@ async function main() {
   // Also append to raw/deduped.jsonl so generate-views.js doesn't lose new items
   // (generate-views reads from deduped.jsonl and overwrites MASTER_DEBT.jsonl)
   const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
-  if (fs.existsSync(DEDUPED_FILE)) {
-    fs.appendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
-  }
+  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
+  fs.appendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
 
   // Log intake activity (including format statistics and confidence values)
   // Include user context for audit trail reconstruction (Qodo compliance)

@@ -311,7 +311,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 11 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 12 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION OVERDUE **Next consolidation due:** NOW
 
 ### When to Consolidate
@@ -623,6 +623,39 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #255: PR Cherry-Pick - Qodo Compliance + SonarCloud + CI (2026-02-06)
+
+**Source:** Qodo Compliance + Qodo PR Suggestions + SonarCloud Quality Gate + CI
+Failure **PR/Branch:** claude/cherry-pick-commits-yLnZV **Suggestions:** 22
+total (Critical: 3, Major: 6, Minor: 12, Trivial: 1)
+
+**Patterns Identified:**
+
+1. [Hardcoded paths in scripts]: Windows-specific ROOT_PREFIX with PII
+   - Root cause: Script authored on Windows with hardcoded user path
+   - Prevention: Always use dynamic path.resolve(\_\_dirname, "../../")
+2. [Pattern compliance false positives]: intake-audit.js flagged despite having
+   try/catch
+   - Root cause: Regex-based checker + exclusion list not updated for new files
+   - Prevention: Add verified try/catch files to exclusion list immediately
+3. [Data loss via copyFileSync]: assign-roadmap-refs.js overwrites deduped.jsonl
+   - Root cause: copyFileSync replaces entire file instead of merging updates
+   - Prevention: Use in-place update or merge strategy for sync operations
+
+**Resolution:**
+
+- Fixed: 22 items (in progress)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- Pattern compliance exclusion list must be updated when wrapping readFileSync
+- SonarCloud API pagination needs explicit Number.isFinite() guards
+- CLI scripts accepting file paths need path traversal protection
 
 ---
 

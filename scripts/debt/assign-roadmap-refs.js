@@ -163,6 +163,7 @@ function main() {
   };
 
   const updatedLines = [];
+  const updatedItems = new Map(); // Track items that were modified
 
   for (const line of lines) {
     stats.total++;
@@ -186,6 +187,7 @@ function main() {
         item.roadmap_ref = normalizedRef;
         stats.normalized = (stats.normalized || 0) + 1;
         updatedLines.push(JSON.stringify(item));
+        if (item.id) updatedItems.set(item.id, item); // Track normalized item
       } else {
         updatedLines.push(line);
       }
@@ -205,6 +207,7 @@ function main() {
     }
 
     updatedLines.push(JSON.stringify(item));
+    if (item.id) updatedItems.set(item.id, item); // Track newly assigned item
   }
 
   console.log("\n📈 Assignment Statistics:");
@@ -278,10 +281,33 @@ function main() {
       fs.rmSync(MASTER_FILE, { force: true });
       fs.renameSync(TEMP_FILE, MASTER_FILE);
 
-      // Sync to raw/deduped.jsonl so generate-views.js doesn't lose updates
+      // Sync updated items to raw/deduped.jsonl (in-place update, not full copy)
       const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
       if (fs.existsSync(DEDUPED_FILE)) {
-        fs.copyFileSync(MASTER_FILE, DEDUPED_FILE);
+        try {
+          const dedupedContent = fs.readFileSync(DEDUPED_FILE, "utf8");
+          const dedupedLines = dedupedContent.split("\n");
+          const dedupedUpdated = dedupedLines.map((line) => {
+            if (!line.trim()) return line;
+            try {
+              const item = JSON.parse(line);
+              if (item.id && updatedItems.has(item.id)) {
+                return JSON.stringify(updatedItems.get(item.id));
+              }
+            } catch {
+              // keep original line if not valid JSON
+            }
+            return line;
+          });
+          const tmpDeduped = `${DEDUPED_FILE}.tmp`;
+          fs.writeFileSync(tmpDeduped, dedupedUpdated.join("\n"));
+          fs.rmSync(DEDUPED_FILE, { force: true });
+          fs.renameSync(tmpDeduped, DEDUPED_FILE);
+        } catch (syncErr) {
+          console.warn(
+            `⚠️ Warning: Could not sync to deduped.jsonl: ${syncErr instanceof Error ? syncErr.message : String(syncErr)}`
+          );
+        }
       }
 
       console.log("✅ MASTER_DEBT.jsonl updated successfully");

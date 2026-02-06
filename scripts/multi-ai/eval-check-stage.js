@@ -555,7 +555,8 @@ function checkE5(sessionPath) {
     let validCanonIds = 0;
     let verifiedCount = 0;
     for (const item of canonItems) {
-      if (item.canonical_id && /^CANON-\d{4}$/.test(item.canonical_id)) validCanonIds++;
+      const canonId = item.canonical_id ?? item.canon_id;
+      if (canonId && /^CANON-\d{4}$/.test(canonId)) validCanonIds++;
       if (item.verified_at || item.file_exists !== undefined) verifiedCount++;
     }
 

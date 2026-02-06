@@ -577,6 +577,11 @@ const ANTI_PATTERNS = [
       "eval-sonarcloud-snapshot.js",
       "eval-sonarcloud-stage.js",
       "eval-sonarcloud-report.js",
+      // 2026-02-06 audit (Review #255):
+      // - intake-audit.js: readFileSync at L287 IS in try/catch (L286-293), L373 IS in try/catch (L372-379)
+      // - extract-agent-findings.js: readFileSync now IS in try/catch (fixed Review #255)
+      "intake-audit.js",
+      "extract-agent-findings.js",
     ],
   },
   {

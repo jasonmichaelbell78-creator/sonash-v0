@@ -27,6 +27,16 @@ const PROJECT_ROOT = path.join(__dirname, "..");
 const OUTPUT_FILE = path.join(PROJECT_ROOT, "docs/audits/sonarcloud-issues-detailed.md");
 const SONARCLOUD_API = "https://sonarcloud.io/api";
 
+// Validate that a file path stays within PROJECT_ROOT (prevents path traversal)
+function resolveProjectPath(relativeFilePath) {
+  const abs = path.resolve(PROJECT_ROOT, relativeFilePath);
+  const root = path.resolve(PROJECT_ROOT) + path.sep;
+  if (!abs.startsWith(root)) {
+    throw new Error(`Refusing to read outside project root: ${relativeFilePath}`);
+  }
+  return abs;
+}
+
 // Read defaults from sonar-project.properties if available
 function readSonarProperties() {
   const propsFile = path.join(PROJECT_ROOT, "sonar-project.properties");
@@ -75,11 +85,14 @@ async function fetchSonarCloudIssues(token, componentKey) {
     });
 
     const url = `${SONARCLOUD_API}/issues/search?${params}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30_000);
     const response = await fetch(url, {
+      signal: controller.signal,
       headers: {
         Authorization: `Basic ${Buffer.from(`${token}:`).toString("base64")}`,
       },
-    });
+    }).finally(() => clearTimeout(timeout));
 
     if (!response.ok) {
       const rawError = await response.text();
@@ -88,7 +101,8 @@ async function fetchSonarCloudIssues(token, componentKey) {
     }
 
     const data = await response.json();
-    total = data.total;
+    const nextTotal = Number(data.total);
+    total = Number.isFinite(nextTotal) ? nextTotal : allIssues.length;
     allIssues.push(...(data.issues || []));
 
     if (!data.issues || data.issues.length === 0) break;
@@ -125,11 +139,14 @@ async function fetchSonarCloudHotspots(token, componentKey) {
     });
 
     const url = `${SONARCLOUD_API}/hotspots/search?${params}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30_000);
     const response = await fetch(url, {
+      signal: controller.signal,
       headers: {
         Authorization: `Basic ${Buffer.from(`${token}:`).toString("base64")}`,
       },
-    });
+    }).finally(() => clearTimeout(timeout));
 
     if (!response.ok) {
       const rawError = await response.text();
@@ -138,10 +155,12 @@ async function fetchSonarCloudHotspots(token, componentKey) {
     }
 
     const data = await response.json();
-    total = data.paging?.total ?? 0;
-    allHotspots.push(...(data.hotspots || []));
+    const nextTotal = Number(data.paging?.total);
+    const pageItems = data.hotspots || [];
+    total = Number.isFinite(nextTotal) ? nextTotal : allHotspots.length + pageItems.length;
+    allHotspots.push(...pageItems);
 
-    if (!data.hotspots || data.hotspots.length === 0) break;
+    if (!pageItems || pageItems.length === 0) break;
     if (page === 1) {
       console.log(`  Total hotspots: ${total}`);
     }
@@ -170,11 +189,10 @@ function getFilePath(component) {
 
 // Read code snippet from local file (with path containment check)
 function getCodeSnippet(filePath, line, textRange, contextLines = 3) {
-  const fullPath = path.join(PROJECT_ROOT, filePath);
-  const resolved = path.resolve(fullPath);
-  const relative = path.relative(PROJECT_ROOT, resolved);
-  // Use regex for robust ".." detection (handles edge cases like "..hidden.md")
-  if (/^\.\.(?:[\\/]|$)/.test(relative) || relative === "" || path.isAbsolute(relative)) {
+  let resolved;
+  try {
+    resolved = resolveProjectPath(filePath);
+  } catch (err) {
     return { found: false, snippet: `[Path outside project: ${filePath}]` };
   }
 
@@ -235,7 +253,7 @@ async function main() {
     process.exit(1);
   }
 
-  const componentKey = `${org}_${project}`;
+  const componentKey = project.startsWith(`${org}_`) ? project : `${org}_${project}`;
   console.log(`\nGenerating SonarCloud detailed report for ${componentKey}...\n`);
 
   // Fetch fresh data from SonarCloud API

@@ -320,7 +320,7 @@ function createBraceTracker() {
           escaped = false;
           continue;
         }
-        if (ch === "\\") {
+        if (inString && ch === "\\") {
           escaped = true;
           continue;
         }
@@ -330,7 +330,10 @@ function createBraceTracker() {
         }
         if (!inString) {
           if (ch === "{") depth++;
-          else if (ch === "}") depth--;
+          else if (ch === "}") {
+            depth--;
+            if (depth < 0) depth = 0;
+          }
         }
       }
     },
