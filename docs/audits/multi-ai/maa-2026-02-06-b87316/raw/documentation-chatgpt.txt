@@ -1,0 +1,11 @@
+Documentation Audit - ChatGPT
+Date: 2026-02-06
+Repository: jasonmichaelbell78-creator/sonash-v0
+EXECUTION_MODE: SEQUENTIAL
+CAPABILITIES: browse_files=yes, run_commands=yes, repo_checkout=yes, limitations="Cannot reliably validate external URLs over the network."
+
+15 confirmed findings + 2 suspected across documentation categories.
+Key issues: missing npm scripts (type-check, review:reset), broken links to src/dataconnect-generated/,
+evaluation reports missing required sections, placement violations.
+
+See documentation-chatgpt.jsonl for full JSONL output.
