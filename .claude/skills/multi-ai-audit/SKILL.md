@@ -13,8 +13,10 @@ description:
 
 # Multi-AI Audit Orchestrator
 
-**Purpose:** Single-entry-point skill that orchestrates the entire multi-AI
-audit workflow with:
+## Purpose
+
+Single-entry-point skill that orchestrates the entire multi-AI audit workflow
+with:
 
 - Category-by-category progression (user-controlled)
 - Template output for external AI systems
@@ -26,6 +28,13 @@ audit workflow with:
 - Context compaction survival via file-based state
 
 **Invocation:** `/multi-ai-audit`
+
+---
+
+## AI Instructions
+
+This skill is invoked via `/multi-ai-audit`. Follow the workflow state machine
+below step-by-step. Do not skip phases or summarize template output.
 
 ---
 
@@ -178,6 +187,26 @@ The user will copy-paste this into external AI systems — any omitted content
 means those AIs won't know what to check.
 
 The prompt sections can be long (200+ lines). This is expected and required.
+
+**⚠️ FAILURE MODE:** Summarizing, condensing, or paraphrasing the template
+renders it useless — external AIs need the **complete prompt verbatim** (with
+placeholders filled) to know what to audit. This has been a recurring error.
+
+**Per-Category Output Checklist (ALL sections mandatory):**
+
+| Category                 | Template                          | Sections That MUST Appear in Full                                                                                                                   |
+| ------------------------ | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| code                     | CODE_REVIEW_PLAN.md               | Parts 1-5: Role/Context, Anti-Hallucination Rules, Audit Phases (all categories), Output Format, Verification                                       |
+| security                 | SECURITY_AUDIT_PLAN.md            | Parts 1-6: Role/Context, Anti-Hallucination Rules, Audit Phases (all 13 categories), Output Format, Verification, Post-Audit                        |
+| performance              | PERFORMANCE_AUDIT_PLAN.md         | Parts 1-5: Role/Context, Anti-Hallucination Rules, Performance Phases (all 7 categories with full checklists), Output Format, Verification Commands |
+| refactoring              | REFACTOR_PLAN.md                  | Parts 1-5: Role/Context, Anti-Hallucination Rules, Refactor Phases, Output Format, Verification                                                     |
+| documentation            | DOCUMENTATION_AUDIT.md            | Parts 1-5: Role/Context, Anti-Hallucination Rules, Documentation Phases, Output Format, Verification                                                |
+| process                  | PROCESS_AUDIT.md                  | Parts 1-5: Role/Context, Anti-Hallucination Rules, Process Phases, Output Format, Verification                                                      |
+| engineering-productivity | ENGINEERING_PRODUCTIVITY_AUDIT.md | Parts 1-5: Role/Context, Anti-Hallucination Rules, EP Phases, Output Format, Verification                                                           |
+
+**Self-check before outputting:** Count the lines you are about to output. If it
+is significantly shorter than the source template's prompt section, you are
+truncating. Stop and re-output the full content.
 
 ```
 === TEMPLATE FOR: [Category] ===
@@ -821,22 +850,22 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 
 ## Related Documentation
 
-- [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Field
-  definitions
-- [docs/multi-ai-audit/templates/](docs/multi-ai-audit/templates/) - Audit
-  templates
-- [scripts/multi-ai/](scripts/multi-ai/) - Processing scripts (normalize,
-  aggregate, unify)
-- [scripts/debt/intake-audit.js](scripts/debt/intake-audit.js) - TDMS intake
-  (Phase 6)
-- [scripts/debt/assign-roadmap-refs.js](scripts/debt/assign-roadmap-refs.js) -
+- [JSONL_SCHEMA_STANDARD.md](../../../docs/templates/JSONL_SCHEMA_STANDARD.md) -
+  Field definitions
+- [docs/multi-ai-audit/templates/](../../../docs/multi-ai-audit/templates/) -
+  Audit templates
+- [scripts/multi-ai/](../../../scripts/multi-ai/) - Processing scripts
+  (normalize, aggregate, unify)
+- [scripts/debt/intake-audit.js](../../../scripts/debt/intake-audit.js) - TDMS
+  intake (Phase 6)
+- [scripts/debt/assign-roadmap-refs.js](../../../scripts/debt/assign-roadmap-refs.js) -
   Roadmap assignment (Phase 7)
-- [scripts/debt/sync-roadmap-refs.js](scripts/debt/sync-roadmap-refs.js) -
+- [scripts/debt/sync-roadmap-refs.js](../../../scripts/debt/sync-roadmap-refs.js) -
   Roadmap validation (Phase 7)
-- [scripts/debt/generate-metrics.js](scripts/debt/generate-metrics.js) - Metrics
-  regeneration (Phase 7)
-- [docs/technical-debt/PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - TDMS
-  procedures
+- [scripts/debt/generate-metrics.js](../../../scripts/debt/generate-metrics.js) -
+  Metrics regeneration (Phase 7)
+- [docs/technical-debt/PROCEDURE.md](../../../docs/technical-debt/PROCEDURE.md) -
+  TDMS procedures
 
 ---
 
@@ -844,6 +873,7 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 
 | Version | Date       | Changes                                                                                                                                                                                  |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.3     | 2026-02-06 | Added per-category output checklist to Step 2.3 to prevent template summarization/truncation (recurring error)                                                                           |
 | 1.2     | 2026-02-05 | Fixed template mapping table format, standardized prompt extraction regex, resolved REFACTOR_PLAN.md ambiguity                                                                           |
 | 1.1     | 2026-02-05 | Added Phase 6 (TDMS intake), Phase 7 (roadmap integration), Phase 8 (summary) — automates the full pipeline from unified findings through MASTER_DEBT.jsonl and roadmap track assignment |
 | 1.0     | 2026-02-04 | Initial skill creation                                                                                                                                                                   |

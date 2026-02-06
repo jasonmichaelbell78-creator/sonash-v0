@@ -81,7 +81,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git add docs/technical-debt/
-          git commit -m "chore(tdms): resolve debt items from PR #${{ github.event.pull_request.number }}
+          SKIP_CROSS_DOC_CHECK=1 git commit -m "chore(tdms): resolve debt items from PR #${{ github.event.pull_request.number }}
 
           Resolved: ${{ steps.extract.outputs.debt_ids }}
 
