@@ -63,9 +63,10 @@
       "finding_count": 63
     },
     "security": {
-      "status": "collecting",
+      "status": "aggregated",
       "sources": ["copilot", "chatgpt", "codex", "jules", "kimi", "claude-code"],
-      "finding_count": 33
+      "finding_count": 33,
+      "canonCount": 30
     },
     "performance": {
       "status": "pending",
@@ -94,5 +95,5 @@
     }
   },
   "final_output": null,
-  "last_updated": "2026-02-06T17:02:47.838Z"
+  "last_updated": "2026-02-06T17:05:32.227Z"
 }
