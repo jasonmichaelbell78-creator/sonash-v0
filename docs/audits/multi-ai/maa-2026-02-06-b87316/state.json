@@ -70,8 +70,8 @@
     },
     "performance": {
       "status": "collecting",
-      "sources": [],
-      "finding_count": 0
+      "sources": ["copilot"],
+      "finding_count": 8
     },
     "refactoring": {
       "status": "pending",
@@ -95,5 +95,5 @@
     }
   },
   "final_output": null,
-  "last_updated": "2026-02-06T17:09:58.313Z"
+  "last_updated": "2026-02-06T17:29:49.512Z"
 }
