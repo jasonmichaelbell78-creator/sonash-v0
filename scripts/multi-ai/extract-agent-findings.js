@@ -189,7 +189,13 @@ const jsonl = findings.map((f) => JSON.stringify(f)).join("\n") + "\n";
 const tmpDest = `${safeDestFile}.tmp`;
 try {
   fs.writeFileSync(tmpDest, jsonl);
-  fs.renameSync(tmpDest, safeDestFile);
+  try {
+    fs.renameSync(tmpDest, safeDestFile);
+  } catch {
+    // Windows may fail rename if dest exists; fallback to rm + rename
+    fs.rmSync(safeDestFile, { force: true });
+    fs.renameSync(tmpDest, safeDestFile);
+  }
 } catch (writeErr) {
   // Clean up tmp file on failure
   try {

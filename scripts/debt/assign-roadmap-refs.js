@@ -301,8 +301,13 @@ function main() {
           });
           const tmpDeduped = `${DEDUPED_FILE}.tmp`;
           fs.writeFileSync(tmpDeduped, dedupedUpdated.join("\n"));
-          fs.rmSync(DEDUPED_FILE, { force: true });
-          fs.renameSync(tmpDeduped, DEDUPED_FILE);
+          try {
+            fs.renameSync(tmpDeduped, DEDUPED_FILE);
+          } catch {
+            // Windows may fail rename if dest exists; fallback to rm + rename
+            fs.rmSync(DEDUPED_FILE, { force: true });
+            fs.renameSync(tmpDeduped, DEDUPED_FILE);
+          }
         } catch (syncErr) {
           console.warn(
             `⚠️ Warning: Could not sync to deduped.jsonl: ${syncErr instanceof Error ? syncErr.message : String(syncErr)}`
