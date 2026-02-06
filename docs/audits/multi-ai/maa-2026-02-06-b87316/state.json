@@ -69,9 +69,10 @@
       "canonCount": 30
     },
     "performance": {
-      "status": "collecting",
+      "status": "aggregated",
       "sources": ["copilot", "kimi", "claude-code", "chatgpt", "codex", "jules"],
-      "finding_count": 53
+      "finding_count": 62,
+      "canonCount": 61
     },
     "refactoring": {
       "status": "pending",
@@ -95,5 +96,5 @@
     }
   },
   "final_output": null,
-  "last_updated": "2026-02-06T18:01:00.000Z"
+  "last_updated": "2026-02-06T18:05:00.000Z"
 }
