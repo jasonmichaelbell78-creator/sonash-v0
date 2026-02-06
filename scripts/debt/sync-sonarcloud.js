@@ -48,6 +48,21 @@ const RESOLUTION_LOG = path.join(LOG_DIR, "resolution-log.jsonl");
 
 const SONARCLOUD_API = "https://sonarcloud.io/api";
 
+// Get pseudonymous operator identifier for audit logs.
+// In CI: "ci". Otherwise: SHA-256 hash prefix of local username (12 chars).
+// Set LOG_OPERATOR_PII=true to log raw username instead.
+function getOperatorId() {
+  let raw;
+  try {
+    raw = os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
+  } catch {
+    raw = process.env.USER || process.env.USERNAME || "unknown";
+  }
+  if (process.env.CI) return "ci";
+  if (process.env.LOG_OPERATOR_PII === "true") return raw;
+  return crypto.createHash("sha256").update(raw).digest("hex").slice(0, 12);
+}
+
 // Read defaults from sonar-project.properties if available
 function readSonarProperties() {
   const propsFile = path.join(__dirname, "../../sonar-project.properties");
@@ -411,19 +426,12 @@ async function resolveStaleItems(options) {
 
   if (staleItems.length === 0) {
     console.log("\n✅ No stale items found. Nothing to resolve.");
-    let operatorContext;
-    try {
-      operatorContext =
-        os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
-    } catch {
-      operatorContext = process.env.USER || process.env.USERNAME || "unknown";
-    }
     logResolution({
       action: "resolve-sonarcloud-stale",
       project: `${org}_${project}`,
       items_checked: sonarItems.length,
       items_resolved: 0,
-      operator: operatorContext,
+      operator: getOperatorId(),
     });
     return { resolved: 0 };
   }
@@ -497,13 +505,6 @@ async function resolveStaleItems(options) {
   }
 
   // Log resolutions
-  let operatorContext;
-  try {
-    operatorContext =
-      os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
-  } catch {
-    operatorContext = process.env.USER || process.env.USERNAME || "unknown";
-  }
   logResolution({
     action: "resolve-sonarcloud-stale",
     project: `${org}_${project}`,
@@ -511,7 +512,7 @@ async function resolveStaleItems(options) {
     items_resolved: resolvedCount,
     first_id: staleItems[0]?.id,
     last_id: staleItems[staleItems.length - 1]?.id,
-    operator: operatorContext,
+    operator: getOperatorId(),
   });
 
   console.log(`\n✅ Resolved ${resolvedCount} stale items.`);

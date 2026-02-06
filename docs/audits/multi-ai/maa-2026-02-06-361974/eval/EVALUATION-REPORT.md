@@ -44,10 +44,10 @@
 
 **Metrics:**
 
-| Metric     | Value                                                                                     |
-| ---------- | ----------------------------------------------------------------------------------------- |
-| dirs_found | ["raw","canon","final"]                                                                   |
-| state_file | C:\Users\jason\Workspace\dev-projects\sonash-v0\.claude\multi-ai-audit\session-state.json |
+| Metric     | Value                                     |
+| ---------- | ----------------------------------------- |
+| dirs_found | ["raw","canon","final"]                   |
+| state_file | .claude/multi-ai-audit/session-state.json |
 
 No issues found.
 

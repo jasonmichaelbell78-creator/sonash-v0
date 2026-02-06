@@ -115,11 +115,11 @@ No issues found.
 
 **Metrics:**
 
-| Metric        | Value                                                                                     |
-| ------------- | ----------------------------------------------------------------------------------------- |
-| report_exists | true                                                                                      |
-| report_path   | C:\Users\jason\Workspace\dev-projects\sonash-v0\docs\audits\sonarcloud-issues-detailed.md |
-| report_size   | 868655                                                                                    |
+| Metric        | Value                                     |
+| ------------- | ----------------------------------------- |
+| report_exists | true                                      |
+| report_path   | docs/audits/sonarcloud-issues-detailed.md |
+| report_size   | 868655                                    |
 
 No issues found.
 

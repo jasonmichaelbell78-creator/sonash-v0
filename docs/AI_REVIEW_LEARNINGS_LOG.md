@@ -312,7 +312,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 15 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 16 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION OVERDUE **Next consolidation due:** NOW
 
 ### When to Consolidate
@@ -471,7 +471,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 15    | <10    | ⚠️     |
+| Reviews since last consolidation | 16    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -624,6 +624,36 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #259: PR Cherry-Pick Round 5 - PII Scrub + Hardening (2026-02-06)
+
+**Source:** Qodo Compliance + Qodo PR Code Suggestions **PR/Branch:**
+claude/cherry-pick-commits-yLnZV **Suggestions:** 11 total (Critical: 1 PII,
+Major: 2, Minor: 2, Trivial: 0, Rejected: 3, Deferred: 0)
+
+**Patterns Identified:**
+
+1. [PII in committed artifacts]: Evaluation reports contained absolute Windows
+   paths with developer username leaked via eval scripts
+   - Root cause: Eval scripts log absolute `path.resolve()` output into reports
+   - Prevention: Always use relative paths in generated reports
+2. [PII in audit logs resolved]: Replaced raw os.userInfo().username with
+   SHA-256 hash prefix (12 chars) for pseudonymous operator tracking
+   - Root cause: Audit trail needed operator identity but raw username is PII
+   - Prevention: Use getOperatorId() helper (CI="ci", local=hash, opt-in raw)
+3. [copyFileSync safer than rm+rename]: rm + rename has a window where dest is
+   deleted but new file not yet in place
+   - Root cause: Two-step operation leaves gap for data loss
+   - Prevention: Use copyFileSync + unlinkSync (dest always has content)
+
+**Resolution:**
+
+- Fixed: 5 items (3 PII paths, copyFileSync fallback, null byte, fence skip,
+  operator hash)
+- Rejected: 3 items (retry/backoff over-engineering, trailing blank trim
+  redundant, sync-sonarcloud backup pattern)
 
 ---
 
@@ -2035,7 +2065,7 @@ Major: 12, Minor: 8, Trivial: 2, Rejected: 2)
 <!--
 Next review entry will go here. Use format:
 
-#### Review #259: PR #XXX Title - Review Source (DATE)
+#### Review #260: PR #XXX Title - Review Source (DATE)
 
 
 -->

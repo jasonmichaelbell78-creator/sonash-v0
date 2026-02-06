@@ -192,10 +192,10 @@ try {
   try {
     fs.renameSync(tmpDest, safeDestFile);
   } catch {
-    // Windows may fail rename if dest exists; fallback to rm + rename
+    // Windows may fail rename if dest exists; fallback to copy + remove tmp
     try {
-      fs.rmSync(safeDestFile, { force: true });
-      fs.renameSync(tmpDest, safeDestFile);
+      fs.copyFileSync(tmpDest, safeDestFile);
+      fs.unlinkSync(tmpDest);
     } catch (fallbackErr) {
       try {
         fs.unlinkSync(tmpDest);

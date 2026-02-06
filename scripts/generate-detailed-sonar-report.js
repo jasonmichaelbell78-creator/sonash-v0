@@ -29,6 +29,9 @@ const SONARCLOUD_API = "https://sonarcloud.io/api";
 
 // Validate that a file path stays within PROJECT_ROOT (prevents path traversal)
 function resolveProjectPath(relativeFilePath) {
+  if (relativeFilePath.includes("\0")) {
+    throw new Error("Refusing to read path with null byte");
+  }
   const abs = path.resolve(PROJECT_ROOT, relativeFilePath);
   const rel = path.relative(PROJECT_ROOT, abs);
   // Reject: project root itself, any ".." escape, or absolute rel (Windows drives)
