@@ -1,33 +1,30 @@
 # Roadmap Reference Assignment Report
 
-<!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-01
-**Status:** ACTIVE
-<!-- prettier-ignore-end -->
-
-**Generated:** 2026-02-01T22:34:38.714Z
+**Generated:** 2026-02-06T00:28:37.141Z
 
 ## Summary
 
-- Total items: 868
-- Already assigned: 868
-- Newly assigned: 0
+- Total items: 1850
+- Already assigned: 43
+- Newly assigned: 1807
 
 ## By Track
 
 | Track        | Count |
 | ------------ | ----- |
-| M2.1         | 767   |
-| Track-S      | 48    |
-| Track-P      | 17    |
+| Track-E      | 870   |
+| M2.1         | 663   |
+| Track-P      | 74    |
+| M2.2         | 65    |
+| Track-S      | 55    |
+| M1.5         | 32    |
+| Track-D      | 29    |
+| Track-T      | 22    |
+| M2.3-REF     | 18    |
 | M4.5         | 8     |
-| M2.3-REF     | 6     |
-| M2.2         | 6     |
 | CANON-0072   | 4     |
 | A2           | 2     |
 | M5           | 2     |
-| Track-D      | 2     |
 | PERF-004     | 1     |
 | D10          | 1     |
 | M2.3-REF-003 | 1     |

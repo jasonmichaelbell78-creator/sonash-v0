@@ -83,9 +83,10 @@ node scripts/debt/sync-sonarcloud.js --severity BLOCKER,CRITICAL --force
 2. Loads existing MASTER_DEBT.jsonl
 3. Deduplicates by sonar_key and content_hash
 4. Assigns next DEBT-XXXX IDs to new items
-5. Appends to MASTER_DEBT.jsonl
+5. Appends to both `raw/deduped.jsonl` and MASTER_DEBT.jsonl
 6. Logs to `docs/technical-debt/logs/intake-log.jsonl`
 7. Regenerates views via `generate-views.js`
+8. **Placement phase** (see [Post-Sync: Placement](#post-sync-placement) below)
 
 ### Output Fields (TDMS Schema)
 
@@ -164,6 +165,85 @@ Contents include:
 - BLOCKER/CRITICAL issues with code snippets
 - Security hotspots with vulnerability probability
 - All issues organized by file
+
+---
+
+## Post-Sync: Placement
+
+**REQUIRED** after any sync or full mode that adds new items. Present the user
+with a rich placement analysis before auto-assigning roadmap references.
+
+### Step 1: Run Assignment (Dry-Run)
+
+```bash
+node scripts/debt/assign-roadmap-refs.js --dry-run --report
+```
+
+### Step 2: Present Severity-Weighted Placement Summary
+
+Compute and display inline (severity weights: S0=10, S1=5, S2=2, S3=1):
+
+```
+| Track           | Total |  S0 |  S1 |  S2 |  S3 | Weight |
+|-----------------|-------|-----|-----|-----|-----|--------|
+| Track-E         |   870 | ... | ... | ... | ... |  2,965 |
+| M2.1            |   663 | ... | ... | ... | ... |  1,589 |
+| ...             |       |     |     |     |     |        |
+| TOTAL           | 1,850 | 141 | 336 |1064 | 309 |  5,527 |
+```
+
+### Step 3: Must-Fix-Now Analysis
+
+Highlight S0 vulnerabilities and bugs separately from S0 code-smells:
+
+- **S0 Vulnerabilities/Bugs**: List each with ID, track, and title — these are
+  genuine critical items
+- **S0 Code-Smells**: Show count per track — these are complexity/style issues
+  that may warrant severity downgrade
+
+### Step 4: Concentration Risk Analysis
+
+For any track carrying >40% of total weight:
+
+- Show file-pattern breakdown of S0/S1 items in that track
+- **Pros** of keeping current assignment
+- **Cons** of keeping current assignment
+- **Suggestion**: Downgrade, split sub-track, or keep as-is
+
+### Step 5: Present Options to User
+
+Use `AskUserQuestion` to offer:
+
+1. **Approve as-is** — accept auto-assignments
+2. **Downgrade S0 code-smells** — reclassify non-vulnerability S0s to S1 in
+   heavy tracks (canonical rule: script cognitive-complexity S0 → S1)
+3. **Custom adjustment** — user specifies track reassignments
+
+### Step 6: Apply and Sync
+
+After user approval:
+
+```bash
+node scripts/debt/assign-roadmap-refs.js --report
+```
+
+Then sync `raw/deduped.jsonl` from MASTER_DEBT.jsonl and regenerate:
+
+```bash
+cp docs/technical-debt/MASTER_DEBT.jsonl docs/technical-debt/raw/deduped.jsonl
+node scripts/debt/generate-views.js
+node scripts/debt/generate-metrics.js
+```
+
+### Canonical Severity Rules
+
+These severity adjustments are standing policy (apply automatically):
+
+| Condition                      | Action          | Rationale                                    |
+| ------------------------------ | --------------- | -------------------------------------------- |
+| Track-E + S0 + type=code-smell | Downgrade to S1 | Script complexity is not production-critical |
+
+Additional rules may be added here as the team establishes more patterns.
 
 ---
 

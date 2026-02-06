@@ -1,1 +1,2 @@
 {"timestamp":"2026-02-02T00:12:03.266Z","action":"bulk_resolved","item_ids":["DEBT-0853","DEBT-0858","DEBT-0862","DEBT-0867"],"count":4,"pr":null}
+{"timestamp":"2026-02-06T00:25:05.001Z","actor":"jason","actor_type":"cli-script","outcome":"success","action":"resolve-sonarcloud-stale","project":"jasonmichaelbell78-creator_sonash-v0","items_checked":951,"items_resolved":0}
