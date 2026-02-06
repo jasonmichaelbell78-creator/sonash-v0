@@ -184,7 +184,9 @@ function checkE2() {
     }
 
     // Check for extractable prompt section
-    const promptMatch = content.match(/## (?:Review|Audit) Prompt[\s\S]*?(?=\r?\n## |\r?\n---|$)/);
+    // Templates use varied headers: "## 📝 Review Prompt (...)", "## Security Audit Prompt (...)",
+    // "## Main Prompt", "## Engineering Productivity Audit Prompt", etc.
+    const promptMatch = content.match(/## .*Prompt[\s\S]*?(?=\r?\n## |\r?\n---|$)/);
     const promptLength = promptMatch ? promptMatch[0].length : 0;
 
     if (promptLength < 100) {
@@ -553,7 +555,7 @@ function checkE5(sessionPath) {
     let validCanonIds = 0;
     let verifiedCount = 0;
     for (const item of canonItems) {
-      if (item.canon_id && /^CANON-\d{4}$/.test(item.canon_id)) validCanonIds++;
+      if (item.canonical_id && /^CANON-\d{4}$/.test(item.canonical_id)) validCanonIds++;
       if (item.verified_at || item.file_exists !== undefined) verifiedCount++;
     }
 

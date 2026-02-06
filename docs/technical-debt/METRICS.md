@@ -30,8 +30,8 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 1850  |
-| Open Items      | 1834  |
+| Total Items     | 1890  |
+| Open Items      | 1874  |
 | Resolved        | 16    |
 | False Positives | 0     |
 | Resolution Rate | 1%    |
@@ -42,7 +42,7 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 1834  |
+| NEW            | 1874  |
 | VERIFIED       | 0     |
 | IN_PROGRESS    | 0     |
 | RESOLVED       | 16    |
@@ -54,10 +54,10 @@ distribution.
 
 | Severity      | Count | % of Total |
 | ------------- | ----- | ---------- |
-| S0 (Critical) | 24    | 1%         |
-| S1 (High)     | 453   | 24%        |
-| S2 (Medium)   | 1064  | 58%        |
-| S3 (Low)      | 309   | 17%        |
+| S0 (Critical) | 25    | 1%         |
+| S1 (High)     | 460   | 24%        |
+| S2 (Medium)   | 1086  | 57%        |
+| S3 (Low)      | 319   | 17%        |
 
 ---
 
@@ -65,9 +65,9 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1647  |
+| code-quality             | 1670  |
+| security                 | 82    |
 | performance              | 78    |
-| security                 | 65    |
 | process                  | 26    |
 | refactoring              | 17    |
 | documentation            | 14    |
@@ -77,7 +77,7 @@ distribution.
 
 ## Alerts
 
-### S0 Critical Alerts (9)
+### S0 Critical Alerts (10)
 
 - **DEBT-0854**: App Check disabled on all production Cloud Functions
   (functions/src/index.ts:0)
@@ -97,8 +97,10 @@ distribution.
   (components/dev/lighthouse-tab.tsx:81)
 - **DEBT-1846**: Refactor this function to reduce its Cognitive Complexity fr
   (components/widgets/compact-meeting-countdown.tsx:136)
+- **DEBT-1912**: Security risk: Client-side filtering of sensitive data
+  (hooks/use-journal.ts:174)
 
-### S1 High Priority Alerts (452)
+### S1 High Priority Alerts (459)
 
 - **DEBT-0001**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -121,7 +123,7 @@ distribution.
 - **DEBT-0010**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 442 more S1 items_
+_...and 449 more S1 items_
 
 ---
 
@@ -129,7 +131,7 @@ _...and 442 more S1 items_
 
 | Metric               | Value      |
 | -------------------- | ---------- |
-| Verification Queue   | 1834 items |
+| Verification Queue   | 1874 items |
 | Avg Age (Open Items) | 0 days     |
 | Oldest Item Age      | 0 days     |
 | Oldest Item          | N/A        |
@@ -140,7 +142,7 @@ _...and 442 more S1 items_
 
 | Source  | Count |
 | ------- | ----- |
-| unknown | 1850  |
+| unknown | 1890  |
 
 ---
 

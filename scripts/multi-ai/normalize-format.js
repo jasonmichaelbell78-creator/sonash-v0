@@ -158,7 +158,7 @@ export function detectFormat(input) {
     }
   }
 
-  // Check for JSONL (each non-empty line is valid JSON object)
+  // Check for JSONL (each non-empty line is valid JSON object, or wrapped JSON objects)
   const lines = trimmed.split("\n").filter((l) => l.trim());
   if (lines.length > 0 && lines[0].trim().startsWith("{")) {
     const validJsonLines = lines.filter((line) => {
@@ -175,6 +175,17 @@ export function detectFormat(input) {
     // If >50% are valid JSON objects, treat as JSONL
     if (validJsonLines.length / lines.length > 0.5) {
       return FORMAT_TYPES.JSONL;
+    }
+
+    // Check for wrapped JSONL: lines that start with { but don't individually
+    // parse. Use stateful brace-depth tracking (handles strings spanning lines)
+    // to see if objects reconstruct properly.
+    if (validJsonLines.length === 0 || validJsonLines.length / lines.length <= 0.5) {
+      const reconstructed = countReconstructableObjects(lines);
+      // If we can reconstruct 2+ objects, treat as wrapped JSONL
+      if (reconstructed >= 2) {
+        return FORMAT_TYPES.JSONL;
+      }
     }
   }
 
@@ -207,33 +218,151 @@ export function detectFormat(input) {
 }
 
 /**
- * Parse JSONL format
- * @param {string} input - JSONL content
+ * Parse JSONL format, including paragraph-wrapped JSON objects.
+ *
+ * External AIs sometimes output JSON objects that span multiple lines
+ * due to markdown rendering or line-wrapping. This parser handles both
+ * clean one-per-line JSONL and wrapped objects by tracking brace depth
+ * AND string-escape state across lines.
+ *
+ * @param {string} input - JSONL content (possibly wrapped)
  * @returns {{ findings: object[], errors: string[] }}
  */
 function parseJsonl(input) {
   const findings = [];
   const errors = [];
 
-  const lines = input.split("\n").filter((l) => l.trim());
+  const lines = input.split("\n");
+
+  let accumulator = "";
+  let accStartLine = -1;
+  // Stateful brace tracker — persists across lines within one object
+  let tracker = createBraceTracker();
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line || line.startsWith("//") || line.startsWith("#")) continue;
 
-    try {
-      const parsed = JSON.parse(line);
-      if (typeof parsed === "object" && !Array.isArray(parsed)) {
-        findings.push(parsed);
-      } else {
-        errors.push(`Line ${i + 1}: Not a JSON object`);
+    // Fast path: try parsing the line as a complete JSON object
+    if (!accumulator && line.startsWith("{")) {
+      try {
+        const parsed = JSON.parse(line);
+        if (typeof parsed === "object" && !Array.isArray(parsed)) {
+          findings.push(parsed);
+          continue;
+        }
+      } catch (_) {
+        // Not a complete JSON object on this line — fall through to accumulator
       }
-    } catch (error) {
-      errors.push(`Line ${i + 1}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+
+    // Accumulate wrapped lines by tracking brace depth with string state
+    if (!accumulator && line.startsWith("{")) {
+      accumulator = line;
+      accStartLine = i + 1;
+      tracker = createBraceTracker();
+      tracker.feed(line);
+    } else if (accumulator) {
+      accumulator += " " + line;
+      tracker.feed(line);
+    } else {
+      // Non-JSON line outside an accumulation — skip
+      continue;
+    }
+
+    // When braces balance (outside strings), try to parse
+    if (tracker.depth === 0) {
+      try {
+        const parsed = JSON.parse(accumulator);
+        if (typeof parsed === "object" && !Array.isArray(parsed)) {
+          findings.push(parsed);
+        } else {
+          errors.push(`Lines ${accStartLine}-${i + 1}: Not a JSON object`);
+        }
+      } catch (error) {
+        errors.push(
+          `Lines ${accStartLine}-${i + 1}: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+      accumulator = "";
+      accStartLine = -1;
+      tracker = createBraceTracker();
     }
   }
 
+  // Handle unterminated accumulation
+  if (accumulator) {
+    errors.push(`Lines ${accStartLine}+: Unterminated JSON object (unbalanced braces)`);
+  }
+
   return { findings, errors };
+}
+
+/**
+ * Create a stateful brace-depth tracker that correctly handles JSON strings
+ * spanning multiple lines. Call feed() for each line — state persists across calls.
+ *
+ * @returns {{ feed: (str: string) => void, depth: number }}
+ */
+function createBraceTracker() {
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  return {
+    get depth() {
+      return depth;
+    },
+    feed(str) {
+      for (let i = 0; i < str.length; i++) {
+        const ch = str[i];
+        if (escaped) {
+          escaped = false;
+          continue;
+        }
+        if (ch === "\\") {
+          escaped = true;
+          continue;
+        }
+        if (ch === '"') {
+          inString = !inString;
+          continue;
+        }
+        if (!inString) {
+          if (ch === "{") depth++;
+          else if (ch === "}") depth--;
+        }
+      }
+    },
+  };
+}
+
+/**
+ * Count reconstructable JSON objects using stateful brace tracking.
+ * Used by detectFormat() to identify wrapped JSONL.
+ * @param {string[]} lines - Non-empty trimmed lines
+ * @returns {number} - Number of complete JSON objects found
+ */
+function countReconstructableObjects(lines) {
+  let reconstructed = 0;
+  let inObj = false;
+  let tracker = createBraceTracker();
+
+  for (const line of lines) {
+    const t = line.trim();
+    if (!inObj && t.startsWith("{")) {
+      inObj = true;
+      tracker = createBraceTracker();
+      tracker.feed(t);
+    } else if (inObj) {
+      tracker.feed(t);
+    }
+    if (inObj && tracker.depth === 0) {
+      reconstructed++;
+      inObj = false;
+    }
+  }
+  return reconstructed;
 }
 
 /**

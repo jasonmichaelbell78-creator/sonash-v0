@@ -9,7 +9,7 @@
 
 ---
 
-## S0 - Critical (24)
+## S0 - Critical (25)
 
 | ID        | Title                                                        | File                                                        | Line | Category     | Effort |
 | --------- | ------------------------------------------------------------ | ----------------------------------------------------------- | ---- | ------------ | ------ |
@@ -37,8 +37,9 @@
 | DEBT-1538 | Refactor this function to reduce its Cognitive Complexity... | functions/src/jobs.ts                                       | 1059 | code-quality | E0     |
 | DEBT-1624 | Refactor this function to reduce its Cognitive Complexity... | components/dev/lighthouse-tab.tsx                           | 81   | code-quality | E0     |
 | DEBT-1846 | Refactor this function to reduce its Cognitive Complexity... | components/widgets/compact-meeting-countdown.tsx            | 136  | code-quality | E0     |
+| DEBT-1912 | Security risk: Client-side filtering of sensitive data       | hooks/use-journal.ts                                        | 174  | code-quality | E1     |
 
-## S1 - High (453)
+## S1 - High (460)
 
 | ID        | Title                                                         | File                                                                         | Line      | Category                 | Effort |
 | --------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------- | ------------------------ | ------ |
@@ -495,8 +496,15 @@
 | DEBT-1899 | A form label must be associated with a control.               | components/admin/meetings-tab.tsx                                            | 185       | code-quality             | E0     |
 | DEBT-1900 | A form label must be associated with a control.               | components/admin/meetings-tab.tsx                                            | 199       | code-quality             | E0     |
 | DEBT-1901 | A form label must be associated with a control.               | components/admin/meetings-tab.tsx                                            | 215       | code-quality             | E0     |
+| DEBT-1913 | App Check disabled across all Cloud Functions                 | functions/src/index.ts                                                       | 84        | security                 | E1     |
+| DEBT-1914 | Performance anti-pattern: Excessive re-renders from conte...  | components/providers/auth-provider.tsx                                       | 43        | code-quality             | E1     |
+| DEBT-1915 | Missing input validation on server-generated data             | hooks/use-journal.ts                                                         | 172       | code-quality             | E1     |
+| DEBT-1916 | Data flow violation: Direct Firestore writes in admin com...  | components/admin/dashboard-tab.tsx                                           | 4         | code-quality             | E1     |
+| DEBT-1917 | Missing error boundary coverage for async operations          | components/providers/error-boundary.tsx                                      | 37        | code-quality             | E1     |
+| DEBT-1918 | Missing cleanup for onSnapshot listener                       | hooks/use-journal.ts                                                         | 284       | code-quality             | E1     |
+| DEBT-1919 | Unvalidated URL construction in GCP links                     | components/admin/logs-tab.tsx                                                | 436       | code-quality             | E1     |
 
-## S2 - Medium (1064)
+## S2 - Medium (1086)
 
 | ID        | Title                                                          | File                                                                         | Line      | Category      | Effort |
 | --------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------- | ------------- | ------ |
@@ -1564,8 +1572,30 @@
 | DEBT-1909 | 'cleanDays' PropType is defined but prop is never used         | components/notebook/book-cover.tsx                                           | 27        | code-quality  | E0     |
 | DEBT-1910 | Unexpected negated condition.                                  | components/notebook/book-cover.tsx                                           | 277       | code-quality  | E0     |
 | DEBT-1911 | 'next' imported multiple times.                                | app/layout.tsx                                                               | 2         | code-quality  | E0     |
+| DEBT-1920 | API design inconsistency: Mixed return patterns                | lib/firestore-service.ts                                                     | 262       | code-quality  | E1     |
+| DEBT-1921 | Missing Content-Security-Policy header                         | firebase.json                                                                | 29        | security      | E1     |
+| DEBT-1922 | User profile document allows direct client writes without...   | firestore.rules                                                              | 26        | security      | E1     |
+| DEBT-1923 | Hardcoded reCAPTCHA site key in server-side code               | functions/src/recaptcha-verify.ts                                            | 66        | security      | E1     |
+| DEBT-1924 | God component: dashboard-tab.tsx with excessive state man...   | components/admin/dashboard-tab.tsx                                           | 952       | code-quality  | E1     |
+| DEBT-1925 | Any type usage in today-page.tsx snapshot handler              | components/notebook/pages/today-page.tsx                                     | 507       | code-quality  | E1     |
+| DEBT-1926 | Tight coupling between UI components and Firebase SDK          | hooks/use-journal.ts                                                         | 350       | code-quality  | E1     |
+| DEBT-1927 | Hardcoded bucket name in Cloud Functions                       | functions/src/jobs.ts                                                        | 602       | code-quality  | E1     |
+| DEBT-1928 | Inconsistent state management patterns across providers        | components/providers/auth-provider.tsx                                       | 38        | code-quality  | E1     |
+| DEBT-1929 | Anti-pattern: Firestore queries in components instead of ...   | hooks/use-journal.ts                                                         | 277       | code-quality  | E1     |
+| DEBT-1930 | Missing dependency in useEffect for logs refresh               | components/admin/logs-tab.tsx                                                | 418       | code-quality  | E1     |
+| DEBT-1931 | Missing loading state coordination across contexts             | hooks/use-journal.ts                                                         | 428       | code-quality  | E1     |
+| DEBT-1932 | Missing error boundary in inventory form                       | components/journal/entry-forms/inventory-form.tsx                            | 38        | code-quality  | E1     |
+| DEBT-1933 | Migration function does not verify source anonymous user ...   | functions/src/index.ts                                                       | 565       | security      | E1     |
+| DEBT-1934 | Missing abstraction for real-time subscriptions                | hooks/use-journal.ts                                                         | 284       | code-quality  | E1     |
+| DEBT-1935 | Firestore timestamp validation inconsistency                   | hooks/use-journal.ts                                                         | 178       | code-quality  | E1     |
+| DEBT-1936 | reCAPTCHA token made optional for data migration function      | functions/src/index.ts                                                       | 516       | security      | E1     |
+| DEBT-1937 | Migration function skips reCAPTCHA when token is missing       | functions/src/index.ts                                                       | 516       | security      | E1     |
+| DEBT-1938 | Journal and inventory entry data field accepts arbitrary ...   | functions/src/schemas.ts                                                     | 32        | security      | E1     |
+| DEBT-1939 | Race condition in parallel file processing                     | functions/src/jobs.ts                                                        | 627       | code-quality  | E1     |
+| DEBT-1940 | CI workflow script injection via unsanitized file names        | .github/workflows/ci.yml                                                     | 64        | security      | E1     |
+| DEBT-1941 | Firestore security_logs collection missing from security ...   | firestore.rules                                                              | 1         | security      | E1     |
 
-## S3 - Low (309)
+## S3 - Low (319)
 
 | ID        | Title                                                          | File                                                          | Line | Category      | Effort |
 | --------- | -------------------------------------------------------------- | ------------------------------------------------------------- | ---- | ------------- | ------ |
@@ -1878,3 +1908,13 @@
 | DEBT-1170 | Complete the task associated to this "TODO" comment.           | scripts/check-content-accuracy.js                             | 188  | code-quality  | E0     |
 | DEBT-1171 | Complete the task associated to this "TODO" comment.           | scripts/check-content-accuracy.js                             | 436  | code-quality  | E0     |
 | DEBT-1449 | Complete the task associated to this "TODO" comment.           | scripts/analyze-learning-effectiveness.js                     | 1067 | code-quality  | E0     |
+| DEBT-1942 | Unpinned GitHub Actions in multiple workflows                  | .github/workflows/auto-label-review-tier.yml                  | 29   | security      | E1     |
+| DEBT-1943 | Inefficient type checking in safeToIso                         | functions/src/admin.ts                                        | 113  | code-quality  | E1     |
+| DEBT-1944 | Unbounded retry loop risk in jobs.ts                           | functions/src/jobs.ts                                         | 529  | code-quality  | E1     |
+| DEBT-1945 | Admin function input validation inconsistency - meetingId...   | functions/src/admin.ts                                        | 768  | security      | E1     |
+| DEBT-1946 | Daily quotes collection allows direct admin client writes...   | firestore.rules                                               | 104  | security      | E1     |
+| DEBT-1947 | Type coercion in generateSearchableText                        | hooks/use-journal.ts                                          | 102  | code-quality  | E1     |
+| DEBT-1948 | Firestore security rules missing for security_logs and ad...   | firestore.rules                                               | 151  | security      | E1     |
+| DEBT-1949 | User ID hash truncation reduces collision resistance for ...   | functions/src/security-logger.ts                              | 74   | security      | E1     |
+| DEBT-1950 | No middleware.ts for server-side route protection              | next.config.mjs                                               | 13   | security      | E1     |
+| DEBT-1951 | Service account credentials written to disk in CI deploy ...   | .github/workflows/deploy-firebase.yml                         | 58   | security      | E1     |

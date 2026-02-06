@@ -1,0 +1,112 @@
+{
+  "mode": "post",
+  "timestamp": "2026-02-06T01:06:06.838Z",
+  "session_path": "C:\\Users\\jason\\Workspace\\dev-projects\\sonash-v0\\docs\\audits\\multi-ai\\maa-2026-02-06-361974",
+  "master_debt": {
+    "item_count": 1890,
+    "last_id": "DEBT-1951",
+    "max_id_num": 1951,
+    "severity_counts": {
+      "S0": 25,
+      "S1": 460,
+      "S2": 1086,
+      "S3": 319
+    },
+    "category_counts": {
+      "code-quality": 1670,
+      "security": 82,
+      "performance": 78,
+      "documentation": 14,
+      "refactoring": 17,
+      "process": 26,
+      "engineering-productivity": 3
+    },
+    "status_counts": {
+      "NEW": 1874,
+      "RESOLVED": 16
+    },
+    "file_hash": "06c40b4bdb620c4e"
+  },
+  "roadmap": {
+    "debt_ref_count": 38,
+    "file_hash": "c0385119756cdc9b"
+  },
+  "metrics": {
+    "mtime": "2026-02-06T01:05:55.120Z",
+    "hash": "1141b7774e935d14"
+  },
+  "views": {
+    "by-category.md": {
+      "mtime": "2026-02-06T01:05:42.974Z",
+      "hash": "b8bc865832b76593"
+    },
+    "by-severity.md": {
+      "mtime": "2026-02-06T01:05:42.972Z",
+      "hash": "2cdbbfeaaea15073"
+    },
+    "by-status.md": {
+      "mtime": "2026-02-06T01:05:42.975Z",
+      "hash": "c6daeb5a91bdfc2f"
+    },
+    "unplaced-items.md": {
+      "mtime": "2026-02-02T19:29:56.899Z",
+      "hash": "330e3357f0aed81a"
+    },
+    "verification-queue.md": {
+      "mtime": "2026-02-06T01:05:42.977Z",
+      "hash": "c31ee42fc3991f6e"
+    }
+  },
+  "session_state": {
+    "session_id": "maa-2026-02-06-361974",
+    "created": "2026-02-06T00:49:44.105Z",
+    "status": "in_progress",
+    "workflow_phase": "starting",
+    "current_category": null,
+    "categories": {
+      "code": {
+        "status": "pending",
+        "sources": [],
+        "finding_count": 0
+      },
+      "security": {
+        "status": "pending",
+        "sources": [],
+        "finding_count": 0
+      },
+      "performance": {
+        "status": "pending",
+        "sources": [],
+        "finding_count": 0
+      },
+      "refactoring": {
+        "status": "pending",
+        "sources": [],
+        "finding_count": 0
+      },
+      "documentation": {
+        "status": "pending",
+        "sources": [],
+        "finding_count": 0
+      },
+      "process": {
+        "status": "pending",
+        "sources": [],
+        "finding_count": 0
+      },
+      "engineering-productivity": {
+        "status": "pending",
+        "sources": [],
+        "finding_count": 0
+      }
+    },
+    "final_output": null,
+    "last_updated": "2026-02-06T00:49:44.105Z"
+  },
+  "session_dirs": {
+    "raw": true,
+    "canon": true,
+    "final": true,
+    "eval": true
+  }
+}
