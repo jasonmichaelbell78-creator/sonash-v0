@@ -30,8 +30,9 @@ const SONARCLOUD_API = "https://sonarcloud.io/api";
 // Validate that a file path stays within PROJECT_ROOT (prevents path traversal)
 function resolveProjectPath(relativeFilePath) {
   const abs = path.resolve(PROJECT_ROOT, relativeFilePath);
-  const root = path.resolve(PROJECT_ROOT) + path.sep;
-  if (!abs.startsWith(root)) {
+  const rel = path.relative(PROJECT_ROOT, abs);
+  // Reject: project root itself, any ".." escape, or absolute rel (Windows drives)
+  if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
     throw new Error(`Refusing to read outside project root: ${relativeFilePath}`);
   }
   return abs;

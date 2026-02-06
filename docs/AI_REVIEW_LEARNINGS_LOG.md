@@ -312,7 +312,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 14 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 15 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION OVERDUE **Next consolidation due:** NOW
 
 ### When to Consolidate
@@ -471,7 +471,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 14    | <10    | ⚠️     |
+| Reviews since last consolidation | 15    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -624,6 +624,39 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #258: PR Cherry-Pick Round 4 - Qodo Compliance + Suggestions (2026-02-06)
+
+**Source:** Qodo Compliance + Qodo PR Code Suggestions **PR/Branch:**
+claude/cherry-pick-commits-yLnZV **Suggestions:** 9 total (Critical: 0, Major: 1
+Security, Minor: 3, Trivial: 0, Rejected: 3 compliance, Deferred: 2 PII)
+
+**Patterns Identified:**
+
+1. [startsWith path containment weakness]: `startsWith(root + sep)` can match
+   sibling dirs (e.g., `/root` matches `/root-other/`)
+   - Root cause: String prefix matching is not path-aware
+   - Prevention: Use `path.relative()` + regex for all containment checks
+2. [Markdown fences in AI output]: AI agents wrap JSON in code fences which
+   breaks JSONL parsers
+   - Root cause: Parsers don't filter non-JSON decorators
+   - Prevention: Skip lines starting with triple backticks
+
+**Resolution:**
+
+- Fixed: 4 items (path containment, trailing newline, rename fallback, fence
+  skip)
+- Rejected: 3 items (source exfiltration by design, audit trail for CLI,
+  intentional silent catch)
+- Deferred: 2 items (PII in audit logs — same as Review #257)
+
+**Key Learnings:**
+
+- `path.relative()` + regex is the codebase standard for path containment
+- JSONL writers should always append trailing newline
+- AI output parsers need to handle markdown decorators (fences, headers)
 
 ---
 
@@ -2002,7 +2035,7 @@ Major: 12, Minor: 8, Trivial: 2, Rejected: 2)
 <!--
 Next review entry will go here. Use format:
 
-#### Review #258: PR #XXX Title - Review Source (DATE)
+#### Review #259: PR #XXX Title - Review Source (DATE)
 
 
 -->

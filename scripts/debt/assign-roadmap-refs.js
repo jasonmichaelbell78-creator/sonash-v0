@@ -300,13 +300,22 @@ function main() {
             return line;
           });
           const tmpDeduped = `${DEDUPED_FILE}.tmp`;
-          fs.writeFileSync(tmpDeduped, dedupedUpdated.join("\n"));
+          fs.writeFileSync(tmpDeduped, dedupedUpdated.join("\n") + "\n");
           try {
             fs.renameSync(tmpDeduped, DEDUPED_FILE);
           } catch {
             // Windows may fail rename if dest exists; fallback to rm + rename
-            fs.rmSync(DEDUPED_FILE, { force: true });
-            fs.renameSync(tmpDeduped, DEDUPED_FILE);
+            try {
+              fs.rmSync(DEDUPED_FILE, { force: true });
+              fs.renameSync(tmpDeduped, DEDUPED_FILE);
+            } catch (fallbackErr) {
+              try {
+                fs.unlinkSync(tmpDeduped);
+              } catch {
+                // ignore cleanup errors
+              }
+              throw fallbackErr;
+            }
           }
         } catch (syncErr) {
           console.warn(

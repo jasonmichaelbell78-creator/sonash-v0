@@ -193,8 +193,17 @@ try {
     fs.renameSync(tmpDest, safeDestFile);
   } catch {
     // Windows may fail rename if dest exists; fallback to rm + rename
-    fs.rmSync(safeDestFile, { force: true });
-    fs.renameSync(tmpDest, safeDestFile);
+    try {
+      fs.rmSync(safeDestFile, { force: true });
+      fs.renameSync(tmpDest, safeDestFile);
+    } catch (fallbackErr) {
+      try {
+        fs.unlinkSync(tmpDest);
+      } catch {
+        // ignore cleanup errors
+      }
+      throw fallbackErr;
+    }
   }
 } catch (writeErr) {
   // Clean up tmp file on failure

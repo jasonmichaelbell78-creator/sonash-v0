@@ -243,6 +243,9 @@ function parseJsonl(input) {
     const line = lines[i].trim();
     if (!line || line.startsWith("//") || line.startsWith("#")) continue;
 
+    // Skip markdown code fences (common in AI-generated output)
+    if (line.startsWith("```")) continue;
+
     // Fast path: try parsing the line as a complete JSON object
     if (!accumulator && line.startsWith("{")) {
       try {
