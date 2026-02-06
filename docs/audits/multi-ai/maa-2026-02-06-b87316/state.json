@@ -64,8 +64,8 @@
     },
     "security": {
       "status": "collecting",
-      "sources": ["copilot"],
-      "finding_count": 6
+      "sources": ["copilot", "chatgpt"],
+      "finding_count": 12
     },
     "performance": {
       "status": "pending",
@@ -94,5 +94,5 @@
     }
   },
   "final_output": null,
-  "last_updated": "2026-02-06T15:59:22.793Z"
+  "last_updated": "2026-02-06T16:25:11.948Z"
 }
