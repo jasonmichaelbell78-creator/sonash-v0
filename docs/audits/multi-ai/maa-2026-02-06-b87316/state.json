@@ -1,0 +1,98 @@
+{
+  "session_id": "maa-2026-02-06-b87316",
+  "created": "2026-02-06T01:27:47.798Z",
+  "status": "in_progress",
+  "workflow_phase": "aggregating",
+  "current_category": null,
+  "categories": {
+    "code": {
+      "status": "aggregated",
+      "sources": [
+        {
+          "name": "copilot",
+          "findings": 15,
+          "suspected": 3,
+          "files": {
+            "raw": "raw/code-copilot.jsonl",
+            "raw_suspected": "raw/code-copilot-suspected.jsonl",
+            "fixed": "raw/code-copilot.fixed.jsonl",
+            "suspected_fixed": "raw/code-copilot-suspected.fixed.jsonl"
+          }
+        },
+        {
+          "name": "codex",
+          "findings": 10,
+          "suspected": 1,
+          "files": {
+            "raw": "raw/code-codex.jsonl",
+            "raw_suspected": "raw/code-codex-suspected.jsonl",
+            "fixed": "raw/code-codex.fixed.jsonl",
+            "suspected_fixed": "raw/code-codex-suspected.fixed.jsonl"
+          }
+        },
+        {
+          "name": "jules",
+          "findings": 8,
+          "suspected": 1,
+          "files": {
+            "raw": "raw/code-jules.jsonl",
+            "raw_suspected": "raw/code-jules-suspected.jsonl",
+            "fixed": "raw/code-jules.fixed.jsonl",
+            "suspected_fixed": "raw/code-jules-suspected.fixed.jsonl"
+          }
+        },
+        {
+          "name": "claude-code",
+          "findings": 12,
+          "suspected": 0,
+          "files": {
+            "raw": "raw/code-claude-code.jsonl",
+            "fixed": "raw/code-claude-code.fixed.jsonl"
+          }
+        },
+        {
+          "name": "claude",
+          "findings": 17,
+          "suspected": 0,
+          "files": {
+            "raw": "raw/code-claude.jsonl",
+            "fixed": "raw/code-claude.fixed.jsonl"
+          }
+        }
+      ],
+      "finding_count": 63
+    },
+    "security": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "performance": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "refactoring": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "documentation": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "process": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "engineering-productivity": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    }
+  },
+  "final_output": null,
+  "last_updated": "2026-02-06T03:30:00.000Z"
+}

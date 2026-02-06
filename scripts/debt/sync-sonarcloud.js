@@ -31,6 +31,7 @@ const path = require("path");
 const crypto = require("crypto");
 const { execFileSync } = require("child_process");
 const readline = require("readline");
+const os = require("os");
 
 // Try to load dotenv if available
 try {
@@ -46,6 +47,50 @@ const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
 const RESOLUTION_LOG = path.join(LOG_DIR, "resolution-log.jsonl");
 
 const SONARCLOUD_API = "https://sonarcloud.io/api";
+
+// Get pseudonymous operator identifier for audit logs.
+// In CI: "ci". Otherwise: SHA-256 hash prefix of local username (12 chars).
+// Set LOG_OPERATOR_PII=true to log raw username instead.
+function getOperatorId() {
+  let raw;
+  try {
+    raw = os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
+  } catch {
+    raw = process.env.USER || process.env.USERNAME || "unknown";
+  }
+  if (process.env.CI) return "ci";
+  if (process.env.LOG_OPERATOR_PII === "true") return raw;
+  return crypto.createHash("sha256").update(raw).digest("hex").slice(0, 12);
+}
+
+// Read defaults from sonar-project.properties if available
+function readSonarProperties() {
+  const propsFile = path.join(__dirname, "../../sonar-project.properties");
+  const result = { org: null, project: null };
+  try {
+    const content = fs.readFileSync(propsFile, "utf8");
+    // First pass: collect all key=value pairs (order-independent)
+    const props = {};
+    for (const line of content.split("\n")) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith("#") || !trimmed.includes("=")) continue;
+      const [key, ...rest] = trimmed.split("=");
+      props[key.trim()] = rest.join("=").trim();
+    }
+    // Extract org and derive project from projectKey
+    result.org = props["sonar.organization"] || null;
+    const projectKey = props["sonar.projectKey"];
+    if (projectKey && result.org && projectKey.startsWith(result.org + "_")) {
+      // projectKey format: "org_project" — extract project suffix
+      result.project = projectKey.substring(result.org.length + 1);
+    } else if (projectKey) {
+      result.project = projectKey;
+    }
+  } catch {
+    // sonar-project.properties not found or unreadable, use other defaults
+  }
+  return result;
+}
 
 // Severity mapping from SonarCloud to TDMS
 const SEVERITY_MAP = {
@@ -381,6 +426,13 @@ async function resolveStaleItems(options) {
 
   if (staleItems.length === 0) {
     console.log("\n✅ No stale items found. Nothing to resolve.");
+    logResolution({
+      action: "resolve-sonarcloud-stale",
+      project: `${org}_${project}`,
+      items_checked: sonarItems.length,
+      items_resolved: 0,
+      operator: getOperatorId(),
+    });
     return { resolved: 0 };
   }
 
@@ -424,9 +476,33 @@ async function resolveStaleItems(options) {
   });
 
   console.log("\n📝 Updating MASTER_DEBT.jsonl...");
+  const updatedContent = updatedLines.join("\n") + "\n";
   const tmpMaster = `${MASTER_FILE}.tmp`;
-  fs.writeFileSync(tmpMaster, updatedLines.join("\n") + "\n");
+  fs.writeFileSync(tmpMaster, updatedContent);
   fs.renameSync(tmpMaster, MASTER_FILE);
+
+  // Also update raw/deduped.jsonl to stay in sync
+  const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
+  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
+  console.log("📝 Updating raw/deduped.jsonl...");
+  const tmpDeduped = `${DEDUPED_FILE}.tmp`;
+  fs.writeFileSync(tmpDeduped, updatedContent);
+  try {
+    fs.renameSync(tmpDeduped, DEDUPED_FILE);
+  } catch {
+    // Windows may fail rename if dest exists; fallback to rm + rename
+    try {
+      fs.rmSync(DEDUPED_FILE, { force: true });
+      fs.renameSync(tmpDeduped, DEDUPED_FILE);
+    } catch (fallbackErr) {
+      try {
+        fs.unlinkSync(tmpDeduped);
+      } catch {
+        // ignore cleanup errors
+      }
+      throw fallbackErr;
+    }
+  }
 
   // Log resolutions
   logResolution({
@@ -436,6 +512,7 @@ async function resolveStaleItems(options) {
     items_resolved: resolvedCount,
     first_id: staleItems[0]?.id,
     last_id: staleItems[staleItems.length - 1]?.id,
+    operator: getOperatorId(),
   });
 
   console.log(`\n✅ Resolved ${resolvedCount} stale items.`);
@@ -471,10 +548,14 @@ Environment variables:
 
   const parsed = parseArgs(args);
 
-  // Get configuration
+  // Get configuration: CLI args > env vars > sonar-project.properties > hardcoded
+  const sonarProps = readSonarProperties();
   const token = process.env.SONAR_TOKEN;
-  const org = parsed.org || process.env.SONAR_ORG;
-  const project = parsed.project || process.env.SONAR_PROJECT || "sonash";
+  const org = parsed.org || process.env.SONAR_ORG || sonarProps.org;
+  const projectInput =
+    parsed.project || process.env.SONAR_PROJECT || sonarProps.project || "sonash";
+  const project =
+    org && projectInput.startsWith(`${org}_`) ? projectInput.slice(org.length + 1) : projectInput;
 
   if (!token) {
     console.error("Error: SONAR_TOKEN environment variable is required");
@@ -613,10 +694,17 @@ Environment variables:
     }
   }
 
-  // Write to MASTER_DEBT.jsonl
-  console.log("\n📝 Writing new items to MASTER_DEBT.jsonl...");
+  // Write to raw/deduped.jsonl FIRST (source of truth for generate-views.js)
+  const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
+  console.log("\n📝 Writing new items to raw/deduped.jsonl...");
   const newLines = newItems.map((item) => JSON.stringify(item));
-  fs.appendFileSync(MASTER_FILE, newLines.join("\n") + "\n");
+  const newLinesStr = newLines.join("\n") + "\n";
+  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
+  fs.appendFileSync(DEDUPED_FILE, newLinesStr);
+
+  // Also write to MASTER_DEBT.jsonl (derived file, regenerated by generate-views.js)
+  console.log("📝 Writing new items to MASTER_DEBT.jsonl...");
+  fs.appendFileSync(MASTER_FILE, newLinesStr);
 
   // Log intake activity
   logIntake({

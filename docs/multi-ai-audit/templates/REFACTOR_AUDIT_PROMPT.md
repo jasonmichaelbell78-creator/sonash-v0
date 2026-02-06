@@ -47,7 +47,7 @@ For maximum signal, run audits in this order:
 
 ---
 
-## Main Prompt
+## Refactoring Audit Prompt (Copy for Each AI Model)
 
 ### ROLE
 

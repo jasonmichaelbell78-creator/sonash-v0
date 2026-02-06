@@ -117,7 +117,7 @@ Exclude: [directories to skip, e.g., docs/, public/, node_modules/]
 
 ---
 
-## 📝 Review Prompt (Copy for Each AI Model)
+## Code Review Audit Prompt (Copy for Each AI Model)
 
 ### Part 1: Role and Context
 

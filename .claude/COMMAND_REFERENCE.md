@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 3.2 **Last Updated:** 2026-02-05 **Purpose:** Comprehensive
+**Version:** 3.3 **Last Updated:** 2026-02-05 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -355,7 +355,8 @@ and `sync-sonarcloud-debt` into a single entry point. **When to use:** Any
 SonarCloud workflow: syncing new issues to TDMS, generating reports with code
 snippets, marking resolved items, running cleanup sprints, or checking quality
 gate status **Example:** `/sonarcloud` **Parameters:** Modes: sync (default),
-resolve, full, report, status, sprint **Added:** Session #133
+resolve, full, report, status, sprint **Added:** Session #133 **Updated:**
+Session #134 (added interactive placement phase with severity-weighted analysis)
 
 #### `sonarcloud-sprint` _(deprecated)_
 
@@ -657,7 +658,8 @@ category), `skip` (skip category), `finish` (unify all), `status` (show
 progress) **Output:** Unified findings in
 `docs/audits/multi-ai/<session>/final/`, DEBT items in MASTER_DEBT.jsonl,
 roadmap track assignments, metrics update **Added:** Session #130 **Updated:**
-Session #132 (v1.1 - added Phases 6-8)
+Session #134 (v1.2 - Phase 7 rewritten as interactive placement with
+severity-weighted analysis, must-fix-now items, concentration risk)
 
 #### `eval-multi-ai-audit`
 
@@ -1938,6 +1940,7 @@ prompt **What it does:**
 
 | Version | Date       | Changes                                                                                                                                                           |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.3     | 2026-02-05 | Session #134: Updated `/sonarcloud` (interactive placement phase) and `/multi-ai-audit` (Phase 7 rewritten as interactive placement)                              |
 | 3.2     | 2026-02-05 | Review #250: Removed duplicate `/sonarcloud` entry; fixed deprecated command examples; updated `/sonarcloud` report mode (no inline curl)                         |
 | 3.1     | 2026-02-05 | Session #133: Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff               |
 | 3.0     | 2026-02-05 | Session #133: Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills; archived obsolete scripts |

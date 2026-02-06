@@ -1,0 +1,72 @@
+{
+  "mode": "post",
+  "timestamp": "2026-02-06T00:25:29.120Z",
+  "session_path": "C:\\Users\\jason\\Workspace\\dev-projects\\sonash-v0\\docs\\audits\\eval-sonarcloud-20260205-182446",
+  "master_debt": {
+    "item_count": 1850,
+    "last_id": "DEBT-1911",
+    "max_id_num": 1911,
+    "severity_counts": {
+      "S0": 141,
+      "S1": 336,
+      "S2": 1064,
+      "S3": 309
+    },
+    "status_counts": {
+      "NEW": 1834,
+      "RESOLVED": 16
+    },
+    "sonar_key_count": 1453,
+    "sonar_sync_items": 951,
+    "content_hash_count": 1820,
+    "file_hash": "67824ff1abe56bd0",
+    "file_size": 1315578
+  },
+  "views": {
+    "by-category.md": {
+      "mtime": "2026-02-06T00:25:02.007Z",
+      "hash": "378c359e3ce70a90",
+      "size": 200191
+    },
+    "by-severity.md": {
+      "mtime": "2026-02-06T00:25:02.001Z",
+      "hash": "aa1ba36170af1498",
+      "size": 227298
+    },
+    "by-status.md": {
+      "mtime": "2026-02-06T00:25:02.008Z",
+      "hash": "95cc61ed22c109d6",
+      "size": 156155
+    },
+    "unplaced-items.md": {
+      "mtime": "2026-02-02T19:29:56.899Z",
+      "hash": "330e3357f0aed81a",
+      "size": 2515
+    },
+    "verification-queue.md": {
+      "mtime": "2026-02-06T00:25:02.010Z",
+      "hash": "1a0b294787f57f73",
+      "size": 198347
+    }
+  },
+  "logs": {
+    "intake": {
+      "exists": true,
+      "size": 10354,
+      "lines": 11,
+      "mtime": "2026-02-06T00:25:01.928Z"
+    },
+    "resolution": {
+      "exists": true,
+      "size": 375,
+      "lines": 2,
+      "mtime": "2026-02-06T00:25:05.001Z"
+    }
+  },
+  "report": {
+    "exists": true,
+    "mtime": "2026-02-06T00:25:16.831Z",
+    "size": 868655,
+    "hash": "6119df31b07892b0"
+  }
+}
