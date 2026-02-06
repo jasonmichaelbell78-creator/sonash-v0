@@ -70,8 +70,8 @@
     },
     "performance": {
       "status": "collecting",
-      "sources": ["copilot", "kimi", "claude-code", "chatgpt"],
-      "finding_count": 37
+      "sources": ["copilot", "kimi", "claude-code", "chatgpt", "codex"],
+      "finding_count": 46
     },
     "refactoring": {
       "status": "pending",
@@ -95,5 +95,5 @@
     }
   },
   "final_output": null,
-  "last_updated": "2026-02-06T17:48:00.000Z"
+  "last_updated": "2026-02-06T17:55:00.000Z"
 }
