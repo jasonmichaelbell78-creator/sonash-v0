@@ -2070,6 +2070,46 @@ Next review entry will go here. Use format:
 
 -->
 
+#### Review #255: PR #342 Multi-AI Audit Data Quality - Doc Lint + Qodo (2026-02-06)
+
+**Source:** Doc Lint + Qodo Code Suggestions **PR/Branch:**
+claude/cherry-pick-commits-yLnZV (PR #342) **Suggestions:** 18 total (Doc Lint:
+10, Qodo: 8; Fixed: 14, Deferred: 1, Rejected: 3)
+
+**Patterns Identified:**
+
+1. [SKILL.md Relative Paths]: Links in .claude/skills/ used repo-root-relative
+   paths instead of ../../../ prefix
+   - Root cause: Author wrote links relative to repo root, not file location
+   - Prevention: Doc lint catches this automatically; run before commit
+
+2. [JSONL Severity Standardization]: Kimi-sourced findings used P2/P3 instead of
+   S2/S3
+   - Root cause: Kimi model outputs non-standard severity format
+   - Prevention: fix-schema.js should normalize P-severity to S-severity
+
+3. [Duplicate CANON Entries]: 4 CANON-PERFORMANCE entries for same
+   images.unoptimized finding, 1 CANON-SECURITY duplicate for App Check
+   - Root cause: aggregate-category.js fingerprint matching not catching all
+     variations
+   - Prevention: Add fingerprint normalization (lowercase, strip punctuation)
+
+4. [Key Naming Inconsistency]: suggested_fix vs remediation in raw JSONL
+   - Root cause: Schema field was renamed but not all entries updated
+   - Prevention: fix-schema.js should normalize key names
+
+**Resolution:**
+
+- Fixed: 14 items (SKILL.md lint x10, CANON dedup x4, severity x8, key x1)
+- Deferred: 1 item (intermediate file .gitignore - architectural decision)
+- Rejected: 3 items (evidence "cleanup" too minor to warrant changes)
+
+**Key Learnings:**
+
+- Skills in .claude/skills/ need ../../../ prefix for repo-root file links
+- Kimi model outputs P-severity; add normalization to fix-schema.js pipeline
+- aggregate-category.js needs more aggressive fingerprint dedup
+
 #### Review #254: PR #338 Token Exposure + Parse Logging - Qodo (2026-02-05)
 
 **Source:** Qodo Compliance **PR/Branch:** claude/new-session-x1MF5 (PR #338)

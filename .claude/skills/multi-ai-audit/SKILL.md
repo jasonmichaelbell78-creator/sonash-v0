@@ -13,8 +13,10 @@ description:
 
 # Multi-AI Audit Orchestrator
 
-**Purpose:** Single-entry-point skill that orchestrates the entire multi-AI
-audit workflow with:
+## Purpose
+
+Single-entry-point skill that orchestrates the entire multi-AI audit workflow
+with:
 
 - Category-by-category progression (user-controlled)
 - Template output for external AI systems
@@ -26,6 +28,13 @@ audit workflow with:
 - Context compaction survival via file-based state
 
 **Invocation:** `/multi-ai-audit`
+
+---
+
+## AI Instructions
+
+This skill is invoked via `/multi-ai-audit`. Follow the workflow state machine
+below step-by-step. Do not skip phases or summarize template output.
 
 ---
 
@@ -841,22 +850,22 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 
 ## Related Documentation
 
-- [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Field
-  definitions
-- [docs/multi-ai-audit/templates/](docs/multi-ai-audit/templates/) - Audit
-  templates
-- [scripts/multi-ai/](scripts/multi-ai/) - Processing scripts (normalize,
-  aggregate, unify)
-- [scripts/debt/intake-audit.js](scripts/debt/intake-audit.js) - TDMS intake
-  (Phase 6)
-- [scripts/debt/assign-roadmap-refs.js](scripts/debt/assign-roadmap-refs.js) -
+- [JSONL_SCHEMA_STANDARD.md](../../../docs/templates/JSONL_SCHEMA_STANDARD.md) -
+  Field definitions
+- [docs/multi-ai-audit/templates/](../../../docs/multi-ai-audit/templates/) -
+  Audit templates
+- [scripts/multi-ai/](../../../scripts/multi-ai/) - Processing scripts
+  (normalize, aggregate, unify)
+- [scripts/debt/intake-audit.js](../../../scripts/debt/intake-audit.js) - TDMS
+  intake (Phase 6)
+- [scripts/debt/assign-roadmap-refs.js](../../../scripts/debt/assign-roadmap-refs.js) -
   Roadmap assignment (Phase 7)
-- [scripts/debt/sync-roadmap-refs.js](scripts/debt/sync-roadmap-refs.js) -
+- [scripts/debt/sync-roadmap-refs.js](../../../scripts/debt/sync-roadmap-refs.js) -
   Roadmap validation (Phase 7)
-- [scripts/debt/generate-metrics.js](scripts/debt/generate-metrics.js) - Metrics
-  regeneration (Phase 7)
-- [docs/technical-debt/PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - TDMS
-  procedures
+- [scripts/debt/generate-metrics.js](../../../scripts/debt/generate-metrics.js) -
+  Metrics regeneration (Phase 7)
+- [docs/technical-debt/PROCEDURE.md](../../../docs/technical-debt/PROCEDURE.md) -
+  TDMS procedures
 
 ---
 
