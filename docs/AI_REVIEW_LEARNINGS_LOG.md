@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 14.5 **Created:** 2026-01-02 **Last Updated:** 2026-02-05
+**Document Version:** 14.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-06
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 14.6    | 2026-02-06 | Review #255-256: PR Cherry-Pick - Qodo + SonarCloud + CI (30 items R1 + 8 items R2). **R1**: Hardcoded Windows path with PII, path traversal protection, readFileSync try/catch, content block normalization, multi-line JSON brace tracking, assign-roadmap-refs data loss via copyFileSync, API pagination guards, AbortController timeouts. **R2**: CI blocker pattern compliance false positive (forward-only lookahead), brace tracker escape hardening, startsWith path stripping, atomic output writes, try-first rename for Windows. 20 CANON audit items rejected (not PR issues). Active reviews #213-256.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 14.5    | 2026-02-05 | Review #250: PR #337 Agent QoL Infrastructure - Qodo + CI (22 items - 1 CRITICAL, 7 MAJOR, 10 MINOR, 4 TRIVIAL, 0 REJECTED). **CRITICAL**: Path traversal in state-utils.js (basename validation). **MAJOR**: sync-sonarcloud.js readFileSync try/catch, 3× unsafe error.message, title guard, non-fatal logging, atomic write; state-utils.js updateTaskState step concat. **MINOR**: 4 false positive readFileSync exclusions, docs/archive/ GLOBAL_EXCLUDE, sonarcloud SKILL.md curl secret, agent-trigger-enforcer path normalization, COMMAND_REFERENCE.md duplicate removal. **TRIVIAL**: session-end handoff preservation, pre-commit-fixer commit -F, deprecated command examples. Active reviews #213-250.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 14.4    | 2026-02-05 | Review #249: PR #336 Multi-AI Audit System - Qodo Compliance + Code Suggestions + SonarCloud + CI (60+ items - 2 CRITICAL, 9 MAJOR, 7 MINOR, 1 TRIVIAL, 4 REJECTED + 41 S5852 DoS regex hotspots). **CRITICAL**: [1] Path traversal via unvalidated sessionPath in 4 eval scripts (regex-based containment), [2] Broken link CI blocker SECURITY_AUDIT_PLAN.md. **MAJOR**: [3] docs/docs/ prefix, [4] Cross-cutting sources not combined, [5] Empty results false PASS, [6] DEBT ID instability (deferred - pipeline issue), [7] Missing snapshot field guard, [8] NaN confidence, [9] Division by zero, [10] Empty fields pass validation, [11] Broken shell &; syntax. **MINOR**: readFileSync try/catch (17 locs), unsafe error.message (6 locs), file path regex, orphaned refs halt, flag consistency, session ID constant, CRLF regex. **S5852 DoS**: 41 regex backtracking hotspots across 23 scripts - added bounds to all unbounded quantifiers. **REJECTED**: Unstructured logs (CLI intentional), missing actor context (CLI), ETL framework (architectural), streaming for eval-report (files too small). **PARALLEL AGENTS**: Used 7+ agents (security-auditor, code-reviewer×2, technical-writer, fullstack-developer×3). Active reviews #213-249. |
 | 14.3    | 2026-02-04 | Review #248: PR #335 Round 9 - Qodo Compliance + Code Suggestions (14 items - 0 CRITICAL, 2 MAJOR, 8 MINOR, 1 TRIVIAL, 3 REJECTED). **REJECTED FALSE POSITIVES**: [1,2] userIdHash field suggestions - userId field IS the hash (security-logger.ts:137), [3] METRICS.md version history - intentional for Tier 2 compliance. **MAJOR**: [4] analytics-tab onRetry unmount guard, [5] errors-tab UserCorrelationSection unmount guard. **MINOR**: [6] UTC date parsing determinism, [7] Export size cap (2000 rows), [8] Request ID pattern for UserActivityModal, [9] Parallelize retention queries (Promise.all), [10-12] admin.ts robustness (metadata shape, persisted value coercion, capMetadata try/catch). **TRIVIAL**: [14] Unique chart keys. **COMPLIANCE INFORMATIONAL**: Resource exhaustion (already mitigated), Zod messages (admin-only), partially redacted email (intentional). Active reviews #213-248.                                                                                                                                                                                                                                                                                                                                       |
@@ -311,7 +312,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 12 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 13 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION OVERDUE **Next consolidation due:** NOW
 
 ### When to Consolidate
@@ -470,7 +471,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 11    | <10    | ⚠️     |
+| Reviews since last consolidation | 13    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -626,6 +627,45 @@ _Reviews #137-179 have been archived to
 
 ---
 
+#### Review #256: PR Cherry-Pick Round 2 - Qodo Suggestions + CI (2026-02-06)
+
+**Source:** Qodo Compliance + Qodo PR Code Suggestions + CI Pattern Compliance
+**PR/Branch:** claude/cherry-pick-commits-yLnZV **Suggestions:** 30 total
+(Critical: 0, Major: 1 CI, Minor: 7, Trivial: 0, Rejected: 20 audit data,
+Deferred: 2)
+
+**Patterns Identified:**
+
+1. [Pattern compliance false positive - forward-only lookahead]: Checker regex
+   looks FORWARD for `rel === ""` but code has it BEFORE `isAbsolute(rel)`
+   - Root cause: Regex negative lookahead only checks chars after match
+   - Prevention: Add file to pathExclude when `rel === ""` is at start of
+     condition
+2. [Brace tracker escape handling]: Escape chars outside JSON strings shouldn't
+   affect depth tracking
+   - Root cause: Escape detection not guarded by `inString` flag
+   - Prevention: Always guard escape handling with string context check
+3. [replace() for path stripping]: String.replace() can match mid-path
+   substrings
+   - Root cause: replace() is not anchored to start of string
+   - Prevention: Use startsWith() + slice() for prefix removal
+
+**Resolution:**
+
+- Fixed: 8 items (1 CI blocker, 7 minor)
+- Rejected: 20 items (CANON audit data, not PR issues)
+- Deferred: 2 items (SonarCloud duplication 3.1% > 3% threshold)
+
+**Key Learnings:**
+
+- Pattern compliance checker regex only looks forward - `rel === ""` at start of
+  condition is invisible to it
+- Brace-depth trackers need inString guard for escape handling
+- Atomic writes (tmp + rename) should be standard for all output files
+- Try rename first, fallback to rm + rename for Windows compatibility
+
+---
+
 #### Review #255: PR Cherry-Pick - Qodo Compliance + SonarCloud + CI (2026-02-06)
 
 **Source:** Qodo Compliance + Qodo PR Suggestions + SonarCloud Quality Gate + CI
@@ -647,7 +687,7 @@ total (Critical: 3, Major: 6, Minor: 12, Trivial: 1)
 
 **Resolution:**
 
-- Fixed: 22 items (in progress)
+- Fixed: 22 items
 - Deferred: 0 items
 - Rejected: 0 items
 
@@ -1932,7 +1972,7 @@ Major: 12, Minor: 8, Trivial: 2, Rejected: 2)
 <!--
 Next review entry will go here. Use format:
 
-#### Review #255: PR #XXX Title - Review Source (DATE)
+#### Review #257: PR #XXX Title - Review Source (DATE)
 
 
 -->

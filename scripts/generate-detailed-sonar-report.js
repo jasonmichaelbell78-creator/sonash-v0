@@ -293,7 +293,7 @@ async function main() {
     if (!byRule[rule]) {
       byRule[rule] = {
         count: 0,
-        message: issue.message,
+        message: typeof issue.message === "string" ? issue.message : "No message",
         severity: issue.severity,
         type: issue.type,
       };

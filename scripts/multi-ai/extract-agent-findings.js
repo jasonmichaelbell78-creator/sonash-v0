@@ -24,12 +24,10 @@ const ROOT_PREFIX = projectRoot + path.sep;
 // FIX 2: Validate CLI paths to prevent path traversal (CWE-22, OWASP A01:2021).
 // Resolve both paths and ensure they stay within the project root.
 function validateContainedPath(inputPath, root) {
-  const resolved = path.resolve(inputPath);
+  const resolved = path.resolve(root, inputPath);
   const rel = path.relative(root, resolved);
   if (rel === "" || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
     console.error(`Error: path "${inputPath}" resolves outside the project root.`);
-    console.error(`  Resolved: ${resolved}`);
-    console.error(`  Project root: ${root}`);
     process.exit(1);
   }
   return resolved;
@@ -75,7 +73,7 @@ function createBraceTracker() {
           escaped = false;
           continue;
         }
-        if (ch === "\\") {
+        if (inString && ch === "\\") {
           escaped = true;
           continue;
         }
@@ -85,7 +83,10 @@ function createBraceTracker() {
         }
         if (!inString) {
           if (ch === "{") depth++;
-          else if (ch === "}") depth--;
+          else if (ch === "}") {
+            depth--;
+            if (depth < 0) depth = 0;
+          }
         }
       }
     },
@@ -101,13 +102,13 @@ function processFindingJson(jsonStr) {
     const finding = JSON.parse(jsonStr);
     if (finding.title && finding.severity) {
       // Normalize file paths to relative, handling both Windows backslash
-      // and Unix forward slash separators.
+      // and Unix forward slash separators via startsWith (prevents mid-path corruption).
       if (finding.file) {
-        finding.file = finding.file
-          .replace(ROOT_PREFIX, "")
-          .replace(projectRoot + "/", "")
-          .replace(projectRoot + "\\", "")
-          .replace(/\\/g, "/");
+        let f = finding.file;
+        if (f.startsWith(ROOT_PREFIX)) f = f.slice(ROOT_PREFIX.length);
+        else if (f.startsWith(projectRoot + "/")) f = f.slice(projectRoot.length + 1);
+        else if (f.startsWith(projectRoot + "\\")) f = f.slice(projectRoot.length + 1);
+        finding.file = f.replace(/\\/g, "/");
       }
       findings.push(finding);
     }
@@ -183,7 +184,22 @@ for (const line of lines) {
 // Ensure dest dir exists
 fs.mkdirSync(path.dirname(safeDestFile), { recursive: true });
 
-// Write findings
+// Write findings atomically via tmp + rename
 const jsonl = findings.map((f) => JSON.stringify(f)).join("\n") + "\n";
-fs.writeFileSync(safeDestFile, jsonl);
-console.log(`Extracted ${findings.length} findings to ${safeDestFile}`);
+const tmpDest = `${safeDestFile}.tmp`;
+try {
+  fs.writeFileSync(tmpDest, jsonl);
+  fs.renameSync(tmpDest, safeDestFile);
+} catch (writeErr) {
+  // Clean up tmp file on failure
+  try {
+    fs.unlinkSync(tmpDest);
+  } catch {
+    // ignore cleanup errors
+  }
+  console.error(
+    `Error: could not write output file: ${writeErr instanceof Error ? writeErr.message : String(writeErr)}`
+  );
+  process.exit(1);
+}
+console.log(`Extracted ${findings.length} findings to ${path.relative(projectRoot, safeDestFile)}`);

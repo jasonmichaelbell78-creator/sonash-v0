@@ -629,8 +629,9 @@ const ANTI_PATTERNS = [
     // - ai-pattern-checks.js: L82 uses `rel !== "" && (isAbsolute || regex)` - equivalent logic, handles empty
     // 2026-02-05 (Review #249): eval-check-stage.js, eval-snapshot.js, unify-findings.js, normalize-format.js
     //   all have `rel === "" ||` in validateSessionPath
+    // 2026-02-06 (Review #256): extract-agent-findings.js L29 has `rel === "" ||` at start of condition
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings|ai-pattern-checks|eval-check-stage|eval-snapshot|unify-findings|normalize-format)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings|ai-pattern-checks|eval-check-stage|eval-snapshot|unify-findings|normalize-format|extract-agent-findings)\.js$/,
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)

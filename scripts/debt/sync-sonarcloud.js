@@ -479,8 +479,13 @@ async function resolveStaleItems(options) {
   console.log("📝 Updating raw/deduped.jsonl...");
   const tmpDeduped = `${DEDUPED_FILE}.tmp`;
   fs.writeFileSync(tmpDeduped, updatedContent);
-  fs.rmSync(DEDUPED_FILE, { force: true });
-  fs.renameSync(tmpDeduped, DEDUPED_FILE);
+  try {
+    fs.renameSync(tmpDeduped, DEDUPED_FILE);
+  } catch {
+    // Windows may fail rename if dest exists; fallback to rm + rename
+    fs.rmSync(DEDUPED_FILE, { force: true });
+    fs.renameSync(tmpDeduped, DEDUPED_FILE);
+  }
 
   // Log resolutions
   let operatorContext;
