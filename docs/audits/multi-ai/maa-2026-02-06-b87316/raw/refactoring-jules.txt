@@ -1,0 +1,43 @@
+SoNash v0 — Refactoring Audit: Jules (Google)
+Date: 2026-02-06
+Repository: jasonmichaelbell78-creator/sonash-v0
+Auditor: Jules (Google AI coding agent)
+CAPABILITIES: browse_files=yes, run_commands=limited, repo_checkout=yes
+Notes: Jules failed to produce JSONL output despite 3 requests. Findings extracted from human-readable summary.
+
+Findings (6 confirmed + 1 suspected):
+
+1. Architecture/Boundaries: Direct Firestore Collection Access Bypass
+- Direct collection(db, path) calls scattered across hooks/ and lib/ files
+- Violates Repository pattern, leads to logic scattering
+- Fix: Move all collection references to lib/db/collections.ts, access via FirestoreService
+
+2. Security Hardening: Inconsistent Secure Callable Usage
+- Direct httpsCallable usage in hooks/use-journal.ts and other files
+- Bypasses centralized secure-caller wrapper (error handling, security logging)
+- Fix: Refactor all direct calls to use secureCall() wrapper
+
+3. Hygiene/Duplication: Repeated Dynamic Function Imports
+- Repeated dynamic imports of firebase/functions in lib/firestore-service.ts and lib/auth/account-linking.ts
+- Fix: Centralize function import or create helper in lib/firebase.ts
+
+4. Types/Correctness: Frontend/Backend Type Duplication
+- JournalEntry types redefined in both frontend (types/journal.ts) and backend (functions/src/)
+- High risk of schema drift
+- Fix: Share types via common module or strict import
+
+5. Architecture/Boundaries: Inconsistent Service Patterns
+- Competing patterns: class-based FirestoreService vs object-based SlogansService/MeetingsService
+- Makes global policies (caching, logging) difficult
+- Fix: Migrate lib/db/* services to FirestoreService ecosystem
+
+6. Hygiene/Duplication: Repeated UI Prop Types
+- HTMLMotionProps<'button'> repeatedly extended across Growth components
+- Fix: Extract shared AnimatedButtonProps type
+
+Suspected:
+7. Potential Path Traversal in Test Scripts
+- Non-literal arguments to filesystem methods in test scripts
+- Low risk in test environment
+
+Estimated Total Effort: E2 (6-10 hours)

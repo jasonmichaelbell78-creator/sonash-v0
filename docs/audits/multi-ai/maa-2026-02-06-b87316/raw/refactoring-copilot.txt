@@ -1,0 +1,23 @@
+SoNash Recovery Notebook — Refactoring Audit
+Auditor: GitHub Copilot
+Date: 2026-02-06
+Repository: jasonmichaelbell78-creator/sonash-v0
+CAPABILITIES: browse_files=yes, run_commands=no, repo_checkout=no, limitations="Can browse files and search code via GitHub API but cannot run CLI commands."
+
+9 confirmed findings + 3 suspected findings across 5 categories:
+- Hygiene/Duplication (2 confirmed + 2 suspected)
+- Types/Correctness (1)
+- Architecture/Boundaries (4 confirmed + 1 suspected)
+- Security Hardening (1)
+- Testing Infrastructure (1)
+
+Key insights:
+- admin.ts at 136KB is critical god file
+- callSecureFunction() wrapper exists but has 0 adopters
+- JournalEntryType defined in 4-6 locations
+- Hooks split across hooks/ and lib/hooks/
+- DB modules split across lib/db/ and lib/database/
+- App Check disabled 2+ months past re-enable date
+
+See refactoring-copilot.jsonl for full JSONL output.
+Estimated total effort: 32-70 hours across 10 PRs.
