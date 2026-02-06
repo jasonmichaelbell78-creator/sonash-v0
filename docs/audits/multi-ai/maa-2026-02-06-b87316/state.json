@@ -63,9 +63,9 @@
       "finding_count": 63
     },
     "security": {
-      "status": "pending",
-      "sources": [],
-      "finding_count": 0
+      "status": "collecting",
+      "sources": ["copilot"],
+      "finding_count": 6
     },
     "performance": {
       "status": "pending",
@@ -94,5 +94,5 @@
     }
   },
   "final_output": null,
-  "last_updated": "2026-02-06T15:47:56.524Z"
+  "last_updated": "2026-02-06T15:59:22.793Z"
 }
