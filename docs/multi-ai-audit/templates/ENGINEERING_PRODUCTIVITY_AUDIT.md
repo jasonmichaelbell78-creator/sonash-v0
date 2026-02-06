@@ -113,7 +113,7 @@ Exclude:
 
 ---
 
-## Engineering Productivity Audit Prompt
+## Engineering Productivity Audit Prompt (Copy for Each AI Model)
 
 ### Part 1: Role and Context
 

@@ -277,6 +277,13 @@ function main() {
       // Windows doesn't allow rename over existing file - remove first (backup already exists)
       fs.rmSync(MASTER_FILE, { force: true });
       fs.renameSync(TEMP_FILE, MASTER_FILE);
+
+      // Sync to raw/deduped.jsonl so generate-views.js doesn't lose updates
+      const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
+      if (fs.existsSync(DEDUPED_FILE)) {
+        fs.copyFileSync(MASTER_FILE, DEDUPED_FILE);
+      }
+
       console.log("✅ MASTER_DEBT.jsonl updated successfully");
     } catch (writeErr) {
       // Clean up temp file on failure

@@ -9,22 +9,22 @@
 
 ---
 
-**Total Items:** 1850
+**Total Items:** 1890
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
-| S0 (Critical) | 24    |
-| S1 (High)     | 453   |
-| S2 (Medium)   | 1064  |
-| S3 (Low)      | 309   |
+| S0 (Critical) | 25    |
+| S1 (High)     | 460   |
+| S2 (Medium)   | 1086  |
+| S3 (Low)      | 319   |
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1647  |
+| code-quality             | 1670  |
+| security                 | 82    |
 | performance              | 78    |
-| security                 | 65    |
 | process                  | 26    |
 | refactoring              | 17    |
 | documentation            | 14    |
@@ -32,7 +32,7 @@
 
 | Status   | Count |
 | -------- | ----- |
-| NEW      | 1834  |
+| NEW      | 1874  |
 | RESOLVED | 16    |
 
 ## Views
@@ -87,6 +87,8 @@
   17 to the 15 a... (components/dev/lighthouse-tab.tsx:81)
 - **DEBT-1846**: Refactor this function to reduce its Cognitive Complexity from
   23 to the 15 a... (components/widgets/compact-meeting-countdown.tsx:136)
+- **DEBT-1912**: Security risk: Client-side filtering of sensitive data
+  (hooks/use-journal.ts:174)
 
 ## High Priority Items (S1)
 
@@ -134,7 +136,7 @@
 - **DEBT-0020**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (scripts/add-false-positive.js:139)
 
-_...and 433 more. See [by-severity.md](./views/by-severity.md)_
+_...and 440 more. See [by-severity.md](./views/by-severity.md)_
 
 ---
 

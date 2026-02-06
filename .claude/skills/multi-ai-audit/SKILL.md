@@ -6,8 +6,8 @@ description:
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.1
-**Last Updated:** 2026-02-05
+**Document Version:** 1.3
+**Last Updated:** 2026-02-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -125,19 +125,59 @@ Read the appropriate template file:
 docs/multi-ai-audit/templates/<CATEGORY_TEMPLATE>.md
 ```
 
-Template mapping: | Category | Template File | |----------|---------------| |
-code | CODE_REVIEW_PLAN.md | | security | SECURITY_AUDIT_PLAN.md | | performance
-| PERFORMANCE_AUDIT_PLAN.md | | refactoring | REFACTOR_PLAN.md or
-REFACTOR_AUDIT_PROMPT.md | | documentation | DOCUMENTATION_AUDIT.md | | process
-| PROCESS_AUDIT.md | | engineering-productivity |
-ENGINEERING_PRODUCTIVITY_AUDIT.md |
+Template mapping:
+
+| Category                 | Template File                     |
+| ------------------------ | --------------------------------- |
+| code                     | CODE_REVIEW_PLAN.md               |
+| security                 | SECURITY_AUDIT_PLAN.md            |
+| performance              | PERFORMANCE_AUDIT_PLAN.md         |
+| refactoring              | REFACTOR_PLAN.md                  |
+| documentation            | DOCUMENTATION_AUDIT.md            |
+| process                  | PROCESS_AUDIT.md                  |
+| engineering-productivity | ENGINEERING_PRODUCTIVITY_AUDIT.md |
 
 ### Step 2.2: Extract Main Prompt
 
-Extract the section between "## Review Prompt" or "## Audit Prompt" and the next
-major section. This is the part users paste into external AIs.
+All templates use the standardized header pattern:
 
-### Step 2.3: Output to User
+```
+## [Category] Audit Prompt (Copy for Each AI Model)
+```
+
+Extract the section between this header and the next `## ` heading. Use this
+regex to find it: `/^## .+ Audit Prompt \(Copy for Each AI Model\)/`. This is
+the part users paste into external AIs.
+
+### Step 2.2a: Fill In Project Details (MANDATORY)
+
+**Before outputting the prompt, replace ALL placeholder values** with actual
+project details. Templates contain `[PLACEHOLDER]` tokens that MUST be resolved.
+Never output unfilled placeholders — the prompt is pasted into external AIs that
+have no knowledge of the project.
+
+Use these sources to fill in values:
+
+| Placeholder               | Source                                                    |
+| ------------------------- | --------------------------------------------------------- |
+| `[GITHUB_REPO_URL]`       | `https://github.com/jasonmichaelbell78-creator/sonash-v0` |
+| `[Framework]`/`[Version]` | CLAUDE.md Section 1 (Stack Versions)                      |
+| `[SCOPE]` directories     | Template's own Scope section or CLAUDE.md                 |
+| `[Project Name]`          | SoNash                                                    |
+| `[BRANCH_NAME]`           | Current git branch                                        |
+| Any other `[...]` token   | Resolve from project config or omit the line              |
+
+**If a placeholder cannot be resolved**, remove the entire line rather than
+leaving a `[...]` token in the output.
+
+### Step 2.3: Output to User (COMPLETE — NO TRUNCATION)
+
+**CRITICAL: Output the FULL extracted prompt content.** Do NOT summarize,
+truncate, abbreviate, or replace sections with `...` or `[X items]` summaries.
+The user will copy-paste this into external AI systems — any omitted content
+means those AIs won't know what to check.
+
+The prompt sections can be long (200+ lines). This is expected and required.
 
 ```
 === TEMPLATE FOR: [Category] ===
@@ -147,7 +187,8 @@ Each AI should analyze your codebase and output findings.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[PROMPT CONTENT - The extracted main prompt section]
+[FULL PROMPT CONTENT — every line from the extracted section, with all
+placeholders filled in per Step 2.2a]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -199,38 +240,60 @@ The user will paste raw output from the external AI. This could be:
 - Plain prose describing findings
 - JSON wrapped in \`\`\`json fences
 
-### Step 3.3: Process the Pasted Content
+### Step 3.3: Save Raw Input
 
-**Run format normalizer:**
-
-```javascript
-import { normalizeFormat } from "scripts/multi-ai/normalize-format.js";
-const { findings: normalized, report: normalizeReport } = normalizeFormat(
-  pastedContent,
-  category
-);
-```
-
-**Run schema fixer:**
-
-```javascript
-import { fixSchema } from "scripts/multi-ai/fix-schema.js";
-const { fixed, report: schemaReport } = fixSchema(normalized, category);
-```
-
-### Step 3.4: Save Results
-
-**Save normalized findings:**
+**Save the pasted content first** (pipeline scripts read from files, not stdin):
 
 ```
 docs/audits/multi-ai/<session>/raw/<category>-<source>.jsonl
 ```
 
-**Save original for debugging:**
+If the input contains separate FINDINGS and SUSPECTED sections, save them as two
+files:
 
 ```
-docs/audits/multi-ai/<session>/raw/<category>-<source>.original.txt
+docs/audits/multi-ai/<session>/raw/<category>-<source>.jsonl          # confirmed
+docs/audits/multi-ai/<session>/raw/<category>-<source>-suspected.jsonl # suspected
 ```
+
+### Step 3.4: Run Pipeline (CLI)
+
+**Both scripts are ESM CLI tools** with signature:
+`node <script> <input-file> <output-file> [category]`
+
+**Step 1 — Normalize format** (converts any input format to clean JSONL):
+
+```bash
+node scripts/multi-ai/normalize-format.js \
+  docs/audits/multi-ai/<session>/raw/<category>-<source>.jsonl \
+  docs/audits/multi-ai/<session>/raw/<category>-<source>.normalized.jsonl \
+  <category>
+```
+
+**Step 2 — Fix schema** (maps field variations, adds defaults, validates):
+
+```bash
+node scripts/multi-ai/fix-schema.js \
+  docs/audits/multi-ai/<session>/raw/<category>-<source>.normalized.jsonl \
+  docs/audits/multi-ai/<session>/raw/<category>-<source>.fixed.jsonl \
+  <category>
+```
+
+Repeat both steps for the `-suspected` file if it exists.
+
+**Pipeline output files** (per source):
+
+```
+raw/<category>-<source>.jsonl                 # original saved input
+raw/<category>-<source>.normalized.jsonl      # after format normalization
+raw/<category>-<source>.fixed.jsonl           # after schema fix (ready for aggregation)
+raw/<category>-<source>-suspected.jsonl       # original suspected (if separate)
+raw/<category>-<source>-suspected.fixed.jsonl # suspected after pipeline
+```
+
+> **Note:** `aggregate-category.js` excludes `.normalized.jsonl` and
+> `.fixed.jsonl` intermediate files automatically. Only the raw `.jsonl` files
+> are aggregation inputs.
 
 ### Step 3.5: Report to User
 
@@ -238,11 +301,11 @@ docs/audits/multi-ai/<session>/raw/<category>-<source>.original.txt
 ✓ Processed findings from [source]
 
   Format detected: [markdown_table|jsonl|json_array|etc.]
-  Findings extracted: [count]
+  Findings extracted: [count] confirmed, [count] suspected
   Schema adjustments: [count]
   Low confidence (<50): [count]
 
-  Stored: raw/[category]-[source].jsonl
+  Stored: raw/[category]-[source].jsonl → .normalized.jsonl → .fixed.jsonl
 
 Add another source or say "done" to aggregate this category.
 ```
@@ -781,5 +844,6 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 
 | Version | Date       | Changes                                                                                                                                                                                  |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.2     | 2026-02-05 | Fixed template mapping table format, standardized prompt extraction regex, resolved REFACTOR_PLAN.md ambiguity                                                                           |
 | 1.1     | 2026-02-05 | Added Phase 6 (TDMS intake), Phase 7 (roadmap integration), Phase 8 (summary) — automates the full pipeline from unified findings through MASTER_DEBT.jsonl and roadmap track assignment |
 | 1.0     | 2026-02-04 | Initial skill creation                                                                                                                                                                   |

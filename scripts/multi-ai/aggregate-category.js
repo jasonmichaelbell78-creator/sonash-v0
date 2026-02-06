@@ -400,8 +400,13 @@ export async function aggregateCategory(sessionPath, category) {
   }
 
   // Find all source files for this category
+  // Exclude intermediate pipeline files (.normalized.jsonl, .fixed.jsonl)
   const files = readdirSync(rawDir).filter(
-    (f) => f.startsWith(`${category}-`) && f.endsWith(".jsonl")
+    (f) =>
+      f.startsWith(`${category}-`) &&
+      f.endsWith(".jsonl") &&
+      !f.includes(".normalized.") &&
+      !f.includes(".fixed.")
   );
 
   if (files.length === 0) {
@@ -532,8 +537,13 @@ export function getCategorySources(sessionPath, category) {
     return { sources: [], total_findings: 0 };
   }
 
+  // Exclude intermediate pipeline files (.normalized.jsonl, .fixed.jsonl)
   const files = readdirSync(rawDir).filter(
-    (f) => f.startsWith(`${category}-`) && f.endsWith(".jsonl")
+    (f) =>
+      f.startsWith(`${category}-`) &&
+      f.endsWith(".jsonl") &&
+      !f.includes(".normalized.") &&
+      !f.includes(".fixed.")
   );
 
   const sources = [];

@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (1834)
+## NEW (1874)
 
 | ID        | Title                                                          | Severity | Category                 |
 | --------- | -------------------------------------------------------------- | -------- | ------------------------ |
@@ -465,6 +465,13 @@
 | DEBT-1899 | A form label must be associated with a control.                | S1       | code-quality             |
 | DEBT-1900 | A form label must be associated with a control.                | S1       | code-quality             |
 | DEBT-1901 | A form label must be associated with a control.                | S1       | code-quality             |
+| DEBT-1913 | App Check disabled across all Cloud Functions                  | S1       | security                 |
+| DEBT-1914 | Performance anti-pattern: Excessive re-renders from conte...   | S1       | code-quality             |
+| DEBT-1915 | Missing input validation on server-generated data              | S1       | code-quality             |
+| DEBT-1916 | Data flow violation: Direct Firestore writes in admin com...   | S1       | code-quality             |
+| DEBT-1917 | Missing error boundary coverage for async operations           | S1       | code-quality             |
+| DEBT-1918 | Missing cleanup for onSnapshot listener                        | S1       | code-quality             |
+| DEBT-1919 | Unvalidated URL construction in GCP links                      | S1       | code-quality             |
 | DEBT-0140 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
 | DEBT-0141 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
 | DEBT-0142 | Prefer `Number.parseFloat` over `parseFloat`.                  | S2       | code-quality             |
@@ -1529,6 +1536,28 @@
 | DEBT-1909 | 'cleanDays' PropType is defined but prop is never used         | S2       | code-quality             |
 | DEBT-1910 | Unexpected negated condition.                                  | S2       | code-quality             |
 | DEBT-1911 | 'next' imported multiple times.                                | S2       | code-quality             |
+| DEBT-1920 | API design inconsistency: Mixed return patterns                | S2       | code-quality             |
+| DEBT-1921 | Missing Content-Security-Policy header                         | S2       | security                 |
+| DEBT-1922 | User profile document allows direct client writes without...   | S2       | security                 |
+| DEBT-1923 | Hardcoded reCAPTCHA site key in server-side code               | S2       | security                 |
+| DEBT-1924 | God component: dashboard-tab.tsx with excessive state man...   | S2       | code-quality             |
+| DEBT-1925 | Any type usage in today-page.tsx snapshot handler              | S2       | code-quality             |
+| DEBT-1926 | Tight coupling between UI components and Firebase SDK          | S2       | code-quality             |
+| DEBT-1927 | Hardcoded bucket name in Cloud Functions                       | S2       | code-quality             |
+| DEBT-1928 | Inconsistent state management patterns across providers        | S2       | code-quality             |
+| DEBT-1929 | Anti-pattern: Firestore queries in components instead of ...   | S2       | code-quality             |
+| DEBT-1930 | Missing dependency in useEffect for logs refresh               | S2       | code-quality             |
+| DEBT-1931 | Missing loading state coordination across contexts             | S2       | code-quality             |
+| DEBT-1932 | Missing error boundary in inventory form                       | S2       | code-quality             |
+| DEBT-1933 | Migration function does not verify source anonymous user ...   | S2       | security                 |
+| DEBT-1934 | Missing abstraction for real-time subscriptions                | S2       | code-quality             |
+| DEBT-1935 | Firestore timestamp validation inconsistency                   | S2       | code-quality             |
+| DEBT-1936 | reCAPTCHA token made optional for data migration function      | S2       | security                 |
+| DEBT-1937 | Migration function skips reCAPTCHA when token is missing       | S2       | security                 |
+| DEBT-1938 | Journal and inventory entry data field accepts arbitrary ...   | S2       | security                 |
+| DEBT-1939 | Race condition in parallel file processing                     | S2       | code-quality             |
+| DEBT-1940 | CI workflow script injection via unsanitized file names        | S2       | security                 |
+| DEBT-1941 | Firestore security_logs collection missing from security ...   | S2       | security                 |
 | DEBT-0553 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | S3       | code-quality             |
@@ -1838,6 +1867,16 @@
 | DEBT-1170 | Complete the task associated to this "TODO" comment.           | S3       | code-quality             |
 | DEBT-1171 | Complete the task associated to this "TODO" comment.           | S3       | code-quality             |
 | DEBT-1449 | Complete the task associated to this "TODO" comment.           | S3       | code-quality             |
+| DEBT-1942 | Unpinned GitHub Actions in multiple workflows                  | S3       | security                 |
+| DEBT-1943 | Inefficient type checking in safeToIso                         | S3       | code-quality             |
+| DEBT-1944 | Unbounded retry loop risk in jobs.ts                           | S3       | code-quality             |
+| DEBT-1945 | Admin function input validation inconsistency - meetingId...   | S3       | security                 |
+| DEBT-1946 | Daily quotes collection allows direct admin client writes...   | S3       | security                 |
+| DEBT-1947 | Type coercion in generateSearchableText                        | S3       | code-quality             |
+| DEBT-1948 | Firestore security rules missing for security_logs and ad...   | S3       | security                 |
+| DEBT-1949 | User ID hash truncation reduces collision resistance for ...   | S3       | security                 |
+| DEBT-1950 | No middleware.ts for server-side route protection              | S3       | security                 |
+| DEBT-1951 | Service account credentials written to disk in CI deploy ...   | S3       | security                 |
 | DEBT-0854 | App Check disabled on all production Cloud Functions           | S0       | security                 |
 | DEBT-1056 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
 | DEBT-1057 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
@@ -1847,6 +1886,7 @@
 | DEBT-1538 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
 | DEBT-1624 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
 | DEBT-1846 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
+| DEBT-1912 | Security risk: Client-side filtering of sensitive data         | S0       | code-quality             |
 
 ## VERIFIED (0)
 
