@@ -64,8 +64,8 @@
     },
     "security": {
       "status": "collecting",
-      "sources": ["copilot", "chatgpt", "codex", "jules"],
-      "finding_count": 22
+      "sources": ["copilot", "chatgpt", "codex", "jules", "kimi"],
+      "finding_count": 26
     },
     "performance": {
       "status": "pending",
@@ -94,5 +94,5 @@
     }
   },
   "final_output": null,
-  "last_updated": "2026-02-06T16:54:28.789Z"
+  "last_updated": "2026-02-06T16:57:30.067Z"
 }
