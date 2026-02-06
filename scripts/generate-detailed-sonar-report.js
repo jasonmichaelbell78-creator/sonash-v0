@@ -33,21 +33,22 @@ function readSonarProperties() {
   const result = { org: null, project: null };
   try {
     const content = fs.readFileSync(propsFile, "utf8");
+    // First pass: collect all key=value pairs (order-independent)
+    const props = {};
     for (const line of content.split("\n")) {
       const trimmed = line.trim();
       if (trimmed.startsWith("#") || !trimmed.includes("=")) continue;
       const [key, ...rest] = trimmed.split("=");
-      const value = rest.join("=").trim();
-      if (key.trim() === "sonar.organization") {
-        result.org = value;
-      } else if (key.trim() === "sonar.projectKey") {
-        // projectKey format: "org_project" — extract project suffix
-        if (result.org && value.startsWith(result.org + "_")) {
-          result.project = value.substring(result.org.length + 1);
-        } else {
-          result.project = value;
-        }
-      }
+      props[key.trim()] = rest.join("=").trim();
+    }
+    // Extract org and derive project from projectKey
+    result.org = props["sonar.organization"] || null;
+    const projectKey = props["sonar.projectKey"];
+    if (projectKey && result.org && projectKey.startsWith(result.org + "_")) {
+      // projectKey format: "org_project" — extract project suffix
+      result.project = projectKey.substring(result.org.length + 1);
+    } else if (projectKey) {
+      result.project = projectKey;
     }
   } catch {
     // sonar-project.properties not found or unreadable
