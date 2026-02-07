@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 14.7 **Created:** 2026-01-02 **Last Updated:** 2026-02-07
+**Document Version:** 14.8 **Created:** 2026-01-02 **Last Updated:** 2026-02-07
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 14.8    | 2026-02-07 | Review #260-264: PR #346 Audit Trigger Reset - 5 rounds Qodo + SonarCloud + CI (29 items across 5 rounds). **R1** (11 items): execFileSync conversion (SonarCloud HIGH), regex DoS backtracking, Object.create(null), \x1f delimiter, NaN guard, Math.min guard, CI false positive exclusions. **R2** (4 items): delimiter mismatch bug, date validation, robust category matching. **R3** (5 items): execFileSync ×2 files, timezone drift, getCategoryAuditDates wrong-table bug. **R4** (3 items): multi-word category capitalization, Windows atomic rename, JSON.parse safety. **R5** (6 items): section-scoped regex, table-column date parsing, empty entries guard. Consolidation counter now at 11 (threshold reached). Active reviews #213-264.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 14.7    | 2026-02-06 | Review #257-259: PR Cherry-Pick Rounds 3-5 - Qodo Compliance + PII Scrub (27 items across 3 rounds). **R3** (7 items): Atomic rename fallback cleanup for Windows, PII in audit logs as design decision. **R4** (9 items): startsWith path containment weakness (use path.relative+regex), markdown fences in AI output breaking JSONL parsers. **R5** (11 items - 1 CRITICAL PII): PII in committed artifacts (absolute paths with username), operator tracking via SHA-256 hash prefix, copyFileSync safer than rm+rename. Active reviews #213-259.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 14.6    | 2026-02-06 | Review #255-256: PR Cherry-Pick - Qodo + SonarCloud + CI (30 items R1 + 8 items R2). **R1**: Hardcoded Windows path with PII, path traversal protection, readFileSync try/catch, content block normalization, multi-line JSON brace tracking, assign-roadmap-refs data loss via copyFileSync, API pagination guards, AbortController timeouts. **R2**: CI blocker pattern compliance false positive (forward-only lookahead), brace tracker escape hardening, startsWith path stripping, atomic output writes, try-first rename for Windows. 20 CANON audit items rejected (not PR issues). Active reviews #213-256.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 14.55   | 2026-02-05 | Review #251-254: PR #338 eval-sonarcloud Skill - 4 Rounds Qodo + CI (46 items). **R1** (26 items - 2 CRITICAL, 12 MAJOR): Path traversal in CLI scripts (validateSessionPath), readFileSync pattern compliance, duplicate file reads. **R2** (9 items - 4 MAJOR): Token exposure in docs (curl secrets), symlink defense (realpathSync), silent parse errors. **R3** (8 items - 3 CRITICAL): Incomplete symlink defense in sibling functions, token exposure in generated content, silent error swallowing. **R4** (3 items - 1 CRITICAL): Here-string token interpolation, multiple similar functions missed, PII in audit logs. Active reviews #213-254.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -314,8 +315,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #260
+**Reviews since last consolidation:** 11 **Consolidation threshold:** 10 reviews
+**Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** Now (threshold
+reached)
 
 ### When to Consolidate
 
@@ -473,7 +475,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 6     | <10    | ✅     |
+| Reviews since last consolidation | 11    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -626,6 +628,169 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #264: PR #346 Audit Trigger Reset - Round 5 Qodo (2026-02-07)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:**
+claude/cherry-pick-commits-yLnZV (PR #346) **Suggestions:** 6 total (Critical:
+0, Major: 3, Minor: 0, Trivial: 0, Skipped: 3)
+
+**Patterns Identified:**
+
+1. [Section-scoped regex matching]: When parsing markdown tables, extract the
+   target section first via `extractSection()` before running regex — prevents
+   matching dates/names in unrelated tables
+   - Root cause: `getCategoryAuditDates()` matched against entire file content
+   - Prevention: Always scope markdown regex to the relevant `##` section
+2. [Table-column-specific date parsing]: Use `^\|\s*(\d{4}-\d{2}-\d{2})\s*\|` to
+   match dates only in first column of markdown table rows
+   - Root cause: Generic `\d{4}-\d{2}-\d{2}` matches dates in comments/links
+   - Prevention: Anchor date regex to table row structure
+3. [Empty-result guard after validation]: When filtering entries (e.g., hash
+   validation), check for empty array before writing output
+   - Root cause: `seed-commit-log.js` could write empty file if all hashes fail
+   - Prevention: Add length check + exit after validation loop
+
+**Resolution:**
+
+- Fixed: 3 items (section scoping, table date regex, empty entries guard)
+- Skipped: 3 items (backup-swap over-engineering, `.filter(Boolean)` on
+  hardcoded constants, case-safe rename on auto-generated file)
+
+---
+
+#### Review #263: PR #346 Audit Trigger Reset - Round 4 Qodo (2026-02-07)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:**
+claude/cherry-pick-commits-yLnZV (PR #346) **Suggestions:** 3 total (Critical:
+0, Major: 2, Minor: 1, Trivial: 0)
+
+**Patterns Identified:**
+
+1. [Multi-word category capitalization]: `category.charAt(0).toUpperCase()`
+   only capitalizes first word — must
+   `.split("-").map(w => capitalize).join("-")`
+   - Root cause: Same bug as `reset-audit-triggers.js` but in different function
+   - Prevention: Extract shared `toDisplayName()` helper for category names
+2. [Windows atomic rename]: `fs.renameSync()` fails on Windows when dest exists
+   — must `fs.rmSync(dest)` first or use backup-swap
+   - Root cause: Windows does not support POSIX rename-over semantics
+   - Prevention: Always add `rmSync(dest, {force:true})` before `renameSync`
+3. [JSON.parse crash in reporting]: `JSON.parse()` in final console output can
+   crash script on malformed entries
+   - Root cause: Entries are JSON strings but could be corrupted
+   - Prevention: Wrap in try-catch via safe helper function
+
+**Resolution:**
+
+- Fixed: 3 items (multi-word category, Windows atomic write, safeMsg helper)
+
+---
+
+#### Review #262: PR #346 Audit Trigger Reset - Round 3 Qodo + SonarCloud (2026-02-07)
+
+**Source:** Qodo PR Code Suggestions + SonarCloud **PR/Branch:**
+claude/cherry-pick-commits-yLnZV (PR #346) **Suggestions:** 5 total (Critical:
+1, Major: 2, Minor: 2, Trivial: 0)
+
+**Patterns Identified:**
+
+1. [execSync → execFileSync conversion]: `execSync(string)` invokes shell
+   (injection risk); `execFileSync("git", [args])` bypasses shell entirely
+   - Root cause: Original hooks used string-based `execSync` for git commands
+   - Prevention: Always use `execFileSync` with array args for subprocess calls
+2. [Timezone drift in date re-parsing]: `new Date("2026-02-07").toISOString()`
+   can shift to previous day in negative UTC offsets
+   - Root cause: Re-parsing YYYY-MM-DD string through Date constructor
+   - Prevention: Use original date string directly, don't round-trip through
+     Date
+3. [getCategoryAuditDates reading wrong table]: Function was reading audit LOG
+   sections (historical) instead of threshold TABLE (current)
+   - Root cause: Regex matched first table with category names
+   - Prevention: Read from specifically named section (fixed in R5)
+
+**Resolution:**
+
+- Fixed: 5 items (execFileSync ×2 files, timezone drift, regex whitespace,
+  entries-based reporting)
+
+---
+
+#### Review #261: PR #346 Audit Trigger Reset - Round 2 Qodo (2026-02-07)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:**
+claude/cherry-pick-commits-yLnZV (PR #346) **Suggestions:** 4 total (Critical:
+0, Major: 2, Minor: 2, Trivial: 0)
+
+**Patterns Identified:**
+
+1. [Delimiter mismatch after format change]: Changed git log format to `\x1f`
+   but forgot to update `split("|")` in reporting code
+   - Root cause: Incomplete find-replace when changing delimiters
+   - Prevention: Search for ALL occurrences of old delimiter when changing
+2. [Date validation before use]: `lastMultiAIDate` could be invalid string
+   causing downstream NaN
+   - Root cause: No validation on parsed date from markdown
+   - Prevention: Always validate dates with
+     `Number.isNaN(new Date(d).getTime())`
+3. [Robust category matching]: Category names in markdown may use hyphens or
+   spaces — regex must handle both
+   - Root cause: `reset-audit-triggers.js` displayName regex too strict
+   - Prevention: Use `[-\\s]+` pattern between word parts
+
+**Resolution:**
+
+- Fixed: 4 items (delimiter mismatch, date validation, category matching,
+  trigger message accuracy)
+
+---
+
+#### Review #260: PR #346 Audit Trigger Reset - Round 1 Qodo + SonarCloud + CI (2026-02-07)
+
+**Source:** Qodo PR Code Suggestions + SonarCloud Security Hotspots + CI
+Failures **PR/Branch:** claude/cherry-pick-commits-yLnZV (PR #346)
+**Suggestions:** 11 total (Critical: 2 CI, Major: 3, Minor: 3, Trivial: 0,
+Skipped: 3)
+
+**Patterns Identified:**
+
+1. [execSync shell injection]: SonarCloud HIGH — `execSync` with string commands
+   allows shell injection; use `execFileSync` with array args
+   - Root cause: `seed-commit-log.js` used `execSync(cmd)` string form
+   - Prevention: Always use `execFileSync("binary", [args])`
+2. [Regex backtracking DoS]: `[^|]+` causes exponential backtracking — use
+   `[^|\n]+` to bound character class
+   - Root cause: `reset-audit-triggers.js` used unbounded regex quantifiers
+   - Prevention: Always add `\n` to negated character classes in table parsing
+3. [Object.create(null) for map objects]: Prevents prototype pollution when
+   using objects as dictionaries
+   - Root cause: `check-session-gaps.js` used `{}` for groupBySession
+   - Prevention: Use `Object.create(null)` for any user-influenced map keys
+4. [Unit Separator delimiter]: `|` in commit messages corrupts git log parsing —
+   use `\x1f` (ASCII 31) as field separator
+   - Root cause: Multiple scripts used `|` as git log format delimiter
+   - Prevention: Always use `\x1f` for git log `--format` field separation
+5. [NaN timestamp guard]: `Date.now() - new Date(null).getTime()` = NaN — must
+   check before arithmetic
+   - Root cause: `compact-restore.js` didn't guard null timestamp
+   - Prevention: Check `Number.isNaN()` before date arithmetic
+6. [Math.min on empty array]: `Math.min(...[])` = Infinity — guard with length
+   check
+   - Root cause: `check-review-needed.js` spread empty validTimestamps
+   - Prevention: Always check `array.length > 0` before `Math.min(...array)`
+7. [CI false positive exclusions]: Pre-commit `readfilesync-without-try` pattern
+   flags multi-line try/catch as violations — add to pathExcludeList with audit
+   - Root cause: Pattern checker doesn't detect try/catch spanning multiple
+     lines
+   - Prevention: Add verified false positives with audit documentation
+
+**Resolution:**
+
+- Fixed: 8 items (execFileSync, regex DoS ×3, Object.create(null), \x1f ×3, NaN
+  guard, Math.min guard, pathExcludeList)
+- Skipped: 3 items (sensitive data persistence — local-only hooks by design)
 
 ---
 
