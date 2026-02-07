@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 14.9 **Created:** 2026-01-02 **Last Updated:** 2026-02-07
+**Document Version:** 15.0 **Created:** 2026-01-02 **Last Updated:** 2026-02-07
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15.0    | 2026-02-07 | **CONSOLIDATION #17**: Reviews #254-265 (12 reviews) → CODE_PATTERNS.md v2.6. Added 23 patterns: 4 Security, 7 JS/TS, 8 CI/Automation, 3 Process Management, 1 Bash/Shell. Source: PR #346 Audit Trigger Reset reviews (Qodo/SonarCloud rounds 1-6). Counter reset 12→0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 14.9    | 2026-02-07 | Review #265: PR #346 Round 6 Qodo (6 items - 1 MAJOR, 3 already fixed, 2 rejected). **MAJOR**: Backup-swap saveJson atomic write (rm+rename crash window). **Already fixed in 5f3f312**: empty entries guard, section scoping, table date regex. **Rejected**: .filter(Boolean) on hardcoded constants, auto-generated DOCUMENTATION_INDEX.md. Consolidation counter 11→12 (consolidation due). Active reviews #213-265.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 14.8    | 2026-02-07 | Review #260-264: PR #346 Audit Trigger Reset - 5 rounds Qodo + SonarCloud + CI (29 items across 5 rounds). **R1** (11 items): execFileSync conversion (SonarCloud HIGH), regex DoS backtracking, Object.create(null), \x1f delimiter, NaN guard, Math.min guard, CI false positive exclusions. **R2** (4 items): delimiter mismatch bug, date validation, robust category matching. **R3** (5 items): execFileSync ×2 files, timezone drift, getCategoryAuditDates wrong-table bug. **R4** (3 items): multi-word category capitalization, Windows atomic rename, JSON.parse safety. **R5** (6 items): section-scoped regex, table-column date parsing, empty entries guard. Consolidation counter now at 11 (threshold reached). Active reviews #213-264.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 14.7    | 2026-02-06 | Review #257-259: PR Cherry-Pick Rounds 3-5 - Qodo Compliance + PII Scrub (27 items across 3 rounds). **R3** (7 items): Atomic rename fallback cleanup for Windows, PII in audit logs as design decision. **R4** (9 items): startsWith path containment weakness (use path.relative+regex), markdown fences in AI output breaking JSONL parsers. **R5** (11 items - 1 CRITICAL PII): PII in committed artifacts (absolute paths with username), operator tracking via SHA-256 hash prefix, copyFileSync safer than rm+rename. Active reviews #213-259.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -316,9 +317,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 12 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** Now (threshold
-reached)
+**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
 
@@ -339,6 +339,41 @@ Consolidation is needed when:
 6. Note consolidation in version history
 
 ### Last Consolidation
+
+- **Date:** 2026-02-07 (Session #140)
+- **Reviews consolidated:** #254-#265 (12 reviews)
+- **Patterns added to CODE_PATTERNS.md v2.6:**
+  - **Security (4 patterns):**
+    - PII in audit reports (hashed identifiers)
+    - Operator identity hashing
+    - Backup-swap atomic write (CRITICAL)
+    - Token exposure prevention in hooks
+  - **JavaScript/TypeScript (7 patterns):**
+    - Section-scoped regex parsing
+    - Empty entries guard before write
+    - Multi-word capitalization
+    - Safe JSON parse helper
+    - Brace depth tracking for nested objects
+    - Multi-line JSON reassembly
+    - Table-column date parsing
+  - **CI/Automation (8 patterns):**
+    - Delimiter consistency (\x1f over |)
+    - pathExcludeList stale entry cleanup
+    - Fence block handling in markdown parsing
+    - Rename fallback guard for Windows
+    - Trailing newline for JSONL files
+    - Content normalization before diff
+    - Silent parse prevention (log warnings)
+    - Stale review detection (commit comparison)
+  - **Process Management (3 patterns):**
+    - Trigger validation coverage (both paths)
+    - Operator tracking design (privacy-first)
+    - Design decision docs (rejected alternatives)
+  - **Bash/Shell (1 pattern):**
+    - Here-string interpolation
+
+<details>
+<summary>Previous Consolidation (#16)</summary>
 
 - **Date:** 2026-02-07 (Session #114+)
 - **Reviews consolidated:** #225-#250 (19 reviews)
@@ -374,6 +409,8 @@ Consolidation is needed when:
     - Prettier-linter conflict resolution
     - Force token refresh (getIdTokenResult)
     - Dev data client-only Firestore rules
+
+</details>
 
 <details>
 <summary>Previous Consolidation (#11)</summary>
@@ -476,7 +513,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 12    | <10    | ⚠️     |
+| Reviews since last consolidation | 0     | <10    | ✅     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
