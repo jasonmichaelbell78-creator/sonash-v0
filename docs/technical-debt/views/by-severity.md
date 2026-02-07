@@ -537,7 +537,7 @@
 | DEBT-2001 | Broken anchor link: docs/DOCUMENT_DEPENDENCIES.md#cross-d...  | ROADMAP.md                                                                   | 0         | documentation            | E0     |
 | DEBT-2002 | Broken anchor link: ./ROADMAP.md#active-sprint-operationa...  | SESSION_CONTEXT.md                                                           | 0         | documentation            | E0     |
 | DEBT-2003 | Broken anchor link: ./ROADMAP.md#m2-architecture-refactor...  | SESSION_CONTEXT.md                                                           | 0         | documentation            | E0     |
-| DEBT-2007 | Contradiction: Security rules enforcement for direct writes   | 71-73                                                                        | 0         | documentation            | E1     |
+| DEBT-2007 | Contradiction: Security rules enforcement for direct writes   | CLAUDE.md                                                                    | 0         | documentation            | E1     |
 | DEBT-2008 | Contradiction: Pre-commit hook blocking status for patter...  | CLAUDE.md                                                                    | 89        | documentation            | E1     |
 
 ## S2 - Medium (1147)

@@ -1732,7 +1732,7 @@
 | DEBT-2001 | Broken anchor link: docs/DOCUMENT_DEPENDENCIES.md#cross-d...   | S1       | ROADMAP.md                                                         | 0         |
 | DEBT-2002 | Broken anchor link: ./ROADMAP.md#active-sprint-operationa...   | S1       | SESSION_CONTEXT.md                                                 | 0         |
 | DEBT-2003 | Broken anchor link: ./ROADMAP.md#m2-architecture-refactor...   | S1       | SESSION_CONTEXT.md                                                 | 0         |
-| DEBT-2007 | Contradiction: Security rules enforcement for direct writes    | S1       | 71-73                                                              | 0         |
+| DEBT-2007 | Contradiction: Security rules enforcement for direct writes    | S1       | CLAUDE.md                                                          | 0         |
 | DEBT-2008 | Contradiction: Pre-commit hook blocking status for patter...   | S1       | CLAUDE.md                                                          | 89        |
 | DEBT-0444 | 99 files fail docs:check (313 errors, 177 warnings)            | S2       | scripts/README.md                                                  | 1         |
 | DEBT-0445 | TRIGGERS.md last updated 2026-01-02 (15 days stale)            | S2       | docs/TRIGGERS.md                                                   | 1         |
