@@ -19,7 +19,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 
 const projectDir = path.resolve(process.cwd());
 const COMMIT_LOG = path.join(projectDir, ".claude", "state", "commit-log.jsonl");
@@ -86,11 +86,16 @@ function getCurrentSessionCounter() {
  */
 function getRecentCommitsFromGit(count) {
   try {
-    const output = execSync(`git log --format="%H|%h|%s|%ad" --date=iso-strict -${count}`, {
-      cwd: projectDir,
-      encoding: "utf8",
-      timeout: 5000,
-    }).trim();
+    const safeCount = String(Math.max(1, Math.min(parseInt(count, 10) || 50, 500)));
+    const output = execFileSync(
+      "git",
+      ["log", `--format=%H|%h|%s|%ad`, "--date=iso-strict", `-${safeCount}`],
+      {
+        cwd: projectDir,
+        encoding: "utf8",
+        timeout: 5000,
+      }
+    ).trim();
     return output
       .split("\n")
       .filter(Boolean)
