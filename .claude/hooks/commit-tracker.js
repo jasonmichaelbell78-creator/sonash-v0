@@ -21,7 +21,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 
 // Paths
 const safeBaseDir = path.resolve(process.cwd());
@@ -69,9 +69,9 @@ function extractCommand() {
 /**
  * Execute git command safely with timeout
  */
-function gitExec(cmd) {
+function gitExec(args) {
   try {
-    return execSync(cmd, { cwd: projectDir, encoding: "utf8", timeout: 5000 }).trim();
+    return execFileSync("git", args, { cwd: projectDir, encoding: "utf8", timeout: 5000 }).trim();
   } catch {
     return "";
   }
@@ -147,7 +147,7 @@ function main() {
   }
 
   // A commit command was run — check if HEAD actually changed
-  const currentHead = gitExec("git rev-parse HEAD");
+  const currentHead = gitExec(["rev-parse", "HEAD"]);
   if (!currentHead) {
     // Not in a git repo or git not available
     console.log("ok");
@@ -163,13 +163,16 @@ function main() {
 
   // NEW COMMIT DETECTED — capture metadata
   // Use Unit Separator (\x1f) instead of | to avoid corruption from | in commit messages
-  const commitLine = gitExec(
-    'git log --format="%H\x1f%h\x1f%s\x1f%an\x1f%ad" --date=iso-strict -1'
-  );
+  const commitLine = gitExec([
+    "log",
+    "--format=%H\x1f%h\x1f%s\x1f%an\x1f%ad",
+    "--date=iso-strict",
+    "-1",
+  ]);
   const parts = commitLine.split("\x1f");
 
-  const branch = gitExec("git rev-parse --abbrev-ref HEAD");
-  const filesChanged = gitExec("git diff-tree --no-commit-id --name-only -r HEAD")
+  const branch = gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
+  const filesChanged = gitExec(["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"])
     .split("\n")
     .filter((f) => f.length > 0);
   const sessionCounter = getSessionCounter();

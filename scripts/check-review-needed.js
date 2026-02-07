@@ -750,8 +750,9 @@ function checkMultiAITriggers(lastMultiAIDate, categoryDates) {
     .filter((t) => !Number.isNaN(t));
   const lastMultiAITs = lastMultiAIDate ? new Date(lastMultiAIDate).getTime() : NaN;
   const usingFallbackDate = Number.isNaN(lastMultiAITs);
+  // Use lastMultiAIDate string directly to avoid timezone-related date drift from re-parsing
   const sinceDate = !usingFallbackDate
-    ? new Date(lastMultiAITs).toISOString().split("T")[0]
+    ? lastMultiAIDate
     : validTimestamps.length > 0
       ? new Date(Math.min(...validTimestamps)).toISOString().split("T")[0]
       : null;

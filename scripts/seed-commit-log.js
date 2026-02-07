@@ -99,8 +99,13 @@ function main() {
 
   console.log(`Seeded ${entries.length} commits to commit-log.jsonl`);
   console.log(`Branch: ${branch}`);
-  console.log(`Oldest: ${lines[lines.length - 1]?.split("\x1f")[2] || "?"}`);
-  console.log(`Newest: ${lines[0]?.split("\x1f")[2] || "?"}`);
+  // Use parsed entries (reversed to chronological) for accurate oldest/newest reporting
+  const oldestMsg = entries[0] ? JSON.parse(entries[0]).message : "?";
+  const newestMsg = entries[entries.length - 1]
+    ? JSON.parse(entries[entries.length - 1]).message
+    : "?";
+  console.log(`Oldest: ${oldestMsg || "?"}`);
+  console.log(`Newest: ${newestMsg || "?"}`);
 }
 
 main();
