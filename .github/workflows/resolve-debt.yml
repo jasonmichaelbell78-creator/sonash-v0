@@ -87,6 +87,9 @@ jobs:
 
           [skip ci]"
 
+          # Pull with rebase to handle race condition where main moved
+          # after checkout (e.g., the merge commit that triggered this workflow)
+          git pull --rebase origin main
           git push
 
       - name: Summary
