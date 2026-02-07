@@ -317,7 +317,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
@@ -513,7 +513,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 0     | <10    | ✅     |
+| Reviews since last consolidation | 1     | <10    | ✅     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -666,6 +666,40 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #266: PR #347 Doc-Optimizer + Artifact Cleanup - Qodo (2026-02-07)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/cherry-pick-commits-yLnZV (PR #347) **Suggestions:** 4 total (Critical:
+0, Major: 1, Minor: 2, Rejected: 1)
+
+**Patterns Identified:**
+
+1. [PII in committed JSONL data]: Absolute local file paths
+   (`C:/Users/jason/...`) leaked into MASTER_DEBT.jsonl `file` field from
+   doc-optimizer agents that wrote full paths instead of relative
+   - Root cause: Agent findings used `path.resolve()` absolute paths
+   - Prevention: intake-audit.js should strip project root from file paths
+   - Fix: Python script to strip prefix from 15 entries in both JSONL files
+2. [Schema field misuse]: 228 entries had human-readable text in `resolution`
+   field instead of `resolution_note`
+   - Root cause: Batch FALSE_POSITIVE script wrote to wrong field
+   - Prevention: Validate schema on write (resolution should be null or enum)
+
+**Resolution:**
+
+- Fixed: 3 items (15 PII paths stripped, 228 resolution fields moved, views
+  regenerated)
+- Rejected: 1 item (GitHub Issues migration - architectural, TDMS is
+  established)
+
+**Key Learnings:**
+
+- Doc-optimizer agents must output relative paths, not absolute
+- Batch update scripts must target `resolution_note` not `resolution`
+- JSONL files committed to git are public - treat file paths as PII
 
 ---
 
