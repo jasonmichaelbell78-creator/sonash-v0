@@ -33,7 +33,57 @@ This skill orchestrates a complete codebase audit across all 7 domains:
 
 ---
 
-## Execution Flow
+## Orchestration Mode Selection
+
+This skill supports two orchestration modes. Check which is available:
+
+### Agent Teams Mode (Preferred when available)
+
+**Requires:** `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in
+`.claude/settings.json`
+
+When agent teams are enabled, use team-based orchestration instead of staged
+subagent waves:
+
+- **Lead:** Orchestrator + aggregator (you)
+- **Teammate Group A:** code + refactoring specialists
+- **Teammate Group B:** security + performance specialists
+- **Teammate Group C:** documentation + process + engineering-productivity
+
+**Team advantages over subagent waves:**
+
+- Teammates can flag cross-cutting findings to each other mid-audit (e.g.,
+  security teammate alerts performance teammate about an auth bypass that also
+  causes N+1 queries)
+- S0/S1 escalation becomes a team message instead of a stage gate
+- Lead handles aggregation directly instead of spawning a separate agent
+- No artificial stage boundaries — all 7 audits can start immediately
+
+**Team execution flow:**
+
+1. Lead creates shared task list with all 7 audit tasks
+2. Spawn 3-4 teammates (grouped by related domains)
+3. Teammates claim and execute audit tasks, messaging lead on S0/S1 findings
+4. Teammates message peers when they find cross-cutting issues
+5. Lead monitors progress, collects results as teammates complete
+6. Lead performs aggregation and deduplication directly
+7. Lead shuts down teammates after all reports collected
+
+**Token budget:** 250K total for the team. If approaching budget, lead messages
+teammates to wrap up and collects partial results.
+
+**Fallback:** If team formation fails or teammates error out, fall back to the
+staged subagent execution flow below.
+
+### Subagent Mode (Default fallback)
+
+When agent teams are NOT enabled, use the 3-stage subagent execution flow below.
+This is the original orchestration pattern with staged waves of parallel
+subagents.
+
+---
+
+## Execution Flow (Subagent Mode)
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -431,23 +481,16 @@ Add an entry to **each of the 6 category tables** in `docs/AUDIT_TRACKER.md`:
 | ------- | ------------- | --------------- | ------------- | ---------------------------- | --------------- |
 | {TODAY} | Comprehensive | Full codebase   | All           | Session #{N} - [report link] | ✅ (all)        |
 
-### 2. Update Threshold Summary Table
+### 2. Reset Audit Triggers (Automated)
 
-In the "Current Thresholds" section, update all 6 categories:
+Run the reset script to update all threshold counters:
 
-- Set "Last Audit" to today's date with "(Comprehensive)"
-- Reset "Commits Since" to 0
-- Reset "Files Since" to 0
+```bash
+node scripts/reset-audit-triggers.js --type=comprehensive --apply
+```
 
-### 3. Update Multi-AI Thresholds
-
-In the "Multi-AI Audit Thresholds" section:
-
-- Update "Total commits" reset date to today
-- Update "Time elapsed" to "0 days (comprehensive audit {TODAY})"
-
-**This step ensures `npm run review:check` correctly shows no triggers after the
-audit.**
+This resets all category dates, commits, files, and multi-AI counters in
+AUDIT_TRACKER.md. Verify with `npm run review:check` (should show no triggers).
 
 ---
 

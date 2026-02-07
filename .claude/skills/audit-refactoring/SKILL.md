@@ -55,8 +55,8 @@ Run `npm run review:check` and report results.
 Collect these metrics by running commands:
 
 ```bash
-# SonarQube issues (if manifest exists)
-cat docs/analysis/sonarqube-manifest.md 2>/dev/null | head -30 || echo "No SonarQube manifest"
+# SonarCloud issues (query via MCP or npm run sonar:report)
+npm run sonar:report 2>/dev/null || echo "No SonarCloud data available"
 
 # Circular dependencies
 npm run deps:circular 2>&1
@@ -96,9 +96,9 @@ Note patterns to exclude from final findings.
 
 **Step 4: Check Template Currency**
 
-Read `docs/multi-ai-audit/templates/REFACTOR_PLAN.md` and verify:
+Read `docs/multi-ai-audit/templates/REFACTORING_AUDIT.md` and verify:
 
-- [ ] SonarQube baseline is current (778 issues, 47 CRITICAL)
+- [ ] SonarCloud baseline is current (778 issues, 47 CRITICAL)
 - [ ] Known god objects are listed
 - [ ] Batch fix opportunities are documented
 
@@ -112,7 +112,7 @@ If outdated, note discrepancies but proceed with current values.
 
 1. God Objects (large files, too many responsibilities)
 2. Code Duplication (repeated patterns, copy-paste code)
-3. Cognitive Complexity (SonarQube CRITICAL targets)
+3. Cognitive Complexity (SonarCloud CRITICAL targets)
 4. Architecture Violations (layer boundaries, import cycles)
 5. Technical Debt Markers (TODOs, FIXMEs, HACKs)
 
@@ -155,8 +155,8 @@ If outdated, note discrepancies but proceed with current values.
 
 **Confidence Levels:**
 
-- **HIGH (90%+)**: Confirmed by tool (SonarQube, deps:circular, wc -l), verified
-  file exists, metrics match
+- **HIGH (90%+)**: Confirmed by tool (SonarCloud, deps:circular, wc -l),
+  verified file exists, metrics match
 - **MEDIUM (70-89%)**: Found via pattern search, file verified, but metrics
   estimated
 - **LOW (<70%)**: Pattern match only, needs manual verification
@@ -165,7 +165,7 @@ If outdated, note discrepancies but proceed with current values.
 
 - HIGH or MEDIUM confidence (LOW confidence S0/S1 must be escalated)
 - Dual-pass verification (re-read the code after initial finding)
-- Cross-reference with SonarQube or dependency analysis output
+- Cross-reference with SonarCloud or dependency analysis output
 
 ---
 
@@ -173,7 +173,7 @@ If outdated, note discrepancies but proceed with current values.
 
 Before finalizing findings, cross-reference with:
 
-1. **SonarQube manifest** - Mark findings as "TOOL_VALIDATED" if SonarQube
+1. **SonarCloud issues** - Mark findings as "TOOL_VALIDATED" if SonarCloud
    flagged same issue
 2. **deps:circular output** - Mark architecture findings as "TOOL_VALIDATED" if
    tool detected cycle
@@ -211,7 +211,7 @@ Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or
 
 ### Baselines
 
-- SonarQube CRITICAL: X issues
+- SonarCloud CRITICAL: X issues
 - Circular dependencies: X
 - Unused exports: X
 - Files > 300 lines: X
@@ -360,6 +360,8 @@ Full markdown report with all findings, baselines, and refactoring plan.
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
+   - Run:
+     `node scripts/reset-audit-triggers.js --type=single --category=refactoring --apply`
 6. **TDMS Integration (MANDATORY)** - Ingest findings to canonical debt store:
    ```bash
    node scripts/debt/intake-audit.js docs/audits/single-session/refactoring/audit-[YYYY-MM-DD].jsonl --source "audit-refactoring-[DATE]"
@@ -389,8 +391,8 @@ category starts counting from zero after this audit.
 
 ### Multi-AI Escalation
 
-After 3 single-session refactoring audits, a full multi-AI Refactoring Audit is
-recommended. Track this in AUDIT_TRACKER.md "Single audits completed" counter.
+Multi-AI audits are triggered by total commits or time elapsed (not single audit
+counts). Check `npm run review:check` for current multi-AI trigger status.
 
 ---
 

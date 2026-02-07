@@ -534,20 +534,14 @@ const ANTI_PATTERNS = [
       // - sync-consolidation-counter.js: readFileSync at L74 IS in try/catch (L73-83)
       "sync-consolidation-counter.js",
       // 2026-02-05 audit (Review #249 PR #336):
-      // - eval-check-stage.js: all readFileSync in try/catch (L65-68, L122-132, L171-178, L702-707, L765-772, L876-880)
-      // - eval-snapshot.js: all readFileSync in try/catch (L55-58, L76-80, L121-126, L152-155)
       // - unify-findings.js: readFileSync at L67 IS in try/catch (L66-70)
       // - normalize-format.js: readFileSync at L811 IS in try/catch (L810-815)
       // - aggregate-category.js: readFileSync at L131 IS in try/catch (L130-134), L544 IS in try/catch (L543-547)
-      // - eval-report.js: readFileSync at L41 IS in try/catch (L40-44), L60 IS in try/catch (L59-63)
       // - fix-schema.js: readFileSync at L520 IS in try/catch (L519-524)
       // - state-manager.js: readFileSync at L157 IS in try/catch (L156-161), L193 IS in try/catch (L192-196)
-      "eval-check-stage.js",
-      "eval-snapshot.js",
       "unify-findings.js",
       "normalize-format.js",
       "aggregate-category.js",
-      "eval-report.js",
       "fix-schema.js",
       "state-manager.js",
       // 2026-02-05 (Review #249): generate-views.js readFileSync at L79 IS in try/catch (L78-108),
@@ -566,22 +560,24 @@ const ANTI_PATTERNS = [
       "state-utils.js",
       "agent-trigger-enforcer.js",
       "sync-sonarcloud.js",
-      // 2026-02-05 audit (Review #251 PR #338):
-      // - eval-sonarcloud-snapshot.js: readFileSync at L52 IS in try/catch (L51-55),
-      //   L80 IS in try/catch (L79-83), L103 IS in try/catch (L102-106)
-      // - eval-sonarcloud-stage.js: readFileSync at L49 IS in try/catch (L48-52),
-      //   L59 IS in try/catch (L58-62), L88 IS in try/catch (L86-91),
-      //   L447 IS in try/catch (L446-450), L510 IS in try/catch (L509-513)
-      // - eval-sonarcloud-report.js: readFileSync at L69 IS in try/catch (L68-72),
-      //   L88 IS in try/catch (L87-91)
-      "eval-sonarcloud-snapshot.js",
-      "eval-sonarcloud-stage.js",
-      "eval-sonarcloud-report.js",
       // 2026-02-06 audit (Review #255):
       // - intake-audit.js: readFileSync at L287 IS in try/catch (L286-293), L373 IS in try/catch (L372-379)
       // - extract-agent-findings.js: readFileSync now IS in try/catch (fixed Review #255)
       "intake-audit.js",
       "extract-agent-findings.js",
+      // 2026-02-07 audit (PR #346):
+      // - commit-tracker.js: readFileSync at L85 IS in try/catch (L84-89), L116 IS in try/catch (L114-121)
+      // - compact-restore.js: readFileSync at L46 IS in try/catch (L45-49)
+      // - pre-compaction-save.js: readFileSync at L67 IS in try/catch (L66-70), L116 IS in try/catch (L114-121), L150 IS in try/catch (L149-166)
+      // - check-session-gaps.js: readFileSync at L35 IS in try/catch (L34-49), L58 IS in try/catch (L57-68), L76 IS in try/catch (L75-81)
+      // - reset-audit-triggers.js: readFileSync at L195 IS in try/catch (L194-199)
+      // - seed-commit-log.js: readFileSync at L34 IS in try/catch (L33-45)
+      "commit-tracker.js",
+      "compact-restore.js",
+      "pre-compaction-save.js",
+      "check-session-gaps.js",
+      "reset-audit-triggers.js",
+      "seed-commit-log.js",
     ],
   },
   {

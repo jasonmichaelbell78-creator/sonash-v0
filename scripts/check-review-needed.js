@@ -18,9 +18,8 @@
  * - Process: ANY CI/hook file OR 30 commits
  *
  * Multi-AI escalation triggers:
- * - 3+ single audits in same category
  * - 100+ total commits
- * - 14+ days since any audit
+ * - 14+ days since last multi-AI audit
  *
  * Usage: node scripts/check-review-needed.js [options]
  * Options:
@@ -94,15 +93,14 @@ const CATEGORY_THRESHOLDS = {
 };
 
 // Multi-AI escalation thresholds
-// Updated 2026-01-20 (Session #85): Increased for active development pace
+// Updated 2026-02-07: Removed singleAuditCount — single audits no longer escalate to multi-AI
 const MULTI_AI_THRESHOLDS = {
-  singleAuditCount: 5, // was 3 - Single audits before multi-AI
-  totalCommits: 300, // was 100 - Total commits across all categories
-  daysSinceAudit: 30, // was 14 - Days since any audit
+  totalCommits: 300, // Total commits across all categories
+  daysSinceAudit: 30, // Days since last multi-AI audit
 };
 
 // Shared category section header patterns (bounded, no backtracking risk)
-// Used by getCategoryAuditDates() and getSingleAuditCounts()
+// Used by getCategoryAuditDates()
 const CATEGORY_HEADERS = {
   code: /^### Code Audits/,
   security: /^### Security Audits/,
@@ -508,18 +506,31 @@ function getCategoryAuditDates(content) {
     process: null,
   };
 
-  for (const [category, headerPattern] of Object.entries(CATEGORY_HEADERS)) {
-    const sectionContent = extractSection(content, headerPattern);
-    if (sectionContent) {
-      // Find the most recent date in the table
-      const dateMatches = sectionContent.match(/\d{4}-\d{2}-\d{2}/g);
-      if (dateMatches && dateMatches.length > 0) {
-        // Get the most recent date, filtering out invalid dates
-        const dates = dateMatches.map((d) => new Date(d).getTime()).filter((t) => !Number.isNaN(t));
-        if (dates.length === 0) continue;
-        const mostRecent = new Date(Math.max(...dates));
-        categories[category] = mostRecent.toISOString().split("T")[0];
-        verbose(`Found ${category} last audit: ${categories[category]}`);
+  // Read dates from the "Single-Session Audit Thresholds" table (the source of truth
+  // updated by reset-audit-triggers.js), not from the audit log sections.
+  // Scope to just the threshold section to avoid matching dates in other tables.
+  const thresholdsSection =
+    extractSection(content, /^## Single-Session Audit Thresholds/) || content;
+
+  // Table row format: | Category | 2026-02-07 (Comprehensive) | 0 | 0 | ... |
+  for (const category of Object.keys(categories)) {
+    const displayName = category
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join("-");
+    // Match category row — handle both hyphens and spaces in multi-word names
+    const displayNamePattern = displayName.replace(/-/g, "[-\\s]+");
+    const rowPattern = new RegExp(`^\\|\\s*${displayNamePattern}\\s*\\|\\s*([^|]+)\\|`, "mi");
+    const match = thresholdsSection.match(rowPattern);
+    if (match) {
+      const cellContent = match[1].trim();
+      const dateMatch = cellContent.match(/(\d{4}-\d{2}-\d{2})/);
+      if (dateMatch) {
+        const ts = new Date(dateMatch[1]).getTime();
+        if (!Number.isNaN(ts)) {
+          categories[category] = dateMatch[1];
+          verbose(`Found ${category} last audit: ${categories[category]} (from threshold table)`);
+        }
       }
     }
   }
@@ -528,35 +539,28 @@ function getCategoryAuditDates(content) {
 }
 
 /**
- * Count single-session audits per category
- * Uses extractSection() to avoid regex backtracking DoS (SonarQube S5852)
- * Deduplicates dates to avoid counting the same date multiple times
- * (e.g., dates appear in both table cells and file path links like audit-2026-01-17.md)
+ * Get the most recent multi-AI audit date from the Multi-AI Audit Log table
  * @param {string} content - Full content of AUDIT_TRACKER.md
- * @returns {Object<string, number>} Map of category names to audit counts
+ * @returns {string|null} ISO date string or null if no multi-AI audits found
  */
-function getSingleAuditCounts(content) {
-  const counts = {
-    code: 0,
-    security: 0,
-    performance: 0,
-    refactoring: 0,
-    documentation: 0,
-    process: 0,
-  };
+function getLastMultiAIAuditDate(content) {
+  const sectionContent = extractSection(content, /^## Multi-AI Audit Log/);
+  if (!sectionContent) return null;
 
-  for (const [category, headerPattern] of Object.entries(CATEGORY_HEADERS)) {
-    const sectionContent = extractSection(content, headerPattern);
-    if (sectionContent) {
-      // Count UNIQUE dates only (dates appear in table cells AND file paths like audit-2026-01-17.md)
-      // Using Set to deduplicate ensures each audit is counted once
-      const dateMatches = sectionContent.match(/\d{4}-\d{2}-\d{2}/g);
-      const uniqueDates = dateMatches ? new Set(dateMatches) : new Set();
-      counts[category] = uniqueDates.size;
-    }
-  }
+  // Match dates only in the first column of markdown table rows (| 2026-02-07 | ... |)
+  // to avoid picking up dates from comments, links, or description text in the section.
+  const rowDateMatches = Array.from(
+    sectionContent.matchAll(/^\|\s*(\d{4}-\d{2}-\d{2})\s*\|/gm),
+    (m) => m[1]
+  );
+  if (rowDateMatches.length === 0) return null;
 
-  return counts;
+  const validTimestamps = rowDateMatches
+    .map((d) => new Date(d).getTime())
+    .filter((t) => !Number.isNaN(t));
+  if (validTimestamps.length === 0) return null;
+
+  return new Date(Math.max(...validTimestamps)).toISOString().split("T")[0];
 }
 
 /**
@@ -725,58 +729,55 @@ function hasComplexityWarnings() {
 }
 
 /**
- * Check multi-AI escalation triggers (3+ single audits, 100+ commits, 14+ days)
- * @param {Object<string, number>} auditCounts - Map of category names to audit counts
+ * Check multi-AI escalation triggers (total commits, days since last multi-AI audit)
+ * Single-session audits do NOT count toward multi-AI escalation.
+ * @param {string|null} lastMultiAIDate - Date of last multi-AI audit (from Multi-AI Audit Log)
  * @param {Object<string, string|null>} categoryDates - Map of category names to last audit dates
- * @returns {Array<{type: string, category?: string, count?: number, daysSince?: number, commits?: number, threshold: number, message: string}>}
+ * @returns {Array<{type: string, daysSince?: number, commits?: number, threshold: number, message: string}>}
  */
-function checkMultiAITriggers(auditCounts, categoryDates) {
+function checkMultiAITriggers(lastMultiAIDate, categoryDates) {
   const triggers = [];
 
-  // Check if any category has 3+ single audits
-  for (const [category, count] of Object.entries(auditCounts)) {
-    if (count >= MULTI_AI_THRESHOLDS.singleAuditCount) {
-      triggers.push({
-        type: "single_audit_count",
-        category,
-        count,
-        threshold: MULTI_AI_THRESHOLDS.singleAuditCount,
-        message: `${category}: ${count} single audits (threshold: ${MULTI_AI_THRESHOLDS.singleAuditCount})`,
-      });
+  // Check days since last multi-AI audit (not any audit)
+  if (lastMultiAIDate) {
+    const multiAITimestamp = new Date(lastMultiAIDate).getTime();
+    if (!Number.isNaN(multiAITimestamp)) {
+      const daysSince = Math.floor((Date.now() - multiAITimestamp) / (1000 * 60 * 60 * 24));
+      if (daysSince >= MULTI_AI_THRESHOLDS.daysSinceAudit) {
+        triggers.push({
+          type: "time_elapsed",
+          daysSince,
+          threshold: MULTI_AI_THRESHOLDS.daysSinceAudit,
+          message: `${daysSince} days since last multi-AI audit (threshold: ${MULTI_AI_THRESHOLDS.daysSinceAudit})`,
+        });
+      }
     }
   }
 
-  // Check days since ANY audit and total commits
-  // Only check if there's at least one previous audit to avoid false positives on fresh projects
+  // Check total commits since last multi-AI audit
+  // Use multi-AI date if available, otherwise fall back to oldest category date
   const allDates = Object.values(categoryDates).filter((d) => d !== null);
-  if (allDates.length > 0) {
-    // Filter out invalid dates to prevent runtime crashes
-    const validTimestamps = allDates
-      .map((d) => new Date(d).getTime())
-      .filter((t) => !Number.isNaN(t));
-    if (validTimestamps.length === 0) return triggers;
+  const validTimestamps = allDates
+    .map((d) => new Date(d).getTime())
+    .filter((t) => !Number.isNaN(t));
+  const lastMultiAITs = lastMultiAIDate ? new Date(lastMultiAIDate).getTime() : NaN;
+  const usingFallbackDate = Number.isNaN(lastMultiAITs);
+  // Use lastMultiAIDate string directly to avoid timezone-related date drift from re-parsing
+  const sinceDate = !usingFallbackDate
+    ? lastMultiAIDate
+    : validTimestamps.length > 0
+      ? new Date(Math.min(...validTimestamps)).toISOString().split("T")[0]
+      : null;
 
-    const mostRecentAudit = new Date(Math.max(...validTimestamps));
-    const daysSince = Math.floor((Date.now() - mostRecentAudit.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (daysSince >= MULTI_AI_THRESHOLDS.daysSinceAudit) {
-      triggers.push({
-        type: "time_elapsed",
-        daysSince,
-        threshold: MULTI_AI_THRESHOLDS.daysSinceAudit,
-        message: `${daysSince} days since last audit (threshold: ${MULTI_AI_THRESHOLDS.daysSinceAudit})`,
-      });
-    }
-
-    // Check total commits since oldest category audit (only when audit history exists)
-    const oldestDate = new Date(Math.min(...validTimestamps)).toISOString().split("T")[0];
-    const totalCommits = getCommitsSince(oldestDate);
+  if (sinceDate) {
+    const totalCommits = getCommitsSince(sinceDate);
     if (totalCommits >= MULTI_AI_THRESHOLDS.totalCommits) {
+      const sinceLabel = usingFallbackDate ? "oldest category audit" : "last multi-AI audit";
       triggers.push({
         type: "total_commits",
         commits: totalCommits,
         threshold: MULTI_AI_THRESHOLDS.totalCommits,
-        message: `${totalCommits} total commits (threshold: ${MULTI_AI_THRESHOLDS.totalCommits})`,
+        message: `${totalCommits} total commits since ${sinceLabel} (${sinceDate}) (threshold: ${MULTI_AI_THRESHOLDS.totalCommits})`,
       });
     }
   }
@@ -836,25 +837,18 @@ function printTriggeredDetails(triggeredCategories) {
  * Print multi-AI escalation section
  * Extracted to reduce cognitive complexity of formatTextOutput (SonarQube S3776)
  * @param {Array<{message: string}>} multiAITriggers - Active multi-AI triggers
- * @param {Object<string, number>} auditCounts - Map of category names to audit counts
  * @returns {void}
  */
-function printMultiAISection(multiAITriggers, auditCounts) {
+function printMultiAISection(multiAITriggers) {
   console.log("\n=== Multi-AI Audit Escalation ===\n");
-  console.log("Single-Session Audit Counts:");
-
-  for (const [category, count] of Object.entries(auditCounts)) {
-    const status = count >= MULTI_AI_THRESHOLDS.singleAuditCount ? "⚠️ " : "✅";
-    console.log(`  ${status} ${category}: ${count}/${MULTI_AI_THRESHOLDS.singleAuditCount}`);
-  }
 
   if (multiAITriggers.length > 0) {
-    console.log("\n⚠️  Multi-AI Audit Recommended:");
+    console.log("⚠️  Multi-AI Audit Recommended:");
     for (const trigger of multiAITriggers) {
       console.log(`   - ${trigger.message}`);
     }
   } else {
-    console.log("\n✅ No multi-AI escalation triggers active.");
+    console.log("✅ No multi-AI escalation triggers active.");
   }
 }
 
@@ -927,11 +921,10 @@ function printSonarCloudSection(sonarData, sonarError) {
  * Refactored to reduce cognitive complexity by extracting helper functions (SonarQube S3776)
  * @param {Array<{category: string, triggered: boolean, commits: number, filesChanged: number, reasons: string[], sinceDate: string}>} categoryResults - Results for each category
  * @param {Array<{type: string, message: string, threshold: number}>} multiAITriggers - Active multi-AI triggers
- * @param {Object<string, number>} auditCounts - Map of category names to audit counts
  * @param {{data?: Object, error?: string}|null} sonarResult - SonarCloud fetch result (optional)
  * @returns {void}
  */
-function formatTextOutput(categoryResults, multiAITriggers, auditCounts, sonarResult = null) {
+function formatTextOutput(categoryResults, multiAITriggers, sonarResult = null) {
   console.log("🔍 Checking Review Triggers...\n");
   console.log("=== Per-Category Single-Session Audit Triggers ===\n");
 
@@ -939,7 +932,7 @@ function formatTextOutput(categoryResults, multiAITriggers, auditCounts, sonarRe
 
   const triggeredCategories = categoryResults.filter((r) => r.triggered);
   printTriggeredDetails(triggeredCategories);
-  printMultiAISection(multiAITriggers, auditCounts);
+  printMultiAISection(multiAITriggers);
 
   // Show SonarCloud section if enabled or data available
   if (SONARCLOUD_ENABLED || sonarResult) {
@@ -1017,9 +1010,9 @@ async function main() {
   // Get repository start date as fallback for missing audit dates
   const repoStartDate = getRepoStartDate();
 
-  // Get per-category audit dates
+  // Get per-category audit dates and last multi-AI audit date
   const categoryDates = getCategoryAuditDates(trackerContent);
-  const auditCounts = getSingleAuditCounts(trackerContent);
+  const lastMultiAIDate = getLastMultiAIAuditDate(trackerContent);
 
   // Check each category
   const categoriesToCheck = SPECIFIC_CATEGORY
@@ -1048,8 +1041,8 @@ async function main() {
     categoryResults.push(result);
   }
 
-  // Check multi-AI escalation
-  const multiAITriggers = checkMultiAITriggers(auditCounts, categoryDates);
+  // Check multi-AI escalation (uses multi-AI audit date, not single-session dates)
+  const multiAITriggers = checkMultiAITriggers(lastMultiAIDate, categoryDates);
 
   // Fetch SonarCloud data if enabled
   let sonarResult = null;
@@ -1073,7 +1066,6 @@ async function main() {
       // Detailed fields
       categoryResults,
       multiAITriggers,
-      auditCounts,
       reviewNeeded,
     };
 
@@ -1086,7 +1078,7 @@ async function main() {
 
     console.log(JSON.stringify(output, null, 2));
   } else {
-    formatTextOutput(categoryResults, multiAITriggers, auditCounts, sonarResult);
+    formatTextOutput(categoryResults, multiAITriggers, sonarResult);
   }
 
   // Exit code

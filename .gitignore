@@ -100,3 +100,5 @@ nul
 .claude/alerts-acknowledged.json
 .claude/pending-mcp-save.json
 .claude/hooks/.auto-save-state.json
+.claude/hooks/.commit-tracker-state.json
+.claude/hooks/.handoff-state.json

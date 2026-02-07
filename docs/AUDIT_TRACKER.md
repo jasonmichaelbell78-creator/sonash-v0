@@ -44,29 +44,30 @@ When tracking audits:
 
 | Category                 | Last Audit                 | Commits Since | Files Since | Trigger At                                |
 | ------------------------ | -------------------------- | ------------- | ----------- | ----------------------------------------- |
-| Code                     | 2026-02-03 (Comprehensive) | 0             | 0           | 25 commits OR 15 files                    |
-| Security                 | 2026-02-03 (Comprehensive) | 0             | 0           | Any security-sensitive file OR 20 commits |
-| Performance              | 2026-02-03 (Comprehensive) | 0             | 0           | 30 commits OR bundle change               |
-| Refactoring              | 2026-02-03 (Comprehensive) | 0             | 0           | 40 commits OR 3 complexity warnings       |
-| Documentation            | 2026-02-03 (Comprehensive) | 0             | 0           | 20 doc files changed OR 30 commits        |
-| Process                  | 2026-02-03 (Comprehensive) | 0             | 0           | Any CI/hook file changed OR 30 commits    |
-| Engineering-Productivity | 2026-02-03 (Comprehensive) | 0             | 0           | 30 commits OR DX-impacting changes        |
+| Code                     | 2026-02-07 (Comprehensive) | 0             | 0           | 25 commits OR 15 files                    |
+| Security                 | 2026-02-07 (Comprehensive) | 0             | 0           | Any security-sensitive file OR 20 commits |
+| Performance              | 2026-02-07 (Comprehensive) | 0             | 0           | 30 commits OR bundle change               |
+| Refactoring              | 2026-02-07 (Comprehensive) | 0             | 0           | 40 commits OR 3 complexity warnings       |
+| Documentation            | 2026-02-07 (Comprehensive) | 0             | 0           | 20 doc files changed OR 30 commits        |
+| Process                  | 2026-02-07 (Comprehensive) | 0             | 0           | Any CI/hook file changed OR 30 commits    |
+| Engineering-Productivity | 2026-02-07 (Comprehensive) | 0             | 0           | 30 commits OR DX-impacting changes        |
 
 ### Multi-AI Audit Thresholds (Cross-Category)
 
-| Trigger Type            | Threshold          | Current                                                                                          | Status   |
-| ----------------------- | ------------------ | ------------------------------------------------------------------------------------------------ | -------- |
-| Single audits completed | 3 per category     | code:0, security:0, performance:0, refactoring:0, documentation:0, process:0, eng-productivity:0 | ✅ Reset |
-| Total commits           | 100 commits        | 0 (reset 2026-02-03)                                                                             | ✅ Reset |
-| Time elapsed            | 14 days            | 0 days (comprehensive audit 2026-02-03)                                                          | ✅ Reset |
-| Major milestone         | Any M1.5+ complete | —                                                                                                | ⏳ Check |
+| Trigger Type    | Threshold          | Current                   | Status   |
+| --------------- | ------------------ | ------------------------- | -------- |
+| Total commits   | 100 commits        | 0 (reset 2026-02-07)      | ✅ Reset |
+| Time elapsed    | 14 days            | 0 days (audit 2026-02-07) | ✅ Reset |
+| Major milestone | Any M1.5+ complete | —                         | ⏳ Check |
 
 **Multi-AI audit is triggered when ANY of:**
 
-- 3+ single-session audits completed in same category
 - 100+ commits since last multi-AI audit
 - 14+ days since last multi-AI audit
 - Major milestone completed
+
+**Note:** Single-session audits do NOT count toward multi-AI escalation
+triggers.
 
 ---
 
@@ -183,15 +184,19 @@ When tracking audits:
 
 1. Update the relevant category table above with audit date
 2. Reset ONLY that category's "Commits Since" and "Files Since" to 0
-3. Increment the "Single audits completed" counter for multi-AI tracking
-4. DO NOT reset other categories
+3. DO NOT reset other categories
+4. Single-session audits do NOT count toward multi-AI escalation
+5. Run:
+   `node scripts/reset-audit-triggers.js --type=single --category=<name> --apply`
 
 ### When Multi-AI Audit Completes
 
 1. Update the Multi-AI Audit Log above
-2. Reset ALL thresholds for that category
-3. Reset the time-based trigger (14 days)
-4. Log in AI_REVIEW_LEARNINGS_LOG.md with Review # entry
+2. Reset ALL category thresholds (all dates, commits, files to 0)
+3. Reset the time-based trigger
+4. Reset total commits counter
+5. Multi-AI audit counts as a single-session audit for all covered categories
+6. Run: `node scripts/reset-audit-triggers.js --type=multi-ai --apply`
 
 ---
 
@@ -201,11 +206,16 @@ When tracking audits:
 # Check current threshold status
 npm run review:check
 
-# Check with category filter (future enhancement)
+# Check with category filter
 npm run review:check -- --category=security
 
-# Force threshold reset after audit (future enhancement)
-npm run review:reset -- --category=code --type=single
+# Reset thresholds after audit (dry-run by default)
+npm run audit:reset -- --type=single --category=code
+npm run audit:reset -- --type=multi-ai
+npm run audit:reset -- --type=comprehensive
+
+# Apply the reset (writes to file)
+npm run audit:reset -- --type=single --category=code --apply
 ```
 
 ---

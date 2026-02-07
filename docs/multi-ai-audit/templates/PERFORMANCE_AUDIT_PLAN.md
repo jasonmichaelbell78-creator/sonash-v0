@@ -11,6 +11,11 @@ Completion:** 0%
 
 ---
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ## Purpose
 
 This document serves as the **execution plan** for running a multi-AI
@@ -116,7 +121,7 @@ Exclude: [directories, e.g., docs/, tests/]
 
 | Model             | Capabilities                           | Performance Strength                                                    |
 | ----------------- | -------------------------------------- | ----------------------------------------------------------------------- |
-| Claude Opus 4.5   | browse_files=yes, run_commands=yes     | Comprehensive performance analysis, bundle optimization, React patterns |
+| Claude Opus 4.6   | browse_files=yes, run_commands=yes     | Comprehensive performance analysis, bundle optimization, React patterns |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes     | Cost-effective performance audits, pattern detection                    |
 | GPT-5-Codex       | browse_files=yes, run_commands=yes     | Comprehensive code analysis, optimization strategies                    |
 | Gemini 3 Pro      | browse_files=yes, run_commands=yes     | Alternative optimization perspective                                    |
@@ -159,6 +164,9 @@ PRE-REVIEW CONTEXT (REQUIRED READING)
 **Note:** Adjust file paths below to match your project structure. Verify each
 file exists before proceeding. If unavailable, skip and note the limitation.
 
+> NOTE: The references below require repository access. If your AI model cannot
+> browse files or run commands, skip to the audit prompt section below.
+
 Before beginning performance analysis, review these project-specific resources:
 
 1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and
@@ -170,10 +178,8 @@ Before beginning performance analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified
-   issues including performance concerns
-   - 47 CRITICAL cognitive complexity violations (refactoring targets)
-   - Performance-impacting patterns already identified
+5. **Static Analysis**: SonarCloud integration available via
+   `npm run sonar:report` (see SonarCloud dashboard)
 6. **Bundle Analysis** (if available): Previous build output for comparison
 
 These resources provide essential context about known performance issues and
@@ -557,20 +563,31 @@ Return 4 sections in this exact order:
 
 2. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema: { "category": "Bundle Size|Rendering|Data Fetching|Memory|Core Web
-Vitals", "title": "short, specific issue", "fingerprint":
-"<category>::<primary_file>::<issue_type>", "severity": "S0|S1|S2|S3", "effort":
-"E0|E1|E2|E3", "confidence": 0-100, "files": ["path1", "path2"], "symbols":
-["ComponentA", "hookB"], "performance_details": { "current_metric": "what it is
-now", "expected_improvement": "estimated improvement", "affected_metric":
-"LCP|INP|CLS|bundle|render|memory" }, "optimization": { "description": "what to
-do", "code_example": "optional: show pattern", "verification": ["how to verify
-improvement"] }, "evidence": ["measurements or code snippets"], "notes":
-"optional", "line": 123 }
+PRIMARY SCHEMA (flat canonical base — all templates use this):
 
-**⚠️ REQUIRED FIELDS (Session #116):** `files` (at least one path) and `line`
-(primary line number, use 1 if file-wide) are REQUIRED for ROADMAP
-cross-reference.
+{ "category": "performance", "title": "UserList renders 500+ items without
+virtualization", "fingerprint":
+"performance::components/List.tsx::missing-virtualization", "severity": "S2",
+"effort": "E2", "confidence": 75, "files": ["components/List.tsx:45"],
+"why_it_matters": "List renders 500+ items without virtualization, causing 2.1s
+INP on list pages and degraded scroll performance", "suggested_fix": "Add
+react-window virtualization for lists exceeding 50 items", "acceptance_tests":
+["INP < 200ms on list page", "Scroll behavior preserved", "All list items still
+accessible"], "evidence": ["Lighthouse INP: 2100ms on /users page"], "symbols":
+["UserList"], "performance_details": { "current_metric": "INP 2100ms",
+"expected_improvement": "INP < 200ms", "affected_metric": "INP" } }
+
+**REQUIRED FIELDS:** `category`, `title`, `fingerprint`, `severity`, `effort`,
+`confidence`, `files` (at least one path), `why_it_matters`, `suggested_fix`,
+`acceptance_tests`, `evidence`.
+
+**OPTIONAL SUPPLEMENTS:** `performance_details` (shown above), `symbols`,
+`notes`, `line` (primary line number, use 1 if file-wide).
+
+**⚠️ CATEGORY VALUE:** Always use `"performance"` as the category value (the
+domain level). Sub-categories like "Bundle Size", "Rendering", "Data Fetching",
+"Memory", "Core Web Vitals" belong in the fingerprint and title only, not in the
+category field.
 
 Severity guide (performance-specific):
 
@@ -711,6 +728,11 @@ MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md:
 
 ---
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ## AI Instructions
 
 When using this template:
@@ -755,7 +777,7 @@ When using this template:
 | 1.4     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems                                                                                                                                                                                      | Claude   |
 | 1.3     | 2026-02-02 | Added Category 7: AI Performance Patterns with naive data fetching, missing pagination, redundant re-renders, AI performance health indicators. Expanded from 6 to 7 focus areas.                                                                                      | Claude   |
 | 1.2     | 2026-01-13 | Added Category 6: Offline Support (offline state detection, sync queue, pending/synced/failed states, conflict resolution, failure modes). From Engineering Productivity audit recommendations.                                                                        | Claude   |
-| 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added path adaptation notes | Claude   |
+| 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.6, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added path adaptation notes | Claude   |
 | 1.0     | YYYY-MM-DD | Initial template creation                                                                                                                                                                                                                                              | [Author] |
 
 ---

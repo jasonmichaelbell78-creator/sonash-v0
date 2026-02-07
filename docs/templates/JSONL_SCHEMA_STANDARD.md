@@ -1,6 +1,6 @@
 # Multi-AI Review JSONL Schema Standard
 
-**Document Version:** 1.0 **Created:** 2026-01-03 **Last Updated:** 2026-01-03
+**Document Version:** 1.3 **Created:** 2026-01-03 **Last Updated:** 2026-02-07
 **Purpose:** Standardized JSONL output schema for all multi-AI review templates
 
 ---
@@ -39,20 +39,20 @@ All finding objects MUST include these fields:
 
 ### Field Definitions
 
-| Field              | Type   | Required | Description                               |
-| ------------------ | ------ | -------- | ----------------------------------------- |
-| `category`         | string | Yes      | Review-type-specific category (see below) |
-| `title`            | string | Yes      | Short, specific description of finding    |
-| `fingerprint`      | string | Yes      | Unique identifier for deduplication       |
-| `severity`         | enum   | Yes      | S0 (critical) to S3 (low)                 |
-| `effort`           | enum   | Yes      | E0 (minutes) to E3 (multi-week)           |
-| `confidence`       | number | Yes      | 0-100 confidence score                    |
-| `files`            | array  | Yes      | Affected file paths                       |
-| `why_it_matters`   | string | Yes      | Impact explanation                        |
-| `suggested_fix`    | string | Yes      | Remediation direction                     |
-| `acceptance_tests` | array  | Yes      | How to verify fix                         |
-| `evidence`         | array  | No       | Grep output, code snippets                |
-| `notes`            | string | No       | Additional context                        |
+| Field              | Type   | Required | Description                                               |
+| ------------------ | ------ | -------- | --------------------------------------------------------- |
+| `category`         | string | Yes      | Domain-level category (see Valid Domain Categories below) |
+| `title`            | string | Yes      | Short, specific description of finding                    |
+| `fingerprint`      | string | Yes      | Unique identifier for deduplication                       |
+| `severity`         | enum   | Yes      | S0 (critical) to S3 (low)                                 |
+| `effort`           | enum   | Yes      | E0 (minutes) to E3 (multi-week)                           |
+| `confidence`       | number | Yes      | 0-100 confidence score                                    |
+| `files`            | array  | Yes      | Affected file paths                                       |
+| `why_it_matters`   | string | Yes      | Impact explanation                                        |
+| `suggested_fix`    | string | Yes      | Remediation direction                                     |
+| `acceptance_tests` | array  | Yes      | How to verify fix                                         |
+| `evidence`         | array  | No       | Grep output, code snippets                                |
+| `notes`            | string | No       | Additional context                                        |
 
 ---
 
@@ -76,10 +76,55 @@ All finding objects MUST include these fields:
 
 ---
 
+## Valid Domain Categories
+
+The `category` field MUST be one of these domain-level values:
+
+| Domain                   | `category` Value           |
+| ------------------------ | -------------------------- |
+| Code Quality             | `code-quality`             |
+| Security                 | `security`                 |
+| Performance              | `performance`              |
+| Refactoring              | `refactoring`              |
+| Documentation            | `documentation`            |
+| Process/Automation       | `process`                  |
+| Engineering Productivity | `engineering-productivity` |
+
+**Sub-Classification:** Sub-categories (e.g., "Rate Limiting", "Bundle Size")
+belong in the `fingerprint` or `title` fields, NOT in `category`. The pipeline's
+`fix-schema.js` normalizes non-standard category values to domain-level, but
+producing standard output is strongly preferred.
+
+---
+
+## Fingerprint Convention
+
+The `fingerprint` field uniquely identifies a finding for deduplication. Format:
+
+```
+<domain>::<file_or_scope>::<issue_slug>
+```
+
+**Examples by domain:**
+
+| Domain                   | Example Fingerprint                                        |
+| ------------------------ | ---------------------------------------------------------- |
+| code-quality             | `code-quality::lib/auth.ts::missing-type-guard`            |
+| security                 | `security::lib/auth.ts::missing-rate-limit`                |
+| performance              | `performance::components/List.tsx::missing-virtualization` |
+| refactoring              | `refactoring::hooks/useJournal.ts::extract-service`        |
+| documentation            | `documentation::ARCHITECTURE.md::broken-link-setup`        |
+| process                  | `process::scripts/deploy.js::missing-error-handling`       |
+| engineering-productivity | `engineering-productivity::scripts/dev.js::slow-startup`   |
+
+---
+
 ## Domain-Specific Extensions
 
-Each review type MAY add domain-specific fields. These are OPTIONAL and
-supplement the base schema.
+Each review type MAY add domain-specific fields. These are OPTIONAL supplements
+to the base schema -- the REQUIRED base fields (`why_it_matters`,
+`suggested_fix`, `acceptance_tests`) must always be populated. Domain extensions
+provide additional structured detail but never replace base fields.
 
 ### Code Review / Refactor Extensions
 
@@ -96,22 +141,6 @@ supplement the base schema.
   "dependencies": ["array of fingerprints this depends on"]
 }
 ```
-
-**Categories for Code Review:**
-
-- Hygiene/Duplication
-- Types/Correctness
-- Next/React Boundaries
-- Security
-- Testing
-
-**Categories for Refactor:**
-
-- Hygiene/Duplication
-- Types/Correctness
-- Architecture/Boundaries
-- Security Hardening
-- Testing Infrastructure
 
 ### S0/S1 Verification Extension (REQUIRED for Critical/High Findings)
 
@@ -155,36 +184,31 @@ require additional scrutiny and may be blocked by pre-commit hooks.
 
 ---
 
-### Security Audit Extensions
+### Security Audit Extensions (OPTIONAL supplements)
+
+These fields provide additional structured detail. The base schema fields
+`why_it_matters` (description + impact), `suggested_fix` (remediation steps),
+and `acceptance_tests` (verification) MUST still be populated.
 
 ```json
 {
   "vulnerability_details": {
-    "description": "string (what's wrong)",
+    "description": "string (what's wrong -- also put in why_it_matters)",
     "exploitation": "string (how it could be attacked)",
     "impact": "string (what damage could occur)",
     "affected_data": "string (what data is at risk)"
   },
   "remediation": {
-    "steps": ["array of fix steps"],
+    "steps": ["array of fix steps -- also put in suggested_fix"],
     "code_example": "string (optional fix pattern)",
-    "verification": ["array of verification steps"]
+    "verification": ["array -- also put in acceptance_tests"]
   },
   "owasp_category": "string (A01-A10 or N/A)",
   "cvss_estimate": "LOW|MEDIUM|HIGH|CRITICAL"
 }
 ```
 
-**Categories for Security:**
-
-- Rate Limiting
-- Input Validation
-- Secrets Management
-- Authentication
-- Firebase Security
-- OWASP
-
-### Performance Audit Extensions
+### Performance Audit Extensions (OPTIONAL supplements)
 
 ```json
 {
@@ -195,22 +219,14 @@ require additional scrutiny and may be blocked by pre-commit hooks.
     "affected_metric": "LCP|INP|CLS|bundle|render|memory"
   },
   "optimization": {
-    "description": "string (what to do)",
+    "description": "string (what to do -- also put in suggested_fix)",
     "code_example": "string (optional pattern)",
-    "verification": ["array of verification steps"]
+    "verification": ["array -- also put in acceptance_tests"]
   }
 }
 ```
 
-**Categories for Performance:**
-
-- Bundle Size
-- Rendering
-- Data Fetching
-- Memory
-- Core Web Vitals
-
-### Engineering Productivity Audit Extensions
+### Engineering Productivity Audit Extensions (OPTIONAL supplements)
 
 ```json
 {
@@ -221,18 +237,12 @@ require additional scrutiny and may be blocked by pre-commit hooks.
     "impact_area": "GoldenPath|Debugging|Offline"
   },
   "improvement": {
-    "description": "string (what to do)",
+    "description": "string (what to do -- also put in suggested_fix)",
     "code_example": "string (optional pattern)",
-    "verification": ["array of verification steps"]
+    "verification": ["array -- also put in acceptance_tests"]
   }
 }
 ```
-
-**Categories for Engineering Productivity:**
-
-- GoldenPath (setup, scripts, onboarding, dev workflow)
-- Debugging (logging, tracing, error handling, messages)
-- Offline (persistence, service workers, queues, sync)
 
 ---
 
@@ -318,11 +328,12 @@ When aggregating:
 
 ## Version History
 
-| Version | Date       | Changes                                                 | Author |
-| ------- | ---------- | ------------------------------------------------------- | ------ |
-| 1.2     | 2026-02-02 | Added TDMS Field Mapping section for intake integration | Claude |
-| 1.1     | 2026-01-24 | Added S0/S1 verification_steps extension (Session #98)  | Claude |
-| 1.0     | 2026-01-03 | Initial schema standard creation (Task 6.7)             | Claude |
+| Version | Date       | Changes                                                                       | Author |
+| ------- | ---------- | ----------------------------------------------------------------------------- | ------ |
+| 1.3     | 2026-02-07 | Domain-level category requirement, fingerprint convention, flatten extensions | Claude |
+| 1.2     | 2026-02-02 | Added TDMS Field Mapping section for intake integration                       | Claude |
+| 1.1     | 2026-01-24 | Added S0/S1 verification_steps extension (Session #98)                        | Claude |
+| 1.0     | 2026-01-03 | Initial schema standard creation (Task 6.7)                                   | Claude |
 
 ---
 
@@ -377,9 +388,11 @@ node scripts/debt/intake-audit.js <audit-output.jsonl> \
 ## Related Documents
 
 - [CODE_REVIEW_PLAN.md](../multi-ai-audit/templates/CODE_REVIEW_PLAN.md)
-- [REFACTOR_PLAN.md](../multi-ai-audit/templates/REFACTOR_PLAN.md)
 - [SECURITY_AUDIT_PLAN.md](../multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md)
 - [PERFORMANCE_AUDIT_PLAN.md](../multi-ai-audit/templates/PERFORMANCE_AUDIT_PLAN.md)
+- [REFACTORING_AUDIT.md](../multi-ai-audit/templates/REFACTORING_AUDIT.md)
+- [SHARED_TEMPLATE_BASE.md](../multi-ai-audit/templates/SHARED_TEMPLATE_BASE.md) -
+  Shared boilerplate for all audit templates
 - [COORDINATOR.md](../multi-ai-audit/COORDINATOR.md)
 - [TDMS PROCEDURE.md](../technical-debt/PROCEDURE.md) - Canonical debt
   management

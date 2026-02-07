@@ -30,15 +30,18 @@ const ARCHIVE_LINE_THRESHOLD = 2500;
  * Format: | X.X | YYYY-MM-DD | Review #NNN: Description |
  */
 function getHighestReviewNumber(content) {
+  // Match "Review #NNN:" or "Review #NNN-NNN:" (range format, captures both numbers)
   const versionRegex =
-    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):/g;
+    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4})(?:-(\d{1,4}))?[-:]/g;
   let match;
   let highest = 0;
 
   while ((match = versionRegex.exec(content)) !== null) {
     const reviewNum = parseInt(match[1], 10);
-    if (reviewNum > highest) {
-      highest = reviewNum;
+    if (reviewNum > highest) highest = reviewNum;
+    if (match[2]) {
+      const rangeEnd = parseInt(match[2], 10);
+      if (rangeEnd > highest) highest = rangeEnd;
     }
   }
 
@@ -103,10 +106,15 @@ function main() {
     // COMPUTED: count actual review entries > last consolidated (gap-safe)
     // Review #215: Use Set counting instead of subtraction to handle gaps
     const lastConsolidated = getLastConsolidatedReview(activeContent);
+    // Match "Review #NNN:" or "Review #NNN-NNN:" (range format, captures both numbers)
     const versionRegex =
-      /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):/g;
+      /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4})(?:-(\d{1,4}))?[-:]/g;
 
-    const allNums = Array.from(activeContent.matchAll(versionRegex), (m) => parseInt(m[1], 10));
+    const allNums = [];
+    for (const m of activeContent.matchAll(versionRegex)) {
+      allNums.push(parseInt(m[1], 10));
+      if (m[2]) allNums.push(parseInt(m[2], 10));
+    }
     const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
     // Review #216: Use reduce to avoid -Infinity and stack overflow on large arrays

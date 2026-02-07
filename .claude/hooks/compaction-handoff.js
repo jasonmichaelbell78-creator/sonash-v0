@@ -12,11 +12,13 @@
  *   - .claude/hooks/.session-agents.json (agents invoked this session)
  *   - .claude/hooks/.session-state.json (session identity)
  *   - .claude/hooks/.context-tracking-state.json (files read)
+ *   - .claude/state/task-*.state.json (in-progress task states)
  *   - git status / git log (branch, recent commits, modified files)
  *
  * Output: .claude/state/handoff.json
  *
  * Session #133: QoL improvement #5 (compaction-safe task handoff protocol)
+ * Session #138: Enhanced with task state summaries + recent commits (Layer B)
  */
 
 const fs = require("node:fs");
@@ -119,6 +121,50 @@ function gatherGitContext() {
 }
 
 /**
+ * Gather all task-*.state.json summaries
+ */
+function gatherTaskStates() {
+  const stateDir = path.join(projectDir, ".claude", "state");
+  try {
+    const files = fs
+      .readdirSync(stateDir)
+      .filter((f) => f.startsWith("task-") && f.endsWith(".state.json"));
+    return files.map((f) => {
+      const data = loadJson(path.join(stateDir, f));
+      if (!data) return { file: f, error: "unreadable" };
+      // Compact summary: task name, status of steps, last update
+      const steps = (data.steps || []).map((s) => ({
+        name: s.name,
+        status: s.status,
+      }));
+      return {
+        file: f,
+        task: data.task || f,
+        lastUpdated: data.lastUpdated || null,
+        steps: steps,
+        resumePoint: data.resume_point || data.context?.status || null,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Get session counter from SESSION_CONTEXT.md
+ */
+function getSessionCounter() {
+  try {
+    const contextPath = path.join(projectDir, "SESSION_CONTEXT.md");
+    const content = fs.readFileSync(contextPath, "utf8");
+    const match = content.match(/\*\*Current Session Count\*\*:\s*(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Build handoff data from all available state
  */
 function buildHandoff() {
@@ -139,12 +185,21 @@ function buildHandoff() {
     }
   }
 
+  // Layer B enhancements: task states + recent commits + session counter
+  const taskStates = gatherTaskStates();
+  const recentCommits = gitExec("git log --oneline -10")
+    .split("\n")
+    .filter((l) => l.length > 0);
+  const sessionCounter = getSessionCounter();
+
   return {
     timestamp: new Date().toISOString(),
     sessionId: sessionState.currentSessionId || null,
+    sessionCounter: sessionCounter,
     git: {
       branch: gitContext.branch,
       lastCommit: gitContext.lastCommit,
+      recentCommits: recentCommits,
       uncommittedFiles: gitContext.uncommittedFiles,
       stagedFiles: gitContext.stagedFiles,
       untrackedFiles: gitContext.untrackedFiles,
@@ -154,12 +209,14 @@ function buildHandoff() {
       filesList: (contextTracking.filesRead || []).slice(-30), // Last 30 files
     },
     agentsUsed: agentSummary,
+    taskStates: taskStates,
     recovery: {
       instruction:
         "Read this file at session start to restore context. " +
         "Check git status for uncommitted work. " +
         "Review agentsUsed to understand what was done. " +
-        "Check .claude/state/task-*.state.json for in-progress task details.",
+        "Check taskStates for in-progress multi-step task details. " +
+        "Use recentCommits to understand what was accomplished.",
     },
   };
 }
@@ -193,15 +250,18 @@ function main() {
 
     console.error("");
     console.error("  COMPACTION HANDOFF PREPARED");
-    console.error("\u2501".repeat(38));
+    console.error("\u2501".repeat(42));
+    console.error(`   Session: #${handoff.sessionCounter || "?"}`);
     console.error(`   Branch: ${handoff.git.branch}`);
     console.error(`   Files read: ${handoff.contextMetrics.filesRead}`);
     console.error(`   Uncommitted: ${handoff.git.uncommittedFiles.length} files`);
     console.error(`   Agents used: ${Object.keys(handoff.agentsUsed).length} types`);
+    console.error(`   Task states: ${handoff.taskStates.length} tracked`);
+    console.error(`   Recent commits: ${handoff.git.recentCommits.length}`);
     console.error("");
     console.error("   Handoff saved to: .claude/state/handoff.json");
     console.error("   This file survives compaction for session recovery.");
-    console.error("\u2501".repeat(38));
+    console.error("\u2501".repeat(42));
   }
 
   console.log("ok");

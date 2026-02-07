@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.9 **Last Updated:** 2026-02-05
+**Document Version:** 4.1 **Last Updated:** 2026-02-07
 
 ---
 
@@ -61,7 +61,7 @@ This is the primary context file for Claude Code sessions:
 | ------------ | ------- | ----------- |
 | Next.js      | 16.1.1  | App Router  |
 | React        | 19.2.3  | Stable      |
-| Firebase     | 12.6.0  | Modular SDK |
+| Firebase     | 12.8.0  | Modular SDK |
 | Tailwind CSS | 4.1.9   |             |
 | Zod          | 4.2.1   |             |
 
@@ -98,7 +98,7 @@ This is the primary context file for Claude Code sessions:
 
 **Full Reference**:
 [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (230+
-patterns with priority tiers 🔴/🟡/⚪ from 212 reviews)
+patterns with priority tiers 🔴/🟡/⚪ from 259 reviews)
 
 **Pre-Write Checklist**:
 [docs/agent_docs/SECURITY_CHECKLIST.md](docs/agent_docs/SECURITY_CHECKLIST.md) -
@@ -128,17 +128,20 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 
 ### PRE-TASK (before starting work)
 
-| Trigger                       | Action                       | Tool  | Parallel? |
-| ----------------------------- | ---------------------------- | ----- | --------- |
-| Bug/error/unexpected behavior | `systematic-debugging`       | Skill | No        |
-| Exploring unfamiliar code     | `Explore` agent              | Task  | No        |
-| Multi-step implementation     | `Plan` agent                 | Task  | No        |
-| Security/auth (no S0/S1)      | `security-auditor` agent     | Task  | Yes       |
-| New documentation             | `documentation-expert` agent | Task  | Yes       |
-| UI/frontend work              | `frontend-design` skill      | Skill | Yes       |
-| Code review <12 items         | `code-reviewer` agent        | Task  | No        |
-| Code review ≥12 items         | Multiple agents              | Task  | Yes       |
-| Audits (comprehensive)        | Domain audits                | Task  | Yes       |
+| Trigger                       | Action                       | Tool  | Parallel? | Team? |
+| ----------------------------- | ---------------------------- | ----- | --------- | ----- |
+| Bug/error/unexpected behavior | `systematic-debugging`       | Skill | No        | No    |
+| Exploring unfamiliar code     | `Explore` agent              | Task  | No        | No    |
+| Multi-step implementation     | `Plan` agent                 | Task  | No        | No    |
+| Multi-file feature (3+ files) | Development team             | Team  | Yes       | Yes   |
+| Security/auth (no S0/S1)      | `security-auditor` agent     | Task  | Yes       | No    |
+| New documentation             | `documentation-expert` agent | Task  | Yes       | No    |
+| UI/frontend work              | `frontend-design` skill      | Skill | Yes       | No    |
+| Code review <12 items         | `code-reviewer` agent        | Task  | No        | No    |
+| Code review 12-19 items       | Multiple agents              | Task  | Yes       | No    |
+| Code review >= 20 items       | Review team                  | Team  | Yes       | Yes   |
+| Audits (comprehensive)        | Audit team                   | Team  | Yes       | Yes   |
+| Audits (single domain)        | Domain audit agent           | Task  | Yes       | No    |
 
 ### POST-TASK (before committing)
 
@@ -160,6 +163,14 @@ delegated review to `.claude/state/pending-reviews.json`. When this triggers:
 3. Main conversation reads the summary — saves 1000+ tokens of review output
 
 This keeps the orchestrating conversation lean and compaction-safe.
+
+**With Agent Teams enabled:** Instead of queuing to pending-reviews.json, spawn
+a persistent reviewer teammate. The reviewer works in background while the main
+session continues coding. The reviewer can message the lead to ask about intent
+behind specific changes, producing higher quality reviews.
+
+**Without Agent Teams:** Continue using pending-reviews.json queue + subagent
+pattern (current behavior).
 
 ### 6.3 Parallelization Decision Matrix
 
@@ -247,6 +258,95 @@ If 2+ agents modified same file:
 | `performance-engineer` | 3-7           | Slow   | Optimization      |
 | `debugger`             | 5-9           | Medium | Forensic work     |
 
+### 6.7 Agent Teams (Experimental)
+
+> [!NOTE] Agent teams require `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in
+> settings.json env. If not enabled, fall back to subagent patterns in 6.3-6.6.
+
+**Agent teams vs. subagents — use the right tool:**
+
+| Situation                         | Use Subagents | Use Agent Team |
+| --------------------------------- | ------------- | -------------- |
+| Bounded, independent tasks        | Yes           | No (overkill)  |
+| Tasks need to share findings      | No            | Yes            |
+| Quick one-off analysis            | Yes           | No             |
+| Multi-file feature implementation | No            | Yes            |
+| Cross-domain audit (7 categories) | Possible      | Preferred      |
+| PR review with 20+ items          | Possible      | Preferred      |
+| Single code review pass           | Yes           | No             |
+
+**Decision rule:** If agents would benefit from talking to each other during
+execution (not just reporting results), use a team. Otherwise use subagents.
+
+#### Team Formation Triggers
+
+Form an agent team automatically when ALL criteria are met:
+
+| Criterion               | Threshold                             |
+| ----------------------- | ------------------------------------- |
+| Estimated work items    | >= 15                                 |
+| Distinct concern areas  | >= 3                                  |
+| Cross-cutting potential | High (items likely affect each other) |
+| User hasn't opted out   | No "use subagents" instruction        |
+
+#### Standard Team Configurations
+
+**Audit Team** (for `/audit-comprehensive`):
+
+- Lead: orchestrator + aggregator
+- Teammates: 2-4 domain specialists (grouped by related domains)
+- Groupings: {code+refactoring}, {security+performance}, {docs+process+eng-prod}
+- Communication: teammates flag cross-cutting findings to lead and relevant peer
+
+**Review Team** (for PR reviews with 20+ items):
+
+- Lead: triages items, synthesizes final report
+- Teammates: grouped by concern (security, code-quality, testing)
+- Communication: security teammate alerts code-quality teammate about auth
+  issues
+
+**Development Team** (for multi-file feature work):
+
+- Lead: primary implementer
+- Teammate 1: test writer (writes tests in parallel with implementation)
+- Teammate 2: doc updater (keeps docs in sync with changes)
+- Communication: test writer asks lead about expected behavior; doc writer asks
+  about API surface changes
+
+#### Team Budget Limits
+
+| Team Type   | Max Teammates | Token Budget | Auto-Shutdown                |
+| ----------- | ------------- | ------------ | ---------------------------- |
+| Audit       | 4             | 250K total   | After aggregation complete   |
+| Review      | 3             | 200K total   | After all items addressed    |
+| Development | 2             | 300K total   | When feature branch is ready |
+| Exploration | 2             | 100K total   | When question is answered    |
+
+If a team approaches its token budget, the lead should:
+
+1. Message teammates to wrap up current work
+2. Collect partial results
+3. Shut down teammates
+4. Continue as single agent with collected context
+
+#### Team Lifecycle
+
+1. **Formation:** Lead announces team creation, assigns initial tasks
+2. **Execution:** Teammates claim tasks from shared list, message on
+   cross-cutting
+3. **Coordination:** Lead resolves file conflicts (CRITICAL fixes first)
+4. **Completion:** Lead collects all results, shuts down teammates
+5. **Handoff:** Lead writes summary to conversation (not teammates)
+
+#### When NOT to Form Teams
+
+- Single-file changes (any complexity)
+- Sequential workflows where Step N depends on Step N-1
+- User explicitly requests subagents or sequential work
+- Session is already past 50% context usage (team overhead risks compaction)
+- Simple bug fixes, even across multiple files
+- Hook/script development (shell-based, no team benefit)
+
 ## 7. Context Preservation & Compaction Safety
 
 > [!IMPORTANT] Prevent loss of important decisions during context compaction.
@@ -292,18 +392,36 @@ This file survives compaction and enables clean resumption. Update it after
 completing each step. The `.claude/state/` directory is gitignored for ephemeral
 session data.
 
-### 7.3 Compaction Handoff
+### 7.3 Compaction-Resilient State Persistence (4 Layers)
 
-The `compaction-handoff.js` hook automatically writes
-`.claude/state/handoff.json` when context thresholds are exceeded (25+ files
-read). This file contains git state, agent invocations, and files read.
+Automatic multi-layer defense against state loss during context compaction:
+
+| Layer         | Hook                     | Trigger                       | Output                           |
+| ------------- | ------------------------ | ----------------------------- | -------------------------------- |
+| A: Commit Log | `commit-tracker.js`      | PostToolUse: Bash             | `.claude/state/commit-log.jsonl` |
+| B: Threshold  | `compaction-handoff.js`  | PostToolUse: Read (25+ files) | `.claude/state/handoff.json`     |
+| C: PreCompact | `pre-compaction-save.js` | PreCompact (auto/manual)      | `.claude/state/handoff.json`     |
+| Restore       | `compact-restore.js`     | SessionStart:compact          | stdout (context injection)       |
+| D: Gap Detect | `check-session-gaps.js`  | Session begin (npm script)    | Console warnings                 |
+
+- **Layer A** logs every git commit to append-only JSONL — survives all failure
+  modes including crashes
+- **Layer C** is the most reliable — fires at exactly the right moment before
+  compaction, captures full task states + commit log + git context
+- **Restore** automatically outputs structured recovery context after compaction
+  (task progress, recent commits, git status)
+- **Layer D** detects sessions missing from SESSION_CONTEXT.md at next session
+  start (`npm run session:gaps`)
 
 **On session resume after compaction:**
 
-1. Read `.claude/state/handoff.json` for structured recovery context
-2. Read any `.claude/state/task-*.state.json` for in-progress tasks
-3. Check `mcp__memory__search_nodes("Session_")` for MCP memory
+1. `compact-restore.js` auto-outputs recovery context (no manual action needed)
+2. Read `.claude/state/handoff.json` for full details if needed
+3. Read any `.claude/state/task-*.state.json` for in-progress tasks
 4. Cross-reference with `git log --oneline -5` and `git status`
+
+**One-time setup:** Run `node scripts/seed-commit-log.js` to backfill commit log
+from git history.
 
 ### 7.4 Other Preservation Tools
 
@@ -320,6 +438,22 @@ and fix failures efficiently instead of manual fix-retry cycles. Category A
 errors (doc index, cross-doc deps) are auto-fixable inline. Category B errors
 (ESLint, pattern violations) should be delegated to a focused subagent.
 
+### 7.6 Agent Team Compaction Safety
+
+Agent teams have unique compaction challenges because each teammate is a
+separate context window:
+
+- **Lead compaction:** If the lead's context compacts, teammates keep working.
+  On restore, lead reads handoff.json + checks team status via task list.
+- **Teammate compaction:** Individual teammates may compact independently. They
+  restore from their own context. Lead should check teammate status after any
+  pause.
+- **Pre-compaction save:** The `pre-compaction-save.js` hook captures team
+  status in handoff.json (active teammates, their assigned tasks, completion
+  status).
+- **Budget monitoring:** If total team token usage exceeds 80% of budget, lead
+  should proactively wind down the team to prevent mid-work compaction.
+
 ## 8. Coding Standards
 
 - **TypeScript**: Strict mode, no `any`
@@ -332,20 +466,22 @@ errors (doc index, cross-doc deps) are auto-fixable inline. Category B errors
 
 ## Version History
 
-| Version | Date       | Description                                                                                                         |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
-| 3.9     | 2026-02-05 | Added 7.2-7.5: File-based state persistence, compaction handoff, pre-commit fixer; Added 6.2: Delegated code review |
-| 3.7     | 2026-02-02 | Added sections 6.3-6.6: Parallelization guidance, agent grouping, coordination, capacity reference                  |
-| 3.6     | 2026-01-28 | Promoted Session Start Protocol to top, fixed table formatting, added save reminder                                 |
-| 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                                                   |
-| 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)                                               |
-| 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md                                 |
-| 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)                                     |
-| 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md                                                  |
-| 2.9     | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60                                                                                    |
-| 2.8     | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50                                                                                    |
-| 2.7     | 2026-01-03 | Added mandatory session-end audit                                                                                   |
-| 2.6     | 2026-01-03 | Added CodeRabbit CLI integration                                                                                    |
+| Version | Date       | Description                                                                                                           |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| 4.1     | 2026-02-07 | Added 6.7 (Agent Teams), 7.6 (Team Compaction Safety); updated 6.2, PRE-TASK table; updated audit-comprehensive skill |
+| 4.0     | 2026-02-07 | Rewrote 7.3: 4-layer compaction-resilient state persistence (commit-tracker, PreCompact, compact-restore, gap detect) |
+| 3.9     | 2026-02-05 | Added 7.2-7.5: File-based state persistence, compaction handoff, pre-commit fixer; Added 6.2: Delegated code review   |
+| 3.7     | 2026-02-02 | Added sections 6.3-6.6: Parallelization guidance, agent grouping, coordination, capacity reference                    |
+| 3.6     | 2026-01-28 | Promoted Session Start Protocol to top, fixed table formatting, added save reminder                                   |
+| 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                                                     |
+| 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)                                                 |
+| 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md                                   |
+| 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)                                       |
+| 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md                                                    |
+| 2.9     | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60                                                                                      |
+| 2.8     | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50                                                                                      |
+| 2.7     | 2026-01-03 | Added mandatory session-end audit                                                                                     |
+| 2.6     | 2026-01-03 | Added CodeRabbit CLI integration                                                                                      |
 
 ---
 

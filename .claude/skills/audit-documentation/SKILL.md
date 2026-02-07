@@ -661,6 +661,10 @@ Add entry to "Documentation Audits" table:
 
 Single-session audits reset the documentation category threshold.
 
+```bash
+node scripts/reset-audit-triggers.js --type=single --category=documentation --apply
+```
+
 ### 5. Offer Fixes
 
 Ask user: "Would you like me to fix any immediate items now?"
@@ -696,8 +700,8 @@ last completed stage.
 
 ## Multi-AI Escalation
 
-After 3 single-session documentation audits, a full multi-AI Documentation Audit
-is recommended. Track in AUDIT_TRACKER.md "Single audits completed" counter.
+Multi-AI audits are triggered by total commits or time elapsed (not single audit
+counts). Check `npm run review:check` for current multi-AI trigger status.
 
 ---
 

@@ -636,6 +636,24 @@ Configured in `.claude/settings.json`.
 | auto-save-context.js     | Save   | Auto-save context to MCP on threshold    |
 | compaction-handoff.js    | Save   | Write handoff.json for compaction (#133) |
 
+**PostToolUse Hooks (Bash):**
+
+| Hook              | Action | Purpose                         |
+| ----------------- | ------ | ------------------------------- |
+| commit-tracker.js | Track  | Log git commits to JSONL (#138) |
+
+**PreCompact Hooks:**
+
+| Hook                   | Action | Purpose                                      |
+| ---------------------- | ------ | -------------------------------------------- |
+| pre-compaction-save.js | Save   | Full state snapshot before compaction (#138) |
+
+**SessionStart:compact Hooks:**
+
+| Hook               | Action  | Purpose                                         |
+| ------------------ | ------- | ----------------------------------------------- |
+| compact-restore.js | Restore | Output recovery context after compaction (#138) |
+
 **UserPromptSubmit Hooks:**
 
 | Hook                    | Action | Purpose                       |

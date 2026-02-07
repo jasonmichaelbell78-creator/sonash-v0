@@ -75,6 +75,14 @@ security review for auth, input validation, secrets management **Example:**
 compliance check **Note:** S0/S1 findings require `verification_steps` (Session
 #98)
 
+### `/doc-optimizer`
+
+**Description:** Scan all docs, auto-fix formatting/headers/links, report issues
+as JSONL, and generate improvement recommendations **When to use:** Periodic doc
+health maintenance, pre-release doc cleanup, after major doc changes
+**Example:** `/doc-optimizer` **Parameters:** None **Output:** 5-wave, 13-agent
+analysis with auto-fixes + JSONL findings + SUMMARY_REPORT.md
+
 ### `/docs-sync`
 
 **Description:** Check document synchronization between templates and instances
@@ -661,37 +669,6 @@ roadmap track assignments, metrics update **Added:** Session #130 **Updated:**
 Session #134 (v1.2 - Phase 7 rewritten as interactive placement with
 severity-weighted analysis, must-fix-now items, concentration risk)
 
-#### `eval-multi-ai-audit`
-
-**Description:** Evaluation wrapper that instruments a live multi-AI audit run
-and scores each pipeline stage. Runs a real `/multi-ai-audit` session with
-instrumentation to measure reliability, correctness, and data integrity across
-all 8 stages (session init, template output, format normalization, schema
-fixing, category aggregation, unification, TDMS intake, roadmap integration).
-Generates a scored evaluation report with actionable improvement
-recommendations. **When to use:** Validating the multi-ai-audit system works
-end-to-end, after making changes to audit scripts, or periodically for quality
-assurance **Example:** `/eval-multi-ai-audit` then proceed with a real audit
-**Parameters:** None - wraps the standard /multi-ai-audit workflow **Output:**
-Evaluation report at `docs/audits/multi-ai/<session>/eval/EVALUATION-REPORT.md`
-with per-stage scoring, data integrity checks, and recommendations **Added:**
-Session #132 **Note:** Temporary skill — remove after validation complete
-
-#### `eval-sonarcloud`
-
-**Description:** Evaluation wrapper for the /sonarcloud skill that validates the
-end-to-end pipeline: API fetch, deduplication, resolve logic, view regeneration,
-report generation, and schema integrity. Runs the REAL sonarcloud skill (not
-dry-run), instruments each stage, and produces a graded evaluation report with
-remediation guidance. No manual steps required. **When to use:** Validating the
-sonarcloud skill works as designed, after making changes to sync-sonarcloud.js,
-or periodically for quality assurance **Example:** `/eval-sonarcloud` then
-follow the automated flow **Parameters:** None - fully automated execution
-**Output:** Evaluation report at
-`docs/audits/eval-sonarcloud-<timestamp>/eval/EVALUATION-REPORT.md` with
-per-stage scoring, pre/post comparison, and remediation guidance **Added:**
-Session #133 **Note:** Temporary skill — remove after validation complete
-
 ### Technical Debt Management (TDMS)
 
 #### `verify-technical-debt`
@@ -750,9 +727,11 @@ context waste from manual fix-commit-retry cycles. **When to use:** When
 #### `session-begin`
 
 **Description:** Complete verification steps before starting any work session.
-Includes automatic secrets decryption check - Claude will prompt for passphrase
-if MCP tokens need decrypting. **When to use:** **START OF EVERY SESSION**
-**Example:** First action in new session **Parameters:** None
+Includes automatic secrets decryption check, session gap detection
+(`npm run session:gaps`), and 4-layer compaction-resilient state persistence.
+**When to use:** **START OF EVERY SESSION** **Example:** First action in new
+session **Parameters:** None **Related npm scripts:** `session:gaps`,
+`session:gaps:fix` (Session #138)
 
 #### `session-end`
 

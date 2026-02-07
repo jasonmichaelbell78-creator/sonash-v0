@@ -141,7 +141,30 @@ search({ query: ["component/module name", "patterns"] });
       [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md)
 - [ ] Check [ROADMAP.md](../../ROADMAP.md) for priority changes
 
-## 1b. Stale Documentation Check (MANDATORY - NEW)
+## 1b. Session Gap Detection (AUTOMATIC - Session #138)
+
+The `npm run session:gaps` script (run in Section 7) checks for undocumented
+sessions by comparing commit-log.jsonl against SESSION_CONTEXT.md.
+
+**If gaps are detected:**
+
+1. Run `npm run session:gaps:fix` to generate suggested session summaries
+2. Review the suggestions and add them to SESSION_CONTEXT.md
+3. Update MEMORY.md if any stale entries need correction
+
+**How the system works (3 layers):**
+
+- **Layer A (commit-tracker.js):** PostToolUse: Bash hook auto-logs every commit
+  to `.claude/state/commit-log.jsonl` with session number, files, timestamp
+- **Layer B (compaction-handoff.js):** Enhanced handoff includes task states and
+  recent commits when context is getting large
+- **Layer D (check-session-gaps.js):** Session-begin detects gaps between commit
+  log and documented sessions
+
+This system prevents state drift caused by context compaction interrupting
+session-end updates.
+
+## 1c. Stale Documentation Check (MANDATORY)
 
 **Documentation often drifts from reality.** Before trusting any status in docs,
 verify against actual commits:
@@ -250,6 +273,9 @@ npm run review:check
 
 # Surface past lessons relevant to current work
 npm run lessons:surface
+
+# Check for undocumented sessions (Layer D - compaction gap detector)
+npm run session:gaps
 ```
 
 **Important**: These scripts are **required**. If any script fails:

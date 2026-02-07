@@ -11,6 +11,11 @@ Completion:** 0%
 
 ---
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ## Purpose
 
 This document serves as the **execution plan** for running a multi-AI
@@ -166,7 +171,7 @@ Exclude: [directories, e.g., node_modules/, docs/archive/]
 | Model             | Parallel Agents | Assign to Stages | Strengths                           |
 | ----------------- | --------------- | ---------------- | ----------------------------------- |
 | Claude Code       | YES             | 1-5 (parallel)   | Full parallel execution, automation |
-| Claude Opus 4.5   | NO (sequential) | 3, 6             | Deep analysis, coherence checking   |
+| Claude Opus 4.6   | NO (sequential) | 3, 6             | Deep analysis, coherence checking   |
 | Claude Sonnet 4.5 | NO (sequential) | 2, 4             | Cost-effective, pattern detection   |
 | GPT-5.2-Codex     | LIMITED         | 4, 5             | Structure validation                |
 | Gemini 3 Pro      | LIMITED         | 2, 3             | Freshness, alternative perspective  |
@@ -285,14 +290,17 @@ JSONL OUTPUT REQUIREMENTS
 
 All findings must include these fields for TDMS integration:
 
-- id: Category-specific prefix (DOC-LINK-_, DOC-CONTENT-_, DOC-FORMAT-_,
-  DOC-LIFECYCLE-_)
 - category: "documentation"
+- title: Short, specific issue title
+- fingerprint: "documentation::<file>::<issue_slug>"
 - severity: S0|S1|S2|S3
 - effort: E0|E1|E2|E3
-- confidence: HIGH|MEDIUM|LOW
-- file: relative path
-- line: line number (use 1 if file-wide)
+- confidence: numeric 0-100 (80+ = high, 50-79 = medium, <50 = low)
+- files: array of "path:line" strings (use ":1" if file-wide)
+- why_it_matters: What's wrong and its impact
+- suggested_fix: How to fix
+- acceptance_tests: How to verify the fix
+- evidence: array of supporting evidence
 ```
 
 ### Part 3: Stage-by-Stage Audit Instructions
@@ -483,7 +491,7 @@ STAGE 6: SYNTHESIS & PRIORITIZATION (Sequential)
    confidenceWeight) / effortWeight
    - severityWeight: S0=100, S1=50, S2=20, S3=5
    - categoryMultiplier: links=1.5, accuracy=1.3, freshness=1.0, format=0.8
-   - confidenceWeight: HIGH=1.0, MEDIUM=0.7, LOW=0.4
+   - confidenceWeight: confidence/100 (e.g., 85 → 0.85)
    - effortWeight: E0=1, E1=2, E2=4, E3=8
 5. Generate action plan:
    - Immediate fixes (S0/S1, E0/E1)
@@ -511,18 +519,27 @@ Return 4 sections in this exact order:
 
 2. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema: { "id": "DOC-<STAGE>-<TYPE>-<TIMESTAMP>-<RANDOM>", "category":
-"documentation", "severity": "S0|S1|S2|S3", "effort": "E0|E1|E2|E3",
-"confidence": "HIGH|MEDIUM|LOW", "verified":
-"TOOL_VALIDATED|MANUAL_CHECK|SUSPECTED", "file": "relative/path.md", "line":
-123, "title": "Short, specific issue title", "description": "What's wrong and
-impact", "recommendation": "How to fix", "evidence": ["specific instances",
-"grep output"], "cross_ref": "link_check|accuracy_check|etc", "stage": 2,
-"agent": "2A" }
+Schema: { "category": "documentation", "title": "Broken internal link to
+ARCHITECTURE.md#setup", "fingerprint":
+"documentation::README.md::broken-link-architecture-setup", "severity": "S2",
+"effort": "E0", "confidence": 85, "files": ["README.md:42"], "why_it_matters":
+"Internal link points to non-existent anchor #setup in ARCHITECTURE.md, breaking
+navigation for new developers", "suggested_fix": "Update anchor to
+#getting-started which is the current heading in ARCHITECTURE.md",
+"acceptance_tests": ["Link resolves to existing heading", "npm run docs:check
+passes"], "evidence": ["grep showing #setup anchor, ARCHITECTURE.md headings
+list"] }
 
-⚠️ REQUIRED FIELDS: `file` (at least one path) and `line` (use 1 if file-wide)
+Field notes:
 
-3. SUSPECTED_FINDINGS_JSONL (same schema, but confidence=LOW; needs
+- fingerprint: convention is `documentation::<file>::<issue_slug>`
+- confidence: numeric 0-100 (NOT string). 80+ = high, 50-79 = medium, <50 = low
+- files: array of "path:line" strings (use ":1" if file-wide)
+- acceptance_tests: how to verify the fix is correct
+
+⚠️ REQUIRED FIELDS: `files` (at least one path) and `confidence` (numeric)
+
+3. SUSPECTED_FINDINGS_JSONL (same schema, but confidence <= 40; needs
    verification)
 
 4. HUMAN_SUMMARY (markdown)
@@ -688,6 +705,11 @@ node scripts/debt/intake-audit.js ${AUDIT_DIR}/all-findings.jsonl \
 | [Date] | 6-Stage Audit | [PAR/SEQ] | [N]    | [X]      | [Before → After] |
 
 ---
+
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
 
 ## AI Instructions
 

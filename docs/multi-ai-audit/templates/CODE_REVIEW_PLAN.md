@@ -9,6 +9,11 @@ Completion:** 0%
 > systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
 > sections sequentially or use external orchestration.
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ---
 
 ## 📋 Purpose
@@ -102,7 +107,7 @@ Exclude: [directories to skip, e.g., docs/, public/, node_modules/]
 
 | Model             | Capabilities                           | Primary Strength                                        |
 | ----------------- | -------------------------------------- | ------------------------------------------------------- |
-| Claude Opus 4.5   | browse_files=yes, run_commands=yes     | Repo-wide audits, grep-based proof, latest AI learnings |
+| Claude Opus 4.6   | browse_files=yes, run_commands=yes     | Repo-wide audits, grep-based proof, latest AI learnings |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes     | Cost-effective repo analysis, pattern detection         |
 | GPT-5-Codex       | browse_files=yes, run_commands=yes     | Refactor detection, TS ergonomics                       |
 | Gemini 3 Pro      | browse_files=yes, run_commands=yes     | Alternative refactor lens, fresh perspective            |
@@ -157,9 +162,9 @@ Before beginning analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified
-   issues from SonarQube
-   - Use current manifest counts (date-stamp your audit output)
+5. **Static Analysis** (SonarCloud dashboard via `npm run sonar:report`):
+   Pre-identified issues from SonarCloud
+   - Use current issue counts (date-stamp your audit output)
    - Focus on CRITICAL items for refactoring candidates
 
 These resources provide essential context about what has already been identified
@@ -438,15 +443,13 @@ Return 3 sections in this exact order:
 
 1. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-**NOTE (MANDATORY):** Use ONLY the schema tokens for `category`. Legacy names
-map: Hygiene/Duplication → Hygiene, Types/Correctness → Types, Next/React
-Boundaries → Framework, AI-Generated Code Failure Modes → AICode, Debugging
-Ergonomics → Debugging.
+**NOTE (MANDATORY):** The `category` field MUST be `"code-quality"` (the
+domain-level value). Sub-categories go in fingerprint and title only. Legacy
+sub-category names: Hygiene, Types, Framework, Security, Testing, AICode,
+Debugging.
 
-Schema: { "category":
-"Hygiene|Types|Framework|Security|Testing|AICode|Debugging", "title": "short,
-specific", "fingerprint":
-"<category>::<primary_file>::<primary_symbol>::<problem_slug>", "severity":
+Schema: { "category": "code-quality", "title": "short, specific", "fingerprint":
+"code-quality::<primary_file>::<primary_symbol>::<problem_slug>", "severity":
 "S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1",
 "path2"], "symbols": ["SymbolA", "SymbolB"], "duplication_cluster": {
 "is_cluster": true/false, "cluster_summary": "if true, describe the repeated
@@ -882,7 +885,8 @@ When using this template:
   reviews
 - **[PERFORMANCE_AUDIT_PLAN.md](./PERFORMANCE_AUDIT_PLAN.md)** -
   Performance-focused reviews
-- **[REFACTOR_PLAN.md](./REFACTOR_PLAN.md)** - Large-scale refactoring plans
+- **[REFACTORING_AUDIT.md](./REFACTORING_AUDIT.md)** - Large-scale refactoring
+  plans
 - **[AI_REVIEW_PROCESS.md](../../AI_REVIEW_PROCESS.md)** - Process for
   individual PR reviews (CodeRabbit, Qodo)
 - **EIGHT_PHASE_REFACTOR_PLAN.md** - Example of review output in action

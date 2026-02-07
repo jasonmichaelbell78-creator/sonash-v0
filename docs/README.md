@@ -94,15 +94,15 @@ code reviews and audits:
 
 All templates now in `docs/multi-ai-audit/templates/`:
 
-| Template                              | Category                 | Description                                             |
-| ------------------------------------- | ------------------------ | ------------------------------------------------------- |
-| **CODE_REVIEW_PLAN.md**               | Code Review              | General code quality, duplication, complexity           |
-| **SECURITY_AUDIT_PLAN.md**            | Security                 | Auth, input validation, dependencies, supply chain      |
-| **PERFORMANCE_AUDIT_PLAN.md**         | Performance              | Runtime perf, memory, bundle size, load times           |
-| **REFACTOR_PLAN.md**                  | Refactoring              | Technical debt, SonarQube issues, large-scale refactors |
-| **DOCUMENTATION_AUDIT.md**            | Documentation            | Cross-refs, staleness, coverage, tier compliance        |
-| **PROCESS_AUDIT.md**                  | Process/Automation       | CI/CD, hooks, scripts, triggers, guardrails             |
-| **ENGINEERING_PRODUCTIVITY_AUDIT.md** | Engineering Productivity | DX friction, debugging, offline gaps                    |
+| Template                              | Category                 | Description                                              |
+| ------------------------------------- | ------------------------ | -------------------------------------------------------- |
+| **CODE_REVIEW_PLAN.md**               | Code Review              | General code quality, duplication, complexity            |
+| **SECURITY_AUDIT_PLAN.md**            | Security                 | Auth, input validation, dependencies, supply chain       |
+| **PERFORMANCE_AUDIT_PLAN.md**         | Performance              | Runtime perf, memory, bundle size, load times            |
+| **REFACTORING_AUDIT.md**              | Refactoring              | Technical debt, SonarCloud issues, large-scale refactors |
+| **DOCUMENTATION_AUDIT.md**            | Documentation            | Cross-refs, staleness, coverage, tier compliance         |
+| **PROCESS_AUDIT.md**                  | Process/Automation       | CI/CD, hooks, scripts, triggers, guardrails              |
+| **ENGINEERING_PRODUCTIVITY_AUDIT.md** | Engineering Productivity | DX friction, debugging, offline gaps                     |
 
 ---
 
@@ -184,12 +184,12 @@ All templates now located in `docs/multi-ai-audit/templates/`:
 | **CODE_REVIEW_PLAN.md**               | Code review audit execution plan                      |
 | **SECURITY_AUDIT_PLAN.md**            | Security audit (13 categories including dependencies) |
 | **PERFORMANCE_AUDIT_PLAN.md**         | Performance audit execution plan                      |
-| **REFACTOR_PLAN.md**                  | Large-scale refactoring execution plan                |
+| **REFACTORING_AUDIT.md**              | Large-scale refactoring execution plan                |
 | **DOCUMENTATION_AUDIT.md**            | Documentation quality audit (6 categories)            |
 | **PROCESS_AUDIT.md**                  | Process/automation audit (12 categories)              |
 | **ENGINEERING_PRODUCTIVITY_AUDIT.md** | DX, debugging, offline gaps audit                     |
 | **AGGREGATOR.md**                     | 2-tier aggregation process                            |
-| **REFACTOR_AUDIT_PROMPT.md**          | Refactor audit prompt for multi-AI execution          |
+| **SHARED_TEMPLATE_BASE.md**           | Shared boilerplate for all audit templates            |
 
 See [docs/multi-ai-audit/README.md](./multi-ai-audit/README.md) for full
 navigation.
