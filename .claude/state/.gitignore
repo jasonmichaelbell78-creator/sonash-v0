@@ -3,6 +3,7 @@
 *.state.json
 handoff.json
 pending-reviews.json
+commit-log.jsonl
 
 # Keep this .gitignore tracked
 !.gitignore

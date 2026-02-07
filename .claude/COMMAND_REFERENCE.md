@@ -758,9 +758,11 @@ context waste from manual fix-commit-retry cycles. **When to use:** When
 #### `session-begin`
 
 **Description:** Complete verification steps before starting any work session.
-Includes automatic secrets decryption check - Claude will prompt for passphrase
-if MCP tokens need decrypting. **When to use:** **START OF EVERY SESSION**
-**Example:** First action in new session **Parameters:** None
+Includes automatic secrets decryption check, session gap detection
+(`npm run session:gaps`), and 4-layer compaction-resilient state persistence.
+**When to use:** **START OF EVERY SESSION** **Example:** First action in new
+session **Parameters:** None **Related npm scripts:** `session:gaps`,
+`session:gaps:fix` (Session #138)
 
 #### `session-end`
 

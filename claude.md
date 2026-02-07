@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.9 **Last Updated:** 2026-02-05
+**Document Version:** 4.0 **Last Updated:** 2026-02-07
 
 ---
 
@@ -292,18 +292,36 @@ This file survives compaction and enables clean resumption. Update it after
 completing each step. The `.claude/state/` directory is gitignored for ephemeral
 session data.
 
-### 7.3 Compaction Handoff
+### 7.3 Compaction-Resilient State Persistence (4 Layers)
 
-The `compaction-handoff.js` hook automatically writes
-`.claude/state/handoff.json` when context thresholds are exceeded (25+ files
-read). This file contains git state, agent invocations, and files read.
+Automatic multi-layer defense against state loss during context compaction:
+
+| Layer         | Hook                     | Trigger                       | Output                           |
+| ------------- | ------------------------ | ----------------------------- | -------------------------------- |
+| A: Commit Log | `commit-tracker.js`      | PostToolUse: Bash             | `.claude/state/commit-log.jsonl` |
+| B: Threshold  | `compaction-handoff.js`  | PostToolUse: Read (25+ files) | `.claude/state/handoff.json`     |
+| C: PreCompact | `pre-compaction-save.js` | PreCompact (auto/manual)      | `.claude/state/handoff.json`     |
+| Restore       | `compact-restore.js`     | SessionStart:compact          | stdout (context injection)       |
+| D: Gap Detect | `check-session-gaps.js`  | Session begin (npm script)    | Console warnings                 |
+
+- **Layer A** logs every git commit to append-only JSONL — survives all failure
+  modes including crashes
+- **Layer C** is the most reliable — fires at exactly the right moment before
+  compaction, captures full task states + commit log + git context
+- **Restore** automatically outputs structured recovery context after compaction
+  (task progress, recent commits, git status)
+- **Layer D** detects sessions missing from SESSION_CONTEXT.md at next session
+  start (`npm run session:gaps`)
 
 **On session resume after compaction:**
 
-1. Read `.claude/state/handoff.json` for structured recovery context
-2. Read any `.claude/state/task-*.state.json` for in-progress tasks
-3. Check `mcp__memory__search_nodes("Session_")` for MCP memory
+1. `compact-restore.js` auto-outputs recovery context (no manual action needed)
+2. Read `.claude/state/handoff.json` for full details if needed
+3. Read any `.claude/state/task-*.state.json` for in-progress tasks
 4. Cross-reference with `git log --oneline -5` and `git status`
+
+**One-time setup:** Run `node scripts/seed-commit-log.js` to backfill commit log
+from git history.
 
 ### 7.4 Other Preservation Tools
 
@@ -332,20 +350,21 @@ errors (doc index, cross-doc deps) are auto-fixable inline. Category B errors
 
 ## Version History
 
-| Version | Date       | Description                                                                                                         |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
-| 3.9     | 2026-02-05 | Added 7.2-7.5: File-based state persistence, compaction handoff, pre-commit fixer; Added 6.2: Delegated code review |
-| 3.7     | 2026-02-02 | Added sections 6.3-6.6: Parallelization guidance, agent grouping, coordination, capacity reference                  |
-| 3.6     | 2026-01-28 | Promoted Session Start Protocol to top, fixed table formatting, added save reminder                                 |
-| 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                                                   |
-| 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)                                               |
-| 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md                                 |
-| 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)                                     |
-| 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md                                                  |
-| 2.9     | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60                                                                                    |
-| 2.8     | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50                                                                                    |
-| 2.7     | 2026-01-03 | Added mandatory session-end audit                                                                                   |
-| 2.6     | 2026-01-03 | Added CodeRabbit CLI integration                                                                                    |
+| Version | Date       | Description                                                                                                           |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| 4.0     | 2026-02-07 | Rewrote 7.3: 4-layer compaction-resilient state persistence (commit-tracker, PreCompact, compact-restore, gap detect) |
+| 3.9     | 2026-02-05 | Added 7.2-7.5: File-based state persistence, compaction handoff, pre-commit fixer; Added 6.2: Delegated code review   |
+| 3.7     | 2026-02-02 | Added sections 6.3-6.6: Parallelization guidance, agent grouping, coordination, capacity reference                    |
+| 3.6     | 2026-01-28 | Promoted Session Start Protocol to top, fixed table formatting, added save reminder                                   |
+| 3.5     | 2026-01-28 | Added Session Start Protocol - read alerts file, check MCP memory                                                     |
+| 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)                                                 |
+| 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md                                   |
+| 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)                                       |
+| 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md                                                    |
+| 2.9     | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60                                                                                      |
+| 2.8     | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50                                                                                      |
+| 2.7     | 2026-01-03 | Added mandatory session-end audit                                                                                     |
+| 2.6     | 2026-01-03 | Added CodeRabbit CLI integration                                                                                      |
 
 ---
 

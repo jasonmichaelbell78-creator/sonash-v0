@@ -26,6 +26,8 @@
     "patterns:suggest": "node scripts/suggest-pattern-automation.js",
     "patterns:sync": "node scripts/check-pattern-sync.js",
     "lessons:surface": "node scripts/surface-lessons-learned.js",
+    "session:gaps": "node scripts/check-session-gaps.js",
+    "session:gaps:fix": "node scripts/check-session-gaps.js --fix",
     "consolidation:check": "node scripts/check-consolidation-status.js",
     "consolidation:run": "node scripts/run-consolidation.js",
     "consolidation:sync": "node scripts/sync-consolidation-counter.js",

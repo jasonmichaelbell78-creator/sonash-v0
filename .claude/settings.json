@@ -28,6 +28,27 @@
             "continueOnError": true
           }
         ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/compact-restore.js",
+            "statusMessage": "Restoring context after compaction..."
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/pre-compaction-save.js $ARGUMENTS",
+            "statusMessage": "Saving state before compaction..."
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -213,6 +234,17 @@
             "type": "command",
             "command": "node .claude/hooks/decision-save-prompt.js $ARGUMENTS",
             "statusMessage": "Checking decision documentation..."
+          }
+        ]
+      },
+      {
+        "matcher": "^(?i)bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/commit-tracker.js $ARGUMENTS",
+            "statusMessage": "Tracking commits...",
+            "continueOnError": true
           }
         ]
       },
