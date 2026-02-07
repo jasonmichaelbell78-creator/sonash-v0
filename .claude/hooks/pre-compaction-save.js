@@ -75,24 +75,50 @@ function loadJson(filePath) {
  */
 function saveJson(filePath, data) {
   const tmpPath = `${filePath}.tmp`;
+  const backupPath = `${filePath}.bak`;
   try {
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
-    // On Windows, renameSync over an existing file can fail; remove first
+    // Backup-swap: move existing dest to .bak, then rename tmp to dest.
+    // If crash occurs at any point, at least one copy survives.
     try {
-      fs.rmSync(filePath, { force: true });
+      fs.rmSync(backupPath, { force: true });
     } catch {
       /* ignore */
     }
+    try {
+      if (fs.existsSync(filePath)) fs.renameSync(filePath, backupPath);
+    } catch {
+      // If backup rename fails, fall through to try direct rename
+    }
     fs.renameSync(tmpPath, filePath);
+    // Success — clean up backup
+    try {
+      fs.rmSync(backupPath, { force: true });
+    } catch {
+      /* ignore */
+    }
     return true;
   } catch {
+    // Rollback: restore backup if dest was moved but tmp rename failed
+    try {
+      if (fs.existsSync(backupPath) && !fs.existsSync(filePath)) {
+        fs.renameSync(backupPath, filePath);
+      }
+    } catch {
+      /* ignore */
+    }
     // Fallback: direct write if rename fails (Windows cross-drive)
     try {
       fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
       try {
         fs.rmSync(tmpPath, { force: true });
+      } catch {
+        /* ignore */
+      }
+      try {
+        fs.rmSync(backupPath, { force: true });
       } catch {
         /* ignore */
       }

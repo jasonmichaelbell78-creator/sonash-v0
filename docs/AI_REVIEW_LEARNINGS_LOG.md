@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 14.8 **Created:** 2026-01-02 **Last Updated:** 2026-02-07
+**Document Version:** 14.9 **Created:** 2026-01-02 **Last Updated:** 2026-02-07
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 14.9    | 2026-02-07 | Review #265: PR #346 Round 6 Qodo (6 items - 1 MAJOR, 3 already fixed, 2 rejected). **MAJOR**: Backup-swap saveJson atomic write (rm+rename crash window). **Already fixed in 5f3f312**: empty entries guard, section scoping, table date regex. **Rejected**: .filter(Boolean) on hardcoded constants, auto-generated DOCUMENTATION_INDEX.md. Consolidation counter 11→12 (consolidation due). Active reviews #213-265.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 14.8    | 2026-02-07 | Review #260-264: PR #346 Audit Trigger Reset - 5 rounds Qodo + SonarCloud + CI (29 items across 5 rounds). **R1** (11 items): execFileSync conversion (SonarCloud HIGH), regex DoS backtracking, Object.create(null), \x1f delimiter, NaN guard, Math.min guard, CI false positive exclusions. **R2** (4 items): delimiter mismatch bug, date validation, robust category matching. **R3** (5 items): execFileSync ×2 files, timezone drift, getCategoryAuditDates wrong-table bug. **R4** (3 items): multi-word category capitalization, Windows atomic rename, JSON.parse safety. **R5** (6 items): section-scoped regex, table-column date parsing, empty entries guard. Consolidation counter now at 11 (threshold reached). Active reviews #213-264.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 14.7    | 2026-02-06 | Review #257-259: PR Cherry-Pick Rounds 3-5 - Qodo Compliance + PII Scrub (27 items across 3 rounds). **R3** (7 items): Atomic rename fallback cleanup for Windows, PII in audit logs as design decision. **R4** (9 items): startsWith path containment weakness (use path.relative+regex), markdown fences in AI output breaking JSONL parsers. **R5** (11 items - 1 CRITICAL PII): PII in committed artifacts (absolute paths with username), operator tracking via SHA-256 hash prefix, copyFileSync safer than rm+rename. Active reviews #213-259.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 14.6    | 2026-02-06 | Review #255-256: PR Cherry-Pick - Qodo + SonarCloud + CI (30 items R1 + 8 items R2). **R1**: Hardcoded Windows path with PII, path traversal protection, readFileSync try/catch, content block normalization, multi-line JSON brace tracking, assign-roadmap-refs data loss via copyFileSync, API pagination guards, AbortController timeouts. **R2**: CI blocker pattern compliance false positive (forward-only lookahead), brace tracker escape hardening, startsWith path stripping, atomic output writes, try-first rename for Windows. 20 CANON audit items rejected (not PR issues). Active reviews #213-256.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -315,7 +316,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 11 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 12 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** Now (threshold
 reached)
 
@@ -475,7 +476,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 11    | <10    | ⚠️     |
+| Reviews since last consolidation | 12    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -628,6 +629,39 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #265: PR #346 Audit Trigger Reset - Round 6 Qodo (2026-02-07)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:**
+claude/cherry-pick-commits-yLnZV (PR #346) **Suggestions:** 6 total (Critical:
+0, Major: 1, Minor: 0, Trivial: 0, Already Fixed: 3, Rejected: 2)
+
+**Patterns Identified:**
+
+1. [Backup-swap for atomic writes]: rm+rename has a crash window where both
+   files are lost; rename dest to .bak first, then rename tmp to dest, then
+   clean up .bak
+   - Root cause: `saveJson()` did rmSync(dest) then renameSync(tmp, dest)
+   - Prevention: Use backup-swap pattern (dest→.bak, tmp→dest, rm .bak)
+2. [Stale review feedback]: 3 of 6 items were already fixed in a prior commit
+   (`5f3f312`) but feedback was based on older commit (`336f54d`)
+   - Root cause: Automated review bots run on push, not on latest HEAD
+   - Prevention: Check commit hash in feedback header against current HEAD
+
+**Resolution:**
+
+- Fixed: 1 item (backup-swap saveJson)
+- Already Fixed: 3 items (empty entries guard, section scoping, table date regex
+  — all in `5f3f312`)
+- Rejected: 2 items (.filter(Boolean) on hardcoded constants, auto-generated
+  DOCUMENTATION_INDEX.md)
+
+**Key Learnings:**
+
+- Always check the "up to commit" header in review feedback against current HEAD
+- rm+rename pattern is unsafe on any OS (not just Windows) due to crash window
 
 ---
 
