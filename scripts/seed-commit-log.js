@@ -14,15 +14,15 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 
 const projectDir = path.resolve(process.cwd());
 const COMMIT_LOG = path.join(projectDir, ".claude", "state", "commit-log.jsonl");
 const count = parseInt(process.argv[2], 10) || 50;
 
-function gitExec(cmd) {
+function gitExec(args) {
   try {
-    return execSync(cmd, { cwd: projectDir, encoding: "utf8", timeout: 10000 }).trim();
+    return execFileSync("git", args, { cwd: projectDir, encoding: "utf8", timeout: 10000 }).trim();
   } catch {
     return "";
   }
@@ -44,10 +44,16 @@ function main() {
     // File doesn't exist, proceed
   }
 
-  const branch = gitExec("git rev-parse --abbrev-ref HEAD");
+  const branch = gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
 
-  // Get commits with detailed info
-  const output = gitExec(`git log --format="%H|%h|%s|%an|%ad" --date=iso-strict -${count}`);
+  // Get commits with detailed info — use Unit Separator (\x1f) to avoid corruption from | in commit messages
+  const safeCount = String(Math.max(1, Math.min(count, 500)));
+  const output = gitExec([
+    "log",
+    `--format=%H\x1f%h\x1f%s\x1f%an\x1f%ad`,
+    "--date=iso-strict",
+    `-${safeCount}`,
+  ]);
 
   if (!output) {
     console.log("No commits found");
@@ -58,10 +64,13 @@ function main() {
   const entries = [];
 
   for (const line of lines) {
-    const [hash, shortHash, message, author, authorDate] = line.split("|");
+    const [hash, shortHash, message, author, authorDate] = line.split("\x1f");
+
+    // Validate hash is a hex string before using in command
+    if (!hash || !/^[0-9a-f]{40}$/i.test(hash)) continue;
 
     // Get files changed for this commit
-    const filesOutput = gitExec(`git diff-tree --no-commit-id --name-only -r ${hash}`);
+    const filesOutput = gitExec(["diff-tree", "--no-commit-id", "--name-only", "-r", hash]);
     const filesList = filesOutput.split("\n").filter(Boolean);
 
     entries.push(

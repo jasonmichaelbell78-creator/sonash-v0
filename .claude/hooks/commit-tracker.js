@@ -162,8 +162,11 @@ function main() {
   }
 
   // NEW COMMIT DETECTED — capture metadata
-  const commitLine = gitExec('git log --format="%H|%h|%s|%an|%ad" --date=iso-strict -1');
-  const parts = commitLine.split("|");
+  // Use Unit Separator (\x1f) instead of | to avoid corruption from | in commit messages
+  const commitLine = gitExec(
+    'git log --format="%H\x1f%h\x1f%s\x1f%an\x1f%ad" --date=iso-strict -1'
+  );
+  const parts = commitLine.split("\x1f");
 
   const branch = gitExec("git rev-parse --abbrev-ref HEAD");
   const filesChanged = gitExec("git diff-tree --no-commit-id --name-only -r HEAD")

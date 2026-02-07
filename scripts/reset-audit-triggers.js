@@ -96,11 +96,14 @@ function resetCategoryRow(content, category, auditType) {
 
   // Match the table row for this category
   // Category names in the table use title case or hyphenated forms
-  const displayName = category.charAt(0).toUpperCase() + category.slice(1);
+  const displayName = category
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join("-");
   // Build a pattern that matches the category row in the threshold table
   // Format: | Category | Last Audit | Commits Since | Files Since | Trigger At |
   const rowPattern = new RegExp(
-    `^(\\| ${escapeRegex(displayName)}\\s+\\|)\\s*[^|]+\\|\\s*[^|]+\\|\\s*[^|]+\\|(.*)$`,
+    `^(\\| ${escapeRegex(displayName)}\\s+\\|)[^|\\n]+\\|[^|\\n]+\\|[^|\\n]+\\|(.*)$`,
     "mi"
   );
 
@@ -127,8 +130,8 @@ function resetMultiAIThresholds(content) {
   const dateStr = today();
   let updated = content;
 
-  // Reset "Total commits" row
-  const commitsPattern = /^(\| Total commits\s+\|[^|]+\|)\s*[^|]+\|(.*)$/m;
+  // Reset "Total commits" row — use [^|\n] to prevent cross-line backtracking
+  const commitsPattern = /^(\| Total commits\s+\|[^|\n]+\|)[^|\n]+\|(.*)$/m;
   const commitsMatch = updated.match(commitsPattern);
   if (commitsMatch) {
     const newCurrent = padEnd(`0 (reset ${dateStr})`, 34);
@@ -139,8 +142,8 @@ function resetMultiAIThresholds(content) {
     log("Reset Total commits row");
   }
 
-  // Reset "Time elapsed" row
-  const timePattern = /^(\| Time elapsed\s+\|[^|]+\|)\s*[^|]+\|(.*)$/m;
+  // Reset "Time elapsed" row — use [^|\n] to prevent cross-line backtracking
+  const timePattern = /^(\| Time elapsed\s+\|[^|\n]+\|)[^|\n]+\|(.*)$/m;
   const timeMatch = updated.match(timePattern);
   if (timeMatch) {
     const newCurrent = padEnd(`0 days (audit ${dateStr})`, 34);

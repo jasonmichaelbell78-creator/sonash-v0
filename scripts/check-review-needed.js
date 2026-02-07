@@ -739,14 +739,13 @@ function checkMultiAITriggers(lastMultiAIDate, categoryDates) {
   // Check total commits since last multi-AI audit
   // Use multi-AI date if available, otherwise fall back to oldest category date
   const allDates = Object.values(categoryDates).filter((d) => d !== null);
+  const validTimestamps = allDates
+    .map((d) => new Date(d).getTime())
+    .filter((t) => !Number.isNaN(t));
   const sinceDate =
     lastMultiAIDate ||
-    (allDates.length > 0
-      ? new Date(
-          Math.min(...allDates.map((d) => new Date(d).getTime()).filter((t) => !Number.isNaN(t)))
-        )
-          .toISOString()
-          .split("T")[0]
+    (validTimestamps.length > 0
+      ? new Date(Math.min(...validTimestamps)).toISOString().split("T")[0]
       : null);
 
   if (sinceDate) {

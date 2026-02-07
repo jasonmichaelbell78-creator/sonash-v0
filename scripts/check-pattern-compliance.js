@@ -565,6 +565,19 @@ const ANTI_PATTERNS = [
       // - extract-agent-findings.js: readFileSync now IS in try/catch (fixed Review #255)
       "intake-audit.js",
       "extract-agent-findings.js",
+      // 2026-02-07 audit (PR #346):
+      // - commit-tracker.js: readFileSync at L85 IS in try/catch (L84-89), L116 IS in try/catch (L114-121)
+      // - compact-restore.js: readFileSync at L46 IS in try/catch (L45-49)
+      // - pre-compaction-save.js: readFileSync at L67 IS in try/catch (L66-70), L116 IS in try/catch (L114-121), L150 IS in try/catch (L149-166)
+      // - check-session-gaps.js: readFileSync at L35 IS in try/catch (L34-49), L58 IS in try/catch (L57-68), L76 IS in try/catch (L75-81)
+      // - reset-audit-triggers.js: readFileSync at L195 IS in try/catch (L194-199)
+      // - seed-commit-log.js: readFileSync at L34 IS in try/catch (L33-45)
+      "commit-tracker.js",
+      "compact-restore.js",
+      "pre-compaction-save.js",
+      "check-session-gaps.js",
+      "reset-audit-triggers.js",
+      "seed-commit-log.js",
     ],
   },
   {

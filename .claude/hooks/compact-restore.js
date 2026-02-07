@@ -115,9 +115,8 @@ function main() {
     process.exit(0);
   }
 
-  const age = handoff.timestamp
-    ? Math.round((Date.now() - new Date(handoff.timestamp).getTime()) / 60000)
-    : "?";
+  const ageMs = handoff.timestamp ? Date.now() - new Date(handoff.timestamp).getTime() : NaN;
+  const age = Number.isNaN(ageMs) ? "?" : Math.round(ageMs / 60000);
 
   // Output recovery context to stdout (Claude sees this)
   const recovery = [

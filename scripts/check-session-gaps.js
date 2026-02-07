@@ -89,7 +89,7 @@ function getRecentCommitsFromGit(count) {
     const safeCount = String(Math.max(1, Math.min(parseInt(count, 10) || 50, 500)));
     const output = execFileSync(
       "git",
-      ["log", `--format=%H|%h|%s|%ad`, "--date=iso-strict", `-${safeCount}`],
+      ["log", `--format=%H\x1f%h\x1f%s\x1f%ad`, "--date=iso-strict", `-${safeCount}`],
       {
         cwd: projectDir,
         encoding: "utf8",
@@ -100,7 +100,7 @@ function getRecentCommitsFromGit(count) {
       .split("\n")
       .filter(Boolean)
       .map((line) => {
-        const [hash, shortHash, message, date] = line.split("|");
+        const [hash, shortHash, message, date] = line.split("\x1f");
         return { hash, shortHash, message, authorDate: date, timestamp: date };
       });
   } catch {
@@ -112,7 +112,7 @@ function getRecentCommitsFromGit(count) {
  * Group commits by session number
  */
 function groupBySession(commits) {
-  const groups = {};
+  const groups = Object.create(null);
   for (const commit of commits) {
     const session = commit.session || "unknown";
     if (!groups[session]) {
