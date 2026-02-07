@@ -506,18 +506,24 @@ function getCategoryAuditDates(content) {
     process: null,
   };
 
-  for (const [category, headerPattern] of Object.entries(CATEGORY_HEADERS)) {
-    const sectionContent = extractSection(content, headerPattern);
-    if (sectionContent) {
-      // Find the most recent date in the table
-      const dateMatches = sectionContent.match(/\d{4}-\d{2}-\d{2}/g);
-      if (dateMatches && dateMatches.length > 0) {
-        // Get the most recent date, filtering out invalid dates
-        const dates = dateMatches.map((d) => new Date(d).getTime()).filter((t) => !Number.isNaN(t));
-        if (dates.length === 0) continue;
-        const mostRecent = new Date(Math.max(...dates));
-        categories[category] = mostRecent.toISOString().split("T")[0];
-        verbose(`Found ${category} last audit: ${categories[category]}`);
+  // Read dates from the "Single-Session Audit Thresholds" table (the source of truth
+  // updated by reset-audit-triggers.js), not from the audit log sections.
+  // Table row format: | Category | 2026-02-07 (Comprehensive) | 0 | 0 | ... |
+  for (const category of Object.keys(categories)) {
+    const displayName = category.charAt(0).toUpperCase() + category.slice(1);
+    // Match category row — handle both hyphens and spaces in multi-word names
+    const displayNamePattern = displayName.replace(/-/g, "[-\\s]+");
+    const rowPattern = new RegExp(`^\\|\\s*${displayNamePattern}\\s*\\|\\s*([^|]+)\\|`, "mi");
+    const match = content.match(rowPattern);
+    if (match) {
+      const cellContent = match[1].trim();
+      const dateMatch = cellContent.match(/(\d{4}-\d{2}-\d{2})/);
+      if (dateMatch) {
+        const ts = new Date(dateMatch[1]).getTime();
+        if (!Number.isNaN(ts)) {
+          categories[category] = dateMatch[1];
+          verbose(`Found ${category} last audit: ${categories[category]} (from threshold table)`);
+        }
       }
     }
   }
