@@ -341,12 +341,13 @@ description] **When to Use**: [Trigger/scenario]
 
 ```markdown
 See [ARCHITECTURE.md](../ARCHITECTURE.md) for system design. See the
-[Dependencies section](../ROADMAP.md#dependencies) for prerequisites.
+[Dependencies section](../ROADMAP.md#milestone-dependency-graph) for
+prerequisites.
 ```
 
 ### External Links
 
-**Format**: `[Link Text](https://full-url.com)`
+**Format**: `[Link Text](https://example.com)`
 
 **Best Practices**:
 

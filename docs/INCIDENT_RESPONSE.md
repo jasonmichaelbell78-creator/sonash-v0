@@ -1,7 +1,7 @@
 # Incident Response Runbook
 
-**Document Tier:** 2 (Active Reference) **Status:** Active **Last Updated:**
-2026-01-03
+**Document Version:** 1.0 **Document Tier:** 2 (Active Reference) **Status:**
+Active **Last Updated:** 2026-01-03
 
 ---
 
@@ -255,10 +255,10 @@ After every P0-P1 incident, complete within 48 hours:
 
 ## Emergency Contacts
 
-| Role             | Contact                                                        | When to Escalate               |
-| ---------------- | -------------------------------------------------------------- | ------------------------------ |
-| Firebase Support | [Console Support](https://console.firebase.google.com/support) | P0 incidents, billing disputes |
-| GCP Billing      | [Billing Support](https://cloud.google.com/support)            | Cost spike >$500               |
+| Role             | Contact                                                                   | When to Escalate               |
+| ---------------- | ------------------------------------------------------------------------- | ------------------------------ |
+| Firebase Support | [Console Support](https://console.firebase.google.com/project/_/settings) | P0 incidents, billing disputes |
+| GCP Billing      | [Billing Support](https://cloud.google.com/support)                       | Cost spike >$500               |
 
 ---
 

@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.5 **Status:** ACTIVE **Last Updated:** 2026-02-02
+**Document Version:** 2.5 **Last Updated:** 2026-02-02 **Status:** Active
 
 ---
 
@@ -37,19 +37,23 @@ project.
 
 ### Installation
 
+1. **Clone the repository:**
+
 ```bash
-# Clone repository
 git clone https://github.com/jasonmichaelbell78-creator/sonash-v0.git
 cd sonash-v0
+```
 
-# Install dependencies
+2. **Install dependencies:**
+
+```bash
 npm install
 cd functions && npm install && cd ..
 ```
 
 ### Environment Setup
 
-Create `.env.local` in project root:
+1. **Create `.env.local` in project root:**
 
 ```bash
 # Firebase SDK Configuration
@@ -71,10 +75,9 @@ NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
 NEXT_PUBLIC_SENTRY_ENABLED=false
 ```
 
-**Get these values from:**
-
-- Firebase Console → Project Settings → General → Your Apps
-- App Check → reCAPTCHA Enterprise
+2. **Get configuration values from Firebase Console:**
+   - Firebase Console → Project Settings → General → Your Apps
+   - App Check → reCAPTCHA Enterprise
 
 ### Run with Firebase Emulators (Recommended)
 
@@ -556,7 +559,9 @@ TypeScript rules)
 
 **Location:** `.husky/`
 
-**Pre-commit hook (`.husky/pre-commit`) runs:**
+#### Pre-commit Hook Chain
+
+The pre-commit hook (`.husky/pre-commit`) runs multiple validation steps:
 
 | Step               | Command                           | Blocking?                         |
 | ------------------ | --------------------------------- | --------------------------------- |
@@ -570,14 +575,18 @@ TypeScript rules)
 | Learning reminder  | (checks staged files)             | NO - reminder only                |
 | Audit S0/S1        | `validate-audit.js --strict-s0s1` | YES - blocks commit (Session #98) |
 
-> **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
-> staged. Validates schema compliance for audit output files.
->
-> **Learning Entry Reminder**: If 5+ files are staged or template/hook changes
-> are detected, the hook reminds you to update `docs/AI_REVIEW_LEARNINGS_LOG.md`
-> when addressing PR feedback.
+#### Hook Stages Explained
 
-**Pre-push hook (`.husky/pre-push`) runs:**
+**CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
+staged. Validates schema compliance for audit output files.
+
+**Learning Entry Reminder**: If 5+ files are staged or template/hook changes are
+detected, the hook reminds you to update `docs/AI_REVIEW_LEARNINGS_LOG.md` when
+addressing PR feedback.
+
+#### Pre-push Hook
+
+The pre-push hook (`.husky/pre-push`) performs final validation:
 
 | Step               | Command                        | Blocking?         |
 | ------------------ | ------------------------------ | ----------------- |
@@ -587,8 +596,10 @@ TypeScript rules)
 | Type check         | `npx tsc --noEmit`             | YES - blocks push |
 | Security audit     | `npm audit --audit-level=high` | NO - warning only |
 
-> **Security Audit**: Checks for high/critical vulnerabilities in dependencies.
-> Non-blocking warning - reports issues but doesn't prevent push.
+**Security Audit**: Checks for high/critical vulnerabilities in dependencies.
+Non-blocking warning - reports issues but doesn't prevent push.
+
+#### Hook Policy
 
 **⚠️ Never bypass:** See Git Workflow section for policy.
 

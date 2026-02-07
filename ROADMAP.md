@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.17
-**Last Updated:** Session #128
+**Document Version:** 3.20
+**Last Updated:** Session #140
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
@@ -524,7 +524,7 @@ reliability, and solo developer automations.
       [E1] - S2
 - [ ] **CANON-0092:** Pre-commit hook slow (~35-50s) `pre-commit` [E1] - S2
 
-**NEW from 2026-02-03 Audit:**
+**NEW from Session #128 Audit:**
 
 - [ ] DEBT-0944: Tests not run for config changes (S1, pre-commit:54)
 - [ ] DEBT-0945: Doc-only commit detection misclassifies critical JSONL (S1,
@@ -583,7 +583,7 @@ reliability, and solo developer automations.
 - [ ] **CANON-0027:** No scripts/doctor.js for environment validation `scripts/`
       [E1] - S2
 
-**NEW from 2026-02-03 Audit (Offline Infrastructure - CRITICAL):**
+**NEW from Session #128 Audit (Offline Infrastructure - CRITICAL):**
 
 - [ ] DEBT-0933: Firebase IndexedDB persistence not enabled (S1,
       lib/firebase.ts)
@@ -666,7 +666,7 @@ reliability, and solo developer automations.
 - [ ] **CANON-0064:** Step1WorksheetCard excessive complexity (804 lines)
       `Step1WorksheetCard.tsx` [E2] - S2
 
-**NEW from 2026-02-03 Audit:**
+**NEW from Session #128 Audit:**
 
 - [ ] DEBT-0950: MoodSparkline redundant fetch duplicates journal data (S1,
       mood-sparkline.tsx:18)
@@ -775,7 +775,7 @@ Check disabled, reCAPTCHA fail-open, missing headers). For security **features**
 - [ ] **S7:** Add IP-based rate limiting, throttle admin endpoints
 - [ ] **S8:** Add Cloud Function wrappers for admin mutations
 
-**NEW from 2026-02-03 Audit:**
+**NEW from Session #128 Audit:**
 
 - [ ] DEBT-0932: App Check disabled + no offline support (S1,
       functions/src/index.ts)
@@ -790,7 +790,7 @@ Check disabled, reCAPTCHA fail-open, missing headers). For security **features**
 Security hotspots and lower-severity items tracked in MASTER_DEBT.jsonl with
 category="security". Review and address as part of ongoing security hardening.
 
-**NEW from 2026-02-03 Audit:**
+**NEW from Session #128 Audit:**
 
 - [ ] DEBT-0951: Missing Content-Security-Policy header (S2, firebase.json)
 - [ ] DEBT-0952: Script injection vulnerability in resolve-debt workflow (S2)
@@ -866,7 +866,7 @@ MASTER_DEBT.jsonl.
 - [ ] **T6.4:** Security Rules Tests - Test firestore.rules coverage (3hr)
       **NEW - Audit**
 
-**NEW from 2026-02-03 Audit:**
+**NEW from Session #128 Audit:**
 
 - [ ] DEBT-0942: Multiple 'any' types in test mock setup (10+ instances) (S1,
       firestore-service.test.ts:18)
@@ -970,7 +970,7 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 | CANON-0101 | Documentation | S3       | E2     | DEFERRED | Missing Quick Start sections     |
 | CANON-0102 | Documentation | S3       | E1     | DEFERRED | Missing AI Instructions sections |
 
-**NEW from 2026-02-03 Audit:**
+**NEW from Session #128 Audit:**
 
 - [ ] DEBT-0938: Comprehensive audit reports missing standard structure (S1,
       audit-code-report.md)
@@ -1194,7 +1194,7 @@ experience for Today page
 
 > **Completed Phases:** For details on completed Phases 1-3 and Today Page
 > Enhancement, see
-> [ROADMAP_LOG.md](./ROADMAP_LOG.md#m16---admin-panel--today-page-enhancement)
+> [ROADMAP_LOG.md](./ROADMAP_LOG.md#️-m16---admin-panel--today-page-enhancement)
 
 ### Phase 4: Error Tracking - Sentry Integration (✅ Complete via Track A)
 
@@ -1251,7 +1251,7 @@ management
 **Context:**
 
 - 60+ verified local resources already aggregated in `data/local-resources.ts`
-  (Dec 28, 2025)
+
 - 8 categories: Clinical (Detox, Residential, Outpatient, Harm Reduction) +
   Community (Recovery Centers, Essentials, Jobs/Legal, Wellness)
 - All resources have addresses, phone numbers, websites, services, and GPS
@@ -1479,7 +1479,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 - [ ] **CANON-0136:** Add Firestore rules emulator tests [E2] - S1
 - [ ] **CANON-0137:** Increase security file coverage [E2] - S1
 
-**NEW from 2026-02-03 Audit:**
+**NEW from Session #128 Audit:**
 
 - [ ] DEBT-0931: TodayPage component critical - N+1 queries, 940+ lines (S1,
       today-page.tsx:1)
@@ -1790,7 +1790,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 
 **From M1 - Security Hardening:**
 
-- 🔄 **Manual reCAPTCHA Enterprise Implementation** (Dec 30, 2025)
+- 🔄 **Manual reCAPTCHA Enterprise Implementation**
   - ✅ **Frontend Integration:** `lib/recaptcha.ts` - `getRecaptchaToken()`
     helper for bot protection
   - ✅ **Backend Verification:** `functions/src/recaptcha-verify.ts` -
@@ -1803,13 +1803,13 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
   - ⏳ **Admin Panel Monitoring:** See
     [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)
   - **Files:** See commits `b6fe5e9`, `9e83e86`, `a818bea`, `b402f41`, `16b5deb`
-- ❌ **Firebase App Check** (Dec 30, 2025) - **DEDUP-0001** → _Moved to M4.5 F2:
-  Privacy Controls_
+- ❌ **Firebase App Check** - **DEDUP-0001** → _Moved to M4.5 F2: Privacy
+  Controls_
   - See APP_CHECK_REENABLE_PLAN.md (archived)
 
 **Data Quality & Operations:**
 
-- ⏳ **Retry Geocoding for 50 Meeting Addresses** (Dec 28, 2025)
+- ⏳ **Retry Geocoding for 50 Meeting Addresses**
   - **Issue:** OpenStreetMap Nominatim API blocked our IP for bulk requests
   - **Status:** 50 meeting addresses still need GPS coordinates
   - **Solution:** Wait 24-48 hours for block to lift, then retry with
@@ -2006,7 +2006,7 @@ Architecture refactoring, schema optimization, and infrastructure work.
 - [ ] **CANON-0069:** useJournal mixes domain logic with transport
       `use-journal.ts` [E2] - S1
 
-**NEW from 2026-02-03 Audit:**
+**NEW from Session #128 Audit:**
 
 - [ ] DEBT-0936: Cloud Functions index file god object (811 lines) (S1,
       functions/src/index.ts:1)
@@ -3308,51 +3308,53 @@ npm run roadmap:validate      # Check consistency (when available)
 
 ## 🗓️ Version History
 
-| Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 3.19    | 2026-02-05 | **Session #133**: Added Phase 1.5 QoL Agent Infrastructure (4 items complete); placed QoL #3, #6, #7, #8 in Phase 2-3; unified /sonarcloud skill; archived obsolete scripts                                                                                                                                                                                                                 |
-| 3.18    | 2026-02-04 | **Session #130**: Added Track A-Test A19-A22 testing plan (TRACK_A_TESTING_PLAN.md); linked Track T Phase 1 as dependency for automated testing; updated test category count to 9; added tool installation details (Playwright, firebase rules testing, msw)                                                                                                                                |
-| 3.17    | 2026-02-03 | **Session #128**: TIMING SYSTEM CHANGE - Removed all date-based scheduling from roadmap; introduced Priority + Phase Buckets + Relative Ordering system; updated Milestones Overview table (Target → Phase column); converted inline date references to session numbers; added episodic memory integration to all audit skills                                                              |
-| 3.16    | 2026-02-01 | **Session #116**: Created canonical audit findings location (`docs/audits/canonical/`); consolidated 172 NET NEW findings; added AUDIT_FINDINGS_PROCEDURE.md for roadmap integration workflow                                                                                                                                                                                               |
-| 3.15    | 2026-01-29 | **Session #115**: Integrated 94 NET NEW findings from Refactoring Audit; added Track T Phase 7 (Cloud Functions Testing), M2.3-REF (God Object Refactoring), M4.5-F3 (Security Hardening), and Quick Wins                                                                                                                                                                                   |
-| 3.14    | 2026-01-27 | **Session #103**: Added Track T (Testing Infrastructure) with 6 phases (~45hr); consolidated D5.5, AUTO-004, TEST-001, TEST-002 into Track T; Playwright-based E2E, component, and visual regression testing; Dev Dashboard integration; CLI Chrome extension support                                                                                                                       |
-| 3.13    | 2026-01-27 | **ROADMAP RESTRUCTURE**: Split into ROADMAP.md (active) + ROADMAP_FUTURE.md (M2-M10 details); fixed percentage inconsistency (removed duplicate 35%); renamed Track D Performance → Track P (avoid collision); added 7 Parallel Groups with `⏸ PG#` markers; comprehensive AI Instructions with specific update triggers; added DOCUMENT_DEPENDENCIES cross-references                      |
-| 3.10    | 2026-01-26 | **Session #98**: Added Track D (Performance Critical) with 18hr of urgent fixes; created TECHNICAL_DEBT_MASTER.md as single source of truth; verified SEC-001/SEC-002 as false positives; updated Technical Debt Backlog section with corrected counts (7 S0, 28 S1, 45 S2, 32 S3)                                                                                                          |
-| 3.9     | 2026-01-24 | **R&D NOTES**: Added 🔬 R&D requirements to E3 items (HALT P3/P4, Pattern Recognition, F11.\*, M10 monetization)                                                                                                                                                                                                                                                                            |
-| 3.8     | 2026-01-24 | **CONSOLIDATION**: Added cross-references for overlapping items (Sponsor, Analytics, Export domains) with ⚡ markers                                                                                                                                                                                                                                                                        |
-| 3.7     | 2026-01-24 | **M9 GATE**: Added M8 exit criteria with go/no-go decision table for M9 native app                                                                                                                                                                                                                                                                                                          |
-| 3.6     | 2026-01-24 | **PARALLEL EXECUTION**: Created PARALLEL_EXECUTION_GUIDE.md with 7 work groups, 15-week potential savings                                                                                                                                                                                                                                                                                   |
-| 3.5     | 2026-01-24 | **ENCRYPTION R&D**: Added 4 pre-M4.5 R&D items (RND-T4.2, RND-T4.3, RND-AUDIT, RND-DEXIE) to reduce critical path bottleneck                                                                                                                                                                                                                                                                |
-| 3.4     | 2026-01-24 | **MILESTONE SPLIT**: Added sub-milestones M2.1/M2.2/M2.3 and M7.1/M7.2/M7.3/M7.4 to improve navigation of overloaded milestones                                                                                                                                                                                                                                                             |
-| 3.3     | 2026-01-24 | **PRIORITIES**: Assigned P2/P3 to 28 items missing priority (M2-MON, M2-ARCH, M4-_, M10-MODEL-_, F11.\*, deferred items)                                                                                                                                                                                                                                                                    |
-| 3.2     | 2026-01-24 | **RELOCATIONS**: Moved 4 miscategorized items (DEDUP-0001→M4.5, EFF-011→M5, Onboarding→M6, Sponsor→M7)                                                                                                                                                                                                                                                                                      |
-| 3.1     | 2026-01-24 | **DEDUPLICATION**: Removed 8 duplicate items (C1→A19, ADMIN-FE-2→A22, FD-005→M4-002, FD-006→M4-001, Journey Phase/Dashboard Builder refs→M1.5/M1.6, EFF-010→T1.2); analysis files in `analysis/` folder                                                                                                                                                                                     |
-| 3.0     | 2026-01-24 | **EXPANSION INTEGRATION**: Merged 85 expansion items from EXPANSION_EVALUATION_TRACKER.md; added M4.5 (Security), M9 (Native); updated M5/M6/M7 with 76 new items; full analysis completed (B1-B6 passes)                                                                                                                                                                                   |
-| 2.16    | 2026-01-20 | **BLOCKER RESOLVED**: Session #85 - SonarCloud Sprint PR 1+2 completed (~300 issues); PR 3-5 deferred to M2 Architecture backlog; Operational Visibility Sprint unblocked; feature development can proceed                                                                                                                                                                                  |
-| 2.15    | 2026-01-19 | **BLOCKER ADDED**: SonarCloud Cleanup Sprint blocks Operational Visibility Sprint; all 1,213 issues (1,116 code issues + 97 security hotspots) must be resolved before feature development resumes; created plan, snapshot, and runbook                                                                                                                                                     |
-| 2.14    | 2026-01-18 | Session #78: Added Admin Panel Phase 3 (A23-A25) - Error JSON export with timeframe selection, auto-refresh tabs on switch, soft-delete users with 30-day retention; deployed functions and Firestore indexes                                                                                                                                                                               |
-| 2.13    | 2026-01-18 | Session #77: **Track A-Test COMPLETE** - All jobs A10-A14 passing (97.7% pass rate); Fixed A11 storage bucket (`sonash-app.firebasestorage.app`); Added EFF-012 (Network Failure Tests) to offline mode section                                                                                                                                                                             |
-| 2.12    | 2026-01-18 | Session #76: Firestore indexes deployed and verified; Track A-Test validation in progress                                                                                                                                                                                                                                                                                                   |
-| 2.11    | 2026-01-17 | Session #75: Added Track A-P2 (Firebase Console Phase 2) with items 5-8 (A19-A22) to active sprint; expanded task details with effort estimates                                                                                                                                                                                                                                             |
-| 2.10    | 2026-01-17 | Session #75: Added Firebase Console In-App Features (A15-A18) - Password reset, Storage stats, Rate limits, Collection counts; added future sprint items A19-A22                                                                                                                                                                                                                            |
-| 2.9     | 2026-01-17 | Track A development complete (A1-A14 all done); added Track A-Test phase with 125 test items; linked to TRACK_A_TESTING_CHECKLIST.md; updated blockers (Sentry/Dashboard resolved)                                                                                                                                                                                                          |
-| 2.8     | 2026-01-17 | Added Technical Debt Backlog section with 283 aggregated findings from all audits; created MASTER_ISSUE_LIST.md, IMPLEMENTATION_PLAN.md, ROADMAP_INTEGRATION.md; linked to `npm run aggregate:audit-findings`                                                                                                                                                                               |
-| 2.7     | 2026-01-16 | Session #70: Added Background Jobs Expansion (A10-A14) to Track A - cleanup sessions, orphaned files, usage analytics, prune security events, health checks; added Deferred Background Jobs to M2 (refresh cache, backup verification)                                                                                                                                                      |
-| 2.6     | 2026-01-16 | Session #69: Major sprint update - corrected stale Sentry status (A1-A3 done); moved Phase 5 into sprint; moved Local Resources to Phase 5.5; added Admin Panel enhancements (stacked tabs, user privileges, batch ops, dark mode); added Dev Dashboard enhancements; added User Analytics Tab; added monitoring integrations evaluation (PostHog recommended); added mobile responsiveness |
-| 2.5     | 2026-01-14 | Created Operational Visibility Sprint as active P0 focus; created OPERATIONAL_VISIBILITY_SPRINT.md; reorganized milestones                                                                                                                                                                                                                                                                  |
-| 2.4     | 2026-01-14 | Added Lighthouse Performance Tracking items (PERF-001 to PERF-006) to M1.5 and M2 sections; created LIGHTHOUSE_INTEGRATION_PLAN.md                                                                                                                                                                                                                                                          |
-| 2.2     | 2026-01-13 | Added Engineering Productivity audit items (EFF-001 to EFF-011) to M1.5 and M2 sections                                                                                                                                                                                                                                                                                                     |
-| 2.1     | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram                                                                                                                                                                                                                                                            |
-| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                                                                                                                                                                                                                                                                                |
-| 1.5     | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1                                                                                                                                                                                                                                                                                                                                                      |
-| 1.4     | 2025-12-23 | M1.6 Phases 1-3 complete                                                                                                                                                                                                                                                                                                                                                                    |
-| 1.3     | 2025-12-22 | Admin panel spec v1.2                                                                                                                                                                                                                                                                                                                                                                       |
-| 1.2     | 2025-12-19 | Consolidated from multiple roadmap docs                                                                                                                                                                                                                                                                                                                                                     |
-| 1.1     | 2025-12-18 | M1 security hardening complete                                                                                                                                                                                                                                                                                                                                                              |
-| 1.0     | 2025-12-17 | Initial consolidated roadmap                                                                                                                                                                                                                                                                                                                                                                |
+| Version | Session | Changes                                                                                                                                                                                                                                                                                                                                                                        |
+| ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 3.20    | #140    | Completed date-to-session migration: converted all remaining inline dates to session references; replaced Version History Date column with Session column; removed inline dates from completed items; npm audit fix (brace-expansion vuln); cleaned up stale .bak file                                                                                                         |
+| 3.19    | #133    | Added Phase 1.5 QoL Agent Infrastructure (4 items complete); placed QoL #3, #6, #7, #8 in Phase 2-3; unified /sonarcloud skill; archived obsolete scripts                                                                                                                                                                                                                      |
+| 3.18    | #130    | Added Track A-Test A19-A22 testing plan (TRACK_A_TESTING_PLAN.md); linked Track T Phase 1 as dependency for automated testing; updated test category count to 9; added tool installation details (Playwright, firebase rules testing, msw)                                                                                                                                     |
+| 3.17    | #128    | TIMING SYSTEM CHANGE - Removed all date-based scheduling from roadmap; introduced Priority + Phase Buckets + Relative Ordering system; updated Milestones Overview table (Target → Phase column); converted inline date references to session numbers; added episodic memory integration to all audit skills                                                                   |
+| 3.16    | #116    | Created canonical audit findings location (`docs/audits/canonical/`); consolidated 172 NET NEW findings; added AUDIT_FINDINGS_PROCEDURE.md for roadmap integration workflow                                                                                                                                                                                                    |
+| 3.15    | #115    | Integrated 94 NET NEW findings from Refactoring Audit; added Track T Phase 7 (Cloud Functions Testing), M2.3-REF (God Object Refactoring), M4.5-F3 (Security Hardening), and Quick Wins                                                                                                                                                                                        |
+| 3.14    | #103    | Added Track T (Testing Infrastructure) with 6 phases (~45hr); consolidated D5.5, AUTO-004, TEST-001, TEST-002 into Track T; Playwright-based E2E, component, and visual regression testing; Dev Dashboard integration; CLI Chrome extension support                                                                                                                            |
+| 3.13    | #102    | **ROADMAP RESTRUCTURE**: Split into ROADMAP.md (active) + ROADMAP_FUTURE.md (M2-M10 details); fixed percentage inconsistency (removed duplicate 35%); renamed Track D Performance → Track P (avoid collision); added 7 Parallel Groups with `⏸ PG#` markers; comprehensive AI Instructions with specific update triggers; added DOCUMENT_DEPENDENCIES cross-references         |
+| 3.10    | #98     | Added Track D (Performance Critical) with 18hr of urgent fixes; created TECHNICAL_DEBT_MASTER.md as single source of truth; verified SEC-001/SEC-002 as false positives; updated Technical Debt Backlog section with corrected counts (7 S0, 28 S1, 45 S2, 32 S3)                                                                                                              |
+| 3.9     | #94     | **R&D NOTES**: Added 🔬 R&D requirements to E3 items (HALT P3/P4, Pattern Recognition, F11.\*, M10 monetization)                                                                                                                                                                                                                                                               |
+| 3.8     | #94     | **CONSOLIDATION**: Added cross-references for overlapping items (Sponsor, Analytics, Export domains) with ⚡ markers                                                                                                                                                                                                                                                           |
+| 3.7     | #94     | **M9 GATE**: Added M8 exit criteria with go/no-go decision table for M9 native app                                                                                                                                                                                                                                                                                             |
+| 3.6     | #94     | **PARALLEL EXECUTION**: Created PARALLEL_EXECUTION_GUIDE.md with 7 work groups, 15-week potential savings                                                                                                                                                                                                                                                                      |
+| 3.5     | #94     | **ENCRYPTION R&D**: Added 4 pre-M4.5 R&D items (RND-T4.2, RND-T4.3, RND-AUDIT, RND-DEXIE) to reduce critical path bottleneck                                                                                                                                                                                                                                                   |
+| 3.4     | #94     | **MILESTONE SPLIT**: Added sub-milestones M2.1/M2.2/M2.3 and M7.1/M7.2/M7.3/M7.4 to improve navigation of overloaded milestones                                                                                                                                                                                                                                                |
+| 3.3     | #94     | **PRIORITIES**: Assigned P2/P3 to 28 items missing priority (M2-MON, M2-ARCH, M4-_, M10-MODEL-_, F11.\*, deferred items)                                                                                                                                                                                                                                                       |
+| 3.2     | #94     | **RELOCATIONS**: Moved 4 miscategorized items (DEDUP-0001→M4.5, EFF-011→M5, Onboarding→M6, Sponsor→M7)                                                                                                                                                                                                                                                                         |
+| 3.1     | #94     | **DEDUPLICATION**: Removed 8 duplicate items (C1→A19, ADMIN-FE-2→A22, FD-005→M4-002, FD-006→M4-001, Journey Phase/Dashboard Builder refs→M1.5/M1.6, EFF-010→T1.2); analysis files in `analysis/` folder                                                                                                                                                                        |
+| 3.0     | #93     | **EXPANSION INTEGRATION**: Merged 85 expansion items from EXPANSION_EVALUATION_TRACKER.md; added M4.5 (Security), M9 (Native); updated M5/M6/M7 with 76 new items; full analysis completed (B1-B6 passes)                                                                                                                                                                      |
+| 2.16    | #85     | **BLOCKER RESOLVED**: SonarCloud Sprint PR 1+2 completed (~300 issues); PR 3-5 deferred to M2 Architecture backlog; Operational Visibility Sprint unblocked; feature development can proceed                                                                                                                                                                                   |
+| 2.15    | #79     | **BLOCKER ADDED**: SonarCloud Cleanup Sprint blocks Operational Visibility Sprint; all 1,213 issues (1,116 code issues + 97 security hotspots) must be resolved before feature development resumes; created plan, snapshot, and runbook                                                                                                                                        |
+| 2.14    | #78     | Added Admin Panel Phase 3 (A23-A25) - Error JSON export with timeframe selection, auto-refresh tabs on switch, soft-delete users with 30-day retention; deployed functions and Firestore indexes                                                                                                                                                                               |
+| 2.13    | #77     | **Track A-Test COMPLETE** - All jobs A10-A14 passing (97.7% pass rate); Fixed A11 storage bucket (`sonash-app.firebasestorage.app`); Added EFF-012 (Network Failure Tests) to offline mode section                                                                                                                                                                             |
+| 2.12    | #76     | Firestore indexes deployed and verified; Track A-Test validation in progress                                                                                                                                                                                                                                                                                                   |
+| 2.11    | #75     | Added Track A-P2 (Firebase Console Phase 2) with items 5-8 (A19-A22) to active sprint; expanded task details with effort estimates                                                                                                                                                                                                                                             |
+| 2.10    | #75     | Added Firebase Console In-App Features (A15-A18) - Password reset, Storage stats, Rate limits, Collection counts; added future sprint items A19-A22                                                                                                                                                                                                                            |
+| 2.9     | #75     | Track A development complete (A1-A14 all done); added Track A-Test phase with 125 test items; linked to TRACK_A_TESTING_CHECKLIST.md; updated blockers (Sentry/Dashboard resolved)                                                                                                                                                                                             |
+| 2.8     | #75     | Added Technical Debt Backlog section with 283 aggregated findings from all audits; created MASTER_ISSUE_LIST.md, IMPLEMENTATION_PLAN.md, ROADMAP_INTEGRATION.md; linked to `npm run aggregate:audit-findings`                                                                                                                                                                  |
+| 2.7     | #70     | Added Background Jobs Expansion (A10-A14) to Track A - cleanup sessions, orphaned files, usage analytics, prune security events, health checks; added Deferred Background Jobs to M2 (refresh cache, backup verification)                                                                                                                                                      |
+| 2.6     | #69     | Major sprint update - corrected stale Sentry status (A1-A3 done); moved Phase 5 into sprint; moved Local Resources to Phase 5.5; added Admin Panel enhancements (stacked tabs, user privileges, batch ops, dark mode); added Dev Dashboard enhancements; added User Analytics Tab; added monitoring integrations evaluation (PostHog recommended); added mobile responsiveness |
+| 2.5     | #65     | Created Operational Visibility Sprint as active P0 focus; created OPERATIONAL_VISIBILITY_SPRINT.md; reorganized milestones                                                                                                                                                                                                                                                     |
+| 2.4     | #65     | Added Lighthouse Performance Tracking items (PERF-001 to PERF-006) to M1.5 and M2 sections; created LIGHTHOUSE_INTEGRATION_PLAN.md                                                                                                                                                                                                                                             |
+| 2.2     | #64     | Added Engineering Productivity audit items (EFF-001 to EFF-011) to M1.5 and M2 sections                                                                                                                                                                                                                                                                                        |
+| 2.1     | #44     | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram                                                                                                                                                                                                                                               |
+| 2.0     | #3      | Standardized structure per Phase 3 migration                                                                                                                                                                                                                                                                                                                                   |
+| 1.5     | Pre-#1  | Created ROADMAP_LOG.md, archived M0/M1                                                                                                                                                                                                                                                                                                                                         |
+| 1.4     | Pre-#1  | M1.6 Phases 1-3 complete                                                                                                                                                                                                                                                                                                                                                       |
+| 1.3     | Pre-#1  | Admin panel spec v1.2                                                                                                                                                                                                                                                                                                                                                          |
+| 1.2     | Pre-#1  | Consolidated from multiple roadmap docs                                                                                                                                                                                                                                                                                                                                        |
+| 1.1     | Pre-#1  | M1 security hardening complete                                                                                                                                                                                                                                                                                                                                                 |
+| 1.0     | Pre-#1  | Initial consolidated roadmap                                                                                                                                                                                                                                                                                                                                                   |
 
 **Historical Notes:**
 
-- December 28, 2025: Created ROADMAP_LOG.md archive, streamlined active roadmap
-- December 19, 2025: Consolidated from ROADMAP_V3.md,
+- Pre-session tracking: Created ROADMAP_LOG.md archive, streamlined active
+  roadmap
+- Pre-session tracking: Consolidated from ROADMAP_V3.md,
   WEB_ENHANCEMENTS_ROADMAP.md, FEATURE_DECISIONS.md

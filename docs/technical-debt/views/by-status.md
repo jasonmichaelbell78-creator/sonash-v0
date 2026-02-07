@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (1920)
+## NEW (2135)
 
 | ID        | Title                                                          | Severity | Category                 |
 | --------- | -------------------------------------------------------------- | -------- | ------------------------ |
@@ -500,6 +500,14 @@
 | DEBT-1986 | God Object: functions/src/admin.ts (4108 lines)                | S1       | code-quality             |
 | DEBT-1988 | Zero Component Test Coverage                                   | S1       | code-quality             |
 | DEBT-1990 | Excessive client-component surface ("use client" appears ...   | S1       | performance              |
+| DEBT-1998 | Invalid placeholder URL in example: full-url.com               | S1       | documentation            |
+| DEBT-1999 | Broken external link: console.firebase.google.com/support...   | S1       | documentation            |
+| DEBT-2000 | Broken anchor link: ./ROADMAP_LOG.md#m16---admin-panel--t...   | S1       | documentation            |
+| DEBT-2001 | Broken anchor link: docs/DOCUMENT_DEPENDENCIES.md#cross-d...   | S1       | documentation            |
+| DEBT-2002 | Broken anchor link: ./ROADMAP.md#active-sprint-operationa...   | S1       | documentation            |
+| DEBT-2003 | Broken anchor link: ./ROADMAP.md#m2-architecture-refactor...   | S1       | documentation            |
+| DEBT-2007 | Contradiction: Security rules enforcement for direct writes    | S1       | documentation            |
+| DEBT-2008 | Contradiction: Pre-commit hook blocking status for patter...   | S1       | documentation            |
 | DEBT-0140 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
 | DEBT-0141 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
 | DEBT-0142 | Prefer `Number.parseFloat` over `parseFloat`.                  | S2       | code-quality             |
@@ -1599,6 +1607,54 @@
 | DEBT-1989 | Potential Firestore-rules alignment risk for direct weekl...   | S2       | code-quality             |
 | DEBT-1991 | Oversized scripts: aggregate-audit-findings.js (63KB), ch...   | S2       | process                  |
 | DEBT-1992 | 8:1 console.log to logger ratio — production observabilit...   | S2       | code-quality             |
+| DEBT-2022 | Structure: COMMAND_REFERENCE.md should be Tier 1 Canonical     | S2       | documentation            |
+| DEBT-2023 | Structure: AI_WORKFLOW.md should be Tier 1 Canonical           | S2       | documentation            |
+| DEBT-2024 | SECURITY_CHECKLIST.md missing Document Version and Status      | S2       | documentation            |
+| DEBT-2025 | APPCHECK_SETUP.md missing Document Version                     | S2       | documentation            |
+| DEBT-2026 | RECAPTCHA_REMOVAL_GUIDE.md missing Document Version            | S2       | documentation            |
+| DEBT-2027 | TESTING_PLAN.md missing Document Version                       | S2       | documentation            |
+| DEBT-2028 | Code blocks missing language specifier                         | S2       | documentation            |
+| DEBT-2029 | Inaccurate Firebase version in CLAUDE.md                       | S2       | documentation            |
+| DEBT-2030 | DEVELOPMENT.md missing Status field in metadata                | S2       | documentation            |
+| DEBT-2031 | CODE_PATTERNS.md uses lowercase 'claude.md' instead of 'C...   | S2       | documentation            |
+| DEBT-2032 | AI_REVIEW_PROCESS.md missing Status field                      | S2       | documentation            |
+| DEBT-2033 | APPCHECK_SETUP.md missing Document Version field               | S2       | documentation            |
+| DEBT-2034 | Broken anchor link: ../ROADMAP.md#dependencies                 | S2       | documentation            |
+| DEBT-2035 | INCIDENT_RESPONSE.md missing Document Version field            | S2       | documentation            |
+| DEBT-2036 | MCP_SETUP.md missing Status field                              | S2       | documentation            |
+| DEBT-2037 | TESTING_PLAN.md missing Document Version field                 | S2       | documentation            |
+| DEBT-2038 | Structure: ROADMAP_LOG.md should be Tier 1 Canonical           | S2       | documentation            |
+| DEBT-2039 | ROADMAP.md missing last updated date (stale > 30 days)         | S2       | documentation            |
+| DEBT-2040 | Inconsistent heading levels in SESSION_CONTEXT.md              | S2       | documentation            |
+| DEBT-2041 | Line length exceeds recommended limit                          | S2       | documentation            |
+| DEBT-2042 | Structure: SESSION_CONTEXT.md should be Tier 1 Canonical       | S2       | documentation            |
+| DEBT-2043 | Structure: .claude/ directory contains Tier 1 candidates       | S2       | documentation            |
+| DEBT-2044 | EXPANSION_EVALUATION_TRACKER.md using deprecated date-bas...   | S2       | documentation            |
+| DEBT-2045 | REVIEW_POLICY_ARCHITECTURE.md has conflicting status indi...   | S2       | documentation            |
+| DEBT-2046 | Inconsistent terminology: 'skill' vs 'command' vs 'slash ...   | S2       | documentation            |
+| DEBT-2047 | Inconsistent terminology: 'agent' vs 'subagent' vs 'worker'    | S2       | documentation            |
+| DEBT-2048 | Duplication: Session Start Protocol in CLAUDE.md and AI_W...   | S2       | documentation            |
+| DEBT-2049 | Duplication: Compaction-resilient state persistence in CL...   | S2       | documentation            |
+| DEBT-2050 | Inconsistent terminology: 'Cloud Functions' capitalization     | S2       | documentation            |
+| DEBT-2051 | Inconsistent terminology: 'App Check' vs 'AppCheck' vs 'a...   | S2       | documentation            |
+| DEBT-2052 | MONETIZATION_RESEARCH.md has stale Last Updated date (ove...   | S2       | documentation            |
+| DEBT-2053 | PR_WORKFLOW_CHECKLIST.md missing Version History table         | S2       | documentation            |
+| DEBT-2054 | Structure: SESSION_DECISIONS.md placement incorrect            | S2       | documentation            |
+| DEBT-2055 | Historical ideation document is unlinked                       | S2       | documentation            |
+| DEBT-2056 | Master documentation index is not linked from entry points     | S2       | documentation            |
+| DEBT-2057 | Duplication: Agent/Skill Triggers table in CLAUDE.md and ...   | S2       | documentation            |
+| DEBT-2388 | Quality: CLAUDE.md scores 8/10 - missing cross-references...   | S2       | documentation            |
+| DEBT-2389 | Quality: .claude/agents/ docs lack usage examples              | S2       | documentation            |
+| DEBT-2390 | Quality: .claude/skills/ docs have inconsistent SKILL.md ...   | S2       | documentation            |
+| DEBT-2391 | Quality: DEVELOPMENT.md scores 7/10 - wall of text in Git...   | S2       | documentation            |
+| DEBT-2392 | Readability: DEVELOPMENT.md has 110-line section without ...   | S2       | documentation            |
+| DEBT-2393 | Gap: Missing overview for multi-ai audit system                | S2       | documentation            |
+| DEBT-2394 | Quality: SECURITY.md scores 8/10 - clear but missing thre...   | S2       | documentation            |
+| DEBT-2395 | Quality: SESSION_CONTEXT.md scores 6/10 - excessive sessi...   | S2       | documentation            |
+| DEBT-2396 | Readability: SESSION_CONTEXT.md session summaries are den...   | S2       | documentation            |
+| DEBT-2397 | Gap: Undocumented agent team workflows                         | S2       | documentation            |
+| DEBT-2398 | Gap: No quickstart guide for new developers                    | S2       | documentation            |
+| DEBT-2399 | Gap: Undocumented core lib modules                             | S2       | documentation            |
 | DEBT-0553 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | S3       | code-quality             |
@@ -1607,7 +1663,6 @@
 | DEBT-0558 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0559 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0560 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
-| DEBT-0561 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0562 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0563 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0564 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
@@ -1673,7 +1728,6 @@
 | DEBT-0624 | Unexpected negated condition.                                  | S3       | code-quality             |
 | DEBT-0625 | Use `export…from` to re-export `DailyLog`.                     | S3       | code-quality             |
 | DEBT-0626 | Use `export…from` to re-export `DailyLogHistoryResult`.        | S3       | code-quality             |
-| DEBT-0627 | `String.raw` should be used to avoid escaping `\`.             | S3       | code-quality             |
 | DEBT-0628 | `String.raw` should be used to avoid escaping `\`.             | S3       | code-quality             |
 | DEBT-0629 | Do not call `Array#push()` multiple times.                     | S3       | code-quality             |
 | DEBT-0630 | `String.raw` should be used to avoid escaping `\`.             | S3       | code-quality             |
@@ -1696,7 +1750,6 @@
 | DEBT-0647 | Define a constant instead of using the literal '━━━━━━━━━...   | S3       | code-quality             |
 | DEBT-0648 | Remove the declaration of the unused 'preserveStackInDev'...   | S3       | code-quality             |
 | DEBT-0649 | Unexpected negated condition.                                  | S3       | code-quality             |
-| DEBT-0650 | Unexpected negated condition.                                  | S3       | code-quality             |
 | DEBT-0651 | Unexpected negated condition.                                  | S3       | code-quality             |
 | DEBT-0652 | Prefer `Date.now()` over `new Date()`.                         | S3       | code-quality             |
 | DEBT-0653 | Unexpected negated condition.                                  | S3       | code-quality             |
@@ -1831,7 +1884,6 @@
 | DEBT-0782 | Pattern checker produces false positives for controlled n...   | S3       | code-quality             |
 | DEBT-0783 | Review trigger thresholds may cause alert fatigue for pro...   | S3       | code-quality             |
 | DEBT-0784 | Deploy workflow secret handling may be brittle for multil...   | S3       | code-quality             |
-| DEBT-0785 | Archive docs contain significant link rot after archival/...   | S3       | code-quality             |
 | DEBT-0786 | Template date placeholders using literal YYYY-MM-DD format     | S3       | code-quality             |
 | DEBT-0787 | Template docs located outside docs/templates/ directory        | S3       | code-quality             |
 | DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes...   | S3       | code-quality             |
@@ -1852,8 +1904,6 @@
 | DEBT-0803 | Secrets expanded in run block                                  | S3       | security                 |
 | DEBT-0804 | process.env.NODE_ENV checks for debug info                     | S3       | security                 |
 | DEBT-0805 | Agent config files present                                     | S3       | security                 |
-| DEBT-0806 | Archive docs contain significant link rot after moves          | S3       | documentation            |
-| DEBT-0807 | PR_REVIEW_PROMPT_TEMPLATE.md lacks Last Updated and Versi...   | S3       | documentation            |
 | DEBT-0808 | DOCUMENTATION_INDEX.md orphaned - not referenced by any m...   | S3       | documentation            |
 | DEBT-0809 | Only 6 dynamic imports despite 101 client components           | S3       | performance              |
 | DEBT-0810 | useMemo/useCallback usage is inconsistent                      | S3       | performance              |
@@ -1885,7 +1935,6 @@
 | DEBT-0836 | Improve deploy secret handling                                 | S3       | code-quality             |
 | DEBT-0837 | Missing "AI Instructions" Sections                             | S3       | code-quality             |
 | DEBT-0838 | Fix deprecated APIs + nested ternaries                         | S3       | code-quality             |
-| DEBT-0839 | Fix archive link rot                                           | S3       | code-quality             |
 | DEBT-0840 | Missing "Quick Start" Sections                                 | S3       | code-quality             |
 | DEBT-0841 | Underscore-prefixed unused variables                           | S3       | code-quality             |
 | DEBT-0842 | TODO comments without issue references                         | S3       | code-quality             |
@@ -1918,11 +1967,177 @@
 | DEBT-1949 | User ID hash truncation reduces collision resistance for ...   | S3       | security                 |
 | DEBT-1950 | No middleware.ts for server-side route protection              | S3       | security                 |
 | DEBT-1951 | Service account credentials written to disk in CI deploy ...   | S3       | security                 |
-| DEBT-1993 | Potential Misplaced Plans in Archive/Templates                 | S3       | documentation            |
-| DEBT-1994 | docs/OPERATIONAL_VISIBILITY_SPRINT.md and docs/HOOKIFY_ST...   | S3       | documentation            |
 | DEBT-1995 | No UI indicator for online/offline state                       | S3       | code-quality             |
 | DEBT-1996 | Markdownlint and Prettier checks not confirmed                 | S3       | documentation            |
 | DEBT-1997 | Potentially missing performance monitoring                     | S3       | code-quality             |
+| DEBT-2058 | COMMAND_REFERENCE.md has inconsistent version format           | S3       | documentation            |
+| DEBT-2059 | Structure: skills/ vs agents/ directory overlap                | S3       | documentation            |
+| DEBT-2060 | Bare URLs without link text                                    | S3       | documentation            |
+| DEBT-2061 | AI_WORKFLOW.md has inline metadata format instead of table     | S3       | documentation            |
+| DEBT-2062 | AI_WORKFLOW.md doesn't link back to CLAUDE.md                  | S3       | documentation            |
+| DEBT-2063 | AI_WORKFLOW.md missing Status field                            | S3       | documentation            |
+| DEBT-2064 | ARCHITECTURE.md outdated by 23 days                            | S3       | documentation            |
+| DEBT-2065 | CLAUDE.md missing Status field                                 | S3       | documentation            |
+| DEBT-2066 | APPCHECK_SETUP.md outdated by 25 days                          | S3       | documentation            |
+| DEBT-2067 | LEARNING_METRICS.md missing tier declaration                   | S3       | documentation            |
+| DEBT-2069 | SECURITY.md outdated by 23 days                                | S3       | documentation            |
+| DEBT-2070 | SESSION_DECISIONS.md missing Status field                      | S3       | documentation            |
+| DEBT-2071 | Inconsistent list marker style                                 | S3       | documentation            |
+| DEBT-2072 | Broken anchor link: ../ROADMAP.md#phase-4-error-tracking-...   | S3       | documentation            |
+| DEBT-2073 | Broken anchor link: ../ROADMAP.md#phase-5-system-logs-gcp...   | S3       | documentation            |
+| DEBT-2074 | CODE_PATTERNS.md <-> SECURITY_CHECKLIST.md missing cross-...   | S3       | documentation            |
+| DEBT-2075 | SECURITY_CHECKLIST.md doesn't reference CLAUDE.md              | S3       | documentation            |
+| DEBT-2076 | Outdated redirect: cloud.google.com/recaptcha-enterprise/...   | S3       | documentation            |
+| DEBT-2077 | AUDIT_TRACKER.md has Status in Purpose line instead of me...   | S3       | documentation            |
+| DEBT-2078 | Structure: AUDIT_TRACKER.md should be Tier 4 Operational       | S3       | documentation            |
+| DEBT-2079 | DOCUMENTATION_STANDARDS.md doesn't reference CLAUDE.md         | S3       | documentation            |
+| DEBT-2080 | FIREBASE_CHANGE_POLICY.md has multiple Last Updated dates...   | S3       | documentation            |
+| DEBT-2081 | Broken anchor link: ../ROADMAP.md#offline-support-critical     | S3       | documentation            |
+| DEBT-2082 | Broken anchor link: ../ROADMAP.md#m3-meetings-location-pl...   | S3       | documentation            |
+| DEBT-2083 | Broken anchor link: ../technical-debt/PROCEDURE.md#11-cat...   | S3       | documentation            |
+| DEBT-2084 | Broken anchor link: ../../ROADMAP.md#track-t---testing-in...   | S3       | documentation            |
+| DEBT-2085 | SESSION_DECISIONS.md missing Created field                     | S3       | documentation            |
+| DEBT-2086 | SLASH_COMMANDS_REFERENCE.md potentially stale (33 days old)    | S3       | documentation            |
+| DEBT-2087 | Outdated redirect: docs.anthropic.com/claude-code redirec...   | S3       | documentation            |
+| DEBT-2088 | Structure: technical-debt/PROCEDURE.md placement review        | S3       | documentation            |
+| DEBT-2089 | Naming: Inconsistent use of PROCEDURE vs GUIDE vs WORKFLOW     | S3       | documentation            |
+| DEBT-2090 | Broken anchor link: ./DOCUMENT_DEPENDENCIES.md#cross-docu...   | S3       | documentation            |
+| DEBT-2091 | Case mismatch in link: CLAUDE.md                               | S3       | documentation            |
+| DEBT-2092 | Inconsistent blank lines around headings                       | S3       | documentation            |
+| DEBT-2093 | Structure: ROADMAP.md vs ROADMAP_FUTURE.md separation          | S3       | documentation            |
+| DEBT-2094 | Multiple H1 headings in single document                        | S3       | documentation            |
+| DEBT-2095 | Trailing spaces at end of lines                                | S3       | documentation            |
+| DEBT-2096 | Table formatting inconsistencies                               | S3       | documentation            |
+| DEBT-2097 | Emoji usage in headings                                        | S3       | documentation            |
+| DEBT-2098 | SESSION_CONTEXT.md has inconsistent metadata format            | S3       | documentation            |
+| DEBT-2099 | Broken internal link: ./SHARED_TEMPLATE_BASE.md#ai-models      | S3       | documentation            |
+| DEBT-2100 | Broken internal link: ./audit-code-report.md                   | S3       | documentation            |
+| DEBT-2101 | Broken internal link: ./audit-security-report.md               | S3       | documentation            |
+| DEBT-2102 | Broken internal link: ./audit-performance-report.md            | S3       | documentation            |
+| DEBT-2103 | Broken internal link: ./audit-documentation-report.md          | S3       | documentation            |
+| DEBT-2104 | Broken internal link: ./audit-refactoring-report.md            | S3       | documentation            |
+| DEBT-2105 | Broken internal link: ./audit-process-report.md                | S3       | documentation            |
+| DEBT-2106 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | documentation            |
+| DEBT-2107 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | documentation            |
+| DEBT-2108 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | documentation            |
+| DEBT-2109 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | documentation            |
+| DEBT-2110 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | documentation            |
+| DEBT-2111 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | documentation            |
+| DEBT-2112 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | documentation            |
+| DEBT-2113 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | documentation            |
+| DEBT-2114 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | documentation            |
+| DEBT-2115 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | documentation            |
+| DEBT-2116 | Broken internal link: path.md                                  | S3       | documentation            |
+| DEBT-2117 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | documentation            |
+| DEBT-2118 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | documentation            |
+| DEBT-2119 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | documentation            |
+| DEBT-2120 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | documentation            |
+| DEBT-2121 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | documentation            |
+| DEBT-2122 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | documentation            |
+| DEBT-2123 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | documentation            |
+| DEBT-2124 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | documentation            |
+| DEBT-2125 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | documentation            |
+| DEBT-2126 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | documentation            |
+| DEBT-2127 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | documentation            |
+| DEBT-2128 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | documentation            |
+| DEBT-2129 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | documentation            |
+| DEBT-2130 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | documentation            |
+| DEBT-2131 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | documentation            |
+| DEBT-2132 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | documentation            |
+| DEBT-2133 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | documentation            |
+| DEBT-2134 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | documentation            |
+| DEBT-2135 | Broken internal link: docs/agent_docs/SECURITY_CHECKLIST.md    | S3       | documentation            |
+| DEBT-2136 | Broken internal link: docs/GLOBAL_SECURITY_STANDARDS.md        | S3       | documentation            |
+| DEBT-2137 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | documentation            |
+| DEBT-2138 | Broken internal link: ../.claude/skills/audit-comprehensi...   | S3       | documentation            |
+| DEBT-2139 | Broken internal link: path.md                                  | S3       | documentation            |
+| DEBT-2140 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | documentation            |
+| DEBT-2141 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | documentation            |
+| DEBT-2142 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | documentation            |
+| DEBT-2143 | Broken internal link: ../../SESSION_CONTEXT.md                 | S3       | documentation            |
+| DEBT-2144 | Broken internal link: ../../SESSION_CONTEXT.md                 | S3       | documentation            |
+| DEBT-2145 | Broken internal link: ../../ROADMAP.md                         | S3       | documentation            |
+| DEBT-2146 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md    | S3       | documentation            |
+| DEBT-2147 | Broken internal link: ../../ROADMAP.md                         | S3       | documentation            |
+| DEBT-2148 | Broken internal link: ../../docs/agent_docs/CODE_PATTERNS.md   | S3       | documentation            |
+| DEBT-2149 | Broken internal link: ../../docs/TECHNICAL_DEBT_MASTER.md      | S3       | documentation            |
+| DEBT-2150 | Broken internal link: ../../docs/DOCUMENT_DEPENDENCIES.md      | S3       | documentation            |
+| DEBT-2151 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md    | S3       | documentation            |
+| DEBT-2152 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | documentation            |
+| DEBT-2154 | Broken internal link: docs/SONARCLOUD_CLEANUP_RUNBOOK.md       | S3       | documentation            |
+| DEBT-2155 | Broken internal link: docs/SONARCLOUD_TRIAGE.md                | S3       | documentation            |
+| DEBT-2157 | Link distribution imbalance between CLAUDE.md and AI_WORK...   | S3       | documentation            |
+| DEBT-2158 | Duplication: Documentation hierarchy/tiers in CLAUDE.md a...   | S3       | documentation            |
+| DEBT-2159 | Inconsistent terminology: 'TDMS' expansion                     | S3       | documentation            |
+| DEBT-2160 | Inconsistent terminology: 'finding' vs 'issue' vs 'item'       | S3       | documentation            |
+| DEBT-2163 | Missing 'Related Documents' sections in agent_docs             | S3       | documentation            |
+| DEBT-2164 | Structure: docs/agent_docs/ naming convention                  | S3       | documentation            |
+| DEBT-2176 | Broken internal link: ../canonical/README.md                   | S3       | documentation            |
+| DEBT-2177 | Broken internal link: ../../AUDIT_FINDINGS_PROCEDURE.md        | S3       | documentation            |
+| DEBT-2179 | Broken internal link: path.md                                  | S3       | documentation            |
+| DEBT-2180 | Broken internal link: ./reviews/2026-Q1/PROCESS_AUDIT_FIN...   | S3       | documentation            |
+| DEBT-2181 | Broken internal link: ./audits/comprehensive/AUDIT_SUMMAR...   | S3       | documentation            |
+| DEBT-2185 | SESSION_DECISIONS.md has no outgoing links                     | S3       | documentation            |
+| DEBT-2186 | SESSION_DECISIONS.md missing 'How to Use This Document' s...   | S3       | documentation            |
+| DEBT-2189 | Broken internal link: audits/sonarcloud-dismissals.md          | S3       | documentation            |
+| DEBT-2190 | Broken internal link: SONARCLOUD_TRIAGE.md                     | S3       | documentation            |
+| DEBT-2193 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | documentation            |
+| DEBT-2194 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | documentation            |
+| DEBT-2195 | Broken internal link: src/dataconnect-generated/README.md      | S3       | documentation            |
+| DEBT-2196 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | documentation            |
+| DEBT-2197 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | documentation            |
+| DEBT-2198 | Broken internal link: src/dataconnect-generated/react/REA...   | S3       | documentation            |
+| DEBT-2199 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | documentation            |
+| DEBT-2200 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | documentation            |
+| DEBT-2201 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | documentation            |
+| DEBT-2202 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | documentation            |
+| DEBT-2203 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | documentation            |
+| DEBT-2204 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | documentation            |
+| DEBT-2205 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | documentation            |
+| DEBT-2206 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | documentation            |
+| DEBT-2207 | Broken internal link: src/dataconnect-generated/react/REA...   | S3       | documentation            |
+| DEBT-2208 | Broken internal link: src/dataconnect-generated/README.md      | S3       | documentation            |
+| DEBT-2384 | No stale anchor references detected                            | S3       | documentation            |
+| DEBT-2385 | ARCHITECTURE.md <-> DEVELOPMENT.md have good bidirectiona...   | S3       | documentation            |
+| DEBT-2386 | CLAUDE.md Documentation Index has proper hyperlinks            | S3       | documentation            |
+| DEBT-2387 | SESSION_CONTEXT.md <-> ROADMAP.md have excellent bidirect...   | S3       | documentation            |
+| DEBT-2400 | Navigation: Skill index exists but not prominently linked...   | S3       | documentation            |
+| DEBT-2401 | Quality: AI_WORKFLOW.md scores 8/10 - good structure but ...   | S3       | documentation            |
+| DEBT-2402 | Navigation: AI_WORKFLOW.md (861 lines) lacks comprehensiv...   | S3       | documentation            |
+| DEBT-2403 | Navigation: Decision tree format in AI_WORKFLOW.md not sc...   | S3       | documentation            |
+| DEBT-2404 | Quality: ARCHITECTURE.md scores 9/10 - excellent structure     | S3       | documentation            |
+| DEBT-2405 | Navigation: ARCHITECTURE.md (780 lines) lacks TOC              | S3       | documentation            |
+| DEBT-2406 | Navigation: CLAUDE.md Section 5 links do not provide onwa...   | S3       | documentation            |
+| DEBT-2407 | Navigation: DEVELOPMENT.md (1095 lines) lacks comprehensi...   | S3       | documentation            |
+| DEBT-2408 | Navigation: CODE_PATTERNS.md (591 lines) lacks TOC             | S3       | documentation            |
+| DEBT-2410 | Gap: Missing cross-links in audit documentation                | S3       | documentation            |
+| DEBT-2411 | Quality: DOCUMENTATION_STANDARDS.md scores 9/10 - excelle...   | S3       | documentation            |
+| DEBT-2412 | Navigation: PROCEDURE.md (585 lines) lacks TOC                 | S3       | documentation            |
+| DEBT-2413 | Navigation: Technical debt views lack navigation back to ...   | S3       | documentation            |
+| DEBT-2414 | Navigation: README.md lacks TOC for 370-line document          | S3       | documentation            |
+| DEBT-2415 | Navigation: No clear path from README to troubleshooting ...   | S3       | documentation            |
+| DEBT-2416 | Typo: ROADMAP.md has inconsistent capitalization in miles...   | S3       | documentation            |
+| DEBT-2417 | Navigation: Scripts README lacks usage examples                | S3       | documentation            |
+| DEBT-2418 | Navigation: Session Context breadcrumbs missing from SESS...   | S3       | documentation            |
+| DEBT-2419 | Navigation: Fire DataConnect generated docs lack context ...   | S3       | documentation            |
+| DEBT-2420 | Gap: Missing skill usage examples beyond SKILL.md              | S3       | documentation            |
+| DEBT-2421 | Navigation: Skill docs lack consistent 'Prerequisites' se...   | S3       | documentation            |
+| DEBT-2422 | Diagram opportunity: Agent team vs subagent execution mod...   | S3       | documentation            |
+| DEBT-2423 | Navigation: Skill docs lack consistent 'Next Steps' sections   | S3       | documentation            |
+| DEBT-2424 | Diagram opportunity: AI_WORKFLOW.md decision tree only in...   | S3       | documentation            |
+| DEBT-2425 | Diagram opportunity: ARCHITECTURE.md security layers desc...   | S3       | documentation            |
+| DEBT-2426 | Diagram opportunity: Compaction-resilient state persisten...   | S3       | documentation            |
+| DEBT-2427 | Quality: CODE_PATTERNS.md scores 8/10 - good reference bu...   | S3       | documentation            |
+| DEBT-2430 | Diagram opportunity: Multi-AI audit workflow lacks visual...   | S3       | documentation            |
+| DEBT-2431 | Navigation: Multi-AI audit templates lack consistent cros...   | S3       | documentation            |
+| DEBT-2433 | Diagram opportunity: Technical Debt intake pipeline descr...   | S3       | documentation            |
+| DEBT-2434 | Navigation: DOCUMENTATION_INDEX.md category organization ...   | S3       | documentation            |
+| DEBT-2435 | Quality: ROADMAP.md scores 7/10 - large tables reduce rea...   | S3       | documentation            |
+| DEBT-2436 | Navigation: ROADMAP.md (3360 lines) lacks TOC                  | S3       | documentation            |
+| DEBT-2437 | Gap: Undocumented utility scripts                              | S3       | documentation            |
+| DEBT-2438 | Gap: Undocumented scripts library modules                      | S3       | documentation            |
+| DEBT-2439 | Gap: Missing troubleshooting guide                             | S3       | documentation            |
+| DEBT-2440 | Gap: No migration guide for legacy patterns                    | S3       | documentation            |
 | DEBT-0854 | App Check disabled on all production Cloud Functions           | S0       | security                 |
 | DEBT-1056 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
 | DEBT-1057 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
@@ -1963,6 +2178,235 @@ _No items_
 | DEBT-0866 | Close legacy journalEntries write path                       | S0       | security     |
 | DEBT-0867 | Fix useJournal memory leak                                   | S0       | code-quality |
 
-## FALSE_POSITIVE (0)
+## FALSE_POSITIVE (228)
 
-_No items_
+| ID        | Title                                                          | Severity | Category      |
+| --------- | -------------------------------------------------------------- | -------- | ------------- |
+| DEBT-0561 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality  |
+| DEBT-0627 | `String.raw` should be used to avoid escaping `\`.             | S3       | code-quality  |
+| DEBT-0650 | Unexpected negated condition.                                  | S3       | code-quality  |
+| DEBT-0785 | Archive docs contain significant link rot after archival/...   | S3       | code-quality  |
+| DEBT-0806 | Archive docs contain significant link rot after moves          | S3       | documentation |
+| DEBT-0807 | PR_REVIEW_PROMPT_TEMPLATE.md lacks Last Updated and Versi...   | S3       | documentation |
+| DEBT-0839 | Fix archive link rot                                           | S3       | code-quality  |
+| DEBT-1993 | Potential Misplaced Plans in Archive/Templates                 | S3       | documentation |
+| DEBT-1994 | docs/OPERATIONAL_VISIBILITY_SPRINT.md and docs/HOOKIFY_ST...   | S3       | documentation |
+| DEBT-2004 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP...   | S3       | documentation |
+| DEBT-2005 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP...   | S3       | documentation |
+| DEBT-2006 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | documentation |
+| DEBT-2009 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | documentation |
+| DEBT-2010 | Broken internal link: ./docs/archive/completed-plans/EIGH...   | S3       | documentation |
+| DEBT-2011 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | documentation |
+| DEBT-2012 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | S3       | documentation |
+| DEBT-2013 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | S3       | documentation |
+| DEBT-2014 | Broken internal link: ./docs/archive/SoNash\_\_AdminPanelEn... | S3       | documentation |
+| DEBT-2015 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | documentation |
+| DEBT-2016 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | documentation |
+| DEBT-2017 | Broken internal link: ./docs/archive/2025-dec-reports/JOU...   | S3       | documentation |
+| DEBT-2018 | Broken internal link: ./docs/archive/2025-dec-reports/LIB...   | S3       | documentation |
+| DEBT-2019 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | S3       | documentation |
+| DEBT-2020 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | documentation |
+| DEBT-2021 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | documentation |
+| DEBT-2068 | RECAPTCHA_REMOVAL_GUIDE.md outdated by 25 days                 | S3       | documentation |
+| DEBT-2153 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | documentation |
+| DEBT-2156 | SESSION_HISTORY.md is append-only but lacks archival policy    | S3       | documentation |
+| DEBT-2161 | Broken internal link: ./archive/SoNash\_\_AdminPanelEnhance... | S3       | documentation |
+| DEBT-2162 | Broken internal link: ./archive/SoNash\_\_AdminPanelEnhance... | S3       | documentation |
+| DEBT-2165 | Broken internal link: ./archive/REVIEWS_1-40.md                | S3       | documentation |
+| DEBT-2166 | Broken internal link: ./archive/REVIEWS_1-40.md                | S3       | documentation |
+| DEBT-2167 | Broken internal link: ./archive/REVIEWS_1-40.md                | S3       | documentation |
+| DEBT-2168 | Broken internal link: ./archive/REVIEWS_42-60.md               | S3       | documentation |
+| DEBT-2169 | Broken internal link: ./archive/REVIEWS_61-100.md              | S3       | documentation |
+| DEBT-2170 | Broken internal link: ./archive/REVIEWS_101-136.md             | S3       | documentation |
+| DEBT-2171 | Broken internal link: ./archive/REVIEWS_137-179.md             | S3       | documentation |
+| DEBT-2172 | Broken internal link: ./archive/REVIEWS_202-212.md             | S3       | documentation |
+| DEBT-2173 | Broken internal link: ./archive/REVIEWS_180-201.md             | S3       | documentation |
+| DEBT-2174 | Broken internal link: ./archive/REVIEWS_137-179.md             | S3       | documentation |
+| DEBT-2175 | Structure: Archive directory organization inconsistent         | S3       | documentation |
+| DEBT-2178 | Broken internal link: ../archive/completed-decisions/ADR-...   | S3       | documentation |
+| DEBT-2182 | Broken internal link: ./archive/2025-dec-reports/BILLING\_...  | S3       | documentation |
+| DEBT-2183 | Broken internal link: ./archive/2025-dec-reports/BILLING\_...  | S3       | documentation |
+| DEBT-2184 | Broken internal link: ./archive/2025-dec-reports/BILLING\_...  | S3       | documentation |
+| DEBT-2187 | Broken internal link: ./archive/completed-plans/sonarclou...   | S3       | documentation |
+| DEBT-2188 | Broken internal link: ./archive/completed-plans/sonarclou...   | S3       | documentation |
+| DEBT-2191 | Broken internal link: ../archive/tdms-intermediates-2026-...   | S3       | documentation |
+| DEBT-2192 | Broken internal link: ../archive/technical-debt-sources-2...   | S3       | documentation |
+| DEBT-2209 | Broken internal link: docs/archive/2025-dec-reports/AGGRE...   | S3       | documentation |
+| DEBT-2210 | Broken internal link: docs/archive/2025-dec-reports/APP_C...   | S3       | documentation |
+| DEBT-2211 | Broken internal link: docs/archive/2025-dec-reports/ARCHI...   | S3       | documentation |
+| DEBT-2212 | Broken internal link: docs/archive/2025-dec-reports/ARCHI...   | S3       | documentation |
+| DEBT-2213 | Broken internal link: docs/archive/2025-dec-reports/BILLI...   | S3       | documentation |
+| DEBT-2214 | Broken internal link: docs/archive/2025-dec-reports/CODE\_...  | S3       | documentation |
+| DEBT-2215 | Broken internal link: docs/archive/2025-dec-reports/CONSO...   | S3       | documentation |
+| DEBT-2216 | Broken internal link: docs/archive/2025-dec-reports/DEPEN...   | S3       | documentation |
+| DEBT-2217 | Broken internal link: docs/archive/2025-dec-reports/ESLIN...   | S3       | documentation |
+| DEBT-2218 | Broken internal link: docs/archive/2025-dec-reports/JOURN...   | S3       | documentation |
+| DEBT-2219 | Broken internal link: docs/archive/2025-dec-reports/LIBRA...   | S3       | documentation |
+| DEBT-2220 | Broken internal link: docs/archive/2025-dec-reports/REFAC...   | S3       | documentation |
+| DEBT-2221 | Broken internal link: docs/archive/2025-dec-reports/REFAC...   | S3       | documentation |
+| DEBT-2222 | Broken internal link: docs/archive/2025-dec-reports/ROADM...   | S3       | documentation |
+| DEBT-2223 | Broken internal link: docs/archive/2025-dec-reports/ROADM...   | S3       | documentation |
+| DEBT-2224 | Broken internal link: docs/archive/2025-dec-reports/ULTRA...   | S3       | documentation |
+| DEBT-2225 | Broken internal link: docs/archive/2025-dec-reports/XSS_P...   | S3       | documentation |
+| DEBT-2226 | Broken internal link: docs/archive/2026-jan-deprecated/AN...   | S3       | documentation |
+| DEBT-2227 | Broken internal link: docs/archive/2026-jan-deprecated/AR...   | S3       | documentation |
+| DEBT-2228 | Broken internal link: docs/archive/2026-jan-deprecated/CU...   | S3       | documentation |
+| DEBT-2229 | Broken internal link: docs/archive/2026-jan-deprecated/PR...   | S3       | documentation |
+| DEBT-2230 | Broken internal link: docs/archive/2026-jan-deprecated/RO...   | S3       | documentation |
+| DEBT-2231 | Broken internal link: docs/archive/2026-jan-deprecated/SL...   | S3       | documentation |
+| DEBT-2232 | Broken internal link: docs/archive/2026-jan-deprecated/br...   | S3       | documentation |
+| DEBT-2233 | Broken internal link: docs/archive/2026-jan-deprecated/br...   | S3       | documentation |
+| DEBT-2234 | Broken internal link: docs/archive/AI_HANDOFF-2026-01-02.md    | S3       | documentation |
+| DEBT-2235 | Broken internal link: docs/archive/AI_STANDARDIZED_REPORT.md   | S3       | documentation |
+| DEBT-2236 | Broken internal link: docs/archive/APPCHECK_FRESH_SETUP.md     | S3       | documentation |
+| DEBT-2237 | Broken internal link: docs/archive/ARCHIVE_INDEX.md            | S3       | documentation |
+| DEBT-2238 | Broken internal link: docs/archive/ChatGPT_Multi_AI_Refac...   | S3       | documentation |
+| DEBT-2239 | Broken internal link: docs/archive/GitHub_Code_Analysis_a...   | S3       | documentation |
+| DEBT-2240 | Broken internal link: docs/archive/IMPLEMENTATION_PROMPTS.md   | S3       | documentation |
+| DEBT-2241 | Broken internal link: docs/archive/Monetization*Research*...   | S3       | documentation |
+| DEBT-2242 | Broken internal link: docs/archive/RECAPTCHA_PROBLEM_SUMM...   | S3       | documentation |
+| DEBT-2243 | Broken internal link: docs/archive/REVIEWS_1-40.md             | S3       | documentation |
+| DEBT-2244 | Broken internal link: docs/archive/REVIEWS_101-136.md          | S3       | documentation |
+| DEBT-2245 | Broken internal link: docs/archive/REVIEWS_137-179.md          | S3       | documentation |
+| DEBT-2246 | Broken internal link: docs/archive/REVIEWS_180-201.md          | S3       | documentation |
+| DEBT-2247 | Broken internal link: docs/archive/REVIEWS_202-212.md          | S3       | documentation |
+| DEBT-2248 | Broken internal link: docs/archive/REVIEWS_42-60.md            | S3       | documentation |
+| DEBT-2249 | Broken internal link: docs/archive/REVIEWS_61-100.md           | S3       | documentation |
+| DEBT-2250 | Broken internal link: docs/archive/Refactoring_PR_Plan.md      | S3       | documentation |
+| DEBT-2251 | Broken internal link: docs/archive/SUPABASE_MIGRATION_ANA...   | S3       | documentation |
+| DEBT-2252 | Broken internal link: docs/archive/SoNash_Code_Review_Con...   | S3       | documentation |
+| DEBT-2253 | Broken internal link: docs/archive/SoNash\_\_AdminPanelEnha... | S3       | documentation |
+| DEBT-2254 | Broken internal link: docs/archive/SoNash\_\_AdminPanelEnha... | S3       | documentation |
+| DEBT-2255 | Broken internal link: docs/archive/SoNash\_\_AdminPanelEnha... | S3       | documentation |
+| DEBT-2256 | Broken internal link: docs/archive/SoNash\_\_Phase1_ClaudeC... | S3       | documentation |
+| DEBT-2257 | Broken internal link: docs/archive/SoNash\_\_Phase1_ClaudeC... | S3       | documentation |
+| DEBT-2258 | Broken internal link: docs/archive/SoNash\_\_Phase1_ClaudeC... | S3       | documentation |
+| DEBT-2259 | Broken internal link: docs/archive/TESTING_CHECKLIST.md        | S3       | documentation |
+| DEBT-2260 | Broken internal link: docs/archive/architecture-reviews-d...   | S3       | documentation |
+| DEBT-2261 | Broken internal link: docs/archive/architecture-reviews-d...   | S3       | documentation |
+| DEBT-2262 | Broken internal link: docs/archive/completed-audits/PHASE...   | S3       | documentation |
+| DEBT-2263 | Broken internal link: docs/archive/completed-decisions/AD...   | S3       | documentation |
+| DEBT-2264 | Broken internal link: docs/archive/completed-plans/DOCUME...   | S3       | documentation |
+| DEBT-2265 | Broken internal link: docs/archive/completed-plans/EIGHT\_...  | S3       | documentation |
+| DEBT-2266 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | documentation |
+| DEBT-2267 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | S3       | documentation |
+| DEBT-2268 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | documentation |
+| DEBT-2269 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | documentation |
+| DEBT-2270 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | documentation |
+| DEBT-2271 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | documentation |
+| DEBT-2272 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | documentation |
+| DEBT-2273 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | documentation |
+| DEBT-2274 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | documentation |
+| DEBT-2275 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | documentation |
+| DEBT-2276 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | documentation |
+| DEBT-2277 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | documentation |
+| DEBT-2278 | Broken internal link: docs/archive/deprecated-findings-do...   | S3       | documentation |
+| DEBT-2279 | Broken internal link: docs/archive/deprecated-findings-do...   | S3       | documentation |
+| DEBT-2280 | Broken internal link: docs/archive/deprecated-findings-do...   | S3       | documentation |
+| DEBT-2281 | Broken internal link: docs/archive/expansion-ideation/REA...   | S3       | documentation |
+| DEBT-2282 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2283 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2284 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2285 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2286 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2287 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2288 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2289 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2290 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2291 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2292 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2293 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2294 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2295 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | documentation |
+| DEBT-2296 | Broken internal link: docs/archive/firestore-rules.md          | S3       | documentation |
+| DEBT-2297 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA...   | S3       | documentation |
+| DEBT-2298 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA...   | S3       | documentation |
+| DEBT-2299 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA...   | S3       | documentation |
+| DEBT-2300 | Broken internal link: docs/archive/handoffs-2025-12/HANDO...   | S3       | documentation |
+| DEBT-2301 | Broken internal link: docs/archive/legacy*task_list_2025*...   | S3       | documentation |
+| DEBT-2302 | Broken internal link: docs/archive/local-resources-review.md   | S3       | documentation |
+| DEBT-2303 | Broken internal link: docs/archive/obsolete-scripts-2026-...   | S3       | documentation |
+| DEBT-2304 | Broken internal link: docs/archive/source-data/Recovery_P...   | S3       | documentation |
+| DEBT-2305 | Broken internal link: docs/archive/source-data/nashville\_...  | S3       | documentation |
+| DEBT-2306 | Broken internal link: docs/archive/source-data/recovery_q...   | S3       | documentation |
+| DEBT-2307 | Broken internal link: docs/archive/superseded-plans/LOCAL...   | S3       | documentation |
+| DEBT-2308 | Broken internal link: docs/archive/superseded-plans/M1.6\_...  | S3       | documentation |
+| DEBT-2309 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2310 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2311 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2312 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2313 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2314 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2315 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2316 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2317 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2318 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2319 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2320 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2321 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2322 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2323 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2324 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2325 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2326 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | documentation |
+| DEBT-2327 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2328 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2329 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2330 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2331 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2332 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2333 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2334 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2335 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2336 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2337 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2338 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2339 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2340 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2341 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2342 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2343 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2344 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2345 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2346 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2347 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2348 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2349 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2350 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2351 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2352 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2353 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2354 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2355 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2356 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2357 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2358 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2359 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2360 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2361 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2362 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2363 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2364 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2365 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2366 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2367 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2368 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2369 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2370 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2371 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2372 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2373 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2374 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2375 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2376 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2377 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | documentation |
+| DEBT-2378 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | documentation |
+| DEBT-2379 | Broken internal link: ./docs/archive/2025-dec-reports/CON...   | S3       | documentation |
+| DEBT-2380 | Broken internal link: ./docs/archive/SoNash_Code_Review_C...   | S3       | documentation |
+| DEBT-2381 | Broken internal link: ./docs/archive/2025-dec-reports/JOU...   | S3       | documentation |
+| DEBT-2382 | Broken internal link: ./docs/archive/completed-plans/EIGH...   | S3       | documentation |
+| DEBT-2383 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP...   | S3       | documentation |
+| DEBT-2409 | Navigation: Archive folders lack README explaining contents    | S3       | documentation |
+| DEBT-2428 | Consolidation: Merge small setup guides                        | S3       | documentation |
+| DEBT-2429 | Quality: docs/archive/ has no index or navigation              | S3       | documentation |
+| DEBT-2432 | Consolidation: Merge overlapping security docs                 | S3       | documentation |

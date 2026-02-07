@@ -63,6 +63,58 @@ Orchestrator: Unify -> Dedupe -> Report -> TDMS intake
 
 ---
 
+## Context Safety (Prevents Context Overflow)
+
+> [!CRITICAL] The previous run crashed because 8 agents returned full results to
+> the orchestrator, overflowing the context window. These rules are mandatory.
+
+### Agent Return Protocol
+
+**Every agent prompt MUST end with this instruction** (append to all prompts):
+
+```
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: [agent-id] wrote N findings to [output-path]
+Do NOT include finding details, file listings, summaries, or analysis in your
+return message. All details belong in the JSONL output file, not your response.
+```
+
+### Orchestrator Must Not Read JSONL Files
+
+The orchestrator checks agent completion via **file existence and line count
+only**:
+
+```bash
+# CORRECT - check file exists and count lines
+wc -l < ".claude/state/doc-optimizer/wave1-format.jsonl" 2>/dev/null || echo "0"
+
+# WRONG - never do this in orchestrator context
+# cat .claude/state/doc-optimizer/wave1-format.jsonl
+```
+
+### Wave Chunking (Max 2 Waves Per Invocation)
+
+If context is running low (past ~60% usage), **stop after the current wave**,
+save progress, and resume in a new invocation. The `progress.json` file tracks
+exactly where to resume.
+
+Recommended chunking: Wave 0+1 → pause → Wave 2 → pause → Wave 3+4 → unify.
+
+### Shared-State Size Cap
+
+`shared-state.json` inventory entries should include ONLY: `path`, `size_bytes`,
+`word_count`. Strip `version`, `last_updated`, `status` fields to reduce file
+size. Agents that need metadata should extract it themselves from individual
+files.
+
+### Budget Check Between Waves
+
+Before launching each wave, the orchestrator should estimate remaining context.
+If the conversation already contains 3+ agent completions, consider saving state
+and resuming in a new session rather than risking overflow.
+
+---
+
 ## JSONL Finding Schema
 
 Standard schema from `docs/templates/JSONL_SCHEMA_STANDARD.md` plus these
@@ -334,6 +386,10 @@ Each line must be valid JSON with these fields:
 }
 
 IMPORTANT: Do NOT modify files outside docs/, .claude/skills/, or root .md files.
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 1A wrote N findings to .claude/state/doc-optimizer/wave1-format.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ````
 
 #### Agent 1C: External Link Validator (REPORT)
@@ -386,6 +442,10 @@ Each line must be valid JSON with these fields:
   "wave": 1,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 1C wrote N findings to .claude/state/doc-optimizer/wave1-external-links.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 1D: Content Accuracy Checker (MIXED)
@@ -440,6 +500,10 @@ Each line must be valid JSON with these fields:
   "wave": 1,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 1D wrote N findings to .claude/state/doc-optimizer/wave1-accuracy.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Wave 1 Checkpoint (after 1A + 1C + 1D complete)
@@ -519,6 +583,10 @@ Each line must be valid JSON with these fields:
   "wave": 1,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 1B wrote N findings to .claude/state/doc-optimizer/wave1-headers.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Wave 1 Final Checkpoint
@@ -614,6 +682,10 @@ Each line must be valid JSON with these fields:
   "wave": 2,
   "finding_type": "issue|enhancement"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 2A wrote N findings to .claude/state/doc-optimizer/wave2-internal-links.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 2B: Orphan & Connectivity Analyzer (REPORT)
@@ -676,6 +748,10 @@ Each line must be valid JSON with these fields:
   "wave": 2,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 2B wrote N findings to .claude/state/doc-optimizer/wave2-orphans.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 2C: Freshness & Lifecycle Analyzer (REPORT)
@@ -745,6 +821,10 @@ Each line must be valid JSON with these fields:
   "wave": 2,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 2C wrote N findings to .claude/state/doc-optimizer/wave2-lifecycle.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 2D: Cross-Reference & Dependency Checker (REPORT)
@@ -802,6 +882,10 @@ Each line must be valid JSON with these fields:
   "wave": 2,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 2D wrote N findings to .claude/state/doc-optimizer/wave2-crossrefs.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Wave 2 Checkpoint
@@ -895,6 +979,10 @@ Each line must be valid JSON with these fields:
   "wave": 3,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 3A wrote N findings to .claude/state/doc-optimizer/wave3-coherence.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 3B: Structure & Classification Reviewer (REPORT)
@@ -960,6 +1048,10 @@ Each line must be valid JSON with these fields:
   "wave": 3,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 3B wrote N findings to .claude/state/doc-optimizer/wave3-structure.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Wave 3 Checkpoint
@@ -1056,6 +1148,10 @@ Each line must be valid JSON with these fields:
   "wave": 4,
   "finding_type": "enhancement"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 4A wrote N findings to .claude/state/doc-optimizer/wave4-quality.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 4B: Content Gap & Consolidation Analyzer (REPORT)
@@ -1116,6 +1212,10 @@ Each line must be valid JSON with these fields:
   "wave": 4,
   "finding_type": "enhancement"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 4B wrote N findings to .claude/state/doc-optimizer/wave4-gaps.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 4C: Visual & Navigation Enhancer (REPORT)
@@ -1179,6 +1279,10 @@ Each line must be valid JSON with these fields:
   "wave": 4,
   "finding_type": "enhancement"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 4C wrote N findings to .claude/state/doc-optimizer/wave4-navigation.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Wave 4 Checkpoint
@@ -1559,6 +1663,7 @@ When modifying this skill, also update:
 
 ## Version History
 
-| Version | Date       | Description                                     |
-| ------- | ---------- | ----------------------------------------------- |
-| 1.0     | 2026-02-07 | Initial version: 5-wave, 13-agent doc optimizer |
+| Version | Date       | Description                                                   |
+| ------- | ---------- | ------------------------------------------------------------- |
+| 1.1     | 2026-02-07 | Context safety: return protocol, wave chunking, budget checks |
+| 1.0     | 2026-02-07 | Initial version: 5-wave, 13-agent doc optimizer               |

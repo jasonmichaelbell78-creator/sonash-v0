@@ -39,7 +39,7 @@
 | DEBT-1846 | Refactor this function to reduce its Cognitive Complexity... | components/widgets/compact-meeting-countdown.tsx            | 136  | code-quality | E0     |
 | DEBT-1912 | Security risk: Client-side filtering of sensitive data       | hooks/use-journal.ts                                        | 174  | code-quality | E1     |
 
-## S1 - High (488)
+## S1 - High (496)
 
 | ID        | Title                                                         | File                                                                         | Line      | Category                 | Effort |
 | --------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------- | ------------------------ | ------ |
@@ -531,1436 +531,1879 @@
 | DEBT-1986 | God Object: functions/src/admin.ts (4108 lines)               | functions/src/admin.ts                                                       | 0         | code-quality             | E3     |
 | DEBT-1988 | Zero Component Test Coverage                                  | components/                                                                  | 0         | code-quality             | E3     |
 | DEBT-1990 | Excessive client-component surface ("use client" appears ...  | app/admin/page.tsx                                                           | 1         | performance              | E3     |
+| DEBT-1998 | Invalid placeholder URL in example: full-url.com              | docs/DOCUMENTATION_STANDARDS.md                                              | 0         | documentation            | E0     |
+| DEBT-1999 | Broken external link: console.firebase.google.com/support...  | docs/INCIDENT_RESPONSE.md                                                    | 0         | documentation            | E0     |
+| DEBT-2000 | Broken anchor link: ./ROADMAP_LOG.md#m16---admin-panel--t...  | ROADMAP.md                                                                   | 0         | documentation            | E0     |
+| DEBT-2001 | Broken anchor link: docs/DOCUMENT_DEPENDENCIES.md#cross-d...  | ROADMAP.md                                                                   | 0         | documentation            | E0     |
+| DEBT-2002 | Broken anchor link: ./ROADMAP.md#active-sprint-operationa...  | SESSION_CONTEXT.md                                                           | 0         | documentation            | E0     |
+| DEBT-2003 | Broken anchor link: ./ROADMAP.md#m2-architecture-refactor...  | SESSION_CONTEXT.md                                                           | 0         | documentation            | E0     |
+| DEBT-2007 | Contradiction: Security rules enforcement for direct writes   | 71-73                                                                        | 0         | documentation            | E1     |
+| DEBT-2008 | Contradiction: Pre-commit hook blocking status for patter...  | CLAUDE.md                                                                    | 89        | documentation            | E1     |
 
-## S2 - Medium (1099)
+## S2 - Medium (1147)
 
-| ID        | Title                                                          | File                                                                         | Line      | Category      | Effort |
-| --------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------- | ------------- | ------ |
-| DEBT-0140 | Prefer `Number.parseInt` over `parseInt`.                      | app/meetings/all/page.tsx                                                    | 45        | code-quality  | E0     |
-| DEBT-0141 | Prefer `Number.parseInt` over `parseInt`.                      | components/admin/links-tab.tsx                                               | 250       | code-quality  | E0     |
-| DEBT-0142 | Prefer `Number.parseFloat` over `parseFloat`.                  | components/admin/meetings-tab.tsx                                            | 150       | code-quality  | E0     |
-| DEBT-0143 | Prefer `Number.parseInt` over `parseInt`.                      | components/admin/meetings-tab.tsx                                            | 234       | code-quality  | E0     |
-| DEBT-0144 | Prefer `Number.parseInt` over `parseInt`.                      | components/admin/prayers-tab.tsx                                             | 236       | code-quality  | E0     |
-| DEBT-0145 | Avoid non-native interactive elements. If using native HT...   | components/admin/users-tab.tsx                                               | 563       | code-quality  | E0     |
-| DEBT-0146 | Ambiguous spacing after previous element span                  | components/growth/GratitudeCard.tsx                                          | 128       | code-quality  | E0     |
-| DEBT-0147 | A form label must be associated with a control.                | components/growth/NightReviewCard.tsx                                        | 406       | code-quality  | E0     |
-| DEBT-0148 | Ambiguous spacing after previous element span                  | components/growth/SpotCheckCard.tsx                                          | 167       | code-quality  | E0     |
-| DEBT-0149 | Avoid non-native interactive elements. If using native HT...   | components/journal/entry-detail-dialog.tsx                                   | 18        | code-quality  | E0     |
-| DEBT-0150 | Avoid non-native interactive elements. If using native HT...   | components/journal/entry-feed.tsx                                            | 152       | code-quality  | E0     |
-| DEBT-0151 | A form label must be associated with a control.                | components/journal/entry-wizard.tsx                                          | 152       | code-quality  | E0     |
-| DEBT-0152 | Prefer `Number.parseInt` over `parseInt`.                      | components/notebook/pages/resources-page.tsx                                 | 215       | code-quality  | E0     |
-| DEBT-0153 | Prefer `Number.parseInt` over `parseInt`.                      | lib/db/meetings.ts                                                           | 54        | code-quality  | E0     |
-| DEBT-0154 | Prefer `Number.isNaN` over `isNaN`.                            | lib/db/meetings.ts                                                           | 58        | code-quality  | E0     |
-| DEBT-0155 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                        | 46        | code-quality  | E0     |
-| DEBT-0156 | Group parts of the regex together to make the intended op...   | scripts/seed-meetings.ts                                                     | 79        | code-quality  | E0     |
-| DEBT-0157 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/seed-real-data.ts                                                    | 129       | code-quality  | E0     |
-| DEBT-0158 | Do not use an object literal as default for parameter `re...   | scripts/generate-documentation-index.js                                      | 141       | code-quality  | E0     |
-| DEBT-0159 | Remove this assignment of "i".                                 | scripts/add-false-positive.js                                                | 252       | code-quality  | E0     |
-| DEBT-0160 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-document-sync.js                                               | 289       | code-quality  | E0     |
-| DEBT-0161 | Remove this assignment of "i".                                 | scripts/assign-review-tier.js                                                | 458       | code-quality  | E0     |
-| DEBT-0162 | Prefer `Number.isNaN` over `isNaN`.                            | scripts/check-review-needed.js                                               | 196       | code-quality  | E0     |
-| DEBT-0163 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-docs-light.js                                                  | 97        | code-quality  | E0     |
-| DEBT-0164 | Prefer `Number.isNaN` over `isNaN`.                            | scripts/check-docs-light.js                                                  | 206       | code-quality  | E0     |
-| DEBT-0165 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/update-readme-status.js                                              | 219       | code-quality  | E0     |
-| DEBT-0166 | Prefer `Number.parseFloat` over `parseFloat`.                  | scripts/retry-failures.ts                                                    | 135       | code-quality  | E0     |
-| DEBT-0167 | Prefer `Number.parseFloat` over `parseFloat`.                  | scripts/enrich-addresses.ts                                                  | 163       | code-quality  | E0     |
-| DEBT-0168 | A form label must be associated with a control.                | components/admin/meetings-tab.tsx                                            | 89        | code-quality  | E0     |
-| DEBT-0169 | Remove this conditional structure or edit its code blocks...   | lib/utils.ts                                                                 | 28        | code-quality  | E0     |
-| DEBT-0170 | Ambiguous spacing after previous element span                  | components/journal/entry-card.tsx                                            | 152       | code-quality  | E0     |
-| DEBT-0171 | A form label must be associated with a control.                | components/journal/entry-forms/daily-log-form.tsx                            | 75        | code-quality  | E0     |
-| DEBT-0172 | A form label must be associated with a control.                | components/journal/entry-forms/gratitude-form.tsx                            | 77        | code-quality  | E0     |
-| DEBT-0173 | A form label must be associated with a control.                | components/journal/entry-forms/inventory-form.tsx                            | 71        | code-quality  | E0     |
-| DEBT-0174 | A form label must be associated with a control.                | components/journal/entry-forms/mood-form.tsx                                 | 71        | code-quality  | E0     |
-| DEBT-0175 | Add an initial value to this "reduce()" call.                  | components/widgets/compact-meeting-countdown.tsx                             | 153       | code-quality  | E0     |
-| DEBT-0176 | Avoid non-native interactive elements. If using native HT...   | components/widgets/compact-meeting-countdown.tsx                             | 273       | code-quality  | E0     |
-| DEBT-0177 | A form label must be associated with a control.                | components/growth/GratitudeCard.tsx                                          | 136       | code-quality  | E0     |
-| DEBT-0178 | A form label must be associated with a control.                | components/ui/label.tsx                                                      | 6         | code-quality  | E0     |
-| DEBT-0179 | Prefer `Number.parseFloat` over `parseFloat`.                  | scripts/seed-real-data.ts                                                    | 92        | code-quality  | E0     |
-| DEBT-0180 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/seed-meetings.ts                                                     | 42        | code-quality  | E0     |
-| DEBT-0181 | Prefer `Number.isNaN` over `isNaN`.                            | tests/utils/date-utils.test.ts                                               | 74        | code-quality  | E0     |
-| DEBT-0182 | Prefer `Number.NaN` over `NaN`.                                | tests/utils/firebase-types.test.ts                                           | 121       | code-quality  | E0     |
-| DEBT-0183 | Prefer `Number.isNaN` over `isNaN`.                            | tests/utils/firebase-types.test.ts                                           | 140       | code-quality  | E0     |
-| DEBT-0184 | Prefer `Number.isNaN` over `isNaN`.                            | lib/types/firebase-types.ts                                                  | 56        | code-quality  | E0     |
-| DEBT-0185 | Prefer `Number.isNaN` over `isNaN`.                            | components/onboarding/onboarding-wizard.tsx                                  | 135       | code-quality  | E0     |
-| DEBT-0186 | Unexpected unknown at-rule "@custom-variant"                   | app/globals.css                                                              | 4         | code-quality  | E0     |
-| DEBT-0187 | Unexpected unknown at-rule "@custom-variant"                   | styles/globals.css                                                           | 4         | code-quality  | E0     |
-| DEBT-0188 | Prefer `node:child_process` over `child_process`.              | tests/scripts/check-docs-light.test.ts                                       | 3         | code-quality  | E0     |
-| DEBT-0189 | Prefer `node:path` over `path`.                                | tests/scripts/check-docs-light.test.ts                                       | 4         | code-quality  | E0     |
-| DEBT-0190 | Prefer `node:fs` over `fs`.                                    | tests/scripts/check-docs-light.test.ts                                       | 5         | code-quality  | E0     |
-| DEBT-0191 | Prefer `node:child_process` over `child_process`.              | tests/scripts/update-readme-status.test.ts                                   | 3         | code-quality  | E0     |
-| DEBT-0192 | Prefer `node:path` over `path`.                                | tests/scripts/update-readme-status.test.ts                                   | 4         | code-quality  | E0     |
-| DEBT-0193 | Prefer `node:fs` over `fs`.                                    | tests/scripts/update-readme-status.test.ts                                   | 5         | code-quality  | E0     |
-| DEBT-0194 | Simplify this regular expression to reduce its complexity...   | scripts/check-pattern-compliance.js                                          | 114       | code-quality  | E0     |
-| DEBT-0195 | Remove duplicates in this character class.                     | scripts/check-pattern-compliance.js                                          | 233       | code-quality  | E0     |
-| DEBT-0196 | `extensions` should be a `Set`, and use `extensions.has()...   | scripts/check-pattern-compliance.js                                          | 463       | code-quality  | E0     |
-| DEBT-0197 | `ignoreDirs` should be a `Set`, and use `ignoreDirs.has()...   | scripts/check-pattern-compliance.js                                          | 464       | code-quality  | E0     |
-| DEBT-0198 | This branch's code block is the same as the block for the...   | scripts/check-pattern-compliance.js                                          | 499       | code-quality  | E0     |
-| DEBT-0199 | Extract this nested ternary operation into an independent...   | components/admin/meetings-tab.tsx                                            | 263       | code-quality  | E0     |
-| DEBT-0200 | Extract this nested ternary operation into an independent...   | components/admin/sober-living-tab.tsx                                        | 148       | code-quality  | E0     |
-| DEBT-0201 | Extract this nested ternary operation into an independent...   | components/auth/sign-in-modal.tsx                                            | 61        | code-quality  | E0     |
-| DEBT-0202 | Extract this nested ternary operation into an independent...   | components/celebrations/celebration-overlay.tsx                              | 64        | code-quality  | E0     |
-| DEBT-0203 | Extract this nested ternary operation into an independent...   | components/celebrations/celebration-provider.tsx                             | 35        | code-quality  | E0     |
-| DEBT-0204 | Prefer using an optional chain expression instead, as it'...   | components/growth/NightReviewCard.tsx                                        | 527       | code-quality  | E0     |
-| DEBT-0205 | Extract this nested ternary operation into an independent...   | components/growth/SpotCheckCard.tsx                                          | 52        | code-quality  | E0     |
-| DEBT-0206 | Use <output> instead of the "status" role to ensure acces...   | components/growth/Step1WorksheetCard.tsx                                     | 742       | code-quality  | E0     |
-| DEBT-0207 | Extract this nested ternary operation into an independent...   | components/journal/entry-card.tsx                                            | 82        | code-quality  | E0     |
-| DEBT-0208 | Extract this nested ternary operation into an independent...   | components/journal/entry-detail-dialog.tsx                                   | 107       | code-quality  | E0     |
-| DEBT-0209 | Do not use Array index in keys                                 | components/journal/entry-detail-dialog.tsx                                   | 346       | code-quality  | E0     |
-| DEBT-0210 | Use <details>, <fieldset>, <optgroup>, or <address> inste...   | components/notebook/features/enhanced-mood-selector.tsx                      | 82        | code-quality  | E0     |
-| DEBT-0211 | Extract this nested ternary operation into an independent...   | components/notebook/pages/history-page.tsx                                   | 59        | code-quality  | E0     |
-| DEBT-0212 | Extract this nested ternary operation into an independent...   | components/notebook/pages/resources-page.tsx                                 | 607       | code-quality  | E0     |
-| DEBT-0213 | Extract this nested ternary operation into an independent...   | components/onboarding/onboarding-wizard.tsx                                  | 195       | code-quality  | E0     |
-| DEBT-0214 | Extract this nested ternary operation into an independent...   | functions/src/admin.ts                                                       | 1148      | code-quality  | E0     |
-| DEBT-0215 | Refactor this code to not use nested template literals.        | lib/security/firestore-validation.ts                                         | 99        | code-quality  | E0     |
-| DEBT-0216 | Prefer top-level await over using a promise chain.             | scripts/add-false-positive.js                                                | 370       | code-quality  | E0     |
-| DEBT-0217 | Refactor this code to not use nested template literals.        | scripts/ai-review.js                                                         | 394       | code-quality  | E0     |
-| DEBT-0218 | Prefer `node:fs` over `fs`.                                    | scripts/archive-doc.js                                                       | 36        | code-quality  | E0     |
-| DEBT-0219 | Prefer `node:path` over `path`.                                | scripts/archive-doc.js                                                       | 37        | code-quality  | E0     |
-| DEBT-0220 | Prefer `node:url` over `url`.                                  | scripts/archive-doc.js                                                       | 38        | code-quality  | E0     |
-| DEBT-0221 | `knownFlags` should be a `Set`, and use `knownFlags.has()...   | scripts/assign-review-tier.js                                                | 444       | code-quality  | E0     |
-| DEBT-0222 | Extract this nested ternary operation into an independent...   | scripts/check-document-sync.js                                               | 408       | code-quality  | E0     |
-| DEBT-0223 | Simplify this regular expression to reduce its complexity...   | scripts/check-review-needed.js                                               | 68        | code-quality  | E1     |
-| DEBT-0224 | Refactor this code to not use nested template literals.        | scripts/check-review-needed.js                                               | 273       | code-quality  | E0     |
-| DEBT-0225 | Extract this nested ternary operation into an independent...   | scripts/check-review-needed.js                                               | 797       | code-quality  | E0     |
-| DEBT-0226 | Prefer top-level await over using a promise chain.             | scripts/check-review-needed.js                                               | 977       | code-quality  | E0     |
-| DEBT-0227 | Prefer `node:fs` over `fs`.                                    | scripts/enrich-addresses.ts                                                  | 3         | code-quality  | E0     |
-| DEBT-0228 | Prefer `node:path` over `path`.                                | scripts/enrich-addresses.ts                                                  | 4         | code-quality  | E0     |
-| DEBT-0229 | Extract this nested ternary operation into an independent...   | scripts/generate-documentation-index.js                                      | 615       | code-quality  | E0     |
-| DEBT-0230 | Prefer top-level await over using a promise chain.             | scripts/mcp/sonarcloud-server.js                                             | 486       | code-quality  | E0     |
-| DEBT-0231 | Prefer `.find(…)` over `.filter(…)`.                           | scripts/normalize-canon-ids.js                                               | 189       | code-quality  | E0     |
-| DEBT-0232 | Prefer top-level await over using a promise chain.             | scripts/phase-complete-check.js                                              | 575       | code-quality  | E0     |
-| DEBT-0233 | Prefer `node:child_process` over `child_process`.              | scripts/retry-failures.ts                                                    | 3         | code-quality  | E0     |
-| DEBT-0234 | Prefer `node:fs` over `fs`.                                    | scripts/retry-failures.ts                                                    | 4         | code-quality  | E0     |
-| DEBT-0235 | Prefer `node:path` over `path`.                                | scripts/retry-failures.ts                                                    | 5         | code-quality  | E0     |
-| DEBT-0236 | Prefer top-level await over using a promise chain.             | scripts/seed-meetings.ts                                                     | 133       | code-quality  | E0     |
-| DEBT-0237 | Prefer `node:fs` over `fs`.                                    | scripts/seed-real-data.ts                                                    | 1         | code-quality  | E0     |
-| DEBT-0238 | Prefer `node:readline` over `readline`.                        | scripts/seed-real-data.ts                                                    | 2         | code-quality  | E0     |
-| DEBT-0239 | Prefer top-level await over an async function `setAdminCl...   | scripts/set-admin-claim.ts                                                   | 109       | code-quality  | E0     |
-| DEBT-0240 | Refactor this code to not use nested template literals.        | scripts/suggest-pattern-automation.js                                        | 376       | code-quality  | E0     |
-| DEBT-0241 | Replace this alternation with a character class.               | scripts/surface-lessons-learned.js                                           | 170       | code-quality  | E0     |
-| DEBT-0242 | Prefer top-level await over using a promise chain.             | scripts/surface-lessons-learned.js                                           | 376       | code-quality  | E0     |
-| DEBT-0243 | Prefer `node:fs` over `fs`.                                    | scripts/sync-geocache.ts                                                     | 3         | code-quality  | E0     |
-| DEBT-0244 | Prefer `node:path` over `path`.                                | scripts/sync-geocache.ts                                                     | 4         | code-quality  | E0     |
-| DEBT-0245 | Extract this nested ternary operation into an independent...   | scripts/update-readme-status.js                                              | 356       | code-quality  | E0     |
-| DEBT-0246 | Prefer top-level await over using a promise chain.             | scripts/validate-audit.js                                                    | 634       | code-quality  | E0     |
-| DEBT-0247 | Add an explicit return statement at the end of the function.   | .claude/hooks/session-start.sh                                               | 58        | code-quality  | E0     |
-| DEBT-0248 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/generate-documentation-index.js                                      | 75        | code-quality  | E0     |
-| DEBT-0249 | Prefer `node:path` over `path`.                                | scripts/check-document-sync.js                                               | 20        | code-quality  | E0     |
-| DEBT-0250 | Prefer `node:fs` over `fs`.                                    | scripts/check-document-sync.js                                               | 19        | code-quality  | E0     |
-| DEBT-0251 | Complete the task associated to this "TODO" comment.           | scripts/check-document-sync.js                                               | 139       | code-quality  | E0     |
-| DEBT-0252 | Prefer `node:url` over `url`.                                  | scripts/check-document-sync.js                                               | 21        | code-quality  | E0     |
-| DEBT-0253 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/check-document-sync.js                                               | 28        | code-quality  | E0     |
-| DEBT-0254 | Complete the task associated to this "TODO" comment.           | .github/workflows/ci.yml                                                     | 86        | code-quality  | E0     |
-| DEBT-0255 | Prefer `node:fs` over `fs`.                                    | scripts/assign-review-tier.js                                                | 20        | code-quality  | E0     |
-| DEBT-0256 | Prefer `node:path` over `path`.                                | scripts/assign-review-tier.js                                                | 21        | code-quality  | E0     |
-| DEBT-0257 | Prefer `node:url` over `url`.                                  | scripts/assign-review-tier.js                                                | 22        | code-quality  | E0     |
-| DEBT-0258 | Prefer `node:url` over `url`.                                  | scripts/surface-lessons-learned.js                                           | 21        | code-quality  | E0     |
-| DEBT-0259 | Prefer `node:fs` over `fs`.                                    | scripts/ai-review.js                                                         | 15        | code-quality  | E0     |
-| DEBT-0260 | Prefer `node:path` over `path`.                                | scripts/ai-review.js                                                         | 16        | code-quality  | E0     |
-| DEBT-0261 | Prefer `node:child_process` over `child_process`.              | scripts/ai-review.js                                                         | 17        | code-quality  | E0     |
-| DEBT-0262 | Prefer `node:url` over `url`.                                  | scripts/phase-complete-check.js                                              | 22        | code-quality  | E0     |
-| DEBT-0263 | Prefer `node:child_process` over `child_process`.              | tests/scripts/phase-complete-check.test.ts                                   | 3         | code-quality  | E0     |
-| DEBT-0264 | Prefer `node:path` over `path`.                                | tests/scripts/phase-complete-check.test.ts                                   | 4         | code-quality  | E0     |
-| DEBT-0265 | Prefer `node:fs` over `fs`.                                    | tests/scripts/phase-complete-check.test.ts                                   | 5         | code-quality  | E0     |
-| DEBT-0266 | Prefer `node:child_process` over `child_process`.              | tests/scripts/surface-lessons-learned.test.ts                                | 3         | code-quality  | E0     |
-| DEBT-0267 | Prefer `node:path` over `path`.                                | tests/scripts/surface-lessons-learned.test.ts                                | 4         | code-quality  | E0     |
-| DEBT-0268 | Prefer `node:fs` over `fs`.                                    | tests/scripts/surface-lessons-learned.test.ts                                | 5         | code-quality  | E0     |
-| DEBT-0269 | Prefer `node:fs` over `fs`.                                    | scripts/phase-complete-check.js                                              | 20        | code-quality  | E0     |
-| DEBT-0270 | Prefer `node:path` over `path`.                                | scripts/phase-complete-check.js                                              | 21        | code-quality  | E0     |
-| DEBT-0271 | Prefer `node:fs` over `fs`.                                    | scripts/surface-lessons-learned.js                                           | 18        | code-quality  | E0     |
-| DEBT-0272 | Prefer `node:path` over `path`.                                | scripts/surface-lessons-learned.js                                           | 19        | code-quality  | E0     |
-| DEBT-0273 | Prefer `node:child_process` over `child_process`.              | scripts/surface-lessons-learned.js                                           | 20        | code-quality  | E0     |
-| DEBT-0274 | Add an explicit return statement at the end of the function.   | .claude/hooks/coderabbit-review.sh                                           | 29        | code-quality  | E0     |
-| DEBT-0275 | Assign this positional parameter to a local variable.          | .claude/hooks/coderabbit-review.sh                                           | 33        | code-quality  | E0     |
-| DEBT-0276 | Add an explicit return statement at the end of the function.   | .claude/hooks/check-mcp-servers.sh                                           | 25        | code-quality  | E0     |
-| DEBT-0277 | Add an explicit return statement at the end of the function.   | .claude/hooks/analyze-user-request.sh                                        | 33        | code-quality  | E0     |
-| DEBT-0278 | Prefer `node:path` over `path`.                                | scripts/suggest-pattern-automation.js                                        | 20        | code-quality  | E0     |
-| DEBT-0279 | Prefer `node:fs` over `fs`.                                    | scripts/suggest-pattern-automation.js                                        | 19        | code-quality  | E0     |
-| DEBT-0280 | Prefer `node:url` over `url`.                                  | scripts/suggest-pattern-automation.js                                        | 21        | code-quality  | E0     |
-| DEBT-0281 | Replace this character class by the character itself.          | scripts/suggest-pattern-automation.js                                        | 49        | code-quality  | E0     |
-| DEBT-0282 | Redirect this error message to stderr (>&2).                   | .claude/hooks/session-start.sh                                               | 295       | code-quality  | E0     |
-| DEBT-0283 | Prefer top-level await over using a promise chain.             | scripts/enrich-addresses.ts                                                  | 215       | code-quality  | E0     |
-| DEBT-0284 | Prefer top-level await over using a promise chain.             | scripts/migrate-to-journal.ts                                                | 297       | code-quality  | E0     |
-| DEBT-0285 | Prefer top-level await over using a promise chain.             | scripts/seed-real-data.ts                                                    | 223       | code-quality  | E0     |
-| DEBT-0286 | Prefer top-level await over using a promise chain.             | scripts/sync-geocache.ts                                                     | 126       | code-quality  | E0     |
-| DEBT-0287 | Prefer top-level await over using a promise chain.             | scripts/retry-failures.ts                                                    | 169       | code-quality  | E0     |
-| DEBT-0288 | Prefer `node:fs` over `fs`.                                    | scripts/check-pattern-compliance.js                                          | 19        | code-quality  | E0     |
-| DEBT-0289 | Remove duplicates in this character class.                     | scripts/lib/sanitize-error.js                                                | 30        | code-quality  | E0     |
-| DEBT-0290 | Prefer `node:path` over `path`.                                | scripts/check-pattern-compliance.js                                          | 20        | code-quality  | E0     |
-| DEBT-0291 | Prefer `node:url` over `url`.                                  | scripts/check-pattern-compliance.js                                          | 21        | code-quality  | E0     |
-| DEBT-0292 | Prefer `node:child_process` over `child_process`.              | scripts/check-pattern-compliance.js                                          | 22        | code-quality  | E0     |
-| DEBT-0293 | Prefer `node:fs` over `fs`.                                    | scripts/validate-phase-completion.js                                         | 16        | code-quality  | E0     |
-| DEBT-0294 | Prefer `node:path` over `path`.                                | scripts/validate-phase-completion.js                                         | 17        | code-quality  | E0     |
-| DEBT-0295 | Prefer `node:url` over `url`.                                  | scripts/validate-phase-completion.js                                         | 18        | code-quality  | E0     |
-| DEBT-0296 | Prefer `node:child_process` over `child_process`.              | scripts/phase-complete-check.js                                              | 18        | code-quality  | E0     |
-| DEBT-0297 | Prefer `node:readline` over `readline`.                        | scripts/phase-complete-check.js                                              | 19        | code-quality  | E0     |
-| DEBT-0298 | Replace this character class by the character itself.          | scripts/check-docs-light.js                                                  | 162       | code-quality  | E0     |
-| DEBT-0299 | Prefer `node:fs` over `fs`.                                    | scripts/check-docs-light.js                                                  | 28        | code-quality  | E0     |
-| DEBT-0300 | Prefer `node:path` over `path`.                                | scripts/check-docs-light.js                                                  | 29        | code-quality  | E0     |
-| DEBT-0301 | Prefer `node:url` over `url`.                                  | scripts/check-docs-light.js                                                  | 30        | code-quality  | E0     |
-| DEBT-0302 | Prefer `node:fs` over `fs`.                                    | scripts/update-readme-status.js                                              | 26        | code-quality  | E0     |
-| DEBT-0303 | Prefer `node:path` over `path`.                                | scripts/update-readme-status.js                                              | 27        | code-quality  | E0     |
-| DEBT-0304 | Prefer `node:url` over `url`.                                  | scripts/update-readme-status.js                                              | 28        | code-quality  | E0     |
-| DEBT-0305 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/update-readme-status.js                                              | 40        | code-quality  | E0     |
-| DEBT-0306 | Redirect this error message to stderr (>&2).                   | .claude/skills/artifacts-builder/scripts/bundle-artifact.sh                  | 8         | code-quality  | E0     |
-| DEBT-0307 | Redirect this error message to stderr (>&2).                   | .claude/skills/artifacts-builder/scripts/init-artifact.sh                    | 12        | code-quality  | E0     |
-| DEBT-0308 | Remove this commented out code.                                | functions/src/index.ts                                                       | 508       | code-quality  | E0     |
-| DEBT-0309 | Remove this commented out code.                                | lib/firebase.ts                                                              | 61        | code-quality  | E0     |
-| DEBT-0310 | Prefer `node:path` over `path`.                                | scripts/migrate-addresses.ts                                                 | 12        | code-quality  | E0     |
-| DEBT-0311 | Prefer `node:fs` over `fs`.                                    | scripts/migrate-addresses.ts                                                 | 13        | code-quality  | E0     |
-| DEBT-0312 | Prefer top-level await over using a promise chain.             | scripts/migrate-addresses.ts                                                 | 102       | code-quality  | E0     |
-| DEBT-0313 | Prefer `node:fs` over `fs`.                                    | scripts/migrate-meetings-dayindex.ts                                         | 14        | code-quality  | E0     |
-| DEBT-0314 | Remove this useless assignment to variable "hasMore".          | scripts/migrate-to-journal.ts                                                | 261       | code-quality  | E0     |
-| DEBT-0315 | Prefer `node:path` over `path`.                                | scripts/migrate-meetings-dayindex.ts                                         | 13        | code-quality  | E0     |
-| DEBT-0316 | Prefer top-level await over using a promise chain.             | scripts/migrate-meetings-dayindex.ts                                         | 160       | code-quality  | E0     |
-| DEBT-0317 | 'If' statement should not be the only statement in 'else'...   | components/growth/Step1WorksheetCard.tsx                                     | 638       | code-quality  | E0     |
-| DEBT-0318 | Do not use Array index in keys                                 | components/growth/Step1WorksheetCard.tsx                                     | 376       | code-quality  | E0     |
-| DEBT-0319 | Complete the task associated to this "TODO" comment.           | components/notebook/features/quick-actions-fab.tsx                           | 12        | code-quality  | E0     |
-| DEBT-0320 | Extract this nested ternary operation into an independent...   | components/notebook/features/check-in-progress.tsx                           | 35        | code-quality  | E0     |
-| DEBT-0321 | Extract this nested ternary operation into an independent...   | components/notebook/features/enhanced-mood-selector.tsx                      | 102       | code-quality  | E0     |
-| DEBT-0322 | Extract this nested ternary operation into an independent...   | components/admin/errors-tab.tsx                                              | 108       | code-quality  | E0     |
-| DEBT-0323 | Extract this nested ternary operation into an independent...   | components/admin/dashboard-tab.tsx                                           | 241       | code-quality  | E0     |
-| DEBT-0324 | This branch's code block is the same as the block for the...   | lib/utils.ts                                                                 | 32        | code-quality  | E0     |
-| DEBT-0325 | Prefer `node:fs` over `fs`.                                    | scripts/import-nashville-links.ts                                            | 3         | code-quality  | E0     |
-| DEBT-0326 | Prefer `node:path` over `path`.                                | scripts/import-nashville-links.ts                                            | 4         | code-quality  | E0     |
-| DEBT-0327 | Prefer `node:fs` over `fs`.                                    | scripts/migrate-library-content.ts                                           | 3         | code-quality  | E0     |
-| DEBT-0328 | Prefer `node:path` over `path`.                                | scripts/migrate-library-content.ts                                           | 4         | code-quality  | E0     |
-| DEBT-0329 | The object passed as the value prop to the Context provid...   | components/celebrations/celebration-provider.tsx                             | 44        | code-quality  | E0     |
-| DEBT-0330 | Extract this nested ternary operation into an independent...   | components/celebrations/confetti-burst.tsx                                   | 66        | code-quality  | E0     |
-| DEBT-0331 | Extract this nested ternary operation into an independent...   | components/celebrations/milestone-modal.tsx                                  | 33        | code-quality  | E0     |
-| DEBT-0332 | Extract this nested ternary operation into an independent...   | components/notebook/book-cover.tsx                                           | 252       | code-quality  | E0     |
-| DEBT-0333 | Prefer top-level await over using a promise chain.             | scripts/import-nashville-links.ts                                            | 258       | code-quality  | E0     |
-| DEBT-0334 | Prefer top-level await over using a promise chain.             | scripts/migrate-library-content.ts                                           | 205       | code-quality  | E0     |
-| DEBT-0335 | Use <details>, <fieldset>, <optgroup>, or <address> inste...   | components/notebook/features/check-in-questions.tsx                          | 36        | code-quality  | E0     |
-| DEBT-0336 | Use <input type="radio"> instead of the "radio" role to e...   | components/notebook/features/check-in-questions.tsx                          | 43        | code-quality  | E0     |
-| DEBT-0337 | Do not use Array index in keys                                 | components/notebook/features/clean-time-display.tsx                          | 98        | code-quality  | E0     |
-| DEBT-0338 | Use <details>, <fieldset>, <optgroup>, or <address> inste...   | components/notebook/features/mood-selector.tsx                               | 51        | code-quality  | E0     |
-| DEBT-0339 | Extract this nested ternary operation into an independent...   | components/notebook/features/recovery-notepad.tsx                            | 99        | code-quality  | E0     |
-| DEBT-0340 | Do not use Array index in keys                                 | components/notebook/pages/library-page.tsx                                   | 170       | code-quality  | E0     |
-| DEBT-0341 | Do not use Array index in keys                                 | components/onboarding/onboarding-wizard.tsx                                  | 515       | code-quality  | E0     |
-| DEBT-0342 | Prefer using an optional chain expression instead, as it'...   | lib/utils/anonymous-backup.ts                                                | 41        | code-quality  | E0     |
-| DEBT-0343 | Prefer using an optional chain expression instead, as it'...   | components/notebook/pages/today-page.tsx                                     | 177       | code-quality  | E0     |
-| DEBT-0344 | Do not use Array index in keys                                 | components/journal/entry-card.tsx                                            | 125       | code-quality  | E0     |
-| DEBT-0345 | Do not use Array index in keys                                 | components/journal/entry-feed.tsx                                            | 194       | code-quality  | E0     |
-| DEBT-0346 | Do not use Array index in keys                                 | components/journal/entry-forms/gratitude-form.tsx                            | 82        | code-quality  | E0     |
-| DEBT-0347 | Do not use Array index in keys                                 | components/journal/entry-wizard.tsx                                          | 131       | code-quality  | E0     |
-| DEBT-0348 | Extract this nested ternary operation into an independent...   | app/meetings/all/page.tsx                                                    | 361       | code-quality  | E0     |
-| DEBT-0349 | Do not use Array index in keys                                 | components/notebook/pages/today-page.tsx                                     | 803       | code-quality  | E0     |
-| DEBT-0350 | Move function 'formatTime' to the outer scope.                 | components/widgets/compact-meeting-countdown.tsx                             | 241       | code-quality  | E0     |
-| DEBT-0351 | Prefer `node:crypto` over `crypto`.                            | functions/src/security-logger.ts                                             | 9         | code-quality  | E0     |
-| DEBT-0352 | Member 'config' is never reassigned; mark it as `readonly`.    | functions/src/firestore-rate-limiter.ts                                      | 27        | code-quality  | E0     |
-| DEBT-0353 | Extract this nested ternary operation into an independent...   | components/growth/NightReviewCard.tsx                                        | 567       | code-quality  | E0     |
-| DEBT-0354 | Prefer top-level await over an async function `testGeocod...   | scripts/test-geocode.ts                                                      | 40        | code-quality  | E0     |
-| DEBT-0355 | Prefer `node:fs` over `fs`.                                    | scripts/seed-meetings.ts                                                     | 9         | code-quality  | E0     |
-| DEBT-0356 | Prefer `node:path` over `path`.                                | scripts/seed-meetings.ts                                                     | 10        | code-quality  | E0     |
-| DEBT-0357 | Prefer `node:fs` over `fs`.                                    | scripts/set-admin-claim.ts                                                   | 11        | code-quality  | E0     |
-| DEBT-0358 | Prefer `node:path` over `path`.                                | scripts/set-admin-claim.ts                                                   | 12        | code-quality  | E0     |
-| DEBT-0359 | The object passed as the value prop to the Context provid...   | components/providers/auth-context.tsx                                        | 118       | code-quality  | E0     |
-| DEBT-0360 | The object passed as the value prop to the Context provid...   | components/providers/daily-log-context.tsx                                   | 75        | code-quality  | E0     |
-| DEBT-0361 | 'If' statement should not be the only statement in 'else'...   | components/providers/profile-context.tsx                                     | 71        | code-quality  | E0     |
-| DEBT-0362 | The object passed as the value prop to the Context provid...   | components/providers/profile-context.tsx                                     | 131       | code-quality  | E0     |
-| DEBT-0363 | 'If' statement should not be the only statement in 'else'...   | components/auth/account-link-modal.tsx                                       | 34        | code-quality  | E0     |
-| DEBT-0364 | Prefer `node:crypto` over `crypto`.                            | lib/sentry.client.ts                                                         | 11        | code-quality  | E0     |
-| DEBT-0365 | Prefer using an optional chain expression instead, as it'...   | lib/security/firestore-validation.ts                                         | 42        | code-quality  | E0     |
-| DEBT-0366 | Prefer `node:path` over `path`.                                | next.config.mjs                                                              | 1         | code-quality  | E0     |
-| DEBT-0367 | Prefer `node:url` over `url`.                                  | next.config.mjs                                                              | 2         | code-quality  | E0     |
-| DEBT-0368 | Complete the task associated to this "TODO" comment.           | lib/database/firestore-adapter.ts                                            | 51        | code-quality  | E0     |
-| DEBT-0369 | Complete the task associated to this "TODO" comment.           | lib/logger.ts                                                                | 107       | code-quality  | E0     |
-| DEBT-0370 | Member 'config' is never reassigned; mark it as `readonly`.    | lib/utils/rate-limiter.ts                                                    | 17        | code-quality  | E0     |
-| DEBT-0371 | Either use this collection's contents or remove the colle...   | tests/firestore-service.test.ts                                              | 18        | code-quality  | E0     |
-| DEBT-0372 | Do not use Array index in keys                                 | components/notebook/visualizations/mood-sparkline.tsx                        | 98        | code-quality  | E0     |
-| DEBT-0373 | Do not use Array index in keys                                 | components/notebook/notebook-shell.tsx                                       | 135       | code-quality  | E0     |
-| DEBT-0374 | Do not use Array index in keys                                 | components/notebook/pages/resources-page.tsx                                 | 368       | code-quality  | E0     |
-| DEBT-0375 | Do not use Array index in keys                                 | components/notebook/pages/support-page.tsx                                   | 115       | code-quality  | E0     |
-| DEBT-0376 | Zod schemas missing .strict() (unknown fields accepted)        | functions/src/schemas.ts                                                     | 0         | security      | E0     |
-| DEBT-0377 | Hardcoded fallback reCAPTCHA site key in server verificat...   | functions/src/recaptcha-verify.ts                                            | 0         | security      | E1     |
-| DEBT-0378 | Server-side journal entry type enum missing 'step-1-works...   | functions/src/schemas.ts                                                     | 0         | security      | E1     |
-| DEBT-0379 | Permissive z.record(..., z.unknown()) allows arbitrary ne...   | functions/src/schemas.ts                                                     | 0         | security      | E2     |
-| DEBT-0380 | Some admin-managed collections allow direct client writes...   | firestore.rules                                                              | 0         | security      | E1     |
-| DEBT-0381 | Console statements present; replace with structured logge...   | N/A                                                                          | 0         | security      | E1     |
-| DEBT-0382 | DailyQuoteCard component duplicated across 2-3 locations       | components/notebook/features/daily-quote-card.tsx                            | 0         | code-quality  | E1     |
-| DEBT-0383 | Critical paths have low test coverage (firestore-service ...   | lib/firestore-service.ts                                                     | 0         | code-quality  | E2     |
-| DEBT-0384 | reCAPTCHA token fetch/include pattern repeated 5x across ...   | lib/firestore-service.ts                                                     | 0         | code-quality  | E1     |
-| DEBT-0385 | Firebase collection access scattered across 22+ files wit...   | lib/db/slogans.ts                                                            | 0         | code-quality  | E2     |
-| DEBT-0386 | reCAPTCHA action strings duplicated as literals (no share...   | functions/src/recaptcha-verify.ts                                            | 0         | code-quality  | E1     |
-| DEBT-0387 | Growth card dialog/save pattern duplicated across 4 compo...   | components/growth/SpotCheckCard.tsx                                          | 0         | code-quality  | E2     |
-| DEBT-0388 | CRUD service patterns repeated across lib/db modules           | lib/db/quotes.ts                                                             | 0         | code-quality  | E2     |
-| DEBT-0389 | Admin Cloud Function wiring duplicated across 5 admin tabs     | components/admin/dashboard-tab.tsx                                           | 0         | code-quality  | E1     |
-| DEBT-0390 | Dual-write pattern to inventory AND journal collections        | components/growth/SpotCheckCard.tsx                                          | 0         | code-quality  | E2     |
-| DEBT-0391 | Deprecated API usage (31 instances) + Nested ternaries (4...   | multiple                                                                     | 0         | code-quality  | E2     |
-| DEBT-0392 | safeReadFile/safeWriteFile utilities duplicated across 3 ...   | scripts/archive-doc.js                                                       | 0         | code-quality  | E1     |
-| DEBT-0393 | FirestoreAdapter exists but is unused (realtime boundary ...   | lib/database/firestore-adapter.ts                                            | 0         | code-quality  | E2     |
-| DEBT-0394 | Searchable-text generation duplicated with inconsistent s...   | hooks/use-journal.ts                                                         | 0         | code-quality  | E1     |
-| DEBT-0395 | DEVELOPMENT.md workflow triggers don't match actual workf...   | DEVELOPMENT.md                                                               | 0         | code-quality  | E1     |
-| DEBT-0396 | Pre-commit hook runs full test suite causing slow commits...   | .husky/pre-commit                                                            | 0         | code-quality  | E1     |
-| DEBT-0397 | Pattern checker reports 93+ violations but CI check is no...   | scripts/check-pattern-compliance.js                                          | 0         | code-quality  | E2     |
-| DEBT-0398 | Firebase CLI version unpinned in deploy workflow               | .github/workflows/deploy-firebase.yml                                        | 0         | code-quality  | E0     |
-| DEBT-0399 | Auto-label workflow has invalid if: expression syntax          | .github/workflows/auto-label-review-tier.yml                                 | 0         | code-quality  | E0     |
-| DEBT-0400 | Sentry integration incomplete - no Web Vitals reporting        | lib/sentry.client.ts                                                         | 0         | code-quality  | E1     |
-| DEBT-0401 | Duplicate DailyQuoteCard implementations + unbounded quot...   | components/widgets/daily-quote-card.tsx                                      | 0         | code-quality  | E1     |
-| DEBT-0402 | Celebration animations create 150+ DOM elements without r...   | components/celebrations/confetti-burst.tsx                                   | 0         | code-quality  | E1     |
-| DEBT-0403 | No React.memo usage causes unnecessary re-renders in list...   | components/journal/entry-card.tsx                                            | 0         | code-quality  | E1     |
-| DEBT-0404 | Hero background image bypasses Next.js image optimization      | app/page.tsx                                                                 | 0         | code-quality  | E1     |
-| DEBT-0405 | Large entry lists not virtualized - DOM grows linearly wi...   | components/journal/entry-feed.tsx                                            | 0         | code-quality  | E2     |
-| DEBT-0406 | Meeting map renders all markers without clustering             | app/meetings/all/page.tsx                                                    | 0         | code-quality  | E2     |
-| DEBT-0407 | 7 unused dependencies increasing bundle size                   | package.json                                                                 | 0         | code-quality  | E0     |
-| DEBT-0408 | Console statements in production code                          | hooks/use-journal.ts                                                         | 0         | code-quality  | E0     |
-| DEBT-0409 | Firebase queries lack consistent indexing and limits           | lib/db/meetings.ts                                                           | 0         | code-quality  | E1     |
-| DEBT-0410 | Admin CRUD table fetches entire collections without pagin...   | components/admin/admin-crud-table.tsx                                        | 0         | code-quality  | E2     |
-| DEBT-0411 | Step1WorksheetCard excessive complexity (804 lines)            | components/growth/Step1WorksheetCard.tsx                                     | 0         | code-quality  | E3     |
-| DEBT-0412 | No route-level loading UI (loading.tsx) or Suspense bound...   | app/page.tsx                                                                 | 0         | code-quality  | E1     |
-| DEBT-0413 | JournalHub eagerly imports all entry forms                     | components/journal/journal-hub.tsx                                           | 0         | code-quality  | E2     |
-| DEBT-0414 | DOCUMENTATION_INDEX.md orphaned and missing required sect...   | DOCUMENTATION_INDEX.md                                                       | 0         | code-quality  | E1     |
-| DEBT-0415 | Tier 2 docs missing required metadata (Document Version, ...   | docs/ANTIGRAVITY_GUIDE.md                                                    | 0         | code-quality  | E1     |
-| DEBT-0416 | Standards/templates contain live placeholder links and in...   | docs/DOCUMENTATION_STANDARDS.md                                              | 0         | code-quality  | E0     |
-| DEBT-0417 | DOCUMENT_DEPENDENCIES.md claims SYNCED but has 30+ issues      | docs/DOCUMENT_DEPENDENCIES.md                                                | 0         | code-quality  | E1     |
-| DEBT-0418 | PR_REVIEW_PROMPT_TEMPLATE lacks required metadata and ver...   | docs/PR_REVIEW_PROMPT_TEMPLATE.md                                            | 0         | code-quality  | E1     |
-| DEBT-0419 | CODE_PATTERNS.md referenced with incorrect path                | docs/agent_docs/CODE_PATTERNS.md                                             | 0         | code-quality  | E0     |
-| DEBT-0420 | Duplicate CODE_REVIEW_PLAN_2026_Q1.md exists in two locat...   | docs/CODE_REVIEW_PLAN_2026_Q1.md                                             | 0         | code-quality  | E0     |
-| DEBT-0421 | Duplicated time-of-day rotation logic for quotes and slogans   | lib/db/quotes.ts                                                             | 0         | code-quality  | E1     |
-| DEBT-0422 | Unsafe type assertions with 'as unknown as' (worksheet + ...   | components/growth/Step1WorksheetCard.tsx                                     | 0         | code-quality  | E1     |
-| DEBT-0423 | ESLint security plugin warnings in scripts (unsafe regex ...   | scripts/check-review-needed.js                                               | 0         | security      | E2     |
-| DEBT-0424 | Journal entry type definitions duplicated across client t...   | types/journal.ts                                                             | 0         | code-quality  | E2     |
-| DEBT-0425 | Missing error.message null safety in TodayPage catch block     | components/notebook/pages/today-page.tsx                                     | 0         | code-quality  | E0     |
-| DEBT-0426 | Unsafe localStorage JSON.parse in use-smart-prompts hook       | components/notebook/hooks/use-smart-prompts.ts                               | 0         | code-quality  | E0     |
-| DEBT-0427 | Duplicated DailyQuoteCard component exists in multiple di...   | components/notebook/features/daily-quote-card.tsx                            | 0         | code-quality  | E1     |
-| DEBT-0428 | Inconsistent Firebase Functions import pattern (static vs...   | lib/firestore-service.ts                                                     | 0         | code-quality  | E1     |
-| DEBT-0429 | Inconsistent httpsCallable typing (missing generic reques...   | lib/firestore-service.ts                                                     | 0         | code-quality  | E1     |
-| DEBT-0430 | useJournal sets up its own auth listener instead of using...   | hooks/use-journal.ts                                                         | 0         | code-quality  | E1     |
-| DEBT-0431 | Cloud Function integration test is skipped in firestore-s...   | tests/firestore-service.test.ts                                              | 0         | code-quality  | E2     |
-| DEBT-0432 | Journal entry schema data is weakly typed (z.record unkno...   | functions/src/schemas.ts                                                     | 0         | code-quality  | E2     |
-| DEBT-0433 | No tests for useJournal hook                                   | hooks/use-journal.ts                                                         | 0         | code-quality  | E2     |
-| DEBT-0434 | Zod schemas permissive - missing .strict() and allows arb...   | functions/src/schemas.ts                                                     | 0         | code-quality  | E2     |
-| DEBT-0435 | Debug console.log statements in production code                | components/notebook/pages/today-page.tsx                                     | 396       | code-quality  | E1     |
-| DEBT-0436 | High cognitive complexity in adminSetUserPrivilege             | functions/src/admin.ts                                                       | 1726      | code-quality  | E2     |
-| DEBT-0437 | High cognitive complexity in UsersTab component                | components/admin/users-tab.tsx                                               | 84        | code-quality  | E2     |
-| DEBT-0438 | No correlation/request ID tracing                              | lib/logger.ts                                                                | 1         | code-quality  | E2     |
-| DEBT-0439 | Nested component definition                                    | components/admin/admin-tabs.tsx                                              | 64        | code-quality  | E1     |
-| DEBT-0440 | Hardcoded reCAPTCHA site key fallback                          | functions/src/recaptcha-verify.ts                                            | 66        | security      | E0     |
-| DEBT-0441 | OS command execution in CLI scripts                            | scripts/ai-review.js                                                         | 222       | security      | E2     |
-| DEBT-0442 | ReDoS vulnerable regex patterns                                | functions/src/admin.ts                                                       | 143       | security      | E2     |
-| DEBT-0443 | GitHub Actions using version tags instead of commit SHAs       | .github/workflows/auto-label-review-tier.yml                                 | 18        | process       | E1     |
-| DEBT-0444 | 99 files fail docs:check (313 errors, 177 warnings)            | scripts/README.md                                                            | 1         | documentation | E1     |
-| DEBT-0445 | TRIGGERS.md last updated 2026-01-02 (15 days stale)            | docs/TRIGGERS.md                                                             | 1         | documentation | E0     |
-| DEBT-0446 | DOCUMENTATION_STANDARDS.md last updated 2026-01-01 (16 da...   | docs/DOCUMENTATION_STANDARDS.md                                              | 1         | documentation | E0     |
-| DEBT-0447 | DOCUMENT_DEPENDENCIES.md claims SYNCED but sync check rep...   | docs/DOCUMENT_DEPENDENCIES.md                                                | 3         | documentation | E1     |
-| DEBT-0448 | 15 recent commits touch docs but AUDIT_TRACKER shows only...   | docs/                                                                        | 0         | documentation | E1     |
-| DEBT-0449 | 30+ components with inline onClick arrow functions             | components                                                                   | 0         | performance   | E1     |
-| DEBT-0450 | 28 components with inline style objects                        | components                                                                   | 0         | performance   | E1     |
-| DEBT-0451 | Large chunk file (628KB) indicates code splitting opportu...   | .next/static/chunks                                                          | 0         | performance   | E1     |
-| DEBT-0452 | 20+ uses of key={index} in list rendering                      | components                                                                   | 0         | performance   | E0     |
-| DEBT-0453 | setInterval without visibility check continues in background   | components/widgets/meeting-countdown.tsx                                     | 41        | performance   | E1     |
-| DEBT-0454 | getAllMeetings() deprecated but still available without l...   | lib/db/meetings.ts                                                           | 129       | performance   | E1     |
-| DEBT-0455 | 28 scripts have 715 console.log/error/warn calls without ...   | scripts/                                                                     | 0         | process       | E1     |
-| DEBT-0456 | Artifact upload without retention policy                       | .github/workflows/ci.yml                                                     | 99        | process       | E1     |
-| DEBT-0457 | Git diff with @{u}...HEAD fails on new branches without u...   | .husky/pre-push                                                              | 48        | process       | E1     |
-| DEBT-0458 | Step1WorksheetCard large component (845 lines) with neste...   | components/growth/Step1WorksheetCard.tsx                                     | 1         | refactoring   | E2     |
-| DEBT-0459 | ResourcesPage large component (728 lines) mixing meetings...   | components/notebook/pages/resources-page.tsx                                 | 1         | refactoring   | E2     |
-| DEBT-0460 | reCAPTCHA token fetch pattern repeated 5x across codebase      | hooks/use-journal.ts                                                         | 281       | refactoring   | E1     |
-| DEBT-0461 | No npm run dev:offline script - requires 2 terminals for ...   | package.json                                                                 | 5         | code-quality  | E0     |
-| DEBT-0462 | No scripts/doctor.js for environment validation                | scripts/                                                                     | 0         | code-quality  | E1     |
-| DEBT-0463 | 8:1 ratio of console.log to structured logger calls (3111...   | app/                                                                         | 0         | code-quality  | E2     |
-| DEBT-0464 | No service worker - no offline asset caching                   | public/                                                                      | 0         | code-quality  | E2     |
-| DEBT-0465 | Add .strict() to Zod schemas                                   | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0466 | Extract time rotation utilities                                | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0467 | Consolidate DailyQuoteCard                                     | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0468 | Debug console.log statements in production code                | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0469 | GitHub Actions using version tags instead of commit SHAs       | N/A                                                                          | 0         | process       | E1     |
-| DEBT-0470 | Console statements present; replace with structured logge...   | N/A                                                                          | 0         | security      | E1     |
-| DEBT-0471 | Address ESLint security warnings                               | N/A                                                                          | 0         | security      | E2     |
-| DEBT-0472 | Remove hardcoded reCAPTCHA fallback                            | N/A                                                                          | 0         | security      | E1     |
-| DEBT-0473 | Route admin writes through Functions                           | N/A                                                                          | 0         | security      | E1     |
-| DEBT-0474 | Add error.message null safety                                  | N/A                                                                          | 0         | code-quality  | E0     |
-| DEBT-0475 | Safe localStorage JSON.parse                                   | N/A                                                                          | 0         | code-quality  | E0     |
-| DEBT-0476 | Replace unsafe type assertions                                 | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0477 | Single source for journal types                                | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0478 | Type httpsCallable generics                                    | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0479 | Create callSecureFunction wrapper                              | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0480 | Shared reCAPTCHA action constants                              | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0481 | Extract useGrowthCardDialog hook                               | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0482 | Route Firebase through service layer                           | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0483 | Create typed collection helpers                                | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0484 | Clarify FirestoreAdapter boundary                              | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0485 | Audit inventory dual-write pattern                             | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0486 | Complete Sentry integration                                    | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0487 | Add reduced-motion to animations                               | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0488 | Add React.memo to list components                              | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0489 | Optimize hero background image                                 | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0490 | Add virtualization to large lists                              | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0491 | Add marker clustering to map                                   | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0492 | Remove 7 unused dependencies                                   | N/A                                                                          | 0         | code-quality  | E0     |
-| DEBT-0493 | Add Firebase query indexes                                     | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0494 | Paginate admin CRUD table                                      | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0495 | Add loading.tsx files                                          | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0496 | Lazy load JournalHub forms                                     | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0497 | Unskip Cloud Function test                                     | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0498 | Add useJournal hook tests                                      | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0499 | Increase critical path coverage                                | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0500 | Create CRUD factory                                            | N/A                                                                          | 0         | code-quality  | E2     |
-| DEBT-0501 | Centralize admin function wrappers                             | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0502 | Extract safeReadFile/safeWriteFile                             | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0503 | Consolidate searchable-text generation                         | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0504 | Add DOCUMENTATION_INDEX to README                              | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0505 | Add Tier 2 required metadata                                   | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0506 | Fix standards placeholder links                                | N/A                                                                          | 0         | code-quality  | E0     |
-| DEBT-0507 | Update DOCUMENT_DEPENDENCIES sync                              | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0508 | Add PR_REVIEW_PROMPT metadata                                  | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0509 | Fix CODE_PATTERNS.md path references                           | N/A                                                                          | 0         | code-quality  | E0     |
-| DEBT-0510 | Update DEVELOPMENT.md workflow docs                            | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0511 | Move full tests to pre-push only                               | N/A                                                                          | 0         | code-quality  | E1     |
-| DEBT-0512 | Pin firebase-tools version                                     | N/A                                                                          | 0         | code-quality  | E0     |
-| DEBT-0513 | Fix auto-label workflow if syntax                              | N/A                                                                          | 0         | code-quality  | E0     |
-| DEBT-0514 | Decompose Step1WorksheetCard                                   | N/A                                                                          | 0         | code-quality  | E3     |
-| DEBT-0515 | Add Correlation IDs to Logger                                  | lib/logger.ts                                                                | 1         | process       | E2     |
-| DEBT-0516 | Add Network Status to Logs                                     | lib/logger.ts                                                                | 45        | process       | E2     |
-| DEBT-0517 | Create Smoke Test Script                                       | scripts/smoke-test.js                                                        | 1         | process       | E2     |
-| DEBT-0518 | Add Bug Report GitHub Template                                 | .github/ISSUE_TEMPLATE/bug_report.md                                         | 1         | process       | E2     |
-| DEBT-0519 | Offline Tests                                                  | tests/offline/                                                               | 1         | process       | E2     |
-| DEBT-0520 | Network Failure Error Handling Tests                           | tests/admin/network-failure.test.ts                                          | 1         | process       | E2     |
-| DEBT-0521 | Historical Score Tracking                                      | .lighthouse/history.json                                                     | 1         | performance   | E2     |
-| DEBT-0522 | Performance Budgets                                            | lighthouserc.js                                                              | 1         | performance   | E1     |
-| DEBT-0523 | Development Dashboard Integration                              | app/dev/page.tsx                                                             | 1         | performance   | E3     |
-| DEBT-0524 | PWA Audit Baseline                                             | app/manifest.ts                                                              | 1         | performance   | E1     |
-| DEBT-0525 | Missing cache headers                                          | firebase.json                                                                | 15        | performance   | E1     |
-| DEBT-0526 | Split today-page.tsx (1,199 lines)                             | components/notebook/pages/today-page.tsx                                     | 396       | refactoring   | E2     |
-| DEBT-0527 | Split dashboard-tab.tsx (1,031 lines)                          | components/admin/dashboard-tab.tsx                                           | 1         | refactoring   | E2     |
-| DEBT-0528 | Repository pattern violations                                  | lib/firestore-service.ts                                                     | 1         | refactoring   | E2     |
-| DEBT-0529 | Restrict CORS origins                                          | functions/src/index.ts                                                       | 23        | security      | E1     |
-| DEBT-0530 | Admin privilege hardening                                      | functions/src/admin.ts                                                       | 89        | security      | E2     |
-| DEBT-0531 | Token rotation for long-lived sessions                         | lib/auth-context.tsx                                                         | 156       | security      | E2     |
-| DEBT-0532 | Security rules for new collections                             | firestore.rules                                                              | 45        | security      | E2     |
-| DEBT-0533 | Debug console logs in production component                     | components/notebook/pages/today-page.tsx                                     | 594       | code-quality  | E1     |
-| DEBT-0534 | Callback parameter typed as any                                | components/notebook/pages/today-page.tsx                                     | 505       | code-quality  | E1     |
-| DEBT-0535 | Missing React.Suspense for code splitting                      | components/                                                                  | 0         | code-quality  | E2     |
-| DEBT-0536 | ESLint rule suppression for exhaustive deps                    | hooks/use-geolocation.ts                                                     | 171       | code-quality  | E1     |
-| DEBT-0537 | No component tests                                             | tests/                                                                       | 0         | code-quality  | E3     |
-| DEBT-0538 | Potential copy-paste code blocks in admin tabs                 | components/admin/                                                            | 0         | code-quality  | E1     |
-| DEBT-0539 | Complex nested logic without early returns                     | components/notebook/pages/today-page.tsx                                     | 698       | code-quality  | E1     |
-| DEBT-0540 | Missing correlation IDs for request tracing                    | lib/firestore-service.ts                                                     | 0         | code-quality  | E2     |
-| DEBT-0541 | Inconsistent error context across components                   | various                                                                      | 0         | code-quality  | E1     |
-| DEBT-0542 | Admin CRUD table pulls full collections via getDocs witho...   | components/admin/admin-crud-table.tsx                                        | 0         | code-quality  | E2     |
-| DEBT-0543 | Meetings map may jank at scale without marker clustering ...   | components/maps/meeting-map.tsx                                              | 0         | code-quality  | E2     |
-| DEBT-0544 | High-intensity confetti spawns up to 150 animated DOM nodes    | components/celebrations/confetti-burst.tsx                                   | 0         | code-quality  | E2     |
-| DEBT-0545 | Console statements exist in production code; should be ga...   | components/\*\*                                                              | 0         | code-quality  | E0     |
-| DEBT-0546 | reCAPTCHA Enterprise script injected on every route (even...   | app/layout.tsx                                                               | 0         | code-quality  | E1     |
-| DEBT-0547 | No Core Web Vitals tracking configured (LCP/CLS/INP)           | app/layout.tsx                                                               | 0         | code-quality  | E1     |
-| DEBT-0548 | Client Sentry config imports Node crypto, risking polyfil...   | lib/sentry.client.ts                                                         | 0         | code-quality  | E1     |
-| DEBT-0549 | AnimatePresence transitions may cause CLS without explici...   | app/page.tsx                                                                 | 0         | code-quality  | E1     |
-| DEBT-0550 | No caching strategy for Firestore queries; mounts trigger...   | hooks/use-journal.ts                                                         | 0         | code-quality  | E2     |
-| DEBT-0551 | useJournal filters soft-deleted entries client-side inste...   | hooks/use-journal.ts                                                         | 0         | code-quality  | E1     |
-| DEBT-0552 | NotebookShell likely bundles most notebook pages because ...   | components/notebook/roadmap-modules.tsx                                      | 0         | code-quality  | E2     |
-| DEBT-0900 | Optimize admin analytics functions (cache/pre-compute)         | functions/src/admin.ts                                                       | 2726      | performance   | E1     |
-| DEBT-0951 | Missing Content-Security-Policy Header                         | N/A                                                                          | undefined | security      | E1     |
-| DEBT-0952 | Script Injection Vulnerability in resolve-debt Workflow        | N/A                                                                          | undefined | security      | E1     |
-| DEBT-0953 | Backlog Enforcement Job Obsolete After TDMS Migration          | N/A                                                                          | undefined | process       | E2     |
-| DEBT-0954 | Security Check Doesn't Scan Cloud Functions                    | N/A                                                                          | undefined | security      | E2     |
-| DEBT-0955 | Large ResourcesPage Not Code-Split (960 lines, ~50KB)          | N/A                                                                          | undefined | performance   | E1     |
-| DEBT-0956 | useJournal Hook Has 7 Responsibilities (438 lines)             | N/A                                                                          | undefined | refactoring   | E1     |
-| DEBT-0957 | Archive Docs Never Checked for Link Rot                        | N/A                                                                          | undefined | documentation | E1     |
-| DEBT-0958 | Function Deletion with Force Flag Lacks Validation             | N/A                                                                          | undefined | process       | E2     |
-| DEBT-0959 | Pre-Commit Total Time 15-30s - Developer Friction              | N/A                                                                          | undefined | process       | E3     |
-| DEBT-0960 | Pre-Push Redundant Checks (15-40s)                             | N/A                                                                          | undefined | performance   | E2     |
-| DEBT-0961 | Prefer `node:crypto` over `crypto`.                            | scripts/eval/eval-sonarcloud-stage.js                                        | 22        | code-quality  | E0     |
-| DEBT-0963 | Prefer `node:fs` over `fs`.                                    | scripts/eval/eval-sonarcloud-report.js                                       | 24        | code-quality  | E0     |
-| DEBT-0964 | Prefer `node:path` over `path`.                                | scripts/eval/eval-sonarcloud-report.js                                       | 25        | code-quality  | E0     |
-| DEBT-0965 | Prefer `node:fs` over `fs`.                                    | scripts/eval/eval-sonarcloud-snapshot.js                                     | 19        | code-quality  | E0     |
-| DEBT-0966 | Prefer `node:path` over `path`.                                | scripts/eval/eval-sonarcloud-snapshot.js                                     | 20        | code-quality  | E0     |
-| DEBT-0967 | Prefer `node:crypto` over `crypto`.                            | scripts/eval/eval-sonarcloud-snapshot.js                                     | 21        | code-quality  | E0     |
-| DEBT-0969 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/eval/eval-sonarcloud-snapshot.js                                     | 145       | code-quality  | E0     |
-| DEBT-0970 | Prefer `node:fs` over `fs`.                                    | scripts/eval/eval-sonarcloud-stage.js                                        | 20        | code-quality  | E0     |
-| DEBT-0971 | Prefer `node:path` over `path`.                                | scripts/eval/eval-sonarcloud-stage.js                                        | 21        | code-quality  | E0     |
-| DEBT-0972 | Unexpected negated condition.                                  | scripts/eval/eval-sonarcloud-stage.js                                        | 156       | code-quality  | E0     |
-| DEBT-0974 | Unexpected negated condition.                                  | scripts/eval/eval-sonarcloud-stage.js                                        | 347       | code-quality  | E0     |
-| DEBT-0977 | Unexpected negated condition.                                  | scripts/eval/eval-sonarcloud-stage.js                                        | 526       | code-quality  | E0     |
-| DEBT-0979 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE...   | scripts/eval/eval-sonarcloud-stage.js                                        | 614       | performance   | E0     |
-| DEBT-0980 | `VALID_STATUSES` should be a `Set`, and use `VALID_STATUS...   | scripts/eval/eval-sonarcloud-stage.js                                        | 615       | performance   | E0     |
-| DEBT-0990 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/generate-views.js                                               | 215       | code-quality  | E0     |
-| DEBT-0991 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/generate-views.js                                               | 216       | code-quality  | E0     |
-| DEBT-0997 | Remove this unused import of 'join'.                           | scripts/multi-ai/normalize-format.js                                         | 15        | code-quality  | E0     |
-| DEBT-0998 | `String.raw` should be used to avoid escaping `\`.             | scripts/multi-ai/state-manager.js                                            | 51        | code-quality  | E0     |
-| DEBT-1000 | Prefer `node:fs` over `fs`.                                    | scripts/multi-ai/eval-check-stage.js                                         | 22        | code-quality  | E0     |
-| DEBT-1001 | Prefer `node:path` over `path`.                                | scripts/multi-ai/eval-check-stage.js                                         | 23        | code-quality  | E0     |
-| DEBT-1002 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE...   | scripts/multi-ai/eval-check-stage.js                                         | 370       | performance   | E0     |
-| DEBT-1003 | `VALID_CATEGORIES` should be a `Set`, and use `VALID_CATE...   | scripts/multi-ai/eval-check-stage.js                                         | 371       | performance   | E0     |
-| DEBT-1005 | Prefer `node:fs` over `fs`.                                    | scripts/multi-ai/eval-report.js                                              | 22        | code-quality  | E0     |
-| DEBT-1006 | Prefer `node:path` over `path`.                                | scripts/multi-ai/eval-report.js                                              | 23        | code-quality  | E0     |
-| DEBT-1007 | Prefer `node:fs` over `fs`.                                    | scripts/multi-ai/eval-snapshot.js                                            | 20        | code-quality  | E0     |
-| DEBT-1008 | Prefer `node:path` over `path`.                                | scripts/multi-ai/eval-snapshot.js                                            | 21        | code-quality  | E0     |
-| DEBT-1009 | Prefer `node:crypto` over `crypto`.                            | scripts/multi-ai/eval-snapshot.js                                            | 22        | code-quality  | E0     |
-| DEBT-1011 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/multi-ai/eval-snapshot.js                                            | 93        | code-quality  | E0     |
-| DEBT-1012 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/aggregate-category.js                                       | 69        | code-quality  | E0     |
-| DEBT-1013 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/aggregate-category.js                                       | 70        | code-quality  | E0     |
-| DEBT-1014 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/aggregate-category.js                                       | 113       | code-quality  | E0     |
-| DEBT-1015 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/aggregate-category.js                                       | 114       | code-quality  | E0     |
-| DEBT-1016 | Handle this exception or don't catch it at all.                | scripts/multi-ai/aggregate-category.js                                       | 144       | code-quality  | E0     |
-| DEBT-1020 | Expected a `for-of` loop instead of a `for` loop with thi...   | scripts/multi-ai/aggregate-category.js                                       | 254       | code-quality  | E0     |
-| DEBT-1023 | Remove this unused import of 'join'.                           | scripts/multi-ai/fix-schema.js                                               | 17        | code-quality  | E0     |
-| DEBT-1024 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/multi-ai/fix-schema.js                                               | 236       | code-quality  | E0     |
-| DEBT-1025 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/fix-schema.js                                               | 255       | code-quality  | E0     |
-| DEBT-1027 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | scripts/multi-ai/fix-schema.js                                               | 256       | performance   | E0     |
-| DEBT-1028 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | scripts/multi-ai/fix-schema.js                                               | 275       | performance   | E0     |
-| DEBT-1030 | Handle this exception or don't catch it at all.                | scripts/multi-ai/fix-schema.js                                               | 537       | code-quality  | E0     |
-| DEBT-1031 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                         | 311       | code-quality  | E0     |
-| DEBT-1034 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                         | 495       | code-quality  | E0     |
-| DEBT-1035 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                         | 496       | code-quality  | E0     |
-| DEBT-1037 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                         | 553       | code-quality  | E0     |
-| DEBT-1038 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                         | 584       | code-quality  | E0     |
-| DEBT-1039 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                         | 585       | code-quality  | E0     |
-| DEBT-1040 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/multi-ai/normalize-format.js                                         | 721       | code-quality  | E0     |
-| DEBT-1041 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                         | 740       | code-quality  | E0     |
-| DEBT-1043 | Don't use a zero fraction in the number.                       | scripts/multi-ai/unify-findings.js                                           | 50        | code-quality  | E0     |
-| DEBT-1044 | Handle this exception or don't catch it at all.                | scripts/multi-ai/unify-findings.js                                           | 79        | code-quality  | E0     |
-| DEBT-1045 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | scripts/multi-ai/unify-findings.js                                           | 99        | performance   | E0     |
-| DEBT-1046 | Don't use a zero fraction in the number.                       | scripts/multi-ai/unify-findings.js                                           | 110       | code-quality  | E0     |
-| DEBT-1049 | Remove the declaration of the unused 'category' variable.      | scripts/multi-ai/unify-findings.js                                           | 287       | code-quality  | E0     |
-| DEBT-1052 | Remove the declaration of the unused 'mergeLog' variable.      | scripts/multi-ai/unify-findings.js                                           | 586       | code-quality  | E0     |
-| DEBT-1054 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 449       | code-quality  | E0     |
-| DEBT-1061 | Prefer `globalThis.window` over `window`.                      | components/admin/errors-tab.tsx                                              | 688       | code-quality  | E0     |
-| DEBT-1062 | Prefer `.at(…)` over `[….length - index]`.                     | components/admin/analytics-tab.tsx                                           | 219       | performance   | E0     |
-| DEBT-1063 | 'input' will use Object's default stringification format ...   | components/admin/logs-tab.tsx                                                | 338       | code-quality  | E0     |
-| DEBT-1065 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/logs-tab.tsx                                                | 316       | code-quality  | E0     |
-| DEBT-1066 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/logs-tab.tsx                                                | 317       | code-quality  | E0     |
-| DEBT-1068 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/logs-tab.tsx                                                | 318       | code-quality  | E0     |
-| DEBT-1071 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/logs-tab.tsx                                                | 315       | code-quality  | E0     |
-| DEBT-1072 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/sync-consolidation-counter.js                                        | 74        | code-quality  | E0     |
-| DEBT-1073 | The catch parameter `readErr` should be named `error_`.        | scripts/sync-consolidation-counter.js                                        | 75        | code-quality  | E0     |
-| DEBT-1074 | This assertion is unnecessary since it does not change th...   | functions/src/jobs.ts                                                        | 379       | code-quality  | E0     |
-| DEBT-1075 | 'unknown' overrides all other types in this union type.        | functions/src/security-logger.ts                                             | 426       | code-quality  | E0     |
-| DEBT-1076 | 'error' will use Object's default stringification format ...   | functions/src/security-logger.ts                                             | 438       | code-quality  | E0     |
-| DEBT-1077 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 453       | code-quality  | E0     |
-| DEBT-1078 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 454       | code-quality  | E0     |
-| DEBT-1079 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 461       | code-quality  | E0     |
-| DEBT-1080 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 463       | code-quality  | E0     |
-| DEBT-1081 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 465       | code-quality  | E0     |
-| DEBT-1082 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 467       | code-quality  | E0     |
-| DEBT-1083 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 472       | code-quality  | E0     |
-| DEBT-1084 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 473       | code-quality  | E0     |
-| DEBT-1085 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 476       | code-quality  | E0     |
-| DEBT-1086 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/jobs-tab.tsx                                                | 72        | code-quality  | E0     |
-| DEBT-1087 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/jobs-tab.tsx                                                | 78        | code-quality  | E0     |
-| DEBT-1091 | Prefer `node:crypto` over `crypto`.                            | functions/src/jobs.ts                                                        | 23        | code-quality  | E0     |
-| DEBT-1101 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/sync-consolidation-counter.js                                        | 37        | code-quality  | E0     |
-| DEBT-1102 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/sync-consolidation-counter.js                                        | 56        | code-quality  | E0     |
-| DEBT-1103 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/sync-consolidation-counter.js                                        | 68        | code-quality  | E0     |
-| DEBT-1106 | Handle this exception or don't catch it at all.                | scripts/audit/transform-jsonl-schema.js                                      | 591       | code-quality  | E0     |
-| DEBT-1107 | The catch parameter `renameErr` should be named `error_`.      | scripts/audit/transform-jsonl-schema.js                                      | 591       | code-quality  | E0     |
-| DEBT-1108 | The catch parameter `unlinkErr` should be named `error_`.      | scripts/audit/transform-jsonl-schema.js                                      | 599       | code-quality  | E0     |
-| DEBT-1109 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/audit/transform-jsonl-schema.js                                      | 193       | code-quality  | E0     |
-| DEBT-1110 | The empty object is useless.                                   | scripts/audit/transform-jsonl-schema.js                                      | 461       | code-quality  | E0     |
-| DEBT-1111 | The empty object is useless.                                   | scripts/audit/transform-jsonl-schema.js                                      | 465       | code-quality  | E0     |
-| DEBT-1112 | The empty object is useless.                                   | scripts/audit/transform-jsonl-schema.js                                      | 469       | code-quality  | E0     |
-| DEBT-1113 | Prefer `node:fs` over `fs`.                                    | scripts/audit/transform-jsonl-schema.js                                      | 22        | code-quality  | E0     |
-| DEBT-1114 | Prefer `node:path` over `path`.                                | scripts/audit/transform-jsonl-schema.js                                      | 23        | code-quality  | E0     |
-| DEBT-1115 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/audit/transform-jsonl-schema.js                                      | 217       | code-quality  | E0     |
-| DEBT-1118 | Unexpected negated condition.                                  | scripts/audit/transform-jsonl-schema.js                                      | 557       | code-quality  | E0     |
-| DEBT-1119 | The '**proto**' property is deprecated.                        | scripts/audit/validate-audit-integration.js                                  | 195       | code-quality  | E0     |
-| DEBT-1123 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/audit/validate-audit-integration.js                                  | 36        | code-quality  | E0     |
-| DEBT-1124 | Handle this exception or don't catch it at all.                | scripts/audit/validate-audit-integration.js                                  | 200       | code-quality  | E0     |
-| DEBT-1128 | Prefer `node:fs` over `fs`.                                    | scripts/audit/validate-audit-integration.js                                  | 24        | code-quality  | E0     |
-| DEBT-1129 | Prefer `node:path` over `path`.                                | scripts/audit/validate-audit-integration.js                                  | 25        | code-quality  | E0     |
-| DEBT-1130 | Prefer `node:crypto` over `crypto`.                            | scripts/audit/validate-audit-integration.js                                  | 26        | code-quality  | E0     |
-| DEBT-1131 | Prefer `node:child_process` over `child_process`.              | scripts/audit/validate-audit-integration.js                                  | 27        | code-quality  | E0     |
-| DEBT-1133 | Unexpected negated condition.                                  | scripts/audit/validate-audit-integration.js                                  | 382       | code-quality  | E0     |
-| DEBT-1134 | Unexpected negated condition.                                  | scripts/audit/validate-audit-integration.js                                  | 415       | code-quality  | E0     |
-| DEBT-1135 | Unexpected negated condition.                                  | scripts/audit/validate-audit-integration.js                                  | 445       | code-quality  | E0     |
-| DEBT-1136 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/audit/validate-audit-integration.js                                  | 508       | code-quality  | E0     |
-| DEBT-1137 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                  | 591       | code-quality  | E0     |
-| DEBT-1138 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                  | 628       | code-quality  | E0     |
-| DEBT-1139 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                  | 629       | code-quality  | E0     |
-| DEBT-1140 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                  | 870       | code-quality  | E0     |
-| DEBT-1141 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                  | 875       | code-quality  | E0     |
-| DEBT-1143 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                  | 1112      | code-quality  | E0     |
-| DEBT-1145 | Prefer `node:os` over `os`.                                    | scripts/debt/intake-audit.js                                                 | 35        | code-quality  | E0     |
-| DEBT-1146 | `DANGEROUS_KEYS` should be a `Set`, and use `DANGEROUS_KE...   | scripts/debt/intake-audit.js                                                 | 39        | performance   | E0     |
-| DEBT-1147 | Unexpected negated condition.                                  | scripts/debt/intake-audit.js                                                 | 143       | code-quality  | E0     |
-| DEBT-1148 | The catch parameter `readErr` should be named `error_`.        | scripts/debt/intake-audit.js                                                 | 288       | code-quality  | E0     |
-| DEBT-1149 | The catch parameter `readErr` should be named `error_`.        | scripts/debt/intake-audit.js                                                 | 374       | code-quality  | E0     |
-| DEBT-1151 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/intake-audit.js                                                 | 135       | code-quality  | E0     |
-| DEBT-1152 | Unexpected negated condition.                                  | scripts/debt/intake-audit.js                                                 | 152       | code-quality  | E0     |
-| DEBT-1153 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-audit.js                                                 | 153       | code-quality  | E0     |
-| DEBT-1154 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-audit.js                                                 | 254       | code-quality  | E0     |
-| DEBT-1160 | The empty object is useless.                                   | scripts/check-content-accuracy.js                                            | 56        | code-quality  | E0     |
-| DEBT-1161 | The empty object is useless.                                   | scripts/check-content-accuracy.js                                            | 57        | code-quality  | E0     |
-| DEBT-1162 | This pattern can be replaced with '\\'.                        | scripts/check-content-accuracy.js                                            | 242       | code-quality  | E0     |
-| DEBT-1167 | Handle this exception or don't catch it at all.                | scripts/check-external-links.js                                              | 219       | code-quality  | E0     |
-| DEBT-1172 | This pattern can be replaced with '\\'.                        | scripts/check-doc-placement.js                                               | 162       | code-quality  | E0     |
-| DEBT-1173 | This pattern can be replaced with '\\'.                        | scripts/check-doc-placement.js                                               | 197       | code-quality  | E0     |
-| DEBT-1174 | This pattern can be replaced with '\\'.                        | scripts/check-doc-placement.js                                               | 233       | code-quality  | E0     |
-| DEBT-1175 | This pattern can be replaced with '\\'.                        | scripts/check-doc-placement.js                                               | 338       | code-quality  | E0     |
-| DEBT-1176 | This pattern can be replaced with '\\'.                        | scripts/check-doc-placement.js                                               | 424       | code-quality  | E0     |
-| DEBT-1184 | The catch parameter `backupErr` should be named `error_`.      | scripts/debt/assign-roadmap-refs.js                                          | 266       | code-quality  | E0     |
-| DEBT-1185 | The catch parameter `writeErr` should be named `error_`.       | scripts/debt/assign-roadmap-refs.js                                          | 281       | code-quality  | E0     |
-| DEBT-1186 | Handle this exception or don't catch it at all.                | scripts/debt/assign-roadmap-refs.js                                          | 285       | code-quality  | E0     |
-| DEBT-1187 | The catch parameter `_e` should be named `error_`.             | scripts/debt/assign-roadmap-refs.js                                          | 285       | code-quality  | E0     |
-| DEBT-1193 | Handle this exception or don't catch it at all.                | scripts/sync-claude-settings.js                                              | 419       | code-quality  | E0     |
-| DEBT-1194 | Unexpected negated condition.                                  | scripts/sync-claude-settings.js                                              | 457       | code-quality  | E0     |
-| DEBT-1195 | Handle this exception or don't catch it at all.                | scripts/sync-claude-settings.js                                              | 463       | code-quality  | E0     |
-| DEBT-1196 | The catch parameter `_e` should be named `error_`.             | scripts/sync-claude-settings.js                                              | 463       | code-quality  | E0     |
-| DEBT-1197 | Prefer `node:fs` over `fs`.                                    | scripts/sync-claude-settings.js                                              | 16        | code-quality  | E0     |
-| DEBT-1198 | Prefer `node:path` over `path`.                                | scripts/sync-claude-settings.js                                              | 17        | code-quality  | E0     |
-| DEBT-1199 | Prefer `node:os` over `os`.                                    | scripts/sync-claude-settings.js                                              | 18        | code-quality  | E0     |
-| DEBT-1201 | Unexpected negated condition.                                  | scripts/sync-claude-settings.js                                              | 413       | code-quality  | E0     |
-| DEBT-1202 | Prefer `node:fs` over `fs`.                                    | scripts/debt/assign-roadmap-refs.js                                          | 32        | code-quality  | E0     |
-| DEBT-1203 | Prefer `node:path` over `path`.                                | scripts/debt/assign-roadmap-refs.js                                          | 33        | code-quality  | E0     |
-| DEBT-1204 | Expected a `for-of` loop instead of a `for` loop with thi...   | scripts/debt/assign-roadmap-refs.js                                          | 42        | code-quality  | E0     |
-| DEBT-1206 | Unexpected negated condition.                                  | scripts/debt/assign-roadmap-refs.js                                          | 184       | code-quality  | E0     |
-| DEBT-1207 | Prefer `node:fs` over `fs`.                                    | scripts/debt/generate-metrics.js                                             | 20        | code-quality  | E0     |
-| DEBT-1208 | Prefer `node:path` over `path`.                                | scripts/debt/generate-metrics.js                                             | 21        | code-quality  | E0     |
-| DEBT-1210 | Prefer `node:fs` over `fs`.                                    | scripts/debt/check-phase-status.js                                           | 11        | code-quality  | E0     |
-| DEBT-1211 | Prefer `node:path` over `path`.                                | scripts/debt/check-phase-status.js                                           | 12        | code-quality  | E0     |
-| DEBT-1212 | Unexpected negated condition.                                  | scripts/debt/check-phase-status.js                                           | 89        | code-quality  | E0     |
-| DEBT-1213 | Unexpected negated condition.                                  | scripts/debt/check-phase-status.js                                           | 90        | code-quality  | E0     |
-| DEBT-1215 | Prefer `Number.NaN` over `NaN`.                                | scripts/aggregate-audit-findings.js                                          | 740       | code-quality  | E0     |
-| DEBT-1216 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/intake-audit.js                                                 | 87        | code-quality  | E0     |
-| DEBT-1218 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/normalize-all.js                                                | 65        | code-quality  | E0     |
-| DEBT-1219 | Prefer `node:child_process` over `child_process`.              | scripts/debt/resolve-bulk.js                                                 | 20        | code-quality  | E0     |
-| DEBT-1220 | Prefer `node:child_process` over `child_process`.              | scripts/debt/intake-audit.js                                                 | 36        | code-quality  | E0     |
-| DEBT-1222 | Prefer `node:child_process` over `child_process`.              | scripts/debt/sync-sonarcloud.js                                              | 32        | code-quality  | E0     |
-| DEBT-1224 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/sync-sonarcloud.js                                              | 281       | code-quality  | E0     |
-| DEBT-1225 | Handle this exception or don't catch it at all.                | scripts/create-canonical-findings.js                                         | 81        | code-quality  | E0     |
-| DEBT-1227 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                          | 189       | code-quality  | E0     |
-| DEBT-1228 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/create-canonical-findings.js                                         | 102       | code-quality  | E0     |
-| DEBT-1231 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/generate-views.js                                               | 87        | code-quality  | E0     |
-| DEBT-1232 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/sync-sonarcloud.js                                              | 244       | code-quality  | E0     |
-| DEBT-1233 | Handle this exception or don't catch it at all.                | scripts/migrate-existing-findings.js                                         | 32        | code-quality  | E0     |
-| DEBT-1234 | Prefer `node:fs` over `fs`.                                    | scripts/debt/sync-roadmap-refs.js                                            | 12        | code-quality  | E0     |
-| DEBT-1235 | Prefer `node:path` over `path`.                                | scripts/debt/sync-roadmap-refs.js                                            | 13        | code-quality  | E0     |
-| DEBT-1236 | Prefer `node:url` over `url`.                                  | scripts/debt/sync-roadmap-refs.js                                            | 14        | code-quality  | E0     |
-| DEBT-1237 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/debt/sync-roadmap-refs.js                                            | 25        | performance   | E0     |
-| DEBT-1238 | Prefer `node:fs` over `fs`.                                    | scripts/debt/resolve-bulk.js                                                 | 18        | code-quality  | E0     |
-| DEBT-1239 | Prefer `node:path` over `path`.                                | scripts/debt/resolve-bulk.js                                                 | 19        | code-quality  | E0     |
-| DEBT-1240 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/resolve-bulk.js                                                 | 35        | code-quality  | E0     |
-| DEBT-1245 | Prefer `node:fs` over `fs`.                                    | scripts/debt/resolve-item.js                                                 | 19        | code-quality  | E0     |
-| DEBT-1246 | Prefer `node:path` over `path`.                                | scripts/debt/resolve-item.js                                                 | 20        | code-quality  | E0     |
-| DEBT-1247 | Prefer `node:child_process` over `child_process`.              | scripts/debt/resolve-item.js                                                 | 21        | code-quality  | E0     |
-| DEBT-1248 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/resolve-item.js                                                 | 39        | code-quality  | E0     |
-| DEBT-1252 | Prefer `node:fs` over `fs`.                                    | scripts/debt/validate-schema.js                                              | 19        | code-quality  | E0     |
-| DEBT-1253 | Prefer `node:path` over `path`.                                | scripts/debt/validate-schema.js                                              | 20        | code-quality  | E0     |
-| DEBT-1258 | Prefer `node:fs` over `fs`.                                    | scripts/debt/intake-audit.js                                                 | 32        | code-quality  | E0     |
-| DEBT-1259 | Prefer `node:path` over `path`.                                | scripts/debt/intake-audit.js                                                 | 33        | code-quality  | E0     |
-| DEBT-1260 | Prefer `node:crypto` over `crypto`.                            | scripts/debt/intake-audit.js                                                 | 34        | code-quality  | E0     |
-| DEBT-1261 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-audit.js                                                 | 218       | code-quality  | E0     |
-| DEBT-1263 | Prefer `node:fs` over `fs`.                                    | scripts/debt/intake-manual.js                                                | 32        | code-quality  | E0     |
-| DEBT-1264 | Prefer `node:path` over `path`.                                | scripts/debt/intake-manual.js                                                | 33        | code-quality  | E0     |
-| DEBT-1265 | Prefer `node:crypto` over `crypto`.                            | scripts/debt/intake-manual.js                                                | 34        | code-quality  | E0     |
-| DEBT-1266 | Prefer `node:child_process` over `child_process`.              | scripts/debt/intake-manual.js                                                | 35        | code-quality  | E0     |
-| DEBT-1268 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-manual.js                                                | 102       | code-quality  | E0     |
-| DEBT-1270 | `String.raw` should be used to avoid escaping `\`.             | scripts/debt/intake-manual.js                                                | 172       | code-quality  | E0     |
-| DEBT-1271 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-manual.js                                                | 267       | code-quality  | E0     |
-| DEBT-1273 | Prefer `node:fs` over `fs`.                                    | scripts/debt/intake-pr-deferred.js                                           | 29        | code-quality  | E0     |
-| DEBT-1274 | Prefer `node:path` over `path`.                                | scripts/debt/intake-pr-deferred.js                                           | 30        | code-quality  | E0     |
-| DEBT-1275 | Prefer `node:crypto` over `crypto`.                            | scripts/debt/intake-pr-deferred.js                                           | 31        | code-quality  | E0     |
-| DEBT-1276 | Prefer `node:child_process` over `child_process`.              | scripts/debt/intake-pr-deferred.js                                           | 32        | code-quality  | E0     |
-| DEBT-1278 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-pr-deferred.js                                           | 95        | code-quality  | E0     |
-| DEBT-1279 | `String.raw` should be used to avoid escaping `\`.             | scripts/debt/intake-pr-deferred.js                                           | 152       | code-quality  | E0     |
-| DEBT-1280 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-pr-deferred.js                                           | 226       | code-quality  | E0     |
-| DEBT-1281 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-pr-deferred.js                                           | 236       | code-quality  | E0     |
-| DEBT-1282 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-pr-deferred.js                                           | 280       | code-quality  | E0     |
-| DEBT-1284 | Prefer `node:fs` over `fs`.                                    | scripts/debt/sync-sonarcloud.js                                              | 29        | code-quality  | E0     |
-| DEBT-1285 | Prefer `node:path` over `path`.                                | scripts/debt/sync-sonarcloud.js                                              | 30        | code-quality  | E0     |
-| DEBT-1286 | Prefer `node:crypto` over `crypto`.                            | scripts/debt/sync-sonarcloud.js                                              | 31        | code-quality  | E0     |
-| DEBT-1287 | Prefer `node:readline` over `readline`.                        | scripts/debt/sync-sonarcloud.js                                              | 33        | code-quality  | E0     |
-| DEBT-1289 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/sync-sonarcloud.js                                              | 130       | code-quality  | E0     |
-| DEBT-1293 | Prefer `node:fs` over `fs`.                                    | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js                  | 12        | code-quality  | E0     |
-| DEBT-1294 | Prefer `node:path` over `path`.                                | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js                  | 13        | code-quality  | E0     |
-| DEBT-1295 | Prefer `Number.parseInt` over `parseInt`.                      | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js                  | 49        | code-quality  | E0     |
-| DEBT-1297 | Prefer `node:child_process` over `child_process`.              | scripts/debt/consolidate-all.js                                              | 12        | code-quality  | E0     |
-| DEBT-1298 | Prefer `node:path` over `path`.                                | scripts/debt/consolidate-all.js                                              | 13        | code-quality  | E0     |
-| DEBT-1299 | Prefer `node:fs` over `fs`.                                    | scripts/debt/consolidate-all.js                                              | 14        | code-quality  | E0     |
-| DEBT-1300 | Prefer `node:fs` over `fs`.                                    | scripts/debt/dedup-multi-pass.js                                             | 19        | code-quality  | E0     |
-| DEBT-1301 | Prefer `node:path` over `path`.                                | scripts/debt/dedup-multi-pass.js                                             | 20        | code-quality  | E0     |
-| DEBT-1302 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/dedup-multi-pass.js                                             | 71        | code-quality  | E0     |
-| DEBT-1303 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/dedup-multi-pass.js                                             | 72        | code-quality  | E0     |
-| DEBT-1304 | Prefer `node:fs` over `fs`.                                    | scripts/debt/extract-audits.js                                               | 15        | code-quality  | E0     |
-| DEBT-1305 | Prefer `node:path` over `path`.                                | scripts/debt/extract-audits.js                                               | 16        | code-quality  | E0     |
-| DEBT-1306 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/extract-audits.js                                               | 62        | code-quality  | E0     |
-| DEBT-1308 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/extract-audits.js                                               | 167       | code-quality  | E0     |
-| DEBT-1309 | Prefer `node:fs` over `fs`.                                    | scripts/debt/extract-reviews.js                                              | 15        | code-quality  | E0     |
-| DEBT-1310 | Prefer `node:path` over `path`.                                | scripts/debt/extract-reviews.js                                              | 16        | code-quality  | E0     |
-| DEBT-1311 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/extract-reviews.js                                              | 60        | code-quality  | E0     |
-| DEBT-1313 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/extract-reviews.js                                              | 165       | code-quality  | E0     |
-| DEBT-1314 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/extract-reviews.js                                              | 199       | code-quality  | E0     |
-| DEBT-1316 | Prefer `node:fs` over `fs`.                                    | scripts/debt/generate-views.js                                               | 17        | code-quality  | E0     |
-| DEBT-1317 | Prefer `node:path` over `path`.                                | scripts/debt/generate-views.js                                               | 18        | code-quality  | E0     |
-| DEBT-1318 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/generate-views.js                                               | 47        | code-quality  | E0     |
-| DEBT-1319 | `String.raw` should be used to avoid escaping `\`.             | scripts/debt/generate-views.js                                               | 47        | code-quality  | E0     |
-| DEBT-1321 | Prefer `node:fs` over `fs`.                                    | scripts/debt/normalize-all.js                                                | 14        | code-quality  | E0     |
-| DEBT-1322 | Prefer `node:path` over `path`.                                | scripts/debt/normalize-all.js                                                | 15        | code-quality  | E0     |
-| DEBT-1323 | Prefer `node:crypto` over `crypto`.                            | scripts/debt/normalize-all.js                                                | 16        | code-quality  | E0     |
-| DEBT-1325 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/normalize-all.js                                                | 138       | code-quality  | E0     |
-| DEBT-1327 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/migrate-existing-findings.js                                         | 56        | code-quality  | E0     |
-| DEBT-1328 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                          | 186       | code-quality  | E0     |
-| DEBT-1329 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                          | 207       | code-quality  | E0     |
-| DEBT-1331 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/aggregate-audit-findings.js                                          | 468       | code-quality  | E0     |
-| DEBT-1332 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/aggregate-audit-findings.js                                          | 511       | code-quality  | E0     |
-| DEBT-1333 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/aggregate-audit-findings.js                                          | 552       | code-quality  | E0     |
-| DEBT-1336 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/aggregate-audit-findings.js                                          | 760       | code-quality  | E0     |
-| DEBT-1340 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                          | 521       | code-quality  | E0     |
-| DEBT-1342 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                          | 476       | code-quality  | E0     |
-| DEBT-1344 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/check-doc-headers.js                                                 | 42        | performance   | E0     |
-| DEBT-1345 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                        | 71        | code-quality  | E0     |
-| DEBT-1346 | Prefer `Math.min()` to simplify ternary expressions.           | scripts/run-consolidation.js                                                 | 539       | code-quality  | E0     |
-| DEBT-1347 | Prefer `Math.max()` to simplify ternary expressions.           | scripts/run-consolidation.js                                                 | 540       | code-quality  | E0     |
-| DEBT-1348 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                        | 109       | code-quality  | E0     |
-| DEBT-1349 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                 | 135       | code-quality  | E0     |
-| DEBT-1350 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                 | 160       | code-quality  | E0     |
-| DEBT-1351 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                        | 39        | code-quality  | E0     |
-| DEBT-1352 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                        | 58        | code-quality  | E0     |
-| DEBT-1353 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                        | 78        | code-quality  | E0     |
-| DEBT-1354 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                        | 118       | code-quality  | E0     |
-| DEBT-1355 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                 | 103       | code-quality  | E0     |
-| DEBT-1356 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                 | 142       | code-quality  | E0     |
-| DEBT-1357 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                 | 180       | code-quality  | E0     |
-| DEBT-1359 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-pending-alerts.js                                           | 51        | code-quality  | E0     |
-| DEBT-1362 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-backlog-health.js                                              | 157       | code-quality  | E0     |
-| DEBT-1363 | Prefer `node:fs` over `fs`.                                    | scripts/append-hook-warning.js                                               | 17        | code-quality  | E0     |
-| DEBT-1364 | Prefer `node:path` over `path`.                                | scripts/append-hook-warning.js                                               | 18        | code-quality  | E0     |
-| DEBT-1365 | Prefer `node:fs` over `fs`.                                    | scripts/generate-pending-alerts.js                                           | 19        | code-quality  | E0     |
-| DEBT-1366 | Prefer `node:path` over `path`.                                | scripts/generate-pending-alerts.js                                           | 20        | code-quality  | E0     |
-| DEBT-1367 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/generate-pending-alerts.js                                           | 72        | code-quality  | E0     |
-| DEBT-1369 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 72        | code-quality  | E0     |
-| DEBT-1370 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 795       | performance   | E0     |
-| DEBT-1371 | Unexpected negated condition.                                  | scripts/check-roadmap-health.js                                              | 251       | code-quality  | E0     |
-| DEBT-1372 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/check-agent-compliance.js                                            | 29        | performance   | E0     |
-| DEBT-1374 | Replace this if-then-else flow by a single return statement.   | scripts/check-docs-light.js                                                  | 302       | code-quality  | E0     |
-| DEBT-1376 | Unexpected negated condition.                                  | scripts/validate-audit.js                                                    | 525       | code-quality  | E0     |
-| DEBT-1377 | Unexpected negated condition.                                  | scripts/validate-audit.js                                                    | 558       | code-quality  | E0     |
-| DEBT-1378 | Unexpected negated condition.                                  | scripts/validate-audit.js                                                    | 588       | code-quality  | E0     |
-| DEBT-1381 | Prefer `Number.isNaN` over `isNaN`.                            | scripts/check-review-needed.js                                               | 216       | code-quality  | E0     |
-| DEBT-1382 | Use concise character class syntax '\D' instead of '[^0-9]'.   | scripts/check-pattern-sync.js                                                | 41        | code-quality  | E0     |
-| DEBT-1383 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-sync.js                                                | 243       | code-quality  | E0     |
-| DEBT-1384 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/analyze-learning-effectiveness.js                                    | 253       | code-quality  | E0     |
-| DEBT-1385 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 478       | code-quality  | E0     |
-| DEBT-1386 | `String.raw` should be used to avoid escaping `\`.             | scripts/analyze-learning-effectiveness.js                                    | 478       | code-quality  | E0     |
-| DEBT-1387 | `String.raw` should be used to avoid escaping `\`.             | scripts/analyze-learning-effectiveness.js                                    | 479       | code-quality  | E0     |
-| DEBT-1388 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-sync.js                                                | 67        | code-quality  | E0     |
-| DEBT-1391 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 388       | code-quality  | E0     |
-| DEBT-1392 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 590       | code-quality  | E0     |
-| DEBT-1393 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 591       | code-quality  | E0     |
-| DEBT-1395 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 727       | code-quality  | E0     |
-| DEBT-1396 | Remove the declaration of the unused 'trends' variable.        | scripts/analyze-learning-effectiveness.js                                    | 791       | code-quality  | E0     |
-| DEBT-1399 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-pattern-sync.js                                                | 45        | code-quality  | E0     |
-| DEBT-1400 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-pattern-sync.js                                                | 121       | code-quality  | E0     |
-| DEBT-1401 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/check-pattern-sync.js                                                | 263       | performance   | E0     |
-| DEBT-1402 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 27        | code-quality  | E0     |
-| DEBT-1403 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 28        | code-quality  | E0     |
-| DEBT-1404 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 29        | code-quality  | E0     |
-| DEBT-1405 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 30        | code-quality  | E0     |
-| DEBT-1407 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 31        | code-quality  | E0     |
-| DEBT-1408 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 46        | code-quality  | E0     |
-| DEBT-1409 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 47        | code-quality  | E0     |
-| DEBT-1410 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 48        | code-quality  | E0     |
-| DEBT-1411 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 49        | code-quality  | E0     |
-| DEBT-1412 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 50        | code-quality  | E0     |
-| DEBT-1413 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 51        | code-quality  | E0     |
-| DEBT-1414 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 68        | code-quality  | E0     |
-| DEBT-1415 | `String.raw` should be used to avoid escaping `\`.             | scripts/lib/security-helpers.js                                              | 68        | code-quality  | E0     |
-| DEBT-1416 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 233       | code-quality  | E0     |
-| DEBT-1417 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 234       | code-quality  | E0     |
-| DEBT-1418 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                              | 235       | code-quality  | E0     |
-| DEBT-1420 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/lib/security-helpers.js                                              | 288       | code-quality  | E0     |
-| DEBT-1421 | Prefer `Number.isNaN` over `isNaN`.                            | scripts/lib/security-helpers.js                                              | 289       | code-quality  | E0     |
-| DEBT-1423 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 75        | code-quality  | E0     |
-| DEBT-1424 | `String.raw` should be used to avoid escaping `\`.             | scripts/analyze-learning-effectiveness.js                                    | 75        | code-quality  | E0     |
-| DEBT-1426 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/analyze-learning-effectiveness.js                                    | 1227      | code-quality  | E0     |
-| DEBT-1427 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/run-consolidation.js                                                 | 39        | code-quality  | E0     |
-| DEBT-1428 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/run-consolidation.js                                                 | 40        | code-quality  | E0     |
-| DEBT-1429 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/run-consolidation.js                                                 | 41        | code-quality  | E0     |
-| DEBT-1430 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 59        | code-quality  | E0     |
-| DEBT-1431 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 60        | code-quality  | E0     |
-| DEBT-1432 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 61        | code-quality  | E0     |
-| DEBT-1433 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 62        | code-quality  | E0     |
-| DEBT-1434 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 63        | code-quality  | E0     |
-| DEBT-1435 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 64        | code-quality  | E0     |
-| DEBT-1437 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 728       | code-quality  | E0     |
-| DEBT-1438 | Prefer `Number.isNaN` over `isNaN`.                            | scripts/analyze-learning-effectiveness.js                                    | 1228      | code-quality  | E0     |
-| DEBT-1439 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 47        | code-quality  | E0     |
-| DEBT-1440 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 48        | code-quality  | E0     |
-| DEBT-1441 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                    | 49        | code-quality  | E0     |
-| DEBT-1442 | Expected a `for-of` loop instead of a `for` loop with thi...   | scripts/analyze-learning-effectiveness.js                                    | 248       | code-quality  | E0     |
-| DEBT-1443 | Expected a `for-of` loop instead of a `for` loop with thi...   | scripts/analyze-learning-effectiveness.js                                    | 334       | code-quality  | E0     |
-| DEBT-1445 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/analyze-learning-effectiveness.js                                    | 365       | code-quality  | E0     |
-| DEBT-1454 | The catch parameter `analysisErr` should be named `error_`.    | scripts/run-consolidation.js                                                 | 715       | code-quality  | E0     |
-| DEBT-1455 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 43        | code-quality  | E0     |
-| DEBT-1456 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 28        | code-quality  | E0     |
-| DEBT-1457 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 29        | code-quality  | E0     |
-| DEBT-1458 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 30        | code-quality  | E0     |
-| DEBT-1459 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 31        | code-quality  | E0     |
-| DEBT-1460 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 33        | code-quality  | E0     |
-| DEBT-1461 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 34        | code-quality  | E0     |
-| DEBT-1462 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 26        | code-quality  | E0     |
-| DEBT-1463 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 27        | code-quality  | E0     |
-| DEBT-1464 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 32        | code-quality  | E0     |
-| DEBT-1465 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 35        | code-quality  | E0     |
-| DEBT-1466 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 36        | code-quality  | E0     |
-| DEBT-1467 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 37        | code-quality  | E0     |
-| DEBT-1468 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 38        | code-quality  | E0     |
-| DEBT-1469 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 39        | code-quality  | E0     |
-| DEBT-1470 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                | 128       | code-quality  | E0     |
-| DEBT-1474 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | scripts/secrets/decrypt-secrets.js                                           | 155       | code-quality  | E0     |
-| DEBT-1477 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | scripts/secrets/encrypt-secrets.js                                           | 113       | code-quality  | E0     |
-| DEBT-1479 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/secrets/decrypt-secrets.js                                           | 178       | performance   | E0     |
-| DEBT-1480 | Remove this unused import of 'statSync'.                       | scripts/validate-canon-schema.js                                             | 20        | code-quality  | E0     |
-| DEBT-1481 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/security-check.js                                                    | 160       | code-quality  | E0     |
-| DEBT-1484 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/verify-sonar-phase.js                                                | 248       | code-quality  | E0     |
-| DEBT-1485 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/verify-sonar-phase.js                                                | 249       | code-quality  | E0     |
-| DEBT-1486 | Handle this exception or don't catch it at all.                | scripts/check-docs-light.js                                                  | 686       | code-quality  | E0     |
-| DEBT-1487 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/verify-sonar-phase.js                                                | 221       | code-quality  | E0     |
-| DEBT-1488 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/archive-doc.js                                                       | 523       | code-quality  | E0     |
-| DEBT-1489 | This assertion is unnecessary since it does not change th...   | functions/src/admin.ts                                                       | 1108      | code-quality  | E0     |
-| DEBT-1491 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-pattern-compliance.js                                          | 735       | code-quality  | E0     |
-| DEBT-1494 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 823       | performance   | E0     |
-| DEBT-1495 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 826       | performance   | E0     |
-| DEBT-1496 | 'data.mood' will use Object's default stringification for...   | components/notebook/pages/history-page.tsx                                   | 73        | code-quality  | E0     |
-| DEBT-1497 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 858       | performance   | E0     |
-| DEBT-1498 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/update-readme-status.js                                              | 214       | code-quality  | E0     |
-| DEBT-1499 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 829       | performance   | E0     |
-| DEBT-1501 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/verify-sonar-phase.js                                                | 34        | code-quality  | E0     |
-| DEBT-1502 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/verify-sonar-phase.js                                                | 191       | code-quality  | E0     |
-| DEBT-1503 | Remove the declaration of the unused '\_phaseConfig' varia...  | scripts/verify-sonar-phase.js                                                | 382       | code-quality  | E0     |
-| DEBT-1504 | Remove the declaration of the unused 'found' variable.         | docs/archive/obsolete-scripts-2026-02/generate-sonar-report-with-snippets.js | 181       | code-quality  | E0     |
-| DEBT-1506 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                    | 111       | code-quality  | E0     |
-| DEBT-1507 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                    | 112       | code-quality  | E0     |
-| DEBT-1508 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                    | 113       | code-quality  | E0     |
-| DEBT-1509 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                    | 114       | code-quality  | E0     |
-| DEBT-1510 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                    | 115       | code-quality  | E0     |
-| DEBT-1511 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                    | 116       | code-quality  | E0     |
-| DEBT-1513 | Remove the declaration of the unused 'found' variable.         | scripts/generate-detailed-sonar-report.js                                    | 274       | code-quality  | E0     |
-| DEBT-1514 | Remove the declaration of the unused 'found' variable.         | scripts/generate-detailed-sonar-report.js                                    | 329       | code-quality  | E0     |
-| DEBT-1516 | Remove the declaration of the unused 'found' variable.         | scripts/generate-detailed-sonar-report.js                                    | 368       | code-quality  | E0     |
-| DEBT-1518 | Prefer `globalThis` over `window`.                             | components/admin/errors-tab.tsx                                              | 399       | code-quality  | E0     |
-| DEBT-1519 | Prefer `globalThis` over `window`.                             | components/admin/errors-tab.tsx                                              | 400       | code-quality  | E0     |
-| DEBT-1520 | Prefer `globalThis` over `window`.                             | components/admin/errors-tab.tsx                                              | 728       | code-quality  | E0     |
-| DEBT-1521 | Prefer `globalThis` over `window`.                             | components/admin/errors-tab.tsx                                              | 729       | code-quality  | E0     |
-| DEBT-1522 | Prefer `globalThis` over `window`.                             | components/admin/users-tab.tsx                                               | 339       | code-quality  | E0     |
-| DEBT-1523 | Prefer `globalThis` over `window`.                             | components/admin/users-tab.tsx                                               | 340       | code-quality  | E0     |
-| DEBT-1529 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                    | 118       | code-quality  | E0     |
-| DEBT-1530 | Prefer `globalThis.window` over `window`.                      | lib/utils/error-export.ts                                                    | 118       | code-quality  | E0     |
-| DEBT-1531 | Prefer `globalThis` over `window`.                             | lib/utils/error-export.ts                                                    | 118       | code-quality  | E0     |
-| DEBT-1532 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                    | 123       | code-quality  | E0     |
-| DEBT-1533 | 'date-fns' imported multiple times.                            | components/admin/users-tab.tsx                                               | 27        | code-quality  | E0     |
-| DEBT-1534 | 'date-fns' imported multiple times.                            | components/admin/users-tab.tsx                                               | 28        | code-quality  | E0     |
-| DEBT-1536 | Prefer `Math.max()` to simplify ternary expressions.           | components/admin/users-tab.tsx                                               | 119       | code-quality  | E0     |
-| DEBT-1539 | Mark the props of the component as read-only.                  | lib/contexts/admin-tab-context.tsx                                           | 66        | code-quality  | E0     |
-| DEBT-1540 | useState call is not destructured into value + setter pair     | lib/contexts/admin-tab-context.tsx                                           | 67        | code-quality  | E0     |
-| DEBT-1542 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                    | 122       | code-quality  | E0     |
-| DEBT-1543 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                    | 124       | code-quality  | E0     |
-| DEBT-1544 | Prefer `globalThis.window` over `window`.                      | lib/utils/error-export.ts                                                    | 124       | code-quality  | E0     |
-| DEBT-1545 | Prefer `globalThis` over `window`.                             | lib/utils/error-export.ts                                                    | 124       | code-quality  | E0     |
-| DEBT-1546 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                    | 135       | code-quality  | E0     |
-| DEBT-1547 | Prefer `globalThis.window` over `window`.                      | lib/utils/error-export.ts                                                    | 135       | code-quality  | E0     |
-| DEBT-1548 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                    | 136       | code-quality  | E0     |
-| DEBT-1549 | Prefer `globalThis.window` over `window`.                      | lib/utils/error-export.ts                                                    | 136       | code-quality  | E0     |
-| DEBT-1550 | 'PerformanceTiming' is deprecated.                             | lib/utils/error-export.ts                                                    | 154       | code-quality  | E0     |
-| DEBT-1551 | 'navigationStart' is deprecated.                               | lib/utils/error-export.ts                                                    | 157       | code-quality  | E0     |
-| DEBT-1552 | 'loadEventEnd' is deprecated.                                  | lib/utils/error-export.ts                                                    | 158       | code-quality  | E0     |
-| DEBT-1553 | 'domContentLoadedEventEnd' is deprecated.                      | lib/utils/error-export.ts                                                    | 159       | code-quality  | E0     |
-| DEBT-1555 | The signature '(commandId: string, showUI?: boolean \| und...  | lib/utils/error-export.ts                                                    | 318       | code-quality  | E0     |
-| DEBT-1558 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/privileges-tab.tsx                                          | 305       | code-quality  | E0     |
-| DEBT-1560 | `BUILT_IN_TYPES` should be a `Set`, and use `BUILT_IN_TYP...   | components/admin/privileges-tab.tsx                                          | 31        | performance   | E0     |
-| DEBT-1566 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/privileges-tab.tsx                                          | 509       | code-quality  | E0     |
-| DEBT-1569 | Prefer `Number.parseInt` over `parseInt`.                      | functions/src/admin.ts                                                       | 3500      | code-quality  | E0     |
-| DEBT-1570 | Prefer `Number.parseFloat` over `parseFloat`.                  | functions/src/admin.ts                                                       | 3568      | code-quality  | E0     |
-| DEBT-1572 | Prefer negative index over length minus index for `slice`.     | scripts/aggregate-audit-findings.js                                          | 330       | performance   | E0     |
-| DEBT-1573 | Remove this unused import of 'readdirSync'.                    | scripts/aggregate-audit-findings.js                                          | 21        | code-quality  | E0     |
-| DEBT-1574 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                          | 236       | code-quality  | E0     |
-| DEBT-1575 | `String.raw` should be used to avoid escaping `\`.             | scripts/aggregate-audit-findings.js                                          | 236       | code-quality  | E0     |
-| DEBT-1576 | Unnecessary use of conditional expression for default ass...   | scripts/aggregate-audit-findings.js                                          | 1154      | code-quality  | E0     |
-| DEBT-1579 | This pattern can be replaced with '\r\n'.                      | scripts/check-docs-light.js                                                  | 158       | code-quality  | E0     |
-| DEBT-1580 | This pattern can be replaced with '\r'.                        | scripts/check-docs-light.js                                                  | 158       | code-quality  | E0     |
-| DEBT-1581 | Replace this union type with a type alias.                     | functions/src/admin.ts                                                       | 2324      | code-quality  | E0     |
-| DEBT-1582 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 274       | code-quality  | E0     |
-| DEBT-1583 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 276       | code-quality  | E0     |
-| DEBT-1584 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 278       | code-quality  | E0     |
-| DEBT-1585 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 283       | code-quality  | E0     |
-| DEBT-1586 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                             | 285       | code-quality  | E0     |
-| DEBT-1589 | Mark the props of the component as read-only.                  | components/admin/logs-tab.tsx                                                | 173       | code-quality  | E0     |
-| DEBT-1593 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-cross-doc-deps.js                                              | 187       | code-quality  | E0     |
-| DEBT-1594 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-cross-doc-deps.js                                              | 191       | code-quality  | E0     |
-| DEBT-1595 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-cross-doc-deps.js                                              | 212       | code-quality  | E0     |
-| DEBT-1596 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-cross-doc-deps.js                                              | 216       | code-quality  | E0     |
-| DEBT-1597 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/run-consolidation.js                                                 | 89        | code-quality  | E0     |
-| DEBT-1598 | `String.raw` should be used to avoid escaping `\`.             | scripts/run-consolidation.js                                                 | 89        | code-quality  | E0     |
-| DEBT-1599 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                 | 122       | code-quality  | E0     |
-| DEBT-1600 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/run-consolidation.js                                                 | 55        | performance   | E0     |
-| DEBT-1601 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                 | 218       | code-quality  | E0     |
-| DEBT-1604 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/check-cross-doc-deps.js                                              | 27        | performance   | E0     |
-| DEBT-1606 | Remove this unused import of 'statSync'.                       | scripts/security-check.js                                                    | 20        | code-quality  | E0     |
-| DEBT-1607 | Remove this unused import of 'isAbsolute'.                     | scripts/security-check.js                                                    | 22        | code-quality  | E0     |
-| DEBT-1608 | Unexpected negated condition.                                  | scripts/check-backlog-health.js                                              | 266       | code-quality  | E0     |
-| DEBT-1609 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-backlog-health.js                                              | 29        | code-quality  | E0     |
-| DEBT-1610 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-backlog-health.js                                              | 30        | code-quality  | E0     |
-| DEBT-1611 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-backlog-health.js                                              | 31        | code-quality  | E0     |
-| DEBT-1612 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-backlog-health.js                                              | 32        | code-quality  | E0     |
-| DEBT-1613 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-backlog-health.js                                              | 261       | code-quality  | E0     |
-| DEBT-1615 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/utils/admin-error-utils.ts                                               | 19        | code-quality  | E0     |
-| DEBT-1616 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/utils/admin-error-utils.ts                                               | 21        | code-quality  | E0     |
-| DEBT-1618 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/utils/admin-error-utils.ts                                               | 27        | code-quality  | E0     |
-| DEBT-1619 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/utils/admin-error-utils.ts                                               | 33        | code-quality  | E0     |
-| DEBT-1620 | `components` should be a `Set`, and use `components.has()...   | tests/error-knowledge-base.test.ts                                           | 144       | performance   | E0     |
-| DEBT-1621 | Mark the props of the component as read-only.                  | components/admin/errors-tab.tsx                                              | 139       | code-quality  | E0     |
-| DEBT-1628 | Prefer `globalThis.window` over `window`.                      | app/dev/page.tsx                                                             | 30        | code-quality  | E0     |
-| DEBT-1629 | Mark the props of the component as read-only.                  | components/dev/dev-dashboard.tsx                                             | 24        | code-quality  | E0     |
-| DEBT-1630 | Mark the props of the component as read-only.                  | components/dev/dev-dashboard.tsx                                             | 65        | code-quality  | E0     |
-| DEBT-1631 | Mark the props of the component as read-only.                  | components/dev/dev-tabs.tsx                                                  | 54        | code-quality  | E0     |
-| DEBT-1632 | Mark the props of the component as read-only.                  | components/dev/lighthouse-tab.tsx                                            | 64        | code-quality  | E0     |
-| DEBT-1635 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/logger.ts                                                                | 87        | code-quality  | E0     |
-| DEBT-1636 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/verify-skill-usage.js                                                | 78        | code-quality  | E0     |
-| DEBT-1637 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/log-session-activity.js                                              | 68        | code-quality  | E0     |
-| DEBT-1645 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | scripts/log-override.js                                                      | 73        | code-quality  | E0     |
-| DEBT-1646 | Do not call `Array#push()` multiple times.                     | scripts/check-triggers.js                                                    | 306       | performance   | E0     |
-| DEBT-1647 | Do not call `Array#push()` multiple times.                     | scripts/check-triggers.js                                                    | 307       | performance   | E0     |
-| DEBT-1648 | Remove the declaration of the unused 'isSession' variable.     | scripts/validate-skill-config.js                                             | 113       | code-quality  | E0     |
-| DEBT-1650 | `String.raw` should be used to avoid escaping `\`.             | scripts/validate-skill-config.js                                             | 118       | code-quality  | E0     |
-| DEBT-1651 | `String.raw` should be used to avoid escaping `\`.             | scripts/validate-skill-config.js                                             | 134       | code-quality  | E0     |
-| DEBT-1652 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/verify-skill-usage.js                                                | 222       | performance   | E0     |
-| DEBT-1653 | Do not call `Array#push()` multiple times.                     | hooks/use-journal.ts                                                         | 133       | performance   | E0     |
-| DEBT-1656 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                          | 360       | code-quality  | E0     |
-| DEBT-1657 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                          | 373       | code-quality  | E0     |
-| DEBT-1658 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                          | 374       | code-quality  | E0     |
-| DEBT-1660 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-pattern-compliance.js                                          | 787       | code-quality  | E0     |
-| DEBT-1661 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-pattern-compliance.js                                          | 894       | code-quality  | E0     |
-| DEBT-1662 | Prefer `Number.parseInt` over `parseInt`.                      | app/meetings/all/page.tsx                                                    | 223       | code-quality  | E0     |
-| DEBT-1663 | Prefer `Number.parseInt` over `parseInt`.                      | app/meetings/all/page.tsx                                                    | 240       | code-quality  | E0     |
-| DEBT-1671 | This assertion is unnecessary since it does not change th...   | components/journal/entry-detail-dialog.tsx                                   | 315       | code-quality  | E0     |
-| DEBT-1672 | This assertion is unnecessary since it does not change th...   | components/journal/entry-detail-dialog.tsx                                   | 362       | code-quality  | E0     |
-| DEBT-1674 | Visible, non-interactive elements with click handlers mus...   | components/journal/entry-feed.tsx                                            | 345       | code-quality  | E0     |
-| DEBT-1677 | Prefer `globalThis` over `window`.                             | components/notebook/features/enhanced-mood-selector.tsx                      | 77        | code-quality  | E0     |
-| DEBT-1678 | 'lucide-react' imported multiple times.                        | components/notebook/pages/resources-page.tsx                                 | 20        | code-quality  | E0     |
-| DEBT-1679 | Prefer `Number.parseInt` over `parseInt`.                      | components/notebook/pages/resources-page.tsx                                 | 52        | code-quality  | E0     |
-| DEBT-1680 | Prefer `globalThis` over `window`.                             | components/status/offline-indicator.tsx                                      | 26        | code-quality  | E0     |
-| DEBT-1681 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                         | 74        | code-quality  | E0     |
-| DEBT-1682 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                         | 76        | code-quality  | E0     |
-| DEBT-1683 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                         | 79        | code-quality  | E0     |
-| DEBT-1684 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                         | 82        | code-quality  | E0     |
-| DEBT-1685 | 'data.action \|\| ""' will use Object's default stringifica... | hooks/use-journal.ts                                                         | 108       | code-quality  | E0     |
-| DEBT-1686 | 'data.step4_gratitude \|\| ""' will use Object's default st... | hooks/use-journal.ts                                                         | 113       | code-quality  | E0     |
-| DEBT-1687 | Do not call `Array#push()` multiple times.                     | hooks/use-journal.ts                                                         | 114       | performance   | E0     |
-| DEBT-1688 | 'v \|\| ""' will use Object's default stringification forma... | hooks/use-journal.ts                                                         | 117       | code-quality  | E0     |
-| DEBT-1689 | 'data.title \|\| ""' will use Object's default stringificat... | hooks/use-journal.ts                                                         | 123       | code-quality  | E0     |
-| DEBT-1690 | Do not call `Array#push()` multiple times.                     | hooks/use-journal.ts                                                         | 124       | performance   | E0     |
-| DEBT-1691 | 'data.content \|\| ""' will use Object's default stringific... | hooks/use-journal.ts                                                         | 124       | code-quality  | E0     |
-| DEBT-1692 | 'data.note \|\| ""' will use Object's default stringificati... | hooks/use-journal.ts                                                         | 127       | code-quality  | E0     |
-| DEBT-1693 | 'data.resentments \|\| ""' will use Object's default string... | hooks/use-journal.ts                                                         | 130       | code-quality  | E0     |
-| DEBT-1694 | 'data.dishonesty \|\| ""' will use Object's default stringi... | hooks/use-journal.ts                                                         | 131       | code-quality  | E0     |
-| DEBT-1695 | 'data.apologies \|\| ""' will use Object's default stringif... | hooks/use-journal.ts                                                         | 132       | code-quality  | E0     |
-| DEBT-1696 | 'data.successes \|\| ""' will use Object's default stringif... | hooks/use-journal.ts                                                         | 133       | code-quality  | E0     |
-| DEBT-1697 | Prefer `Number.parseInt` over `parseInt`.                      | lib/db/meetings.ts                                                           | 50        | code-quality  | E0     |
-| DEBT-1698 | Prefer `globalThis.window` over `window`.                      | lib/firebase.ts                                                              | 94        | code-quality  | E0     |
-| DEBT-1699 | Prefer `globalThis.window` over `window`.                      | lib/firebase.ts                                                              | 142       | code-quality  | E0     |
-| DEBT-1700 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/ai-review.js                                                         | 61        | code-quality  | E0     |
-| DEBT-1701 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/ai-review.js                                                         | 64        | code-quality  | E0     |
-| DEBT-1702 | `String.raw` should be used to avoid escaping `\`.             | scripts/archive-doc.js                                                       | 383       | code-quality  | E0     |
-| DEBT-1703 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/archive-doc.js                                                       | 417       | code-quality  | E0     |
-| DEBT-1704 | `String.raw` should be used to avoid escaping `\`.             | scripts/archive-doc.js                                                       | 417       | code-quality  | E0     |
-| DEBT-1705 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/assign-review-tier.js                                                | 33        | code-quality  | E0     |
-| DEBT-1706 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/assign-review-tier.js                                                | 41        | code-quality  | E0     |
-| DEBT-1707 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-docs-light.js                                                  | 405       | code-quality  | E0     |
-| DEBT-1708 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-docs-light.js                                                  | 406       | code-quality  | E0     |
-| DEBT-1709 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-docs-light.js                                                  | 407       | code-quality  | E0     |
-| DEBT-1710 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-docs-light.js                                                  | 422       | code-quality  | E0     |
-| DEBT-1711 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/dedupe-quotes.ts                                                     | 218       | code-quality  | E0     |
-| DEBT-1712 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/enrich-addresses.ts                                                  | 92        | code-quality  | E0     |
-| DEBT-1713 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/enrich-addresses.ts                                                  | 93        | code-quality  | E0     |
-| DEBT-1714 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 166       | code-quality  | E0     |
-| DEBT-1715 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 167       | code-quality  | E0     |
-| DEBT-1716 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                      | 168       | code-quality  | E0     |
-| DEBT-1717 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 168       | code-quality  | E0     |
-| DEBT-1718 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 169       | code-quality  | E0     |
-| DEBT-1719 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                      | 169       | code-quality  | E0     |
-| DEBT-1720 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 170       | code-quality  | E0     |
-| DEBT-1721 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                      | 170       | code-quality  | E0     |
-| DEBT-1722 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 171       | code-quality  | E0     |
-| DEBT-1723 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                      | 171       | code-quality  | E0     |
-| DEBT-1724 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 172       | code-quality  | E0     |
-| DEBT-1725 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 173       | code-quality  | E0     |
-| DEBT-1726 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 174       | code-quality  | E0     |
-| DEBT-1727 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 175       | code-quality  | E0     |
-| DEBT-1728 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 176       | code-quality  | E0     |
-| DEBT-1729 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 232       | code-quality  | E0     |
-| DEBT-1730 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 321       | code-quality  | E0     |
-| DEBT-1731 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 458       | code-quality  | E0     |
-| DEBT-1732 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 515       | code-quality  | E0     |
-| DEBT-1734 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 669       | code-quality  | E0     |
-| DEBT-1735 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                      | 669       | code-quality  | E0     |
-| DEBT-1736 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                      | 671       | code-quality  | E0     |
-| DEBT-1737 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                      | 671       | code-quality  | E0     |
-| DEBT-1738 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 719       | performance   | E0     |
-| DEBT-1739 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 720       | performance   | E0     |
-| DEBT-1740 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 721       | performance   | E0     |
-| DEBT-1741 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 722       | performance   | E0     |
-| DEBT-1742 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 731       | performance   | E0     |
-| DEBT-1743 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 757       | performance   | E0     |
-| DEBT-1744 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 832       | performance   | E0     |
-| DEBT-1745 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/migrate-library-content.ts                                           | 130       | code-quality  | E0     |
-| DEBT-1746 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/migrate-library-content.ts                                           | 162       | code-quality  | E0     |
-| DEBT-1747 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/migrate-library-content.ts                                           | 163       | code-quality  | E0     |
-| DEBT-1748 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 384       | code-quality  | E0     |
-| DEBT-1749 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 478       | code-quality  | E0     |
-| DEBT-1750 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 479       | code-quality  | E0     |
-| DEBT-1751 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 482       | code-quality  | E0     |
-| DEBT-1752 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 485       | code-quality  | E0     |
-| DEBT-1753 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 488       | code-quality  | E0     |
-| DEBT-1754 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 489       | code-quality  | E0     |
-| DEBT-1755 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 490       | code-quality  | E0     |
-| DEBT-1756 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 492       | code-quality  | E0     |
-| DEBT-1757 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 681       | code-quality  | E0     |
-| DEBT-1758 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 682       | code-quality  | E0     |
-| DEBT-1759 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 683       | code-quality  | E0     |
-| DEBT-1760 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 685       | code-quality  | E0     |
-| DEBT-1761 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 66        | code-quality  | E0     |
-| DEBT-1762 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 67        | code-quality  | E0     |
-| DEBT-1763 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 72        | code-quality  | E0     |
-| DEBT-1764 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                        | 92        | code-quality  | E0     |
-| DEBT-1765 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                        | 94        | code-quality  | E0     |
-| DEBT-1766 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                        | 211       | code-quality  | E0     |
-| DEBT-1767 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 259       | code-quality  | E0     |
-| DEBT-1768 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 260       | code-quality  | E0     |
-| DEBT-1769 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 261       | code-quality  | E0     |
-| DEBT-1770 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 262       | code-quality  | E0     |
-| DEBT-1771 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 263       | code-quality  | E0     |
-| DEBT-1772 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 264       | code-quality  | E0     |
-| DEBT-1773 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 265       | code-quality  | E0     |
-| DEBT-1774 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 285       | code-quality  | E0     |
-| DEBT-1775 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                        | 285       | code-quality  | E0     |
-| DEBT-1776 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/surface-lessons-learned.js                                           | 400       | code-quality  | E0     |
-| DEBT-1777 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/surface-lessons-learned.js                                           | 401       | code-quality  | E0     |
-| DEBT-1778 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/surface-lessons-learned.js                                           | 402       | code-quality  | E0     |
-| DEBT-1779 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/surface-lessons-learned.js                                           | 404       | code-quality  | E0     |
-| DEBT-1783 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/update-readme-status.js                                              | 411       | code-quality  | E0     |
-| DEBT-1784 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/update-readme-status.js                                              | 537       | code-quality  | E0     |
-| DEBT-1785 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/normalize-canon-ids.js                                               | 57        | code-quality  | E0     |
-| DEBT-1786 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/normalize-canon-ids.js                                               | 58        | code-quality  | E0     |
-| DEBT-1787 | `String.raw` should be used to avoid escaping `\`.             | scripts/normalize-canon-ids.js                                               | 58        | code-quality  | E0     |
-| DEBT-1788 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/normalize-canon-ids.js                                               | 68        | code-quality  | E0     |
-| DEBT-1792 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 718       | performance   | E0     |
-| DEBT-1793 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 745       | performance   | E0     |
-| DEBT-1794 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 746       | performance   | E0     |
-| DEBT-1795 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 747       | performance   | E0     |
-| DEBT-1796 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 748       | performance   | E0     |
-| DEBT-1797 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 765       | performance   | E0     |
-| DEBT-1798 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 766       | performance   | E0     |
-| DEBT-1799 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                      | 808       | performance   | E0     |
-| DEBT-1800 | Handle this exception or don't catch it at all.                | scripts/check-document-sync.js                                               | 241       | code-quality  | E0     |
-| DEBT-1804 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/ai-review.js                                                         | 62        | code-quality  | E0     |
-| DEBT-1805 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/assign-review-tier.js                                                | 30        | code-quality  | E0     |
-| DEBT-1807 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                          | 341       | code-quality  | E0     |
-| DEBT-1808 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                          | 352       | code-quality  | E0     |
-| DEBT-1809 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                          | 361       | code-quality  | E0     |
-| DEBT-1810 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                          | 383       | code-quality  | E0     |
-| DEBT-1811 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                              | 106       | code-quality  | E0     |
-| DEBT-1812 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                        | 88        | code-quality  | E0     |
-| DEBT-1813 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 57        | code-quality  | E0     |
-| DEBT-1814 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                        | 65        | code-quality  | E0     |
-| DEBT-1817 | `String.raw` should be used to avoid escaping `\`.             | scripts/archive-doc.js                                                       | 347       | code-quality  | E0     |
-| DEBT-1818 | Unexpected negated condition.                                  | scripts/validate-phase-completion.js                                         | 105       | code-quality  | E0     |
-| DEBT-1819 | Unexpected negated condition.                                  | scripts/phase-complete-check.js                                              | 625       | code-quality  | E0     |
-| DEBT-1821 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/archive-doc.js                                                       | 382       | code-quality  | E0     |
-| DEBT-1832 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                         | 24        | code-quality  | E0     |
-| DEBT-1833 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                         | 42        | code-quality  | E0     |
-| DEBT-1834 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                         | 61        | code-quality  | E0     |
-| DEBT-1835 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                         | 80        | code-quality  | E0     |
-| DEBT-1836 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                         | 136       | code-quality  | E0     |
-| DEBT-1837 | Prefer `globalThis` over `window`.                             | lib/recaptcha.ts                                                             | 52        | code-quality  | E0     |
-| DEBT-1838 | Prefer `globalThis` over `window`.                             | lib/recaptcha.ts                                                             | 54        | code-quality  | E0     |
-| DEBT-1839 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/retry-failures.ts                                                    | 58        | code-quality  | E0     |
-| DEBT-1840 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/retry-failures.ts                                                    | 59        | code-quality  | E0     |
-| DEBT-1841 | Prefer `Number.parseFloat` over `parseFloat`.                  | scripts/retry-failures.ts                                                    | 136       | code-quality  | E0     |
-| DEBT-1842 | Prefer `Number.parseFloat` over `parseFloat`.                  | scripts/enrich-addresses.ts                                                  | 164       | code-quality  | E0     |
-| DEBT-1847 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/import-nashville-links.ts                                            | 206       | code-quality  | E0     |
-| DEBT-1851 | Prefer `String.fromCodePoint()` over `String.fromCharCode...   | components/growth/Step1WorksheetCard.tsx                                     | 413       | code-quality  | E0     |
-| DEBT-1853 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                         | 78        | code-quality  | E0     |
-| DEBT-1854 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                         | 80        | code-quality  | E0     |
-| DEBT-1855 | Prefer `globalThis` over `window`.                             | components/status/offline-indicator.tsx                                      | 23        | code-quality  | E0     |
-| DEBT-1856 | Prefer `globalThis` over `window`.                             | components/status/offline-indicator.tsx                                      | 27        | code-quality  | E0     |
-| DEBT-1857 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/admin.ts                                                       | 692       | code-quality  | E0     |
-| DEBT-1858 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/admin.ts                                                       | 696       | code-quality  | E0     |
-| DEBT-1860 | Prefer `globalThis` over `window`.                             | hooks/use-speech-recognition.ts                                              | 35        | code-quality  | E0     |
-| DEBT-1861 | Prefer `globalThis.window` over `window`.                      | components/celebrations/confetti-burst.tsx                                   | 33        | code-quality  | E0     |
-| DEBT-1862 | Prefer `globalThis.window` over `window`.                      | components/celebrations/firework-burst.tsx                                   | 55        | code-quality  | E0     |
-| DEBT-1874 | 'data.mood' will use Object's default stringification for...   | hooks/use-journal.ts                                                         | 145       | code-quality  | E0     |
-| DEBT-1877 | Visible, non-interactive elements with click handlers mus...   | components/journal/entry-detail-dialog.tsx                                   | 271       | code-quality  | E0     |
-| DEBT-1884 | Prefer `globalThis` over `window`.                             | components/pwa/install-prompt.tsx                                            | 45        | code-quality  | E0     |
-| DEBT-1885 | Prefer `globalThis.window` over `window`.                      | hooks/use-speech-recognition.ts                                              | 21        | code-quality  | E0     |
-| DEBT-1886 | Prefer `globalThis.window` over `window`.                      | hooks/use-speech-recognition.ts                                              | 34        | code-quality  | E0     |
-| DEBT-1888 | 'lucide-react' imported multiple times.                        | components/growth/NightReviewCard.tsx                                        | 19        | code-quality  | E0     |
-| DEBT-1889 | 'lucide-react' imported multiple times.                        | components/growth/SpotCheckCard.tsx                                          | 20        | code-quality  | E0     |
-| DEBT-1890 | Use `export…from` to re-export `NotebookModuleId`.             | components/notebook/roadmap-modules.tsx                                      | 12        | code-quality  | E0     |
-| DEBT-1893 | Prefer `globalThis` over `window`.                             | components/pwa/install-prompt.tsx                                            | 19        | code-quality  | E0     |
-| DEBT-1894 | Prefer `globalThis` over `window`.                             | components/pwa/install-prompt.tsx                                            | 21        | code-quality  | E0     |
-| DEBT-1895 | Prefer `globalThis.window` over `window`.                      | components/ui/voice-text-area.tsx                                            | 19        | code-quality  | E0     |
-| DEBT-1896 | '@/lib/db/meetings' imported multiple times.                   | components/admin/meetings-tab.tsx                                            | 9         | code-quality  | E0     |
-| DEBT-1902 | Use `export…from` to re-export `useProfile`.                   | components/providers/auth-provider.tsx                                       | 22        | code-quality  | E0     |
-| DEBT-1903 | Use `export…from` to re-export `useDailyLog`.                  | components/providers/auth-provider.tsx                                       | 22        | code-quality  | E0     |
-| DEBT-1904 | Unexpected negated condition.                                  | components/notebook/pages/resources-page.tsx                                 | 236       | code-quality  | E0     |
-| DEBT-1905 | Unexpected negated condition.                                  | components/notebook/pages/resources-page.tsx                                 | 417       | code-quality  | E0     |
-| DEBT-1906 | 'unknown' overrides all other types in this union type.        | lib/types/daily-log.ts                                                       | 36        | code-quality  | E0     |
-| DEBT-1907 | Prefer `Number.parseInt` over `parseInt`.                      | lib/db/meetings.ts                                                           | 26        | code-quality  | E0     |
-| DEBT-1908 | Prefer `Number.parseInt` over `parseInt`.                      | lib/db/meetings.ts                                                           | 27        | code-quality  | E0     |
-| DEBT-1909 | 'cleanDays' PropType is defined but prop is never used         | components/notebook/book-cover.tsx                                           | 27        | code-quality  | E0     |
-| DEBT-1910 | Unexpected negated condition.                                  | components/notebook/book-cover.tsx                                           | 277       | code-quality  | E0     |
-| DEBT-1911 | 'next' imported multiple times.                                | app/layout.tsx                                                               | 2         | code-quality  | E0     |
-| DEBT-1920 | API design inconsistency: Mixed return patterns                | lib/firestore-service.ts                                                     | 262       | code-quality  | E1     |
-| DEBT-1921 | Missing Content-Security-Policy header                         | firebase.json                                                                | 29        | security      | E1     |
-| DEBT-1922 | User profile document allows direct client writes without...   | firestore.rules                                                              | 26        | security      | E1     |
-| DEBT-1923 | Hardcoded reCAPTCHA site key in server-side code               | functions/src/recaptcha-verify.ts                                            | 66        | security      | E1     |
-| DEBT-1924 | God component: dashboard-tab.tsx with excessive state man...   | components/admin/dashboard-tab.tsx                                           | 952       | code-quality  | E1     |
-| DEBT-1925 | Any type usage in today-page.tsx snapshot handler              | components/notebook/pages/today-page.tsx                                     | 507       | code-quality  | E1     |
-| DEBT-1926 | Tight coupling between UI components and Firebase SDK          | hooks/use-journal.ts                                                         | 350       | code-quality  | E1     |
-| DEBT-1927 | Hardcoded bucket name in Cloud Functions                       | functions/src/jobs.ts                                                        | 602       | code-quality  | E1     |
-| DEBT-1928 | Inconsistent state management patterns across providers        | components/providers/auth-provider.tsx                                       | 38        | code-quality  | E1     |
-| DEBT-1929 | Anti-pattern: Firestore queries in components instead of ...   | hooks/use-journal.ts                                                         | 277       | code-quality  | E1     |
-| DEBT-1930 | Missing dependency in useEffect for logs refresh               | components/admin/logs-tab.tsx                                                | 418       | code-quality  | E1     |
-| DEBT-1931 | Missing loading state coordination across contexts             | hooks/use-journal.ts                                                         | 428       | code-quality  | E1     |
-| DEBT-1932 | Missing error boundary in inventory form                       | components/journal/entry-forms/inventory-form.tsx                            | 38        | code-quality  | E1     |
-| DEBT-1933 | Migration function does not verify source anonymous user ...   | functions/src/index.ts                                                       | 565       | security      | E1     |
-| DEBT-1934 | Missing abstraction for real-time subscriptions                | hooks/use-journal.ts                                                         | 284       | code-quality  | E1     |
-| DEBT-1935 | Firestore timestamp validation inconsistency                   | hooks/use-journal.ts                                                         | 178       | code-quality  | E1     |
-| DEBT-1936 | reCAPTCHA token made optional for data migration function      | functions/src/index.ts                                                       | 516       | security      | E1     |
-| DEBT-1937 | Migration function skips reCAPTCHA when token is missing       | functions/src/index.ts                                                       | 516       | security      | E1     |
-| DEBT-1938 | Journal and inventory entry data field accepts arbitrary ...   | functions/src/schemas.ts                                                     | 32        | security      | E1     |
-| DEBT-1939 | Race condition in parallel file processing                     | functions/src/jobs.ts                                                        | 627       | code-quality  | E1     |
-| DEBT-1940 | CI workflow script injection via unsanitized file names        | .github/workflows/ci.yml                                                     | 64        | security      | E1     |
-| DEBT-1941 | Firestore security_logs collection missing from security ...   | firestore.rules                                                              | 1         | security      | E1     |
-| DEBT-1960 | Hardcoded reCAPTCHA site key fallback in Cloud Functions       | functions/src/recaptcha-verify.ts                                            | 0         | code-quality  | E0     |
-| DEBT-1963 | Functions code imports type from undeclared direct depend...   | functions/src/jobs.ts                                                        | 0         | code-quality  | E0     |
-| DEBT-1969 | External URL dead: refugerecovery.org/meetings/ returns 404    | README.md                                                                    | 1         | documentation | E0     |
-| DEBT-1975 | Potential empty catch blocks in scripts                        | scripts/seed-real-data.ts                                                    | 0         | code-quality  | E0     |
-| DEBT-1979 | Duplicate Quote Widget Components (3 Variants)                 | components/widgets/daily-quote-card.tsx                                      | 0         | code-quality  | E1     |
-| DEBT-1980 | Inconsistent lib/db/ Write Patterns                            | lib/db/sober-living.ts                                                       | 0         | code-quality  | E1     |
-| DEBT-1981 | Duplicate generateSearchableText implementations               | hooks/use-journal.ts                                                         | 0         | code-quality  | E1     |
-| DEBT-1982 | No environment validation/doctor script                        | scripts/                                                                     | 1         | code-quality  | E1     |
-| DEBT-1983 | Dual hooks directories: hooks/ and lib/hooks/                  | hooks/use-journal.ts                                                         | 0         | code-quality  | E1     |
-| DEBT-1987 | Logger is present but lacks correlation/request IDs; trac...   | lib/logger.ts                                                                | 99        | code-quality  | E2     |
-| DEBT-1989 | Potential Firestore-rules alignment risk for direct weekl...   | components/notebook/pages/today-page.tsx                                     | 0         | code-quality  | E1     |
-| DEBT-1991 | Oversized scripts: aggregate-audit-findings.js (63KB), ch...   | scripts/aggregate-audit-findings.js                                          | 1         | process       | E2     |
-| DEBT-1992 | 8:1 console.log to logger ratio — production observabilit...   | app/                                                                         | 1         | code-quality  | E2     |
+| ID        | Title                                                          | File                                                                                  | Line      | Category      | Effort |
+| --------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------- | --------- | ------------- | ------ |
+| DEBT-0140 | Prefer `Number.parseInt` over `parseInt`.                      | app/meetings/all/page.tsx                                                             | 45        | code-quality  | E0     |
+| DEBT-0141 | Prefer `Number.parseInt` over `parseInt`.                      | components/admin/links-tab.tsx                                                        | 250       | code-quality  | E0     |
+| DEBT-0142 | Prefer `Number.parseFloat` over `parseFloat`.                  | components/admin/meetings-tab.tsx                                                     | 150       | code-quality  | E0     |
+| DEBT-0143 | Prefer `Number.parseInt` over `parseInt`.                      | components/admin/meetings-tab.tsx                                                     | 234       | code-quality  | E0     |
+| DEBT-0144 | Prefer `Number.parseInt` over `parseInt`.                      | components/admin/prayers-tab.tsx                                                      | 236       | code-quality  | E0     |
+| DEBT-0145 | Avoid non-native interactive elements. If using native HT...   | components/admin/users-tab.tsx                                                        | 563       | code-quality  | E0     |
+| DEBT-0146 | Ambiguous spacing after previous element span                  | components/growth/GratitudeCard.tsx                                                   | 128       | code-quality  | E0     |
+| DEBT-0147 | A form label must be associated with a control.                | components/growth/NightReviewCard.tsx                                                 | 406       | code-quality  | E0     |
+| DEBT-0148 | Ambiguous spacing after previous element span                  | components/growth/SpotCheckCard.tsx                                                   | 167       | code-quality  | E0     |
+| DEBT-0149 | Avoid non-native interactive elements. If using native HT...   | components/journal/entry-detail-dialog.tsx                                            | 18        | code-quality  | E0     |
+| DEBT-0150 | Avoid non-native interactive elements. If using native HT...   | components/journal/entry-feed.tsx                                                     | 152       | code-quality  | E0     |
+| DEBT-0151 | A form label must be associated with a control.                | components/journal/entry-wizard.tsx                                                   | 152       | code-quality  | E0     |
+| DEBT-0152 | Prefer `Number.parseInt` over `parseInt`.                      | components/notebook/pages/resources-page.tsx                                          | 215       | code-quality  | E0     |
+| DEBT-0153 | Prefer `Number.parseInt` over `parseInt`.                      | lib/db/meetings.ts                                                                    | 54        | code-quality  | E0     |
+| DEBT-0154 | Prefer `Number.isNaN` over `isNaN`.                            | lib/db/meetings.ts                                                                    | 58        | code-quality  | E0     |
+| DEBT-0155 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                                 | 46        | code-quality  | E0     |
+| DEBT-0156 | Group parts of the regex together to make the intended op...   | scripts/seed-meetings.ts                                                              | 79        | code-quality  | E0     |
+| DEBT-0157 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/seed-real-data.ts                                                             | 129       | code-quality  | E0     |
+| DEBT-0158 | Do not use an object literal as default for parameter `re...   | scripts/generate-documentation-index.js                                               | 141       | code-quality  | E0     |
+| DEBT-0159 | Remove this assignment of "i".                                 | scripts/add-false-positive.js                                                         | 252       | code-quality  | E0     |
+| DEBT-0160 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-document-sync.js                                                        | 289       | code-quality  | E0     |
+| DEBT-0161 | Remove this assignment of "i".                                 | scripts/assign-review-tier.js                                                         | 458       | code-quality  | E0     |
+| DEBT-0162 | Prefer `Number.isNaN` over `isNaN`.                            | scripts/check-review-needed.js                                                        | 196       | code-quality  | E0     |
+| DEBT-0163 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-docs-light.js                                                           | 97        | code-quality  | E0     |
+| DEBT-0164 | Prefer `Number.isNaN` over `isNaN`.                            | scripts/check-docs-light.js                                                           | 206       | code-quality  | E0     |
+| DEBT-0165 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/update-readme-status.js                                                       | 219       | code-quality  | E0     |
+| DEBT-0166 | Prefer `Number.parseFloat` over `parseFloat`.                  | scripts/retry-failures.ts                                                             | 135       | code-quality  | E0     |
+| DEBT-0167 | Prefer `Number.parseFloat` over `parseFloat`.                  | scripts/enrich-addresses.ts                                                           | 163       | code-quality  | E0     |
+| DEBT-0168 | A form label must be associated with a control.                | components/admin/meetings-tab.tsx                                                     | 89        | code-quality  | E0     |
+| DEBT-0169 | Remove this conditional structure or edit its code blocks...   | lib/utils.ts                                                                          | 28        | code-quality  | E0     |
+| DEBT-0170 | Ambiguous spacing after previous element span                  | components/journal/entry-card.tsx                                                     | 152       | code-quality  | E0     |
+| DEBT-0171 | A form label must be associated with a control.                | components/journal/entry-forms/daily-log-form.tsx                                     | 75        | code-quality  | E0     |
+| DEBT-0172 | A form label must be associated with a control.                | components/journal/entry-forms/gratitude-form.tsx                                     | 77        | code-quality  | E0     |
+| DEBT-0173 | A form label must be associated with a control.                | components/journal/entry-forms/inventory-form.tsx                                     | 71        | code-quality  | E0     |
+| DEBT-0174 | A form label must be associated with a control.                | components/journal/entry-forms/mood-form.tsx                                          | 71        | code-quality  | E0     |
+| DEBT-0175 | Add an initial value to this "reduce()" call.                  | components/widgets/compact-meeting-countdown.tsx                                      | 153       | code-quality  | E0     |
+| DEBT-0176 | Avoid non-native interactive elements. If using native HT...   | components/widgets/compact-meeting-countdown.tsx                                      | 273       | code-quality  | E0     |
+| DEBT-0177 | A form label must be associated with a control.                | components/growth/GratitudeCard.tsx                                                   | 136       | code-quality  | E0     |
+| DEBT-0178 | A form label must be associated with a control.                | components/ui/label.tsx                                                               | 6         | code-quality  | E0     |
+| DEBT-0179 | Prefer `Number.parseFloat` over `parseFloat`.                  | scripts/seed-real-data.ts                                                             | 92        | code-quality  | E0     |
+| DEBT-0180 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/seed-meetings.ts                                                              | 42        | code-quality  | E0     |
+| DEBT-0181 | Prefer `Number.isNaN` over `isNaN`.                            | tests/utils/date-utils.test.ts                                                        | 74        | code-quality  | E0     |
+| DEBT-0182 | Prefer `Number.NaN` over `NaN`.                                | tests/utils/firebase-types.test.ts                                                    | 121       | code-quality  | E0     |
+| DEBT-0183 | Prefer `Number.isNaN` over `isNaN`.                            | tests/utils/firebase-types.test.ts                                                    | 140       | code-quality  | E0     |
+| DEBT-0184 | Prefer `Number.isNaN` over `isNaN`.                            | lib/types/firebase-types.ts                                                           | 56        | code-quality  | E0     |
+| DEBT-0185 | Prefer `Number.isNaN` over `isNaN`.                            | components/onboarding/onboarding-wizard.tsx                                           | 135       | code-quality  | E0     |
+| DEBT-0186 | Unexpected unknown at-rule "@custom-variant"                   | app/globals.css                                                                       | 4         | code-quality  | E0     |
+| DEBT-0187 | Unexpected unknown at-rule "@custom-variant"                   | styles/globals.css                                                                    | 4         | code-quality  | E0     |
+| DEBT-0188 | Prefer `node:child_process` over `child_process`.              | tests/scripts/check-docs-light.test.ts                                                | 3         | code-quality  | E0     |
+| DEBT-0189 | Prefer `node:path` over `path`.                                | tests/scripts/check-docs-light.test.ts                                                | 4         | code-quality  | E0     |
+| DEBT-0190 | Prefer `node:fs` over `fs`.                                    | tests/scripts/check-docs-light.test.ts                                                | 5         | code-quality  | E0     |
+| DEBT-0191 | Prefer `node:child_process` over `child_process`.              | tests/scripts/update-readme-status.test.ts                                            | 3         | code-quality  | E0     |
+| DEBT-0192 | Prefer `node:path` over `path`.                                | tests/scripts/update-readme-status.test.ts                                            | 4         | code-quality  | E0     |
+| DEBT-0193 | Prefer `node:fs` over `fs`.                                    | tests/scripts/update-readme-status.test.ts                                            | 5         | code-quality  | E0     |
+| DEBT-0194 | Simplify this regular expression to reduce its complexity...   | scripts/check-pattern-compliance.js                                                   | 114       | code-quality  | E0     |
+| DEBT-0195 | Remove duplicates in this character class.                     | scripts/check-pattern-compliance.js                                                   | 233       | code-quality  | E0     |
+| DEBT-0196 | `extensions` should be a `Set`, and use `extensions.has()...   | scripts/check-pattern-compliance.js                                                   | 463       | code-quality  | E0     |
+| DEBT-0197 | `ignoreDirs` should be a `Set`, and use `ignoreDirs.has()...   | scripts/check-pattern-compliance.js                                                   | 464       | code-quality  | E0     |
+| DEBT-0198 | This branch's code block is the same as the block for the...   | scripts/check-pattern-compliance.js                                                   | 499       | code-quality  | E0     |
+| DEBT-0199 | Extract this nested ternary operation into an independent...   | components/admin/meetings-tab.tsx                                                     | 263       | code-quality  | E0     |
+| DEBT-0200 | Extract this nested ternary operation into an independent...   | components/admin/sober-living-tab.tsx                                                 | 148       | code-quality  | E0     |
+| DEBT-0201 | Extract this nested ternary operation into an independent...   | components/auth/sign-in-modal.tsx                                                     | 61        | code-quality  | E0     |
+| DEBT-0202 | Extract this nested ternary operation into an independent...   | components/celebrations/celebration-overlay.tsx                                       | 64        | code-quality  | E0     |
+| DEBT-0203 | Extract this nested ternary operation into an independent...   | components/celebrations/celebration-provider.tsx                                      | 35        | code-quality  | E0     |
+| DEBT-0204 | Prefer using an optional chain expression instead, as it'...   | components/growth/NightReviewCard.tsx                                                 | 527       | code-quality  | E0     |
+| DEBT-0205 | Extract this nested ternary operation into an independent...   | components/growth/SpotCheckCard.tsx                                                   | 52        | code-quality  | E0     |
+| DEBT-0206 | Use <output> instead of the "status" role to ensure acces...   | components/growth/Step1WorksheetCard.tsx                                              | 742       | code-quality  | E0     |
+| DEBT-0207 | Extract this nested ternary operation into an independent...   | components/journal/entry-card.tsx                                                     | 82        | code-quality  | E0     |
+| DEBT-0208 | Extract this nested ternary operation into an independent...   | components/journal/entry-detail-dialog.tsx                                            | 107       | code-quality  | E0     |
+| DEBT-0209 | Do not use Array index in keys                                 | components/journal/entry-detail-dialog.tsx                                            | 346       | code-quality  | E0     |
+| DEBT-0210 | Use <details>, <fieldset>, <optgroup>, or <address> inste...   | components/notebook/features/enhanced-mood-selector.tsx                               | 82        | code-quality  | E0     |
+| DEBT-0211 | Extract this nested ternary operation into an independent...   | components/notebook/pages/history-page.tsx                                            | 59        | code-quality  | E0     |
+| DEBT-0212 | Extract this nested ternary operation into an independent...   | components/notebook/pages/resources-page.tsx                                          | 607       | code-quality  | E0     |
+| DEBT-0213 | Extract this nested ternary operation into an independent...   | components/onboarding/onboarding-wizard.tsx                                           | 195       | code-quality  | E0     |
+| DEBT-0214 | Extract this nested ternary operation into an independent...   | functions/src/admin.ts                                                                | 1148      | code-quality  | E0     |
+| DEBT-0215 | Refactor this code to not use nested template literals.        | lib/security/firestore-validation.ts                                                  | 99        | code-quality  | E0     |
+| DEBT-0216 | Prefer top-level await over using a promise chain.             | scripts/add-false-positive.js                                                         | 370       | code-quality  | E0     |
+| DEBT-0217 | Refactor this code to not use nested template literals.        | scripts/ai-review.js                                                                  | 394       | code-quality  | E0     |
+| DEBT-0218 | Prefer `node:fs` over `fs`.                                    | scripts/archive-doc.js                                                                | 36        | code-quality  | E0     |
+| DEBT-0219 | Prefer `node:path` over `path`.                                | scripts/archive-doc.js                                                                | 37        | code-quality  | E0     |
+| DEBT-0220 | Prefer `node:url` over `url`.                                  | scripts/archive-doc.js                                                                | 38        | code-quality  | E0     |
+| DEBT-0221 | `knownFlags` should be a `Set`, and use `knownFlags.has()...   | scripts/assign-review-tier.js                                                         | 444       | code-quality  | E0     |
+| DEBT-0222 | Extract this nested ternary operation into an independent...   | scripts/check-document-sync.js                                                        | 408       | code-quality  | E0     |
+| DEBT-0223 | Simplify this regular expression to reduce its complexity...   | scripts/check-review-needed.js                                                        | 68        | code-quality  | E1     |
+| DEBT-0224 | Refactor this code to not use nested template literals.        | scripts/check-review-needed.js                                                        | 273       | code-quality  | E0     |
+| DEBT-0225 | Extract this nested ternary operation into an independent...   | scripts/check-review-needed.js                                                        | 797       | code-quality  | E0     |
+| DEBT-0226 | Prefer top-level await over using a promise chain.             | scripts/check-review-needed.js                                                        | 977       | code-quality  | E0     |
+| DEBT-0227 | Prefer `node:fs` over `fs`.                                    | scripts/enrich-addresses.ts                                                           | 3         | code-quality  | E0     |
+| DEBT-0228 | Prefer `node:path` over `path`.                                | scripts/enrich-addresses.ts                                                           | 4         | code-quality  | E0     |
+| DEBT-0229 | Extract this nested ternary operation into an independent...   | scripts/generate-documentation-index.js                                               | 615       | code-quality  | E0     |
+| DEBT-0230 | Prefer top-level await over using a promise chain.             | scripts/mcp/sonarcloud-server.js                                                      | 486       | code-quality  | E0     |
+| DEBT-0231 | Prefer `.find(…)` over `.filter(…)`.                           | scripts/normalize-canon-ids.js                                                        | 189       | code-quality  | E0     |
+| DEBT-0232 | Prefer top-level await over using a promise chain.             | scripts/phase-complete-check.js                                                       | 575       | code-quality  | E0     |
+| DEBT-0233 | Prefer `node:child_process` over `child_process`.              | scripts/retry-failures.ts                                                             | 3         | code-quality  | E0     |
+| DEBT-0234 | Prefer `node:fs` over `fs`.                                    | scripts/retry-failures.ts                                                             | 4         | code-quality  | E0     |
+| DEBT-0235 | Prefer `node:path` over `path`.                                | scripts/retry-failures.ts                                                             | 5         | code-quality  | E0     |
+| DEBT-0236 | Prefer top-level await over using a promise chain.             | scripts/seed-meetings.ts                                                              | 133       | code-quality  | E0     |
+| DEBT-0237 | Prefer `node:fs` over `fs`.                                    | scripts/seed-real-data.ts                                                             | 1         | code-quality  | E0     |
+| DEBT-0238 | Prefer `node:readline` over `readline`.                        | scripts/seed-real-data.ts                                                             | 2         | code-quality  | E0     |
+| DEBT-0239 | Prefer top-level await over an async function `setAdminCl...   | scripts/set-admin-claim.ts                                                            | 109       | code-quality  | E0     |
+| DEBT-0240 | Refactor this code to not use nested template literals.        | scripts/suggest-pattern-automation.js                                                 | 376       | code-quality  | E0     |
+| DEBT-0241 | Replace this alternation with a character class.               | scripts/surface-lessons-learned.js                                                    | 170       | code-quality  | E0     |
+| DEBT-0242 | Prefer top-level await over using a promise chain.             | scripts/surface-lessons-learned.js                                                    | 376       | code-quality  | E0     |
+| DEBT-0243 | Prefer `node:fs` over `fs`.                                    | scripts/sync-geocache.ts                                                              | 3         | code-quality  | E0     |
+| DEBT-0244 | Prefer `node:path` over `path`.                                | scripts/sync-geocache.ts                                                              | 4         | code-quality  | E0     |
+| DEBT-0245 | Extract this nested ternary operation into an independent...   | scripts/update-readme-status.js                                                       | 356       | code-quality  | E0     |
+| DEBT-0246 | Prefer top-level await over using a promise chain.             | scripts/validate-audit.js                                                             | 634       | code-quality  | E0     |
+| DEBT-0247 | Add an explicit return statement at the end of the function.   | .claude/hooks/session-start.sh                                                        | 58        | code-quality  | E0     |
+| DEBT-0248 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/generate-documentation-index.js                                               | 75        | code-quality  | E0     |
+| DEBT-0249 | Prefer `node:path` over `path`.                                | scripts/check-document-sync.js                                                        | 20        | code-quality  | E0     |
+| DEBT-0250 | Prefer `node:fs` over `fs`.                                    | scripts/check-document-sync.js                                                        | 19        | code-quality  | E0     |
+| DEBT-0251 | Complete the task associated to this "TODO" comment.           | scripts/check-document-sync.js                                                        | 139       | code-quality  | E0     |
+| DEBT-0252 | Prefer `node:url` over `url`.                                  | scripts/check-document-sync.js                                                        | 21        | code-quality  | E0     |
+| DEBT-0253 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/check-document-sync.js                                                        | 28        | code-quality  | E0     |
+| DEBT-0254 | Complete the task associated to this "TODO" comment.           | .github/workflows/ci.yml                                                              | 86        | code-quality  | E0     |
+| DEBT-0255 | Prefer `node:fs` over `fs`.                                    | scripts/assign-review-tier.js                                                         | 20        | code-quality  | E0     |
+| DEBT-0256 | Prefer `node:path` over `path`.                                | scripts/assign-review-tier.js                                                         | 21        | code-quality  | E0     |
+| DEBT-0257 | Prefer `node:url` over `url`.                                  | scripts/assign-review-tier.js                                                         | 22        | code-quality  | E0     |
+| DEBT-0258 | Prefer `node:url` over `url`.                                  | scripts/surface-lessons-learned.js                                                    | 21        | code-quality  | E0     |
+| DEBT-0259 | Prefer `node:fs` over `fs`.                                    | scripts/ai-review.js                                                                  | 15        | code-quality  | E0     |
+| DEBT-0260 | Prefer `node:path` over `path`.                                | scripts/ai-review.js                                                                  | 16        | code-quality  | E0     |
+| DEBT-0261 | Prefer `node:child_process` over `child_process`.              | scripts/ai-review.js                                                                  | 17        | code-quality  | E0     |
+| DEBT-0262 | Prefer `node:url` over `url`.                                  | scripts/phase-complete-check.js                                                       | 22        | code-quality  | E0     |
+| DEBT-0263 | Prefer `node:child_process` over `child_process`.              | tests/scripts/phase-complete-check.test.ts                                            | 3         | code-quality  | E0     |
+| DEBT-0264 | Prefer `node:path` over `path`.                                | tests/scripts/phase-complete-check.test.ts                                            | 4         | code-quality  | E0     |
+| DEBT-0265 | Prefer `node:fs` over `fs`.                                    | tests/scripts/phase-complete-check.test.ts                                            | 5         | code-quality  | E0     |
+| DEBT-0266 | Prefer `node:child_process` over `child_process`.              | tests/scripts/surface-lessons-learned.test.ts                                         | 3         | code-quality  | E0     |
+| DEBT-0267 | Prefer `node:path` over `path`.                                | tests/scripts/surface-lessons-learned.test.ts                                         | 4         | code-quality  | E0     |
+| DEBT-0268 | Prefer `node:fs` over `fs`.                                    | tests/scripts/surface-lessons-learned.test.ts                                         | 5         | code-quality  | E0     |
+| DEBT-0269 | Prefer `node:fs` over `fs`.                                    | scripts/phase-complete-check.js                                                       | 20        | code-quality  | E0     |
+| DEBT-0270 | Prefer `node:path` over `path`.                                | scripts/phase-complete-check.js                                                       | 21        | code-quality  | E0     |
+| DEBT-0271 | Prefer `node:fs` over `fs`.                                    | scripts/surface-lessons-learned.js                                                    | 18        | code-quality  | E0     |
+| DEBT-0272 | Prefer `node:path` over `path`.                                | scripts/surface-lessons-learned.js                                                    | 19        | code-quality  | E0     |
+| DEBT-0273 | Prefer `node:child_process` over `child_process`.              | scripts/surface-lessons-learned.js                                                    | 20        | code-quality  | E0     |
+| DEBT-0274 | Add an explicit return statement at the end of the function.   | .claude/hooks/coderabbit-review.sh                                                    | 29        | code-quality  | E0     |
+| DEBT-0275 | Assign this positional parameter to a local variable.          | .claude/hooks/coderabbit-review.sh                                                    | 33        | code-quality  | E0     |
+| DEBT-0276 | Add an explicit return statement at the end of the function.   | .claude/hooks/check-mcp-servers.sh                                                    | 25        | code-quality  | E0     |
+| DEBT-0277 | Add an explicit return statement at the end of the function.   | .claude/hooks/analyze-user-request.sh                                                 | 33        | code-quality  | E0     |
+| DEBT-0278 | Prefer `node:path` over `path`.                                | scripts/suggest-pattern-automation.js                                                 | 20        | code-quality  | E0     |
+| DEBT-0279 | Prefer `node:fs` over `fs`.                                    | scripts/suggest-pattern-automation.js                                                 | 19        | code-quality  | E0     |
+| DEBT-0280 | Prefer `node:url` over `url`.                                  | scripts/suggest-pattern-automation.js                                                 | 21        | code-quality  | E0     |
+| DEBT-0281 | Replace this character class by the character itself.          | scripts/suggest-pattern-automation.js                                                 | 49        | code-quality  | E0     |
+| DEBT-0282 | Redirect this error message to stderr (>&2).                   | .claude/hooks/session-start.sh                                                        | 295       | code-quality  | E0     |
+| DEBT-0283 | Prefer top-level await over using a promise chain.             | scripts/enrich-addresses.ts                                                           | 215       | code-quality  | E0     |
+| DEBT-0284 | Prefer top-level await over using a promise chain.             | scripts/migrate-to-journal.ts                                                         | 297       | code-quality  | E0     |
+| DEBT-0285 | Prefer top-level await over using a promise chain.             | scripts/seed-real-data.ts                                                             | 223       | code-quality  | E0     |
+| DEBT-0286 | Prefer top-level await over using a promise chain.             | scripts/sync-geocache.ts                                                              | 126       | code-quality  | E0     |
+| DEBT-0287 | Prefer top-level await over using a promise chain.             | scripts/retry-failures.ts                                                             | 169       | code-quality  | E0     |
+| DEBT-0288 | Prefer `node:fs` over `fs`.                                    | scripts/check-pattern-compliance.js                                                   | 19        | code-quality  | E0     |
+| DEBT-0289 | Remove duplicates in this character class.                     | scripts/lib/sanitize-error.js                                                         | 30        | code-quality  | E0     |
+| DEBT-0290 | Prefer `node:path` over `path`.                                | scripts/check-pattern-compliance.js                                                   | 20        | code-quality  | E0     |
+| DEBT-0291 | Prefer `node:url` over `url`.                                  | scripts/check-pattern-compliance.js                                                   | 21        | code-quality  | E0     |
+| DEBT-0292 | Prefer `node:child_process` over `child_process`.              | scripts/check-pattern-compliance.js                                                   | 22        | code-quality  | E0     |
+| DEBT-0293 | Prefer `node:fs` over `fs`.                                    | scripts/validate-phase-completion.js                                                  | 16        | code-quality  | E0     |
+| DEBT-0294 | Prefer `node:path` over `path`.                                | scripts/validate-phase-completion.js                                                  | 17        | code-quality  | E0     |
+| DEBT-0295 | Prefer `node:url` over `url`.                                  | scripts/validate-phase-completion.js                                                  | 18        | code-quality  | E0     |
+| DEBT-0296 | Prefer `node:child_process` over `child_process`.              | scripts/phase-complete-check.js                                                       | 18        | code-quality  | E0     |
+| DEBT-0297 | Prefer `node:readline` over `readline`.                        | scripts/phase-complete-check.js                                                       | 19        | code-quality  | E0     |
+| DEBT-0298 | Replace this character class by the character itself.          | scripts/check-docs-light.js                                                           | 162       | code-quality  | E0     |
+| DEBT-0299 | Prefer `node:fs` over `fs`.                                    | scripts/check-docs-light.js                                                           | 28        | code-quality  | E0     |
+| DEBT-0300 | Prefer `node:path` over `path`.                                | scripts/check-docs-light.js                                                           | 29        | code-quality  | E0     |
+| DEBT-0301 | Prefer `node:url` over `url`.                                  | scripts/check-docs-light.js                                                           | 30        | code-quality  | E0     |
+| DEBT-0302 | Prefer `node:fs` over `fs`.                                    | scripts/update-readme-status.js                                                       | 26        | code-quality  | E0     |
+| DEBT-0303 | Prefer `node:path` over `path`.                                | scripts/update-readme-status.js                                                       | 27        | code-quality  | E0     |
+| DEBT-0304 | Prefer `node:url` over `url`.                                  | scripts/update-readme-status.js                                                       | 28        | code-quality  | E0     |
+| DEBT-0305 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/update-readme-status.js                                                       | 40        | code-quality  | E0     |
+| DEBT-0306 | Redirect this error message to stderr (>&2).                   | .claude/skills/artifacts-builder/scripts/bundle-artifact.sh                           | 8         | code-quality  | E0     |
+| DEBT-0307 | Redirect this error message to stderr (>&2).                   | .claude/skills/artifacts-builder/scripts/init-artifact.sh                             | 12        | code-quality  | E0     |
+| DEBT-0308 | Remove this commented out code.                                | functions/src/index.ts                                                                | 508       | code-quality  | E0     |
+| DEBT-0309 | Remove this commented out code.                                | lib/firebase.ts                                                                       | 61        | code-quality  | E0     |
+| DEBT-0310 | Prefer `node:path` over `path`.                                | scripts/migrate-addresses.ts                                                          | 12        | code-quality  | E0     |
+| DEBT-0311 | Prefer `node:fs` over `fs`.                                    | scripts/migrate-addresses.ts                                                          | 13        | code-quality  | E0     |
+| DEBT-0312 | Prefer top-level await over using a promise chain.             | scripts/migrate-addresses.ts                                                          | 102       | code-quality  | E0     |
+| DEBT-0313 | Prefer `node:fs` over `fs`.                                    | scripts/migrate-meetings-dayindex.ts                                                  | 14        | code-quality  | E0     |
+| DEBT-0314 | Remove this useless assignment to variable "hasMore".          | scripts/migrate-to-journal.ts                                                         | 261       | code-quality  | E0     |
+| DEBT-0315 | Prefer `node:path` over `path`.                                | scripts/migrate-meetings-dayindex.ts                                                  | 13        | code-quality  | E0     |
+| DEBT-0316 | Prefer top-level await over using a promise chain.             | scripts/migrate-meetings-dayindex.ts                                                  | 160       | code-quality  | E0     |
+| DEBT-0317 | 'If' statement should not be the only statement in 'else'...   | components/growth/Step1WorksheetCard.tsx                                              | 638       | code-quality  | E0     |
+| DEBT-0318 | Do not use Array index in keys                                 | components/growth/Step1WorksheetCard.tsx                                              | 376       | code-quality  | E0     |
+| DEBT-0319 | Complete the task associated to this "TODO" comment.           | components/notebook/features/quick-actions-fab.tsx                                    | 12        | code-quality  | E0     |
+| DEBT-0320 | Extract this nested ternary operation into an independent...   | components/notebook/features/check-in-progress.tsx                                    | 35        | code-quality  | E0     |
+| DEBT-0321 | Extract this nested ternary operation into an independent...   | components/notebook/features/enhanced-mood-selector.tsx                               | 102       | code-quality  | E0     |
+| DEBT-0322 | Extract this nested ternary operation into an independent...   | components/admin/errors-tab.tsx                                                       | 108       | code-quality  | E0     |
+| DEBT-0323 | Extract this nested ternary operation into an independent...   | components/admin/dashboard-tab.tsx                                                    | 241       | code-quality  | E0     |
+| DEBT-0324 | This branch's code block is the same as the block for the...   | lib/utils.ts                                                                          | 32        | code-quality  | E0     |
+| DEBT-0325 | Prefer `node:fs` over `fs`.                                    | scripts/import-nashville-links.ts                                                     | 3         | code-quality  | E0     |
+| DEBT-0326 | Prefer `node:path` over `path`.                                | scripts/import-nashville-links.ts                                                     | 4         | code-quality  | E0     |
+| DEBT-0327 | Prefer `node:fs` over `fs`.                                    | scripts/migrate-library-content.ts                                                    | 3         | code-quality  | E0     |
+| DEBT-0328 | Prefer `node:path` over `path`.                                | scripts/migrate-library-content.ts                                                    | 4         | code-quality  | E0     |
+| DEBT-0329 | The object passed as the value prop to the Context provid...   | components/celebrations/celebration-provider.tsx                                      | 44        | code-quality  | E0     |
+| DEBT-0330 | Extract this nested ternary operation into an independent...   | components/celebrations/confetti-burst.tsx                                            | 66        | code-quality  | E0     |
+| DEBT-0331 | Extract this nested ternary operation into an independent...   | components/celebrations/milestone-modal.tsx                                           | 33        | code-quality  | E0     |
+| DEBT-0332 | Extract this nested ternary operation into an independent...   | components/notebook/book-cover.tsx                                                    | 252       | code-quality  | E0     |
+| DEBT-0333 | Prefer top-level await over using a promise chain.             | scripts/import-nashville-links.ts                                                     | 258       | code-quality  | E0     |
+| DEBT-0334 | Prefer top-level await over using a promise chain.             | scripts/migrate-library-content.ts                                                    | 205       | code-quality  | E0     |
+| DEBT-0335 | Use <details>, <fieldset>, <optgroup>, or <address> inste...   | components/notebook/features/check-in-questions.tsx                                   | 36        | code-quality  | E0     |
+| DEBT-0336 | Use <input type="radio"> instead of the "radio" role to e...   | components/notebook/features/check-in-questions.tsx                                   | 43        | code-quality  | E0     |
+| DEBT-0337 | Do not use Array index in keys                                 | components/notebook/features/clean-time-display.tsx                                   | 98        | code-quality  | E0     |
+| DEBT-0338 | Use <details>, <fieldset>, <optgroup>, or <address> inste...   | components/notebook/features/mood-selector.tsx                                        | 51        | code-quality  | E0     |
+| DEBT-0339 | Extract this nested ternary operation into an independent...   | components/notebook/features/recovery-notepad.tsx                                     | 99        | code-quality  | E0     |
+| DEBT-0340 | Do not use Array index in keys                                 | components/notebook/pages/library-page.tsx                                            | 170       | code-quality  | E0     |
+| DEBT-0341 | Do not use Array index in keys                                 | components/onboarding/onboarding-wizard.tsx                                           | 515       | code-quality  | E0     |
+| DEBT-0342 | Prefer using an optional chain expression instead, as it'...   | lib/utils/anonymous-backup.ts                                                         | 41        | code-quality  | E0     |
+| DEBT-0343 | Prefer using an optional chain expression instead, as it'...   | components/notebook/pages/today-page.tsx                                              | 177       | code-quality  | E0     |
+| DEBT-0344 | Do not use Array index in keys                                 | components/journal/entry-card.tsx                                                     | 125       | code-quality  | E0     |
+| DEBT-0345 | Do not use Array index in keys                                 | components/journal/entry-feed.tsx                                                     | 194       | code-quality  | E0     |
+| DEBT-0346 | Do not use Array index in keys                                 | components/journal/entry-forms/gratitude-form.tsx                                     | 82        | code-quality  | E0     |
+| DEBT-0347 | Do not use Array index in keys                                 | components/journal/entry-wizard.tsx                                                   | 131       | code-quality  | E0     |
+| DEBT-0348 | Extract this nested ternary operation into an independent...   | app/meetings/all/page.tsx                                                             | 361       | code-quality  | E0     |
+| DEBT-0349 | Do not use Array index in keys                                 | components/notebook/pages/today-page.tsx                                              | 803       | code-quality  | E0     |
+| DEBT-0350 | Move function 'formatTime' to the outer scope.                 | components/widgets/compact-meeting-countdown.tsx                                      | 241       | code-quality  | E0     |
+| DEBT-0351 | Prefer `node:crypto` over `crypto`.                            | functions/src/security-logger.ts                                                      | 9         | code-quality  | E0     |
+| DEBT-0352 | Member 'config' is never reassigned; mark it as `readonly`.    | functions/src/firestore-rate-limiter.ts                                               | 27        | code-quality  | E0     |
+| DEBT-0353 | Extract this nested ternary operation into an independent...   | components/growth/NightReviewCard.tsx                                                 | 567       | code-quality  | E0     |
+| DEBT-0354 | Prefer top-level await over an async function `testGeocod...   | scripts/test-geocode.ts                                                               | 40        | code-quality  | E0     |
+| DEBT-0355 | Prefer `node:fs` over `fs`.                                    | scripts/seed-meetings.ts                                                              | 9         | code-quality  | E0     |
+| DEBT-0356 | Prefer `node:path` over `path`.                                | scripts/seed-meetings.ts                                                              | 10        | code-quality  | E0     |
+| DEBT-0357 | Prefer `node:fs` over `fs`.                                    | scripts/set-admin-claim.ts                                                            | 11        | code-quality  | E0     |
+| DEBT-0358 | Prefer `node:path` over `path`.                                | scripts/set-admin-claim.ts                                                            | 12        | code-quality  | E0     |
+| DEBT-0359 | The object passed as the value prop to the Context provid...   | components/providers/auth-context.tsx                                                 | 118       | code-quality  | E0     |
+| DEBT-0360 | The object passed as the value prop to the Context provid...   | components/providers/daily-log-context.tsx                                            | 75        | code-quality  | E0     |
+| DEBT-0361 | 'If' statement should not be the only statement in 'else'...   | components/providers/profile-context.tsx                                              | 71        | code-quality  | E0     |
+| DEBT-0362 | The object passed as the value prop to the Context provid...   | components/providers/profile-context.tsx                                              | 131       | code-quality  | E0     |
+| DEBT-0363 | 'If' statement should not be the only statement in 'else'...   | components/auth/account-link-modal.tsx                                                | 34        | code-quality  | E0     |
+| DEBT-0364 | Prefer `node:crypto` over `crypto`.                            | lib/sentry.client.ts                                                                  | 11        | code-quality  | E0     |
+| DEBT-0365 | Prefer using an optional chain expression instead, as it'...   | lib/security/firestore-validation.ts                                                  | 42        | code-quality  | E0     |
+| DEBT-0366 | Prefer `node:path` over `path`.                                | next.config.mjs                                                                       | 1         | code-quality  | E0     |
+| DEBT-0367 | Prefer `node:url` over `url`.                                  | next.config.mjs                                                                       | 2         | code-quality  | E0     |
+| DEBT-0368 | Complete the task associated to this "TODO" comment.           | lib/database/firestore-adapter.ts                                                     | 51        | code-quality  | E0     |
+| DEBT-0369 | Complete the task associated to this "TODO" comment.           | lib/logger.ts                                                                         | 107       | code-quality  | E0     |
+| DEBT-0370 | Member 'config' is never reassigned; mark it as `readonly`.    | lib/utils/rate-limiter.ts                                                             | 17        | code-quality  | E0     |
+| DEBT-0371 | Either use this collection's contents or remove the colle...   | tests/firestore-service.test.ts                                                       | 18        | code-quality  | E0     |
+| DEBT-0372 | Do not use Array index in keys                                 | components/notebook/visualizations/mood-sparkline.tsx                                 | 98        | code-quality  | E0     |
+| DEBT-0373 | Do not use Array index in keys                                 | components/notebook/notebook-shell.tsx                                                | 135       | code-quality  | E0     |
+| DEBT-0374 | Do not use Array index in keys                                 | components/notebook/pages/resources-page.tsx                                          | 368       | code-quality  | E0     |
+| DEBT-0375 | Do not use Array index in keys                                 | components/notebook/pages/support-page.tsx                                            | 115       | code-quality  | E0     |
+| DEBT-0376 | Zod schemas missing .strict() (unknown fields accepted)        | functions/src/schemas.ts                                                              | 0         | security      | E0     |
+| DEBT-0377 | Hardcoded fallback reCAPTCHA site key in server verificat...   | functions/src/recaptcha-verify.ts                                                     | 0         | security      | E1     |
+| DEBT-0378 | Server-side journal entry type enum missing 'step-1-works...   | functions/src/schemas.ts                                                              | 0         | security      | E1     |
+| DEBT-0379 | Permissive z.record(..., z.unknown()) allows arbitrary ne...   | functions/src/schemas.ts                                                              | 0         | security      | E2     |
+| DEBT-0380 | Some admin-managed collections allow direct client writes...   | firestore.rules                                                                       | 0         | security      | E1     |
+| DEBT-0381 | Console statements present; replace with structured logge...   | N/A                                                                                   | 0         | security      | E1     |
+| DEBT-0382 | DailyQuoteCard component duplicated across 2-3 locations       | components/notebook/features/daily-quote-card.tsx                                     | 0         | code-quality  | E1     |
+| DEBT-0383 | Critical paths have low test coverage (firestore-service ...   | lib/firestore-service.ts                                                              | 0         | code-quality  | E2     |
+| DEBT-0384 | reCAPTCHA token fetch/include pattern repeated 5x across ...   | lib/firestore-service.ts                                                              | 0         | code-quality  | E1     |
+| DEBT-0385 | Firebase collection access scattered across 22+ files wit...   | lib/db/slogans.ts                                                                     | 0         | code-quality  | E2     |
+| DEBT-0386 | reCAPTCHA action strings duplicated as literals (no share...   | functions/src/recaptcha-verify.ts                                                     | 0         | code-quality  | E1     |
+| DEBT-0387 | Growth card dialog/save pattern duplicated across 4 compo...   | components/growth/SpotCheckCard.tsx                                                   | 0         | code-quality  | E2     |
+| DEBT-0388 | CRUD service patterns repeated across lib/db modules           | lib/db/quotes.ts                                                                      | 0         | code-quality  | E2     |
+| DEBT-0389 | Admin Cloud Function wiring duplicated across 5 admin tabs     | components/admin/dashboard-tab.tsx                                                    | 0         | code-quality  | E1     |
+| DEBT-0390 | Dual-write pattern to inventory AND journal collections        | components/growth/SpotCheckCard.tsx                                                   | 0         | code-quality  | E2     |
+| DEBT-0391 | Deprecated API usage (31 instances) + Nested ternaries (4...   | multiple                                                                              | 0         | code-quality  | E2     |
+| DEBT-0392 | safeReadFile/safeWriteFile utilities duplicated across 3 ...   | scripts/archive-doc.js                                                                | 0         | code-quality  | E1     |
+| DEBT-0393 | FirestoreAdapter exists but is unused (realtime boundary ...   | lib/database/firestore-adapter.ts                                                     | 0         | code-quality  | E2     |
+| DEBT-0394 | Searchable-text generation duplicated with inconsistent s...   | hooks/use-journal.ts                                                                  | 0         | code-quality  | E1     |
+| DEBT-0395 | DEVELOPMENT.md workflow triggers don't match actual workf...   | DEVELOPMENT.md                                                                        | 0         | code-quality  | E1     |
+| DEBT-0396 | Pre-commit hook runs full test suite causing slow commits...   | .husky/pre-commit                                                                     | 0         | code-quality  | E1     |
+| DEBT-0397 | Pattern checker reports 93+ violations but CI check is no...   | scripts/check-pattern-compliance.js                                                   | 0         | code-quality  | E2     |
+| DEBT-0398 | Firebase CLI version unpinned in deploy workflow               | .github/workflows/deploy-firebase.yml                                                 | 0         | code-quality  | E0     |
+| DEBT-0399 | Auto-label workflow has invalid if: expression syntax          | .github/workflows/auto-label-review-tier.yml                                          | 0         | code-quality  | E0     |
+| DEBT-0400 | Sentry integration incomplete - no Web Vitals reporting        | lib/sentry.client.ts                                                                  | 0         | code-quality  | E1     |
+| DEBT-0401 | Duplicate DailyQuoteCard implementations + unbounded quot...   | components/widgets/daily-quote-card.tsx                                               | 0         | code-quality  | E1     |
+| DEBT-0402 | Celebration animations create 150+ DOM elements without r...   | components/celebrations/confetti-burst.tsx                                            | 0         | code-quality  | E1     |
+| DEBT-0403 | No React.memo usage causes unnecessary re-renders in list...   | components/journal/entry-card.tsx                                                     | 0         | code-quality  | E1     |
+| DEBT-0404 | Hero background image bypasses Next.js image optimization      | app/page.tsx                                                                          | 0         | code-quality  | E1     |
+| DEBT-0405 | Large entry lists not virtualized - DOM grows linearly wi...   | components/journal/entry-feed.tsx                                                     | 0         | code-quality  | E2     |
+| DEBT-0406 | Meeting map renders all markers without clustering             | app/meetings/all/page.tsx                                                             | 0         | code-quality  | E2     |
+| DEBT-0407 | 7 unused dependencies increasing bundle size                   | package.json                                                                          | 0         | code-quality  | E0     |
+| DEBT-0408 | Console statements in production code                          | hooks/use-journal.ts                                                                  | 0         | code-quality  | E0     |
+| DEBT-0409 | Firebase queries lack consistent indexing and limits           | lib/db/meetings.ts                                                                    | 0         | code-quality  | E1     |
+| DEBT-0410 | Admin CRUD table fetches entire collections without pagin...   | components/admin/admin-crud-table.tsx                                                 | 0         | code-quality  | E2     |
+| DEBT-0411 | Step1WorksheetCard excessive complexity (804 lines)            | components/growth/Step1WorksheetCard.tsx                                              | 0         | code-quality  | E3     |
+| DEBT-0412 | No route-level loading UI (loading.tsx) or Suspense bound...   | app/page.tsx                                                                          | 0         | code-quality  | E1     |
+| DEBT-0413 | JournalHub eagerly imports all entry forms                     | components/journal/journal-hub.tsx                                                    | 0         | code-quality  | E2     |
+| DEBT-0414 | DOCUMENTATION_INDEX.md orphaned and missing required sect...   | DOCUMENTATION_INDEX.md                                                                | 0         | code-quality  | E1     |
+| DEBT-0415 | Tier 2 docs missing required metadata (Document Version, ...   | docs/ANTIGRAVITY_GUIDE.md                                                             | 0         | code-quality  | E1     |
+| DEBT-0416 | Standards/templates contain live placeholder links and in...   | docs/DOCUMENTATION_STANDARDS.md                                                       | 0         | code-quality  | E0     |
+| DEBT-0417 | DOCUMENT_DEPENDENCIES.md claims SYNCED but has 30+ issues      | docs/DOCUMENT_DEPENDENCIES.md                                                         | 0         | code-quality  | E1     |
+| DEBT-0418 | PR_REVIEW_PROMPT_TEMPLATE lacks required metadata and ver...   | docs/PR_REVIEW_PROMPT_TEMPLATE.md                                                     | 0         | code-quality  | E1     |
+| DEBT-0419 | CODE_PATTERNS.md referenced with incorrect path                | docs/agent_docs/CODE_PATTERNS.md                                                      | 0         | code-quality  | E0     |
+| DEBT-0420 | Duplicate CODE_REVIEW_PLAN_2026_Q1.md exists in two locat...   | docs/CODE_REVIEW_PLAN_2026_Q1.md                                                      | 0         | code-quality  | E0     |
+| DEBT-0421 | Duplicated time-of-day rotation logic for quotes and slogans   | lib/db/quotes.ts                                                                      | 0         | code-quality  | E1     |
+| DEBT-0422 | Unsafe type assertions with 'as unknown as' (worksheet + ...   | components/growth/Step1WorksheetCard.tsx                                              | 0         | code-quality  | E1     |
+| DEBT-0423 | ESLint security plugin warnings in scripts (unsafe regex ...   | scripts/check-review-needed.js                                                        | 0         | security      | E2     |
+| DEBT-0424 | Journal entry type definitions duplicated across client t...   | types/journal.ts                                                                      | 0         | code-quality  | E2     |
+| DEBT-0425 | Missing error.message null safety in TodayPage catch block     | components/notebook/pages/today-page.tsx                                              | 0         | code-quality  | E0     |
+| DEBT-0426 | Unsafe localStorage JSON.parse in use-smart-prompts hook       | components/notebook/hooks/use-smart-prompts.ts                                        | 0         | code-quality  | E0     |
+| DEBT-0427 | Duplicated DailyQuoteCard component exists in multiple di...   | components/notebook/features/daily-quote-card.tsx                                     | 0         | code-quality  | E1     |
+| DEBT-0428 | Inconsistent Firebase Functions import pattern (static vs...   | lib/firestore-service.ts                                                              | 0         | code-quality  | E1     |
+| DEBT-0429 | Inconsistent httpsCallable typing (missing generic reques...   | lib/firestore-service.ts                                                              | 0         | code-quality  | E1     |
+| DEBT-0430 | useJournal sets up its own auth listener instead of using...   | hooks/use-journal.ts                                                                  | 0         | code-quality  | E1     |
+| DEBT-0431 | Cloud Function integration test is skipped in firestore-s...   | tests/firestore-service.test.ts                                                       | 0         | code-quality  | E2     |
+| DEBT-0432 | Journal entry schema data is weakly typed (z.record unkno...   | functions/src/schemas.ts                                                              | 0         | code-quality  | E2     |
+| DEBT-0433 | No tests for useJournal hook                                   | hooks/use-journal.ts                                                                  | 0         | code-quality  | E2     |
+| DEBT-0434 | Zod schemas permissive - missing .strict() and allows arb...   | functions/src/schemas.ts                                                              | 0         | code-quality  | E2     |
+| DEBT-0435 | Debug console.log statements in production code                | components/notebook/pages/today-page.tsx                                              | 396       | code-quality  | E1     |
+| DEBT-0436 | High cognitive complexity in adminSetUserPrivilege             | functions/src/admin.ts                                                                | 1726      | code-quality  | E2     |
+| DEBT-0437 | High cognitive complexity in UsersTab component                | components/admin/users-tab.tsx                                                        | 84        | code-quality  | E2     |
+| DEBT-0438 | No correlation/request ID tracing                              | lib/logger.ts                                                                         | 1         | code-quality  | E2     |
+| DEBT-0439 | Nested component definition                                    | components/admin/admin-tabs.tsx                                                       | 64        | code-quality  | E1     |
+| DEBT-0440 | Hardcoded reCAPTCHA site key fallback                          | functions/src/recaptcha-verify.ts                                                     | 66        | security      | E0     |
+| DEBT-0441 | OS command execution in CLI scripts                            | scripts/ai-review.js                                                                  | 222       | security      | E2     |
+| DEBT-0442 | ReDoS vulnerable regex patterns                                | functions/src/admin.ts                                                                | 143       | security      | E2     |
+| DEBT-0443 | GitHub Actions using version tags instead of commit SHAs       | .github/workflows/auto-label-review-tier.yml                                          | 18        | process       | E1     |
+| DEBT-0444 | 99 files fail docs:check (313 errors, 177 warnings)            | scripts/README.md                                                                     | 1         | documentation | E1     |
+| DEBT-0445 | TRIGGERS.md last updated 2026-01-02 (15 days stale)            | docs/TRIGGERS.md                                                                      | 1         | documentation | E0     |
+| DEBT-0446 | DOCUMENTATION_STANDARDS.md last updated 2026-01-01 (16 da...   | docs/DOCUMENTATION_STANDARDS.md                                                       | 1         | documentation | E0     |
+| DEBT-0447 | DOCUMENT_DEPENDENCIES.md claims SYNCED but sync check rep...   | docs/DOCUMENT_DEPENDENCIES.md                                                         | 3         | documentation | E1     |
+| DEBT-0448 | 15 recent commits touch docs but AUDIT_TRACKER shows only...   | docs/                                                                                 | 0         | documentation | E1     |
+| DEBT-0449 | 30+ components with inline onClick arrow functions             | components                                                                            | 0         | performance   | E1     |
+| DEBT-0450 | 28 components with inline style objects                        | components                                                                            | 0         | performance   | E1     |
+| DEBT-0451 | Large chunk file (628KB) indicates code splitting opportu...   | .next/static/chunks                                                                   | 0         | performance   | E1     |
+| DEBT-0452 | 20+ uses of key={index} in list rendering                      | components                                                                            | 0         | performance   | E0     |
+| DEBT-0453 | setInterval without visibility check continues in background   | components/widgets/meeting-countdown.tsx                                              | 41        | performance   | E1     |
+| DEBT-0454 | getAllMeetings() deprecated but still available without l...   | lib/db/meetings.ts                                                                    | 129       | performance   | E1     |
+| DEBT-0455 | 28 scripts have 715 console.log/error/warn calls without ...   | scripts/                                                                              | 0         | process       | E1     |
+| DEBT-0456 | Artifact upload without retention policy                       | .github/workflows/ci.yml                                                              | 99        | process       | E1     |
+| DEBT-0457 | Git diff with @{u}...HEAD fails on new branches without u...   | .husky/pre-push                                                                       | 48        | process       | E1     |
+| DEBT-0458 | Step1WorksheetCard large component (845 lines) with neste...   | components/growth/Step1WorksheetCard.tsx                                              | 1         | refactoring   | E2     |
+| DEBT-0459 | ResourcesPage large component (728 lines) mixing meetings...   | components/notebook/pages/resources-page.tsx                                          | 1         | refactoring   | E2     |
+| DEBT-0460 | reCAPTCHA token fetch pattern repeated 5x across codebase      | hooks/use-journal.ts                                                                  | 281       | refactoring   | E1     |
+| DEBT-0461 | No npm run dev:offline script - requires 2 terminals for ...   | package.json                                                                          | 5         | code-quality  | E0     |
+| DEBT-0462 | No scripts/doctor.js for environment validation                | scripts/                                                                              | 0         | code-quality  | E1     |
+| DEBT-0463 | 8:1 ratio of console.log to structured logger calls (3111...   | app/                                                                                  | 0         | code-quality  | E2     |
+| DEBT-0464 | No service worker - no offline asset caching                   | public/                                                                               | 0         | code-quality  | E2     |
+| DEBT-0465 | Add .strict() to Zod schemas                                   | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0466 | Extract time rotation utilities                                | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0467 | Consolidate DailyQuoteCard                                     | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0468 | Debug console.log statements in production code                | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0469 | GitHub Actions using version tags instead of commit SHAs       | N/A                                                                                   | 0         | process       | E1     |
+| DEBT-0470 | Console statements present; replace with structured logge...   | N/A                                                                                   | 0         | security      | E1     |
+| DEBT-0471 | Address ESLint security warnings                               | N/A                                                                                   | 0         | security      | E2     |
+| DEBT-0472 | Remove hardcoded reCAPTCHA fallback                            | N/A                                                                                   | 0         | security      | E1     |
+| DEBT-0473 | Route admin writes through Functions                           | N/A                                                                                   | 0         | security      | E1     |
+| DEBT-0474 | Add error.message null safety                                  | N/A                                                                                   | 0         | code-quality  | E0     |
+| DEBT-0475 | Safe localStorage JSON.parse                                   | N/A                                                                                   | 0         | code-quality  | E0     |
+| DEBT-0476 | Replace unsafe type assertions                                 | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0477 | Single source for journal types                                | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0478 | Type httpsCallable generics                                    | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0479 | Create callSecureFunction wrapper                              | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0480 | Shared reCAPTCHA action constants                              | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0481 | Extract useGrowthCardDialog hook                               | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0482 | Route Firebase through service layer                           | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0483 | Create typed collection helpers                                | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0484 | Clarify FirestoreAdapter boundary                              | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0485 | Audit inventory dual-write pattern                             | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0486 | Complete Sentry integration                                    | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0487 | Add reduced-motion to animations                               | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0488 | Add React.memo to list components                              | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0489 | Optimize hero background image                                 | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0490 | Add virtualization to large lists                              | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0491 | Add marker clustering to map                                   | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0492 | Remove 7 unused dependencies                                   | N/A                                                                                   | 0         | code-quality  | E0     |
+| DEBT-0493 | Add Firebase query indexes                                     | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0494 | Paginate admin CRUD table                                      | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0495 | Add loading.tsx files                                          | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0496 | Lazy load JournalHub forms                                     | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0497 | Unskip Cloud Function test                                     | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0498 | Add useJournal hook tests                                      | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0499 | Increase critical path coverage                                | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0500 | Create CRUD factory                                            | N/A                                                                                   | 0         | code-quality  | E2     |
+| DEBT-0501 | Centralize admin function wrappers                             | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0502 | Extract safeReadFile/safeWriteFile                             | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0503 | Consolidate searchable-text generation                         | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0504 | Add DOCUMENTATION_INDEX to README                              | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0505 | Add Tier 2 required metadata                                   | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0506 | Fix standards placeholder links                                | N/A                                                                                   | 0         | code-quality  | E0     |
+| DEBT-0507 | Update DOCUMENT_DEPENDENCIES sync                              | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0508 | Add PR_REVIEW_PROMPT metadata                                  | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0509 | Fix CODE_PATTERNS.md path references                           | N/A                                                                                   | 0         | code-quality  | E0     |
+| DEBT-0510 | Update DEVELOPMENT.md workflow docs                            | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0511 | Move full tests to pre-push only                               | N/A                                                                                   | 0         | code-quality  | E1     |
+| DEBT-0512 | Pin firebase-tools version                                     | N/A                                                                                   | 0         | code-quality  | E0     |
+| DEBT-0513 | Fix auto-label workflow if syntax                              | N/A                                                                                   | 0         | code-quality  | E0     |
+| DEBT-0514 | Decompose Step1WorksheetCard                                   | N/A                                                                                   | 0         | code-quality  | E3     |
+| DEBT-0515 | Add Correlation IDs to Logger                                  | lib/logger.ts                                                                         | 1         | process       | E2     |
+| DEBT-0516 | Add Network Status to Logs                                     | lib/logger.ts                                                                         | 45        | process       | E2     |
+| DEBT-0517 | Create Smoke Test Script                                       | scripts/smoke-test.js                                                                 | 1         | process       | E2     |
+| DEBT-0518 | Add Bug Report GitHub Template                                 | .github/ISSUE_TEMPLATE/bug_report.md                                                  | 1         | process       | E2     |
+| DEBT-0519 | Offline Tests                                                  | tests/offline/                                                                        | 1         | process       | E2     |
+| DEBT-0520 | Network Failure Error Handling Tests                           | tests/admin/network-failure.test.ts                                                   | 1         | process       | E2     |
+| DEBT-0521 | Historical Score Tracking                                      | .lighthouse/history.json                                                              | 1         | performance   | E2     |
+| DEBT-0522 | Performance Budgets                                            | lighthouserc.js                                                                       | 1         | performance   | E1     |
+| DEBT-0523 | Development Dashboard Integration                              | app/dev/page.tsx                                                                      | 1         | performance   | E3     |
+| DEBT-0524 | PWA Audit Baseline                                             | app/manifest.ts                                                                       | 1         | performance   | E1     |
+| DEBT-0525 | Missing cache headers                                          | firebase.json                                                                         | 15        | performance   | E1     |
+| DEBT-0526 | Split today-page.tsx (1,199 lines)                             | components/notebook/pages/today-page.tsx                                              | 396       | refactoring   | E2     |
+| DEBT-0527 | Split dashboard-tab.tsx (1,031 lines)                          | components/admin/dashboard-tab.tsx                                                    | 1         | refactoring   | E2     |
+| DEBT-0528 | Repository pattern violations                                  | lib/firestore-service.ts                                                              | 1         | refactoring   | E2     |
+| DEBT-0529 | Restrict CORS origins                                          | functions/src/index.ts                                                                | 23        | security      | E1     |
+| DEBT-0530 | Admin privilege hardening                                      | functions/src/admin.ts                                                                | 89        | security      | E2     |
+| DEBT-0531 | Token rotation for long-lived sessions                         | lib/auth-context.tsx                                                                  | 156       | security      | E2     |
+| DEBT-0532 | Security rules for new collections                             | firestore.rules                                                                       | 45        | security      | E2     |
+| DEBT-0533 | Debug console logs in production component                     | components/notebook/pages/today-page.tsx                                              | 594       | code-quality  | E1     |
+| DEBT-0534 | Callback parameter typed as any                                | components/notebook/pages/today-page.tsx                                              | 505       | code-quality  | E1     |
+| DEBT-0535 | Missing React.Suspense for code splitting                      | components/                                                                           | 0         | code-quality  | E2     |
+| DEBT-0536 | ESLint rule suppression for exhaustive deps                    | hooks/use-geolocation.ts                                                              | 171       | code-quality  | E1     |
+| DEBT-0537 | No component tests                                             | tests/                                                                                | 0         | code-quality  | E3     |
+| DEBT-0538 | Potential copy-paste code blocks in admin tabs                 | components/admin/                                                                     | 0         | code-quality  | E1     |
+| DEBT-0539 | Complex nested logic without early returns                     | components/notebook/pages/today-page.tsx                                              | 698       | code-quality  | E1     |
+| DEBT-0540 | Missing correlation IDs for request tracing                    | lib/firestore-service.ts                                                              | 0         | code-quality  | E2     |
+| DEBT-0541 | Inconsistent error context across components                   | various                                                                               | 0         | code-quality  | E1     |
+| DEBT-0542 | Admin CRUD table pulls full collections via getDocs witho...   | components/admin/admin-crud-table.tsx                                                 | 0         | code-quality  | E2     |
+| DEBT-0543 | Meetings map may jank at scale without marker clustering ...   | components/maps/meeting-map.tsx                                                       | 0         | code-quality  | E2     |
+| DEBT-0544 | High-intensity confetti spawns up to 150 animated DOM nodes    | components/celebrations/confetti-burst.tsx                                            | 0         | code-quality  | E2     |
+| DEBT-0545 | Console statements exist in production code; should be ga...   | components/\*\*                                                                       | 0         | code-quality  | E0     |
+| DEBT-0546 | reCAPTCHA Enterprise script injected on every route (even...   | app/layout.tsx                                                                        | 0         | code-quality  | E1     |
+| DEBT-0547 | No Core Web Vitals tracking configured (LCP/CLS/INP)           | app/layout.tsx                                                                        | 0         | code-quality  | E1     |
+| DEBT-0548 | Client Sentry config imports Node crypto, risking polyfil...   | lib/sentry.client.ts                                                                  | 0         | code-quality  | E1     |
+| DEBT-0549 | AnimatePresence transitions may cause CLS without explici...   | app/page.tsx                                                                          | 0         | code-quality  | E1     |
+| DEBT-0550 | No caching strategy for Firestore queries; mounts trigger...   | hooks/use-journal.ts                                                                  | 0         | code-quality  | E2     |
+| DEBT-0551 | useJournal filters soft-deleted entries client-side inste...   | hooks/use-journal.ts                                                                  | 0         | code-quality  | E1     |
+| DEBT-0552 | NotebookShell likely bundles most notebook pages because ...   | components/notebook/roadmap-modules.tsx                                               | 0         | code-quality  | E2     |
+| DEBT-0900 | Optimize admin analytics functions (cache/pre-compute)         | functions/src/admin.ts                                                                | 2726      | performance   | E1     |
+| DEBT-0951 | Missing Content-Security-Policy Header                         | N/A                                                                                   | undefined | security      | E1     |
+| DEBT-0952 | Script Injection Vulnerability in resolve-debt Workflow        | N/A                                                                                   | undefined | security      | E1     |
+| DEBT-0953 | Backlog Enforcement Job Obsolete After TDMS Migration          | N/A                                                                                   | undefined | process       | E2     |
+| DEBT-0954 | Security Check Doesn't Scan Cloud Functions                    | N/A                                                                                   | undefined | security      | E2     |
+| DEBT-0955 | Large ResourcesPage Not Code-Split (960 lines, ~50KB)          | N/A                                                                                   | undefined | performance   | E1     |
+| DEBT-0956 | useJournal Hook Has 7 Responsibilities (438 lines)             | N/A                                                                                   | undefined | refactoring   | E1     |
+| DEBT-0957 | Archive Docs Never Checked for Link Rot                        | N/A                                                                                   | undefined | documentation | E1     |
+| DEBT-0958 | Function Deletion with Force Flag Lacks Validation             | N/A                                                                                   | undefined | process       | E2     |
+| DEBT-0959 | Pre-Commit Total Time 15-30s - Developer Friction              | N/A                                                                                   | undefined | process       | E3     |
+| DEBT-0960 | Pre-Push Redundant Checks (15-40s)                             | N/A                                                                                   | undefined | performance   | E2     |
+| DEBT-0961 | Prefer `node:crypto` over `crypto`.                            | scripts/eval/eval-sonarcloud-stage.js                                                 | 22        | code-quality  | E0     |
+| DEBT-0963 | Prefer `node:fs` over `fs`.                                    | scripts/eval/eval-sonarcloud-report.js                                                | 24        | code-quality  | E0     |
+| DEBT-0964 | Prefer `node:path` over `path`.                                | scripts/eval/eval-sonarcloud-report.js                                                | 25        | code-quality  | E0     |
+| DEBT-0965 | Prefer `node:fs` over `fs`.                                    | scripts/eval/eval-sonarcloud-snapshot.js                                              | 19        | code-quality  | E0     |
+| DEBT-0966 | Prefer `node:path` over `path`.                                | scripts/eval/eval-sonarcloud-snapshot.js                                              | 20        | code-quality  | E0     |
+| DEBT-0967 | Prefer `node:crypto` over `crypto`.                            | scripts/eval/eval-sonarcloud-snapshot.js                                              | 21        | code-quality  | E0     |
+| DEBT-0969 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/eval/eval-sonarcloud-snapshot.js                                              | 145       | code-quality  | E0     |
+| DEBT-0970 | Prefer `node:fs` over `fs`.                                    | scripts/eval/eval-sonarcloud-stage.js                                                 | 20        | code-quality  | E0     |
+| DEBT-0971 | Prefer `node:path` over `path`.                                | scripts/eval/eval-sonarcloud-stage.js                                                 | 21        | code-quality  | E0     |
+| DEBT-0972 | Unexpected negated condition.                                  | scripts/eval/eval-sonarcloud-stage.js                                                 | 156       | code-quality  | E0     |
+| DEBT-0974 | Unexpected negated condition.                                  | scripts/eval/eval-sonarcloud-stage.js                                                 | 347       | code-quality  | E0     |
+| DEBT-0977 | Unexpected negated condition.                                  | scripts/eval/eval-sonarcloud-stage.js                                                 | 526       | code-quality  | E0     |
+| DEBT-0979 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE...   | scripts/eval/eval-sonarcloud-stage.js                                                 | 614       | performance   | E0     |
+| DEBT-0980 | `VALID_STATUSES` should be a `Set`, and use `VALID_STATUS...   | scripts/eval/eval-sonarcloud-stage.js                                                 | 615       | performance   | E0     |
+| DEBT-0990 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/generate-views.js                                                        | 215       | code-quality  | E0     |
+| DEBT-0991 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/generate-views.js                                                        | 216       | code-quality  | E0     |
+| DEBT-0997 | Remove this unused import of 'join'.                           | scripts/multi-ai/normalize-format.js                                                  | 15        | code-quality  | E0     |
+| DEBT-0998 | `String.raw` should be used to avoid escaping `\`.             | scripts/multi-ai/state-manager.js                                                     | 51        | code-quality  | E0     |
+| DEBT-1000 | Prefer `node:fs` over `fs`.                                    | scripts/multi-ai/eval-check-stage.js                                                  | 22        | code-quality  | E0     |
+| DEBT-1001 | Prefer `node:path` over `path`.                                | scripts/multi-ai/eval-check-stage.js                                                  | 23        | code-quality  | E0     |
+| DEBT-1002 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE...   | scripts/multi-ai/eval-check-stage.js                                                  | 370       | performance   | E0     |
+| DEBT-1003 | `VALID_CATEGORIES` should be a `Set`, and use `VALID_CATE...   | scripts/multi-ai/eval-check-stage.js                                                  | 371       | performance   | E0     |
+| DEBT-1005 | Prefer `node:fs` over `fs`.                                    | scripts/multi-ai/eval-report.js                                                       | 22        | code-quality  | E0     |
+| DEBT-1006 | Prefer `node:path` over `path`.                                | scripts/multi-ai/eval-report.js                                                       | 23        | code-quality  | E0     |
+| DEBT-1007 | Prefer `node:fs` over `fs`.                                    | scripts/multi-ai/eval-snapshot.js                                                     | 20        | code-quality  | E0     |
+| DEBT-1008 | Prefer `node:path` over `path`.                                | scripts/multi-ai/eval-snapshot.js                                                     | 21        | code-quality  | E0     |
+| DEBT-1009 | Prefer `node:crypto` over `crypto`.                            | scripts/multi-ai/eval-snapshot.js                                                     | 22        | code-quality  | E0     |
+| DEBT-1011 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/multi-ai/eval-snapshot.js                                                     | 93        | code-quality  | E0     |
+| DEBT-1012 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/aggregate-category.js                                                | 69        | code-quality  | E0     |
+| DEBT-1013 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/aggregate-category.js                                                | 70        | code-quality  | E0     |
+| DEBT-1014 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/aggregate-category.js                                                | 113       | code-quality  | E0     |
+| DEBT-1015 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/aggregate-category.js                                                | 114       | code-quality  | E0     |
+| DEBT-1016 | Handle this exception or don't catch it at all.                | scripts/multi-ai/aggregate-category.js                                                | 144       | code-quality  | E0     |
+| DEBT-1020 | Expected a `for-of` loop instead of a `for` loop with thi...   | scripts/multi-ai/aggregate-category.js                                                | 254       | code-quality  | E0     |
+| DEBT-1023 | Remove this unused import of 'join'.                           | scripts/multi-ai/fix-schema.js                                                        | 17        | code-quality  | E0     |
+| DEBT-1024 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/multi-ai/fix-schema.js                                                        | 236       | code-quality  | E0     |
+| DEBT-1025 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/fix-schema.js                                                        | 255       | code-quality  | E0     |
+| DEBT-1027 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | scripts/multi-ai/fix-schema.js                                                        | 256       | performance   | E0     |
+| DEBT-1028 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | scripts/multi-ai/fix-schema.js                                                        | 275       | performance   | E0     |
+| DEBT-1030 | Handle this exception or don't catch it at all.                | scripts/multi-ai/fix-schema.js                                                        | 537       | code-quality  | E0     |
+| DEBT-1031 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                                  | 311       | code-quality  | E0     |
+| DEBT-1034 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                                  | 495       | code-quality  | E0     |
+| DEBT-1035 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                                  | 496       | code-quality  | E0     |
+| DEBT-1037 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                                  | 553       | code-quality  | E0     |
+| DEBT-1038 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                                  | 584       | code-quality  | E0     |
+| DEBT-1039 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                                  | 585       | code-quality  | E0     |
+| DEBT-1040 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/multi-ai/normalize-format.js                                                  | 721       | code-quality  | E0     |
+| DEBT-1041 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/multi-ai/normalize-format.js                                                  | 740       | code-quality  | E0     |
+| DEBT-1043 | Don't use a zero fraction in the number.                       | scripts/multi-ai/unify-findings.js                                                    | 50        | code-quality  | E0     |
+| DEBT-1044 | Handle this exception or don't catch it at all.                | scripts/multi-ai/unify-findings.js                                                    | 79        | code-quality  | E0     |
+| DEBT-1045 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | scripts/multi-ai/unify-findings.js                                                    | 99        | performance   | E0     |
+| DEBT-1046 | Don't use a zero fraction in the number.                       | scripts/multi-ai/unify-findings.js                                                    | 110       | code-quality  | E0     |
+| DEBT-1049 | Remove the declaration of the unused 'category' variable.      | scripts/multi-ai/unify-findings.js                                                    | 287       | code-quality  | E0     |
+| DEBT-1052 | Remove the declaration of the unused 'mergeLog' variable.      | scripts/multi-ai/unify-findings.js                                                    | 586       | code-quality  | E0     |
+| DEBT-1054 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 449       | code-quality  | E0     |
+| DEBT-1061 | Prefer `globalThis.window` over `window`.                      | components/admin/errors-tab.tsx                                                       | 688       | code-quality  | E0     |
+| DEBT-1062 | Prefer `.at(…)` over `[….length - index]`.                     | components/admin/analytics-tab.tsx                                                    | 219       | performance   | E0     |
+| DEBT-1063 | 'input' will use Object's default stringification format ...   | components/admin/logs-tab.tsx                                                         | 338       | code-quality  | E0     |
+| DEBT-1065 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/logs-tab.tsx                                                         | 316       | code-quality  | E0     |
+| DEBT-1066 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/logs-tab.tsx                                                         | 317       | code-quality  | E0     |
+| DEBT-1068 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/logs-tab.tsx                                                         | 318       | code-quality  | E0     |
+| DEBT-1071 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/logs-tab.tsx                                                         | 315       | code-quality  | E0     |
+| DEBT-1072 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/sync-consolidation-counter.js                                                 | 74        | code-quality  | E0     |
+| DEBT-1073 | The catch parameter `readErr` should be named `error_`.        | scripts/sync-consolidation-counter.js                                                 | 75        | code-quality  | E0     |
+| DEBT-1074 | This assertion is unnecessary since it does not change th...   | functions/src/jobs.ts                                                                 | 379       | code-quality  | E0     |
+| DEBT-1075 | 'unknown' overrides all other types in this union type.        | functions/src/security-logger.ts                                                      | 426       | code-quality  | E0     |
+| DEBT-1076 | 'error' will use Object's default stringification format ...   | functions/src/security-logger.ts                                                      | 438       | code-quality  | E0     |
+| DEBT-1077 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 453       | code-quality  | E0     |
+| DEBT-1078 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 454       | code-quality  | E0     |
+| DEBT-1079 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 461       | code-quality  | E0     |
+| DEBT-1080 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 463       | code-quality  | E0     |
+| DEBT-1081 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 465       | code-quality  | E0     |
+| DEBT-1082 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 467       | code-quality  | E0     |
+| DEBT-1083 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 472       | code-quality  | E0     |
+| DEBT-1084 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 473       | code-quality  | E0     |
+| DEBT-1085 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 476       | code-quality  | E0     |
+| DEBT-1086 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/jobs-tab.tsx                                                         | 72        | code-quality  | E0     |
+| DEBT-1087 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/jobs-tab.tsx                                                         | 78        | code-quality  | E0     |
+| DEBT-1091 | Prefer `node:crypto` over `crypto`.                            | functions/src/jobs.ts                                                                 | 23        | code-quality  | E0     |
+| DEBT-1101 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/sync-consolidation-counter.js                                                 | 37        | code-quality  | E0     |
+| DEBT-1102 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/sync-consolidation-counter.js                                                 | 56        | code-quality  | E0     |
+| DEBT-1103 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/sync-consolidation-counter.js                                                 | 68        | code-quality  | E0     |
+| DEBT-1106 | Handle this exception or don't catch it at all.                | scripts/audit/transform-jsonl-schema.js                                               | 591       | code-quality  | E0     |
+| DEBT-1107 | The catch parameter `renameErr` should be named `error_`.      | scripts/audit/transform-jsonl-schema.js                                               | 591       | code-quality  | E0     |
+| DEBT-1108 | The catch parameter `unlinkErr` should be named `error_`.      | scripts/audit/transform-jsonl-schema.js                                               | 599       | code-quality  | E0     |
+| DEBT-1109 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/audit/transform-jsonl-schema.js                                               | 193       | code-quality  | E0     |
+| DEBT-1110 | The empty object is useless.                                   | scripts/audit/transform-jsonl-schema.js                                               | 461       | code-quality  | E0     |
+| DEBT-1111 | The empty object is useless.                                   | scripts/audit/transform-jsonl-schema.js                                               | 465       | code-quality  | E0     |
+| DEBT-1112 | The empty object is useless.                                   | scripts/audit/transform-jsonl-schema.js                                               | 469       | code-quality  | E0     |
+| DEBT-1113 | Prefer `node:fs` over `fs`.                                    | scripts/audit/transform-jsonl-schema.js                                               | 22        | code-quality  | E0     |
+| DEBT-1114 | Prefer `node:path` over `path`.                                | scripts/audit/transform-jsonl-schema.js                                               | 23        | code-quality  | E0     |
+| DEBT-1115 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/audit/transform-jsonl-schema.js                                               | 217       | code-quality  | E0     |
+| DEBT-1118 | Unexpected negated condition.                                  | scripts/audit/transform-jsonl-schema.js                                               | 557       | code-quality  | E0     |
+| DEBT-1119 | The '**proto**' property is deprecated.                        | scripts/audit/validate-audit-integration.js                                           | 195       | code-quality  | E0     |
+| DEBT-1123 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/audit/validate-audit-integration.js                                           | 36        | code-quality  | E0     |
+| DEBT-1124 | Handle this exception or don't catch it at all.                | scripts/audit/validate-audit-integration.js                                           | 200       | code-quality  | E0     |
+| DEBT-1128 | Prefer `node:fs` over `fs`.                                    | scripts/audit/validate-audit-integration.js                                           | 24        | code-quality  | E0     |
+| DEBT-1129 | Prefer `node:path` over `path`.                                | scripts/audit/validate-audit-integration.js                                           | 25        | code-quality  | E0     |
+| DEBT-1130 | Prefer `node:crypto` over `crypto`.                            | scripts/audit/validate-audit-integration.js                                           | 26        | code-quality  | E0     |
+| DEBT-1131 | Prefer `node:child_process` over `child_process`.              | scripts/audit/validate-audit-integration.js                                           | 27        | code-quality  | E0     |
+| DEBT-1133 | Unexpected negated condition.                                  | scripts/audit/validate-audit-integration.js                                           | 382       | code-quality  | E0     |
+| DEBT-1134 | Unexpected negated condition.                                  | scripts/audit/validate-audit-integration.js                                           | 415       | code-quality  | E0     |
+| DEBT-1135 | Unexpected negated condition.                                  | scripts/audit/validate-audit-integration.js                                           | 445       | code-quality  | E0     |
+| DEBT-1136 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/audit/validate-audit-integration.js                                           | 508       | code-quality  | E0     |
+| DEBT-1137 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                           | 591       | code-quality  | E0     |
+| DEBT-1138 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                           | 628       | code-quality  | E0     |
+| DEBT-1139 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                           | 629       | code-quality  | E0     |
+| DEBT-1140 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                           | 870       | code-quality  | E0     |
+| DEBT-1141 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                           | 875       | code-quality  | E0     |
+| DEBT-1143 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/audit/validate-audit-integration.js                                           | 1112      | code-quality  | E0     |
+| DEBT-1145 | Prefer `node:os` over `os`.                                    | scripts/debt/intake-audit.js                                                          | 35        | code-quality  | E0     |
+| DEBT-1146 | `DANGEROUS_KEYS` should be a `Set`, and use `DANGEROUS_KE...   | scripts/debt/intake-audit.js                                                          | 39        | performance   | E0     |
+| DEBT-1147 | Unexpected negated condition.                                  | scripts/debt/intake-audit.js                                                          | 143       | code-quality  | E0     |
+| DEBT-1148 | The catch parameter `readErr` should be named `error_`.        | scripts/debt/intake-audit.js                                                          | 288       | code-quality  | E0     |
+| DEBT-1149 | The catch parameter `readErr` should be named `error_`.        | scripts/debt/intake-audit.js                                                          | 374       | code-quality  | E0     |
+| DEBT-1151 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/intake-audit.js                                                          | 135       | code-quality  | E0     |
+| DEBT-1152 | Unexpected negated condition.                                  | scripts/debt/intake-audit.js                                                          | 152       | code-quality  | E0     |
+| DEBT-1153 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-audit.js                                                          | 153       | code-quality  | E0     |
+| DEBT-1154 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-audit.js                                                          | 254       | code-quality  | E0     |
+| DEBT-1160 | The empty object is useless.                                   | scripts/check-content-accuracy.js                                                     | 56        | code-quality  | E0     |
+| DEBT-1161 | The empty object is useless.                                   | scripts/check-content-accuracy.js                                                     | 57        | code-quality  | E0     |
+| DEBT-1162 | This pattern can be replaced with '\\'.                        | scripts/check-content-accuracy.js                                                     | 242       | code-quality  | E0     |
+| DEBT-1167 | Handle this exception or don't catch it at all.                | scripts/check-external-links.js                                                       | 219       | code-quality  | E0     |
+| DEBT-1172 | This pattern can be replaced with '\\'.                        | scripts/check-doc-placement.js                                                        | 162       | code-quality  | E0     |
+| DEBT-1173 | This pattern can be replaced with '\\'.                        | scripts/check-doc-placement.js                                                        | 197       | code-quality  | E0     |
+| DEBT-1174 | This pattern can be replaced with '\\'.                        | scripts/check-doc-placement.js                                                        | 233       | code-quality  | E0     |
+| DEBT-1175 | This pattern can be replaced with '\\'.                        | scripts/check-doc-placement.js                                                        | 338       | code-quality  | E0     |
+| DEBT-1176 | This pattern can be replaced with '\\'.                        | scripts/check-doc-placement.js                                                        | 424       | code-quality  | E0     |
+| DEBT-1184 | The catch parameter `backupErr` should be named `error_`.      | scripts/debt/assign-roadmap-refs.js                                                   | 266       | code-quality  | E0     |
+| DEBT-1185 | The catch parameter `writeErr` should be named `error_`.       | scripts/debt/assign-roadmap-refs.js                                                   | 281       | code-quality  | E0     |
+| DEBT-1186 | Handle this exception or don't catch it at all.                | scripts/debt/assign-roadmap-refs.js                                                   | 285       | code-quality  | E0     |
+| DEBT-1187 | The catch parameter `_e` should be named `error_`.             | scripts/debt/assign-roadmap-refs.js                                                   | 285       | code-quality  | E0     |
+| DEBT-1193 | Handle this exception or don't catch it at all.                | scripts/sync-claude-settings.js                                                       | 419       | code-quality  | E0     |
+| DEBT-1194 | Unexpected negated condition.                                  | scripts/sync-claude-settings.js                                                       | 457       | code-quality  | E0     |
+| DEBT-1195 | Handle this exception or don't catch it at all.                | scripts/sync-claude-settings.js                                                       | 463       | code-quality  | E0     |
+| DEBT-1196 | The catch parameter `_e` should be named `error_`.             | scripts/sync-claude-settings.js                                                       | 463       | code-quality  | E0     |
+| DEBT-1197 | Prefer `node:fs` over `fs`.                                    | scripts/sync-claude-settings.js                                                       | 16        | code-quality  | E0     |
+| DEBT-1198 | Prefer `node:path` over `path`.                                | scripts/sync-claude-settings.js                                                       | 17        | code-quality  | E0     |
+| DEBT-1199 | Prefer `node:os` over `os`.                                    | scripts/sync-claude-settings.js                                                       | 18        | code-quality  | E0     |
+| DEBT-1201 | Unexpected negated condition.                                  | scripts/sync-claude-settings.js                                                       | 413       | code-quality  | E0     |
+| DEBT-1202 | Prefer `node:fs` over `fs`.                                    | scripts/debt/assign-roadmap-refs.js                                                   | 32        | code-quality  | E0     |
+| DEBT-1203 | Prefer `node:path` over `path`.                                | scripts/debt/assign-roadmap-refs.js                                                   | 33        | code-quality  | E0     |
+| DEBT-1204 | Expected a `for-of` loop instead of a `for` loop with thi...   | scripts/debt/assign-roadmap-refs.js                                                   | 42        | code-quality  | E0     |
+| DEBT-1206 | Unexpected negated condition.                                  | scripts/debt/assign-roadmap-refs.js                                                   | 184       | code-quality  | E0     |
+| DEBT-1207 | Prefer `node:fs` over `fs`.                                    | scripts/debt/generate-metrics.js                                                      | 20        | code-quality  | E0     |
+| DEBT-1208 | Prefer `node:path` over `path`.                                | scripts/debt/generate-metrics.js                                                      | 21        | code-quality  | E0     |
+| DEBT-1210 | Prefer `node:fs` over `fs`.                                    | scripts/debt/check-phase-status.js                                                    | 11        | code-quality  | E0     |
+| DEBT-1211 | Prefer `node:path` over `path`.                                | scripts/debt/check-phase-status.js                                                    | 12        | code-quality  | E0     |
+| DEBT-1212 | Unexpected negated condition.                                  | scripts/debt/check-phase-status.js                                                    | 89        | code-quality  | E0     |
+| DEBT-1213 | Unexpected negated condition.                                  | scripts/debt/check-phase-status.js                                                    | 90        | code-quality  | E0     |
+| DEBT-1215 | Prefer `Number.NaN` over `NaN`.                                | scripts/aggregate-audit-findings.js                                                   | 740       | code-quality  | E0     |
+| DEBT-1216 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/intake-audit.js                                                          | 87        | code-quality  | E0     |
+| DEBT-1218 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/normalize-all.js                                                         | 65        | code-quality  | E0     |
+| DEBT-1219 | Prefer `node:child_process` over `child_process`.              | scripts/debt/resolve-bulk.js                                                          | 20        | code-quality  | E0     |
+| DEBT-1220 | Prefer `node:child_process` over `child_process`.              | scripts/debt/intake-audit.js                                                          | 36        | code-quality  | E0     |
+| DEBT-1222 | Prefer `node:child_process` over `child_process`.              | scripts/debt/sync-sonarcloud.js                                                       | 32        | code-quality  | E0     |
+| DEBT-1224 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/sync-sonarcloud.js                                                       | 281       | code-quality  | E0     |
+| DEBT-1225 | Handle this exception or don't catch it at all.                | scripts/create-canonical-findings.js                                                  | 81        | code-quality  | E0     |
+| DEBT-1227 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                                   | 189       | code-quality  | E0     |
+| DEBT-1228 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/create-canonical-findings.js                                                  | 102       | code-quality  | E0     |
+| DEBT-1231 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/generate-views.js                                                        | 87        | code-quality  | E0     |
+| DEBT-1232 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/sync-sonarcloud.js                                                       | 244       | code-quality  | E0     |
+| DEBT-1233 | Handle this exception or don't catch it at all.                | scripts/migrate-existing-findings.js                                                  | 32        | code-quality  | E0     |
+| DEBT-1234 | Prefer `node:fs` over `fs`.                                    | scripts/debt/sync-roadmap-refs.js                                                     | 12        | code-quality  | E0     |
+| DEBT-1235 | Prefer `node:path` over `path`.                                | scripts/debt/sync-roadmap-refs.js                                                     | 13        | code-quality  | E0     |
+| DEBT-1236 | Prefer `node:url` over `url`.                                  | scripts/debt/sync-roadmap-refs.js                                                     | 14        | code-quality  | E0     |
+| DEBT-1237 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/debt/sync-roadmap-refs.js                                                     | 25        | performance   | E0     |
+| DEBT-1238 | Prefer `node:fs` over `fs`.                                    | scripts/debt/resolve-bulk.js                                                          | 18        | code-quality  | E0     |
+| DEBT-1239 | Prefer `node:path` over `path`.                                | scripts/debt/resolve-bulk.js                                                          | 19        | code-quality  | E0     |
+| DEBT-1240 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/resolve-bulk.js                                                          | 35        | code-quality  | E0     |
+| DEBT-1245 | Prefer `node:fs` over `fs`.                                    | scripts/debt/resolve-item.js                                                          | 19        | code-quality  | E0     |
+| DEBT-1246 | Prefer `node:path` over `path`.                                | scripts/debt/resolve-item.js                                                          | 20        | code-quality  | E0     |
+| DEBT-1247 | Prefer `node:child_process` over `child_process`.              | scripts/debt/resolve-item.js                                                          | 21        | code-quality  | E0     |
+| DEBT-1248 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/resolve-item.js                                                          | 39        | code-quality  | E0     |
+| DEBT-1252 | Prefer `node:fs` over `fs`.                                    | scripts/debt/validate-schema.js                                                       | 19        | code-quality  | E0     |
+| DEBT-1253 | Prefer `node:path` over `path`.                                | scripts/debt/validate-schema.js                                                       | 20        | code-quality  | E0     |
+| DEBT-1258 | Prefer `node:fs` over `fs`.                                    | scripts/debt/intake-audit.js                                                          | 32        | code-quality  | E0     |
+| DEBT-1259 | Prefer `node:path` over `path`.                                | scripts/debt/intake-audit.js                                                          | 33        | code-quality  | E0     |
+| DEBT-1260 | Prefer `node:crypto` over `crypto`.                            | scripts/debt/intake-audit.js                                                          | 34        | code-quality  | E0     |
+| DEBT-1261 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-audit.js                                                          | 218       | code-quality  | E0     |
+| DEBT-1263 | Prefer `node:fs` over `fs`.                                    | scripts/debt/intake-manual.js                                                         | 32        | code-quality  | E0     |
+| DEBT-1264 | Prefer `node:path` over `path`.                                | scripts/debt/intake-manual.js                                                         | 33        | code-quality  | E0     |
+| DEBT-1265 | Prefer `node:crypto` over `crypto`.                            | scripts/debt/intake-manual.js                                                         | 34        | code-quality  | E0     |
+| DEBT-1266 | Prefer `node:child_process` over `child_process`.              | scripts/debt/intake-manual.js                                                         | 35        | code-quality  | E0     |
+| DEBT-1268 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-manual.js                                                         | 102       | code-quality  | E0     |
+| DEBT-1270 | `String.raw` should be used to avoid escaping `\`.             | scripts/debt/intake-manual.js                                                         | 172       | code-quality  | E0     |
+| DEBT-1271 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-manual.js                                                         | 267       | code-quality  | E0     |
+| DEBT-1273 | Prefer `node:fs` over `fs`.                                    | scripts/debt/intake-pr-deferred.js                                                    | 29        | code-quality  | E0     |
+| DEBT-1274 | Prefer `node:path` over `path`.                                | scripts/debt/intake-pr-deferred.js                                                    | 30        | code-quality  | E0     |
+| DEBT-1275 | Prefer `node:crypto` over `crypto`.                            | scripts/debt/intake-pr-deferred.js                                                    | 31        | code-quality  | E0     |
+| DEBT-1276 | Prefer `node:child_process` over `child_process`.              | scripts/debt/intake-pr-deferred.js                                                    | 32        | code-quality  | E0     |
+| DEBT-1278 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-pr-deferred.js                                                    | 95        | code-quality  | E0     |
+| DEBT-1279 | `String.raw` should be used to avoid escaping `\`.             | scripts/debt/intake-pr-deferred.js                                                    | 152       | code-quality  | E0     |
+| DEBT-1280 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-pr-deferred.js                                                    | 226       | code-quality  | E0     |
+| DEBT-1281 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-pr-deferred.js                                                    | 236       | code-quality  | E0     |
+| DEBT-1282 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/intake-pr-deferred.js                                                    | 280       | code-quality  | E0     |
+| DEBT-1284 | Prefer `node:fs` over `fs`.                                    | scripts/debt/sync-sonarcloud.js                                                       | 29        | code-quality  | E0     |
+| DEBT-1285 | Prefer `node:path` over `path`.                                | scripts/debt/sync-sonarcloud.js                                                       | 30        | code-quality  | E0     |
+| DEBT-1286 | Prefer `node:crypto` over `crypto`.                            | scripts/debt/sync-sonarcloud.js                                                       | 31        | code-quality  | E0     |
+| DEBT-1287 | Prefer `node:readline` over `readline`.                        | scripts/debt/sync-sonarcloud.js                                                       | 33        | code-quality  | E0     |
+| DEBT-1289 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/sync-sonarcloud.js                                                       | 130       | code-quality  | E0     |
+| DEBT-1293 | Prefer `node:fs` over `fs`.                                    | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js                           | 12        | code-quality  | E0     |
+| DEBT-1294 | Prefer `node:path` over `path`.                                | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js                           | 13        | code-quality  | E0     |
+| DEBT-1295 | Prefer `Number.parseInt` over `parseInt`.                      | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js                           | 49        | code-quality  | E0     |
+| DEBT-1297 | Prefer `node:child_process` over `child_process`.              | scripts/debt/consolidate-all.js                                                       | 12        | code-quality  | E0     |
+| DEBT-1298 | Prefer `node:path` over `path`.                                | scripts/debt/consolidate-all.js                                                       | 13        | code-quality  | E0     |
+| DEBT-1299 | Prefer `node:fs` over `fs`.                                    | scripts/debt/consolidate-all.js                                                       | 14        | code-quality  | E0     |
+| DEBT-1300 | Prefer `node:fs` over `fs`.                                    | scripts/debt/dedup-multi-pass.js                                                      | 19        | code-quality  | E0     |
+| DEBT-1301 | Prefer `node:path` over `path`.                                | scripts/debt/dedup-multi-pass.js                                                      | 20        | code-quality  | E0     |
+| DEBT-1302 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/dedup-multi-pass.js                                                      | 71        | code-quality  | E0     |
+| DEBT-1303 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/dedup-multi-pass.js                                                      | 72        | code-quality  | E0     |
+| DEBT-1304 | Prefer `node:fs` over `fs`.                                    | scripts/debt/extract-audits.js                                                        | 15        | code-quality  | E0     |
+| DEBT-1305 | Prefer `node:path` over `path`.                                | scripts/debt/extract-audits.js                                                        | 16        | code-quality  | E0     |
+| DEBT-1306 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/extract-audits.js                                                        | 62        | code-quality  | E0     |
+| DEBT-1308 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/extract-audits.js                                                        | 167       | code-quality  | E0     |
+| DEBT-1309 | Prefer `node:fs` over `fs`.                                    | scripts/debt/extract-reviews.js                                                       | 15        | code-quality  | E0     |
+| DEBT-1310 | Prefer `node:path` over `path`.                                | scripts/debt/extract-reviews.js                                                       | 16        | code-quality  | E0     |
+| DEBT-1311 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/debt/extract-reviews.js                                                       | 60        | code-quality  | E0     |
+| DEBT-1313 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/extract-reviews.js                                                       | 165       | code-quality  | E0     |
+| DEBT-1314 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/extract-reviews.js                                                       | 199       | code-quality  | E0     |
+| DEBT-1316 | Prefer `node:fs` over `fs`.                                    | scripts/debt/generate-views.js                                                        | 17        | code-quality  | E0     |
+| DEBT-1317 | Prefer `node:path` over `path`.                                | scripts/debt/generate-views.js                                                        | 18        | code-quality  | E0     |
+| DEBT-1318 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/generate-views.js                                                        | 47        | code-quality  | E0     |
+| DEBT-1319 | `String.raw` should be used to avoid escaping `\`.             | scripts/debt/generate-views.js                                                        | 47        | code-quality  | E0     |
+| DEBT-1321 | Prefer `node:fs` over `fs`.                                    | scripts/debt/normalize-all.js                                                         | 14        | code-quality  | E0     |
+| DEBT-1322 | Prefer `node:path` over `path`.                                | scripts/debt/normalize-all.js                                                         | 15        | code-quality  | E0     |
+| DEBT-1323 | Prefer `node:crypto` over `crypto`.                            | scripts/debt/normalize-all.js                                                         | 16        | code-quality  | E0     |
+| DEBT-1325 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/debt/normalize-all.js                                                         | 138       | code-quality  | E0     |
+| DEBT-1327 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/migrate-existing-findings.js                                                  | 56        | code-quality  | E0     |
+| DEBT-1328 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                                   | 186       | code-quality  | E0     |
+| DEBT-1329 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                                   | 207       | code-quality  | E0     |
+| DEBT-1331 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/aggregate-audit-findings.js                                                   | 468       | code-quality  | E0     |
+| DEBT-1332 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/aggregate-audit-findings.js                                                   | 511       | code-quality  | E0     |
+| DEBT-1333 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/aggregate-audit-findings.js                                                   | 552       | code-quality  | E0     |
+| DEBT-1336 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/aggregate-audit-findings.js                                                   | 760       | code-quality  | E0     |
+| DEBT-1340 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                                   | 521       | code-quality  | E0     |
+| DEBT-1342 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                                   | 476       | code-quality  | E0     |
+| DEBT-1344 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/check-doc-headers.js                                                          | 42        | performance   | E0     |
+| DEBT-1345 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                                 | 71        | code-quality  | E0     |
+| DEBT-1346 | Prefer `Math.min()` to simplify ternary expressions.           | scripts/run-consolidation.js                                                          | 539       | code-quality  | E0     |
+| DEBT-1347 | Prefer `Math.max()` to simplify ternary expressions.           | scripts/run-consolidation.js                                                          | 540       | code-quality  | E0     |
+| DEBT-1348 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                                 | 109       | code-quality  | E0     |
+| DEBT-1349 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                          | 135       | code-quality  | E0     |
+| DEBT-1350 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                          | 160       | code-quality  | E0     |
+| DEBT-1351 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                                 | 39        | code-quality  | E0     |
+| DEBT-1352 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                                 | 58        | code-quality  | E0     |
+| DEBT-1353 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                                 | 78        | code-quality  | E0     |
+| DEBT-1354 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-consolidation-status.js                                                 | 118       | code-quality  | E0     |
+| DEBT-1355 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                          | 103       | code-quality  | E0     |
+| DEBT-1356 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                          | 142       | code-quality  | E0     |
+| DEBT-1357 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                          | 180       | code-quality  | E0     |
+| DEBT-1359 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-pending-alerts.js                                                    | 51        | code-quality  | E0     |
+| DEBT-1362 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-backlog-health.js                                                       | 157       | code-quality  | E0     |
+| DEBT-1363 | Prefer `node:fs` over `fs`.                                    | scripts/append-hook-warning.js                                                        | 17        | code-quality  | E0     |
+| DEBT-1364 | Prefer `node:path` over `path`.                                | scripts/append-hook-warning.js                                                        | 18        | code-quality  | E0     |
+| DEBT-1365 | Prefer `node:fs` over `fs`.                                    | scripts/generate-pending-alerts.js                                                    | 19        | code-quality  | E0     |
+| DEBT-1366 | Prefer `node:path` over `path`.                                | scripts/generate-pending-alerts.js                                                    | 20        | code-quality  | E0     |
+| DEBT-1367 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/generate-pending-alerts.js                                                    | 72        | code-quality  | E0     |
+| DEBT-1369 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 72        | code-quality  | E0     |
+| DEBT-1370 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 795       | performance   | E0     |
+| DEBT-1371 | Unexpected negated condition.                                  | scripts/check-roadmap-health.js                                                       | 251       | code-quality  | E0     |
+| DEBT-1372 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/check-agent-compliance.js                                                     | 29        | performance   | E0     |
+| DEBT-1374 | Replace this if-then-else flow by a single return statement.   | scripts/check-docs-light.js                                                           | 302       | code-quality  | E0     |
+| DEBT-1376 | Unexpected negated condition.                                  | scripts/validate-audit.js                                                             | 525       | code-quality  | E0     |
+| DEBT-1377 | Unexpected negated condition.                                  | scripts/validate-audit.js                                                             | 558       | code-quality  | E0     |
+| DEBT-1378 | Unexpected negated condition.                                  | scripts/validate-audit.js                                                             | 588       | code-quality  | E0     |
+| DEBT-1381 | Prefer `Number.isNaN` over `isNaN`.                            | scripts/check-review-needed.js                                                        | 216       | code-quality  | E0     |
+| DEBT-1382 | Use concise character class syntax '\D' instead of '[^0-9]'.   | scripts/check-pattern-sync.js                                                         | 41        | code-quality  | E0     |
+| DEBT-1383 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-sync.js                                                         | 243       | code-quality  | E0     |
+| DEBT-1384 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/analyze-learning-effectiveness.js                                             | 253       | code-quality  | E0     |
+| DEBT-1385 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 478       | code-quality  | E0     |
+| DEBT-1386 | `String.raw` should be used to avoid escaping `\`.             | scripts/analyze-learning-effectiveness.js                                             | 478       | code-quality  | E0     |
+| DEBT-1387 | `String.raw` should be used to avoid escaping `\`.             | scripts/analyze-learning-effectiveness.js                                             | 479       | code-quality  | E0     |
+| DEBT-1388 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-sync.js                                                         | 67        | code-quality  | E0     |
+| DEBT-1391 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 388       | code-quality  | E0     |
+| DEBT-1392 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 590       | code-quality  | E0     |
+| DEBT-1393 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 591       | code-quality  | E0     |
+| DEBT-1395 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 727       | code-quality  | E0     |
+| DEBT-1396 | Remove the declaration of the unused 'trends' variable.        | scripts/analyze-learning-effectiveness.js                                             | 791       | code-quality  | E0     |
+| DEBT-1399 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-pattern-sync.js                                                         | 45        | code-quality  | E0     |
+| DEBT-1400 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-pattern-sync.js                                                         | 121       | code-quality  | E0     |
+| DEBT-1401 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/check-pattern-sync.js                                                         | 263       | performance   | E0     |
+| DEBT-1402 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 27        | code-quality  | E0     |
+| DEBT-1403 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 28        | code-quality  | E0     |
+| DEBT-1404 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 29        | code-quality  | E0     |
+| DEBT-1405 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 30        | code-quality  | E0     |
+| DEBT-1407 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 31        | code-quality  | E0     |
+| DEBT-1408 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 46        | code-quality  | E0     |
+| DEBT-1409 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 47        | code-quality  | E0     |
+| DEBT-1410 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 48        | code-quality  | E0     |
+| DEBT-1411 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 49        | code-quality  | E0     |
+| DEBT-1412 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 50        | code-quality  | E0     |
+| DEBT-1413 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 51        | code-quality  | E0     |
+| DEBT-1414 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 68        | code-quality  | E0     |
+| DEBT-1415 | `String.raw` should be used to avoid escaping `\`.             | scripts/lib/security-helpers.js                                                       | 68        | code-quality  | E0     |
+| DEBT-1416 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 233       | code-quality  | E0     |
+| DEBT-1417 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 234       | code-quality  | E0     |
+| DEBT-1418 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/security-helpers.js                                                       | 235       | code-quality  | E0     |
+| DEBT-1420 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/lib/security-helpers.js                                                       | 288       | code-quality  | E0     |
+| DEBT-1421 | Prefer `Number.isNaN` over `isNaN`.                            | scripts/lib/security-helpers.js                                                       | 289       | code-quality  | E0     |
+| DEBT-1423 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 75        | code-quality  | E0     |
+| DEBT-1424 | `String.raw` should be used to avoid escaping `\`.             | scripts/analyze-learning-effectiveness.js                                             | 75        | code-quality  | E0     |
+| DEBT-1426 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/analyze-learning-effectiveness.js                                             | 1227      | code-quality  | E0     |
+| DEBT-1427 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/run-consolidation.js                                                          | 39        | code-quality  | E0     |
+| DEBT-1428 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/run-consolidation.js                                                          | 40        | code-quality  | E0     |
+| DEBT-1429 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/run-consolidation.js                                                          | 41        | code-quality  | E0     |
+| DEBT-1430 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 59        | code-quality  | E0     |
+| DEBT-1431 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 60        | code-quality  | E0     |
+| DEBT-1432 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 61        | code-quality  | E0     |
+| DEBT-1433 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 62        | code-quality  | E0     |
+| DEBT-1434 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 63        | code-quality  | E0     |
+| DEBT-1435 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 64        | code-quality  | E0     |
+| DEBT-1437 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 728       | code-quality  | E0     |
+| DEBT-1438 | Prefer `Number.isNaN` over `isNaN`.                            | scripts/analyze-learning-effectiveness.js                                             | 1228      | code-quality  | E0     |
+| DEBT-1439 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 47        | code-quality  | E0     |
+| DEBT-1440 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 48        | code-quality  | E0     |
+| DEBT-1441 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/analyze-learning-effectiveness.js                                             | 49        | code-quality  | E0     |
+| DEBT-1442 | Expected a `for-of` loop instead of a `for` loop with thi...   | scripts/analyze-learning-effectiveness.js                                             | 248       | code-quality  | E0     |
+| DEBT-1443 | Expected a `for-of` loop instead of a `for` loop with thi...   | scripts/analyze-learning-effectiveness.js                                             | 334       | code-quality  | E0     |
+| DEBT-1445 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/analyze-learning-effectiveness.js                                             | 365       | code-quality  | E0     |
+| DEBT-1454 | The catch parameter `analysisErr` should be named `error_`.    | scripts/run-consolidation.js                                                          | 715       | code-quality  | E0     |
+| DEBT-1455 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 43        | code-quality  | E0     |
+| DEBT-1456 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 28        | code-quality  | E0     |
+| DEBT-1457 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 29        | code-quality  | E0     |
+| DEBT-1458 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 30        | code-quality  | E0     |
+| DEBT-1459 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 31        | code-quality  | E0     |
+| DEBT-1460 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 33        | code-quality  | E0     |
+| DEBT-1461 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 34        | code-quality  | E0     |
+| DEBT-1462 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 26        | code-quality  | E0     |
+| DEBT-1463 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 27        | code-quality  | E0     |
+| DEBT-1464 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 32        | code-quality  | E0     |
+| DEBT-1465 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 35        | code-quality  | E0     |
+| DEBT-1466 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 36        | code-quality  | E0     |
+| DEBT-1467 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 37        | code-quality  | E0     |
+| DEBT-1468 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 38        | code-quality  | E0     |
+| DEBT-1469 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 39        | code-quality  | E0     |
+| DEBT-1470 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/lib/validate-paths.js                                                         | 128       | code-quality  | E0     |
+| DEBT-1474 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | scripts/secrets/decrypt-secrets.js                                                    | 155       | code-quality  | E0     |
+| DEBT-1477 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | scripts/secrets/encrypt-secrets.js                                                    | 113       | code-quality  | E0     |
+| DEBT-1479 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/secrets/decrypt-secrets.js                                                    | 178       | performance   | E0     |
+| DEBT-1480 | Remove this unused import of 'statSync'.                       | scripts/validate-canon-schema.js                                                      | 20        | code-quality  | E0     |
+| DEBT-1481 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/security-check.js                                                             | 160       | code-quality  | E0     |
+| DEBT-1484 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/verify-sonar-phase.js                                                         | 248       | code-quality  | E0     |
+| DEBT-1485 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/verify-sonar-phase.js                                                         | 249       | code-quality  | E0     |
+| DEBT-1486 | Handle this exception or don't catch it at all.                | scripts/check-docs-light.js                                                           | 686       | code-quality  | E0     |
+| DEBT-1487 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/verify-sonar-phase.js                                                         | 221       | code-quality  | E0     |
+| DEBT-1488 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/archive-doc.js                                                                | 523       | code-quality  | E0     |
+| DEBT-1489 | This assertion is unnecessary since it does not change th...   | functions/src/admin.ts                                                                | 1108      | code-quality  | E0     |
+| DEBT-1491 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-pattern-compliance.js                                                   | 735       | code-quality  | E0     |
+| DEBT-1494 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 823       | performance   | E0     |
+| DEBT-1495 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 826       | performance   | E0     |
+| DEBT-1496 | 'data.mood' will use Object's default stringification for...   | components/notebook/pages/history-page.tsx                                            | 73        | code-quality  | E0     |
+| DEBT-1497 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 858       | performance   | E0     |
+| DEBT-1498 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/update-readme-status.js                                                       | 214       | code-quality  | E0     |
+| DEBT-1499 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 829       | performance   | E0     |
+| DEBT-1501 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/verify-sonar-phase.js                                                         | 34        | code-quality  | E0     |
+| DEBT-1502 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/verify-sonar-phase.js                                                         | 191       | code-quality  | E0     |
+| DEBT-1503 | Remove the declaration of the unused '\_phaseConfig' varia...  | scripts/verify-sonar-phase.js                                                         | 382       | code-quality  | E0     |
+| DEBT-1504 | Remove the declaration of the unused 'found' variable.         | docs/archive/obsolete-scripts-2026-02/generate-sonar-report-with-snippets.js          | 181       | code-quality  | E0     |
+| DEBT-1506 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                             | 111       | code-quality  | E0     |
+| DEBT-1507 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                             | 112       | code-quality  | E0     |
+| DEBT-1508 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                             | 113       | code-quality  | E0     |
+| DEBT-1509 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                             | 114       | code-quality  | E0     |
+| DEBT-1510 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                             | 115       | code-quality  | E0     |
+| DEBT-1511 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-detailed-sonar-report.js                                             | 116       | code-quality  | E0     |
+| DEBT-1513 | Remove the declaration of the unused 'found' variable.         | scripts/generate-detailed-sonar-report.js                                             | 274       | code-quality  | E0     |
+| DEBT-1514 | Remove the declaration of the unused 'found' variable.         | scripts/generate-detailed-sonar-report.js                                             | 329       | code-quality  | E0     |
+| DEBT-1516 | Remove the declaration of the unused 'found' variable.         | scripts/generate-detailed-sonar-report.js                                             | 368       | code-quality  | E0     |
+| DEBT-1518 | Prefer `globalThis` over `window`.                             | components/admin/errors-tab.tsx                                                       | 399       | code-quality  | E0     |
+| DEBT-1519 | Prefer `globalThis` over `window`.                             | components/admin/errors-tab.tsx                                                       | 400       | code-quality  | E0     |
+| DEBT-1520 | Prefer `globalThis` over `window`.                             | components/admin/errors-tab.tsx                                                       | 728       | code-quality  | E0     |
+| DEBT-1521 | Prefer `globalThis` over `window`.                             | components/admin/errors-tab.tsx                                                       | 729       | code-quality  | E0     |
+| DEBT-1522 | Prefer `globalThis` over `window`.                             | components/admin/users-tab.tsx                                                        | 339       | code-quality  | E0     |
+| DEBT-1523 | Prefer `globalThis` over `window`.                             | components/admin/users-tab.tsx                                                        | 340       | code-quality  | E0     |
+| DEBT-1529 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                             | 118       | code-quality  | E0     |
+| DEBT-1530 | Prefer `globalThis.window` over `window`.                      | lib/utils/error-export.ts                                                             | 118       | code-quality  | E0     |
+| DEBT-1531 | Prefer `globalThis` over `window`.                             | lib/utils/error-export.ts                                                             | 118       | code-quality  | E0     |
+| DEBT-1532 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                             | 123       | code-quality  | E0     |
+| DEBT-1533 | 'date-fns' imported multiple times.                            | components/admin/users-tab.tsx                                                        | 27        | code-quality  | E0     |
+| DEBT-1534 | 'date-fns' imported multiple times.                            | components/admin/users-tab.tsx                                                        | 28        | code-quality  | E0     |
+| DEBT-1536 | Prefer `Math.max()` to simplify ternary expressions.           | components/admin/users-tab.tsx                                                        | 119       | code-quality  | E0     |
+| DEBT-1539 | Mark the props of the component as read-only.                  | lib/contexts/admin-tab-context.tsx                                                    | 66        | code-quality  | E0     |
+| DEBT-1540 | useState call is not destructured into value + setter pair     | lib/contexts/admin-tab-context.tsx                                                    | 67        | code-quality  | E0     |
+| DEBT-1542 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                             | 122       | code-quality  | E0     |
+| DEBT-1543 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                             | 124       | code-quality  | E0     |
+| DEBT-1544 | Prefer `globalThis.window` over `window`.                      | lib/utils/error-export.ts                                                             | 124       | code-quality  | E0     |
+| DEBT-1545 | Prefer `globalThis` over `window`.                             | lib/utils/error-export.ts                                                             | 124       | code-quality  | E0     |
+| DEBT-1546 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                             | 135       | code-quality  | E0     |
+| DEBT-1547 | Prefer `globalThis.window` over `window`.                      | lib/utils/error-export.ts                                                             | 135       | code-quality  | E0     |
+| DEBT-1548 | Unexpected negated condition.                                  | lib/utils/error-export.ts                                                             | 136       | code-quality  | E0     |
+| DEBT-1549 | Prefer `globalThis.window` over `window`.                      | lib/utils/error-export.ts                                                             | 136       | code-quality  | E0     |
+| DEBT-1550 | 'PerformanceTiming' is deprecated.                             | lib/utils/error-export.ts                                                             | 154       | code-quality  | E0     |
+| DEBT-1551 | 'navigationStart' is deprecated.                               | lib/utils/error-export.ts                                                             | 157       | code-quality  | E0     |
+| DEBT-1552 | 'loadEventEnd' is deprecated.                                  | lib/utils/error-export.ts                                                             | 158       | code-quality  | E0     |
+| DEBT-1553 | 'domContentLoadedEventEnd' is deprecated.                      | lib/utils/error-export.ts                                                             | 159       | code-quality  | E0     |
+| DEBT-1555 | The signature '(commandId: string, showUI?: boolean \| und...  | lib/utils/error-export.ts                                                             | 318       | code-quality  | E0     |
+| DEBT-1558 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/privileges-tab.tsx                                                   | 305       | code-quality  | E0     |
+| DEBT-1560 | `BUILT_IN_TYPES` should be a `Set`, and use `BUILT_IN_TYP...   | components/admin/privileges-tab.tsx                                                   | 31        | performance   | E0     |
+| DEBT-1566 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/privileges-tab.tsx                                                   | 509       | code-quality  | E0     |
+| DEBT-1569 | Prefer `Number.parseInt` over `parseInt`.                      | functions/src/admin.ts                                                                | 3500      | code-quality  | E0     |
+| DEBT-1570 | Prefer `Number.parseFloat` over `parseFloat`.                  | functions/src/admin.ts                                                                | 3568      | code-quality  | E0     |
+| DEBT-1572 | Prefer negative index over length minus index for `slice`.     | scripts/aggregate-audit-findings.js                                                   | 330       | performance   | E0     |
+| DEBT-1573 | Remove this unused import of 'readdirSync'.                    | scripts/aggregate-audit-findings.js                                                   | 21        | code-quality  | E0     |
+| DEBT-1574 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/aggregate-audit-findings.js                                                   | 236       | code-quality  | E0     |
+| DEBT-1575 | `String.raw` should be used to avoid escaping `\`.             | scripts/aggregate-audit-findings.js                                                   | 236       | code-quality  | E0     |
+| DEBT-1576 | Unnecessary use of conditional expression for default ass...   | scripts/aggregate-audit-findings.js                                                   | 1154      | code-quality  | E0     |
+| DEBT-1579 | This pattern can be replaced with '\r\n'.                      | scripts/check-docs-light.js                                                           | 158       | code-quality  | E0     |
+| DEBT-1580 | This pattern can be replaced with '\r'.                        | scripts/check-docs-light.js                                                           | 158       | code-quality  | E0     |
+| DEBT-1581 | Replace this union type with a type alias.                     | functions/src/admin.ts                                                                | 2324      | code-quality  | E0     |
+| DEBT-1582 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 274       | code-quality  | E0     |
+| DEBT-1583 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 276       | code-quality  | E0     |
+| DEBT-1584 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 278       | code-quality  | E0     |
+| DEBT-1585 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 283       | code-quality  | E0     |
+| DEBT-1586 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                      | 285       | code-quality  | E0     |
+| DEBT-1589 | Mark the props of the component as read-only.                  | components/admin/logs-tab.tsx                                                         | 173       | code-quality  | E0     |
+| DEBT-1593 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-cross-doc-deps.js                                                       | 187       | code-quality  | E0     |
+| DEBT-1594 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-cross-doc-deps.js                                                       | 191       | code-quality  | E0     |
+| DEBT-1595 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-cross-doc-deps.js                                                       | 212       | code-quality  | E0     |
+| DEBT-1596 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-cross-doc-deps.js                                                       | 216       | code-quality  | E0     |
+| DEBT-1597 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/run-consolidation.js                                                          | 89        | code-quality  | E0     |
+| DEBT-1598 | `String.raw` should be used to avoid escaping `\`.             | scripts/run-consolidation.js                                                          | 89        | code-quality  | E0     |
+| DEBT-1599 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                          | 122       | code-quality  | E0     |
+| DEBT-1600 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/run-consolidation.js                                                          | 55        | performance   | E0     |
+| DEBT-1601 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/run-consolidation.js                                                          | 218       | code-quality  | E0     |
+| DEBT-1604 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/check-cross-doc-deps.js                                                       | 27        | performance   | E0     |
+| DEBT-1606 | Remove this unused import of 'statSync'.                       | scripts/security-check.js                                                             | 20        | code-quality  | E0     |
+| DEBT-1607 | Remove this unused import of 'isAbsolute'.                     | scripts/security-check.js                                                             | 22        | code-quality  | E0     |
+| DEBT-1608 | Unexpected negated condition.                                  | scripts/check-backlog-health.js                                                       | 266       | code-quality  | E0     |
+| DEBT-1609 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-backlog-health.js                                                       | 29        | code-quality  | E0     |
+| DEBT-1610 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-backlog-health.js                                                       | 30        | code-quality  | E0     |
+| DEBT-1611 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-backlog-health.js                                                       | 31        | code-quality  | E0     |
+| DEBT-1612 | Prefer `Number.parseInt` over `parseInt`.                      | scripts/check-backlog-health.js                                                       | 32        | code-quality  | E0     |
+| DEBT-1613 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-backlog-health.js                                                       | 261       | code-quality  | E0     |
+| DEBT-1615 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/utils/admin-error-utils.ts                                                        | 19        | code-quality  | E0     |
+| DEBT-1616 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/utils/admin-error-utils.ts                                                        | 21        | code-quality  | E0     |
+| DEBT-1618 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/utils/admin-error-utils.ts                                                        | 27        | code-quality  | E0     |
+| DEBT-1619 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/utils/admin-error-utils.ts                                                        | 33        | code-quality  | E0     |
+| DEBT-1620 | `components` should be a `Set`, and use `components.has()...   | tests/error-knowledge-base.test.ts                                                    | 144       | performance   | E0     |
+| DEBT-1621 | Mark the props of the component as read-only.                  | components/admin/errors-tab.tsx                                                       | 139       | code-quality  | E0     |
+| DEBT-1628 | Prefer `globalThis.window` over `window`.                      | app/dev/page.tsx                                                                      | 30        | code-quality  | E0     |
+| DEBT-1629 | Mark the props of the component as read-only.                  | components/dev/dev-dashboard.tsx                                                      | 24        | code-quality  | E0     |
+| DEBT-1630 | Mark the props of the component as read-only.                  | components/dev/dev-dashboard.tsx                                                      | 65        | code-quality  | E0     |
+| DEBT-1631 | Mark the props of the component as read-only.                  | components/dev/dev-tabs.tsx                                                           | 54        | code-quality  | E0     |
+| DEBT-1632 | Mark the props of the component as read-only.                  | components/dev/lighthouse-tab.tsx                                                     | 64        | code-quality  | E0     |
+| DEBT-1635 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/logger.ts                                                                         | 87        | code-quality  | E0     |
+| DEBT-1636 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/verify-skill-usage.js                                                         | 78        | code-quality  | E0     |
+| DEBT-1637 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/log-session-activity.js                                                       | 68        | code-quality  | E0     |
+| DEBT-1645 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | scripts/log-override.js                                                               | 73        | code-quality  | E0     |
+| DEBT-1646 | Do not call `Array#push()` multiple times.                     | scripts/check-triggers.js                                                             | 306       | performance   | E0     |
+| DEBT-1647 | Do not call `Array#push()` multiple times.                     | scripts/check-triggers.js                                                             | 307       | performance   | E0     |
+| DEBT-1648 | Remove the declaration of the unused 'isSession' variable.     | scripts/validate-skill-config.js                                                      | 113       | code-quality  | E0     |
+| DEBT-1650 | `String.raw` should be used to avoid escaping `\`.             | scripts/validate-skill-config.js                                                      | 118       | code-quality  | E0     |
+| DEBT-1651 | `String.raw` should be used to avoid escaping `\`.             | scripts/validate-skill-config.js                                                      | 134       | code-quality  | E0     |
+| DEBT-1652 | `args` should be a `Set`, and use `args.has()` to check e...   | scripts/verify-skill-usage.js                                                         | 222       | performance   | E0     |
+| DEBT-1653 | Do not call `Array#push()` multiple times.                     | hooks/use-journal.ts                                                                  | 133       | performance   | E0     |
+| DEBT-1656 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                                   | 360       | code-quality  | E0     |
+| DEBT-1657 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                                   | 373       | code-quality  | E0     |
+| DEBT-1658 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                                   | 374       | code-quality  | E0     |
+| DEBT-1660 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-pattern-compliance.js                                                   | 787       | code-quality  | E0     |
+| DEBT-1661 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-pattern-compliance.js                                                   | 894       | code-quality  | E0     |
+| DEBT-1662 | Prefer `Number.parseInt` over `parseInt`.                      | app/meetings/all/page.tsx                                                             | 223       | code-quality  | E0     |
+| DEBT-1663 | Prefer `Number.parseInt` over `parseInt`.                      | app/meetings/all/page.tsx                                                             | 240       | code-quality  | E0     |
+| DEBT-1671 | This assertion is unnecessary since it does not change th...   | components/journal/entry-detail-dialog.tsx                                            | 315       | code-quality  | E0     |
+| DEBT-1672 | This assertion is unnecessary since it does not change th...   | components/journal/entry-detail-dialog.tsx                                            | 362       | code-quality  | E0     |
+| DEBT-1674 | Visible, non-interactive elements with click handlers mus...   | components/journal/entry-feed.tsx                                                     | 345       | code-quality  | E0     |
+| DEBT-1677 | Prefer `globalThis` over `window`.                             | components/notebook/features/enhanced-mood-selector.tsx                               | 77        | code-quality  | E0     |
+| DEBT-1678 | 'lucide-react' imported multiple times.                        | components/notebook/pages/resources-page.tsx                                          | 20        | code-quality  | E0     |
+| DEBT-1679 | Prefer `Number.parseInt` over `parseInt`.                      | components/notebook/pages/resources-page.tsx                                          | 52        | code-quality  | E0     |
+| DEBT-1680 | Prefer `globalThis` over `window`.                             | components/status/offline-indicator.tsx                                               | 26        | code-quality  | E0     |
+| DEBT-1681 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                                  | 74        | code-quality  | E0     |
+| DEBT-1682 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                                  | 76        | code-quality  | E0     |
+| DEBT-1683 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                                  | 79        | code-quality  | E0     |
+| DEBT-1684 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                                  | 82        | code-quality  | E0     |
+| DEBT-1685 | 'data.action \|\| ""' will use Object's default stringifica... | hooks/use-journal.ts                                                                  | 108       | code-quality  | E0     |
+| DEBT-1686 | 'data.step4_gratitude \|\| ""' will use Object's default st... | hooks/use-journal.ts                                                                  | 113       | code-quality  | E0     |
+| DEBT-1687 | Do not call `Array#push()` multiple times.                     | hooks/use-journal.ts                                                                  | 114       | performance   | E0     |
+| DEBT-1688 | 'v \|\| ""' will use Object's default stringification forma... | hooks/use-journal.ts                                                                  | 117       | code-quality  | E0     |
+| DEBT-1689 | 'data.title \|\| ""' will use Object's default stringificat... | hooks/use-journal.ts                                                                  | 123       | code-quality  | E0     |
+| DEBT-1690 | Do not call `Array#push()` multiple times.                     | hooks/use-journal.ts                                                                  | 124       | performance   | E0     |
+| DEBT-1691 | 'data.content \|\| ""' will use Object's default stringific... | hooks/use-journal.ts                                                                  | 124       | code-quality  | E0     |
+| DEBT-1692 | 'data.note \|\| ""' will use Object's default stringificati... | hooks/use-journal.ts                                                                  | 127       | code-quality  | E0     |
+| DEBT-1693 | 'data.resentments \|\| ""' will use Object's default string... | hooks/use-journal.ts                                                                  | 130       | code-quality  | E0     |
+| DEBT-1694 | 'data.dishonesty \|\| ""' will use Object's default stringi... | hooks/use-journal.ts                                                                  | 131       | code-quality  | E0     |
+| DEBT-1695 | 'data.apologies \|\| ""' will use Object's default stringif... | hooks/use-journal.ts                                                                  | 132       | code-quality  | E0     |
+| DEBT-1696 | 'data.successes \|\| ""' will use Object's default stringif... | hooks/use-journal.ts                                                                  | 133       | code-quality  | E0     |
+| DEBT-1697 | Prefer `Number.parseInt` over `parseInt`.                      | lib/db/meetings.ts                                                                    | 50        | code-quality  | E0     |
+| DEBT-1698 | Prefer `globalThis.window` over `window`.                      | lib/firebase.ts                                                                       | 94        | code-quality  | E0     |
+| DEBT-1699 | Prefer `globalThis.window` over `window`.                      | lib/firebase.ts                                                                       | 142       | code-quality  | E0     |
+| DEBT-1700 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/ai-review.js                                                                  | 61        | code-quality  | E0     |
+| DEBT-1701 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/ai-review.js                                                                  | 64        | code-quality  | E0     |
+| DEBT-1702 | `String.raw` should be used to avoid escaping `\`.             | scripts/archive-doc.js                                                                | 383       | code-quality  | E0     |
+| DEBT-1703 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/archive-doc.js                                                                | 417       | code-quality  | E0     |
+| DEBT-1704 | `String.raw` should be used to avoid escaping `\`.             | scripts/archive-doc.js                                                                | 417       | code-quality  | E0     |
+| DEBT-1705 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/assign-review-tier.js                                                         | 33        | code-quality  | E0     |
+| DEBT-1706 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/assign-review-tier.js                                                         | 41        | code-quality  | E0     |
+| DEBT-1707 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-docs-light.js                                                           | 405       | code-quality  | E0     |
+| DEBT-1708 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-docs-light.js                                                           | 406       | code-quality  | E0     |
+| DEBT-1709 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-docs-light.js                                                           | 407       | code-quality  | E0     |
+| DEBT-1710 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-docs-light.js                                                           | 422       | code-quality  | E0     |
+| DEBT-1711 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/dedupe-quotes.ts                                                              | 218       | code-quality  | E0     |
+| DEBT-1712 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/enrich-addresses.ts                                                           | 92        | code-quality  | E0     |
+| DEBT-1713 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/enrich-addresses.ts                                                           | 93        | code-quality  | E0     |
+| DEBT-1714 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 166       | code-quality  | E0     |
+| DEBT-1715 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 167       | code-quality  | E0     |
+| DEBT-1716 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                               | 168       | code-quality  | E0     |
+| DEBT-1717 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 168       | code-quality  | E0     |
+| DEBT-1718 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 169       | code-quality  | E0     |
+| DEBT-1719 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                               | 169       | code-quality  | E0     |
+| DEBT-1720 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 170       | code-quality  | E0     |
+| DEBT-1721 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                               | 170       | code-quality  | E0     |
+| DEBT-1722 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 171       | code-quality  | E0     |
+| DEBT-1723 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                               | 171       | code-quality  | E0     |
+| DEBT-1724 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 172       | code-quality  | E0     |
+| DEBT-1725 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 173       | code-quality  | E0     |
+| DEBT-1726 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 174       | code-quality  | E0     |
+| DEBT-1727 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 175       | code-quality  | E0     |
+| DEBT-1728 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 176       | code-quality  | E0     |
+| DEBT-1729 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 232       | code-quality  | E0     |
+| DEBT-1730 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 321       | code-quality  | E0     |
+| DEBT-1731 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 458       | code-quality  | E0     |
+| DEBT-1732 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 515       | code-quality  | E0     |
+| DEBT-1734 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 669       | code-quality  | E0     |
+| DEBT-1735 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                               | 669       | code-quality  | E0     |
+| DEBT-1736 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                               | 671       | code-quality  | E0     |
+| DEBT-1737 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                               | 671       | code-quality  | E0     |
+| DEBT-1738 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 719       | performance   | E0     |
+| DEBT-1739 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 720       | performance   | E0     |
+| DEBT-1740 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 721       | performance   | E0     |
+| DEBT-1741 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 722       | performance   | E0     |
+| DEBT-1742 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 731       | performance   | E0     |
+| DEBT-1743 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 757       | performance   | E0     |
+| DEBT-1744 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 832       | performance   | E0     |
+| DEBT-1745 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/migrate-library-content.ts                                                    | 130       | code-quality  | E0     |
+| DEBT-1746 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/migrate-library-content.ts                                                    | 162       | code-quality  | E0     |
+| DEBT-1747 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/migrate-library-content.ts                                                    | 163       | code-quality  | E0     |
+| DEBT-1748 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 384       | code-quality  | E0     |
+| DEBT-1749 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 478       | code-quality  | E0     |
+| DEBT-1750 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 479       | code-quality  | E0     |
+| DEBT-1751 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 482       | code-quality  | E0     |
+| DEBT-1752 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 485       | code-quality  | E0     |
+| DEBT-1753 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 488       | code-quality  | E0     |
+| DEBT-1754 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 489       | code-quality  | E0     |
+| DEBT-1755 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 490       | code-quality  | E0     |
+| DEBT-1756 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 492       | code-quality  | E0     |
+| DEBT-1757 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 681       | code-quality  | E0     |
+| DEBT-1758 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 682       | code-quality  | E0     |
+| DEBT-1759 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 683       | code-quality  | E0     |
+| DEBT-1760 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 685       | code-quality  | E0     |
+| DEBT-1761 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 66        | code-quality  | E0     |
+| DEBT-1762 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 67        | code-quality  | E0     |
+| DEBT-1763 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 72        | code-quality  | E0     |
+| DEBT-1764 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                                 | 92        | code-quality  | E0     |
+| DEBT-1765 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                                 | 94        | code-quality  | E0     |
+| DEBT-1766 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                                 | 211       | code-quality  | E0     |
+| DEBT-1767 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 259       | code-quality  | E0     |
+| DEBT-1768 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 260       | code-quality  | E0     |
+| DEBT-1769 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 261       | code-quality  | E0     |
+| DEBT-1770 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 262       | code-quality  | E0     |
+| DEBT-1771 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 263       | code-quality  | E0     |
+| DEBT-1772 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 264       | code-quality  | E0     |
+| DEBT-1773 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 265       | code-quality  | E0     |
+| DEBT-1774 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 285       | code-quality  | E0     |
+| DEBT-1775 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                                 | 285       | code-quality  | E0     |
+| DEBT-1776 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/surface-lessons-learned.js                                                    | 400       | code-quality  | E0     |
+| DEBT-1777 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/surface-lessons-learned.js                                                    | 401       | code-quality  | E0     |
+| DEBT-1778 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/surface-lessons-learned.js                                                    | 402       | code-quality  | E0     |
+| DEBT-1779 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/surface-lessons-learned.js                                                    | 404       | code-quality  | E0     |
+| DEBT-1783 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/update-readme-status.js                                                       | 411       | code-quality  | E0     |
+| DEBT-1784 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/update-readme-status.js                                                       | 537       | code-quality  | E0     |
+| DEBT-1785 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/normalize-canon-ids.js                                                        | 57        | code-quality  | E0     |
+| DEBT-1786 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/normalize-canon-ids.js                                                        | 58        | code-quality  | E0     |
+| DEBT-1787 | `String.raw` should be used to avoid escaping `\`.             | scripts/normalize-canon-ids.js                                                        | 58        | code-quality  | E0     |
+| DEBT-1788 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/normalize-canon-ids.js                                                        | 68        | code-quality  | E0     |
+| DEBT-1792 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 718       | performance   | E0     |
+| DEBT-1793 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 745       | performance   | E0     |
+| DEBT-1794 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 746       | performance   | E0     |
+| DEBT-1795 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 747       | performance   | E0     |
+| DEBT-1796 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 748       | performance   | E0     |
+| DEBT-1797 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 765       | performance   | E0     |
+| DEBT-1798 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 766       | performance   | E0     |
+| DEBT-1799 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                               | 808       | performance   | E0     |
+| DEBT-1800 | Handle this exception or don't catch it at all.                | scripts/check-document-sync.js                                                        | 241       | code-quality  | E0     |
+| DEBT-1804 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/ai-review.js                                                                  | 62        | code-quality  | E0     |
+| DEBT-1805 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/assign-review-tier.js                                                         | 30        | code-quality  | E0     |
+| DEBT-1807 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                                   | 341       | code-quality  | E0     |
+| DEBT-1808 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                                   | 352       | code-quality  | E0     |
+| DEBT-1809 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                                   | 361       | code-quality  | E0     |
+| DEBT-1810 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                                   | 383       | code-quality  | E0     |
+| DEBT-1811 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                       | 106       | code-quality  | E0     |
+| DEBT-1812 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                                 | 88        | code-quality  | E0     |
+| DEBT-1813 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 57        | code-quality  | E0     |
+| DEBT-1814 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                                 | 65        | code-quality  | E0     |
+| DEBT-1817 | `String.raw` should be used to avoid escaping `\`.             | scripts/archive-doc.js                                                                | 347       | code-quality  | E0     |
+| DEBT-1818 | Unexpected negated condition.                                  | scripts/validate-phase-completion.js                                                  | 105       | code-quality  | E0     |
+| DEBT-1819 | Unexpected negated condition.                                  | scripts/phase-complete-check.js                                                       | 625       | code-quality  | E0     |
+| DEBT-1821 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/archive-doc.js                                                                | 382       | code-quality  | E0     |
+| DEBT-1832 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                                  | 24        | code-quality  | E0     |
+| DEBT-1833 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                                  | 42        | code-quality  | E0     |
+| DEBT-1834 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                                  | 61        | code-quality  | E0     |
+| DEBT-1835 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                                  | 80        | code-quality  | E0     |
+| DEBT-1836 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                                  | 136       | code-quality  | E0     |
+| DEBT-1837 | Prefer `globalThis` over `window`.                             | lib/recaptcha.ts                                                                      | 52        | code-quality  | E0     |
+| DEBT-1838 | Prefer `globalThis` over `window`.                             | lib/recaptcha.ts                                                                      | 54        | code-quality  | E0     |
+| DEBT-1839 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/retry-failures.ts                                                             | 58        | code-quality  | E0     |
+| DEBT-1840 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/retry-failures.ts                                                             | 59        | code-quality  | E0     |
+| DEBT-1841 | Prefer `Number.parseFloat` over `parseFloat`.                  | scripts/retry-failures.ts                                                             | 136       | code-quality  | E0     |
+| DEBT-1842 | Prefer `Number.parseFloat` over `parseFloat`.                  | scripts/enrich-addresses.ts                                                           | 164       | code-quality  | E0     |
+| DEBT-1847 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/import-nashville-links.ts                                                     | 206       | code-quality  | E0     |
+| DEBT-1851 | Prefer `String.fromCodePoint()` over `String.fromCharCode...   | components/growth/Step1WorksheetCard.tsx                                              | 413       | code-quality  | E0     |
+| DEBT-1853 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                                  | 78        | code-quality  | E0     |
+| DEBT-1854 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                                  | 80        | code-quality  | E0     |
+| DEBT-1855 | Prefer `globalThis` over `window`.                             | components/status/offline-indicator.tsx                                               | 23        | code-quality  | E0     |
+| DEBT-1856 | Prefer `globalThis` over `window`.                             | components/status/offline-indicator.tsx                                               | 27        | code-quality  | E0     |
+| DEBT-1857 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/admin.ts                                                                | 692       | code-quality  | E0     |
+| DEBT-1858 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/admin.ts                                                                | 696       | code-quality  | E0     |
+| DEBT-1860 | Prefer `globalThis` over `window`.                             | hooks/use-speech-recognition.ts                                                       | 35        | code-quality  | E0     |
+| DEBT-1861 | Prefer `globalThis.window` over `window`.                      | components/celebrations/confetti-burst.tsx                                            | 33        | code-quality  | E0     |
+| DEBT-1862 | Prefer `globalThis.window` over `window`.                      | components/celebrations/firework-burst.tsx                                            | 55        | code-quality  | E0     |
+| DEBT-1874 | 'data.mood' will use Object's default stringification for...   | hooks/use-journal.ts                                                                  | 145       | code-quality  | E0     |
+| DEBT-1877 | Visible, non-interactive elements with click handlers mus...   | components/journal/entry-detail-dialog.tsx                                            | 271       | code-quality  | E0     |
+| DEBT-1884 | Prefer `globalThis` over `window`.                             | components/pwa/install-prompt.tsx                                                     | 45        | code-quality  | E0     |
+| DEBT-1885 | Prefer `globalThis.window` over `window`.                      | hooks/use-speech-recognition.ts                                                       | 21        | code-quality  | E0     |
+| DEBT-1886 | Prefer `globalThis.window` over `window`.                      | hooks/use-speech-recognition.ts                                                       | 34        | code-quality  | E0     |
+| DEBT-1888 | 'lucide-react' imported multiple times.                        | components/growth/NightReviewCard.tsx                                                 | 19        | code-quality  | E0     |
+| DEBT-1889 | 'lucide-react' imported multiple times.                        | components/growth/SpotCheckCard.tsx                                                   | 20        | code-quality  | E0     |
+| DEBT-1890 | Use `export…from` to re-export `NotebookModuleId`.             | components/notebook/roadmap-modules.tsx                                               | 12        | code-quality  | E0     |
+| DEBT-1893 | Prefer `globalThis` over `window`.                             | components/pwa/install-prompt.tsx                                                     | 19        | code-quality  | E0     |
+| DEBT-1894 | Prefer `globalThis` over `window`.                             | components/pwa/install-prompt.tsx                                                     | 21        | code-quality  | E0     |
+| DEBT-1895 | Prefer `globalThis.window` over `window`.                      | components/ui/voice-text-area.tsx                                                     | 19        | code-quality  | E0     |
+| DEBT-1896 | '@/lib/db/meetings' imported multiple times.                   | components/admin/meetings-tab.tsx                                                     | 9         | code-quality  | E0     |
+| DEBT-1902 | Use `export…from` to re-export `useProfile`.                   | components/providers/auth-provider.tsx                                                | 22        | code-quality  | E0     |
+| DEBT-1903 | Use `export…from` to re-export `useDailyLog`.                  | components/providers/auth-provider.tsx                                                | 22        | code-quality  | E0     |
+| DEBT-1904 | Unexpected negated condition.                                  | components/notebook/pages/resources-page.tsx                                          | 236       | code-quality  | E0     |
+| DEBT-1905 | Unexpected negated condition.                                  | components/notebook/pages/resources-page.tsx                                          | 417       | code-quality  | E0     |
+| DEBT-1906 | 'unknown' overrides all other types in this union type.        | lib/types/daily-log.ts                                                                | 36        | code-quality  | E0     |
+| DEBT-1907 | Prefer `Number.parseInt` over `parseInt`.                      | lib/db/meetings.ts                                                                    | 26        | code-quality  | E0     |
+| DEBT-1908 | Prefer `Number.parseInt` over `parseInt`.                      | lib/db/meetings.ts                                                                    | 27        | code-quality  | E0     |
+| DEBT-1909 | 'cleanDays' PropType is defined but prop is never used         | components/notebook/book-cover.tsx                                                    | 27        | code-quality  | E0     |
+| DEBT-1910 | Unexpected negated condition.                                  | components/notebook/book-cover.tsx                                                    | 277       | code-quality  | E0     |
+| DEBT-1911 | 'next' imported multiple times.                                | app/layout.tsx                                                                        | 2         | code-quality  | E0     |
+| DEBT-1920 | API design inconsistency: Mixed return patterns                | lib/firestore-service.ts                                                              | 262       | code-quality  | E1     |
+| DEBT-1921 | Missing Content-Security-Policy header                         | firebase.json                                                                         | 29        | security      | E1     |
+| DEBT-1922 | User profile document allows direct client writes without...   | firestore.rules                                                                       | 26        | security      | E1     |
+| DEBT-1923 | Hardcoded reCAPTCHA site key in server-side code               | functions/src/recaptcha-verify.ts                                                     | 66        | security      | E1     |
+| DEBT-1924 | God component: dashboard-tab.tsx with excessive state man...   | components/admin/dashboard-tab.tsx                                                    | 952       | code-quality  | E1     |
+| DEBT-1925 | Any type usage in today-page.tsx snapshot handler              | components/notebook/pages/today-page.tsx                                              | 507       | code-quality  | E1     |
+| DEBT-1926 | Tight coupling between UI components and Firebase SDK          | hooks/use-journal.ts                                                                  | 350       | code-quality  | E1     |
+| DEBT-1927 | Hardcoded bucket name in Cloud Functions                       | functions/src/jobs.ts                                                                 | 602       | code-quality  | E1     |
+| DEBT-1928 | Inconsistent state management patterns across providers        | components/providers/auth-provider.tsx                                                | 38        | code-quality  | E1     |
+| DEBT-1929 | Anti-pattern: Firestore queries in components instead of ...   | hooks/use-journal.ts                                                                  | 277       | code-quality  | E1     |
+| DEBT-1930 | Missing dependency in useEffect for logs refresh               | components/admin/logs-tab.tsx                                                         | 418       | code-quality  | E1     |
+| DEBT-1931 | Missing loading state coordination across contexts             | hooks/use-journal.ts                                                                  | 428       | code-quality  | E1     |
+| DEBT-1932 | Missing error boundary in inventory form                       | components/journal/entry-forms/inventory-form.tsx                                     | 38        | code-quality  | E1     |
+| DEBT-1933 | Migration function does not verify source anonymous user ...   | functions/src/index.ts                                                                | 565       | security      | E1     |
+| DEBT-1934 | Missing abstraction for real-time subscriptions                | hooks/use-journal.ts                                                                  | 284       | code-quality  | E1     |
+| DEBT-1935 | Firestore timestamp validation inconsistency                   | hooks/use-journal.ts                                                                  | 178       | code-quality  | E1     |
+| DEBT-1936 | reCAPTCHA token made optional for data migration function      | functions/src/index.ts                                                                | 516       | security      | E1     |
+| DEBT-1937 | Migration function skips reCAPTCHA when token is missing       | functions/src/index.ts                                                                | 516       | security      | E1     |
+| DEBT-1938 | Journal and inventory entry data field accepts arbitrary ...   | functions/src/schemas.ts                                                              | 32        | security      | E1     |
+| DEBT-1939 | Race condition in parallel file processing                     | functions/src/jobs.ts                                                                 | 627       | code-quality  | E1     |
+| DEBT-1940 | CI workflow script injection via unsanitized file names        | .github/workflows/ci.yml                                                              | 64        | security      | E1     |
+| DEBT-1941 | Firestore security_logs collection missing from security ...   | firestore.rules                                                                       | 1         | security      | E1     |
+| DEBT-1960 | Hardcoded reCAPTCHA site key fallback in Cloud Functions       | functions/src/recaptcha-verify.ts                                                     | 0         | code-quality  | E0     |
+| DEBT-1963 | Functions code imports type from undeclared direct depend...   | functions/src/jobs.ts                                                                 | 0         | code-quality  | E0     |
+| DEBT-1969 | External URL dead: refugerecovery.org/meetings/ returns 404    | README.md                                                                             | 1         | documentation | E0     |
+| DEBT-1975 | Potential empty catch blocks in scripts                        | scripts/seed-real-data.ts                                                             | 0         | code-quality  | E0     |
+| DEBT-1979 | Duplicate Quote Widget Components (3 Variants)                 | components/widgets/daily-quote-card.tsx                                               | 0         | code-quality  | E1     |
+| DEBT-1980 | Inconsistent lib/db/ Write Patterns                            | lib/db/sober-living.ts                                                                | 0         | code-quality  | E1     |
+| DEBT-1981 | Duplicate generateSearchableText implementations               | hooks/use-journal.ts                                                                  | 0         | code-quality  | E1     |
+| DEBT-1982 | No environment validation/doctor script                        | scripts/                                                                              | 1         | code-quality  | E1     |
+| DEBT-1983 | Dual hooks directories: hooks/ and lib/hooks/                  | hooks/use-journal.ts                                                                  | 0         | code-quality  | E1     |
+| DEBT-1987 | Logger is present but lacks correlation/request IDs; trac...   | lib/logger.ts                                                                         | 99        | code-quality  | E2     |
+| DEBT-1989 | Potential Firestore-rules alignment risk for direct weekl...   | components/notebook/pages/today-page.tsx                                              | 0         | code-quality  | E1     |
+| DEBT-1991 | Oversized scripts: aggregate-audit-findings.js (63KB), ch...   | scripts/aggregate-audit-findings.js                                                   | 1         | process       | E2     |
+| DEBT-1992 | 8:1 console.log to logger ratio — production observabilit...   | app/                                                                                  | 1         | code-quality  | E2     |
+| DEBT-2022 | Structure: COMMAND_REFERENCE.md should be Tier 1 Canonical     | .claude/COMMAND_REFERENCE.md                                                          | 0         | documentation | E0     |
+| DEBT-2023 | Structure: AI_WORKFLOW.md should be Tier 1 Canonical           | AI_WORKFLOW.md                                                                        | 0         | documentation | E0     |
+| DEBT-2024 | SECURITY_CHECKLIST.md missing Document Version and Status      | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/agent_docs/SECURITY_CHECKLIST.md | 0         | documentation | E0     |
+| DEBT-2025 | APPCHECK_SETUP.md missing Document Version                     | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/APPCHECK_SETUP.md                | 0         | documentation | E0     |
+| DEBT-2026 | RECAPTCHA_REMOVAL_GUIDE.md missing Document Version            | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/RECAPTCHA_REMOVAL_GUIDE.md       | 0         | documentation | E0     |
+| DEBT-2027 | TESTING_PLAN.md missing Document Version                       | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/TESTING_PLAN.md                  | 0         | documentation | E0     |
+| DEBT-2028 | Code blocks missing language specifier                         | CLAUDE.md                                                                             | 0         | documentation | E0     |
+| DEBT-2029 | Inaccurate Firebase version in CLAUDE.md                       | CLAUDE.md                                                                             | 0         | documentation | E0     |
+| DEBT-2030 | DEVELOPMENT.md missing Status field in metadata                | DEVELOPMENT.md                                                                        | 0         | documentation | E0     |
+| DEBT-2031 | CODE_PATTERNS.md uses lowercase 'claude.md' instead of 'C...   | docs/agent_docs/CODE_PATTERNS.md                                                      | 0         | documentation | E0     |
+| DEBT-2032 | AI_REVIEW_PROCESS.md missing Status field                      | docs/AI_REVIEW_PROCESS.md                                                             | 0         | documentation | E0     |
+| DEBT-2033 | APPCHECK_SETUP.md missing Document Version field               | docs/APPCHECK_SETUP.md                                                                | 0         | documentation | E0     |
+| DEBT-2034 | Broken anchor link: ../ROADMAP.md#dependencies                 | docs/DOCUMENTATION_STANDARDS.md                                                       | 0         | documentation | E0     |
+| DEBT-2035 | INCIDENT_RESPONSE.md missing Document Version field            | docs/INCIDENT_RESPONSE.md                                                             | 0         | documentation | E0     |
+| DEBT-2036 | MCP_SETUP.md missing Status field                              | docs/MCP_SETUP.md                                                                     | 0         | documentation | E0     |
+| DEBT-2037 | TESTING_PLAN.md missing Document Version field                 | docs/TESTING_PLAN.md                                                                  | 0         | documentation | E0     |
+| DEBT-2038 | Structure: ROADMAP_LOG.md should be Tier 1 Canonical           | ROADMAP_LOG.md                                                                        | 0         | documentation | E0     |
+| DEBT-2039 | ROADMAP.md missing last updated date (stale > 30 days)         | ROADMAP.md                                                                            | 0         | documentation | E0     |
+| DEBT-2040 | Inconsistent heading levels in SESSION_CONTEXT.md              | SESSION_CONTEXT.md                                                                    | 0         | documentation | E0     |
+| DEBT-2041 | Line length exceeds recommended limit                          | SESSION_CONTEXT.md                                                                    | 0         | documentation | E0     |
+| DEBT-2042 | Structure: SESSION_CONTEXT.md should be Tier 1 Canonical       | SESSION_CONTEXT.md                                                                    | 0         | documentation | E0     |
+| DEBT-2043 | Structure: .claude/ directory contains Tier 1 candidates       | .claude/COMMAND_REFERENCE.md                                                          | 0         | documentation | E1     |
+| DEBT-2044 | EXPANSION_EVALUATION_TRACKER.md using deprecated date-bas...   | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md  | 0         | documentation | E1     |
+| DEBT-2045 | REVIEW_POLICY_ARCHITECTURE.md has conflicting status indi...   | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/REVIEW_POLICY_ARCHITECTURE.md    | 0         | documentation | E1     |
+| DEBT-2046 | Inconsistent terminology: 'skill' vs 'command' vs 'slash ...   | 127-154                                                                               | 0         | documentation | E1     |
+| DEBT-2047 | Inconsistent terminology: 'agent' vs 'subagent' vs 'worker'    | 156-174                                                                               | 0         | documentation | E1     |
+| DEBT-2048 | Duplication: Session Start Protocol in CLAUDE.md and AI_W...   | 21-42                                                                                 | 0         | documentation | E1     |
+| DEBT-2049 | Duplication: Compaction-resilient state persistence in CL...   | 395-425                                                                               | 0         | documentation | E1     |
+| DEBT-2050 | Inconsistent terminology: 'Cloud Functions' capitalization     | CLAUDE.md                                                                             | 72        | documentation | E1     |
+| DEBT-2051 | Inconsistent terminology: 'App Check' vs 'AppCheck' vs 'a...   | CLAUDE.md                                                                             | 74        | documentation | E1     |
+| DEBT-2052 | MONETIZATION_RESEARCH.md has stale Last Updated date (ove...   | docs/MONETIZATION_RESEARCH.md                                                         | 0         | documentation | E1     |
+| DEBT-2053 | PR_WORKFLOW_CHECKLIST.md missing Version History table         | docs/PR_WORKFLOW_CHECKLIST.md                                                         | 0         | documentation | E1     |
+| DEBT-2054 | Structure: SESSION_DECISIONS.md placement incorrect            | docs/SESSION_DECISIONS.md                                                             | 0         | documentation | E1     |
+| DEBT-2055 | Historical ideation document is unlinked                       | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md                                    | 0         | documentation | E1     |
+| DEBT-2056 | Master documentation index is not linked from entry points     | DOCUMENTATION_INDEX.md                                                                | 0         | documentation | E1     |
+| DEBT-2057 | Duplication: Agent/Skill Triggers table in CLAUDE.md and ...   | 129-144                                                                               | 0         | documentation | E2     |
+| DEBT-2388 | Quality: CLAUDE.md scores 8/10 - missing cross-references...   | CLAUDE.md                                                                             | 0         | documentation | E1     |
+| DEBT-2389 | Quality: .claude/agents/ docs lack usage examples              | .claude/agents/\*.md                                                                  | 0         | documentation | E2     |
+| DEBT-2390 | Quality: .claude/skills/ docs have inconsistent SKILL.md ...   | .claude/skills/\*/SKILL.md                                                            | 0         | documentation | E2     |
+| DEBT-2391 | Quality: DEVELOPMENT.md scores 7/10 - wall of text in Git...   | DEVELOPMENT.md                                                                        | 0         | documentation | E2     |
+| DEBT-2392 | Readability: DEVELOPMENT.md has 110-line section without ...   | DEVELOPMENT.md                                                                        | 0         | documentation | E2     |
+| DEBT-2393 | Gap: Missing overview for multi-ai audit system                | docs/multi-ai-audit/README.md                                                         | 0         | documentation | E2     |
+| DEBT-2394 | Quality: SECURITY.md scores 8/10 - clear but missing thre...   | docs/SECURITY.md                                                                      | 0         | documentation | E2     |
+| DEBT-2395 | Quality: SESSION_CONTEXT.md scores 6/10 - excessive sessi...   | SESSION_CONTEXT.md                                                                    | 0         | documentation | E2     |
+| DEBT-2396 | Readability: SESSION_CONTEXT.md session summaries are den...   | SESSION_CONTEXT.md                                                                    | 0         | documentation | E2     |
+| DEBT-2397 | Gap: Undocumented agent team workflows                         | CLAUDE.md                                                                             | 0         | documentation | E3     |
+| DEBT-2398 | Gap: No quickstart guide for new developers                    | DEVELOPMENT.md                                                                        | 0         | documentation | E3     |
+| DEBT-2399 | Gap: Undocumented core lib modules                             | lib/firestore-service.ts                                                              | 0         | documentation | E3     |
 
-## S3 - Low (324)
+## S3 - Low (711)
 
-| ID        | Title                                                          | File                                                               | Line | Category      | Effort |
-| --------- | -------------------------------------------------------------- | ------------------------------------------------------------------ | ---- | ------------- | ------ |
-| DEBT-0553 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-pattern-compliance.js                                | 419  | code-quality  | E0     |
-| DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/errors-tab.tsx                                    | 37   | code-quality  | E0     |
-| DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | components/admin/users-tab.tsx                                     | 563  | code-quality  | E0     |
-| DEBT-0556 | Visible, non-interactive elements with click handlers mus...   | components/journal/entry-detail-dialog.tsx                         | 18   | code-quality  | E0     |
-| DEBT-0557 | Visible, non-interactive elements with click handlers mus...   | components/journal/entry-feed.tsx                                  | 152  | code-quality  | E0     |
-| DEBT-0558 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/admin.ts                                             | 110  | code-quality  | E0     |
-| DEBT-0559 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                               | 72   | code-quality  | E0     |
-| DEBT-0560 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/ai-review.js                                               | 44   | code-quality  | E0     |
-| DEBT-0561 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/archive-doc.js                                             | 368  | code-quality  | E0     |
-| DEBT-0562 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/assign-review-tier.js                                      | 31   | code-quality  | E0     |
-| DEBT-0563 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-docs-light.js                                        | 141  | code-quality  | E0     |
-| DEBT-0564 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/dedupe-quotes.ts                                           | 217  | code-quality  | E0     |
-| DEBT-0565 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/enrich-addresses.ts                                        | 91   | code-quality  | E0     |
-| DEBT-0566 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                            | 123  | code-quality  | E0     |
-| DEBT-0567 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/import-nashville-links.ts                                  | 207  | code-quality  | E0     |
-| DEBT-0568 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/migrate-library-content.ts                                 | 129  | code-quality  | E0     |
-| DEBT-0569 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/normalize-canon-ids.js                                     | 69   | code-quality  | E0     |
-| DEBT-0570 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                    | 157  | code-quality  | E0     |
-| DEBT-0571 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/retry-failures.ts                                          | 57   | code-quality  | E0     |
-| DEBT-0572 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/seed-meetings.ts                                           | 79   | code-quality  | E0     |
-| DEBT-0573 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                              | 89   | code-quality  | E0     |
-| DEBT-0574 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/surface-lessons-learned.js                                 | 264  | code-quality  | E0     |
-| DEBT-0575 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/update-readme-status.js                                    | 211  | code-quality  | E0     |
-| DEBT-0576 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-consolidation-status.js                              | 34   | code-quality  | E0     |
-| DEBT-0577 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | scripts/suggest-pattern-automation.js                              | 296  | code-quality  | E0     |
-| DEBT-0578 | Prefer `String.fromCodePoint()` over `String.fromCharCode...   | components/growth/Step1WorksheetCard.tsx                           | 380  | code-quality  | E0     |
-| DEBT-0579 | Use `new Array()` instead of `Array()`.                        | components/growth/Step1WorksheetCard.tsx                           | 121  | code-quality  | E0     |
-| DEBT-0580 | Visible, non-interactive elements with click handlers mus...   | components/widgets/compact-meeting-countdown.tsx                   | 273  | code-quality  | E0     |
-| DEBT-0581 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                   | 188  | code-quality  | E0     |
-| DEBT-0582 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/sentry.client.ts                                               | 48   | code-quality  | E0     |
-| DEBT-0583 | Use `new Array()` instead of `Array()`.                        | components/notebook/notebook-shell.tsx                             | 133  | code-quality  | E0     |
-| DEBT-0584 | Use `new Array()` instead of `Array()`.                        | components/notebook/pages/support-page.tsx                         | 114  | code-quality  | E0     |
-| DEBT-0585 | 'useAuth' is deprecated.                                       | components/home/home-client.tsx                                    | 7    | code-quality  | E0     |
-| DEBT-0586 | The signature '(): { user: any; loading: any; isAnonymous...   | components/home/home-client.tsx                                    | 21   | code-quality  | E0     |
-| DEBT-0587 | Unexpected negated condition.                                  | components/home/home-client.tsx                                    | 42   | code-quality  | E0     |
-| DEBT-0588 | Prefer `.some(…)` over `.find(…)`.                             | functions/src/admin.ts                                             | 644  | code-quality  | E0     |
-| DEBT-0589 | Do not call `Array#push()` multiple times.                     | hooks/use-journal.ts                                               | 131  | code-quality  | E0     |
-| DEBT-0590 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                | 221  | code-quality  | E0     |
-| DEBT-0591 | Prefer `globalThis.window` over `window`.                      | app/admin/page.tsx                                                 | 31   | code-quality  | E0     |
-| DEBT-0592 | 'next' imported multiple times.                                | app/layout.tsx                                                     | 54   | code-quality  | E0     |
-| DEBT-0593 | 'useAuth' is deprecated.                                       | app/meetings/all/page.tsx                                          | 19   | code-quality  | E0     |
-| DEBT-0594 | Use the "RegExp.exec()" method instead.                        | app/meetings/all/page.tsx                                          | 42   | code-quality  | E0     |
-| DEBT-0595 | The signature '(): { user: any; loading: any; isAnonymous...   | app/meetings/all/page.tsx                                          | 72   | code-quality  | E0     |
-| DEBT-0596 | Unexpected negated condition.                                  | components/admin/links-tab.tsx                                     | 286  | code-quality  | E0     |
-| DEBT-0597 | Unexpected negated condition.                                  | components/admin/prayers-tab.tsx                                   | 272  | code-quality  | E0     |
-| DEBT-0598 | Prefer `globalThis.window` over `window`.                      | components/celebrations/confetti-burst.tsx                         | 52   | code-quality  | E0     |
-| DEBT-0599 | Unexpected negated condition.                                  | components/celebrations/milestone-modal.tsx                        | 105  | code-quality  | E0     |
-| DEBT-0600 | The signature '(): { user: any; loading: any; isAnonymous...   | components/growth/Step1WorksheetCard.tsx                           | 491  | code-quality  | E0     |
-| DEBT-0601 | This assertion is unnecessary since it does not change th...   | components/journal/entry-detail-dialog.tsx                         | 286  | code-quality  | E0     |
-| DEBT-0602 | The signature '(): { user: any; loading: any; isAnonymous...   | components/journal/journal-hub.tsx                                 | 25   | code-quality  | E0     |
-| DEBT-0603 | Mark the props of the component as read-only.                  | components/meetings/meeting-details-dialog.tsx                     | 23   | code-quality  | E0     |
-| DEBT-0604 | Mark the props of the component as read-only.                  | components/notebook/features/enhanced-mood-selector.tsx            | 50   | code-quality  | E0     |
-| DEBT-0605 | Prefer `globalThis` over `window`.                             | components/notebook/features/enhanced-mood-selector.tsx            | 76   | code-quality  | E0     |
-| DEBT-0606 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/notebook-shell.tsx                             | 34   | code-quality  | E0     |
-| DEBT-0607 | 'lucide-react' imported multiple times.                        | components/notebook/pages/resources-page.tsx                       | 3    | code-quality  | E0     |
-| DEBT-0608 | 'useAuth' is deprecated.                                       | components/notebook/pages/resources-page.tsx                       | 11   | code-quality  | E0     |
-| DEBT-0609 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/pages/resources-page.tsx                       | 52   | code-quality  | E0     |
-| DEBT-0610 | The signature '(): Promise<Meeting[]>' of 'MeetingsServic...   | components/notebook/pages/resources-page.tsx                       | 162  | code-quality  | E0     |
-| DEBT-0611 | Use the "RegExp.exec()" method instead.                        | components/notebook/pages/resources-page.tsx                       | 213  | code-quality  | E0     |
-| DEBT-0612 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | components/notebook/pages/today-page.tsx                           | 122  | code-quality  | E0     |
-| DEBT-0613 | The signature '(): { user: any; loading: any; isAnonymous...   | components/onboarding/onboarding-wizard.tsx                        | 31   | code-quality  | E0     |
-| DEBT-0614 | `new Error()` is too unspecific for a type check. Use `ne...   | components/onboarding/onboarding-wizard.tsx                        | 136  | code-quality  | E0     |
-| DEBT-0615 | Prefer `globalThis` over `window`.                             | components/status/offline-indicator.tsx                            | 22   | code-quality  | E0     |
-| DEBT-0616 | Use the "RegExp.exec()" method instead.                        | components/widgets/compact-meeting-countdown.tsx                   | 73   | code-quality  | E0     |
-| DEBT-0617 | Compare with `undefined` directly instead of using `typeof`.   | hooks/use-daily-quote.ts                                           | 170  | code-quality  | E0     |
-| DEBT-0618 | Prefer `globalThis.window` over `window`.                      | hooks/use-geolocation.ts                                           | 80   | code-quality  | E0     |
-| DEBT-0619 | 'data.content \|\| ""' will use Object's default stringific... | hooks/use-journal.ts                                               | 101  | code-quality  | E0     |
-| DEBT-0620 | 'data.step4_surrender \|\| ""' will use Object's default st... | hooks/use-journal.ts                                               | 113  | code-quality  | E0     |
-| DEBT-0621 | Replace this union type with a type alias.                     | lib/db/collections.ts                                              | 97   | code-quality  | E0     |
-| DEBT-0622 | Use the "RegExp.exec()" method instead.                        | lib/db/meetings.ts                                                 | 34   | code-quality  | E0     |
-| DEBT-0623 | Prefer `globalThis.window` over `window`.                      | lib/firebase.ts                                                    | 44   | code-quality  | E0     |
-| DEBT-0624 | Unexpected negated condition.                                  | lib/firebase.ts                                                    | 141  | code-quality  | E0     |
-| DEBT-0625 | Use `export…from` to re-export `DailyLog`.                     | lib/firestore-service.ts                                           | 97   | code-quality  | E0     |
-| DEBT-0626 | Use `export…from` to re-export `DailyLogHistoryResult`.        | lib/firestore-service.ts                                           | 97   | code-quality  | E0     |
-| DEBT-0627 | `String.raw` should be used to avoid escaping `\`.             | scripts/archive-doc.js                                             | 340  | code-quality  | E0     |
-| DEBT-0628 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                            | 125  | code-quality  | E0     |
-| DEBT-0629 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                            | 571  | code-quality  | E0     |
-| DEBT-0630 | `String.raw` should be used to avoid escaping `\`.             | scripts/normalize-canon-ids.js                                     | 69   | code-quality  | E0     |
-| DEBT-0631 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                              | 63   | code-quality  | E0     |
-| DEBT-0632 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | scripts/update-readme-status.js                                    | 204  | code-quality  | E0     |
-| DEBT-0633 | Use the "RegExp.exec()" method instead.                        | tests/utils/logger.test.ts                                         | 173  | code-quality  | E0     |
-| DEBT-0634 | Compare with `undefined` directly instead of using `typeof`.   | components/notebook/hooks/use-smart-prompts.ts                     | 47   | code-quality  | E0     |
-| DEBT-0635 | Unexpected negated condition.                                  | scripts/check-consolidation-status.js                              | 41   | code-quality  | E0     |
-| DEBT-0636 | Remove this unused import of 'mkdirSync'.                      | scripts/normalize-canon-ids.js                                     | 21   | code-quality  | E0     |
-| DEBT-0637 | Remove this unused import of 'basename'.                       | scripts/normalize-canon-ids.js                                     | 22   | code-quality  | E0     |
-| DEBT-0638 | Unexpected negated condition.                                  | scripts/normalize-canon-ids.js                                     | 309  | code-quality  | E0     |
-| DEBT-0639 | Define a constant instead of using the literal 'functions...   | .claude/hooks/session-start.sh                                     | 203  | code-quality  | E0     |
-| DEBT-0640 | Unexpected negated condition.                                  | scripts/validate-audit.js                                          | 270  | code-quality  | E0     |
-| DEBT-0641 | `String.raw` should be used to avoid escaping `\`.             | scripts/add-false-positive.js                                      | 270  | code-quality  | E0     |
-| DEBT-0642 | Handle this exception or don't catch it at all.                | scripts/check-document-sync.js                                     | 95   | code-quality  | E1     |
-| DEBT-0643 | Prefer using nullish coalescing operator (`??=`) instead ...   | tests/scripts/phase-complete-check.test.ts                         | 49   | code-quality  | E0     |
-| DEBT-0644 | Handle this exception or don't catch it at all.                | scripts/phase-complete-check.js                                    | 217  | code-quality  | E1     |
-| DEBT-0645 | Unexpected negated condition.                                  | scripts/phase-complete-check.js                                    | 330  | code-quality  | E0     |
-| DEBT-0646 | The empty object is useless.                                   | eslint.config.mjs                                                  | 13   | code-quality  | E0     |
-| DEBT-0647 | Define a constant instead of using the literal '━━━━━━━━━...   | .claude/hooks/session-start.sh                                     | 303  | code-quality  | E0     |
-| DEBT-0648 | Remove the declaration of the unused 'preserveStackInDev'...   | scripts/lib/sanitize-error.js                                      | 65   | code-quality  | E0     |
-| DEBT-0649 | Unexpected negated condition.                                  | scripts/validate-phase-completion.js                               | 77   | code-quality  | E0     |
-| DEBT-0650 | Unexpected negated condition.                                  | scripts/archive-doc.js                                             | 572  | code-quality  | E0     |
-| DEBT-0651 | Unexpected negated condition.                                  | scripts/check-docs-light.js                                        | 425  | code-quality  | E0     |
-| DEBT-0652 | Prefer `Date.now()` over `new Date()`.                         | scripts/check-docs-light.js                                        | 434  | code-quality  | E0     |
-| DEBT-0653 | Unexpected negated condition.                                  | scripts/update-readme-status.js                                    | 497  | code-quality  | E0     |
-| DEBT-0654 | Define a constant instead of using the literal 'package-l...   | .claude/hooks/session-start.sh                                     | 180  | code-quality  | E0     |
-| DEBT-0655 | Define a constant instead of using the literal '=========...   | scripts/check-review-triggers.sh                                   | 156  | code-quality  | E0     |
-| DEBT-0656 | Prefer `globalThis.window` over `window`.                      | lib/utils/storage.ts                                               | 17   | code-quality  | E0     |
-| DEBT-0657 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                               | 23   | code-quality  | E0     |
-| DEBT-0658 | Prefer `globalThis.window` over `window`.                      | lib/recaptcha.ts                                                   | 36   | code-quality  | E0     |
-| DEBT-0659 | `new Error()` is too unspecific for a type check. Use `ne...   | lib/recaptcha.ts                                                   | 37   | code-quality  | E0     |
-| DEBT-0660 | Prefer `globalThis` over `window`.                             | lib/recaptcha.ts                                                   | 46   | code-quality  | E0     |
-| DEBT-0661 | Do not call `Array#push()` multiple times.                     | scripts/enrich-addresses.ts                                        | 128  | code-quality  | E0     |
-| DEBT-0662 | Do not call `Array#push()` multiple times.                     | scripts/retry-failures.ts                                          | 98   | code-quality  | E0     |
-| DEBT-0663 | Unexpected negated condition.                                  | scripts/sync-geocache.ts                                           | 88   | code-quality  | E0     |
-| DEBT-0664 | Mark the props of the component as read-only.                  | components/admin/meetings-tab.tsx                                  | 24   | code-quality  | E0     |
-| DEBT-0665 | Mark the props of the component as read-only.                  | components/admin/slogans-tab.tsx                                   | 28   | code-quality  | E0     |
-| DEBT-0666 | Prefer `globalThis` over `window`.                             | components/growth/Step1WorksheetCard.tsx                           | 697  | code-quality  | E0     |
-| DEBT-0667 | A fragment with only one child is redundant.                   | components/growth/Step1WorksheetCard.tsx                           | 709  | code-quality  | E0     |
-| DEBT-0668 | 'useAuth' is deprecated.                                       | components/growth/Step1WorksheetCard.tsx                           | 14   | code-quality  | E0     |
-| DEBT-0669 | Mark the props of the component as read-only.                  | components/notebook/features/recovery-notepad.tsx                  | 25   | code-quality  | E0     |
-| DEBT-0670 | Expected a `for-of` loop instead of a `for` loop with thi...   | functions/src/index.ts                                             | 694  | code-quality  | E0     |
-| DEBT-0671 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | components/notebook/hooks/use-smart-prompts.ts                     | 102  | code-quality  | E0     |
-| DEBT-0672 | Mark the props of the component as read-only.                  | components/notebook/pages/today-page.tsx                           | 40   | code-quality  | E0     |
-| DEBT-0673 | Mark the props of the component as read-only.                  | components/notebook/features/check-in-progress.tsx                 | 9    | code-quality  | E0     |
-| DEBT-0674 | Mark the props of the component as read-only.                  | components/notebook/features/quick-actions-fab.tsx                 | 17   | code-quality  | E0     |
-| DEBT-0675 | Prefer `globalThis` over `window`.                             | components/notebook/features/quick-actions-fab.tsx                 | 36   | code-quality  | E0     |
-| DEBT-0676 | Mark the props of the component as read-only.                  | components/notebook/features/smart-prompt.tsx                      | 16   | code-quality  | E0     |
-| DEBT-0677 | Unexpected negated condition.                                  | components/admin/users-tab.tsx                                     | 429  | code-quality  | E0     |
-| DEBT-0678 | Unexpected negated condition.                                  | functions/src/index.ts                                             | 200  | code-quality  | E0     |
-| DEBT-0679 | Prefer `globalThis.window` over `window`.                      | lib/utils.ts                                                       | 28   | code-quality  | E0     |
-| DEBT-0680 | Mark the props of the component as read-only.                  | components/celebrations/milestone-modal.tsx                        | 22   | code-quality  | E0     |
-| DEBT-0681 | Prefer `globalThis` over `window`.                             | components/ui/voice-text-area.tsx                                  | 20   | code-quality  | E0     |
-| DEBT-0682 | Prefer `globalThis` over `window`.                             | hooks/use-speech-recognition.ts                                    | 22   | code-quality  | E0     |
-| DEBT-0683 | Mark the props of the component as read-only.                  | components/journal/timeline.tsx                                    | 21   | code-quality  | E0     |
-| DEBT-0684 | 'lucide-react' imported multiple times.                        | components/growth/NightReviewCard.tsx                              | 5    | code-quality  | E0     |
-| DEBT-0685 | 'lucide-react' imported multiple times.                        | components/growth/SpotCheckCard.tsx                                | 5    | code-quality  | E0     |
-| DEBT-0686 | Mark the props of the component as read-only.                  | components/notebook/pages/growth-page.tsx                          | 15   | code-quality  | E0     |
-| DEBT-0687 | Prefer `globalThis.window` over `window`.                      | components/celebrations/firework-burst.tsx                         | 32   | code-quality  | E0     |
-| DEBT-0688 | Mark the props of the component as read-only.                  | components/celebrations/celebration-overlay.tsx                    | 15   | code-quality  | E0     |
-| DEBT-0689 | Mark the props of the component as read-only.                  | components/celebrations/celebration-provider.tsx                   | 19   | code-quality  | E0     |
-| DEBT-0690 | Mark the props of the component as read-only.                  | components/celebrations/confetti-burst.tsx                         | 26   | code-quality  | E0     |
-| DEBT-0691 | Mark the props of the component as read-only.                  | components/celebrations/firework-burst.tsx                         | 26   | code-quality  | E0     |
-| DEBT-0692 | Mark the props of the component as read-only.                  | components/celebrations/success-pulse.tsx                          | 12   | code-quality  | E0     |
-| DEBT-0693 | Mark the props of the component as read-only.                  | components/notebook/features/check-in-questions.tsx                | 29   | code-quality  | E0     |
-| DEBT-0694 | Mark the props of the component as read-only.                  | components/notebook/features/clean-time-display.tsx                | 29   | code-quality  | E0     |
-| DEBT-0695 | Mark the props of the component as read-only.                  | components/notebook/features/mood-selector.tsx                     | 45   | code-quality  | E0     |
-| DEBT-0696 | Mark the props of the component as read-only.                  | components/admin/glossary-tab.tsx                                  | 28   | code-quality  | E0     |
-| DEBT-0697 | Mark the props of the component as read-only.                  | components/journal/entry-forms/daily-log-form.tsx                  | 25   | code-quality  | E0     |
-| DEBT-0698 | Mark the props of the component as read-only.                  | components/journal/entry-card.tsx                                  | 16   | code-quality  | E0     |
-| DEBT-0699 | Mark the props of the component as read-only.                  | components/journal/entry-creator-menu.tsx                          | 51   | code-quality  | E0     |
-| DEBT-0700 | Mark the props of the component as read-only.                  | components/journal/entry-detail-dialog.tsx                         | 10   | code-quality  | E0     |
-| DEBT-0701 | Mark the props of the component as read-only.                  | components/journal/entry-forms/free-write-form.tsx                 | 15   | code-quality  | E0     |
-| DEBT-0702 | Mark the props of the component as read-only.                  | components/journal/entry-forms/gratitude-form.tsx                  | 15   | code-quality  | E0     |
-| DEBT-0703 | Mark the props of the component as read-only.                  | components/journal/entry-forms/inventory-form.tsx                  | 15   | code-quality  | E0     |
-| DEBT-0704 | Mark the props of the component as read-only.                  | components/journal/entry-forms/mood-form.tsx                       | 25   | code-quality  | E0     |
-| DEBT-0705 | Mark the props of the component as read-only.                  | components/journal/entry-menu.tsx                                  | 28   | code-quality  | E0     |
-| DEBT-0706 | Mark the props of the component as read-only.                  | components/journal/entry-wizard.tsx                                | 13   | code-quality  | E0     |
-| DEBT-0707 | Mark the props of the component as read-only.                  | components/journal/floating-pen.tsx                                | 12   | code-quality  | E0     |
-| DEBT-0708 | 'useAuth' is deprecated.                                       | components/journal/journal-hub.tsx                                 | 10   | code-quality  | E0     |
-| DEBT-0709 | Mark the props of the component as read-only.                  | components/journal/journal-layout.tsx                              | 9    | code-quality  | E0     |
-| DEBT-0710 | Mark the props of the component as read-only.                  | components/journal/lock-screen.tsx                                 | 7    | code-quality  | E0     |
-| DEBT-0711 | Mark the props of the component as read-only.                  | components/journal/ribbon-nav.tsx                                  | 64   | code-quality  | E0     |
-| DEBT-0712 | Unexpected negated condition.                                  | app/meetings/all/page.tsx                                          | 364  | code-quality  | E0     |
-| DEBT-0713 | Prefer using nullish coalescing operator (`??=`) instead ...   | components/widgets/compact-meeting-countdown.tsx                   | 191  | code-quality  | E0     |
-| DEBT-0714 | Mark the props of the component as read-only.                  | components/admin/admin-crud-table.tsx                              | 24   | code-quality  | E0     |
-| DEBT-0715 | '@/lib/db/meetings' imported multiple times.                   | components/admin/meetings-tab.tsx                                  | 10   | code-quality  | E0     |
-| DEBT-0716 | Mark the props of the component as read-only.                  | components/admin/quotes-tab.tsx                                    | 24   | code-quality  | E0     |
-| DEBT-0717 | Mark the props of the component as read-only.                  | components/admin/sober-living-tab.tsx                              | 17   | code-quality  | E0     |
-| DEBT-0718 | Prefer `globalThis.window` over `window`.                      | components/pwa/install-prompt.tsx                                  | 18   | code-quality  | E0     |
-| DEBT-0719 | Prefer `globalThis` over `window`.                             | components/pwa/install-prompt.tsx                                  | 43   | code-quality  | E0     |
-| DEBT-0720 | 'useAuth' is deprecated.                                       | components/growth/GratitudeCard.tsx                                | 15   | code-quality  | E0     |
-| DEBT-0721 | The signature '(): { user: any; loading: any; isAnonymous...   | components/growth/GratitudeCard.tsx                                | 35   | code-quality  | E0     |
-| DEBT-0722 | 'useAuth' is deprecated.                                       | components/growth/NightReviewCard.tsx                              | 15   | code-quality  | E0     |
-| DEBT-0723 | The signature '(): { user: any; loading: any; isAnonymous...   | components/growth/NightReviewCard.tsx                              | 85   | code-quality  | E0     |
-| DEBT-0724 | 'useAuth' is deprecated.                                       | components/growth/SpotCheckCard.tsx                                | 15   | code-quality  | E0     |
-| DEBT-0725 | The signature '(): { user: any; loading: any; isAnonymous...   | components/growth/SpotCheckCard.tsx                                | 31   | code-quality  | E0     |
-| DEBT-0726 | Mark the props of the component as read-only.                  | components/journal/entry-feed.tsx                                  | 16   | code-quality  | E0     |
-| DEBT-0727 | Mark the props of the component as read-only.                  | components/journal/journal-sidebar.tsx                             | 15   | code-quality  | E0     |
-| DEBT-0728 | Use `export…from` to re-export `NotebookModule`.               | components/notebook/roadmap-modules.tsx                            | 12   | code-quality  | E0     |
-| DEBT-0729 | Mark the props of the component as read-only.                  | components/admin/admin-tabs.tsx                                    | 32   | code-quality  | E0     |
-| DEBT-0730 | Mark the props of the component as read-only.                  | components/maps/meeting-map.tsx                                    | 76   | code-quality  | E0     |
-| DEBT-0731 | 'useAuth' is deprecated.                                       | components/notebook/journal-modal.tsx                              | 7    | code-quality  | E0     |
-| DEBT-0732 | Mark the props of the component as read-only.                  | components/notebook/journal-modal.tsx                              | 27   | code-quality  | E0     |
-| DEBT-0733 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/journal-modal.tsx                              | 28   | code-quality  | E0     |
-| DEBT-0734 | Unexpected negated condition.                                  | components/notebook/pages/resources-page.tsx                       | 521  | code-quality  | E0     |
-| DEBT-0735 | Mark the props of the component as read-only.                  | app/admin/layout.tsx                                               | 12   | code-quality  | E0     |
-| DEBT-0736 | Mark the props of the component as read-only.                  | components/ui/skeleton.tsx                                         | 12   | code-quality  | E0     |
-| DEBT-0737 | Mark the props of the component as read-only.                  | components/ui/empty-state.tsx                                      | 39   | code-quality  | E0     |
-| DEBT-0738 | Mark the props of the component as read-only.                  | components/providers/auth-context.tsx                              | 81   | code-quality  | E0     |
-| DEBT-0739 | Unexpected negated condition.                                  | components/providers/auth-context.tsx                              | 90   | code-quality  | E0     |
-| DEBT-0740 | Use `export…from` to re-export `useAuthCore`.                  | components/providers/auth-provider.tsx                             | 22   | code-quality  | E0     |
-| DEBT-0741 | Mark the props of the component as read-only.                  | components/providers/auth-provider.tsx                             | 38   | code-quality  | E0     |
-| DEBT-0742 | Mark the props of the component as read-only.                  | components/providers/daily-log-context.tsx                         | 31   | code-quality  | E0     |
-| DEBT-0743 | Mark the props of the component as read-only.                  | components/providers/profile-context.tsx                           | 41   | code-quality  | E0     |
-| DEBT-0744 | Mark the props of the component as read-only.                  | components/auth/account-link-modal.tsx                             | 13   | code-quality  | E0     |
-| DEBT-0745 | 'useAuth' is deprecated.                                       | components/notebook/notebook-shell.tsx                             | 10   | code-quality  | E0     |
-| DEBT-0746 | Prefer `globalThis.window` over `window`.                      | lib/sentry.client.ts                                               | 24   | code-quality  | E0     |
-| DEBT-0747 | Don't use a zero fraction in the number.                       | lib/sentry.client.ts                                               | 42   | code-quality  | E0     |
-| DEBT-0748 | Prefer `globalThis` over `window`.                             | components/providers/error-boundary.tsx                            | 49   | code-quality  | E0     |
-| DEBT-0749 | Use `export…from` to re-export `DailyLog`.                     | lib/database/database-interface.ts                                 | 12   | code-quality  | E0     |
-| DEBT-0750 | 'unknown' overrides all other types in this union type.        | lib/types/daily-log.ts                                             | 28   | code-quality  | E0     |
-| DEBT-0751 | 'unknown' overrides all other types in this union type.        | lib/database/database-interface.ts                                 | 19   | code-quality  | E0     |
-| DEBT-0752 | 'useAuth' is deprecated.                                       | components/status/auth-error-banner.tsx                            | 6    | code-quality  | E0     |
-| DEBT-0753 | Mark the props of the component as read-only.                  | components/status/auth-error-banner.tsx                            | 14   | code-quality  | E0     |
-| DEBT-0754 | The signature '(): { user: any; loading: any; isAnonymous...   | components/status/auth-error-banner.tsx                            | 15   | code-quality  | E0     |
-| DEBT-0755 | Prefer `globalThis.window` over `window`.                      | components/notebook/book-cover.tsx                                 | 37   | code-quality  | E0     |
-| DEBT-0756 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/pages/today-page.tsx                           | 74   | code-quality  | E0     |
-| DEBT-0757 | 'useAuth' is deprecated.                                       | components/notebook/visualizations/mood-sparkline.tsx              | 6    | code-quality  | E0     |
-| DEBT-0758 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/visualizations/mood-sparkline.tsx              | 10   | code-quality  | E0     |
-| DEBT-0759 | Mark the props of the component as read-only.                  | components/auth/sign-in-modal.tsx                                  | 20   | code-quality  | E0     |
-| DEBT-0760 | 'useAuth' is deprecated.                                       | components/notebook/book-cover.tsx                                 | 7    | code-quality  | E0     |
-| DEBT-0761 | 'nickname' PropType is defined but prop is never used          | components/notebook/book-cover.tsx                                 | 26   | code-quality  | E0     |
-| DEBT-0762 | Mark the props of the component as read-only.                  | components/notebook/book-cover.tsx                                 | 30   | code-quality  | E0     |
-| DEBT-0763 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/book-cover.tsx                                 | 31   | code-quality  | E0     |
-| DEBT-0764 | 'useAuth' is deprecated.                                       | components/onboarding/onboarding-wizard.tsx                        | 5    | code-quality  | E0     |
-| DEBT-0765 | Mark the props of the component as read-only.                  | components/onboarding/onboarding-wizard.tsx                        | 30   | code-quality  | E0     |
-| DEBT-0766 | 'useAuth' is deprecated.                                       | components/notebook/pages/today-page.tsx                           | 4    | code-quality  | E0     |
-| DEBT-0767 | Mark the props of the component as read-only.                  | components/desktop/sobriety-chip.tsx                               | 29   | code-quality  | E0     |
-| DEBT-0768 | Unexpected negated condition.                                  | components/notebook/book-cover.tsx                                 | 158  | code-quality  | E0     |
-| DEBT-0769 | Mark the props of the component as read-only.                  | components/notebook/bookmark-ribbon.tsx                            | 10   | code-quality  | E0     |
-| DEBT-0770 | Mark the props of the component as read-only.                  | components/notebook/notebook-page.tsx                              | 9    | code-quality  | E0     |
-| DEBT-0771 | Mark the props of the component as read-only.                  | components/notebook/notebook-shell.tsx                             | 33   | code-quality  | E0     |
-| DEBT-0772 | Mark the props of the component as read-only.                  | components/notebook/pages/placeholder-page.tsx                     | 8    | code-quality  | E0     |
-| DEBT-0773 | Mark the props of the component as read-only.                  | components/notebook/sticky-note.tsx                                | 14   | code-quality  | E0     |
-| DEBT-0774 | Mark the props of the component as read-only.                  | components/notebook/tab-navigation.tsx                             | 18   | code-quality  | E0     |
-| DEBT-0775 | App Check disabled on Functions and client init disabled ...   | functions/src/index.ts                                             | 0    | security      | E1     |
-| DEBT-0776 | CloudFunctionError interface defined twice in same file        | lib/firestore-service.ts                                           | 0    | code-quality  | E0     |
-| DEBT-0777 | Batch fix opportunities: 200+ ESLint auto-fixable issues       | multiple                                                           | 0    | code-quality  | E0     |
-| DEBT-0778 | Batch fix opportunities: 79 replaceAll() + 71 node: prefi...   | multiple                                                           | 0    | code-quality  | E1     |
-| DEBT-0779 | parseTime() meeting helper duplicated in two pages             | app/meetings/all/page.tsx                                          | 0    | code-quality  | E0     |
-| DEBT-0780 | DEVELOPMENT.md Husky section missing pattern compliance step   | DEVELOPMENT.md                                                     | 0    | code-quality  | E0     |
-| DEBT-0781 | CI workflow lacks explicit permissions block (security ha...   | .github/workflows/ci.yml                                           | 0    | code-quality  | E0     |
-| DEBT-0782 | Pattern checker produces false positives for controlled n...   | scripts/check-pattern-compliance.js                                | 0    | code-quality  | E1     |
-| DEBT-0783 | Review trigger thresholds may cause alert fatigue for pro...   | scripts/check-review-needed.js                                     | 0    | code-quality  | E1     |
-| DEBT-0784 | Deploy workflow secret handling may be brittle for multil...   | .github/workflows/deploy-firebase.yml                              | 0    | code-quality  | E1     |
-| DEBT-0785 | Archive docs contain significant link rot after archival/...   | docs/archive/AI_HANDOFF-2026-01-02.md                              | 0    | code-quality  | E2     |
-| DEBT-0786 | Template date placeholders using literal YYYY-MM-DD format     | docs/templates/FOUNDATION_DOC_TEMPLATE.md                          | 0    | code-quality  | E0     |
-| DEBT-0787 | Template docs located outside docs/templates/ directory        | docs/PR_REVIEW_PROMPT_TEMPLATE.md                                  | 0    | code-quality  | E0     |
-| DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes...   | docs/DEVELOPMENT.md                                                | 0    | code-quality  | E0     |
-| DEBT-0789 | ROADMAP anchor links may be fragile due to emoji/punctuat...   | ROADMAP.md                                                         | 0    | code-quality  | E0     |
-| DEBT-0790 | @ts-expect-error suppression comment in production code        | components/notebook/pages/resources-page.tsx                       | 0    | code-quality  | E0     |
-| DEBT-0791 | Environment variables accessed directly in components (ce...   | app/layout.tsx                                                     | 0    | code-quality  | E0     |
-| DEBT-0792 | 'any' types leaking into production code (needs tightening)    | lib/sentry.client.ts                                               | 0    | code-quality  | E1     |
-| DEBT-0793 | Landing page forced to client component for top-level state    | app/page.tsx                                                       | 0    | code-quality  | E1     |
-| DEBT-0794 | void operator usage flagged by SonarCloud                      | components/admin/logs-tab.tsx                                      | 287  | code-quality  | E0     |
-| DEBT-0795 | @ts-expect-error suppression for type mismatch                 | components/notebook/pages/resources-page.tsx                       | 444  | code-quality  | E0     |
-| DEBT-0796 | TODO comment for unimplemented feature                         | lib/database/firestore-adapter.ts                                  | 51   | code-quality  | E0     |
-| DEBT-0797 | TODO comment for user preferences feature                      | components/notebook/features/quick-actions-fab.tsx                 | 12   | code-quality  | E0     |
-| DEBT-0798 | Useless assignment to hasMore variable                         | functions/src/jobs.ts                                              | 620  | code-quality  | E1     |
-| DEBT-0799 | Nested ternary operator                                        | components/admin/logs-tab.tsx                                      | 481  | code-quality  | E1     |
-| DEBT-0800 | Nested template literals (6 occurrences)                       | functions/src/admin.ts                                             | 1388 | code-quality  | E1     |
-| DEBT-0801 | SonarCloud: Potentially hard-coded password pattern            | lib/utils/errors.ts                                                | 69   | security      | E0     |
-| DEBT-0802 | Math.random for visual effects                                 | components/celebrations/confetti-burst.tsx                         | 39   | security      | E0     |
-| DEBT-0803 | Secrets expanded in run block                                  | .github/workflows/deploy-firebase.yml                              | 58   | security      | E0     |
-| DEBT-0804 | process.env.NODE_ENV checks for debug info                     | components/providers/error-boundary.tsx                            | 84   | security      | E0     |
-| DEBT-0805 | Agent config files present                                     | .claude/settings.json                                              | 1    | security      | E0     |
-| DEBT-0806 | Archive docs contain significant link rot after moves          | docs/archive/                                                      | 0    | documentation | E2     |
-| DEBT-0807 | PR_REVIEW_PROMPT_TEMPLATE.md lacks Last Updated and Versi...   | docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md      | 1    | documentation | E0     |
-| DEBT-0808 | DOCUMENTATION_INDEX.md orphaned - not referenced by any m...   | DOCUMENTATION_INDEX.md                                             | 1    | documentation | E0     |
-| DEBT-0809 | Only 6 dynamic imports despite 101 client components           | components                                                         | 0    | performance   | E1     |
-| DEBT-0810 | useMemo/useCallback usage is inconsistent                      | components                                                         | 0    | performance   | E1     |
-| DEBT-0811 | Image optimization disabled (unoptimized: true)                | next.config.mjs                                                    | 14   | performance   | E2     |
-| DEBT-0812 | tj-actions/changed-files without CVE-pinned version            | .github/workflows/docs-lint.yml                                    | 36   | process       | E0     |
-| DEBT-0813 | lint-staged using npx --no-install may fail if not in cache    | .husky/pre-commit                                                  | 21   | process       | E0     |
-| DEBT-0814 | Multiple trap commands may override each other                 | .claude/hooks/session-start.sh                                     | 245  | process       | E0     |
-| DEBT-0815 | Script has minimal console output (1 call)                     | scripts/check-cross-doc-deps.js                                    | 1    | process       | E0     |
-| DEBT-0816 | TRIGGERS.md last updated 2026-01-02 but hooks updated since    | docs/TRIGGERS.md                                                   | 1    | process       | E0     |
-| DEBT-0817 | All 12 slash commands have frontmatter descriptions            | .claude/commands/                                                  | 0    | process       | E0     |
-| DEBT-0818 | 2 tracked TODO markers in codebase                             | components/notebook/features/quick-actions-fab.tsx                 | 12   | refactoring   | E0     |
-| DEBT-0819 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e...   | lib/logger.ts                                                      | 86   | refactoring   | E1     |
-| DEBT-0820 | Setup requires multiple commands - no single bootstrap         | package.json                                                       | 5    | code-quality  | E0     |
-| DEBT-0821 | Error messages lack actionable fix hints - generic 'Pleas...   | components/                                                        | 0    | code-quality  | E1     |
-| DEBT-0822 | OfflineIndicator is display-only - no sync status or retr...   | components/status/offline-indicator.tsx                            | 7    | code-quality  | E1     |
-| DEBT-0823 | GitHub Actions using version tags instead of SHA               | .github/workflows/auto-label-review-tier.yml                       | 29   | security      | E0     |
-| DEBT-0824 | Fix @ts-expect-error suppression                               | N/A                                                                | 0    | code-quality  | E0     |
-| DEBT-0825 | Remove duplicate CloudFunctionError                            | N/A                                                                | 0    | code-quality  | E0     |
-| DEBT-0826 | Run ESLint auto-fix                                            | N/A                                                                | 0    | code-quality  | E0     |
-| DEBT-0827 | Extract parseTime helper                                       | N/A                                                                | 0    | code-quality  | E0     |
-| DEBT-0828 | Replace template date placeholders                             | N/A                                                                | 0    | code-quality  | E0     |
-| DEBT-0829 | Move PR template to docs/templates/                            | N/A                                                                | 0    | code-quality  | E0     |
-| DEBT-0830 | Update DEVELOPMENT.md test count                               | N/A                                                                | 0    | code-quality  | E0     |
-| DEBT-0831 | Document fragile anchor links                                  | N/A                                                                | 0    | code-quality  | E0     |
-| DEBT-0832 | Update Husky docs for patterns:check                           | N/A                                                                | 0    | code-quality  | E0     |
-| DEBT-0833 | Add explicit permissions block                                 | N/A                                                                | 0    | code-quality  | E0     |
-| DEBT-0834 | Replace 'any' with proper types                                | N/A                                                                | 0    | code-quality  | E1     |
-| DEBT-0835 | replaceAll + node: prefix batch                                | N/A                                                                | 0    | code-quality  | E1     |
-| DEBT-0836 | Improve deploy secret handling                                 | N/A                                                                | 0    | code-quality  | E1     |
-| DEBT-0837 | Missing "AI Instructions" Sections                             | N/A                                                                | 0    | code-quality  | E1     |
-| DEBT-0838 | Fix deprecated APIs + nested ternaries                         | N/A                                                                | 0    | code-quality  | E2     |
-| DEBT-0839 | Fix archive link rot                                           | N/A                                                                | 0    | code-quality  | E2     |
-| DEBT-0840 | Missing "Quick Start" Sections                                 | N/A                                                                | 0    | code-quality  | E2     |
-| DEBT-0841 | Underscore-prefixed unused variables                           | components/notebook/pages/today-page.tsx                           | 305  | code-quality  | E0     |
-| DEBT-0842 | TODO comments without issue references                         | components/notebook/features/quick-actions-fab.tsx                 | 12   | code-quality  | E0     |
-| DEBT-0843 | Any type usage in test files                                   | tests/firestore-service.test.ts                                    | 18   | code-quality  | E1     |
-| DEBT-0844 | Console statements in error paths                              | lib/utils/callable-errors.ts                                       | 182  | security      | E1     |
-| DEBT-0845 | Sentry client initialization exists but is not invoked au...   | lib/sentry.client.ts                                               | 0    | code-quality  | E1     |
-| DEBT-0846 | Timeline may re-group/re-sort even though useJournal alre...   | components/journal/timeline.tsx                                    | 0    | code-quality  | E1     |
-| DEBT-0847 | Event listener/timer cleanup verification needed across m...   | components/\*\*                                                    | 0    | code-quality  | E1     |
-| DEBT-0848 | Sentry tracesSampleRate is low in production; may miss pe...   | lib/sentry.client.ts                                               | 0    | code-quality  | E0     |
-| DEBT-0849 | Unused dependencies remain in runtime dependencies (tool-...   | package.json                                                       | 0    | code-quality  | E1     |
-| DEBT-0868 | Add type: module to package.json to eliminate NODE warnings    | package.json                                                       | 1    | code-quality  | E1     |
-| DEBT-1089 | Complete the task associated to this "TODO" comment.           | functions/src/admin.ts                                             | 2769 | code-quality  | E0     |
-| DEBT-1090 | Complete the task associated to this "TODO" comment.           | functions/src/admin.ts                                             | 3936 | code-quality  | E0     |
-| DEBT-1157 | Complete the task associated to this "TODO" comment.           | scripts/lib/ai-pattern-checks.js                                   | 300  | code-quality  | E0     |
-| DEBT-1163 | Complete the task associated to this "TODO" comment.           | scripts/check-doc-placement.js                                     | 158  | code-quality  | E0     |
-| DEBT-1164 | Complete the task associated to this "TODO" comment.           | scripts/check-doc-placement.js                                     | 229  | code-quality  | E0     |
-| DEBT-1165 | Complete the task associated to this "TODO" comment.           | scripts/check-doc-placement.js                                     | 534  | code-quality  | E0     |
-| DEBT-1166 | Complete the task associated to this "TODO" comment.           | scripts/check-external-links.js                                    | 105  | code-quality  | E0     |
-| DEBT-1169 | Complete the task associated to this "TODO" comment.           | scripts/check-external-links.js                                    | 570  | code-quality  | E0     |
-| DEBT-1170 | Complete the task associated to this "TODO" comment.           | scripts/check-content-accuracy.js                                  | 188  | code-quality  | E0     |
-| DEBT-1171 | Complete the task associated to this "TODO" comment.           | scripts/check-content-accuracy.js                                  | 436  | code-quality  | E0     |
-| DEBT-1449 | Complete the task associated to this "TODO" comment.           | scripts/analyze-learning-effectiveness.js                          | 1067 | code-quality  | E0     |
-| DEBT-1942 | Unpinned GitHub Actions in multiple workflows                  | .github/workflows/auto-label-review-tier.yml                       | 29   | security      | E1     |
-| DEBT-1943 | Inefficient type checking in safeToIso                         | functions/src/admin.ts                                             | 113  | code-quality  | E1     |
-| DEBT-1944 | Unbounded retry loop risk in jobs.ts                           | functions/src/jobs.ts                                              | 529  | code-quality  | E1     |
-| DEBT-1945 | Admin function input validation inconsistency - meetingId...   | functions/src/admin.ts                                             | 768  | security      | E1     |
-| DEBT-1946 | Daily quotes collection allows direct admin client writes...   | firestore.rules                                                    | 104  | security      | E1     |
-| DEBT-1947 | Type coercion in generateSearchableText                        | hooks/use-journal.ts                                               | 102  | code-quality  | E1     |
-| DEBT-1948 | Firestore security rules missing for security_logs and ad...   | firestore.rules                                                    | 151  | security      | E1     |
-| DEBT-1949 | User ID hash truncation reduces collision resistance for ...   | functions/src/security-logger.ts                                   | 74   | security      | E1     |
-| DEBT-1950 | No middleware.ts for server-side route protection              | next.config.mjs                                                    | 13   | security      | E1     |
-| DEBT-1951 | Service account credentials written to disk in CI deploy ...   | .github/workflows/deploy-firebase.yml                              | 58   | security      | E1     |
-| DEBT-1993 | Potential Misplaced Plans in Archive/Templates                 | docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md | 1    | documentation | E0     |
-| DEBT-1994 | docs/OPERATIONAL_VISIBILITY_SPRINT.md and docs/HOOKIFY_ST...   | docs/OPERATIONAL_VISIBILITY_SPRINT.md                              | 1    | documentation | E1     |
-| DEBT-1995 | No UI indicator for online/offline state                       | components/offline-indicator.tsx                                   | 1    | code-quality  | E1     |
-| DEBT-1996 | Markdownlint and Prettier checks not confirmed                 | docs/\*_/_.md                                                      | 1    | documentation | E1     |
-| DEBT-1997 | Potentially missing performance monitoring                     | lib/performance.ts                                                 | 1    | code-quality  | E1     |
+| ID        | Title                                                          | File                                                                            | Line | Category      | Effort |
+| --------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---- | ------------- | ------ |
+| DEBT-0553 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-pattern-compliance.js                                             | 419  | code-quality  | E0     |
+| DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | components/admin/errors-tab.tsx                                                 | 37   | code-quality  | E0     |
+| DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | components/admin/users-tab.tsx                                                  | 563  | code-quality  | E0     |
+| DEBT-0556 | Visible, non-interactive elements with click handlers mus...   | components/journal/entry-detail-dialog.tsx                                      | 18   | code-quality  | E0     |
+| DEBT-0557 | Visible, non-interactive elements with click handlers mus...   | components/journal/entry-feed.tsx                                               | 152  | code-quality  | E0     |
+| DEBT-0558 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/admin.ts                                                          | 110  | code-quality  | E0     |
+| DEBT-0559 | Prefer `String#replaceAll()` over `String#replace()`.          | hooks/use-journal.ts                                                            | 72   | code-quality  | E0     |
+| DEBT-0560 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/ai-review.js                                                            | 44   | code-quality  | E0     |
+| DEBT-0561 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/archive-doc.js                                                          | 368  | code-quality  | E0     |
+| DEBT-0562 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/assign-review-tier.js                                                   | 31   | code-quality  | E0     |
+| DEBT-0563 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-docs-light.js                                                     | 141  | code-quality  | E0     |
+| DEBT-0564 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/dedupe-quotes.ts                                                        | 217  | code-quality  | E0     |
+| DEBT-0565 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/enrich-addresses.ts                                                     | 91   | code-quality  | E0     |
+| DEBT-0566 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/generate-documentation-index.js                                         | 123  | code-quality  | E0     |
+| DEBT-0567 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/import-nashville-links.ts                                               | 207  | code-quality  | E0     |
+| DEBT-0568 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/migrate-library-content.ts                                              | 129  | code-quality  | E0     |
+| DEBT-0569 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/normalize-canon-ids.js                                                  | 69   | code-quality  | E0     |
+| DEBT-0570 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/phase-complete-check.js                                                 | 157  | code-quality  | E0     |
+| DEBT-0571 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/retry-failures.ts                                                       | 57   | code-quality  | E0     |
+| DEBT-0572 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/seed-meetings.ts                                                        | 79   | code-quality  | E0     |
+| DEBT-0573 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/suggest-pattern-automation.js                                           | 89   | code-quality  | E0     |
+| DEBT-0574 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/surface-lessons-learned.js                                              | 264  | code-quality  | E0     |
+| DEBT-0575 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/update-readme-status.js                                                 | 211  | code-quality  | E0     |
+| DEBT-0576 | Prefer `String#replaceAll()` over `String#replace()`.          | scripts/check-consolidation-status.js                                           | 34   | code-quality  | E0     |
+| DEBT-0577 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | scripts/suggest-pattern-automation.js                                           | 296  | code-quality  | E0     |
+| DEBT-0578 | Prefer `String.fromCodePoint()` over `String.fromCharCode...   | components/growth/Step1WorksheetCard.tsx                                        | 380  | code-quality  | E0     |
+| DEBT-0579 | Use `new Array()` instead of `Array()`.                        | components/growth/Step1WorksheetCard.tsx                                        | 121  | code-quality  | E0     |
+| DEBT-0580 | Visible, non-interactive elements with click handlers mus...   | components/widgets/compact-meeting-countdown.tsx                                | 273  | code-quality  | E0     |
+| DEBT-0581 | Prefer `String#replaceAll()` over `String#replace()`.          | functions/src/security-logger.ts                                                | 188  | code-quality  | E0     |
+| DEBT-0582 | Prefer `String#replaceAll()` over `String#replace()`.          | lib/sentry.client.ts                                                            | 48   | code-quality  | E0     |
+| DEBT-0583 | Use `new Array()` instead of `Array()`.                        | components/notebook/notebook-shell.tsx                                          | 133  | code-quality  | E0     |
+| DEBT-0584 | Use `new Array()` instead of `Array()`.                        | components/notebook/pages/support-page.tsx                                      | 114  | code-quality  | E0     |
+| DEBT-0585 | 'useAuth' is deprecated.                                       | components/home/home-client.tsx                                                 | 7    | code-quality  | E0     |
+| DEBT-0586 | The signature '(): { user: any; loading: any; isAnonymous...   | components/home/home-client.tsx                                                 | 21   | code-quality  | E0     |
+| DEBT-0587 | Unexpected negated condition.                                  | components/home/home-client.tsx                                                 | 42   | code-quality  | E0     |
+| DEBT-0588 | Prefer `.some(…)` over `.find(…)`.                             | functions/src/admin.ts                                                          | 644  | code-quality  | E0     |
+| DEBT-0589 | Do not call `Array#push()` multiple times.                     | hooks/use-journal.ts                                                            | 131  | code-quality  | E0     |
+| DEBT-0590 | `String.raw` should be used to avoid escaping `\`.             | scripts/check-pattern-compliance.js                                             | 221  | code-quality  | E0     |
+| DEBT-0591 | Prefer `globalThis.window` over `window`.                      | app/admin/page.tsx                                                              | 31   | code-quality  | E0     |
+| DEBT-0592 | 'next' imported multiple times.                                | app/layout.tsx                                                                  | 54   | code-quality  | E0     |
+| DEBT-0593 | 'useAuth' is deprecated.                                       | app/meetings/all/page.tsx                                                       | 19   | code-quality  | E0     |
+| DEBT-0594 | Use the "RegExp.exec()" method instead.                        | app/meetings/all/page.tsx                                                       | 42   | code-quality  | E0     |
+| DEBT-0595 | The signature '(): { user: any; loading: any; isAnonymous...   | app/meetings/all/page.tsx                                                       | 72   | code-quality  | E0     |
+| DEBT-0596 | Unexpected negated condition.                                  | components/admin/links-tab.tsx                                                  | 286  | code-quality  | E0     |
+| DEBT-0597 | Unexpected negated condition.                                  | components/admin/prayers-tab.tsx                                                | 272  | code-quality  | E0     |
+| DEBT-0598 | Prefer `globalThis.window` over `window`.                      | components/celebrations/confetti-burst.tsx                                      | 52   | code-quality  | E0     |
+| DEBT-0599 | Unexpected negated condition.                                  | components/celebrations/milestone-modal.tsx                                     | 105  | code-quality  | E0     |
+| DEBT-0600 | The signature '(): { user: any; loading: any; isAnonymous...   | components/growth/Step1WorksheetCard.tsx                                        | 491  | code-quality  | E0     |
+| DEBT-0601 | This assertion is unnecessary since it does not change th...   | components/journal/entry-detail-dialog.tsx                                      | 286  | code-quality  | E0     |
+| DEBT-0602 | The signature '(): { user: any; loading: any; isAnonymous...   | components/journal/journal-hub.tsx                                              | 25   | code-quality  | E0     |
+| DEBT-0603 | Mark the props of the component as read-only.                  | components/meetings/meeting-details-dialog.tsx                                  | 23   | code-quality  | E0     |
+| DEBT-0604 | Mark the props of the component as read-only.                  | components/notebook/features/enhanced-mood-selector.tsx                         | 50   | code-quality  | E0     |
+| DEBT-0605 | Prefer `globalThis` over `window`.                             | components/notebook/features/enhanced-mood-selector.tsx                         | 76   | code-quality  | E0     |
+| DEBT-0606 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/notebook-shell.tsx                                          | 34   | code-quality  | E0     |
+| DEBT-0607 | 'lucide-react' imported multiple times.                        | components/notebook/pages/resources-page.tsx                                    | 3    | code-quality  | E0     |
+| DEBT-0608 | 'useAuth' is deprecated.                                       | components/notebook/pages/resources-page.tsx                                    | 11   | code-quality  | E0     |
+| DEBT-0609 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/pages/resources-page.tsx                                    | 52   | code-quality  | E0     |
+| DEBT-0610 | The signature '(): Promise<Meeting[]>' of 'MeetingsServic...   | components/notebook/pages/resources-page.tsx                                    | 162  | code-quality  | E0     |
+| DEBT-0611 | Use the "RegExp.exec()" method instead.                        | components/notebook/pages/resources-page.tsx                                    | 213  | code-quality  | E0     |
+| DEBT-0612 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | components/notebook/pages/today-page.tsx                                        | 122  | code-quality  | E0     |
+| DEBT-0613 | The signature '(): { user: any; loading: any; isAnonymous...   | components/onboarding/onboarding-wizard.tsx                                     | 31   | code-quality  | E0     |
+| DEBT-0614 | `new Error()` is too unspecific for a type check. Use `ne...   | components/onboarding/onboarding-wizard.tsx                                     | 136  | code-quality  | E0     |
+| DEBT-0615 | Prefer `globalThis` over `window`.                             | components/status/offline-indicator.tsx                                         | 22   | code-quality  | E0     |
+| DEBT-0616 | Use the "RegExp.exec()" method instead.                        | components/widgets/compact-meeting-countdown.tsx                                | 73   | code-quality  | E0     |
+| DEBT-0617 | Compare with `undefined` directly instead of using `typeof`.   | hooks/use-daily-quote.ts                                                        | 170  | code-quality  | E0     |
+| DEBT-0618 | Prefer `globalThis.window` over `window`.                      | hooks/use-geolocation.ts                                                        | 80   | code-quality  | E0     |
+| DEBT-0619 | 'data.content \|\| ""' will use Object's default stringific... | hooks/use-journal.ts                                                            | 101  | code-quality  | E0     |
+| DEBT-0620 | 'data.step4_surrender \|\| ""' will use Object's default st... | hooks/use-journal.ts                                                            | 113  | code-quality  | E0     |
+| DEBT-0621 | Replace this union type with a type alias.                     | lib/db/collections.ts                                                           | 97   | code-quality  | E0     |
+| DEBT-0622 | Use the "RegExp.exec()" method instead.                        | lib/db/meetings.ts                                                              | 34   | code-quality  | E0     |
+| DEBT-0623 | Prefer `globalThis.window` over `window`.                      | lib/firebase.ts                                                                 | 44   | code-quality  | E0     |
+| DEBT-0624 | Unexpected negated condition.                                  | lib/firebase.ts                                                                 | 141  | code-quality  | E0     |
+| DEBT-0625 | Use `export…from` to re-export `DailyLog`.                     | lib/firestore-service.ts                                                        | 97   | code-quality  | E0     |
+| DEBT-0626 | Use `export…from` to re-export `DailyLogHistoryResult`.        | lib/firestore-service.ts                                                        | 97   | code-quality  | E0     |
+| DEBT-0627 | `String.raw` should be used to avoid escaping `\`.             | scripts/archive-doc.js                                                          | 340  | code-quality  | E0     |
+| DEBT-0628 | `String.raw` should be used to avoid escaping `\`.             | scripts/generate-documentation-index.js                                         | 125  | code-quality  | E0     |
+| DEBT-0629 | Do not call `Array#push()` multiple times.                     | scripts/generate-documentation-index.js                                         | 571  | code-quality  | E0     |
+| DEBT-0630 | `String.raw` should be used to avoid escaping `\`.             | scripts/normalize-canon-ids.js                                                  | 69   | code-quality  | E0     |
+| DEBT-0631 | `String.raw` should be used to avoid escaping `\`.             | scripts/suggest-pattern-automation.js                                           | 63   | code-quality  | E0     |
+| DEBT-0632 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | scripts/update-readme-status.js                                                 | 204  | code-quality  | E0     |
+| DEBT-0633 | Use the "RegExp.exec()" method instead.                        | tests/utils/logger.test.ts                                                      | 173  | code-quality  | E0     |
+| DEBT-0634 | Compare with `undefined` directly instead of using `typeof`.   | components/notebook/hooks/use-smart-prompts.ts                                  | 47   | code-quality  | E0     |
+| DEBT-0635 | Unexpected negated condition.                                  | scripts/check-consolidation-status.js                                           | 41   | code-quality  | E0     |
+| DEBT-0636 | Remove this unused import of 'mkdirSync'.                      | scripts/normalize-canon-ids.js                                                  | 21   | code-quality  | E0     |
+| DEBT-0637 | Remove this unused import of 'basename'.                       | scripts/normalize-canon-ids.js                                                  | 22   | code-quality  | E0     |
+| DEBT-0638 | Unexpected negated condition.                                  | scripts/normalize-canon-ids.js                                                  | 309  | code-quality  | E0     |
+| DEBT-0639 | Define a constant instead of using the literal 'functions...   | .claude/hooks/session-start.sh                                                  | 203  | code-quality  | E0     |
+| DEBT-0640 | Unexpected negated condition.                                  | scripts/validate-audit.js                                                       | 270  | code-quality  | E0     |
+| DEBT-0641 | `String.raw` should be used to avoid escaping `\`.             | scripts/add-false-positive.js                                                   | 270  | code-quality  | E0     |
+| DEBT-0642 | Handle this exception or don't catch it at all.                | scripts/check-document-sync.js                                                  | 95   | code-quality  | E1     |
+| DEBT-0643 | Prefer using nullish coalescing operator (`??=`) instead ...   | tests/scripts/phase-complete-check.test.ts                                      | 49   | code-quality  | E0     |
+| DEBT-0644 | Handle this exception or don't catch it at all.                | scripts/phase-complete-check.js                                                 | 217  | code-quality  | E1     |
+| DEBT-0645 | Unexpected negated condition.                                  | scripts/phase-complete-check.js                                                 | 330  | code-quality  | E0     |
+| DEBT-0646 | The empty object is useless.                                   | eslint.config.mjs                                                               | 13   | code-quality  | E0     |
+| DEBT-0647 | Define a constant instead of using the literal '━━━━━━━━━...   | .claude/hooks/session-start.sh                                                  | 303  | code-quality  | E0     |
+| DEBT-0648 | Remove the declaration of the unused 'preserveStackInDev'...   | scripts/lib/sanitize-error.js                                                   | 65   | code-quality  | E0     |
+| DEBT-0649 | Unexpected negated condition.                                  | scripts/validate-phase-completion.js                                            | 77   | code-quality  | E0     |
+| DEBT-0650 | Unexpected negated condition.                                  | scripts/archive-doc.js                                                          | 572  | code-quality  | E0     |
+| DEBT-0651 | Unexpected negated condition.                                  | scripts/check-docs-light.js                                                     | 425  | code-quality  | E0     |
+| DEBT-0652 | Prefer `Date.now()` over `new Date()`.                         | scripts/check-docs-light.js                                                     | 434  | code-quality  | E0     |
+| DEBT-0653 | Unexpected negated condition.                                  | scripts/update-readme-status.js                                                 | 497  | code-quality  | E0     |
+| DEBT-0654 | Define a constant instead of using the literal 'package-l...   | .claude/hooks/session-start.sh                                                  | 180  | code-quality  | E0     |
+| DEBT-0655 | Define a constant instead of using the literal '=========...   | scripts/check-review-triggers.sh                                                | 156  | code-quality  | E0     |
+| DEBT-0656 | Prefer `globalThis.window` over `window`.                      | lib/utils/storage.ts                                                            | 17   | code-quality  | E0     |
+| DEBT-0657 | Prefer `globalThis` over `window`.                             | lib/utils/storage.ts                                                            | 23   | code-quality  | E0     |
+| DEBT-0658 | Prefer `globalThis.window` over `window`.                      | lib/recaptcha.ts                                                                | 36   | code-quality  | E0     |
+| DEBT-0659 | `new Error()` is too unspecific for a type check. Use `ne...   | lib/recaptcha.ts                                                                | 37   | code-quality  | E0     |
+| DEBT-0660 | Prefer `globalThis` over `window`.                             | lib/recaptcha.ts                                                                | 46   | code-quality  | E0     |
+| DEBT-0661 | Do not call `Array#push()` multiple times.                     | scripts/enrich-addresses.ts                                                     | 128  | code-quality  | E0     |
+| DEBT-0662 | Do not call `Array#push()` multiple times.                     | scripts/retry-failures.ts                                                       | 98   | code-quality  | E0     |
+| DEBT-0663 | Unexpected negated condition.                                  | scripts/sync-geocache.ts                                                        | 88   | code-quality  | E0     |
+| DEBT-0664 | Mark the props of the component as read-only.                  | components/admin/meetings-tab.tsx                                               | 24   | code-quality  | E0     |
+| DEBT-0665 | Mark the props of the component as read-only.                  | components/admin/slogans-tab.tsx                                                | 28   | code-quality  | E0     |
+| DEBT-0666 | Prefer `globalThis` over `window`.                             | components/growth/Step1WorksheetCard.tsx                                        | 697  | code-quality  | E0     |
+| DEBT-0667 | A fragment with only one child is redundant.                   | components/growth/Step1WorksheetCard.tsx                                        | 709  | code-quality  | E0     |
+| DEBT-0668 | 'useAuth' is deprecated.                                       | components/growth/Step1WorksheetCard.tsx                                        | 14   | code-quality  | E0     |
+| DEBT-0669 | Mark the props of the component as read-only.                  | components/notebook/features/recovery-notepad.tsx                               | 25   | code-quality  | E0     |
+| DEBT-0670 | Expected a `for-of` loop instead of a `for` loop with thi...   | functions/src/index.ts                                                          | 694  | code-quality  | E0     |
+| DEBT-0671 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | components/notebook/hooks/use-smart-prompts.ts                                  | 102  | code-quality  | E0     |
+| DEBT-0672 | Mark the props of the component as read-only.                  | components/notebook/pages/today-page.tsx                                        | 40   | code-quality  | E0     |
+| DEBT-0673 | Mark the props of the component as read-only.                  | components/notebook/features/check-in-progress.tsx                              | 9    | code-quality  | E0     |
+| DEBT-0674 | Mark the props of the component as read-only.                  | components/notebook/features/quick-actions-fab.tsx                              | 17   | code-quality  | E0     |
+| DEBT-0675 | Prefer `globalThis` over `window`.                             | components/notebook/features/quick-actions-fab.tsx                              | 36   | code-quality  | E0     |
+| DEBT-0676 | Mark the props of the component as read-only.                  | components/notebook/features/smart-prompt.tsx                                   | 16   | code-quality  | E0     |
+| DEBT-0677 | Unexpected negated condition.                                  | components/admin/users-tab.tsx                                                  | 429  | code-quality  | E0     |
+| DEBT-0678 | Unexpected negated condition.                                  | functions/src/index.ts                                                          | 200  | code-quality  | E0     |
+| DEBT-0679 | Prefer `globalThis.window` over `window`.                      | lib/utils.ts                                                                    | 28   | code-quality  | E0     |
+| DEBT-0680 | Mark the props of the component as read-only.                  | components/celebrations/milestone-modal.tsx                                     | 22   | code-quality  | E0     |
+| DEBT-0681 | Prefer `globalThis` over `window`.                             | components/ui/voice-text-area.tsx                                               | 20   | code-quality  | E0     |
+| DEBT-0682 | Prefer `globalThis` over `window`.                             | hooks/use-speech-recognition.ts                                                 | 22   | code-quality  | E0     |
+| DEBT-0683 | Mark the props of the component as read-only.                  | components/journal/timeline.tsx                                                 | 21   | code-quality  | E0     |
+| DEBT-0684 | 'lucide-react' imported multiple times.                        | components/growth/NightReviewCard.tsx                                           | 5    | code-quality  | E0     |
+| DEBT-0685 | 'lucide-react' imported multiple times.                        | components/growth/SpotCheckCard.tsx                                             | 5    | code-quality  | E0     |
+| DEBT-0686 | Mark the props of the component as read-only.                  | components/notebook/pages/growth-page.tsx                                       | 15   | code-quality  | E0     |
+| DEBT-0687 | Prefer `globalThis.window` over `window`.                      | components/celebrations/firework-burst.tsx                                      | 32   | code-quality  | E0     |
+| DEBT-0688 | Mark the props of the component as read-only.                  | components/celebrations/celebration-overlay.tsx                                 | 15   | code-quality  | E0     |
+| DEBT-0689 | Mark the props of the component as read-only.                  | components/celebrations/celebration-provider.tsx                                | 19   | code-quality  | E0     |
+| DEBT-0690 | Mark the props of the component as read-only.                  | components/celebrations/confetti-burst.tsx                                      | 26   | code-quality  | E0     |
+| DEBT-0691 | Mark the props of the component as read-only.                  | components/celebrations/firework-burst.tsx                                      | 26   | code-quality  | E0     |
+| DEBT-0692 | Mark the props of the component as read-only.                  | components/celebrations/success-pulse.tsx                                       | 12   | code-quality  | E0     |
+| DEBT-0693 | Mark the props of the component as read-only.                  | components/notebook/features/check-in-questions.tsx                             | 29   | code-quality  | E0     |
+| DEBT-0694 | Mark the props of the component as read-only.                  | components/notebook/features/clean-time-display.tsx                             | 29   | code-quality  | E0     |
+| DEBT-0695 | Mark the props of the component as read-only.                  | components/notebook/features/mood-selector.tsx                                  | 45   | code-quality  | E0     |
+| DEBT-0696 | Mark the props of the component as read-only.                  | components/admin/glossary-tab.tsx                                               | 28   | code-quality  | E0     |
+| DEBT-0697 | Mark the props of the component as read-only.                  | components/journal/entry-forms/daily-log-form.tsx                               | 25   | code-quality  | E0     |
+| DEBT-0698 | Mark the props of the component as read-only.                  | components/journal/entry-card.tsx                                               | 16   | code-quality  | E0     |
+| DEBT-0699 | Mark the props of the component as read-only.                  | components/journal/entry-creator-menu.tsx                                       | 51   | code-quality  | E0     |
+| DEBT-0700 | Mark the props of the component as read-only.                  | components/journal/entry-detail-dialog.tsx                                      | 10   | code-quality  | E0     |
+| DEBT-0701 | Mark the props of the component as read-only.                  | components/journal/entry-forms/free-write-form.tsx                              | 15   | code-quality  | E0     |
+| DEBT-0702 | Mark the props of the component as read-only.                  | components/journal/entry-forms/gratitude-form.tsx                               | 15   | code-quality  | E0     |
+| DEBT-0703 | Mark the props of the component as read-only.                  | components/journal/entry-forms/inventory-form.tsx                               | 15   | code-quality  | E0     |
+| DEBT-0704 | Mark the props of the component as read-only.                  | components/journal/entry-forms/mood-form.tsx                                    | 25   | code-quality  | E0     |
+| DEBT-0705 | Mark the props of the component as read-only.                  | components/journal/entry-menu.tsx                                               | 28   | code-quality  | E0     |
+| DEBT-0706 | Mark the props of the component as read-only.                  | components/journal/entry-wizard.tsx                                             | 13   | code-quality  | E0     |
+| DEBT-0707 | Mark the props of the component as read-only.                  | components/journal/floating-pen.tsx                                             | 12   | code-quality  | E0     |
+| DEBT-0708 | 'useAuth' is deprecated.                                       | components/journal/journal-hub.tsx                                              | 10   | code-quality  | E0     |
+| DEBT-0709 | Mark the props of the component as read-only.                  | components/journal/journal-layout.tsx                                           | 9    | code-quality  | E0     |
+| DEBT-0710 | Mark the props of the component as read-only.                  | components/journal/lock-screen.tsx                                              | 7    | code-quality  | E0     |
+| DEBT-0711 | Mark the props of the component as read-only.                  | components/journal/ribbon-nav.tsx                                               | 64   | code-quality  | E0     |
+| DEBT-0712 | Unexpected negated condition.                                  | app/meetings/all/page.tsx                                                       | 364  | code-quality  | E0     |
+| DEBT-0713 | Prefer using nullish coalescing operator (`??=`) instead ...   | components/widgets/compact-meeting-countdown.tsx                                | 191  | code-quality  | E0     |
+| DEBT-0714 | Mark the props of the component as read-only.                  | components/admin/admin-crud-table.tsx                                           | 24   | code-quality  | E0     |
+| DEBT-0715 | '@/lib/db/meetings' imported multiple times.                   | components/admin/meetings-tab.tsx                                               | 10   | code-quality  | E0     |
+| DEBT-0716 | Mark the props of the component as read-only.                  | components/admin/quotes-tab.tsx                                                 | 24   | code-quality  | E0     |
+| DEBT-0717 | Mark the props of the component as read-only.                  | components/admin/sober-living-tab.tsx                                           | 17   | code-quality  | E0     |
+| DEBT-0718 | Prefer `globalThis.window` over `window`.                      | components/pwa/install-prompt.tsx                                               | 18   | code-quality  | E0     |
+| DEBT-0719 | Prefer `globalThis` over `window`.                             | components/pwa/install-prompt.tsx                                               | 43   | code-quality  | E0     |
+| DEBT-0720 | 'useAuth' is deprecated.                                       | components/growth/GratitudeCard.tsx                                             | 15   | code-quality  | E0     |
+| DEBT-0721 | The signature '(): { user: any; loading: any; isAnonymous...   | components/growth/GratitudeCard.tsx                                             | 35   | code-quality  | E0     |
+| DEBT-0722 | 'useAuth' is deprecated.                                       | components/growth/NightReviewCard.tsx                                           | 15   | code-quality  | E0     |
+| DEBT-0723 | The signature '(): { user: any; loading: any; isAnonymous...   | components/growth/NightReviewCard.tsx                                           | 85   | code-quality  | E0     |
+| DEBT-0724 | 'useAuth' is deprecated.                                       | components/growth/SpotCheckCard.tsx                                             | 15   | code-quality  | E0     |
+| DEBT-0725 | The signature '(): { user: any; loading: any; isAnonymous...   | components/growth/SpotCheckCard.tsx                                             | 31   | code-quality  | E0     |
+| DEBT-0726 | Mark the props of the component as read-only.                  | components/journal/entry-feed.tsx                                               | 16   | code-quality  | E0     |
+| DEBT-0727 | Mark the props of the component as read-only.                  | components/journal/journal-sidebar.tsx                                          | 15   | code-quality  | E0     |
+| DEBT-0728 | Use `export…from` to re-export `NotebookModule`.               | components/notebook/roadmap-modules.tsx                                         | 12   | code-quality  | E0     |
+| DEBT-0729 | Mark the props of the component as read-only.                  | components/admin/admin-tabs.tsx                                                 | 32   | code-quality  | E0     |
+| DEBT-0730 | Mark the props of the component as read-only.                  | components/maps/meeting-map.tsx                                                 | 76   | code-quality  | E0     |
+| DEBT-0731 | 'useAuth' is deprecated.                                       | components/notebook/journal-modal.tsx                                           | 7    | code-quality  | E0     |
+| DEBT-0732 | Mark the props of the component as read-only.                  | components/notebook/journal-modal.tsx                                           | 27   | code-quality  | E0     |
+| DEBT-0733 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/journal-modal.tsx                                           | 28   | code-quality  | E0     |
+| DEBT-0734 | Unexpected negated condition.                                  | components/notebook/pages/resources-page.tsx                                    | 521  | code-quality  | E0     |
+| DEBT-0735 | Mark the props of the component as read-only.                  | app/admin/layout.tsx                                                            | 12   | code-quality  | E0     |
+| DEBT-0736 | Mark the props of the component as read-only.                  | components/ui/skeleton.tsx                                                      | 12   | code-quality  | E0     |
+| DEBT-0737 | Mark the props of the component as read-only.                  | components/ui/empty-state.tsx                                                   | 39   | code-quality  | E0     |
+| DEBT-0738 | Mark the props of the component as read-only.                  | components/providers/auth-context.tsx                                           | 81   | code-quality  | E0     |
+| DEBT-0739 | Unexpected negated condition.                                  | components/providers/auth-context.tsx                                           | 90   | code-quality  | E0     |
+| DEBT-0740 | Use `export…from` to re-export `useAuthCore`.                  | components/providers/auth-provider.tsx                                          | 22   | code-quality  | E0     |
+| DEBT-0741 | Mark the props of the component as read-only.                  | components/providers/auth-provider.tsx                                          | 38   | code-quality  | E0     |
+| DEBT-0742 | Mark the props of the component as read-only.                  | components/providers/daily-log-context.tsx                                      | 31   | code-quality  | E0     |
+| DEBT-0743 | Mark the props of the component as read-only.                  | components/providers/profile-context.tsx                                        | 41   | code-quality  | E0     |
+| DEBT-0744 | Mark the props of the component as read-only.                  | components/auth/account-link-modal.tsx                                          | 13   | code-quality  | E0     |
+| DEBT-0745 | 'useAuth' is deprecated.                                       | components/notebook/notebook-shell.tsx                                          | 10   | code-quality  | E0     |
+| DEBT-0746 | Prefer `globalThis.window` over `window`.                      | lib/sentry.client.ts                                                            | 24   | code-quality  | E0     |
+| DEBT-0747 | Don't use a zero fraction in the number.                       | lib/sentry.client.ts                                                            | 42   | code-quality  | E0     |
+| DEBT-0748 | Prefer `globalThis` over `window`.                             | components/providers/error-boundary.tsx                                         | 49   | code-quality  | E0     |
+| DEBT-0749 | Use `export…from` to re-export `DailyLog`.                     | lib/database/database-interface.ts                                              | 12   | code-quality  | E0     |
+| DEBT-0750 | 'unknown' overrides all other types in this union type.        | lib/types/daily-log.ts                                                          | 28   | code-quality  | E0     |
+| DEBT-0751 | 'unknown' overrides all other types in this union type.        | lib/database/database-interface.ts                                              | 19   | code-quality  | E0     |
+| DEBT-0752 | 'useAuth' is deprecated.                                       | components/status/auth-error-banner.tsx                                         | 6    | code-quality  | E0     |
+| DEBT-0753 | Mark the props of the component as read-only.                  | components/status/auth-error-banner.tsx                                         | 14   | code-quality  | E0     |
+| DEBT-0754 | The signature '(): { user: any; loading: any; isAnonymous...   | components/status/auth-error-banner.tsx                                         | 15   | code-quality  | E0     |
+| DEBT-0755 | Prefer `globalThis.window` over `window`.                      | components/notebook/book-cover.tsx                                              | 37   | code-quality  | E0     |
+| DEBT-0756 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/pages/today-page.tsx                                        | 74   | code-quality  | E0     |
+| DEBT-0757 | 'useAuth' is deprecated.                                       | components/notebook/visualizations/mood-sparkline.tsx                           | 6    | code-quality  | E0     |
+| DEBT-0758 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/visualizations/mood-sparkline.tsx                           | 10   | code-quality  | E0     |
+| DEBT-0759 | Mark the props of the component as read-only.                  | components/auth/sign-in-modal.tsx                                               | 20   | code-quality  | E0     |
+| DEBT-0760 | 'useAuth' is deprecated.                                       | components/notebook/book-cover.tsx                                              | 7    | code-quality  | E0     |
+| DEBT-0761 | 'nickname' PropType is defined but prop is never used          | components/notebook/book-cover.tsx                                              | 26   | code-quality  | E0     |
+| DEBT-0762 | Mark the props of the component as read-only.                  | components/notebook/book-cover.tsx                                              | 30   | code-quality  | E0     |
+| DEBT-0763 | The signature '(): { user: any; loading: any; isAnonymous...   | components/notebook/book-cover.tsx                                              | 31   | code-quality  | E0     |
+| DEBT-0764 | 'useAuth' is deprecated.                                       | components/onboarding/onboarding-wizard.tsx                                     | 5    | code-quality  | E0     |
+| DEBT-0765 | Mark the props of the component as read-only.                  | components/onboarding/onboarding-wizard.tsx                                     | 30   | code-quality  | E0     |
+| DEBT-0766 | 'useAuth' is deprecated.                                       | components/notebook/pages/today-page.tsx                                        | 4    | code-quality  | E0     |
+| DEBT-0767 | Mark the props of the component as read-only.                  | components/desktop/sobriety-chip.tsx                                            | 29   | code-quality  | E0     |
+| DEBT-0768 | Unexpected negated condition.                                  | components/notebook/book-cover.tsx                                              | 158  | code-quality  | E0     |
+| DEBT-0769 | Mark the props of the component as read-only.                  | components/notebook/bookmark-ribbon.tsx                                         | 10   | code-quality  | E0     |
+| DEBT-0770 | Mark the props of the component as read-only.                  | components/notebook/notebook-page.tsx                                           | 9    | code-quality  | E0     |
+| DEBT-0771 | Mark the props of the component as read-only.                  | components/notebook/notebook-shell.tsx                                          | 33   | code-quality  | E0     |
+| DEBT-0772 | Mark the props of the component as read-only.                  | components/notebook/pages/placeholder-page.tsx                                  | 8    | code-quality  | E0     |
+| DEBT-0773 | Mark the props of the component as read-only.                  | components/notebook/sticky-note.tsx                                             | 14   | code-quality  | E0     |
+| DEBT-0774 | Mark the props of the component as read-only.                  | components/notebook/tab-navigation.tsx                                          | 18   | code-quality  | E0     |
+| DEBT-0775 | App Check disabled on Functions and client init disabled ...   | functions/src/index.ts                                                          | 0    | security      | E1     |
+| DEBT-0776 | CloudFunctionError interface defined twice in same file        | lib/firestore-service.ts                                                        | 0    | code-quality  | E0     |
+| DEBT-0777 | Batch fix opportunities: 200+ ESLint auto-fixable issues       | multiple                                                                        | 0    | code-quality  | E0     |
+| DEBT-0778 | Batch fix opportunities: 79 replaceAll() + 71 node: prefi...   | multiple                                                                        | 0    | code-quality  | E1     |
+| DEBT-0779 | parseTime() meeting helper duplicated in two pages             | app/meetings/all/page.tsx                                                       | 0    | code-quality  | E0     |
+| DEBT-0780 | DEVELOPMENT.md Husky section missing pattern compliance step   | DEVELOPMENT.md                                                                  | 0    | code-quality  | E0     |
+| DEBT-0781 | CI workflow lacks explicit permissions block (security ha...   | .github/workflows/ci.yml                                                        | 0    | code-quality  | E0     |
+| DEBT-0782 | Pattern checker produces false positives for controlled n...   | scripts/check-pattern-compliance.js                                             | 0    | code-quality  | E1     |
+| DEBT-0783 | Review trigger thresholds may cause alert fatigue for pro...   | scripts/check-review-needed.js                                                  | 0    | code-quality  | E1     |
+| DEBT-0784 | Deploy workflow secret handling may be brittle for multil...   | .github/workflows/deploy-firebase.yml                                           | 0    | code-quality  | E1     |
+| DEBT-0785 | Archive docs contain significant link rot after archival/...   | docs/archive/AI_HANDOFF-2026-01-02.md                                           | 0    | code-quality  | E2     |
+| DEBT-0786 | Template date placeholders using literal YYYY-MM-DD format     | docs/templates/FOUNDATION_DOC_TEMPLATE.md                                       | 0    | code-quality  | E0     |
+| DEBT-0787 | Template docs located outside docs/templates/ directory        | docs/PR_REVIEW_PROMPT_TEMPLATE.md                                               | 0    | code-quality  | E0     |
+| DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes...   | docs/DEVELOPMENT.md                                                             | 0    | code-quality  | E0     |
+| DEBT-0789 | ROADMAP anchor links may be fragile due to emoji/punctuat...   | ROADMAP.md                                                                      | 0    | code-quality  | E0     |
+| DEBT-0790 | @ts-expect-error suppression comment in production code        | components/notebook/pages/resources-page.tsx                                    | 0    | code-quality  | E0     |
+| DEBT-0791 | Environment variables accessed directly in components (ce...   | app/layout.tsx                                                                  | 0    | code-quality  | E0     |
+| DEBT-0792 | 'any' types leaking into production code (needs tightening)    | lib/sentry.client.ts                                                            | 0    | code-quality  | E1     |
+| DEBT-0793 | Landing page forced to client component for top-level state    | app/page.tsx                                                                    | 0    | code-quality  | E1     |
+| DEBT-0794 | void operator usage flagged by SonarCloud                      | components/admin/logs-tab.tsx                                                   | 287  | code-quality  | E0     |
+| DEBT-0795 | @ts-expect-error suppression for type mismatch                 | components/notebook/pages/resources-page.tsx                                    | 444  | code-quality  | E0     |
+| DEBT-0796 | TODO comment for unimplemented feature                         | lib/database/firestore-adapter.ts                                               | 51   | code-quality  | E0     |
+| DEBT-0797 | TODO comment for user preferences feature                      | components/notebook/features/quick-actions-fab.tsx                              | 12   | code-quality  | E0     |
+| DEBT-0798 | Useless assignment to hasMore variable                         | functions/src/jobs.ts                                                           | 620  | code-quality  | E1     |
+| DEBT-0799 | Nested ternary operator                                        | components/admin/logs-tab.tsx                                                   | 481  | code-quality  | E1     |
+| DEBT-0800 | Nested template literals (6 occurrences)                       | functions/src/admin.ts                                                          | 1388 | code-quality  | E1     |
+| DEBT-0801 | SonarCloud: Potentially hard-coded password pattern            | lib/utils/errors.ts                                                             | 69   | security      | E0     |
+| DEBT-0802 | Math.random for visual effects                                 | components/celebrations/confetti-burst.tsx                                      | 39   | security      | E0     |
+| DEBT-0803 | Secrets expanded in run block                                  | .github/workflows/deploy-firebase.yml                                           | 58   | security      | E0     |
+| DEBT-0804 | process.env.NODE_ENV checks for debug info                     | components/providers/error-boundary.tsx                                         | 84   | security      | E0     |
+| DEBT-0805 | Agent config files present                                     | .claude/settings.json                                                           | 1    | security      | E0     |
+| DEBT-0806 | Archive docs contain significant link rot after moves          | docs/archive/                                                                   | 0    | documentation | E2     |
+| DEBT-0807 | PR_REVIEW_PROMPT_TEMPLATE.md lacks Last Updated and Versi...   | docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md                   | 1    | documentation | E0     |
+| DEBT-0808 | DOCUMENTATION_INDEX.md orphaned - not referenced by any m...   | DOCUMENTATION_INDEX.md                                                          | 1    | documentation | E0     |
+| DEBT-0809 | Only 6 dynamic imports despite 101 client components           | components                                                                      | 0    | performance   | E1     |
+| DEBT-0810 | useMemo/useCallback usage is inconsistent                      | components                                                                      | 0    | performance   | E1     |
+| DEBT-0811 | Image optimization disabled (unoptimized: true)                | next.config.mjs                                                                 | 14   | performance   | E2     |
+| DEBT-0812 | tj-actions/changed-files without CVE-pinned version            | .github/workflows/docs-lint.yml                                                 | 36   | process       | E0     |
+| DEBT-0813 | lint-staged using npx --no-install may fail if not in cache    | .husky/pre-commit                                                               | 21   | process       | E0     |
+| DEBT-0814 | Multiple trap commands may override each other                 | .claude/hooks/session-start.sh                                                  | 245  | process       | E0     |
+| DEBT-0815 | Script has minimal console output (1 call)                     | scripts/check-cross-doc-deps.js                                                 | 1    | process       | E0     |
+| DEBT-0816 | TRIGGERS.md last updated 2026-01-02 but hooks updated since    | docs/TRIGGERS.md                                                                | 1    | process       | E0     |
+| DEBT-0817 | All 12 slash commands have frontmatter descriptions            | .claude/commands/                                                               | 0    | process       | E0     |
+| DEBT-0818 | 2 tracked TODO markers in codebase                             | components/notebook/features/quick-actions-fab.tsx                              | 12   | refactoring   | E0     |
+| DEBT-0819 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e...   | lib/logger.ts                                                                   | 86   | refactoring   | E1     |
+| DEBT-0820 | Setup requires multiple commands - no single bootstrap         | package.json                                                                    | 5    | code-quality  | E0     |
+| DEBT-0821 | Error messages lack actionable fix hints - generic 'Pleas...   | components/                                                                     | 0    | code-quality  | E1     |
+| DEBT-0822 | OfflineIndicator is display-only - no sync status or retr...   | components/status/offline-indicator.tsx                                         | 7    | code-quality  | E1     |
+| DEBT-0823 | GitHub Actions using version tags instead of SHA               | .github/workflows/auto-label-review-tier.yml                                    | 29   | security      | E0     |
+| DEBT-0824 | Fix @ts-expect-error suppression                               | N/A                                                                             | 0    | code-quality  | E0     |
+| DEBT-0825 | Remove duplicate CloudFunctionError                            | N/A                                                                             | 0    | code-quality  | E0     |
+| DEBT-0826 | Run ESLint auto-fix                                            | N/A                                                                             | 0    | code-quality  | E0     |
+| DEBT-0827 | Extract parseTime helper                                       | N/A                                                                             | 0    | code-quality  | E0     |
+| DEBT-0828 | Replace template date placeholders                             | N/A                                                                             | 0    | code-quality  | E0     |
+| DEBT-0829 | Move PR template to docs/templates/                            | N/A                                                                             | 0    | code-quality  | E0     |
+| DEBT-0830 | Update DEVELOPMENT.md test count                               | N/A                                                                             | 0    | code-quality  | E0     |
+| DEBT-0831 | Document fragile anchor links                                  | N/A                                                                             | 0    | code-quality  | E0     |
+| DEBT-0832 | Update Husky docs for patterns:check                           | N/A                                                                             | 0    | code-quality  | E0     |
+| DEBT-0833 | Add explicit permissions block                                 | N/A                                                                             | 0    | code-quality  | E0     |
+| DEBT-0834 | Replace 'any' with proper types                                | N/A                                                                             | 0    | code-quality  | E1     |
+| DEBT-0835 | replaceAll + node: prefix batch                                | N/A                                                                             | 0    | code-quality  | E1     |
+| DEBT-0836 | Improve deploy secret handling                                 | N/A                                                                             | 0    | code-quality  | E1     |
+| DEBT-0837 | Missing "AI Instructions" Sections                             | N/A                                                                             | 0    | code-quality  | E1     |
+| DEBT-0838 | Fix deprecated APIs + nested ternaries                         | N/A                                                                             | 0    | code-quality  | E2     |
+| DEBT-0839 | Fix archive link rot                                           | N/A                                                                             | 0    | code-quality  | E2     |
+| DEBT-0840 | Missing "Quick Start" Sections                                 | N/A                                                                             | 0    | code-quality  | E2     |
+| DEBT-0841 | Underscore-prefixed unused variables                           | components/notebook/pages/today-page.tsx                                        | 305  | code-quality  | E0     |
+| DEBT-0842 | TODO comments without issue references                         | components/notebook/features/quick-actions-fab.tsx                              | 12   | code-quality  | E0     |
+| DEBT-0843 | Any type usage in test files                                   | tests/firestore-service.test.ts                                                 | 18   | code-quality  | E1     |
+| DEBT-0844 | Console statements in error paths                              | lib/utils/callable-errors.ts                                                    | 182  | security      | E1     |
+| DEBT-0845 | Sentry client initialization exists but is not invoked au...   | lib/sentry.client.ts                                                            | 0    | code-quality  | E1     |
+| DEBT-0846 | Timeline may re-group/re-sort even though useJournal alre...   | components/journal/timeline.tsx                                                 | 0    | code-quality  | E1     |
+| DEBT-0847 | Event listener/timer cleanup verification needed across m...   | components/\*\*                                                                 | 0    | code-quality  | E1     |
+| DEBT-0848 | Sentry tracesSampleRate is low in production; may miss pe...   | lib/sentry.client.ts                                                            | 0    | code-quality  | E0     |
+| DEBT-0849 | Unused dependencies remain in runtime dependencies (tool-...   | package.json                                                                    | 0    | code-quality  | E1     |
+| DEBT-0868 | Add type: module to package.json to eliminate NODE warnings    | package.json                                                                    | 1    | code-quality  | E1     |
+| DEBT-1089 | Complete the task associated to this "TODO" comment.           | functions/src/admin.ts                                                          | 2769 | code-quality  | E0     |
+| DEBT-1090 | Complete the task associated to this "TODO" comment.           | functions/src/admin.ts                                                          | 3936 | code-quality  | E0     |
+| DEBT-1157 | Complete the task associated to this "TODO" comment.           | scripts/lib/ai-pattern-checks.js                                                | 300  | code-quality  | E0     |
+| DEBT-1163 | Complete the task associated to this "TODO" comment.           | scripts/check-doc-placement.js                                                  | 158  | code-quality  | E0     |
+| DEBT-1164 | Complete the task associated to this "TODO" comment.           | scripts/check-doc-placement.js                                                  | 229  | code-quality  | E0     |
+| DEBT-1165 | Complete the task associated to this "TODO" comment.           | scripts/check-doc-placement.js                                                  | 534  | code-quality  | E0     |
+| DEBT-1166 | Complete the task associated to this "TODO" comment.           | scripts/check-external-links.js                                                 | 105  | code-quality  | E0     |
+| DEBT-1169 | Complete the task associated to this "TODO" comment.           | scripts/check-external-links.js                                                 | 570  | code-quality  | E0     |
+| DEBT-1170 | Complete the task associated to this "TODO" comment.           | scripts/check-content-accuracy.js                                               | 188  | code-quality  | E0     |
+| DEBT-1171 | Complete the task associated to this "TODO" comment.           | scripts/check-content-accuracy.js                                               | 436  | code-quality  | E0     |
+| DEBT-1449 | Complete the task associated to this "TODO" comment.           | scripts/analyze-learning-effectiveness.js                                       | 1067 | code-quality  | E0     |
+| DEBT-1942 | Unpinned GitHub Actions in multiple workflows                  | .github/workflows/auto-label-review-tier.yml                                    | 29   | security      | E1     |
+| DEBT-1943 | Inefficient type checking in safeToIso                         | functions/src/admin.ts                                                          | 113  | code-quality  | E1     |
+| DEBT-1944 | Unbounded retry loop risk in jobs.ts                           | functions/src/jobs.ts                                                           | 529  | code-quality  | E1     |
+| DEBT-1945 | Admin function input validation inconsistency - meetingId...   | functions/src/admin.ts                                                          | 768  | security      | E1     |
+| DEBT-1946 | Daily quotes collection allows direct admin client writes...   | firestore.rules                                                                 | 104  | security      | E1     |
+| DEBT-1947 | Type coercion in generateSearchableText                        | hooks/use-journal.ts                                                            | 102  | code-quality  | E1     |
+| DEBT-1948 | Firestore security rules missing for security_logs and ad...   | firestore.rules                                                                 | 151  | security      | E1     |
+| DEBT-1949 | User ID hash truncation reduces collision resistance for ...   | functions/src/security-logger.ts                                                | 74   | security      | E1     |
+| DEBT-1950 | No middleware.ts for server-side route protection              | next.config.mjs                                                                 | 13   | security      | E1     |
+| DEBT-1951 | Service account credentials written to disk in CI deploy ...   | .github/workflows/deploy-firebase.yml                                           | 58   | security      | E1     |
+| DEBT-1993 | Potential Misplaced Plans in Archive/Templates                 | docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md              | 1    | documentation | E0     |
+| DEBT-1994 | docs/OPERATIONAL_VISIBILITY_SPRINT.md and docs/HOOKIFY_ST...   | docs/OPERATIONAL_VISIBILITY_SPRINT.md                                           | 1    | documentation | E1     |
+| DEBT-1995 | No UI indicator for online/offline state                       | components/offline-indicator.tsx                                                | 1    | code-quality  | E1     |
+| DEBT-1996 | Markdownlint and Prettier checks not confirmed                 | docs/\*_/_.md                                                                   | 1    | documentation | E1     |
+| DEBT-1997 | Potentially missing performance monitoring                     | lib/performance.ts                                                              | 1    | code-quality  | E1     |
+| DEBT-2004 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP...   | AI_WORKFLOW.md                                                                  | 0    | documentation | E1     |
+| DEBT-2005 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP...   | AI_WORKFLOW.md                                                                  | 0    | documentation | E1     |
+| DEBT-2006 | Broken internal link: docs/archive/completed-plans/INTEGR...   | ARCHITECTURE.md                                                                 | 0    | documentation | E1     |
+| DEBT-2009 | Broken internal link: docs/archive/completed-plans/INTEGR...   | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2010 | Broken internal link: ./docs/archive/completed-plans/EIGH...   | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2011 | Broken internal link: docs/archive/completed-plans/sonarc...   | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2012 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2013 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2014 | Broken internal link: ./docs/archive/SoNash\_\_AdminPanelEn... | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2015 | Broken internal link: docs/archive/completed-plans/sonarc...   | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2016 | Broken internal link: docs/archive/completed-plans/INTEGR...   | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2017 | Broken internal link: ./docs/archive/2025-dec-reports/JOU...   | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2018 | Broken internal link: ./docs/archive/2025-dec-reports/LIB...   | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2019 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | SESSION_CONTEXT.md                                                              | 0    | documentation | E1     |
+| DEBT-2020 | Broken internal link: docs/archive/completed-plans/sonarc...   | SESSION_CONTEXT.md                                                              | 0    | documentation | E1     |
+| DEBT-2021 | Broken internal link: docs/archive/completed-plans/INTEGR...   | SESSION_CONTEXT.md                                                              | 0    | documentation | E1     |
+| DEBT-2058 | COMMAND_REFERENCE.md has inconsistent version format           | .claude/COMMAND_REFERENCE.md                                                    | 0    | documentation | E0     |
+| DEBT-2059 | Structure: skills/ vs agents/ directory overlap                | .claude/skills/                                                                 | 0    | documentation | E0     |
+| DEBT-2060 | Bare URLs without link text                                    | AI_WORKFLOW.md                                                                  | 0    | documentation | E0     |
+| DEBT-2061 | AI_WORKFLOW.md has inline metadata format instead of table     | AI_WORKFLOW.md                                                                  | 0    | documentation | E0     |
+| DEBT-2062 | AI_WORKFLOW.md doesn't link back to CLAUDE.md                  | AI_WORKFLOW.md                                                                  | 0    | documentation | E0     |
+| DEBT-2063 | AI_WORKFLOW.md missing Status field                            | C:/Users/jason/Workspace/dev-projects/sonash-v0/AI_WORKFLOW.md                  | 0    | documentation | E0     |
+| DEBT-2064 | ARCHITECTURE.md outdated by 23 days                            | C:/Users/jason/Workspace/dev-projects/sonash-v0/ARCHITECTURE.md                 | 0    | documentation | E0     |
+| DEBT-2065 | CLAUDE.md missing Status field                                 | C:/Users/jason/Workspace/dev-projects/sonash-v0/CLAUDE.md                       | 0    | documentation | E0     |
+| DEBT-2066 | APPCHECK_SETUP.md outdated by 25 days                          | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/APPCHECK_SETUP.md          | 0    | documentation | E0     |
+| DEBT-2067 | LEARNING_METRICS.md missing tier declaration                   | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/LEARNING_METRICS.md        | 0    | documentation | E0     |
+| DEBT-2068 | RECAPTCHA_REMOVAL_GUIDE.md outdated by 25 days                 | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/RECAPTCHA_REMOVAL_GUIDE.md | 0    | documentation | E0     |
+| DEBT-2069 | SECURITY.md outdated by 23 days                                | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/SECURITY.md                | 0    | documentation | E0     |
+| DEBT-2070 | SESSION_DECISIONS.md missing Status field                      | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/SESSION_DECISIONS.md       | 0    | documentation | E0     |
+| DEBT-2071 | Inconsistent list marker style                                 | CLAUDE.md                                                                       | 0    | documentation | E0     |
+| DEBT-2072 | Broken anchor link: ../ROADMAP.md#phase-4-error-tracking-...   | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md                            | 0    | documentation | E0     |
+| DEBT-2073 | Broken anchor link: ../ROADMAP.md#phase-5-system-logs-gcp...   | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md                            | 0    | documentation | E0     |
+| DEBT-2074 | CODE_PATTERNS.md <-> SECURITY_CHECKLIST.md missing cross-...   | docs/agent_docs/CODE_PATTERNS.md                                                | 0    | documentation | E0     |
+| DEBT-2075 | SECURITY_CHECKLIST.md doesn't reference CLAUDE.md              | docs/agent_docs/SECURITY_CHECKLIST.md                                           | 0    | documentation | E0     |
+| DEBT-2076 | Outdated redirect: cloud.google.com/recaptcha-enterprise/...   | docs/APPCHECK_SETUP.md                                                          | 0    | documentation | E0     |
+| DEBT-2077 | AUDIT_TRACKER.md has Status in Purpose line instead of me...   | docs/AUDIT_TRACKER.md                                                           | 0    | documentation | E0     |
+| DEBT-2078 | Structure: AUDIT_TRACKER.md should be Tier 4 Operational       | docs/AUDIT_TRACKER.md                                                           | 0    | documentation | E0     |
+| DEBT-2079 | DOCUMENTATION_STANDARDS.md doesn't reference CLAUDE.md         | docs/DOCUMENTATION_STANDARDS.md                                                 | 0    | documentation | E0     |
+| DEBT-2080 | FIREBASE_CHANGE_POLICY.md has multiple Last Updated dates...   | docs/FIREBASE_CHANGE_POLICY.md                                                  | 0    | documentation | E0     |
+| DEBT-2081 | Broken anchor link: ../ROADMAP.md#offline-support-critical     | docs/LIGHTHOUSE_INTEGRATION_PLAN.md                                             | 0    | documentation | E0     |
+| DEBT-2082 | Broken anchor link: ../ROADMAP.md#m3-meetings-location-pl...   | docs/MONETIZATION_RESEARCH.md                                                   | 0    | documentation | E0     |
+| DEBT-2083 | Broken anchor link: ../technical-debt/PROCEDURE.md#11-cat...   | docs/multi-ai-audit/COORDINATOR.md                                              | 0    | documentation | E0     |
+| DEBT-2084 | Broken anchor link: ../../ROADMAP.md#track-t---testing-in...   | docs/plans/TESTING_INFRASTRUCTURE_PLAN.md                                       | 0    | documentation | E0     |
+| DEBT-2085 | SESSION_DECISIONS.md missing Created field                     | docs/SESSION_DECISIONS.md                                                       | 0    | documentation | E0     |
+| DEBT-2086 | SLASH_COMMANDS_REFERENCE.md potentially stale (33 days old)    | docs/SLASH_COMMANDS_REFERENCE.md                                                | 0    | documentation | E0     |
+| DEBT-2087 | Outdated redirect: docs.anthropic.com/claude-code redirec...   | docs/SLASH_COMMANDS_REFERENCE.md                                                | 0    | documentation | E0     |
+| DEBT-2088 | Structure: technical-debt/PROCEDURE.md placement review        | docs/technical-debt/PROCEDURE.md                                                | 0    | documentation | E0     |
+| DEBT-2089 | Naming: Inconsistent use of PROCEDURE vs GUIDE vs WORKFLOW     | docs/technical-debt/PROCEDURE.md                                                | 0    | documentation | E0     |
+| DEBT-2090 | Broken anchor link: ./DOCUMENT_DEPENDENCIES.md#cross-docu...   | docs/TRIGGERS.md                                                                | 0    | documentation | E0     |
+| DEBT-2091 | Case mismatch in link: CLAUDE.md                               | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E0     |
+| DEBT-2092 | Inconsistent blank lines around headings                       | GLOBAL_SECURITY_STANDARDS.md                                                    | 0    | documentation | E0     |
+| DEBT-2093 | Structure: ROADMAP.md vs ROADMAP_FUTURE.md separation          | ROADMAP.md                                                                      | 0    | documentation | E0     |
+| DEBT-2094 | Multiple H1 headings in single document                        | SESSION_CONTEXT.md                                                              | 0    | documentation | E0     |
+| DEBT-2095 | Trailing spaces at end of lines                                | SESSION_CONTEXT.md                                                              | 0    | documentation | E0     |
+| DEBT-2096 | Table formatting inconsistencies                               | SESSION_CONTEXT.md                                                              | 0    | documentation | E0     |
+| DEBT-2097 | Emoji usage in headings                                        | SESSION_CONTEXT.md                                                              | 0    | documentation | E0     |
+| DEBT-2098 | SESSION_CONTEXT.md has inconsistent metadata format            | SESSION_CONTEXT.md                                                              | 0    | documentation | E0     |
+| DEBT-2099 | Broken internal link: ./SHARED_TEMPLATE_BASE.md#ai-models      | .claude/plans/audit-template-schema-overhaul.md                                 | 0    | documentation | E1     |
+| DEBT-2100 | Broken internal link: ./audit-code-report.md                   | .claude/skills/audit-aggregator/SKILL.md                                        | 0    | documentation | E1     |
+| DEBT-2101 | Broken internal link: ./audit-security-report.md               | .claude/skills/audit-aggregator/SKILL.md                                        | 0    | documentation | E1     |
+| DEBT-2102 | Broken internal link: ./audit-performance-report.md            | .claude/skills/audit-aggregator/SKILL.md                                        | 0    | documentation | E1     |
+| DEBT-2103 | Broken internal link: ./audit-documentation-report.md          | .claude/skills/audit-aggregator/SKILL.md                                        | 0    | documentation | E1     |
+| DEBT-2104 | Broken internal link: ./audit-refactoring-report.md            | .claude/skills/audit-aggregator/SKILL.md                                        | 0    | documentation | E1     |
+| DEBT-2105 | Broken internal link: ./audit-process-report.md                | .claude/skills/audit-aggregator/SKILL.md                                        | 0    | documentation | E1     |
+| DEBT-2106 | Broken internal link: docs/technical-debt/PROCEDURE.md         | .claude/skills/audit-aggregator/SKILL.md                                        | 0    | documentation | E1     |
+| DEBT-2107 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | .claude/skills/audit-aggregator/SKILL.md                                        | 0    | documentation | E1     |
+| DEBT-2108 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | .claude/skills/audit-aggregator/SKILL.md                                        | 0    | documentation | E1     |
+| DEBT-2109 | Broken internal link: docs/technical-debt/PROCEDURE.md         | .claude/skills/audit-code/SKILL.md                                              | 0    | documentation | E1     |
+| DEBT-2110 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | .claude/skills/audit-code/SKILL.md                                              | 0    | documentation | E1     |
+| DEBT-2111 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | .claude/skills/audit-code/SKILL.md                                              | 0    | documentation | E1     |
+| DEBT-2112 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | .claude/skills/audit-code/SKILL.md                                              | 0    | documentation | E1     |
+| DEBT-2113 | Broken internal link: docs/technical-debt/PROCEDURE.md         | .claude/skills/audit-comprehensive/SKILL.md                                     | 0    | documentation | E1     |
+| DEBT-2114 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | .claude/skills/audit-comprehensive/SKILL.md                                     | 0    | documentation | E1     |
+| DEBT-2115 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | .claude/skills/audit-comprehensive/SKILL.md                                     | 0    | documentation | E1     |
+| DEBT-2116 | Broken internal link: path.md                                  | .claude/skills/audit-documentation/SKILL.md                                     | 0    | documentation | E1     |
+| DEBT-2117 | Broken internal link: docs/technical-debt/PROCEDURE.md         | .claude/skills/audit-documentation/SKILL.md                                     | 0    | documentation | E1     |
+| DEBT-2118 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | .claude/skills/audit-documentation/SKILL.md                                     | 0    | documentation | E1     |
+| DEBT-2119 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | .claude/skills/audit-documentation/SKILL.md                                     | 0    | documentation | E1     |
+| DEBT-2120 | Broken internal link: docs/technical-debt/PROCEDURE.md         | .claude/skills/audit-performance/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2121 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | .claude/skills/audit-performance/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2122 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | .claude/skills/audit-performance/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2123 | Broken internal link: docs/technical-debt/PROCEDURE.md         | .claude/skills/audit-process/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2124 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | .claude/skills/audit-process/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2125 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | .claude/skills/audit-process/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2126 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | .claude/skills/audit-process/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2127 | Broken internal link: docs/technical-debt/PROCEDURE.md         | .claude/skills/audit-refactoring/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2128 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | .claude/skills/audit-refactoring/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2129 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | .claude/skills/audit-refactoring/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2130 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | .claude/skills/audit-refactoring/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2131 | Broken internal link: docs/technical-debt/PROCEDURE.md         | .claude/skills/audit-security/SKILL.md                                          | 0    | documentation | E1     |
+| DEBT-2132 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | .claude/skills/audit-security/SKILL.md                                          | 0    | documentation | E1     |
+| DEBT-2133 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | .claude/skills/audit-security/SKILL.md                                          | 0    | documentation | E1     |
+| DEBT-2134 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | .claude/skills/audit-security/SKILL.md                                          | 0    | documentation | E1     |
+| DEBT-2135 | Broken internal link: docs/agent_docs/SECURITY_CHECKLIST.md    | .claude/skills/audit-security/SKILL.md                                          | 0    | documentation | E1     |
+| DEBT-2136 | Broken internal link: docs/GLOBAL_SECURITY_STANDARDS.md        | .claude/skills/audit-security/SKILL.md                                          | 0    | documentation | E1     |
+| DEBT-2137 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | .claude/skills/audit-validation-wrapper/SKILL.md                                | 0    | documentation | E1     |
+| DEBT-2138 | Broken internal link: ../.claude/skills/audit-comprehensi...   | .claude/skills/audit-validation-wrapper/SKILL.md                                | 0    | documentation | E1     |
+| DEBT-2139 | Broken internal link: path.md                                  | .claude/skills/doc-optimizer/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2140 | Broken internal link: docs/technical-debt/PROCEDURE.md         | .claude/skills/doc-optimizer/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2141 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | .claude/skills/doc-optimizer/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2142 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | .claude/skills/doc-optimizer/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2143 | Broken internal link: ../../SESSION_CONTEXT.md                 | .claude/skills/session-begin/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2144 | Broken internal link: ../../SESSION_CONTEXT.md                 | .claude/skills/session-begin/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2145 | Broken internal link: ../../ROADMAP.md                         | .claude/skills/session-begin/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2146 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md    | .claude/skills/session-begin/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2147 | Broken internal link: ../../ROADMAP.md                         | .claude/skills/session-begin/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2148 | Broken internal link: ../../docs/agent_docs/CODE_PATTERNS.md   | .claude/skills/session-begin/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2149 | Broken internal link: ../../docs/TECHNICAL_DEBT_MASTER.md      | .claude/skills/session-begin/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2150 | Broken internal link: ../../docs/DOCUMENT_DEPENDENCIES.md      | .claude/skills/session-begin/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2151 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md    | .claude/skills/session-begin/SKILL.md                                           | 0    | documentation | E1     |
+| DEBT-2152 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | .claude/skills/sonarcloud-sprint/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2153 | Broken internal link: docs/archive/completed-plans/sonarc...   | .claude/skills/sonarcloud-sprint/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2154 | Broken internal link: docs/SONARCLOUD_CLEANUP_RUNBOOK.md       | .claude/skills/sonarcloud-sprint/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2155 | Broken internal link: docs/SONARCLOUD_TRIAGE.md                | .claude/skills/sonarcloud-sprint/SKILL.md                                       | 0    | documentation | E1     |
+| DEBT-2156 | SESSION_HISTORY.md is append-only but lacks archival policy    | C:/Users/jason/Workspace/dev-projects/sonash-v0/docs/SESSION_HISTORY.md         | 0    | documentation | E1     |
+| DEBT-2157 | Link distribution imbalance between CLAUDE.md and AI_WORK...   | CLAUDE.md                                                                       | 0    | documentation | E1     |
+| DEBT-2158 | Duplication: Documentation hierarchy/tiers in CLAUDE.md a...   | 114-123                                                                         | 0    | documentation | E1     |
+| DEBT-2159 | Inconsistent terminology: 'TDMS' expansion                     | multiple                                                                        | 0    | documentation | E1     |
+| DEBT-2160 | Inconsistent terminology: 'finding' vs 'issue' vs 'item'       | multiple                                                                        | 0    | documentation | E1     |
+| DEBT-2161 | Broken internal link: ./archive/SoNash\_\_AdminPanelEnhance... | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md                            | 0    | documentation | E1     |
+| DEBT-2162 | Broken internal link: ./archive/SoNash\_\_AdminPanelEnhance... | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md                            | 0    | documentation | E1     |
+| DEBT-2163 | Missing 'Related Documents' sections in agent_docs             | docs/agent_docs/CODE_PATTERNS.md                                                | 0    | documentation | E1     |
+| DEBT-2164 | Structure: docs/agent_docs/ naming convention                  | docs/agent_docs/CODE_PATTERNS.md                                                | 0    | documentation | E1     |
+| DEBT-2165 | Broken internal link: ./archive/REVIEWS_1-40.md                | docs/AI_REVIEW_LEARNINGS_LOG.md                                                 | 0    | documentation | E1     |
+| DEBT-2166 | Broken internal link: ./archive/REVIEWS_1-40.md                | docs/AI_REVIEW_LEARNINGS_LOG.md                                                 | 0    | documentation | E1     |
+| DEBT-2167 | Broken internal link: ./archive/REVIEWS_1-40.md                | docs/AI_REVIEW_LEARNINGS_LOG.md                                                 | 0    | documentation | E1     |
+| DEBT-2168 | Broken internal link: ./archive/REVIEWS_42-60.md               | docs/AI_REVIEW_LEARNINGS_LOG.md                                                 | 0    | documentation | E1     |
+| DEBT-2169 | Broken internal link: ./archive/REVIEWS_61-100.md              | docs/AI_REVIEW_LEARNINGS_LOG.md                                                 | 0    | documentation | E1     |
+| DEBT-2170 | Broken internal link: ./archive/REVIEWS_101-136.md             | docs/AI_REVIEW_LEARNINGS_LOG.md                                                 | 0    | documentation | E1     |
+| DEBT-2171 | Broken internal link: ./archive/REVIEWS_137-179.md             | docs/AI_REVIEW_LEARNINGS_LOG.md                                                 | 0    | documentation | E1     |
+| DEBT-2172 | Broken internal link: ./archive/REVIEWS_202-212.md             | docs/AI_REVIEW_LEARNINGS_LOG.md                                                 | 0    | documentation | E1     |
+| DEBT-2173 | Broken internal link: ./archive/REVIEWS_180-201.md             | docs/AI_REVIEW_LEARNINGS_LOG.md                                                 | 0    | documentation | E1     |
+| DEBT-2174 | Broken internal link: ./archive/REVIEWS_137-179.md             | docs/AI_REVIEW_LEARNINGS_LOG.md                                                 | 0    | documentation | E1     |
+| DEBT-2175 | Structure: Archive directory organization inconsistent         | docs/archive/2025-dec-reports/                                                  | 0    | documentation | E1     |
+| DEBT-2176 | Broken internal link: ../canonical/README.md                   | docs/audits/single-session/README.md                                            | 0    | documentation | E1     |
+| DEBT-2177 | Broken internal link: ../../AUDIT_FINDINGS_PROCEDURE.md        | docs/audits/single-session/README.md                                            | 0    | documentation | E1     |
+| DEBT-2178 | Broken internal link: ../archive/completed-decisions/ADR-...   | docs/decisions/README.md                                                        | 0    | documentation | E1     |
+| DEBT-2179 | Broken internal link: path.md                                  | docs/multi-ai-audit/templates/DOCUMENTATION_AUDIT.md                            | 0    | documentation | E1     |
+| DEBT-2180 | Broken internal link: ./reviews/2026-Q1/PROCESS_AUDIT_FIN...   | docs/OPERATIONAL_VISIBILITY_SPRINT.md                                           | 0    | documentation | E1     |
+| DEBT-2181 | Broken internal link: ./audits/comprehensive/AUDIT_SUMMAR...   | docs/OPERATIONAL_VISIBILITY_SPRINT.md                                           | 0    | documentation | E1     |
+| DEBT-2182 | Broken internal link: ./archive/2025-dec-reports/BILLING\_...  | docs/SECURITY.md                                                                | 0    | documentation | E1     |
+| DEBT-2183 | Broken internal link: ./archive/2025-dec-reports/BILLING\_...  | docs/SECURITY.md                                                                | 0    | documentation | E1     |
+| DEBT-2184 | Broken internal link: ./archive/2025-dec-reports/BILLING\_...  | docs/SECURITY.md                                                                | 0    | documentation | E1     |
+| DEBT-2185 | SESSION_DECISIONS.md has no outgoing links                     | docs/SESSION_DECISIONS.md                                                       | 0    | documentation | E1     |
+| DEBT-2186 | SESSION_DECISIONS.md missing 'How to Use This Document' s...   | docs/SESSION_DECISIONS.md                                                       | 0    | documentation | E1     |
+| DEBT-2187 | Broken internal link: ./archive/completed-plans/sonarclou...   | docs/SONARCLOUD_CLEANUP_RUNBOOK.md                                              | 0    | documentation | E1     |
+| DEBT-2188 | Broken internal link: ./archive/completed-plans/sonarclou...   | docs/SONARCLOUD_CLEANUP_RUNBOOK.md                                              | 0    | documentation | E1     |
+| DEBT-2189 | Broken internal link: audits/sonarcloud-dismissals.md          | docs/SONARCLOUD_CLEANUP_RUNBOOK.md                                              | 0    | documentation | E1     |
+| DEBT-2190 | Broken internal link: SONARCLOUD_TRIAGE.md                     | docs/SONARCLOUD_CLEANUP_RUNBOOK.md                                              | 0    | documentation | E1     |
+| DEBT-2191 | Broken internal link: ../archive/tdms-intermediates-2026-...   | docs/technical-debt/FINAL_SYSTEM_AUDIT.md                                       | 0    | documentation | E1     |
+| DEBT-2192 | Broken internal link: ../archive/technical-debt-sources-2...   | docs/technical-debt/FINAL_SYSTEM_AUDIT.md                                       | 0    | documentation | E1     |
+| DEBT-2193 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2194 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2195 | Broken internal link: src/dataconnect-generated/README.md      | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2196 | Broken internal link: src/dataconnect-generated/.guides/u...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2197 | Broken internal link: src/dataconnect-generated/.guides/s...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2198 | Broken internal link: src/dataconnect-generated/react/REA...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2199 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2200 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2201 | Broken internal link: src/dataconnect-generated/.guides/s...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2202 | Broken internal link: src/dataconnect-generated/.guides/u...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2203 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2204 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2205 | Broken internal link: src/dataconnect-generated/.guides/s...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2206 | Broken internal link: src/dataconnect-generated/.guides/u...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2207 | Broken internal link: src/dataconnect-generated/react/REA...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2208 | Broken internal link: src/dataconnect-generated/README.md      | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2209 | Broken internal link: docs/archive/2025-dec-reports/AGGRE...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2210 | Broken internal link: docs/archive/2025-dec-reports/APP_C...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2211 | Broken internal link: docs/archive/2025-dec-reports/ARCHI...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2212 | Broken internal link: docs/archive/2025-dec-reports/ARCHI...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2213 | Broken internal link: docs/archive/2025-dec-reports/BILLI...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2214 | Broken internal link: docs/archive/2025-dec-reports/CODE\_...  | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2215 | Broken internal link: docs/archive/2025-dec-reports/CONSO...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2216 | Broken internal link: docs/archive/2025-dec-reports/DEPEN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2217 | Broken internal link: docs/archive/2025-dec-reports/ESLIN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2218 | Broken internal link: docs/archive/2025-dec-reports/JOURN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2219 | Broken internal link: docs/archive/2025-dec-reports/LIBRA...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2220 | Broken internal link: docs/archive/2025-dec-reports/REFAC...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2221 | Broken internal link: docs/archive/2025-dec-reports/REFAC...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2222 | Broken internal link: docs/archive/2025-dec-reports/ROADM...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2223 | Broken internal link: docs/archive/2025-dec-reports/ROADM...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2224 | Broken internal link: docs/archive/2025-dec-reports/ULTRA...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2225 | Broken internal link: docs/archive/2025-dec-reports/XSS_P...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2226 | Broken internal link: docs/archive/2026-jan-deprecated/AN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2227 | Broken internal link: docs/archive/2026-jan-deprecated/AR...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2228 | Broken internal link: docs/archive/2026-jan-deprecated/CU...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2229 | Broken internal link: docs/archive/2026-jan-deprecated/PR...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2230 | Broken internal link: docs/archive/2026-jan-deprecated/RO...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2231 | Broken internal link: docs/archive/2026-jan-deprecated/SL...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2232 | Broken internal link: docs/archive/2026-jan-deprecated/br...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2233 | Broken internal link: docs/archive/2026-jan-deprecated/br...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2234 | Broken internal link: docs/archive/AI_HANDOFF-2026-01-02.md    | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2235 | Broken internal link: docs/archive/AI_STANDARDIZED_REPORT.md   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2236 | Broken internal link: docs/archive/APPCHECK_FRESH_SETUP.md     | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2237 | Broken internal link: docs/archive/ARCHIVE_INDEX.md            | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2238 | Broken internal link: docs/archive/ChatGPT_Multi_AI_Refac...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2239 | Broken internal link: docs/archive/GitHub_Code_Analysis_a...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2240 | Broken internal link: docs/archive/IMPLEMENTATION_PROMPTS.md   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2241 | Broken internal link: docs/archive/Monetization*Research*...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2242 | Broken internal link: docs/archive/RECAPTCHA_PROBLEM_SUMM...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2243 | Broken internal link: docs/archive/REVIEWS_1-40.md             | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2244 | Broken internal link: docs/archive/REVIEWS_101-136.md          | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2245 | Broken internal link: docs/archive/REVIEWS_137-179.md          | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2246 | Broken internal link: docs/archive/REVIEWS_180-201.md          | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2247 | Broken internal link: docs/archive/REVIEWS_202-212.md          | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2248 | Broken internal link: docs/archive/REVIEWS_42-60.md            | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2249 | Broken internal link: docs/archive/REVIEWS_61-100.md           | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2250 | Broken internal link: docs/archive/Refactoring_PR_Plan.md      | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2251 | Broken internal link: docs/archive/SUPABASE_MIGRATION_ANA...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2252 | Broken internal link: docs/archive/SoNash_Code_Review_Con...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2253 | Broken internal link: docs/archive/SoNash\_\_AdminPanelEnha... | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2254 | Broken internal link: docs/archive/SoNash\_\_AdminPanelEnha... | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2255 | Broken internal link: docs/archive/SoNash\_\_AdminPanelEnha... | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2256 | Broken internal link: docs/archive/SoNash\_\_Phase1_ClaudeC... | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2257 | Broken internal link: docs/archive/SoNash\_\_Phase1_ClaudeC... | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2258 | Broken internal link: docs/archive/SoNash\_\_Phase1_ClaudeC... | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2259 | Broken internal link: docs/archive/TESTING_CHECKLIST.md        | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2260 | Broken internal link: docs/archive/architecture-reviews-d...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2261 | Broken internal link: docs/archive/architecture-reviews-d...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2262 | Broken internal link: docs/archive/completed-audits/PHASE...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2263 | Broken internal link: docs/archive/completed-decisions/AD...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2264 | Broken internal link: docs/archive/completed-plans/DOCUME...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2265 | Broken internal link: docs/archive/completed-plans/EIGHT\_...  | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2266 | Broken internal link: docs/archive/completed-plans/INTEGR...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2267 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2268 | Broken internal link: docs/archive/completed-plans/sonarc...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2269 | Broken internal link: docs/archive/consolidated-2025-12-1...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2270 | Broken internal link: docs/archive/consolidated-2025-12-1...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2271 | Broken internal link: docs/archive/consolidated-2025-12-1...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2272 | Broken internal link: docs/archive/consolidated-2025-12-1...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2273 | Broken internal link: docs/archive/consolidated-2025-12-1...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2274 | Broken internal link: docs/archive/consolidated-2025-12-1...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2275 | Broken internal link: docs/archive/consolidated-2025-12-1...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2276 | Broken internal link: docs/archive/consolidated-2025-12-1...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2277 | Broken internal link: docs/archive/consolidated-2025-12-1...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2278 | Broken internal link: docs/archive/deprecated-findings-do...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2279 | Broken internal link: docs/archive/deprecated-findings-do...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2280 | Broken internal link: docs/archive/deprecated-findings-do...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2281 | Broken internal link: docs/archive/expansion-ideation/REA...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2282 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2283 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2284 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2285 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2286 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2287 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2288 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2289 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2290 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2291 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2292 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2293 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2294 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2295 | Broken internal link: docs/archive/expansion-ideation/SoN...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2296 | Broken internal link: docs/archive/firestore-rules.md          | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2297 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2298 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2299 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2300 | Broken internal link: docs/archive/handoffs-2025-12/HANDO...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2301 | Broken internal link: docs/archive/legacy*task_list_2025*...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2302 | Broken internal link: docs/archive/local-resources-review.md   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2303 | Broken internal link: docs/archive/obsolete-scripts-2026-...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2304 | Broken internal link: docs/archive/source-data/Recovery_P...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2305 | Broken internal link: docs/archive/source-data/nashville\_...  | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2306 | Broken internal link: docs/archive/source-data/recovery_q...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2307 | Broken internal link: docs/archive/superseded-plans/LOCAL...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2308 | Broken internal link: docs/archive/superseded-plans/M1.6\_...  | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2309 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2310 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2311 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2312 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2313 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2314 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2315 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2316 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2317 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2318 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2319 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2320 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2321 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2322 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2323 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2324 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2325 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2326 | Broken internal link: docs/archive/tdms-intermediates-202...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2327 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2328 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2329 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2330 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2331 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2332 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2333 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2334 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2335 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2336 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2337 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2338 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2339 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2340 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2341 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2342 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2343 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2344 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2345 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2346 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2347 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2348 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2349 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2350 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2351 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2352 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2353 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2354 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2355 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2356 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2357 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2358 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2359 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2360 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2361 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2362 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2363 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2364 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2365 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2366 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2367 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2368 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2369 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2370 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2371 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2372 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2373 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2374 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2375 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2376 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2377 | Broken internal link: docs/archive/technical-debt-sources...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E1     |
+| DEBT-2378 | Broken internal link: docs/archive/completed-plans/INTEGR...   | README.md                                                                       | 0    | documentation | E1     |
+| DEBT-2379 | Broken internal link: ./docs/archive/2025-dec-reports/CON...   | ROADMAP_LOG.md                                                                  | 0    | documentation | E1     |
+| DEBT-2380 | Broken internal link: ./docs/archive/SoNash_Code_Review_C...   | ROADMAP_LOG.md                                                                  | 0    | documentation | E1     |
+| DEBT-2381 | Broken internal link: ./docs/archive/2025-dec-reports/JOU...   | ROADMAP_LOG.md                                                                  | 0    | documentation | E1     |
+| DEBT-2382 | Broken internal link: ./docs/archive/completed-plans/EIGH...   | ROADMAP_LOG.md                                                                  | 0    | documentation | E1     |
+| DEBT-2383 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP...   | ROADMAP_LOG.md                                                                  | 0    | documentation | E1     |
+| DEBT-2384 | No stale anchor references detected                            | N/A                                                                             | 0    | documentation | E0     |
+| DEBT-2385 | ARCHITECTURE.md <-> DEVELOPMENT.md have good bidirectiona...   | ARCHITECTURE.md                                                                 | 0    | documentation | E0     |
+| DEBT-2386 | CLAUDE.md Documentation Index has proper hyperlinks            | CLAUDE.md                                                                       | 0    | documentation | E0     |
+| DEBT-2387 | SESSION_CONTEXT.md <-> ROADMAP.md have excellent bidirect...   | SESSION_CONTEXT.md                                                              | 0    | documentation | E0     |
+| DEBT-2400 | Navigation: Skill index exists but not prominently linked...   | .claude/skills/SKILL_INDEX.md                                                   | 0    | documentation | E1     |
+| DEBT-2401 | Quality: AI_WORKFLOW.md scores 8/10 - good structure but ...   | AI_WORKFLOW.md                                                                  | 0    | documentation | E1     |
+| DEBT-2402 | Navigation: AI_WORKFLOW.md (861 lines) lacks comprehensiv...   | AI_WORKFLOW.md                                                                  | 0    | documentation | E1     |
+| DEBT-2403 | Navigation: Decision tree format in AI_WORKFLOW.md not sc...   | AI_WORKFLOW.md                                                                  | 0    | documentation | E1     |
+| DEBT-2404 | Quality: ARCHITECTURE.md scores 9/10 - excellent structure     | ARCHITECTURE.md                                                                 | 0    | documentation | E1     |
+| DEBT-2405 | Navigation: ARCHITECTURE.md (780 lines) lacks TOC              | ARCHITECTURE.md                                                                 | 0    | documentation | E1     |
+| DEBT-2406 | Navigation: CLAUDE.md Section 5 links do not provide onwa...   | CLAUDE.md                                                                       | 0    | documentation | E1     |
+| DEBT-2407 | Navigation: DEVELOPMENT.md (1095 lines) lacks comprehensi...   | DEVELOPMENT.md                                                                  | 0    | documentation | E1     |
+| DEBT-2408 | Navigation: CODE_PATTERNS.md (591 lines) lacks TOC             | docs/agent_docs/CODE_PATTERNS.md                                                | 0    | documentation | E1     |
+| DEBT-2409 | Navigation: Archive folders lack README explaining contents    | docs/archive/2025-dec-reports                                                   | 0    | documentation | E1     |
+| DEBT-2410 | Gap: Missing cross-links in audit documentation                | docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md                         | 0    | documentation | E1     |
+| DEBT-2411 | Quality: DOCUMENTATION_STANDARDS.md scores 9/10 - excelle...   | docs/DOCUMENTATION_STANDARDS.md                                                 | 0    | documentation | E1     |
+| DEBT-2412 | Navigation: PROCEDURE.md (585 lines) lacks TOC                 | docs/technical-debt/PROCEDURE.md                                                | 0    | documentation | E1     |
+| DEBT-2413 | Navigation: Technical debt views lack navigation back to ...   | docs/technical-debt/views/by-category.md                                        | 0    | documentation | E1     |
+| DEBT-2414 | Navigation: README.md lacks TOC for 370-line document          | README.md                                                                       | 0    | documentation | E1     |
+| DEBT-2415 | Navigation: No clear path from README to troubleshooting ...   | README.md                                                                       | 0    | documentation | E1     |
+| DEBT-2416 | Typo: ROADMAP.md has inconsistent capitalization in miles...   | ROADMAP.md                                                                      | 0    | documentation | E1     |
+| DEBT-2417 | Navigation: Scripts README lacks usage examples                | scripts/README.md                                                               | 0    | documentation | E1     |
+| DEBT-2418 | Navigation: Session Context breadcrumbs missing from SESS...   | SESSION_CONTEXT.md                                                              | 0    | documentation | E1     |
+| DEBT-2419 | Navigation: Fire DataConnect generated docs lack context ...   | src/dataconnect-generated/README.md                                             | 0    | documentation | E1     |
+| DEBT-2420 | Gap: Missing skill usage examples beyond SKILL.md              | .claude/skills/\*/SKILL.md                                                      | 0    | documentation | E2     |
+| DEBT-2421 | Navigation: Skill docs lack consistent 'Prerequisites' se...   | .claude/skills/\*/SKILL.md                                                      | 0    | documentation | E2     |
+| DEBT-2422 | Diagram opportunity: Agent team vs subagent execution mod...   | .claude/skills/audit-comprehensive/SKILL.md                                     | 0    | documentation | E2     |
+| DEBT-2423 | Navigation: Skill docs lack consistent 'Next Steps' sections   | .claude/skills/code-reviewer/SKILL.md                                           | 0    | documentation | E2     |
+| DEBT-2424 | Diagram opportunity: AI_WORKFLOW.md decision tree only in...   | AI_WORKFLOW.md                                                                  | 0    | documentation | E2     |
+| DEBT-2425 | Diagram opportunity: ARCHITECTURE.md security layers desc...   | ARCHITECTURE.md                                                                 | 0    | documentation | E2     |
+| DEBT-2426 | Diagram opportunity: Compaction-resilient state persisten...   | CLAUDE.md                                                                       | 0    | documentation | E2     |
+| DEBT-2427 | Quality: CODE_PATTERNS.md scores 8/10 - good reference bu...   | docs/agent_docs/CODE_PATTERNS.md                                                | 0    | documentation | E2     |
+| DEBT-2428 | Consolidation: Merge small setup guides                        | docs/APPCHECK_SETUP.md                                                          | 0    | documentation | E2     |
+| DEBT-2429 | Quality: docs/archive/ has no index or navigation              | docs/archive/                                                                   | 0    | documentation | E2     |
+| DEBT-2430 | Diagram opportunity: Multi-AI audit workflow lacks visual...   | docs/multi-ai-audit/README.md                                                   | 0    | documentation | E2     |
+| DEBT-2431 | Navigation: Multi-AI audit templates lack consistent cros...   | docs/multi-ai-audit/templates/CODE_REVIEW_PLAN.md                               | 0    | documentation | E2     |
+| DEBT-2432 | Consolidation: Merge overlapping security docs                 | docs/SECURITY.md                                                                | 0    | documentation | E2     |
+| DEBT-2433 | Diagram opportunity: Technical Debt intake pipeline descr...   | docs/technical-debt/PROCEDURE.md                                                | 0    | documentation | E2     |
+| DEBT-2434 | Navigation: DOCUMENTATION_INDEX.md category organization ...   | DOCUMENTATION_INDEX.md                                                          | 0    | documentation | E2     |
+| DEBT-2435 | Quality: ROADMAP.md scores 7/10 - large tables reduce rea...   | ROADMAP.md                                                                      | 0    | documentation | E2     |
+| DEBT-2436 | Navigation: ROADMAP.md (3360 lines) lacks TOC                  | ROADMAP.md                                                                      | 0    | documentation | E2     |
+| DEBT-2437 | Gap: Undocumented utility scripts                              | scripts/assign-review-tier.js                                                   | 0    | documentation | E2     |
+| DEBT-2438 | Gap: Undocumented scripts library modules                      | scripts/lib/sanitize-error.js                                                   | 0    | documentation | E2     |
+| DEBT-2439 | Gap: Missing troubleshooting guide                             | DEVELOPMENT.md                                                                  | 0    | documentation | E3     |
+| DEBT-2440 | Gap: No migration guide for legacy patterns                    | docs/agent_docs/CODE_PATTERNS.md                                                | 0    | documentation | E3     |
