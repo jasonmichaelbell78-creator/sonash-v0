@@ -1,7 +1,7 @@
 # Code Review Patterns Reference
 
-**Document Version:** 2.5 **Source:** Distilled from 224 AI code reviews **Last
-Updated:** 2026-02-02
+**Document Version:** 2.5 **Source:** Distilled from 259 AI code reviews **Last
+Updated:** 2026-02-07
 
 ---
 
@@ -167,24 +167,25 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ## Bash/Shell
 
-| Priority | Pattern                          | Rule                                                                                    | Why                                                |
-| -------- | -------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| 🟡       | Exit code capture                | `if ! OUT=$(cmd); then` NOT `OUT=$(cmd); if [ $? -ne 0 ]`                               | Captures assignment exit, not command              |
-| ⚪       | HEAD~N commits                   | Use `COMMIT_COUNT - 1` as max                                                           | HEAD~N needs N+1 commits                           |
-| 🟡       | File iteration                   | `while IFS= read -r file` NOT `for file in $list`                                       | Spaces break for loop                              |
-| 🟡       | Subshell scope                   | Use temp file or `while read; done < <(cmd)`                                            | <code>cmd &#124; while read</code> loses variables |
-| 🟡       | Temp file cleanup                | `trap 'rm -f "$TMPFILE"' EXIT`                                                          | Guaranteed cleanup                                 |
-| ⚪       | Exit code semantics              | 0=success, 1=action-needed, 2=error                                                     | Check explicitly                                   |
-| 🟡       | Retry loops                      | `for i in 1 2 3; do cmd && break; sleep 5; done`                                        | Race condition handling                            |
-| 🔴       | printf over echo                 | `printf '%s' "$VAR"` NOT `echo "$VAR"`                                                  | -n/-e injection risk                               |
-| 🟡       | End-of-options                   | `basename -- "$PATH"`                                                                   | Prevents `-` as options                            |
-| ⚪       | Portable word boundaries         | `(^[^[:alnum:]])(word)([^[:alnum:]]$)` NOT `\b`                                         | Not portable ERE                                   |
-| 🟡       | Pipeline failure                 | Add <code>&#124;&#124; VAR=""</code> fallback                                           | Commands may fail with pipefail                    |
-| 🟡       | Terminal sanitization            | `tr -cd '[:alnum:] ,_-'`                                                                | Strip ANSI escapes                                 |
-| ⚪       | grep --exclude                   | `--exclude="storage.ts"` NOT `--exclude="lib/utils/storage.ts"`                         | Matches basename only                              |
-| 🟡       | Process substitution (Bash-only) | `while IFS= read -r line; do ...; done < <(cmd)` NOT <code>cmd &#124; while read</code> | Preserves exit codes + safe reads                  |
-| ⚪       | Bash wrapper for scripts         | Wrap bash-specific code in `bash -lc '...'` with quote escaping                         | Avoids breaking POSIX sh                           |
-| 🟡       | set -o pipefail (Bash/Zsh/Ksh)   | Add before pipes in bash-based validation scripts                                       | Catch pipe failures                                |
+| Priority | Pattern                          | Rule                                                                                    | Why                                                    |
+| -------- | -------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 🟡       | Exit code capture                | `if ! OUT=$(cmd); then` NOT `OUT=$(cmd); if [ $? -ne 0 ]`                               | Captures assignment exit, not command                  |
+| ⚪       | HEAD~N commits                   | Use `COMMIT_COUNT - 1` as max                                                           | HEAD~N needs N+1 commits                               |
+| 🟡       | File iteration                   | `while IFS= read -r file` NOT `for file in $list`                                       | Spaces break for loop                                  |
+| 🟡       | Subshell scope                   | Use temp file or `while read; done < <(cmd)`                                            | <code>cmd &#124; while read</code> loses variables     |
+| 🟡       | Temp file cleanup                | `trap 'rm -f "$TMPFILE"' EXIT`                                                          | Guaranteed cleanup                                     |
+| ⚪       | Exit code semantics              | 0=success, 1=action-needed, 2=error                                                     | Check explicitly                                       |
+| 🟡       | Retry loops                      | `for i in 1 2 3; do cmd && break; sleep 5; done`                                        | Race condition handling                                |
+| 🔴       | printf over echo                 | `printf '%s' "$VAR"` NOT `echo "$VAR"`                                                  | -n/-e injection risk                                   |
+| 🟡       | End-of-options                   | `basename -- "$PATH"`                                                                   | Prevents `-` as options                                |
+| ⚪       | Portable word boundaries         | `(^[^[:alnum:]])(word)([^[:alnum:]]$)` NOT `\b`                                         | Not portable ERE                                       |
+| 🟡       | Pipeline failure                 | Add <code>&#124;&#124; VAR=""</code> fallback                                           | Commands may fail with pipefail                        |
+| 🟡       | Terminal sanitization            | `tr -cd '[:alnum:] ,_-'`                                                                | Strip ANSI escapes                                     |
+| ⚪       | grep --exclude                   | `--exclude="storage.ts"` NOT `--exclude="lib/utils/storage.ts"`                         | Matches basename only                                  |
+| 🟡       | Process substitution (Bash-only) | `while IFS= read -r line; do ...; done < <(cmd)` NOT <code>cmd &#124; while read</code> | Preserves exit codes + safe reads                      |
+| ⚪       | Bash wrapper for scripts         | Wrap bash-specific code in `bash -lc '...'` with quote escaping                         | Avoids breaking POSIX sh                               |
+| 🟡       | set -o pipefail (Bash/Zsh/Ksh)   | Add before pipes in bash-based validation scripts                                       | Catch pipe failures                                    |
+| 🟡       | Shell redirection order          | `> file 2>&1` (correct) NOT `2>&1 > file` (stderr goes to terminal)                     | Redirections are processed left-to-right (Review #225) |
 
 ---
 
@@ -306,97 +307,100 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ## JavaScript/TypeScript
 
-| Priority | Pattern                      | Rule                                                                         | Why                                                                   |
-| -------- | ---------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| 🔴       | Error sanitization           | Use `scripts/lib/sanitize-error.js`                                          | Strip sensitive paths                                                 |
-| 🟡       | Error first line             | `.split('\n')[0].replace(/\r$/, '')`                                         | Handles CRLF                                                          |
-| 🟡       | Control char strip           | `/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g`                                        | Preserves \t\n\r                                                      |
-| 🟡       | OSC escape strip             | <code>/\x1B\][^\x07\x1B]\*(?:\x07&#124;\x1B\\)/g</code>                      | With ANSI CSI                                                         |
-| 🟡       | File-derived content         | Strip control chars before console.log                                       | Not just errors                                                       |
-| 🟡       | Safe error handling          | `error instanceof Error ? error.message : String(error)`                     | Non-Error throws                                                      |
-| 🟡       | Robust non-Error             | `error && typeof error === 'object' && 'message' in error`                   | Full check                                                            |
-| 🔴       | Cross-platform paths         | `path.relative()` not `startsWith()`                                         | Path validation                                                       |
-| 🟡       | path.relative() trap         | `".."` returned without separator for `/a` → `/`                             | Check `rel === '..'` too                                              |
-| 🔴       | Normalize backslashes        | `.replace(/\\/g, '/')` before security checks                                | Path traversal                                                        |
-| 🟡       | CRLF in regex                | `\r?\n` instead of `\n`                                                      | Cross-platform                                                        |
-| 🟡       | Windows cross-drive          | Check for `/^[A-Za-z]:/` in relative output                                  | Absolute path returned                                                |
-| 🟡       | Windows path sanitize        | `.replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]')`                              | gi flag                                                               |
-| 🟡       | Markdown links               | `.replace(/\\/g, '/')`                                                       | Normalize backslashes                                                 |
-| 🟡       | lstatSync                    | Wrap in try-catch                                                            | Permission denied, broken symlinks                                    |
-| 🔴       | File reads                   | Wrap ALL in try/catch                                                        | existsSync race, permissions                                          |
-| 🟡       | Main module detect           | Wrap in try-catch with fallback                                              | Unusual paths throw                                                   |
-| 🟡       | maxBuffer                    | `10 * 1024 * 1024` for execSync                                              | Large output                                                          |
-| 🔴       | Global flag for exec()       | `/g` REQUIRED in while loops                                                 | No /g = infinite loop                                                 |
-| 🟡       | Regex brace matching         | `[^}]` not `[\s\S]`                                                          | Single-brace-level                                                    |
-| 🟡       | Path boundary anchor         | <code>(?:^&#124;[\\/])</code> prefix                                         | Prevent substring matches                                             |
-| 🟡       | Falsy vs missing check       | <code>=== undefined &#124;&#124; === null</code> for numeric fields          | `!field` returns true for 0                                           |
-| ⚪       | Node.js module prefix        | `node:fs`, `node:path`, `node:url`                                           | SonarQube S6803 best practice                                         |
-| 🟡       | Number.parseInt radix        | `Number.parseInt(str, 10)` not `parseInt(str)`                               | Strings starting with 0 misinterpret                                  |
-| 🟡       | Dead code after throw        | Code after realpathSync success is unreachable                               | realpathSync throws on missing files                                  |
-| 🟡       | SSR-safe browser APIs        | Guard with `typeof window !== 'undefined'`                                   | Prevent SSR crashes                                                   |
-| 🟡       | Cognitive complexity         | Keep functions under 15; extract helpers                                     | SonarQube S3776 threshold                                             |
-| 🟡       | lstatSync for symlinks       | Use `lstatSync` to detect symlinks without following                         | `statSync` follows symlinks, misses escapes                           |
-| 🟡       | NaN-safe numeric sorting     | `Number(a) - Number(b)` with <code>&#124;&#124; 0</code> fallback            | NaN in sort comparator causes undefined order                         |
-| 🟡       | path.relative() empty        | Include `rel === ''` in containment checks                                   | Resolving `.` gives empty relative path                               |
-| 🟡       | Error cause preservation     | Use `new Error(msg, { cause: originalError })`                               | Preserves error chain for debugging                                   |
-| 🟡       | globalThis over window       | Use `globalThis.window` for SSR-safe browser detection                       | `window` throws in Node.js                                            |
-| 🟡       | Array.isArray guards         | Check `Array.isArray()` before array operations                              | External data may not match expected type                             |
-| 🟡       | Cross-platform isAbsolute    | Use `path.isAbsolute(file)` NOT `file.startsWith("/")`                       | Windows paths are `C:\...` not `/...`                                 |
-| 🟡       | CRLF line normalization      | `content.replace(/\r\n/g, "\n").replace(/\r/g, "\n")`                        | Windows files have CRLF, breaks regex with `$`                        |
-| 🟡       | Cross-platform path.sep      | Use `path.sep` or normalize with `.replace(/\\/g, "/")`                      | Backslash on Windows, forward slash on Unix                           |
-| ⚪       | listDocuments() for IDs      | Use `listDocuments()` when only document IDs needed                          | Avoids reading full document data                                     |
-| 🟡       | Non-greedy JSON extract      | Use `[\s\S]*?` not `[\s\S]*` for JSON extraction                             | Greedy can backtrack on malformed input                               |
-| 🟡       | Next.js env var bundling     | Use static `process.env.NEXT_PUBLIC_*` not dynamic lookup                    | Dynamic `process.env[key]` not inlined                                |
-| 🟡       | Union type property access   | Cast to specific type: `(entry as MoodEntry).data.mood`                      | TS2339: Property doesn't exist on union type                          |
-| 🟡       | Discriminated union helpers  | Use specific types in helper props: `{ data: MoodEntry["data"] }`            | Avoids union type narrowing issues in components                      |
-| 🔴       | Args arrays over templates   | Use `execFileSync(cmd, [arg1, arg2])` not `execSync(\`cmd ${var}\`)`         | Eliminates injection vectors even with validated inputs (Review #199) |
-| 🔴       | Log target type validation   | Use `fstatSync(fd).isFile()` (Unix) or `lstatSync().isFile()` (Win)          | Log files can be replaced with dirs/FIFOs (Review #199)               |
-| 🟡       | Signal error code semantics  | Check `error.code === 'ESRCH'` specifically for process signals              | ESRCH = gone, EPERM = exists but no permission (Review #199)          |
-| 🟡       | Process disappearance race   | When inspection fails, verify with `kill(pid, 0)` and treat ESRCH as success | Distinguish "target disappeared" from "failed" (Review #199)          |
-| 🟡       | PowerShell JSON edge cases   | Check for `"null"` string, use `Array.isArray()`, validate object            | PowerShell can return null, arrays, or malformed JSON (Review #199)   |
-| 🟡       | Subprocess NaN prevention    | Filter PIDs with `Number.isInteger(n) && n > 0` after parsing                | parseInt on unexpected input produces NaN (Review #199)               |
-| 🟡       | Set vs Array migration       | When changing Array→Set, update all `.length` and `[index]` consumers        | `Array.from()` needed for iteration (Review #189)                     |
-| 🟡       | Deterministic Set iteration  | Sort after `Array.from(set)` for reproducible order                          | Set iteration order is undefined in JS (Review #190)                  |
-| 🟡       | Firestore Timestamp safety   | Check `typeof x?.toDate === "function"` before calling `.toDate()`           | Timestamps may be null, undefined, or plain objects (Review #189)     |
-| 🟡       | Cross-platform newline split | Use `/\r?\n/` regex for splitting subprocess output                          | Windows uses CRLF, Unix uses LF (Review #199)                         |
-| 🟡       | Math.max empty array         | Check `arr.length > 0` before `Math.max(...arr)`                             | `Math.max(...[])` returns -Infinity (Review #216)                     |
-| 🟡       | Spread operator limits       | Use `reduce()` for large arrays, not `Math.max(...arr)`                      | Spread can overflow call stack (~65k args) (Review #216)              |
-| 🟡       | Nullish coalescing           | Use `??` not `\|\|` when 0 or "" are valid values                            | `\|\|` treats 0/"" as falsy (Review #219)                             |
-| 🟡       | Gap-safe counting            | Use Set-based counting, not arithmetic subtraction                           | Gaps in numbering break `highest - last` (Review #215)                |
-| 🟡       | statSync race condition      | Wrap statSync in try/catch after readdirSync                                 | File can be deleted between readdir and stat (Review #224)            |
-| 🟡       | Range clamping               | Clamp values before operations: `Math.max(0, Math.min(100, value))`          | Out-of-range values crash `.repeat()` etc (Review #224)               |
-| 🟡       | Platform root detection      | Use `path.parse(dir).root` not hardcoded "/"                                 | Windows root is `C:\` not `/` (Review #214)                           |
-| 🟡       | Regex anchoring for enums    | Use `^E[0-3]$` not `E[0-3]` for enum validation                              | Unanchored matches partial strings like E12 (Review #219)             |
+| Priority | Pattern                      | Rule                                                                         | Why                                                                       |
+| -------- | ---------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------- | --- | ----- | ------------------------------------------------------------ |
+| 🔴       | Error sanitization           | Use `scripts/lib/sanitize-error.js`                                          | Strip sensitive paths                                                     |
+| 🟡       | Error first line             | `.split('\n')[0].replace(/\r$/, '')`                                         | Handles CRLF                                                              |
+| 🟡       | Control char strip           | `/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g`                                        | Preserves \t\n\r                                                          |
+| 🟡       | OSC escape strip             | <code>/\x1B\][^\x07\x1B]\*(?:\x07&#124;\x1B\\)/g</code>                      | With ANSI CSI                                                             |
+| 🟡       | File-derived content         | Strip control chars before console.log                                       | Not just errors                                                           |
+| 🟡       | Safe error handling          | `error instanceof Error ? error.message : String(error)`                     | Non-Error throws                                                          |
+| 🟡       | Robust non-Error             | `error && typeof error === 'object' && 'message' in error`                   | Full check                                                                |
+| 🔴       | Cross-platform paths         | `path.relative()` not `startsWith()`                                         | Path validation                                                           |
+| 🟡       | path.relative() trap         | `".."` returned without separator for `/a` → `/`                             | Check `rel === '..'` too                                                  |
+| 🔴       | Normalize backslashes        | `.replace(/\\/g, '/')` before security checks                                | Path traversal                                                            |
+| 🟡       | CRLF in regex                | `\r?\n` instead of `\n`                                                      | Cross-platform                                                            |
+| 🟡       | Windows cross-drive          | Check for `/^[A-Za-z]:/` in relative output                                  | Absolute path returned                                                    |
+| 🟡       | Windows path sanitize        | `.replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]')`                              | gi flag                                                                   |
+| 🟡       | Markdown links               | `.replace(/\\/g, '/')`                                                       | Normalize backslashes                                                     |
+| 🟡       | lstatSync                    | Wrap in try-catch                                                            | Permission denied, broken symlinks                                        |
+| 🔴       | File reads                   | Wrap ALL in try/catch                                                        | existsSync race, permissions                                              |
+| 🟡       | Main module detect           | Wrap in try-catch with fallback                                              | Unusual paths throw                                                       |
+| 🟡       | maxBuffer                    | `10 * 1024 * 1024` for execSync                                              | Large output                                                              |
+| 🔴       | Global flag for exec()       | `/g` REQUIRED in while loops                                                 | No /g = infinite loop                                                     |
+| 🟡       | Regex brace matching         | `[^}]` not `[\s\S]`                                                          | Single-brace-level                                                        |
+| 🟡       | Path boundary anchor         | <code>(?:^&#124;[\\/])</code> prefix                                         | Prevent substring matches                                                 |
+| 🟡       | Falsy vs missing check       | <code>=== undefined &#124;&#124; === null</code> for numeric fields          | `!field` returns true for 0                                               |
+| ⚪       | Node.js module prefix        | `node:fs`, `node:path`, `node:url`                                           | SonarQube S6803 best practice                                             |
+| 🟡       | Number.parseInt radix        | `Number.parseInt(str, 10)` not `parseInt(str)`                               | Strings starting with 0 misinterpret                                      |
+| 🟡       | Dead code after throw        | Code after realpathSync success is unreachable                               | realpathSync throws on missing files                                      |
+| 🟡       | SSR-safe browser APIs        | Guard with `typeof window !== 'undefined'`                                   | Prevent SSR crashes                                                       |
+| 🟡       | Cognitive complexity         | Keep functions under 15; extract helpers                                     | SonarQube S3776 threshold                                                 |
+| 🟡       | lstatSync for symlinks       | Use `lstatSync` to detect symlinks without following                         | `statSync` follows symlinks, misses escapes                               |
+| 🟡       | NaN-safe numeric sorting     | `Number(a) - Number(b)` with <code>&#124;&#124; 0</code> fallback            | NaN in sort comparator causes undefined order                             |
+| 🟡       | path.relative() empty        | Include `rel === ''` in containment checks                                   | Resolving `.` gives empty relative path                                   |
+| 🟡       | Error cause preservation     | Use `new Error(msg, { cause: originalError })`                               | Preserves error chain for debugging                                       |
+| 🟡       | globalThis over window       | Use `globalThis.window` for SSR-safe browser detection                       | `window` throws in Node.js                                                |
+| 🟡       | Array.isArray guards         | Check `Array.isArray()` before array operations                              | External data may not match expected type                                 |
+| 🟡       | Cross-platform isAbsolute    | Use `path.isAbsolute(file)` NOT `file.startsWith("/")`                       | Windows paths are `C:\...` not `/...`                                     |
+| 🟡       | CRLF line normalization      | `content.replace(/\r\n/g, "\n").replace(/\r/g, "\n")`                        | Windows files have CRLF, breaks regex with `$`                            |
+| 🟡       | Cross-platform path.sep      | Use `path.sep` or normalize with `.replace(/\\/g, "/")`                      | Backslash on Windows, forward slash on Unix                               |
+| ⚪       | listDocuments() for IDs      | Use `listDocuments()` when only document IDs needed                          | Avoids reading full document data                                         |
+| 🟡       | Non-greedy JSON extract      | Use `[\s\S]*?` not `[\s\S]*` for JSON extraction                             | Greedy can backtrack on malformed input                                   |
+| 🟡       | Next.js env var bundling     | Use static `process.env.NEXT_PUBLIC_*` not dynamic lookup                    | Dynamic `process.env[key]` not inlined                                    |
+| 🟡       | Union type property access   | Cast to specific type: `(entry as MoodEntry).data.mood`                      | TS2339: Property doesn't exist on union type                              |
+| 🟡       | Discriminated union helpers  | Use specific types in helper props: `{ data: MoodEntry["data"] }`            | Avoids union type narrowing issues in components                          |
+| 🔴       | Args arrays over templates   | Use `execFileSync(cmd, [arg1, arg2])` not `execSync(\`cmd ${var}\`)`         | Eliminates injection vectors even with validated inputs (Review #199)     |
+| 🔴       | Log target type validation   | Use `fstatSync(fd).isFile()` (Unix) or `lstatSync().isFile()` (Win)          | Log files can be replaced with dirs/FIFOs (Review #199)                   |
+| 🟡       | Signal error code semantics  | Check `error.code === 'ESRCH'` specifically for process signals              | ESRCH = gone, EPERM = exists but no permission (Review #199)              |
+| 🟡       | Process disappearance race   | When inspection fails, verify with `kill(pid, 0)` and treat ESRCH as success | Distinguish "target disappeared" from "failed" (Review #199)              |
+| 🟡       | PowerShell JSON edge cases   | Check for `"null"` string, use `Array.isArray()`, validate object            | PowerShell can return null, arrays, or malformed JSON (Review #199)       |
+| 🟡       | Subprocess NaN prevention    | Filter PIDs with `Number.isInteger(n) && n > 0` after parsing                | parseInt on unexpected input produces NaN (Review #199)                   |
+| 🟡       | Set vs Array migration       | When changing Array→Set, update all `.length` and `[index]` consumers        | `Array.from()` needed for iteration (Review #189)                         |
+| 🟡       | Deterministic Set iteration  | Sort after `Array.from(set)` for reproducible order                          | Set iteration order is undefined in JS (Review #190)                      |
+| 🟡       | Firestore Timestamp safety   | Check `typeof x?.toDate === "function"` before calling `.toDate()`           | Timestamps may be null, undefined, or plain objects (Review #189)         |
+| 🟡       | Cross-platform newline split | Use `/\r?\n/` regex for splitting subprocess output                          | Windows uses CRLF, Unix uses LF (Review #199)                             |
+| 🟡       | Math.max empty array         | Check `arr.length > 0` before `Math.max(...arr)`                             | `Math.max(...[])` returns -Infinity (Review #216)                         |
+| 🟡       | Spread operator limits       | Use `reduce()` for large arrays, not `Math.max(...arr)`                      | Spread can overflow call stack (~65k args) (Review #216)                  |
+| 🟡       | Nullish coalescing           | Use `??` not `\|\|` when 0 or "" are valid values                            | `\|\|` treats 0/"" as falsy (Review #219)                                 |
+| 🟡       | Gap-safe counting            | Use Set-based counting, not arithmetic subtraction                           | Gaps in numbering break `highest - last` (Review #215)                    |
+| 🟡       | statSync race condition      | Wrap statSync in try/catch after readdirSync                                 | File can be deleted between readdir and stat (Review #224)                |
+| 🟡       | Range clamping               | Clamp values before operations: `Math.max(0, Math.min(100, value))`          | Out-of-range values crash `.repeat()` etc (Review #224)                   |
+| 🟡       | Platform root detection      | Use `path.parse(dir).root` not hardcoded "/"                                 | Windows root is `C:\` not `/` (Review #214)                               |
+| 🟡       | Regex anchoring for enums    | Use `^E[0-3]$` not `E[0-3]` for enum validation                              | Unanchored matches partial strings like E12 (Review #219)                 |
+| 🟡       | Regex operator precedence    | In `/^a                                                                      | b                                                                         | c$/`, alternation has lowest precedence. Use `/^(a | b   | c)$/` | Unintended partial matches across alternatives (Review #225) |
+| 🟡       | Safe percentage              | Use `safePercent(n, total)` helper with division-by-zero guard               | `(n/total)*100` throws or returns NaN/Infinity when total=0 (Review #226) |
 
 ---
 
 ## CI/Automation
 
-| Priority | Pattern                 | Rule                                                        | Why                                                        |
-| -------- | ----------------------- | ----------------------------------------------------------- | ---------------------------------------------------------- |
-| 🟡       | CI mode                 | Check ALL, no truncation                                    | Limits for interactive only                                |
-| 🟡       | Invalid files           | Fail on exists && !valid && required                        | Not just missing                                           |
-| 🟡       | Explicit flags          | Fail explicitly if flag target missing                      | Even interactive                                           |
-| 🟡       | Readline close          | Create helper, call on all paths                            | Prevent hang                                               |
-| 🟡       | File moves              | grep for filename in .github/, scripts/                     | Update CI refs                                             |
-| 🟡       | JSON output isolation   | Guard all console.error when JSON mode active               | Mixed output breaks parsers                                |
-| 🟡       | Empty-state guards      | Handle "no prior data" case in triggers                     | Prevents false positives on fresh projects                 |
-| 🟡       | Unimplemented CLI flags | Block with error message, exit code 2                       | Silent acceptance = false confidence                       |
-| 🔴       | CLI arg separator       | Use `--` before file args: `script -- $FILES`               | Prevents `-filename` injection                             |
-| 🔴       | Quote shell arguments   | Always quote `$ARGS` in shell hook settings                 | Command injection prevention                               |
-| 🔴       | Project dir validation  | Validate cwd is within expected project root                | Prevent traversal in hooks                                 |
-| 🟡       | Cross-platform paths    | Use `path.sep` and normalize backslashes                    | Windows compatibility                                      |
-| 🟡       | Exit code best practice | Use `process.exitCode` not `process.exit()`                 | Allows buffer flush                                        |
-| 🟡       | Per-item error handling | try/catch around individual job items                       | One failure shouldn't abort entire job                     |
-| 🟡       | Complete cleanup loops  | Loop until no documents match, not one batch                | Cleanup jobs may have more than 500 items                  |
-| 🟡       | Pre-push file selection | Use `git diff @{u}...HEAD` for pushed commits               | Pre-commit uses staged, pre-push uses diff                 |
-| 🟡       | JSONL line parsing      | Parse line-by-line with try/catch, track line numbers       | Single corrupt line shouldn't crash script (Review #218)   |
-| 🔴       | Atomic file writes      | Write to `.tmp` then `fs.renameSync` for critical files     | Interrupted write leaves corrupt file (Review #218, #224)  |
-| 🟡       | Stable ID preservation  | Never reassign IDs once allocated; IDs are immutable        | Downstream consumers depend on stable refs (Review #218)   |
-| 🟡       | API pagination          | Always check for pagination in external APIs; fetch all     | APIs default to partial results (Review #218)              |
-| 🟡       | Multi-file rollback     | If second write fails, undo first to maintain consistency   | Partial writes leave inconsistent state (Review #223)      |
-| 🟡       | Glob self-inclusion     | Use explicit file lists, not globs that include output file | `cat *.jsonl > merged.jsonl` includes output (Review #221) |
-| 🟡       | Windows atomic rename   | Use `fs.rmSync()` before `fs.renameSync()` on Windows       | Windows rename fails if destination exists (Review #224)   |
+| Priority | Pattern                 | Rule                                                                       | Why                                                         |
+| -------- | ----------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| 🟡       | CI mode                 | Check ALL, no truncation                                                   | Limits for interactive only                                 |
+| 🟡       | Invalid files           | Fail on exists && !valid && required                                       | Not just missing                                            |
+| 🟡       | Explicit flags          | Fail explicitly if flag target missing                                     | Even interactive                                            |
+| 🟡       | Readline close          | Create helper, call on all paths                                           | Prevent hang                                                |
+| 🟡       | File moves              | grep for filename in .github/, scripts/                                    | Update CI refs                                              |
+| 🟡       | JSON output isolation   | Guard all console.error when JSON mode active                              | Mixed output breaks parsers                                 |
+| 🟡       | Empty-state guards      | Handle "no prior data" case in triggers                                    | Prevents false positives on fresh projects                  |
+| 🟡       | Unimplemented CLI flags | Block with error message, exit code 2                                      | Silent acceptance = false confidence                        |
+| 🔴       | CLI arg separator       | Use `--` before file args: `script -- $FILES`                              | Prevents `-filename` injection                              |
+| 🔴       | Quote shell arguments   | Always quote `$ARGS` in shell hook settings                                | Command injection prevention                                |
+| 🔴       | Project dir validation  | Validate cwd is within expected project root                               | Prevent traversal in hooks                                  |
+| 🟡       | Cross-platform paths    | Use `path.sep` and normalize backslashes                                   | Windows compatibility                                       |
+| 🟡       | Exit code best practice | Use `process.exitCode` not `process.exit()`                                | Allows buffer flush                                         |
+| 🟡       | Per-item error handling | try/catch around individual job items                                      | One failure shouldn't abort entire job                      |
+| 🟡       | Complete cleanup loops  | Loop until no documents match, not one batch                               | Cleanup jobs may have more than 500 items                   |
+| 🟡       | Pre-push file selection | Use `git diff @{u}...HEAD` for pushed commits                              | Pre-commit uses staged, pre-push uses diff                  |
+| 🟡       | JSONL line parsing      | Parse line-by-line with try/catch, track line numbers                      | Single corrupt line shouldn't crash script (Review #218)    |
+| 🔴       | Atomic file writes      | Write to `.tmp` then `fs.renameSync` for critical files                    | Interrupted write leaves corrupt file (Review #218, #224)   |
+| 🟡       | Stable ID preservation  | Never reassign IDs once allocated; IDs are immutable                       | Downstream consumers depend on stable refs (Review #218)    |
+| 🟡       | API pagination          | Always check for pagination in external APIs; fetch all                    | APIs default to partial results (Review #218)               |
+| 🟡       | Multi-file rollback     | If second write fails, undo first to maintain consistency                  | Partial writes leave inconsistent state (Review #223)       |
+| 🟡       | Glob self-inclusion     | Use explicit file lists, not globs that include output file                | `cat *.jsonl > merged.jsonl` includes output (Review #221)  |
+| 🟡       | Windows atomic rename   | Use `fs.rmSync()` before `fs.renameSync()` on Windows                      | Windows rename fails if destination exists (Review #224)    |
+| 🟡       | Parallel agent review   | For 50+ review items, spawn specialized agents by concern area in parallel | Sequential review misses cross-cutting issues (Review #225) |
 
 ---
 

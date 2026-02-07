@@ -31,10 +31,15 @@ const applyChanges = process.argv.includes("--apply");
  * Parse version history to find review numbers > lastConsolidated
  */
 function getComputedCount(content, lastConsolidated) {
+  // Match "Review #NNN:" or "Review #NNN-NNN:" (range format, captures both numbers)
   const versionRegex =
-    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):/g;
+    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4})(?:-(\d{1,4}))?[-:]/g;
 
-  const allNums = Array.from(content.matchAll(versionRegex), (m) => parseInt(m[1], 10));
+  const allNums = [];
+  for (const m of content.matchAll(versionRegex)) {
+    allNums.push(parseInt(m[1], 10));
+    if (m[2]) allNums.push(parseInt(m[2], 10));
+  }
   const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
   return uniqueNums.size;
