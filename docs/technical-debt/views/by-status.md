@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2135)
+## NEW (2106)
 
 | ID        | Title                                                          | Severity | Category                 |
 | --------- | -------------------------------------------------------------- | -------- | ------------------------ |
@@ -500,14 +500,6 @@
 | DEBT-1986 | God Object: functions/src/admin.ts (4108 lines)                | S1       | code-quality             |
 | DEBT-1988 | Zero Component Test Coverage                                   | S1       | code-quality             |
 | DEBT-1990 | Excessive client-component surface ("use client" appears ...   | S1       | performance              |
-| DEBT-1998 | Invalid placeholder URL in example: full-url.com               | S1       | documentation            |
-| DEBT-1999 | Broken external link: console.firebase.google.com/support...   | S1       | documentation            |
-| DEBT-2000 | Broken anchor link: ./ROADMAP_LOG.md#m16---admin-panel--t...   | S1       | documentation            |
-| DEBT-2001 | Broken anchor link: docs/DOCUMENT_DEPENDENCIES.md#cross-d...   | S1       | documentation            |
-| DEBT-2002 | Broken anchor link: ./ROADMAP.md#active-sprint-operationa...   | S1       | documentation            |
-| DEBT-2003 | Broken anchor link: ./ROADMAP.md#m2-architecture-refactor...   | S1       | documentation            |
-| DEBT-2007 | Contradiction: Security rules enforcement for direct writes    | S1       | documentation            |
-| DEBT-2008 | Contradiction: Pre-commit hook blocking status for patter...   | S1       | documentation            |
 | DEBT-0140 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
 | DEBT-0141 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
 | DEBT-0142 | Prefer `Number.parseFloat` over `parseFloat`.                  | S2       | code-quality             |
@@ -1609,45 +1601,24 @@
 | DEBT-1992 | 8:1 console.log to logger ratio — production observabilit...   | S2       | code-quality             |
 | DEBT-2022 | Structure: COMMAND_REFERENCE.md should be Tier 1 Canonical     | S2       | documentation            |
 | DEBT-2023 | Structure: AI_WORKFLOW.md should be Tier 1 Canonical           | S2       | documentation            |
-| DEBT-2024 | SECURITY_CHECKLIST.md missing Document Version and Status      | S2       | documentation            |
-| DEBT-2025 | APPCHECK_SETUP.md missing Document Version                     | S2       | documentation            |
-| DEBT-2026 | RECAPTCHA_REMOVAL_GUIDE.md missing Document Version            | S2       | documentation            |
-| DEBT-2027 | TESTING_PLAN.md missing Document Version                       | S2       | documentation            |
 | DEBT-2028 | Code blocks missing language specifier                         | S2       | documentation            |
-| DEBT-2029 | Inaccurate Firebase version in CLAUDE.md                       | S2       | documentation            |
-| DEBT-2030 | DEVELOPMENT.md missing Status field in metadata                | S2       | documentation            |
-| DEBT-2031 | CODE_PATTERNS.md uses lowercase 'claude.md' instead of 'C...   | S2       | documentation            |
-| DEBT-2032 | AI_REVIEW_PROCESS.md missing Status field                      | S2       | documentation            |
-| DEBT-2033 | APPCHECK_SETUP.md missing Document Version field               | S2       | documentation            |
-| DEBT-2034 | Broken anchor link: ../ROADMAP.md#dependencies                 | S2       | documentation            |
-| DEBT-2035 | INCIDENT_RESPONSE.md missing Document Version field            | S2       | documentation            |
-| DEBT-2036 | MCP_SETUP.md missing Status field                              | S2       | documentation            |
-| DEBT-2037 | TESTING_PLAN.md missing Document Version field                 | S2       | documentation            |
 | DEBT-2038 | Structure: ROADMAP_LOG.md should be Tier 1 Canonical           | S2       | documentation            |
 | DEBT-2039 | ROADMAP.md missing last updated date (stale > 30 days)         | S2       | documentation            |
-| DEBT-2040 | Inconsistent heading levels in SESSION_CONTEXT.md              | S2       | documentation            |
 | DEBT-2041 | Line length exceeds recommended limit                          | S2       | documentation            |
 | DEBT-2042 | Structure: SESSION_CONTEXT.md should be Tier 1 Canonical       | S2       | documentation            |
 | DEBT-2043 | Structure: .claude/ directory contains Tier 1 candidates       | S2       | documentation            |
 | DEBT-2044 | EXPANSION_EVALUATION_TRACKER.md using deprecated date-bas...   | S2       | documentation            |
 | DEBT-2045 | REVIEW_POLICY_ARCHITECTURE.md has conflicting status indi...   | S2       | documentation            |
 | DEBT-2046 | Inconsistent terminology: 'skill' vs 'command' vs 'slash ...   | S2       | documentation            |
-| DEBT-2047 | Inconsistent terminology: 'agent' vs 'subagent' vs 'worker'    | S2       | documentation            |
-| DEBT-2048 | Duplication: Session Start Protocol in CLAUDE.md and AI_W...   | S2       | documentation            |
-| DEBT-2049 | Duplication: Compaction-resilient state persistence in CL...   | S2       | documentation            |
-| DEBT-2050 | Inconsistent terminology: 'Cloud Functions' capitalization     | S2       | documentation            |
 | DEBT-2051 | Inconsistent terminology: 'App Check' vs 'AppCheck' vs 'a...   | S2       | documentation            |
 | DEBT-2052 | MONETIZATION_RESEARCH.md has stale Last Updated date (ove...   | S2       | documentation            |
 | DEBT-2053 | PR_WORKFLOW_CHECKLIST.md missing Version History table         | S2       | documentation            |
 | DEBT-2054 | Structure: SESSION_DECISIONS.md placement incorrect            | S2       | documentation            |
 | DEBT-2055 | Historical ideation document is unlinked                       | S2       | documentation            |
-| DEBT-2056 | Master documentation index is not linked from entry points     | S2       | documentation            |
 | DEBT-2057 | Duplication: Agent/Skill Triggers table in CLAUDE.md and ...   | S2       | documentation            |
 | DEBT-2388 | Quality: CLAUDE.md scores 8/10 - missing cross-references...   | S2       | documentation            |
 | DEBT-2389 | Quality: .claude/agents/ docs lack usage examples              | S2       | documentation            |
 | DEBT-2390 | Quality: .claude/skills/ docs have inconsistent SKILL.md ...   | S2       | documentation            |
-| DEBT-2391 | Quality: DEVELOPMENT.md scores 7/10 - wall of text in Git...   | S2       | documentation            |
-| DEBT-2392 | Readability: DEVELOPMENT.md has 110-line section without ...   | S2       | documentation            |
 | DEBT-2393 | Gap: Missing overview for multi-ai audit system                | S2       | documentation            |
 | DEBT-2394 | Quality: SECURITY.md scores 8/10 - clear but missing thre...   | S2       | documentation            |
 | DEBT-2395 | Quality: SESSION_CONTEXT.md scores 6/10 - excessive sessi...   | S2       | documentation            |
@@ -2157,31 +2128,60 @@ _No items_
 
 _No items_
 
-## RESOLVED (16)
+## RESOLVED (40)
 
-| ID        | Title                                                        | Severity | Category     |
-| --------- | ------------------------------------------------------------ | -------- | ------------ |
-| DEBT-0863 | Reduce 47 CRITICAL complexity functions                      | S1       | code-quality |
-| DEBT-0850 | Legacy journalEntries collection allows direct client wri... | S0       | security     |
-| DEBT-0852 | Multiple CI quality gates configured as non-blocking (con... | S0       | code-quality |
-| DEBT-0853 | useJournal creates redundant auth listener + potential me... | S0       | code-quality |
-| DEBT-0855 | Legacy journalEntries collection allows direct client wri... | S0       | security     |
-| DEBT-0856 | App Check disabled on all Cloud Functions and client init... | S0       | security     |
-| DEBT-0857 | Legacy journalEntries collection allows direct client wri... | S0       | security     |
-| DEBT-0858 | useJournal creates redundant auth listener + potential me... | S0       | performance  |
-| DEBT-0859 | CI quality gates non-blocking allowing regressions           | S0       | process      |
-| DEBT-0860 | Re-enable App Check on Cloud Functions                       | S0       | security     |
-| DEBT-0861 | Close legacy journalEntries write path                       | S0       | security     |
-| DEBT-0862 | Fix useJournal memory leak                                   | S0       | code-quality |
-| DEBT-0864 | Convert CI gates to blocking                                 | S0       | code-quality |
-| DEBT-0865 | Re-enable App Check on Cloud Functions                       | S0       | security     |
-| DEBT-0866 | Close legacy journalEntries write path                       | S0       | security     |
-| DEBT-0867 | Fix useJournal memory leak                                   | S0       | code-quality |
+| ID        | Title                                                        | Severity | Category      |
+| --------- | ------------------------------------------------------------ | -------- | ------------- |
+| DEBT-0863 | Reduce 47 CRITICAL complexity functions                      | S1       | code-quality  |
+| DEBT-1998 | Invalid placeholder URL in example: full-url.com             | S1       | documentation |
+| DEBT-1999 | Broken external link: console.firebase.google.com/support... | S1       | documentation |
+| DEBT-2000 | Broken anchor link: ./ROADMAP_LOG.md#m16---admin-panel--t... | S1       | documentation |
+| DEBT-2001 | Broken anchor link: docs/DOCUMENT_DEPENDENCIES.md#cross-d... | S1       | documentation |
+| DEBT-2002 | Broken anchor link: ./ROADMAP.md#active-sprint-operationa... | S1       | documentation |
+| DEBT-2003 | Broken anchor link: ./ROADMAP.md#m2-architecture-refactor... | S1       | documentation |
+| DEBT-2007 | Contradiction: Security rules enforcement for direct writes  | S1       | documentation |
+| DEBT-2024 | SECURITY_CHECKLIST.md missing Document Version and Status    | S2       | documentation |
+| DEBT-2025 | APPCHECK_SETUP.md missing Document Version                   | S2       | documentation |
+| DEBT-2026 | RECAPTCHA_REMOVAL_GUIDE.md missing Document Version          | S2       | documentation |
+| DEBT-2027 | TESTING_PLAN.md missing Document Version                     | S2       | documentation |
+| DEBT-2029 | Inaccurate Firebase version in CLAUDE.md                     | S2       | documentation |
+| DEBT-2030 | DEVELOPMENT.md missing Status field in metadata              | S2       | documentation |
+| DEBT-2031 | CODE_PATTERNS.md uses lowercase 'claude.md' instead of 'C... | S2       | documentation |
+| DEBT-2032 | AI_REVIEW_PROCESS.md missing Status field                    | S2       | documentation |
+| DEBT-2033 | APPCHECK_SETUP.md missing Document Version field             | S2       | documentation |
+| DEBT-2034 | Broken anchor link: ../ROADMAP.md#dependencies               | S2       | documentation |
+| DEBT-2035 | INCIDENT_RESPONSE.md missing Document Version field          | S2       | documentation |
+| DEBT-2036 | MCP_SETUP.md missing Status field                            | S2       | documentation |
+| DEBT-2037 | TESTING_PLAN.md missing Document Version field               | S2       | documentation |
+| DEBT-2047 | Inconsistent terminology: 'agent' vs 'subagent' vs 'worker'  | S2       | documentation |
+| DEBT-2056 | Master documentation index is not linked from entry points   | S2       | documentation |
+| DEBT-2391 | Quality: DEVELOPMENT.md scores 7/10 - wall of text in Git... | S2       | documentation |
+| DEBT-2392 | Readability: DEVELOPMENT.md has 110-line section without ... | S2       | documentation |
+| DEBT-0850 | Legacy journalEntries collection allows direct client wri... | S0       | security      |
+| DEBT-0852 | Multiple CI quality gates configured as non-blocking (con... | S0       | code-quality  |
+| DEBT-0853 | useJournal creates redundant auth listener + potential me... | S0       | code-quality  |
+| DEBT-0855 | Legacy journalEntries collection allows direct client wri... | S0       | security      |
+| DEBT-0856 | App Check disabled on all Cloud Functions and client init... | S0       | security      |
+| DEBT-0857 | Legacy journalEntries collection allows direct client wri... | S0       | security      |
+| DEBT-0858 | useJournal creates redundant auth listener + potential me... | S0       | performance   |
+| DEBT-0859 | CI quality gates non-blocking allowing regressions           | S0       | process       |
+| DEBT-0860 | Re-enable App Check on Cloud Functions                       | S0       | security      |
+| DEBT-0861 | Close legacy journalEntries write path                       | S0       | security      |
+| DEBT-0862 | Fix useJournal memory leak                                   | S0       | code-quality  |
+| DEBT-0864 | Convert CI gates to blocking                                 | S0       | code-quality  |
+| DEBT-0865 | Re-enable App Check on Cloud Functions                       | S0       | security      |
+| DEBT-0866 | Close legacy journalEntries write path                       | S0       | security      |
+| DEBT-0867 | Fix useJournal memory leak                                   | S0       | code-quality  |
 
-## FALSE_POSITIVE (228)
+## FALSE_POSITIVE (233)
 
 | ID        | Title                                                          | Severity | Category      |
 | --------- | -------------------------------------------------------------- | -------- | ------------- |
+| DEBT-2008 | Contradiction: Pre-commit hook blocking status for patter...   | S1       | documentation |
+| DEBT-2040 | Inconsistent heading levels in SESSION_CONTEXT.md              | S2       | documentation |
+| DEBT-2048 | Duplication: Session Start Protocol in CLAUDE.md and AI_W...   | S2       | documentation |
+| DEBT-2049 | Duplication: Compaction-resilient state persistence in CL...   | S2       | documentation |
+| DEBT-2050 | Inconsistent terminology: 'Cloud Functions' capitalization     | S2       | documentation |
 | DEBT-0561 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality  |
 | DEBT-0627 | `String.raw` should be used to avoid escaping `\`.             | S3       | code-quality  |
 | DEBT-0650 | Unexpected negated condition.                                  | S3       | code-quality  |
