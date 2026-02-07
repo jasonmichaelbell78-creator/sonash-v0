@@ -481,23 +481,16 @@ Add an entry to **each of the 6 category tables** in `docs/AUDIT_TRACKER.md`:
 | ------- | ------------- | --------------- | ------------- | ---------------------------- | --------------- |
 | {TODAY} | Comprehensive | Full codebase   | All           | Session #{N} - [report link] | ✅ (all)        |
 
-### 2. Update Threshold Summary Table
+### 2. Reset Audit Triggers (Automated)
 
-In the "Current Thresholds" section, update all 6 categories:
+Run the reset script to update all threshold counters:
 
-- Set "Last Audit" to today's date with "(Comprehensive)"
-- Reset "Commits Since" to 0
-- Reset "Files Since" to 0
+```bash
+node scripts/reset-audit-triggers.js --type=comprehensive --apply
+```
 
-### 3. Update Multi-AI Thresholds
-
-In the "Multi-AI Audit Thresholds" section:
-
-- Update "Total commits" reset date to today
-- Update "Time elapsed" to "0 days (comprehensive audit {TODAY})"
-
-**This step ensures `npm run review:check` correctly shows no triggers after the
-audit.**
+This resets all category dates, commits, files, and multi-AI counters in
+AUDIT_TRACKER.md. Verify with `npm run review:check` (should show no triggers).
 
 ---
 

@@ -18,6 +18,7 @@
     "docs:index": "node scripts/generate-documentation-index.js",
     "roadmap:validate": "node scripts/check-roadmap-health.js",
     "review:check": "node scripts/check-review-needed.js",
+    "audit:reset": "node scripts/reset-audit-triggers.js",
     "phase:complete": "node scripts/phase-complete-check.js",
     "phase:complete:auto": "node scripts/phase-complete-check.js --auto",
     "phase:validate": "node scripts/validate-phase-completion.js",

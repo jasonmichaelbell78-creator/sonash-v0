@@ -1169,6 +1169,12 @@ Add entry with:
 - Stages completed
 - Validation status
 
+### 2b. Reset Threshold
+
+```bash
+node scripts/reset-audit-triggers.js --type=single --category=process --apply
+```
+
 ### 3. Final TDMS Reconciliation
 
 Ensure all findings have DEBT-XXXX IDs:

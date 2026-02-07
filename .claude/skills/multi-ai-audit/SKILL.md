@@ -739,7 +739,15 @@ Remaining Manual Steps:
   3. Archive session when satisfied: move to docs/audits/multi-ai/archive/
 ```
 
-### Step 8.2: Complete Session
+### Step 8.2: Reset Audit Triggers
+
+```bash
+node scripts/reset-audit-triggers.js --type=multi-ai --apply
+```
+
+This resets all category thresholds and multi-AI counters in AUDIT_TRACKER.md.
+
+### Step 8.3: Complete Session
 
 ```javascript
 completeSession(sessionId, {

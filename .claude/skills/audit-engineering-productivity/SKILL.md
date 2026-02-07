@@ -297,6 +297,12 @@ node scripts/debt/intake-audit.js \
   --source "audit-engineering-productivity-$(date +%Y-%m-%d)"
 ```
 
+## Reset Threshold
+
+```bash
+node scripts/reset-audit-triggers.js --type=single --category=engineering-productivity --apply
+```
+
 ---
 
 ## Related Skills

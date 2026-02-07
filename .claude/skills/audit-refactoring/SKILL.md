@@ -360,6 +360,8 @@ Full markdown report with all findings, baselines, and refactoring plan.
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
+   - Run:
+     `node scripts/reset-audit-triggers.js --type=single --category=refactoring --apply`
 6. **TDMS Integration (MANDATORY)** - Ingest findings to canonical debt store:
    ```bash
    node scripts/debt/intake-audit.js docs/audits/single-session/refactoring/audit-[YYYY-MM-DD].jsonl --source "audit-refactoring-[DATE]"
@@ -389,8 +391,8 @@ category starts counting from zero after this audit.
 
 ### Multi-AI Escalation
 
-After 3 single-session refactoring audits, a full multi-AI Refactoring Audit is
-recommended. Track this in AUDIT_TRACKER.md "Single audits completed" counter.
+Multi-AI audits are triggered by total commits or time elapsed (not single audit
+counts). Check `npm run review:check` for current multi-AI trigger status.
 
 ---
 
