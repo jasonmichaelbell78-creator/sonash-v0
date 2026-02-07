@@ -1,0 +1,4 @@
+CAPABILITIES: browse_files=yes, run_commands=no, repo_checkout=no, limitations="Can browse all repository files via GitHub API but cannot execute shell commands or run tests locally."
+
+[Full Copilot audit output - 15 confirmed + 3 suspected findings across 5 categories]
+[See engineering-productivity-copilot.jsonl and engineering-productivity-copilot-suspected.jsonl for structured data]
