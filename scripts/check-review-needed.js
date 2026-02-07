@@ -742,20 +742,23 @@ function checkMultiAITriggers(lastMultiAIDate, categoryDates) {
   const validTimestamps = allDates
     .map((d) => new Date(d).getTime())
     .filter((t) => !Number.isNaN(t));
-  const sinceDate =
-    lastMultiAIDate ||
-    (validTimestamps.length > 0
+  const lastMultiAITs = lastMultiAIDate ? new Date(lastMultiAIDate).getTime() : NaN;
+  const usingFallbackDate = Number.isNaN(lastMultiAITs);
+  const sinceDate = !usingFallbackDate
+    ? new Date(lastMultiAITs).toISOString().split("T")[0]
+    : validTimestamps.length > 0
       ? new Date(Math.min(...validTimestamps)).toISOString().split("T")[0]
-      : null);
+      : null;
 
   if (sinceDate) {
     const totalCommits = getCommitsSince(sinceDate);
     if (totalCommits >= MULTI_AI_THRESHOLDS.totalCommits) {
+      const sinceLabel = usingFallbackDate ? "oldest category audit" : "last multi-AI audit";
       triggers.push({
         type: "total_commits",
         commits: totalCommits,
         threshold: MULTI_AI_THRESHOLDS.totalCommits,
-        message: `${totalCommits} total commits since last multi-AI audit (threshold: ${MULTI_AI_THRESHOLDS.totalCommits})`,
+        message: `${totalCommits} total commits since ${sinceLabel} (${sinceDate}) (threshold: ${MULTI_AI_THRESHOLDS.totalCommits})`,
       });
     }
   }

@@ -99,8 +99,8 @@ function main() {
 
   console.log(`Seeded ${entries.length} commits to commit-log.jsonl`);
   console.log(`Branch: ${branch}`);
-  console.log(`Oldest: ${lines[lines.length - 1]?.split("|")[2] || "?"}`);
-  console.log(`Newest: ${lines[0]?.split("|")[2] || "?"}`);
+  console.log(`Oldest: ${lines[lines.length - 1]?.split("\x1f")[2] || "?"}`);
+  console.log(`Newest: ${lines[0]?.split("\x1f")[2] || "?"}`);
 }
 
 main();

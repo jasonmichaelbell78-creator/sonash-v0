@@ -101,9 +101,11 @@ function resetCategoryRow(content, category, auditType) {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join("-");
   // Build a pattern that matches the category row in the threshold table
+  // Use [-\s]+ between words to match both "Engineering-Productivity" and "Engineering Productivity"
   // Format: | Category | Last Audit | Commits Since | Files Since | Trigger At |
+  const displayNamePattern = escapeRegex(displayName).replace(/\\-/g, "[-\\s]+");
   const rowPattern = new RegExp(
-    `^(\\| ${escapeRegex(displayName)}\\s+\\|)[^|\\n]+\\|[^|\\n]+\\|[^|\\n]+\\|(.*)$`,
+    `^(\\| ${displayNamePattern}\\s+\\|)[^|\\n]+\\|[^|\\n]+\\|[^|\\n]+\\|(.*)$`,
     "mi"
   );
 
