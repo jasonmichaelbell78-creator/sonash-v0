@@ -61,7 +61,7 @@ This is the primary context file for Claude Code sessions:
 | ------------ | ------- | ----------- |
 | Next.js      | 16.1.1  | App Router  |
 | React        | 19.2.3  | Stable      |
-| Firebase     | 12.8.0  | Modular SDK |
+| Firebase     | 12.6.0  | Modular SDK |
 | Tailwind CSS | 4.1.9   |             |
 | Zod          | 4.2.1   |             |
 
@@ -113,14 +113,15 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 
 ## 5. Documentation Index
 
-| Document                                               | Purpose                                      |
-| ------------------------------------------------------ | -------------------------------------------- |
-| [AI_WORKFLOW.md](./AI_WORKFLOW.md)                     | **START HERE** - session startup, navigation |
-| [ARCHITECTURE.md](./ARCHITECTURE.md)                   | Schema, security layers, components          |
-| [DEVELOPMENT.md](./DEVELOPMENT.md)                     | Setup, testing, directory structure          |
-| [ROADMAP.md](./ROADMAP.md)                             | Planned vs completed features                |
-| [SESSION_CONTEXT.md](./SESSION_CONTEXT.md)             | Current sprint, recent context               |
-| [docs/SESSION_DECISIONS.md](docs/SESSION_DECISIONS.md) | Decision log to survive context compaction   |
+| Document                                               | Purpose                                       |
+| ------------------------------------------------------ | --------------------------------------------- |
+| [AI_WORKFLOW.md](./AI_WORKFLOW.md)                     | **START HERE** - session startup, navigation  |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)                   | Schema, security layers, components           |
+| [DEVELOPMENT.md](./DEVELOPMENT.md)                     | Setup, testing, directory structure           |
+| [ROADMAP.md](./ROADMAP.md)                             | Planned vs completed features                 |
+| [SESSION_CONTEXT.md](./SESSION_CONTEXT.md)             | Current sprint, recent context                |
+| [docs/SESSION_DECISIONS.md](docs/SESSION_DECISIONS.md) | Decision log to survive context compaction    |
+| [DOCUMENTATION_INDEX.md](./DOCUMENTATION_INDEX.md)     | Complete documentation catalog with summaries |
 
 ## 6. Agent/Skill Triggers
 

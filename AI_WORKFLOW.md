@@ -438,7 +438,7 @@ applies. If a capability **clearly applies** to your task, you MUST use it.
 # Skills (specialized workflows and knowledge)
 ls .claude/skills/
 
-# Agents (specialist sub-agents for complex tasks)
+# Agents (specialist subagents for complex tasks)
 ls .claude/agents/
 
 # MCP Servers (external tool integrations)
@@ -479,7 +479,7 @@ Task: "Fix this authentication bug"
 
 ### Agents (`.claude/agents/`)
 
-Agents are specialist sub-agents invoked via the **Task tool** with
+Agents are specialist subagents invoked via the **Task tool** with
 `subagent_type` parameter. They run autonomously and return results.
 
 **When to Use Agents:**

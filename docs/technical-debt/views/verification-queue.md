@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 1920
+**Items Needing Verification:** 2106
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -1602,6 +1602,33 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-1989 | Potential Firestore-rules alignment risk for direct weekl...   | S2       | components/notebook/pages/today-page.tsx                                     | 0         |
 | DEBT-1991 | Oversized scripts: aggregate-audit-findings.js (63KB), ch...   | S2       | scripts/aggregate-audit-findings.js                                          | 1         |
 | DEBT-1992 | 8:1 console.log to logger ratio — production observabilit...   | S2       | app/                                                                         | 1         |
+| DEBT-2022 | Structure: COMMAND_REFERENCE.md should be Tier 1 Canonical     | S2       | .claude/COMMAND_REFERENCE.md                                                 | 0         |
+| DEBT-2023 | Structure: AI_WORKFLOW.md should be Tier 1 Canonical           | S2       | AI_WORKFLOW.md                                                               | 0         |
+| DEBT-2028 | Code blocks missing language specifier                         | S2       | CLAUDE.md                                                                    | 0         |
+| DEBT-2038 | Structure: ROADMAP_LOG.md should be Tier 1 Canonical           | S2       | ROADMAP_LOG.md                                                               | 0         |
+| DEBT-2039 | ROADMAP.md missing last updated date (stale > 30 days)         | S2       | ROADMAP.md                                                                   | 0         |
+| DEBT-2041 | Line length exceeds recommended limit                          | S2       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2042 | Structure: SESSION_CONTEXT.md should be Tier 1 Canonical       | S2       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2043 | Structure: .claude/ directory contains Tier 1 candidates       | S2       | .claude/COMMAND_REFERENCE.md                                                 | 0         |
+| DEBT-2044 | EXPANSION_EVALUATION_TRACKER.md using deprecated date-bas...   | S2       | docs/EXPANSION_EVALUATION_TRACKER.md                                         | 0         |
+| DEBT-2045 | REVIEW_POLICY_ARCHITECTURE.md has conflicting status indi...   | S2       | docs/REVIEW_POLICY_ARCHITECTURE.md                                           | 0         |
+| DEBT-2046 | Inconsistent terminology: 'skill' vs 'command' vs 'slash ...   | S2       | 127-154                                                                      | 0         |
+| DEBT-2051 | Inconsistent terminology: 'App Check' vs 'AppCheck' vs 'a...   | S2       | CLAUDE.md                                                                    | 74        |
+| DEBT-2052 | MONETIZATION_RESEARCH.md has stale Last Updated date (ove...   | S2       | docs/MONETIZATION_RESEARCH.md                                                | 0         |
+| DEBT-2053 | PR_WORKFLOW_CHECKLIST.md missing Version History table         | S2       | docs/PR_WORKFLOW_CHECKLIST.md                                                | 0         |
+| DEBT-2054 | Structure: SESSION_DECISIONS.md placement incorrect            | S2       | docs/SESSION_DECISIONS.md                                                    | 0         |
+| DEBT-2055 | Historical ideation document is unlinked                       | S2       | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md                           | 0         |
+| DEBT-2057 | Duplication: Agent/Skill Triggers table in CLAUDE.md and ...   | S2       | 129-144                                                                      | 0         |
+| DEBT-2388 | Quality: CLAUDE.md scores 8/10 - missing cross-references...   | S2       | CLAUDE.md                                                                    | 0         |
+| DEBT-2389 | Quality: .claude/agents/ docs lack usage examples              | S2       | .claude/agents/\*.md                                                         | 0         |
+| DEBT-2390 | Quality: .claude/skills/ docs have inconsistent SKILL.md ...   | S2       | .claude/skills/\*/SKILL.md                                                   | 0         |
+| DEBT-2393 | Gap: Missing overview for multi-ai audit system                | S2       | docs/multi-ai-audit/README.md                                                | 0         |
+| DEBT-2394 | Quality: SECURITY.md scores 8/10 - clear but missing thre...   | S2       | docs/SECURITY.md                                                             | 0         |
+| DEBT-2395 | Quality: SESSION_CONTEXT.md scores 6/10 - excessive sessi...   | S2       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2396 | Readability: SESSION_CONTEXT.md session summaries are den...   | S2       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2397 | Gap: Undocumented agent team workflows                         | S2       | CLAUDE.md                                                                    | 0         |
+| DEBT-2398 | Gap: No quickstart guide for new developers                    | S2       | DEVELOPMENT.md                                                               | 0         |
+| DEBT-2399 | Gap: Undocumented core lib modules                             | S2       | lib/firestore-service.ts                                                     | 0         |
 | DEBT-0553 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | scripts/check-pattern-compliance.js                                          | 419       |
 | DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | components/admin/errors-tab.tsx                                              | 37        |
 | DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | S3       | components/admin/users-tab.tsx                                               | 563       |
@@ -1610,7 +1637,6 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-0558 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | functions/src/admin.ts                                                       | 110       |
 | DEBT-0559 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | hooks/use-journal.ts                                                         | 72        |
 | DEBT-0560 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | scripts/ai-review.js                                                         | 44        |
-| DEBT-0561 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | scripts/archive-doc.js                                                       | 368       |
 | DEBT-0562 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | scripts/assign-review-tier.js                                                | 31        |
 | DEBT-0563 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | scripts/check-docs-light.js                                                  | 141       |
 | DEBT-0564 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | scripts/dedupe-quotes.ts                                                     | 217       |
@@ -1676,7 +1702,6 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-0624 | Unexpected negated condition.                                  | S3       | lib/firebase.ts                                                              | 141       |
 | DEBT-0625 | Use `export…from` to re-export `DailyLog`.                     | S3       | lib/firestore-service.ts                                                     | 97        |
 | DEBT-0626 | Use `export…from` to re-export `DailyLogHistoryResult`.        | S3       | lib/firestore-service.ts                                                     | 97        |
-| DEBT-0627 | `String.raw` should be used to avoid escaping `\`.             | S3       | scripts/archive-doc.js                                                       | 340       |
 | DEBT-0628 | `String.raw` should be used to avoid escaping `\`.             | S3       | scripts/generate-documentation-index.js                                      | 125       |
 | DEBT-0629 | Do not call `Array#push()` multiple times.                     | S3       | scripts/generate-documentation-index.js                                      | 571       |
 | DEBT-0630 | `String.raw` should be used to avoid escaping `\`.             | S3       | scripts/normalize-canon-ids.js                                               | 69        |
@@ -1699,7 +1724,6 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-0647 | Define a constant instead of using the literal '━━━━━━━━━...   | S3       | .claude/hooks/session-start.sh                                               | 303       |
 | DEBT-0648 | Remove the declaration of the unused 'preserveStackInDev'...   | S3       | scripts/lib/sanitize-error.js                                                | 65        |
 | DEBT-0649 | Unexpected negated condition.                                  | S3       | scripts/validate-phase-completion.js                                         | 77        |
-| DEBT-0650 | Unexpected negated condition.                                  | S3       | scripts/archive-doc.js                                                       | 572       |
 | DEBT-0651 | Unexpected negated condition.                                  | S3       | scripts/check-docs-light.js                                                  | 425       |
 | DEBT-0652 | Prefer `Date.now()` over `new Date()`.                         | S3       | scripts/check-docs-light.js                                                  | 434       |
 | DEBT-0653 | Unexpected negated condition.                                  | S3       | scripts/update-readme-status.js                                              | 497       |
@@ -1834,7 +1858,6 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-0782 | Pattern checker produces false positives for controlled n...   | S3       | scripts/check-pattern-compliance.js                                          | 0         |
 | DEBT-0783 | Review trigger thresholds may cause alert fatigue for pro...   | S3       | scripts/check-review-needed.js                                               | 0         |
 | DEBT-0784 | Deploy workflow secret handling may be brittle for multil...   | S3       | .github/workflows/deploy-firebase.yml                                        | 0         |
-| DEBT-0785 | Archive docs contain significant link rot after archival/...   | S3       | docs/archive/AI_HANDOFF-2026-01-02.md                                        | 0         |
 | DEBT-0786 | Template date placeholders using literal YYYY-MM-DD format     | S3       | docs/templates/FOUNDATION_DOC_TEMPLATE.md                                    | 0         |
 | DEBT-0787 | Template docs located outside docs/templates/ directory        | S3       | docs/PR_REVIEW_PROMPT_TEMPLATE.md                                            | 0         |
 | DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes...   | S3       | docs/DEVELOPMENT.md                                                          | 0         |
@@ -1855,8 +1878,6 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-0803 | Secrets expanded in run block                                  | S3       | .github/workflows/deploy-firebase.yml                                        | 58        |
 | DEBT-0804 | process.env.NODE_ENV checks for debug info                     | S3       | components/providers/error-boundary.tsx                                      | 84        |
 | DEBT-0805 | Agent config files present                                     | S3       | .claude/settings.json                                                        | 1         |
-| DEBT-0806 | Archive docs contain significant link rot after moves          | S3       | docs/archive/                                                                | 0         |
-| DEBT-0807 | PR_REVIEW_PROMPT_TEMPLATE.md lacks Last Updated and Versi...   | S3       | docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md                | 1         |
 | DEBT-0808 | DOCUMENTATION_INDEX.md orphaned - not referenced by any m...   | S3       | DOCUMENTATION_INDEX.md                                                       | 1         |
 | DEBT-0809 | Only 6 dynamic imports despite 101 client components           | S3       | components                                                                   | 0         |
 | DEBT-0810 | useMemo/useCallback usage is inconsistent                      | S3       | components                                                                   | 0         |
@@ -1888,7 +1909,6 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-0836 | Improve deploy secret handling                                 | S3       | N/A                                                                          | 0         |
 | DEBT-0837 | Missing "AI Instructions" Sections                             | S3       | N/A                                                                          | 0         |
 | DEBT-0838 | Fix deprecated APIs + nested ternaries                         | S3       | N/A                                                                          | 0         |
-| DEBT-0839 | Fix archive link rot                                           | S3       | N/A                                                                          | 0         |
 | DEBT-0840 | Missing "Quick Start" Sections                                 | S3       | N/A                                                                          | 0         |
 | DEBT-0841 | Underscore-prefixed unused variables                           | S3       | components/notebook/pages/today-page.tsx                                     | 305       |
 | DEBT-0842 | TODO comments without issue references                         | S3       | components/notebook/features/quick-actions-fab.tsx                           | 12        |
@@ -1921,11 +1941,177 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-1949 | User ID hash truncation reduces collision resistance for ...   | S3       | functions/src/security-logger.ts                                             | 74        |
 | DEBT-1950 | No middleware.ts for server-side route protection              | S3       | next.config.mjs                                                              | 13        |
 | DEBT-1951 | Service account credentials written to disk in CI deploy ...   | S3       | .github/workflows/deploy-firebase.yml                                        | 58        |
-| DEBT-1993 | Potential Misplaced Plans in Archive/Templates                 | S3       | docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md           | 1         |
-| DEBT-1994 | docs/OPERATIONAL_VISIBILITY_SPRINT.md and docs/HOOKIFY_ST...   | S3       | docs/OPERATIONAL_VISIBILITY_SPRINT.md                                        | 1         |
 | DEBT-1995 | No UI indicator for online/offline state                       | S3       | components/offline-indicator.tsx                                             | 1         |
 | DEBT-1996 | Markdownlint and Prettier checks not confirmed                 | S3       | docs/\*_/_.md                                                                | 1         |
 | DEBT-1997 | Potentially missing performance monitoring                     | S3       | lib/performance.ts                                                           | 1         |
+| DEBT-2058 | COMMAND_REFERENCE.md has inconsistent version format           | S3       | .claude/COMMAND_REFERENCE.md                                                 | 0         |
+| DEBT-2059 | Structure: skills/ vs agents/ directory overlap                | S3       | .claude/skills/                                                              | 0         |
+| DEBT-2060 | Bare URLs without link text                                    | S3       | AI_WORKFLOW.md                                                               | 0         |
+| DEBT-2061 | AI_WORKFLOW.md has inline metadata format instead of table     | S3       | AI_WORKFLOW.md                                                               | 0         |
+| DEBT-2062 | AI_WORKFLOW.md doesn't link back to CLAUDE.md                  | S3       | AI_WORKFLOW.md                                                               | 0         |
+| DEBT-2063 | AI_WORKFLOW.md missing Status field                            | S3       | AI_WORKFLOW.md                                                               | 0         |
+| DEBT-2064 | ARCHITECTURE.md outdated by 23 days                            | S3       | ARCHITECTURE.md                                                              | 0         |
+| DEBT-2065 | CLAUDE.md missing Status field                                 | S3       | CLAUDE.md                                                                    | 0         |
+| DEBT-2066 | APPCHECK_SETUP.md outdated by 25 days                          | S3       | docs/APPCHECK_SETUP.md                                                       | 0         |
+| DEBT-2067 | LEARNING_METRICS.md missing tier declaration                   | S3       | docs/LEARNING_METRICS.md                                                     | 0         |
+| DEBT-2069 | SECURITY.md outdated by 23 days                                | S3       | docs/SECURITY.md                                                             | 0         |
+| DEBT-2070 | SESSION_DECISIONS.md missing Status field                      | S3       | docs/SESSION_DECISIONS.md                                                    | 0         |
+| DEBT-2071 | Inconsistent list marker style                                 | S3       | CLAUDE.md                                                                    | 0         |
+| DEBT-2072 | Broken anchor link: ../ROADMAP.md#phase-4-error-tracking-...   | S3       | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md                         | 0         |
+| DEBT-2073 | Broken anchor link: ../ROADMAP.md#phase-5-system-logs-gcp...   | S3       | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md                         | 0         |
+| DEBT-2074 | CODE_PATTERNS.md <-> SECURITY_CHECKLIST.md missing cross-...   | S3       | docs/agent_docs/CODE_PATTERNS.md                                             | 0         |
+| DEBT-2075 | SECURITY_CHECKLIST.md doesn't reference CLAUDE.md              | S3       | docs/agent_docs/SECURITY_CHECKLIST.md                                        | 0         |
+| DEBT-2076 | Outdated redirect: cloud.google.com/recaptcha-enterprise/...   | S3       | docs/APPCHECK_SETUP.md                                                       | 0         |
+| DEBT-2077 | AUDIT_TRACKER.md has Status in Purpose line instead of me...   | S3       | docs/AUDIT_TRACKER.md                                                        | 0         |
+| DEBT-2078 | Structure: AUDIT_TRACKER.md should be Tier 4 Operational       | S3       | docs/AUDIT_TRACKER.md                                                        | 0         |
+| DEBT-2079 | DOCUMENTATION_STANDARDS.md doesn't reference CLAUDE.md         | S3       | docs/DOCUMENTATION_STANDARDS.md                                              | 0         |
+| DEBT-2080 | FIREBASE_CHANGE_POLICY.md has multiple Last Updated dates...   | S3       | docs/FIREBASE_CHANGE_POLICY.md                                               | 0         |
+| DEBT-2081 | Broken anchor link: ../ROADMAP.md#offline-support-critical     | S3       | docs/LIGHTHOUSE_INTEGRATION_PLAN.md                                          | 0         |
+| DEBT-2082 | Broken anchor link: ../ROADMAP.md#m3-meetings-location-pl...   | S3       | docs/MONETIZATION_RESEARCH.md                                                | 0         |
+| DEBT-2083 | Broken anchor link: ../technical-debt/PROCEDURE.md#11-cat...   | S3       | docs/multi-ai-audit/COORDINATOR.md                                           | 0         |
+| DEBT-2084 | Broken anchor link: ../../ROADMAP.md#track-t---testing-in...   | S3       | docs/plans/TESTING_INFRASTRUCTURE_PLAN.md                                    | 0         |
+| DEBT-2085 | SESSION_DECISIONS.md missing Created field                     | S3       | docs/SESSION_DECISIONS.md                                                    | 0         |
+| DEBT-2086 | SLASH_COMMANDS_REFERENCE.md potentially stale (33 days old)    | S3       | docs/SLASH_COMMANDS_REFERENCE.md                                             | 0         |
+| DEBT-2087 | Outdated redirect: docs.anthropic.com/claude-code redirec...   | S3       | docs/SLASH_COMMANDS_REFERENCE.md                                             | 0         |
+| DEBT-2088 | Structure: technical-debt/PROCEDURE.md placement review        | S3       | docs/technical-debt/PROCEDURE.md                                             | 0         |
+| DEBT-2089 | Naming: Inconsistent use of PROCEDURE vs GUIDE vs WORKFLOW     | S3       | docs/technical-debt/PROCEDURE.md                                             | 0         |
+| DEBT-2090 | Broken anchor link: ./DOCUMENT_DEPENDENCIES.md#cross-docu...   | S3       | docs/TRIGGERS.md                                                             | 0         |
+| DEBT-2091 | Case mismatch in link: CLAUDE.md                               | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2092 | Inconsistent blank lines around headings                       | S3       | GLOBAL_SECURITY_STANDARDS.md                                                 | 0         |
+| DEBT-2093 | Structure: ROADMAP.md vs ROADMAP_FUTURE.md separation          | S3       | ROADMAP.md                                                                   | 0         |
+| DEBT-2094 | Multiple H1 headings in single document                        | S3       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2095 | Trailing spaces at end of lines                                | S3       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2096 | Table formatting inconsistencies                               | S3       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2097 | Emoji usage in headings                                        | S3       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2098 | SESSION_CONTEXT.md has inconsistent metadata format            | S3       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2099 | Broken internal link: ./SHARED_TEMPLATE_BASE.md#ai-models      | S3       | .claude/plans/audit-template-schema-overhaul.md                              | 0         |
+| DEBT-2100 | Broken internal link: ./audit-code-report.md                   | S3       | .claude/skills/audit-aggregator/SKILL.md                                     | 0         |
+| DEBT-2101 | Broken internal link: ./audit-security-report.md               | S3       | .claude/skills/audit-aggregator/SKILL.md                                     | 0         |
+| DEBT-2102 | Broken internal link: ./audit-performance-report.md            | S3       | .claude/skills/audit-aggregator/SKILL.md                                     | 0         |
+| DEBT-2103 | Broken internal link: ./audit-documentation-report.md          | S3       | .claude/skills/audit-aggregator/SKILL.md                                     | 0         |
+| DEBT-2104 | Broken internal link: ./audit-refactoring-report.md            | S3       | .claude/skills/audit-aggregator/SKILL.md                                     | 0         |
+| DEBT-2105 | Broken internal link: ./audit-process-report.md                | S3       | .claude/skills/audit-aggregator/SKILL.md                                     | 0         |
+| DEBT-2106 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-aggregator/SKILL.md                                     | 0         |
+| DEBT-2107 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-aggregator/SKILL.md                                     | 0         |
+| DEBT-2108 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-aggregator/SKILL.md                                     | 0         |
+| DEBT-2109 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-code/SKILL.md                                           | 0         |
+| DEBT-2110 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-code/SKILL.md                                           | 0         |
+| DEBT-2111 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-code/SKILL.md                                           | 0         |
+| DEBT-2112 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | .claude/skills/audit-code/SKILL.md                                           | 0         |
+| DEBT-2113 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-comprehensive/SKILL.md                                  | 0         |
+| DEBT-2114 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-comprehensive/SKILL.md                                  | 0         |
+| DEBT-2115 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-comprehensive/SKILL.md                                  | 0         |
+| DEBT-2116 | Broken internal link: path.md                                  | S3       | .claude/skills/audit-documentation/SKILL.md                                  | 0         |
+| DEBT-2117 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-documentation/SKILL.md                                  | 0         |
+| DEBT-2118 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-documentation/SKILL.md                                  | 0         |
+| DEBT-2119 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-documentation/SKILL.md                                  | 0         |
+| DEBT-2120 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-performance/SKILL.md                                    | 0         |
+| DEBT-2121 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-performance/SKILL.md                                    | 0         |
+| DEBT-2122 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-performance/SKILL.md                                    | 0         |
+| DEBT-2123 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-process/SKILL.md                                        | 0         |
+| DEBT-2124 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-process/SKILL.md                                        | 0         |
+| DEBT-2125 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-process/SKILL.md                                        | 0         |
+| DEBT-2126 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | .claude/skills/audit-process/SKILL.md                                        | 0         |
+| DEBT-2127 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-refactoring/SKILL.md                                    | 0         |
+| DEBT-2128 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-refactoring/SKILL.md                                    | 0         |
+| DEBT-2129 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-refactoring/SKILL.md                                    | 0         |
+| DEBT-2130 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | .claude/skills/audit-refactoring/SKILL.md                                    | 0         |
+| DEBT-2131 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-security/SKILL.md                                       | 0         |
+| DEBT-2132 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-security/SKILL.md                                       | 0         |
+| DEBT-2133 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-security/SKILL.md                                       | 0         |
+| DEBT-2134 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | .claude/skills/audit-security/SKILL.md                                       | 0         |
+| DEBT-2135 | Broken internal link: docs/agent_docs/SECURITY_CHECKLIST.md    | S3       | .claude/skills/audit-security/SKILL.md                                       | 0         |
+| DEBT-2136 | Broken internal link: docs/GLOBAL_SECURITY_STANDARDS.md        | S3       | .claude/skills/audit-security/SKILL.md                                       | 0         |
+| DEBT-2137 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-validation-wrapper/SKILL.md                             | 0         |
+| DEBT-2138 | Broken internal link: ../.claude/skills/audit-comprehensi...   | S3       | .claude/skills/audit-validation-wrapper/SKILL.md                             | 0         |
+| DEBT-2139 | Broken internal link: path.md                                  | S3       | .claude/skills/doc-optimizer/SKILL.md                                        | 0         |
+| DEBT-2140 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/doc-optimizer/SKILL.md                                        | 0         |
+| DEBT-2141 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/doc-optimizer/SKILL.md                                        | 0         |
+| DEBT-2142 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/doc-optimizer/SKILL.md                                        | 0         |
+| DEBT-2143 | Broken internal link: ../../SESSION_CONTEXT.md                 | S3       | .claude/skills/session-begin/SKILL.md                                        | 0         |
+| DEBT-2144 | Broken internal link: ../../SESSION_CONTEXT.md                 | S3       | .claude/skills/session-begin/SKILL.md                                        | 0         |
+| DEBT-2145 | Broken internal link: ../../ROADMAP.md                         | S3       | .claude/skills/session-begin/SKILL.md                                        | 0         |
+| DEBT-2146 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md    | S3       | .claude/skills/session-begin/SKILL.md                                        | 0         |
+| DEBT-2147 | Broken internal link: ../../ROADMAP.md                         | S3       | .claude/skills/session-begin/SKILL.md                                        | 0         |
+| DEBT-2148 | Broken internal link: ../../docs/agent_docs/CODE_PATTERNS.md   | S3       | .claude/skills/session-begin/SKILL.md                                        | 0         |
+| DEBT-2149 | Broken internal link: ../../docs/TECHNICAL_DEBT_MASTER.md      | S3       | .claude/skills/session-begin/SKILL.md                                        | 0         |
+| DEBT-2150 | Broken internal link: ../../docs/DOCUMENT_DEPENDENCIES.md      | S3       | .claude/skills/session-begin/SKILL.md                                        | 0         |
+| DEBT-2151 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md    | S3       | .claude/skills/session-begin/SKILL.md                                        | 0         |
+| DEBT-2152 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | .claude/skills/sonarcloud-sprint/SKILL.md                                    | 0         |
+| DEBT-2154 | Broken internal link: docs/SONARCLOUD_CLEANUP_RUNBOOK.md       | S3       | .claude/skills/sonarcloud-sprint/SKILL.md                                    | 0         |
+| DEBT-2155 | Broken internal link: docs/SONARCLOUD_TRIAGE.md                | S3       | .claude/skills/sonarcloud-sprint/SKILL.md                                    | 0         |
+| DEBT-2157 | Link distribution imbalance between CLAUDE.md and AI_WORK...   | S3       | CLAUDE.md                                                                    | 0         |
+| DEBT-2158 | Duplication: Documentation hierarchy/tiers in CLAUDE.md a...   | S3       | 114-123                                                                      | 0         |
+| DEBT-2159 | Inconsistent terminology: 'TDMS' expansion                     | S3       | multiple                                                                     | 0         |
+| DEBT-2160 | Inconsistent terminology: 'finding' vs 'issue' vs 'item'       | S3       | multiple                                                                     | 0         |
+| DEBT-2163 | Missing 'Related Documents' sections in agent_docs             | S3       | docs/agent_docs/CODE_PATTERNS.md                                             | 0         |
+| DEBT-2164 | Structure: docs/agent_docs/ naming convention                  | S3       | docs/agent_docs/CODE_PATTERNS.md                                             | 0         |
+| DEBT-2176 | Broken internal link: ../canonical/README.md                   | S3       | docs/audits/single-session/README.md                                         | 0         |
+| DEBT-2177 | Broken internal link: ../../AUDIT_FINDINGS_PROCEDURE.md        | S3       | docs/audits/single-session/README.md                                         | 0         |
+| DEBT-2179 | Broken internal link: path.md                                  | S3       | docs/multi-ai-audit/templates/DOCUMENTATION_AUDIT.md                         | 0         |
+| DEBT-2180 | Broken internal link: ./reviews/2026-Q1/PROCESS_AUDIT_FIN...   | S3       | docs/OPERATIONAL_VISIBILITY_SPRINT.md                                        | 0         |
+| DEBT-2181 | Broken internal link: ./audits/comprehensive/AUDIT_SUMMAR...   | S3       | docs/OPERATIONAL_VISIBILITY_SPRINT.md                                        | 0         |
+| DEBT-2185 | SESSION_DECISIONS.md has no outgoing links                     | S3       | docs/SESSION_DECISIONS.md                                                    | 0         |
+| DEBT-2186 | SESSION_DECISIONS.md missing 'How to Use This Document' s...   | S3       | docs/SESSION_DECISIONS.md                                                    | 0         |
+| DEBT-2189 | Broken internal link: audits/sonarcloud-dismissals.md          | S3       | docs/SONARCLOUD_CLEANUP_RUNBOOK.md                                           | 0         |
+| DEBT-2190 | Broken internal link: SONARCLOUD_TRIAGE.md                     | S3       | docs/SONARCLOUD_CLEANUP_RUNBOOK.md                                           | 0         |
+| DEBT-2193 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2194 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2195 | Broken internal link: src/dataconnect-generated/README.md      | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2196 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2197 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2198 | Broken internal link: src/dataconnect-generated/react/REA...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2199 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2200 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2201 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2202 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2203 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2204 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2205 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2206 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2207 | Broken internal link: src/dataconnect-generated/react/REA...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2208 | Broken internal link: src/dataconnect-generated/README.md      | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2384 | No stale anchor references detected                            | S3       | N/A                                                                          | 0         |
+| DEBT-2385 | ARCHITECTURE.md <-> DEVELOPMENT.md have good bidirectiona...   | S3       | ARCHITECTURE.md                                                              | 0         |
+| DEBT-2386 | CLAUDE.md Documentation Index has proper hyperlinks            | S3       | CLAUDE.md                                                                    | 0         |
+| DEBT-2387 | SESSION_CONTEXT.md <-> ROADMAP.md have excellent bidirect...   | S3       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2400 | Navigation: Skill index exists but not prominently linked...   | S3       | .claude/skills/SKILL_INDEX.md                                                | 0         |
+| DEBT-2401 | Quality: AI_WORKFLOW.md scores 8/10 - good structure but ...   | S3       | AI_WORKFLOW.md                                                               | 0         |
+| DEBT-2402 | Navigation: AI_WORKFLOW.md (861 lines) lacks comprehensiv...   | S3       | AI_WORKFLOW.md                                                               | 0         |
+| DEBT-2403 | Navigation: Decision tree format in AI_WORKFLOW.md not sc...   | S3       | AI_WORKFLOW.md                                                               | 0         |
+| DEBT-2404 | Quality: ARCHITECTURE.md scores 9/10 - excellent structure     | S3       | ARCHITECTURE.md                                                              | 0         |
+| DEBT-2405 | Navigation: ARCHITECTURE.md (780 lines) lacks TOC              | S3       | ARCHITECTURE.md                                                              | 0         |
+| DEBT-2406 | Navigation: CLAUDE.md Section 5 links do not provide onwa...   | S3       | CLAUDE.md                                                                    | 0         |
+| DEBT-2407 | Navigation: DEVELOPMENT.md (1095 lines) lacks comprehensi...   | S3       | DEVELOPMENT.md                                                               | 0         |
+| DEBT-2408 | Navigation: CODE_PATTERNS.md (591 lines) lacks TOC             | S3       | docs/agent_docs/CODE_PATTERNS.md                                             | 0         |
+| DEBT-2410 | Gap: Missing cross-links in audit documentation                | S3       | docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md                      | 0         |
+| DEBT-2411 | Quality: DOCUMENTATION_STANDARDS.md scores 9/10 - excelle...   | S3       | docs/DOCUMENTATION_STANDARDS.md                                              | 0         |
+| DEBT-2412 | Navigation: PROCEDURE.md (585 lines) lacks TOC                 | S3       | docs/technical-debt/PROCEDURE.md                                             | 0         |
+| DEBT-2413 | Navigation: Technical debt views lack navigation back to ...   | S3       | docs/technical-debt/views/by-category.md                                     | 0         |
+| DEBT-2414 | Navigation: README.md lacks TOC for 370-line document          | S3       | README.md                                                                    | 0         |
+| DEBT-2415 | Navigation: No clear path from README to troubleshooting ...   | S3       | README.md                                                                    | 0         |
+| DEBT-2416 | Typo: ROADMAP.md has inconsistent capitalization in miles...   | S3       | ROADMAP.md                                                                   | 0         |
+| DEBT-2417 | Navigation: Scripts README lacks usage examples                | S3       | scripts/README.md                                                            | 0         |
+| DEBT-2418 | Navigation: Session Context breadcrumbs missing from SESS...   | S3       | SESSION_CONTEXT.md                                                           | 0         |
+| DEBT-2419 | Navigation: Fire DataConnect generated docs lack context ...   | S3       | src/dataconnect-generated/README.md                                          | 0         |
+| DEBT-2420 | Gap: Missing skill usage examples beyond SKILL.md              | S3       | .claude/skills/\*/SKILL.md                                                   | 0         |
+| DEBT-2421 | Navigation: Skill docs lack consistent 'Prerequisites' se...   | S3       | .claude/skills/\*/SKILL.md                                                   | 0         |
+| DEBT-2422 | Diagram opportunity: Agent team vs subagent execution mod...   | S3       | .claude/skills/audit-comprehensive/SKILL.md                                  | 0         |
+| DEBT-2423 | Navigation: Skill docs lack consistent 'Next Steps' sections   | S3       | .claude/skills/code-reviewer/SKILL.md                                        | 0         |
+| DEBT-2424 | Diagram opportunity: AI_WORKFLOW.md decision tree only in...   | S3       | AI_WORKFLOW.md                                                               | 0         |
+| DEBT-2425 | Diagram opportunity: ARCHITECTURE.md security layers desc...   | S3       | ARCHITECTURE.md                                                              | 0         |
+| DEBT-2426 | Diagram opportunity: Compaction-resilient state persisten...   | S3       | CLAUDE.md                                                                    | 0         |
+| DEBT-2427 | Quality: CODE_PATTERNS.md scores 8/10 - good reference bu...   | S3       | docs/agent_docs/CODE_PATTERNS.md                                             | 0         |
+| DEBT-2430 | Diagram opportunity: Multi-AI audit workflow lacks visual...   | S3       | docs/multi-ai-audit/README.md                                                | 0         |
+| DEBT-2431 | Navigation: Multi-AI audit templates lack consistent cros...   | S3       | docs/multi-ai-audit/templates/CODE_REVIEW_PLAN.md                            | 0         |
+| DEBT-2433 | Diagram opportunity: Technical Debt intake pipeline descr...   | S3       | docs/technical-debt/PROCEDURE.md                                             | 0         |
+| DEBT-2434 | Navigation: DOCUMENTATION_INDEX.md category organization ...   | S3       | DOCUMENTATION_INDEX.md                                                       | 0         |
+| DEBT-2435 | Quality: ROADMAP.md scores 7/10 - large tables reduce rea...   | S3       | ROADMAP.md                                                                   | 0         |
+| DEBT-2436 | Navigation: ROADMAP.md (3360 lines) lacks TOC                  | S3       | ROADMAP.md                                                                   | 0         |
+| DEBT-2437 | Gap: Undocumented utility scripts                              | S3       | scripts/assign-review-tier.js                                                | 0         |
+| DEBT-2438 | Gap: Undocumented scripts library modules                      | S3       | scripts/lib/sanitize-error.js                                                | 0         |
+| DEBT-2439 | Gap: Missing troubleshooting guide                             | S3       | DEVELOPMENT.md                                                               | 0         |
+| DEBT-2440 | Gap: No migration guide for legacy patterns                    | S3       | docs/agent_docs/CODE_PATTERNS.md                                             | 0         |
 | DEBT-0854 | App Check disabled on all production Cloud Functions           | S0       | functions/src/index.ts                                                       | 0         |
 | DEBT-1056 | Refactor this function to reduce its Cognitive Complexity...   | S0       | components/admin/errors-tab.tsx                                              | 327       |
 | DEBT-1057 | Refactor this function to reduce its Cognitive Complexity...   | S0       | functions/src/admin.ts                                                       | 3863      |

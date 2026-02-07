@@ -25,6 +25,11 @@ project:
 - **[INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)** -
   Unified improvement roadmap (COMPLETE - archived)
 
+### Navigation & Discovery
+
+- **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - Complete documentation
+  catalog with summaries
+
 ### Core Documents (Tier 1)
 
 - **[ROADMAP.md](./ROADMAP.md)** - Product roadmap and feature planning

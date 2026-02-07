@@ -11,7 +11,7 @@ estimated_time_sequential: 120 min
 
 # Documentation Optimizer
 
-**Version:** 1.0 **Last Updated:** 2026-02-07 **Status:** ACTIVE **Waves:** 5
+**Version:** 1.2 **Last Updated:** 2026-02-07 **Status:** ACTIVE **Waves:** 5
 waves with 13 agents **Output:** `.claude/state/doc-optimizer/`
 
 **What This Does:** Wave-based orchestrator that deploys 13 parallel agents
@@ -59,7 +59,64 @@ Wave 4: Enhancement & Optimization (3 parallel)
 
 Orchestrator: Unify -> Dedupe -> Report -> TDMS intake
   ~5 min
+
+Post-Run: Cleanup
+  Delete temp files (.claude/state/doc-optimizer/)
+  Identify & remove obsolete audit/review artifacts from docs/
+  ~2 min
 ```
+
+---
+
+## Context Safety (Prevents Context Overflow)
+
+> [!CRITICAL] The previous run crashed because 8 agents returned full results to
+> the orchestrator, overflowing the context window. These rules are mandatory.
+
+### Agent Return Protocol
+
+**Every agent prompt MUST end with this instruction** (append to all prompts):
+
+```
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: [agent-id] wrote N findings to [output-path]
+Do NOT include finding details, file listings, summaries, or analysis in your
+return message. All details belong in the JSONL output file, not your response.
+```
+
+### Orchestrator Must Not Read JSONL Files
+
+The orchestrator checks agent completion via **file existence and line count
+only**:
+
+```bash
+# CORRECT - check file exists and count lines
+wc -l < ".claude/state/doc-optimizer/wave1-format.jsonl" 2>/dev/null || echo "0"
+
+# WRONG - never do this in orchestrator context
+# cat .claude/state/doc-optimizer/wave1-format.jsonl
+```
+
+### Wave Chunking (Max 2 Waves Per Invocation)
+
+If context is running low (past ~60% usage), **stop after the current wave**,
+save progress, and resume in a new invocation. The `progress.json` file tracks
+exactly where to resume.
+
+Recommended chunking: Wave 0+1 → pause → Wave 2 → pause → Wave 3+4 → unify.
+
+### Shared-State Size Cap
+
+`shared-state.json` inventory entries should include ONLY: `path`, `size_bytes`,
+`word_count`. Strip `version`, `last_updated`, `status` fields to reduce file
+size. Agents that need metadata should extract it themselves from individual
+files.
+
+### Budget Check Between Waves
+
+Before launching each wave, the orchestrator should estimate remaining context.
+If the conversation already contains 3+ agent completions, consider saving state
+and resuming in a new session rather than risking overflow.
 
 ---
 
@@ -334,6 +391,10 @@ Each line must be valid JSON with these fields:
 }
 
 IMPORTANT: Do NOT modify files outside docs/, .claude/skills/, or root .md files.
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 1A wrote N findings to .claude/state/doc-optimizer/wave1-format.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ````
 
 #### Agent 1C: External Link Validator (REPORT)
@@ -386,6 +447,10 @@ Each line must be valid JSON with these fields:
   "wave": 1,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 1C wrote N findings to .claude/state/doc-optimizer/wave1-external-links.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 1D: Content Accuracy Checker (MIXED)
@@ -440,6 +505,10 @@ Each line must be valid JSON with these fields:
   "wave": 1,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 1D wrote N findings to .claude/state/doc-optimizer/wave1-accuracy.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Wave 1 Checkpoint (after 1A + 1C + 1D complete)
@@ -519,6 +588,10 @@ Each line must be valid JSON with these fields:
   "wave": 1,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 1B wrote N findings to .claude/state/doc-optimizer/wave1-headers.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Wave 1 Final Checkpoint
@@ -614,6 +687,10 @@ Each line must be valid JSON with these fields:
   "wave": 2,
   "finding_type": "issue|enhancement"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 2A wrote N findings to .claude/state/doc-optimizer/wave2-internal-links.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 2B: Orphan & Connectivity Analyzer (REPORT)
@@ -676,6 +753,10 @@ Each line must be valid JSON with these fields:
   "wave": 2,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 2B wrote N findings to .claude/state/doc-optimizer/wave2-orphans.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 2C: Freshness & Lifecycle Analyzer (REPORT)
@@ -745,6 +826,10 @@ Each line must be valid JSON with these fields:
   "wave": 2,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 2C wrote N findings to .claude/state/doc-optimizer/wave2-lifecycle.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 2D: Cross-Reference & Dependency Checker (REPORT)
@@ -802,6 +887,10 @@ Each line must be valid JSON with these fields:
   "wave": 2,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 2D wrote N findings to .claude/state/doc-optimizer/wave2-crossrefs.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Wave 2 Checkpoint
@@ -895,6 +984,10 @@ Each line must be valid JSON with these fields:
   "wave": 3,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 3A wrote N findings to .claude/state/doc-optimizer/wave3-coherence.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 3B: Structure & Classification Reviewer (REPORT)
@@ -960,6 +1053,10 @@ Each line must be valid JSON with these fields:
   "wave": 3,
   "finding_type": "issue"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 3B wrote N findings to .claude/state/doc-optimizer/wave3-structure.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Wave 3 Checkpoint
@@ -1056,6 +1153,10 @@ Each line must be valid JSON with these fields:
   "wave": 4,
   "finding_type": "enhancement"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 4A wrote N findings to .claude/state/doc-optimizer/wave4-quality.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 4B: Content Gap & Consolidation Analyzer (REPORT)
@@ -1116,6 +1217,10 @@ Each line must be valid JSON with these fields:
   "wave": 4,
   "finding_type": "enhancement"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 4B wrote N findings to .claude/state/doc-optimizer/wave4-gaps.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Agent 4C: Visual & Navigation Enhancer (REPORT)
@@ -1179,6 +1284,10 @@ Each line must be valid JSON with these fields:
   "wave": 4,
   "finding_type": "enhancement"
 }
+
+CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
+COMPLETE: 4C wrote N findings to .claude/state/doc-optimizer/wave4-navigation.jsonl
+Do NOT include finding details, file listings, summaries, or analysis in your return message.
 ```
 
 #### Wave 4 Checkpoint
@@ -1417,12 +1526,16 @@ cp docs/technical-debt/MASTER_DEBT.jsonl docs/technical-debt/raw/deduped.jsonl
 
 ---
 
-### STEP 10: Cleanup
+### STEP 10: Cleanup & Artifact Removal
+
+#### 10.1: Regenerate Docs Index
 
 ```bash
 # Regenerate docs index (auto-fixed files may have changed)
 npm run docs:index
 ```
+
+#### 10.2: Stage & Commit Fixes
 
 Ask user: "Would you like me to stage the auto-fixed files for commit?"
 
@@ -1433,6 +1546,87 @@ If yes:
 git add docs/ .claude/skills/ *.md
 git status
 ```
+
+#### 10.3: Delete Temp Files
+
+After the fix plan is committed and TDMS intake is complete, remove the working
+directory:
+
+```bash
+# Remove all doc-optimizer temp/working files
+rm -rf .claude/state/doc-optimizer/
+
+# Also remove any plan files created during the process
+rm -f .claude/plans/doc-optimizer-fixes.md
+```
+
+These files are gitignored and only needed during the active run. The
+`progress.json` recovery system is no longer needed once findings are committed
+and ingested into TDMS.
+
+#### 10.4: Remove Obsolete Audit/Review Artifacts
+
+After TDMS intake confirms all findings are in MASTER_DEBT.jsonl, the source
+audit/review files in `docs/` are redundant. Survey and offer to remove them.
+
+**What qualifies as obsolete:**
+
+- `docs/audits/` -- per-session audit outputs (JSONL, markdown reports)
+- `docs/archive/technical-debt-sources-*/` -- raw audit source data
+- `docs/archive/tdms-intermediates-*/` -- pipeline intermediate files
+- `docs/archive/completed-audits/` -- previously archived audit results
+- `docs/archive/deprecated-findings-docs/` -- superseded findings
+- `docs/archive/source-data/` -- raw data that fed into audits
+- `docs/archive/obsolete-scripts-*/` -- scripts replaced by current pipeline
+
+**Procedure:**
+
+1. List candidate directories with file counts and sizes:
+
+```bash
+# Survey obsolete audit/review artifacts
+for dir in docs/audits docs/archive/technical-debt-sources-* \
+  docs/archive/tdms-intermediates-* docs/archive/completed-audits \
+  docs/archive/deprecated-findings-docs docs/archive/source-data \
+  docs/archive/obsolete-scripts-*; do
+  if [ -d "$dir" ]; then
+    count=$(find "$dir" -type f | wc -l)
+    size=$(du -sh "$dir" 2>/dev/null | cut -f1)
+    echo "$dir: $count files, $size"
+  fi
+done
+```
+
+2. Present the list to the user with total counts.
+
+3. If user approves removal:
+
+```bash
+# Remove obsolete directories (only after user confirmation)
+rm -rf docs/audits/
+rm -rf docs/archive/technical-debt-sources-*/
+rm -rf docs/archive/tdms-intermediates-*/
+rm -rf docs/archive/completed-audits/
+rm -rf docs/archive/deprecated-findings-docs/
+rm -rf docs/archive/source-data/
+rm -rf docs/archive/obsolete-scripts-*/
+```
+
+4. Regenerate docs index and commit:
+
+```bash
+npm run docs:index
+git add -A docs/
+git commit -m "chore: remove obsolete audit/review artifacts after TDMS intake"
+```
+
+**Important:** Do NOT remove:
+
+- `docs/technical-debt/` -- active TDMS system (MASTER_DEBT.jsonl, views, etc.)
+- `docs/archive/completed-plans/` -- product planning history
+- `docs/templates/` -- reusable templates
+- `docs/agent_docs/` -- active agent reference docs
+- `docs/decisions/` -- Architecture Decision Records
 
 ---
 
@@ -1559,6 +1753,8 @@ When modifying this skill, also update:
 
 ## Version History
 
-| Version | Date       | Description                                     |
-| ------- | ---------- | ----------------------------------------------- |
-| 1.0     | 2026-02-07 | Initial version: 5-wave, 13-agent doc optimizer |
+| Version | Date       | Description                                                     |
+| ------- | ---------- | --------------------------------------------------------------- |
+| 1.2     | 2026-02-07 | Step 10 expanded: temp file cleanup + obsolete artifact removal |
+| 1.1     | 2026-02-07 | Context safety: return protocol, wave chunking, budget checks   |
+| 1.0     | 2026-02-07 | Initial version: 5-wave, 13-agent doc optimizer                 |

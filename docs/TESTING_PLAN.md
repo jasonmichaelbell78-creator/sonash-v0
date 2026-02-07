@@ -1,7 +1,7 @@
 # Testing Plan
 
-**Document Tier:** 2 (Active Reference) **Status:** Active **Last Updated:**
-2026-01-20
+**Document Version:** 1.0 **Document Tier:** 2 (Active Reference) **Status:**
+Active **Last Updated:** 2026-01-20
 
 ---
 
