@@ -93,6 +93,11 @@ function main() {
   // Write in chronological order (oldest first)
   entries.reverse();
 
+  if (entries.length === 0) {
+    console.log("No valid commits could be seeded (all entries failed validation).");
+    process.exit(1);
+  }
+
   const dir = path.dirname(COMMIT_LOG);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(COMMIT_LOG, entries.join("\n") + "\n");

@@ -508,6 +508,10 @@ function getCategoryAuditDates(content) {
 
   // Read dates from the "Single-Session Audit Thresholds" table (the source of truth
   // updated by reset-audit-triggers.js), not from the audit log sections.
+  // Scope to just the threshold section to avoid matching dates in other tables.
+  const thresholdsSection =
+    extractSection(content, /^## Single-Session Audit Thresholds/) || content;
+
   // Table row format: | Category | 2026-02-07 (Comprehensive) | 0 | 0 | ... |
   for (const category of Object.keys(categories)) {
     const displayName = category
@@ -517,7 +521,7 @@ function getCategoryAuditDates(content) {
     // Match category row — handle both hyphens and spaces in multi-word names
     const displayNamePattern = displayName.replace(/-/g, "[-\\s]+");
     const rowPattern = new RegExp(`^\\|\\s*${displayNamePattern}\\s*\\|\\s*([^|]+)\\|`, "mi");
-    const match = content.match(rowPattern);
+    const match = thresholdsSection.match(rowPattern);
     if (match) {
       const cellContent = match[1].trim();
       const dateMatch = cellContent.match(/(\d{4}-\d{2}-\d{2})/);
@@ -543,10 +547,15 @@ function getLastMultiAIAuditDate(content) {
   const sectionContent = extractSection(content, /^## Multi-AI Audit Log/);
   if (!sectionContent) return null;
 
-  const dateMatches = sectionContent.match(/\d{4}-\d{2}-\d{2}/g);
-  if (!dateMatches || dateMatches.length === 0) return null;
+  // Match dates only in the first column of markdown table rows (| 2026-02-07 | ... |)
+  // to avoid picking up dates from comments, links, or description text in the section.
+  const rowDateMatches = Array.from(
+    sectionContent.matchAll(/^\|\s*(\d{4}-\d{2}-\d{2})\s*\|/gm),
+    (m) => m[1]
+  );
+  if (rowDateMatches.length === 0) return null;
 
-  const validTimestamps = dateMatches
+  const validTimestamps = rowDateMatches
     .map((d) => new Date(d).getTime())
     .filter((t) => !Number.isNaN(t));
   if (validTimestamps.length === 0) return null;
