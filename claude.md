@@ -61,7 +61,7 @@ This is the primary context file for Claude Code sessions:
 | ------------ | ------- | ----------- |
 | Next.js      | 16.1.1  | App Router  |
 | React        | 19.2.3  | Stable      |
-| Firebase     | 12.6.0  | Modular SDK |
+| Firebase     | 12.8.0  | Modular SDK |
 | Tailwind CSS | 4.1.9   |             |
 | Zod          | 4.2.1   |             |
 

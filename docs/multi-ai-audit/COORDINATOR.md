@@ -34,15 +34,15 @@ Starting any review process, checking if review is needed
 
 ### Review Types and Templates
 
-| Review Type                    | Template                                                                           | Use When                                                                             |
-| ------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Code Review                    | [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)                             | PRs, feature completion, tactical issues                                             |
-| Security Audit                 | [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)                       | Security concerns, auth changes, pre-release, dependency vulnerabilities             |
-| Performance Audit              | [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)                 | Slow app, bundle growth, before traffic increase                                     |
-| Refactoring Plan               | [REFACTOR_PLAN.md](./templates/REFACTOR_PLAN.md)                                   | Tech debt, architecture consolidation, vibe coding cleanup, SonarQube CRITICAL items |
-| Documentation Audit            | [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)                       | Broken links, stale docs, coverage gaps, quarterly doc health check                  |
-| Process Audit                  | [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)                                   | CI/CD reliability, hook effectiveness, automation health, quarterly process review   |
-| Engineering Productivity Audit | [ENGINEERING_PRODUCTIVITY_AUDIT.md](./templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | DX friction, debugging difficulties, offline gaps, build/CI slowness, test issues    |
+| Review Type                    | Template                                                                           | Use When                                                                              |
+| ------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Code Review                    | [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)                             | PRs, feature completion, tactical issues                                              |
+| Security Audit                 | [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)                       | Security concerns, auth changes, pre-release, dependency vulnerabilities              |
+| Performance Audit              | [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)                 | Slow app, bundle growth, before traffic increase                                      |
+| Refactoring Plan               | [REFACTORING_AUDIT.md](./templates/REFACTORING_AUDIT.md)                           | Tech debt, architecture consolidation, vibe coding cleanup, SonarCloud CRITICAL items |
+| Documentation Audit            | [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)                       | Broken links, stale docs, coverage gaps, quarterly doc health check                   |
+| Process Audit                  | [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)                                   | CI/CD reliability, hook effectiveness, automation health, quarterly process review    |
+| Engineering Productivity Audit | [ENGINEERING_PRODUCTIVITY_AUDIT.md](./templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | DX friction, debugging difficulties, offline gaps, build/CI slowness, test issues     |
 
 ### Template Selection Decision Tree
 
@@ -706,7 +706,7 @@ It should NOT be used for:
   - [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)
   - [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)
   - [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)
-  - [REFACTOR_PLAN.md](./templates/REFACTOR_PLAN.md)
+  - [REFACTORING_AUDIT.md](./templates/REFACTORING_AUDIT.md)
   - [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)
   - [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)
   - [ENGINEERING_PRODUCTIVITY_AUDIT.md](./templates/ENGINEERING_PRODUCTIVITY_AUDIT.md)

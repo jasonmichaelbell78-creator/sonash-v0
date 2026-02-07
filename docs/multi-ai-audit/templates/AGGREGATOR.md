@@ -25,14 +25,14 @@ aggregation modes.
 
 ---
 
-## Model Recommendations (Current as of 2026-01-05)
+## Model Recommendations (Current as of 2026-02-07)
 
 You want: long-context + strict instruction following + reliable tool/terminal
 behavior.
 
 ### Best Single-Model Aggregator
 
-**Claude Opus 4.5** - Comprehensive aggregation brain with excellent
+**Claude Opus 4.6** - Comprehensive aggregation brain with excellent
 instruction-following and code review reliability. Positioned as most precise
 with fewer tool-calling errors.
 
@@ -55,7 +55,7 @@ Great for implementing PR plans after aggregation.
 ### Recommended Setup
 
 **For Tier-1 Aggregation (per-category):** Claude Sonnet 4.5 or GPT-5-Codex
-**For Tier-2 Aggregation (cross-category):** Claude Opus 4.5 or GPT-5 Thinking
+**For Tier-2 Aggregation (cross-category):** Claude Opus 4.6 or GPT-5 Thinking
 
 ---
 
@@ -142,7 +142,7 @@ MODE: <TIER-1 | TIER-2>
 **If TIER-1:**
 
 - Category: <CODE | SECURITY | PERF | REFACTOR | DOCS | PROCESS>
-- Input sources: <List model names, e.g., "Claude Opus 4.5, GPT-5-Codex, Gemini
+- Input sources: <List model names, e.g., "Claude Opus 4.6, GPT-5-Codex, Gemini
   3 Pro">
 
 **If TIER-2:**
@@ -162,7 +162,7 @@ Before processing raw AI outputs, review project-specific baselines:
 2. **Dependency Health:**
    - Circular dependencies: npm run deps:circular (expect 0)
    - Unused exports: npm run deps:unused
-3. **Static Analysis:** docs/analysis/sonarqube-manifest.md
+3. **Static Analysis:** SonarCloud baseline
    - 778 total issues (47 CRITICAL cognitive complexity) as of 2026-01-05
 4. **SonarCloud MCP (if available):** Query real-time issue counts via MCP
    server

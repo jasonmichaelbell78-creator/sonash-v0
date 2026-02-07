@@ -11,6 +11,11 @@ Completion:** 0%
 
 ---
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ## Purpose
 
 This document serves as the **execution plan** for running a multi-AI
@@ -98,7 +103,7 @@ Exclude:
 
 | Model             | Capabilities                           | Productivity Strength                          |
 | ----------------- | -------------------------------------- | ---------------------------------------------- |
-| Claude Opus 4.5   | browse_files=yes, run_commands=yes     | Comprehensive DX analysis, pattern recognition |
+| Claude Opus 4.6   | browse_files=yes, run_commands=yes     | Comprehensive DX analysis, pattern recognition |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes     | Cost-effective workflow analysis               |
 | GPT-5-Codex       | browse_files=yes, run_commands=yes     | Build system expertise, CI/CD optimization     |
 | Gemini 3 Pro      | browse_files=yes, run_commands=yes     | Alternative perspective, fresh insights        |
@@ -339,14 +344,17 @@ Return 4 sections in this exact order:
 
 2. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema: { "category": "GoldenPath|Debugging|Offline|CI_CD|Testing|Engineering",
-"title": "short, specific issue", "fingerprint":
-"engineering-productivity::<primary_file>::<issue_type>", "severity":
-"S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1",
-"path2"], "why_it_matters": "1-3 sentences explaining developer impact",
-"suggested_fix": "Concrete remediation direction", "acceptance_tests": ["Array
-of verification steps"], "evidence": ["grep output or code snippet"], "line":
-123 }
+**NOTE:** The `category` field MUST be `"engineering-productivity"`
+(domain-level). Sub-categories (GoldenPath, Debugging, Offline, etc.) go in
+fingerprint/title only.
+
+Schema: { "category": "engineering-productivity", "title": "short, specific
+issue", "fingerprint": "engineering-productivity::<primary_file>::<issue_type>",
+"severity": "S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100,
+"files": ["path1", "path2"], "why_it_matters": "1-3 sentences explaining
+developer impact", "suggested_fix": "Concrete remediation direction",
+"acceptance_tests": ["Array of verification steps"], "evidence": ["grep output
+or code snippet"], "line": 123 }
 
 **REQUIRED FIELDS:** `files` (at least one path) and `line` (primary line
 number, use 1 if file-wide) are REQUIRED for ROADMAP cross-reference.
@@ -415,6 +423,11 @@ OUTPUT
 
 ---
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ## TDMS Integration
 
 ### Automatic Intake
@@ -461,6 +474,11 @@ Ensure all findings include these fields for TDMS compatibility:
 | [Date] | Engineering Productivity | [Reason] | [Models]    | [X findings] | [X ingested] |
 
 ---
+
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
 
 ## AI Instructions
 

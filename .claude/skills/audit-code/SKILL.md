@@ -175,8 +175,8 @@ grep -E '"(next|react|typescript)"' package.json | head -5
 If `mcp__sonarcloud__get_issues` is available, fetch current issue counts:
 
 - Query with `types: "CODE_SMELL,BUG"` and `severities: "CRITICAL,MAJOR"`
-- Compare against baseline in `docs/analysis/sonarqube-manifest.md` (778 issues
-  as of 2026-01-05)
+- Compare against baseline from previous SonarCloud sync (778 issues as of
+  2026-01-05)
 - Note any significant changes (>10% increase/decrease)
 
 This provides real-time issue data to cross-reference with audit findings.

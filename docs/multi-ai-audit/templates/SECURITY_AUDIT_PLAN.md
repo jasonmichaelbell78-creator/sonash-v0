@@ -11,6 +11,11 @@ Completion:** 0%
 
 ---
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ## Purpose
 
 This document serves as the **execution plan** for running a multi-AI
@@ -116,7 +121,7 @@ Exclude: [directories, e.g., docs/, public/, tests/]
 
 | Model             | Capabilities                           | Security Strength                                                        |
 | ----------------- | -------------------------------------- | ------------------------------------------------------------------------ |
-| Claude Opus 4.5   | browse_files=yes, run_commands=yes     | Comprehensive security audit, Firebase expertise, latest attack patterns |
+| Claude Opus 4.6   | browse_files=yes, run_commands=yes     | Comprehensive security audit, Firebase expertise, latest attack patterns |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes     | Cost-effective security analysis, OWASP knowledge                        |
 | GPT-5-Codex       | browse_files=yes, run_commands=yes     | Comprehensive code analysis, vulnerability detection                     |
 | Gemini 3 Pro      | browse_files=yes, run_commands=yes     | Alternative security lens, fresh perspective                             |
@@ -166,6 +171,9 @@ STACK / CONTEXT
 
 PRE-REVIEW CONTEXT (REQUIRED READING)
 
+> NOTE: The references below require repository access. If your AI model cannot
+> browse files or run commands, skip to the audit prompt section below.
+
 Before beginning security analysis, review these project-specific resources:
 
 1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and security
@@ -177,8 +185,8 @@ Before beginning security analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified
-   issues including security concerns
+5. **Static Analysis**: SonarCloud integration available via
+   `npm run sonar:report` (see SonarCloud dashboard)
 6. **Firebase Policy** (../FIREBASE_CHANGE_POLICY.md): Required security review
    process for Firebase changes
 
@@ -574,7 +582,7 @@ At the end: "Phase 6 complete - Ready to output"
 
 ### Part 4: Output Format
 
-```markdown
+````markdown
 OUTPUT FORMAT (STRICT)
 
 Return 4 sections in this exact order:
@@ -587,18 +595,44 @@ Return 4 sections in this exact order:
 
 2. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema: { "category":
-"RateLimiting|InputValidation|SecretsManagement|Authentication|Firebase|OWASP|Headers|Framework|FileHandling|Crypto|ProductUXRisk|AgentSecurity",
-"title": "short, specific vulnerability", "fingerprint":
-"<category>::<primary_file>::<vulnerability_type>", "severity": "S0|S1|S2|S3",
-"effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1", "path2"],
-"vulnerability_details": { "description": "what's wrong", "exploitation": "how
-it could be attacked", "impact": "what damage could occur", "affected_data":
-"what data is at risk" }, "remediation": { "steps": ["step 1", "step 2"],
-"code_example": "optional: show fix pattern", "verification": ["how to verify
-fix"] }, "owasp_category": "A01|A02|...|A10|N/A", "cvss_estimate":
-"LOW|MEDIUM|HIGH|CRITICAL", "evidence": ["grep output or code snippet"],
-"notes": "optional", "line": 123 }
+**PRIMARY schema (flat canonical base):**
+
+```json
+{
+  "category": "security",
+  "title": "Missing rate limiting on login endpoint",
+  "fingerprint": "security::lib/auth.ts::missing-rate-limit",
+  "severity": "S1",
+  "effort": "E1",
+  "confidence": 85,
+  "files": ["lib/auth.ts:42"],
+  "why_it_matters": "Login endpoint has no rate limiting, enabling brute-force credential stuffing attacks that could compromise user accounts",
+  "suggested_fix": "Add rate limiting middleware (e.g., express-rate-limit) with 5 attempts per 15 minutes per IP",
+  "acceptance_tests": [
+    "Rate limit returns 429 after 5 failed attempts",
+    "Legitimate users can still log in normally"
+  ],
+  "evidence": ["grep showing no rate limit middleware in auth routes"],
+  "owasp_category": "A07",
+  "cvss_estimate": "MEDIUM",
+  "vulnerability_details": {
+    "exploitation": "Automated credential stuffing with leaked password lists",
+    "impact": "Mass account compromise",
+    "affected_data": "User credentials and account data"
+  }
+}
+```
+````
+
+> **NOTE:** The `category` field MUST be the domain-level value `"security"` for
+> all findings from this audit. Sub-categories (e.g., RateLimiting,
+> InputValidation, Authentication) go in the `fingerprint` and `title` only, not
+> in the `category` field.
+
+> **OPTIONAL supplements:** The `vulnerability_details` object is an optional
+> supplement for security-specific context. The PRIMARY fields for describing
+> findings are the flat `why_it_matters`, `suggested_fix`, and
+> `acceptance_tests` fields.
 
 **⚠️ REQUIRED FIELDS (Session #116):** `files` (at least one path) and `line`
 (primary line number, use 1 if file-wide) are REQUIRED for ROADMAP
@@ -614,7 +648,8 @@ cross-reference.
 - Top 5 security risks
 - Remediation priority list (ordered)
 - Estimated effort for full compliance
-```
+
+````
 
 ### Part 5: Security Verification Commands
 
@@ -652,7 +687,7 @@ SECURITY VERIFICATION (run if run_commands=yes)
 - cat firestore.rules | head -100
 
 Paste only minimal excerpts as evidence (file paths + 1-3 relevant lines).
-```
+````
 
 ---
 
@@ -763,6 +798,11 @@ Use R1, R2, and Between-PR checklist from MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
 
 ---
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ## TDMS Integration
 
 ### Automatic Intake
@@ -780,31 +820,22 @@ node scripts/debt/intake-audit.js \
 
 Ensure all findings include these fields for TDMS compatibility:
 
-| Audit Field             | TDMS Field    | Notes                                   |
-| ----------------------- | ------------- | --------------------------------------- |
-| `category`              | `category`    | Map to TDMS category (see table below)  |
-| `severity`              | `severity`    | S0/S1/S2/S3 (unchanged)                 |
-| `files[0]`              | `file`        | Primary file path                       |
-| `line`                  | `line`        | Line number (use 1 if file-wide)        |
-| `title`                 | `title`       | Short description                       |
-| `vulnerability_details` | `description` | Full description with exploitation info |
+| Audit Field      | TDMS Field    | Notes                                          |
+| ---------------- | ------------- | ---------------------------------------------- |
+| `category`       | `category`    | Always `"security"` (domain-level, no mapping) |
+| `severity`       | `severity`    | S0/S1/S2/S3 (unchanged)                        |
+| `files[0]`       | `file`        | Primary file path                              |
+| `line`           | `line`        | Line number (use 1 if file-wide)               |
+| `title`          | `title`       | Short description                              |
+| `why_it_matters` | `description` | Primary description field                      |
 
 ### Category Mapping (Security Audit → TDMS)
 
-| Security Audit Category | TDMS Category |
-| ----------------------- | ------------- |
-| RateLimiting            | security      |
-| InputValidation         | security      |
-| SecretsManagement       | security      |
-| Authentication          | security      |
-| Firebase                | security      |
-| OWASP                   | security      |
-| Headers                 | security      |
-| Framework               | security      |
-| FileHandling            | security      |
-| Crypto                  | security      |
-| ProductUXRisk           | security      |
-| AgentSecurity           | security      |
+All security audit findings use `"security"` as the domain-level category value.
+Sub-categories (RateLimiting, InputValidation, SecretsManagement,
+Authentication, Firebase, OWASP, Headers, Framework, FileHandling, Crypto,
+ProductUXRisk, AgentSecurity) are encoded in the `fingerprint` and `title`
+fields, not in `category`.
 
 ### Completion Checklist
 
@@ -816,6 +847,11 @@ After TDMS intake:
 - [ ] Audit History updated with TDMS Items count
 
 ---
+
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
 
 ## AI Instructions
 

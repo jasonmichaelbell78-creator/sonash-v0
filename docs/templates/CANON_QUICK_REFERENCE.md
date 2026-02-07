@@ -1,6 +1,6 @@
 # CANON Quick Reference Card
 
-**Version:** 1.0 | **Created:** 2026-01-11 | **Last Updated:** 2026-01-11
+**Version:** 1.1 | **Created:** 2026-01-11 | **Last Updated:** 2026-02-07
 
 ---
 
@@ -20,9 +20,10 @@ When using CANON references:
 
 ## Version History
 
-| Version | Date       | Changes                 |
-| ------- | ---------- | ----------------------- |
-| 1.0     | 2026-01-11 | Initial quick reference |
+| Version | Date       | Changes                                                     |
+| ------- | ---------- | ----------------------------------------------------------- |
+| 1.1     | 2026-02-07 | Domain-level categories, added engineering-productivity row |
+| 1.0     | 2026-01-11 | Initial quick reference                                     |
 
 ---
 
@@ -93,18 +94,19 @@ When using CANON references:
 
 ## Category Values by Audit Type
 
-> **Important:** The `category` field must match allowed values in
-> `docs/standards/JSONL_SCHEMA_STANDARD.md` exactly (treat as enum, not free
-> text). When unsure, open the schema standard and copy/paste the exact value.
+> **Important:** The `category` field MUST be the domain-level value from
+> `docs/templates/JSONL_SCHEMA_STANDARD.md` (treat as enum, not free text).
+> Sub-categories belong in the `fingerprint` or `title` fields only.
 
-| Audit Type    | Valid Categories (must match schema exactly)                                                                       |
-| ------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Code Review   | Hygiene/Duplication, Types/Correctness, Next/React Boundaries, Security, Testing                                   |
-| Security      | Rate Limiting, Input Validation, Secrets Management, Authentication, Firebase Security, Dependency Security, OWASP |
-| Performance   | Bundle Size, Rendering, Data Fetching, Memory Management, Core Web Vitals, Observability                           |
-| Refactoring   | Hygiene/Duplication, Types/Correctness, Architecture/Boundaries, Security Hardening, Testing Infrastructure        |
-| Documentation | Cross-Reference, Staleness, Coverage Gaps, Tier Compliance, Frontmatter                                            |
-| Process       | CI/CD, Hooks, Scripts, Pattern Checker, Triggers, Workflow Docs                                                    |
+| Audit Type               | `category` Value           | Sub-categories (for fingerprint/title only)                             |
+| ------------------------ | -------------------------- | ----------------------------------------------------------------------- |
+| Code Review              | `code-quality`             | Hygiene/Duplication, Types/Correctness, Boundaries, Security, Testing   |
+| Security                 | `security`                 | Rate Limiting, Input Validation, Secrets, Auth, Firebase, OWASP         |
+| Performance              | `performance`              | Bundle Size, Rendering, Data Fetching, Memory, Core Web Vitals          |
+| Refactoring              | `refactoring`              | Hygiene, Types, Architecture, Security Hardening, Testing Infra         |
+| Documentation            | `documentation`            | Cross-Reference, Staleness, Coverage Gaps, Tier Compliance, Frontmatter |
+| Process                  | `process`                  | CI/CD, Hooks, Scripts, Pattern Checker, Triggers, Workflow Docs         |
+| Engineering Productivity | `engineering-productivity` | GoldenPath, Debugging, Offline                                          |
 
 ---
 

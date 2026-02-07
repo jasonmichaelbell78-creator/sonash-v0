@@ -11,6 +11,11 @@ Completion:** 0%
 
 ---
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ## Purpose
 
 This document serves as the **execution plan** for running a multi-AI process
@@ -176,7 +181,7 @@ Exclude:
 
 | Model             | Capabilities                       | Process Analysis Strength                                            |
 | ----------------- | ---------------------------------- | -------------------------------------------------------------------- |
-| Claude Opus 4.5   | browse_files=yes, run_commands=yes | Comprehensive process analysis, CI/CD expertise, automation patterns |
+| Claude Opus 4.6   | browse_files=yes, run_commands=yes | Comprehensive process analysis, CI/CD expertise, automation patterns |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective process review, script analysis                       |
 | GPT-5-Codex       | browse_files=yes, run_commands=yes | Script quality analysis, workflow optimization                       |
 | Gemini 3 Pro      | browse_files=yes, run_commands=yes | Alternative process perspective                                      |
@@ -250,6 +255,9 @@ PROCESS STACK
 
 PRE-REVIEW CONTEXT (REQUIRED READING)
 
+> NOTE: The references below require repository access. If your AI model cannot
+> browse files or run commands, skip to the audit prompt section below.
+
 Before beginning process analysis, review these project-specific resources:
 
 1. **AI Learnings** (claude.md Section 4): Process patterns and lessons from
@@ -261,8 +269,8 @@ Before beginning process analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified
-   script quality issues
+5. **Static Analysis**: SonarCloud integration available via
+   `npm run sonar:report` (see SonarCloud dashboard)
 6. **Workflow Documentation** (if available): CI/CD process docs, hook
    documentation
 7. **TDMS**: docs/technical-debt/MASTER_DEBT.jsonl for existing tracked debt
@@ -553,19 +561,41 @@ Return these sections in order:
 
 2. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema (TDMS-compatible): { "id": "PROC-XXX", "stage": 1-7, "category":
-"Redundancy|DeadCode|Effectiveness|Performance|ErrorHandling|Dependency|Consistency|CoverageGap|Maintainability|Functionality|Improvement|CodeQuality",
-"automation_type":
-"hook|skill|command|npm_script|script|script_lib|github_action|husky|lint_staged|eslint|prettier|tsconfig|firebase_function|scheduled_job|firebase_rules|mcp_server",
-"title": "short, specific issue", "fingerprint": "<type>::<file>::<issue_type>",
-"severity": "S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100,
-"files": ["path1"], "line": 123, "description": "detailed description",
-"recommendation": "how to fix", "evidence": ["code snippets", "test output"],
-"tdms_category":
-"architecture|code_quality|testing|infrastructure|security|documentation|technical_debt"
-}
+Schema (TDMS-compatible):
 
-**⚠️ REQUIRED FIELDS:** `files`, `line`, `severity`, `effort`, `tdms_category`
+```json
+{
+  "category": "process",
+  "title": "Pre-commit hook missing error recovery",
+  "fingerprint": "process::scripts/pre-commit.js::missing-error-recovery",
+  "severity": "S2",
+  "effort": "E1",
+  "confidence": 80,
+  "files": ["scripts/pre-commit.js:45"],
+  "why_it_matters": "Pre-commit hook crashes on malformed staged files without cleanup, leaving git index in inconsistent state",
+  "suggested_fix": "Wrap hook execution in try/catch with git stash pop recovery on failure",
+  "acceptance_tests": [
+    "Hook recovers gracefully from malformed files",
+    "Git index is clean after hook failure"
+  ],
+  "evidence": ["No try/catch in pre-commit.js main function"]
+}
+```
+
+**Field notes:**
+
+- `category`: Always `"process"` (domain-level). Use sub-categories (Redundancy,
+  DeadCode, Effectiveness, Performance, ErrorHandling, Dependency, Consistency,
+  CoverageGap, Maintainability, Functionality, Improvement, CodeQuality) in
+  fingerprint and title only, not in this field.
+- `fingerprint`: Convention is `process::<file_or_scope>::<issue_slug>`
+- `severity`: S0|S1|S2|S3
+- `effort`: E0|E1|E2|E3
+- `confidence`: 0-100
+
+**⚠️ REQUIRED FIELDS:** `category`, `title`, `fingerprint`, `severity`,
+`effort`, `confidence`, `files`, `why_it_matters`, `suggested_fix`,
+`acceptance_tests`, `evidence`
 
 3. SUSPECTED_FINDINGS_JSONL (same schema, but confidence <= 40; needs
    verification)
@@ -729,6 +759,11 @@ Then proceed to aggregation across models.
 
 ---
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ## TDMS Integration
 
 ### Automatic Intake
@@ -749,13 +784,17 @@ node scripts/debt/intake-audit.js \
 
 Ensure all findings include:
 
+- `category`: Always `"process"`
 - `title`: Short description
+- `fingerprint`: `process::<file_or_scope>::<issue_slug>`
 - `severity`: S0|S1|S2|S3
-- `tdms_category`: One of the 7 TDMS categories
-- `file`: Primary file path
-- `line`: Line number (or 1 for file-wide)
-- `description`: Full description
-- `recommendation`: How to fix
+- `effort`: E0|E1|E2|E3
+- `confidence`: 0-100
+- `files`: Array of file paths (with optional `:line` suffix)
+- `why_it_matters`: Why this issue is important
+- `suggested_fix`: How to fix
+- `acceptance_tests`: Array of verification criteria
+- `evidence`: Array of supporting evidence
 
 ---
 
@@ -864,6 +903,11 @@ Use R1, R2, and Between-PR checklist from MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
 | [Date] | Process v2.0 | [Reason] | 1-7        | [Models]    | [X]      | [X added]  |
 
 ---
+
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
 
 ## AI Instructions
 

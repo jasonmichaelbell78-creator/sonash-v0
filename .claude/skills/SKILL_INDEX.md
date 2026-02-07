@@ -1,6 +1,6 @@
 # Skill Index
 
-**Version**: 1.2 **Last Updated**: 2026-01-31 **Total Skills**: 49
+**Version**: 1.3 **Last Updated**: 2026-02-07 **Total Skills**: 50
 
 Quick reference for all available Claude Code skills organized by category.
 
@@ -61,14 +61,15 @@ Quick reference for all available Claude Code skills organized by category.
 | `/ui-design-system`       | Design system components |
 | `/ux-researcher-designer` | UX research and design   |
 
-### Documentation & Content (4 skills)
+### Documentation & Content (5 skills)
 
-| Skill                      | Description                         |
-| -------------------------- | ----------------------------------- |
-| `/docs-sync`               | Sync documentation across files     |
-| `/docs-update`             | Update doc artifacts after changes  |
-| `/content-research-writer` | Content research and writing        |
-| `/markitdown`              | Convert various formats to markdown |
+| Skill                      | Description                                      |
+| -------------------------- | ------------------------------------------------ |
+| `/doc-optimizer`           | Auto-fix + enhance all docs (13 agents, 5 waves) |
+| `/docs-sync`               | Sync documentation across files                  |
+| `/docs-update`             | Update doc artifacts after changes               |
+| `/content-research-writer` | Content research and writing                     |
+| `/markitdown`              | Convert various formats to markdown              |
 
 ### Testing (1 skill)
 
@@ -119,6 +120,7 @@ Quick reference for all available Claude Code skills organized by category.
 | Performance issues     | `/audit-performance`                          |
 | Architecture decisions | `/senior-architect`                           |
 | UI/UX work             | `/frontend-design`, `/ux-researcher-designer` |
+| Doc repair + enhance   | `/doc-optimizer`                              |
 | Ending work            | `/session-end`                                |
 | CI failures            | `/gh-fix-ci`                                  |
 | System health          | `/alerts`                                     |

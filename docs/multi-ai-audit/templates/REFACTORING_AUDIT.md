@@ -1,13 +1,29 @@
-# [Project Name] Multi-AI Refactoring Plan
+# [Project Name] Multi-AI Refactoring Audit
 
-**Document Version:** 1.1 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-04
+**Document Version:** 2.0 **Created:** YYYY-MM-DD **Last Updated:** 2026-02-07
 **Tier:** 3 (Planning) **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall
 Completion:** 0/X phases complete (0%)
 
-> **⚠️ Multi-Agent Capability Note:** This template assumes orchestration by
-> Claude Code which can spawn parallel agents via the Task tool. Other AI
-> systems (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
+> **Multi-Agent Capability Note:** This template assumes orchestration by Claude
+> Code which can spawn parallel agents via the Task tool. Other AI systems
+> (ChatGPT, Gemini, etc.) cannot call multiple agents and should execute
 > sections sequentially or use external orchestration.
+
+---
+
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
+## Quick Start
+
+1. Copy the **Refactoring Audit Prompt** section (Parts 1-5) below
+2. Paste into your AI assistant (Claude Code, Codex, Copilot, Gemini Jules,
+   etc.)
+3. For tool-capable agents, also include the **Tool Evidence Commands** (Part 5)
+4. Collect FINDINGS_JSONL output for aggregation
+5. Repeat for each AI model, then run the **Aggregation Process** below
 
 ---
 
@@ -23,15 +39,12 @@ large-scale refactoring audit on [Project Name]. Use this template when:
 - Codebase needs systematic cleanup before scaling
 
 **This is for LARGE-SCALE refactoring, not tactical bug fixes.** For smaller
-code quality issues, use MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
+code quality issues, use CODE_REVIEW_PLAN.md.
 
-**Review Focus Areas (5 Categories):**
-
-1. Hygiene/Duplication (cross-cutting patterns)
-2. Types/Correctness (domain model unification)
-3. Architecture/Boundaries (component organization)
-4. Security Hardening (pattern consolidation)
-5. Testing Infrastructure (coverage & organization)
+**Review Focus:** All findings use category `"refactoring"` at the domain level.
+Sub-categories (e.g., Hygiene/Duplication, Types/Correctness,
+Architecture/Boundaries, Security Hardening, Testing Infrastructure) are
+expressed in the fingerprint and title only.
 
 **Expected Output:** Phased PR plan with canonical findings, similar to
 EIGHT_PHASE_REFACTOR_PLAN.md.
@@ -105,7 +118,7 @@ Exclude: [directories, e.g., docs/, public/, node_modules/]
 
 | Model             | Capabilities                           | Refactoring Strength                                                       |
 | ----------------- | -------------------------------------- | -------------------------------------------------------------------------- |
-| Claude Opus 4.5   | browse_files=yes, run_commands=yes     | Comprehensive refactor analysis, cross-cutting patterns, grep verification |
+| Claude Opus 4.6   | browse_files=yes, run_commands=yes     | Comprehensive refactor analysis, cross-cutting patterns, grep verification |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes     | Cost-effective pattern detection, duplication clusters                     |
 | GPT-5-Codex       | browse_files=yes, run_commands=yes     | Duplication detection, TypeScript deep analysis                            |
 | Gemini 3 Pro      | browse_files=yes, run_commands=yes     | Alternative refactor lens, fresh perspective                               |
@@ -117,6 +130,16 @@ Exclude: [directories, e.g., docs/, public/, node_modules/]
 - At least 2 models with `run_commands=yes` for grep/lint evidence
 - At least 1 model with strong TypeScript expertise
 - Total 4-6 models for good consensus on duplication clusters
+
+**Recommended run order for maximum signal:**
+
+| Order | AI Tool                    | Strengths                                         |
+| ----- | -------------------------- | ------------------------------------------------- |
+| 1     | Claude Code (tool-capable) | Repo-wide audits, grep-based proof                |
+| 2     | Codex (tool-capable)       | Refactor detection, TS ergonomics                 |
+| 3     | Copilot (IDE)              | Local pattern spotting, quick confirmations       |
+| 4     | Gemini Jules               | Second opinion, alternative refactor lens         |
+| 5     | Kimi K2                    | Extra coverage (may have more suspected findings) |
 
 ---
 
@@ -151,6 +174,9 @@ STACK / CONTEXT (treat as true)
 
 PRE-REVIEW CONTEXT (REQUIRED READING)
 
+> NOTE: The references below require repository access. If your AI model cannot
+> browse files or run commands, skip to the CAPABILITIES section below.
+
 Before beginning refactoring analysis, review these project-specific resources:
 
 1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and
@@ -162,9 +188,9 @@ Before beginning refactoring analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis (PRIMARY INPUT)** (../analysis/sonarqube-manifest.md):
-   Pre-identified refactoring targets
-   - **NOTE:** Run fresh SonarQube scan or verify metrics are current before
+5. **Static Analysis (PRIMARY INPUT)**: SonarCloud integration available via
+   `npm run sonar:report` (see SonarCloud dashboard)
+   - **NOTE:** Run fresh SonarCloud scan or verify metrics are current before
      each audit—numbers become stale as issues are fixed.
    - CRITICAL cognitive complexity violations (functions exceeding 15-point
      threshold)
@@ -175,9 +201,9 @@ Before beginning refactoring analysis, review these project-specific resources:
    (../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md): Previous CANON
    findings
 
-**IMPORTANT**: If SonarQube analysis is available, the CRITICAL cognitive
+**IMPORTANT**: If SonarCloud analysis is available, the CRITICAL cognitive
 complexity violations are the PRIMARY targets for this audit. Focus on functions
-that need refactoring due to excessive complexity. If no SonarQube data exists,
+that need refactoring due to excessive complexity. If no SonarCloud data exists,
 focus on manual complexity assessment of large functions (>50 lines) and
 high-cyclomatic-complexity patterns.
 
@@ -223,13 +249,39 @@ When identifying duplicated patterns:
 - Describe the common pattern being repeated
 - Suggest the consolidation target
 
-FOCUS AREAS (use ONLY these 5 categories)
+WHAT TO FIND (PRIORITY ORDER)
 
-1. Hygiene/Duplication
-2. Types/Correctness
-3. Architecture/Boundaries
-4. Security Hardening
-5. Testing Infrastructure
+PASS 1 — Cross-cutting duplication/inconsistency (highest priority)
+
+Identify duplicated or inconsistent implementations across multiple areas,
+especially:
+
+- Firebase init/service wrappers, auth guards, Firestore read/write helpers,
+  path validation, rate-limiting, logging/audit, analytics
+- UI primitives duplicated outside components/ui
+  (buttons/cards/modals/toasts/spinners/loading states)
+- Repeated hook patterns (state sync, localStorage, keyboard shortcuts,
+  scrolling, prompts, networking/offline)
+- Repeated types/enums/constants (entry types, statuses, feature flags, routes,
+  Firestore paths)
+
+For each duplication cluster: produce ONE consolidated finding with a list of
+the duplicated files/symbols.
+
+PASS 2 — Types/Correctness
+
+- any/unknown leakage, inconsistent domain types, nullable handling, unsafe
+  casts
+- places where runtime validation should match TS types (esp. data in/out of
+  Firestore)
+
+PASS 3 — Architecture/Boundaries + Security + Tests (only after pass 1 is done)
+
+- Server vs client component boundary issues, data fetching patterns, state
+  placement
+- Trust boundaries: where client code assumes privileges; rules alignment;
+  secrets/config; App Check usage assumptions
+- Missing or weak tests around shared helpers and security-critical code paths
 ```
 
 ### Part 3: Refactoring Audit Phases
@@ -256,9 +308,9 @@ Systematically map the repository structure:
 
 PHASE 3: CROSS-CUTTING PATTERN ANALYSIS
 
-For each category, identify patterns that repeat across multiple files:
+For each sub-category, identify patterns that repeat across multiple files:
 
-Category 1: Hygiene/Duplication LOOK FOR:
+Sub-category 1: Hygiene/Duplication LOOK FOR:
 
 - Duplicated code blocks (>10 lines similar)
 - Repeated utility functions
@@ -276,7 +328,7 @@ For EACH duplication cluster:
 - Estimate consolidation effort
 - Suggest canonical location
 
-Category 2: Types/Correctness LOOK FOR:
+Sub-category 2: Types/Correctness LOOK FOR:
 
 - Same domain entity defined multiple times differently
 - any/unknown leakage
@@ -291,7 +343,7 @@ For EACH type issue:
 - Describe the inconsistency
 - Suggest unified approach
 
-Category 3: Architecture/Boundaries LOOK FOR:
+Sub-category 3: Architecture/Boundaries LOOK FOR:
 
 - Server vs client component boundaries unclear
 - State stored at wrong level
@@ -306,7 +358,7 @@ For EACH boundary issue:
 - Describe the problem
 - Suggest cleaner boundaries
 
-Category 4: Security Hardening LOOK FOR:
+Sub-category 4: Security Hardening LOOK FOR:
 
 - Security patterns that need consolidation (not new vulnerabilities)
 - Rate limiting applied inconsistently
@@ -319,7 +371,7 @@ For EACH security consolidation:
 - List current scattered implementations
 - Suggest unified approach
 
-Category 5: Testing Infrastructure LOOK FOR:
+Sub-category 5: Testing Infrastructure LOOK FOR:
 
 - Test organization patterns
 - Missing test coverage for critical paths
@@ -332,7 +384,7 @@ For EACH testing issue:
 - Describe current state
 - Suggest improvement
 
-After each category: "Category X complete - Clusters found: [number]"
+After each sub-category: "Sub-category X complete - Clusters found: [number]"
 
 PHASE 4: DRAFT CANONICAL FINDINGS
 
@@ -367,29 +419,49 @@ Suggest PR sequence. At the end: "Phase 6 complete - Ready to output"
 
 ### Part 4: Output Format
 
-```markdown
+````markdown
 OUTPUT FORMAT (STRICT)
 
-Return 3 sections in this exact order:
+Return 3 sections in this exact order.
+
+NO CODE FENCES: Output raw JSONL lines directly — do NOT wrap FINDINGS_JSONL,
+SUSPECTED_FINDINGS_JSONL, or HUMAN_SUMMARY in Markdown fenced code blocks
+(including ```json blocks). The schema example below is for reference only.
 
 1. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema: { "category":
-"Hygiene/Duplication|Types/Correctness|Architecture/Boundaries|Security
-Hardening|Testing Infrastructure", "title": "short, specific", "fingerprint":
-"<category>::<primary_file>::<primary_symbol>::<problem_slug>", "severity":
-"S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1",
-"path2", "..."], "symbols": ["SymbolA", "SymbolB", "..."],
-"duplication_cluster": { "is_cluster": true/false, "cluster_summary": "describe
-the repeated pattern", "instances": [ {"file": "path/to/file1.ts", "symbol":
-"functionA"}, {"file": "path/to/file2.ts", "symbol": "functionB"}, ... ],
-"consolidation_target": "suggested canonical location" }, "why_it_matters": "1-3
-sentences on technical debt impact", "suggested_fix": "concrete refactor
-direction (extraction, unification, migration)", "acceptance_tests": ["what to
-run/verify after change"], "pr_bucket_suggestion":
+Schema: { "category": "refactoring", "title": "short, specific", "fingerprint":
+"refactoring::<primary_file>::<issue_slug>", "severity": "S0|S1|S2|S3",
+"effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1", "path2",
+"..."], "line": 123, "symbols": ["SymbolA", "SymbolB", "..."],
+"duplication_cluster": { ... }, "why_it_matters": "1-3 sentences on technical
+debt impact", "suggested_fix": "concrete refactor direction (extraction,
+unification, migration)", "acceptance_tests": ["what to run/verify after
+change"], "pr_bucket_suggestion":
 "firebase-access|ui-primitives|hooks-standardization|types-domain|boundaries|security-hardening|tests-hardening|misc",
 "dependencies": ["fingerprint of prerequisite finding", "..."], "evidence":
 ["grep output or code snippets"], "notes": "optional" }
+
+NOTE: The category is always "refactoring" at the domain level. Use the title
+and fingerprint to express the sub-category (e.g.,
+"refactoring::lib/firebase.ts::duplicated-init-pattern").
+
+REQUIRED FIELDS (for deduplication/cross-reference - Session #116):
+
+- files - REQUIRED: Array with at least one file path from repo root
+- line - REQUIRED: Primary line number where issue occurs (use 1 if file-wide)
+- These fields enable the aggregator to match findings against existing ROADMAP
+  items and prevent duplicates across audits
+
+duplication_cluster format:
+
+When the finding IS a duplication cluster: "duplication_cluster": {
+"is_cluster": true, "cluster_summary": "describe the repeated pattern",
+"instances": [{"file": "path1.ts", "symbol": "funcA"}, {"file": "path2.ts",
+"symbol": "funcB"}] }
+
+When the finding is NOT a duplication cluster: "duplication_cluster": {
+"is_cluster": false, "cluster_summary": "", "instances": [] }
 
 Severity guide (refactoring-specific):
 
@@ -415,7 +487,7 @@ Effort guide:
 - Suggested PR sequence (8-12 PRs)
 - "Do first" shortlist (low-risk enablers)
 - Estimated total effort
-```
+````
 
 ### Part 5: Tool Evidence Commands
 
@@ -455,6 +527,31 @@ Paste only minimal excerpts (file paths + 1-3 lines per match).
 
 ---
 
+## Tool Checklist Addendum
+
+Use this as a second message only to tool-capable agents (Claude Code, Codex,
+Copilot-in-IDE, Jules), after the main prompt:
+
+```
+If (run_commands=yes AND repo_checkout=yes), prioritize PASS 1 duplication with these checks (do not install heavy tooling unless already present):
+
+1) Quality gates (capture only failures + file paths):
+- npm run lint
+- npm test
+- npm run test:coverage
+
+2) Cross-cutting duplication triangulation (pick 2-4 that are available):
+- ripgrep searches for repeated patterns (firebase init, getFirestore(), collection paths, auth guards, "use client", localStorage keys, feature flags)
+- ts/prune-style check for unused exports (if available)
+- circular dependency check (if available)
+- duplication scan (if available)
+
+In evidence, paste only the minimal excerpt needed to support the finding (e.g., file paths + 1-3 matching lines).
+If a command is not available, write "SKIPPED: <reason>" and continue.
+```
+
+---
+
 ## Aggregation Process
 
 ### Step 1: Collect Outputs
@@ -467,8 +564,7 @@ For each AI model, save:
 
 ### Step 2: Run Refactoring Aggregator
 
-Use the aggregation prompt from MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md with these
-modifications:
+Use the aggregation prompt from CODE_REVIEW_PLAN.md with these modifications:
 
 ```markdown
 REFACTORING-SPECIFIC AGGREGATION RULES
@@ -512,10 +608,10 @@ Create a document following EIGHT_PHASE_REFACTOR_PLAN.md structure:
 For each refactoring phase, follow the 4-step workflow:
 
 ```
-1️⃣  IMPLEMENTATION → 2️⃣  REVIEW R1 → 3️⃣  REVIEW R2 → 4️⃣  BETWEEN-PR CHECKLIST
+1. IMPLEMENTATION -> 2. REVIEW R1 -> 3. REVIEW R2 -> 4. BETWEEN-PR CHECKLIST
 ```
 
-See MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md for detailed prompts.
+See CODE_REVIEW_PLAN.md for detailed prompts.
 
 ### Refactoring-Specific Implementation Rules
 
@@ -603,6 +699,11 @@ Track what becomes canonical after each PR:
 
 ---
 
+> **Shared Boilerplate:** Common sections (AI Models, Severity/Effort scales,
+> JSONL schema, TDMS integration, Aggregation process) are canonicalized in
+> [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
+> below takes precedence.
+
 ## AI Instructions
 
 When using this template:
@@ -634,6 +735,7 @@ When using this template:
 - **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** -
   Canonical JSONL schema for all review templates
 - **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
+- **[REFACTORING_AUDIT.md](./REFACTORING_AUDIT.md)** - This document
 - **[CODE_REVIEW_PLAN.md](./CODE_REVIEW_PLAN.md)** - Tactical code review
   (smaller issues)
 - **[SECURITY_AUDIT_PLAN.md](./SECURITY_AUDIT_PLAN.md)** - Security-focused
@@ -650,10 +752,11 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                     | Author |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2.0     | 2026-02-07 | Merged REFACTOR_PLAN.md + REFACTOR_AUDIT_PROMPT.md; standardized to domain-level category; updated model names; replaced SonarQube with SonarCloud                                                                                                          | Claude |
 | 1.2     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems; Fixed YYYY-MM-DD placeholder in header                                                                                                                                   | Claude |
 | 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT with SonarQube CRITICAL focus; Added batch fix opportunities; Referenced archived EIGHT_PHASE_REFACTOR_PLAN.md; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added staleness warning for SonarQube metrics | Claude |
 | 1.0     | 2026-01-01 | Initial template creation                                                                                                                                                                                                                                   | Claude |
 
 ---
 
-**END OF REFACTOR_PLAN.md**
+**END OF REFACTORING_AUDIT.md**

@@ -75,6 +75,14 @@ security review for auth, input validation, secrets management **Example:**
 compliance check **Note:** S0/S1 findings require `verification_steps` (Session
 #98)
 
+### `/doc-optimizer`
+
+**Description:** Scan all docs, auto-fix formatting/headers/links, report issues
+as JSONL, and generate improvement recommendations **When to use:** Periodic doc
+health maintenance, pre-release doc cleanup, after major doc changes
+**Example:** `/doc-optimizer` **Parameters:** None **Output:** 5-wave, 13-agent
+analysis with auto-fixes + JSONL findings + SUMMARY_REPORT.md
+
 ### `/docs-sync`
 
 **Description:** Check document synchronization between templates and instances

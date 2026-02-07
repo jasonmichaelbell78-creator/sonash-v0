@@ -78,7 +78,7 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 | Code Review              | [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)                             | Hygiene, types, patterns, testing, AI failures |
 | Security                 | [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)                       | Auth, validation, OWASP, secrets, AI security  |
 | Performance              | [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)                 | Bundle, rendering, caching, vitals, offline    |
-| Refactoring              | [REFACTOR_PLAN.md](./templates/REFACTOR_PLAN.md)                                   | Tech debt, architecture, DRY, god objects      |
+| Refactoring              | [REFACTORING_AUDIT.md](./templates/REFACTORING_AUDIT.md)                           | Tech debt, architecture, DRY, god objects      |
 | Documentation            | [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)                       | Links, coverage, staleness, tier compliance    |
 | Process/Automation       | [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)                                   | CI/CD, hooks, automation, golden path          |
 | Engineering Productivity | [ENGINEERING_PRODUCTIVITY_AUDIT.md](./templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | DX friction, debugging, offline gaps           |
@@ -87,11 +87,11 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 
 ## Supporting Files
 
-| File                                                                       | Purpose                                  |
-| -------------------------------------------------------------------------- | ---------------------------------------- |
-| [COORDINATOR.md](./COORDINATOR.md)                                         | Decision trees, baselines, audit history |
-| [templates/AGGREGATOR.md](./templates/AGGREGATOR.md)                       | 2-tier aggregation process               |
-| [templates/REFACTOR_AUDIT_PROMPT.md](./templates/REFACTOR_AUDIT_PROMPT.md) | Standalone refactor prompt               |
+| File                                                                     | Purpose                                  |
+| ------------------------------------------------------------------------ | ---------------------------------------- |
+| [COORDINATOR.md](./COORDINATOR.md)                                       | Decision trees, baselines, audit history |
+| [templates/AGGREGATOR.md](./templates/AGGREGATOR.md)                     | 2-tier aggregation process               |
+| [templates/SHARED_TEMPLATE_BASE.md](./templates/SHARED_TEMPLATE_BASE.md) | Shared boilerplate for all templates     |
 
 ---
 
