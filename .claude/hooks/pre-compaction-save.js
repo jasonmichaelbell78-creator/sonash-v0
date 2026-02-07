@@ -208,6 +208,52 @@ function gatherAgentSummary() {
 }
 
 /**
+ * Gather active agent team status from session state
+ * Captures teammate IDs, assigned tasks, and completion status
+ * so the lead can restore team context after compaction.
+ */
+function gatherTeamStatus() {
+  try {
+    // Check if agent teams are enabled
+    const settingsPath = path.join(projectDir, ".claude", "settings.json");
+    const settings = loadJson(settingsPath);
+    const teamsEnabled = settings?.env?.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS === "1";
+    if (!teamsEnabled) return null;
+
+    // Read session agents for team-related invocations
+    const sessionAgents = loadJson(SESSION_AGENTS) || { agentsInvoked: [] };
+    const teamInvocations = (sessionAgents.agentsInvoked || []).filter(
+      (inv) =>
+        inv.description &&
+        (inv.description.toLowerCase().includes("team") ||
+          inv.description.toLowerCase().includes("teammate"))
+    );
+
+    // Read pending reviews (may indicate active reviewer teammate)
+    const pendingReviewsPath = path.join(STATE_DIR, "pending-reviews.json");
+    const pendingReviews = loadJson(pendingReviewsPath);
+
+    return {
+      enabled: true,
+      teamInvocations: teamInvocations.length,
+      recentTeamActivity: teamInvocations.slice(-10).map((inv) => ({
+        agent: inv.agent,
+        description: inv.description,
+        timestamp: inv.timestamp,
+      })),
+      pendingReviews: pendingReviews
+        ? {
+            count: Array.isArray(pendingReviews.items) ? pendingReviews.items.length : 0,
+            status: pendingReviews.status || "unknown",
+          }
+        : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Detect compaction trigger from hook arguments
  */
 function getCompactionTrigger() {
@@ -233,6 +279,8 @@ function main() {
   const contextTracking = loadJson(CONTEXT_TRACKING) || { filesRead: [] };
   const sessionState = loadJson(SESSION_STATE) || {};
 
+  const teamStatus = gatherTeamStatus();
+
   const handoff = {
     timestamp: new Date().toISOString(),
     trigger: `pre-compaction (${trigger})`,
@@ -246,11 +294,13 @@ function main() {
       filesList: (contextTracking.filesRead || []).slice(-30),
     },
     agentsUsed: agentSummary,
+    teamStatus: teamStatus,
     recovery: {
       instruction:
         "CONTEXT WAS COMPACTED. Read this handoff to restore session state. " +
         "Key info: sessionCounter, git.branch, taskStates (full task progress), " +
         "commitLog (recent work), agentsUsed (what was done). " +
+        (teamStatus ? "teamStatus (active agent team info - check teammate progress). " : "") +
         "Continue from where the session left off.",
     },
   };
@@ -268,6 +318,9 @@ function main() {
     console.error(`   Uncommitted: ${gitContext.uncommittedFiles.length} files`);
     console.error(`   Agents used: ${Object.keys(agentSummary).length} types`);
     console.error(`   Files read: ${contextTracking.filesRead?.length || 0}`);
+    if (teamStatus) {
+      console.error(`   Agent teams: enabled (${teamStatus.teamInvocations} team invocations)`);
+    }
     console.error(`   Trigger: ${trigger}`);
     console.error("");
     console.error("   Saved to: .claude/state/handoff.json");
