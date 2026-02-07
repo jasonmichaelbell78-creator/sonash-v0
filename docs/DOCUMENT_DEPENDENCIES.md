@@ -1,9 +1,9 @@
 # Document Dependencies
 
-**Document Type:** REFERENCE (Tier 4) **Version:** 1.8 **Created:** 2026-01-08
+**Document Type:** REFERENCE (Tier 4) **Version:** 1.9 **Created:** 2026-01-08
 **Status:** ACTIVE **Purpose:** Track template-instance relationships,
 cross-document dependencies, and synchronization requirements **Last Updated:**
-2026-02-01 (Session #123 - TDMS Complete)
+2026-02-07 (Session #141 - Remove deleted audit plan instances)
 
 ---
 
@@ -44,14 +44,9 @@ When managing document dependencies:
 
 ### 1. Multi-AI Audit Plan Templates
 
-| Template                                        | Instances                           | Location              | Last Synced | Sync Status                                              |
-| ----------------------------------------------- | ----------------------------------- | --------------------- | ----------- | -------------------------------------------------------- |
-| **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md**       | CODE_REVIEW_PLAN_2026_Q1.md         | docs/reviews/2026-Q1/ | 2026-01-05  | ✅ SYNCED (Verified Session #35)                         |
-| **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md**    | SECURITY_AUDIT_PLAN_2026_Q1.md      | docs/reviews/2026-Q1/ | 2026-01-08  | ✅ SYNCED (Fixed broken link Session #35)                |
-| **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** | PERFORMANCE_AUDIT_PLAN_2026_Q1.md   | docs/reviews/2026-Q1/ | 2026-01-08  | ✅ SYNCED (Review #89)                                   |
-| **MULTI_AI_REFACTOR_AUDIT_PROMPT.md**           | REFACTORING_AUDIT_PLAN_2026_Q1.md   | docs/reviews/2026-Q1/ | 2026-01-08  | ✅ SYNCED (Replaced Tech Stack placeholders Session #35) |
-| **MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md**    | DOCUMENTATION_AUDIT_PLAN_2026_Q1.md | docs/reviews/2026-Q1/ | 2026-01-08  | ✅ SYNCED (Review #89)                                   |
-| **MULTI_AI_PROCESS_AUDIT_TEMPLATE.md**          | PROCESS_AUDIT_PLAN_2026_Q1.md       | docs/reviews/2026-Q1/ | 2026-01-08  | ✅ SYNCED (Replaced SCOPE placeholders Session #35)      |
+> **Note:** Q1 2026 audit plan instances were removed during the 412-artifact
+> cleanup (Session #140). The multi-AI audit skill now handles audits directly
+> via templates in `docs/templates/`. No active template-instance pairs remain.
 
 **Sync Requirements:**
 
@@ -317,8 +312,8 @@ changes in one document affect the accuracy of another.
 | `ROADMAP.md` milestone promoted    | `ROADMAP_FUTURE.md` (remove detailed section)                                        | Future details move with promotion                 | Manual   |
 | `ROADMAP_FUTURE.md` task added     | `analysis/PARALLEL_EXECUTION_GUIDE.md` (if PG marker)                                | Parallel groups must stay synchronized             | Manual   |
 | Milestone promoted to active       | `ROADMAP.md`, `ROADMAP_FUTURE.md`                                                    | Move section from FUTURE to active roadmap         | Manual   |
-| Audit findings resolved            | `docs/TECHNICAL_DEBT_MASTER.md`                                                      | Technical debt tracker must reflect resolved items | Manual   |
-| Comprehensive audit runs           | `docs/TECHNICAL_DEBT_MASTER.md`, `ROADMAP.md`                                        | New findings must be consolidated and prioritized  | Manual   |
+| Audit findings resolved            | `docs/technical-debt/MASTER_DEBT.jsonl`                                              | Technical debt tracker must reflect resolved items | Manual   |
+| Comprehensive audit runs           | `docs/technical-debt/MASTER_DEBT.jsonl`, `ROADMAP.md`                                | New findings must be consolidated and prioritized  | Manual   |
 | `TECHNICAL_DEBT_MASTER.md` changed | `ROADMAP.md` (Technical Debt Backlog section)                                        | Backlog section references tech debt master        | Manual   |
 | New npm script added               | `DEVELOPMENT.md` (scripts section)                                                   | All scripts should be documented                   | ✅ BLOCK |
 | New hook added                     | `DEVELOPMENT.md` (hooks section), `docs/TRIGGERS.md`, `.claude/COMMAND_REFERENCE.md` | Hook documentation must be complete                | ✅ BLOCK |
@@ -342,7 +337,7 @@ changes in one document affect the accuracy of another.
 | **Docs added/removed/moved**       | `DOCUMENTATION_INDEX.md` (run `npm run docs:index`)                                  | Auto-generated index must reflect current state    | Manual   |
 | `docs/plans/` files added/changed  | `docs/PLAN_MAP.md`, `docs/README.md`                                                 | Navigation docs must reference new plans           | ✅ BLOCK |
 | `docs/technical-debt/` changed     | `SESSION_CONTEXT.md`                                                                 | Session context tracks tech debt status            | ✅ BLOCK |
-| `docs/audits/canonical/` changed   | `docs/PLAN_MAP.md`                                                                   | TDMS migration status tracking                     | ✅ BLOCK |
+| `docs/technical-debt/` changed     | `docs/PLAN_MAP.md`                                                                   | TDMS status tracking                               | ✅ BLOCK |
 | DEBT-XXXX items resolved           | `docs/technical-debt/MASTER_DEBT.jsonl`, `ROADMAP.md`                                | Both canonical and roadmap must reflect resolution | Manual   |
 | New audit findings generated       | `docs/technical-debt/MASTER_DEBT.jsonl` (via intake scripts)                         | All findings flow to canonical location            | Manual   |
 
@@ -366,9 +361,14 @@ the session.
 
 Instances that have been archived to `docs/archive/` and no longer require sync:
 
-| Template   | Archived Instance | Archive Date | Archive Location |
-| ---------- | ----------------- | ------------ | ---------------- |
-| (None yet) | (None yet)        | N/A          | docs/archive/    |
+| Template                                    | Archived Instance                   | Archive Date | Archive Location                        |
+| ------------------------------------------- | ----------------------------------- | ------------ | --------------------------------------- |
+| MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md       | CODE_REVIEW_PLAN_2026_Q1.md         | 2026-02-07   | Deleted (artifact cleanup Session #140) |
+| MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md    | SECURITY_AUDIT_PLAN_2026_Q1.md      | 2026-02-07   | Deleted (artifact cleanup Session #140) |
+| MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md | PERFORMANCE_AUDIT_PLAN_2026_Q1.md   | 2026-02-07   | Deleted (artifact cleanup Session #140) |
+| MULTI_AI_REFACTOR_AUDIT_PROMPT.md           | REFACTORING_AUDIT_PLAN_2026_Q1.md   | 2026-02-07   | Deleted (artifact cleanup Session #140) |
+| MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md    | DOCUMENTATION_AUDIT_PLAN_2026_Q1.md | 2026-02-07   | Deleted (artifact cleanup Session #140) |
+| MULTI_AI_PROCESS_AUDIT_TEMPLATE.md          | PROCESS_AUDIT_PLAN_2026_Q1.md       | 2026-02-07   | Deleted (artifact cleanup Session #140) |
 
 ---
 
@@ -407,6 +407,7 @@ When reviewing documentation PRs:
 
 | Version | Date       | Changes                                                                                                                                          | Author      |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| 1.9     | 2026-02-07 | Removed 6 deleted Q1 audit plan instances (artifact cleanup Session #140); fixed stale TECHNICAL_DEBT_MASTER.md and docs/audits/canonical/ refs. | Claude Code |
 | 1.8     | 2026-02-01 | TDMS ALL 17 PHASES COMPLETE - Updated to note docs/audits/canonical/ was archived to docs/archive/technical-debt-sources-2026-01/; Session #123. | Claude Code |
 | 1.7     | 2026-01-30 | Added TDMS-related triggers: docs/plans/, docs/technical-debt/, docs/audits/canonical/, DEBT-XXXX resolution; Session #117.                      | Claude Code |
 | 1.6     | 2026-01-29 | Added DEFERRED → TRIAGED trigger: when items move to ROADMAP_FUTURE.md, source entries must be updated; Session #115.                            | Claude Code |
