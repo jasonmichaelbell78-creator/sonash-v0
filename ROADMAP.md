@@ -639,9 +639,8 @@ reliability, and solo developer automations.
 
 ### Track P - Performance Critical (NEW - Session #98)
 
-> **Source:**
-> [Comprehensive Audit (Session #98)](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)
-> **Tracking:** [TECHNICAL_DEBT_MASTER.md](docs/technical-debt/INDEX.md)
+> **Source:** Comprehensive Audit (Session #98, report archived) **Tracking:**
+> [Technical Debt Index](docs/technical-debt/INDEX.md)
 >
 > **Note:** Renamed from "Track D" to "Track P" to avoid confusion with Track D
 > (CI Reliability) in the Operational Visibility Sprint.
@@ -1095,8 +1094,7 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 #### Engineering Productivity Quick Wins (from Session #64 Audit)
 
-> **Source:**
-> [Engineering Productivity Audit](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)
+> **Source:** Engineering Productivity Audit (Session #64, report archived)
 
 9. **EFF-001: Add `npm run dev:offline` Script** (S effort, High ROI)
    - [ ] Install `concurrently` as dev dependency
@@ -1376,9 +1374,8 @@ experience
 > **Primary Source:** [TECHNICAL_DEBT_MASTER.md](docs/technical-debt/INDEX.md) ←
 > **NEW (Session #98)** **Legacy Source:**
 > [MASTER_ISSUE_LIST.md](docs/technical-debt/INDEX.md) (superseded)
-> **Comprehensive Audit:**
-> [COMPREHENSIVE_AUDIT_REPORT.md](docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)
-> **Last Updated:** Session #98
+> **Comprehensive Audit:** Session #98 (report archived) **Last Updated:**
+> Session #98
 
 ### Overview
 
@@ -1872,8 +1869,7 @@ Performance monitoring, incident response, and dashboard enhancements.
 
 ### Engineering Productivity - Observability & Offline (from Session #64 Audit)
 
-> **Source:**
-> [Engineering Productivity Audit](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)
+> **Source:** Engineering Productivity Audit (Session #64, report archived)
 > **Priority:** P1 for EFF-010 (CRITICAL), P2 for others
 
 #### Observability Improvements
