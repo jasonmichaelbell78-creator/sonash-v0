@@ -1,8 +1,8 @@
 # Claude Code Command Reference
 
-**Version:** 3.3 **Last Updated:** 2026-02-05 **Purpose:** Comprehensive
-reference for all CLI commands, agents, skills, MCP servers, and shortcuts
-available in Claude Code
+**Version:** 4.0 **Last Updated:** Session #140 **Purpose:** Comprehensive
+reference for all CLI commands, agents, skills, MCP servers, hooks, and
+shortcuts available in Claude Code
 
 ---
 
@@ -10,11 +10,19 @@ available in Claude Code
 
 1. [Slash Commands (Custom)](#slash-commands-custom)
 2. [Slash Commands (System/Built-in)](#slash-commands-systembuilt-in)
-3. [Skills](#skills)
-4. [Agents](#agents)
-5. [MCP Servers](#mcp-servers)
-6. [Keyboard Shortcuts](#keyboard-shortcuts)
-7. [Hooks](#hooks)
+3. [Skills (Project-Specific)](#skills)
+4. [Skills (Plugin/Global)](#skills-pluginglobal)
+5. [Agents](#agents)
+6. [MCP Servers](#mcp-servers)
+7. [Keyboard Shortcuts](#keyboard-shortcuts)
+8. [Claude Code Hooks](#hooks)
+9. [Git Hooks (Pre-commit & Pre-push)](#git-hooks-pre-commit--pre-push)
+10. [GitHub Actions](#github-actions)
+11. [Environment Variables & Overrides](#environment-variables--overrides)
+12. [Usage Examples](#usage-examples)
+13. [Tips & Best Practices](#tips--best-practices)
+14. [Quick Reference Tables](#quick-reference-tables)
+15. [Version History](#version-history)
 
 ---
 
@@ -22,10 +30,10 @@ available in Claude Code
 
 Custom slash commands are now defined as skills in `.claude/skills/`.
 
-> **Note (2026-01-31):** All custom commands have been migrated to skills
-> format. The legacy command files in `.claude/commands/` have been **deleted**
-> (Session #120). Use `/command-name` which invokes the corresponding skill. See
-> the [Skills](#skills) section for the authoritative list.
+> **Note (Session #120):** All custom commands have been migrated to skills
+> format. The legacy command files in `.claude/commands/` have been **deleted**.
+> Use `/command-name` which invokes the corresponding skill. See the
+> [Skills](#skills) section for the authoritative list.
 
 ### `/audit-code`
 
@@ -186,6 +194,114 @@ important project-specific context **Example:** `/remember [information]`
 **Description:** Retrieve previously saved information **When to use:** Access
 stored project context **Example:** `/recall [query]` **Parameters:** Search
 query **Output:** Matching remembered information
+
+### `/bug`
+
+**Description:** Report a bug in Claude Code **When to use:** Encountered a bug
+in the CLI tool itself **Example:** `/bug` **Parameters:** None **Output:**
+Opens bug report flow
+
+### `/compact`
+
+**Description:** Compact conversation context to free up token space **When to
+use:** When context is getting large, or before a complex task **Example:**
+`/compact` **Parameters:** None **Output:** Compacted context summary
+
+### `/config`
+
+**Description:** View or modify Claude Code configuration **When to use:**
+Checking or changing settings **Example:** `/config` **Parameters:** Optional
+key/value to set **Output:** Current configuration or confirmation of change
+
+### `/cost`
+
+**Description:** Show token usage and cost for the current session **When to
+use:** Monitoring usage and spend **Example:** `/cost` **Parameters:** None
+**Output:** Token counts and estimated cost
+
+### `/doctor`
+
+**Description:** Check Claude Code health and diagnose issues **When to use:**
+When something isn't working correctly **Example:** `/doctor` **Parameters:**
+None **Output:** Health check results
+
+### `/init`
+
+**Description:** Initialize project configuration (CLAUDE.md, settings) **When
+to use:** Setting up a new project for Claude Code **Example:** `/init`
+**Parameters:** None **Output:** Created configuration files
+
+### `/listen`
+
+**Description:** Enter listen mode (read-only observation) **When to use:** When
+you want Claude to observe without acting **Example:** `/listen` **Parameters:**
+None **Output:** Enters passive mode
+
+### `/login`
+
+**Description:** Authenticate with Anthropic **When to use:** Initial setup or
+re-authentication **Example:** `/login` **Parameters:** None **Output:**
+Authentication flow
+
+### `/logout`
+
+**Description:** Sign out of Anthropic account **When to use:** Switching
+accounts or ending access **Example:** `/logout` **Parameters:** None
+**Output:** Signed out confirmation
+
+### `/mcp`
+
+**Description:** Manage MCP servers (list, add, remove) **When to use:**
+Configuring or troubleshooting MCP servers **Example:** `/mcp` **Parameters:**
+None **Output:** MCP server management interface
+
+### `/model`
+
+**Description:** Switch the AI model being used **When to use:** Changing
+between Opus, Sonnet, Haiku **Example:** `/model sonnet` **Parameters:**
+Optional model name **Output:** Model switch confirmation
+
+### `/permissions`
+
+**Description:** View or modify tool permissions **When to use:** Checking or
+adjusting what actions are auto-approved **Example:** `/permissions`
+**Parameters:** None **Output:** Permission settings
+
+### `/pr-comments`
+
+**Description:** View PR comments for the current branch **When to use:**
+Reviewing feedback on a pull request **Example:** `/pr-comments` **Parameters:**
+None **Output:** PR comment list
+
+### `/review`
+
+**Description:** Request AI code review of current changes **When to use:**
+Before committing or merging changes **Example:** `/review` **Parameters:** None
+**Output:** Code review feedback
+
+### `/resume`
+
+**Description:** Resume a background task **When to use:** Reconnecting to a
+previously started background agent **Example:** `/resume [task-id]`
+**Parameters:** Task ID **Output:** Resumed task output
+
+### `/status`
+
+**Description:** Show session status and context info **When to use:** Checking
+current session state **Example:** `/status` **Parameters:** None **Output:**
+Session status summary
+
+### `/terminal-setup`
+
+**Description:** Configure terminal for optimal Claude Code experience **When to
+use:** Initial setup or fixing terminal display issues **Example:**
+`/terminal-setup` **Parameters:** None **Output:** Terminal configuration guide
+
+### `/vim`
+
+**Description:** Toggle vim keybindings for input **When to use:** Prefer vim
+editing mode **Example:** `/vim` **Parameters:** None **Output:** Vim mode
+toggled
 
 ---
 
@@ -740,6 +856,33 @@ mandatory auto-commit script (`npm run session:end`) that commits and pushes
 SESSION_CONTEXT.md updates to ensure session-end is never forgotten. **When to
 use:** **END OF EVERY SESSION** **Example:** Final action before closing
 **Parameters:** None **Added:** Auto-commit mechanism in Session #115
+
+---
+
+## Skills (Plugin/Global)
+
+Plugin skills are installed globally and available across all projects. They are
+invoked as `/plugin-name:skill-name`. Use `/sc:help` or `/gsd:help` for full
+command lists within those ecosystems.
+
+| Plugin               | Count | Key Skills                                                              | Invocation Prefix               |
+| -------------------- | ----- | ----------------------------------------------------------------------- | ------------------------------- |
+| GSD                  | ~30   | `help`, `plan-phase`, `execute-phase`, `new-project`, `debug`           | `/gsd:`                         |
+| SuperClaude          | ~25   | `analyze`, `implement`, `test`, `help`, `design`, `workflow`            | `/sc:`                          |
+| Superpowers          | ~13   | `brainstorming`, `systematic-debugging`, `writing-plans`                | `/superpowers:`                 |
+| Sentry               | ~5    | `getIssues`, `seer`, `sentry-setup-tracing`                             | `/sentry:`                      |
+| Episodic Memory      | 2     | `search-conversations`, `remembering-conversations`                     | `/episodic-memory:`             |
+| Hookify              | 4     | `configure`, `help`, `list`, `hookify`                                  | `/hookify:`                     |
+| PR Review Toolkit    | 4     | `review-pr`, `code-review`                                              | `/pr-review-toolkit:`           |
+| Backend Development  | 9     | `api-design-principles`, `microservices-patterns`, `saga-orchestration` | `/backend-development:`         |
+| Frontend/Mobile      | 4     | `nextjs-app-router-patterns`, `tailwind-design-system`                  | `/frontend-mobile-development:` |
+| LLM Application Dev  | 8     | `rag-implementation`, `prompt-engineering-patterns`                     | `/llm-application-dev:`         |
+| Framework Migration  | 4     | `react-modernization`, `database-migration`                             | `/framework-migration:`         |
+| SEO Content Creation | ~3    | `seo-content-writer`, `seo-content-planner`, `seo-content-auditor`      | `/seo-content-creation:`        |
+| SEO Technical        | ~4    | `seo-meta-optimizer`, `seo-snippet-hunter`, `seo-structure-architect`   | `/seo-technical-optimization:`  |
+| SEO Analysis         | ~3    | `seo-authority-builder`, `seo-cannibalization-detector`                 | `/seo-analysis-monitoring:`     |
+| Content Marketing    | 2     | `content-marketer`, `search-specialist`                                 | `/content-marketing:`           |
+| Superpowers Chrome   | 1     | `browsing`                                                              | `/superpowers-chrome:`          |
 
 ---
 
@@ -1305,18 +1448,73 @@ to use:** **PROACTIVELY** for legacy system updates, framework migrations, or
 technical debt reduction **Example:** Framework migration **Parameters:**
 Migration task **Tools:** All tools
 
+### Additional Local Agents
+
+#### `dependency-manager`
+
+**Description:** Dependency analysis, vulnerability scanning, and license
+compliance specialist **When to use:** Managing project dependencies, checking
+for vulnerabilities, license audits **Example:** Analyzing dependency tree or
+scanning for CVEs **Parameters:** Dependency task **Tools:** All tools
+
+#### `documentation-expert`
+
+**Description:** Create, improve, and maintain project documentation **When to
+use:** Creating new docs, improving existing docs, generating docs from code
+**Example:** Writing API docs or improving README **Parameters:** Documentation
+task **Tools:** All tools
+
+### GSD Agents (Plugin)
+
+GSD (Get Stuff Done) agents are invoked via the Task tool with `subagent_type`.
+They support the `/gsd:*` skill ecosystem.
+
+| Agent                      | Purpose                                       | Tools                                              |
+| -------------------------- | --------------------------------------------- | -------------------------------------------------- |
+| `gsd-codebase-mapper`      | Explores codebase, writes structured analysis | Read, Bash, Grep, Glob, Write                      |
+| `gsd-debugger`             | Scientific method debugging with checkpoints  | All tools                                          |
+| `gsd-executor`             | Executes GSD plans with atomic commits        | All tools                                          |
+| `gsd-integration-checker`  | Cross-phase integration verification          | Read, Bash, Grep, Glob                             |
+| `gsd-phase-researcher`     | Pre-planning research, produces RESEARCH.md   | Read, Write, Bash, Grep, Glob, WebSearch, WebFetch |
+| `gsd-plan-checker`         | Goal-backward plan verification               | Read, Bash, Glob, Grep                             |
+| `gsd-planner`              | Creates executable phase plans                | Read, Write, Bash, Glob, Grep, WebFetch            |
+| `gsd-project-researcher`   | Domain ecosystem research                     | Read, Write, Bash, Grep, Glob, WebSearch, WebFetch |
+| `gsd-research-synthesizer` | Synthesizes parallel research outputs         | Read, Write, Bash                                  |
+| `gsd-roadmapper`           | Creates project roadmaps with phase breakdown | Read, Write, Bash, Glob, Grep                      |
+| `gsd-verifier`             | Phase goal achievement verification           | Read, Bash, Grep, Glob                             |
+
+### Other Plugin Agents (Summary)
+
+These agents come from various installed plugins and are available via the Task
+tool:
+
+| Plugin             | Agents                                                                                                                                                                                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SEO (3 plugins)    | `seo-content-auditor`, `seo-content-planner`, `seo-content-writer`, `seo-keyword-strategist`, `seo-meta-optimizer`, `seo-snippet-hunter`, `seo-structure-architect`, `seo-authority-builder`, `seo-cannibalization-detector`, `seo-content-refresher` |
+| Content Marketing  | `content-marketer`, `search-specialist`                                                                                                                                                                                                               |
+| Sentry             | `sentry:issue-summarizer`                                                                                                                                                                                                                             |
+| Episodic Memory    | `episodic-memory:search-conversations`                                                                                                                                                                                                                |
+| PR Review Toolkit  | `pr-review-toolkit:code-reviewer`, `pr-review-toolkit:code-simplifier`, `pr-review-toolkit:comment-analyzer`, `pr-review-toolkit:pr-test-analyzer`, `pr-review-toolkit:silent-failure-hunter`, `pr-review-toolkit:type-design-analyzer`               |
+| Code Simplifier    | `code-simplifier:code-simplifier`                                                                                                                                                                                                                     |
+| Hookify            | `hookify:conversation-analyzer`                                                                                                                                                                                                                       |
+| Superpowers Chrome | `superpowers-chrome:browser-user`                                                                                                                                                                                                                     |
+| Superpowers        | `superpowers:code-reviewer`                                                                                                                                                                                                                           |
+
 ---
 
 ## MCP Servers
 
 MCP (Model Context Protocol) servers provide external integrations and
-capabilities. Configuration is in `.mcp.json`.
+capabilities. Project-level servers are configured in `.mcp.json`. Plugin
+servers are automatically provided by installed Claude Code plugins.
 
 **Note:** Some servers require API tokens. Set tokens in `.env.local`
 (gitignored). For remote sessions, use encrypted secrets:
 `node scripts/secrets/decrypt-secrets.js`
 
-### Active MCP Servers
+### Active Project MCP Servers
+
+These are configured in `.mcp.json` and enabled in `.claude/settings.json`.
 
 #### `filesystem`
 
@@ -1357,20 +1555,6 @@ UI testing, debugging web applications **Setup:** Run
 - `browser_wait_for` - Wait for conditions
 - `browser_close` - Close browser
 
-#### `github`
-
-**Description:** Full GitHub API access for repository management, issues, PRs.
-**When to use:** Managing GitHub repositories, issues, pull requests, file
-operations **Requires:** `GITHUB_TOKEN` in `.env.local` **Token scopes:**
-`repo`, `read:org`, `read:user` **Tools Available:**
-
-- Repository management (create, fork, search)
-- File operations (create, update, push)
-- Branch management
-- Issues (create, update, list, comment)
-- Pull requests (create, merge, review)
-- Search (code, issues, PRs, users)
-
 #### `memory`
 
 **Description:** Knowledge graph-based persistent memory system. **When to
@@ -1396,28 +1580,31 @@ Fetching code quality issues, security hotspots, quality gate status
 **Requires:** `SONAR_TOKEN` in `.env.local` **Tools Available:**
 
 - `get_issues` - Fetch code issues with pagination
-- `get_hotspots` - Fetch security hotspots
+- `get_security_hotspots` - Fetch security hotspots
 - `get_quality_gate` - Get quality gate status
 
-#### `firebase`
+### Plugin-Provided MCP Servers
 
-**Description:** Firebase tools integration for project management. **When to
-use:** Firebase project operations, deployment, emulator management **Tools
-Available:**
+These are automatically available via installed Claude Code plugins. Some
+duplicate project-level servers (the plugin version is used).
 
-- Firebase CLI operations
-- Project management
-- Deployment tools
+| Server                                   | Purpose                    | Duplicate of Project |
+| ---------------------------------------- | -------------------------- | -------------------- |
+| `plugin:context7:context7`               | Library documentation      | `context7`           |
+| `plugin:github:github`                   | GitHub API                 | N/A (no project)     |
+| `plugin:playwright:playwright`           | Browser automation         | `playwright`         |
+| `plugin:firebase:firebase`               | Firebase tools             | N/A (no project)     |
+| `plugin:episodic-memory:episodic-memory` | Conversation memory search | N/A (unique)         |
+| `plugin:superpowers-chrome:chrome`       | Chrome DevTools Protocol   | N/A (unique)         |
 
-#### `context7`
+### Disabled MCP Servers
 
-**Description:** Library documentation and code example provider. Access
-up-to-date documentation for any programming library or framework. **When to
-use:** Learning new libraries, finding code examples, checking latest API
-**Requires:** `CONTEXT7_API_KEY` in `.env.local` (optional) **Tools Available:**
+These are configured in `.mcp.json` but disabled in `.claude/settings.json`
+(`disabledMcpjsonServers`):
 
-- `resolve-library-id` - Find Context7 library ID from package name
-- `query-docs` - Retrieve documentation and examples for library
+- `serena` - Code analysis and semantic editing (disabled for performance)
+- `rube` - Disabled
+- `nextjs-devtools` - Disabled
 
 ---
 
@@ -1522,10 +1709,10 @@ session **What it does:**
 
 **Location:** `.claude/hooks/session-start.js`
 
-#### `check-mcp-servers.sh`
+#### `check-mcp-servers.js`
 
 **Description:** MCP server availability checker **When triggered:** At session
-start (after session-start.sh) **What it does:**
+start (after session-start.js) **What it does:**
 
 - Verifies MCP servers are accessible
 - Reports unavailable servers
@@ -1552,9 +1739,39 @@ start for remote/web sessions **What it does:**
 - Prevents resource leaks **Location:** `.claude/hooks/stop-serena-dashboard.js`
   **Added:** Session #114
 
-### PostToolUse Hooks
+### PreCompact Hooks
 
-#### `check-write-requirements.sh`
+#### `pre-compaction-save.js`
+
+**Description:** Full state snapshot before compaction (Layer C of compaction
+defense) **When triggered:** Automatically before context compaction **What it
+does:**
+
+- Saves task states, commit log, and git context to `.claude/state/handoff.json`
+- Captures full session state for recovery
+- Most reliable compaction defense layer (fires at exactly the right moment)
+  **Location:** `.claude/hooks/pre-compaction-save.js` **Status Message:**
+  "Saving state before compaction..." **Added:** Session #138
+
+### SessionStart:compact Hooks
+
+#### `compact-restore.js`
+
+**Description:** Context recovery after compaction **When triggered:**
+Automatically after context compaction (matcher: `compact`) **What it does:**
+
+- Reads `.claude/state/handoff.json`
+- Outputs structured recovery context (task progress, recent commits, git
+  status)
+- No manual action needed - automatic context injection **Location:**
+  `.claude/hooks/compact-restore.js` **Status Message:** "Restoring context
+  after compaction..." **Added:** Session #138
+
+### PostToolUse:Write/Edit/MultiEdit Hooks
+
+These hooks fire after Write, Edit, or MultiEdit tool usage on code files.
+
+#### `check-write-requirements.js`
 
 **Description:** Agent requirement validator for Write tool **When triggered:**
 After Write tool is used **What it does:**
@@ -1565,7 +1782,7 @@ After Write tool is used **What it does:**
   `.claude/hooks/check-write-requirements.js` **Status Message:** "Checking
   agent requirements..."
 
-#### `check-edit-requirements.sh`
+#### `check-edit-requirements.js`
 
 **Description:** Agent requirement validator for Edit/MultiEdit tools **When
 triggered:** After Edit or MultiEdit tool is used **What it does:**
@@ -1576,7 +1793,7 @@ triggered:** After Edit or MultiEdit tool is used **What it does:**
   `.claude/hooks/check-edit-requirements.js` **Status Message:** "Checking agent
   requirements..."
 
-#### `pattern-check.sh`
+#### `pattern-check.js`
 
 **Description:** Anti-pattern compliance checker **When triggered:** After
 Write, Edit, or MultiEdit tools **What it does:**
@@ -1614,22 +1831,12 @@ to Firebase-related files **What it does:**
 #### `audit-s0s1-validator.js`
 
 **Description:** Audit finding severity validator **When triggered:** After
-edits to audit-related files **What it does:**
+Write to audit-related files **What it does:**
 
 - Validates S0/S1 findings have required fields
 - Ensures verification_steps are present
 - Enforces audit quality standards **Location:**
   `.claude/hooks/audit-s0s1-validator.js` **Added:** Session #114
-
-#### `auto-save-context.js`
-
-**Description:** Automatic context saver **When triggered:** After significant
-tool operations **What it does:**
-
-- Monitors for important context changes
-- Auto-saves to MCP memory when appropriate
-- Prevents context loss **Location:** `.claude/hooks/auto-save-context.js`
-  **Added:** Session #114
 
 #### `component-size-check.js`
 
@@ -1640,16 +1847,6 @@ React component files **What it does:**
 - Warns when components exceed recommended limits
 - Suggests splitting large components **Location:**
   `.claude/hooks/component-size-check.js` **Added:** Session #114
-
-#### `decision-save-prompt.js`
-
-**Description:** Decision documentation prompter **When triggered:** After
-significant decisions detected **What it does:**
-
-- Detects architectural/design decisions
-- Prompts to document in decision log
-- Non-blocking **Location:** `.claude/hooks/decision-save-prompt.js` **Added:**
-  Session #114
 
 #### `firestore-write-block.js`
 
@@ -1680,16 +1877,6 @@ test files **What it does:**
 - Ensures test isolation **Location:** `.claude/hooks/test-mocking-validator.js`
   **Added:** Session #114
 
-#### `track-agent-invocation.js`
-
-**Description:** Agent usage tracker **When triggered:** After Task tool
-invocations **What it does:**
-
-- Tracks which agents are invoked
-- Records usage statistics
-- Supports agent effectiveness analysis **Location:**
-  `.claude/hooks/track-agent-invocation.js` **Added:** Session #114
-
 #### `typescript-strict-check.js`
 
 **Description:** TypeScript strict mode enforcer **When triggered:** After edits
@@ -1699,6 +1886,92 @@ to TypeScript files **What it does:**
 - Checks for any/unknown type usage
 - Enforces type safety standards **Location:**
   `.claude/hooks/typescript-strict-check.js` **Added:** Session #114
+
+### PostToolUse:Read Hooks
+
+These hooks fire after the Read tool is used to read files.
+
+#### `large-context-warning.js`
+
+**Description:** Context size monitor and file read counter **When triggered:**
+After Read tool is used **What it does:**
+
+- Tracks number of files read in the session
+- Warns at 25+ files read (approaching context limits)
+- Suggests `/save-context` when needed **Location:**
+  `.claude/hooks/large-context-warning.js` **Status Message:** "Tracking context
+  size..." **Added:** Session #114
+
+#### `auto-save-context.js`
+
+**Description:** Automatic context saver **When triggered:** After Read tool is
+used **What it does:**
+
+- Monitors for important context changes
+- Auto-saves to MCP memory when appropriate
+- Prevents context loss **Location:** `.claude/hooks/auto-save-context.js`
+  **Status Message:** "Checking context preservation..." **Added:** Session #114
+
+#### `compaction-handoff.js`
+
+**Description:** Layer B compaction defense **When triggered:** After Read tool
+(fires when 25+ files have been read) **What it does:**
+
+- Monitors file read count as proxy for context growth
+- Writes compaction handoff state to `.claude/state/handoff.json`
+- Part of the 4-layer compaction-resilient state persistence system
+  **Location:** `.claude/hooks/compaction-handoff.js` **Status Message:**
+  "Checking compaction handoff..." **Added:** Session #138
+
+### PostToolUse:Bash Hooks
+
+#### `commit-tracker.js`
+
+**Description:** Git commit logger (Layer A of compaction defense) **When
+triggered:** After Bash tool is used **What it does:**
+
+- Detects git commit commands in bash output
+- Logs every commit to `.claude/state/commit-log.jsonl` (append-only)
+- Survives all failure modes including crashes
+- Single source of truth for commit history across compactions **Location:**
+  `.claude/hooks/commit-tracker.js` **Status Message:** "Tracking commits..."
+  **Added:** Session #138
+
+### PostToolUse:AskUserQuestion Hooks
+
+#### `decision-save-prompt.js`
+
+**Description:** Decision documentation prompter **When triggered:** After
+AskUserQuestion tool is used (not broadly - specific to decision points) **What
+it does:**
+
+- Detects architectural/design decisions
+- Prompts to document in decision log (SESSION_DECISIONS.md)
+- Non-blocking **Location:** `.claude/hooks/decision-save-prompt.js` **Status
+  Message:** "Checking decision documentation..." **Added:** Session #114
+
+### PostToolUse:Task Hooks
+
+#### `track-agent-invocation.js`
+
+**Description:** Agent usage tracker **When triggered:** After Task tool
+invocations **What it does:**
+
+- Tracks which agents are invoked
+- Records usage statistics
+- Supports agent effectiveness analysis **Location:**
+  `.claude/hooks/track-agent-invocation.js` **Status Message:** "Tracking agent
+  invocation..." **Added:** Session #114
+
+### Shared Hook Utilities
+
+#### `state-utils.js`
+
+**Description:** Shared utility module used by compaction hooks **Not a hook
+itself** - provides common functions for state file I/O, timestamp formatting,
+and git context gathering. Used by `pre-compaction-save.js`,
+`compact-restore.js`, and `compaction-handoff.js`. **Location:**
+`.claude/hooks/state-utils.js` **Added:** Session #138
 
 ### UserPromptSubmit Hooks
 
@@ -1722,17 +1995,6 @@ a prompt **What it does:**
 - Provides pre-task recommendations **Location:**
   `.claude/hooks/analyze-user-request.js` **Status Message:** "Checking PRE-TASK
   triggers..."
-
-#### `large-context-warning.js`
-
-**Description:** Context size monitor **When triggered:** When user submits a
-prompt **What it does:**
-
-- Monitors conversation context size
-- Warns when approaching context limits
-- Suggests `/save-context` when needed **Location:**
-  `.claude/hooks/large-context-warning.js` **Status Message:** "Checking context
-  size..." **Added:** Session #114
 
 #### `plan-mode-suggestion.js`
 
@@ -1758,6 +2020,129 @@ prompt **What it does:**
 
 ---
 
+## Git Hooks (Pre-commit & Pre-push)
+
+Git hooks run automatically via Husky. These are separate from Claude Code hooks
+and enforce code quality at the git level.
+
+### Pre-commit Chain (13 Steps)
+
+Configured in `.husky/pre-commit`. Runs on every `git commit`.
+
+| Step | Check                                         | Blocking     | Override                        |
+| ---- | --------------------------------------------- | ------------ | ------------------------------- |
+| 1    | ESLint (`npm run lint`)                       | Yes          | Fix errors first                |
+| 2    | lint-staged / Prettier                        | Yes          | Auto-formats staged             |
+| 3    | Pattern compliance (`npm run patterns:check`) | Yes          | Fix violations                  |
+| 4    | Tests (`npm test`)                            | Yes          | `SKIP_TESTS=1`                  |
+| 5    | CANON schema validation                       | No (warning) | N/A                             |
+| 6    | Skill configuration validation                | No (warning) | N/A                             |
+| 7    | Cross-document dependency check               | Yes          | `SKIP_CROSS_DOC_CHECK=1`        |
+| 8    | Documentation Index staleness                 | Yes          | `SKIP_DOC_INDEX_CHECK=1`        |
+| 8.5  | Document header validation (new docs)         | Yes          | `SKIP_DOC_HEADER_CHECK=1`       |
+| 9    | Learning entry reminder                       | No (info)    | N/A                             |
+| 10   | Audit file S0/S1 validation                   | Yes          | `SKIP_AUDIT_VALIDATION=1`       |
+| 11   | Agent compliance check                        | No (warning) | `STRICT_AGENT_CHECK=1` to block |
+| 12   | Technical debt schema validation              | Yes          | `SKIP_DEBT_VALIDATION=1`        |
+| 13   | Canonical location check                      | No (warning) | N/A                             |
+
+**Smart test skipping (Step 4):**
+
+- Config file changes (package.json, tsconfig, next.config, lockfiles) always
+  force tests
+- Doc-only commits (all files are .md, .mdx, .txt, images, .jsonl) skip tests
+- All other commits run tests normally
+
+### Pre-push Chain (7 Steps)
+
+Configured in `.husky/pre-push`. Runs on every `git push`.
+
+| Step | Check                                         | Blocking            | Override          |
+| ---- | --------------------------------------------- | ------------------- | ----------------- |
+| 1    | Circular dependency check                     | Yes                 | Fix deps first    |
+| 2    | Pattern compliance (`npm run patterns:check`) | Yes                 | Fix violations    |
+| 3    | Security pattern check (per-file)             | Yes (CRITICAL/HIGH) | Fix security      |
+| 4    | npm security audit                            | No (warning)        | N/A               |
+| 5    | Type check (`tsc --noEmit`)                   | Yes                 | Fix type errors   |
+| 6    | npm audit (high/critical vulns)               | No (warning)        | N/A               |
+| 7    | Event-based trigger checker                   | Yes (security)      | `SKIP_TRIGGERS=1` |
+
+### Git Hook Override Environment Variables
+
+Set these before the git command to bypass specific checks:
+
+```bash
+# Pre-commit overrides
+SKIP_TESTS=1 git commit -m "message"              # Skip test step
+SKIP_CROSS_DOC_CHECK=1 git commit -m "message"    # Skip cross-doc deps
+SKIP_DOC_INDEX_CHECK=1 git commit -m "message"    # Skip doc index check
+SKIP_DOC_HEADER_CHECK=1 git commit -m "message"   # Skip header validation
+SKIP_AUDIT_VALIDATION=1 git commit -m "message"   # Skip S0/S1 audit check
+SKIP_DEBT_VALIDATION=1 git commit -m "message"     # Skip TDMS schema check
+STRICT_AGENT_CHECK=1 git commit -m "message"       # Make agent check blocking
+
+# Pre-push overrides
+SKIP_TRIGGERS=1 git push                           # Skip event-based triggers
+```
+
+---
+
+## GitHub Actions
+
+CI/CD workflows in `.github/workflows/`. These run automatically on GitHub.
+
+| Workflow            | File                         | Trigger         | Purpose                   |
+| ------------------- | ---------------------------- | --------------- | ------------------------- |
+| CI                  | `ci.yml`                     | Push/PR         | Lint, test, build         |
+| Deploy Firebase     | `deploy-firebase.yml`        | Push to main    | Production deploy         |
+| SonarCloud          | `sonarcloud.yml`             | Push/PR         | Code quality scan         |
+| Docs Lint           | `docs-lint.yml`              | Push/PR         | Documentation linting     |
+| Review Check        | `review-check.yml`           | PR              | Review requirements       |
+| Auto Label          | `auto-label-review-tier.yml` | PR              | Auto-label by review tier |
+| Resolve Debt        | `resolve-debt.yml`           | Schedule/manual | Auto-resolve TDMS items   |
+| Backlog Enforcement | `backlog-enforcement.yml`    | PR              | Enforce backlog standards |
+| Validate Plan       | `validate-plan.yml`          | PR              | Validate planning docs    |
+| Sync README         | `sync-readme.yml`            | Push            | Keep README in sync       |
+
+---
+
+## Environment Variables & Overrides
+
+Consolidated reference for all environment variables used across hooks, git
+hooks, and settings.
+
+### Git Hook Overrides (Pre-commit)
+
+| Variable                  | Effect                                     |
+| ------------------------- | ------------------------------------------ |
+| `SKIP_TESTS=1`            | Skip test step in pre-commit               |
+| `SKIP_CROSS_DOC_CHECK=1`  | Skip cross-document dependency check       |
+| `SKIP_DOC_INDEX_CHECK=1`  | Skip documentation index staleness check   |
+| `SKIP_DOC_HEADER_CHECK=1` | Skip document header validation (new docs) |
+| `SKIP_AUDIT_VALIDATION=1` | Skip S0/S1 audit finding validation        |
+| `SKIP_DEBT_VALIDATION=1`  | Skip technical debt schema validation      |
+| `STRICT_AGENT_CHECK=1`    | Make agent compliance check blocking       |
+
+### Git Hook Overrides (Pre-push)
+
+| Variable          | Effect                           |
+| ----------------- | -------------------------------- |
+| `SKIP_TRIGGERS=1` | Skip event-based trigger checker |
+
+### Claude Code Settings
+
+| Variable                                 | Effect                     |
+| ---------------------------------------- | -------------------------- |
+| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` | Enable agent teams feature |
+
+### Build/Test Overrides
+
+| Variable                  | Effect                                                          |
+| ------------------------- | --------------------------------------------------------------- |
+| `SKIP_AUDIT_VALIDATION=1` | Also used for eval artifacts with false-positive S0/S1 triggers |
+
+---
+
 ## Usage Examples
 
 ### Example 1: Starting a Session
@@ -1766,7 +2151,7 @@ prompt **What it does:**
 # Session start
 /session-begin
 
-# (Hooks automatically run: session-start.sh, check-mcp-servers.sh)
+# (Hooks automatically run: session-start.js, check-mcp-servers.js)
 # Output shows validation results
 ```
 
@@ -1803,10 +2188,10 @@ prompt **What it does:**
 ### Example 5: Using MCP Server
 
 ```bash
-# AI uses serena MCP automatically:
-"Find all usages of the UserAuth class"
+# AI uses context7 MCP automatically:
+"Show me the latest Next.js App Router docs"
 
-# This triggers: mcp__serena__find_symbol with appropriate parameters
+# This triggers: mcp__context7__resolve-library-id then mcp__context7__query-docs
 ```
 
 ### Example 6: Keyboard Shortcut
@@ -1826,7 +2211,7 @@ prompt **What it does:**
 
 1. Use `/help` to see available system commands
 2. Type `/` and Tab to see slash command suggestions
-3. Check `.claude/commands/` for custom commands
+3. Check `.claude/skills/` for project-specific skills
 4. Ask AI: "What skills are available for X task?"
 
 ### Agent Usage
@@ -1847,8 +2232,9 @@ prompt **What it does:**
 
 1. MCP servers work transparently through AI
 2. No direct invocation needed - AI selects appropriate tools
-3. Check `.claude/settings.json` for enabled/disabled servers
-4. Serena MCP is essential for code navigation
+3. Check `.mcp.json` for project servers, `.claude/settings.json` for
+   enabled/disabled
+4. Plugin servers (context7, github, firebase, playwright) are always available
 
 ### Hook Management
 
@@ -1872,23 +2258,28 @@ prompt **What it does:**
 
 | Command          | Type     | Purpose                  |
 | ---------------- | -------- | ------------------------ |
-| `/session-begin` | Slash    | Start session validation |
-| `/session-end`   | Slash    | End session checklist    |
+| `/session-begin` | Skill    | Start session validation |
+| `/session-end`   | Skill    | End session checklist    |
 | `/commit`        | System   | Create git commit        |
+| `/compact`       | System   | Compact conversation     |
 | `/help`          | System   | Get help                 |
+| `/model`         | System   | Switch AI model          |
+| `/config`        | System   | View/modify config       |
 | `Tab`            | Keyboard | Auto-complete            |
 | `Ctrl+C`         | Keyboard | Cancel/interrupt         |
 
 ### Most Used Agents
 
-| Agent                | Purpose                        |
-| -------------------- | ------------------------------ |
-| `Explore`            | Find files and search codebase |
-| `debugger`           | Debug errors and failures      |
-| `code-reviewer`      | Review code quality            |
-| `Plan`               | Design implementation plans    |
-| `frontend-developer` | Build UI components            |
-| `backend-architect`  | Design APIs and services       |
+| Agent                  | Purpose                        |
+| ---------------------- | ------------------------------ |
+| `Explore`              | Find files and search codebase |
+| `debugger`             | Debug errors and failures      |
+| `code-reviewer`        | Review code quality            |
+| `Plan`                 | Design implementation plans    |
+| `frontend-developer`   | Build UI components            |
+| `backend-architect`    | Design APIs and services       |
+| `documentation-expert` | Create/maintain documentation  |
+| `security-auditor`     | Security reviews               |
 
 ### Most Used Skills
 
@@ -1899,49 +2290,44 @@ prompt **What it does:**
 | `frontend-design`      | Build polished UI           |
 | `senior-fullstack`     | Full-stack development      |
 | `sonarcloud`           | Unified SonarCloud workflow |
-| `/session-begin`       | Session validation          |
-| `/session-end`         | Session completion          |
+| `session-begin`        | Session validation          |
+| `session-end`          | Session completion          |
 
 ### Active MCP Servers
 
-| Server                | Main Purpose                       |
-| --------------------- | ---------------------------------- |
-| `serena`              | Code analysis and semantic editing |
-| `sequential-thinking` | Complex problem-solving            |
-| `magic`               | UI components and logos            |
-| `context7`            | Library documentation              |
-| `playwright`          | Browser automation                 |
-| `ide`                 | IDE integration                    |
+| Server       | Main Purpose                   |
+| ------------ | ------------------------------ |
+| `filesystem` | File operations                |
+| `playwright` | Browser automation             |
+| `memory`     | Persistent memory              |
+| `git`        | Git repository operations      |
+| `sonarcloud` | Code quality analysis          |
+| `context7`   | Library documentation (plugin) |
+| `github`     | GitHub API (plugin)            |
+| `firebase`   | Firebase tools (plugin)        |
 
 ---
 
 ## Version History
 
-| Version | Date       | Changes                                                                                                                                                           |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 3.3     | 2026-02-05 | Session #134: Updated `/sonarcloud` (interactive placement phase) and `/multi-ai-audit` (Phase 7 rewritten as interactive placement)                              |
-| 3.2     | 2026-02-05 | Review #250: Removed duplicate `/sonarcloud` entry; fixed deprecated command examples; updated `/sonarcloud` report mode (no inline curl)                         |
-| 3.1     | 2026-02-05 | Session #133: Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff               |
-| 3.0     | 2026-02-05 | Session #133: Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills; archived obsolete scripts |
-| 2.9     | 2026-02-04 | Session #130: Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits with any-format input normalization                             |
-| 2.8     | 2026-02-04 | Session #129: pr-review skill now MANDATES incrementing consolidation counter; added `npm run consolidation:sync` script for drift fixes                          |
-| 2.7     | 2026-02-02 | Session #125: Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture + AI-specific patterns            |
-| 2.6     | 2026-02-02 | Session #124: Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents), added 3 new scripts and 4 npm scripts                     |
-| 2.5     | 2026-02-01 | Session #123: Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt) - TDMS all 17 phases complete           |
-| 2.3     | 2026-01-29 | Session #115: Added auto-commit mechanism to session-end skill (`npm run session:end`) to prevent forgetting session-end commits                                  |
-| 2.2     | 2026-01-29 | Session #114: Added 3 missing skills (audit-aggregator, audit-comprehensive, checkpoint), documented 14 undocumented hooks, clarified commands→skills migration   |
-| 2.1     | 2026-01-27 | Updated session-end checklist to include DOCUMENTATION_INDEX.md                                                                                                   |
-| 2.0     | 2026-01-22 | Fix expansion-evaluation template per PR review (Review #195)                                                                                                     |
-| 1.9     | 2026-01-22 | Add detailed presentation format to expansion-evaluation skill                                                                                                    |
-| 1.8     | 2026-01-22 | Refine expansion-evaluation skill command examples (Review #196)                                                                                                  |
-| 1.7     | 2026-01-22 | Add agent-trigger-enforcer hook with phase notifications                                                                                                          |
-| 1.6     | 2026-01-22 | Add plan-mode-suggestion hook for complex task detection                                                                                                          |
-| 1.5     | 2026-01-21 | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook                                                                                                   |
-| 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas                                                                                                                     |
-| 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions                                                                                                                   |
-| 1.2     | 2026-01-20 | Note custom commands migrated to skills format                                                                                                                    |
-| 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction                                                                                                                |
-| 1.0     | 2026-01-10 | Initial comprehensive command reference created                                                                                                                   |
+| Version | Session | Changes                                                                                                                                                                 |
+| ------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.0     | #140    | Major overhaul: added Git Hooks, GitHub Actions, Plugin Skills, Environment Variables sections; fixed MCP servers; added missing agents/hooks; expanded system commands |
+| 3.3     | #134    | Updated `/sonarcloud` (interactive placement phase) and `/multi-ai-audit` (Phase 7 rewritten as interactive placement)                                                  |
+| 3.2     | #134    | Review #250: Removed duplicate `/sonarcloud` entry; fixed deprecated command examples                                                                                   |
+| 3.1     | #133    | Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff                                   |
+| 3.0     | #133    | Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills                                                |
+| 2.9     | #130    | Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits                                                                                     |
+| 2.8     | #129    | pr-review skill now MANDATES incrementing consolidation counter; added `npm run consolidation:sync`                                                                     |
+| 2.7     | #125    | Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture                                                       |
+| 2.6     | #124    | Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents)                                                                                |
+| 2.5     | #123    | Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt)                                                             |
+| 2.3     | #115    | Added auto-commit mechanism to session-end skill                                                                                                                        |
+| 2.2     | #114    | Added 3 missing skills, documented 14 undocumented hooks, clarified commands→skills migration                                                                           |
+| 2.1     | #112    | Updated session-end checklist to include DOCUMENTATION_INDEX.md                                                                                                         |
+| 2.0     | #110    | Fix expansion-evaluation template per PR review (Review #195)                                                                                                           |
+| 1.5     | #108    | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook                                                                                                         |
+| 1.0     | #100    | Initial comprehensive command reference created                                                                                                                         |
 
 ---
 

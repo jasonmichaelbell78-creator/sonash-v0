@@ -78,7 +78,7 @@ _Essential project-level documentation_
 | [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-07    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑13     | 2026-02-05    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-05    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | Unified dev dashboard for monitoring session activity, error      | ↓19 ↑20    | 2026-02-05    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | Unified dev dashboard for monitoring session activity, error      | ↓19 ↑20    | 2026-02-07    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                 | ↓4 ↑5      | 2026-01-17    |
 
 ### Core Documentation (Tier 2)
