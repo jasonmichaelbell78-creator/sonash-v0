@@ -11,7 +11,7 @@ estimated_time_sequential: 120 min
 
 # Documentation Optimizer
 
-**Version:** 1.0 **Last Updated:** 2026-02-07 **Status:** ACTIVE **Waves:** 5
+**Version:** 1.2 **Last Updated:** 2026-02-07 **Status:** ACTIVE **Waves:** 5
 waves with 13 agents **Output:** `.claude/state/doc-optimizer/`
 
 **What This Does:** Wave-based orchestrator that deploys 13 parallel agents
@@ -59,6 +59,11 @@ Wave 4: Enhancement & Optimization (3 parallel)
 
 Orchestrator: Unify -> Dedupe -> Report -> TDMS intake
   ~5 min
+
+Post-Run: Cleanup
+  Delete temp files (.claude/state/doc-optimizer/)
+  Identify & remove obsolete audit/review artifacts from docs/
+  ~2 min
 ```
 
 ---
@@ -1521,12 +1526,16 @@ cp docs/technical-debt/MASTER_DEBT.jsonl docs/technical-debt/raw/deduped.jsonl
 
 ---
 
-### STEP 10: Cleanup
+### STEP 10: Cleanup & Artifact Removal
+
+#### 10.1: Regenerate Docs Index
 
 ```bash
 # Regenerate docs index (auto-fixed files may have changed)
 npm run docs:index
 ```
+
+#### 10.2: Stage & Commit Fixes
 
 Ask user: "Would you like me to stage the auto-fixed files for commit?"
 
@@ -1537,6 +1546,87 @@ If yes:
 git add docs/ .claude/skills/ *.md
 git status
 ```
+
+#### 10.3: Delete Temp Files
+
+After the fix plan is committed and TDMS intake is complete, remove the working
+directory:
+
+```bash
+# Remove all doc-optimizer temp/working files
+rm -rf .claude/state/doc-optimizer/
+
+# Also remove any plan files created during the process
+rm -f .claude/plans/doc-optimizer-fixes.md
+```
+
+These files are gitignored and only needed during the active run. The
+`progress.json` recovery system is no longer needed once findings are committed
+and ingested into TDMS.
+
+#### 10.4: Remove Obsolete Audit/Review Artifacts
+
+After TDMS intake confirms all findings are in MASTER_DEBT.jsonl, the source
+audit/review files in `docs/` are redundant. Survey and offer to remove them.
+
+**What qualifies as obsolete:**
+
+- `docs/audits/` -- per-session audit outputs (JSONL, markdown reports)
+- `docs/archive/technical-debt-sources-*/` -- raw audit source data
+- `docs/archive/tdms-intermediates-*/` -- pipeline intermediate files
+- `docs/archive/completed-audits/` -- previously archived audit results
+- `docs/archive/deprecated-findings-docs/` -- superseded findings
+- `docs/archive/source-data/` -- raw data that fed into audits
+- `docs/archive/obsolete-scripts-*/` -- scripts replaced by current pipeline
+
+**Procedure:**
+
+1. List candidate directories with file counts and sizes:
+
+```bash
+# Survey obsolete audit/review artifacts
+for dir in docs/audits docs/archive/technical-debt-sources-* \
+  docs/archive/tdms-intermediates-* docs/archive/completed-audits \
+  docs/archive/deprecated-findings-docs docs/archive/source-data \
+  docs/archive/obsolete-scripts-*; do
+  if [ -d "$dir" ]; then
+    count=$(find "$dir" -type f | wc -l)
+    size=$(du -sh "$dir" 2>/dev/null | cut -f1)
+    echo "$dir: $count files, $size"
+  fi
+done
+```
+
+2. Present the list to the user with total counts.
+
+3. If user approves removal:
+
+```bash
+# Remove obsolete directories (only after user confirmation)
+rm -rf docs/audits/
+rm -rf docs/archive/technical-debt-sources-*/
+rm -rf docs/archive/tdms-intermediates-*/
+rm -rf docs/archive/completed-audits/
+rm -rf docs/archive/deprecated-findings-docs/
+rm -rf docs/archive/source-data/
+rm -rf docs/archive/obsolete-scripts-*/
+```
+
+4. Regenerate docs index and commit:
+
+```bash
+npm run docs:index
+git add -A docs/
+git commit -m "chore: remove obsolete audit/review artifacts after TDMS intake"
+```
+
+**Important:** Do NOT remove:
+
+- `docs/technical-debt/` -- active TDMS system (MASTER_DEBT.jsonl, views, etc.)
+- `docs/archive/completed-plans/` -- product planning history
+- `docs/templates/` -- reusable templates
+- `docs/agent_docs/` -- active agent reference docs
+- `docs/decisions/` -- Architecture Decision Records
 
 ---
 
@@ -1663,7 +1753,8 @@ When modifying this skill, also update:
 
 ## Version History
 
-| Version | Date       | Description                                                   |
-| ------- | ---------- | ------------------------------------------------------------- |
-| 1.1     | 2026-02-07 | Context safety: return protocol, wave chunking, budget checks |
-| 1.0     | 2026-02-07 | Initial version: 5-wave, 13-agent doc optimizer               |
+| Version | Date       | Description                                                     |
+| ------- | ---------- | --------------------------------------------------------------- |
+| 1.2     | 2026-02-07 | Step 10 expanded: temp file cleanup + obsolete artifact removal |
+| 1.1     | 2026-02-07 | Context safety: return protocol, wave chunking, budget checks   |
+| 1.0     | 2026-02-07 | Initial version: 5-wave, 13-agent doc optimizer                 |
