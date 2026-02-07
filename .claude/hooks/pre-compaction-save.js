@@ -79,6 +79,12 @@ function saveJson(filePath, data) {
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
+    // On Windows, renameSync over an existing file can fail; remove first
+    try {
+      fs.rmSync(filePath, { force: true });
+    } catch {
+      /* ignore */
+    }
     fs.renameSync(tmpPath, filePath);
     return true;
   } catch {

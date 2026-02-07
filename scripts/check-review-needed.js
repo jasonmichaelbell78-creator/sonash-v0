@@ -510,7 +510,10 @@ function getCategoryAuditDates(content) {
   // updated by reset-audit-triggers.js), not from the audit log sections.
   // Table row format: | Category | 2026-02-07 (Comprehensive) | 0 | 0 | ... |
   for (const category of Object.keys(categories)) {
-    const displayName = category.charAt(0).toUpperCase() + category.slice(1);
+    const displayName = category
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join("-");
     // Match category row — handle both hyphens and spaces in multi-word names
     const displayNamePattern = displayName.replace(/-/g, "[-\\s]+");
     const rowPattern = new RegExp(`^\\|\\s*${displayNamePattern}\\s*\\|\\s*([^|]+)\\|`, "mi");

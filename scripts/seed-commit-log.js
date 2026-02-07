@@ -100,10 +100,16 @@ function main() {
   console.log(`Seeded ${entries.length} commits to commit-log.jsonl`);
   console.log(`Branch: ${branch}`);
   // Use parsed entries (reversed to chronological) for accurate oldest/newest reporting
-  const oldestMsg = entries[0] ? JSON.parse(entries[0]).message : "?";
-  const newestMsg = entries[entries.length - 1]
-    ? JSON.parse(entries[entries.length - 1]).message
-    : "?";
+  function safeMsg(entryStr) {
+    if (!entryStr) return "?";
+    try {
+      return JSON.parse(entryStr).message || "?";
+    } catch {
+      return "?";
+    }
+  }
+  const oldestMsg = safeMsg(entries[0]);
+  const newestMsg = safeMsg(entries[entries.length - 1]);
   console.log(`Oldest: ${oldestMsg || "?"}`);
   console.log(`Newest: ${newestMsg || "?"}`);
 }
