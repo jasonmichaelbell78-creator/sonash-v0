@@ -1,0 +1,61 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Admin Privileges Tab",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "admin",
+  "target_route": "/admin",
+  "prerequisites": {
+    "auth": "admin",
+    "description": "Must be logged in as admin"
+  },
+  "steps": [
+    {
+      "id": "APRIV-01",
+      "name": "Click Privileges tab",
+      "action": "click",
+      "selector": "text=Privileges",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "APRIV-02",
+      "name": "Privilege types list visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[class*='privilege'], [data-testid*='privilege'], table, [class*='list']"
+        }
+      ]
+    },
+    {
+      "id": "APRIV-03",
+      "name": "Create button exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "button:has-text('Create'), button:has-text('Add'), button:has-text('New')"
+        }
+      ]
+    }
+  ],
+  "error_scenarios": []
+}

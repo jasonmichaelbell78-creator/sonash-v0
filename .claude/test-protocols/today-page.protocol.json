@@ -1,0 +1,92 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Today Page (Dashboard)",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/notebook",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in"
+  },
+  "steps": [
+    {
+      "id": "TODAY-01",
+      "name": "Navigate to Today tab",
+      "action": "navigate",
+      "selector": null,
+      "value": "/notebook",
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "TODAY-02",
+      "name": "Daily quote card visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        { "type": "element_exists", "selector": "[class*='quote'], [data-testid='daily-quote']" }
+      ]
+    },
+    {
+      "id": "TODAY-03",
+      "name": "Mood selector present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        { "type": "element_exists", "selector": "[data-testid='mood-selector'], [class*='mood']" }
+      ]
+    },
+    {
+      "id": "TODAY-04",
+      "name": "Recovery notepad visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "textarea, [data-testid='recovery-notepad'], [class*='notepad']"
+        }
+      ]
+    },
+    {
+      "id": "TODAY-05",
+      "name": "HALT check section present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "HALT" }]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "TODAY-E1",
+      "name": "First-time user with no data",
+      "description": "Today page should render gracefully with empty state",
+      "manual_only": true,
+      "expected": "Empty state messages shown, no errors"
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Admin Content Management Tabs",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "admin",
+  "target_route": "/admin",
+  "prerequisites": {
+    "auth": "admin",
+    "description": "Must be logged in as admin"
+  },
+  "steps": [
+    {
+      "id": "ACNT-01",
+      "name": "Click Meetings content tab",
+      "action": "click",
+      "selector": "text=Meetings",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "ACNT-02",
+      "name": "Content list loads",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "table, [class*='list'], [class*='card']" }
+      ]
+    },
+    {
+      "id": "ACNT-03",
+      "name": "Create button exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "button:has-text('Create'), button:has-text('Add'), button:has-text('New')"
+        }
+      ]
+    },
+    {
+      "id": "ACNT-04",
+      "name": "Click Daily Quotes tab",
+      "action": "click",
+      "selector": "text=Daily Quotes, text=Quotes",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "ACNT-05",
+      "name": "Click Slogans tab",
+      "action": "click",
+      "selector": "text=Slogans",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "ACNT-06",
+      "name": "Click Quick Links tab",
+      "action": "click",
+      "selector": "text=Quick Links",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "ACNT-07",
+      "name": "Click Prayers tab",
+      "action": "click",
+      "selector": "text=Prayers",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "ACNT-08",
+      "name": "Click Glossary tab",
+      "action": "click",
+      "selector": "text=Glossary",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "no_console_errors" }]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "ACNT-E1",
+      "name": "CRUD operations on content",
+      "description": "Creating, editing, deleting content items",
+      "manual_only": true,
+      "expected": "CRUD operations reflect in list, confirmations for delete"
+    }
+  ]
+}

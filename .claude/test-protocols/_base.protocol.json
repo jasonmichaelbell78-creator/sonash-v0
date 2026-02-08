@@ -1,0 +1,18 @@
+{
+  "protocol_version": "1.0",
+  "description": "Base protocol inherited by all feature protocols. Common assertions applied to every page load.",
+  "common_assertions": [
+    {
+      "type": "no_console_errors",
+      "description": "No error-level console messages on page load"
+    },
+    {
+      "type": "page_load_under",
+      "value": 5000,
+      "description": "Page loads within 5 seconds"
+    }
+  ],
+  "common_wait_for": "network_idle",
+  "screenshot_on_failure": true,
+  "default_timeout_ms": 10000
+}

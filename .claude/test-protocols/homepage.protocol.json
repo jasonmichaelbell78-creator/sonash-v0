@@ -1,0 +1,76 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Landing Page & Book Cover",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/",
+  "prerequisites": {
+    "auth": "none",
+    "description": "No authentication required"
+  },
+  "steps": [
+    {
+      "id": "HOME-01",
+      "name": "Page loads successfully",
+      "action": "navigate",
+      "selector": null,
+      "value": "/",
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }, { "type": "page_load_under", "value": 5000 }]
+    },
+    {
+      "id": "HOME-02",
+      "name": "Branding and logo visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "SoNash" }]
+    },
+    {
+      "id": "HOME-03",
+      "name": "Book cover animation element exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[class*='book'], [class*='cover'], [data-testid='book-cover']"
+        }
+      ]
+    },
+    {
+      "id": "HOME-04",
+      "name": "Login options visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Sign" }]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "HOME-E1",
+      "name": "Slow network load",
+      "description": "App should show loading state on slow networks",
+      "manual_only": true,
+      "expected": "Loading spinner or skeleton visible before content"
+    }
+  ]
+}

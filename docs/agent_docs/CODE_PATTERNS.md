@@ -528,6 +528,7 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | Capture before transaction     | Store original values before transaction for rollback                 | Full restoration if post-transaction steps fail              |
 | 🟡       | Primitive useEffect deps       | Use `user?.uid` not `user` object in dependency array                 | Prevents unnecessary re-renders                              |
 | 🟡       | Functional setState updates    | Use `setState((prev) => ...)` in useCallback                          | Avoids stale closure state                                   |
+| ⚪       | data-testid for test selectors | Use `data-testid="{feature}-{element}"` on key interactive elements   | Stable selectors for automated UI testing protocols          |
 | 🟡       | Claims preservation            | `setCustomUserClaims({ ...existing, newClaim })` spread first         | Firebase replaces entire claims object                       |
 | 🟡       | React state updaters pure      | Move side effects (localStorage/Firestore) from setState to useEffect | State updaters called twice in Strict Mode (Review #207)     |
 | 🟡       | Storage operations isolation   | Independent try/catch for localStorage vs Firestore saves             | One failing shouldn't block the other (Review #207)          |

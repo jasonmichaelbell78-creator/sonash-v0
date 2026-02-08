@@ -1,0 +1,101 @@
+{
+  "protocol_version": "1.0",
+  "feature": "All Meetings Page",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/meetings/all",
+  "prerequisites": {
+    "auth": "none",
+    "description": "Meetings page is publicly accessible"
+  },
+  "steps": [
+    {
+      "id": "MTG-01",
+      "name": "Navigate to meetings page",
+      "action": "navigate",
+      "selector": null,
+      "value": "/meetings/all",
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }, { "type": "page_load_under", "value": 5000 }]
+    },
+    {
+      "id": "MTG-02",
+      "name": "Meeting list loads",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[class*='meeting'], [data-testid='meeting-card'], [class*='card']"
+        }
+      ]
+    },
+    {
+      "id": "MTG-03",
+      "name": "Fellowship filter visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [
+        { "type": "text_visible", "value": "AA" },
+        { "type": "text_visible", "value": "NA" }
+      ]
+    },
+    {
+      "id": "MTG-04",
+      "name": "Neighborhood dropdown exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "select, [data-testid='neighborhood-filter'], [class*='dropdown']"
+        }
+      ]
+    },
+    {
+      "id": "MTG-05",
+      "name": "List/map toggle exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[data-testid='view-toggle'], button:has-text('Map'), button:has-text('List')"
+        }
+      ]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "MTG-E1",
+      "name": "No meetings match filter",
+      "description": "Selecting filters that match no meetings",
+      "manual_only": true,
+      "expected": "Empty state message shown"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Resources Page",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "secondary",
+  "target_route": "/notebook",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in, navigate to Resources tab"
+  },
+  "steps": [
+    {
+      "id": "RES-01",
+      "name": "Navigate to Resources tab",
+      "action": "click",
+      "selector": "text=Resources",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "RES-02",
+      "name": "Resource sections visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[class*='card'], [class*='section'], [class*='resource']"
+        }
+      ]
+    },
+    {
+      "id": "RES-03",
+      "name": "Meeting finder link present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Meeting" }]
+    }
+  ],
+  "error_scenarios": []
+}

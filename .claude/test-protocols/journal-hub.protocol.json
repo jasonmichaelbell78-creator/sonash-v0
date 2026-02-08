@@ -1,0 +1,87 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Journal Interface",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/journal",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in"
+  },
+  "steps": [
+    {
+      "id": "JHUB-01",
+      "name": "Navigate to journal",
+      "action": "navigate",
+      "selector": null,
+      "value": "/journal",
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "JHUB-02",
+      "name": "Ribbon navigation visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[class*='ribbon'], [data-testid='journal-ribbon'], nav"
+        }
+      ]
+    },
+    {
+      "id": "JHUB-03",
+      "name": "Floating pen button exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[data-testid='pen-button'], button[class*='pen'], button[class*='fab'], button[class*='float']"
+        }
+      ]
+    },
+    {
+      "id": "JHUB-04",
+      "name": "Click pen button opens entry creator",
+      "action": "click",
+      "selector": "[data-testid='pen-button'], button[class*='pen'], button[class*='fab'], button[class*='float']",
+      "value": null,
+      "wait_for": "text=Mood",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        { "type": "text_visible", "value": "Mood" },
+        { "type": "text_visible", "value": "Gratitude" },
+        { "type": "text_visible", "value": "Inventory" },
+        { "type": "text_visible", "value": "Free Write" },
+        { "type": "text_visible", "value": "Daily Log" }
+      ]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "JHUB-E1",
+      "name": "Empty journal timeline",
+      "description": "New user with no entries should see empty state",
+      "manual_only": true,
+      "expected": "Helpful empty state message, pen button still accessible"
+    }
+  ]
+}

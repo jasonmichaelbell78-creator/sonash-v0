@@ -85,6 +85,9 @@ serviceAccountKey.json
 # Claude Code hook backups (not tracked)
 .claude/hooks/backup/
 
+# Test suite results (regenerate with: /test-suite)
+.claude/test-results/
+
 # Lighthouse audit reports (generated, not tracked)
 .lighthouse/
 

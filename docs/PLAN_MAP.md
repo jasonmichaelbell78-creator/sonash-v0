@@ -206,7 +206,7 @@ docs/archive/
 | ------------------------- | ------------------------------------------------------- |
 | See current priorities    | ROADMAP.md                                              |
 | Understand current sprint | SESSION_CONTEXT.md → OPERATIONAL_VISIBILITY_SPRINT.md   |
-| Find testing guidance     | docs/TESTING_PLAN.md                                    |
+| Find testing guidance     | docs/plans/TESTING_USER_MANUAL.md                       |
 | Check AI rules/patterns   | CLAUDE.md → docs/agent_docs/CODE_PATTERNS.md            |
 | Review completed work     | docs/archive/completed-plans/                           |
 | **Manage technical debt** | **docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md** |

@@ -543,6 +543,16 @@ validation **Example:** Planning user research or creating personas
 
 ### Testing & Quality
 
+#### `test-suite`
+
+**Description:** Multi-phase UI testing orchestration. Runs smoke tests, feature
+protocol tests, security checks, and performance checks against any deployment
+URL using Playwright MCP or Chrome Extension. **When to use:** Smoke testing
+deployments, running feature protocols, pre-merge validation, post-deploy checks
+**Example:** `/test-suite --smoke`, `/test-suite --protocol=homepage`,
+`/test-suite --full` **Parameters:**
+`[scope] [--url=URL] [--protocol=NAME] [--chrome]`
+
 #### `webapp-testing`
 
 **Description:** Toolkit for interacting with and testing local web applications

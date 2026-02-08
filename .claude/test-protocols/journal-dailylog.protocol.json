@@ -1,0 +1,81 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Daily Log Entry",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/journal",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in"
+  },
+  "steps": [
+    {
+      "id": "DLOG-01",
+      "name": "Open entry creator and select Daily Log",
+      "action": "click",
+      "selector": "text=Daily Log",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "DLOG-02",
+      "name": "Date field defaulted to today",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "input[type='date'], [data-testid='date-picker']" }
+      ]
+    },
+    {
+      "id": "DLOG-03",
+      "name": "All form fields present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "textarea, [data-testid='dailylog-content']" }
+      ]
+    },
+    {
+      "id": "DLOG-04",
+      "name": "Cravings and used toggles present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "text_visible", "value": "craving" }]
+    },
+    {
+      "id": "DLOG-05",
+      "name": "Save button visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "button:has-text('Save'), button[type='submit']" }
+      ]
+    }
+  ],
+  "error_scenarios": []
+}

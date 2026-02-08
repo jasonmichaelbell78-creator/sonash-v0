@@ -1,0 +1,77 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Gratitude Entry",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/journal",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in"
+  },
+  "steps": [
+    {
+      "id": "GRAT-01",
+      "name": "Open entry creator and select Gratitude",
+      "action": "click",
+      "selector": "text=Gratitude",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "GRAT-02",
+      "name": "Item list builder visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "input, textarea, [data-testid='gratitude-input']" }
+      ]
+    },
+    {
+      "id": "GRAT-03",
+      "name": "Add button works",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "button:has-text('Add'), button[class*='add']" }
+      ]
+    },
+    {
+      "id": "GRAT-04",
+      "name": "Save button visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "button:has-text('Save'), button[type='submit']" }
+      ]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "GRAT-E1",
+      "name": "Empty gratitude list save",
+      "description": "Attempting to save with no items added",
+      "manual_only": true,
+      "expected": "Validation prevents empty save"
+    }
+  ]
+}

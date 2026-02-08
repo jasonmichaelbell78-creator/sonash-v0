@@ -1,0 +1,92 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Admin Logs Tab",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "admin",
+  "target_route": "/admin",
+  "prerequisites": {
+    "auth": "admin",
+    "description": "Must be logged in as admin"
+  },
+  "steps": [
+    {
+      "id": "ALOG-01",
+      "name": "Click Logs tab",
+      "action": "click",
+      "selector": "text=Logs",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "ALOG-02",
+      "name": "Log entries load",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "[class*='log'], [data-testid*='log'], table" }
+      ]
+    },
+    {
+      "id": "ALOG-03",
+      "name": "Search input present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "input[type='search'], input[placeholder*='search' i]"
+        }
+      ]
+    },
+    {
+      "id": "ALOG-04",
+      "name": "Type category dropdown exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "select, [class*='dropdown'], [data-testid='type-filter']"
+        }
+      ]
+    },
+    {
+      "id": "ALOG-05",
+      "name": "Export button exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "button:has-text('Export'), button:has-text('Download')"
+        }
+      ]
+    }
+  ],
+  "error_scenarios": []
+}

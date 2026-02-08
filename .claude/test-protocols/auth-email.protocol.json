@@ -1,0 +1,81 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Email/Password Authentication",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/",
+  "prerequisites": {
+    "auth": "none",
+    "description": "Start from unauthenticated state"
+  },
+  "steps": [
+    {
+      "id": "EMAIL-01",
+      "name": "Open sign-in modal",
+      "action": "click",
+      "selector": "text=Sign",
+      "value": null,
+      "wait_for": "text=Email",
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Email" }]
+    },
+    {
+      "id": "EMAIL-02",
+      "name": "Sign-in form fields present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [
+        { "type": "element_exists", "selector": "input[type='email'], input[name='email']" },
+        { "type": "element_exists", "selector": "input[type='password'], input[name='password']" }
+      ]
+    },
+    {
+      "id": "EMAIL-03",
+      "name": "Toggle to sign-up mode",
+      "action": "click",
+      "selector": "text=Sign up, text=Create account, text=Register",
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Create" }]
+    },
+    {
+      "id": "EMAIL-04",
+      "name": "Close modal",
+      "action": "click",
+      "selector": "[aria-label='Close'], button:has-text('Close'), [data-testid='close-modal']",
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_not_visible", "value": "Password" }]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "EMAIL-E1",
+      "name": "Invalid email format",
+      "description": "Submitting invalid email shows validation error",
+      "manual_only": true,
+      "expected": "Form shows email validation error"
+    },
+    {
+      "id": "EMAIL-E2",
+      "name": "Wrong password",
+      "description": "Submitting wrong password shows error",
+      "manual_only": true,
+      "expected": "Error toast or inline message appears"
+    }
+  ]
+}

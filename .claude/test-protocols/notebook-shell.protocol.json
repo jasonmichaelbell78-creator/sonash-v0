@@ -1,0 +1,80 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Notebook Navigation (8 tabs)",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/notebook",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in to access notebook"
+  },
+  "steps": [
+    {
+      "id": "NB-01",
+      "name": "Navigate to notebook",
+      "action": "navigate",
+      "selector": null,
+      "value": "/notebook",
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "NB-02",
+      "name": "All 8 tab buttons visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        { "type": "text_visible", "value": "Today" },
+        { "type": "text_visible", "value": "Resources" },
+        { "type": "text_visible", "value": "Growth" },
+        { "type": "text_visible", "value": "Library" },
+        { "type": "text_visible", "value": "Support" },
+        { "type": "text_visible", "value": "Work" },
+        { "type": "text_visible", "value": "More" },
+        { "type": "text_visible", "value": "Journal" }
+      ]
+    },
+    {
+      "id": "NB-03",
+      "name": "Click Today tab",
+      "action": "click",
+      "selector": "text=Today",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "NB-04",
+      "name": "Click Journal tab",
+      "action": "click",
+      "selector": "text=Journal",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "NB-E1",
+      "name": "Unauthenticated access",
+      "description": "Accessing /notebook without auth should redirect",
+      "manual_only": false,
+      "expected": "Redirect to login page"
+    }
+  ]
+}

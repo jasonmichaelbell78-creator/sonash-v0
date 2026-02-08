@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 4.1 **Last Updated:** 2026-02-07
+**Document Version:** 4.2 **Last Updated:** 2026-02-07
 
 ---
 
@@ -143,14 +143,18 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 | Code review >= 20 items       | Review team                  | Team  | Yes       | Yes   |
 | Audits (comprehensive)        | Audit team                   | Team  | Yes       | Yes   |
 | Audits (single domain)        | Domain audit agent           | Task  | Yes       | No    |
+| New UI feature                | Generate `.protocol.json`    | Write | No        | No    |
 
 ### POST-TASK (before committing)
 
-| What You Did        | Action                       | Tool | Parallel? |
-| ------------------- | ---------------------------- | ---- | --------- |
-| Wrote/modified code | `code-reviewer` agent        | Task | See above |
-| New documentation   | `documentation-expert` agent | Task | Yes       |
-| Security changes    | `security-auditor` agent     | Task | See above |
+| What You Did        | Action                        | Tool  | Parallel? |
+| ------------------- | ----------------------------- | ----- | --------- |
+| Wrote/modified code | `code-reviewer` agent         | Task  | See above |
+| Built UI feature    | `/test-suite --protocol=NAME` | Skill | No        |
+| New documentation   | `documentation-expert` agent  | Task  | Yes       |
+| Security changes    | `security-auditor` agent      | Task  | See above |
+| PR ready for merge  | `/test-suite --smoke`         | Skill | No        |
+| Merged to main      | `/test-suite --post-deploy`   | Skill | No        |
 
 **Session End**: Run `/session-end` for full audit checklist.
 
@@ -469,6 +473,7 @@ separate context window:
 
 | Version | Date       | Description                                                                                                           |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| 4.2     | 2026-02-07 | Added /test-suite triggers to PRE-TASK and POST-TASK tables; protocol generation on new UI features                   |
 | 4.1     | 2026-02-07 | Added 6.7 (Agent Teams), 7.6 (Team Compaction Safety); updated 6.2, PRE-TASK table; updated audit-comprehensive skill |
 | 4.0     | 2026-02-07 | Rewrote 7.3: 4-layer compaction-resilient state persistence (commit-tracker, PreCompact, compact-restore, gap detect) |
 | 3.9     | 2026-02-05 | Added 7.2-7.5: File-based state persistence, compaction handoff, pre-commit fixer; Added 6.2: Delegated code review   |
