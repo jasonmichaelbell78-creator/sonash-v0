@@ -54,6 +54,8 @@ project:
 
 - **[docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Comprehensive testing
   guide (includes manual checklists)
+- **[docs/plans/TESTING_USER_MANUAL.md](./docs/plans/TESTING_USER_MANUAL.md)** -
+  UI testing with `/test-suite` skill (27 protocols, 5 phases)
 
 ### Security & Operations
 
@@ -269,7 +271,8 @@ npm run lint
 **Test Status:** 89/91 passing (97.8%)
 
 See **[TESTING_PLAN.md](docs/TESTING_PLAN.md)** for testing strategy and manual
-QA checklist.
+QA checklist. For automated UI testing, use `/test-suite` — see
+**[TESTING_USER_MANUAL.md](docs/plans/TESTING_USER_MANUAL.md)**.
 
 ---
 
