@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.5 **Last Updated:** 2026-02-02 **Status:** Active
+**Document Version:** 2.6 **Last Updated:** 2026-02-08 **Status:** Active
 
 ---
 
@@ -1069,6 +1069,157 @@ Closes #123
 
 ---
 
+## 🔄 Agile Process
+
+> **Moved from:** ROADMAP.md v3.22 (Session #142)
+
+### Sprint Cadence
+
+- **Sprint Length:** 2 weeks
+- **Planning:** Every other Monday
+- **Retrospective:** Every other Friday
+- **Daily Standups:** Async (Slack/Discord)
+
+### Story Point Scale
+
+- 1-2 SP: <1 day
+- 3-5 SP: 1-2 days
+- 8 SP: 1 week
+- 13 SP: 1-2 weeks
+- 21+ SP: Break into smaller stories
+
+### Definition of Done
+
+- Code reviewed
+- Tests written and passing
+- Documentation updated
+- Deployed to staging
+- Manual QA complete
+- Security review (if applicable)
+
+---
+
+## 🛠️ Process & Tooling Improvements
+
+> **Moved from:** ROADMAP.md v3.22 (Session #142)
+
+### Development Dashboard (Planned - Near-term)
+
+**Status:** Planned **Priority:** P1 (Development Tooling) **Added:** Session
+#64
+
+**Purpose:** Unified dev dashboard for monitoring session activity, error
+tracing, and development metrics. Not for production - strictly development
+tooling.
+
+**Proposed Features:**
+
+1. **Session Activity Monitor**
+   - Visualize JSONL session logs (`.claude/session-activity.jsonl`)
+   - Show event timeline (file edits, skill invocations, commits)
+   - Detect sessions without explicit end markers
+   - Aggregate metrics (files changed, skills used, session duration)
+
+2. **Error & Tracing Viewer**
+   - Display Sentry-like local error aggregation
+   - Show console.error logs with context
+   - Link errors to relevant file/line
+   - Filter by severity, date, component
+
+3. **Override Audit Trail**
+   - Visualize override logs (`.claude/override-log.jsonl`)
+   - Show frequency, reasons, patterns
+   - Flag unusual override patterns
+
+4. **Document Sync Status**
+   - Visual status of template-instance relationships
+   - Placeholder detection results
+   - Cross-document dependency alerts
+
+**Implementation Notes:**
+
+- Simple local web UI (Next.js page under /dev or standalone)
+- Read-only access to JSONL logs
+- No production impact
+- Could be separate tool or integrated admin panel
+
+**Discussion:** Brainstorm in future session. Low effort MVP could be a CLI
+summary command; full dashboard is larger scope.
+
+---
+
+### Cross-Document Dependency Map
+
+**Status:** COMPLETE **Priority:** P1 **Completed:** Session #64
+
+**What Was Done:**
+
+1. Added "Cross-Document Update Triggers" section to `DOCUMENT_DEPENDENCIES.md`
+   (v1.1) with 12-row trigger matrix
+2. Integrated into `/session-end` command checklist (Section 3)
+
+**Trigger Matrix Location:**
+[DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers](docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
+
+> **Note:** INTEGRATED_IMPROVEMENT_PLAN.md is now archived (Session #64). See
+> the canonical trigger matrix in DOCUMENT_DEPENDENCIES.md for current triggers.
+
+---
+
+### Document Dependency Automation (Future Enhancement)
+
+**Current State (Session #35):**
+
+- Manual validation via `/docs-sync` slash command (wrapper that executes
+  `npm run docs:sync-check`)
+- Script: `npm run docs:sync-check` → `scripts/check-document-sync.js` (detects
+  placeholder content, broken links, stale sync dates)
+- Documentation: `docs/DOCUMENT_DEPENDENCIES.md` tracks all template-instance
+  relationships
+- Integration: DOCUMENTATION_AUDIT Category 6 validates sync status
+
+**Future Automation Options:**
+
+1. **Pre-Commit Hook Integration** (Low Priority)
+   - Run `docs:sync-check` before each commit
+   - Block commits if critical sync issues found
+   - **Pros**: Catches issues early
+   - **Cons**: Adds ~2-3s to commit latency
+
+2. **Pre-Push Hook Integration** (Medium Priority)
+   - Run `docs:sync-check` before push
+   - Warn on issues but don't block (exit 0 always)
+   - **Pros**: Less intrusive than pre-commit
+   - **Cons**: Issues found later in workflow
+
+3. **CI/CD Integration** (Recommended)
+   - Add `npm run docs:sync-check` to GitHub Actions
+   - Run on PRs that modify docs/templates/ or docs/reviews/
+   - Report issues as PR comments
+   - **Pros**: No local latency impact, thorough validation
+   - **Cons**: Requires CI/CD setup
+
+4. **Scheduled Validation** (Low Priority)
+   - Weekly cron job runs `docs:sync-check`
+   - Reports to Slack/email if issues found
+   - **Pros**: Regular validation without manual intervention
+   - **Cons**: Delayed detection (up to 7 days)
+
+**Recommendation**:
+
+- Keep manual (`/docs-sync`) for immediate use
+- Add to CI/CD when GitHub Actions is configured (post-M3)
+- Consider pre-push hook if sync issues become frequent (quarterly review)
+
+**Discussion**:
+
+- Document sync is quality-focused, not critical to functionality
+- Manual checks are sufficient for current team size (solo developer)
+- Automation becomes valuable when multiple contributors update templates
+- Revisit when team expands
+
+---
+
 ## 📝 Update Triggers
 
 **Update this document when:**
@@ -1097,12 +1248,13 @@ When maintaining this document:
 
 ## 🗓️ Version History
 
-| Version | Date       | Changes                                                                      |
-| ------- | ---------- | ---------------------------------------------------------------------------- |
-| 2.5     | 2026-02-02 | Added Claude Code settings sync commands and cross-platform setup reference  |
-| 2.4     | 2026-01-24 | Previous version                                                             |
-| 2.3     | 2026-01-16 | Updated pre-commit hook: lint-staged auto-formats staged files (Session #70) |
-| 2.2     | 2026-01-13 | Updated pre-commit hook table (pattern compliance, learning entry reminder)  |
-| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip)                      |
-| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                 |
-| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources                             |
+| Version | Date       | Changes                                                                                                     |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
+| 2.6     | 2026-02-08 | Added Agile Process and Process & Tooling Improvements sections (moved from ROADMAP.md v3.22, Session #142) |
+| 2.5     | 2026-02-02 | Added Claude Code settings sync commands and cross-platform setup reference                                 |
+| 2.4     | 2026-01-24 | Previous version                                                                                            |
+| 2.3     | 2026-01-16 | Updated pre-commit hook: lint-staged auto-formats staged files (Session #70)                                |
+| 2.2     | 2026-01-13 | Updated pre-commit hook table (pattern compliance, learning entry reminder)                                 |
+| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip)                                                     |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                |
+| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources                                                            |

@@ -1,7 +1,7 @@
 # SoNash Roadmap Log
 
 **Document Version:** 2.0 **Status:** ACTIVE (append-only archive) **Last
-Updated:** 2026-01-02
+Updated:** 2026-02-08
 
 ---
 
@@ -27,6 +27,9 @@ roadmap:
 - **M0 - Baseline**: ✅ Complete (Q4 2025)
 - **M1 - Foundation**: ✅ Complete (Q1 2026)
 - **M1.6 Today Page Enhancement**: ✅ Complete (December 2025)
+- **Track A — Admin Panel**: ✅ Complete (Sessions #75-#129)
+- **Track A-Test — Testing**: ✅ Complete (Sessions #130-#141)
+- **Immediate Hotfixes**: ✅ Complete (Session #115)
 
 For **active work**, see [ROADMAP.md](./ROADMAP.md).
 
@@ -155,6 +158,61 @@ added
 
 - Cleaned up local merged branches
 - Identified 8 old remote branches for deletion (Dec 28-30)
+
+### Session #142 - Roadmap Cleanup: Archived Completed Tracks
+
+**Completed tracks moved from ROADMAP.md active sprint:**
+
+#### Track A — Admin Panel ✅ DEVELOPMENT COMPLETE
+
+> **Status:** All development items complete (A1-A25). **Checklist:**
+> [TRACK_A_TESTING_CHECKLIST.md](docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md)
+
+**Sentry Integration (Phase 4):** A1-A4 ✅ **Admin Panel Fixes:** A5-A7 ✅
+**User Privileges:** A8-A9 ✅ **Background Jobs:** A10-A14 ✅ **Firebase Console
+Phase 1:** A15-A18 ✅ (Session #75) **Firebase Console Phase 2:** A19-A22 ✅
+(Session #129) **Admin Enhancements Phase 3:** A23-A25 ✅ (Session #78)
+
+#### Track A-Test — Testing & Validation ✅ COMPLETE
+
+> **293/294 unit tests passing** (1 skipped) | **TypeScript build:** ✅ |
+> **ESLint:** ✅ **Testing Plan:**
+> [TRACK_A_TESTING_PLAN.md](docs/plans/TRACK_A_TESTING_PLAN.md) **UI
+> Protocols:** 8 admin protocols available via `/test-suite`
+
+| Category            | Tests | Passed | Status                  |
+| ------------------- | ----- | ------ | ----------------------- |
+| Logs Tab UI         | 24    | 24     | ✅ Complete             |
+| Integration Tests   | 26    | 25     | ✅ Complete             |
+| Performance Tests   | 5     | 4      | ✅ Complete             |
+| Privileges Backend  | 16    | 5      | ✅ Partial (11 skipped) |
+| Privileges Frontend | 14    | 10     | ✅ Partial (4 skipped)  |
+| Background Jobs     | 30    | 4      | ✅ Re-tested            |
+| Security Testing    | 10    | 6      | ✅ Partial              |
+| A19-A22 Testing     | ~40   | 5      | ✅ In Progress          |
+
+Firestore indexes deployed ✅ | Storage bucket fixed ✅
+
+#### Track P — Performance Critical ✅ PLANNED (Items tracked, not yet started)
+
+> **Note:** Track P items are tracked but NOT yet implemented. They remain in
+> ROADMAP.md under the active sprint as planned work. This archive entry
+> documents the track's creation and scope for historical context.
+
+**Source:** Comprehensive Audit (Session #98) **Scope:** P1 Image Optimization,
+P2 Bundle Optimization, P3 React Performance, P4 Firestore Optimization, P5
+Caching & Offline, P6 Security Headers **Total Effort:** ~24 hours
+
+#### Immediate Hotfixes ✅ COMPLETE (Session #115)
+
+| ID        | Issue                        | Status                  |
+| --------- | ---------------------------- | ----------------------- |
+| REACT-001 | setTimeout memory leak       | ✅ Fixed                |
+| PERF-002  | Admin tabs all rendered      | ✅ Fixed                |
+| DEP-018   | Firebase config in committed | ⏭️ N/A (false positive) |
+| FB-002    | Firebase SDK mismatch        | ⏭️ N/A (false positive) |
+
+**Completed:** Session #115 | **Actual Time:** ~45 minutes
 
 ---
 

@@ -143,6 +143,7 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 | Code review >= 20 items       | Review team                  | Team  | Yes       | Yes   |
 | Audits (comprehensive)        | Audit team                   | Team  | Yes       | Yes   |
 | Audits (single domain)        | Domain audit agent           | Task  | Yes       | No    |
+| New project/unfamiliar domain | `/find-skills`               | Skill | No        | No    |
 | New UI feature                | Generate `.protocol.json`    | Write | No        | No    |
 
 ### POST-TASK (before committing)

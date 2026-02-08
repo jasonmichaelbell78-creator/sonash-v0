@@ -50,7 +50,7 @@ system integrity.
 | SonarCloud/Qodo               | `docs/analysis/`                               | 921 + 77 hotspots | JSON    |
 | Aggregation MASTER_ISSUE_LIST | `docs/aggregation/`                            | 284               | JSONL   |
 | Aggregation net-new           | `docs/aggregation/`                            | 171               | JSONL   |
-| Canonical MASTER_FINDINGS     | `docs/audits/canonical/`                       | 203               | JSONL   |
+| Canonical MASTER_DEBT         | `docs/technical-debt/`                         | 2379              | JSONL   |
 | 2026-Q1 CANON-\* files        | `docs/reviews/2026-Q1/canonical/`              | 118               | JSONL   |
 | 2026-Q1 DEDUPED_FINDINGS      | `docs/reviews/2026-Q1/canonical/tier2-output/` | 15                | JSONL   |
 | Single-session audits         | `docs/audits/single-session/`                  | 93                | JSONL   |

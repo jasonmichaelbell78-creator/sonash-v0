@@ -69,6 +69,7 @@ Recovery Notebook project. It provides:
      - Scan .claude/agents/ for specialist agents
      - Note any MCP servers configured
      - If task matches a capability, USE IT (not optional)
+     - For new domains: run '/find-skills' to discover ecosystem capabilities
 ☐ 6. Check ROADMAP.md (verify milestone priorities)
 ☐ 7. Check active blockers (none currently - see ROADMAP.md)
 ☐ 8. Consult specific planning docs as needed
@@ -381,6 +382,9 @@ applies. If a capability **clearly applies** to your task, you MUST use it.
 **When you receive a task from the user, IMMEDIATELY check these triggers:**
 
 ```
+☐ Am I starting a new project or working in an unfamiliar domain?
+   → SHOULD use '/find-skills' to discover specialized capabilities
+
 ☐ Is this a bug, error, or unexpected behavior?
    → MUST use 'systematic-debugging' skill FIRST
 
@@ -435,6 +439,10 @@ applies. If a capability **clearly applies** to your task, you MUST use it.
 ### How to Discover Capabilities
 
 ```bash
+# Search all ecosystems (skills.sh + plugin marketplaces)
+npm run capabilities:search -- [query]
+# or invoke: /find-skills [query]
+
 # Skills (specialized workflows and knowledge)
 ls .claude/skills/
 
@@ -517,6 +525,7 @@ project configuration for available servers.
 
 | Scenario                                | Use                                |
 | --------------------------------------- | ---------------------------------- |
+| New project/unfamiliar domain           | **Skill** (`/find-skills`)         |
 | Need specific workflow guidance         | **Skill**                          |
 | Need autonomous complex task completion | **Agent**                          |
 | Simple, well-understood task            | **Direct action**                  |

@@ -423,6 +423,19 @@ charts, perform data analysis **When to use:** Analyzing Excel files,
 spreadsheets, tabular data, or .xlsx files **Example:** Processing data export
 or financial report **Parameters:** File path to Excel file
 
+#### `find-skills`
+
+**Description:** Unified discovery across skills.sh ecosystem AND Claude Code
+plugin marketplaces (6 registries, 100+ plugins). Searches installed plugins,
+local skills, marketplace plugins, marketplace skills, and skills.sh by keyword.
+Shows install status and commands. **When to use:** When looking for
+functionality that might exist as an installable skill or plugin, extending
+agent capabilities, starting a new project, or exploring an unfamiliar domain
+**Example:** `/find-skills react performance` or user asks "is there a skill for
+X?" **Parameters:** Search query (via AI detection) **Backend:**
+`scripts/search-capabilities.js` + `npx skills find` **npm script:**
+`npm run capabilities:search -- [query]`
+
 #### `gh-fix-ci`
 
 **Description:** Inspect GitHub PR checks with gh, pull failing GitHub Actions
@@ -2322,6 +2335,7 @@ hooks, and settings.
 
 | Version | Session | Changes                                                                                                                                                                 |
 | ------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.1     | #142    | Added `find-skills` skill (vercel-labs/skills ecosystem discovery)                                                                                                      |
 | 4.0     | #140    | Major overhaul: added Git Hooks, GitHub Actions, Plugin Skills, Environment Variables sections; fixed MCP servers; added missing agents/hooks; expanded system commands |
 | 3.3     | #134    | Updated `/sonarcloud` (interactive placement phase) and `/multi-ai-audit` (Phase 7 rewritten as interactive placement)                                                  |
 | 3.2     | #134    | Review #250: Removed duplicate `/sonarcloud` entry; fixed deprecated command examples                                                                                   |
@@ -2349,5 +2363,8 @@ This document is maintained locally and should be updated when:
 - Skills are created or modified
 - Agents are added or updated
 - MCP servers are configured or changed
-- Hooks are added or modified
+- Claude Code hooks are added or modified
+- Git hooks (pre-commit/pre-push) are added or modified
+- GitHub Actions workflows are added or modified
+- Environment variables or overrides are added or changed
 - New keyboard shortcuts are discovered
