@@ -116,9 +116,9 @@ Execute feature test protocols from `.claude/test-protocols/`.
      emails/userIds
    - `url_contains`: current URL includes string
    - `url_redirected`: navigation redirected to expected URL
-   - `page_load_under`: evaluate
-     `performance.getEntriesByType('navigation')[0].loadEventEnd` < threshold
-     (Navigation Timing API)
+   - `page_load_under`: evaluate page load duration via Navigation Timing API:
+     `(() => { const nav = performance.getEntriesByType('navigation')[0]; return nav ? nav.duration : null; })()`
+     and assert result is non-null and < threshold (ms)
    - `evaluate_truthy`: evaluate the JavaScript expression and assert it returns
      truthy e. If `screenshot: true`, take screenshot f. If step has
      `browser_resize` property (`{ "width": N, "height": N }`), call
@@ -136,10 +136,12 @@ Security-focused checks.
 2. Scan network requests for PII:
    - `mcp__playwright__browser_network_requests`
    - Check no email addresses or raw user IDs in request URLs/bodies
-3. Check security headers:
-   - `Content-Security-Policy` present
-   - `X-Frame-Options` present
-   - `Strict-Transport-Security` present
+3. Check security headers (via `mcp__playwright__browser_network_requests`):
+   - Locate the document response for the target route
+   - Assert headers include: `Content-Security-Policy`, `X-Frame-Options` (or
+     `frame-ancestors` via CSP), `Strict-Transport-Security`
+   - If headers unavailable in tool output → record as **skipped**
+     (`reason: "headers_unavailable_in_tool"`)
 4. Check console for exposed secrets:
    - No API keys, tokens, or credentials in console output
 
@@ -151,8 +153,8 @@ Performance checks.
 
 1. Navigate to homepage, measure load time:
    - `mcp__playwright__browser_evaluate`:
-     `performance.timing.loadEventEnd - performance.timing.navigationStart`
-   - Threshold: < 3000ms
+     `(() => { const nav = performance.getEntriesByType('navigation')[0]; return nav ? nav.duration : null; })()`
+   - Threshold: < 3000ms (skip if `null`)
 2. Count network requests:
    - `mcp__playwright__browser_network_requests`
    - Flag if > 50 requests
