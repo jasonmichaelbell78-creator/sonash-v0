@@ -55,7 +55,7 @@
       "action": "evaluate",
       "selector": null,
       "value": "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
-      "wait_for": "network_idle",
+      "wait_for": null,
       "screenshot": false,
       "auth_required": false,
       "skip_on_preview": false,

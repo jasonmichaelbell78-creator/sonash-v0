@@ -99,7 +99,9 @@ Execute feature test protocols from `.claude/test-protocols/`.
 5. For `--protocol=NAME` scope: run only the named protocol
 6. For each protocol file: a. Read the JSON file b. Check prerequisites (auth
    level, skip_on_preview) c. Execute each step sequentially:
-   - For `navigate` action: `mcp__playwright__browser_navigate`
+   - For `navigate` action: resolve `step.value` against the target URL origin
+     (if it starts with `/`, build `${new URL(target_url).origin}${step.value}`)
+     then call `mcp__playwright__browser_navigate`
    - For `click` action: `mcp__playwright__browser_click` with selector
    - For `type` action: `mcp__playwright__browser_type` with selector + value
    - For `select` action: `mcp__playwright__browser_select_option`

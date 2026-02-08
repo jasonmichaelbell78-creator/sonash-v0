@@ -12,7 +12,7 @@ code reviews. These patterns are **enforced by `npm run patterns:check`** - this
 file serves as a reference when investigating violations or understanding why a
 pattern exists.
 
-**Quick Reference**: See [CLAUDE.md](../../CLAUDE.md) Section 4 for the 5
+**Quick Reference**: See [claude.md](../../claude.md) Section 4 for the 5
 critical patterns that apply to every session.
 
 ## Quick Start
