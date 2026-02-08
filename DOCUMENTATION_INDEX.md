@@ -72,7 +72,7 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                       | References | Last Modified |
 | ------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](CLAUDE.md)              | This document provides essential context and rules for AI as...   | ↓1 ↑8      | 2026-02-08    |
+| [AI Context & Rules for SoNash](CLAUDE.md)              | This document provides essential context and rules for AI as...   | ↓0 ↑8      | 2026-02-08    |
 | [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-07    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓13 ↑6     | 2026-02-08    |
 | [Development Guide](DEVELOPMENT.md)                     | -                                                                 | ↓14 ↑8     | 2026-02-08    |
@@ -162,7 +162,7 @@ _AI agent reference docs_
 
 | Document                                                                | Description                                                     | References | Last Modified |
 | ----------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)      | This document contains detailed code patterns and anti-patte... | ↓6 ↑1      | 2026-02-08    |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)      | This document contains detailed code patterns and anti-patte... | ↓6 ↑0      | 2026-02-08    |
 | [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md) | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-02-07    |
 | [Skill and Agent Usage Policy](docs/agent_docs/SKILL_AGENT_POLICY.md)   | This document defines the policy for creating, using, and ov... | ↓0 ↑3      | 2026-02-05    |
 
@@ -517,7 +517,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**184 orphaned documents:**
+**185 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [backend architect](.claude/agents/backend-architect.md)
@@ -663,6 +663,7 @@ Documents with no inbound links (not referenced by any other document):
 - [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)
 - [Copilot Instructions - SoNash Recovery Notebook](.github/copilot-instructions.md)
 - [pull request template](.github/pull_request_template.md)
+- [AI Context &amp; Rules for SoNash](CLAUDE.md)
 - [SoNash - Sober Nashville Recovery Notebook](README.md)
 - [ROADMAP Full Analysis Summary](analysis/FULL_ANALYSIS_SUMMARY.md)
 - [ROADMAP Deep Analysis - Integration Summary](analysis/INTEGRATION_SUMMARY.md)

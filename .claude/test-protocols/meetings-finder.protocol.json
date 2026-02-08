@@ -20,7 +20,7 @@
       "screenshot": true,
       "auth_required": false,
       "skip_on_preview": false,
-      "assertions": [{ "type": "no_console_errors" }, { "type": "page_load_under", "value": 5000 }]
+      "assertions": [{ "type": "no_console_errors" }, { "type": "page_load_under", "value": 3000 }]
     },
     {
       "id": "MTG-02",

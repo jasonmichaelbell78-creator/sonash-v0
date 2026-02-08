@@ -41,7 +41,7 @@
       "id": "EMAIL-03",
       "name": "Toggle to sign-up mode",
       "action": "click",
-      "selector": "text=Sign up, text=Create account, text=Register",
+      "selector": "text=/\\b(Sign up|Create account|Register)\\b/",
       "value": null,
       "wait_for": null,
       "screenshot": true,

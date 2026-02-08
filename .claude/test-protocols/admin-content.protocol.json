@@ -57,7 +57,7 @@
       "id": "ACNT-04",
       "name": "Click Daily Quotes tab",
       "action": "click",
-      "selector": "text=Daily Quotes, text=Quotes",
+      "selector": "text=/\\b(Daily Quotes|Quotes)\\b/",
       "value": null,
       "wait_for": "network_idle",
       "screenshot": true,

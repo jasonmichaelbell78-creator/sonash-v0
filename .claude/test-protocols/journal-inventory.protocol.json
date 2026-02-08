@@ -35,7 +35,7 @@
       "assertions": [
         { "type": "text_visible", "value": "Resentment" },
         { "type": "text_visible", "value": "Dishonest" },
-        { "type": "text_visible", "value": "Apolog" },
+        { "type": "text_visible", "value": "Apologies" },
         { "type": "text_visible", "value": "Success" }
       ]
     },

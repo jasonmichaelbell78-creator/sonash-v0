@@ -59,7 +59,12 @@
       "screenshot": false,
       "auth_required": false,
       "skip_on_preview": false,
-      "assertions": [{ "type": "element_exists", "selector": "body" }],
+      "assertions": [
+        {
+          "type": "evaluate_truthy",
+          "value": "document.documentElement.scrollWidth <= document.documentElement.clientWidth"
+        }
+      ],
       "browser_resize": { "width": 375, "height": 812 }
     },
     {

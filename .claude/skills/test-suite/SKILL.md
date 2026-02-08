@@ -116,8 +116,14 @@ Execute feature test protocols from `.claude/test-protocols/`.
      emails/userIds
    - `url_contains`: current URL includes string
    - `url_redirected`: navigation redirected to expected URL
-   - `page_load_under`: evaluate `performance.now()` < threshold e. If
-     `screenshot: true`, take screenshot f. Record result as JSONL line
+   - `page_load_under`: evaluate
+     `performance.getEntriesByType('navigation')[0].loadEventEnd` < threshold
+     (Navigation Timing API)
+   - `evaluate_truthy`: evaluate the JavaScript expression and assert it returns
+     truthy e. If `screenshot: true`, take screenshot f. If step has
+     `browser_resize` property (`{ "width": N, "height": N }`), call
+     `mcp__playwright__browser_resize` before executing the step g. Record
+     result as JSONL line
 7. **Continue on failure** — collect all results, do not abort
 
 ### Phase 3: SECURITY

@@ -64,7 +64,7 @@
       "screenshot": false,
       "auth_required": true,
       "skip_on_preview": true,
-      "assertions": [{ "type": "text_visible", "value": "User" }]
+      "assertions": [{ "type": "text_visible", "value": "User Correlation" }]
     },
     {
       "id": "AERR-05",
