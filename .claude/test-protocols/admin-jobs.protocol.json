@@ -1,0 +1,75 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Admin Jobs Tab",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "admin",
+  "target_route": "/admin",
+  "prerequisites": {
+    "auth": "admin",
+    "description": "Must be logged in as admin"
+  },
+  "steps": [
+    {
+      "id": "AJOB-01",
+      "name": "Click Jobs tab",
+      "action": "click",
+      "selector": "text=Jobs",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "AJOB-02",
+      "name": "Job list with 7 jobs visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[class*='job'], [data-testid*='job'], [class*='card']"
+        }
+      ]
+    },
+    {
+      "id": "AJOB-03",
+      "name": "Status badges visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "[class*='badge'], [class*='status']" }
+      ]
+    },
+    {
+      "id": "AJOB-04",
+      "name": "Expandable history panels",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "button[class*='expand'], [class*='accordion'], [class*='collapse'], details"
+        }
+      ]
+    }
+  ],
+  "error_scenarios": []
+}

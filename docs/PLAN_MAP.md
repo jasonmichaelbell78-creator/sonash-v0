@@ -1,6 +1,6 @@
 # SoNash Documentation Plan Map
 
-**Last Updated:** 2026-02-02 | **Version:** 1.8
+**Last Updated:** 2026-02-07 | **Version:** 1.9
 
 ---
 
@@ -188,15 +188,17 @@ docs/archive/
 
 ## Cross-Document Sync Triggers
 
-| When This Changes...          | ...Update These                                    |
-| ----------------------------- | -------------------------------------------------- |
-| ROADMAP.md milestone complete | ROADMAP_LOG.md (archive items)                     |
-| ROADMAP.md new feature        | TESTING_PLAN.md (add test coverage)                |
-| ROADMAP.md sprint status      | SESSION_CONTEXT.md (current state)                 |
-| TESTING_PLAN.md new section   | ROADMAP.md (cross-reference)                       |
-| **TDMS Plan changes**         | **Audit skills, pr-review skill, SESSION_CONTEXT** |
-| **New technical debt found**  | **MASTER_DEBT.jsonl → ROADMAP.md (via DEBT-XXXX)** |
-| **Debt item resolved**        | **MASTER_DEBT.jsonl status, ROADMAP.md checkbox**  |
+| When This Changes...          | ...Update These                                        |
+| ----------------------------- | ------------------------------------------------------ |
+| ROADMAP.md milestone complete | ROADMAP_LOG.md (archive items)                         |
+| ROADMAP.md new feature        | TESTING_PLAN.md (add test coverage)                    |
+| ROADMAP.md sprint status      | SESSION_CONTEXT.md (current state)                     |
+| TESTING_PLAN.md new section   | ROADMAP.md (cross-reference)                           |
+| **New UI feature built**      | **`.claude/test-protocols/` + TESTING_USER_MANUAL.md** |
+| **New test protocol added**   | **TESTING_USER_MANUAL.md protocol inventory table**    |
+| **TDMS Plan changes**         | **Audit skills, pr-review skill, SESSION_CONTEXT**     |
+| **New technical debt found**  | **MASTER_DEBT.jsonl → ROADMAP.md (via DEBT-XXXX)**     |
+| **Debt item resolved**        | **MASTER_DEBT.jsonl status, ROADMAP.md checkbox**      |
 
 ---
 
@@ -206,7 +208,7 @@ docs/archive/
 | ------------------------- | ------------------------------------------------------- |
 | See current priorities    | ROADMAP.md                                              |
 | Understand current sprint | SESSION_CONTEXT.md → OPERATIONAL_VISIBILITY_SPRINT.md   |
-| Find testing guidance     | docs/TESTING_PLAN.md                                    |
+| Find testing guidance     | docs/plans/TESTING_USER_MANUAL.md                       |
 | Check AI rules/patterns   | CLAUDE.md → docs/agent_docs/CODE_PATTERNS.md            |
 | Review completed work     | docs/archive/completed-plans/                           |
 | **Manage technical debt** | **docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md** |
@@ -219,6 +221,7 @@ docs/archive/
 
 | Version | Date       | Description                                                  |
 | ------- | ---------- | ------------------------------------------------------------ |
+| 1.9     | 2026-02-07 | Added test-suite sync triggers, TESTING_USER_MANUAL.md links |
 | 1.7     | 2026-02-01 | TDMS ALL 17 PHASES COMPLETE - System fully operational       |
 | 1.6     | 2026-01-31 | TDMS Phases 6-8 complete, Phase 9b added (audit integration) |
 | 1.5     | 2026-01-30 | TDMS Phase 4 complete, validation scripts built              |

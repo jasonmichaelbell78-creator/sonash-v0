@@ -1,0 +1,59 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Anonymous Authentication",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/",
+  "prerequisites": {
+    "auth": "none",
+    "description": "Start from unauthenticated state"
+  },
+  "steps": [
+    {
+      "id": "ANON-01",
+      "name": "Visit site unauthenticated",
+      "action": "navigate",
+      "selector": null,
+      "value": "/",
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "ANON-02",
+      "name": "Guest/anonymous option visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Guest" }]
+    },
+    {
+      "id": "ANON-03",
+      "name": "Click guest option enters app",
+      "action": "click",
+      "selector": "text=Guest",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "url_contains", "value": "notebook" }]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "ANON-E1",
+      "name": "Anonymous user restrictions",
+      "description": "Anonymous users should see limited access indicators",
+      "manual_only": true,
+      "expected": "Restricted features show upgrade prompts"
+    }
+  ]
+}

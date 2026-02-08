@@ -1,0 +1,88 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Admin Errors Tab",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "admin",
+  "target_route": "/admin",
+  "prerequisites": {
+    "auth": "admin",
+    "description": "Must be logged in as admin"
+  },
+  "steps": [
+    {
+      "id": "AERR-01",
+      "name": "Click Errors tab",
+      "action": "click",
+      "selector": "text=Errors",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "AERR-02",
+      "name": "Error list loads",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[class*='error'], [data-testid*='error-list'], table"
+        }
+      ]
+    },
+    {
+      "id": "AERR-03",
+      "name": "Timeframe filter present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "text_visible", "value": "1h" },
+        { "type": "text_visible", "value": "24h" }
+      ]
+    },
+    {
+      "id": "AERR-04",
+      "name": "User Correlation section visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "text_visible", "value": "User Correlation" }]
+    },
+    {
+      "id": "AERR-05",
+      "name": "JSON export button exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "button:has-text('Export'), button:has-text('Download'), button:has-text('JSON')"
+        }
+      ]
+    }
+  ],
+  "error_scenarios": []
+}

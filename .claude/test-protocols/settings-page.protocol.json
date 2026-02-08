@@ -1,0 +1,76 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Settings Page",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "secondary",
+  "target_route": "/settings",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in"
+  },
+  "steps": [
+    {
+      "id": "SET-01",
+      "name": "Navigate to settings",
+      "action": "navigate",
+      "selector": null,
+      "value": "/settings",
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "SET-02",
+      "name": "Profile form fields present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "input[name='nickname'], input[name='displayName'], input[placeholder*='name' i]"
+        }
+      ]
+    },
+    {
+      "id": "SET-03",
+      "name": "Clean date management visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Clean" }]
+    },
+    {
+      "id": "SET-04",
+      "name": "Account security section visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Security" }]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "SET-E1",
+      "name": "Anonymous user account linking",
+      "description": "Anonymous user should see account linking option",
+      "manual_only": true,
+      "expected": "Link account button visible for anonymous users"
+    }
+  ]
+}

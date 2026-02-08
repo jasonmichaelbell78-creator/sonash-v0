@@ -11,6 +11,11 @@ Comprehensive testing guidance for the SoNash application, including manual
 testing checklists, automated test recommendations, and phase-specific testing
 for code review fixes.
 
+> **UI Testing:** For automated UI testing with the `/test-suite` skill (smoke
+> tests, feature protocols, security & performance checks), see
+> [TESTING_USER_MANUAL.md](plans/TESTING_USER_MANUAL.md). That system covers 27
+> feature protocols with 195+ test steps across 5 phases.
+
 ---
 
 ## 📌 Important: Keep This Document Current

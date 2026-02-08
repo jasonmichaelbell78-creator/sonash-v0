@@ -1,0 +1,69 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Admin Users Tab",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "admin",
+  "target_route": "/admin",
+  "prerequisites": {
+    "auth": "admin",
+    "description": "Must be logged in as admin"
+  },
+  "steps": [
+    {
+      "id": "AUSR-01",
+      "name": "Click Users tab",
+      "action": "click",
+      "selector": "text=Users",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "AUSR-02",
+      "name": "User list loads with pagination",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[class*='user'], [data-testid*='user-list'], table, [class*='list']"
+        }
+      ]
+    },
+    {
+      "id": "AUSR-03",
+      "name": "Search functionality exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "input[type='search'], input[placeholder*='search' i], [data-testid='user-search']"
+        }
+      ]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "AUSR-E1",
+      "name": "Soft-delete confirmation",
+      "description": "Soft-deleting a user requires double confirmation",
+      "manual_only": true,
+      "expected": "Two-step confirmation dialog before deletion"
+    }
+  ]
+}

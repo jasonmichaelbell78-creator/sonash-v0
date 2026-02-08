@@ -1,0 +1,59 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Google OAuth",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/",
+  "prerequisites": {
+    "auth": "none",
+    "description": "Start from unauthenticated state"
+  },
+  "steps": [
+    {
+      "id": "GAUTH-01",
+      "name": "Open sign-in modal",
+      "action": "click",
+      "selector": "text=Sign",
+      "value": null,
+      "wait_for": "text=Google",
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Google" }]
+    },
+    {
+      "id": "GAUTH-02",
+      "name": "Google sign-in button exists",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "button:has-text('Google'), [data-testid='google-signin']"
+        }
+      ]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "GAUTH-E1",
+      "name": "OAuth popup blocked",
+      "description": "Browser blocks popup for Google auth",
+      "manual_only": true,
+      "expected": "Fallback to redirect-based auth or helpful error message"
+    },
+    {
+      "id": "GAUTH-E2",
+      "name": "Network failure during OAuth",
+      "description": "Network drops during Google OAuth flow",
+      "manual_only": true,
+      "expected": "Error message shown, user can retry"
+    }
+  ]
+}

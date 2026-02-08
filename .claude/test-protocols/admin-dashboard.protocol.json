@@ -1,0 +1,76 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Admin Dashboard Tab",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "admin",
+  "target_route": "/admin",
+  "prerequisites": {
+    "auth": "admin",
+    "description": "Must be logged in as admin"
+  },
+  "steps": [
+    {
+      "id": "ADASH-01",
+      "name": "Navigate to admin panel",
+      "action": "navigate",
+      "selector": null,
+      "value": "/admin",
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "ADASH-02",
+      "name": "Dashboard tab loads",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Dashboard" }]
+    },
+    {
+      "id": "ADASH-03",
+      "name": "System health cards visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[class*='health'], [class*='status'], [data-testid*='health']"
+        }
+      ]
+    },
+    {
+      "id": "ADASH-04",
+      "name": "Collection document counts section",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "text_visible", "value": "users" }]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "ADASH-E1",
+      "name": "Non-admin access",
+      "description": "Regular user accessing /admin",
+      "manual_only": false,
+      "expected": "Redirect or access denied message"
+    }
+  ]
+}

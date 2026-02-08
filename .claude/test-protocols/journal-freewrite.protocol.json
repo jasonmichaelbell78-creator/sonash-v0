@@ -1,0 +1,67 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Free Write Entry",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/journal",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in"
+  },
+  "steps": [
+    {
+      "id": "FREE-01",
+      "name": "Open entry creator and select Free Write",
+      "action": "click",
+      "selector": "text=Free Write",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "FREE-02",
+      "name": "Title and content fields present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "input[placeholder*='title' i], input[name='title'], [data-testid='freewrite-title']"
+        },
+        { "type": "element_exists", "selector": "textarea, [data-testid='freewrite-content']" }
+      ]
+    },
+    {
+      "id": "FREE-03",
+      "name": "Save button visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "button:has-text('Save'), button[type='submit']" }
+      ]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "FREE-E1",
+      "name": "Save without content",
+      "description": "Attempting to save free write with empty content",
+      "manual_only": true,
+      "expected": "Content required validation, title optional"
+    }
+  ]
+}

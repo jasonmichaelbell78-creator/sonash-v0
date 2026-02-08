@@ -1,0 +1,63 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Library Page",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "secondary",
+  "target_route": "/notebook",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in, navigate to Library tab"
+  },
+  "steps": [
+    {
+      "id": "LIB-01",
+      "name": "Navigate to Library tab",
+      "action": "click",
+      "selector": "text=Library",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "LIB-02",
+      "name": "Quick Links section visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Quick Links" }]
+    },
+    {
+      "id": "LIB-03",
+      "name": "Prayers section visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Prayer" }]
+    },
+    {
+      "id": "LIB-04",
+      "name": "Glossary section visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Glossary" }]
+    }
+  ],
+  "error_scenarios": []
+}

@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.20
-**Last Updated:** Session #140
+**Document Version:** 3.21
+**Last Updated:** Session #141
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
@@ -300,7 +300,7 @@ reliability, and solo developer automations.
 | **Track E** | Solo Developer Automations            | 📋 Planned      | ~14 hours | Claude |
 | **Track O** | Owner Actions (manual setup)          | 📋 **DO FIRST** | ~10 min   | Jason  |
 | **Track P** | Performance Critical (CWV fix)        | 📋 Planned      | ~24 hours | Claude |
-| **Track T** | Testing Infrastructure (Playwright)   | 📋 Planned      | ~70 hours | Claude |
+| **Track T** | Testing Infrastructure (Playwright)   | 🔄 Phase 1 Done | ~70 hours | Claude |
 
 ### Track A - Admin Panel ✅ DEVELOPMENT COMPLETE
 
@@ -424,6 +424,9 @@ reliability, and solo developer automations.
 - ✅ **TypeScript Build:** All types compile correctly
 - ✅ **ESLint:** No linting errors
 - ⏳ **Manual Tests:** Pending user verification (see TRACK_A_TESTING_PLAN.md)
+- ✅ **UI Protocol Tests:** Admin protocols now available via `/test-suite`
+  (admin-dashboard, admin-users, admin-privileges, admin-jobs, admin-errors,
+  admin-logs, admin-analytics, admin-content — 8 protocols)
 - **Tool Requirements:** Testing deps installed (`@playwright/test`, `msw`,
   `@firebase/rules-unit-testing`)
 
@@ -812,22 +815,27 @@ MASTER_DEBT.jsonl.
 
 **Priority:** P1 - Build sustainable testing infrastructure for solo developer
 
-#### Phase 1: Playwright Foundation (8hr)
+#### Phase 1: `/test-suite` Skill + Feature Protocols ✅ COMPLETE (Session #141)
 
-> **Dependency:** Required for Track A-Test A19-A22 automated testing **See:**
-> [TRACK_A_TESTING_PLAN.md](docs/plans/TRACK_A_TESTING_PLAN.md) for immediate
-> Playwright MCP usage
+> **Delivered:** Unified testing suite with 27 feature protocols, 5-phase
+> pipeline (smoke/feature/security/performance/report), dual browser support
+> (Playwright MCP + Chrome Extension), Firebase Preview Channels for PR testing.
+>
+> **User Manual:** [TESTING_USER_MANUAL.md](docs/plans/TESTING_USER_MANUAL.md)
+> **Skill:** `.claude/skills/test-suite/SKILL.md` **Protocols:**
+> `.claude/test-protocols/*.protocol.json` (27 files)
 
-- [ ] **T1.1:** Install and configure Playwright (2hr)
-  - `npm i -D @playwright/test && npx playwright install`
-  - Additional: `@firebase/rules-unit-testing`, `msw` (optional)
-- [ ] **T1.2:** Create test fixtures (auth, emulator, test users) (2hr)
-- [ ] **T1.3:** Create base page objects (HomePage, AdminPage, etc.) (2hr)
-- [ ] **T1.4:** Configure CI integration (GitHub Actions) (2hr)
+- [x] **T1.1:** Install and configure Playwright (via MCP plugin) ✅
+- [x] **T1.2:** Create test protocol system (27 feature protocols) ✅
+- [x] **T1.3:** Create `/test-suite` skill with 5-phase pipeline ✅
+- [x] **T1.4:** Configure Firebase Preview Channels for PR testing ✅
+- [x] **T1.5:** Testing User Manual + doc cross-references ✅
 
 #### Phase 2: Golden Path E2E Tests (10hr)
 
-> Implements and expands D5.5 (Golden-path E2E test)
+> Implements and expands D5.5 (Golden-path E2E test). **Note:** The
+> `/test-suite` protocols (Phase 1) cover these journeys via Playwright MCP.
+> This phase adds traditional `@playwright/test` CI-runnable tests if needed.
 
 - [ ] **T2.1:** Auth Flow - Sign in, anonymous auth, sign out (2hr)
 - [ ] **T2.2:** Onboarding - Clean date, fellowship, nickname (2hr)
@@ -3169,6 +3177,8 @@ summary command; full dashboard is larger scope.
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
 - **[TESTING_PLAN.md](docs/TESTING_PLAN.md)** - Testing strategy and QA
   procedures
+- **[TESTING_USER_MANUAL.md](docs/plans/TESTING_USER_MANUAL.md)** - UI testing
+  with `/test-suite` skill (27 protocols, 5 phases)
 - **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)** - Current sprint focus and
   status
 - **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
@@ -3185,6 +3195,8 @@ summary command; full dashboard is larger scope.
   December 2025 journal refactor changelog
 - **[TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Comprehensive testing strategy
   and multi-phase fixes
+- **[TESTING_USER_MANUAL.md](./docs/plans/TESTING_USER_MANUAL.md)** -
+  `/test-suite` skill reference (smoke, feature, security, performance testing)
 - **[SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Cloud
   Functions security patterns
 - **[LIBRARY_ANALYSIS.md](./docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md)** -
@@ -3213,6 +3225,10 @@ summary command; full dashboard is larger scope.
   coverage for new features
 - When adding test sections to TESTING_PLAN.md → Reference in ROADMAP.md under
   the relevant milestone
+- When building a new UI feature → Generate `.protocol.json` at
+  `.claude/test-protocols/` and run `/test-suite --protocol=NAME`
+- When adding test protocols → Update protocol inventory in
+  `docs/plans/TESTING_USER_MANUAL.md`
 
 ---
 
@@ -3306,6 +3322,7 @@ npm run roadmap:validate      # Check consistency (when available)
 
 | Version | Session | Changes                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 3.21    | #141    | Track T Phase 1 COMPLETE: `/test-suite` skill with 27 feature protocols, 5-phase pipeline (smoke/feature/security/performance/report), Firebase Preview Channels, dual browser support (Playwright MCP + Chrome Extension); added TESTING_USER_MANUAL.md references to all core docs; updated cross-document sync triggers for test protocols                                  |
 | 3.20    | #140    | Completed date-to-session migration: converted all remaining inline dates to session references; replaced Version History Date column with Session column; removed inline dates from completed items; npm audit fix (brace-expansion vuln); cleaned up stale .bak file                                                                                                         |
 | 3.19    | #133    | Added Phase 1.5 QoL Agent Infrastructure (4 items complete); placed QoL #3, #6, #7, #8 in Phase 2-3; unified /sonarcloud skill; archived obsolete scripts                                                                                                                                                                                                                      |
 | 3.18    | #130    | Added Track A-Test A19-A22 testing plan (TRACK_A_TESTING_PLAN.md); linked Track T Phase 1 as dependency for automated testing; updated test category count to 9; added tool installation details (Playwright, firebase rules testing, msw)                                                                                                                                     |

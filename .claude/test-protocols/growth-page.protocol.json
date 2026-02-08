@@ -1,0 +1,63 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Growth Page",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "secondary",
+  "target_route": "/notebook",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in, navigate to Growth tab"
+  },
+  "steps": [
+    {
+      "id": "GROW-01",
+      "name": "Navigate to Growth tab",
+      "action": "click",
+      "selector": "text=Growth",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "GROW-02",
+      "name": "Card-based layout visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "element_exists", "selector": "[class*='card'], [class*='Card']" }]
+    },
+    {
+      "id": "GROW-03",
+      "name": "Spot Check card visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Spot Check" }]
+    },
+    {
+      "id": "GROW-04",
+      "name": "Daily Slogan widget visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "text_visible", "value": "Slogan" }]
+    }
+  ],
+  "error_scenarios": []
+}

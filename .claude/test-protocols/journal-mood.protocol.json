@@ -1,0 +1,83 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Mood Entry Creation",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/journal",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in"
+  },
+  "steps": [
+    {
+      "id": "MOOD-01",
+      "name": "Open entry creator and select Mood",
+      "action": "click",
+      "selector": "text=Mood",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "MOOD-02",
+      "name": "Emoji selector visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "[data-testid='emoji-selector'], [class*='emoji'], [class*='mood-option']"
+        }
+      ]
+    },
+    {
+      "id": "MOOD-03",
+      "name": "Intensity slider present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        {
+          "type": "element_exists",
+          "selector": "input[type='range'], [data-testid='intensity-slider'], [class*='slider']"
+        }
+      ]
+    },
+    {
+      "id": "MOOD-04",
+      "name": "Save button visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "button:has-text('Save'), button[type='submit']" }
+      ]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "MOOD-E1",
+      "name": "Save without selecting mood",
+      "description": "Attempting to save without selecting a mood emoji",
+      "manual_only": true,
+      "expected": "Validation message or save button disabled"
+    }
+  ]
+}

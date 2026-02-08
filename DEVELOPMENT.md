@@ -21,6 +21,8 @@ project.
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
 - [SECURITY.md](./docs/SECURITY.md) - Security requirements
 - [TESTING_PLAN.md](docs/TESTING_PLAN.md) - Testing strategy and QA procedures
+- [TESTING_USER_MANUAL.md](docs/plans/TESTING_USER_MANUAL.md) - UI testing with
+  `/test-suite` skill (27 protocols, 5 phases)
 - [.claude/CROSS_PLATFORM_SETUP.md](.claude/CROSS_PLATFORM_SETUP.md) -
   Cross-platform Claude Code setup
 

@@ -12,7 +12,7 @@ code reviews. These patterns are **enforced by `npm run patterns:check`** - this
 file serves as a reference when investigating violations or understanding why a
 pattern exists.
 
-**Quick Reference**: See [CLAUDE.md](../../CLAUDE.md) Section 4 for the 5
+**Quick Reference**: See [claude.md](../../claude.md) Section 4 for the 5
 critical patterns that apply to every session.
 
 ## Quick Start
@@ -528,6 +528,7 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | Capture before transaction     | Store original values before transaction for rollback                 | Full restoration if post-transaction steps fail              |
 | 🟡       | Primitive useEffect deps       | Use `user?.uid` not `user` object in dependency array                 | Prevents unnecessary re-renders                              |
 | 🟡       | Functional setState updates    | Use `setState((prev) => ...)` in useCallback                          | Avoids stale closure state                                   |
+| ⚪       | data-testid for test selectors | Use `data-testid="{feature}-{element}"` on key interactive elements   | Stable selectors for automated UI testing protocols          |
 | 🟡       | Claims preservation            | `setCustomUserClaims({ ...existing, newClaim })` spread first         | Firebase replaces entire claims object                       |
 | 🟡       | React state updaters pure      | Move side effects (localStorage/Firestore) from setState to useEffect | State updaters called twice in Strict Mode (Review #207)     |
 | 🟡       | Storage operations isolation   | Independent try/catch for localStorage vs Firestore saves             | One failing shouldn't block the other (Review #207)          |

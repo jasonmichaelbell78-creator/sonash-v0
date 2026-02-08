@@ -740,7 +740,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
 - **Product:** [ROADMAP.md](./ROADMAP.md)
 - **Development:** [DEVELOPMENT.md](./DEVELOPMENT.md)
 - **Security:** [docs/SECURITY.md](./docs/SECURITY.md)
-- **Testing:** [docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)
+- **Testing:** [docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md) |
+  [UI Testing Manual](./docs/plans/TESTING_USER_MANUAL.md) (`/test-suite` skill)
 - **Incident Response:**
   [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)
 

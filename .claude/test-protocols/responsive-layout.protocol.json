@@ -1,0 +1,93 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Responsive Design",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "edge",
+  "target_route": "/",
+  "prerequisites": {
+    "auth": "none",
+    "description": "Tests at multiple viewport sizes"
+  },
+  "steps": [
+    {
+      "id": "RESP-01",
+      "name": "Homepage at mobile (375px)",
+      "action": "evaluate",
+      "selector": null,
+      "value": "window.innerWidth",
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }],
+      "browser_resize": { "width": 375, "height": 812 }
+    },
+    {
+      "id": "RESP-02",
+      "name": "Homepage at tablet (768px)",
+      "action": "evaluate",
+      "selector": null,
+      "value": "window.innerWidth",
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }],
+      "browser_resize": { "width": 768, "height": 1024 }
+    },
+    {
+      "id": "RESP-03",
+      "name": "Homepage at desktop (1280px)",
+      "action": "evaluate",
+      "selector": null,
+      "value": "window.innerWidth",
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }],
+      "browser_resize": { "width": 1280, "height": 800 }
+    },
+    {
+      "id": "RESP-04",
+      "name": "No horizontal scroll at mobile",
+      "action": "evaluate",
+      "selector": null,
+      "value": "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [
+        {
+          "type": "evaluate_truthy",
+          "value": "document.documentElement.scrollWidth <= document.documentElement.clientWidth"
+        }
+      ],
+      "browser_resize": { "width": 375, "height": 812 }
+    },
+    {
+      "id": "RESP-05",
+      "name": "Meetings page at mobile",
+      "action": "navigate",
+      "selector": null,
+      "value": "/meetings/all",
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": false,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }],
+      "browser_resize": { "width": 375, "height": 812 }
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "RESP-E1",
+      "name": "Admin on mobile shows desktop-only notice",
+      "description": "Admin panel should indicate desktop-only on mobile",
+      "manual_only": true,
+      "expected": "Message indicating desktop required"
+    }
+  ]
+}

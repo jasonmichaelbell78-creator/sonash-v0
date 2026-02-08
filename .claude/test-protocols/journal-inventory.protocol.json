@@ -1,0 +1,70 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Inventory Entry (4-part)",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "core",
+  "target_route": "/journal",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in"
+  },
+  "steps": [
+    {
+      "id": "INV-01",
+      "name": "Open entry creator and select Inventory",
+      "action": "click",
+      "selector": "text=Inventory",
+      "value": null,
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "INV-02",
+      "name": "All 4 sections present",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "text_visible", "value": "Resentment" },
+        { "type": "text_visible", "value": "Dishonest" },
+        { "type": "text_visible", "value": "Apologies" },
+        { "type": "text_visible", "value": "Success" }
+      ]
+    },
+    {
+      "id": "INV-03",
+      "name": "Text areas accept input",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [{ "type": "element_count", "selector": "textarea", "value": 4 }]
+    },
+    {
+      "id": "INV-04",
+      "name": "Save button visible",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": true,
+      "assertions": [
+        { "type": "element_exists", "selector": "button:has-text('Save'), button[type='submit']" }
+      ]
+    }
+  ],
+  "error_scenarios": []
+}

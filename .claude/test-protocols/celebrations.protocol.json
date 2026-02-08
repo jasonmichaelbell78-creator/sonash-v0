@@ -1,0 +1,54 @@
+{
+  "protocol_version": "1.0",
+  "feature": "Celebration System",
+  "created": "2026-02-07",
+  "created_session": 141,
+  "priority": "edge",
+  "target_route": "/notebook",
+  "prerequisites": {
+    "auth": "user",
+    "description": "Must be logged in with clean time milestones"
+  },
+  "steps": [
+    {
+      "id": "CELEB-01",
+      "name": "Navigate to notebook",
+      "action": "navigate",
+      "selector": null,
+      "value": "/notebook",
+      "wait_for": "network_idle",
+      "screenshot": true,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    },
+    {
+      "id": "CELEB-02",
+      "name": "No runtime errors from celebration components",
+      "action": "snapshot",
+      "selector": null,
+      "value": null,
+      "wait_for": null,
+      "screenshot": false,
+      "auth_required": true,
+      "skip_on_preview": false,
+      "assertions": [{ "type": "no_console_errors" }]
+    }
+  ],
+  "error_scenarios": [
+    {
+      "id": "CELEB-E1",
+      "name": "Milestone celebration triggers",
+      "description": "Specific clean time milestones trigger confetti/fireworks",
+      "manual_only": true,
+      "expected": "Animation plays on milestone days (1d, 7d, 30d, 90d, etc.)"
+    },
+    {
+      "id": "CELEB-E2",
+      "name": "Celebration modal display",
+      "description": "Milestone modal renders correctly",
+      "manual_only": true,
+      "expected": "Modal shows milestone info with dismiss button"
+    }
+  ]
+}
