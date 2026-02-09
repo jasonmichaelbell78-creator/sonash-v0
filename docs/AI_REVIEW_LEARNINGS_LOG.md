@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15.1    | 2026-02-09 | Review #268: PR #352 Round 2 - Qodo + CI (7 items - 0 CRITICAL, 3 MAJOR, 1 MINOR, 2 REJECTED, 1 INFORMATIONAL). **CI FIX**: 2 remaining false positives (intake-pr-deferred.js:107, normalize-all.js:143) added to verified-patterns.json. **MAJOR**: process.exit(1) on read failure instead of return [] (intake-pr-deferred.js), try/catch + Array.isArray guard for module-scope loadConfig (transform-jsonl-schema.js), empty rules warning (check-cross-doc-deps.js). **REJECTED**: Composite dedup key in generate-skill-registry.js (intentional first-wins behavior), config shape validation in load-config.js (over-engineering for internal configs). Consolidation counter 3→4. Active reviews #266-268.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 15.0    | 2026-02-07 | **CONSOLIDATION #17**: Reviews #254-265 (12 reviews) → CODE_PATTERNS.md v2.6. Added 23 patterns: 4 Security, 7 JS/TS, 8 CI/Automation, 3 Process Management, 1 Bash/Shell. Source: PR #346 Audit Trigger Reset reviews (Qodo/SonarCloud rounds 1-6). Counter reset 12→0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 14.9    | 2026-02-07 | Review #265: PR #346 Round 6 Qodo (6 items - 1 MAJOR, 3 already fixed, 2 rejected). **MAJOR**: Backup-swap saveJson atomic write (rm+rename crash window). **Already fixed in 5f3f312**: empty entries guard, section scoping, table date regex. **Rejected**: .filter(Boolean) on hardcoded constants, auto-generated DOCUMENTATION_INDEX.md. Consolidation counter 11→12 (consolidation due). Active reviews #213-265.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 14.8    | 2026-02-07 | Review #260-264: PR #346 Audit Trigger Reset - 5 rounds Qodo + SonarCloud + CI (29 items across 5 rounds). **R1** (11 items): execFileSync conversion (SonarCloud HIGH), regex DoS backtracking, Object.create(null), \x1f delimiter, NaN guard, Math.min guard, CI false positive exclusions. **R2** (4 items): delimiter mismatch bug, date validation, robust category matching. **R3** (5 items): execFileSync ×2 files, timezone drift, getCategoryAuditDates wrong-table bug. **R4** (3 items): multi-word category capitalization, Windows atomic rename, JSON.parse safety. **R5** (6 items): section-scoped regex, table-column date parsing, empty entries guard. Consolidation counter now at 11 (threshold reached). Active reviews #213-264.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -666,6 +667,52 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #268: PR #352 Round 2 - Qodo + CI False Positives (2026-02-09)
+
+**Source:** Qodo PR Compliance + CI Pattern Compliance (Round 2) **PR/Branch:**
+claude/cherry-pick-and-pr-xarOL (PR #352) **Suggestions:** 7 total (Critical: 0,
+Major: 3, Minor: 1, Rejected: 2, Informational: 1)
+
+**CI Blockers Fixed:**
+
+1. `intake-pr-deferred.js:107` — readFileSync IS inside try/catch (lines
+   106-112), pattern checker false positive. Added to verified-patterns.json.
+2. `normalize-all.js:143` — readFileSync IS inside try/catch (lines 142-148),
+   pattern checker false positive. Added to verified-patterns.json.
+
+**Accepted Suggestions:**
+
+3. [MAJOR] `intake-pr-deferred.js` — Changed `return []` to `process.exit(1)`
+   when MASTER_DEBT.jsonl exists but can't be read. Returning empty silently
+   loses duplicate detection capability.
+4. [MAJOR] `transform-jsonl-schema.js` — Wrapped module-scope `loadConfig()` in
+   try/catch with defaults. Unguarded module-scope call crashes with unhelpful
+   stack trace if config missing.
+5. [MAJOR] `transform-jsonl-schema.js` — Added `Array.isArray()` guard on
+   `validSeverities` from config to validate shape before use.
+6. [MINOR] `check-cross-doc-deps.js` — Added warning when no dependency rules
+   loaded from config (empty rules is valid but worth flagging).
+
+**Rejected Suggestions:**
+
+7. `generate-skill-registry.js` composite dedup key (`source:name`) — REJECTED.
+   Current name-only dedup is intentional: `.claude/skills` takes priority over
+   `.agents/skills`. Composite key would allow duplicates.
+8. `load-config.js` config shape validation — REJECTED. Over-engineering for
+   internal dev-controlled configs. All consumers already validate what they
+   need.
+
+**Key Learnings:**
+
+- Pattern checker line numbers shift after edits — always re-verify false
+  positives after fixing nearby code
+- `return []` on read failure can silently lose safety guarantees (dedup) —
+  prefer `process.exit(1)` for non-optional file reads
+- Module-scope `loadConfig()` needs try/catch even more than function-scope
+  calls since the error surface is harder to diagnose
 
 ---
 
