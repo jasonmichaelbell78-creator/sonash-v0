@@ -10,6 +10,13 @@
 
 ---
 
+## Purpose
+
+This plan establishes a unified Technical Debt Management System (TDMS) for
+tracking, prioritizing, and resolving technical debt across the SoNash project.
+
+---
+
 ## Executive Summary
 
 This plan establishes a unified Technical Debt Management System (TDMS) for the
@@ -50,7 +57,7 @@ system integrity.
 | SonarCloud/Qodo               | `docs/analysis/`                               | 921 + 77 hotspots | JSON    |
 | Aggregation MASTER_ISSUE_LIST | `docs/aggregation/`                            | 284               | JSONL   |
 | Aggregation net-new           | `docs/aggregation/`                            | 171               | JSONL   |
-| Canonical MASTER_FINDINGS     | `docs/audits/canonical/`                       | 203               | JSONL   |
+| Canonical MASTER_DEBT         | `docs/technical-debt/`                         | 2379              | JSONL   |
 | 2026-Q1 CANON-\* files        | `docs/reviews/2026-Q1/canonical/`              | 118               | JSONL   |
 | 2026-Q1 DEDUPED_FINDINGS      | `docs/reviews/2026-Q1/canonical/tier2-output/` | 15                | JSONL   |
 | Single-session audits         | `docs/audits/single-session/`                  | 93                | JSONL   |
@@ -1014,6 +1021,18 @@ node scripts/debt/check-phase-status.js
 > **Note:** Phase 18 was a corrective phase added 2026-02-01 to complete the
 > originally planned Phase 6/6.5 ROADMAP integration. Successfully completed
 > same day.
+
+---
+
+## Version History
+
+| Version | Date       | Description                                          |
+| ------- | ---------- | ---------------------------------------------------- |
+| 1.4     | 2026-02-01 | All 18 phases complete, Phase 18 corrective addition |
+| 1.3     | 2026-02-01 | Phases 15-17 implementation                          |
+| 1.2     | 2026-01-31 | Phases 10-14 implementation                          |
+| 1.1     | 2026-01-31 | Phases 5-9 implementation                            |
+| 1.0     | 2026-01-30 | Initial plan (Session #117)                          |
 
 ---
 

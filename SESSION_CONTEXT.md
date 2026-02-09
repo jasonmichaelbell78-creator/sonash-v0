@@ -2,7 +2,7 @@
 
 **Document Version**: 3.54 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-08 (Session #141)
+2026-02-08 (Session #142)
 
 ---
 
@@ -552,7 +552,7 @@ productive work.
 
 **Status**: 🔄 IN PROGRESS (~60% complete - Track A Phase 3 done)
 
-**See**: [ROADMAP.md](./ROADMAP.md#-active-sprint-operational-visibility-p0) |
+**See**: [ROADMAP.md](./ROADMAP.md#5--active-sprint-operational-visibility-p0) |
 [Sprint Spec](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 
 ### 🔧 Hookify Strategy - Pending Review
@@ -1336,7 +1336,7 @@ Remaining work (PR 3-5) deferred to M2 Architecture backlog.
 (Status: PAUSED, archived 2026-01-20)
 
 **Deferred work**: See
-[ROADMAP.md M2 → SonarCloud Deferred Work](./ROADMAP.md#️-m2---architecture-refactor-️-optional)
+[ROADMAP.md M2 → SonarCloud Deferred Work](./ROADMAP.md#9-️-m2---architecture-refactor-️-optional)
 
 ---
 

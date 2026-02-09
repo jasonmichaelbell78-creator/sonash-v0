@@ -87,9 +87,9 @@ To run alerts check:
 | Check             | Source                            | Severity |
 | ----------------- | --------------------------------- | -------- |
 | Deferred PR items | `docs/AI_REVIEW_LEARNINGS_LOG.md` | Warning  |
-| Backlog S0 items  | `docs/AUDIT_FINDINGS_BACKLOG.md`  | Error    |
-| Backlog S1 items  | `docs/AUDIT_FINDINGS_BACKLOG.md`  | Warning  |
-| Backlog S2 items  | `docs/AUDIT_FINDINGS_BACKLOG.md`  | Info     |
+| Backlog S0 items  | `docs/technical-debt/INDEX.md`    | Error    |
+| Backlog S1 items  | `docs/technical-debt/INDEX.md`    | Warning  |
+| Backlog S2 items  | `docs/technical-debt/INDEX.md`    | Info     |
 
 ### 5. Documentation Health (Full Mode)
 

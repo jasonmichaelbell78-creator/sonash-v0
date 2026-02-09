@@ -33,9 +33,9 @@ health, and respond to security incidents through the admin panel.
 
 **Related To**:
 
-- [M1.6 Admin Panel Phase 4](../ROADMAP.md#phase-4-error-tracking-sentry-integration-90-complete) -
+- [M1.6 Admin Panel Phase 4](../ROADMAP.md#phase-4-error-tracking---sentry-integration--complete-via-track-a) -
   Error Tracking
-- [M1.6 Admin Panel Phase 5](../ROADMAP.md#phase-5-system-logs-gcp-integration-in-sprint) -
+- [M1.6 Admin Panel Phase 5](../ROADMAP.md#phase-5-system-logs---gcp-integration--complete-via-track-a) -
   Logs Tab
 - [SoNash Admin Panel Enhancement v1.4](./archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)
 

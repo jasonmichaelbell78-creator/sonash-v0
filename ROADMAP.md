@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.21
-**Last Updated:** Session #141
+**Document Version:** 3.22
+**Last Updated:** Session #142
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
@@ -12,23 +12,13 @@
 
 > **v3.16 UPDATE:** Created canonical audit findings location (Session #116).
 > 172 NET NEW findings consolidated to
-> [docs/audits/canonical/](./docs/technical-debt/). Added audit findings
-> procedure documentation and ROADMAP integration guide. See
-> AUDIT_FINDINGS_PROCEDURE.md (archived).
-
-> **v3.15 UPDATE:** Integrated 94 NET NEW findings from Refactoring Audit
-> (Session #115). Added Track T Phase 7 (Cloud Functions Testing), M2.3-REF (God
-> Object Refactoring), M4.5-F3 (Security Hardening), and Quick Wins. See
-> docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md (archived)
-
-> **v3.0 MAJOR UPDATE:** Integrated 76 expansion items from
-> EXPANSION_EVALUATION_TRACKER.md. Added M4.5 (Security & Privacy) and M9
-> (Native App) milestones. Updated M5, M6, M7 with expanded feature groups. See
-> [analysis/](./analysis/) for full deduplication and dependency analysis.
+> [docs/technical-debt/](./docs/technical-debt/). Added audit findings procedure
+> documentation and ROADMAP integration guide. See AUDIT_FINDINGS_PROCEDURE.md
+> (archived).
 
 ---
 
-## 🎯 Document Purpose
+## 1. 🎯 Document Purpose
 
 This is the **CANONICAL** product roadmap for SoNash. This document serves as:
 
@@ -50,7 +40,7 @@ This is the **CANONICAL** product roadmap for SoNash. This document serves as:
 
 ---
 
-## 📋 How to Use This Document
+## 2. 📋 How to Use This Document
 
 ### For AI Assistants
 
@@ -69,7 +59,7 @@ This is the **CANONICAL** product roadmap for SoNash. This document serves as:
 
 ---
 
-## 🎯 Vision
+## 3. 🎯 Vision
 
 Build a comprehensive, secure digital recovery notebook that helps individuals
 track their sobriety journey with privacy-first design and evidence-based
@@ -77,15 +67,15 @@ recovery practices.
 
 ---
 
-## 📊 Milestones Overview
+## 4. 📊 Milestones Overview
 
 | Milestone                       | Status      | Progress         | Phase       | Priority   | Items |
 | ------------------------------- | ----------- | ---------------- | ----------- | ---------- | ----- |
 | **M0 - Baseline**               | ✅ Complete | 100%             | Foundation  | Foundation | -     |
 | **M1 - Foundation**             | ✅ Complete | 100%             | Foundation  | P0         | -     |
 | **Integrated Improvement Plan** | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -     |
-| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~30%             | Foundation  | **P0**     | ~56   |
-| **M1.5 - Quick Wins**           | ⏸️ Paused   | ~50%             | Foundation  | P1         | ~19   |
+| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~25%             | Foundation  | **P0**     | ~105  |
+| **M1.5 - Quick Wins**           | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19   |
 | **M1.6 - Admin Panel + UX**     | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15   |
 | **M2 - Architecture**           | ⏸️ Optional | 0%               | Parallel    | P2         | ~72   |
 | ↳ M2.1 Code Quality             |             |                  | Parallel    | P2         | ~25   |
@@ -123,8 +113,8 @@ recovery practices.
 - **P2**: Backlog, opportunistic
 - **P3**: Future consideration
 
-**Overall Progress:** ~40% (Improvement Plan complete, feature work ready to
-resume)
+**Overall Progress:** ~15% (3 foundation milestones complete, active sprint
+~25%)
 
 > **Archive:** For completed M0 and M1 milestones, see
 > [ROADMAP_LOG.md](./ROADMAP_LOG.md)
@@ -243,7 +233,7 @@ Planned | 🟣 Research
 
 ---
 
-## 🚀 ACTIVE SPRINT: Operational Visibility (P0)
+## 5. 🚀 ACTIVE SPRINT: Operational Visibility (P0)
 
 > **Spec:**
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
@@ -271,29 +261,19 @@ Planned | 🟣 Research
 This sprint consolidates Admin Panel completion, Development Dashboard, CI/CD
 reliability, and solo developer automations.
 
-### 🚨 Immediate Hotfixes ✅ COMPLETE (Session #115)
+### Archived Tracks (✅ Complete)
 
-> **Source:** docs/audits/comprehensive/REFACTORING_AUDIT_DEDUPLICATED.md -
-> Critical issues requiring immediate attention
-
-| ID        | Issue                        | File                                 | Effort | Status   |
-| --------- | ---------------------------- | ------------------------------------ | ------ | -------- |
-| REACT-001 | setTimeout memory leak       | celebration-provider.tsx             | 30 min | ✅ Fixed |
-| PERF-002  | Admin tabs all rendered      | admin-tabs.tsx                       | 1 hr   | ✅ Fixed |
-| DEP-018   | Firebase config in committed | .env.production                      | 10 min | ⏭️ N/A   |
-| FB-002    | Firebase SDK mismatch        | package.json, functions/package.json | 30 min | ⏭️ N/A   |
-
-> **DEP-018/FB-002 Note:** Investigated and found to be false positives -
-> Firebase config is public by design, and SDK versions differ because they're
-> different packages.
-
-**Completed:** Session #115 | **Actual Time:** ~45 minutes
+| Track            | Items               | Completed     | Session   | Details                                                                                    |
+| ---------------- | ------------------- | ------------- | --------- | ------------------------------------------------------------------------------------------ |
+| Hotfixes         | REACT-001, PERF-002 | ✅ Fixed      | #115      | [ROADMAP_LOG.md](./ROADMAP_LOG.md#session-142---roadmap-cleanup-archived-completed-tracks) |
+| A — Admin Panel  | A1-A25              | ✅ All phases | #75-#129  | [ROADMAP_LOG.md](./ROADMAP_LOG.md#track-a--admin-panel--development-complete)              |
+| A-Test — Testing | 293/294 tests       | ✅ Complete   | #130-#141 | [ROADMAP_LOG.md](./ROADMAP_LOG.md#track-a-test--testing--validation--complete)             |
 
 ### Sprint Tracks (8 Parallel Tracks)
 
 | Track       | Focus                                 | Status          | Effort    | Owner  |
 | ----------- | ------------------------------------- | --------------- | --------- | ------ |
-| **Track A** | Admin Panel (Sentry + GCP Logs)       | ✅ Dev Complete | ~6 hours  | Claude |
+| **Track A** | Admin Panel (Sentry + GCP Logs)       | ✅ Archived     | ~6 hours  | Claude |
 | **Track B** | Dev Dashboard MVP (expanded +B10/B11) | 🔄 In Progress  | ~20 hours | Claude |
 | **Track C** | UI/UX Improvements                    | 📋 Reserved     | TBD       | Claude |
 | **Track D** | CI Reliability & Automation           | 📋 Planned      | ~28 hours | Claude |
@@ -302,160 +282,6 @@ reliability, and solo developer automations.
 | **Track P** | Performance Critical (CWV fix)        | 📋 Planned      | ~24 hours | Claude |
 | **Track T** | Testing Infrastructure (Playwright)   | 🔄 Phase 1 Done | ~70 hours | Claude |
 
-### Track A - Admin Panel ✅ DEVELOPMENT COMPLETE
-
-> **Status:** All development items complete. Testing in progress. See
-> [TRACK_A_TESTING_CHECKLIST.md](docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md)
-> for validation.
-
-#### Sentry Integration (Phase 4) ✅ Complete
-
-- [x] **A1:** Wire Sentry client in `app/layout.tsx` ✅
-- [x] **A2:** Configure Sentry Cloud Function env vars ✅
-- [x] **A3:** Admin Errors Tab displays real data ✅
-- [x] **A3.1:** Add user correlation to Errors Tab ✅
-- [x] **A4:** Build Admin Logs Tab with GCP deep links ✅
-
-#### Admin Panel Fixes ✅ Complete
-
-- [x] **A5:** Fix Dashboard Tab - `adminGetDashboardStats` ✅
-- [x] **A6:** Users Tab - Initial population with pagination ✅
-- [x] **A7:** Stacked Tabs UI - Replace horizontal scroll ✅
-
-#### User Privileges System ✅ Complete
-
-- [x] **A8:** Create user privilege types infrastructure ✅
-- [x] **A9:** Grant privileges in Admin Users screen ✅
-
-#### Background Jobs Expansion ✅ Complete
-
-- [x] **A10:** Cleanup Old Sessions job ✅
-- [x] **A11:** Cleanup Orphaned Storage Files job ✅
-- [x] **A12:** Generate Usage Analytics job ✅
-- [x] **A13:** Prune Security Events job ✅
-- [x] **A14:** Health Check Notifications job ✅
-
-#### Firebase Console In-App Features ✅ Complete (Session #75)
-
-> **Goal:** Bring commonly-accessed Firebase Console features into the admin
-> panel to reduce context switching.
-
-- [x] **A15:** Password Reset Button in Users Tab ✅
-  - Sends password reset email via Firebase Admin SDK
-  - Shows disabled state for Google/anonymous auth users
-  - Confirmation dialog prevents accidental sends
-- [x] **A16:** Storage Stats in Dashboard ✅
-  - Total size, file count, user count
-  - Orphaned file detection
-  - File type breakdown
-- [x] **A17:** Rate Limit Viewer in Dashboard ✅
-  - View active rate limits with request counts
-  - Clear blocked rate limits manually
-  - Shows expiration times
-- [x] **A18:** Collection Document Counts in Dashboard ✅
-  - Document counts for all Firestore collections
-  - Subcollection estimates where applicable
-  - On-demand loading to reduce dashboard load time
-
-#### Firebase Console Features - Phase 2 (Items 5-8) 📋 PLANNED
-
-> **Next batch** from Firebase/GCP Console integration (Session #75). Implement
-> after Track A-Test validation complete.
-
-- [x] **A19:** User Analytics Tab (3-4hr) ✅ Session #129
-  - DAU/WAU/MAU trends visualization
-  - Retention metrics from Firestore session data
-  - Feature usage breakdown
-- [x] **A20:** Job Results Detailed Viewer (2-3hr) ✅ Session #129
-  - View full job output logs in-app
-  - Filter by job type, status, date range
-  - Download job logs as JSON
-- [x] **A21:** Sentry Error → User Correlation (2-3hr) ✅ Session #129
-  - Link errors to specific user accounts
-  - Show user's recent actions before error
-  - **Key lines:** `lib/logger.ts:1`
-  - Quick navigation to user details from error
-- [x] **A22:** GCP Cloud Logging Query Builder (3-4hr) ✅ Session #129
-  - Simple log queries without GCP Console
-  - Pre-built query templates (errors, security events, auth)
-  - Export filtered results
-
-#### Admin Panel Enhancements - Phase 3 ✅ Complete (Session #78)
-
-- [x] **A23:** Error JSON Export with Timeframe Selection ✅
-  - Download error reports as JSON for Claude Code debugging
-  - Timeframe options: 1h, 6h, 24h, 7d, 30d
-  - Copy to clipboard functionality
-  - Error boundary export buttons for crash reports
-- [x] **A24:** Auto-Refresh Tabs on Switch ✅
-  - Tab context provider tracks active tab and refresh timestamps
-  - useTabRefresh hook with 30-second minimum interval
-  - All 13 admin tab components migrated
-- [x] **A25:** Soft-Delete Users with 30-Day Retention ✅
-  - Double confirmation dialog (Step 1: confirm, Step 2: type DELETE)
-  - Soft-delete sets isSoftDeleted flag, disables Firebase Auth
-  - Undelete button restores user within 30 days
-  - scheduledHardDeleteSoftDeletedUsers job (daily 5AM UTC)
-  - Visual indicators: "Pending Deletion" badge with days remaining
-
-### Track A-Test - Testing & Validation 🔄 IN PROGRESS
-
-> **Original Checklist:**
-> [TRACK_A_TESTING_CHECKLIST.md](docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md)
-> **A19-A22 Testing Plan:**
-> [TRACK_A_TESTING_PLAN.md](docs/plans/TRACK_A_TESTING_PLAN.md) (Session #130)
-> **Total Tests:** 131 original + A19-A22 additions | **Categories:** 9
-
-| Category            | Tests | Passed | Skipped | Status         |
-| ------------------- | ----- | ------ | ------- | -------------- |
-| Logs Tab UI         | 24    | 24     | 0       | ✅ Complete    |
-| Privileges Backend  | 16    | 5      | 11      | 🔄 Partial     |
-| Privileges Frontend | 14    | 10     | 4       | 🔄 Partial     |
-| Background Jobs     | 30    | 4      | 25      | 🔄 Re-testing  |
-| Security Testing    | 10    | 6      | 4       | 🔄 Partial     |
-| Integration Tests   | 26    | 25     | 1       | ✅ Complete    |
-| Performance Tests   | 5     | 4      | 1       | ✅ Complete    |
-| Error Handling      | 6     | 0      | 6       | ⏳ Pending     |
-| **A19-A22 Testing** | ~40   | 5      | 0       | 🔄 In Progress |
-
-**A19-A22 Testing Status (Session #130):**
-
-- ✅ **Automated Tests Complete:** 293/294 unit tests passing (1 skipped)
-- ✅ **TypeScript Build:** All types compile correctly
-- ✅ **ESLint:** No linting errors
-- ⏳ **Manual Tests:** Pending user verification (see TRACK_A_TESTING_PLAN.md)
-- ✅ **UI Protocol Tests:** Admin protocols now available via `/test-suite`
-  (admin-dashboard, admin-users, admin-privileges, admin-jobs, admin-errors,
-  admin-logs, admin-analytics, admin-content — 8 protocols)
-- **Tool Requirements:** Testing deps installed (`@playwright/test`, `msw`,
-  `@firebase/rules-unit-testing`)
-
-#### Track A Blockers - Firestore Indexes ✅ RESOLVED
-
-> **Status:** All required indexes are now deployed (verified Session #77).
-
-| Job | Index Required                                     | Status      |
-| --- | -------------------------------------------------- | ----------- |
-| A10 | `daily_logs` collection group: `updatedAt ASC`     | ✅ Deployed |
-| A12 | `security_logs`: `type + functionName + timestamp` | ✅ Deployed |
-| A14 | `security_logs`: `severity ASC + timestamp ASC`    | ✅ Deployed |
-| A14 | `admin_jobs`: `lastRunStatus + lastRun`            | ✅ Deployed |
-
-**All Blockers Resolved (Session #77):**
-
-- ✅ Firestore indexes deployed
-- ✅ A11 storage bucket fix deployed (`sonash-app.firebasestorage.app`)
-
-**Testing Prerequisites:**
-
-- [x] Deploy latest functions to Firebase
-- [x] Fix job visibility (Session #74 - added all jobs to registeredJobs)
-- [x] Create missing Firestore indexes (A10, A14) - **DONE** (Session #77)
-- [x] Fix A11 storage bucket name - **DONE** (Session #77)
-- [x] Re-test all jobs A10-A14 - **ALL PASSING** (Session #77)
-- [ ] Verify Sentry env vars configured
-- [ ] Create test user accounts (admin, premium, free)
-
 ### Track B - Dev Dashboard (Expanded)
 
 > **Full spec:** See
@@ -463,7 +289,7 @@ reliability, and solo developer automations.
 > Track B
 >
 > **Session #116 Audit Findings:** 18 documentation findings - see
-> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (documentation
+> [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (documentation
 > category)
 
 #### Session #116 Documentation Priority Items (S1/S2)
@@ -511,8 +337,7 @@ reliability, and solo developer automations.
 > Track D
 >
 > **Session #116 Audit Findings:** 17 findings - see
-> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (process
-> category)
+> [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (process category)
 
 #### Session #116 Priority Items (S1/S2)
 
@@ -579,7 +404,7 @@ reliability, and solo developer automations.
 > Track E
 >
 > **Session #116 Audit Findings:** 3 engineering-productivity findings - see
-> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl)
+> [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl)
 
 #### Session #116 Priority Items (S2)
 
@@ -649,7 +474,7 @@ reliability, and solo developer automations.
 > (CI Reliability) in the Operational Visibility Sprint.
 >
 > **Session #116 Audit Findings:** 11 findings - see
-> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (performance
+> [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (performance
 > category)
 
 **Priority:** P0 - Core Web Vitals failing, 11MB image payload
@@ -960,7 +785,7 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 ---
 
-## ⚡ M1.5 - Quick Wins (🔄 In Progress)
+## 6. ⚡ M1.5 - Quick Wins (🔄 In Progress)
 
 **Goal:** High-impact, low-effort features that improve user experience
 
@@ -1189,7 +1014,7 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 ---
 
-## 🖥️ M1.6 - Admin Panel + Today Page Enhancement (🔄 In Progress)
+## 7. 🖥️ M1.6 - Admin Panel + Today Page Enhancement (🔄 In Progress)
 
 **Goal:** Operational monitoring for admins + dramatically improved user
 experience for Today page
@@ -1377,7 +1202,7 @@ experience
 
 ---
 
-## 📊 Technical Debt Backlog (Aggregated)
+## 8. 📊 Technical Debt Backlog (Aggregated)
 
 > **Primary Source:** [TECHNICAL_DEBT_MASTER.md](docs/technical-debt/INDEX.md) ←
 > **NEW (Session #98)** **Legacy Source:**
@@ -1451,7 +1276,7 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 
 ---
 
-## 🏛️ M2 - Architecture Refactor (⏸️ Optional)
+## 9. 🏛️ M2 - Architecture Refactor (⏸️ Optional)
 
 **Goal:** Reduce technical debt only if friction prevents progress
 
@@ -1460,12 +1285,12 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 
 ---
 
-### 📦 M2.1 - Code Quality & Tooling (~25 items)
+### 9.1 📦 M2.1 - Code Quality & Tooling (~25 items)
 
 Developer tooling, SonarCloud cleanup, and code quality improvements.
 
 > **Session #116 Audit Findings:** 87 code findings - see
-> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (code category)
+> [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (code category)
 
 #### Session #116 Priority Items (S0/S1)
 
@@ -1604,9 +1429,10 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 - ⏳ **Automated Metrics Dashboard**
   - Session activity visualization
   - Error tracing viewer
-  - See: [ROADMAP.md Process & Tooling section](#-process--tooling-improvements)
+  - See:
+    [DEVELOPMENT.md Process & Tooling section](./DEVELOPMENT.md#-process--tooling-improvements)
 
-**Dependency Maintenance (Q2 2026 - Session #69):**
+**Dependency Maintenance (Session #69):**
 
 > **Reminder:** Review and plan migration for major version upgrades. Research
 > done in Session #69 - see commit history for breaking change analysis.
@@ -1756,9 +1582,9 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
    fixer, delegated review
 2. **Phase 2 (Next sprint):** Parallel session-start agents, batch agent farms,
    codebase-explorer, code-reviewer refactor
-3. **Phase 3 (Q3 2026):** Smart agent selection, compliance report,
-   agent-router, shared utilities
-4. **Phase 4 (Q4 2026):** Build documentation-enforcement and context-optimizer
+3. **Phase 3:** Smart agent selection, compliance report, agent-router, shared
+   utilities
+4. **Phase 4:** Build documentation-enforcement and context-optimizer
 5. **Continuous:** Audit skills for parallelization opportunities during routine
    maintenance
 
@@ -1871,7 +1697,7 @@ These pre-existing issues were identified during PR review CI:
 
 ---
 
-### 📊 M2.2 - Monitoring & Observability (~25 items)
+### 9.2 📊 M2.2 - Monitoring & Observability (~25 items)
 
 Performance monitoring, incident response, and dashboard enhancements.
 
@@ -1960,7 +1786,7 @@ Performance monitoring, incident response, and dashboard enhancements.
 
 ---
 
-### 🏗️ M2.3 - Infrastructure & Refactoring (~22 items)
+### 9.3 🏗️ M2.3 - Infrastructure & Refactoring (~22 items)
 
 Architecture refactoring, schema optimization, and infrastructure work.
 
@@ -1994,7 +1820,7 @@ Architecture refactoring, schema optimization, and infrastructure work.
 > affecting maintainability and performance
 >
 > **Session #116 Audit Findings:** 19 refactoring findings - see
-> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (refactoring
+> [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (refactoring
 > category)
 
 #### Session #116 Refactoring Priority Items (S0/S1)
@@ -2146,7 +1972,7 @@ reveals performance issues
 ### Consolidated Audit Findings (Session #116)
 
 > **Canonical Location:** [docs/audits/canonical/](docs/technical-debt/) **Full
-> Index:** [MASTER_FINDINGS_INDEX.md](docs/technical-debt/INDEX.md)
+> Index:** [Technical Debt INDEX.md](docs/technical-debt/INDEX.md)
 > **Procedures:** AUDIT_FINDINGS_PROCEDURE.md (archived)
 
 **Session #116** consolidated 172 NET NEW audit findings from 6-domain
@@ -2191,13 +2017,13 @@ comprehensive audit.
 
 1. **S0/S1 findings** added to respective track/milestone above
 2. **S2/S3 findings** tracked in
-   [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl)
+   [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl)
 3. **Cross-reference** via file:line in aggregator for deduplication
 4. **Resolution workflow** documented in AUDIT_FINDINGS_PROCEDURE.md (archived)
 
 ---
 
-## 🗓️ M3 - Meetings & Location (📋 Planned - Q2 2026)
+## 10. 🗓️ M3 - Meetings & Location (📋 PLANNED)
 
 **Story Points:** 84 SP | **Priority:** P1
 
@@ -2255,7 +2081,7 @@ comprehensive audit.
 
 ---
 
-## 🎯 M4 - Feature Expansion (📋 Planned - Q2 2026)
+## 11. 🎯 M4 - Feature Expansion (📋 PLANNED)
 
 **Goal:** Extend core functionality based on M1-M3 learnings
 
@@ -2304,7 +2130,7 @@ _Building on the basic HALT check feature from M1.5_
 
 ---
 
-## 🔐 M4.5 - Security & Privacy (📋 Planned - Q2 2026)
+## 12. 🔐 M4.5 - Security & Privacy (📋 PLANNED)
 
 **Story Points:** ~85 SP | **Priority:** P0 (Critical prerequisite for M5)
 
@@ -2312,8 +2138,7 @@ _Building on the basic HALT check feature from M1.5_
 > All offline data storage requires encryption infrastructure from M4.5.
 >
 > **Session #116 Audit Findings:** 17 findings - see
-> [MASTER_FINDINGS.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (security
-> category)
+> [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) (security category)
 
 ### Session #116 Priority Items (S1/S2)
 
@@ -2415,7 +2240,7 @@ entries) will be encrypted at rest using AES-256-GCM with PBKDF2 key derivation.
 
 ---
 
-## 📝 M5 - Offline + Steps (📋 Planned - Q3 2026)
+## 13. 📝 M5 - Offline + Steps (📋 PLANNED)
 
 **Story Points:** ~150 SP | **Priority:** P1 | **Items:** 23
 
@@ -2474,7 +2299,7 @@ Digital worksheets for structured step work (existing + expansion).
 
 ---
 
-## 🙏 M6 - Journaling + Safety (📋 Planned - Q3 2026)
+## 14. 🙏 M6 - Journaling + Safety (📋 PLANNED)
 
 **Story Points:** ~180 SP | **Priority:** P1 | **Items:** 26
 
@@ -2534,7 +2359,7 @@ Improved new user experience.
 
 ---
 
-## 🤝 M7 - Fellowship Suite (📋 Planned - Q4 2026)
+## 15. 🤝 M7 - Fellowship Suite (📋 PLANNED)
 
 **Story Points:** ~350 SP | **Priority:** P1 | **Items:** ~55
 
@@ -2545,7 +2370,7 @@ Improved new user experience.
 
 ---
 
-### 👥 M7.1 - Sponsor & Sharing (~15 items)
+### 15.1 👥 M7.1 - Sponsor & Sharing (~15 items)
 
 Sponsor relationship management and daily engagement features.
 
@@ -2581,7 +2406,7 @@ Complete sponsor relationship management.
 
 ---
 
-### 📄 M7.2 - Exports & Reports (~14 items)
+### 15.2 📄 M7.2 - Exports & Reports (~14 items)
 
 Comprehensive data export and professional documentation.
 
@@ -2607,7 +2432,7 @@ Comprehensive data export and professional documentation.
 
 ---
 
-### 🎸 M7.3 - Nashville & Knowledge (~21 items)
+### 15.3 🎸 M7.3 - Nashville & Knowledge (~21 items)
 
 Nashville-specific resources and educational content.
 
@@ -2644,7 +2469,7 @@ Educational content and interactive guides.
 
 ---
 
-### ⚙️ M7.4 - Personalization & Analytics (~17 items)
+### 15.4 ⚙️ M7.4 - Personalization & Analytics (~17 items)
 
 Safety, personalization, accessibility, and analytics features.
 
@@ -2709,7 +2534,7 @@ Financial recovery and mentorship tools.
 
 ---
 
-## 🎤 M8 - Speaker Recordings (📋 Planned - Q4 2026)
+## 16. 🎤 M8 - Speaker Recordings (📋 PLANNED)
 
 **Story Points:** 63 SP | **Priority:** P2
 
@@ -2758,7 +2583,7 @@ Before M8 completes, the following must be evaluated to decide M9 scope:
 
 ---
 
-## 📱 M9 - Native App Features (📋 Planned - 2027)
+## 17. 📱 M9 - Native App Features (📋 PLANNED)
 
 **Story Points:** ~100 SP | **Priority:** P2 | **Items:** 15
 
@@ -2822,7 +2647,7 @@ Advanced native features.
 
 ---
 
-## 💰 M10 - Monetization + Future (🔬 Research - 2027+)
+## 18. 💰 M10 - Monetization + Future (🔬 RESEARCH)
 
 **Goal:** Sustainable revenue model without exploiting vulnerable users
 
@@ -2916,7 +2741,7 @@ Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
 
 ---
 
-## 🖥️ Desktop/Web Enhancements
+## 19. 🖥️ Desktop/Web Enhancements
 
 **Goal:** Leverage full browser capabilities for power users
 
@@ -2978,7 +2803,7 @@ Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
 
 ---
 
-## 🎨 Feature Decisions (Quick Reference)
+## 20. 🎨 Feature Decisions (Quick Reference)
 
 | Feature                | Status          | Priority | Notes                        |
 | ---------------------- | --------------- | -------- | ---------------------------- |
@@ -2990,7 +2815,7 @@ Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
 
 ---
 
-## 📏 Success Metrics
+## 21. 📏 Success Metrics
 
 ### User Engagement
 
@@ -3021,154 +2846,22 @@ Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
 
 ---
 
-## 🔄 Agile Process
+## 22. 🔄 Agile Process
 
-### Sprint Cadence
-
-- **Sprint Length:** 2 weeks
-- **Planning:** Every other Monday
-- **Retrospective:** Every other Friday
-- **Daily Standups:** Async (Slack/Discord)
-
-### Story Point Scale
-
-- 1-2 SP: <1 day
-- 3-5 SP: 1-2 days
-- 8 SP: 1 week
-- 13 SP: 1-2 weeks
-- 21+ SP: Break into smaller stories
-
-### Definition of Done
-
-- ✅ Code reviewed
-- ✅ Tests written and passing
-- ✅ Documentation updated
-- ✅ Deployed to staging
-- ✅ Manual QA complete
-- ✅ Security review (if applicable)
+> Sprint cadence, story point scale, and Definition of Done are documented in
+> [DEVELOPMENT.md](./DEVELOPMENT.md#-agile-process).
 
 ---
 
-## 🛠️ Process & Tooling Improvements
+## 23. 🛠️ Process & Tooling Improvements
 
-### Development Dashboard (Planned - Near-term)
-
-**Status:** 📋 Planned **Priority:** P1 (Development Tooling) **Added:** Session
-#64
-
-**Purpose:** Unified dev dashboard for monitoring session activity, error
-tracing, and development metrics. Not for production - strictly development
-tooling.
-
-**Proposed Features:**
-
-1. **Session Activity Monitor**
-   - Visualize JSONL session logs (`.claude/session-activity.jsonl`)
-   - Show event timeline (file edits, skill invocations, commits)
-   - Detect sessions without explicit end markers
-   - Aggregate metrics (files changed, skills used, session duration)
-
-2. **Error & Tracing Viewer**
-   - Display Sentry-like local error aggregation
-   - Show console.error logs with context
-   - Link errors to relevant file/line
-   - Filter by severity, date, component
-
-3. **Override Audit Trail**
-   - Visualize override logs (`.claude/override-log.jsonl`)
-   - Show frequency, reasons, patterns
-   - Flag unusual override patterns
-
-4. **Document Sync Status**
-   - Visual status of template-instance relationships
-   - Placeholder detection results
-   - Cross-document dependency alerts
-
-**Implementation Notes:**
-
-- Simple local web UI (Next.js page under /dev or standalone)
-- Read-only access to JSONL logs
-- No production impact
-- Could be separate tool or integrated admin panel
-
-**Discussion:** Brainstorm in future session. Low effort MVP could be a CLI
-summary command; full dashboard is larger scope.
+> Development Dashboard plans, Cross-Document Dependency Map (✅ complete), and
+> Document Dependency Automation options are documented in
+> [DEVELOPMENT.md](./DEVELOPMENT.md#-process--tooling-improvements).
 
 ---
 
-### Cross-Document Dependency Map
-
-**Status:** ✅ COMPLETE **Priority:** P1 **Completed:** Session #64
-
-**What Was Done:**
-
-1. ✅ Added "Cross-Document Update Triggers" section to
-   `DOCUMENT_DEPENDENCIES.md` (v1.1) with 12-row trigger matrix
-2. ✅ Integrated into `/session-end` command checklist (Section 3)
-
-**Trigger Matrix Location:**
-[DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers](docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
-
-> **Note:** INTEGRATED_IMPROVEMENT_PLAN.md is now archived (Session #64). See
-> the canonical trigger matrix in DOCUMENT_DEPENDENCIES.md for current triggers.
-
----
-
-### Document Dependency Automation (Future Enhancement)
-
-**Current State (Session #35):**
-
-- ✅ Manual validation via `/docs-sync` slash command (wrapper that executes
-  `npm run docs:sync-check`)
-- ✅ Script: `npm run docs:sync-check` → `scripts/check-document-sync.js`
-  (detects placeholder content, broken links, stale sync dates)
-- ✅ Documentation: `docs/DOCUMENT_DEPENDENCIES.md` tracks all template-instance
-  relationships
-- ✅ Integration: DOCUMENTATION_AUDIT Category 6 validates sync status
-
-**Future Automation Options:**
-
-1. **Pre-Commit Hook Integration** (Low Priority)
-   - Run `docs:sync-check` before each commit
-   - Block commits if critical sync issues found
-   - **Pros**: Catches issues early
-   - **Cons**: Adds ~2-3s to commit latency
-
-2. **Pre-Push Hook Integration** (Medium Priority)
-   - Run `docs:sync-check` before push
-   - Warn on issues but don't block (exit 0 always)
-   - **Pros**: Less intrusive than pre-commit
-   - **Cons**: Issues found later in workflow
-
-3. **CI/CD Integration** (Recommended)
-   - Add `npm run docs:sync-check` to GitHub Actions
-   - Run on PRs that modify docs/templates/ or docs/reviews/
-   - Report issues as PR comments
-   - **Pros**: No local latency impact, thorough validation
-   - **Cons**: Requires CI/CD setup
-
-4. **Scheduled Validation** (Low Priority)
-   - Weekly cron job runs `docs:sync-check`
-   - Reports to Slack/email if issues found
-   - **Pros**: Regular validation without manual intervention
-   - **Cons**: Delayed detection (up to 7 days)
-
-**Recommendation**:
-
-- Keep manual (`/docs-sync`) for immediate use
-- Add to CI/CD when GitHub Actions is configured (post-M3)
-- Consider pre-push hook if sync issues become frequent (quarterly review)
-
-**Discussion**:
-
-- Document sync is quality-focused, not critical to functionality
-- Manual checks are sufficient for current team size (solo developer)
-- Automation becomes valuable when multiple contributors update templates
-- Revisit in Q2 2026 or when team expands
-
----
-
-## 📚 References
+## 24. 📚 References
 
 ### Core Documentation
 
@@ -3209,119 +2902,34 @@ summary command; full dashboard is larger scope.
 
 ---
 
-## 📝 Update Triggers
+## 25. 📝 Update Triggers
 
-**Update this document when:**
-
-- Milestone status changes (started, completed, blocked)
-- New features are added to roadmap
-- Priority or timeline changes
-- Progress percentage changes significantly (>10%)
-- Features are completed and need archiving to ROADMAP_LOG.md
-
-**Cross-document updates:**
-
-- When adding features to ROADMAP.md → Update `docs/TESTING_PLAN.md` with test
-  coverage for new features
-- When adding test sections to TESTING_PLAN.md → Reference in ROADMAP.md under
-  the relevant milestone
-- When building a new UI feature → Generate `.protocol.json` at
-  `.claude/test-protocols/` and run `/test-suite --protocol=NAME`
-- When adding test protocols → Update protocol inventory in
-  `docs/plans/TESTING_USER_MANUAL.md`
+Update this document when milestone status changes, new features are added,
+priorities change, or progress percentages change significantly (>10%). For full
+trigger matrix and cross-document update rules, see
+[CLAUDE.md Section 7](./CLAUDE.md).
 
 ---
 
-## 🤖 AI Instructions
+## 26. 🤖 AI Instructions
 
-### Document Scope
+> For detailed AI update instructions, cross-document update triggers, and
+> validation commands, see [CLAUDE.md Section 6](./CLAUDE.md).
 
-- **This document (ROADMAP.md):** Active sprint work, paused milestones (M1.5,
-  M1.6), overview tables
-- **ROADMAP_FUTURE.md:** Detailed specifications for future milestones (M2-M10)
-- **ROADMAP_LOG.md:** Archive of completed items
+**Quick Reference:**
 
-### When to Update This Document
-
-| Trigger                       | What to Update                   | How to Update                                      |
-| ----------------------------- | -------------------------------- | -------------------------------------------------- |
-| Starting a task               | Task status                      | Change `- [ ]` to `- [x]` or add 🔄 emoji          |
-| Task completed                | Task checkbox + sprint progress  | Mark `[x]`, update progress % in sprint header     |
-| New task for active sprint    | Add to appropriate Track section | Use format: `- [ ] **ID:** Description (effort)`   |
-| New task for future milestone | Add to ROADMAP_FUTURE.md         | See ROADMAP_FUTURE.md AI Instructions              |
-| Sprint progress >10% change   | Milestones Overview table        | Update Progress column percentage                  |
-| Milestone promoted to active  | Move from ROADMAP_FUTURE.md      | Copy section here, update status in Overview table |
-| Milestone completed           | Archive to ROADMAP_LOG.md        | Use `npm run docs:archive`, update Overview table  |
-| Blocker discovered            | Blockers table                   | Add row with status and resolution plan            |
-| Blocker resolved              | Blockers table                   | Update status to ✅ Resolved with date             |
-
-### Specific Update Instructions
-
-**When marking a task complete:**
-
-```markdown
-# Before:
-
-- [ ] **A1:** Wire Sentry client in `app/layout.tsx`
-
-# After:
-
-- [x] **A1:** Wire Sentry client in `app/layout.tsx` ✅
-```
-
-**When updating sprint progress:**
-
-1. Count completed `[x]` items in the track
-2. Calculate percentage: (completed / total) × 100
-3. Update the Track table row AND the Milestones Overview table
-
-**When adding a new task to active sprint:**
-
-```markdown
-- [ ] **[Track][Number]:** Task description (effort estimate)
-  - Implementation detail or subtask
-  - Dependency: [Blocking task if any]
-```
-
-**When a milestone is promoted to active:**
-
-1. Copy full section from ROADMAP_FUTURE.md to this document
-2. Update Milestones Overview table: Status → 🔄 ACTIVE
-3. Delete detailed section from ROADMAP_FUTURE.md (keep 1-line reference)
-4. Update both document versions
-
-### Cross-Document Updates Required
-
-| Change Here                 | Also Update                             |
-| --------------------------- | --------------------------------------- |
-| Milestone status changes    | SESSION_CONTEXT.md priorities section   |
-| Sprint progress >10%        | SESSION_CONTEXT.md current work section |
-| Track A/B/C/D/E/O/P changes | OPERATIONAL_VISIBILITY_SPRINT.md        |
-| New blocker added           | SESSION_CONTEXT.md blockers section     |
-| Dependency chain changes    | analysis/PARALLEL_EXECUTION_GUIDE.md    |
-| Technical debt resolved     | docs/TECHNICAL_DEBT_MASTER.md           |
-
-### What NOT to Do
-
-- ❌ Do NOT add future milestone details here (use ROADMAP_FUTURE.md)
-- ❌ Do NOT delete completed tasks (archive to ROADMAP_LOG.md)
-- ❌ Do NOT change milestone order without updating dependency graph
-- ❌ Do NOT update percentages without counting actual completed items
-- ❌ Do NOT skip updating SESSION_CONTEXT.md after significant changes
-
-### Validation Commands
-
-```bash
-npm run docs:update-readme    # Sync README with roadmap status
-npm run roadmap:validate      # Check consistency (when available)
-```
+- **Active sprint work** → Update task checkboxes and progress %
+- **Future milestone details** → Add to [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md)
+- **Completed items** → Archive to [ROADMAP_LOG.md](./ROADMAP_LOG.md)
+- **Validation:** `npm run docs:update-readme`, `npm run roadmap:validate`
 
 ---
 
-## 🗓️ Version History
+## 27. 🗓️ Version History
 
 | Version | Session | Changes                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 3.22    | #142    | Moved Agile Process, Process & Tooling Improvements to DEVELOPMENT.md; trimmed Update Triggers and AI Instructions sections to summaries with links                                                                                                                                                                                                                            |
 | 3.21    | #141    | Track T Phase 1 COMPLETE: `/test-suite` skill with 27 feature protocols, 5-phase pipeline (smoke/feature/security/performance/report), Firebase Preview Channels, dual browser support (Playwright MCP + Chrome Extension); added TESTING_USER_MANUAL.md references to all core docs; updated cross-document sync triggers for test protocols                                  |
 | 3.20    | #140    | Completed date-to-session migration: converted all remaining inline dates to session references; replaced Version History Date column with Session column; removed inline dates from completed items; npm audit fix (brace-expansion vuln); cleaned up stale .bak file                                                                                                         |
 | 3.19    | #133    | Added Phase 1.5 QoL Agent Infrastructure (4 items complete); placed QoL #3, #6, #7, #8 in Phase 2-3; unified /sonarcloud skill; archived obsolete scripts                                                                                                                                                                                                                      |

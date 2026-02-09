@@ -144,7 +144,7 @@ and structure requirements:
   examples)
 - Initiative plans (see `docs/archive/superseded-plans/` for examples)
 - Research documents (MONETIZATION_RESEARCH.md)
-- Backlog documents (AUDIT_FINDINGS_BACKLOG.md)
+- Backlog documents (docs/technical-debt/INDEX.md)
 
 **Characteristics**:
 

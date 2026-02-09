@@ -198,7 +198,7 @@ patterns identified" with review summary.
 ### 7. **Triaging Deferred Items** ⚠️ **IMPORTANT**
 
 When deferred items are added to ROADMAP_FUTURE.md (or
-AUDIT_FINDINGS_BACKLOG.md):
+docs/technical-debt/INDEX.md):
 
 1. **Update the source entry** in AI_REVIEW_LEARNINGS_LOG.md:
    - Change `**DEFERRED (N):**` to `**TRIAGED (N):** → ROADMAP_FUTURE.md`
@@ -237,7 +237,7 @@ Use these standard reasons when rejecting AI review suggestions:
 | **Out of scope**          | Suggestion extends beyond PR scope       | "Performance optimization is Phase 3 work"            |
 | **Style preference**      | Subjective style choice                  | "Project uses this naming convention"                 |
 | **Implementation detail** | Will be addressed during implementation  | "Script implementation will determine best library"   |
-| **Already planned**       | Captured in backlog/plan                 | "Tracked in AUDIT_FINDINGS_BACKLOG.md"                |
+| **Already planned**       | Captured in backlog/plan                 | "Tracked in docs/technical-debt/INDEX.md"             |
 | **Not applicable**        | Suggestion doesn't apply to this context | "This isn't production code, it's a template example" |
 
 ---

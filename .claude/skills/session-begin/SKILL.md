@@ -226,6 +226,7 @@ the "Consolidation Trigger" section:
 
 ```
 DECISION TREE:
+├─ New project/domain? → Use '/find-skills' to discover capabilities
 ├─ Bug/Error? → Use 'systematic-debugging' skill FIRST
 ├─ Writing code? → Use 'code-reviewer' agent AFTER completion
 ├─ Security work? → Use 'security-auditor' agent
@@ -291,18 +292,18 @@ npm run session:gaps
 
 **Check current technical debt status:**
 
-- [ ] Read [TECHNICAL_DEBT_MASTER.md](../../docs/TECHNICAL_DEBT_MASTER.md) for
+- [ ] Read [Technical Debt INDEX](../../docs/technical-debt/INDEX.md) for
       prioritized tech debt
 - [ ] Note any S0/S1 items that should be addressed this session
 - [ ] Check if any items from previous session need updating
 
 **Key tracking documents:**
 
-| Document                   | Purpose                                    |
-| -------------------------- | ------------------------------------------ |
-| `TECHNICAL_DEBT_MASTER.md` | Single source of truth for all tech debt   |
-| `AUDIT_TRACKER.md`         | Audit completion and threshold tracking    |
-| `ROADMAP.md` Track D       | Performance-critical items for this sprint |
+| Document                       | Purpose                                    |
+| ------------------------------ | ------------------------------------------ |
+| `docs/technical-debt/INDEX.md` | Single source of truth for all tech debt   |
+| `AUDIT_TRACKER.md`             | Audit completion and threshold tracking    |
+| `ROADMAP.md` Track D           | Performance-critical items for this sprint |
 
 **After resolving tech debt items:**
 
