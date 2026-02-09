@@ -70,7 +70,15 @@ function generateHeader(title, today) {
 }
 
 // Fields preserved from existing MASTER items during regeneration
-const PRESERVED_FIELDS = ["status", "resolution", "verified_date", "verification_reason"];
+const PRESERVED_FIELDS = [
+  "status",
+  "resolution",
+  "verified_date",
+  "verification_reason",
+  "roadmap_ref",
+  "milestone",
+  "roadmap_phase",
+];
 
 // Load existing items to preserve their IDs and status/resolution fields
 function loadExistingItems() {

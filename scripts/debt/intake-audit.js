@@ -13,7 +13,8 @@
  * 5. Appends to raw pipeline files (normalized-all.jsonl + deduped.jsonl)
  * 6. Runs multi-pass dedup (parametric, near, semantic, cross-source, systemic)
  * 7. Regenerates views
- * 8. Logs intake activity (including confidence values from Doc Standards)
+ * 8. Assigns roadmap references (category + file path mapping)
+ * 9. Logs intake activity (including confidence values from Doc Standards)
  *
  * Supports two input formats:
  * - TDMS format (native): Uses fields like source_id, file, description, recommendation
@@ -580,6 +581,15 @@ async function main() {
   } catch {
     console.warn(
       "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
+    );
+  }
+
+  console.log("🔄 Assigning roadmap references...");
+  try {
+    execFileSync(process.execPath, ["scripts/debt/assign-roadmap-refs.js"], { stdio: "inherit" });
+  } catch {
+    console.warn(
+      "  ⚠️ Failed to assign roadmap refs. Run manually: node scripts/debt/assign-roadmap-refs.js"
     );
   }
 
