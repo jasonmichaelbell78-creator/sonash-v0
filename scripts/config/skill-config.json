@@ -5,12 +5,12 @@
   },
   "deprecatedPatterns": [
     {
-      "pattern": { "source": "\\/\\/\\s*TODO:", "flags": "gi" },
+      "pattern": { "source": "\\/\\/\\s*TODO:", "flags": "i" },
       "message": "TODO comment without issue reference"
     },
-    { "pattern": { "source": "FIXME", "flags": "gi" }, "message": "FIXME without resolution" },
+    { "pattern": { "source": "FIXME", "flags": "i" }, "message": "FIXME without resolution" },
     {
-      "pattern": { "source": "\\[PLACEHOLDER\\]", "flags": "gi" },
+      "pattern": { "source": "\\[PLACEHOLDER\\]", "flags": "i" },
       "message": "Placeholder text not replaced"
     }
   ],

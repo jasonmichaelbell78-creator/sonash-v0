@@ -4,7 +4,12 @@
       "pattern": { "source": "\\.(ts|tsx|js|jsx)$", "flags": "" },
       "agent": "code-reviewer",
       "description": "Code review for TypeScript/JavaScript changes",
-      "excludePaths": [{ "source": "\\.test\\.|\\.spec\\.|__tests__|node_modules", "flags": "" }]
+      "excludePaths": [
+        {
+          "source": "(?:^|\\/)(?:__tests__|node_modules)(?:\\/|$)|\\.(?:test|spec)\\.",
+          "flags": ""
+        }
+      ]
     },
     {
       "pattern": { "source": "functions/src/.*\\.ts$", "flags": "" },

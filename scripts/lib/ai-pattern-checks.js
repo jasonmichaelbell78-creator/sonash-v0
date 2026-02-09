@@ -280,6 +280,11 @@ try {
   process.exit(2);
 }
 
+if (!AI_PATTERNS || typeof AI_PATTERNS !== "object" || Object.keys(AI_PATTERNS).length === 0) {
+  console.error('Error: ai-patterns config loaded but no patterns found under "patterns"');
+  process.exit(2);
+}
+
 /**
  * Check a file for AI-specific patterns
  * Addresses [2] regex /g in loop and [8] multi-line regex matches

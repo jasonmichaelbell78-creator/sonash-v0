@@ -33,7 +33,14 @@ const ROOT = join(__dirname, "..");
 // Load verified pattern exclusions from JSON config (single source of truth)
 const require = createRequire(import.meta.url);
 const { loadConfig } = require("./config/load-config.js");
-const verifiedPatterns = loadConfig("verified-patterns");
+let verifiedPatterns;
+try {
+  verifiedPatterns = loadConfig("verified-patterns");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load verified-patterns config: ${msg}`);
+  process.exit(2);
+}
 
 // Parse command line arguments
 const args = process.argv.slice(2);

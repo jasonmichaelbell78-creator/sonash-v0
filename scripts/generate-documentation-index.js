@@ -27,7 +27,14 @@ const require = createRequire(import.meta.url);
 const { loadConfig } = require("./config/load-config");
 
 // All config — single source of truth: scripts/config/doc-generator-config.json
-const genConfig = loadConfig("doc-generator-config");
+let genConfig;
+try {
+  genConfig = loadConfig("doc-generator-config");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load doc-generator-config: ${msg}`);
+  process.exit(2);
+}
 const CONFIG = genConfig.config;
 const TIER_DESCRIPTIONS = genConfig.tierDescriptions;
 const EXTERNAL_SCHEMES = genConfig.externalSchemes;

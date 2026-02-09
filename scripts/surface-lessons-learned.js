@@ -27,7 +27,15 @@ const { loadConfig } = require("./config/load-config.js");
 const LEARNINGS_FILE = "docs/AI_REVIEW_LEARNINGS_LOG.md";
 
 // Topic aliases sourced from scripts/config/skill-config.json
-const TOPIC_ALIASES = loadConfig("skill-config").topicAliases;
+let TOPIC_ALIASES = {};
+try {
+  const cfg = loadConfig("skill-config");
+  TOPIC_ALIASES = (cfg && typeof cfg === "object" && cfg.topicAliases) || {};
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load skill-config: ${msg}`);
+  process.exit(2);
+}
 
 /**
  * Parse command line arguments
