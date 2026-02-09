@@ -24,20 +24,20 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { loadConfigWithRegex } = require("./config/load-config");
 
-// Configuration
+// Configuration — single source of truth: scripts/config/skill-config.json
 const SKILLS_DIR = ".claude/commands";
-const REQUIRED_SECTIONS = {
-  // Audit commands should have validation and output sections
-  audit: ["Pre-Audit Validation", "Post-Audit", "Output Requirements"],
-  session: [],
-};
-
-const DEPRECATED_PATTERNS = [
-  { pattern: /\/\/\s*TODO:/gi, message: "TODO comment without issue reference" },
-  { pattern: /FIXME/gi, message: "FIXME without resolution" },
-  { pattern: /\[PLACEHOLDER\]/gi, message: "Placeholder text not replaced" },
-];
+let skillConfig;
+try {
+  skillConfig = loadConfigWithRegex("skill-config");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load skill-config: ${msg}`);
+  process.exit(2);
+}
+const REQUIRED_SECTIONS = skillConfig.requiredSections;
+const DEPRECATED_PATTERNS = skillConfig.deprecatedPatterns;
 
 // Parse YAML frontmatter (supports both LF and CRLF line endings)
 function parseFrontmatter(content) {

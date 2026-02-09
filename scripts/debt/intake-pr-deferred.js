@@ -31,21 +31,24 @@ const path = require("path");
 const crypto = require("crypto");
 const { execSync } = require("child_process");
 
+const { loadConfig } = require("../config/load-config");
+
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
 const LOG_DIR = path.join(DEBT_DIR, "logs");
 const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
 
-// Valid schema values
-const VALID_CATEGORIES = [
-  "security",
-  "performance",
-  "code-quality",
-  "documentation",
-  "process",
-  "refactoring",
-];
-const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
+// Valid schema values — single source of truth: scripts/config/audit-schema.json
+let schema;
+try {
+  schema = loadConfig("audit-schema");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load audit-schema config: ${msg}`);
+  process.exit(2);
+}
+const VALID_CATEGORIES = schema.validCategories;
+const VALID_SEVERITIES = schema.validSeverities;
 
 // Parse command line arguments
 function parseArgs(args) {
@@ -105,7 +108,16 @@ function loadMasterDebt() {
   if (!fs.existsSync(MASTER_FILE)) {
     return [];
   }
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (readErr) {
+    const msg = readErr instanceof Error ? readErr.message : String(readErr);
+    console.error(`Error: Failed to read MASTER_DEBT.jsonl: ${msg}`);
+    process.exit(1);
+  }
+
   const lines = content.split("\n").filter((line) => line.trim());
 
   const items = [];
@@ -115,7 +127,8 @@ function loadMasterDebt() {
     try {
       items.push(JSON.parse(lines[i]));
     } catch (err) {
-      badLines.push({ line: i + 1, message: err.message });
+      const msg = err instanceof Error ? err.message : String(err);
+      badLines.push({ line: i + 1, message: msg });
     }
   }
 

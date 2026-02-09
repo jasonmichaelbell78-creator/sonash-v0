@@ -16,34 +16,29 @@
 import { readFileSync, writeFileSync, readdirSync, statSync, lstatSync } from "node:fs";
 import { join, relative, dirname, basename, extname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, "..");
 
-// Configuration
-const CONFIG = {
-  excludeDirs: ["node_modules", ".git", ".next", "coverage", "dist", ".turbo"],
-  excludeFiles: ["DOCUMENTATION_INDEX.md"], // Don't index ourselves
-  archiveDirs: ["docs/archive"], // Archived docs - just list, don't fully track
-  outputFile: "DOCUMENTATION_INDEX.md",
-  maxDescriptionLength: 200,
-};
+// CJS interop for loading JSON configs from ESM
+const require = createRequire(import.meta.url);
+const { loadConfig } = require("./config/load-config");
 
-// Tier description mapping (S3776 complexity reduction)
-const TIER_DESCRIPTIONS = {
-  1: "Essential",
-  2: "Core",
-  3: "Specialized",
-  4: "Reference",
-  5: "Archive",
-};
-
-// External URL schemes to skip in link extraction (S3776 complexity reduction)
-const EXTERNAL_SCHEMES = ["http://", "https://", "mailto:", "tel:", "data:"];
-
-// Image extensions to skip in link extraction (S3776 complexity reduction)
-const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"];
+// All config — single source of truth: scripts/config/doc-generator-config.json
+let genConfig;
+try {
+  genConfig = loadConfig("doc-generator-config");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load doc-generator-config: ${msg}`);
+  process.exit(2);
+}
+const CONFIG = genConfig.config;
+const TIER_DESCRIPTIONS = genConfig.tierDescriptions;
+const EXTERNAL_SCHEMES = genConfig.externalSchemes;
+const IMAGE_EXTENSIONS = genConfig.imageExtensions;
 
 /**
  * Check if href is an external link or special scheme.
@@ -72,46 +67,8 @@ function encodeMarkdownPath(path) {
   return encodeURI(path).replace(/\(/g, "%28").replace(/\)/g, "%29");
 }
 
-// Category definitions based on directory structure
-const CATEGORIES = {
-  root: { name: "Root Documents", tier: 1, description: "Essential project-level documentation" },
-  docs: { name: "Core Documentation", tier: 2, description: "Main documentation directory" },
-  "docs/templates": { name: "Templates", tier: 3, description: "Document and audit templates" },
-  "docs/reviews": { name: "Reviews & Audits", tier: 3, description: "Audit plans and findings" },
-  "docs/reviews/2026-Q1": {
-    name: "2026 Q1 Reviews",
-    tier: 3,
-    description: "Q1 2026 audit documentation",
-  },
-  "docs/reviews/2026-Q1/canonical": {
-    name: "Canonical Findings",
-    tier: 4,
-    description: "JSONL canonical findings",
-  },
-  "docs/archive": {
-    name: "Archive",
-    tier: 5,
-    description: "Historical and completed documentation",
-  },
-  "docs/archive/completed-plans": {
-    name: "Completed Plans",
-    tier: 5,
-    description: "Archived completed plans",
-  },
-  "docs/agent_docs": {
-    name: "Agent Documentation",
-    tier: 3,
-    description: "AI agent reference docs",
-  },
-  "docs/brainstorm": { name: "Brainstorm", tier: 4, description: "Draft and planning documents" },
-  "docs/analysis": { name: "Analysis", tier: 4, description: "Code analysis and metrics" },
-  ".claude/commands": {
-    name: "Slash Commands",
-    tier: 3,
-    description: "Claude Code custom commands",
-  },
-  ".claude/skills": { name: "Skills", tier: 3, description: "Claude Code skills" },
-};
+// Category definitions — from doc-generator-config.json
+const CATEGORIES = genConfig.categories;
 
 // Parse command line arguments
 const args = process.argv.slice(2);

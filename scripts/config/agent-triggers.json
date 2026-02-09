@@ -1,0 +1,32 @@
+{
+  "agentTriggers": [
+    {
+      "pattern": { "source": "\\.(ts|tsx|js|jsx)$", "flags": "" },
+      "agent": "code-reviewer",
+      "description": "Code review for TypeScript/JavaScript changes",
+      "excludePaths": [
+        {
+          "source": "(?:^|\\/)(?:__tests__|node_modules)(?:\\/|$)|\\.(?:test|spec)\\.",
+          "flags": ""
+        },
+        {
+          "source": "(?:^|\\/)functions\\/src(?:\\/|$)",
+          "flags": ""
+        }
+      ]
+    },
+    {
+      "pattern": { "source": "functions/src/.*\\.ts$", "flags": "" },
+      "agent": "security-auditor",
+      "description": "Security review for Cloud Functions changes",
+      "excludePaths": [{ "source": "\\.test\\.|\\.spec\\.", "flags": "" }]
+    },
+    {
+      "pattern": { "source": "firestore\\.rules$", "flags": "" },
+      "agent": "security-auditor",
+      "description": "Security review for Firestore rules changes",
+      "excludePaths": []
+    }
+  ],
+  "reviewChangeThreshold": 5
+}

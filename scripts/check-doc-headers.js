@@ -26,6 +26,7 @@
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { loadConfigWithRegex } = require("./config/load-config");
 
 // Review #217 R4: Resolve from git repo root for path safety and subdirectory support
 let REPO_ROOT = "";
@@ -65,34 +66,18 @@ function getErrorMessage(err) {
   return err instanceof Error ? err.message : String(err);
 }
 
-// Files/folders exempt from header requirements
-const EXEMPT_PATTERNS = [
-  /^README\.md$/i,
-  /^CHANGELOG\.md$/i,
-  /^LICENSE\.md$/i,
-  /^node_modules\//,
-  /^\.next\//,
-  /^coverage\//,
-  /^dist\//,
-  /^\.git\//,
-  /DOCUMENTATION_INDEX\.md$/,
-  /\/archive\//i,
-  // Auto-generated files
-  /package-lock\.json/,
-];
-
-// Required header fields for Tier 3+ documents
-const REQUIRED_HEADERS = [
-  { pattern: /\*\*Document Version:\*\*|\*\*Version:\*\*/i, name: "Document Version" },
-  { pattern: /\*\*Last Updated:\*\*|\*\*Updated:\*\*/i, name: "Last Updated" },
-  { pattern: /\*\*Status:\*\*/i, name: "Status" },
-];
-
-// Optional but recommended
-const RECOMMENDED_HEADERS = [
-  { pattern: /\*\*Related:\*\*|\*\*See Also:\*\*/i, name: "Related/See Also" },
-  { pattern: /\*\*Purpose:\*\*|^>\s*\*\*Purpose/m, name: "Purpose" },
-];
+// Header config — single source of truth: scripts/config/doc-header-config.json
+let headerConfig;
+try {
+  headerConfig = loadConfigWithRegex("doc-header-config");
+} catch (err) {
+  const msg = getErrorMessage(err);
+  log(`Error: failed to load doc header config: ${msg}`, colors.red);
+  process.exit(2);
+}
+const EXEMPT_PATTERNS = headerConfig.exemptPatterns;
+const REQUIRED_HEADERS = headerConfig.requiredHeaders;
+const RECOMMENDED_HEADERS = headerConfig.recommendedHeaders;
 
 /**
  * Check if file is exempt from header requirements

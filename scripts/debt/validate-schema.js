@@ -18,31 +18,26 @@
 
 const fs = require("fs");
 const path = require("path");
+const { loadConfig } = require("../config/load-config");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const DEFAULT_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
 
-// Valid schema values
-const VALID_CATEGORIES = [
-  "security",
-  "performance",
-  "code-quality",
-  "documentation",
-  "process",
-  "refactoring",
-  "engineering-productivity",
-];
-
-const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
-
-const VALID_TYPES = ["bug", "code-smell", "vulnerability", "hotspot", "tech-debt", "process-gap"];
-
-const VALID_STATUSES = ["NEW", "VERIFIED", "FALSE_POSITIVE", "IN_PROGRESS", "RESOLVED"];
-
-const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
-
-// Required fields
-const REQUIRED_FIELDS = ["id", "source_id", "title", "severity", "category", "status"];
+// Valid schema values — single source of truth: scripts/config/audit-schema.json
+let schema;
+try {
+  schema = loadConfig("audit-schema");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load audit-schema config: ${msg}`);
+  process.exit(2);
+}
+const VALID_CATEGORIES = schema.validCategories;
+const VALID_SEVERITIES = schema.validSeverities;
+const VALID_TYPES = schema.validTypes;
+const VALID_STATUSES = schema.validStatuses;
+const VALID_EFFORTS = schema.validEfforts;
+const REQUIRED_FIELDS = schema.requiredFields;
 
 // Parse command line arguments
 function parseArgs(args) {

@@ -22,6 +22,7 @@
  */
 
 const { execFileSync } = require("node:child_process");
+const { loadConfigWithRegex } = require("./config/load-config");
 
 // Parse arguments
 const args = process.argv.slice(2);
@@ -52,87 +53,29 @@ function logVerbose(message) {
 
 /**
  * Cross-document dependency rules
- * Based on docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers
+ * Single source of truth: scripts/config/doc-dependencies.json
+ * Reference: docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers
  */
-const dependencyRules = [
-  {
-    trigger: "ROADMAP.md",
-    dependents: ["SESSION_CONTEXT.md"],
-    reason: "Session context reflects current roadmap focus",
-    checkDiff: false, // Any change to ROADMAP triggers this
-  },
-  {
-    trigger: "package.json",
-    dependents: ["DEVELOPMENT.md"],
-    reason: "All scripts should be documented",
-    checkDiff: true, // Only check if 'scripts' section changed
-    diffPattern: /"scripts"/,
-  },
-  {
-    trigger: ".husky/",
-    dependents: ["docs/TRIGGERS.md", "DEVELOPMENT.md"],
-    reason: "Hook documentation must be complete",
-    checkDiff: false,
-  },
-  {
-    trigger: ".claude/hooks/",
-    dependents: ["docs/TRIGGERS.md", "DEVELOPMENT.md"],
-    reason: "Hook documentation must be complete",
-    checkDiff: false,
-  },
-  {
-    trigger: ".claude/commands/",
-    dependents: [".claude/COMMAND_REFERENCE.md"],
-    reason: "Skill/command registry must be complete",
-    checkDiff: false,
-  },
-  {
-    trigger: ".claude/skills/",
-    dependents: [".claude/COMMAND_REFERENCE.md"],
-    reason: "Skill/command registry must be complete",
-    checkDiff: false,
-  },
-  // Feature file → ROADMAP.md rules (Session #72 - hard block on feature changes without roadmap update)
-  {
-    trigger: "app/admin/",
-    dependents: ["ROADMAP.md"],
-    reason: "Admin Panel changes must update Track A status in ROADMAP.md",
-    checkDiff: false,
-  },
-  {
-    trigger: "functions/src/admin",
-    dependents: ["ROADMAP.md"],
-    reason: "Admin backend changes must update Track A status in ROADMAP.md",
-    checkDiff: false,
-  },
-  {
-    trigger: "app/(protected)/dashboard/",
-    dependents: ["ROADMAP.md"],
-    reason: "Dashboard changes must update sprint status in ROADMAP.md",
-    checkDiff: false,
-  },
-  // Plan documents → navigation docs (Session #117 - TDMS plan)
-  {
-    trigger: "docs/plans/",
-    dependents: ["docs/PLAN_MAP.md", "docs/README.md"],
-    reason: "New/updated plans must be referenced in navigation docs",
-    checkDiff: false,
-  },
-  // Technical debt canonical → related docs (Session #117 - TDMS)
-  {
-    trigger: "docs/technical-debt/",
-    dependents: ["SESSION_CONTEXT.md"],
-    reason: "Technical debt changes should be noted in session context",
-    checkDiff: false,
-  },
-  // Audit canonical → plan map (Session #117 - TDMS migration tracking)
-  {
-    trigger: "docs/audits/canonical/",
-    dependents: ["docs/PLAN_MAP.md"],
-    reason: "Canonical audit changes affect TDMS migration status",
-    checkDiff: false,
-  },
-];
+let dependencyRules = [];
+try {
+  const cfg = loadConfigWithRegex("doc-dependencies", ["diffPattern"]);
+  dependencyRules = Array.isArray(cfg.rules) ? cfg.rules : [];
+} catch (configErr) {
+  const msg = configErr instanceof Error ? configErr.message : String(configErr);
+  log(`Error: failed to load doc dependency rules: ${msg}`, colors.red);
+  process.exit(2);
+}
+
+if (dependencyRules.length === 0) {
+  log(
+    "Warning: No dependency rules loaded from config. Check doc-dependencies.json.",
+    colors.yellow
+  );
+  if (!dryRun) {
+    log("Error: cross-doc dependency enforcement disabled due to empty rules.", colors.red);
+    process.exit(2);
+  }
+}
 
 /**
  * Get list of staged files from git

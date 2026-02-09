@@ -48,6 +48,8 @@
     "capabilities:search": "node scripts/search-capabilities.js",
     "skills:validate": "node scripts/validate-skill-config.js",
     "skills:verify-usage": "node scripts/verify-skill-usage.js",
+    "skills:registry": "node scripts/generate-skill-registry.js",
+    "config:validate": "node -e \"require('fs').readdirSync('scripts/config').filter(f=>f.endsWith('.json')).forEach(f=>{JSON.parse(require('fs').readFileSync('scripts/config/'+f,'utf8'));console.log('OK:',f)})\"",
     "validate:canon": "node scripts/validate-canon-schema.js",
     "audit:validate": "node scripts/validate-audit.js",
     "canon:normalize": "node scripts/normalize-canon-ids.js",

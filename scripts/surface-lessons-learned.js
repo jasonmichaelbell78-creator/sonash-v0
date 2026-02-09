@@ -19,25 +19,23 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { execSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { loadConfig } = require("./config/load-config.js");
 
 const LEARNINGS_FILE = "docs/AI_REVIEW_LEARNINGS_LOG.md";
 
-// Common topic keywords and their aliases
-const TOPIC_ALIASES = {
-  firebase: ["firebase", "firestore", "auth", "cloud functions", "app check"],
-  auth: ["authentication", "auth", "login", "session", "jwt", "oauth"],
-  tests: ["test", "testing", "jest", "coverage", "mock"],
-  security: ["security", "xss", "injection", "owasp", "vulnerability", "sanitize"],
-  hooks: ["hook", "useEffect", "useState", "custom hook"],
-  api: ["api", "endpoint", "fetch", "request", "response"],
-  build: ["build", "compile", "typescript", "tsc", "webpack", "next.js"],
-  lint: ["lint", "eslint", "prettier", "format"],
-  ci: ["ci", "github actions", "workflow", "pipeline", "deploy"],
-  docs: ["documentation", "readme", "markdown", "docs"],
-  performance: ["performance", "bundle", "lazy", "optimize", "memory"],
-  react: ["react", "component", "jsx", "tsx", "props", "state"],
-  regex: ["regex", "regexp", "pattern", "match"],
-};
+// Topic aliases sourced from scripts/config/skill-config.json
+let TOPIC_ALIASES = {};
+try {
+  const cfg = loadConfig("skill-config");
+  TOPIC_ALIASES = (cfg && typeof cfg === "object" && cfg.topicAliases) || {};
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load skill-config: ${msg}`);
+  process.exit(2);
+}
 
 /**
  * Parse command line arguments

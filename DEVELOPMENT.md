@@ -190,6 +190,18 @@ sonash-v0/
 │   └── images/
 │
 ├── scripts/                      # Utility scripts
+│   ├── config/                   # JSON configuration files (single source of truth)
+│   │   ├── load-config.js        # Shared loader (loadConfig, loadConfigWithRegex)
+│   │   ├── audit-schema.json     # TDMS enums (categories, severities, types)
+│   │   ├── audit-config.json     # Audit thresholds and trigger config
+│   │   ├── doc-dependencies.json # Cross-document dependency rules
+│   │   ├── doc-header-config.json# Document header validation rules
+│   │   ├── doc-generator-config.json # Documentation index generator config
+│   │   ├── verified-patterns.json# Pattern compliance verified exclusions
+│   │   ├── ai-patterns.json      # AI code quality pattern definitions
+│   │   ├── agent-triggers.json   # Agent recommendation trigger rules
+│   │   ├── skill-config.json     # Skill validation + topic taxonomy
+│   │   └── skill-registry.json   # Auto-generated skill manifest
 │   ├── seed-meetings.ts          # Seed meeting data
 │   └── set-admin-claim.ts        # Set admin privileges
 │
@@ -464,25 +476,27 @@ npm audit fix
 
 ### Code Quality Commands
 
-| Command                                         | Purpose                    | Notes                                        |
-| ----------------------------------------------- | -------------------------- | -------------------------------------------- |
-| `npm run lint`                                  | ESLint check               | Must pass (0 errors)                         |
-| `npm run format`                                | Prettier auto-format       | Formats all files                            |
-| `npm run format:check`                          | Prettier check             | For CI (no changes)                          |
-| `npm run deps:circular`                         | Check circular deps        | Uses madge                                   |
-| `npm run deps:unused`                           | Find unused exports        | Uses knip                                    |
-| `npm test`                                      | Run all tests              | 116 tests (1 skipped)                        |
-| `npm run test:coverage`                         | Test with coverage         | Uses c8                                      |
-| `npm run validate:canon`                        | Validate CANON files       | Checks audit output schema                   |
-| `npm run crossdoc:check`                        | Cross-doc deps             | Blocks if deps missing                       |
-| `npm run consolidation:check`                   | Check consolidation status | Warns if 10+ reviews pending                 |
-| `npm run consolidation:run`                     | Run consolidation          | Extract patterns to CODE_PATTERNS.md         |
-| `npm run consolidation:run -- --auto`           | Auto-consolidation         | Runs silently, used by SessionStart hook     |
-| `npm run patterns:check`                        | Pattern compliance         | Check for anti-patterns in staged files      |
-| `npm run patterns:sync`                         | Pattern sync check         | Verify docs/automation consistency           |
-| `node scripts/sync-claude-settings.js --import` | Claude settings sync       | Import global Claude Code settings from repo |
-| `node scripts/sync-claude-settings.js --export` | Claude settings sync       | Export local settings to repo template       |
-| `node scripts/sync-claude-settings.js --diff`   | Claude settings sync       | Compare local vs repo settings               |
+| Command                                         | Purpose                    | Notes                                                 |
+| ----------------------------------------------- | -------------------------- | ----------------------------------------------------- |
+| `npm run lint`                                  | ESLint check               | Must pass (0 errors)                                  |
+| `npm run format`                                | Prettier auto-format       | Formats all files                                     |
+| `npm run format:check`                          | Prettier check             | For CI (no changes)                                   |
+| `npm run deps:circular`                         | Check circular deps        | Uses madge                                            |
+| `npm run deps:unused`                           | Find unused exports        | Uses knip                                             |
+| `npm test`                                      | Run all tests              | 116 tests (1 skipped)                                 |
+| `npm run test:coverage`                         | Test with coverage         | Uses c8                                               |
+| `npm run validate:canon`                        | Validate CANON files       | Checks audit output schema                            |
+| `npm run crossdoc:check`                        | Cross-doc deps             | Blocks if deps missing                                |
+| `npm run consolidation:check`                   | Check consolidation status | Warns if 10+ reviews pending                          |
+| `npm run consolidation:run`                     | Run consolidation          | Extract patterns to CODE_PATTERNS.md                  |
+| `npm run consolidation:run -- --auto`           | Auto-consolidation         | Runs silently, used by SessionStart hook              |
+| `npm run patterns:check`                        | Pattern compliance         | Check for anti-patterns in staged files               |
+| `npm run patterns:sync`                         | Pattern sync check         | Verify docs/automation consistency                    |
+| `npm run skills:registry`                       | Generate skill registry    | Auto-generate skill-registry.json from SKILL.md files |
+| `npm run config:validate`                       | Validate JSON configs      | Parse all JSON files in scripts/config/               |
+| `node scripts/sync-claude-settings.js --import` | Claude settings sync       | Import global Claude Code settings from repo          |
+| `node scripts/sync-claude-settings.js --export` | Claude settings sync       | Export local settings to repo template                |
+| `node scripts/sync-claude-settings.js --diff`   | Claude settings sync       | Compare local vs repo settings                        |
 
 ### Prettier (Code Formatting)
 

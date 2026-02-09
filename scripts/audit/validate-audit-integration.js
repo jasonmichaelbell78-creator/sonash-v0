@@ -25,6 +25,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { execFileSync } = require("child_process");
+const { loadConfig } = require("../config/load-config");
 
 // Import error sanitization helper
 let sanitizeError;
@@ -100,18 +101,18 @@ const AUDIT_DIR = path.join(__dirname, "../../docs/audits/comprehensive");
 const VALIDATION_STATE_FILE = path.join(AUDIT_DIR, "validation-state.json");
 const VALIDATION_REPORT_FILE = path.join(AUDIT_DIR, "VALIDATION_REPORT.md");
 
-// Valid schema values from JSONL_SCHEMA_STANDARD.md
-const VALID_CATEGORIES = [
-  "security",
-  "performance",
-  "code-quality",
-  "documentation",
-  "process",
-  "refactoring",
-  "engineering-productivity",
-];
-const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
-const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
+// Valid schema values — single source of truth: scripts/config/audit-schema.json
+let auditSchema;
+try {
+  auditSchema = loadConfig("audit-schema");
+} catch (err) {
+  const msg = sanitizeError(err);
+  console.error(`Error: failed to load audit schema config: ${msg}`);
+  process.exit(2);
+}
+const VALID_CATEGORIES = auditSchema.validCategories;
+const VALID_SEVERITIES = auditSchema.validSeverities;
+const VALID_EFFORTS = auditSchema.validEfforts;
 
 // Required fields for Doc Standards JSONL (base schema)
 const REQUIRED_BASE_FIELDS = [

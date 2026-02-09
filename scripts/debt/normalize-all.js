@@ -15,31 +15,25 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { glob } = require("glob");
+const { loadConfig } = require("../config/load-config");
 
 const RAW_DIR = path.join(__dirname, "../../docs/technical-debt/raw");
 const OUTPUT_FILE = path.join(RAW_DIR, "normalized-all.jsonl");
 
-// Valid category values
-const VALID_CATEGORIES = [
-  "security",
-  "performance",
-  "code-quality",
-  "documentation",
-  "process",
-  "refactoring",
-];
-
-// Valid severity values
-const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
-
-// Valid type values
-const VALID_TYPES = ["bug", "code-smell", "vulnerability", "hotspot", "tech-debt", "process-gap"];
-
-// Valid status values
-const VALID_STATUSES = ["NEW", "VERIFIED", "FALSE_POSITIVE", "IN_PROGRESS", "RESOLVED"];
-
-// Valid effort values
-const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
+// Valid schema values — single source of truth: scripts/config/audit-schema.json
+let schema;
+try {
+  schema = loadConfig("audit-schema");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load audit-schema config: ${msg}`);
+  process.exit(2);
+}
+const VALID_CATEGORIES = schema.validCategories;
+const VALID_SEVERITIES = schema.validSeverities;
+const VALID_TYPES = schema.validTypes;
+const VALID_STATUSES = schema.validStatuses;
+const VALID_EFFORTS = schema.validEfforts;
 
 // Generate deterministic content hash for deduplication
 function generateContentHash(item) {
@@ -151,7 +145,14 @@ async function main() {
 
   for (const file of files) {
     const fileName = path.basename(file);
-    const content = fs.readFileSync(file, "utf8");
+    let content;
+    try {
+      content = fs.readFileSync(file, "utf8");
+    } catch (readErr) {
+      const msg = readErr instanceof Error ? readErr.message : String(readErr);
+      console.warn(`  ⚠️ Failed to read ${path.basename(file)}: ${msg}`);
+      continue;
+    }
     const lines = content.split("\n").filter((line) => line.trim());
 
     let fileItemCount = 0;
@@ -224,4 +225,8 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+main().catch((err) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Fatal error: ${msg}`);
+  process.exit(1);
+});

@@ -1,0 +1,77 @@
+{
+  "rules": [
+    {
+      "trigger": "ROADMAP.md",
+      "dependents": ["SESSION_CONTEXT.md"],
+      "reason": "Session context reflects current roadmap focus",
+      "checkDiff": false
+    },
+    {
+      "trigger": "package.json",
+      "dependents": ["DEVELOPMENT.md"],
+      "reason": "All scripts should be documented",
+      "checkDiff": true,
+      "diffPattern": { "source": "\"scripts\"", "flags": "" }
+    },
+    {
+      "trigger": ".husky/",
+      "dependents": ["docs/TRIGGERS.md", "DEVELOPMENT.md"],
+      "reason": "Hook documentation must be complete",
+      "checkDiff": false
+    },
+    {
+      "trigger": ".claude/hooks/",
+      "dependents": ["docs/TRIGGERS.md", "DEVELOPMENT.md"],
+      "reason": "Hook documentation must be complete",
+      "checkDiff": false
+    },
+    {
+      "trigger": ".claude/commands/",
+      "dependents": [".claude/COMMAND_REFERENCE.md"],
+      "reason": "Skill/command registry must be complete",
+      "checkDiff": false
+    },
+    {
+      "trigger": ".claude/skills/",
+      "dependents": [".claude/COMMAND_REFERENCE.md"],
+      "reason": "Skill/command registry must be complete",
+      "checkDiff": false
+    },
+    {
+      "trigger": "app/admin/",
+      "dependents": ["ROADMAP.md"],
+      "reason": "Admin Panel changes must update Track A status in ROADMAP.md",
+      "checkDiff": false
+    },
+    {
+      "trigger": "functions/src/admin",
+      "dependents": ["ROADMAP.md"],
+      "reason": "Admin backend changes must update Track A status in ROADMAP.md",
+      "checkDiff": false
+    },
+    {
+      "trigger": "app/(protected)/dashboard/",
+      "dependents": ["ROADMAP.md"],
+      "reason": "Dashboard changes must update sprint status in ROADMAP.md",
+      "checkDiff": false
+    },
+    {
+      "trigger": "docs/plans/",
+      "dependents": ["docs/PLAN_MAP.md", "docs/README.md"],
+      "reason": "New/updated plans must be referenced in navigation docs",
+      "checkDiff": false
+    },
+    {
+      "trigger": "docs/technical-debt/",
+      "dependents": ["SESSION_CONTEXT.md"],
+      "reason": "Technical debt changes should be noted in session context",
+      "checkDiff": false
+    },
+    {
+      "trigger": "docs/audits/canonical/",
+      "dependents": ["docs/PLAN_MAP.md"],
+      "reason": "Canonical audit changes affect TDMS migration status",
+      "checkDiff": false
+    }
+  ]
+}

@@ -28,6 +28,11 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15.5    | 2026-02-09 | Review #272: PR #352 Round 6 — FINAL loadConfig sweep (12 items - 1 Security, 8 MAJOR, 2 MINOR, 1 REJECTED). **SECURITY**: Path traversal guard in load-config.js (reject .., /, \\). **MAJOR**: Complete sweep of ALL remaining unguarded loadConfig calls (6 files: validate-schema.js, normalize-all.js, intake-manual.js, intake-audit.js, intake-pr-deferred.js, validate-skill-config.js), description fallback YAML artifact filter, path-boundary archive regex, overlapping trigger exclusion. **REJECTED**: audit-schema.json category rename + 3 shape validation suggestions (over-engineering). **MILESTONE**: Zero unguarded loadConfig calls remain in codebase. Consolidation counter 7→8. Active reviews #266-272.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 15.4    | 2026-02-09 | Review #271: PR #352 Round 5 - Qodo Suggestions + Compliance (7 items - 4 MAJOR, 2 MINOR, 1 REJECTED). **MAJOR**: Stateful regex bug (g flag removed from skill-config.json deprecatedPatterns), path-boundary anchored excludePaths regex (agent-triggers.json), unguarded loadConfig try/catch (check-pattern-compliance.js + generate-documentation-index.js + surface-lessons-learned.js). **MINOR**: Empty patterns fail-closed (ai-pattern-checks.js). **REJECTED**: check-review-needed.js 15-line shape validation (over-engineering). Consolidation counter 6→7. Active reviews #266-271.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 15.3    | 2026-02-09 | Review #270: PR #352 Round 4 - Qodo Suggestions + Compliance (7 items - 4 MAJOR, 1 MINOR, 1 REJECTED, 1 INFORMATIONAL). **MAJOR**: YAML block scalar handling in parseFrontmatter (generate-skill-registry.js), silent catch→console.warn (search-capabilities.js), unguarded loadConfigWithRegex try/catch (check-review-needed.js + ai-pattern-checks.js). **REJECTED**: sanitizeError guard in validate-audit-integration.js (already has inline fallback via try/catch). Consolidation counter 5→6. Active reviews #266-270.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 15.2    | 2026-02-09 | Review #269: PR #352 Round 3 - Qodo Security + Compliance + Suggestions (7 items - 1 Security, 1 Compliance, 5 Code). **SECURITY**: Symlink guard (lstatSync) before reading SKILL.md in generate-skill-registry.js. **COMPLIANCE**: Silent catch blocks replaced with console.warn for diagnosability. **MAJOR**: parseFrontmatter slice(3) to skip opening ---, fail-closed empty rules (check-cross-doc-deps.js), unguarded loadConfig try/catch (validate-audit-integration.js + check-doc-headers.js). **MINOR**: Object.freeze on VALID_SEVERITIES_CACHED. Consolidation counter 4→5. Active reviews #266-269.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 15.1    | 2026-02-09 | Review #268: PR #352 Round 2 - Qodo + CI (7 items - 0 CRITICAL, 3 MAJOR, 1 MINOR, 2 REJECTED, 1 INFORMATIONAL). **CI FIX**: 2 remaining false positives (intake-pr-deferred.js:107, normalize-all.js:143) added to verified-patterns.json. **MAJOR**: process.exit(1) on read failure instead of return [] (intake-pr-deferred.js), try/catch + Array.isArray guard for module-scope loadConfig (transform-jsonl-schema.js), empty rules warning (check-cross-doc-deps.js). **REJECTED**: Composite dedup key in generate-skill-registry.js (intentional first-wins behavior), config shape validation in load-config.js (over-engineering for internal configs). Consolidation counter 3→4. Active reviews #266-268.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 15.0    | 2026-02-07 | **CONSOLIDATION #17**: Reviews #254-265 (12 reviews) → CODE_PATTERNS.md v2.6. Added 23 patterns: 4 Security, 7 JS/TS, 8 CI/Automation, 3 Process Management, 1 Bash/Shell. Source: PR #346 Audit Trigger Reset reviews (Qodo/SonarCloud rounds 1-6). Counter reset 12→0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 14.9    | 2026-02-07 | Review #265: PR #346 Round 6 Qodo (6 items - 1 MAJOR, 3 already fixed, 2 rejected). **MAJOR**: Backup-swap saveJson atomic write (rm+rename crash window). **Already fixed in 5f3f312**: empty entries guard, section scoping, table date regex. **Rejected**: .filter(Boolean) on hardcoded constants, auto-generated DOCUMENTATION_INDEX.md. Consolidation counter 11→12 (consolidation due). Active reviews #213-265.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 14.8    | 2026-02-07 | Review #260-264: PR #346 Audit Trigger Reset - 5 rounds Qodo + SonarCloud + CI (29 items across 5 rounds). **R1** (11 items): execFileSync conversion (SonarCloud HIGH), regex DoS backtracking, Object.create(null), \x1f delimiter, NaN guard, Math.min guard, CI false positive exclusions. **R2** (4 items): delimiter mismatch bug, date validation, robust category matching. **R3** (5 items): execFileSync ×2 files, timezone drift, getCategoryAuditDates wrong-table bug. **R4** (3 items): multi-word category capitalization, Windows atomic rename, JSON.parse safety. **R5** (6 items): section-scoped regex, table-column date parsing, empty entries guard. Consolidation counter now at 11 (threshold reached). Active reviews #213-264.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -317,7 +322,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 3 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
@@ -666,6 +671,240 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #272: PR #352 Round 6 — Final loadConfig Sweep (2026-02-09)
+
+**Source:** Qodo PR Compliance + Code Suggestions (Round 6) **PR/Branch:**
+claude/cherry-pick-and-pr-xarOL (PR #352) **Suggestions:** 12 total (Security:
+1, Major: 8, Minor: 2, Rejected: 1)
+
+**Approach change:** Instead of fixing one file per round, grep'd entire
+codebase for unguarded `const X = loadConfig(` and fixed ALL 6 remaining in one
+batch.
+
+**Accepted:**
+
+1. [SECURITY] `load-config.js` — Path traversal guard in config name
+2. [MAJOR] 6 debt/validate scripts — try/catch around all remaining loadConfig
+3. [MAJOR] `generate-skill-registry.js` — Description fallback filters YAML
+   block scalars and empty description/name lines
+4. [MINOR] `doc-header-config.json` — Path-boundary archive regex
+5. [MINOR] `agent-triggers.json` — Exclude functions/src/ from code-reviewer
+
+**Rejected:** audit-schema.json category rename, 3 shape validation suggestions
+
+**Milestone:** Zero unguarded loadConfig calls remain in codebase.
+
+---
+
+#### Review #271: PR #352 Round 5 - Qodo Regex + Config Guards (2026-02-09)
+
+**Source:** Qodo PR Compliance + Code Suggestions (Round 5) **PR/Branch:**
+claude/cherry-pick-and-pr-xarOL (PR #352) **Suggestions:** 7 total (Major: 4,
+Minor: 2, Rejected: 1)
+
+**Accepted Suggestions:**
+
+1. [MAJOR] `skill-config.json` — Removed global `g` flag from 3
+   `deprecatedPatterns` regex. The `g` flag makes `RegExp.test()` stateful via
+   `lastIndex`, causing alternating true/false results on repeated calls.
+2. [MAJOR] `agent-triggers.json` — Path-boundary anchored `excludePaths` regex:
+   `(?:^|\\/)(?:__tests__|node_modules)(?:\\/|$)` prevents substring matches
+   (e.g., `my__tests__helper` would incorrectly match before).
+3. [MAJOR] `check-pattern-compliance.js` + `generate-documentation-index.js` +
+   `surface-lessons-learned.js` — Wrapped module-scope `loadConfig` calls in
+   try/catch with `process.exit(2)`. This is the final batch — all 10 refactored
+   config consumers now have error handling.
+4. [MINOR] `ai-pattern-checks.js` — Fail-closed when patterns config loads
+   successfully but contains no patterns (prevents silent no-op).
+
+**Rejected Suggestions:**
+
+5. `check-review-needed.js` — 15+ lines of config shape validation (typeof
+   checks on every property). Over-engineering for internal dev-controlled
+   configs. The try/catch from R4 already handles missing/invalid files.
+
+**Key Learnings:**
+
+- Global `g` flag on regex used with `.test()` is a recurring bug pattern —
+  stateful `lastIndex` causes non-deterministic results. Only use `g` with
+  `matchAll()` or `exec()` loops.
+- Path-matching regex needs anchoring at path boundaries, not just substring
+  matching, to avoid false positives on directory/file names containing the
+  pattern as a substring.
+- All 10 config consumers from the Session #142 JSON extraction are now guarded
+  with try/catch — this systematic sweep took 5 review rounds.
+
+---
+
+#### Review #270: PR #352 Round 4 - Qodo Config Guards + YAML Parsing (2026-02-09)
+
+**Source:** Qodo PR Compliance + Code Suggestions (Round 4) **PR/Branch:**
+claude/cherry-pick-and-pr-xarOL (PR #352) **Suggestions:** 7 total (Major: 4,
+Minor: 1, Rejected: 1, Informational: 1)
+
+**Accepted Suggestions:**
+
+1. [MAJOR] `generate-skill-registry.js` — YAML block scalar indicators (`|`,
+   `>`, `>-`) treated as empty values in parseFrontmatter. Prevents corrupted
+   descriptions in skill-registry.json when SKILL.md uses multiline YAML.
+2. [MAJOR] `search-capabilities.js` — Replaced silent empty catch with
+   `console.warn` for skill registry load failures. Improves diagnosability when
+   registry JSON is missing vs corrupted.
+3. [MAJOR] `check-review-needed.js` — Wrapped module-scope
+   `loadConfigWithRegex("audit-config")` in try/catch with `process.exit(2)`.
+4. [MAJOR] `ai-pattern-checks.js` — Wrapped module-scope
+   `loadConfigWithRegex("ai-patterns")` in try/catch with `process.exit(2)`.
+
+**Rejected Suggestions:**
+
+5. `validate-audit-integration.js` `sanitizeError` guard — REJECTED. The
+   `sanitizeError` import already has a try/catch with inline fallback (lines
+   31-37), guaranteeing it's always a function. Adding `typeof === "function"`
+   check is redundant.
+
+**Informational (no action):**
+
+6. Secure logging compliance — unstructured console.warn with item.name paths.
+   Acceptable for internal CLI dev tooling; no PII exposure.
+7. Regex config loading — configs are dev-controlled JSON, not user input. Regex
+   DoS risk is negligible for internal config files.
+
+**Key Learnings:**
+
+- Systematic pattern: every `loadConfig*()` at module scope across the codebase
+  needs try/catch. R3 caught 2 files, R4 caught 2 more — pattern is spreading
+  across all 10 refactored config consumers
+- YAML block scalars (`|`, `>`) are common in SKILL.md frontmatter but the
+  simple key:value parser doesn't handle multiline — treating them as empty
+  values and falling through to description fallback is the correct approach
+
+---
+
+#### Review #269: PR #352 Round 3 - Qodo Security + Config Resilience (2026-02-09)
+
+**Source:** Qodo PR Security Compliance + Code Suggestions (Round 3)
+**PR/Branch:** claude/cherry-pick-and-pr-xarOL (PR #352) **Suggestions:** 7
+total (Security: 1, Compliance: 1, Major: 3, Minor: 1, Informational: 1)
+
+**Accepted Suggestions:**
+
+1. [SECURITY] `generate-skill-registry.js` — Added `lstatSync` symlink guard
+   before reading SKILL.md to prevent symlink-based file disclosure.
+2. [COMPLIANCE] `generate-skill-registry.js` — Replaced silent empty catch
+   blocks with `console.warn` for diagnosability (both skill-level and
+   directory-level catches).
+3. [MAJOR] `generate-skill-registry.js` — Fixed `parseFrontmatter` to
+   `content.slice(3, end)` instead of `slice(0, end)` to skip the opening `---`
+   marker line. Cleaner parsing that avoids redundant `key !== "---"` guard.
+4. [MAJOR] `validate-audit-integration.js` + `check-doc-headers.js` — Wrapped
+   unguarded module-scope `loadConfig` / `loadConfigWithRegex` calls in
+   try/catch with `process.exit(2)` on failure. Same pattern as R2 fix for
+   `transform-jsonl-schema.js`.
+5. [MAJOR] `check-cross-doc-deps.js` — Fail closed (`process.exit(2)`) when no
+   dependency rules loaded in non-dry-run mode. Prevents silently bypassing
+   dependency enforcement if config is misconfigured.
+6. [MINOR] `transform-jsonl-schema.js` — `Object.freeze` on
+   `VALID_SEVERITIES_CACHED` to prevent mutation of module-scoped config cache.
+
+**Key Learnings:**
+
+- Every module-scope `loadConfig()` call in the codebase needs try/catch — this
+  is now a systematic pattern to check in all refactored config consumers
+- Symlink guards needed even for internal tooling directories (`.claude/skills`)
+- Silent catch blocks prevent diagnosis — always log at least a warning
+- Fail-closed is the safe default for CI enforcement hooks when config is empty
+
+---
+
+#### Review #268: PR #352 Round 2 - Qodo + CI False Positives (2026-02-09)
+
+**Source:** Qodo PR Compliance + CI Pattern Compliance (Round 2) **PR/Branch:**
+claude/cherry-pick-and-pr-xarOL (PR #352) **Suggestions:** 7 total (Critical: 0,
+Major: 3, Minor: 1, Rejected: 2, Informational: 1)
+
+**CI Blockers Fixed:**
+
+1. `intake-pr-deferred.js:107` — readFileSync IS inside try/catch (lines
+   106-112), pattern checker false positive. Added to verified-patterns.json.
+2. `normalize-all.js:143` — readFileSync IS inside try/catch (lines 142-148),
+   pattern checker false positive. Added to verified-patterns.json.
+
+**Accepted Suggestions:**
+
+3. [MAJOR] `intake-pr-deferred.js` — Changed `return []` to `process.exit(1)`
+   when MASTER_DEBT.jsonl exists but can't be read. Returning empty silently
+   loses duplicate detection capability.
+4. [MAJOR] `transform-jsonl-schema.js` — Wrapped module-scope `loadConfig()` in
+   try/catch with defaults. Unguarded module-scope call crashes with unhelpful
+   stack trace if config missing.
+5. [MAJOR] `transform-jsonl-schema.js` — Added `Array.isArray()` guard on
+   `validSeverities` from config to validate shape before use.
+6. [MINOR] `check-cross-doc-deps.js` — Added warning when no dependency rules
+   loaded from config (empty rules is valid but worth flagging).
+
+**Rejected Suggestions:**
+
+7. `generate-skill-registry.js` composite dedup key (`source:name`) — REJECTED.
+   Current name-only dedup is intentional: `.claude/skills` takes priority over
+   `.agents/skills`. Composite key would allow duplicates.
+8. `load-config.js` config shape validation — REJECTED. Over-engineering for
+   internal dev-controlled configs. All consumers already validate what they
+   need.
+
+**Key Learnings:**
+
+- Pattern checker line numbers shift after edits — always re-verify false
+  positives after fixing nearby code
+- `return []` on read failure can silently lose safety guarantees (dedup) —
+  prefer `process.exit(1)` for non-optional file reads
+- Module-scope `loadConfig()` needs try/catch even more than function-scope
+  calls since the error surface is harder to diagnose
+
+---
+
+#### Review #267: PR #352 Config Refactor Hardening - Qodo + CI (2026-02-09)
+
+**Source:** Qodo PR Compliance + Code Suggestions + CI Pattern Compliance
+**PR/Branch:** claude/cherry-pick-and-pr-xarOL (PR #352) **Suggestions:** 13
+total (Critical: 0, Major: 6, Minor: 3, Rejected: 4)
+
+**Patterns Identified:**
+
+1. [Config loader resilience]: Scripts consuming
+   `loadConfig()`/`loadConfigWithRegex()` at module scope crash with unhelpful
+   stack trace if config file is missing
+   - Root cause: JSON configs are new (Session #142 refactor) — no error
+     wrapping at call sites
+   - Prevention: Wrap top-level config loads in try/catch with graceful fallback
+     or clear exit
+2. [Pattern checker false positives]: readFileSync already in try/catch still
+   flagged by CI pattern compliance when `existsSync` appears nearby
+   - Root cause: Regex-based pattern checker doesn't analyze scope nesting
+   - Prevention: Add verified-patterns.json entries for confirmed false
+     positives
+3. [Per-item config reload]: `loadConfig()` called inside `transformItem()`
+   function re-reads and re-parses JSON on every item in a potentially large
+   JSONL batch
+   - Root cause: Quick refactor moved inline constant to loadConfig without
+     considering call site
+   - Prevention: Cache config at module scope when used in hot loops
+
+**Resolution:**
+
+- Fixed: 9 items (6 CI pattern violations + 3 Qodo suggestions)
+- Rejected: 4 items (2 false positives verified via code review, 1 intentional
+  catch design, 1 over-engineering)
+
+**Key Learnings:**
+
+- New shared config system needs defensive loading at every call site
+- Hooks must never crash on config load failure — use defaults
+- Pattern checker false positives need verified-patterns.json entries
+  immediately
+- Module-scope caching is critical when loadConfig is called in loops
 
 ---
 

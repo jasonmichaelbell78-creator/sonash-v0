@@ -20,6 +20,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { loadConfigWithRegex } = require("../../scripts/config/load-config");
 
 // Configuration
 const STATE_FILE = ".claude/hooks/.agent-trigger-state.json";
@@ -29,30 +30,17 @@ const PHASE_2_THRESHOLD_DAYS = 30;
 const PHASE_3_THRESHOLD_USES = 100;
 const PHASE_3_THRESHOLD_DAYS = 60;
 
-// Track modified files for delegated review queue (QoL #4)
-const REVIEW_CHANGE_THRESHOLD = 5; // Queue review after N code file modifications
-
-// Agent recommendations based on file patterns
-const AGENT_TRIGGERS = [
-  {
-    pattern: /\.(ts|tsx|js|jsx)$/,
-    agent: "code-reviewer",
-    description: "Code review for TypeScript/JavaScript changes",
-    excludePaths: [/\.test\.|\.spec\.|__tests__|node_modules/],
-  },
-  {
-    pattern: /functions\/src\/.*\.ts$/,
-    agent: "security-auditor",
-    description: "Security review for Cloud Functions changes",
-    excludePaths: [/\.test\.|\.spec\./],
-  },
-  {
-    pattern: /firestore\.rules$/,
-    agent: "security-auditor",
-    description: "Security review for Firestore rules changes",
-    excludePaths: [],
-  },
-];
+// Agent triggers and thresholds sourced from scripts/config/agent-triggers.json
+let agentTriggersConfig;
+try {
+  agentTriggersConfig = loadConfigWithRegex("agent-triggers");
+} catch (configErr) {
+  const msg = configErr instanceof Error ? configErr.message : String(configErr);
+  console.error(`Warning: failed to load agent-triggers config: ${msg}`);
+  agentTriggersConfig = { reviewChangeThreshold: 5, agentTriggers: [] };
+}
+const REVIEW_CHANGE_THRESHOLD = agentTriggersConfig.reviewChangeThreshold;
+const AGENT_TRIGGERS = agentTriggersConfig.agentTriggers;
 
 // Get and validate project directory
 const safeBaseDir = path.resolve(process.cwd());

@@ -37,6 +37,7 @@
  */
 
 import { readFileSync, existsSync } from "node:fs";
+import { createRequire } from "node:module";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
@@ -46,69 +47,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, "..");
 
+// CJS interop for loading JSON configs from ESM
+const require = createRequire(import.meta.url);
+const { loadConfigWithRegex } = require("./config/load-config");
+
 // File paths
 const TRACKER_PATH = join(ROOT, "docs", "AUDIT_TRACKER.md");
 const _COORDINATOR_PATH = join(ROOT, "docs", "multi-ai-audit", "COORDINATOR.md"); // Reserved for future use
 
-// Category-specific thresholds
-// Updated 2026-01-20 (Session #85): Increased thresholds to reduce noise
-// Previous values were too sensitive for active development pace
-const CATEGORY_THRESHOLDS = {
-  code: {
-    commits: 75, // was 25
-    files: 40, // was 15
-    filePattern: /\.(tsx?|jsx?|js)$/,
-    excludePattern: /^(docs|tests|\.)/,
-  },
-  security: {
-    commits: 50, // was 20
-    files: 5, // was 1 (ANY) - now requires meaningful changes
-    // Targeted patterns: explicitly match critical security files by name or path
-    // Includes: firestore.rules, middleware.ts, .env files, functions/, auth/firebase libs
-    filePattern:
-      /(^|\/)(firestore\.rules|middleware\.ts)$|(^|\/)\.env(\.|$)|(^|\/)functions\/|(^|\/)lib\/(auth|firebase)[^/]*\.(ts|tsx|js|jsx)$|\b(auth|security|secrets|credential|token)\b/i,
-  },
-  performance: {
-    commits: 100, // was 30
-    files: 30, // was 10
-    filePattern: /\.(tsx?|jsx?)$/,
-    checkBundle: true,
-  },
-  refactoring: {
-    commits: 150, // was 40
-    files: 50, // was 20
-    filePattern: /\.(tsx?|jsx?)$/,
-    checkComplexity: true,
-  },
-  documentation: {
-    commits: 100, // was 30
-    files: 50, // was 20
-    filePattern: /\.md$/,
-  },
-  process: {
-    commits: 75, // was 30
-    files: 20, // was 10 - Session #101: increased to reduce noise from routine script updates
-    filePattern: /(\.github|\.claude|\.husky|scripts\/)/,
-  },
-};
-
-// Multi-AI escalation thresholds
-// Updated 2026-02-07: Removed singleAuditCount — single audits no longer escalate to multi-AI
-const MULTI_AI_THRESHOLDS = {
-  totalCommits: 300, // Total commits across all categories
-  daysSinceAudit: 30, // Days since last multi-AI audit
-};
-
-// Shared category section header patterns (bounded, no backtracking risk)
-// Used by getCategoryAuditDates()
-const CATEGORY_HEADERS = {
-  code: /^### Code Audits/,
-  security: /^### Security Audits/,
-  performance: /^### Performance Audits/,
-  refactoring: /^### Refactoring Audits/,
-  documentation: /^### Documentation Audits/,
-  process: /^### Process Audits/,
-};
+// Category thresholds, multi-AI thresholds, and section headers
+// Single source of truth: scripts/config/audit-config.json
+let auditConfig;
+try {
+  auditConfig = loadConfigWithRegex("audit-config");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load audit-config: ${msg}`);
+  process.exit(2);
+}
+const CATEGORY_THRESHOLDS = auditConfig.categoryThresholds;
+const MULTI_AI_THRESHOLDS = auditConfig.multiAiThresholds;
+const CATEGORY_HEADERS = auditConfig.categoryHeaders;
 
 // Parse command line arguments
 const args = process.argv.slice(2);

@@ -23,11 +23,24 @@ import { readFileSync, existsSync, readdirSync, lstatSync } from "node:fs";
 import { join, dirname, extname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
+import { createRequire } from "node:module";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, "..");
+
+// Load verified pattern exclusions from JSON config (single source of truth)
+const require = createRequire(import.meta.url);
+const { loadConfig } = require("./config/load-config.js");
+let verifiedPatterns;
+try {
+  verifiedPatterns = loadConfig("verified-patterns");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load verified-patterns config: ${msg}`);
+  process.exit(2);
+}
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -397,191 +410,8 @@ const ANTI_PATTERNS = [
     fix: "Wrap in try/catch: race conditions, permissions, encoding errors",
     review: "#36, #37",
     fileTypes: [".js", ".ts"],
-    // Exclude files verified to have proper try/catch:
-    // 2026-01-04 audit:
-    // - check-pattern-compliance.js: pattern definition + proper try/catch at L440
-    // - phase-complete-check.js: proper try/catch at L252-261, L147-192
-    // - surface-lessons-learned.js: proper try/catch at L313-318
-    // - suggest-pattern-automation.js: proper try/catch at L108-113, L171-176
-    // - archive-doc.js: safeReadFile wrapper at L126-154 with try/catch
-    // - validate-phase-completion.js: NOW HAS try/catch at L29-35 (fixed 2026-01-04)
-    // - update-readme-status.js: safeReadFile wrapper at L57-88 with try/catch (fixed 2026-01-04)
-    // 2026-01-12 audit (Review #134):
-    // - check-mcp-servers.js: readFileSync at L60 IS in try/catch (L58-106)
-    // - session-start.js: computeHash() L72 in try/catch L70-76, needsRootInstall() L88 in try/catch L83-92, needsFunctionsInstall() L105 in try/catch L99-110
-    // 2026-01-13 audit (Review #143):
-    // - log-override.js: readFileSync at L153 IS in try/catch (L152-158)
-    // - log-session-activity.js: readFileSync at L118 IS in try/catch (L117-123)
-    // - validate-skill-config.js: readFileSync at L105 IS in try/catch (L104-109)
-    // - verify-skill-usage.js: readFileSync at L77 IS in try/catch (L76-82)
-    // 2026-01-16 audit (Review #159):
-    // - run-consolidation.js: readFileSync at L413 IS in try/catch (L412-419)
-    // 2026-01-17 audit (Review #175):
-    // - aggregate-audit-findings.js: readFileSync at L145, L181, L246 all in try/catch blocks
-    // 2026-01-19 audit (Review #181):
-    // - generate-detailed-sonar-report.js: readFileSync at L27, L43, L76 all in try/catch blocks
-    // - generate-sonar-report-with-snippets.js: ARCHIVED to docs/archive/obsolete-scripts-2026-02/
-    // - verify-sonar-phase.js: readFileSync at L135, L195, L215 all in try/catch blocks
-    // 2026-01-20 audit (PR #286):
-    // - check-backlog-health.js: readFileSync at L250 IS in try/catch (L242-292)
-    // - security-check.js: readFileSync at L358 IS in try/catch (L357-361)
-    // 2026-01-21 audit (Review #191):
-    // - encrypt-secrets.js: readFileSync at L136 IS in try/catch (L135-140)
-    // - decrypt-secrets.js: readFileSync at L178 IS in try/catch (L177-191), L197 in try/catch (L196-201)
-    // 2026-01-23 audit (Review #200):
-    // - pattern-check.js: readFileSync at L117 IS in try/catch (L110-125)
-    // 2026-01-24 audit (Review #200):
-    // - analyze-learning-effectiveness.js: readFileSync at L143, L241, L308 all in try/catch blocks
-    // S5843: Use array instead of complex regex to reduce complexity from 21 to < 20
-    // (Review #184 - SonarCloud regex complexity)
-    pathExcludeList: [
-      "check-pattern-compliance.js",
-      "phase-complete-check.js",
-      "surface-lessons-learned.js",
-      "suggest-pattern-automation.js",
-      "archive-doc.js",
-      "validate-phase-completion.js",
-      "update-readme-status.js",
-      "check-mcp-servers.js",
-      "session-start.js",
-      "log-override.js",
-      "log-session-activity.js",
-      "validate-skill-config.js",
-      "verify-skill-usage.js",
-      "run-consolidation.js",
-      "aggregate-audit-findings.js",
-      "generate-detailed-sonar-report.js",
-      // generate-sonar-report-with-snippets.js - ARCHIVED to docs/archive/obsolete-scripts-2026-02/
-      "verify-sonar-phase.js",
-      "check-backlog-health.js",
-      "security-check.js",
-      "encrypt-secrets.js",
-      "decrypt-secrets.js",
-      "pattern-check.js",
-      "analyze-learning-effectiveness.js",
-      // 2026-01-24 audit (Review #202):
-      // - check-pattern-sync.js: readFileSync at L105 IS in try/catch (L104-109), L232 in try/catch (L231-235)
-      // - security-helpers.js: safeReadFile at L322 IS in try/catch (L321-329)
-      "check-pattern-sync.js",
-      "security-helpers.js",
-      // 2026-01-26 audit (Review #198):
-      // - audit-s0s1-validator.js: readFileSync at L216 IS in try/catch (L214-221)
-      "audit-s0s1-validator.js",
-      // 2026-01-26 audit (Review #208):
-      // - check-remote-session-context.js: readFileSync at L113 IS in try/catch (L112-118)
-      // - track-agent-invocation.js: readFileSync at L61 IS in try/catch (L60-64), L92 IS in try/catch (L91-96)
-      // - check-agent-compliance.js: readFileSync at L76 IS in try/catch (L74-80)
-      "check-remote-session-context.js",
-      "track-agent-invocation.js",
-      "check-agent-compliance.js",
-      // 2026-01-27 audit (Review #212):
-      // - check-roadmap-health.js: readFileSync at L39 IS in try/catch (L38-47 readFile function)
-      "check-roadmap-health.js",
-      // 2026-01-28 audit (Review #214):
-      // - alerts-reminder.js: all readFileSync calls in try/catch (checkContextSize L35-47, checkPendingMcpSave, main)
-      // - auto-save-context.js: loadJson has try/catch (L57-62), getRecentDecisions has try/catch (L112-114)
-      // - run-alerts.js: all readFileSync calls verified in try/catch blocks
-      // - large-context-warning.js: readFileSync L93 in try/catch (L92-103), L127 in try/catch (L126-131)
-      // - generate-pending-alerts.js: all readFileSync now wrapped in try/catch after refactor
-      // - append-hook-warning.js: readWarnings has try/catch (L40-48 after refactor)
-      "alerts-reminder.js",
-      "auto-save-context.js",
-      "run-alerts.js",
-      "large-context-warning.js",
-      "generate-pending-alerts.js",
-      "append-hook-warning.js",
-      // 2026-01-29 audit (Review #217):
-      // - check-doc-headers.js: readFileSync at L100 IS in try/catch (L99-126)
-      // - session-end-commit.js: readFileSync at L86 IS in try/catch (L85-90)
-      "check-doc-headers.js",
-      "session-end-commit.js",
-      // 2026-01-31 audit (Review #221):
-      // - check-phase-status.js: readFileSync at L53 IS in try/catch (L49-68)
-      // - intake-manual.js: readFileSync at L119 IS in try/catch (L118-124)
-      "check-phase-status.js",
-      "intake-manual.js",
-      // 2026-02-02 audit (Review #224):
-      // - generate-metrics.js: readFileSync at L47 IS in try/catch (L45-52), loadMasterDebt validated
-      // - assign-roadmap-refs.js: readFileSync at L140 IS in try/catch (L139-145)
-      // - sync-claude-settings.js: readFileSync at L84 IS in try/catch (L83-91) via readJson helper
-      // - statusline.js (hooks/global): readFileSync at L67 IS in try/catch (L59-73), L82 IS in try/catch (L81-88)
-      // - gsd-check-update.js: readFileSync at L37 IS in try/catch (L36-38) in spawned child process code
-      "generate-metrics.js",
-      "assign-roadmap-refs.js",
-      "sync-claude-settings.js",
-      "statusline.js",
-      "gsd-check-update.js",
-      // 2026-02-02 audit (PR #329):
-      // - check-content-accuracy.js: readFileSync at L49 IS in try/catch (L47-52), L408 IS in try/catch (L407)
-      // - check-doc-placement.js: readFileSync at L504 IS in try/catch (L503)
-      // - check-external-links.js: readFileSync at L580 IS in try/catch (L579-587)
-      "check-content-accuracy.js",
-      "check-doc-placement.js",
-      "check-external-links.js",
-      // 2026-02-03 audit (Review #127):
-      // - ai-pattern-checks.js: readFileSync at L34 IS in try/catch (L33-38)
-      "ai-pattern-checks.js",
-      // 2026-02-03 audit (PR #333):
-      // - validate-audit-integration.js: readFileSync at L164 IS in try/catch (L163-171),
-      //   L578 IS in try/catch (L577-603), L901 IS in try/catch (L900-905)
-      "validate-audit-integration.js",
-      // 2026-02-03 audit (Review #238 PR #334):
-      // - transform-jsonl-schema.js: readFileSync at L497 IS in try/catch (L496-502),
-      //   File paths in --all mode at L621 come from fs.readdirSync(), containment check at L623,
-      //   symlink check at L627-640 after line additions
-      "transform-jsonl-schema.js",
-      // 2026-02-04 audit (Review #242):
-      // - sync-consolidation-counter.js: readFileSync at L74 IS in try/catch (L73-83)
-      "sync-consolidation-counter.js",
-      // 2026-02-05 audit (Review #249 PR #336):
-      // - unify-findings.js: readFileSync at L67 IS in try/catch (L66-70)
-      // - normalize-format.js: readFileSync at L811 IS in try/catch (L810-815)
-      // - aggregate-category.js: readFileSync at L131 IS in try/catch (L130-134), L544 IS in try/catch (L543-547)
-      // - fix-schema.js: readFileSync at L520 IS in try/catch (L519-524)
-      // - state-manager.js: readFileSync at L157 IS in try/catch (L156-161), L193 IS in try/catch (L192-196)
-      "unify-findings.js",
-      "normalize-format.js",
-      "aggregate-category.js",
-      "fix-schema.js",
-      "state-manager.js",
-      // 2026-02-05 (Review #249): generate-views.js readFileSync at L79 IS in try/catch (L78-108),
-      //   L129 now IS in try/catch (L129-135)
-      "generate-views.js",
-      // extract-sonarcloud.js - ARCHIVED to docs/archive/obsolete-scripts-2026-02/
-      // 2026-02-05 (Review #249): validate-schema.js readFileSync at L181 IS in try/catch (L180-185)
-      "validate-schema.js",
-      // 2026-02-05 (Review #250 PR #337):
-      // - compaction-handoff.js: readFileSync at L63 IS in try/catch (L62-66 in loadJson)
-      // - state-utils.js: readFileSync at L56 IS in try/catch (L55-59 in readState)
-      // - agent-trigger-enforcer.js: readFileSync at L118 IS in try/catch (L116-121),
-      //   L258 IS in try/catch (L257-262)
-      // - sync-sonarcloud.js: readFileSync at L144 now IS in try/catch (L143-150)
-      "compaction-handoff.js",
-      "state-utils.js",
-      "agent-trigger-enforcer.js",
-      "sync-sonarcloud.js",
-      // 2026-02-06 audit (Review #255):
-      // - intake-audit.js: readFileSync at L287 IS in try/catch (L286-293), L373 IS in try/catch (L372-379)
-      // - extract-agent-findings.js: readFileSync now IS in try/catch (fixed Review #255)
-      "intake-audit.js",
-      "extract-agent-findings.js",
-      // 2026-02-07 audit (PR #346):
-      // - commit-tracker.js: readFileSync at L85 IS in try/catch (L84-89), L116 IS in try/catch (L114-121)
-      // - compact-restore.js: readFileSync at L46 IS in try/catch (L45-49)
-      // - pre-compaction-save.js: readFileSync at L67 IS in try/catch (L66-70), L116 IS in try/catch (L114-121), L150 IS in try/catch (L149-166)
-      // - check-session-gaps.js: readFileSync at L35 IS in try/catch (L34-49), L58 IS in try/catch (L57-68), L76 IS in try/catch (L75-81)
-      // - reset-audit-triggers.js: readFileSync at L195 IS in try/catch (L194-199)
-      // - seed-commit-log.js: readFileSync at L34 IS in try/catch (L33-45)
-      "commit-tracker.js",
-      "compact-restore.js",
-      "pre-compaction-save.js",
-      "check-session-gaps.js",
-      "reset-audit-triggers.js",
-      "seed-commit-log.js",
-      // 2026-02-08 audit (PR #351):
-      // - search-capabilities.js: readFileSync at L38 IS in try/catch (L37-41), L65 IS in try/catch (L64-68)
-      "search-capabilities.js",
-    ],
+    // Verified exclusions sourced from scripts/config/verified-patterns.json
+    pathExcludeList: verifiedPatterns["readfilesync-without-try"] || [],
   },
   {
     id: "auto-mode-slice-truncation",

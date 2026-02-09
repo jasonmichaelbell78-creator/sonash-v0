@@ -35,24 +35,27 @@ const crypto = require("crypto");
 const { execSync } = require("child_process");
 const { sanitizeError } = require("../lib/security-helpers.js");
 
+const { loadConfig } = require("../config/load-config");
+
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
 const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
 const LOG_DIR = path.join(DEBT_DIR, "logs");
 const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
 
-// Valid schema values
-const VALID_CATEGORIES = [
-  "security",
-  "performance",
-  "code-quality",
-  "documentation",
-  "process",
-  "refactoring",
-];
-const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
-const VALID_TYPES = ["bug", "code-smell", "vulnerability", "hotspot", "tech-debt", "process-gap"];
-const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
+// Valid schema values — single source of truth: scripts/config/audit-schema.json
+let schema;
+try {
+  schema = loadConfig("audit-schema");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load audit-schema config: ${msg}`);
+  process.exit(2);
+}
+const VALID_CATEGORIES = schema.validCategories;
+const VALID_SEVERITIES = schema.validSeverities;
+const VALID_TYPES = schema.validTypes;
+const VALID_EFFORTS = schema.validEfforts;
 
 // Parse command line arguments
 function parseArgs(args) {

@@ -21,6 +21,21 @@
 
 const fs = require("fs");
 const path = require("path");
+const { loadConfig } = require("../config/load-config");
+
+// Cache audit schema at module scope (avoid re-reading per item)
+let VALID_SEVERITIES_CACHED;
+try {
+  const auditSchema = loadConfig("audit-schema");
+  const severities = Array.isArray(auditSchema.validSeverities)
+    ? auditSchema.validSeverities
+    : ["S0", "S1", "S2", "S3"];
+  VALID_SEVERITIES_CACHED = Object.freeze([...severities]);
+} catch (configErr) {
+  const msg = configErr instanceof Error ? configErr.message : String(configErr);
+  console.error(`Warning: failed to load audit-schema config: ${msg}. Using defaults.`);
+  VALID_SEVERITIES_CACHED = Object.freeze(["S0", "S1", "S2", "S3"]);
+}
 
 // Project root for path containment validation
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
@@ -324,9 +339,8 @@ function transformItem(item, index) {
   }
 
   // Validate severity (case-insensitive - normalize to uppercase)
-  const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
   const severityInput = typeof item.severity === "string" ? item.severity.trim().toUpperCase() : "";
-  let severity = VALID_SEVERITIES.includes(severityInput) ? severityInput : "S2";
+  let severity = VALID_SEVERITIES_CACHED.includes(severityInput) ? severityInput : "S2";
   if (severity !== item.severity) {
     issues.push(`severity: "${item.severity}" → ${severity}`);
   }
