@@ -208,8 +208,9 @@ function searchLocalSkills(keywords) {
         )
         .map((s) => ({ name: s.name, source: s.source, description: s.description || "" }));
     }
-  } catch {
-    // Registry not generated yet — fall back to directory scan
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`Warning: failed to load skill registry (falling back to scan): ${msg}`);
   }
 
   // Fallback: scan directories directly

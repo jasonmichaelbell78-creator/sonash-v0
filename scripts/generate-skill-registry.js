@@ -41,7 +41,10 @@ function parseFrontmatter(content) {
     const colonIdx = trimmed.indexOf(":");
     if (colonIdx === -1) continue;
     const key = trimmed.slice(0, colonIdx).trim();
-    const value = trimmed.slice(colonIdx + 1).trim();
+    const rawValue = trimmed.slice(colonIdx + 1).trim();
+    // Ignore YAML block scalar indicators (|, >, >-); fallback description handles these
+    const value =
+      rawValue === "|" || rawValue === ">" || rawValue === ">-" || rawValue === "" ? "" : rawValue;
     if (key && value) {
       result[key] = value;
     }

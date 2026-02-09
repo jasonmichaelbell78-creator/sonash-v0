@@ -270,7 +270,15 @@ function checkImportExists(importName, packageJsonPath = "package.json") {
  * Regex patterns are made non-greedy and specific to avoid DoS (SonarCloud S5852)
  * Single source of truth: scripts/config/ai-patterns.json
  */
-const AI_PATTERNS = loadConfigWithRegex("ai-patterns").patterns;
+let AI_PATTERNS;
+try {
+  const cfg = loadConfigWithRegex("ai-patterns");
+  AI_PATTERNS = cfg && typeof cfg === "object" ? cfg.patterns || {} : {};
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load ai-patterns config: ${msg}`);
+  process.exit(2);
+}
 
 /**
  * Check a file for AI-specific patterns

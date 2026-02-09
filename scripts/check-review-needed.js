@@ -57,7 +57,14 @@ const _COORDINATOR_PATH = join(ROOT, "docs", "multi-ai-audit", "COORDINATOR.md")
 
 // Category thresholds, multi-AI thresholds, and section headers
 // Single source of truth: scripts/config/audit-config.json
-const auditConfig = loadConfigWithRegex("audit-config");
+let auditConfig;
+try {
+  auditConfig = loadConfigWithRegex("audit-config");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load audit-config: ${msg}`);
+  process.exit(2);
+}
 const CATEGORY_THRESHOLDS = auditConfig.categoryThresholds;
 const MULTI_AI_THRESHOLDS = auditConfig.multiAiThresholds;
 const CATEGORY_HEADERS = auditConfig.categoryHeaders;
