@@ -33,14 +33,16 @@ function parseFrontmatter(content) {
   const end = endLF === -1 ? endCRLF : endCRLF === -1 ? endLF : Math.min(endLF, endCRLF);
   if (end === -1) return null;
 
-  const fm = content.slice(0, end);
+  const fm = content.slice(3, end);
   const result = {};
   for (const line of fm.split(/\r?\n/)) {
-    const colonIdx = line.indexOf(":");
+    const trimmed = line.trim();
+    if (!trimmed || trimmed === "---") continue;
+    const colonIdx = trimmed.indexOf(":");
     if (colonIdx === -1) continue;
-    const key = line.slice(0, colonIdx).trim();
-    const value = line.slice(colonIdx + 1).trim();
-    if (key && value && key !== "---") {
+    const key = trimmed.slice(0, colonIdx).trim();
+    const value = trimmed.slice(colonIdx + 1).trim();
+    if (key && value) {
       result[key] = value;
     }
   }
@@ -66,6 +68,13 @@ function scanSkillsDir(dir, source) {
       const entry = { name: item.name, source };
       try {
         if (fs.existsSync(skillMd)) {
+          // Reject symlinks to prevent unintended file reads (Review #269)
+          const stat = fs.lstatSync(skillMd);
+          if (stat.isSymbolicLink()) {
+            console.warn(`  Warning: skipping symlink SKILL.md in ${item.name}`);
+            entries.push(entry);
+            continue;
+          }
           const content = fs.readFileSync(skillMd, "utf8");
           const fm = parseFrontmatter(content);
           if (fm) {
@@ -85,13 +94,15 @@ function scanSkillsDir(dir, source) {
             }
           }
         }
-      } catch {
-        // Skip unreadable SKILL.md
+      } catch (skillErr) {
+        const msg = skillErr instanceof Error ? skillErr.message : String(skillErr);
+        console.warn(`  Warning: failed to read SKILL.md in ${item.name}: ${msg}`);
       }
       entries.push(entry);
     }
-  } catch {
-    // Skip unreadable directory
+  } catch (dirErr) {
+    const msg = dirErr instanceof Error ? dirErr.message : String(dirErr);
+    console.warn(`Warning: failed to scan skills directory ${dir}: ${msg}`);
   }
   return entries;
 }

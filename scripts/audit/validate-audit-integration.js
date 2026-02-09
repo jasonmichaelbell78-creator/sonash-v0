@@ -102,7 +102,14 @@ const VALIDATION_STATE_FILE = path.join(AUDIT_DIR, "validation-state.json");
 const VALIDATION_REPORT_FILE = path.join(AUDIT_DIR, "VALIDATION_REPORT.md");
 
 // Valid schema values — single source of truth: scripts/config/audit-schema.json
-const auditSchema = loadConfig("audit-schema");
+let auditSchema;
+try {
+  auditSchema = loadConfig("audit-schema");
+} catch (err) {
+  const msg = sanitizeError(err);
+  console.error(`Error: failed to load audit schema config: ${msg}`);
+  process.exit(2);
+}
 const VALID_CATEGORIES = auditSchema.validCategories;
 const VALID_SEVERITIES = auditSchema.validSeverities;
 const VALID_EFFORTS = auditSchema.validEfforts;

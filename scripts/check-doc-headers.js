@@ -67,7 +67,14 @@ function getErrorMessage(err) {
 }
 
 // Header config — single source of truth: scripts/config/doc-header-config.json
-const headerConfig = loadConfigWithRegex("doc-header-config");
+let headerConfig;
+try {
+  headerConfig = loadConfigWithRegex("doc-header-config");
+} catch (err) {
+  const msg = getErrorMessage(err);
+  log(`Error: failed to load doc header config: ${msg}`, colors.red);
+  process.exit(2);
+}
 const EXEMPT_PATTERNS = headerConfig.exemptPatterns;
 const REQUIRED_HEADERS = headerConfig.requiredHeaders;
 const RECOMMENDED_HEADERS = headerConfig.recommendedHeaders;

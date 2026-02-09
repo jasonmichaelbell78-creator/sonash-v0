@@ -71,6 +71,10 @@ if (dependencyRules.length === 0) {
     "Warning: No dependency rules loaded from config. Check doc-dependencies.json.",
     colors.yellow
   );
+  if (!dryRun) {
+    log("Error: cross-doc dependency enforcement disabled due to empty rules.", colors.red);
+    process.exit(2);
+  }
 }
 
 /**
