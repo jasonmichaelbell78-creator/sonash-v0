@@ -99,8 +99,10 @@ function loadExistingItems() {
               const num = parseInt(match[1], 10);
               if (num > maxId) maxId = num;
             }
-            // Store full item for field preservation
-            itemMap.set(item.id, item);
+            // Store full item for field preservation (only for valid DEBT-XXXX IDs)
+            if (typeof item.id === "string" && /^DEBT-\d+$/.test(item.id)) {
+              itemMap.set(item.id, item);
+            }
             // Map by content_hash, source_id, AND fingerprint for stable ID lookup
             if (item.content_hash) idMap.set(`hash:${item.content_hash}`, item.id);
             if (item.source_id) idMap.set(`source:${item.source_id}`, item.id);
@@ -212,8 +214,9 @@ function main() {
     if (existing) {
       for (const field of PRESERVED_FIELDS) {
         const hasExisting = existing[field] !== undefined && existing[field] !== null;
-        const missingOnNew = item[field] === undefined || item[field] === null;
-        if (hasExisting && missingOnNew) {
+        const newIsUnset = item[field] === undefined || item[field] === null;
+        const newIsDefaultStatus = field === "status" && item.status === "NEW";
+        if (hasExisting && (newIsUnset || newIsDefaultStatus)) {
           item[field] = existing[field];
         }
       }

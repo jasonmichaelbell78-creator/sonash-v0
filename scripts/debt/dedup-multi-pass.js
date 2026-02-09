@@ -547,8 +547,10 @@ function main() {
   const pass5Items = [...pass4Items]; // Copy — we annotate in place, no removals
 
   for (const [normTitle, indices] of titleGroups) {
-    // Collect unique files in this group
-    const uniqueFiles = new Set(indices.map((idx) => pass5Items[idx].file));
+    // Collect unique files in this group (ignore missing/empty file values)
+    const uniqueFiles = new Set(
+      indices.map((idx) => pass5Items[idx].file).filter((f) => typeof f === "string" && f.trim())
+    );
     if (uniqueFiles.size < 3) continue;
 
     // This is a systemic pattern
