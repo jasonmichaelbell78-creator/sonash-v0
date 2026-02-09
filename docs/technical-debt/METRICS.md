@@ -30,8 +30,8 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 2379  |
-| Open Items      | 2106  |
+| Total Items     | 2122  |
+| Open Items      | 1849  |
 | Resolved        | 40    |
 | False Positives | 233   |
 | Resolution Rate | 2%    |
@@ -42,7 +42,7 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 2106  |
+| NEW            | 1849  |
 | VERIFIED       | 0     |
 | IN_PROGRESS    | 0     |
 | RESOLVED       | 40    |
@@ -54,10 +54,10 @@ distribution.
 
 | Severity      | Count | % of Total |
 | ------------- | ----- | ---------- |
-| S0 (Critical) | 25    | 1%         |
-| S1 (High)     | 496   | 21%        |
-| S2 (Medium)   | 1147  | 48%        |
-| S3 (Low)      | 711   | 30%        |
+| S0 (Critical) | 27    | 1%         |
+| S1 (High)     | 388   | 18%        |
+| S2 (Medium)   | 900   | 42%        |
+| S3 (Low)      | 807   | 38%        |
 
 ---
 
@@ -65,11 +65,11 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1700  |
+| code-quality             | 1174  |
 | documentation            | 464   |
-| security                 | 82    |
-| performance              | 81    |
-| process                  | 28    |
+| process                  | 329   |
+| security                 | 81    |
+| performance              | 50    |
 | refactoring              | 21    |
 | engineering-productivity | 3     |
 
@@ -77,30 +77,30 @@ distribution.
 
 ## Alerts
 
-### S0 Critical Alerts (10)
+### S0 Critical Alerts (12)
 
+- **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity fr
+  (functions/src/admin.ts:576)
+- **DEBT-0037**: Refactor this function to reduce its Cognitive Complexity fr
+  (components/widgets/compact-meeting-countdown.tsx:69)
 - **DEBT-0854**: App Check disabled on all production Cloud Functions
   (functions/src/index.ts:0)
 - **DEBT-1056**: Refactor this function to reduce its Cognitive Complexity fr
   (components/admin/errors-tab.tsx:327)
-- **DEBT-1057**: Refactor this function to reduce its Cognitive Complexity fr
-  (functions/src/admin.ts:3863)
 - **DEBT-1064**: Refactor this code to not nest functions more than 4 levels
   (components/admin/logs-tab.tsx:342)
-- **DEBT-1088**: Refactor this function to reduce its Cognitive Complexity fr
-  (functions/src/admin.ts:2009)
 - **DEBT-1296**: Refactor this function to reduce its Cognitive Complexity fr
   (docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js:137)
 - **DEBT-1538**: Refactor this function to reduce its Cognitive Complexity fr
   (functions/src/jobs.ts:1059)
 - **DEBT-1624**: Refactor this function to reduce its Cognitive Complexity fr
   (components/dev/lighthouse-tab.tsx:81)
-- **DEBT-1846**: Refactor this function to reduce its Cognitive Complexity fr
-  (components/widgets/compact-meeting-countdown.tsx:136)
 - **DEBT-1912**: Security risk: Client-side filtering of sensitive data
   (hooks/use-journal.ts:174)
+- **DEBT-2499**: CI gap: pull_request_target security vulnerability allows un
+  (.github/workflows/deploy-firebase.yml:7)
 
-### S1 High Priority Alerts (487)
+### S1 High Priority Alerts (379)
 
 - **DEBT-0001**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -123,7 +123,7 @@ distribution.
 - **DEBT-0010**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 477 more S1 items_
+_...and 369 more S1 items_
 
 ---
 
@@ -131,7 +131,7 @@ _...and 477 more S1 items_
 
 | Metric               | Value      |
 | -------------------- | ---------- |
-| Verification Queue   | 2106 items |
+| Verification Queue   | 1849 items |
 | Avg Age (Open Items) | 0 days     |
 | Oldest Item Age      | 0 days     |
 | Oldest Item          | N/A        |
@@ -142,7 +142,7 @@ _...and 477 more S1 items_
 
 | Source  | Count |
 | ------- | ----- |
-| unknown | 2379  |
+| unknown | 2122  |
 
 ---
 

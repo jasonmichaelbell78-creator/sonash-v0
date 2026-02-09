@@ -9,30 +9,30 @@
 
 ---
 
-**Total Items:** 2637
+**Total Items:** 2122
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
-| S0 (Critical) | 28    |
-| S1 (High)     | 520   |
-| S2 (Medium)   | 1239  |
-| S3 (Low)      | 850   |
+| S0 (Critical) | 27    |
+| S1 (High)     | 388   |
+| S2 (Medium)   | 900   |
+| S3 (Low)      | 807   |
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1700  |
+| code-quality             | 1174  |
 | documentation            | 464   |
-| process                  | 286   |
-| security                 | 82    |
-| performance              | 81    |
+| process                  | 329   |
+| security                 | 81    |
+| performance              | 50    |
 | refactoring              | 21    |
 | engineering-productivity | 3     |
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 2364  |
+| NEW            | 1849  |
 | RESOLVED       | 40    |
 | FALSE_POSITIVE | 233   |
 
@@ -45,6 +45,10 @@
 
 ## Critical Items (S0)
 
+- **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity from
+  22 to the 15 a... (functions/src/admin.ts:576)
+- **DEBT-0037**: Refactor this function to reduce its Cognitive Complexity from
+  17 to the 15 a... (components/widgets/compact-meeting-countdown.tsx:69)
 - **DEBT-0850**: Legacy journalEntries collection allows direct client writes
   (bypasses Functi... (firestore.rules:0)
 - **DEBT-0852**: Multiple CI quality gates configured as non-blocking
@@ -73,12 +77,8 @@
 - **DEBT-0867**: Fix useJournal memory leak (hooks/use-journal.ts:156)
 - **DEBT-1056**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (components/admin/errors-tab.tsx:327)
-- **DEBT-1057**: Refactor this function to reduce its Cognitive Complexity from
-  18 to the 15 a... (functions/src/admin.ts:3863)
 - **DEBT-1064**: Refactor this code to not nest functions more than 4 levels
   deep. (components/admin/logs-tab.tsx:342)
-- **DEBT-1088**: Refactor this function to reduce its Cognitive Complexity from
-  42 to the 15 a... (functions/src/admin.ts:2009)
 - **DEBT-1296**: Refactor this function to reduce its Cognitive Complexity from
   21 to the 15 a...
   (docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js:137)
@@ -86,8 +86,6 @@
   16 to the 15 a... (functions/src/jobs.ts:1059)
 - **DEBT-1624**: Refactor this function to reduce its Cognitive Complexity from
   17 to the 15 a... (components/dev/lighthouse-tab.tsx:81)
-- **DEBT-1846**: Refactor this function to reduce its Cognitive Complexity from
-  23 to the 15 a... (components/widgets/compact-meeting-countdown.tsx:136)
 - **DEBT-1912**: Security risk: Client-side filtering of sensitive data
   (hooks/use-journal.ts:174)
 - **DEBT-2499**: CI gap: pull_request_target security vulnerability allows
@@ -124,8 +122,6 @@
   20 to the 15 a... (lib/db/meetings.ts:21)
 - **DEBT-0011**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (components/admin/admin-crud-table.tsx:83)
-- **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity from
-  22 to the 15 a... (functions/src/admin.ts:576)
 - **DEBT-0013**: Refactor this function to reduce its Cognitive Complexity from
   18 to the 15 a... (functions/src/index.ts:486)
 - **DEBT-0014**: Refactor this code to not nest functions more than 4 levels
@@ -142,8 +138,10 @@
   34 to the 15 a... (scripts/validate-audit.js:211)
 - **DEBT-0020**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (scripts/add-false-positive.js:139)
+- **DEBT-0021**: Refactor this function to reduce its Cognitive Complexity from
+  19 to the 15 a... (scripts/check-document-sync.js:200)
 
-_...and 500 more. See [by-severity.md](./views/by-severity.md)_
+_...and 368 more. See [by-severity.md](./views/by-severity.md)_
 
 ---
 

@@ -10,14 +10,17 @@
  *   - docs/technical-debt/raw/review-needed.jsonl (uncertain matches)
  *
  * Deduplication passes:
+ * 0. Parametric match: Same file + title differing only in numeric literals
  * 1. Exact match: Same content_hash
  * 2. Near match: Same file + line ±5 + message similarity >80%
  * 3. Semantic match: Same file + very similar title
  * 4. Cross-source match: SonarCloud rule → audit finding correlation
+ * 5. Systemic pattern grouper: Annotate items with same title across >=3 files
  */
 
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/normalized-all.jsonl");
 const OUTPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");
@@ -71,6 +74,17 @@ function normalizeText(text) {
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+// Strip numeric literals from title for parametric comparison
+function normalizeParametric(title) {
+  if (!title) return "";
+  return title.replace(/\d+/g, "#");
+}
+
+// Generate a stable short hash for cluster IDs
+function shortHash(str) {
+  return crypto.createHash("sha256").update(str).digest("hex").substring(0, 12);
 }
 
 // Check if items are near matches
@@ -246,13 +260,99 @@ function main() {
   const dedupLog = [];
   const reviewNeeded = [];
 
+  // Pass 0: Parametric dedup — same file, title differing only in numeric literals
+  console.log("  Pass 0: Parametric dedup (file + title with numbers stripped)...");
+  const parametricGroups = new Map();
+
+  for (const item of items) {
+    const paramTitle = normalizeParametric(item.title || "");
+    const key = `${item.file || ""}::${paramTitle}`;
+    if (!parametricGroups.has(key)) {
+      parametricGroups.set(key, []);
+    }
+    parametricGroups.get(key).push(item);
+  }
+
+  const pass0Items = [];
+  let pass0Merged = 0;
+
+  for (const [, group] of parametricGroups) {
+    if (group.length <= 1) {
+      pass0Items.push(...group);
+      continue;
+    }
+
+    // Check if items in the group have different line numbers (same rule, different locations)
+    const uniqueLines = new Set(group.map((g) => g.line));
+    if (uniqueLines.size <= 1) {
+      // All same line — not a parametric pattern, pass through
+      pass0Items.push(...group);
+      continue;
+    }
+
+    // Safety guard: never auto-merge S0/S1 — flag for review instead
+    const hasHighSeverity = group.some((g) => g.severity === "S0" || g.severity === "S1");
+    if (hasHighSeverity) {
+      // Pass all items through unmerged, but flag for review
+      pass0Items.push(...group);
+      for (let k = 1; k < group.length; k++) {
+        reviewNeeded.push({
+          reason: "parametric_s0s1_review",
+          item_a: group[0],
+          item_b: group[k],
+          note: "Parametric match on S0/S1 items requires manual review",
+        });
+        dedupLog.push({
+          pass: 0,
+          type: "parametric_match",
+          kept: group[0].source_id,
+          flagged: group[k].source_id,
+          reason: "parametric match skipped for S0/S1 — flagged for review",
+        });
+      }
+      continue;
+    }
+
+    // Merge: keep the item with the lowest line number as primary
+    const sorted = [...group].sort((a, b) => {
+      const aLine = Number.isFinite(a.line) ? a.line : Infinity;
+      const bLine = Number.isFinite(b.line) ? b.line : Infinity;
+      return aLine - bLine;
+    });
+
+    let primary = sorted[0];
+    for (let k = 1; k < sorted.length; k++) {
+      primary = mergeItems(primary, sorted[k]);
+      // Track merged_from with source_id (mergeItems handles this) plus line info
+      if (!primary.merged_from) primary.merged_from = [];
+      const secondaryRef = `${sorted[k].source_id || "unknown"}@line:${sorted[k].line}`;
+      if (!primary.merged_from.includes(secondaryRef)) {
+        primary.merged_from.push(secondaryRef);
+      }
+      dedupLog.push({
+        pass: 0,
+        type: "parametric_match",
+        kept: primary.source_id,
+        removed: sorted[k].source_id,
+        reason: `parametric title match (numbers stripped), lines: ${sorted[0].line} vs ${sorted[k].line}`,
+      });
+      pass0Merged++;
+    }
+
+    pass0Items.push(primary);
+  }
+
+  console.log(
+    `    Reduced ${items.length} → ${pass0Items.length} (${pass0Merged} parametric matches)`
+  );
+
   // Pass 1: Exact hash match
   console.log("  Pass 1: Exact content hash match...");
   const hashMap = new Map();
   const pass1Items = [];
   let noHashCount = 0;
 
-  for (const item of items) {
+  for (const item of pass0Items) {
     const hash =
       typeof item.content_hash === "string" && item.content_hash.trim() ? item.content_hash : null;
 
@@ -291,7 +391,7 @@ function main() {
     console.log(`    ⚠️ ${noHashCount} items skipped (missing content_hash)`);
   }
   console.log(
-    `    Reduced ${items.length} → ${pass1Items.length} (${items.length - pass1Items.length} exact duplicates)`
+    `    Reduced ${pass0Items.length} → ${pass1Items.length} (${pass0Items.length - pass1Items.length} exact duplicates)`
   );
 
   // Pass 2: Near match (same file, close line, similar title)
@@ -413,6 +513,71 @@ function main() {
     `    Reduced ${pass3Items.length} → ${pass4Items.length} (${pass4Removed.size} cross-source matches)`
   );
 
+  // Pass 5: Systemic pattern grouper — annotate items with same title across >=3 files
+  console.log("  Pass 5: Systemic pattern grouper (same title across >=3 files)...");
+  const titleGroups = new Map();
+
+  for (let i = 0; i < pass4Items.length; i++) {
+    const normTitle = normalizeText(pass4Items[i].title);
+    if (!normTitle) continue;
+    if (!titleGroups.has(normTitle)) {
+      titleGroups.set(normTitle, []);
+    }
+    titleGroups.get(normTitle).push(i);
+  }
+
+  let pass5Clustered = 0;
+  const sevRankForCluster = { S0: 0, S1: 1, S2: 2, S3: 3 };
+  const pass5Items = [...pass4Items]; // Copy — we annotate in place, no removals
+
+  for (const [normTitle, indices] of titleGroups) {
+    // Collect unique files in this group
+    const uniqueFiles = new Set(indices.map((idx) => pass5Items[idx].file));
+    if (uniqueFiles.size < 3) continue;
+
+    // This is a systemic pattern
+    const clusterId = `CLUSTER-${shortHash(normTitle)}`;
+    const clusterCount = indices.length;
+
+    // Find the item with worst severity (lowest rank number)
+    let primaryIdx = indices[0];
+    let primaryRank = sevRankForCluster[pass5Items[primaryIdx].severity] ?? 99;
+
+    for (const idx of indices) {
+      const rank = sevRankForCluster[pass5Items[idx].severity] ?? 99;
+      if (rank < primaryRank) {
+        primaryRank = rank;
+        primaryIdx = idx;
+      }
+    }
+
+    // Annotate all items in the cluster
+    for (const idx of indices) {
+      pass5Items[idx] = {
+        ...pass5Items[idx],
+        cluster_id: clusterId,
+        cluster_count: clusterCount,
+      };
+      if (idx === primaryIdx) {
+        pass5Items[idx].cluster_primary = true;
+      }
+
+      dedupLog.push({
+        pass: 5,
+        type: "systemic_pattern",
+        source_id: pass5Items[idx].source_id,
+        cluster_id: clusterId,
+        cluster_count: clusterCount,
+        is_primary: idx === primaryIdx,
+        reason: `title appears in ${uniqueFiles.size} different files`,
+      });
+    }
+
+    pass5Clustered++;
+  }
+
+  console.log(`    Identified ${pass5Clustered} systemic patterns (items annotated, none removed)`);
+
   // Ensure output directories exist
   const outputDir = path.dirname(OUTPUT_FILE);
   const logDir = path.dirname(LOG_FILE);
@@ -424,7 +589,7 @@ function main() {
   }
 
   // Write deduped items
-  const outputLines = pass4Items.map((item) => JSON.stringify(item));
+  const outputLines = pass5Items.map((item) => JSON.stringify(item));
   fs.writeFileSync(OUTPUT_FILE, outputLines.join("\n") + "\n");
 
   // Write dedup log
@@ -438,11 +603,28 @@ function main() {
   }
 
   // Summary
-  const totalRemoved = items.length - pass4Items.length;
-  console.log(`\n✅ Deduplication complete: ${items.length} → ${pass4Items.length}`);
+  const totalRemoved = items.length - pass5Items.length;
+  console.log(`\n✅ Deduplication complete: ${items.length} → ${pass5Items.length}`);
   console.log(
     `   Removed ${totalRemoved} duplicates (${((totalRemoved / items.length) * 100).toFixed(1)}%)`
   );
+  console.log(`\n📊 Per-pass breakdown:`);
+  console.log(
+    `   Pass 0 (parametric):    ${items.length} → ${pass0Items.length} (${pass0Merged} merged)`
+  );
+  console.log(
+    `   Pass 1 (exact hash):    ${pass0Items.length} → ${pass1Items.length} (${pass0Items.length - pass1Items.length} merged)`
+  );
+  console.log(
+    `   Pass 2 (near match):    ${pass1Items.length} → ${pass2Items.length} (${pass2Removed.size} merged)`
+  );
+  console.log(
+    `   Pass 3 (semantic):      ${pass2Items.length} → ${pass3Items.length} (${pass3Removed.size} merged)`
+  );
+  console.log(
+    `   Pass 4 (cross-source):  ${pass3Items.length} → ${pass4Items.length} (${pass4Removed.size} merged)`
+  );
+  console.log(`   Pass 5 (systemic):      ${pass5Clustered} patterns annotated (0 removed)`);
   console.log(`\n📄 Output files:`);
   console.log(`   ${OUTPUT_FILE}`);
   console.log(`   ${LOG_FILE} (${dedupLog.length} merge records)`);
@@ -452,7 +634,7 @@ function main() {
 
   // Final summary by severity
   const bySeverity = {};
-  for (const item of pass4Items) {
+  for (const item of pass5Items) {
     bySeverity[item.severity] = (bySeverity[item.severity] || 0) + 1;
   }
   console.log("\n📈 Final counts by severity:");

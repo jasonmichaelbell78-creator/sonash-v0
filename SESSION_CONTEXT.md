@@ -39,8 +39,14 @@ Modified**: 40+ audit files, TDMS updated
   - Fixed stateful regex bug (removed `g` flag), symlink guards, YAML handling
 - Ran comprehensive `/audit-process`: 7-stage automation audit with 22 agents
 - 258 findings: 3 S0, 24 S1, 88 S2, 139 S3, 4 S4
-- TDMS intake: DEBT-2441 to DEBT-2698 (258 new items, total now 2637)
+- TDMS intake: DEBT-2441 to DEBT-2698 (258 new items)
 - Key S0: CI security gap (pull_request_target), command injection risk
+- Enhanced dedup pipeline: 6-pass system (parametric, hash, near, semantic,
+  cross-source, systemic pattern grouper)
+- Full cleanup: 2637 → 2122 items (515 duplicates eliminated)
+- 72 systemic patterns identified, 795 items cluster-annotated
+- Wired intake-audit.js to use multi-pass dedup (was hash-only)
+- Added consolidation to session-end skill (~1.5s)
 
 **Session #141 Summary** (UNIFIED TESTING SUITE + PR REVIEW FIXES):
 
