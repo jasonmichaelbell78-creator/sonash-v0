@@ -211,7 +211,9 @@ function main() {
     const existing = itemMap.get(item.id);
     if (existing) {
       for (const field of PRESERVED_FIELDS) {
-        if (existing[field] !== undefined && existing[field] !== null) {
+        const hasExisting = existing[field] !== undefined && existing[field] !== null;
+        const missingOnNew = item[field] === undefined || item[field] === null;
+        if (hasExisting && missingOnNew) {
           item[field] = existing[field];
         }
       }

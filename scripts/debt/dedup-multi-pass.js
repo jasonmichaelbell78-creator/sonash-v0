@@ -230,7 +230,14 @@ function main() {
   }
 
   // Read normalized items with safe JSON parsing
-  const content = fs.readFileSync(INPUT_FILE, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(INPUT_FILE, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Failed to read input file: ${errMsg}`);
+    process.exit(1);
+  }
   const lines = content.split("\n").filter((line) => line.trim());
 
   let items = [];
@@ -240,7 +247,7 @@ function main() {
     try {
       items.push(JSON.parse(lines[i]));
     } catch (err) {
-      parseErrors.push({ line: i + 1, message: err.message });
+      parseErrors.push({ line: i + 1, message: err instanceof Error ? err.message : String(err) });
     }
   }
 
@@ -283,9 +290,14 @@ function main() {
     }
 
     // Check if items in the group have different line numbers (same rule, different locations)
-    const uniqueLines = new Set(group.map((g) => g.line));
+    const toLineNumber = (v) => {
+      const n = typeof v === "number" ? v : Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+    const uniqueLines = new Set(group.map((g) => toLineNumber(g.line)));
+    uniqueLines.delete(null);
     if (uniqueLines.size <= 1) {
-      // All same line — not a parametric pattern, pass through
+      // All same (or unknown) line — not a parametric pattern, pass through
       pass0Items.push(...group);
       continue;
     }
@@ -315,17 +327,21 @@ function main() {
 
     // Merge: keep the item with the lowest line number as primary
     const sorted = [...group].sort((a, b) => {
-      const aLine = Number.isFinite(a.line) ? a.line : Infinity;
-      const bLine = Number.isFinite(b.line) ? b.line : Infinity;
+      const aLine = toLineNumber(a.line) ?? Infinity;
+      const bLine = toLineNumber(b.line) ?? Infinity;
       return aLine - bLine;
     });
 
     let primary = sorted[0];
     for (let k = 1; k < sorted.length; k++) {
-      primary = mergeItems(primary, sorted[k]);
-      // Track merged_from with source_id (mergeItems handles this) plus line info
-      if (!primary.merged_from) primary.merged_from = [];
-      const secondaryRef = `${sorted[k].source_id || "unknown"}@line:${sorted[k].line}`;
+      const secondary = sorted[k];
+      primary = mergeItems(primary, secondary);
+      // Track merged_from with detailed line info (remove simple source_id to avoid duplication)
+      if (!Array.isArray(primary.merged_from)) primary.merged_from = [];
+      const secondaryId = secondary.source_id || "unknown";
+      const simpleIdx = primary.merged_from.indexOf(secondaryId);
+      if (simpleIdx > -1) primary.merged_from.splice(simpleIdx, 1);
+      const secondaryRef = `${secondaryId}@line:${secondary.line}`;
       if (!primary.merged_from.includes(secondaryRef)) {
         primary.merged_from.push(secondaryRef);
       }

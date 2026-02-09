@@ -534,6 +534,7 @@ async function main() {
 
   // Also append to raw/deduped.jsonl as fallback
   const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
+  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
   fs.appendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
 
   // Log intake activity (including format statistics and confidence values)
@@ -571,32 +572,37 @@ async function main() {
   try {
     execFileSync(process.execPath, ["scripts/debt/dedup-multi-pass.js"], { stdio: "inherit" });
     dedupRan = true;
-  } catch {
-    console.warn("  ⚠️ Multi-pass dedup failed. Falling back to views-only regeneration.");
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`  ⚠️ Multi-pass dedup failed: ${msg}. Falling back to views-only regeneration.`);
   }
 
   console.log("🔄 Regenerating views...");
+  let viewsRan = false;
   try {
     execFileSync(process.execPath, ["scripts/debt/generate-views.js"], { stdio: "inherit" });
-  } catch {
+    viewsRan = true;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.warn(
-      "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
+      `  ⚠️ Failed to regenerate views: ${msg}. Run manually: node scripts/debt/generate-views.js`
     );
   }
 
   console.log("🔄 Assigning roadmap references...");
   try {
     execFileSync(process.execPath, ["scripts/debt/assign-roadmap-refs.js"], { stdio: "inherit" });
-  } catch {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.warn(
-      "  ⚠️ Failed to assign roadmap refs. Run manually: node scripts/debt/assign-roadmap-refs.js"
+      `  ⚠️ Failed to assign roadmap refs: ${msg}. Run manually: node scripts/debt/assign-roadmap-refs.js`
     );
   }
 
   // Read final count and dedup stats for on-screen report
-  const finalItems = loadMasterDebt();
+  const finalItems = viewsRan ? loadMasterDebt() : existingItems;
   const beforeDedup = existingItems.length + newItems.length;
-  const dedupRemoved = dedupRan ? beforeDedup - finalItems.length : 0;
+  const dedupRemoved = dedupRan && viewsRan ? Math.max(0, beforeDedup - finalItems.length) : 0;
 
   // Read dedup log for per-pass breakdown
   let dedupBreakdown = {};
