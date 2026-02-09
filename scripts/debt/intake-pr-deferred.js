@@ -107,8 +107,8 @@ function loadMasterDebt() {
     content = fs.readFileSync(MASTER_FILE, "utf8");
   } catch (readErr) {
     const msg = readErr instanceof Error ? readErr.message : String(readErr);
-    console.error(`⚠️ Failed to read MASTER_DEBT.jsonl: ${msg}`);
-    return [];
+    console.error(`Error: Failed to read MASTER_DEBT.jsonl: ${msg}`);
+    process.exit(1);
   }
 
   const lines = content.split("\n").filter((line) => line.trim());

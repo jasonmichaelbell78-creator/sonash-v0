@@ -66,6 +66,13 @@ try {
   process.exit(2);
 }
 
+if (dependencyRules.length === 0) {
+  log(
+    "Warning: No dependency rules loaded from config. Check doc-dependencies.json.",
+    colors.yellow
+  );
+}
+
 /**
  * Get list of staged files from git
  */

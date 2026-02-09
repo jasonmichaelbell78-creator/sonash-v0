@@ -24,8 +24,17 @@ const path = require("path");
 const { loadConfig } = require("../config/load-config");
 
 // Cache audit schema at module scope (avoid re-reading per item)
-const auditSchema = loadConfig("audit-schema");
-const VALID_SEVERITIES_CACHED = auditSchema.validSeverities;
+let VALID_SEVERITIES_CACHED;
+try {
+  const auditSchema = loadConfig("audit-schema");
+  VALID_SEVERITIES_CACHED = Array.isArray(auditSchema.validSeverities)
+    ? auditSchema.validSeverities
+    : ["S0", "S1", "S2", "S3"];
+} catch (configErr) {
+  const msg = configErr instanceof Error ? configErr.message : String(configErr);
+  console.error(`Warning: failed to load audit-schema config: ${msg}. Using defaults.`);
+  VALID_SEVERITIES_CACHED = ["S0", "S1", "S2", "S3"];
+}
 
 // Project root for path containment validation
 const PROJECT_ROOT = path.resolve(__dirname, "../..");

@@ -73,6 +73,8 @@
     "seed-commit-log.js",
     "search-capabilities.js",
     "load-config.js",
-    "generate-skill-registry.js"
+    "generate-skill-registry.js",
+    "intake-pr-deferred.js",
+    "normalize-all.js"
   ]
 }
