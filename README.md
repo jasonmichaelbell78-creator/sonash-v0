@@ -189,23 +189,24 @@ chip (WIP) │ └── ui/ # shadcn components └── public/ └── ima
 
 ### Milestone Status
 
-| Milestone                   | Status      | Progress |
-| --------------------------- | ----------- | -------- |
-| M1 - Foundation             | ✅ Complete | 100%     |
-| Integrated Improvement Plan | ✅ Complete | 100%     |
-| 🚀 Operational Visibility   | ⏸️ ACTIVE   | 25%      |
-| M1.5 - Quick Wins           | ⏸️ Paused   | 20%      |
-| M1.6 - Admin Panel + UX     | ⏸️ Paused   | 75%      |
-| M2 - Architecture           | ⏸️ Optional | 0%       |
-| M3 - Meetings               | 📋 Planned  | 0%       |
-| M4 - Expansion              | 📋 Planned  | 0%       |
-| M4.5 - Security & Privacy   | 📋 Planned  | 0%       |
-| M5 - Offline + Steps        | 📋 Planned  | 0%       |
-| M6 - Journaling + Safety    | 📋 Planned  | 0%       |
-| M7 - Fellowship Suite       | 📋 Planned  | 0%       |
-| M8 - Speakers               | 📋 Planned  | 0%       |
-| M9 - Native App             | 📋 Planned  | 0%       |
-| M10 - Monetization + Future | 🔬 Research | 0%       |
+| Milestone                       | Status      | Progress |
+| ------------------------------- | ----------- | -------- |
+| M1 - Foundation                 | ✅ Complete | 100%     |
+| Integrated Improvement Plan     | ✅ Complete | 100%     |
+| 🧹 GRAND PLAN: Debt Elimination | 📋 Planned  | 0%       |
+| 🚀 Operational Visibility       | ⏸️ ACTIVE   | 25%      |
+| M1.5 - Quick Wins               | ⏸️ Paused   | 20%      |
+| M1.6 - Admin Panel + UX         | ⏸️ Paused   | 75%      |
+| M2 - Architecture               | ⏸️ Optional | 0%       |
+| M3 - Meetings                   | 📋 Planned  | 0%       |
+| M4 - Expansion                  | 📋 Planned  | 0%       |
+| M4.5 - Security & Privacy       | 📋 Planned  | 0%       |
+| M5 - Offline + Steps            | 📋 Planned  | 0%       |
+| M6 - Journaling + Safety        | 📋 Planned  | 0%       |
+| M7 - Fellowship Suite           | 📋 Planned  | 0%       |
+| M8 - Speakers                   | 📋 Planned  | 0%       |
+| M9 - Native App                 | 📋 Planned  | 0%       |
+| M10 - Monetization + Future     | 🔬 Research | 0%       |
 
 ### Recent Completions
 
