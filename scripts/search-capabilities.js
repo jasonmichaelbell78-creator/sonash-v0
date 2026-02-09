@@ -39,7 +39,7 @@ function readFirstLine(filePath) {
     } catch {
       return "";
     }
-    const lines = content.split("\n");
+    const lines = content.split(/\r?\n/);
     for (const line of lines) {
       const trimmed = line.replace(/^#+\s*/, "").trim();
       if (trimmed && !trimmed.startsWith("---") && !trimmed.startsWith("name:")) {
@@ -69,11 +69,13 @@ function readSkillDescription(filePath) {
 
     // Parse frontmatter without backtracking regex (ReDoS-safe)
     if (content.startsWith("---")) {
-      const end = content.indexOf("\n---", 3);
+      const endLF = content.indexOf("\n---", 3);
+      const endCRLF = content.indexOf("\r\n---", 3);
+      const end = endLF === -1 ? endCRLF : endCRLF === -1 ? endLF : Math.min(endLF, endCRLF);
       if (end !== -1) {
         const fm = content.slice(0, end);
         const descLine = fm
-          .split("\n")
+          .split(/\r?\n/)
           .find((l) => l.trim().toLowerCase().startsWith("description:"));
         if (descLine) {
           const desc = descLine.split(":").slice(1).join(":").trim();
@@ -96,7 +98,7 @@ function readSkillDescription(filePath) {
  */
 function fuzzyMatch(keywords, name) {
   const normalized = name.toLowerCase().replace(/[-_]/g, " ");
-  return keywords.every((kw) => normalized.includes(kw));
+  return keywords.every((kw) => normalized.includes(kw.replace(/[-_]/g, " ")));
 }
 
 /**
@@ -222,7 +224,7 @@ function searchLocalSkills(keywords) {
  */
 function searchSkillsSh(queryArgs) {
   try {
-    const output = execFileSync("npx", ["skills", "find", "--", ...queryArgs], {
+    const output = execFileSync("npx", ["-y", "skills", "find", "--", ...queryArgs], {
       encoding: "utf8",
       timeout: 30000,
       stdio: ["pipe", "pipe", "pipe"],
