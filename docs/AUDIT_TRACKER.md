@@ -49,7 +49,7 @@ When tracking audits:
 | Performance              | 2026-02-07 (Comprehensive) | 0             | 0           | 30 commits OR bundle change               |
 | Refactoring              | 2026-02-07 (Comprehensive) | 0             | 0           | 40 commits OR 3 complexity warnings       |
 | Documentation            | 2026-02-07 (Comprehensive) | 0             | 0           | 20 doc files changed OR 30 commits        |
-| Process                  | 2026-02-07 (Comprehensive) | 0             | 0           | Any CI/hook file changed OR 30 commits    |
+| Process                  | 2026-02-09 (Single)        | 0             | 0           | Any CI/hook file changed OR 30 commits    |
 | Engineering-Productivity | 2026-02-07 (Comprehensive) | 0             | 0           | 30 commits OR DX-impacting changes        |
 
 ### Multi-AI Audit Thresholds (Cross-Category)
@@ -126,13 +126,14 @@ triggers.
 
 ### Process Audits (`/audit-process`)
 
-| Date       | Session       | Commits Covered | Files Covered    | Findings                                                                                                  | Reset Threshold |
-| ---------- | ------------- | --------------- | ---------------- | --------------------------------------------------------------------------------------------------------- | --------------- |
-| 2026-02-03 | Comprehensive | Full codebase   | All              | 46 findings - [audit-process-report.md](./audits/comprehensive/audit-process-report.md)                   | ✅ (all)        |
-| 2026-01-30 | Comprehensive | Full codebase   | All              | Session #116 - [audit-process-report.md](./audits/comprehensive/audit-process-report.md)                  | ✅ (all)        |
-| 2026-01-24 | Comprehensive | Full codebase   | 60+ workflows    | 27 (0 S0, 5 S1, 12 S2, 10 S3) - [audit-process-report.md](./audits/comprehensive/audit-process-report.md) | ✅ (all)        |
-| 2026-01-17 | Single-Claude | N/A (first)     | 60+              | 10 (0 S1, 4 S2, 6 S3) - [audit-2026-01-17.md](./audits/single-session/process/audit-2026-01-17.md)        | ⚠️ (single)     |
-| 2026-01-10 | Multi-AI      | Full codebase   | CI/hooks/scripts | 14 (CANON-PROCESS.jsonl)                                                                                  | ✅              |
+| Date       | Session       | Commits Covered | Files Covered       | Findings                                                                                                                                     | Reset Threshold |
+| ---------- | ------------- | --------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| 2026-02-09 | Single #143   | 35 files        | 16 automation types | 258 (3 S0, 24 S1, 88 S2, 139 S3) - [AUTOMATION_AUDIT_REPORT.md](./audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md) | ⚠️ (single)     |
+| 2026-02-03 | Comprehensive | Full codebase   | All                 | 46 findings - [audit-process-report.md](./audits/comprehensive/audit-process-report.md)                                                      | ✅ (all)        |
+| 2026-01-30 | Comprehensive | Full codebase   | All                 | Session #116 - [audit-process-report.md](./audits/comprehensive/audit-process-report.md)                                                     | ✅ (all)        |
+| 2026-01-24 | Comprehensive | Full codebase   | 60+ workflows       | 27 (0 S0, 5 S1, 12 S2, 10 S3) - [audit-process-report.md](./audits/comprehensive/audit-process-report.md)                                    | ✅ (all)        |
+| 2026-01-17 | Single-Claude | N/A (first)     | 60+                 | 10 (0 S1, 4 S2, 6 S3) - [audit-2026-01-17.md](./audits/single-session/process/audit-2026-01-17.md)                                           | ⚠️ (single)     |
+| 2026-01-10 | Multi-AI      | Full codebase   | CI/hooks/scripts    | 14 (CANON-PROCESS.jsonl)                                                                                                                     | ✅              |
 
 ### Engineering-Productivity Audits (`/audit-engineering-productivity`)
 
