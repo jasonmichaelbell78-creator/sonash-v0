@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15.4    | 2026-02-09 | Review #271: PR #352 Round 5 - Qodo Suggestions + Compliance (7 items - 4 MAJOR, 2 MINOR, 1 REJECTED). **MAJOR**: Stateful regex bug (g flag removed from skill-config.json deprecatedPatterns), path-boundary anchored excludePaths regex (agent-triggers.json), unguarded loadConfig try/catch (check-pattern-compliance.js + generate-documentation-index.js + surface-lessons-learned.js). **MINOR**: Empty patterns fail-closed (ai-pattern-checks.js). **REJECTED**: check-review-needed.js 15-line shape validation (over-engineering). Consolidation counter 6→7. Active reviews #266-271.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 15.3    | 2026-02-09 | Review #270: PR #352 Round 4 - Qodo Suggestions + Compliance (7 items - 4 MAJOR, 1 MINOR, 1 REJECTED, 1 INFORMATIONAL). **MAJOR**: YAML block scalar handling in parseFrontmatter (generate-skill-registry.js), silent catch→console.warn (search-capabilities.js), unguarded loadConfigWithRegex try/catch (check-review-needed.js + ai-pattern-checks.js). **REJECTED**: sanitizeError guard in validate-audit-integration.js (already has inline fallback via try/catch). Consolidation counter 5→6. Active reviews #266-270.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 15.2    | 2026-02-09 | Review #269: PR #352 Round 3 - Qodo Security + Compliance + Suggestions (7 items - 1 Security, 1 Compliance, 5 Code). **SECURITY**: Symlink guard (lstatSync) before reading SKILL.md in generate-skill-registry.js. **COMPLIANCE**: Silent catch blocks replaced with console.warn for diagnosability. **MAJOR**: parseFrontmatter slice(3) to skip opening ---, fail-closed empty rules (check-cross-doc-deps.js), unguarded loadConfig try/catch (validate-audit-integration.js + check-doc-headers.js). **MINOR**: Object.freeze on VALID_SEVERITIES_CACHED. Consolidation counter 4→5. Active reviews #266-269.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 15.1    | 2026-02-09 | Review #268: PR #352 Round 2 - Qodo + CI (7 items - 0 CRITICAL, 3 MAJOR, 1 MINOR, 2 REJECTED, 1 INFORMATIONAL). **CI FIX**: 2 remaining false positives (intake-pr-deferred.js:107, normalize-all.js:143) added to verified-patterns.json. **MAJOR**: process.exit(1) on read failure instead of return [] (intake-pr-deferred.js), try/catch + Array.isArray guard for module-scope loadConfig (transform-jsonl-schema.js), empty rules warning (check-cross-doc-deps.js). **REJECTED**: Composite dedup key in generate-skill-registry.js (intentional first-wins behavior), config shape validation in load-config.js (over-engineering for internal configs). Consolidation counter 3→4. Active reviews #266-268.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -669,6 +670,46 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #271: PR #352 Round 5 - Qodo Regex + Config Guards (2026-02-09)
+
+**Source:** Qodo PR Compliance + Code Suggestions (Round 5) **PR/Branch:**
+claude/cherry-pick-and-pr-xarOL (PR #352) **Suggestions:** 7 total (Major: 4,
+Minor: 2, Rejected: 1)
+
+**Accepted Suggestions:**
+
+1. [MAJOR] `skill-config.json` — Removed global `g` flag from 3
+   `deprecatedPatterns` regex. The `g` flag makes `RegExp.test()` stateful via
+   `lastIndex`, causing alternating true/false results on repeated calls.
+2. [MAJOR] `agent-triggers.json` — Path-boundary anchored `excludePaths` regex:
+   `(?:^|\\/)(?:__tests__|node_modules)(?:\\/|$)` prevents substring matches
+   (e.g., `my__tests__helper` would incorrectly match before).
+3. [MAJOR] `check-pattern-compliance.js` + `generate-documentation-index.js` +
+   `surface-lessons-learned.js` — Wrapped module-scope `loadConfig` calls in
+   try/catch with `process.exit(2)`. This is the final batch — all 10 refactored
+   config consumers now have error handling.
+4. [MINOR] `ai-pattern-checks.js` — Fail-closed when patterns config loads
+   successfully but contains no patterns (prevents silent no-op).
+
+**Rejected Suggestions:**
+
+5. `check-review-needed.js` — 15+ lines of config shape validation (typeof
+   checks on every property). Over-engineering for internal dev-controlled
+   configs. The try/catch from R4 already handles missing/invalid files.
+
+**Key Learnings:**
+
+- Global `g` flag on regex used with `.test()` is a recurring bug pattern —
+  stateful `lastIndex` causes non-deterministic results. Only use `g` with
+  `matchAll()` or `exec()` loops.
+- Path-matching regex needs anchoring at path boundaries, not just substring
+  matching, to avoid false positives on directory/file names containing the
+  pattern as a substring.
+- All 10 config consumers from the Session #142 JSON extraction are now guarded
+  with try/catch — this systematic sweep took 5 review rounds.
 
 ---
 
