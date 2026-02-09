@@ -1,0 +1,77 @@
+{
+  "config": {
+    "excludeDirs": ["node_modules", ".git", ".next", "coverage", "dist", ".turbo"],
+    "excludeFiles": ["DOCUMENTATION_INDEX.md"],
+    "archiveDirs": ["docs/archive"],
+    "outputFile": "DOCUMENTATION_INDEX.md",
+    "maxDescriptionLength": 200
+  },
+  "tierDescriptions": {
+    "1": "Essential",
+    "2": "Core",
+    "3": "Specialized",
+    "4": "Reference",
+    "5": "Archive"
+  },
+  "externalSchemes": ["http://", "https://", "mailto:", "tel:", "data:"],
+  "imageExtensions": [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"],
+  "categories": {
+    "root": {
+      "name": "Root Documents",
+      "tier": 1,
+      "description": "Essential project-level documentation"
+    },
+    "docs": {
+      "name": "Core Documentation",
+      "tier": 2,
+      "description": "Main documentation directory"
+    },
+    "docs/templates": {
+      "name": "Templates",
+      "tier": 3,
+      "description": "Document and audit templates"
+    },
+    "docs/reviews": {
+      "name": "Reviews & Audits",
+      "tier": 3,
+      "description": "Audit plans and findings"
+    },
+    "docs/reviews/2026-Q1": {
+      "name": "2026 Q1 Reviews",
+      "tier": 3,
+      "description": "Q1 2026 audit documentation"
+    },
+    "docs/reviews/2026-Q1/canonical": {
+      "name": "Canonical Findings",
+      "tier": 4,
+      "description": "JSONL canonical findings"
+    },
+    "docs/archive": {
+      "name": "Archive",
+      "tier": 5,
+      "description": "Historical and completed documentation"
+    },
+    "docs/archive/completed-plans": {
+      "name": "Completed Plans",
+      "tier": 5,
+      "description": "Archived completed plans"
+    },
+    "docs/agent_docs": {
+      "name": "Agent Documentation",
+      "tier": 3,
+      "description": "AI agent reference docs"
+    },
+    "docs/brainstorm": {
+      "name": "Brainstorm",
+      "tier": 4,
+      "description": "Draft and planning documents"
+    },
+    "docs/analysis": { "name": "Analysis", "tier": 4, "description": "Code analysis and metrics" },
+    ".claude/commands": {
+      "name": "Slash Commands",
+      "tier": 3,
+      "description": "Claude Code custom commands"
+    },
+    ".claude/skills": { "name": "Skills", "tier": 3, "description": "Claude Code skills" }
+  }
+}

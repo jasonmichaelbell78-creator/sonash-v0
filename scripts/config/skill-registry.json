@@ -1,0 +1,339 @@
+{
+  "generatedAt": "2026-02-09T03:34:45.788Z",
+  "skillCount": 56,
+  "skills": [
+    {
+      "name": "add-deferred-debt",
+      "source": ".claude/skills",
+      "description": "Add deferred technical debt items identified during PR review",
+      "displayName": "add-deferred-debt"
+    },
+    {
+      "name": "add-manual-debt",
+      "source": ".claude/skills",
+      "description": "Manually add a technical debt item to MASTER_DEBT.jsonl",
+      "displayName": "add-manual-debt"
+    },
+    {
+      "name": "alerts",
+      "source": ".claude/skills",
+      "description": "|",
+      "displayName": "alerts"
+    },
+    {
+      "name": "artifacts-builder",
+      "source": ".claude/skills",
+      "displayName": "artifacts-builder",
+      "description": "description:"
+    },
+    {
+      "name": "audit-aggregator",
+      "source": ".claude/skills",
+      "description": "Aggregate and deduplicate findings from multiple audit reports",
+      "displayName": "audit-aggregator"
+    },
+    {
+      "name": "audit-code",
+      "source": ".claude/skills",
+      "description": "Run a single-session code review audit on the codebase",
+      "displayName": "audit-code"
+    },
+    {
+      "name": "audit-comprehensive",
+      "source": ".claude/skills",
+      "description": "Run all 7 domain audits in staged waves and aggregate results",
+      "displayName": "audit-comprehensive"
+    },
+    {
+      "name": "audit-documentation",
+      "source": ".claude/skills",
+      "displayName": "audit-documentation",
+      "description": "description:"
+    },
+    {
+      "name": "audit-engineering-productivity",
+      "source": ".claude/skills",
+      "description": "Run a single-session engineering productivity audit on the codebase",
+      "displayName": "audit-engineering-productivity"
+    },
+    {
+      "name": "audit-performance",
+      "source": ".claude/skills",
+      "description": "Run a single-session performance audit on the codebase",
+      "displayName": "audit-performance"
+    },
+    {
+      "name": "audit-process",
+      "source": ".claude/skills",
+      "displayName": "audit-process",
+      "description": "description:"
+    },
+    {
+      "name": "audit-refactoring",
+      "source": ".claude/skills",
+      "description": "Run a single-session refactoring audit on the codebase",
+      "displayName": "audit-refactoring"
+    },
+    {
+      "name": "audit-security",
+      "source": ".claude/skills",
+      "description": "Run a single-session security audit on the codebase",
+      "displayName": "audit-security"
+    },
+    {
+      "name": "audit-validation-wrapper",
+      "source": ".claude/skills",
+      "displayName": "audit-validation-wrapper",
+      "description": "description:"
+    },
+    {
+      "name": "checkpoint",
+      "source": ".claude/skills",
+      "description": "Quick save of current session state for recovery after failures",
+      "displayName": "checkpoint"
+    },
+    {
+      "name": "code-reviewer",
+      "source": ".claude/skills",
+      "displayName": "code-reviewer",
+      "description": "description:"
+    },
+    {
+      "name": "content-research-writer",
+      "source": ".claude/skills",
+      "displayName": "content-research-writer",
+      "description": "description:"
+    },
+    {
+      "name": "decrypt-secrets",
+      "source": ".claude/skills",
+      "description": "Decrypt MCP tokens for remote sessions",
+      "displayName": "decrypt-secrets"
+    },
+    {
+      "name": "developer-growth-analysis",
+      "source": ".claude/skills",
+      "displayName": "developer-growth-analysis",
+      "description": "description:"
+    },
+    {
+      "name": "doc-optimizer",
+      "source": ".claude/skills",
+      "displayName": "doc-optimizer",
+      "description": "description:"
+    },
+    {
+      "name": "docs-sync",
+      "source": ".claude/skills",
+      "description": "Document Sync Check",
+      "displayName": "docs-sync"
+    },
+    {
+      "name": "docs-update",
+      "source": ".claude/skills",
+      "description": "docs-update Skill"
+    },
+    {
+      "name": "excel-analysis",
+      "source": ".claude/skills",
+      "displayName": "Excel Analysis",
+      "description": "description:"
+    },
+    {
+      "name": "expansion-evaluation",
+      "source": ".claude/skills",
+      "description": ">-",
+      "displayName": "expansion-evaluation"
+    },
+    {
+      "name": "find-skills",
+      "source": ".agents/skills",
+      "displayName": "find-skills",
+      "description": "description:"
+    },
+    {
+      "name": "frontend-design",
+      "source": ".claude/skills",
+      "displayName": "frontend-design",
+      "description": "description:"
+    },
+    {
+      "name": "gh-fix-ci",
+      "source": ".claude/skills",
+      "displayName": "gh-fix-ci",
+      "description": "description:"
+    },
+    {
+      "name": "market-research-reports",
+      "source": ".claude/skills",
+      "displayName": "market-research-reports",
+      "description": "description:"
+    },
+    {
+      "name": "markitdown",
+      "source": ".claude/skills",
+      "displayName": "markitdown",
+      "description": "description:"
+    },
+    {
+      "name": "mcp-builder",
+      "source": ".claude/skills",
+      "displayName": "mcp-builder",
+      "description": "description:"
+    },
+    {
+      "name": "multi-ai-audit",
+      "source": ".claude/skills",
+      "displayName": "multi-ai-audit",
+      "description": "description:"
+    },
+    {
+      "name": "pr-review",
+      "source": ".claude/skills",
+      "description": "PR Code Review Processor",
+      "displayName": "pr-review"
+    },
+    {
+      "name": "pre-commit-fixer",
+      "source": ".claude/skills",
+      "description": "|",
+      "displayName": "pre-commit-fixer"
+    },
+    {
+      "name": "quick-fix",
+      "source": ".claude/skills",
+      "description": "quick-fix Skill"
+    },
+    {
+      "name": "requesting-code-review",
+      "source": ".claude/skills",
+      "displayName": "requesting-code-review",
+      "description": "description:"
+    },
+    {
+      "name": "save-context",
+      "source": ".claude/skills",
+      "description": "|",
+      "displayName": "save-context"
+    },
+    {
+      "name": "senior-architect",
+      "source": ".claude/skills",
+      "displayName": "senior-architect",
+      "description": "description:"
+    },
+    {
+      "name": "senior-backend",
+      "source": ".claude/skills",
+      "displayName": "senior-backend",
+      "description": "description:"
+    },
+    {
+      "name": "senior-devops",
+      "source": ".claude/skills",
+      "displayName": "senior-devops",
+      "description": "description:"
+    },
+    {
+      "name": "senior-frontend",
+      "source": ".claude/skills",
+      "displayName": "senior-frontend",
+      "description": "description:"
+    },
+    {
+      "name": "senior-fullstack",
+      "source": ".claude/skills",
+      "displayName": "senior-fullstack",
+      "description": "description:"
+    },
+    {
+      "name": "senior-qa",
+      "source": ".claude/skills",
+      "displayName": "senior-qa",
+      "description": "description:"
+    },
+    {
+      "name": "session-begin",
+      "source": ".claude/skills",
+      "description": "Complete verification steps before starting any work session",
+      "displayName": "session-begin"
+    },
+    {
+      "name": "session-end",
+      "source": ".claude/skills",
+      "description": "Complete verification steps before ending the session",
+      "displayName": "session-end"
+    },
+    {
+      "name": "skill-creator",
+      "source": ".claude/skills",
+      "displayName": "skill-creator",
+      "description": "description:"
+    },
+    {
+      "name": "sonarcloud",
+      "source": ".claude/skills",
+      "description": "|",
+      "displayName": "sonarcloud"
+    },
+    {
+      "name": "sonarcloud-sprint",
+      "source": ".claude/skills",
+      "displayName": "sonarcloud-sprint",
+      "description": "description:"
+    },
+    {
+      "name": "sync-sonarcloud-debt",
+      "source": ".claude/skills",
+      "description": "|",
+      "displayName": "sync-sonarcloud-debt"
+    },
+    {
+      "name": "systematic-debugging",
+      "source": ".claude/skills",
+      "displayName": "systematic-debugging",
+      "description": "description:"
+    },
+    {
+      "name": "test-suite",
+      "source": ".claude/skills",
+      "description": "/test-suite — Unified Testing Suite"
+    },
+    {
+      "name": "ui-design-system",
+      "source": ".claude/skills",
+      "displayName": "ui-design-system",
+      "description": "description:"
+    },
+    {
+      "name": "using-superpowers",
+      "source": ".claude/skills",
+      "displayName": "using-superpowers",
+      "description": "description:"
+    },
+    {
+      "name": "ux-researcher-designer",
+      "source": ".claude/skills",
+      "displayName": "ux-researcher-designer",
+      "description": "description:"
+    },
+    {
+      "name": "validate-claude-folder",
+      "source": ".claude/skills",
+      "description": "Validate .claude folder configuration consistency",
+      "displayName": "validate-claude-folder"
+    },
+    {
+      "name": "verify-technical-debt",
+      "source": ".claude/skills",
+      "description": "Verify technical debt items in the verification queue",
+      "displayName": "verify-technical-debt"
+    },
+    {
+      "name": "webapp-testing",
+      "source": ".claude/skills",
+      "displayName": "webapp-testing",
+      "description": "description:"
+    }
+  ]
+}

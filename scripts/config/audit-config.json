@@ -1,0 +1,52 @@
+{
+  "categoryThresholds": {
+    "code": {
+      "commits": 75,
+      "files": 40,
+      "filePattern": { "source": "\\.(tsx?|jsx?|js)$", "flags": "" },
+      "excludePattern": { "source": "^(docs|tests|\\.)", "flags": "" }
+    },
+    "security": {
+      "commits": 50,
+      "files": 5,
+      "filePattern": {
+        "source": "(^|\\/)(firestore\\.rules|middleware\\.ts)$|(^|\\/)\\.(env)(\\.|$)|(^|\\/)functions\\/|(^|\\/)lib\\/(auth|firebase)[^/]*\\.(ts|tsx|js|jsx)$|\\b(auth|security|secrets|credential|token)\\b",
+        "flags": "i"
+      }
+    },
+    "performance": {
+      "commits": 100,
+      "files": 30,
+      "filePattern": { "source": "\\.(tsx?|jsx?)$", "flags": "" },
+      "checkBundle": true
+    },
+    "refactoring": {
+      "commits": 150,
+      "files": 50,
+      "filePattern": { "source": "\\.(tsx?|jsx?)$", "flags": "" },
+      "checkComplexity": true
+    },
+    "documentation": {
+      "commits": 100,
+      "files": 50,
+      "filePattern": { "source": "\\.md$", "flags": "" }
+    },
+    "process": {
+      "commits": 75,
+      "files": 20,
+      "filePattern": { "source": "(\\.github|\\.claude|\\.husky|scripts\\/)", "flags": "" }
+    }
+  },
+  "multiAiThresholds": {
+    "totalCommits": 300,
+    "daysSinceAudit": 30
+  },
+  "categoryHeaders": {
+    "code": { "source": "^### Code Audits", "flags": "" },
+    "security": { "source": "^### Security Audits", "flags": "" },
+    "performance": { "source": "^### Performance Audits", "flags": "" },
+    "refactoring": { "source": "^### Refactoring Audits", "flags": "" },
+    "documentation": { "source": "^### Documentation Audits", "flags": "" },
+    "process": { "source": "^### Process Audits", "flags": "" }
+  }
+}

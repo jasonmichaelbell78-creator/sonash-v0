@@ -1,0 +1,39 @@
+{
+  "exemptPatterns": [
+    { "source": "^README\\.md$", "flags": "i" },
+    { "source": "^CHANGELOG\\.md$", "flags": "i" },
+    { "source": "^LICENSE\\.md$", "flags": "i" },
+    { "source": "^node_modules/", "flags": "" },
+    { "source": "^\\.next/", "flags": "" },
+    { "source": "^coverage/", "flags": "" },
+    { "source": "^dist/", "flags": "" },
+    { "source": "^\\.git/", "flags": "" },
+    { "source": "DOCUMENTATION_INDEX\\.md$", "flags": "" },
+    { "source": "/archive/", "flags": "i" },
+    { "source": "package-lock\\.json", "flags": "" }
+  ],
+  "requiredHeaders": [
+    {
+      "pattern": { "source": "\\*\\*Document Version:\\*\\*|\\*\\*Version:\\*\\*", "flags": "i" },
+      "name": "Document Version"
+    },
+    {
+      "pattern": { "source": "\\*\\*Last Updated:\\*\\*|\\*\\*Updated:\\*\\*", "flags": "i" },
+      "name": "Last Updated"
+    },
+    {
+      "pattern": { "source": "\\*\\*Status:\\*\\*", "flags": "i" },
+      "name": "Status"
+    }
+  ],
+  "recommendedHeaders": [
+    {
+      "pattern": { "source": "\\*\\*Related:\\*\\*|\\*\\*See Also:\\*\\*", "flags": "i" },
+      "name": "Related/See Also"
+    },
+    {
+      "pattern": { "source": "\\*\\*Purpose:\\*\\*|^>\\s*\\*\\*Purpose", "flags": "m" },
+      "name": "Purpose"
+    }
+  ]
+}

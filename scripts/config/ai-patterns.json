@@ -1,0 +1,96 @@
+{
+  "patterns": {
+    "HAPPY_PATH_ONLY": {
+      "name": "Happy-path only logic",
+      "severity": "S1",
+      "patterns": [
+        { "source": "async\\s+function\\s+\\w+[^}]*?(?!try)", "flags": "" },
+        { "source": "=>\\s*\\{[^}]*?await[^}]*?\\}(?![^}]*?catch)", "flags": "" }
+      ],
+      "description": "Function handles only success path, no error handling"
+    },
+    "TRIVIAL_ASSERTIONS": {
+      "name": "Trivial test assertions",
+      "severity": "S1",
+      "patterns": [
+        { "source": "expect\\(true\\)\\.toBe\\(true\\)", "flags": "" },
+        { "source": "expect\\(1\\)\\.toBe\\(1\\)", "flags": "" },
+        { "source": "expect\\(false\\)\\.toBe\\(false\\)", "flags": "" },
+        { "source": "expect\\(\"[^\"]*\"\\)\\.toBe\\(\"[^\"]*\"\\)", "flags": "" },
+        { "source": "assert\\.ok\\(true\\)", "flags": "" },
+        { "source": "assert\\.equal\\(1,\\s*1\\)", "flags": "" }
+      ],
+      "description": "Test that always passes without testing real behavior"
+    },
+    "AI_TODO_MARKERS": {
+      "name": "AI TODO markers",
+      "severity": "S3",
+      "patterns": [
+        { "source": "TODO[^A-Z]*AI", "flags": "i" },
+        { "source": "FIXME[^A-Z]*[Cc]laude", "flags": "" },
+        { "source": "TODO[^A-Z]*LLM", "flags": "i" },
+        { "source": "FIXME[^A-Z]*GPT", "flags": "i" },
+        { "source": "TODO[^A-Z]*[Cc]laude", "flags": "" },
+        { "source": "AI should fix", "flags": "i" },
+        { "source": "Claude will", "flags": "i" }
+      ],
+      "description": "TODO comment referencing AI that was never resolved"
+    },
+    "SESSION_BOUNDARY": {
+      "name": "Session boundary markers",
+      "severity": "S2",
+      "patterns": [
+        { "source": "\\/\\/\\s*Session\\s*\\d+", "flags": "i" },
+        { "source": "\\/\\/\\s*Added in session", "flags": "i" },
+        { "source": "\\/\\/\\s*From session", "flags": "i" },
+        { "source": "\\/\\*\\s*Session\\s*\\d+", "flags": "i" }
+      ],
+      "description": "Comment marking AI session boundary (potential inconsistency)"
+    },
+    "OVERCONFIDENT_SECURITY": {
+      "name": "Over-confident security comments",
+      "severity": "S2",
+      "patterns": [
+        { "source": "this is secure", "flags": "i" },
+        { "source": "security guaranteed", "flags": "i" },
+        { "source": "fully protected", "flags": "i" },
+        { "source": "completely safe", "flags": "i" },
+        { "source": "no vulnerabilities", "flags": "i" },
+        { "source": "unhackable", "flags": "i" }
+      ],
+      "description": "Comment claiming security without evidence"
+    },
+    "HALLUCINATED_APIS": {
+      "name": "Hallucinated API calls",
+      "severity": "S1",
+      "patterns": [
+        { "source": "crypto\\.secureHash\\(", "flags": "" },
+        { "source": "firebase\\.verifyAppCheck\\(", "flags": "" },
+        { "source": "React\\.useServerState\\(", "flags": "" },
+        { "source": "next\\.getServerAuth\\(", "flags": "" },
+        { "source": "firestore\\.atomicUpdate\\(", "flags": "" }
+      ],
+      "description": "Call to API method that doesn't exist"
+    },
+    "NAIVE_DATA_FETCH": {
+      "name": "Naive data fetching",
+      "severity": "S1",
+      "patterns": [
+        { "source": "\\.get\\(\\)\\.then\\([^)]{0,100}\\.filter\\(", "flags": "" },
+        { "source": "await\\s+[^;]{0,200}\\.get\\(\\)[^;]{0,100}\\.filter\\(", "flags": "" },
+        { "source": "getDocs\\([^)]{0,100}\\)[^;]{0,100}\\.filter\\(", "flags": "" }
+      ],
+      "description": "Fetching all data then filtering client-side"
+    },
+    "UNBOUNDED_QUERY": {
+      "name": "Unbounded query",
+      "severity": "S2",
+      "patterns": [
+        { "source": "collection\\([^)]+\\)\\.get\\(\\)(?![^;]{0,50}\\blimit\\s*\\()", "flags": "" },
+        { "source": "getDocs\\([^)]+\\)(?![^;]{0,50}\\blimit\\s*\\()", "flags": "" },
+        { "source": "\\.onSnapshot\\([^)]+\\)(?![^;]{0,50}\\blimit\\s*\\()", "flags": "" }
+      ],
+      "description": "Query without limit() on potentially large collection"
+    }
+  }
+}

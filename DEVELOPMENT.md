@@ -190,6 +190,18 @@ sonash-v0/
 │   └── images/
 │
 ├── scripts/                      # Utility scripts
+│   ├── config/                   # JSON configuration files (single source of truth)
+│   │   ├── load-config.js        # Shared loader (loadConfig, loadConfigWithRegex)
+│   │   ├── audit-schema.json     # TDMS enums (categories, severities, types)
+│   │   ├── audit-config.json     # Audit thresholds and trigger config
+│   │   ├── doc-dependencies.json # Cross-document dependency rules
+│   │   ├── doc-header-config.json# Document header validation rules
+│   │   ├── doc-generator-config.json # Documentation index generator config
+│   │   ├── verified-patterns.json# Pattern compliance verified exclusions
+│   │   ├── ai-patterns.json      # AI code quality pattern definitions
+│   │   ├── agent-triggers.json   # Agent recommendation trigger rules
+│   │   ├── skill-config.json     # Skill validation + topic taxonomy
+│   │   └── skill-registry.json   # Auto-generated skill manifest
 │   ├── seed-meetings.ts          # Seed meeting data
 │   └── set-admin-claim.ts        # Set admin privileges
 │

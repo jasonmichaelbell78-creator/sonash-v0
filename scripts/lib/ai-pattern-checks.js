@@ -13,6 +13,7 @@
 const { existsSync, readFileSync } = require("node:fs");
 const path = require("node:path");
 const nodeModule = require("node:module");
+const { loadConfigWithRegex } = require("../config/load-config");
 
 // Cache for parsed package.json files (prevents redundant I/O)
 const PACKAGE_JSON_CACHE = new Map();
@@ -267,118 +268,9 @@ function checkImportExists(importName, packageJsonPath = "package.json") {
 /**
  * AI-specific patterns to detect
  * Regex patterns are made non-greedy and specific to avoid DoS (SonarCloud S5852)
+ * Single source of truth: scripts/config/ai-patterns.json
  */
-const AI_PATTERNS = {
-  // Happy-path only logic patterns
-  HAPPY_PATH_ONLY: {
-    name: "Happy-path only logic",
-    severity: "S1",
-    patterns: [
-      // Function without try/catch that calls async operation (non-greedy)
-      /async\s+function\s+\w+[^}]*?(?!try)/,
-      // Arrow function without error handling (non-greedy)
-      /=>\s*\{[^}]*?await[^}]*?\}(?![^}]*?catch)/,
-    ],
-    description: "Function handles only success path, no error handling",
-  },
-
-  // Trivial test assertions
-  TRIVIAL_ASSERTIONS: {
-    name: "Trivial test assertions",
-    severity: "S1",
-    patterns: [
-      /expect\(true\)\.toBe\(true\)/,
-      /expect\(1\)\.toBe\(1\)/,
-      /expect\(false\)\.toBe\(false\)/,
-      /expect\("[^"]*"\)\.toBe\("[^"]*"\)/, // More specific than .*
-      /assert\.ok\(true\)/,
-      /assert\.equal\(1,\s*1\)/,
-    ],
-    description: "Test that always passes without testing real behavior",
-  },
-
-  // AI TODO markers
-  AI_TODO_MARKERS: {
-    name: "AI TODO markers",
-    severity: "S3",
-    patterns: [
-      /TODO[^A-Z]*AI/i,
-      /FIXME[^A-Z]*[Cc]laude/,
-      /TODO[^A-Z]*LLM/i,
-      /FIXME[^A-Z]*GPT/i,
-      /TODO[^A-Z]*[Cc]laude/,
-      /AI should fix/i,
-      /Claude will/i,
-    ],
-    description: "TODO comment referencing AI that was never resolved",
-  },
-
-  // Session boundary markers
-  SESSION_BOUNDARY: {
-    name: "Session boundary markers",
-    severity: "S2",
-    patterns: [
-      /\/\/\s*Session\s*\d+/i,
-      /\/\/\s*Added in session/i,
-      /\/\/\s*From session/i,
-      /\/\*\s*Session\s*\d+/i,
-    ],
-    description: "Comment marking AI session boundary (potential inconsistency)",
-  },
-
-  // Over-confident security comments
-  OVERCONFIDENT_SECURITY: {
-    name: "Over-confident security comments",
-    severity: "S2",
-    patterns: [
-      /this is secure/i,
-      /security guaranteed/i,
-      /fully protected/i,
-      /completely safe/i,
-      /no vulnerabilities/i,
-      /unhackable/i,
-    ],
-    description: "Comment claiming security without evidence",
-  },
-
-  // Hallucinated APIs (common examples)
-  HALLUCINATED_APIS: {
-    name: "Hallucinated API calls",
-    severity: "S1",
-    patterns: [
-      /crypto\.secureHash\(/,
-      /firebase\.verifyAppCheck\(/,
-      /React\.useServerState\(/,
-      /next\.getServerAuth\(/,
-      /firestore\.atomicUpdate\(/,
-    ],
-    description: "Call to API method that doesn't exist",
-  },
-
-  // Naive data fetching - fixed for multi-line and DoS (addresses [4], [17])
-  NAIVE_DATA_FETCH: {
-    name: "Naive data fetching",
-    severity: "S1",
-    patterns: [
-      /\.get\(\)\.then\([^)]{0,100}\.filter\(/,
-      /await\s+[^;]{0,200}\.get\(\)[^;]{0,100}\.filter\(/,
-      /getDocs\([^)]{0,100}\)[^;]{0,100}\.filter\(/,
-    ],
-    description: "Fetching all data then filtering client-side",
-  },
-
-  // Missing pagination - fixed for multi-line (addresses [17])
-  UNBOUNDED_QUERY: {
-    name: "Unbounded query",
-    severity: "S2",
-    patterns: [
-      /collection\([^)]+\)\.get\(\)(?![^;]{0,50}\blimit\s*\()/,
-      /getDocs\([^)]+\)(?![^;]{0,50}\blimit\s*\()/,
-      /\.onSnapshot\([^)]+\)(?![^;]{0,50}\blimit\s*\()/,
-    ],
-    description: "Query without limit() on potentially large collection",
-  },
-};
+const AI_PATTERNS = loadConfigWithRegex("ai-patterns").patterns;
 
 /**
  * Check a file for AI-specific patterns

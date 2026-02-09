@@ -31,21 +31,17 @@ const path = require("path");
 const crypto = require("crypto");
 const { execSync } = require("child_process");
 
+const { loadConfig } = require("../config/load-config");
+
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
 const LOG_DIR = path.join(DEBT_DIR, "logs");
 const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
 
-// Valid schema values
-const VALID_CATEGORIES = [
-  "security",
-  "performance",
-  "code-quality",
-  "documentation",
-  "process",
-  "refactoring",
-];
-const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
+// Valid schema values — single source of truth: scripts/config/audit-schema.json
+const schema = loadConfig("audit-schema");
+const VALID_CATEGORIES = schema.validCategories;
+const VALID_SEVERITIES = schema.validSeverities;
 
 // Parse command line arguments
 function parseArgs(args) {

@@ -15,31 +15,18 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { glob } = require("glob");
+const { loadConfig } = require("../config/load-config");
 
 const RAW_DIR = path.join(__dirname, "../../docs/technical-debt/raw");
 const OUTPUT_FILE = path.join(RAW_DIR, "normalized-all.jsonl");
 
-// Valid category values
-const VALID_CATEGORIES = [
-  "security",
-  "performance",
-  "code-quality",
-  "documentation",
-  "process",
-  "refactoring",
-];
-
-// Valid severity values
-const VALID_SEVERITIES = ["S0", "S1", "S2", "S3"];
-
-// Valid type values
-const VALID_TYPES = ["bug", "code-smell", "vulnerability", "hotspot", "tech-debt", "process-gap"];
-
-// Valid status values
-const VALID_STATUSES = ["NEW", "VERIFIED", "FALSE_POSITIVE", "IN_PROGRESS", "RESOLVED"];
-
-// Valid effort values
-const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
+// Valid schema values — single source of truth: scripts/config/audit-schema.json
+const schema = loadConfig("audit-schema");
+const VALID_CATEGORIES = schema.validCategories;
+const VALID_SEVERITIES = schema.validSeverities;
+const VALID_TYPES = schema.validTypes;
+const VALID_STATUSES = schema.validStatuses;
+const VALID_EFFORTS = schema.validEfforts;
 
 // Generate deterministic content hash for deduplication
 function generateContentHash(item) {
