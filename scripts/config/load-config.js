@@ -21,6 +21,15 @@ const CONFIG_DIR = __dirname;
  * @throws {Error} If file not found or invalid JSON
  */
 function loadConfig(name) {
+  if (
+    typeof name !== "string" ||
+    name.length === 0 ||
+    name.includes("..") ||
+    name.includes("/") ||
+    name.includes("\\")
+  ) {
+    throw new Error(`Invalid config name "${String(name)}"`);
+  }
   const filePath = path.join(CONFIG_DIR, name + ".json");
   try {
     const content = fs.readFileSync(filePath, "utf8");

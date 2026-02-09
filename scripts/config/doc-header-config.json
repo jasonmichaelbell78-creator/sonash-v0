@@ -9,7 +9,7 @@
     { "source": "^dist/", "flags": "" },
     { "source": "^\\.git/", "flags": "" },
     { "source": "DOCUMENTATION_INDEX\\.md$", "flags": "" },
-    { "source": "/archive/", "flags": "i" },
+    { "source": "(?:^|\\/)archive(?:\\/|$)", "flags": "i" },
     { "source": "package-lock\\.json", "flags": "" }
   ],
   "requiredHeaders": [

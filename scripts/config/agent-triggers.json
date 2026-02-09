@@ -8,6 +8,10 @@
         {
           "source": "(?:^|\\/)(?:__tests__|node_modules)(?:\\/|$)|\\.(?:test|spec)\\.",
           "flags": ""
+        },
+        {
+          "source": "(?:^|\\/)functions\\/src(?:\\/|$)",
+          "flags": ""
         }
       ]
     },

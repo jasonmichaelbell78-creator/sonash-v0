@@ -56,7 +56,14 @@ const LOG_DIR = path.join(DEBT_DIR, "logs");
 const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
 
 // Valid schema values — single source of truth: scripts/config/audit-schema.json
-const schema = loadConfig("audit-schema");
+let schema;
+try {
+  schema = loadConfig("audit-schema");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load audit-schema config: ${msg}`);
+  process.exit(2);
+}
 const VALID_CATEGORIES = schema.validCategories;
 const VALID_SEVERITIES = schema.validSeverities;
 const VALID_TYPES = schema.validTypes;

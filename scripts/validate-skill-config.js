@@ -28,7 +28,14 @@ const { loadConfigWithRegex } = require("./config/load-config");
 
 // Configuration — single source of truth: scripts/config/skill-config.json
 const SKILLS_DIR = ".claude/commands";
-const skillConfig = loadConfigWithRegex("skill-config");
+let skillConfig;
+try {
+  skillConfig = loadConfigWithRegex("skill-config");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load skill-config: ${msg}`);
+  process.exit(2);
+}
 const REQUIRED_SECTIONS = skillConfig.requiredSections;
 const DEPRECATED_PATTERNS = skillConfig.deprecatedPatterns;
 

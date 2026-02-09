@@ -21,7 +21,14 @@ const RAW_DIR = path.join(__dirname, "../../docs/technical-debt/raw");
 const OUTPUT_FILE = path.join(RAW_DIR, "normalized-all.jsonl");
 
 // Valid schema values — single source of truth: scripts/config/audit-schema.json
-const schema = loadConfig("audit-schema");
+let schema;
+try {
+  schema = loadConfig("audit-schema");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: failed to load audit-schema config: ${msg}`);
+  process.exit(2);
+}
 const VALID_CATEGORIES = schema.validCategories;
 const VALID_SEVERITIES = schema.validSeverities;
 const VALID_TYPES = schema.validTypes;

@@ -90,10 +90,19 @@ function scanSkillsDir(dir, source) {
             const lines = content.split(/\r?\n/);
             for (const line of lines) {
               const trimmed = line.replace(/^#+\s*/, "").trim();
-              if (trimmed && !trimmed.startsWith("---") && !trimmed.startsWith("name:")) {
-                entry.description = trimmed.length > 120 ? trimmed.slice(0, 117) + "..." : trimmed;
-                break;
+              if (
+                !trimmed ||
+                trimmed === "---" ||
+                trimmed === "|" ||
+                trimmed === ">" ||
+                trimmed === ">-" ||
+                /^name:\s*/i.test(trimmed) ||
+                /^description:\s*$/i.test(trimmed)
+              ) {
+                continue;
               }
+              entry.description = trimmed.length > 120 ? trimmed.slice(0, 117) + "..." : trimmed;
+              break;
             }
           }
         }
