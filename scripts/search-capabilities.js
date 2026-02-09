@@ -33,7 +33,12 @@ const LOCAL_SKILLS_DIRS = [
 function readFirstLine(filePath) {
   try {
     if (!existsSync(filePath)) return "";
-    const content = readFileSync(filePath, "utf8");
+    let content;
+    try {
+      content = readFileSync(filePath, "utf8");
+    } catch {
+      return "";
+    }
     const lines = content.split("\n");
     for (const line of lines) {
       const trimmed = line.replace(/^#+\s*/, "").trim();
@@ -55,12 +60,28 @@ function readFirstLine(filePath) {
 function readSkillDescription(filePath) {
   try {
     if (!existsSync(filePath)) return "";
-    const content = readFileSync(filePath, "utf8");
-    const match = content.match(/^---\s*\n[\s\S]*?description:\s*(.+)\n[\s\S]*?^---/m);
-    if (match) {
-      const desc = match[1].trim();
-      return desc.length > 80 ? desc.slice(0, 77) + "..." : desc;
+    let content;
+    try {
+      content = readFileSync(filePath, "utf8");
+    } catch {
+      return "";
     }
+
+    // Parse frontmatter without backtracking regex (ReDoS-safe)
+    if (content.startsWith("---")) {
+      const end = content.indexOf("\n---", 3);
+      if (end !== -1) {
+        const fm = content.slice(0, end);
+        const descLine = fm
+          .split("\n")
+          .find((l) => l.trim().toLowerCase().startsWith("description:"));
+        if (descLine) {
+          const desc = descLine.split(":").slice(1).join(":").trim();
+          return desc.length > 80 ? desc.slice(0, 77) + "..." : desc;
+        }
+      }
+    }
+
     return readFirstLine(filePath);
   } catch {
     return "";
@@ -93,7 +114,7 @@ function getInstalledPlugins() {
     const re = /❯\s+(\S+)/g;
     let m;
     while ((m = re.exec(output)) !== null) {
-      installed.add(m[1]);
+      installed.add(m[1].toLowerCase());
     }
   } catch {
     // claude CLI not available or errored — continue without installed info
@@ -196,12 +217,12 @@ function searchLocalSkills(keywords) {
 
 /**
  * Search skills.sh via `npx skills find`.
- * @param {string} query
+ * @param {string[]} queryArgs - Arguments to pass to skills find
  * @returns {string[]} Raw output lines
  */
-function searchSkillsSh(query) {
+function searchSkillsSh(queryArgs) {
   try {
-    const output = execFileSync("npx", ["skills", "find", query], {
+    const output = execFileSync("npx", ["skills", "find", "--", ...queryArgs], {
       encoding: "utf8",
       timeout: 30000,
       stdio: ["pipe", "pipe", "pipe"],
@@ -211,7 +232,7 @@ function searchSkillsSh(query) {
       .map((l) => l.trim())
       .filter((l) => l.length > 0);
   } catch {
-    return ["(skills.sh search unavailable)"];
+    return [];
   }
 }
 
@@ -238,13 +259,13 @@ function main() {
   const { plugins: mpPlugins, skills: mpSkills } = searchMarketplaces(keywords);
 
   // Separate marketplace results into installed vs available
-  const installedPlugins = mpPlugins.filter((p) => installed.has(p.installId));
-  const availablePlugins = mpPlugins.filter((p) => !installed.has(p.installId));
-  const installedMpSkills = mpSkills.filter((s) => installed.has(s.installId));
-  const availableMpSkills = mpSkills.filter((s) => !installed.has(s.installId));
+  const installedPlugins = mpPlugins.filter((p) => installed.has(p.installId.toLowerCase()));
+  const availablePlugins = mpPlugins.filter((p) => !installed.has(p.installId.toLowerCase()));
+  const installedMpSkills = mpSkills.filter((s) => installed.has(s.installId.toLowerCase()));
+  const availableMpSkills = mpSkills.filter((s) => !installed.has(s.installId.toLowerCase()));
 
   // 4. skills.sh search (slower, do last)
-  const skillsShResults = searchSkillsSh(queryStr);
+  const skillsShResults = searchSkillsSh(args);
 
   // --- Output ---
 

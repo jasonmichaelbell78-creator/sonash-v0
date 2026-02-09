@@ -578,6 +578,9 @@ const ANTI_PATTERNS = [
       "check-session-gaps.js",
       "reset-audit-triggers.js",
       "seed-commit-log.js",
+      // 2026-02-08 audit (PR #351):
+      // - search-capabilities.js: readFileSync at L38 IS in try/catch (L37-41), L65 IS in try/catch (L64-68)
+      "search-capabilities.js",
     ],
   },
   {

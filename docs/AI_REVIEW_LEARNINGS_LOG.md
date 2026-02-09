@@ -317,7 +317,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
@@ -700,6 +700,50 @@ claude/cherry-pick-commits-yLnZV (PR #347) **Suggestions:** 4 total (Critical:
 - Doc-optimizer agents must output relative paths, not absolute
 - Batch update scripts must target `resolution_note` not `resolution`
 - JSONL files committed to git are public - treat file paths as PII
+
+---
+
+#### Review #266: PR #351 ROADMAP Cleanup - CI + Qodo + SonarCloud (2026-02-08)
+
+**Source:** Mixed (CI failures, Qodo PR Suggestions, SonarCloud S5852)
+**PR/Branch:** claude/cherry-pick-commits-yLnZV (PR #351) **Suggestions:** 10
+total (Critical: 0, Major: 2, Minor: 6, Trivial: 0, Rejected: 2)
+
+**Patterns Identified:**
+
+1. [Doc lint required sections]: Tier 2 docs require `Purpose/Overview/Scope`
+   and `Version History` sections — TDMS plan was missing both
+   - Root cause: Plan was written before doc linting was enforced
+   - Prevention: Doc header + section check runs in CI on all changed `.md`
+     files
+2. [ReDoS in frontmatter regex]: `[\s\S]*?` with `^---` anchor creates
+   backtracking risk (SonarCloud S5852)
+   - Root cause: Regex used nested `[\s\S]*?` quantifiers
+   - Prevention: Use string-based parsing (indexOf + split) for frontmatter
+3. [Case-insensitive installId]: Plugin matching failed when case differed
+   between `claude plugin list` output and marketplace directory names
+   - Root cause: Set comparison was case-sensitive
+   - Prevention: Normalize to lowercase on both add and lookup
+4. [CLI flag injection via user args]: User query passed directly to
+   `execFileSync` args could be interpreted as flags
+   - Root cause: No `--` separator before user-controlled arguments
+   - Prevention: Always add `--` before user input in execFileSync calls
+
+**Resolution:**
+
+- Fixed: 8 items (TDMS Purpose + Version History, readFileSync try/catch ×2,
+  ReDoS regex → string parsing, case-insensitive installId, empty array catch,
+  `--` flag injection, args as array)
+- Rejected: 2 items (`.agents` naming is correct, slice vs substring no
+  difference)
+
+**Key Learnings:**
+
+- Auto-generated DOCUMENTATION_INDEX.md picks up
+  `<!-- prettier-ignore-start -->` as description if it's the first non-heading
+  line — need to fix generator
+- Pattern compliance `pathExcludeList` is the correct way to handle verified
+  try/catch files
 
 ---
 

@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-08 **Active Documents:** 261 **Archived Documents:** 93
+**Generated:** 2026-02-09 **Active Documents:** 261 **Archived Documents:** 93
 
 ---
 
@@ -100,7 +100,7 @@ _Main documentation directory_
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                                         | Each AI review is an opportunity to improve future work. Sys...   | ↓9 ↑2      | 2026-02-08    |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                         | -                                                                 | ↓3 ↑4      | 2026-02-08    |
 | [ADR-NNN: [Short Title]](docs/decisions/TEMPLATE.md)                                                                           | [Briefly describe the purpose of this ADR - what decision do...   | ↓1 ↑0      | 2026-01-17    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                     | This document is the **audit trail** of all AI code review l...   | ↓4 ↑2      | 2026-02-07    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                     | This document is the **audit trail** of all AI code review l...   | ↓4 ↑2      | 2026-02-09    |
 | [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                                                | This guide covers Firebase App Check configuration for the S...   | ↓2 ↑0      | 2026-02-07    |
 | [Architecture Decision Records (ADRs)](docs/decisions/README.md)                                                               | This directory contains Architecture Decision Records (ADRs)...   | ↓0 ↑1      | 2026-02-02    |
 | [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                                         | Track single-session and multi-AI audit completions for thre...   | ↓1 ↑1      | 2026-02-07    |
@@ -147,7 +147,7 @@ _Main documentation directory_
 | [Technical Debt by Status](docs/technical-debt/views/by-status.md)                                                             | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-07    |
 | [Technical Debt Index](docs/technical-debt/INDEX.md)                                                                           | <!-- prettier-ignore-start -->                                    | ↓4 ↑4      | 2026-02-07    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                                         | This document provides step-by-step procedures for managing ...   | ↓12 ↑2     | 2026-02-05    |
-| [Technical Debt Management System (TDMS) - Implementation Plan](docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)           | <!-- prettier-ignore-start -->                                    | ↓4 ↑1      | 2026-02-08    |
+| [Technical Debt Management System (TDMS) - Implementation Plan](docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)           | This plan establishes a unified Technical Debt Management Sy...   | ↓4 ↑1      | 2026-02-09    |
 | [Technical Debt Metrics](docs/technical-debt/METRICS.md)                                                                       | This document provides a real-time dashboard of technical de...   | ↓1 ↑0      | 2026-02-08    |
 | [Testing Infrastructure Plan](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)                                                       | This document outlines a comprehensive testing infrastructur...   | ↓1 ↑2      | 2026-02-02    |
 | [Testing Plan](docs/TESTING_PLAN.md)                                                                                           | Comprehensive testing guidance for the SoNash application, i...   | ↓5 ↑1      | 2026-02-08    |
@@ -1101,7 +1101,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-08 | Auto-generated from codebase scan |
+| Auto    | 2026-02-09 | Auto-generated from codebase scan |
 
 ---
 
