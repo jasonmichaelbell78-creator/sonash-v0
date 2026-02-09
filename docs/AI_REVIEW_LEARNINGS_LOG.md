@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15.3    | 2026-02-09 | Review #270: PR #352 Round 4 - Qodo Suggestions + Compliance (7 items - 4 MAJOR, 1 MINOR, 1 REJECTED, 1 INFORMATIONAL). **MAJOR**: YAML block scalar handling in parseFrontmatter (generate-skill-registry.js), silent catch→console.warn (search-capabilities.js), unguarded loadConfigWithRegex try/catch (check-review-needed.js + ai-pattern-checks.js). **REJECTED**: sanitizeError guard in validate-audit-integration.js (already has inline fallback via try/catch). Consolidation counter 5→6. Active reviews #266-270.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 15.2    | 2026-02-09 | Review #269: PR #352 Round 3 - Qodo Security + Compliance + Suggestions (7 items - 1 Security, 1 Compliance, 5 Code). **SECURITY**: Symlink guard (lstatSync) before reading SKILL.md in generate-skill-registry.js. **COMPLIANCE**: Silent catch blocks replaced with console.warn for diagnosability. **MAJOR**: parseFrontmatter slice(3) to skip opening ---, fail-closed empty rules (check-cross-doc-deps.js), unguarded loadConfig try/catch (validate-audit-integration.js + check-doc-headers.js). **MINOR**: Object.freeze on VALID_SEVERITIES_CACHED. Consolidation counter 4→5. Active reviews #266-269.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 15.1    | 2026-02-09 | Review #268: PR #352 Round 2 - Qodo + CI (7 items - 0 CRITICAL, 3 MAJOR, 1 MINOR, 2 REJECTED, 1 INFORMATIONAL). **CI FIX**: 2 remaining false positives (intake-pr-deferred.js:107, normalize-all.js:143) added to verified-patterns.json. **MAJOR**: process.exit(1) on read failure instead of return [] (intake-pr-deferred.js), try/catch + Array.isArray guard for module-scope loadConfig (transform-jsonl-schema.js), empty rules warning (check-cross-doc-deps.js). **REJECTED**: Composite dedup key in generate-skill-registry.js (intentional first-wins behavior), config shape validation in load-config.js (over-engineering for internal configs). Consolidation counter 3→4. Active reviews #266-268.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 15.0    | 2026-02-07 | **CONSOLIDATION #17**: Reviews #254-265 (12 reviews) → CODE_PATTERNS.md v2.6. Added 23 patterns: 4 Security, 7 JS/TS, 8 CI/Automation, 3 Process Management, 1 Bash/Shell. Source: PR #346 Audit Trigger Reset reviews (Qodo/SonarCloud rounds 1-6). Counter reset 12→0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -668,6 +669,50 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #270: PR #352 Round 4 - Qodo Config Guards + YAML Parsing (2026-02-09)
+
+**Source:** Qodo PR Compliance + Code Suggestions (Round 4) **PR/Branch:**
+claude/cherry-pick-and-pr-xarOL (PR #352) **Suggestions:** 7 total (Major: 4,
+Minor: 1, Rejected: 1, Informational: 1)
+
+**Accepted Suggestions:**
+
+1. [MAJOR] `generate-skill-registry.js` — YAML block scalar indicators (`|`,
+   `>`, `>-`) treated as empty values in parseFrontmatter. Prevents corrupted
+   descriptions in skill-registry.json when SKILL.md uses multiline YAML.
+2. [MAJOR] `search-capabilities.js` — Replaced silent empty catch with
+   `console.warn` for skill registry load failures. Improves diagnosability when
+   registry JSON is missing vs corrupted.
+3. [MAJOR] `check-review-needed.js` — Wrapped module-scope
+   `loadConfigWithRegex("audit-config")` in try/catch with `process.exit(2)`.
+4. [MAJOR] `ai-pattern-checks.js` — Wrapped module-scope
+   `loadConfigWithRegex("ai-patterns")` in try/catch with `process.exit(2)`.
+
+**Rejected Suggestions:**
+
+5. `validate-audit-integration.js` `sanitizeError` guard — REJECTED. The
+   `sanitizeError` import already has a try/catch with inline fallback (lines
+   31-37), guaranteeing it's always a function. Adding `typeof === "function"`
+   check is redundant.
+
+**Informational (no action):**
+
+6. Secure logging compliance — unstructured console.warn with item.name paths.
+   Acceptable for internal CLI dev tooling; no PII exposure.
+7. Regex config loading — configs are dev-controlled JSON, not user input. Regex
+   DoS risk is negligible for internal config files.
+
+**Key Learnings:**
+
+- Systematic pattern: every `loadConfig*()` at module scope across the codebase
+  needs try/catch. R3 caught 2 files, R4 caught 2 more — pattern is spreading
+  across all 10 refactored config consumers
+- YAML block scalars (`|`, `>`) are common in SKILL.md frontmatter but the
+  simple key:value parser doesn't handle multiline — treating them as empty
+  values and falling through to description fallback is the correct approach
 
 ---
 
