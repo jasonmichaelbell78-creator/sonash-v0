@@ -70,7 +70,14 @@ function convertRegexFields(obj, regexFields, currentKey) {
     ) {
       // Only convert if no regexFields filter, or current key matches
       if (!regexFields || regexFields.includes(currentKey)) {
-        return new RegExp(obj.source, obj.flags);
+        try {
+          return new RegExp(obj.source, obj.flags);
+        } catch (regexErr) {
+          const msg = regexErr instanceof Error ? regexErr.message : String(regexErr);
+          throw new Error(
+            `Invalid regex in config at "${currentKey}": /${obj.source}/${obj.flags} (${msg})`
+          );
+        }
       }
     }
 

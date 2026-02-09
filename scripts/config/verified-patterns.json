@@ -71,6 +71,8 @@
     "check-session-gaps.js",
     "reset-audit-triggers.js",
     "seed-commit-log.js",
-    "search-capabilities.js"
+    "search-capabilities.js",
+    "load-config.js",
+    "generate-skill-registry.js"
   ]
 }

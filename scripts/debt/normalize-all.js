@@ -138,7 +138,14 @@ async function main() {
 
   for (const file of files) {
     const fileName = path.basename(file);
-    const content = fs.readFileSync(file, "utf8");
+    let content;
+    try {
+      content = fs.readFileSync(file, "utf8");
+    } catch (readErr) {
+      const msg = readErr instanceof Error ? readErr.message : String(readErr);
+      console.warn(`  ⚠️ Failed to read ${path.basename(file)}: ${msg}`);
+      continue;
+    }
     const lines = content.split("\n").filter((line) => line.trim());
 
     let fileItemCount = 0;
@@ -211,4 +218,8 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+main().catch((err) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Fatal error: ${msg}`);
+  process.exit(1);
+});

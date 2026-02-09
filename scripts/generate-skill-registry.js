@@ -118,6 +118,7 @@ function main() {
     skills,
   };
 
+  fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
   fs.writeFileSync(OUTPUT, JSON.stringify(registry, null, 2) + "\n", "utf8");
   console.log(`Generated skill registry: ${skills.length} skills → ${path.relative(ROOT, OUTPUT)}`);
 }

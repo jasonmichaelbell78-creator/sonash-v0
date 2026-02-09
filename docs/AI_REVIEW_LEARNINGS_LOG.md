@@ -317,7 +317,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 3 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
@@ -666,6 +666,49 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #267: PR #352 Config Refactor Hardening - Qodo + CI (2026-02-09)
+
+**Source:** Qodo PR Compliance + Code Suggestions + CI Pattern Compliance
+**PR/Branch:** claude/cherry-pick-and-pr-xarOL (PR #352) **Suggestions:** 13
+total (Critical: 0, Major: 6, Minor: 3, Rejected: 4)
+
+**Patterns Identified:**
+
+1. [Config loader resilience]: Scripts consuming
+   `loadConfig()`/`loadConfigWithRegex()` at module scope crash with unhelpful
+   stack trace if config file is missing
+   - Root cause: JSON configs are new (Session #142 refactor) — no error
+     wrapping at call sites
+   - Prevention: Wrap top-level config loads in try/catch with graceful fallback
+     or clear exit
+2. [Pattern checker false positives]: readFileSync already in try/catch still
+   flagged by CI pattern compliance when `existsSync` appears nearby
+   - Root cause: Regex-based pattern checker doesn't analyze scope nesting
+   - Prevention: Add verified-patterns.json entries for confirmed false
+     positives
+3. [Per-item config reload]: `loadConfig()` called inside `transformItem()`
+   function re-reads and re-parses JSON on every item in a potentially large
+   JSONL batch
+   - Root cause: Quick refactor moved inline constant to loadConfig without
+     considering call site
+   - Prevention: Cache config at module scope when used in hot loops
+
+**Resolution:**
+
+- Fixed: 9 items (6 CI pattern violations + 3 Qodo suggestions)
+- Rejected: 4 items (2 false positives verified via code review, 1 intentional
+  catch design, 1 over-engineering)
+
+**Key Learnings:**
+
+- New shared config system needs defensive loading at every call site
+- Hooks must never crash on config load failure — use defaults
+- Pattern checker false positives need verified-patterns.json entries
+  immediately
+- Module-scope caching is critical when loadConfig is called in loops
 
 ---
 

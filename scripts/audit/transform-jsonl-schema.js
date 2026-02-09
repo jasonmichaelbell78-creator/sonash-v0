@@ -23,6 +23,10 @@ const fs = require("fs");
 const path = require("path");
 const { loadConfig } = require("../config/load-config");
 
+// Cache audit schema at module scope (avoid re-reading per item)
+const auditSchema = loadConfig("audit-schema");
+const VALID_SEVERITIES_CACHED = auditSchema.validSeverities;
+
 // Project root for path containment validation
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
@@ -325,9 +329,8 @@ function transformItem(item, index) {
   }
 
   // Validate severity (case-insensitive - normalize to uppercase)
-  const { validSeverities } = loadConfig("audit-schema");
   const severityInput = typeof item.severity === "string" ? item.severity.trim().toUpperCase() : "";
-  let severity = validSeverities.includes(severityInput) ? severityInput : "S2";
+  let severity = VALID_SEVERITIES_CACHED.includes(severityInput) ? severityInput : "S2";
   if (severity !== item.severity) {
     issues.push(`severity: "${item.severity}" → ${severity}`);
   }

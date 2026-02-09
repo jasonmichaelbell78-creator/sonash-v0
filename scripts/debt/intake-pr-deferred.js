@@ -101,7 +101,16 @@ function loadMasterDebt() {
   if (!fs.existsSync(MASTER_FILE)) {
     return [];
   }
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (readErr) {
+    const msg = readErr instanceof Error ? readErr.message : String(readErr);
+    console.error(`⚠️ Failed to read MASTER_DEBT.jsonl: ${msg}`);
+    return [];
+  }
+
   const lines = content.split("\n").filter((line) => line.trim());
 
   const items = [];
@@ -111,7 +120,8 @@ function loadMasterDebt() {
     try {
       items.push(JSON.parse(lines[i]));
     } catch (err) {
-      badLines.push({ line: i + 1, message: err.message });
+      const msg = err instanceof Error ? err.message : String(err);
+      badLines.push({ line: i + 1, message: msg });
     }
   }
 

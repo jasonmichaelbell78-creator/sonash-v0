@@ -31,7 +31,14 @@ const PHASE_3_THRESHOLD_USES = 100;
 const PHASE_3_THRESHOLD_DAYS = 60;
 
 // Agent triggers and thresholds sourced from scripts/config/agent-triggers.json
-const agentTriggersConfig = loadConfigWithRegex("agent-triggers");
+let agentTriggersConfig;
+try {
+  agentTriggersConfig = loadConfigWithRegex("agent-triggers");
+} catch (configErr) {
+  const msg = configErr instanceof Error ? configErr.message : String(configErr);
+  console.error(`Warning: failed to load agent-triggers config: ${msg}`);
+  agentTriggersConfig = { reviewChangeThreshold: 5, agentTriggers: [] };
+}
 const REVIEW_CHANGE_THRESHOLD = agentTriggersConfig.reviewChangeThreshold;
 const AGENT_TRIGGERS = agentTriggersConfig.agentTriggers;
 
