@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-09T03:34:45.788Z",
+  "generatedAt": "2026-02-09T12:14:46.222Z",
   "skillCount": 56,
   "skills": [
     {
@@ -147,7 +147,7 @@
     },
     {
       "name": "find-skills",
-      "source": ".agents/skills",
+      "source": ".claude/skills",
       "displayName": "find-skills",
       "description": "description:"
     },
