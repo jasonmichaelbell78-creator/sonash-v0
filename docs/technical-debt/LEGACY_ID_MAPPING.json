@@ -138,7 +138,7 @@
   "review:DEDUP-0007": "DEBT-0104",
   "review:DEDUP-0008": "DEBT-0105",
   "review:DEDUP-0012": "DEBT-0106",
-  "review:LEGACY-001": "DEBT-0107",
+  "review:LEGACY-001": "DEBT-2746",
   "MASTER-0194": "DEBT-0108",
   "review:MASTER-0194": "DEBT-0108",
   "MASTER-0195": "DEBT-0109",
@@ -2427,6 +2427,6 @@
   "sonarcloud:AZu_YGh_4bpUIlczDkm1": "DEBT-1624",
   "audit:code-quality-hooks\\use-journal.ts-60817d80": "DEBT-1912",
   "audit:process-.github/workflows/deploy-firebase.yml-pull-request-target-risk": "DEBT-2499",
-  "audit:process-.claude/settings.json-continue-on-error-usage": "DEBT-2598",
-  "audit:process-scripts/debt/resolve-item.js-execsync-string-interpolation": "DEBT-2615"
+  "audit:process-.claude/settings.json-continue-on-error-usage": "DEBT-2744",
+  "audit:process-scripts/debt/resolve-item.js-execsync-string-interpolation": "DEBT-2745"
 }

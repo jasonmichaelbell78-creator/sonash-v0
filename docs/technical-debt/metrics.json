@@ -1,19 +1,19 @@
 {
-  "generated": "2026-02-09T18:18:04.083Z",
+  "generated": "2026-02-09T18:44:19.597Z",
   "generated_date": "2026-02-09",
   "summary": {
     "total": 2122,
-    "open": 1849,
-    "resolved": 40,
-    "false_positives": 233,
-    "resolution_rate_pct": 2
+    "open": 1830,
+    "resolved": 56,
+    "false_positives": 236,
+    "resolution_rate_pct": 3
   },
   "by_status": {
-    "NEW": 1849,
-    "VERIFIED": 0,
+    "NEW": 1458,
+    "VERIFIED": 372,
     "IN_PROGRESS": 0,
-    "RESOLVED": 40,
-    "FALSE_POSITIVE": 233
+    "RESOLVED": 56,
+    "FALSE_POSITIVE": 236
   },
   "by_severity": {
     "S0": 27,
@@ -34,8 +34,8 @@
     "unknown": 2122
   },
   "alerts": {
-    "s0_count": 12,
-    "s1_count": 379,
+    "s0_count": 9,
+    "s1_count": 363,
     "s0_items": [
       {
         "id": "DEBT-0012",
@@ -66,12 +66,6 @@
         "title": "Refactor this code to not nest functions more than 4 levels ",
         "file": "components/admin/logs-tab.tsx",
         "line": 342
-      },
-      {
-        "id": "DEBT-1296",
-        "title": "Refactor this function to reduce its Cognitive Complexity fr",
-        "file": "docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js",
-        "line": 137
       },
       {
         "id": "DEBT-1538",
@@ -165,6 +159,6 @@
     "avg_age_days": 0,
     "oldest_age_days": 0,
     "oldest_item_id": null,
-    "verification_queue_size": 1849
+    "verification_queue_size": 1458
   }
 }

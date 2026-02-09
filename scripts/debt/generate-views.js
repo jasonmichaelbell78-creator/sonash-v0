@@ -69,9 +69,13 @@ function generateHeader(title, today) {
 `;
 }
 
-// Load existing items to preserve their IDs
-function loadExistingIds() {
+// Fields preserved from existing MASTER items during regeneration
+const PRESERVED_FIELDS = ["status", "resolution", "verified_date", "verification_reason"];
+
+// Load existing items to preserve their IDs and status/resolution fields
+function loadExistingItems() {
   const idMap = new Map(); // content_hash/source_id/fingerprint -> existing DEBT-XXXX
+  const itemMap = new Map(); // DEBT-XXXX -> existing item (for preserving status etc.)
   let maxId = 0;
 
   if (fs.existsSync(MASTER_FILE)) {
@@ -87,6 +91,8 @@ function loadExistingIds() {
               const num = parseInt(match[1], 10);
               if (num > maxId) maxId = num;
             }
+            // Store full item for field preservation
+            itemMap.set(item.id, item);
             // Map by content_hash, source_id, AND fingerprint for stable ID lookup
             if (item.content_hash) idMap.set(`hash:${item.content_hash}`, item.id);
             if (item.source_id) idMap.set(`source:${item.source_id}`, item.id);
@@ -107,7 +113,7 @@ function loadExistingIds() {
     }
   }
 
-  return { idMap, maxId };
+  return { idMap, itemMap, maxId };
 }
 
 function main() {
@@ -119,8 +125,8 @@ function main() {
     process.exit(1);
   }
 
-  // Load existing IDs to preserve them (IDs must be stable)
-  const { idMap, maxId } = loadExistingIds();
+  // Load existing items to preserve IDs and status/resolution fields
+  const { idMap, itemMap, maxId } = loadExistingItems();
   let nextId = maxId + 1;
   let preservedCount = 0;
   let newCount = 0;
@@ -190,6 +196,17 @@ function main() {
     }
     if (!item.status) {
       item.status = "NEW";
+    }
+
+    // Preserve status/resolution/verification fields from existing MASTER items
+    // This ensures verification results survive view regeneration
+    const existing = itemMap.get(item.id);
+    if (existing) {
+      for (const field of PRESERVED_FIELDS) {
+        if (existing[field] !== undefined && existing[field] !== null) {
+          item[field] = existing[field];
+        }
+      }
     }
 
     items.push(item);

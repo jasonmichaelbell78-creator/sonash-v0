@@ -31,10 +31,10 @@ distribution.
 | Metric          | Value |
 | --------------- | ----- |
 | Total Items     | 2122  |
-| Open Items      | 1849  |
-| Resolved        | 40    |
-| False Positives | 233   |
-| Resolution Rate | 2%    |
+| Open Items      | 1830  |
+| Resolved        | 56    |
+| False Positives | 236   |
+| Resolution Rate | 3%    |
 
 ---
 
@@ -42,11 +42,11 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 1849  |
-| VERIFIED       | 0     |
+| NEW            | 1458  |
+| VERIFIED       | 372   |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 40    |
-| FALSE_POSITIVE | 233   |
+| RESOLVED       | 56    |
+| FALSE_POSITIVE | 236   |
 
 ---
 
@@ -77,7 +77,7 @@ distribution.
 
 ## Alerts
 
-### S0 Critical Alerts (12)
+### S0 Critical Alerts (9)
 
 - **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity fr
   (functions/src/admin.ts:576)
@@ -89,8 +89,6 @@ distribution.
   (components/admin/errors-tab.tsx:327)
 - **DEBT-1064**: Refactor this code to not nest functions more than 4 levels
   (components/admin/logs-tab.tsx:342)
-- **DEBT-1296**: Refactor this function to reduce its Cognitive Complexity fr
-  (docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js:137)
 - **DEBT-1538**: Refactor this function to reduce its Cognitive Complexity fr
   (functions/src/jobs.ts:1059)
 - **DEBT-1624**: Refactor this function to reduce its Cognitive Complexity fr
@@ -100,7 +98,7 @@ distribution.
 - **DEBT-2499**: CI gap: pull_request_target security vulnerability allows un
   (.github/workflows/deploy-firebase.yml:7)
 
-### S1 High Priority Alerts (379)
+### S1 High Priority Alerts (363)
 
 - **DEBT-0001**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -123,7 +121,7 @@ distribution.
 - **DEBT-0010**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 369 more S1 items_
+_...and 353 more S1 items_
 
 ---
 
@@ -131,7 +129,7 @@ _...and 369 more S1 items_
 
 | Metric               | Value      |
 | -------------------- | ---------- |
-| Verification Queue   | 1849 items |
+| Verification Queue   | 1458 items |
 | Avg Age (Open Items) | 0 days     |
 | Oldest Item Age      | 0 days     |
 | Oldest Item          | N/A        |

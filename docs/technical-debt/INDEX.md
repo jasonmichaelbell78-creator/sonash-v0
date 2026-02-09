@@ -32,9 +32,10 @@
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 1849  |
-| RESOLVED       | 40    |
-| FALSE_POSITIVE | 233   |
+| VERIFIED       | 372   |
+| RESOLVED       | 56    |
+| FALSE_POSITIVE | 236   |
+| NEW            | 1458  |
 
 ## Views
 
@@ -90,9 +91,9 @@
   (hooks/use-journal.ts:174)
 - **DEBT-2499**: CI gap: pull_request_target security vulnerability allows
   untrusted code exec... (.github/workflows/deploy-firebase.yml:7)
-- **DEBT-2598**: Error handling: continueOnError used appropriately in
+- **DEBT-2744**: Error handling: continueOnError used appropriately in
   settings.json (.claude/settings.json:24)
-- **DEBT-2615**: Security: Potential command injection in resolve-item.js
+- **DEBT-2745**: Security: Potential command injection in resolve-item.js
   execSync (scripts/debt/resolve-item.js:21)
 
 ## High Priority Items (S1)

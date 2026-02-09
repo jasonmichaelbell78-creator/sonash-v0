@@ -93,7 +93,7 @@
 | DEBT-0104 | Extract error handling utility                                 | S1       | N/A                                                                          | 0    |
 | DEBT-0105 | Remove deprecated saveNotebookJournalEntry                     | S1       | N/A                                                                          | 0    |
 | DEBT-0106 | Enable SSR for landing page                                    | S1       | N/A                                                                          | 0    |
-| DEBT-0107 | Item Name                                                      | S1       | N/A                                                                          | 0    |
+| DEBT-2746 | Item Name                                                      | S1       | N/A                                                                          | 0    |
 | DEBT-0113 | Separate domain/transport in useJournal                        | S1       | N/A                                                                          | 0    |
 | DEBT-0114 | Reduce 'use client' directives                                 | S1       | N/A                                                                          | 0    |
 | DEBT-0115 | Split TodayPage god component                                  | S1       | N/A                                                                          | 0    |
@@ -2051,8 +2051,8 @@
 | DEBT-2738 | Duplicated: JSON argument parsing across hooks                | S3       | .claude/hooks/check-edit-requirements.js            | 20   |
 | DEBT-0859 | CI quality gates non-blocking allowing regressions            | S0       | .github/workflows/ci.yml                            | 0    |
 | DEBT-2499 | CI gap: pull_request_target security vulnerability allows...  | S0       | .github/workflows/deploy-firebase.yml               | 7    |
-| DEBT-2598 | Error handling: continueOnError used appropriately in set...  | S0       | .claude/settings.json                               | 24   |
-| DEBT-2615 | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                        | 21   |
+| DEBT-2744 | Error handling: continueOnError used appropriately in set...  | S0       | .claude/settings.json                               | 24   |
+| DEBT-2745 | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                        | 21   |
 
 ## refactoring (21)
 

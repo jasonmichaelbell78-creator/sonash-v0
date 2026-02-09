@@ -1,0 +1,62 @@
+{
+  "timestamp": "2026-02-09T18:39:51.508Z",
+  "total_s1_new": 379,
+  "duplicate_groups": [
+    {
+      "primary": "DEBT-0047",
+      "duplicates": ["DEBT-0095"],
+      "file": "lib/db/quotes.ts",
+      "similarity": 0.846,
+      "titles": [
+        "Time-of-day rotation logic duplicated in quotes.ts and slogans.ts",
+        "Time-of-day rotation logic duplicated in quotes.ts and slogans.ts (80+ lines)"
+      ],
+      "match_reasons": ["jaccard=0.846"]
+    },
+    {
+      "primary": "DEBT-0059",
+      "duplicates": ["DEBT-0084"],
+      "file": "app/page.tsx",
+      "similarity": 0.75,
+      "titles": [
+        "Landing page forced to client-side rendering blocks SSR for LCP route",
+        "Landing page forced to client-side rendering blocks SSR"
+      ],
+      "match_reasons": ["jaccard=0.750"]
+    },
+    {
+      "primary": "DEBT-1050",
+      "duplicates": ["DEBT-1053"],
+      "file": "scripts/multi-ai/unify-findings.js",
+      "similarity": 0.75,
+      "titles": [
+        "Remove this useless assignment to variable \"category\".",
+        "Remove this useless assignment to variable \"mergeLog\"."
+      ],
+      "match_reasons": ["jaccard=0.750"]
+    },
+    {
+      "primary": "DEBT-1070",
+      "duplicates": ["DEBT-1524"],
+      "file": "components/admin/errors-tab.tsx",
+      "similarity": 0.733,
+      "titles": [
+        "Use <dialog> instead of the \"dialog\" role to ensure accessibility across all devices.",
+        "Use <img alt=...> instead of the \"presentation\" role to ensure accessibility across all devices."
+      ],
+      "match_reasons": ["jaccard=0.733"]
+    },
+    {
+      "primary": "DEBT-1525",
+      "duplicates": ["DEBT-1528"],
+      "file": "components/admin/users-tab.tsx",
+      "similarity": 0.733,
+      "titles": [
+        "Use <img alt=...> instead of the \"presentation\" role to ensure accessibility across all devices.",
+        "Use <dialog> instead of the \"dialog\" role to ensure accessibility across all devices."
+      ],
+      "match_reasons": ["jaccard=0.733"]
+    }
+  ],
+  "total_duplicate_candidates": 5
+}

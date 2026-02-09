@@ -11,12 +11,13 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-02-09 **Branch**: `claude/cherry-pick-and-pr-xarOL`
-**Working On**: PR #352 review fixes + comprehensive automation audit **Files
-Modified**: 40+ audit files, TDMS updated
+**Working On**: TDMS verification + dedup pipeline improvements **Files
+Modified**: generate-views.js, MASTER_DEBT.jsonl, verification logs
 
-**Next Step**: Push audit commit, continue PR #352 review cycles if needed.
+**Next Step**: Commit verification results, continue S2/S3 verification if
+needed.
 
-**Uncommitted Work**: None
+**Uncommitted Work**: S0/S1 verification results + generate-views.js fix
 
 **TODO (tomorrow):**
 
@@ -30,6 +31,17 @@ Modified**: 40+ audit files, TDMS updated
   - `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
   - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
   - `NEXT_PUBLIC_FIREBASE_APP_ID`
+
+**Session #143b Summary** (TDMS VERIFICATION + DEDUP FIX):
+
+- Fixed generate-views.js to preserve status/resolution/verification fields
+  during view regeneration (was overwriting VERIFIED/RESOLVED with NEW)
+- Verified all 12 S0 items: 9 VERIFIED, 1 RESOLVED (file deleted), 2
+  FALSE_POSITIVE
+- Verified all 379 S1 items: 363 VERIFIED, 15 RESOLVED, 2 DUPLICATE, 1
+  FALSE_POSITIVE
+- Status breakdown: 372 VERIFIED, 56 RESOLVED, 236 FALSE_POSITIVE, 1458 NEW
+- S0 NEW: 0, S1 NEW: 0 (all high-priority items verified)
 
 **Session #143 Summary** (PR #352 REVIEW FIXES + AUTOMATION AUDIT):
 

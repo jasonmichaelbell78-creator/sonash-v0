@@ -38,8 +38,8 @@
 | DEBT-1624 | Refactor this function to reduce its Cognitive Complexity... | components/dev/lighthouse-tab.tsx                           | 81   | code-quality | E0     |
 | DEBT-1912 | Security risk: Client-side filtering of sensitive data       | hooks/use-journal.ts                                        | 174  | code-quality | E1     |
 | DEBT-2499 | CI gap: pull_request_target security vulnerability allows... | .github/workflows/deploy-firebase.yml                       | 7    | process      | E2     |
-| DEBT-2598 | Error handling: continueOnError used appropriately in set... | .claude/settings.json                                       | 24   | process      | E0     |
-| DEBT-2615 | Security: Potential command injection in resolve-item.js ... | scripts/debt/resolve-item.js                                | 21   | process      | E1     |
+| DEBT-2744 | Error handling: continueOnError used appropriately in set... | .claude/settings.json                                       | 24   | process      | E0     |
+| DEBT-2745 | Security: Potential command injection in resolve-item.js ... | scripts/debt/resolve-item.js                                | 21   | process      | E1     |
 
 ## S1 - High (388)
 
@@ -149,7 +149,7 @@
 | DEBT-0104 | Extract error handling utility                                | N/A                                                                          | 0    | code-quality             | E1     |
 | DEBT-0105 | Remove deprecated saveNotebookJournalEntry                    | N/A                                                                          | 0    | code-quality             | E2     |
 | DEBT-0106 | Enable SSR for landing page                                   | N/A                                                                          | 0    | code-quality             | E2     |
-| DEBT-0107 | Item Name                                                     | N/A                                                                          | 0    | code-quality             | E0     |
+| DEBT-2746 | Item Name                                                     | N/A                                                                          | 0    | code-quality             | E0     |
 | DEBT-0108 | Restore client App Check init                                 | N/A                                                                          | 0    | security                 | E1     |
 | DEBT-0109 | Admin-claim rules defense-in-depth                            | N/A                                                                          | 0    | security                 | E2     |
 | DEBT-0110 | Verify reCAPTCHA coverage                                     | N/A                                                                          | 0    | security                 | E1     |
