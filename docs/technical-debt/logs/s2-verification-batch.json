@@ -1,0 +1,4338 @@
+{
+  "timestamp": "2026-02-09T19:00:05.205Z",
+  "total_s2_new": 877,
+  "file_exists_count": 747,
+  "file_not_found_count": 68,
+  "empty_file_count": 62,
+  "data_quality_count": 0,
+  "file_exists": [
+    {
+      "id": "DEBT-0140",
+      "file": "app/meetings/all/page.tsx",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0141",
+      "file": "components/admin/links-tab.tsx",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0142",
+      "file": "components/admin/meetings-tab.tsx",
+      "title": "Prefer `Number.parseFloat` over `parseFloat`."
+    },
+    {
+      "id": "DEBT-0143",
+      "file": "components/admin/meetings-tab.tsx",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0144",
+      "file": "components/admin/prayers-tab.tsx",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0145",
+      "file": "components/admin/users-tab.tsx",
+      "title": "Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element."
+    },
+    {
+      "id": "DEBT-0146",
+      "file": "components/growth/GratitudeCard.tsx",
+      "title": "Ambiguous spacing after previous element span"
+    },
+    {
+      "id": "DEBT-0148",
+      "file": "components/growth/SpotCheckCard.tsx",
+      "title": "Ambiguous spacing after previous element span"
+    },
+    {
+      "id": "DEBT-0152",
+      "file": "components/notebook/pages/resources-page.tsx",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0153",
+      "file": "lib/db/meetings.ts",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0154",
+      "file": "lib/db/meetings.ts",
+      "title": "Prefer `Number.isNaN` over `isNaN`."
+    },
+    {
+      "id": "DEBT-0155",
+      "file": "scripts/check-consolidation-status.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0156",
+      "file": "scripts/seed-meetings.ts",
+      "title": "Group parts of the regex together to make the intended operator precedence explicit."
+    },
+    {
+      "id": "DEBT-0157",
+      "file": "scripts/seed-real-data.ts",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0158",
+      "file": "scripts/generate-documentation-index.js",
+      "title": "Do not use an object literal as default for parameter `result`."
+    },
+    {
+      "id": "DEBT-0159",
+      "file": "scripts/add-false-positive.js",
+      "title": "Remove this assignment of \"i\"."
+    },
+    {
+      "id": "DEBT-0160",
+      "file": "scripts/check-document-sync.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0161",
+      "file": "scripts/assign-review-tier.js",
+      "title": "Remove this assignment of \"i\"."
+    },
+    {
+      "id": "DEBT-0162",
+      "file": "scripts/check-review-needed.js",
+      "title": "Prefer `Number.isNaN` over `isNaN`."
+    },
+    {
+      "id": "DEBT-0163",
+      "file": "scripts/check-docs-light.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0164",
+      "file": "scripts/check-docs-light.js",
+      "title": "Prefer `Number.isNaN` over `isNaN`."
+    },
+    {
+      "id": "DEBT-0165",
+      "file": "scripts/update-readme-status.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0166",
+      "file": "scripts/retry-failures.ts",
+      "title": "Prefer `Number.parseFloat` over `parseFloat`."
+    },
+    {
+      "id": "DEBT-0167",
+      "file": "scripts/enrich-addresses.ts",
+      "title": "Prefer `Number.parseFloat` over `parseFloat`."
+    },
+    {
+      "id": "DEBT-0169",
+      "file": "lib/utils.ts",
+      "title": "Remove this conditional structure or edit its code blocks so that they're not all the same."
+    },
+    {
+      "id": "DEBT-0170",
+      "file": "components/journal/entry-card.tsx",
+      "title": "Ambiguous spacing after previous element span"
+    },
+    {
+      "id": "DEBT-0172",
+      "file": "components/journal/entry-forms/gratitude-form.tsx",
+      "title": "A form label must be associated with a control."
+    },
+    {
+      "id": "DEBT-0175",
+      "file": "components/widgets/compact-meeting-countdown.tsx",
+      "title": "Add an initial value to this \"reduce()\" call."
+    },
+    {
+      "id": "DEBT-0176",
+      "file": "components/widgets/compact-meeting-countdown.tsx",
+      "title": "Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element."
+    },
+    {
+      "id": "DEBT-0177",
+      "file": "components/growth/GratitudeCard.tsx",
+      "title": "A form label must be associated with a control."
+    },
+    {
+      "id": "DEBT-0178",
+      "file": "components/ui/label.tsx",
+      "title": "A form label must be associated with a control."
+    },
+    {
+      "id": "DEBT-0179",
+      "file": "scripts/seed-real-data.ts",
+      "title": "Prefer `Number.parseFloat` over `parseFloat`."
+    },
+    {
+      "id": "DEBT-0180",
+      "file": "scripts/seed-meetings.ts",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0181",
+      "file": "tests/utils/date-utils.test.ts",
+      "title": "Prefer `Number.isNaN` over `isNaN`."
+    },
+    {
+      "id": "DEBT-0182",
+      "file": "tests/utils/firebase-types.test.ts",
+      "title": "Prefer `Number.NaN` over `NaN`."
+    },
+    {
+      "id": "DEBT-0183",
+      "file": "tests/utils/firebase-types.test.ts",
+      "title": "Prefer `Number.isNaN` over `isNaN`."
+    },
+    {
+      "id": "DEBT-0184",
+      "file": "lib/types/firebase-types.ts",
+      "title": "Prefer `Number.isNaN` over `isNaN`."
+    },
+    {
+      "id": "DEBT-0185",
+      "file": "components/onboarding/onboarding-wizard.tsx",
+      "title": "Prefer `Number.isNaN` over `isNaN`."
+    },
+    {
+      "id": "DEBT-0186",
+      "file": "app/globals.css",
+      "title": "Unexpected unknown at-rule \"@custom-variant\""
+    },
+    {
+      "id": "DEBT-0187",
+      "file": "styles/globals.css",
+      "title": "Unexpected unknown at-rule \"@custom-variant\""
+    },
+    {
+      "id": "DEBT-0188",
+      "file": "tests/scripts/check-docs-light.test.ts",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-0189",
+      "file": "tests/scripts/check-docs-light.test.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0190",
+      "file": "tests/scripts/check-docs-light.test.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0191",
+      "file": "tests/scripts/update-readme-status.test.ts",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-0192",
+      "file": "tests/scripts/update-readme-status.test.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0193",
+      "file": "tests/scripts/update-readme-status.test.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0195",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "Remove duplicates in this character class."
+    },
+    {
+      "id": "DEBT-0196",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "`extensions` should be a `Set`, and use `extensions.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-0197",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "`ignoreDirs` should be a `Set`, and use `ignoreDirs.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-0198",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "This branch's code block is the same as the block for the branch on line 497."
+    },
+    {
+      "id": "DEBT-0202",
+      "file": "components/celebrations/celebration-overlay.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0203",
+      "file": "components/celebrations/celebration-provider.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0204",
+      "file": "components/growth/NightReviewCard.tsx",
+      "title": "Prefer using an optional chain expression instead, as it's more concise and easier to read."
+    },
+    {
+      "id": "DEBT-0207",
+      "file": "components/journal/entry-card.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0208",
+      "file": "components/journal/entry-detail-dialog.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0210",
+      "file": "components/notebook/features/enhanced-mood-selector.tsx",
+      "title": "Use <details>, <fieldset>, <optgroup>, or <address> instead of the \"group\" role to ensure accessibility across all devices."
+    },
+    {
+      "id": "DEBT-0213",
+      "file": "components/onboarding/onboarding-wizard.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0215",
+      "file": "lib/security/firestore-validation.ts",
+      "title": "Refactor this code to not use nested template literals."
+    },
+    {
+      "id": "DEBT-0216",
+      "file": "scripts/add-false-positive.js",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0217",
+      "file": "scripts/ai-review.js",
+      "title": "Refactor this code to not use nested template literals."
+    },
+    {
+      "id": "DEBT-0218",
+      "file": "scripts/archive-doc.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0219",
+      "file": "scripts/archive-doc.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0220",
+      "file": "scripts/archive-doc.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0221",
+      "file": "scripts/assign-review-tier.js",
+      "title": "`knownFlags` should be a `Set`, and use `knownFlags.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-0222",
+      "file": "scripts/check-document-sync.js",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0223",
+      "file": "scripts/check-review-needed.js",
+      "title": "Simplify this regular expression to reduce its complexity from 30 to the 20 allowed."
+    },
+    {
+      "id": "DEBT-0224",
+      "file": "scripts/check-review-needed.js",
+      "title": "Refactor this code to not use nested template literals."
+    },
+    {
+      "id": "DEBT-0225",
+      "file": "scripts/check-review-needed.js",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0226",
+      "file": "scripts/check-review-needed.js",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0227",
+      "file": "scripts/enrich-addresses.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0228",
+      "file": "scripts/enrich-addresses.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0230",
+      "file": "scripts/mcp/sonarcloud-server.js",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0231",
+      "file": "scripts/normalize-canon-ids.js",
+      "title": "Prefer `.find(…)` over `.filter(…)`."
+    },
+    {
+      "id": "DEBT-0232",
+      "file": "scripts/phase-complete-check.js",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0233",
+      "file": "scripts/retry-failures.ts",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-0234",
+      "file": "scripts/retry-failures.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0235",
+      "file": "scripts/retry-failures.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0236",
+      "file": "scripts/seed-meetings.ts",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0237",
+      "file": "scripts/seed-real-data.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0238",
+      "file": "scripts/seed-real-data.ts",
+      "title": "Prefer `node:readline` over `readline`."
+    },
+    {
+      "id": "DEBT-0239",
+      "file": "scripts/set-admin-claim.ts",
+      "title": "Prefer top-level await over an async function `setAdminClaim` call."
+    },
+    {
+      "id": "DEBT-0240",
+      "file": "scripts/suggest-pattern-automation.js",
+      "title": "Refactor this code to not use nested template literals."
+    },
+    {
+      "id": "DEBT-0241",
+      "file": "scripts/surface-lessons-learned.js",
+      "title": "Replace this alternation with a character class."
+    },
+    {
+      "id": "DEBT-0242",
+      "file": "scripts/surface-lessons-learned.js",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0243",
+      "file": "scripts/sync-geocache.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0244",
+      "file": "scripts/sync-geocache.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0246",
+      "file": "scripts/validate-audit.js",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0247",
+      "file": ".claude/hooks/session-start.sh",
+      "title": "Add an explicit return statement at the end of the function."
+    },
+    {
+      "id": "DEBT-0248",
+      "file": "scripts/generate-documentation-index.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-0249",
+      "file": "scripts/check-document-sync.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0250",
+      "file": "scripts/check-document-sync.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0251",
+      "file": "scripts/check-document-sync.js",
+      "title": "Complete the task associated to this \"TODO\" comment."
+    },
+    {
+      "id": "DEBT-0252",
+      "file": "scripts/check-document-sync.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0253",
+      "file": "scripts/check-document-sync.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-0254",
+      "file": ".github/workflows/ci.yml",
+      "title": "Complete the task associated to this \"TODO\" comment."
+    },
+    {
+      "id": "DEBT-0255",
+      "file": "scripts/assign-review-tier.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0256",
+      "file": "scripts/assign-review-tier.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0257",
+      "file": "scripts/assign-review-tier.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0258",
+      "file": "scripts/surface-lessons-learned.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0259",
+      "file": "scripts/ai-review.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0260",
+      "file": "scripts/ai-review.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0261",
+      "file": "scripts/ai-review.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-0262",
+      "file": "scripts/phase-complete-check.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0263",
+      "file": "tests/scripts/phase-complete-check.test.ts",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-0264",
+      "file": "tests/scripts/phase-complete-check.test.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0265",
+      "file": "tests/scripts/phase-complete-check.test.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0266",
+      "file": "tests/scripts/surface-lessons-learned.test.ts",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-0267",
+      "file": "tests/scripts/surface-lessons-learned.test.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0268",
+      "file": "tests/scripts/surface-lessons-learned.test.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0269",
+      "file": "scripts/phase-complete-check.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0270",
+      "file": "scripts/phase-complete-check.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0271",
+      "file": "scripts/surface-lessons-learned.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0272",
+      "file": "scripts/surface-lessons-learned.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0273",
+      "file": "scripts/surface-lessons-learned.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-0276",
+      "file": ".claude/hooks/check-mcp-servers.sh",
+      "title": "Add an explicit return statement at the end of the function."
+    },
+    {
+      "id": "DEBT-0277",
+      "file": ".claude/hooks/analyze-user-request.sh",
+      "title": "Add an explicit return statement at the end of the function."
+    },
+    {
+      "id": "DEBT-0278",
+      "file": "scripts/suggest-pattern-automation.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0279",
+      "file": "scripts/suggest-pattern-automation.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0280",
+      "file": "scripts/suggest-pattern-automation.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0281",
+      "file": "scripts/suggest-pattern-automation.js",
+      "title": "Replace this character class by the character itself."
+    },
+    {
+      "id": "DEBT-0282",
+      "file": ".claude/hooks/session-start.sh",
+      "title": "Redirect this error message to stderr (>&2)."
+    },
+    {
+      "id": "DEBT-0283",
+      "file": "scripts/enrich-addresses.ts",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0284",
+      "file": "scripts/migrate-to-journal.ts",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0285",
+      "file": "scripts/seed-real-data.ts",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0286",
+      "file": "scripts/sync-geocache.ts",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0287",
+      "file": "scripts/retry-failures.ts",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0288",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0289",
+      "file": "scripts/lib/sanitize-error.js",
+      "title": "Remove duplicates in this character class."
+    },
+    {
+      "id": "DEBT-0290",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0291",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0292",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-0293",
+      "file": "scripts/validate-phase-completion.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0294",
+      "file": "scripts/validate-phase-completion.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0295",
+      "file": "scripts/validate-phase-completion.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0296",
+      "file": "scripts/phase-complete-check.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-0297",
+      "file": "scripts/phase-complete-check.js",
+      "title": "Prefer `node:readline` over `readline`."
+    },
+    {
+      "id": "DEBT-0299",
+      "file": "scripts/check-docs-light.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0300",
+      "file": "scripts/check-docs-light.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0301",
+      "file": "scripts/check-docs-light.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0302",
+      "file": "scripts/update-readme-status.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0303",
+      "file": "scripts/update-readme-status.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0304",
+      "file": "scripts/update-readme-status.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0305",
+      "file": "scripts/update-readme-status.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-0306",
+      "file": ".claude/skills/artifacts-builder/scripts/bundle-artifact.sh",
+      "title": "Redirect this error message to stderr (>&2)."
+    },
+    {
+      "id": "DEBT-0307",
+      "file": ".claude/skills/artifacts-builder/scripts/init-artifact.sh",
+      "title": "Redirect this error message to stderr (>&2)."
+    },
+    {
+      "id": "DEBT-0308",
+      "file": "functions/src/index.ts",
+      "title": "Remove this commented out code."
+    },
+    {
+      "id": "DEBT-0309",
+      "file": "lib/firebase.ts",
+      "title": "Remove this commented out code."
+    },
+    {
+      "id": "DEBT-0310",
+      "file": "scripts/migrate-addresses.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0311",
+      "file": "scripts/migrate-addresses.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0312",
+      "file": "scripts/migrate-addresses.ts",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0313",
+      "file": "scripts/migrate-meetings-dayindex.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0314",
+      "file": "scripts/migrate-to-journal.ts",
+      "title": "Remove this useless assignment to variable \"hasMore\"."
+    },
+    {
+      "id": "DEBT-0315",
+      "file": "scripts/migrate-meetings-dayindex.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0316",
+      "file": "scripts/migrate-meetings-dayindex.ts",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0317",
+      "file": "components/growth/Step1WorksheetCard.tsx",
+      "title": "'If' statement should not be the only statement in 'else' block"
+    },
+    {
+      "id": "DEBT-0319",
+      "file": "components/notebook/features/quick-actions-fab.tsx",
+      "title": "Complete the task associated to this \"TODO\" comment."
+    },
+    {
+      "id": "DEBT-0320",
+      "file": "components/notebook/features/check-in-progress.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0321",
+      "file": "components/notebook/features/enhanced-mood-selector.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0324",
+      "file": "lib/utils.ts",
+      "title": "This branch's code block is the same as the block for the branch on line 28."
+    },
+    {
+      "id": "DEBT-0325",
+      "file": "scripts/import-nashville-links.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0326",
+      "file": "scripts/import-nashville-links.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0327",
+      "file": "scripts/migrate-library-content.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0328",
+      "file": "scripts/migrate-library-content.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0329",
+      "file": "components/celebrations/celebration-provider.tsx",
+      "title": "The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook."
+    },
+    {
+      "id": "DEBT-0330",
+      "file": "components/celebrations/confetti-burst.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0332",
+      "file": "components/notebook/book-cover.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0333",
+      "file": "scripts/import-nashville-links.ts",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0334",
+      "file": "scripts/migrate-library-content.ts",
+      "title": "Prefer top-level await over using a promise chain."
+    },
+    {
+      "id": "DEBT-0335",
+      "file": "components/notebook/features/check-in-questions.tsx",
+      "title": "Use <details>, <fieldset>, <optgroup>, or <address> instead of the \"group\" role to ensure accessibility across all devices."
+    },
+    {
+      "id": "DEBT-0337",
+      "file": "components/notebook/features/clean-time-display.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0338",
+      "file": "components/notebook/features/mood-selector.tsx",
+      "title": "Use <details>, <fieldset>, <optgroup>, or <address> instead of the \"group\" role to ensure accessibility across all devices."
+    },
+    {
+      "id": "DEBT-0339",
+      "file": "components/notebook/features/recovery-notepad.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0340",
+      "file": "components/notebook/pages/library-page.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0341",
+      "file": "components/onboarding/onboarding-wizard.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0343",
+      "file": "components/notebook/pages/today-page.tsx",
+      "title": "Prefer using an optional chain expression instead, as it's more concise and easier to read."
+    },
+    {
+      "id": "DEBT-0344",
+      "file": "components/journal/entry-card.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0345",
+      "file": "components/journal/entry-feed.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0346",
+      "file": "components/journal/entry-forms/gratitude-form.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0347",
+      "file": "components/journal/entry-wizard.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0349",
+      "file": "components/notebook/pages/today-page.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0350",
+      "file": "components/widgets/compact-meeting-countdown.tsx",
+      "title": "Move function 'formatTime' to the outer scope."
+    },
+    {
+      "id": "DEBT-0351",
+      "file": "functions/src/security-logger.ts",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-0353",
+      "file": "components/growth/NightReviewCard.tsx",
+      "title": "Extract this nested ternary operation into an independent statement."
+    },
+    {
+      "id": "DEBT-0354",
+      "file": "scripts/test-geocode.ts",
+      "title": "Prefer top-level await over an async function `testGeocode` call."
+    },
+    {
+      "id": "DEBT-0355",
+      "file": "scripts/seed-meetings.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0356",
+      "file": "scripts/seed-meetings.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0357",
+      "file": "scripts/set-admin-claim.ts",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0358",
+      "file": "scripts/set-admin-claim.ts",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0359",
+      "file": "components/providers/auth-context.tsx",
+      "title": "The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook."
+    },
+    {
+      "id": "DEBT-0360",
+      "file": "components/providers/daily-log-context.tsx",
+      "title": "The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook."
+    },
+    {
+      "id": "DEBT-0361",
+      "file": "components/providers/profile-context.tsx",
+      "title": "'If' statement should not be the only statement in 'else' block"
+    },
+    {
+      "id": "DEBT-0362",
+      "file": "components/providers/profile-context.tsx",
+      "title": "The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook."
+    },
+    {
+      "id": "DEBT-0363",
+      "file": "components/auth/account-link-modal.tsx",
+      "title": "'If' statement should not be the only statement in 'else' block"
+    },
+    {
+      "id": "DEBT-0364",
+      "file": "lib/sentry.client.ts",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-0365",
+      "file": "lib/security/firestore-validation.ts",
+      "title": "Prefer using an optional chain expression instead, as it's more concise and easier to read."
+    },
+    {
+      "id": "DEBT-0366",
+      "file": "next.config.mjs",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0367",
+      "file": "next.config.mjs",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-0368",
+      "file": "lib/database/firestore-adapter.ts",
+      "title": "Complete the task associated to this \"TODO\" comment."
+    },
+    {
+      "id": "DEBT-0369",
+      "file": "lib/logger.ts",
+      "title": "Complete the task associated to this \"TODO\" comment."
+    },
+    {
+      "id": "DEBT-0370",
+      "file": "lib/utils/rate-limiter.ts",
+      "title": "Member 'config' is never reassigned; mark it as `readonly`."
+    },
+    {
+      "id": "DEBT-0371",
+      "file": "tests/firestore-service.test.ts",
+      "title": "Either use this collection's contents or remove the collection."
+    },
+    {
+      "id": "DEBT-0372",
+      "file": "components/notebook/visualizations/mood-sparkline.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0373",
+      "file": "components/notebook/notebook-shell.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0374",
+      "file": "components/notebook/pages/resources-page.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0375",
+      "file": "components/notebook/pages/support-page.tsx",
+      "title": "Do not use Array index in keys"
+    },
+    {
+      "id": "DEBT-0376",
+      "file": "functions/src/schemas.ts",
+      "title": "Zod schemas missing .strict() (unknown fields accepted)"
+    },
+    {
+      "id": "DEBT-0377",
+      "file": "functions/src/recaptcha-verify.ts",
+      "title": "Hardcoded fallback reCAPTCHA site key in server verification code (config integrity/rotation risk)"
+    },
+    {
+      "id": "DEBT-0378",
+      "file": "functions/src/schemas.ts",
+      "title": "Server-side journal entry type enum missing 'step-1-worksheet' (validation drift)"
+    },
+    {
+      "id": "DEBT-0379",
+      "file": "functions/src/schemas.ts",
+      "title": "Permissive z.record(..., z.unknown()) allows arbitrary nested data in journal/inventory entries"
+    },
+    {
+      "id": "DEBT-0380",
+      "file": "firestore.rules",
+      "title": "Some admin-managed collections allow direct client writes without centralized schema/rate-limit protections"
+    },
+    {
+      "id": "DEBT-0382",
+      "file": "components/notebook/features/daily-quote-card.tsx",
+      "title": "DailyQuoteCard component duplicated across 2-3 locations"
+    },
+    {
+      "id": "DEBT-0383",
+      "file": "lib/firestore-service.ts",
+      "title": "Critical paths have low test coverage (firestore-service 35.6%, account-linking 17.29%)"
+    },
+    {
+      "id": "DEBT-0384",
+      "file": "lib/firestore-service.ts",
+      "title": "reCAPTCHA token fetch/include pattern repeated 5x across codebase"
+    },
+    {
+      "id": "DEBT-0385",
+      "file": "lib/db/slogans.ts",
+      "title": "Firebase collection access scattered across 22+ files without type safety"
+    },
+    {
+      "id": "DEBT-0386",
+      "file": "functions/src/recaptcha-verify.ts",
+      "title": "reCAPTCHA action strings duplicated as literals (no shared constants)"
+    },
+    {
+      "id": "DEBT-0387",
+      "file": "components/growth/SpotCheckCard.tsx",
+      "title": "Growth card dialog/save pattern duplicated across 4 components"
+    },
+    {
+      "id": "DEBT-0388",
+      "file": "lib/db/quotes.ts",
+      "title": "CRUD service patterns repeated across lib/db modules"
+    },
+    {
+      "id": "DEBT-0389",
+      "file": "components/admin/dashboard-tab.tsx",
+      "title": "Admin Cloud Function wiring duplicated across 5 admin tabs"
+    },
+    {
+      "id": "DEBT-0390",
+      "file": "components/growth/SpotCheckCard.tsx",
+      "title": "Dual-write pattern to inventory AND journal collections"
+    },
+    {
+      "id": "DEBT-0392",
+      "file": "scripts/archive-doc.js",
+      "title": "safeReadFile/safeWriteFile utilities duplicated across 3 scripts"
+    },
+    {
+      "id": "DEBT-0393",
+      "file": "lib/database/firestore-adapter.ts",
+      "title": "FirestoreAdapter exists but is unused (realtime boundary unclear)"
+    },
+    {
+      "id": "DEBT-0394",
+      "file": "hooks/use-journal.ts",
+      "title": "Searchable-text generation duplicated with inconsistent sanitization"
+    },
+    {
+      "id": "DEBT-0395",
+      "file": "DEVELOPMENT.md",
+      "title": "DEVELOPMENT.md workflow triggers don't match actual workflow YAML"
+    },
+    {
+      "id": "DEBT-0396",
+      "file": ".husky/pre-commit",
+      "title": "Pre-commit hook runs full test suite causing slow commits (~50s+)"
+    },
+    {
+      "id": "DEBT-0397",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "Pattern checker reports 93+ violations but CI check is non-blocking"
+    },
+    {
+      "id": "DEBT-0398",
+      "file": ".github/workflows/deploy-firebase.yml",
+      "title": "Firebase CLI version unpinned in deploy workflow"
+    },
+    {
+      "id": "DEBT-0399",
+      "file": ".github/workflows/auto-label-review-tier.yml",
+      "title": "Auto-label workflow has invalid if: expression syntax"
+    },
+    {
+      "id": "DEBT-0400",
+      "file": "lib/sentry.client.ts",
+      "title": "Sentry integration incomplete - no Web Vitals reporting"
+    },
+    {
+      "id": "DEBT-0401",
+      "file": "components/widgets/daily-quote-card.tsx",
+      "title": "Duplicate DailyQuoteCard implementations + unbounded quotes fetch"
+    },
+    {
+      "id": "DEBT-0402",
+      "file": "components/celebrations/confetti-burst.tsx",
+      "title": "Celebration animations create 150+ DOM elements without reduced-motion support"
+    },
+    {
+      "id": "DEBT-0403",
+      "file": "components/journal/entry-card.tsx",
+      "title": "No React.memo usage causes unnecessary re-renders in list components"
+    },
+    {
+      "id": "DEBT-0404",
+      "file": "app/page.tsx",
+      "title": "Hero background image bypasses Next.js image optimization"
+    },
+    {
+      "id": "DEBT-0405",
+      "file": "components/journal/entry-feed.tsx",
+      "title": "Large entry lists not virtualized - DOM grows linearly with data"
+    },
+    {
+      "id": "DEBT-0406",
+      "file": "app/meetings/all/page.tsx",
+      "title": "Meeting map renders all markers without clustering"
+    },
+    {
+      "id": "DEBT-0407",
+      "file": "package.json",
+      "title": "7 unused dependencies increasing bundle size"
+    },
+    {
+      "id": "DEBT-0408",
+      "file": "hooks/use-journal.ts",
+      "title": "Console statements in production code"
+    },
+    {
+      "id": "DEBT-0409",
+      "file": "lib/db/meetings.ts",
+      "title": "Firebase queries lack consistent indexing and limits"
+    },
+    {
+      "id": "DEBT-0410",
+      "file": "components/admin/admin-crud-table.tsx",
+      "title": "Admin CRUD table fetches entire collections without pagination"
+    },
+    {
+      "id": "DEBT-0411",
+      "file": "components/growth/Step1WorksheetCard.tsx",
+      "title": "Step1WorksheetCard excessive complexity (804 lines)"
+    },
+    {
+      "id": "DEBT-0412",
+      "file": "app/page.tsx",
+      "title": "No route-level loading UI (loading.tsx) or Suspense boundaries"
+    },
+    {
+      "id": "DEBT-0413",
+      "file": "components/journal/journal-hub.tsx",
+      "title": "JournalHub eagerly imports all entry forms"
+    },
+    {
+      "id": "DEBT-0414",
+      "file": "DOCUMENTATION_INDEX.md",
+      "title": "DOCUMENTATION_INDEX.md orphaned and missing required sections"
+    },
+    {
+      "id": "DEBT-0416",
+      "file": "docs/DOCUMENTATION_STANDARDS.md",
+      "title": "Standards/templates contain live placeholder links and incorrect anchors"
+    },
+    {
+      "id": "DEBT-0417",
+      "file": "docs/DOCUMENT_DEPENDENCIES.md",
+      "title": "DOCUMENT_DEPENDENCIES.md claims SYNCED but has 30+ issues"
+    },
+    {
+      "id": "DEBT-0419",
+      "file": "docs/agent_docs/CODE_PATTERNS.md",
+      "title": "CODE_PATTERNS.md referenced with incorrect path"
+    },
+    {
+      "id": "DEBT-0421",
+      "file": "lib/db/quotes.ts",
+      "title": "Duplicated time-of-day rotation logic for quotes and slogans"
+    },
+    {
+      "id": "DEBT-0422",
+      "file": "components/growth/Step1WorksheetCard.tsx",
+      "title": "Unsafe type assertions with 'as unknown as' (worksheet + related components)"
+    },
+    {
+      "id": "DEBT-0423",
+      "file": "scripts/check-review-needed.js",
+      "title": "ESLint security plugin warnings in scripts (unsafe regex / non-literal fs / object injection patterns)"
+    },
+    {
+      "id": "DEBT-0424",
+      "file": "types/journal.ts",
+      "title": "Journal entry type definitions duplicated across client types and server schemas (single-source refactor)"
+    },
+    {
+      "id": "DEBT-0425",
+      "file": "components/notebook/pages/today-page.tsx",
+      "title": "Missing error.message null safety in TodayPage catch block"
+    },
+    {
+      "id": "DEBT-0426",
+      "file": "components/notebook/hooks/use-smart-prompts.ts",
+      "title": "Unsafe localStorage JSON.parse in use-smart-prompts hook"
+    },
+    {
+      "id": "DEBT-0427",
+      "file": "components/notebook/features/daily-quote-card.tsx",
+      "title": "Duplicated DailyQuoteCard component exists in multiple directories (2 confirmed; possible 3rd variant)"
+    },
+    {
+      "id": "DEBT-0428",
+      "file": "lib/firestore-service.ts",
+      "title": "Inconsistent Firebase Functions import pattern (static vs dynamic imports)"
+    },
+    {
+      "id": "DEBT-0429",
+      "file": "lib/firestore-service.ts",
+      "title": "Inconsistent httpsCallable typing (missing generic request/response types)"
+    },
+    {
+      "id": "DEBT-0430",
+      "file": "hooks/use-journal.ts",
+      "title": "useJournal sets up its own auth listener instead of using shared auth context"
+    },
+    {
+      "id": "DEBT-0431",
+      "file": "tests/firestore-service.test.ts",
+      "title": "Cloud Function integration test is skipped in firestore-service test suite"
+    },
+    {
+      "id": "DEBT-0432",
+      "file": "functions/src/schemas.ts",
+      "title": "Journal entry schema data is weakly typed (z.record unknown; per-type validation not enforced)"
+    },
+    {
+      "id": "DEBT-0433",
+      "file": "hooks/use-journal.ts",
+      "title": "No tests for useJournal hook"
+    },
+    {
+      "id": "DEBT-0434",
+      "file": "functions/src/schemas.ts",
+      "title": "Zod schemas permissive - missing .strict() and allows arbitrary nested data"
+    },
+    {
+      "id": "DEBT-0435",
+      "file": "components/notebook/pages/today-page.tsx",
+      "title": "Debug console.log statements in production code"
+    },
+    {
+      "id": "DEBT-0436",
+      "file": "functions/src/admin.ts",
+      "title": "High cognitive complexity in adminSetUserPrivilege"
+    },
+    {
+      "id": "DEBT-0437",
+      "file": "components/admin/users-tab.tsx",
+      "title": "High cognitive complexity in UsersTab component"
+    },
+    {
+      "id": "DEBT-0438",
+      "file": "lib/logger.ts",
+      "title": "No correlation/request ID tracing"
+    },
+    {
+      "id": "DEBT-0439",
+      "file": "components/admin/admin-tabs.tsx",
+      "title": "Nested component definition"
+    },
+    {
+      "id": "DEBT-0440",
+      "file": "functions/src/recaptcha-verify.ts",
+      "title": "Hardcoded reCAPTCHA site key fallback"
+    },
+    {
+      "id": "DEBT-0441",
+      "file": "scripts/ai-review.js",
+      "title": "OS command execution in CLI scripts"
+    },
+    {
+      "id": "DEBT-0442",
+      "file": "functions/src/admin.ts",
+      "title": "ReDoS vulnerable regex patterns"
+    },
+    {
+      "id": "DEBT-0443",
+      "file": ".github/workflows/auto-label-review-tier.yml",
+      "title": "GitHub Actions using version tags instead of commit SHAs"
+    },
+    {
+      "id": "DEBT-0444",
+      "file": "scripts/README.md",
+      "title": "99 files fail docs:check (313 errors, 177 warnings)"
+    },
+    {
+      "id": "DEBT-0445",
+      "file": "docs/TRIGGERS.md",
+      "title": "TRIGGERS.md last updated 2026-01-02 (15 days stale)"
+    },
+    {
+      "id": "DEBT-0446",
+      "file": "docs/DOCUMENTATION_STANDARDS.md",
+      "title": "DOCUMENTATION_STANDARDS.md last updated 2026-01-01 (16 days stale)"
+    },
+    {
+      "id": "DEBT-0447",
+      "file": "docs/DOCUMENT_DEPENDENCIES.md",
+      "title": "DOCUMENT_DEPENDENCIES.md claims SYNCED but sync check reports 20 issues"
+    },
+    {
+      "id": "DEBT-0448",
+      "file": "docs/",
+      "title": "15 recent commits touch docs but AUDIT_TRACKER shows only 5 categories audited today"
+    },
+    {
+      "id": "DEBT-0449",
+      "file": "components",
+      "title": "30+ components with inline onClick arrow functions"
+    },
+    {
+      "id": "DEBT-0450",
+      "file": "components",
+      "title": "28 components with inline style objects"
+    },
+    {
+      "id": "DEBT-0452",
+      "file": "components",
+      "title": "20+ uses of key={index} in list rendering"
+    },
+    {
+      "id": "DEBT-0453",
+      "file": "components/widgets/meeting-countdown.tsx",
+      "title": "setInterval without visibility check continues in background"
+    },
+    {
+      "id": "DEBT-0454",
+      "file": "lib/db/meetings.ts",
+      "title": "getAllMeetings() deprecated but still available without limit"
+    },
+    {
+      "id": "DEBT-0455",
+      "file": "scripts/",
+      "title": "28 scripts have 715 console.log/error/warn calls without structured logging"
+    },
+    {
+      "id": "DEBT-0456",
+      "file": ".github/workflows/ci.yml",
+      "title": "Artifact upload without retention policy"
+    },
+    {
+      "id": "DEBT-0457",
+      "file": ".husky/pre-push",
+      "title": "Git diff with @{u}...HEAD fails on new branches without upstream"
+    },
+    {
+      "id": "DEBT-0458",
+      "file": "components/growth/Step1WorksheetCard.tsx",
+      "title": "Step1WorksheetCard large component (845 lines) with nested conditionals"
+    },
+    {
+      "id": "DEBT-0459",
+      "file": "components/notebook/pages/resources-page.tsx",
+      "title": "ResourcesPage large component (728 lines) mixing meetings and sober homes"
+    },
+    {
+      "id": "DEBT-0460",
+      "file": "hooks/use-journal.ts",
+      "title": "reCAPTCHA token fetch pattern repeated 5x across codebase"
+    },
+    {
+      "id": "DEBT-0461",
+      "file": "package.json",
+      "title": "No npm run dev:offline script - requires 2 terminals for emulator dev"
+    },
+    {
+      "id": "DEBT-0462",
+      "file": "scripts/",
+      "title": "No scripts/doctor.js for environment validation"
+    },
+    {
+      "id": "DEBT-0463",
+      "file": "app/",
+      "title": "8:1 ratio of console.log to structured logger calls (3111 vs 394)"
+    },
+    {
+      "id": "DEBT-0464",
+      "file": "public/",
+      "title": "No service worker - no offline asset caching"
+    },
+    {
+      "id": "DEBT-0515",
+      "file": "lib/logger.ts",
+      "title": "Add Correlation IDs to Logger"
+    },
+    {
+      "id": "DEBT-0516",
+      "file": "lib/logger.ts",
+      "title": "Add Network Status to Logs"
+    },
+    {
+      "id": "DEBT-0523",
+      "file": "app/dev/page.tsx",
+      "title": "Development Dashboard Integration"
+    },
+    {
+      "id": "DEBT-0525",
+      "file": "firebase.json",
+      "title": "Missing cache headers"
+    },
+    {
+      "id": "DEBT-0526",
+      "file": "components/notebook/pages/today-page.tsx",
+      "title": "Split today-page.tsx (1,199 lines)"
+    },
+    {
+      "id": "DEBT-0527",
+      "file": "components/admin/dashboard-tab.tsx",
+      "title": "Split dashboard-tab.tsx (1,031 lines)"
+    },
+    {
+      "id": "DEBT-0528",
+      "file": "lib/firestore-service.ts",
+      "title": "Repository pattern violations"
+    },
+    {
+      "id": "DEBT-0529",
+      "file": "functions/src/index.ts",
+      "title": "Restrict CORS origins"
+    },
+    {
+      "id": "DEBT-0530",
+      "file": "functions/src/admin.ts",
+      "title": "Admin privilege hardening"
+    },
+    {
+      "id": "DEBT-0532",
+      "file": "firestore.rules",
+      "title": "Security rules for new collections"
+    },
+    {
+      "id": "DEBT-0533",
+      "file": "components/notebook/pages/today-page.tsx",
+      "title": "Debug console logs in production component"
+    },
+    {
+      "id": "DEBT-0534",
+      "file": "components/notebook/pages/today-page.tsx",
+      "title": "Callback parameter typed as any"
+    },
+    {
+      "id": "DEBT-0535",
+      "file": "components/",
+      "title": "Missing React.Suspense for code splitting"
+    },
+    {
+      "id": "DEBT-0536",
+      "file": "hooks/use-geolocation.ts",
+      "title": "ESLint rule suppression for exhaustive deps"
+    },
+    {
+      "id": "DEBT-0537",
+      "file": "tests/",
+      "title": "No component tests"
+    },
+    {
+      "id": "DEBT-0538",
+      "file": "components/admin/",
+      "title": "Potential copy-paste code blocks in admin tabs"
+    },
+    {
+      "id": "DEBT-0539",
+      "file": "components/notebook/pages/today-page.tsx",
+      "title": "Complex nested logic without early returns"
+    },
+    {
+      "id": "DEBT-0540",
+      "file": "lib/firestore-service.ts",
+      "title": "Missing correlation IDs for request tracing"
+    },
+    {
+      "id": "DEBT-0542",
+      "file": "components/admin/admin-crud-table.tsx",
+      "title": "Admin CRUD table pulls full collections via getDocs without pagination"
+    },
+    {
+      "id": "DEBT-0543",
+      "file": "components/maps/meeting-map.tsx",
+      "title": "Meetings map may jank at scale without marker clustering and stable fitBounds behavior"
+    },
+    {
+      "id": "DEBT-0544",
+      "file": "components/celebrations/confetti-burst.tsx",
+      "title": "High-intensity confetti spawns up to 150 animated DOM nodes"
+    },
+    {
+      "id": "DEBT-0546",
+      "file": "app/layout.tsx",
+      "title": "reCAPTCHA Enterprise script injected on every route (even when not needed)"
+    },
+    {
+      "id": "DEBT-0547",
+      "file": "app/layout.tsx",
+      "title": "No Core Web Vitals tracking configured (LCP/CLS/INP)"
+    },
+    {
+      "id": "DEBT-0548",
+      "file": "lib/sentry.client.ts",
+      "title": "Client Sentry config imports Node crypto, risking polyfills/larger client chunks"
+    },
+    {
+      "id": "DEBT-0549",
+      "file": "app/page.tsx",
+      "title": "AnimatePresence transitions may cause CLS without explicit size reservation"
+    },
+    {
+      "id": "DEBT-0550",
+      "file": "hooks/use-journal.ts",
+      "title": "No caching strategy for Firestore queries; mounts trigger repeated reads"
+    },
+    {
+      "id": "DEBT-0551",
+      "file": "hooks/use-journal.ts",
+      "title": "useJournal filters soft-deleted entries client-side instead of using where(isSoftDeleted==false) despite available index"
+    },
+    {
+      "id": "DEBT-0552",
+      "file": "components/notebook/roadmap-modules.tsx",
+      "title": "NotebookShell likely bundles most notebook pages because roadmap-modules statically imports pages at module scope"
+    },
+    {
+      "id": "DEBT-0553",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0556",
+      "file": "components/journal/entry-detail-dialog.tsx",
+      "title": "Visible, non-interactive elements with click handlers must have at least one keyboard listener."
+    },
+    {
+      "id": "DEBT-0557",
+      "file": "components/journal/entry-feed.tsx",
+      "title": "Visible, non-interactive elements with click handlers must have at least one keyboard listener."
+    },
+    {
+      "id": "DEBT-0558",
+      "file": "functions/src/admin.ts",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0559",
+      "file": "hooks/use-journal.ts",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0560",
+      "file": "scripts/ai-review.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0562",
+      "file": "scripts/assign-review-tier.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0563",
+      "file": "scripts/check-docs-light.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0564",
+      "file": "scripts/dedupe-quotes.ts",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0565",
+      "file": "scripts/enrich-addresses.ts",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0566",
+      "file": "scripts/generate-documentation-index.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0567",
+      "file": "scripts/import-nashville-links.ts",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0568",
+      "file": "scripts/migrate-library-content.ts",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0569",
+      "file": "scripts/normalize-canon-ids.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0570",
+      "file": "scripts/phase-complete-check.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0571",
+      "file": "scripts/retry-failures.ts",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0573",
+      "file": "scripts/suggest-pattern-automation.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0574",
+      "file": "scripts/surface-lessons-learned.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0575",
+      "file": "scripts/update-readme-status.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0578",
+      "file": "components/growth/Step1WorksheetCard.tsx",
+      "title": "Prefer `String.fromCodePoint()` over `String.fromCharCode()`."
+    },
+    {
+      "id": "DEBT-0581",
+      "file": "functions/src/security-logger.ts",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-0589",
+      "file": "hooks/use-journal.ts",
+      "title": "Do not call `Array#push()` multiple times."
+    },
+    {
+      "id": "DEBT-0590",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-0592",
+      "file": "app/layout.tsx",
+      "title": "'next' imported multiple times."
+    },
+    {
+      "id": "DEBT-0598",
+      "file": "components/celebrations/confetti-burst.tsx",
+      "title": "Prefer `globalThis.window` over `window`."
+    },
+    {
+      "id": "DEBT-0601",
+      "file": "components/journal/entry-detail-dialog.tsx",
+      "title": "This assertion is unnecessary since it does not change the type of the expression."
+    },
+    {
+      "id": "DEBT-0605",
+      "file": "components/notebook/features/enhanced-mood-selector.tsx",
+      "title": "Prefer `globalThis` over `window`."
+    },
+    {
+      "id": "DEBT-0607",
+      "file": "components/notebook/pages/resources-page.tsx",
+      "title": "'lucide-react' imported multiple times."
+    },
+    {
+      "id": "DEBT-0615",
+      "file": "components/status/offline-indicator.tsx",
+      "title": "Prefer `globalThis` over `window`."
+    },
+    {
+      "id": "DEBT-0619",
+      "file": "hooks/use-journal.ts",
+      "title": "'data.content || \"\"' will use Object's default stringification format ('[object Object]') when stringified."
+    },
+    {
+      "id": "DEBT-0620",
+      "file": "hooks/use-journal.ts",
+      "title": "'data.step4_surrender || \"\"' will use Object's default stringification format ('[object Object]') when stringified."
+    },
+    {
+      "id": "DEBT-0623",
+      "file": "lib/firebase.ts",
+      "title": "Prefer `globalThis.window` over `window`."
+    },
+    {
+      "id": "DEBT-0628",
+      "file": "scripts/generate-documentation-index.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-0629",
+      "file": "scripts/generate-documentation-index.js",
+      "title": "Do not call `Array#push()` multiple times."
+    },
+    {
+      "id": "DEBT-0630",
+      "file": "scripts/normalize-canon-ids.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-0631",
+      "file": "scripts/suggest-pattern-automation.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-0640",
+      "file": "scripts/validate-audit.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-0642",
+      "file": "scripts/check-document-sync.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-0645",
+      "file": "scripts/phase-complete-check.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-0649",
+      "file": "scripts/validate-phase-completion.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-0657",
+      "file": "lib/utils/storage.ts",
+      "title": "Prefer `globalThis` over `window`."
+    },
+    {
+      "id": "DEBT-0660",
+      "file": "lib/recaptcha.ts",
+      "title": "Prefer `globalThis` over `window`."
+    },
+    {
+      "id": "DEBT-0681",
+      "file": "components/ui/voice-text-area.tsx",
+      "title": "Prefer `globalThis` over `window`."
+    },
+    {
+      "id": "DEBT-0682",
+      "file": "hooks/use-speech-recognition.ts",
+      "title": "Prefer `globalThis` over `window`."
+    },
+    {
+      "id": "DEBT-0684",
+      "file": "components/growth/NightReviewCard.tsx",
+      "title": "'lucide-react' imported multiple times."
+    },
+    {
+      "id": "DEBT-0685",
+      "file": "components/growth/SpotCheckCard.tsx",
+      "title": "'lucide-react' imported multiple times."
+    },
+    {
+      "id": "DEBT-0687",
+      "file": "components/celebrations/firework-burst.tsx",
+      "title": "Prefer `globalThis.window` over `window`."
+    },
+    {
+      "id": "DEBT-0715",
+      "file": "components/admin/meetings-tab.tsx",
+      "title": "'@/lib/db/meetings' imported multiple times."
+    },
+    {
+      "id": "DEBT-0718",
+      "file": "components/pwa/install-prompt.tsx",
+      "title": "Prefer `globalThis.window` over `window`."
+    },
+    {
+      "id": "DEBT-0728",
+      "file": "components/notebook/roadmap-modules.tsx",
+      "title": "Use `export…from` to re-export `NotebookModule`."
+    },
+    {
+      "id": "DEBT-0734",
+      "file": "components/notebook/pages/resources-page.tsx",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-0740",
+      "file": "components/providers/auth-provider.tsx",
+      "title": "Use `export…from` to re-export `useAuthCore`."
+    },
+    {
+      "id": "DEBT-0750",
+      "file": "lib/types/daily-log.ts",
+      "title": "'unknown' overrides all other types in this union type."
+    },
+    {
+      "id": "DEBT-0761",
+      "file": "components/notebook/book-cover.tsx",
+      "title": "'nickname' PropType is defined but prop is never used"
+    },
+    {
+      "id": "DEBT-0768",
+      "file": "components/notebook/book-cover.tsx",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-0900",
+      "file": "functions/src/admin.ts",
+      "title": "Optimize admin analytics functions (cache/pre-compute)"
+    },
+    {
+      "id": "DEBT-0990",
+      "file": "scripts/debt/generate-views.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0997",
+      "file": "scripts/multi-ai/normalize-format.js",
+      "title": "Remove this unused import of 'join'."
+    },
+    {
+      "id": "DEBT-0998",
+      "file": "scripts/multi-ai/state-manager.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-1012",
+      "file": "scripts/multi-ai/aggregate-category.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1016",
+      "file": "scripts/multi-ai/aggregate-category.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1020",
+      "file": "scripts/multi-ai/aggregate-category.js",
+      "title": "Expected a `for-of` loop instead of a `for` loop with this simple iteration."
+    },
+    {
+      "id": "DEBT-1023",
+      "file": "scripts/multi-ai/fix-schema.js",
+      "title": "Remove this unused import of 'join'."
+    },
+    {
+      "id": "DEBT-1024",
+      "file": "scripts/multi-ai/fix-schema.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1025",
+      "file": "scripts/multi-ai/fix-schema.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1027",
+      "file": "scripts/multi-ai/fix-schema.js",
+      "title": "arrow function is equivalent to `Boolean`. Use `Boolean` directly."
+    },
+    {
+      "id": "DEBT-1030",
+      "file": "scripts/multi-ai/fix-schema.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1031",
+      "file": "scripts/multi-ai/normalize-format.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1040",
+      "file": "scripts/multi-ai/normalize-format.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1043",
+      "file": "scripts/multi-ai/unify-findings.js",
+      "title": "Don't use a zero fraction in the number."
+    },
+    {
+      "id": "DEBT-1044",
+      "file": "scripts/multi-ai/unify-findings.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1045",
+      "file": "scripts/multi-ai/unify-findings.js",
+      "title": "arrow function is equivalent to `Boolean`. Use `Boolean` directly."
+    },
+    {
+      "id": "DEBT-1049",
+      "file": "scripts/multi-ai/unify-findings.js",
+      "title": "Remove the declaration of the unused 'category' variable."
+    },
+    {
+      "id": "DEBT-1052",
+      "file": "scripts/multi-ai/unify-findings.js",
+      "title": "Remove the declaration of the unused 'mergeLog' variable."
+    },
+    {
+      "id": "DEBT-1061",
+      "file": "components/admin/errors-tab.tsx",
+      "title": "Prefer `globalThis.window` over `window`."
+    },
+    {
+      "id": "DEBT-1062",
+      "file": "components/admin/analytics-tab.tsx",
+      "title": "Prefer `.at(…)` over `[….length - index]`."
+    },
+    {
+      "id": "DEBT-1063",
+      "file": "components/admin/logs-tab.tsx",
+      "title": "'input' will use Object's default stringification format ('[object Object]') when stringified."
+    },
+    {
+      "id": "DEBT-1065",
+      "file": "components/admin/logs-tab.tsx",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1072",
+      "file": "scripts/sync-consolidation-counter.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1073",
+      "file": "scripts/sync-consolidation-counter.js",
+      "title": "The catch parameter `readErr` should be named `error_`."
+    },
+    {
+      "id": "DEBT-1074",
+      "file": "functions/src/jobs.ts",
+      "title": "This assertion is unnecessary since it does not change the type of the expression."
+    },
+    {
+      "id": "DEBT-1075",
+      "file": "functions/src/security-logger.ts",
+      "title": "'unknown' overrides all other types in this union type."
+    },
+    {
+      "id": "DEBT-1076",
+      "file": "functions/src/security-logger.ts",
+      "title": "'error' will use Object's default stringification format ('[object Object]') when stringified."
+    },
+    {
+      "id": "DEBT-1086",
+      "file": "components/admin/jobs-tab.tsx",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1091",
+      "file": "functions/src/jobs.ts",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-1101",
+      "file": "scripts/sync-consolidation-counter.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1106",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1107",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "title": "The catch parameter `renameErr` should be named `error_`."
+    },
+    {
+      "id": "DEBT-1108",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "title": "The catch parameter `unlinkErr` should be named `error_`."
+    },
+    {
+      "id": "DEBT-1109",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1110",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "title": "The empty object is useless."
+    },
+    {
+      "id": "DEBT-1113",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1114",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1118",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-1119",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "title": "The '__proto__' property is deprecated."
+    },
+    {
+      "id": "DEBT-1123",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1124",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1128",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1129",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1130",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-1131",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-1133",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-1137",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1145",
+      "file": "scripts/debt/intake-audit.js",
+      "title": "Prefer `node:os` over `os`."
+    },
+    {
+      "id": "DEBT-1146",
+      "file": "scripts/debt/intake-audit.js",
+      "title": "`DANGEROUS_KEYS` should be a `Set`, and use `DANGEROUS_KEYS.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1147",
+      "file": "scripts/debt/intake-audit.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-1148",
+      "file": "scripts/debt/intake-audit.js",
+      "title": "The catch parameter `readErr` should be named `error_`."
+    },
+    {
+      "id": "DEBT-1151",
+      "file": "scripts/debt/intake-audit.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1153",
+      "file": "scripts/debt/intake-audit.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1160",
+      "file": "scripts/check-content-accuracy.js",
+      "title": "The empty object is useless."
+    },
+    {
+      "id": "DEBT-1162",
+      "file": "scripts/check-content-accuracy.js",
+      "title": "This pattern can be replaced with '\\\\'."
+    },
+    {
+      "id": "DEBT-1167",
+      "file": "scripts/check-external-links.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1172",
+      "file": "scripts/check-doc-placement.js",
+      "title": "This pattern can be replaced with '\\\\'."
+    },
+    {
+      "id": "DEBT-1184",
+      "file": "scripts/debt/assign-roadmap-refs.js",
+      "title": "The catch parameter `backupErr` should be named `error_`."
+    },
+    {
+      "id": "DEBT-1185",
+      "file": "scripts/debt/assign-roadmap-refs.js",
+      "title": "The catch parameter `writeErr` should be named `error_`."
+    },
+    {
+      "id": "DEBT-1186",
+      "file": "scripts/debt/assign-roadmap-refs.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1193",
+      "file": "scripts/sync-claude-settings.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1194",
+      "file": "scripts/sync-claude-settings.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-1196",
+      "file": "scripts/sync-claude-settings.js",
+      "title": "The catch parameter `_e` should be named `error_`."
+    },
+    {
+      "id": "DEBT-1197",
+      "file": "scripts/sync-claude-settings.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1198",
+      "file": "scripts/sync-claude-settings.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1202",
+      "file": "scripts/debt/assign-roadmap-refs.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1203",
+      "file": "scripts/debt/assign-roadmap-refs.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1204",
+      "file": "scripts/debt/assign-roadmap-refs.js",
+      "title": "Expected a `for-of` loop instead of a `for` loop with this simple iteration."
+    },
+    {
+      "id": "DEBT-1206",
+      "file": "scripts/debt/assign-roadmap-refs.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-1207",
+      "file": "scripts/debt/generate-metrics.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1208",
+      "file": "scripts/debt/generate-metrics.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1210",
+      "file": "scripts/debt/check-phase-status.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1211",
+      "file": "scripts/debt/check-phase-status.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1212",
+      "file": "scripts/debt/check-phase-status.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-1215",
+      "file": "scripts/aggregate-audit-findings.js",
+      "title": "Prefer `Number.NaN` over `NaN`."
+    },
+    {
+      "id": "DEBT-1218",
+      "file": "scripts/debt/normalize-all.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1219",
+      "file": "scripts/debt/resolve-bulk.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-1220",
+      "file": "scripts/debt/intake-audit.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-1222",
+      "file": "scripts/debt/sync-sonarcloud.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-1224",
+      "file": "scripts/debt/sync-sonarcloud.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1225",
+      "file": "scripts/create-canonical-findings.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1227",
+      "file": "scripts/aggregate-audit-findings.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1228",
+      "file": "scripts/create-canonical-findings.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1233",
+      "file": "scripts/migrate-existing-findings.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1234",
+      "file": "scripts/debt/sync-roadmap-refs.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1235",
+      "file": "scripts/debt/sync-roadmap-refs.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1236",
+      "file": "scripts/debt/sync-roadmap-refs.js",
+      "title": "Prefer `node:url` over `url`."
+    },
+    {
+      "id": "DEBT-1237",
+      "file": "scripts/debt/sync-roadmap-refs.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1238",
+      "file": "scripts/debt/resolve-bulk.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1239",
+      "file": "scripts/debt/resolve-bulk.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1240",
+      "file": "scripts/debt/resolve-bulk.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1245",
+      "file": "scripts/debt/resolve-item.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1246",
+      "file": "scripts/debt/resolve-item.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1247",
+      "file": "scripts/debt/resolve-item.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-1248",
+      "file": "scripts/debt/resolve-item.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1252",
+      "file": "scripts/debt/validate-schema.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1253",
+      "file": "scripts/debt/validate-schema.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1259",
+      "file": "scripts/debt/intake-audit.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1260",
+      "file": "scripts/debt/intake-audit.js",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-1263",
+      "file": "scripts/debt/intake-manual.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1264",
+      "file": "scripts/debt/intake-manual.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1265",
+      "file": "scripts/debt/intake-manual.js",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-1266",
+      "file": "scripts/debt/intake-manual.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-1268",
+      "file": "scripts/debt/intake-manual.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1270",
+      "file": "scripts/debt/intake-manual.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-1273",
+      "file": "scripts/debt/intake-pr-deferred.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1274",
+      "file": "scripts/debt/intake-pr-deferred.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1275",
+      "file": "scripts/debt/intake-pr-deferred.js",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-1276",
+      "file": "scripts/debt/intake-pr-deferred.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-1278",
+      "file": "scripts/debt/intake-pr-deferred.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1279",
+      "file": "scripts/debt/intake-pr-deferred.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-1284",
+      "file": "scripts/debt/sync-sonarcloud.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1285",
+      "file": "scripts/debt/sync-sonarcloud.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1286",
+      "file": "scripts/debt/sync-sonarcloud.js",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-1287",
+      "file": "scripts/debt/sync-sonarcloud.js",
+      "title": "Prefer `node:readline` over `readline`."
+    },
+    {
+      "id": "DEBT-1289",
+      "file": "scripts/debt/sync-sonarcloud.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1297",
+      "file": "scripts/debt/consolidate-all.js",
+      "title": "Prefer `node:child_process` over `child_process`."
+    },
+    {
+      "id": "DEBT-1298",
+      "file": "scripts/debt/consolidate-all.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1299",
+      "file": "scripts/debt/consolidate-all.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1300",
+      "file": "scripts/debt/dedup-multi-pass.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1301",
+      "file": "scripts/debt/dedup-multi-pass.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1302",
+      "file": "scripts/debt/dedup-multi-pass.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1304",
+      "file": "scripts/debt/extract-audits.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1305",
+      "file": "scripts/debt/extract-audits.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1306",
+      "file": "scripts/debt/extract-audits.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1308",
+      "file": "scripts/debt/extract-audits.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1309",
+      "file": "scripts/debt/extract-reviews.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1310",
+      "file": "scripts/debt/extract-reviews.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1311",
+      "file": "scripts/debt/extract-reviews.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1313",
+      "file": "scripts/debt/extract-reviews.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1316",
+      "file": "scripts/debt/generate-views.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1317",
+      "file": "scripts/debt/generate-views.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1318",
+      "file": "scripts/debt/generate-views.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1319",
+      "file": "scripts/debt/generate-views.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-1321",
+      "file": "scripts/debt/normalize-all.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1322",
+      "file": "scripts/debt/normalize-all.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1323",
+      "file": "scripts/debt/normalize-all.js",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-1327",
+      "file": "scripts/migrate-existing-findings.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1331",
+      "file": "scripts/aggregate-audit-findings.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1344",
+      "file": "scripts/check-doc-headers.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1346",
+      "file": "scripts/run-consolidation.js",
+      "title": "Prefer `Math.min()` to simplify ternary expressions."
+    },
+    {
+      "id": "DEBT-1349",
+      "file": "scripts/run-consolidation.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1359",
+      "file": "scripts/generate-pending-alerts.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1362",
+      "file": "scripts/check-backlog-health.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1363",
+      "file": "scripts/append-hook-warning.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1364",
+      "file": "scripts/append-hook-warning.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1365",
+      "file": "scripts/generate-pending-alerts.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1366",
+      "file": "scripts/generate-pending-alerts.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1367",
+      "file": "scripts/generate-pending-alerts.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1371",
+      "file": "scripts/check-roadmap-health.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-1372",
+      "file": "scripts/check-agent-compliance.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1374",
+      "file": "scripts/check-docs-light.js",
+      "title": "Replace this if-then-else flow by a single return statement."
+    },
+    {
+      "id": "DEBT-1382",
+      "file": "scripts/check-pattern-sync.js",
+      "title": "Use concise character class syntax '\\D' instead of '[^0-9]'."
+    },
+    {
+      "id": "DEBT-1383",
+      "file": "scripts/check-pattern-sync.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-1384",
+      "file": "scripts/analyze-learning-effectiveness.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1385",
+      "file": "scripts/analyze-learning-effectiveness.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1386",
+      "file": "scripts/analyze-learning-effectiveness.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-1396",
+      "file": "scripts/analyze-learning-effectiveness.js",
+      "title": "Remove the declaration of the unused 'trends' variable."
+    },
+    {
+      "id": "DEBT-1399",
+      "file": "scripts/check-pattern-sync.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1401",
+      "file": "scripts/check-pattern-sync.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1402",
+      "file": "scripts/lib/security-helpers.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1415",
+      "file": "scripts/lib/security-helpers.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-1420",
+      "file": "scripts/lib/security-helpers.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1421",
+      "file": "scripts/lib/security-helpers.js",
+      "title": "Prefer `Number.isNaN` over `isNaN`."
+    },
+    {
+      "id": "DEBT-1427",
+      "file": "scripts/run-consolidation.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1438",
+      "file": "scripts/analyze-learning-effectiveness.js",
+      "title": "Prefer `Number.isNaN` over `isNaN`."
+    },
+    {
+      "id": "DEBT-1442",
+      "file": "scripts/analyze-learning-effectiveness.js",
+      "title": "Expected a `for-of` loop instead of a `for` loop with this simple iteration."
+    },
+    {
+      "id": "DEBT-1454",
+      "file": "scripts/run-consolidation.js",
+      "title": "The catch parameter `analysisErr` should be named `error_`."
+    },
+    {
+      "id": "DEBT-1455",
+      "file": "scripts/lib/validate-paths.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1474",
+      "file": "scripts/secrets/decrypt-secrets.js",
+      "title": "Prefer `String#codePointAt()` over `String#charCodeAt()`."
+    },
+    {
+      "id": "DEBT-1477",
+      "file": "scripts/secrets/encrypt-secrets.js",
+      "title": "Prefer `String#codePointAt()` over `String#charCodeAt()`."
+    },
+    {
+      "id": "DEBT-1479",
+      "file": "scripts/secrets/decrypt-secrets.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1480",
+      "file": "scripts/validate-canon-schema.js",
+      "title": "Remove this unused import of 'statSync'."
+    },
+    {
+      "id": "DEBT-1481",
+      "file": "scripts/security-check.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1484",
+      "file": "scripts/verify-sonar-phase.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1486",
+      "file": "scripts/check-docs-light.js",
+      "title": "Handle this exception or don't catch it at all."
+    },
+    {
+      "id": "DEBT-1489",
+      "file": "functions/src/admin.ts",
+      "title": "This assertion is unnecessary since it does not change the type of the expression."
+    },
+    {
+      "id": "DEBT-1496",
+      "file": "components/notebook/pages/history-page.tsx",
+      "title": "'data.mood' will use Object's default stringification format ('[object Object]') when stringified."
+    },
+    {
+      "id": "DEBT-1501",
+      "file": "scripts/verify-sonar-phase.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1503",
+      "file": "scripts/verify-sonar-phase.js",
+      "title": "Remove the declaration of the unused '_phaseConfig' variable."
+    },
+    {
+      "id": "DEBT-1506",
+      "file": "scripts/generate-detailed-sonar-report.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1513",
+      "file": "scripts/generate-detailed-sonar-report.js",
+      "title": "Remove the declaration of the unused 'found' variable."
+    },
+    {
+      "id": "DEBT-1518",
+      "file": "components/admin/errors-tab.tsx",
+      "title": "Prefer `globalThis` over `window`."
+    },
+    {
+      "id": "DEBT-1522",
+      "file": "components/admin/users-tab.tsx",
+      "title": "Prefer `globalThis` over `window`."
+    },
+    {
+      "id": "DEBT-1529",
+      "file": "lib/utils/error-export.ts",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-1530",
+      "file": "lib/utils/error-export.ts",
+      "title": "Prefer `globalThis.window` over `window`."
+    },
+    {
+      "id": "DEBT-1533",
+      "file": "components/admin/users-tab.tsx",
+      "title": "'date-fns' imported multiple times."
+    },
+    {
+      "id": "DEBT-1536",
+      "file": "components/admin/users-tab.tsx",
+      "title": "Prefer `Math.max()` to simplify ternary expressions."
+    },
+    {
+      "id": "DEBT-1539",
+      "file": "lib/contexts/admin-tab-context.tsx",
+      "title": "Mark the props of the component as read-only."
+    },
+    {
+      "id": "DEBT-1540",
+      "file": "lib/contexts/admin-tab-context.tsx",
+      "title": "useState call is not destructured into value + setter pair"
+    },
+    {
+      "id": "DEBT-1550",
+      "file": "lib/utils/error-export.ts",
+      "title": "'PerformanceTiming' is deprecated."
+    },
+    {
+      "id": "DEBT-1551",
+      "file": "lib/utils/error-export.ts",
+      "title": "'navigationStart' is deprecated."
+    },
+    {
+      "id": "DEBT-1552",
+      "file": "lib/utils/error-export.ts",
+      "title": "'loadEventEnd' is deprecated."
+    },
+    {
+      "id": "DEBT-1553",
+      "file": "lib/utils/error-export.ts",
+      "title": "'domContentLoadedEventEnd' is deprecated."
+    },
+    {
+      "id": "DEBT-1555",
+      "file": "lib/utils/error-export.ts",
+      "title": "The signature '(commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean' of 'document.execCommand' is deprecated."
+    },
+    {
+      "id": "DEBT-1558",
+      "file": "components/admin/privileges-tab.tsx",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1560",
+      "file": "components/admin/privileges-tab.tsx",
+      "title": "`BUILT_IN_TYPES` should be a `Set`, and use `BUILT_IN_TYPES.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1569",
+      "file": "functions/src/admin.ts",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1570",
+      "file": "functions/src/admin.ts",
+      "title": "Prefer `Number.parseFloat` over `parseFloat`."
+    },
+    {
+      "id": "DEBT-1572",
+      "file": "scripts/aggregate-audit-findings.js",
+      "title": "Prefer negative index over length minus index for `slice`."
+    },
+    {
+      "id": "DEBT-1573",
+      "file": "scripts/aggregate-audit-findings.js",
+      "title": "Remove this unused import of 'readdirSync'."
+    },
+    {
+      "id": "DEBT-1575",
+      "file": "scripts/aggregate-audit-findings.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-1576",
+      "file": "scripts/aggregate-audit-findings.js",
+      "title": "Unnecessary use of conditional expression for default assignment."
+    },
+    {
+      "id": "DEBT-1579",
+      "file": "scripts/check-docs-light.js",
+      "title": "This pattern can be replaced with '\\r\\n'."
+    },
+    {
+      "id": "DEBT-1581",
+      "file": "functions/src/admin.ts",
+      "title": "Replace this union type with a type alias."
+    },
+    {
+      "id": "DEBT-1589",
+      "file": "components/admin/logs-tab.tsx",
+      "title": "Mark the props of the component as read-only."
+    },
+    {
+      "id": "DEBT-1593",
+      "file": "scripts/check-cross-doc-deps.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1598",
+      "file": "scripts/run-consolidation.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-1600",
+      "file": "scripts/run-consolidation.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1604",
+      "file": "scripts/check-cross-doc-deps.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1606",
+      "file": "scripts/security-check.js",
+      "title": "Remove this unused import of 'statSync'."
+    },
+    {
+      "id": "DEBT-1607",
+      "file": "scripts/security-check.js",
+      "title": "Remove this unused import of 'isAbsolute'."
+    },
+    {
+      "id": "DEBT-1608",
+      "file": "scripts/check-backlog-health.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-1609",
+      "file": "scripts/check-backlog-health.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1615",
+      "file": "lib/utils/admin-error-utils.ts",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1620",
+      "file": "tests/error-knowledge-base.test.ts",
+      "title": "`components` should be a `Set`, and use `components.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1621",
+      "file": "components/admin/errors-tab.tsx",
+      "title": "Mark the props of the component as read-only."
+    },
+    {
+      "id": "DEBT-1628",
+      "file": "app/dev/page.tsx",
+      "title": "Prefer `globalThis.window` over `window`."
+    },
+    {
+      "id": "DEBT-1629",
+      "file": "components/dev/dev-dashboard.tsx",
+      "title": "Mark the props of the component as read-only."
+    },
+    {
+      "id": "DEBT-1631",
+      "file": "components/dev/dev-tabs.tsx",
+      "title": "Mark the props of the component as read-only."
+    },
+    {
+      "id": "DEBT-1632",
+      "file": "components/dev/lighthouse-tab.tsx",
+      "title": "Mark the props of the component as read-only."
+    },
+    {
+      "id": "DEBT-1635",
+      "file": "lib/logger.ts",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1636",
+      "file": "scripts/verify-skill-usage.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1637",
+      "file": "scripts/log-session-activity.js",
+      "title": "Prefer `String#replaceAll()` over `String#replace()`."
+    },
+    {
+      "id": "DEBT-1645",
+      "file": "scripts/log-override.js",
+      "title": "Prefer `String#codePointAt()` over `String#charCodeAt()`."
+    },
+    {
+      "id": "DEBT-1646",
+      "file": "scripts/check-triggers.js",
+      "title": "Do not call `Array#push()` multiple times."
+    },
+    {
+      "id": "DEBT-1648",
+      "file": "scripts/validate-skill-config.js",
+      "title": "Remove the declaration of the unused 'isSession' variable."
+    },
+    {
+      "id": "DEBT-1650",
+      "file": "scripts/validate-skill-config.js",
+      "title": "`String.raw` should be used to avoid escaping `\\`."
+    },
+    {
+      "id": "DEBT-1652",
+      "file": "scripts/verify-skill-usage.js",
+      "title": "`args` should be a `Set`, and use `args.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1920",
+      "file": "lib/firestore-service.ts",
+      "title": "API design inconsistency: Mixed return patterns"
+    },
+    {
+      "id": "DEBT-1921",
+      "file": "firebase.json",
+      "title": "Missing Content-Security-Policy header"
+    },
+    {
+      "id": "DEBT-1922",
+      "file": "firestore.rules",
+      "title": "User profile document allows direct client writes without rate limiting"
+    },
+    {
+      "id": "DEBT-1923",
+      "file": "functions/src/recaptcha-verify.ts",
+      "title": "Hardcoded reCAPTCHA site key in server-side code"
+    },
+    {
+      "id": "DEBT-1924",
+      "file": "components/admin/dashboard-tab.tsx",
+      "title": "God component: dashboard-tab.tsx with excessive state management"
+    },
+    {
+      "id": "DEBT-1925",
+      "file": "components/notebook/pages/today-page.tsx",
+      "title": "Any type usage in today-page.tsx snapshot handler"
+    },
+    {
+      "id": "DEBT-1926",
+      "file": "hooks/use-journal.ts",
+      "title": "Tight coupling between UI components and Firebase SDK"
+    },
+    {
+      "id": "DEBT-1927",
+      "file": "functions/src/jobs.ts",
+      "title": "Hardcoded bucket name in Cloud Functions"
+    },
+    {
+      "id": "DEBT-1928",
+      "file": "components/providers/auth-provider.tsx",
+      "title": "Inconsistent state management patterns across providers"
+    },
+    {
+      "id": "DEBT-1929",
+      "file": "hooks/use-journal.ts",
+      "title": "Anti-pattern: Firestore queries in components instead of service layer"
+    },
+    {
+      "id": "DEBT-1930",
+      "file": "components/admin/logs-tab.tsx",
+      "title": "Missing dependency in useEffect for logs refresh"
+    },
+    {
+      "id": "DEBT-1931",
+      "file": "hooks/use-journal.ts",
+      "title": "Missing loading state coordination across contexts"
+    },
+    {
+      "id": "DEBT-1932",
+      "file": "components/journal/entry-forms/inventory-form.tsx",
+      "title": "Missing error boundary in inventory form"
+    },
+    {
+      "id": "DEBT-1933",
+      "file": "functions/src/index.ts",
+      "title": "Migration function does not verify source anonymous user is actually anonymous"
+    },
+    {
+      "id": "DEBT-1934",
+      "file": "hooks/use-journal.ts",
+      "title": "Missing abstraction for real-time subscriptions"
+    },
+    {
+      "id": "DEBT-1935",
+      "file": "hooks/use-journal.ts",
+      "title": "Firestore timestamp validation inconsistency"
+    },
+    {
+      "id": "DEBT-1936",
+      "file": "functions/src/index.ts",
+      "title": "reCAPTCHA token made optional for data migration function"
+    },
+    {
+      "id": "DEBT-1937",
+      "file": "functions/src/index.ts",
+      "title": "Migration function skips reCAPTCHA when token is missing"
+    },
+    {
+      "id": "DEBT-1938",
+      "file": "functions/src/schemas.ts",
+      "title": "Journal and inventory entry data field accepts arbitrary objects without depth or size limits"
+    },
+    {
+      "id": "DEBT-1939",
+      "file": "functions/src/jobs.ts",
+      "title": "Race condition in parallel file processing"
+    },
+    {
+      "id": "DEBT-1940",
+      "file": ".github/workflows/ci.yml",
+      "title": "CI workflow script injection via unsanitized file names"
+    },
+    {
+      "id": "DEBT-1941",
+      "file": "firestore.rules",
+      "title": "Firestore security_logs collection missing from security rules"
+    },
+    {
+      "id": "DEBT-1960",
+      "file": "functions/src/recaptcha-verify.ts",
+      "title": "Hardcoded reCAPTCHA site key fallback in Cloud Functions"
+    },
+    {
+      "id": "DEBT-1963",
+      "file": "functions/src/jobs.ts",
+      "title": "Functions code imports type from undeclared direct dependency"
+    },
+    {
+      "id": "DEBT-1969",
+      "file": "README.md",
+      "title": "External URL dead: refugerecovery.org/meetings/ returns 404"
+    },
+    {
+      "id": "DEBT-1975",
+      "file": "scripts/seed-real-data.ts",
+      "title": "Potential empty catch blocks in scripts"
+    },
+    {
+      "id": "DEBT-1979",
+      "file": "components/widgets/daily-quote-card.tsx",
+      "title": "Duplicate Quote Widget Components (3 Variants)"
+    },
+    {
+      "id": "DEBT-1980",
+      "file": "lib/db/sober-living.ts",
+      "title": "Inconsistent lib/db/ Write Patterns"
+    },
+    {
+      "id": "DEBT-1981",
+      "file": "hooks/use-journal.ts",
+      "title": "Duplicate generateSearchableText implementations"
+    },
+    {
+      "id": "DEBT-1982",
+      "file": "scripts/",
+      "title": "No environment validation/doctor script"
+    },
+    {
+      "id": "DEBT-1983",
+      "file": "hooks/use-journal.ts",
+      "title": "Dual hooks directories: hooks/ and lib/hooks/"
+    },
+    {
+      "id": "DEBT-1987",
+      "file": "lib/logger.ts",
+      "title": "Logger is present but lacks correlation/request IDs; tracing across async flows is difficult"
+    },
+    {
+      "id": "DEBT-1989",
+      "file": "components/notebook/pages/today-page.tsx",
+      "title": "Potential Firestore-rules alignment risk for direct weekly log reads"
+    },
+    {
+      "id": "DEBT-1991",
+      "file": "scripts/aggregate-audit-findings.js",
+      "title": "Oversized scripts: aggregate-audit-findings.js (63KB), check-pattern-compliance.js (45KB)"
+    },
+    {
+      "id": "DEBT-1992",
+      "file": "app/",
+      "title": "8:1 console.log to logger ratio — production observability gap"
+    },
+    {
+      "id": "DEBT-2022",
+      "file": ".claude/COMMAND_REFERENCE.md",
+      "title": "Structure: COMMAND_REFERENCE.md should be Tier 1 Canonical"
+    },
+    {
+      "id": "DEBT-2023",
+      "file": "AI_WORKFLOW.md",
+      "title": "Structure: AI_WORKFLOW.md should be Tier 1 Canonical"
+    },
+    {
+      "id": "DEBT-2038",
+      "file": "ROADMAP_LOG.md",
+      "title": "Structure: ROADMAP_LOG.md should be Tier 1 Canonical"
+    },
+    {
+      "id": "DEBT-2039",
+      "file": "ROADMAP.md",
+      "title": "ROADMAP.md missing last updated date (stale > 30 days)"
+    },
+    {
+      "id": "DEBT-2041",
+      "file": "SESSION_CONTEXT.md",
+      "title": "Line length exceeds recommended limit"
+    },
+    {
+      "id": "DEBT-2042",
+      "file": "SESSION_CONTEXT.md",
+      "title": "Structure: SESSION_CONTEXT.md should be Tier 1 Canonical"
+    },
+    {
+      "id": "DEBT-2043",
+      "file": ".claude/COMMAND_REFERENCE.md",
+      "title": "Structure: .claude/ directory contains Tier 1 candidates"
+    },
+    {
+      "id": "DEBT-2044",
+      "file": "docs/EXPANSION_EVALUATION_TRACKER.md",
+      "title": "EXPANSION_EVALUATION_TRACKER.md using deprecated date-based scheduling"
+    },
+    {
+      "id": "DEBT-2045",
+      "file": "docs/REVIEW_POLICY_ARCHITECTURE.md",
+      "title": "REVIEW_POLICY_ARCHITECTURE.md has conflicting status indicators"
+    },
+    {
+      "id": "DEBT-2052",
+      "file": "docs/MONETIZATION_RESEARCH.md",
+      "title": "MONETIZATION_RESEARCH.md has stale Last Updated date (over 30 days)"
+    },
+    {
+      "id": "DEBT-2053",
+      "file": "docs/PR_WORKFLOW_CHECKLIST.md",
+      "title": "PR_WORKFLOW_CHECKLIST.md missing Version History table"
+    },
+    {
+      "id": "DEBT-2054",
+      "file": "docs/SESSION_DECISIONS.md",
+      "title": "Structure: SESSION_DECISIONS.md placement incorrect"
+    },
+    {
+      "id": "DEBT-2055",
+      "file": "docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md",
+      "title": "Historical ideation document is unlinked"
+    },
+    {
+      "id": "DEBT-2393",
+      "file": "docs/multi-ai-audit/README.md",
+      "title": "Gap: Missing overview for multi-ai audit system"
+    },
+    {
+      "id": "DEBT-2394",
+      "file": "docs/SECURITY.md",
+      "title": "Quality: SECURITY.md scores 8/10 - clear but missing threat model"
+    },
+    {
+      "id": "DEBT-2395",
+      "file": "SESSION_CONTEXT.md",
+      "title": "Quality: SESSION_CONTEXT.md scores 6/10 - excessive session summaries without index"
+    },
+    {
+      "id": "DEBT-2396",
+      "file": "SESSION_CONTEXT.md",
+      "title": "Readability: SESSION_CONTEXT.md session summaries are dense prose"
+    },
+    {
+      "id": "DEBT-2398",
+      "file": "DEVELOPMENT.md",
+      "title": "Gap: No quickstart guide for new developers"
+    },
+    {
+      "id": "DEBT-2399",
+      "file": "lib/firestore-service.ts",
+      "title": "Gap: Undocumented core lib modules"
+    },
+    {
+      "id": "DEBT-2441",
+      "file": "scripts/seed-commit-log.js",
+      "title": "Orphaned: seed-commit-log.js"
+    },
+    {
+      "id": "DEBT-2442",
+      "file": "scripts/sync-claude-settings.js",
+      "title": "Orphaned: sync-claude-settings.js"
+    },
+    {
+      "id": "DEBT-2443",
+      "file": "scripts/update-legacy-lines.js",
+      "title": "Orphaned: update-legacy-lines.js"
+    },
+    {
+      "id": "DEBT-2444",
+      "file": "scripts/create-canonical-findings.js",
+      "title": "Orphaned: create-canonical-findings.js"
+    },
+    {
+      "id": "DEBT-2445",
+      "file": "scripts/generate-detailed-sonar-report.js",
+      "title": "Orphaned: generate-detailed-sonar-report.js"
+    },
+    {
+      "id": "DEBT-2446",
+      "file": "scripts/generate-placement-report.js",
+      "title": "Orphaned: generate-placement-report.js"
+    },
+    {
+      "id": "DEBT-2447",
+      "file": "scripts/migrate-existing-findings.js",
+      "title": "Orphaned: migrate-existing-findings.js"
+    },
+    {
+      "id": "DEBT-2448",
+      "file": "scripts/regenerate-findings-index.js",
+      "title": "Orphaned: regenerate-findings-index.js"
+    },
+    {
+      "id": "DEBT-2449",
+      "file": "scripts/verify-sonar-phase.js",
+      "title": "Orphaned: verify-sonar-phase.js"
+    },
+    {
+      "id": "DEBT-2451",
+      "file": "scripts/dedupe-quotes.ts",
+      "title": "Orphaned: TypeScript migration scripts (14 files)"
+    },
+    {
+      "id": "DEBT-2452",
+      "file": "package.json",
+      "title": "Orphaned npm script: learning:category"
+    },
+    {
+      "id": "DEBT-2453",
+      "file": "package.json",
+      "title": "Orphaned npm script: learning:since"
+    },
+    {
+      "id": "DEBT-2454",
+      "file": "package.json",
+      "title": "Orphaned npm script: phase:complete:auto"
+    },
+    {
+      "id": "DEBT-2456",
+      "file": ".github/workflows/validate-plan.yml",
+      "title": "Narrow trigger: validate-plan.yml for specific archived file"
+    },
+    {
+      "id": "DEBT-2458",
+      "file": ".husky/pre-commit",
+      "title": "Duplicated: ESLint validation in pre-commit AND CI"
+    },
+    {
+      "id": "DEBT-2459",
+      "file": ".husky/pre-commit",
+      "title": "Duplicated: Pattern compliance check in pre-commit AND CI"
+    },
+    {
+      "id": "DEBT-2460",
+      "file": ".husky/pre-commit",
+      "title": "Duplicated: Technical debt schema validation in pre-commit AND CI"
+    },
+    {
+      "id": "DEBT-2461",
+      "file": ".husky/pre-commit",
+      "title": "Duplicated: CANON schema validation in pre-commit AND CI"
+    },
+    {
+      "id": "DEBT-2470",
+      "file": ".claude/hooks/check-edit-requirements.js",
+      "title": "Duplicated: Base directory resolution across hooks"
+    },
+    {
+      "id": "DEBT-2485",
+      "file": ".github/workflows/validate-plan.yml",
+      "title": "Never executes: validate-plan workflow for archived file"
+    },
+    {
+      "id": "DEBT-2486",
+      "file": ".claude/hooks/audit-s0s1-validator.js",
+      "title": "Ineffective: audit-s0s1-validator defaults to WARN mode"
+    },
+    {
+      "id": "DEBT-2487",
+      "file": ".claude/hooks/pattern-check.js",
+      "title": "Ineffective: pattern-check hook never blocks violations"
+    },
+    {
+      "id": "DEBT-2489",
+      "file": ".husky/pre-commit",
+      "title": "Ineffective: Pre-commit bypass conditions too easy"
+    },
+    {
+      "id": "DEBT-2494",
+      "file": ".claude/hooks/large-context-warning.js",
+      "title": "Ineffective: large-context-warning warningShown flag prevents repeated warnings"
+    },
+    {
+      "id": "DEBT-2495",
+      "file": ".claude/hooks/check-remote-session-context.js",
+      "title": "Ineffective: check-remote-session-context always succeeds"
+    },
+    {
+      "id": "DEBT-2497",
+      "file": ".claude/settings.json",
+      "title": "Ineffective: commit-tracker continueOnError makes failures silent"
+    },
+    {
+      "id": "DEBT-2501",
+      "file": ".github/workflows/ci.yml",
+      "title": "CI gap: continue-on-error bypasses critical validations"
+    },
+    {
+      "id": "DEBT-2529",
+      "file": ".github/workflows/auto-label-review-tier.yml",
+      "title": "CI gap: Tier comment spam on every synchronize event"
+    },
+    {
+      "id": "DEBT-2530",
+      "file": "scripts/check-review-needed.js",
+      "title": "Bug: check-review-needed.js - getNextDay() fails silently on invalid dates"
+    },
+    {
+      "id": "DEBT-2531",
+      "file": "scripts/check-cross-doc-deps.js",
+      "title": "Bug: check-cross-doc-deps.js - checkDiffPattern() silently skips rules on git errors"
+    },
+    {
+      "id": "DEBT-2532",
+      "file": "scripts/check-cross-doc-deps.js",
+      "title": "Bug: check-cross-doc-deps.js - inconsistent behavior with empty dependency rules"
+    },
+    {
+      "id": "DEBT-2533",
+      "file": "scripts/security-check.js",
+      "title": "Bug: security-check.js - getStagedFiles() returns empty array on git failure without error"
+    },
+    {
+      "id": "DEBT-2548",
+      "file": ".husky/pre-commit",
+      "title": "Slow: ESLint full codebase scan in pre-commit"
+    },
+    {
+      "id": "DEBT-2549",
+      "file": ".husky/pre-commit",
+      "title": "Duplicate: Pattern compliance runs in both pre-commit and pre-push"
+    },
+    {
+      "id": "DEBT-2550",
+      "file": ".husky/pre-push",
+      "title": "Slow: TypeScript full project type check on every push"
+    },
+    {
+      "id": "DEBT-2551",
+      "file": ".husky/pre-push",
+      "title": "Slow: Circular dependency scan on entire codebase every push"
+    },
+    {
+      "id": "DEBT-2552",
+      "file": "package.json",
+      "title": "Slow: Test suite rebuilds TypeScript on every test run"
+    },
+    {
+      "id": "DEBT-2561",
+      "file": ".github/workflows/ci.yml",
+      "title": "CI slow: Build job waits unnecessarily for all lint/test steps"
+    },
+    {
+      "id": "DEBT-2562",
+      "file": ".github/workflows/ci.yml",
+      "title": "CI slow: Redundant npm ci in build job"
+    },
+    {
+      "id": "DEBT-2563",
+      "file": ".github/workflows/ci.yml",
+      "title": "CI slow: No Next.js build cache"
+    },
+    {
+      "id": "DEBT-2564",
+      "file": ".github/workflows/ci.yml",
+      "title": "CI slow: No path filters on main CI workflow"
+    },
+    {
+      "id": "DEBT-2565",
+      "file": ".github/workflows/deploy-firebase.yml",
+      "title": "CI slow: Firebase deploy builds app twice"
+    },
+    {
+      "id": "DEBT-2573",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "Perf: check-pattern-compliance.js - Synchronous file reads in loop"
+    },
+    {
+      "id": "DEBT-2574",
+      "file": "scripts/check-pattern-compliance.js",
+      "title": "Perf: check-pattern-compliance.js - O(n*m) pattern matching without optimization"
+    },
+    {
+      "id": "DEBT-2577",
+      "file": "scripts/check-docs-light.js",
+      "title": "Perf: check-docs-light.js - O(n^2) anchor link validation"
+    },
+    {
+      "id": "DEBT-2578",
+      "file": "scripts/check-docs-light.js",
+      "title": "Perf: check-docs-light.js - Repeated realpath/stat calls"
+    },
+    {
+      "id": "DEBT-2581",
+      "file": "scripts/generate-documentation-index.js",
+      "title": "Perf: generate-documentation-index.js - O(n*m) reference graph building"
+    },
+    {
+      "id": "DEBT-2583",
+      "file": "scripts/aggregate-audit-findings.js",
+      "title": "Perf: aggregate-audit-findings.js - Synchronous JSONL file reads"
+    },
+    {
+      "id": "DEBT-2584",
+      "file": "scripts/aggregate-audit-findings.js",
+      "title": "Perf: aggregate-audit-findings.js - Expensive Levenshtein in hot path"
+    },
+    {
+      "id": "DEBT-2586",
+      "file": "scripts/check-content-accuracy.js",
+      "title": "Perf: check-content-accuracy.js - Synchronous file reads in loop"
+    },
+    {
+      "id": "DEBT-2587",
+      "file": "scripts/check-content-accuracy.js",
+      "title": "Perf: check-content-accuracy.js - Regex compilation in hot loops"
+    },
+    {
+      "id": "DEBT-2588",
+      "file": "scripts/check-content-accuracy.js",
+      "title": "Perf: check-content-accuracy.js - O(lines * patterns) nested loops"
+    },
+    {
+      "id": "DEBT-2591",
+      "file": ".claude/hooks/typescript-strict-check.js",
+      "title": "Error handling: Hook validation exits with 0 on security failures"
+    },
+    {
+      "id": "DEBT-2594",
+      "file": "scripts/validate-audit.js",
+      "title": "Error handling: Error messages expose full system paths"
+    },
+    {
+      "id": "DEBT-2596",
+      "file": "scripts/verify-skill-usage.js",
+      "title": "Error handling: JSON.parse failures without validation context"
+    },
+    {
+      "id": "DEBT-2597",
+      "file": "scripts/update-readme-status.js",
+      "title": "Error handling: Missing error messages in file write operations"
+    },
+    {
+      "id": "DEBT-2599",
+      "file": "scripts/verify-skill-usage.js",
+      "title": "Error handling: Validation scripts exit 0 with violations in non-strict mode"
+    },
+    {
+      "id": "DEBT-2600",
+      "file": ".claude/hooks/typescript-strict-check.js",
+      "title": "Error handling: Multiple exit(0) calls suggest unclear control flow"
+    },
+    {
+      "id": "DEBT-2603",
+      "file": "scripts/debt/sync-sonarcloud.js",
+      "title": "Error handling: sync-sonarcloud.js API errors expose implementation details"
+    },
+    {
+      "id": "DEBT-2608",
+      "file": ".claude/hooks/stop-serena-dashboard.js",
+      "title": "Quality: Magic number - hardcoded port without explanation"
+    },
+    {
+      "id": "DEBT-2609",
+      "file": ".claude/hooks/analyze-user-request.js",
+      "title": "Quality: Magic number - MAX_LENGTH without explanation"
+    },
+    {
+      "id": "DEBT-2610",
+      "file": ".claude/hooks/large-context-warning.js",
+      "title": "Quality: Magic number - SINGLE_FILE_LINE_LIMIT without explanation"
+    },
+    {
+      "id": "DEBT-2611",
+      "file": "scripts/check-consolidation-status.js",
+      "title": "Quality: Magic number - ARCHIVE_LINE_THRESHOLD without explanation"
+    },
+    {
+      "id": "DEBT-2612",
+      "file": "scripts/mcp/sonarcloud-server.js",
+      "title": "Quality: Magic number - REQUEST_TIMEOUT_MS without explanation"
+    },
+    {
+      "id": "DEBT-2613",
+      "file": ".claude/hooks/state-utils.js",
+      "title": "Quality: Hardcoded path should be configurable"
+    },
+    {
+      "id": "DEBT-2614",
+      "file": "scripts/debt/intake-audit.js",
+      "title": "Quality: Multiple hardcoded debt paths"
+    },
+    {
+      "id": "DEBT-2625",
+      "file": "scripts/archive-doc.js",
+      "title": "Inconsistent: File path validation and sanitization"
+    },
+    {
+      "id": "DEBT-2626",
+      "file": "scripts/archive-doc.js",
+      "title": "Inconsistent: Error sanitization approaches"
+    },
+    {
+      "id": "DEBT-2627",
+      "file": ".claude/hooks/analyze-user-request.sh",
+      "title": "Gap: Shell scripts not linted or validated"
+    },
+    {
+      "id": "DEBT-2629",
+      "file": "scripts/",
+      "title": "Gap: Scripts directory missing test coverage"
+    },
+    {
+      "id": "DEBT-2630",
+      "file": "functions/src/admin.ts",
+      "title": "Gap: Firebase functions lack integration tests"
+    },
+    {
+      "id": "DEBT-2633",
+      "file": ".env.local.example",
+      "title": "Gap: Environment files not validated"
+    },
+    {
+      "id": "DEBT-2635",
+      "file": ".github/workflows/ci.yml",
+      "title": "Gap: No syntax validation for committed shell scripts in CI"
+    },
+    {
+      "id": "DEBT-2702",
+      "file": ".claude/settings.json",
+      "title": "Performance: 10 Claude hooks run on every Write/Edit operation"
+    },
+    {
+      "id": "DEBT-2708",
+      "file": ".claude/skills/audit-process/SKILL.md",
+      "title": "Skill issue: episodic memory MCP not configured but referenced by 11 skills"
+    },
+    {
+      "id": "DEBT-2709",
+      "file": ".claude/skills/audit-process/SKILL.md",
+      "title": "Skill issue: audit skills reference non-existent FALSE_POSITIVES.jsonl"
+    },
+    {
+      "id": "DEBT-2710",
+      "file": ".claude/skills/systematic-debugging/SKILL.md",
+      "title": "Skill issue: systematic-debugging references non-existent superpowers skills"
+    },
+    {
+      "id": "DEBT-2712",
+      "file": ".claude/skills/audit-process/SKILL.md",
+      "title": "Skill issue: audit-process has complex 7-stage orchestration that may be brittle"
+    },
+    {
+      "id": "DEBT-2715",
+      "file": ".github/workflows/ci.yml",
+      "title": "CI gap: Missing secrets cause silent build success"
+    },
+    {
+      "id": "DEBT-2716",
+      "file": ".github/workflows/ci.yml",
+      "title": "CI gap: Pattern compliance only checks changed files in PRs"
+    },
+    {
+      "id": "DEBT-2717",
+      "file": ".github/workflows/ci.yml",
+      "title": "CI gap: Build job re-installs dependencies wastefully"
+    },
+    {
+      "id": "DEBT-2718",
+      "file": ".github/workflows/auto-label-review-tier.yml",
+      "title": "CI gap: Race condition in tier label assignment"
+    },
+    {
+      "id": "DEBT-2719",
+      "file": ".github/workflows/auto-label-review-tier.yml",
+      "title": "CI gap: Inline tier assignment logic creates maintenance drift"
+    },
+    {
+      "id": "DEBT-2720",
+      "file": ".github/workflows/sonarcloud.yml",
+      "title": "CI gap: Fork PRs completely skip SonarCloud analysis"
+    },
+    {
+      "id": "DEBT-2721",
+      "file": ".github/workflows/deploy-firebase.yml",
+      "title": "CI gap: Firebase deployment has no success validation"
+    },
+    {
+      "id": "DEBT-2722",
+      "file": ".github/workflows/deploy-firebase.yml",
+      "title": "CI gap: Deployment has no rollback mechanism"
+    },
+    {
+      "id": "DEBT-2723",
+      "file": ".github/workflows/deploy-firebase.yml",
+      "title": "CI gap: Service account credentials written to filesystem"
+    },
+    {
+      "id": "DEBT-2733",
+      "file": ".claude/hooks/firestore-write-block.js",
+      "title": "Duplicated: File reading logic across 5 hooks"
+    },
+    {
+      "id": "DEBT-2735",
+      "file": ".claude/hooks/check-edit-requirements.js",
+      "title": "Duplicated: Security validations across all hooks"
+    },
+    {
+      "id": "DEBT-2739",
+      "file": ".claude/hooks/firestore-write-block.js",
+      "title": "Duplicated: ALLOWED_PATHS pattern matching across hooks"
+    },
+    {
+      "id": "DEBT-2741",
+      "file": ".claude/hooks/pattern-check.js",
+      "title": "Duplicated: Pattern check implementation between hook and script"
+    },
+    {
+      "id": "DEBT-2742",
+      "file": "scripts/validate-audit.js",
+      "title": "Duplicated: Validation between validate-audit.js and validate-schema.js"
+    }
+  ],
+  "file_not_found": [
+    {
+      "id": "DEBT-0274",
+      "file": ".claude/hooks/coderabbit-review.sh",
+      "title": "Add an explicit return statement at the end of the function."
+    },
+    {
+      "id": "DEBT-0275",
+      "file": ".claude/hooks/coderabbit-review.sh",
+      "title": "Assign this positional parameter to a local variable."
+    },
+    {
+      "id": "DEBT-0391",
+      "file": "multiple",
+      "title": "Deprecated API usage (31 instances) + Nested ternaries (41 instances)"
+    },
+    {
+      "id": "DEBT-0415",
+      "file": "docs/ANTIGRAVITY_GUIDE.md",
+      "title": "Tier 2 docs missing required metadata (Document Version, Applies To)"
+    },
+    {
+      "id": "DEBT-0418",
+      "file": "docs/PR_REVIEW_PROMPT_TEMPLATE.md",
+      "title": "PR_REVIEW_PROMPT_TEMPLATE lacks required metadata and version history"
+    },
+    {
+      "id": "DEBT-0420",
+      "file": "docs/CODE_REVIEW_PLAN_2026_Q1.md",
+      "title": "Duplicate CODE_REVIEW_PLAN_2026_Q1.md exists in two locations"
+    },
+    {
+      "id": "DEBT-0451",
+      "file": ".next/static/chunks",
+      "title": "Large chunk file (628KB) indicates code splitting opportunity"
+    },
+    {
+      "id": "DEBT-0517",
+      "file": "scripts/smoke-test.js",
+      "title": "Create Smoke Test Script"
+    },
+    {
+      "id": "DEBT-0518",
+      "file": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "title": "Add Bug Report GitHub Template"
+    },
+    {
+      "id": "DEBT-0519",
+      "file": "tests/offline/",
+      "title": "Offline Tests"
+    },
+    {
+      "id": "DEBT-0520",
+      "file": "tests/admin/network-failure.test.ts",
+      "title": "Network Failure Error Handling Tests"
+    },
+    {
+      "id": "DEBT-0521",
+      "file": ".lighthouse/history.json",
+      "title": "Historical Score Tracking"
+    },
+    {
+      "id": "DEBT-0522",
+      "file": "lighthouserc.js",
+      "title": "Performance Budgets"
+    },
+    {
+      "id": "DEBT-0524",
+      "file": "app/manifest.ts",
+      "title": "PWA Audit Baseline"
+    },
+    {
+      "id": "DEBT-0531",
+      "file": "lib/auth-context.tsx",
+      "title": "Token rotation for long-lived sessions"
+    },
+    {
+      "id": "DEBT-0541",
+      "file": "various",
+      "title": "Inconsistent error context across components"
+    },
+    {
+      "id": "DEBT-0545",
+      "file": "components/**",
+      "title": "Console statements exist in production code; should be gated/removed or routed to logger/Sentry"
+    },
+    {
+      "id": "DEBT-0961",
+      "file": "scripts/eval/eval-sonarcloud-stage.js",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-0963",
+      "file": "scripts/eval/eval-sonarcloud-report.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0964",
+      "file": "scripts/eval/eval-sonarcloud-report.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0965",
+      "file": "scripts/eval/eval-sonarcloud-snapshot.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0966",
+      "file": "scripts/eval/eval-sonarcloud-snapshot.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0967",
+      "file": "scripts/eval/eval-sonarcloud-snapshot.js",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-0969",
+      "file": "scripts/eval/eval-sonarcloud-snapshot.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-0970",
+      "file": "scripts/eval/eval-sonarcloud-stage.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-0971",
+      "file": "scripts/eval/eval-sonarcloud-stage.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-0972",
+      "file": "scripts/eval/eval-sonarcloud-stage.js",
+      "title": "Unexpected negated condition."
+    },
+    {
+      "id": "DEBT-0979",
+      "file": "scripts/eval/eval-sonarcloud-stage.js",
+      "title": "`VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVERITIES.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1000",
+      "file": "scripts/multi-ai/eval-check-stage.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1001",
+      "file": "scripts/multi-ai/eval-check-stage.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1002",
+      "file": "scripts/multi-ai/eval-check-stage.js",
+      "title": "`VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVERITIES.has()` to check existence or non-existence."
+    },
+    {
+      "id": "DEBT-1005",
+      "file": "scripts/multi-ai/eval-report.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1006",
+      "file": "scripts/multi-ai/eval-report.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1007",
+      "file": "scripts/multi-ai/eval-snapshot.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1008",
+      "file": "scripts/multi-ai/eval-snapshot.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1009",
+      "file": "scripts/multi-ai/eval-snapshot.js",
+      "title": "Prefer `node:crypto` over `crypto`."
+    },
+    {
+      "id": "DEBT-1011",
+      "file": "scripts/multi-ai/eval-snapshot.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1293",
+      "file": "docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js",
+      "title": "Prefer `node:fs` over `fs`."
+    },
+    {
+      "id": "DEBT-1294",
+      "file": "docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js",
+      "title": "Prefer `node:path` over `path`."
+    },
+    {
+      "id": "DEBT-1295",
+      "file": "docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js",
+      "title": "Prefer `Number.parseInt` over `parseInt`."
+    },
+    {
+      "id": "DEBT-1504",
+      "file": "docs/archive/obsolete-scripts-2026-02/generate-sonar-report-with-snippets.js",
+      "title": "Remove the declaration of the unused 'found' variable."
+    },
+    {
+      "id": "DEBT-2028",
+      "file": "CLAUDE.md",
+      "title": "Code blocks missing language specifier"
+    },
+    {
+      "id": "DEBT-2046",
+      "file": "127-154",
+      "title": "Inconsistent terminology: 'skill' vs 'command' vs 'slash command'"
+    },
+    {
+      "id": "DEBT-2051",
+      "file": "CLAUDE.md",
+      "title": "Inconsistent terminology: 'App Check' vs 'AppCheck' vs 'app check'"
+    },
+    {
+      "id": "DEBT-2057",
+      "file": "129-144",
+      "title": "Duplication: Agent/Skill Triggers table in CLAUDE.md and AI_WORKFLOW.md"
+    },
+    {
+      "id": "DEBT-2388",
+      "file": "CLAUDE.md",
+      "title": "Quality: CLAUDE.md scores 8/10 - missing cross-references to skills"
+    },
+    {
+      "id": "DEBT-2389",
+      "file": ".claude/agents/*.md",
+      "title": "Quality: .claude/agents/ docs lack usage examples"
+    },
+    {
+      "id": "DEBT-2390",
+      "file": ".claude/skills/*/SKILL.md",
+      "title": "Quality: .claude/skills/ docs have inconsistent SKILL.md structure"
+    },
+    {
+      "id": "DEBT-2397",
+      "file": "CLAUDE.md",
+      "title": "Gap: Undocumented agent team workflows"
+    },
+    {
+      "id": "DEBT-2464",
+      "file": "114-124",
+      "title": "Duplicated: File reading logic across 5 hooks"
+    },
+    {
+      "id": "DEBT-2467",
+      "file": "40-62",
+      "title": "Duplicated: Security validations across all hooks"
+    },
+    {
+      "id": "DEBT-2473",
+      "file": "30-38",
+      "title": "Duplicated: ALLOWED_PATHS pattern matching across hooks"
+    },
+    {
+      "id": "DEBT-2475",
+      "file": "1-223",
+      "title": "Duplicated: Pattern check implementation between hook and script"
+    },
+    {
+      "id": "DEBT-2476",
+      "file": "1-80",
+      "title": "Duplicated: Validation between validate-audit.js and validate-schema.js"
+    },
+    {
+      "id": "DEBT-2502",
+      "file": "154-159",
+      "title": "CI gap: Missing secrets cause silent build success"
+    },
+    {
+      "id": "DEBT-2503",
+      "file": "58-68",
+      "title": "CI gap: Pattern compliance only checks changed files in PRs"
+    },
+    {
+      "id": "DEBT-2504",
+      "file": "136-149",
+      "title": "CI gap: Build job re-installs dependencies wastefully"
+    },
+    {
+      "id": "DEBT-2505",
+      "file": "77-150",
+      "title": "CI gap: Race condition in tier label assignment"
+    },
+    {
+      "id": "DEBT-2506",
+      "file": "60-75",
+      "title": "CI gap: Inline tier assignment logic creates maintenance drift"
+    },
+    {
+      "id": "DEBT-2507",
+      "file": "22-24",
+      "title": "CI gap: Fork PRs completely skip SonarCloud analysis"
+    },
+    {
+      "id": "DEBT-2508",
+      "file": "140-147",
+      "title": "CI gap: Firebase deployment has no success validation"
+    },
+    {
+      "id": "DEBT-2509",
+      "file": "140-147",
+      "title": "CI gap: Deployment has no rollback mechanism"
+    },
+    {
+      "id": "DEBT-2510",
+      "file": "120-124",
+      "title": "CI gap: Service account credentials written to filesystem"
+    },
+    {
+      "id": "DEBT-2540",
+      "file": "audit-process/SKILL.md",
+      "title": "Skill issue: episodic memory MCP not configured but referenced by 11 skills"
+    },
+    {
+      "id": "DEBT-2541",
+      "file": "audit-process/SKILL.md",
+      "title": "Skill issue: audit skills reference non-existent FALSE_POSITIVES.jsonl"
+    },
+    {
+      "id": "DEBT-2543",
+      "file": "systematic-debugging/SKILL.md",
+      "title": "Skill issue: systematic-debugging references non-existent superpowers skills"
+    },
+    {
+      "id": "DEBT-2545",
+      "file": "audit-process/SKILL.md",
+      "title": "Skill issue: audit-process has complex 7-stage orchestration that may be brittle"
+    },
+    {
+      "id": "DEBT-2554",
+      "file": "57-111",
+      "title": "Performance: 10 Claude hooks run on every Write/Edit operation"
+    }
+  ],
+  "empty_file": [
+    {
+      "id": "DEBT-0381",
+      "title": "Console statements present; replace with structured logger and enforce no-console in production"
+    },
+    {
+      "id": "DEBT-0465",
+      "title": "Add .strict() to Zod schemas"
+    },
+    {
+      "id": "DEBT-0466",
+      "title": "Extract time rotation utilities"
+    },
+    {
+      "id": "DEBT-0467",
+      "title": "Consolidate DailyQuoteCard"
+    },
+    {
+      "id": "DEBT-0468",
+      "title": "Debug console.log statements in production code"
+    },
+    {
+      "id": "DEBT-0469",
+      "title": "GitHub Actions using version tags instead of commit SHAs"
+    },
+    {
+      "id": "DEBT-0470",
+      "title": "Console statements present; replace with structured logger and enforce no-console in production"
+    },
+    {
+      "id": "DEBT-0471",
+      "title": "Address ESLint security warnings"
+    },
+    {
+      "id": "DEBT-0472",
+      "title": "Remove hardcoded reCAPTCHA fallback"
+    },
+    {
+      "id": "DEBT-0473",
+      "title": "Route admin writes through Functions"
+    },
+    {
+      "id": "DEBT-0474",
+      "title": "Add error.message null safety"
+    },
+    {
+      "id": "DEBT-0475",
+      "title": "Safe localStorage JSON.parse"
+    },
+    {
+      "id": "DEBT-0476",
+      "title": "Replace unsafe type assertions"
+    },
+    {
+      "id": "DEBT-0477",
+      "title": "Single source for journal types"
+    },
+    {
+      "id": "DEBT-0478",
+      "title": "Type httpsCallable generics"
+    },
+    {
+      "id": "DEBT-0479",
+      "title": "Create callSecureFunction wrapper"
+    },
+    {
+      "id": "DEBT-0480",
+      "title": "Shared reCAPTCHA action constants"
+    },
+    {
+      "id": "DEBT-0481",
+      "title": "Extract useGrowthCardDialog hook"
+    },
+    {
+      "id": "DEBT-0482",
+      "title": "Route Firebase through service layer"
+    },
+    {
+      "id": "DEBT-0483",
+      "title": "Create typed collection helpers"
+    },
+    {
+      "id": "DEBT-0484",
+      "title": "Clarify FirestoreAdapter boundary"
+    },
+    {
+      "id": "DEBT-0485",
+      "title": "Audit inventory dual-write pattern"
+    },
+    {
+      "id": "DEBT-0486",
+      "title": "Complete Sentry integration"
+    },
+    {
+      "id": "DEBT-0487",
+      "title": "Add reduced-motion to animations"
+    },
+    {
+      "id": "DEBT-0488",
+      "title": "Add React.memo to list components"
+    },
+    {
+      "id": "DEBT-0489",
+      "title": "Optimize hero background image"
+    },
+    {
+      "id": "DEBT-0490",
+      "title": "Add virtualization to large lists"
+    },
+    {
+      "id": "DEBT-0491",
+      "title": "Add marker clustering to map"
+    },
+    {
+      "id": "DEBT-0492",
+      "title": "Remove 7 unused dependencies"
+    },
+    {
+      "id": "DEBT-0493",
+      "title": "Add Firebase query indexes"
+    },
+    {
+      "id": "DEBT-0494",
+      "title": "Paginate admin CRUD table"
+    },
+    {
+      "id": "DEBT-0495",
+      "title": "Add loading.tsx files"
+    },
+    {
+      "id": "DEBT-0496",
+      "title": "Lazy load JournalHub forms"
+    },
+    {
+      "id": "DEBT-0497",
+      "title": "Unskip Cloud Function test"
+    },
+    {
+      "id": "DEBT-0498",
+      "title": "Add useJournal hook tests"
+    },
+    {
+      "id": "DEBT-0499",
+      "title": "Increase critical path coverage"
+    },
+    {
+      "id": "DEBT-0500",
+      "title": "Create CRUD factory"
+    },
+    {
+      "id": "DEBT-0501",
+      "title": "Centralize admin function wrappers"
+    },
+    {
+      "id": "DEBT-0502",
+      "title": "Extract safeReadFile/safeWriteFile"
+    },
+    {
+      "id": "DEBT-0503",
+      "title": "Consolidate searchable-text generation"
+    },
+    {
+      "id": "DEBT-0504",
+      "title": "Add DOCUMENTATION_INDEX to README"
+    },
+    {
+      "id": "DEBT-0505",
+      "title": "Add Tier 2 required metadata"
+    },
+    {
+      "id": "DEBT-0506",
+      "title": "Fix standards placeholder links"
+    },
+    {
+      "id": "DEBT-0507",
+      "title": "Update DOCUMENT_DEPENDENCIES sync"
+    },
+    {
+      "id": "DEBT-0508",
+      "title": "Add PR_REVIEW_PROMPT metadata"
+    },
+    {
+      "id": "DEBT-0509",
+      "title": "Fix CODE_PATTERNS.md path references"
+    },
+    {
+      "id": "DEBT-0510",
+      "title": "Update DEVELOPMENT.md workflow docs"
+    },
+    {
+      "id": "DEBT-0511",
+      "title": "Move full tests to pre-push only"
+    },
+    {
+      "id": "DEBT-0512",
+      "title": "Pin firebase-tools version"
+    },
+    {
+      "id": "DEBT-0513",
+      "title": "Fix auto-label workflow if syntax"
+    },
+    {
+      "id": "DEBT-0514",
+      "title": "Decompose Step1WorksheetCard"
+    },
+    {
+      "id": "DEBT-0951",
+      "title": "Missing Content-Security-Policy Header"
+    },
+    {
+      "id": "DEBT-0952",
+      "title": "Script Injection Vulnerability in resolve-debt Workflow"
+    },
+    {
+      "id": "DEBT-0953",
+      "title": "Backlog Enforcement Job Obsolete After TDMS Migration"
+    },
+    {
+      "id": "DEBT-0954",
+      "title": "Security Check Doesn't Scan Cloud Functions"
+    },
+    {
+      "id": "DEBT-0955",
+      "title": "Large ResourcesPage Not Code-Split (960 lines, ~50KB)"
+    },
+    {
+      "id": "DEBT-0956",
+      "title": "useJournal Hook Has 7 Responsibilities (438 lines)"
+    },
+    {
+      "id": "DEBT-0957",
+      "title": "Archive Docs Never Checked for Link Rot"
+    },
+    {
+      "id": "DEBT-0958",
+      "title": "Function Deletion with Force Flag Lacks Validation"
+    },
+    {
+      "id": "DEBT-0959",
+      "title": "Pre-Commit Total Time 15-30s - Developer Friction"
+    },
+    {
+      "id": "DEBT-0960",
+      "title": "Pre-Push Redundant Checks (15-40s)"
+    },
+    {
+      "id": "DEBT-2743",
+      "title": "Untitled"
+    }
+  ],
+  "data_quality": []
+}

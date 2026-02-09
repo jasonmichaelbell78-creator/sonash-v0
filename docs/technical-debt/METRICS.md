@@ -31,10 +31,10 @@ distribution.
 | Metric          | Value |
 | --------------- | ----- |
 | Total Items     | 2122  |
-| Open Items      | 1830  |
-| Resolved        | 56    |
+| Open Items      | 1727  |
+| Resolved        | 159   |
 | False Positives | 236   |
-| Resolution Rate | 3%    |
+| Resolution Rate | 7%    |
 
 ---
 
@@ -42,10 +42,10 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 1458  |
-| VERIFIED       | 372   |
+| NEW            | 0     |
+| VERIFIED       | 1727  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 56    |
+| RESOLVED       | 159   |
 | FALSE_POSITIVE | 236   |
 
 ---
@@ -127,12 +127,12 @@ _...and 353 more S1 items_
 
 ## Health Metrics
 
-| Metric               | Value      |
-| -------------------- | ---------- |
-| Verification Queue   | 1458 items |
-| Avg Age (Open Items) | 0 days     |
-| Oldest Item Age      | 0 days     |
-| Oldest Item          | N/A        |
+| Metric               | Value   |
+| -------------------- | ------- |
+| Verification Queue   | 0 items |
+| Avg Age (Open Items) | 0 days  |
+| Oldest Item Age      | 0 days  |
+| Oldest Item          | N/A     |
 
 ---
 

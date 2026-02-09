@@ -32,10 +32,9 @@
 
 | Status         | Count |
 | -------------- | ----- |
-| VERIFIED       | 372   |
-| RESOLVED       | 56    |
+| VERIFIED       | 1727  |
+| RESOLVED       | 159   |
 | FALSE_POSITIVE | 236   |
-| NEW            | 1458  |
 
 ## Views
 
