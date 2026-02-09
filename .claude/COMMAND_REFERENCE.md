@@ -120,7 +120,7 @@ security patterns
 **Description:** Complete verification steps before ending session **When to
 use:** **END OF EVERY SESSION** - ensures all work is committed and tracked
 **Example:** `/session-end` **Parameters:** None **Output:** Completion
-checklist and session summary
+checklist, TDMS consolidation (6-pass dedup), and session summary
 
 ### `/alerts`
 

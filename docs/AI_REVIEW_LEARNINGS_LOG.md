@@ -322,7 +322,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 4 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
@@ -671,6 +671,57 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #273: PR #353 — TDMS Pipeline Robustness (2026-02-09)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + CI Pattern Compliance
+**PR/Branch:** claude/cherry-pick-and-pr-xarOL (PR #353) **Suggestions:** 15
+total (Critical: 3, Major: 5, Minor: 3, Rejected: 4)
+
+**Patterns Identified:**
+
+1. Contextless catch blocks: `catch { }` without capturing error loses
+   debuggability
+   - Root cause: execFileSync catch blocks logged generic warnings without error
+     context
+   - Prevention: Always capture `(err)` and include
+     `err instanceof Error ? err.message : String(err)`
+2. String line numbers in JSONL: `Number.isFinite("56")` returns false, causing
+   items to be treated as Infinity in sorting
+   - Root cause: JSONL items from external sources may have string-typed line
+     numbers
+   - Prevention: Normalize line values with `Number()` before `Number.isFinite`
+     checks
+3. PRESERVED_FIELDS overwrite: Existing values always overwrote newly computed
+   values during view regeneration
+   - Root cause: Condition only checked if existing had value, not if new item
+     already had one
+   - Prevention: Only copy preserved field when new item lacks it
+
+**False Positives Identified:**
+
+- [1] backfill-hashes.js:56 readFileSync - IS in try/catch (lines 55-63),
+  pattern checker multi-line detection miss → added to verified-patterns.json
+- [9] reviewNeeded persistence - ALREADY written at dedup-multi-pass.js:599-603
+- [12] Trailing newline - ALREADY preserved through empty-line handling in
+  split/join
+
+**Resolution:**
+
+- Fixed: 9 items (1 false positive CI fix + 2 Critical + 3 Major + 3 Minor)
+- Rejected: 4 items (audit trails, secure logging, input validation, SQLite
+  replacement)
+- Deferred: 0
+
+**Key Learnings:**
+
+- Pattern checker has known multi-line try/catch detection gaps — always verify
+  before fixing
+- Qodo can miss existing implementations when suggesting additions — check
+  surrounding code
+- String-typed numbers from JSONL parsing are a common source of comparison bugs
 
 ---
 

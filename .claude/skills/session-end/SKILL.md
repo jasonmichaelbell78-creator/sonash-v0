@@ -76,9 +76,17 @@ fi
 Keep `task-*.state.json` files only if they have `in_progress` steps (the user
 may resume them next session).
 
-## 7. TDMS Metrics Update
+## 7. TDMS Consolidation & Metrics
 
-Regenerate technical debt metrics for dashboard integration:
+Run the full consolidation pipeline to ensure dedup is current (~1.5s):
+
+```bash
+node scripts/debt/consolidate-all.js
+```
+
+This runs: extract → normalize → multi-pass dedup (6 passes) → generate views.
+
+Then regenerate metrics for dashboard integration:
 
 ```bash
 node scripts/debt/generate-metrics.js
@@ -86,6 +94,7 @@ node scripts/debt/generate-metrics.js
 
 This generates:
 
+- `docs/technical-debt/MASTER_DEBT.jsonl` - Canonical debt store (deduped)
 - `docs/technical-debt/metrics.json` - Machine-readable for dashboard
 - `docs/technical-debt/METRICS.md` - Human-readable summary
 

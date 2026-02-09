@@ -75,6 +75,8 @@
     "load-config.js",
     "generate-skill-registry.js",
     "intake-pr-deferred.js",
-    "normalize-all.js"
+    "normalize-all.js",
+    "backfill-hashes.js",
+    "dedup-multi-pass.js"
   ]
 }

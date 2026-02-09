@@ -1,0 +1,311 @@
+{
+  "timestamp": "2026-02-09T19:00:14.443Z",
+  "total_s3_new": 581,
+  "file_exists_count": 518,
+  "file_not_found_count": 29,
+  "empty_file_count": 18,
+  "data_quality_count": 16,
+  "file_not_found": [
+    {
+      "id": "DEBT-0777",
+      "file": "multiple",
+      "title": "Batch fix opportunities: 200+ ESLint auto-fixable issues"
+    },
+    {
+      "id": "DEBT-0778",
+      "file": "multiple",
+      "title": "Batch fix opportunities: 79 replaceAll() + 71 node: prefix modernizations"
+    },
+    {
+      "id": "DEBT-0787",
+      "file": "docs/PR_REVIEW_PROMPT_TEMPLATE.md",
+      "title": "Template docs located outside docs/templates/ directory"
+    },
+    {
+      "id": "DEBT-0788",
+      "file": "docs/DEVELOPMENT.md",
+      "title": "Test count mismatch between DEVELOPMENT.md and actual test suite"
+    },
+    {
+      "id": "DEBT-0847",
+      "file": "components/**",
+      "title": "Event listener/timer cleanup verification needed across multiple components"
+    },
+    {
+      "id": "DEBT-1995",
+      "file": "components/offline-indicator.tsx",
+      "title": "No UI indicator for online/offline state"
+    },
+    {
+      "id": "DEBT-1996",
+      "file": "docs/**/*.md",
+      "title": "Markdownlint and Prettier checks not confirmed"
+    },
+    {
+      "id": "DEBT-1997",
+      "file": "lib/performance.ts",
+      "title": "Potentially missing performance monitoring"
+    },
+    {
+      "id": "DEBT-2065",
+      "file": "CLAUDE.md",
+      "title": "CLAUDE.md missing Status field"
+    },
+    {
+      "id": "DEBT-2071",
+      "file": "CLAUDE.md",
+      "title": "Inconsistent list marker style"
+    },
+    {
+      "id": "DEBT-2092",
+      "file": "GLOBAL_SECURITY_STANDARDS.md",
+      "title": "Inconsistent blank lines around headings"
+    },
+    {
+      "id": "DEBT-2157",
+      "file": "CLAUDE.md",
+      "title": "Link distribution imbalance between CLAUDE.md and AI_WORKFLOW.md"
+    },
+    {
+      "id": "DEBT-2159",
+      "file": "multiple",
+      "title": "Inconsistent terminology: 'TDMS' expansion"
+    },
+    {
+      "id": "DEBT-2160",
+      "file": "multiple",
+      "title": "Inconsistent terminology: 'finding' vs 'issue' vs 'item'"
+    },
+    {
+      "id": "DEBT-2176",
+      "file": "docs/audits/single-session/README.md",
+      "title": "Broken internal link: ../canonical/README.md"
+    },
+    {
+      "id": "DEBT-2177",
+      "file": "docs/audits/single-session/README.md",
+      "title": "Broken internal link: ../../AUDIT_FINDINGS_PROCEDURE.md"
+    },
+    {
+      "id": "DEBT-2386",
+      "file": "CLAUDE.md",
+      "title": "CLAUDE.md Documentation Index has proper hyperlinks"
+    },
+    {
+      "id": "DEBT-2406",
+      "file": "CLAUDE.md",
+      "title": "Navigation: CLAUDE.md Section 5 links do not provide onward navigation"
+    },
+    {
+      "id": "DEBT-2410",
+      "file": "docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md",
+      "title": "Gap: Missing cross-links in audit documentation"
+    },
+    {
+      "id": "DEBT-2419",
+      "file": "src/dataconnect-generated/README.md",
+      "title": "Navigation: Fire DataConnect generated docs lack context about integration"
+    },
+    {
+      "id": "DEBT-2420",
+      "file": ".claude/skills/*/SKILL.md",
+      "title": "Gap: Missing skill usage examples beyond SKILL.md"
+    },
+    {
+      "id": "DEBT-2421",
+      "file": ".claude/skills/*/SKILL.md",
+      "title": "Navigation: Skill docs lack consistent 'Prerequisites' sections"
+    },
+    {
+      "id": "DEBT-2426",
+      "file": "CLAUDE.md",
+      "title": "Diagram opportunity: Compaction-resilient state persistence 4-layer system"
+    },
+    {
+      "id": "DEBT-2544",
+      "file": "code-reviewer/scripts/pr_analyzer.py",
+      "title": "Skill issue: code-reviewer scripts may be non-functional templates"
+    },
+    {
+      "id": "DEBT-2546",
+      "file": "audit-process/SKILL.md",
+      "title": "Skill issue: multiple audit skills have duplicate functionality in pre-audit steps"
+    },
+    {
+      "id": "DEBT-2547",
+      "file": "session-begin/SKILL.md",
+      "title": "Skill issue: session-begin references deprecated TECHNICAL_DEBT_MASTER.md filename"
+    },
+    {
+      "id": "DEBT-2556",
+      "file": "47,94,138,159,194",
+      "title": "Inefficient: Multiple git status/diff scans in pre-commit"
+    },
+    {
+      "id": "DEBT-2557",
+      "file": "59,80",
+      "title": "Risk: No timeout on npm test in pre-commit"
+    },
+    {
+      "id": "DEBT-2699",
+      "file": ".github/workflows/*",
+      "title": "Improve: Add workflow for stale branch cleanup"
+    }
+  ],
+  "empty_file": [
+    {
+      "id": "DEBT-0824",
+      "title": "Fix @ts-expect-error suppression"
+    },
+    {
+      "id": "DEBT-0825",
+      "title": "Remove duplicate CloudFunctionError"
+    },
+    {
+      "id": "DEBT-0826",
+      "title": "Run ESLint auto-fix"
+    },
+    {
+      "id": "DEBT-0827",
+      "title": "Extract parseTime helper"
+    },
+    {
+      "id": "DEBT-0828",
+      "title": "Replace template date placeholders"
+    },
+    {
+      "id": "DEBT-0829",
+      "title": "Move PR template to docs/templates/"
+    },
+    {
+      "id": "DEBT-0830",
+      "title": "Update DEVELOPMENT.md test count"
+    },
+    {
+      "id": "DEBT-0831",
+      "title": "Document fragile anchor links"
+    },
+    {
+      "id": "DEBT-0832",
+      "title": "Update Husky docs for patterns:check"
+    },
+    {
+      "id": "DEBT-0833",
+      "title": "Add explicit permissions block"
+    },
+    {
+      "id": "DEBT-0834",
+      "title": "Replace 'any' with proper types"
+    },
+    {
+      "id": "DEBT-0835",
+      "title": "replaceAll + node: prefix batch"
+    },
+    {
+      "id": "DEBT-0836",
+      "title": "Improve deploy secret handling"
+    },
+    {
+      "id": "DEBT-0837",
+      "title": "Missing \"AI Instructions\" Sections"
+    },
+    {
+      "id": "DEBT-0838",
+      "title": "Fix deprecated APIs + nested ternaries"
+    },
+    {
+      "id": "DEBT-0840",
+      "title": "Missing \"Quick Start\" Sections"
+    },
+    {
+      "id": "DEBT-2384",
+      "title": "No stale anchor references detected"
+    },
+    {
+      "id": "DEBT-2655",
+      "title": "Improve: Add workflow for stale branch cleanup"
+    }
+  ],
+  "data_quality": [
+    {
+      "id": "DEBT-2158",
+      "file": "114-123",
+      "title": "Duplication: Documentation hierarchy/tiers in CLAUDE.md and DOCUMENTATION_STANDARDS.md"
+    },
+    {
+      "id": "DEBT-2466",
+      "file": "48-56",
+      "title": "Duplicated: TTY-aware color code across 3+ scripts"
+    },
+    {
+      "id": "DEBT-2468",
+      "file": "83-97",
+      "title": "Duplicated: Git staged files retrieval across scripts"
+    },
+    {
+      "id": "DEBT-2469",
+      "file": "34-43",
+      "title": "Duplicated: Config loading pattern across 17+ files"
+    },
+    {
+      "id": "DEBT-2471",
+      "file": "20-31",
+      "title": "Duplicated: JSON argument parsing across hooks"
+    },
+    {
+      "id": "DEBT-2511",
+      "file": "131-138",
+      "title": "CI gap: Deleting functions uses continue-on-error hiding real failures"
+    },
+    {
+      "id": "DEBT-2513",
+      "file": "35-42",
+      "title": "CI gap: Backlog check gracefully skips with no replacement validation"
+    },
+    {
+      "id": "DEBT-2514",
+      "file": "147-150",
+      "title": "CI gap: Security pattern check runs file-by-file inefficiently"
+    },
+    {
+      "id": "DEBT-2515",
+      "file": "78-81",
+      "title": "CI gap: Documentation linting skips archive files entirely"
+    },
+    {
+      "id": "DEBT-2519",
+      "file": "46-50",
+      "title": "CI gap: Review trigger check has fragile JSON validation"
+    },
+    {
+      "id": "DEBT-2522",
+      "file": "64-78",
+      "title": "CI gap: Sync README has fragile retry logic"
+    },
+    {
+      "id": "DEBT-2526",
+      "file": "72-75",
+      "title": "CI gap: Template file exclusion is brittle regex"
+    },
+    {
+      "id": "DEBT-2553",
+      "file": "50-65",
+      "title": "Inefficient: Sequential security checks in pre-push"
+    },
+    {
+      "id": "DEBT-2558",
+      "file": "68-88",
+      "title": "Optimization: Doc-only commit detection could be smarter"
+    },
+    {
+      "id": "DEBT-2559",
+      "file": "8-44",
+      "title": "Slow: Session start hooks add 2-5s latency to every session"
+    },
+    {
+      "id": "DEBT-2560",
+      "file": "265-290",
+      "title": "Optimization: UserPromptSubmit hooks run before every user message"
+    }
+  ]
+}

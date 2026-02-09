@@ -8,11 +8,13 @@
  * Process:
  * 1. Validates input file schema
  * 2. Maps Doc Standards JSONL format to TDMS format (if detected)
- * 3. Checks for duplicates against MASTER_DEBT.jsonl
+ * 3. Checks for exact hash duplicates against MASTER_DEBT.jsonl
  * 4. Assigns DEBT-XXXX IDs to new items
- * 5. Appends to MASTER_DEBT.jsonl
- * 6. Regenerates views
- * 7. Logs intake activity (including confidence values from Doc Standards)
+ * 5. Appends to raw pipeline files (normalized-all.jsonl + deduped.jsonl)
+ * 6. Runs multi-pass dedup (parametric, near, semantic, cross-source, systemic)
+ * 7. Regenerates views
+ * 8. Assigns roadmap references (category + file path mapping)
+ * 9. Logs intake activity (including confidence values from Doc Standards)
  *
  * Supports two input formats:
  * - TDMS format (native): Uses fields like source_id, file, description, recommendation
@@ -518,16 +520,19 @@ async function main() {
     process.exit(0);
   }
 
-  // Append to MASTER_DEBT.jsonl (ensure directory exists for fresh clones/CI)
-  console.log("\n📝 Writing new items to MASTER_DEBT.jsonl...");
+  // Append new items to raw pipeline files so full dedup can process them
+  console.log("\n📝 Writing new items to pipeline...");
   if (!fs.existsSync(DEBT_DIR)) {
     fs.mkdirSync(DEBT_DIR, { recursive: true });
   }
   const newLines = newItems.map((item) => JSON.stringify(item));
-  fs.appendFileSync(MASTER_FILE, newLines.join("\n") + "\n");
 
-  // Also append to raw/deduped.jsonl so generate-views.js doesn't lose new items
-  // (generate-views reads from deduped.jsonl and overwrites MASTER_DEBT.jsonl)
+  // Append to raw/normalized-all.jsonl (input for dedup-multi-pass)
+  const NORMALIZED_FILE = path.join(DEBT_DIR, "raw/normalized-all.jsonl");
+  fs.mkdirSync(path.dirname(NORMALIZED_FILE), { recursive: true });
+  fs.appendFileSync(NORMALIZED_FILE, newLines.join("\n") + "\n");
+
+  // Also append to raw/deduped.jsonl as fallback
   const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
   fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
   fs.appendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
@@ -561,23 +566,132 @@ async function main() {
     confidence_logs: formatStats.confidenceLogs.length > 0 ? formatStats.confidenceLogs : undefined,
   });
 
-  // Regenerate views
-  console.log("🔄 Regenerating views...");
+  // Run multi-pass dedup then regenerate views
+  console.log("🔄 Running multi-pass dedup pipeline...");
+  let dedupRan = false;
   try {
-    // Use execFileSync with args array to prevent shell injection
+    execFileSync(process.execPath, ["scripts/debt/dedup-multi-pass.js"], { stdio: "inherit" });
+    dedupRan = true;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`  ⚠️ Multi-pass dedup failed: ${msg}. Falling back to views-only regeneration.`);
+  }
+
+  console.log("🔄 Regenerating views...");
+  let viewsRan = false;
+  try {
     execFileSync(process.execPath, ["scripts/debt/generate-views.js"], { stdio: "inherit" });
-  } catch {
+    viewsRan = true;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.warn(
-      "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
+      `  ⚠️ Failed to regenerate views: ${msg}. Run manually: node scripts/debt/generate-views.js`
     );
   }
 
-  // Summary
-  console.log("\n✅ Intake complete!");
+  console.log("🔄 Assigning roadmap references...");
+  try {
+    execFileSync(process.execPath, ["scripts/debt/assign-roadmap-refs.js"], { stdio: "inherit" });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(
+      `  ⚠️ Failed to assign roadmap refs: ${msg}. Run manually: node scripts/debt/assign-roadmap-refs.js`
+    );
+  }
+
+  // Read final count and dedup stats for on-screen report
+  const finalItems = viewsRan ? loadMasterDebt() : existingItems;
+  const beforeDedup = existingItems.length + newItems.length;
+  const dedupRemoved = dedupRan && viewsRan ? Math.max(0, beforeDedup - finalItems.length) : 0;
+
+  // Read dedup log for per-pass breakdown
+  let dedupBreakdown = {};
+  let reviewCount = 0;
+  let clusterCount = 0;
+  if (dedupRan) {
+    try {
+      const dedupLogPath = path.join(DEBT_DIR, "logs/dedup-log.jsonl");
+      const dedupLogContent = fs.readFileSync(dedupLogPath, "utf8");
+      const logEntries = dedupLogContent.split("\n").filter((l) => l.trim());
+      for (const entry of logEntries) {
+        try {
+          const e = JSON.parse(entry);
+          const key = `pass_${e.pass}`;
+          dedupBreakdown[key] = (dedupBreakdown[key] || 0) + 1;
+        } catch {
+          /* skip unparseable log entry */
+        }
+      }
+    } catch {
+      /* dedup log not available */
+    }
+    try {
+      const reviewPath = path.join(DEBT_DIR, "raw/review-needed.jsonl");
+      if (fs.existsSync(reviewPath)) {
+        reviewCount = fs
+          .readFileSync(reviewPath, "utf8")
+          .split("\n")
+          .filter((l) => l.trim()).length;
+      }
+    } catch {
+      /* review file not available */
+    }
+    // Count systemic clusters in final items
+    const clusterIds = new Set();
+    for (const item of finalItems) {
+      if (item.cluster_id) clusterIds.add(item.cluster_id);
+    }
+    clusterCount = clusterIds.size;
+  }
+
+  // Severity breakdown of final items
+  const sevCounts = {};
+  for (const item of finalItems) {
+    sevCounts[item.severity] = (sevCounts[item.severity] || 0) + 1;
+  }
+
+  // On-screen report
+  console.log("\n" + "═".repeat(60));
+  console.log("  INTAKE & DEDUP REPORT");
+  console.log("═".repeat(60));
+  console.log(`  📥 Input:     ${inputLines.length} findings from audit`);
   console.log(
-    `  📈 Added ${newItems.length} new items (${newItems[0]?.id} - ${newItems[newItems.length - 1]?.id})`
+    `  ✅ Ingested:  ${newItems.length} new items (${newItems[0]?.id} – ${newItems[newItems.length - 1]?.id})`
   );
-  console.log(`  📊 New MASTER_DEBT.jsonl total: ${existingItems.length + newItems.length} items`);
+  console.log(`  ⏭️  Hash dupes: ${duplicates.length} exact duplicates skipped`);
+  console.log(`  ❌ Errors:    ${errors.length} validation failures`);
+  if (dedupRan) {
+    console.log("");
+    console.log("  🔄 Multi-Pass Dedup:");
+    const passNames = {
+      pass_0: "Parametric (numbers stripped)",
+      pass_1: "Exact hash match",
+      pass_2: "Near match (file+line+title)",
+      pass_3: "Semantic (file+title >90%)",
+      pass_4: "Cross-source (SonarCloud↔audit)",
+      pass_5: "Systemic pattern annotation",
+    };
+    for (const [key, name] of Object.entries(passNames)) {
+      const count = dedupBreakdown[key] || 0;
+      if (count > 0) {
+        console.log(`     ${name}: ${count}`);
+      }
+    }
+    console.log(`     Total merged: ${dedupRemoved}`);
+    if (clusterCount > 0) {
+      console.log(`     Systemic patterns: ${clusterCount} clusters identified`);
+    }
+    if (reviewCount > 0) {
+      console.log(`     ⚠️  ${reviewCount} items flagged for manual review`);
+    }
+  }
+  console.log("");
+  console.log("  📊 MASTER_DEBT.jsonl:");
+  console.log(`     Total: ${finalItems.length} items`);
+  console.log(
+    `     S0: ${sevCounts.S0 || 0} | S1: ${sevCounts.S1 || 0} | S2: ${sevCounts.S2 || 0} | S3: ${sevCounts.S3 || 0}`
+  );
+  console.log("═".repeat(60));
 }
 
 main().catch((err) => {

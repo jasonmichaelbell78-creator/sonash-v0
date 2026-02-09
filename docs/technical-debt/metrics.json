@@ -1,42 +1,54 @@
 {
-  "generated": "2026-02-09T03:47:07.191Z",
+  "generated": "2026-02-09T21:24:03.558Z",
   "generated_date": "2026-02-09",
   "summary": {
-    "total": 2379,
-    "open": 2106,
-    "resolved": 40,
-    "false_positives": 233,
-    "resolution_rate_pct": 2
+    "total": 2122,
+    "open": 1727,
+    "resolved": 159,
+    "false_positives": 236,
+    "resolution_rate_pct": 7
   },
   "by_status": {
-    "NEW": 2106,
-    "VERIFIED": 0,
+    "NEW": 0,
+    "VERIFIED": 1727,
     "IN_PROGRESS": 0,
-    "RESOLVED": 40,
-    "FALSE_POSITIVE": 233
+    "RESOLVED": 159,
+    "FALSE_POSITIVE": 236
   },
   "by_severity": {
-    "S0": 25,
-    "S1": 496,
-    "S2": 1147,
-    "S3": 711
+    "S0": 27,
+    "S1": 388,
+    "S2": 900,
+    "S3": 807
   },
   "by_category": {
-    "code-quality": 1700,
-    "security": 82,
-    "performance": 81,
+    "code-quality": 1174,
+    "security": 81,
+    "performance": 50,
     "documentation": 464,
     "refactoring": 21,
-    "process": 28,
+    "process": 329,
     "engineering-productivity": 3
   },
   "by_source": {
-    "unknown": 2379
+    "unknown": 2122
   },
   "alerts": {
-    "s0_count": 10,
-    "s1_count": 487,
+    "s0_count": 9,
+    "s1_count": 363,
     "s0_items": [
+      {
+        "id": "DEBT-0012",
+        "title": "Refactor this function to reduce its Cognitive Complexity fr",
+        "file": "functions/src/admin.ts",
+        "line": 576
+      },
+      {
+        "id": "DEBT-0037",
+        "title": "Refactor this function to reduce its Cognitive Complexity fr",
+        "file": "components/widgets/compact-meeting-countdown.tsx",
+        "line": 69
+      },
       {
         "id": "DEBT-0854",
         "title": "App Check disabled on all production Cloud Functions",
@@ -50,28 +62,10 @@
         "line": 327
       },
       {
-        "id": "DEBT-1057",
-        "title": "Refactor this function to reduce its Cognitive Complexity fr",
-        "file": "functions/src/admin.ts",
-        "line": 3863
-      },
-      {
         "id": "DEBT-1064",
         "title": "Refactor this code to not nest functions more than 4 levels ",
         "file": "components/admin/logs-tab.tsx",
         "line": 342
-      },
-      {
-        "id": "DEBT-1088",
-        "title": "Refactor this function to reduce its Cognitive Complexity fr",
-        "file": "functions/src/admin.ts",
-        "line": 2009
-      },
-      {
-        "id": "DEBT-1296",
-        "title": "Refactor this function to reduce its Cognitive Complexity fr",
-        "file": "docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js",
-        "line": 137
       },
       {
         "id": "DEBT-1538",
@@ -86,16 +80,16 @@
         "line": 81
       },
       {
-        "id": "DEBT-1846",
-        "title": "Refactor this function to reduce its Cognitive Complexity fr",
-        "file": "components/widgets/compact-meeting-countdown.tsx",
-        "line": 136
-      },
-      {
         "id": "DEBT-1912",
         "title": "Security risk: Client-side filtering of sensitive data",
         "file": "hooks/use-journal.ts",
         "line": 174
+      },
+      {
+        "id": "DEBT-2499",
+        "title": "CI gap: pull_request_target security vulnerability allows un",
+        "file": ".github/workflows/deploy-firebase.yml",
+        "line": 7
       }
     ],
     "s1_items": [
@@ -165,6 +159,6 @@
     "avg_age_days": 0,
     "oldest_age_days": 0,
     "oldest_item_id": null,
-    "verification_queue_size": 2106
+    "verification_queue_size": 0
   }
 }

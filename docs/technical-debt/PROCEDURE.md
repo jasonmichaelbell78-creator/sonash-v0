@@ -89,10 +89,17 @@ node scripts/debt/intake-audit.js ./path/to/audit-output.jsonl
 The script will:
 
 - Validate schema compliance
-- Check for duplicates
+- Check for exact hash duplicates (fast O(1) check)
 - Assign DEBT-XXXX IDs
-- Append to MASTER_DEBT.jsonl
+- Run 6-pass multi-pass dedup pipeline:
+  - Pass 0: Parametric (strips numbers from titles for same-rule matching)
+  - Pass 1: Exact content hash
+  - Pass 2: Near match (same file + line ±5 + title >80%)
+  - Pass 3: Semantic (same file + title >90%, flagged for review)
+  - Pass 4: Cross-source (SonarCloud ↔ audit correlation)
+  - Pass 5: Systemic pattern grouper (cross-file clustering, >=3 occurrences)
 - Regenerate all views
+- Print on-screen dedup report with per-pass breakdown
 
 **Required audit output format:**
 

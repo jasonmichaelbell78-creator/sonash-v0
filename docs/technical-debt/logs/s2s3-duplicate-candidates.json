@@ -1,0 +1,234 @@
+{
+  "timestamp": "2026-02-09T19:00:29.944Z",
+  "total_checked": 1458,
+  "duplicate_groups": [
+    {
+      "primary": "DEBT-0196",
+      "duplicates": ["DEBT-0197"],
+      "file": "scripts/check-pattern-compliance.js",
+      "similarity": 0.73,
+      "titles": [
+        "`extensions` should be a `Set`, and use `extensions.has()` to check existence or non-existence.",
+        "`ignoreDirs` should be a `Set`, and use `ignoreDirs.has()` to check existence or non-existence."
+      ]
+    },
+    {
+      "primary": "DEBT-0636",
+      "duplicates": ["DEBT-0637"],
+      "file": "scripts/normalize-canon-ids.js",
+      "similarity": 0.71,
+      "titles": [
+        "Remove this unused import of 'mkdirSync'.",
+        "Remove this unused import of 'basename'."
+      ]
+    },
+    {
+      "primary": "DEBT-0639",
+      "duplicates": ["DEBT-0647", "DEBT-0654"],
+      "file": ".claude/hooks/session-start.sh",
+      "similarity": 0.83,
+      "titles": [
+        "Define a constant instead of using the literal 'functions/package-lock.json' 4 times.",
+        "Define a constant instead of using the literal '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' 4 times."
+      ]
+    },
+    {
+      "primary": "DEBT-0647",
+      "duplicates": ["DEBT-0654"],
+      "file": ".claude/hooks/session-start.sh",
+      "similarity": 0.83,
+      "titles": [
+        "Define a constant instead of using the literal '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' 4 times.",
+        "Define a constant instead of using the literal 'package-lock.json' 4 times."
+      ]
+    },
+    {
+      "primary": "DEBT-0381",
+      "duplicates": ["DEBT-0470"],
+      "file": "UNKNOWN",
+      "similarity": 1,
+      "titles": [
+        "Console statements present; replace with structured logger and enforce no-console in production",
+        "Console statements present; replace with structured logger and enforce no-console in production"
+      ]
+    },
+    {
+      "primary": "DEBT-0619",
+      "duplicates": ["DEBT-0620"],
+      "file": "hooks/use-journal.ts",
+      "similarity": 0.86,
+      "titles": [
+        "'data.content || \"\"' will use Object's default stringification format ('[object Object]') when stringified.",
+        "'data.step4_surrender || \"\"' will use Object's default stringification format ('[object Object]') when stringified."
+      ]
+    },
+    {
+      "primary": "DEBT-2193",
+      "duplicates": ["DEBT-2199", "DEBT-2204"],
+      "file": "DOCUMENTATION_INDEX.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: docs/SoNash_Technical_Ideation_Multi_AI%201.20.26.md",
+        "Broken internal link: docs/SoNash_Technical_Ideation_Multi_AI%201.20.26.md"
+      ]
+    },
+    {
+      "primary": "DEBT-2194",
+      "duplicates": ["DEBT-2200", "DEBT-2203"],
+      "file": "DOCUMENTATION_INDEX.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: docs/audits/sonarcloud-issues-detailed.md",
+        "Broken internal link: docs/audits/sonarcloud-issues-detailed.md"
+      ]
+    },
+    {
+      "primary": "DEBT-2195",
+      "duplicates": ["DEBT-2208"],
+      "file": "DOCUMENTATION_INDEX.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: src/dataconnect-generated/README.md",
+        "Broken internal link: src/dataconnect-generated/README.md"
+      ]
+    },
+    {
+      "primary": "DEBT-2196",
+      "duplicates": ["DEBT-2202", "DEBT-2206"],
+      "file": "DOCUMENTATION_INDEX.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: src/dataconnect-generated/.guides/usage.md",
+        "Broken internal link: src/dataconnect-generated/.guides/usage.md"
+      ]
+    },
+    {
+      "primary": "DEBT-2197",
+      "duplicates": ["DEBT-2201", "DEBT-2205"],
+      "file": "DOCUMENTATION_INDEX.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: src/dataconnect-generated/.guides/setup.md",
+        "Broken internal link: src/dataconnect-generated/.guides/setup.md"
+      ]
+    },
+    {
+      "primary": "DEBT-2198",
+      "duplicates": ["DEBT-2207"],
+      "file": "DOCUMENTATION_INDEX.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: src/dataconnect-generated/react/README.md",
+        "Broken internal link: src/dataconnect-generated/react/README.md"
+      ]
+    },
+    {
+      "primary": "DEBT-2199",
+      "duplicates": ["DEBT-2204"],
+      "file": "DOCUMENTATION_INDEX.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: docs/SoNash_Technical_Ideation_Multi_AI%201.20.26.md",
+        "Broken internal link: docs/SoNash_Technical_Ideation_Multi_AI%201.20.26.md"
+      ]
+    },
+    {
+      "primary": "DEBT-2200",
+      "duplicates": ["DEBT-2203"],
+      "file": "DOCUMENTATION_INDEX.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: docs/audits/sonarcloud-issues-detailed.md",
+        "Broken internal link: docs/audits/sonarcloud-issues-detailed.md"
+      ]
+    },
+    {
+      "primary": "DEBT-2201",
+      "duplicates": ["DEBT-2205"],
+      "file": "DOCUMENTATION_INDEX.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: src/dataconnect-generated/.guides/setup.md",
+        "Broken internal link: src/dataconnect-generated/.guides/setup.md"
+      ]
+    },
+    {
+      "primary": "DEBT-2202",
+      "duplicates": ["DEBT-2206"],
+      "file": "DOCUMENTATION_INDEX.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: src/dataconnect-generated/.guides/usage.md",
+        "Broken internal link: src/dataconnect-generated/.guides/usage.md"
+      ]
+    },
+    {
+      "primary": "DEBT-1049",
+      "duplicates": ["DEBT-1052"],
+      "file": "scripts/multi-ai/unify-findings.js",
+      "similarity": 0.75,
+      "titles": [
+        "Remove the declaration of the unused 'category' variable.",
+        "Remove the declaration of the unused 'mergeLog' variable."
+      ]
+    },
+    {
+      "primary": "DEBT-1107",
+      "duplicates": ["DEBT-1108"],
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "similarity": 0.78,
+      "titles": [
+        "The catch parameter `renameErr` should be named `error_`.",
+        "The catch parameter `unlinkErr` should be named `error_`."
+      ]
+    },
+    {
+      "primary": "DEBT-1184",
+      "duplicates": ["DEBT-1185"],
+      "file": "scripts/debt/assign-roadmap-refs.js",
+      "similarity": 0.78,
+      "titles": [
+        "The catch parameter `backupErr` should be named `error_`.",
+        "The catch parameter `writeErr` should be named `error_`."
+      ]
+    },
+    {
+      "primary": "DEBT-1606",
+      "duplicates": ["DEBT-1607"],
+      "file": "scripts/security-check.js",
+      "similarity": 0.71,
+      "titles": [
+        "Remove this unused import of 'statSync'.",
+        "Remove this unused import of 'isAbsolute'."
+      ]
+    },
+    {
+      "primary": "DEBT-2143",
+      "duplicates": ["DEBT-2144"],
+      "file": ".claude/skills/session-begin/SKILL.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: ../../SESSION_CONTEXT.md",
+        "Broken internal link: ../../SESSION_CONTEXT.md"
+      ]
+    },
+    {
+      "primary": "DEBT-2145",
+      "duplicates": ["DEBT-2147"],
+      "file": ".claude/skills/session-begin/SKILL.md",
+      "similarity": 1,
+      "titles": ["Broken internal link: ../../ROADMAP.md", "Broken internal link: ../../ROADMAP.md"]
+    },
+    {
+      "primary": "DEBT-2146",
+      "duplicates": ["DEBT-2151"],
+      "file": ".claude/skills/session-begin/SKILL.md",
+      "similarity": 1,
+      "titles": [
+        "Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md",
+        "Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md"
+      ]
+    }
+  ],
+  "total_duplicate_candidates": 23
+}
