@@ -36,11 +36,13 @@ const PLAN_PATH = join(
  * @returns {string|null} Phase content or null if not found
  */
 function extractPhaseContent(content, phase) {
-  const phaseStart = content.indexOf(`## 📋 ${phase}`);
+  const header = `## 📋 ${phase}`;
+  const phaseStart = content.indexOf(header);
   if (phaseStart === -1) return null;
 
-  const nextPhaseMatch = content.slice(phaseStart + 10).match(/\n## 📋 PHASE/);
-  const phaseEnd = nextPhaseMatch ? phaseStart + 10 + nextPhaseMatch.index : content.length;
+  const searchStart = phaseStart + header.length;
+  const nextPhaseMatch = content.slice(searchStart).match(/\n## 📋 PHASE/);
+  const phaseEnd = nextPhaseMatch ? searchStart + nextPhaseMatch.index : content.length;
   return content.slice(phaseStart, phaseEnd);
 }
 

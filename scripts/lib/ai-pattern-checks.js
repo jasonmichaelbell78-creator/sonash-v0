@@ -102,7 +102,10 @@ function validatePackageJsonPath(packageJsonPath) {
  */
 function isPathTraversal(relPath) {
   return (
-    path.isAbsolute(relPath) || /^[A-Za-z]:[\\/]/.test(relPath) || /^\.\.(?:[\\/]|$)/.test(relPath)
+    path.isAbsolute(relPath) ||
+    /^[A-Za-z]:[\\/]/.test(relPath) ||
+    /^\.\.(?:[\\/]|$)/.test(relPath) ||
+    /(^|[\\/])\.\.(?:[\\/]|$)/.test(relPath)
   );
 }
 

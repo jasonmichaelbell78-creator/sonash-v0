@@ -523,10 +523,6 @@ function resolveConfig(parsed) {
   const sonarProps = readSonarProperties();
   const token = process.env.SONAR_TOKEN;
   const org = parsed.org || process.env.SONAR_ORG || sonarProps.org;
-  const projectInput =
-    parsed.project || process.env.SONAR_PROJECT || sonarProps.project || "sonash";
-  const project =
-    org && projectInput.startsWith(`${org}_`) ? projectInput.slice(org.length + 1) : projectInput;
 
   if (!token) {
     console.error("Error: SONAR_TOKEN environment variable is required");
@@ -539,6 +535,12 @@ function resolveConfig(parsed) {
     console.error("  Use --org flag or set SONAR_ORG environment variable");
     process.exit(1);
   }
+
+  const projectInput =
+    parsed.project || process.env.SONAR_PROJECT || sonarProps.project || "sonash";
+  const project = projectInput.startsWith(`${org}_`)
+    ? projectInput.slice(org.length + 1)
+    : projectInput;
 
   return { token, org, project };
 }

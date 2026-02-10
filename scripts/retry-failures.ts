@@ -1,6 +1,6 @@
 import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { sanitizeError } from "./lib/sanitize-error";
@@ -79,8 +79,11 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 2500));
 
     const url = `${NOMINATIM_BASE_URL}?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1`;
-    const curlCommand = `curl -s -H "User-Agent: ${USER_AGENT}" -H "Referer: https://sonash.app" "${url}"`;
-    const responseText = execSync(curlCommand, { encoding: "utf8", maxBuffer: 1024 * 1024 });
+    const responseText = execFileSync(
+      "curl",
+      ["-s", "-H", `User-Agent: ${USER_AGENT}`, "-H", "Referer: https://sonash.app", url],
+      { encoding: "utf8", maxBuffer: 1024 * 1024 }
+    );
 
     const results = JSON.parse(responseText) as Array<{
       lat: string;
@@ -146,9 +149,7 @@ try {
     }
 
     const streetClean = cleanAddress(data.address);
-    console.log(
-      `[${index + 1}/${failures.length}] 🔄 Retrying ID: ${docId} | Addr: "${data.address}" -> "${streetClean}"`
-    );
+    console.log(`[${index + 1}/${failures.length}] 🔄 Retrying ID: ${docId}`);
 
     const found = await retryOneFailure(docRef, data);
     if (found) {

@@ -338,30 +338,37 @@ function detectToolFromRefs(toolRefs) {
  * Categorize verification steps into evidence, review, and tool references
  */
 function categorizeVerificationSteps(steps) {
-  const evidenceItems = steps.filter((v) => {
-    const lower = v.toLowerCase();
-    return (
-      lower.includes("grep") ||
-      lower.includes("search") ||
-      lower.includes("run") ||
-      lower.includes("check")
-    );
-  });
-  const reviewItems = steps.filter((v) => {
-    const lower = v.toLowerCase();
-    return lower.includes("review") || lower.includes("verify") || lower.includes("confirm");
-  });
-  const toolRefs = steps.filter((v) => {
-    const lower = v.toLowerCase();
-    return (
-      lower.includes("eslint") ||
-      lower.includes("lint") ||
-      lower.includes("npm") ||
-      lower.includes("typescript") ||
-      lower.includes("sonar")
-    );
-  });
-  return { evidenceItems, reviewItems, toolRefs };
+  if (!steps) return { evidenceItems: [], reviewItems: [], toolRefs: [] };
+
+  return steps.reduce(
+    (acc, v) => {
+      const lower = v.toLowerCase();
+      if (
+        lower.includes("eslint") ||
+        lower.includes("lint") ||
+        lower.includes("npm") ||
+        lower.includes("typescript") ||
+        lower.includes("sonar")
+      ) {
+        acc.toolRefs.push(v);
+      } else if (
+        lower.includes("review") ||
+        lower.includes("verify") ||
+        lower.includes("confirm")
+      ) {
+        acc.reviewItems.push(v);
+      } else if (
+        lower.includes("grep") ||
+        lower.includes("search") ||
+        lower.includes("run") ||
+        lower.includes("check")
+      ) {
+        acc.evidenceItems.push(v);
+      }
+      return acc;
+    },
+    { evidenceItems: [], reviewItems: [], toolRefs: [] }
+  );
 }
 
 /**
