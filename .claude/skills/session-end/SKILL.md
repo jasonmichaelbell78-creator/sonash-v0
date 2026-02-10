@@ -76,7 +76,21 @@ fi
 Keep `task-*.state.json` files only if they have `in_progress` steps (the user
 may resume them next session).
 
-## 7. TDMS Consolidation & Metrics
+## 7. Velocity Tracking
+
+Capture session velocity metrics (items completed from ROADMAP.md):
+
+```bash
+node scripts/velocity/track-session.js
+```
+
+This script:
+
+- Diffs ROADMAP.md to count items checked off this session
+- Appends an entry to `.claude/state/velocity-log.jsonl`
+- Prints a summary with rolling average and trend
+
+## 8. TDMS Consolidation & Metrics
 
 Run the full consolidation pipeline to ensure dedup is current (~1.5s):
 
@@ -98,7 +112,7 @@ This generates:
 - `docs/technical-debt/metrics.json` - Machine-readable for dashboard
 - `docs/technical-debt/METRICS.md` - Human-readable summary
 
-## 8. Final Commit & Push (MANDATORY)
+## 9. Final Commit & Push (MANDATORY)
 
 ```bash
 npm run session:end

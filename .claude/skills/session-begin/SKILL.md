@@ -261,6 +261,23 @@ section (🔴 = critical patterns). Key patterns:
 - **Archive exclusions** - Historical docs should be excluded from strict
   linting
 
+## 6b. Velocity & Task Dependencies (RECOMMENDED)
+
+**Show recent velocity and available tasks:**
+
+```bash
+# Show velocity summary (if data exists)
+node scripts/velocity/generate-report.js 2>/dev/null || true
+
+# Show dependency-resolved available tasks
+node scripts/tasks/resolve-dependencies.js 2>/dev/null || true
+```
+
+Share the output with the user at session start so they can see:
+
+- Recent velocity trend and sprint burn-down
+- Which tasks are unblocked and ready to work on
+
 ## 7. Session Start Scripts (AUTO-RUN)
 
 **Execute these scripts automatically** when processing this command:

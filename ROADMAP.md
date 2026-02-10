@@ -337,18 +337,20 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 
 #### Dev Dashboard Tabs
 
-- [ ] **B3:** Lighthouse CI Integration (2hr)
-- [ ] **B4:** Firestore History Storage (2hr)
-- [ ] **B5:** Lighthouse Dashboard Tab (3hr)
-- [ ] **B6:** Error Tracing Tab (2hr) - includes npm audit display
-- [ ] **B7:** Session Activity Tab (2hr)
-- [ ] **B8:** Document Sync Tab (1hr)
-- [ ] **B9:** Override Audit Tab (1hr)
+- [ ] **B3:** Lighthouse CI Integration (2hr) [depends: B1, B2]
+- [ ] **B4:** Firestore History Storage (2hr) [depends: B1]
+- [ ] **B5:** Lighthouse Dashboard Tab (3hr) [depends: B3, B4]
+- [ ] **B6:** Error Tracing Tab (2hr) - includes npm audit display [depends: B4]
+- [ ] **B7:** Session Activity Tab (2hr) [depends: B4]
+- [ ] **B8:** Document Sync Tab (1hr) [depends: B4]
+- [ ] **B9:** Override Audit Tab (1hr) [depends: B4]
 - [ ] **B10:** System Health Tab (3hr) **NEW - Process Audit Integration**
+      [depends: B4]
   - Pattern compliance status (93 violations baseline)
   - CI gate status, script test coverage
   - Pre-commit timing, agent compliance
-- [ ] **B11:** Warnings Resolution Tab (3hr) **NEW - Session #101**
+- [ ] **B11:** Warnings Resolution Tab (3hr) **NEW - Session #101** [depends:
+      B4, E1]
   - Track unresolved hook warnings
   - Resolution actions: Acknowledge/Resolve/Suppress
   - Aging alerts for old warnings
@@ -405,20 +407,22 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 #### Phase 2 - CI Quality Gates
 
 - [ ] **D4:** Fix non-blocking CI gates (4hr) [CANON-0105, 0111] - S0 priority
-- [ ] **D5:** Add security scanning to CI (4hr) [CANON-0107]
+      [depends: D1]
+- [ ] **D5:** Add security scanning to CI (4hr) [CANON-0107] [depends: D4]
 
 #### Phase 3 - Deployment Safety
 
 - [x] **D5.5:** Golden-path E2E test (3hr) [CTO Advisory] - ✅ **Consolidated
       into Track T** (T2.1-T2.5)
-- [ ] **D6:** Post-deployment health checks (2hr) [Comprehensive]
-- [ ] **D7:** Deployment approval gates (2hr) [Comprehensive]
-- [ ] **D8:** Automated rollback (5hr) [Comprehensive]
-- [ ] **D9:** Canary deployments (6hr) [Comprehensive - Optional]
+- [ ] **D6:** Post-deployment health checks (2hr) [Comprehensive] [depends: D4]
+- [ ] **D7:** Deployment approval gates (2hr) [Comprehensive] [depends: D6]
+- [ ] **D8:** Automated rollback (5hr) [Comprehensive] [depends: D6, D7]
+- [ ] **D9:** Canary deployments (6hr) [Comprehensive - Optional] [depends: D8]
 
 #### Phase 4 - Ongoing
 
 - [ ] **D10:** Script test coverage (ongoing) [CANON-0106] - 2-7% → 30%
+      [depends: D1]
 
 ### Track E - Solo Developer Automations (NEW)
 
@@ -444,8 +448,10 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
       lib/firestore-service.ts)
 
 - [ ] **E1:** Warning collector hook (2hr) - Feed B11 Warnings Tab
-- [ ] **E2:** Session health summary (1hr) - JSON output for Dashboard
-- [ ] **E3:** Auto-escalation system (2hr) - Age-based issue alerts
+- [ ] **E2:** Session health summary (1hr) - JSON output for Dashboard [depends:
+      E1]
+- [ ] **E3:** Auto-escalation system (2hr) - Age-based issue alerts [depends:
+      E1]
 - [ ] **E4:** Pre-commit decision aid (1hr) - Guide commit decisions
 - [ ] **E5:** Automated fix suggestions (3hr) - Generate patches
 - [ ] **E6:** Weekly health digest (2hr) - Automated trend summary
