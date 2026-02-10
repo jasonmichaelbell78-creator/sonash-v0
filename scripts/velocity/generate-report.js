@@ -60,22 +60,29 @@ function countRemainingItems() {
     const roadmap = fs.readFileSync(ROADMAP_PATH, "utf8");
 
     // Extract the Active Sprint section (stops at next ## heading or EOF)
+    // Uses \r?\n for cross-platform CRLF compatibility (Review #40)
     const sectionMatch = roadmap.match(
-      /##\s+(?:Active Sprint|Current Sprint)[^\n]*\n([\s\S]*?)(?=\n##\s|$)/i
+      /##\s+(?:Active Sprint|Current Sprint)[^\r\n]*\r?\n([\s\S]*?)(?=\r?\n##\s|$)/i
     );
-    const scope = sectionMatch ? sectionMatch[1] : roadmap;
+
+    if (!sectionMatch) {
+      return { remaining: 0, completed: 0, scoped: false };
+    }
+
+    const scope = sectionMatch[1];
 
     const unchecked = scope.match(/^[ \t]*- \[ \]/gm);
     const checked = scope.match(/^[ \t]*- \[x\]/gim);
     return {
       remaining: unchecked ? unchecked.length : 0,
       completed: checked ? checked.length : 0,
+      scoped: true,
     };
   } catch (err) {
     process.stderr.write(
       `Warning: Could not read ROADMAP.md: ${err instanceof Error ? err.message : String(err)}\n`
     );
-    return { remaining: 0, completed: 0 };
+    return { remaining: 0, completed: 0, scoped: false };
   }
 }
 
@@ -168,7 +175,7 @@ function printSummary(velocity, remaining) {
   );
   console.log(`Trend: ${velocity.trend}`);
 
-  if (remaining.remaining > 0) {
+  if (remaining.remaining > 0 && remaining.scoped !== false) {
     const sessionsRemaining =
       velocity.averageVelocity > 0
         ? Math.ceil(remaining.remaining / velocity.averageVelocity)

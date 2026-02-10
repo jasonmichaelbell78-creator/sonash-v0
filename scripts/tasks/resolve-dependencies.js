@@ -72,8 +72,20 @@ function parseTasks() {
       //         [depends: B4]
       const nextLine = lines[i + 1] || "";
       if (/^[ \t]{2,}\[depends?:/i.test(nextLine) && !/\[depends?:/i.test(description)) {
-        description = `${description} ${nextLine.trim()}`;
-        i += 1; // consume continuation line
+        let j = i + 1;
+        let continuation = nextLine.trim();
+
+        // Support multi-line depends blocks (e.g., [depends:\n  B4, E1])
+        // Cap look-ahead to 4 lines to avoid runaway on malformed markdown
+        while (!/\]/.test(continuation) && j + 1 < lines.length && j - i < 4) {
+          const maybeNext = lines[j + 1] || "";
+          if (!/^[ \t]{2,}/.test(maybeNext)) break;
+          continuation += ` ${maybeNext.trim()}`;
+          j += 1;
+        }
+
+        description = `${description} ${continuation}`;
+        i = j; // consume continuation line(s)
       }
 
       // Extract [depends: ...] annotation
@@ -146,6 +158,18 @@ function resolveOrder(tasks) {
 
   // Detect circular dependencies
   const circles = detectCircles(tasks);
+
+  // If cycles exist, ensure cycle members are never treated as ready
+  if (circles.length > 0) {
+    const cycleIds = new Set(circles.flat());
+
+    for (let i = ready.length - 1; i >= 0; i--) {
+      if (cycleIds.has(ready[i].id)) {
+        const task = ready.splice(i, 1)[0];
+        blocked.push({ ...task, unmetDeps: ["<circular dependency>"] });
+      }
+    }
+  }
 
   return { ready, blocked, completed, orphanDeps, circles };
 }

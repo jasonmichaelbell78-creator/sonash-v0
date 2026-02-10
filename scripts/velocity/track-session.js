@@ -28,7 +28,14 @@ function getSessionNumber() {
   // Check CLI args
   const sessionIdx = process.argv.indexOf("--session");
   if (sessionIdx !== -1 && process.argv[sessionIdx + 1]) {
-    return parseInt(process.argv[sessionIdx + 1], 10);
+    const parsed = parseInt(process.argv[sessionIdx + 1], 10);
+    if (Number.isNaN(parsed) || parsed < 0 || !Number.isFinite(parsed)) {
+      process.stderr.write(
+        `Warning: Invalid --session value "${process.argv[sessionIdx + 1]}", ignoring\n`
+      );
+    } else {
+      return parsed;
+    }
   }
 
   // Try to read from SESSION_CONTEXT.md
@@ -172,15 +179,20 @@ function run() {
   // Ensure state directory exists and write entry
   try {
     const stateDir = path.dirname(VELOCITY_LOG);
-    if (!fs.existsSync(stateDir)) {
-      fs.mkdirSync(stateDir, { recursive: true });
+    fs.mkdirSync(stateDir, { recursive: true });
+
+    const stat = fs.statSync(stateDir);
+    if (!stat.isDirectory()) {
+      throw new Error(`${stateDir} is not a directory`);
     }
+
     // Append to JSONL
     fs.appendFileSync(VELOCITY_LOG, JSON.stringify(entry) + "\n", "utf8");
   } catch (err) {
     process.stderr.write(
       `Warning: Could not write velocity log: ${err instanceof Error ? err.message : String(err)}\n`
     );
+    process.exitCode = 1;
   }
 
   // Print summary
