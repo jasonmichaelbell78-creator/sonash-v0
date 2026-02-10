@@ -30,6 +30,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "
 import { join, dirname, basename, relative, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
+import crypto from "node:crypto";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -258,7 +259,7 @@ function createAgeFinding(filePath, relativePath, thresholdDays, idSuffix, title
   if (daysSinceModified <= thresholdDays) return null;
 
   return {
-    id: `DOC-LIFECYCLE-${idSuffix}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+    id: `DOC-LIFECYCLE-${idSuffix}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`,
     category: "documentation",
     severity: "S3",
     effort: "E1",

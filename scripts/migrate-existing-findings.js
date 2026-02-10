@@ -23,7 +23,14 @@ const REFACTOR_BACKLOG = join(
 let existingFindings = [];
 try {
   if (existsSync(MASTER_FILE)) {
-    const raw = readFileSync(MASTER_FILE, "utf-8");
+    let raw;
+    try {
+      raw = readFileSync(MASTER_FILE, "utf-8");
+    } catch (readErr) {
+      const errMsg = readErr instanceof Error ? readErr.message : String(readErr);
+      console.error(`Failed to read ${MASTER_FILE}: ${errMsg}`);
+      process.exit(1);
+    }
     const lines = raw.split("\n").filter((l) => l.trim().length > 0);
     existingFindings = lines
       .map((l, idx) => {

@@ -176,7 +176,14 @@ async function main() {
 
   for (const file of files) {
     const relPath = path.relative(path.join(__dirname, "../.."), file);
-    const content = fs.readFileSync(file, "utf8");
+    let content;
+    try {
+      content = fs.readFileSync(file, "utf8");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.warn(`  ⚠️ Failed to read ${relPath}: ${errMsg}`);
+      continue;
+    }
     const lines = content.split("\n").filter((line) => line.trim());
 
     let fileItemCount = 0;
@@ -194,7 +201,8 @@ async function main() {
         items.push(processed);
         fileItemCount++;
       } catch (err) {
-        console.warn(`  ⚠️ Failed to parse line in ${relPath}: ${err.message}`);
+        const errMsg = err instanceof Error ? err.message : String(err);
+        console.warn(`  ⚠️ Failed to parse line in ${relPath}: ${errMsg}`);
       }
     }
 

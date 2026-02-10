@@ -47,7 +47,14 @@ function loadMasterDebt() {
   if (!fs.existsSync(MASTER_FILE)) {
     return [];
   }
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to read ${MASTER_FILE}: ${errMsg}`);
+    process.exit(1);
+  }
   const lines = content.split("\n").filter((line) => line.trim());
 
   const items = [];
@@ -57,7 +64,8 @@ function loadMasterDebt() {
     try {
       items.push(JSON.parse(lines[i]));
     } catch (err) {
-      badLines.push({ line: i + 1, message: err.message });
+      const errMsg = err instanceof Error ? err.message : String(err);
+      badLines.push({ line: i + 1, message: errMsg });
     }
   }
 
@@ -115,7 +123,14 @@ function loadIdsFromFile(filePath) {
     console.error(`Error: File not found: ${filePath}`);
     process.exit(1);
   }
-  const content = fs.readFileSync(filePath, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(filePath, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to read ${filePath}: ${errMsg}`);
+    process.exit(1);
+  }
   const ids = content
     .split("\n")
     .map((line) => line.trim())
@@ -269,6 +284,7 @@ Example:
 }
 
 main().catch((err) => {
-  console.error("Fatal error:", err.message);
+  const errMsg = err instanceof Error ? err.message : String(err);
+  console.error("Fatal error:", errMsg);
   process.exit(1);
 });

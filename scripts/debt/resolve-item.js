@@ -18,7 +18,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -51,7 +51,14 @@ function loadMasterDebt() {
   if (!fs.existsSync(MASTER_FILE)) {
     return [];
   }
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to read ${MASTER_FILE}: ${errMsg}`);
+    process.exit(1);
+  }
   const lines = content.split("\n").filter((line) => line.trim());
   return lines.map((line) => JSON.parse(line));
 }
@@ -228,10 +235,10 @@ function applyResolved(items, item, parsed, now, masterBackup) {
 function regenerateViews() {
   console.log("\n🔄 Regenerating views...");
   try {
-    execSync(`"${process.execPath}" scripts/debt/generate-views.js`, { stdio: "inherit" });
+    execFileSync(process.execPath, ["scripts/debt/generate-views.js"], { stdio: "inherit" });
   } catch {
     console.warn(
-      `  ⚠️ Failed to regenerate views. Run manually: "${process.execPath}" scripts/debt/generate-views.js`
+      `  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js`
     );
   }
 }
@@ -273,7 +280,16 @@ Example:
   }
 
   const now = new Date().toISOString().split("T")[0];
-  const masterBackup = fs.existsSync(MASTER_FILE) ? fs.readFileSync(MASTER_FILE, "utf8") : null;
+  let masterBackup = null;
+  if (fs.existsSync(MASTER_FILE)) {
+    try {
+      masterBackup = fs.readFileSync(MASTER_FILE, "utf8");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.error(`Failed to read ${MASTER_FILE} for backup: ${errMsg}`);
+      process.exit(1);
+    }
+  }
 
   if (parsed.falsePositive) {
     applyFalsePositive(items, item, itemIndex, parsed, now, masterBackup);
@@ -286,6 +302,7 @@ Example:
 }
 
 main().catch((err) => {
-  console.error("Fatal error:", err.message);
+  const errMsg = err instanceof Error ? err.message : String(err);
+  console.error("Fatal error:", errMsg);
   process.exit(1);
 });
