@@ -103,7 +103,10 @@ function resolveOrder(tasks) {
   const completed = []; // Already done
   const orphanDeps = []; // References dependencies that don't exist
 
-  for (const [, task] of tasks) {
+  // Compute topological order of incomplete tasks using Kahn's algorithm
+  const topoOrder = topologicalOrder(tasks);
+
+  for (const task of topoOrder) {
     if (task.completed) {
       completed.push(task);
       continue;
@@ -111,14 +114,13 @@ function resolveOrder(tasks) {
 
     const unmet = [];
     const met = [];
-    let hasOrphan = false;
 
     for (const depId of task.depends) {
       const dep = tasks.get(depId);
       if (!dep) {
-        // Dependency not found in ROADMAP — may be in another doc or typo
+        // Missing dependency = blocker (may be typo or in another doc)
         orphanDeps.push({ task: task.id, missingDep: depId });
-        hasOrphan = true;
+        unmet.push(depId);
       } else if (dep.completed) {
         met.push(depId);
       } else {
@@ -126,14 +128,7 @@ function resolveOrder(tasks) {
       }
     }
 
-    if (hasOrphan) {
-      // Treat orphan deps as warnings, not blockers
-      if (unmet.length === 0) {
-        ready.push({ ...task, metDeps: met, unmetDeps: unmet });
-      } else {
-        blocked.push({ ...task, metDeps: met, unmetDeps: unmet });
-      }
-    } else if (unmet.length === 0) {
+    if (unmet.length === 0) {
       ready.push({ ...task, metDeps: met, unmetDeps: [] });
     } else {
       blocked.push({ ...task, metDeps: met, unmetDeps: unmet });
@@ -144,6 +139,59 @@ function resolveOrder(tasks) {
   const circles = detectCircles(tasks);
 
   return { ready, blocked, completed, orphanDeps, circles };
+}
+
+/**
+ * Kahn's topological sort — returns tasks in dependency-resolved order.
+ * Completed tasks are treated as satisfied (indegree edges from completed deps
+ * are not counted). Falls back to input iteration order if cycles exist.
+ */
+function topologicalOrder(tasks) {
+  const indegree = new Map();
+  const dependents = new Map(); // dep -> [tasks that depend on it]
+
+  for (const [id] of tasks) {
+    indegree.set(id, 0);
+    dependents.set(id, []);
+  }
+
+  for (const [id, task] of tasks) {
+    if (task.completed) continue; // completed tasks don't need ordering
+    for (const depId of task.depends) {
+      const dep = tasks.get(depId);
+      if (!dep || dep.completed) continue; // skip satisfied/missing deps
+      if (!dependents.has(depId)) dependents.set(depId, []);
+      dependents.get(depId).push(id);
+      indegree.set(id, (indegree.get(id) || 0) + 1);
+    }
+  }
+
+  // Seed queue with tasks that have zero indegree (no unmet deps)
+  const queue = [];
+  for (const [id, deg] of indegree) {
+    if (deg === 0 && tasks.has(id)) queue.push(id);
+  }
+
+  const result = [];
+  while (queue.length > 0) {
+    const id = queue.shift();
+    const t = tasks.get(id);
+    if (t) result.push(t);
+
+    for (const next of dependents.get(id) || []) {
+      indegree.set(next, (indegree.get(next) || 0) - 1);
+      if (indegree.get(next) === 0) queue.push(next);
+    }
+  }
+
+  // If cycle prevented full ordering, append remaining tasks
+  if (result.length < tasks.size) {
+    for (const [, task] of tasks) {
+      if (!result.includes(task)) result.push(task);
+    }
+  }
+
+  return result;
 }
 
 /**

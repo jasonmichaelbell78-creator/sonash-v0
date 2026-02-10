@@ -16,7 +16,7 @@
  * 5. Prints a summary to stdout
  */
 
-const { execSync } = require("child_process");
+const { execSync, execFileSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
@@ -49,22 +49,38 @@ function getSessionNumber() {
 }
 
 function getCompletedItems() {
-  // Get the diff of ROADMAP.md to find newly checked items
-  // Compare against the last commit that touched ROADMAP.md
+  // Get the diff of ROADMAP.md to find items transitioned from [ ] to [x]
+  // Find the last commit that actually modified ROADMAP.md (not just HEAD~1)
   let diff;
   try {
-    diff = execSync("git diff HEAD~1 -- ROADMAP.md", {
+    const base = execFileSync("git", ["rev-list", "-n", "1", "HEAD~1", "--", "ROADMAP.md"], {
       cwd: PROJECT_ROOT,
       encoding: "utf8",
       timeout: 10000,
-    });
+    }).trim();
+
+    if (base) {
+      // Use execFileSync with args array to avoid shell interpolation (SEC-001)
+      diff = execFileSync("git", ["diff", `${base}..HEAD`, "--", "ROADMAP.md"], {
+        cwd: PROJECT_ROOT,
+        encoding: "utf8",
+        timeout: 10000,
+      });
+    } else {
+      // No prior commit touching ROADMAP.md; fall back to last commit
+      diff = execFileSync("git", ["diff", "HEAD~1", "--", "ROADMAP.md"], {
+        cwd: PROJECT_ROOT,
+        encoding: "utf8",
+        timeout: 10000,
+      });
+    }
   } catch (err) {
-    // If HEAD~1 doesn't exist or diff fails, try against staged
+    // If history diff fails (e.g., initial commit), try against staged
     process.stderr.write(
-      `Note: git diff HEAD~1 failed, trying staged: ${err instanceof Error ? err.message : String(err)}\n`
+      `Note: git history diff failed, trying staged: ${err instanceof Error ? err.message : String(err)}\n`
     );
     try {
-      diff = execSync("git diff --cached -- ROADMAP.md", {
+      diff = execFileSync("git", ["diff", "--cached", "--", "ROADMAP.md"], {
         cwd: PROJECT_ROOT,
         encoding: "utf8",
         timeout: 10000,
@@ -81,26 +97,37 @@ function getCompletedItems() {
     return { items: [], tracks: [] };
   }
 
-  const items = [];
-  const tracks = new Set();
+  // Track transitions: removed [ ] and added [x] for the same item ID
+  const addedChecked = new Set();
+  const removedUnchecked = new Set();
   const lines = diff.split("\n");
+  const idPattern = /\*\*([A-Z][A-Z0-9]{0,20}(?:-\d{1,6})?):?\*\*/i;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    // Look for added lines that contain checked checkboxes
-    if (line.startsWith("+") && !line.startsWith("+++")) {
-      // Match patterns like: + - [x] **B3:** or + - [x] **CANON-0011:**
-      const checkMatch = line.match(/^\+\s*-\s*\[x\]\s*\*\*([A-Z][A-Z0-9]*(?:-\d+)?):?\*\*/i);
-      if (checkMatch) {
-        const itemId = checkMatch[1];
-        items.push(itemId);
-        // Extract track letter (B from B3, D from D1, etc.)
-        const trackMatch = itemId.match(/^([A-Z]+)/);
-        if (trackMatch) {
-          tracks.add(trackMatch[1]);
-        }
+  for (const line of lines) {
+    // Removed unchecked line: - - [ ] **B3:** ...
+    if (line.startsWith("-") && !line.startsWith("---")) {
+      if (/^-\s*-\s*\[\s\]/.test(line)) {
+        const m = line.match(idPattern);
+        if (m) removedUnchecked.add(m[1].toUpperCase());
       }
     }
+    // Added checked line: + - [x] **B3:** ...
+    if (line.startsWith("+") && !line.startsWith("+++")) {
+      if (/^\+\s*-\s*\[x\]/i.test(line)) {
+        const m = line.match(idPattern);
+        if (m) addedChecked.add(m[1].toUpperCase());
+      }
+    }
+  }
+
+  // Only count items that transitioned from [ ] → [x]
+  const items = [];
+  const tracks = new Set();
+  for (const id of addedChecked) {
+    if (!removedUnchecked.has(id)) continue;
+    items.push(id);
+    const trackMatch = id.match(/^([A-Z]+)/);
+    if (trackMatch) tracks.add(trackMatch[1]);
   }
 
   return { items, tracks: [...tracks] };

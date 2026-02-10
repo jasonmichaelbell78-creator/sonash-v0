@@ -41,10 +41,13 @@ function loadEntries() {
     .trim()
     .split("\n")
     .filter(Boolean)
-    .map((line) => {
+    .map((line, idx) => {
       try {
         return JSON.parse(line);
-      } catch {
+      } catch (err) {
+        process.stderr.write(
+          `Warning: Malformed JSONL at line ${idx + 1}: ${err instanceof Error ? err.message : String(err)}\n`
+        );
         return null;
       }
     })
@@ -52,11 +55,18 @@ function loadEntries() {
 }
 
 function countRemainingItems() {
-  // Count unchecked items in ROADMAP.md active sprint area
+  // Count unchecked items scoped to the Active Sprint section of ROADMAP.md
   try {
     const roadmap = fs.readFileSync(ROADMAP_PATH, "utf8");
-    const unchecked = roadmap.match(/^[ \t]*- \[ \]/gm);
-    const checked = roadmap.match(/^[ \t]*- \[x\]/gm);
+
+    // Extract the Active Sprint section (stops at next ## heading or EOF)
+    const sectionMatch = roadmap.match(
+      /##\s+(?:Active Sprint|Current Sprint)[^\n]*\n([\s\S]*?)(?=\n##\s|$)/i
+    );
+    const scope = sectionMatch ? sectionMatch[1] : roadmap;
+
+    const unchecked = scope.match(/^[ \t]*- \[ \]/gm);
+    const checked = scope.match(/^[ \t]*- \[x\]/gim);
     return {
       remaining: unchecked ? unchecked.length : 0,
       completed: checked ? checked.length : 0,
@@ -104,15 +114,32 @@ function calculateVelocity(entries) {
     trend = "insufficient data";
   }
 
-  // Track breakdown
+  // Track breakdown — derive counts from item_ids to prevent double-counting
   const trackBreakdown = {};
   for (const entry of entries) {
-    for (const track of entry.tracks || []) {
-      if (!trackBreakdown[track]) {
-        trackBreakdown[track] = { sessions: 0, items: 0 };
+    const itemIds = Array.isArray(entry.item_ids) ? entry.item_ids : null;
+
+    if (itemIds && itemIds.length > 0) {
+      // Count items per track from actual IDs
+      const tracksTouched = new Set();
+      for (const id of itemIds) {
+        const track = String(id).match(/^([A-Z]+)/)?.[1];
+        if (!track) continue;
+        if (!trackBreakdown[track]) trackBreakdown[track] = { sessions: 0, items: 0 };
+        trackBreakdown[track].items += 1;
+        tracksTouched.add(track);
       }
-      trackBreakdown[track].sessions++;
-      trackBreakdown[track].items += entry.items_completed || 0;
+      // Increment sessions once per track touched
+      for (const track of tracksTouched) {
+        trackBreakdown[track].sessions += 1;
+      }
+    } else {
+      // Legacy fallback for entries without item_ids
+      for (const track of entry.tracks || []) {
+        if (!trackBreakdown[track]) trackBreakdown[track] = { sessions: 0, items: 0 };
+        trackBreakdown[track].sessions += 1;
+        trackBreakdown[track].items += entry.items_completed || 0;
+      }
     }
   }
 
