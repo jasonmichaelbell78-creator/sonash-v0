@@ -68,13 +68,18 @@ try {
       // Checking `MeetingMap` usage would be ideal, but usually it looks up by the string displayed.
       // Let's assume keys are "123 Main St, Nashville, TN"
 
-      if (data.address && data.coordinates && data.coordinates.lat && data.coordinates.lng) {
+      const coords = data.coordinates;
+      const hasValidCoords =
+        coords &&
+        typeof coords.lat === "number" &&
+        typeof coords.lng === "number" &&
+        Number.isFinite(coords.lat) &&
+        Number.isFinite(coords.lng);
+
+      if (data.address && hasValidCoords) {
         // Construct the likely lookup keys.
         // 1. Full combo
         const fullAddr = `${data.address}, ${data.city || "Nashville"}, ${data.state || "TN"}`;
-        // 2. Just raw address (if implied context)
-        const _rawAddr = data.address;
-
         // We'll prioritize the full address key as it's less ambiguous
         // But let's check what keys are already in the cache to guess the pattern?
         // Since we can't see runtime, let's just save the full address.
@@ -87,17 +92,29 @@ try {
           // Determine if we should update?
           // E.g. if the DB has newer verified data vs old cache.
           // Since we just ran enrichment, DB is truth.
-          const oldLat = cache[fullAddr].lat;
-          const newLat = data.coordinates.lat;
+          const oldLat = cache[fullAddr]?.lat;
+          const oldLng = cache[fullAddr]?.lng;
+          const newLat = coords.lat;
+          const newLng = coords.lng;
 
-          if (Math.abs(oldLat - newLat) > 0.0001) {
-            cache[fullAddr] = data.coordinates;
+          const oldIsValid =
+            typeof oldLat === "number" &&
+            typeof oldLng === "number" &&
+            Number.isFinite(oldLat) &&
+            Number.isFinite(oldLng);
+
+          if (
+            !oldIsValid ||
+            Math.abs(oldLat - newLat) > 0.0001 ||
+            Math.abs(oldLng - newLng) > 0.0001
+          ) {
+            cache[fullAddr] = coords;
             addedCount++; // Count as update
           } else {
             skippedCount++;
           }
         } else {
-          cache[fullAddr] = data.coordinates;
+          cache[fullAddr] = coords;
           addedCount++;
         }
       }

@@ -93,10 +93,10 @@ try {
 
     if (!results || results.length === 0) return null;
 
-    return {
-      lat: Number.parseFloat(results[0].lat),
-      lon: Number.parseFloat(results[0].lon),
-    };
+    const lat = Number.parseFloat(results[0].lat);
+    const lon = Number.parseFloat(results[0].lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+    return { lat, lon };
   }
 
   /**
@@ -106,10 +106,19 @@ try {
     docRef: FirebaseFirestore.DocumentReference,
     data: FirebaseFirestore.DocumentData
   ): Promise<boolean> {
-    const streetClean = cleanAddress(data.address);
-    const queries = buildGeoQueries(streetClean, data.city || "Nashville", data.neighborhood);
+    const rawAddress = typeof data.address === "string" ? data.address : "";
+    if (rawAddress.trim().length < 5) return false;
 
-    for (const query of queries) {
+    const streetClean = cleanAddress(rawAddress);
+    const city = typeof data.city === "string" && data.city.trim() ? data.city.trim() : "Nashville";
+    const neighborhood =
+      typeof data.neighborhood === "string" && data.neighborhood.trim()
+        ? data.neighborhood.trim()
+        : undefined;
+    const queries = buildGeoQueries(streetClean, city, neighborhood);
+
+    for (let i = 0; i < queries.length; i++) {
+      const query = queries[i];
       try {
         const coords = await tryGeocode(query);
         if (coords) {
@@ -117,7 +126,7 @@ try {
           console.log(`   ✅ Success! Found: [${coords.lat}, ${coords.lon}]`);
           return true;
         }
-        console.log(`   🔸 No results for: "${query}"`);
+        console.log(`   🔸 No results for query ${i + 1}/${queries.length}`);
       } catch (error: unknown) {
         // Query intentionally omitted from logs to avoid exposing address data
         console.error(`   ⚠️ Error querying geocode API`);
@@ -148,7 +157,15 @@ try {
       continue;
     }
 
-    const streetClean = cleanAddress(data.address);
+    // Guard malformed address values
+    const address = typeof data.address === "string" ? data.address.trim() : "";
+    if (address.length < 5) {
+      console.log(
+        `[${index + 1}/${failures.length}] ⚠️  Skipped (Invalid address type or too short): ID ${docId}`
+      );
+      continue;
+    }
+
     console.log(`[${index + 1}/${failures.length}] 🔄 Retrying ID: ${docId}`);
 
     const found = await retryOneFailure(docRef, data);

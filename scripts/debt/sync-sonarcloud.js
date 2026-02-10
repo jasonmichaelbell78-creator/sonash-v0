@@ -581,7 +581,7 @@ function deduplicateAndAssignIds(issues, existingItems) {
     converted.content_hash = generateContentHash(converted);
 
     if (existingHashes.has(converted.content_hash)) {
-      contentDuplicates.push(converted.title.substring(0, 40));
+      contentDuplicates.push((converted.title || "").substring(0, 40));
       continue;
     }
 
@@ -600,10 +600,54 @@ function writeNewItems(newItems) {
   console.log("\n📝 Writing new items to raw/deduped.jsonl...");
   const newLinesStr = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
   fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
-  fs.appendFileSync(DEDUPED_FILE, newLinesStr);
+
+  // Capture file size before appending for efficient rollback
+  let dedupedSizeBeforeAppend = 0;
+  try {
+    const stats = fs.statSync(DEDUPED_FILE);
+    dedupedSizeBeforeAppend = stats.size;
+  } catch {
+    // File doesn't exist yet, size = 0
+  }
+
+  try {
+    fs.appendFileSync(DEDUPED_FILE, newLinesStr);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Failed to write to deduped.jsonl: ${msg}`);
+    process.exit(1);
+  }
 
   console.log("📝 Writing new items to MASTER_DEBT.jsonl...");
-  fs.appendFileSync(MASTER_FILE, newLinesStr);
+  let masterSizeBeforeAppend = 0;
+  try {
+    masterSizeBeforeAppend = fs.statSync(MASTER_FILE).size;
+  } catch {
+    // File doesn't exist yet, size = 0
+  }
+  try {
+    fs.appendFileSync(MASTER_FILE, newLinesStr);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Failed to write to MASTER_DEBT.jsonl: ${msg}`);
+    try {
+      fs.truncateSync(DEDUPED_FILE, dedupedSizeBeforeAppend);
+      console.warn("  ⚠️ Rolled back deduped.jsonl");
+    } catch (rollbackErr) {
+      console.warn(
+        `  ⚠️ Failed to rollback deduped.jsonl: ${rollbackErr instanceof Error ? rollbackErr.message : String(rollbackErr)}`
+      );
+    }
+    try {
+      fs.truncateSync(MASTER_FILE, masterSizeBeforeAppend);
+      console.warn("  ⚠️ Rolled back MASTER_DEBT.jsonl");
+    } catch (rollbackErr) {
+      console.warn(
+        `  ⚠️ Failed to rollback MASTER_DEBT.jsonl: ${rollbackErr instanceof Error ? rollbackErr.message : String(rollbackErr)}`
+      );
+    }
+    process.exit(1);
+  }
 }
 
 // Main function

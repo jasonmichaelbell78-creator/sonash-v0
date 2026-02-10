@@ -415,13 +415,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     if (!handler) {
       throw new Error(`Unknown tool: ${name}`);
     }
-    return await handler(args);
+    const safeArgs = args && typeof args === "object" && !Array.isArray(args) ? args : {};
+    return await handler(safeArgs);
   } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
     return {
       content: [
         {
           type: "text",
-          text: `Error: ${error.message}`,
+          text: `Error: ${msg}`,
         },
       ],
       isError: true,

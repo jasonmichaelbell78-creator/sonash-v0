@@ -475,7 +475,7 @@ function sanitizeOutput(output) {
       .replace(/\/home\/[^/\s]+/g, "[HOME]")
       .replace(/\/Users\/[^/\s]+/g, "[HOME]")
       // Handle any Windows drive letter, case-insensitive
-      .replace(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]")
+      .replace(/[A-Z]:\\Users\\[^\\/]+/gi, "[HOME]")
   );
 }
 
@@ -736,7 +736,7 @@ if (isMainModule) {
       .replace(/\/home\/[^/\s]+/g, "[HOME]")
       .replace(/\/Users\/[^/\s]+/g, "[HOME]")
       // Handle any Windows drive letter, case-insensitive
-      .replace(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]");
+      .replace(/[A-Z]:\\Users\\[^\\/]+/gi, "[HOME]");
     console.error("Script error:", safeMessage);
     closeRl();
     process.exit(1);

@@ -442,14 +442,17 @@ function runPairwiseMergePass(inputItems, passNum, passName, matchFn, dedupLog, 
       }
 
       // Handle merge direction for cross-source matches
-      if (matchResult.swapOrder) {
-        current = mergeItems(inputItems[j], current);
-      } else {
-        current = mergeItems(current, inputItems[j]);
-      }
+      const primaryBefore = matchResult.swapOrder ? inputItems[j] : current;
+      const secondaryBefore = matchResult.swapOrder ? current : inputItems[j];
+
+      current = mergeItems(primaryBefore, secondaryBefore);
 
       removed.add(j);
-      dedupLog.push(matchResult.logEntry);
+      dedupLog.push({
+        ...matchResult.logEntry,
+        kept: primaryBefore.source_id,
+        removed: secondaryBefore.source_id,
+      });
     }
 
     outputItems.push(current);

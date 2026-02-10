@@ -208,6 +208,25 @@ function validateInput(parsed) {
     process.exit(1);
   }
 
+  // Validate line number if provided
+  if (parsed.line !== undefined) {
+    const raw = String(parsed.line).trim();
+    if (!/^\d+$/.test(raw)) {
+      console.error(`Error: --line must be a non-negative integer, got: ${parsed.line}`);
+      process.exit(1);
+    }
+    const lineNum = Number.parseInt(raw, 10);
+    if (
+      !Number.isFinite(lineNum) ||
+      lineNum < 0 ||
+      lineNum > Number.MAX_SAFE_INTEGER ||
+      !Number.isInteger(lineNum)
+    ) {
+      console.error(`Error: --line must be a non-negative integer, got: ${parsed.line}`);
+      process.exit(1);
+    }
+  }
+
   return { type, effort };
 }
 
@@ -279,18 +298,39 @@ function writeItemToFiles(newItem) {
     fs.appendFileSync(MASTER_FILE, newItemJson);
   } catch (writeError) {
     console.error(`Error writing to master file: ${sanitizeError(writeError)}`);
-    rollbackDedupedFile();
+    rollbackDedupedFile(newItemJson);
     process.exit(1);
   }
 }
 
-// Rollback deduped file by removing the last appended line
-function rollbackDedupedFile() {
+// Rollback deduped file by removing the last appended line (verified)
+function rollbackDedupedFile(appendedLine) {
   try {
     const deduped = fs.readFileSync(DEDUPED_FILE, "utf8");
     const lines = deduped.split("\n");
+
+    // Guard for empty files
+    if (lines.length === 0) {
+      console.warn("  ⚠️ Rollback skipped: deduped file is empty");
+      return;
+    }
+
     if (lines.length >= 2 && lines[lines.length - 1] === "") {
       lines.pop();
+    }
+
+    if (lines.length === 0) {
+      console.warn("  ⚠️ Rollback skipped: deduped file is empty after removing trailing newline");
+      return;
+    }
+
+    // Normalize lines for comparison - strip \r and trimEnd
+    const lastLine = lines[lines.length - 1].replace(/\r/g, "").trimEnd();
+    const expectedLine = appendedLine.replace(/\n$/, "").replace(/\r/g, "").trimEnd();
+
+    if (lastLine !== expectedLine) {
+      console.warn("  ⚠️ Rollback skipped: last line does not match the appended entry");
+      return;
     }
     lines.pop();
     fs.writeFileSync(DEDUPED_FILE, lines.length ? lines.join("\n") + "\n" : "");

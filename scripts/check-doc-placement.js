@@ -258,8 +258,14 @@ function createAgeFinding(filePath, relativePath, thresholdDays, idSuffix, title
   const daysSinceModified = Math.floor((Date.now() - gitDate.getTime()) / (1000 * 60 * 60 * 24));
   if (daysSinceModified <= thresholdDays) return null;
 
+  const stableIdPart = crypto
+    .createHash("sha256")
+    .update(`${idSuffix}:${relativePath}`)
+    .digest("hex")
+    .slice(0, 12);
+
   return {
-    id: `DOC-LIFECYCLE-${idSuffix}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`,
+    id: `DOC-LIFECYCLE-${idSuffix}-${stableIdPart}`,
     category: "documentation",
     severity: "S3",
     effort: "E1",

@@ -207,18 +207,23 @@ function syncUpdatedItemsToDeduped(updatedItems) {
 function atomicRename(tmpPath, destPath) {
   try {
     fs.renameSync(tmpPath, destPath);
-  } catch {
-    // Windows may fail rename if dest exists; fallback to rm + rename
-    try {
-      fs.rmSync(destPath, { force: true });
-      fs.renameSync(tmpPath, destPath);
-    } catch (fallbackErr) {
+  } catch (error) {
+    const code =
+      error && typeof error === "object" && typeof error.code === "string" ? error.code : undefined;
+    if (code === "EPERM" || code === "EEXIST" || code === "EACCES" || code === "EBUSY") {
       try {
-        fs.unlinkSync(tmpPath);
-      } catch {
-        // ignore cleanup errors
+        fs.rmSync(destPath, { force: true });
+        fs.renameSync(tmpPath, destPath);
+      } catch (fallbackErr) {
+        try {
+          fs.unlinkSync(tmpPath);
+        } catch {
+          // ignore cleanup errors
+        }
+        throw fallbackErr;
       }
-      throw fallbackErr;
+    } else {
+      throw error;
     }
   }
 }

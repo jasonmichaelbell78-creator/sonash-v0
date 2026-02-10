@@ -37,6 +37,10 @@ function parseArgs(args) {
       parsed.falsePositive = true;
     } else if (arg === "--pr" && args[i + 1]) {
       parsed.pr = Number.parseInt(args[++i], 10);
+      if (!Number.isFinite(parsed.pr) || parsed.pr <= 0 || !Number.isInteger(parsed.pr)) {
+        console.error(`Error: --pr must be a positive integer, got: ${args[i]}`);
+        process.exit(1);
+      }
     } else if (arg === "--reason" && args[i + 1]) {
       parsed.reason = args[++i];
     } else if (arg.match(/^DEBT-\d+$/)) {
@@ -173,9 +177,10 @@ function handleWriteError(itemId, writeError, masterBackup, masterUpdated = true
   if (masterUpdated) {
     restoreMasterBackup(masterBackup);
   }
+  const errMsg = writeError instanceof Error ? writeError.message : String(writeError);
   console.error(`\n❌ Critical Error: Failed to write updates for ${itemId}.`);
   console.error("   The master file may be out of sync. Please restore from version control.");
-  console.error(`   Error: ${writeError.message}`);
+  console.error(`   Error: ${errMsg}`);
   process.exit(1);
 }
 

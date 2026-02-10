@@ -1472,7 +1472,8 @@ function parseAllSources(allFindings, stats) {
  * Write JSONL helper
  */
 function writeJsonl(filePath, items) {
-  writeFileSync(filePath, items.map((f) => JSON.stringify(f)).join("\n"));
+  const payload = items.length > 0 ? items.map((f) => JSON.stringify(f)).join("\n") + "\n" : "";
+  writeFileSync(filePath, payload);
 }
 
 /**
@@ -1493,8 +1494,10 @@ function deduplicateAndCrossReference(allFindings, stats) {
 
   console.log("\nPhase 3: Deduplicating findings...");
   const { uniqueFindings, dedupLog } = deduplicateFindings(allFindings);
+  const reductionRatio = stats.total > 0 ? 1 - uniqueFindings.length / stats.total : 0;
+  const reductionPct = Math.max(0, Math.min(100, Math.round(reductionRatio * 100)));
   console.log(
-    `  Deduplicated: ${stats.total} -> ${uniqueFindings.length} (${Math.round((1 - uniqueFindings.length / stats.total) * 100)}% reduction)`
+    `  Deduplicated: ${stats.total} -> ${uniqueFindings.length} (${reductionPct}% reduction)`
   );
 
   writeJsonl(join(CONFIG.outputDir, "dedup-log.jsonl"), dedupLog);

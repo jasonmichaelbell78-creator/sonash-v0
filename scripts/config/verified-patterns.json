@@ -80,6 +80,13 @@
     "dedup-multi-pass.js",
     "resolve-dependencies.js",
     "track-session.js",
-    "generate-report.js"
+    "generate-report.js",
+    "create-canonical-findings.js",
+    "extract-audits.js",
+    "extract-reviews.js",
+    "resolve-bulk.js",
+    "resolve-item.js",
+    "sync-roadmap-refs.js",
+    "migrate-existing-findings.js"
   ]
 }

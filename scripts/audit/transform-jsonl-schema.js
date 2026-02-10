@@ -384,7 +384,11 @@ function buildVerificationStepsFromArray(steps) {
           ? "grep"
           : "code_search",
       evidence_collected:
-        evidenceItems.length > 0 ? evidenceItems : [steps[0] || "Initial code review"],
+        evidenceItems.length > 0
+          ? evidenceItems
+          : steps.length > 0
+            ? steps
+            : ["See files array for affected locations"],
     },
     second_pass: {
       method: reviewItems.length > 0 ? "contextual_review" : "manual_verification",

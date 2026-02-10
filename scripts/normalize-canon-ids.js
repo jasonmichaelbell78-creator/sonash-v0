@@ -338,7 +338,8 @@ function rewriteAllIdReferences(fileData, idMap, dryRun, verbose) {
         writeFileSync(filepath, toJsonl(updatedFindings));
         console.log(`    ✓ Updated ${updatedFindings.length} findings`);
       } catch (err) {
-        console.error(`    Error writing ${filename}: ${err.message}`);
+        const errMsg = err instanceof Error ? err.message : String(err);
+        console.error(`    Error writing ${filename}: ${errMsg}`);
       }
     }
   }
@@ -363,7 +364,7 @@ function writeIdMappingFile(directory, globalCounter, idMapping, dryRun) {
     writeFileSync(mappingPath, JSON.stringify(mappingContent, null, 2));
     console.log(`\n✓ ID mapping saved to ${mappingPath}`);
   } catch (err) {
-    console.error(`Error writing ID mapping: ${err.message}`);
+    console.error(`Error writing ID mapping: ${err instanceof Error ? err.message : String(err)}`);
   }
 }
 
