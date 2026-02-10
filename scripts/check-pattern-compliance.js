@@ -530,8 +530,8 @@ function getFilesToCheck() {
 
   if (ALL) {
     const files = [];
-    const extensions = [".sh", ".yml", ".yaml", ".js", ".ts", ".tsx", ".jsx"];
-    const ignoreDirs = ["node_modules", ".next", "dist", "dist-tests", ".git", "coverage"];
+    const extensions = new Set([".sh", ".yml", ".yaml", ".js", ".ts", ".tsx", ".jsx"]);
+    const ignoreDirs = new Set(["node_modules", ".next", "dist", "dist-tests", ".git", "coverage"]);
 
     function walk(dir) {
       try {
@@ -558,13 +558,13 @@ function getFilesToCheck() {
           }
 
           if (lstat.isDirectory()) {
-            if (!ignoreDirs.includes(entry)) {
+            if (!ignoreDirs.has(entry)) {
               walk(fullPath);
             }
           } else {
             const ext = extname(entry);
             // Include files with known extensions OR extensionless files in .husky
-            if (extensions.includes(ext)) {
+            if (extensions.has(ext)) {
               files.push(relative(ROOT, fullPath));
             } else if (!ext) {
               // Review #190: Normalize backslashes for Windows path detection

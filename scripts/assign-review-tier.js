@@ -441,9 +441,9 @@ function main() {
   }
 
   // Check for unknown flags (reject early rather than silently ignoring)
-  const knownFlags = ["--pr"];
+  const knownFlags = new Set(["--pr"]);
   for (const arg of args) {
-    if (arg.startsWith("--") && !knownFlags.includes(arg.split("=")[0])) {
+    if (arg.startsWith("--") && !knownFlags.has(arg.split("=")[0])) {
       console.error(`Error: Unknown flag "${arg}"`);
       console.error("Usage: assign-review-tier.js [files...]");
       console.error("       assign-review-tier.js --pr <PR_NUMBER>");

@@ -540,11 +540,11 @@ function main() {
 
   // Step 4: Get overall progress
   let overallProgress = getOverallProgress(roadmapResult.content);
-  if (!overallProgress) {
+  if (overallProgress) {
+    console.log(`\nOverall progress from ROADMAP.md: ${overallProgress}`);
+  } else {
     overallProgress = calculateOverallProgress(milestones);
     console.log(`\nCalculated overall progress: ${overallProgress}`);
-  } else {
-    console.log(`\nOverall progress from ROADMAP.md: ${overallProgress}`);
   }
 
   // Step 5: Generate new status section

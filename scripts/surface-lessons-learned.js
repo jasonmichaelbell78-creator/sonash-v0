@@ -387,7 +387,9 @@ try {
 }
 
 if (isMainModule) {
-  main().catch((err) => {
+  try {
+    await main();
+  } catch (err) {
     // Avoid exposing sensitive paths in error messages
     // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
     // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
@@ -402,5 +404,5 @@ if (isMainModule) {
       .replace(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]");
     console.error("Script error:", safeMessage);
     process.exit(1);
-  });
+  }
 }

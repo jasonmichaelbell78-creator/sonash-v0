@@ -26,7 +26,8 @@ const DAY_TO_INDEX: Record<string, number> = {
   saturday: 6,
 };
 
-async function migrateMeetings() {
+// Run migration
+try {
   console.log("🚀 Starting migration: Adding dayIndex to meetings...\n");
 
   // Initialize Firebase Admin SDK
@@ -56,16 +57,13 @@ async function migrateMeetings() {
   const db = getFirestore();
   const meetingsRef = db.collection("meetings");
 
-  try {
-    // Get all meetings
-    const snapshot = await meetingsRef.get();
-    console.log(`📊 Found ${snapshot.size} meetings to migrate\n`);
+  // Get all meetings
+  const snapshot = await meetingsRef.get();
+  console.log(`📊 Found ${snapshot.size} meetings to migrate\n`);
 
-    if (snapshot.empty) {
-      console.log("⚠️  No meetings found in Firestore. Nothing to migrate.");
-      return;
-    }
-
+  if (snapshot.empty) {
+    console.log("⚠️  No meetings found in Firestore. Nothing to migrate.");
+  } else {
     let successCount = 0;
     let errorCount = 0;
     let skippedCount = 0;
@@ -144,21 +142,11 @@ async function migrateMeetings() {
       console.log("      firebase deploy --only firestore:indexes");
       console.log("   2. Test pagination in the app");
     }
-  } catch (error) {
-    console.error("\n❌ Migration failed:");
-    // Use sanitizeError to avoid exposing sensitive paths
-    console.error(sanitizeError(error));
-    process.exit(1);
   }
-}
 
-// Run migration
-migrateMeetings()
-  .then(() => {
-    process.exit(0);
-  })
-  .catch((error) => {
-    // Use sanitizeError to avoid exposing sensitive paths
-    console.error("Unexpected error:", sanitizeError(error));
-    process.exit(1);
-  });
+  process.exit(0);
+} catch (error) {
+  // Use sanitizeError to avoid exposing sensitive paths
+  console.error("Unexpected error:", sanitizeError(error));
+  process.exit(1);
+}

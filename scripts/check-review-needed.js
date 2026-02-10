@@ -951,12 +951,8 @@ function getRepoStartDate() {
   return result.success && result.output ? sanitizeDateString(result.output) : "2025-01-01";
 }
 
-/**
- * Main function - orchestrates review trigger checking
- * Reads AUDIT_TRACKER.md, checks per-category thresholds, and outputs results
- * @returns {Promise<void>} Exits with code 0 (no review needed), 1 (review recommended), or 2 (error)
- */
-async function main() {
+// Run
+try {
   // Read AUDIT_TRACKER.md
   const trackerResult = safeReadFile(TRACKER_PATH, "AUDIT_TRACKER.md");
   const trackerContent = trackerResult.success ? trackerResult.content : "";
@@ -1042,10 +1038,7 @@ async function main() {
 
   // Exit code
   process.exit(reviewNeeded ? 1 : 0);
-}
-
-// Run
-main().catch((error) => {
+} catch (error) {
   const msg = sanitizeError(error);
   if (JSON_OUTPUT) {
     console.log(JSON.stringify({ error: msg }));
@@ -1053,4 +1046,4 @@ main().catch((error) => {
     console.error("❌ Unexpected error:", msg);
   }
   process.exit(2);
-});
+}

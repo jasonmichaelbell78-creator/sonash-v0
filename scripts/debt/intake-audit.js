@@ -38,12 +38,12 @@ const os = require("node:os");
 const { execFileSync } = require("node:child_process");
 
 // Prototype pollution protection - filter dangerous keys from untrusted objects
-const DANGEROUS_KEYS = ["__proto__", "constructor", "prototype"];
+const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 function safeCloneObject(obj) {
   if (obj === null || typeof obj !== "object") return obj;
   const result = {};
   for (const key of Object.keys(obj)) {
-    if (!DANGEROUS_KEYS.includes(key)) {
+    if (!DANGEROUS_KEYS.has(key)) {
       result[key] = obj[key];
     }
   }

@@ -80,12 +80,12 @@ function main() {
 
     // Check 1: "What Was Accomplished" section exists
     const hasAccomplished = /### 📊 What Was Accomplished/.test(phaseContent);
-    if (!hasAccomplished) {
+    if (hasAccomplished) {
+      console.log('  ✅ Has "What Was Accomplished" section');
+    } else {
       console.log('  ❌ Missing "What Was Accomplished" section');
       issues.push(`${phase}: Missing "What Was Accomplished" section`);
       allValid = false;
-    } else {
-      console.log('  ✅ Has "What Was Accomplished" section');
     }
 
     // Check 2: Acceptance criteria have some checked items
@@ -102,12 +102,12 @@ function main() {
 
     // Check 3: Completed date exists
     const hasCompletedDate = /\*\*Completed:\*\*\s*\d{4}-\d{2}-\d{2}/.test(phaseContent);
-    if (!hasCompletedDate) {
+    if (hasCompletedDate) {
+      console.log("  ✅ Has completion date");
+    } else {
       console.log('  ❌ Missing "Completed" date');
       issues.push(`${phase}: Missing completion date`);
       allValid = false;
-    } else {
-      console.log("  ✅ Has completion date");
     }
 
     console.log("");

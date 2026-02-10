@@ -706,11 +706,15 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     process.exit(1);
   }
 
-  unifyFindings(safeSessionPath).then(({ findings, summary }) => {
+  try {
+    const { findings, summary } = await unifyFindings(safeSessionPath);
     if (summary.error) {
       console.error(`Error: ${summary.error}`);
       process.exit(1);
     }
     console.log(`\nUnification complete: ${findings.length} unified findings`);
-  });
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
 }

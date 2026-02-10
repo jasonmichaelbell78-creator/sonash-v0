@@ -522,15 +522,7 @@ function validateS0S1Strict(findings) {
     const vs = finding.verification_steps;
 
     // Check 4: Validate first_pass
-    if (!vs.first_pass) {
-      violations.push({
-        type: "MISSING_FIRST_PASS",
-        findingId: finding.id,
-        severity: finding.severity,
-        message: `${prefix}: Missing 'verification_steps.first_pass' object.`,
-        blocking: true,
-      });
-    } else {
+    if (vs.first_pass) {
       if (!vs.first_pass.method || !VALID_FIRST_PASS_METHODS.has(vs.first_pass.method)) {
         violations.push({
           type: "INVALID_FIRST_PASS_METHOD",
@@ -552,18 +544,18 @@ function validateS0S1Strict(findings) {
           blocking: true,
         });
       }
+    } else {
+      violations.push({
+        type: "MISSING_FIRST_PASS",
+        findingId: finding.id,
+        severity: finding.severity,
+        message: `${prefix}: Missing 'verification_steps.first_pass' object.`,
+        blocking: true,
+      });
     }
 
     // Check 5: Validate second_pass
-    if (!vs.second_pass) {
-      violations.push({
-        type: "MISSING_SECOND_PASS",
-        findingId: finding.id,
-        severity: finding.severity,
-        message: `${prefix}: Missing 'verification_steps.second_pass' object.`,
-        blocking: true,
-      });
-    } else {
+    if (vs.second_pass) {
       if (!vs.second_pass.method || !VALID_SECOND_PASS_METHODS.has(vs.second_pass.method)) {
         violations.push({
           type: "INVALID_SECOND_PASS_METHOD",
@@ -582,18 +574,18 @@ function validateS0S1Strict(findings) {
           blocking: true,
         });
       }
+    } else {
+      violations.push({
+        type: "MISSING_SECOND_PASS",
+        findingId: finding.id,
+        severity: finding.severity,
+        message: `${prefix}: Missing 'verification_steps.second_pass' object.`,
+        blocking: true,
+      });
     }
 
     // Check 6: Validate tool_confirmation
-    if (!vs.tool_confirmation) {
-      violations.push({
-        type: "MISSING_TOOL_CONFIRMATION",
-        findingId: finding.id,
-        severity: finding.severity,
-        message: `${prefix}: Missing 'verification_steps.tool_confirmation' object.`,
-        blocking: true,
-      });
-    } else {
+    if (vs.tool_confirmation) {
       if (!vs.tool_confirmation.tool || !VALID_TOOL_CONFIRMATIONS.has(vs.tool_confirmation.tool)) {
         violations.push({
           type: "INVALID_TOOL_CONFIRMATION",
@@ -615,6 +607,14 @@ function validateS0S1Strict(findings) {
           blocking: true,
         });
       }
+    } else {
+      violations.push({
+        type: "MISSING_TOOL_CONFIRMATION",
+        findingId: finding.id,
+        severity: finding.severity,
+        message: `${prefix}: Missing 'verification_steps.tool_confirmation' object.`,
+        blocking: true,
+      });
     }
 
     // Check 7: Evidence array should have >= 2 items for S0/S1
@@ -890,7 +890,7 @@ function findRecentAudits() {
   return audits.sort((a, b) => b.name.localeCompare(a.name));
 }
 
-async function main() {
+try {
   const args = process.argv.slice(2);
 
   if (args.includes("--help") || args.includes("-h")) {
@@ -972,9 +972,7 @@ Options:
   }
 
   process.exit(allPassed ? 0 : 1);
-}
-
-main().catch((err) => {
+} catch (err) {
   console.error("Error:", err.message);
   process.exit(1);
-});
+}

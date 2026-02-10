@@ -298,8 +298,8 @@ function isPlaceholderLink(text, target) {
   // Review #206: Require exact match, not just both being generic words
   const normalizedText = text.trim().toLowerCase();
   const normalizedTargetLower = normalizedTarget.toLowerCase();
-  const genericWords = ["text", "link", "file", "path", "url", "title", "name"];
-  if (normalizedText === normalizedTargetLower && genericWords.includes(normalizedText)) {
+  const genericWords = new Set(["text", "link", "file", "path", "url", "title", "name"]);
+  if (normalizedText === normalizedTargetLower && genericWords.has(normalizedText)) {
     return true;
   }
 

@@ -13,7 +13,7 @@ import * as path from "node:path";
 import * as fs from "node:fs";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
-async function migrateAddresses() {
+try {
   console.log("🚀 Starting address migration...\n");
 
   // Initialize Firebase Admin SDK
@@ -34,15 +34,10 @@ async function migrateAddresses() {
   const db = getFirestore();
   const meetingsRef = db.collection("meetings");
 
-  try {
-    const snapshot = await meetingsRef.get();
-    console.log(`📊 Found ${snapshot.size} meetings to check\n`);
+  const snapshot = await meetingsRef.get();
+  console.log(`📊 Found ${snapshot.size} meetings to check\n`);
 
-    if (snapshot.empty) {
-      console.log("⚠️  No meetings found. Nothing to migrate.");
-      return;
-    }
-
+  if (!snapshot.empty) {
     let successCount = 0;
     let skippedCount = 0;
     const batchSize = 500;
@@ -90,17 +85,13 @@ async function migrateAddresses() {
     console.log(`✅ Migrated: ${successCount}`);
     console.log(`⏭️  Skipped: ${skippedCount}`);
     console.log("=".repeat(60));
-  } catch (error) {
-    // Use sanitizeError to avoid exposing sensitive paths
-    console.error("\n❌ Migration failed:", sanitizeError(error));
-    process.exit(1);
+  } else {
+    console.log("⚠️  No meetings found. Nothing to migrate.");
   }
-}
 
-migrateAddresses()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    // Use sanitizeError to avoid exposing sensitive paths
-    console.error("Unexpected error:", sanitizeError(error));
-    process.exit(1);
-  });
+  process.exit(0);
+} catch (error) {
+  // Use sanitizeError to avoid exposing sensitive paths
+  console.error("Unexpected error:", sanitizeError(error));
+  process.exit(1);
+}

@@ -155,7 +155,7 @@ async function processLine(line: string, index: number): Promise<Meeting | null>
   };
 }
 
-async function main() {
+try {
   console.log(`Starting Import... Mode: ${GOOGLE_MAPS_KEY ? "FAST (Google)" : "SLOW (Nominatim)"}`);
 
   const fileStream = fs.createReadStream(CSV_FILE);
@@ -219,9 +219,7 @@ async function main() {
   }
 
   console.log("\nDone! Success.");
-}
-
-main().catch((error: unknown) => {
+} catch (error: unknown) {
   console.error("❌ Unexpected error:", sanitizeError(error));
   process.exit(1);
-});
+}

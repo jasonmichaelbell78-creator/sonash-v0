@@ -353,15 +353,15 @@ function main() {
       return updated;
     });
 
-    if (!dryRun) {
+    if (dryRun) {
+      console.log(`    Would update ${updatedFindings.length} findings`);
+    } else {
       try {
         writeFileSync(filepath, toJsonl(updatedFindings));
         console.log(`    ✓ Updated ${updatedFindings.length} findings`);
       } catch (err) {
         console.error(`    Error writing ${filename}: ${err.message}`);
       }
-    } else {
-      console.log(`    Would update ${updatedFindings.length} findings`);
     }
   }
 

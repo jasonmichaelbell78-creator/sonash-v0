@@ -469,7 +469,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 // Start the server
-async function main() {
+try {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("SonarCloud MCP server running on stdio");
@@ -481,10 +481,8 @@ async function main() {
       "Warning: SONAR_TOKEN not set. Set it via environment variable for authenticated access."
     );
   }
-}
-
-main().catch((error) => {
+} catch (error) {
   // Sanitize error output - don't expose stack traces
   console.error(`Fatal error: ${error.message || "Unknown error"}`);
   process.exit(1);
-});
+}

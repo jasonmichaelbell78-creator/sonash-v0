@@ -380,15 +380,7 @@ function validateS0S1Requirements(item) {
   const vs = item.verification_steps;
 
   // Validate first_pass
-  if (!vs.first_pass) {
-    issues.push({
-      type: "MISSING_FIRST_PASS",
-      findingId,
-      severity,
-      blocking: true,
-      message: `${prefix}: Missing 'verification_steps.first_pass' object`,
-    });
-  } else {
+  if (vs.first_pass) {
     if (!vs.first_pass.method || !VALID_FIRST_PASS_METHODS.includes(vs.first_pass.method)) {
       issues.push({
         type: "INVALID_FIRST_PASS_METHOD",
@@ -410,18 +402,18 @@ function validateS0S1Requirements(item) {
         message: `${prefix}: first_pass.evidence_collected must have at least 1 item`,
       });
     }
-  }
-
-  // Validate second_pass
-  if (!vs.second_pass) {
+  } else {
     issues.push({
-      type: "MISSING_SECOND_PASS",
+      type: "MISSING_FIRST_PASS",
       findingId,
       severity,
       blocking: true,
-      message: `${prefix}: Missing 'verification_steps.second_pass' object`,
+      message: `${prefix}: Missing 'verification_steps.first_pass' object`,
     });
-  } else {
+  }
+
+  // Validate second_pass
+  if (vs.second_pass) {
     if (!vs.second_pass.method || !VALID_SECOND_PASS_METHODS.includes(vs.second_pass.method)) {
       issues.push({
         type: "INVALID_SECOND_PASS_METHOD",
@@ -440,18 +432,18 @@ function validateS0S1Requirements(item) {
         message: `${prefix}: second_pass.confirmed must be true. If not confirmed, downgrade severity.`,
       });
     }
-  }
-
-  // Validate tool_confirmation
-  if (!vs.tool_confirmation) {
+  } else {
     issues.push({
-      type: "MISSING_TOOL_CONFIRMATION",
+      type: "MISSING_SECOND_PASS",
       findingId,
       severity,
       blocking: true,
-      message: `${prefix}: Missing 'verification_steps.tool_confirmation' object`,
+      message: `${prefix}: Missing 'verification_steps.second_pass' object`,
     });
-  } else {
+  }
+
+  // Validate tool_confirmation
+  if (vs.tool_confirmation) {
     if (
       !vs.tool_confirmation.tool ||
       !VALID_TOOL_CONFIRMATIONS.includes(vs.tool_confirmation.tool)
@@ -476,6 +468,14 @@ function validateS0S1Requirements(item) {
         message: `${prefix}: tool_confirmation.reference must be a non-empty string`,
       });
     }
+  } else {
+    issues.push({
+      type: "MISSING_TOOL_CONFIRMATION",
+      findingId,
+      severity,
+      blocking: true,
+      message: `${prefix}: Missing 'verification_steps.tool_confirmation' object`,
+    });
   }
 
   return issues;

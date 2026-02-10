@@ -109,101 +109,93 @@ const existingPrayers = [
   },
 ];
 
-async function migrateLibraryContent() {
+// Run migration
+try {
   console.log("🚀 Starting Library Content Migration...\n");
 
-  try {
-    let linksAdded = 0;
-    let linksSkipped = 0;
-    let prayersAdded = 0;
-    let prayersSkipped = 0;
+  let linksAdded = 0;
+  let linksSkipped = 0;
+  let prayersAdded = 0;
+  let prayersSkipped = 0;
 
-    // Migrate Quick Links
-    console.log("📌 Migrating Quick Links...");
-    const linksRef = db.collection("quick_links");
+  // Migrate Quick Links
+  console.log("📌 Migrating Quick Links...");
+  const linksRef = db.collection("quick_links");
 
-    for (const link of existingLinks) {
-      // Use improved slugification for robust idempotency
-      const slug = link.title
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "");
-      const docId = `link-${link.category}-${slug}`;
-      const docRef = linksRef.doc(docId);
+  for (const link of existingLinks) {
+    // Use improved slugification for robust idempotency
+    const slug = link.title
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+    const docId = `link-${link.category}-${slug}`;
+    const docRef = linksRef.doc(docId);
 
-      const existing = await docRef.get();
+    const existing = await docRef.get();
 
-      if (existing.exists) {
-        console.log(`  ⏭️  Skipped: ${link.title} (already exists)`);
-        linksSkipped++;
-        continue;
-      }
-
-      await docRef.set({
-        ...link,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        source: "migrate-library-content",
-      });
-      console.log(`  ✅ Added: ${link.title}`);
-      linksAdded++;
+    if (existing.exists) {
+      console.log(`  ⏭️  Skipped: ${link.title} (already exists)`);
+      linksSkipped++;
+      continue;
     }
-    console.log(`\n✓ Links: ${linksAdded} added, ${linksSkipped} skipped\n`);
 
-    // Migrate Prayers
-    console.log("🙏 Migrating Prayers...");
-    const prayersRef = db.collection("prayers");
-
-    for (const prayer of existingPrayers) {
-      // Use improved slugification for robust idempotency
-      const slug = prayer.title
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "");
-      const docId = `prayer-${prayer.category}-${slug}`;
-      const docRef = prayersRef.doc(docId);
-
-      const existing = await docRef.get();
-
-      if (existing.exists) {
-        console.log(`  ⏭️  Skipped: ${prayer.title} (already exists)`);
-        prayersSkipped++;
-        continue;
-      }
-
-      await docRef.set({
-        ...prayer,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        source: "migrate-library-content",
-      });
-      console.log(`  ✅ Added: ${prayer.title}`);
-      prayersAdded++;
-    }
-    console.log(`\n✓ Prayers: ${prayersAdded} added, ${prayersSkipped} skipped\n`);
-
-    console.log("🎉 Migration complete!");
-    console.log(`\nTotal items processed:`);
-    console.log(
-      `  - Quick Links: ${linksAdded + linksSkipped} (${linksAdded} new, ${linksSkipped} existing)`
-    );
-    console.log(
-      `  - Prayers: ${prayersAdded + prayersSkipped} (${prayersAdded} new, ${prayersSkipped} existing)`
-    );
-  } catch (error) {
-    // Use sanitizeError to avoid exposing sensitive paths
-    console.error("❌ Migration failed:", sanitizeError(error));
-    throw error;
+    await docRef.set({
+      ...link,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      source: "migrate-library-content",
+    });
+    console.log(`  ✅ Added: ${link.title}`);
+    linksAdded++;
   }
-}
+  console.log(`\n✓ Links: ${linksAdded} added, ${linksSkipped} skipped\n`);
 
-// Run migration
-migrateLibraryContent()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    // Use sanitizeError to avoid exposing sensitive paths
-    console.error(sanitizeError(error));
-    process.exit(1);
-  });
+  // Migrate Prayers
+  console.log("🙏 Migrating Prayers...");
+  const prayersRef = db.collection("prayers");
+
+  for (const prayer of existingPrayers) {
+    // Use improved slugification for robust idempotency
+    const slug = prayer.title
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+    const docId = `prayer-${prayer.category}-${slug}`;
+    const docRef = prayersRef.doc(docId);
+
+    const existing = await docRef.get();
+
+    if (existing.exists) {
+      console.log(`  ⏭️  Skipped: ${prayer.title} (already exists)`);
+      prayersSkipped++;
+      continue;
+    }
+
+    await docRef.set({
+      ...prayer,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      source: "migrate-library-content",
+    });
+    console.log(`  ✅ Added: ${prayer.title}`);
+    prayersAdded++;
+  }
+  console.log(`\n✓ Prayers: ${prayersAdded} added, ${prayersSkipped} skipped\n`);
+
+  console.log("🎉 Migration complete!");
+  console.log(`\nTotal items processed:`);
+  console.log(
+    `  - Quick Links: ${linksAdded + linksSkipped} (${linksAdded} new, ${linksSkipped} existing)`
+  );
+  console.log(
+    `  - Prayers: ${prayersAdded + prayersSkipped} (${prayersAdded} new, ${prayersSkipped} existing)`
+  );
+
+  process.exit(0);
+} catch (error) {
+  // Use sanitizeError to avoid exposing sensitive paths
+  console.error("❌ Migration failed:", sanitizeError(error));
+  process.exit(1);
+}

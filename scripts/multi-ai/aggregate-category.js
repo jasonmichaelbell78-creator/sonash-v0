@@ -593,11 +593,15 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     process.exit(1);
   }
 
-  aggregateCategory(sessionPath, category).then(({ findings, report }) => {
+  try {
+    const { findings, report } = await aggregateCategory(sessionPath, category);
     if (report.error) {
       console.error(`Error: ${report.error}`);
       process.exit(1);
     }
     console.log(`\nAggregation complete: ${findings.length} canonical findings`);
-  });
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
 }

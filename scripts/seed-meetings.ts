@@ -55,7 +55,7 @@ const geocodingCache: Record<string, { lat: number; lng: number }> = JSON.parse(
   readFileSync(cachePath, "utf-8")
 );
 
-async function importMeetings() {
+try {
   const csvPath = join(process.cwd(), "SoNash_Meetings__cleaned.csv");
   const rawData = readFileSync(csvPath, "utf-8");
   const lines = rawData.split("\n");
@@ -128,10 +128,8 @@ async function importMeetings() {
 
   console.log(`✅ Successfully imported ${totalImported} meetings.`);
   process.exit(0);
-}
-
-importMeetings().catch((error) => {
+} catch (error) {
   // Use sanitizeError to avoid exposing sensitive paths
   console.error("❌ Import failed:", sanitizeError(error));
   process.exit(1);
-});
+}

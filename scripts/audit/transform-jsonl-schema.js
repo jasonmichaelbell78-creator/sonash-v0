@@ -30,11 +30,11 @@ try {
   const severities = Array.isArray(auditSchema.validSeverities)
     ? auditSchema.validSeverities
     : ["S0", "S1", "S2", "S3"];
-  VALID_SEVERITIES_CACHED = Object.freeze([...severities]);
+  VALID_SEVERITIES_CACHED = Object.freeze(new Set(severities));
 } catch (configErr) {
   const msg = configErr instanceof Error ? configErr.message : String(configErr);
   console.error(`Warning: failed to load audit-schema config: ${msg}. Using defaults.`);
-  VALID_SEVERITIES_CACHED = Object.freeze(["S0", "S1", "S2", "S3"]);
+  VALID_SEVERITIES_CACHED = Object.freeze(new Set(["S0", "S1", "S2", "S3"]));
 }
 
 // Project root for path containment validation
@@ -176,7 +176,7 @@ function normalizeCategory(category) {
   const lower = trimmed.toLowerCase();
 
   // Valid normalized categories
-  const validCategories = [
+  const validCategories = new Set([
     "security",
     "performance",
     "code-quality",
@@ -184,10 +184,10 @@ function normalizeCategory(category) {
     "process",
     "refactoring",
     "engineering-productivity",
-  ];
+  ]);
 
   // Check if already normalized (case/whitespace tolerant)
-  if (validCategories.includes(lower)) return lower;
+  if (validCategories.has(lower)) return lower;
 
   // Try lookup in category map
   if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
@@ -340,15 +340,15 @@ function transformItem(item, index) {
 
   // Validate severity (case-insensitive - normalize to uppercase)
   const severityInput = typeof item.severity === "string" ? item.severity.trim().toUpperCase() : "";
-  let severity = VALID_SEVERITIES_CACHED.includes(severityInput) ? severityInput : "S2";
+  let severity = VALID_SEVERITIES_CACHED.has(severityInput) ? severityInput : "S2";
   if (severity !== item.severity) {
     issues.push(`severity: "${item.severity}" → ${severity}`);
   }
 
   // Validate effort (case-insensitive - normalize to uppercase)
-  const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
+  const VALID_EFFORTS = new Set(["E0", "E1", "E2", "E3"]);
   const effortInput = typeof item.effort === "string" ? item.effort.trim().toUpperCase() : "";
-  let effort = VALID_EFFORTS.includes(effortInput) ? effortInput : "E2";
+  let effort = VALID_EFFORTS.has(effortInput) ? effortInput : "E2";
   if (effort !== item.effort) {
     issues.push(`effort: "${item.effort}" → ${effort}`);
   }
@@ -568,7 +568,9 @@ function processFile(inputPath, outputPath, dryRun) {
     return 0;
   }
 
-  if (!dryRun) {
+  if (dryRun) {
+    console.log(`  (dry-run - no changes written)`);
+  } else {
     // Write output atomically (tmp file + rename) to prevent corruption
     // Use unique temp file name with PID/timestamp to prevent race conditions
     const dir = path.dirname(outputPath);
@@ -641,8 +643,6 @@ function processFile(inputPath, outputPath, dryRun) {
       process.exitCode = 1;
       return 0;
     }
-  } else {
-    console.log(`  (dry-run - no changes written)`);
   }
 
   return results.length;

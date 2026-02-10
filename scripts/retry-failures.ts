@@ -9,7 +9,7 @@ import { sanitizeError } from "./lib/sanitize-error";
 const NOMINATIM_BASE_URL = "https://nominatim.openstreetmap.org/search";
 const USER_AGENT = "SonashApp_Migration/1.0 (jason@example.com)"; // Replace with real email if possible
 
-async function retryFailures() {
+try {
   console.log("🚀 Starting Retry for Failed Addresses...\n");
 
   // 1. Initialize Firebase
@@ -94,8 +94,7 @@ async function retryFailures() {
     if (neighborhood && neighborhood !== "Nashville" && neighborhood.length > 2) {
       queries.push(`${streetClean}, ${neighborhood}, TN, USA`);
     }
-    queries.push(`${streetClean}, ${currentCity}, TN, USA`);
-    queries.push(`${streetClean}, TN, USA`);
+    queries.push(`${streetClean}, ${currentCity}, TN, USA`, `${streetClean}, TN, USA`);
 
     let found = false;
 
@@ -164,9 +163,7 @@ async function retryFailures() {
   console.log(`✅ Fixed/Updated: ${successCount}`);
   console.log(`❌ Still Failed: ${failCount}`);
   console.log("============================================================\n");
-}
-
-retryFailures().catch((error: unknown) => {
+} catch (error: unknown) {
   console.error("❌ Unexpected error:", sanitizeError(error));
   process.exit(1);
-});
+}

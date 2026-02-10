@@ -302,9 +302,11 @@ function main() {
   const results = [];
 
   // Run all trigger checks
-  results.push(checkSecurityTrigger(files));
-  results.push(checkConsolidationTrigger());
-  results.push(checkSkillValidationTrigger(files));
+  results.push(
+    checkSecurityTrigger(files),
+    checkConsolidationTrigger(),
+    checkSkillValidationTrigger(files)
+  );
 
   // Filter and display results
   const triggered = results.filter((r) => r.triggered);
