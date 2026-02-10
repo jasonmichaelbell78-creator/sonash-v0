@@ -1472,7 +1472,7 @@ function parseAllSources(allFindings, stats) {
  * Write JSONL helper
  */
 function writeJsonl(filePath, items) {
-  writeFileSync(filePath, items.map((f) => JSON.stringify(f)).join("\n"));
+  writeFileSync(filePath, items.map((f) => JSON.stringify(f)).join("\n") + "\n");
 }
 
 /**

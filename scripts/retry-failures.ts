@@ -93,10 +93,10 @@ try {
 
     if (!results || results.length === 0) return null;
 
-    return {
-      lat: Number.parseFloat(results[0].lat),
-      lon: Number.parseFloat(results[0].lon),
-    };
+    const lat = Number.parseFloat(results[0].lat);
+    const lon = Number.parseFloat(results[0].lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+    return { lat, lon };
   }
 
   /**
@@ -106,8 +106,16 @@ try {
     docRef: FirebaseFirestore.DocumentReference,
     data: FirebaseFirestore.DocumentData
   ): Promise<boolean> {
-    const streetClean = cleanAddress(data.address);
-    const queries = buildGeoQueries(streetClean, data.city || "Nashville", data.neighborhood);
+    const rawAddress = typeof data.address === "string" ? data.address : "";
+    if (rawAddress.trim().length < 5) return false;
+
+    const streetClean = cleanAddress(rawAddress);
+    const city = typeof data.city === "string" && data.city.trim() ? data.city.trim() : "Nashville";
+    const neighborhood =
+      typeof data.neighborhood === "string" && data.neighborhood.trim()
+        ? data.neighborhood.trim()
+        : undefined;
+    const queries = buildGeoQueries(streetClean, city, neighborhood);
 
     for (const query of queries) {
       try {
@@ -117,7 +125,7 @@ try {
           console.log(`   ✅ Success! Found: [${coords.lat}, ${coords.lon}]`);
           return true;
         }
-        console.log(`   🔸 No results for: "${query}"`);
+        console.log(`   🔸 No results for query ${queries.indexOf(query) + 1}/${queries.length}`);
       } catch (error: unknown) {
         // Query intentionally omitted from logs to avoid exposing address data
         console.error(`   ⚠️ Error querying geocode API`);

@@ -77,6 +77,13 @@
     "intake-pr-deferred.js",
     "normalize-all.js",
     "backfill-hashes.js",
-    "dedup-multi-pass.js"
+    "dedup-multi-pass.js",
+    "create-canonical-findings.js",
+    "extract-audits.js",
+    "extract-reviews.js",
+    "resolve-bulk.js",
+    "resolve-item.js",
+    "sync-roadmap-refs.js",
+    "migrate-existing-findings.js"
   ]
 }

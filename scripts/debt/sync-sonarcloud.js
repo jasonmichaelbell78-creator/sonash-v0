@@ -581,7 +581,7 @@ function deduplicateAndAssignIds(issues, existingItems) {
     converted.content_hash = generateContentHash(converted);
 
     if (existingHashes.has(converted.content_hash)) {
-      contentDuplicates.push(converted.title.substring(0, 40));
+      contentDuplicates.push((converted.title || "").substring(0, 40));
       continue;
     }
 
@@ -600,10 +600,34 @@ function writeNewItems(newItems) {
   console.log("\n📝 Writing new items to raw/deduped.jsonl...");
   const newLinesStr = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
   fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
-  fs.appendFileSync(DEDUPED_FILE, newLinesStr);
+
+  try {
+    fs.appendFileSync(DEDUPED_FILE, newLinesStr);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Failed to write to deduped.jsonl: ${msg}`);
+    process.exit(1);
+  }
 
   console.log("📝 Writing new items to MASTER_DEBT.jsonl...");
-  fs.appendFileSync(MASTER_FILE, newLinesStr);
+  try {
+    fs.appendFileSync(MASTER_FILE, newLinesStr);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Failed to write to MASTER_DEBT.jsonl: ${msg}`);
+    try {
+      const content = fs.readFileSync(DEDUPED_FILE, "utf8");
+      if (content.endsWith(newLinesStr)) {
+        fs.writeFileSync(DEDUPED_FILE, content.slice(0, -newLinesStr.length));
+        console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
+      } else {
+        console.warn("  ⚠️ Skip rollback: deduped.jsonl changed since append");
+      }
+    } catch {
+      // best-effort rollback only
+    }
+    process.exit(1);
+  }
 }
 
 // Main function

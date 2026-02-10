@@ -279,18 +279,23 @@ function writeItemToFiles(newItem) {
     fs.appendFileSync(MASTER_FILE, newItemJson);
   } catch (writeError) {
     console.error(`Error writing to master file: ${sanitizeError(writeError)}`);
-    rollbackDedupedFile();
+    rollbackDedupedFile(newItemJson);
     process.exit(1);
   }
 }
 
-// Rollback deduped file by removing the last appended line
-function rollbackDedupedFile() {
+// Rollback deduped file by removing the last appended line (verified)
+function rollbackDedupedFile(appendedLine) {
   try {
     const deduped = fs.readFileSync(DEDUPED_FILE, "utf8");
     const lines = deduped.split("\n");
     if (lines.length >= 2 && lines[lines.length - 1] === "") {
       lines.pop();
+    }
+    const lastLine = lines[lines.length - 1];
+    if (lastLine !== appendedLine.replace(/\n$/, "")) {
+      console.warn("  ⚠️ Rollback skipped: last line does not match the appended entry");
+      return;
     }
     lines.pop();
     fs.writeFileSync(DEDUPED_FILE, lines.length ? lines.join("\n") + "\n" : "");
