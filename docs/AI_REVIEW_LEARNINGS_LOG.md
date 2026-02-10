@@ -677,8 +677,8 @@ _Reviews #137-179 have been archived to
 #### Review #280: Qodo Evidence Deduplication in JSONL Debt Files (2026-02-10)
 
 **Source:** Qodo Code Suggestions **PR/Branch:**
-claude/analyze-repo-install-ceMkn **Suggestions:** 14 total (Critical: 0, Major:
-0, Minor: 13, Trivial: 1)
+claude/analyze-repo-install-ceMkn **Suggestions:** 21 total across 2 rounds
+(Critical: 0, Major: 0, Minor: 13, Trivial: 1, Rejected: 7)
 
 **Patterns Identified:**
 
@@ -696,7 +696,7 @@ claude/analyze-repo-install-ceMkn **Suggestions:** 14 total (Critical: 0, Major:
 
 - Fixed: 14 items (all via dedup script — 84 total entries fixed across 3 files)
 - Deferred: 0
-- Rejected: 0
+- Rejected: 7 (R2: stale content_hash × 5, restore merged_from, schema change)
 
 **Key Learnings:**
 
@@ -704,6 +704,9 @@ claude/analyze-repo-install-ceMkn **Suggestions:** 14 total (Critical: 0, Major:
   systemically, not just the flagged instances
 - Evidence deduplication should ideally happen at aggregation time, not as
   post-hoc cleanup
+- R2 false positive: Qodo flagged content_hash as stale after evidence edits,
+  but `generateContentHash()` uses file|line|title|description — NOT evidence.
+  Always verify hash computation before recomputing
 
 ---
 

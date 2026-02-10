@@ -74,7 +74,7 @@ _Essential project-level documentation_
 | Document                                                | Description                                                       | References | Last Modified |
 | ------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Context & Rules for SoNash](claude.md)              | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑7      | 2026-02-10    |
-| [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-09    |
+| [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-10    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓12 ↑6     | 2026-02-09    |
 | [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓13 ↑9     | 2026-02-10    |
 | [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-10    |
@@ -160,7 +160,7 @@ _Main documentation directory_
 | [Testing Plan](docs/TESTING_PLAN.md)                                                                                           | Comprehensive testing guidance for the SoNash application, i...   | ↓5 ↑1      | 2026-02-09    |
 | [Track A Admin Panel Testing Plan](docs/plans/TRACK_A_TESTING_PLAN.md)                                                         | Comprehensive testing plan for Track A Admin Panel features ...   | ↓1 ↑0      | 2026-02-05    |
 | [Track A Manual Testing Checklist](docs/plans/TRACK_A_MANUAL_TEST_CHECKLIST.md)                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-05    |
-| [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)                                                           | -                                                                 | ↓2 ↑1      | 2026-02-09    |
+| [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)                                                           | -                                                                 | ↓2 ↑1      | 2026-02-10    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md)                                                   | <!-- prettier-ignore-start -->                                    | ↓0 ↑2      | 2026-02-02    |
 | [Verification Queue](docs/technical-debt/views/verification-queue.md)                                                          | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-10    |
 
