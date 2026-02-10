@@ -1494,8 +1494,8 @@ function deduplicateAndCrossReference(allFindings, stats) {
 
   console.log("\nPhase 3: Deduplicating findings...");
   const { uniqueFindings, dedupLog } = deduplicateFindings(allFindings);
-  const reductionPct =
-    stats.total > 0 ? Math.round((1 - uniqueFindings.length / stats.total) * 100) : 0;
+  const reductionRatio = stats.total > 0 ? 1 - uniqueFindings.length / stats.total : 0;
+  const reductionPct = Math.max(0, Math.min(100, Math.round(reductionRatio * 100)));
   console.log(
     `  Deduplicated: ${stats.total} -> ${uniqueFindings.length} (${reductionPct}% reduction)`
   );

@@ -179,6 +179,7 @@ try {
           );
           successCount++;
           found = true;
+          break;
         }
       } catch (error) {
         console.error(`   💥 Error during geocode query:`, sanitizeError(error));

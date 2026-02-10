@@ -322,7 +322,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 9 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 10 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
@@ -671,6 +671,34 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #279: PR #355 R6 — Qodo Round 6 Deterministic IDs + Loop Fix (2026-02-10)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions **PR/Branch:**
+claude/branch-workflow-question-cgHVF (PR #355) **Suggestions:** 11 total
+(Critical: 0, Major: 2, Minor: 2, Trivial: 0, Rejected: 7)
+
+**Patterns Identified:**
+
+1. [Break after success in geocode loop]: After a successful geocode + Firestore
+   update, the inner query loop continued to next query unnecessarily, wasting
+   API calls. Fix: `break` after `found = true`
+   - Root cause: R5 early-return refactor removed the if block that naturally
+     ended processing, but didn't add break
+   - Prevention: When flattening if-else with early continue, add break at end
+2. [Deterministic finding IDs]: Using `Date.now()` + `randomUUID()` for finding
+   IDs makes them non-deterministic across runs, breaking dedup pipelines. Fix:
+   hash stable inputs (idSuffix + relativePath) for reproducible IDs
+3. [TLA false positive x5]: validate-audit.js (no TLA — standard try/catch),
+   set-admin-claim.ts, seed-meetings.ts all use import → ESM auto-detect
+   (REJECTED, same as R1-R5)
+4. [Already-guarded null check]: validate-audit-integration.js line 369 already
+   checks `!item.verification_steps` before line 380 (REJECTED — false positive)
+
+**Files Changed:** enrich-addresses.ts, check-doc-placement.js,
+aggregate-audit-findings.js, transform-jsonl-schema.js
 
 ---
 
