@@ -632,10 +632,19 @@ function writeNewItems(newItems) {
     console.error(`❌ Failed to write to MASTER_DEBT.jsonl: ${msg}`);
     try {
       fs.truncateSync(DEDUPED_FILE, dedupedSizeBeforeAppend);
+      console.warn("  ⚠️ Rolled back deduped.jsonl");
+    } catch (rollbackErr) {
+      console.warn(
+        `  ⚠️ Failed to rollback deduped.jsonl: ${rollbackErr instanceof Error ? rollbackErr.message : String(rollbackErr)}`
+      );
+    }
+    try {
       fs.truncateSync(MASTER_FILE, masterSizeBeforeAppend);
-      console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
-    } catch {
-      // best-effort rollback only
+      console.warn("  ⚠️ Rolled back MASTER_DEBT.jsonl");
+    } catch (rollbackErr) {
+      console.warn(
+        `  ⚠️ Failed to rollback MASTER_DEBT.jsonl: ${rollbackErr instanceof Error ? rollbackErr.message : String(rollbackErr)}`
+      );
     }
     process.exit(1);
   }

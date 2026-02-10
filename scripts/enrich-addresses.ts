@@ -158,16 +158,19 @@ try {
           const lat = Number.parseFloat(result.lat);
           const lon = Number.parseFloat(result.lon);
 
-          if (newZip && Number.isFinite(lat) && Number.isFinite(lon)) {
-            // Update Firestore
-            await doc.ref.update({
+          if (Number.isFinite(lat) && Number.isFinite(lon)) {
+            // Update Firestore — enrich coordinates even without zip
+            const updateFields: Record<string, unknown> = {
               city: newCity,
-              zip: newZip,
               coordinates: { lat, lng: lon },
-            });
+            };
+            if (newZip) updateFields.zip = newZip;
+            await doc.ref.update(updateFields);
 
             console.log(`[${index + 1}/${toProcess.length}] ✅ Enriched: ID ${doc.id}`);
-            console.log(`   └-> ${newCity}, ${newZip} @ [${lat.toFixed(5)}, ${lon.toFixed(5)}]`);
+            console.log(
+              `   └-> ${newCity}${newZip ? `, ${newZip}` : ""} @ [${lat.toFixed(5)}, ${lon.toFixed(5)}]`
+            );
             successCount++;
             found = true;
           }

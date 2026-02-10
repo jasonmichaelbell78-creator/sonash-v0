@@ -95,10 +95,12 @@ try {
           // Determine if we should update?
           // E.g. if the DB has newer verified data vs old cache.
           // Since we just ran enrichment, DB is truth.
-          const oldLat = cache[fullAddr].lat;
+          const oldLat = cache[fullAddr]?.lat;
+          const oldLng = cache[fullAddr]?.lng;
           const newLat = coords.lat;
+          const newLng = coords.lng;
 
-          if (Math.abs(oldLat - newLat) > 0.0001) {
+          if (Math.abs(oldLat - newLat) > 0.0001 || Math.abs(oldLng - newLng) > 0.0001) {
             cache[fullAddr] = coords;
             addedCount++; // Count as update
           } else {

@@ -649,7 +649,7 @@ function printLinkSummary(uniqueUrlCount, totalRefCount, results, failed) {
   console.log(`   URLs checked: ${uniqueUrlCount}`);
   console.log(`   Total references: ${totalRefCount}`);
   console.log(`   Failed: ${failed}`);
-  console.log(`   Passed: ${results.filter((r) => r.ok).length}`);
+  console.log(`   Passed: ${uniqueUrlCount - failed}`);
   console.log(
     failed === 0 ? "\n✅ All external links are valid!" : `\n❌ ${failed} broken link(s) found.`
   );

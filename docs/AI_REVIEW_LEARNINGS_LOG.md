@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 15.0 **Created:** 2026-01-02 **Last Updated:** 2026-02-07
+**Document Version:** 15.0 **Created:** 2026-01-02 **Last Updated:** 2026-02-10
 
 ## Purpose
 
@@ -322,7 +322,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 7 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 8 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
@@ -671,6 +671,42 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #277: PR #355 R4 — Qodo Round 4 Defensive Guards + Shape Validation (2026-02-10)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions **PR/Branch:**
+claude/branch-workflow-question-cgHVF (PR #355) **Suggestions:** 12 total
+(Critical: 0, Major: 4, Minor: 6, Trivial: 0, Rejected: 2)
+
+**Patterns Identified:**
+
+1. [Summary count mismatch]: check-external-links.js "Passed" count used
+   results.filter which counted per-reference, not per-unique-URL
+   - Fix: Use `uniqueUrlCount - failed` for consistent unique-URL counting
+2. [Args shape validation]: MCP handler `args || {}` only guards null, not
+   arrays or non-object types. Validate with
+   `typeof === "object" && !Array.isArray`
+3. [Independent rollback]: When rolling back two files, catch each truncation
+   independently so one failure doesn't prevent the other
+4. [Unused variable dead code]: streetClean assigned outside function that
+   already computes it internally — remove outer dead assignment
+5. [Enrich without zip]: Requiring zip before writing coordinates loses valid
+   geo data — enrich coordinates even when zip is unavailable
+6. [Compare both axes]: Cache staleness check compared only lat, missing
+   longitude drift — compare both lat and lng
+7. [parseInt for integer pass]: Use parseInt for dedup pass numbers to ensure
+   integer keys, not floating-point from Number()
+8. [MAX_SAFE_INTEGER bound]: Line number validation lacked upper bound — add
+   MAX_SAFE_INTEGER check to prevent overflow
+9. [TLA false positive x2]: phase-complete-check.js and sonarcloud-server.js
+   both use import statements — Node v22 auto-detects ESM (REJECTED)
+
+**Files Changed:** validate-audit.js, check-external-links.js,
+assign-roadmap-refs.js, retry-failures.ts, enrich-addresses.ts,
+sync-geocache.ts, sync-sonarcloud.js, sonarcloud-server.js, intake-audit.js,
+intake-manual.js
 
 ---
 

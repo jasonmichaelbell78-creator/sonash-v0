@@ -396,8 +396,8 @@ function readDedupStats(finalItems) {
     for (const entry of logEntries) {
       try {
         const e = JSON.parse(entry);
-        const passNum = typeof e.pass === "number" ? e.pass : Number(e.pass);
-        if (!Number.isFinite(passNum)) continue;
+        const passNum = Number.parseInt(String(e.pass), 10);
+        if (!Number.isFinite(passNum) || passNum < 0) continue;
         const key = `pass_${passNum}`;
         dedupBreakdown[key] = (dedupBreakdown[key] || 0) + 1;
       } catch {

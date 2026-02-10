@@ -208,7 +208,8 @@ function atomicRename(tmpPath, destPath) {
   try {
     fs.renameSync(tmpPath, destPath);
   } catch (error) {
-    if (error.code === "EPERM" || error.code === "EEXIST" || error.code === "EACCES") {
+    const code = error && typeof error === "object" ? error.code : undefined;
+    if (code === "EPERM" || code === "EEXIST" || code === "EACCES") {
       try {
         fs.rmSync(destPath, { force: true });
         fs.renameSync(tmpPath, destPath);

@@ -1013,7 +1013,8 @@ Options:
       // In strict mode, blocking violations cause exit 1
       if (strictS0S1 && summary.blocked) allPassed = false;
     } catch (err) {
-      console.error(`❌ Error validating ${file.path}: ${err.message}`);
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`❌ Error validating ${file.path}: ${msg}`);
       allPassed = false;
     }
   }

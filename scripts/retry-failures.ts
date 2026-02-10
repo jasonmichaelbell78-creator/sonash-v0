@@ -166,7 +166,6 @@ try {
       continue;
     }
 
-    const streetClean = cleanAddress(data.address);
     console.log(`[${index + 1}/${failures.length}] 🔄 Retrying ID: ${docId}`);
 
     const found = await retryOneFailure(docRef, data);

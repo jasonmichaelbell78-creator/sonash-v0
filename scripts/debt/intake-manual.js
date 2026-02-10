@@ -215,8 +215,13 @@ function validateInput(parsed) {
       console.error(`Error: --line must be a non-negative integer, got: ${parsed.line}`);
       process.exit(1);
     }
-    const lineNum = Number.parseInt(parsed.line, 10);
-    if (!Number.isFinite(lineNum) || lineNum < 0 || !Number.isInteger(lineNum)) {
+    const lineNum = Number.parseInt(raw, 10);
+    if (
+      !Number.isFinite(lineNum) ||
+      lineNum < 0 ||
+      lineNum > Number.MAX_SAFE_INTEGER ||
+      !Number.isInteger(lineNum)
+    ) {
       console.error(`Error: --line must be a non-negative integer, got: ${parsed.line}`);
       process.exit(1);
     }
