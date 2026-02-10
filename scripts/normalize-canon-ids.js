@@ -338,7 +338,8 @@ function rewriteAllIdReferences(fileData, idMap, dryRun, verbose) {
         writeFileSync(filepath, toJsonl(updatedFindings));
         console.log(`    ✓ Updated ${updatedFindings.length} findings`);
       } catch (err) {
-        console.error(`    Error writing ${filename}: ${err.message}`);
+        const errMsg = err instanceof Error ? err.message : String(err);
+        console.error(`    Error writing ${filename}: ${errMsg}`);
       }
     }
   }

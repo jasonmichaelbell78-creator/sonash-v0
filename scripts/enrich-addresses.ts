@@ -158,22 +158,27 @@ try {
           const lat = Number.parseFloat(result.lat);
           const lon = Number.parseFloat(result.lon);
 
-          if (Number.isFinite(lat) && Number.isFinite(lon)) {
-            // Update Firestore — enrich coordinates even without zip
-            const updateFields: Record<string, unknown> = {
-              city: newCity,
-              coordinates: { lat, lng: lon },
-            };
-            if (newZip) updateFields.zip = newZip;
-            await doc.ref.update(updateFields);
-
-            console.log(`[${index + 1}/${toProcess.length}] ✅ Enriched: ID ${doc.id}`);
+          if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
             console.log(
-              `   └-> ${newCity}${newZip ? `, ${newZip}` : ""} @ [${lat.toFixed(5)}, ${lon.toFixed(5)}]`
+              `[${index + 1}/${toProcess.length}] 🔸 Invalid coordinates from geocoder: ID ${doc.id}`
             );
-            successCount++;
-            found = true;
+            continue;
           }
+
+          // Update Firestore — enrich coordinates even without zip
+          const updateFields: Record<string, unknown> = {
+            city: newCity,
+            coordinates: { lat, lng: lon },
+          };
+          if (newZip) updateFields.zip = newZip;
+          await doc.ref.update(updateFields);
+
+          console.log(`[${index + 1}/${toProcess.length}] ✅ Enriched: ID ${doc.id}`);
+          console.log(
+            `   └-> ${newCity}${newZip ? `, ${newZip}` : ""} @ [${lat.toFixed(5)}, ${lon.toFixed(5)}]`
+          );
+          successCount++;
+          found = true;
         }
       } catch (error) {
         console.error(`   💥 Error during geocode query:`, sanitizeError(error));

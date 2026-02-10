@@ -126,11 +126,11 @@ async function processLine(line: string, index: number): Promise<Meeting | null>
     // Basic converter
     const [timePart, modifier] = time.split(" ");
     const [hoursRaw, minutes] = timePart.split(":");
-    if (!hoursRaw) continue;
+    if (!hoursRaw) return null;
     const safeMinutes = minutes || "00";
     let hours = hoursRaw;
     if (modifier.toLowerCase() === "pm" && hours !== "12")
-      hours = String(Number.parseInt(hours) + 12);
+      hours = String(Number.parseInt(hours, 10) + 12);
     if (modifier.toLowerCase() === "am" && hours === "12") hours = "00";
     time24 = `${hours.padStart(2, "0")}:${safeMinutes}`;
   }

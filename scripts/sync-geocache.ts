@@ -80,9 +80,6 @@ try {
         // Construct the likely lookup keys.
         // 1. Full combo
         const fullAddr = `${data.address}, ${data.city || "Nashville"}, ${data.state || "TN"}`;
-        // 2. Just raw address (if implied context)
-        const _rawAddr = data.address;
-
         // We'll prioritize the full address key as it's less ambiguous
         // But let's check what keys are already in the cache to guess the pattern?
         // Since we can't see runtime, let's just save the full address.
@@ -100,7 +97,17 @@ try {
           const newLat = coords.lat;
           const newLng = coords.lng;
 
-          if (Math.abs(oldLat - newLat) > 0.0001 || Math.abs(oldLng - newLng) > 0.0001) {
+          const oldIsValid =
+            typeof oldLat === "number" &&
+            typeof oldLng === "number" &&
+            Number.isFinite(oldLat) &&
+            Number.isFinite(oldLng);
+
+          if (
+            !oldIsValid ||
+            Math.abs(oldLat - newLat) > 0.0001 ||
+            Math.abs(oldLng - newLng) > 0.0001
+          ) {
             cache[fullAddr] = coords;
             addedCount++; // Count as update
           } else {
