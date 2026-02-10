@@ -30,7 +30,14 @@ function parseFrontmatter(content) {
   if (!content.startsWith("---")) return null;
   const endLF = content.indexOf("\n---", 3);
   const endCRLF = content.indexOf("\r\n---", 3);
-  const end = endLF === -1 ? endCRLF : endCRLF === -1 ? endLF : Math.min(endLF, endCRLF);
+  let end;
+  if (endLF === -1) {
+    end = endCRLF;
+  } else if (endCRLF === -1) {
+    end = endLF;
+  } else {
+    end = Math.min(endLF, endCRLF);
+  }
   if (end === -1) return null;
 
   const fm = content.slice(3, end);

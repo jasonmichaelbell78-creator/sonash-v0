@@ -872,7 +872,7 @@ function parseFileList(value) {
   const str = String(value);
 
   // Split by common separators
-  const parts = str.split(/[,;\n]+/).map((p) => p.trim().replace(/^`|`$/g, ""));
+  const parts = str.split(/[,;\n]+/).map((p) => p.trim().replace(/(?:^`)|(?:`$)/g, ""));
 
   // Filter to valid-looking file paths
   return parts.filter((p) => {

@@ -290,9 +290,9 @@ function loadMasterDebt() {
   let content;
   try {
     content = fs.readFileSync(MASTER_FILE, "utf8");
-  } catch (readErr) {
+  } catch (error_) {
     console.error(
-      `⚠️ Warning: Failed to read MASTER_DEBT.jsonl: ${readErr instanceof Error ? readErr.message : String(readErr)}`
+      `⚠️ Warning: Failed to read MASTER_DEBT.jsonl: ${error_ instanceof Error ? error_.message : String(error_)}`
     );
     return [];
   }
@@ -524,9 +524,9 @@ async function main() {
   let inputContent;
   try {
     inputContent = fs.readFileSync(inputFile, "utf8");
-  } catch (readErr) {
+  } catch (error_) {
     console.error(
-      `Error: Failed to read input file: ${readErr instanceof Error ? readErr.message : String(readErr)}`
+      `Error: Failed to read input file: ${error_ instanceof Error ? error_.message : String(error_)}`
     );
     process.exit(1);
   }

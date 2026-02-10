@@ -38,7 +38,7 @@ function extractPatterns(content, source) {
   const patterns = new Map();
 
   // Only match explicit pattern references (avoid PR/issue numbers like "PR #14")
-  const regex = /(?:^|\b)[Pp]attern\s+#(\d+)(?:\b|[^0-9])/gm;
+  const regex = /(?:^|\b)[Pp]attern\s+#(\d+)(?:\b|\D)/gm;
   let match;
 
   while ((match = regex.exec(content)) !== null) {
@@ -64,7 +64,7 @@ function isPatternAutomated(checkerContent, patternNum) {
   const patterns = [
     new RegExp(`#${patternNum}(?![0-9])`),
     new RegExp(`Pattern ${patternNum}(?![0-9])`),
-    new RegExp(`Review #\\d+.*#${patternNum}(?![0-9])`),
+    new RegExp(String.raw`Review #\d+.*#${patternNum}(?![0-9])`),
   ];
 
   return patterns.some((p) => p.test(checkerContent));
@@ -250,7 +250,7 @@ function getPatternDetails(patternNum) {
   const lines = content.split("\n");
   let capturing = false;
   let result = [];
-  const patternStart = new RegExp(`^\\*\\*Pattern #${patternNum}(?![0-9])`, "i");
+  const patternStart = new RegExp(String.raw`^\*\*Pattern #${patternNum}(?![0-9])`, "i");
   const patternEnd = /^\*\*(?:Pattern #|Resolution)/i;
 
   for (const line of lines) {

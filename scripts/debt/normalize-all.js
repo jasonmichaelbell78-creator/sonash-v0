@@ -148,8 +148,8 @@ async function main() {
     let content;
     try {
       content = fs.readFileSync(file, "utf8");
-    } catch (readErr) {
-      const msg = readErr instanceof Error ? readErr.message : String(readErr);
+    } catch (error_) {
+      const msg = error_ instanceof Error ? error_.message : String(error_);
       console.warn(`  ⚠️ Failed to read ${path.basename(file)}: ${msg}`);
       continue;
     }

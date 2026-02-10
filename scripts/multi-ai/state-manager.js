@@ -48,7 +48,9 @@ const VALID_PHASES = ["starting", "collecting", "aggregating", "unifying", "comp
 
 // Session ID format
 const SESSION_ID_PREFIX = "maa";
-const SESSION_ID_REGEX = new RegExp(`^${SESSION_ID_PREFIX}-\\d{4}-\\d{2}-\\d{2}-[a-f0-9]{6}$`);
+const SESSION_ID_REGEX = new RegExp(
+  String.raw`^${SESSION_ID_PREFIX}-\d{4}-\d{2}-\d{2}-[a-f0-9]{6}$`
+);
 
 /**
  * Generate a unique session ID

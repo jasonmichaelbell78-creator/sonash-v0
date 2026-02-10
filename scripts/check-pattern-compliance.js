@@ -267,7 +267,7 @@ const ANTI_PATTERNS = [
   {
     id: "hardcoded-api-key",
     pattern:
-      /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Za-z0-9_/+=-]{20,}['"`]/gi,
+      /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Z0-9_/+=-]{20,}['"`]/gi,
     message: "Potential hardcoded API key or secret detected",
     fix: "Use environment variables: process.env.API_KEY",
     review: "Security Standards",

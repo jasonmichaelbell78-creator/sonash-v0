@@ -320,7 +320,7 @@ function runBasicExecutionTest(stats, hookFile, hookPath, testDef) {
     hookFile,
     label,
     passed,
-    `exit=${basicResult.exitCode}${basicResult.stderr ? `: ${basicResult.stderr}` : ""}`
+    "exit=" + basicResult.exitCode + (basicResult.stderr ? `: ${basicResult.stderr}` : "")
   );
 }
 

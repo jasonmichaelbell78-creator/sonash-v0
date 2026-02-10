@@ -32,11 +32,9 @@ function parseArgs(args) {
     if (arg === "--dry-run") {
       parsed.dryRun = true;
     } else if (arg === "--pr" && args[i + 1]) {
-      parsed.pr = Number.parseInt(args[i + 1], 10);
-      i++;
+      parsed.pr = Number.parseInt(args[++i], 10);
     } else if (arg === "--file" && args[i + 1]) {
-      parsed.file = args[i + 1];
-      i++;
+      parsed.file = args[++i];
     } else if (arg.match(/^DEBT-\d+$/)) {
       parsed.debtIds.push(arg);
     }

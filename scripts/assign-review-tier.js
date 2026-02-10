@@ -454,8 +454,8 @@ function main() {
   // Filter out flags and their values explicitly
   const files = [];
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--pr") {
-      i++; // Skip the value too
+    if (args[i] === "--pr" && args[i + 1]) {
+      void args[++i]; // Skip the value too
     } else if (!args[i].startsWith("--")) {
       files.push(args[i]);
     }

@@ -620,9 +620,13 @@ function formatDocumentRow(doc, referenceGraph) {
   const inCount = refs ? refs.inbound.length : 0;
   const outCount = refs ? refs.outbound.length : 0;
   const refStr = `↓${inCount} ↑${outCount}`;
-  let desc = doc.description
-    ? doc.description.slice(0, 60) + (doc.description.length > 60 ? "..." : "")
-    : "-";
+  let desc;
+  if (doc.description) {
+    const suffix = doc.description.length > 60 ? "..." : "";
+    desc = doc.description.slice(0, 60) + suffix;
+  } else {
+    desc = "-";
+  }
   desc = desc.replace(/\|/g, "\\|");
   const linkPath = encodeMarkdownPath(doc.path);
   const safeTitle = doc.title.replace(/\|/g, "\\|");

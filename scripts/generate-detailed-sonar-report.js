@@ -94,7 +94,7 @@ async function fetchSonarCloudIssues(token, componentKey) {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        Authorization: `Basic ${Buffer.from(`${token}:`).toString("base64")}`,
+        Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
       },
     }).finally(() => clearTimeout(timeout));
 
@@ -148,7 +148,7 @@ async function fetchSonarCloudHotspots(token, componentKey) {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        Authorization: `Basic ${Buffer.from(`${token}:`).toString("base64")}`,
+        Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
       },
     }).finally(() => clearTimeout(timeout));
 

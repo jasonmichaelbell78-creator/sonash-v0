@@ -36,11 +36,9 @@ function parseArgs(args) {
     } else if (arg === "--false-positive") {
       parsed.falsePositive = true;
     } else if (arg === "--pr" && args[i + 1]) {
-      parsed.pr = Number.parseInt(args[i + 1], 10);
-      i++;
+      parsed.pr = Number.parseInt(args[++i], 10);
     } else if (arg === "--reason" && args[i + 1]) {
-      parsed.reason = args[i + 1];
-      i++;
+      parsed.reason = args[++i];
     } else if (arg.match(/^DEBT-\d+$/)) {
       parsed.debtId = arg;
     }

@@ -76,7 +76,7 @@ try {
     // CSV split handling quotes
     const cols = line
       .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-      .map((s) => s.trim().replace(/^"|"$/g, ""));
+      .map((s) => s.trim().replace(/(?:^")|(?:"$)/g, ""));
 
     if (cols.length < 7) {
       console.warn(`Skipping invalid line ${i + 2}: ${line}`);

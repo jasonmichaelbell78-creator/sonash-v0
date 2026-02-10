@@ -327,10 +327,7 @@ function parseMarkdownBacklog(filePath) {
       const deps = parts[parts.length - 3];
       const pr = parts[parts.length - 2];
       // Title may contain pipe chars - join middle parts
-      const title = parts
-        .slice(2, parts.length - 4)
-        .join(" | ")
-        .trim();
+      const title = parts.slice(2, -4).join(" | ").trim();
 
       if (/^E\d$/.test(effort)) {
         items.push({
@@ -537,7 +534,7 @@ function parseRoadmapItems(filePath) {
       const col3 = tableMatch[3].trim();
 
       // Detect if column 2 is a file path (contains / or ends with file extension)
-      const col2IsFilePath = /[/\\]|\.(?:tsx?|jsx?|mjs|cjs|json|md)$/i.test(col2);
+      const col2IsFilePath = /(?:[/\\])|(?:\.(?:tsx?|jsx?|mjs|cjs|json|md)$)/i.test(col2);
 
       // If col2 is a file path, use it as the file and col3 as description
       const description = col2IsFilePath ? col3 : col2;
@@ -873,7 +870,11 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
  */
 function normalizeConfidence(value) {
   if (value === undefined || value === null) return undefined;
-  if (typeof value === "number") return value >= 0.9 ? "high" : value >= 0.7 ? "medium" : "low";
+  if (typeof value === "number") {
+    if (value >= 0.9) return "high";
+    if (value >= 0.7) return "medium";
+    return "low";
+  }
   return String(value).toLowerCase();
 }
 

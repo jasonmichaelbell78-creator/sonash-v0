@@ -154,8 +154,8 @@ function determineTier(filePath, _content) {
  * @returns {string} - Content with normalized LF line endings
  */
 function normalizeLineEndings(content) {
-  // S7781: Use replaceAll() for regex with global flag
-  return content.replaceAll(/\r\n/g, "\n").replaceAll(/\r/g, "\n");
+  // S7781: Use string args with replaceAll() instead of regex
+  return content.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
 }
 
 /**
@@ -520,7 +520,7 @@ function validateMetadataDate(metadata, tier, warnings) {
   }
 
   // Check if date is stale (> 90 days for active docs)
-  const daysSinceUpdate = Math.floor((new Date() - dateResult.date) / (1000 * 60 * 60 * 24));
+  const daysSinceUpdate = Math.floor((Date.now() - dateResult.date) / (1000 * 60 * 60 * 24));
   if (daysSinceUpdate > 90 && tier <= 3) {
     warnings.push(`Document may be stale: last updated ${daysSinceUpdate} days ago`);
   }

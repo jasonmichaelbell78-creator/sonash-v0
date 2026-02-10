@@ -49,8 +49,7 @@ function parseArgs(args) {
     } else if (arg === "--quiet") {
       parsed.quiet = true;
     } else if (arg === "--file" && args[i + 1]) {
-      parsed.file = args[i + 1];
-      i++;
+      parsed.file = args[++i];
     } else if (!arg.startsWith("--")) {
       parsed.file = arg;
     }

@@ -389,7 +389,6 @@ function isIssueTracked(issue, entries) {
 
 // Generate learnings from the phase
 function extractPhaseLearnings(phaseNum, issues, hotspots) {
-  const _phaseConfig = PHASE_RULES[phaseNum];
   const learnings = [];
 
   // Group by rule

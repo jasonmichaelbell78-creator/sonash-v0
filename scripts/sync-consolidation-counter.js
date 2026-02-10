@@ -77,17 +77,15 @@ function main() {
   let content;
   try {
     content = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
-  } catch (readErr) {
+  } catch (error_) {
     const code =
-      readErr && typeof readErr === "object" && "code" in readErr
-        ? String(readErr.code)
-        : undefined;
+      error_ && typeof error_ === "object" && "code" in error_ ? String(error_.code) : undefined;
 
     if (code === "ENOENT") {
       console.error("❌ AI_REVIEW_LEARNINGS_LOG.md not found");
     } else {
       console.error(
-        `❌ Failed to read file: ${readErr instanceof Error ? readErr.message : String(readErr)}`
+        `❌ Failed to read file: ${error_ instanceof Error ? error_.message : String(error_)}`
       );
     }
     process.exitCode = 2;

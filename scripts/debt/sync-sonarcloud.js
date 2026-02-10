@@ -137,8 +137,7 @@ function parseArgs(args) {
       const key = arg.substring(2);
       const value = args[i + 1];
       if (value && !value.startsWith("--")) {
-        parsed[key] = value;
-        i++;
+        parsed[key] = args[++i];
       }
     }
   }
@@ -279,7 +278,7 @@ async function fetchSonarCloudIssues(options) {
 
     const response = await fetch(url, {
       headers: {
-        Authorization: `Basic ${Buffer.from(`${token}:`).toString("base64")}`,
+        Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
       },
     });
 

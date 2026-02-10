@@ -373,7 +373,7 @@ function main() {
     const sanitizedPattern = sanitizeCodeForLogging(suggested.pattern, 50);
 
     console.log(
-      `${i + 1}. Category: ${category}${reviewNumber ? ` (Review #${reviewNumber})` : ""}`
+      i + 1 + ". Category: " + category + (reviewNumber ? ` (Review #${reviewNumber})` : "")
     );
     console.log(`   Code: ${sanitizedCode}`);
     console.log(`   Suggested regex: /${sanitizedPattern}/`);

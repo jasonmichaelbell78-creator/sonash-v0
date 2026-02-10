@@ -93,7 +93,10 @@ function scanDeferredItems() {
     alerts.push({
       type: "deferred",
       severity: agingCount > 0 ? "warning" : "info",
-      message: `${deferredItems.length} deferred PR review item(s)${agingCount > 0 ? ` (${agingCount} aging)` : ""}`,
+      message:
+        deferredItems.length +
+        " deferred PR review item(s)" +
+        (agingCount > 0 ? ` (${agingCount} aging)` : ""),
       details: deferredItems.slice(0, 5).map((d) => `Review #${d.review}: ${d.description}`),
       action: "Consider adding to ROADMAP_FUTURE.md or AUDIT_FINDINGS_BACKLOG.md",
     });

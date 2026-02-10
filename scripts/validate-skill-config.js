@@ -110,7 +110,6 @@ function validateSkillFile(filePath) {
 
   const filename = path.basename(filePath);
   const isAudit = filename.startsWith("audit-");
-  const isSession = filename.startsWith("session-");
 
   // Check 1: YAML frontmatter
   const frontmatter = parseFrontmatter(content);
@@ -131,7 +130,7 @@ function validateSkillFile(filePath) {
   // Check 3: Required sections for audit commands
   if (isAudit) {
     for (const section of REQUIRED_SECTIONS.audit) {
-      const sectionRegex = new RegExp(`^#+\\s+${section}`, "mi");
+      const sectionRegex = new RegExp(String.raw`^#+\s+${section}`, "mi");
       if (!sectionRegex.test(content)) {
         warnings.push(`Missing recommended section: '${section}'`);
       }

@@ -339,7 +339,7 @@ async function fetchSonarCloudData() {
 
   const headers = {
     Accept: "application/json",
-    Authorization: `Basic ${Buffer.from(`${SONAR_CONFIG.token}:`).toString("base64")}`,
+    Authorization: `Basic ${Buffer.from(SONAR_CONFIG.token + ":").toString("base64")}`,
   };
 
   const controller = new AbortController();
@@ -479,7 +479,7 @@ function getCategoryAuditDates(content) {
       .join("-");
     // Match category row — handle both hyphens and spaces in multi-word names
     const displayNamePattern = displayName.replace(/-/g, "[-\\s]+");
-    const rowPattern = new RegExp(`^\\|\\s*${displayNamePattern}\\s*\\|\\s*([^|]+)\\|`, "mi");
+    const rowPattern = new RegExp(String.raw`^\|\s*${displayNamePattern}\s*\|\s*([^|]+)\|`, "mi");
     const match = thresholdsSection.match(rowPattern);
     if (match) {
       const cellContent = match[1].trim();
@@ -856,8 +856,14 @@ function printSonarCloudSection(sonarData, sonarError) {
     return;
   }
 
-  const gateIcon =
-    sonarData.qualityGate === "OK" ? "✅" : sonarData.qualityGate === "ERROR" ? "❌" : "⚠️";
+  let gateIcon;
+  if (sonarData.qualityGate === "OK") {
+    gateIcon = "✅";
+  } else if (sonarData.qualityGate === "ERROR") {
+    gateIcon = "❌";
+  } else {
+    gateIcon = "⚠️";
+  }
   console.log(`Quality Gate: ${gateIcon} ${sonarData.qualityGate}`);
   console.log(`\nIssue Counts:`);
   console.log(`  Bugs:            ${sonarData.bugs}`);

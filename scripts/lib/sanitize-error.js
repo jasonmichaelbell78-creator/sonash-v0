@@ -27,7 +27,7 @@ const SENSITIVE_PATTERNS = [
   /api[_-]?key[=:]\s*\S+/gi, // API keys
   /token[=:]\s*\S+/gi, // Tokens
   /secret[=:]\s*\S+/gi, // Secrets
-  /Bearer\s+[A-Za-z0-9._-]+/gi, // Bearer tokens
+  /Bearer\s+[A-Z0-9._-]+/gi, // Bearer tokens
 
   // Connection strings
   /mongodb(\+srv)?:\/\/[^\s]+/gi, // MongoDB
@@ -62,7 +62,7 @@ const REDACTED = "[REDACTED]";
  */
 export function sanitizeError(error, options = {}) {
   const {
-    preserveStackInDev = true, // Reserved for future: preserve stack in dev mode
+    // preserveStackInDev reserved for future: preserve stack in dev mode
     verbose = false,
   } = options;
 

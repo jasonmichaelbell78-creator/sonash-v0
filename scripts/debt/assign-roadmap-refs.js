@@ -39,8 +39,7 @@ const BACKUP_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl.bak");
 // Parse command line arguments
 function parseArgs(args) {
   const parsed = { dryRun: false, verbose: false, report: false };
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
+  for (const arg of args) {
     if (arg === "--dry-run") parsed.dryRun = true;
     else if (arg === "--verbose") parsed.verbose = true;
     else if (arg === "--report") parsed.report = true;
@@ -336,8 +335,8 @@ function main() {
     try {
       fs.copyFileSync(MASTER_FILE, BACKUP_FILE);
       console.log(`\n💾 Backup created: ${BACKUP_FILE}`);
-    } catch (backupErr) {
-      const errMsg = backupErr instanceof Error ? backupErr.message : String(backupErr);
+    } catch (error_) {
+      const errMsg = error_ instanceof Error ? error_.message : String(error_);
       console.error(`❌ Failed to create backup file: ${errMsg}`);
       process.exit(4);
     }
@@ -355,14 +354,14 @@ function main() {
       syncUpdatedItemsToDeduped(updatedItems);
 
       console.log("✅ MASTER_DEBT.jsonl updated successfully");
-    } catch (writeErr) {
+    } catch (error_) {
       // Clean up temp file on failure
       try {
         fs.unlinkSync(TEMP_FILE);
-      } catch (_e) {
+      } catch {
         /* ignore cleanup errors */
       }
-      const errMsg = writeErr instanceof Error ? writeErr.message : String(writeErr);
+      const errMsg = error_ instanceof Error ? error_.message : String(error_);
       console.error(`❌ Failed to write MASTER_DEBT.jsonl: ${errMsg}`);
       process.exit(4);
     }

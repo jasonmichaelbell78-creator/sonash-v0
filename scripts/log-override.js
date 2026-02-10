@@ -55,9 +55,9 @@ const SECRET_PATTERNS = [
   // Likely secret tokens: 24+ chars, must contain both letters and digits (reduces SHA/word false positives)
   /\b(?=[A-Za-z0-9_-]{24,}\b)(?=[A-Za-z0-9_-]*[A-Za-z])(?=[A-Za-z0-9_-]*\d)[A-Za-z0-9_-]+\b/g,
   // Bearer tokens
-  /bearer\s+[A-Za-z0-9._-]+/gi,
+  /bearer\s+[A-Z0-9._-]+/gi,
   // Basic auth
-  /basic\s+[A-Za-z0-9+/=]+/gi,
+  /basic\s+[A-Z0-9+/=]+/gi,
   // Key=value patterns with sensitive names
   /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*\S+/gi,
 ];

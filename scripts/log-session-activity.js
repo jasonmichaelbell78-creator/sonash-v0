@@ -47,9 +47,9 @@ const SECRET_PATTERNS = [
   // Tokens with 24+ chars containing both letters and digits
   /\b(?=[A-Za-z0-9_-]{24,}\b)(?=[A-Za-z0-9_-]*[A-Za-z])(?=[A-Za-z0-9_-]*\d)[A-Za-z0-9_-]+\b/g,
   // Bearer tokens
-  /bearer\s+[A-Za-z0-9._-]+/gi,
+  /bearer\s+[A-Z0-9._-]+/gi,
   // Basic auth
-  /basic\s+[A-Za-z0-9+/=]+/gi,
+  /basic\s+[A-Z0-9+/=]+/gi,
   // Key=value patterns with sensitive names
   /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*\S+/gi,
 ];

@@ -536,8 +536,8 @@ function applyConsolidationChanges(content, reviews, recurringPatterns) {
   // Review #216: Use reduce to avoid stack overflow on large review batches
   const { minReviewNum, maxReviewNum } = reviews.reduce(
     (acc, r) => ({
-      minReviewNum: r.number < acc.minReviewNum ? r.number : acc.minReviewNum,
-      maxReviewNum: r.number > acc.maxReviewNum ? r.number : acc.maxReviewNum,
+      minReviewNum: Math.min(r.number, acc.minReviewNum),
+      maxReviewNum: Math.max(r.number, acc.maxReviewNum),
     }),
     { minReviewNum: Infinity, maxReviewNum: 0 }
   );
@@ -712,12 +712,12 @@ function main() {
             stdio: "inherit",
             cwd: join(__dirname, ".."),
           });
-        } catch (analysisErr) {
+        } catch (error_) {
           // Non-blocking: Don't fail consolidation if analysis fails
           log("⚠️  Learning analysis failed (non-blocking)", colors.yellow);
           if (verbose) {
             // Review #200: Sanitize error message to prevent internal detail leakage
-            log(`   ${sanitizeError(analysisErr)}`, colors.yellow);
+            log(`   ${sanitizeError(error_)}`, colors.yellow);
           }
         }
 

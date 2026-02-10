@@ -205,7 +205,7 @@ try {
       throw fallbackErr;
     }
   }
-} catch (writeErr) {
+} catch (error_) {
   // Clean up tmp file on failure
   try {
     fs.unlinkSync(tmpDest);
@@ -213,7 +213,7 @@ try {
     // ignore cleanup errors
   }
   console.error(
-    `Error: could not write output file: ${writeErr instanceof Error ? writeErr.message : String(writeErr)}`
+    `Error: could not write output file: ${error_ instanceof Error ? error_.message : String(error_)}`
   );
   process.exit(1);
 }

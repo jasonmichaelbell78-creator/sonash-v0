@@ -61,8 +61,7 @@ function parseArgs(args) {
       const key = arg.substring(2);
       const value = args[i + 1];
       if (value && !value.startsWith("--")) {
-        parsed[key] = value;
-        i++;
+        parsed[key] = args[++i];
       }
     }
   }
@@ -112,8 +111,8 @@ function loadMasterDebt() {
   let content;
   try {
     content = fs.readFileSync(MASTER_FILE, "utf8");
-  } catch (readErr) {
-    const msg = readErr instanceof Error ? readErr.message : String(readErr);
+  } catch (error_) {
+    const msg = error_ instanceof Error ? error_.message : String(error_);
     console.error(`Error: Failed to read MASTER_DEBT.jsonl: ${msg}`);
     process.exit(1);
   }

@@ -68,8 +68,7 @@ function parseArgs(args) {
       const key = arg.substring(2);
       const value = args[i + 1];
       if (value && !value.startsWith("--")) {
-        parsed[key] = value;
-        i++;
+        parsed[key] = args[++i];
       }
     }
   }

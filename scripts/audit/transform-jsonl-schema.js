@@ -660,7 +660,7 @@ function processFile(inputPath, outputPath, dryRun) {
       // Atomic rename (with Windows fallback)
       try {
         fs.renameSync(tmpPath, outputPath);
-      } catch (renameErr) {
+      } catch (error_) {
         // Windows can fail to overwrite existing destination; fall back to unlink+rename
         try {
           const st = fs.statSync(outputPath);
@@ -668,17 +668,17 @@ function processFile(inputPath, outputPath, dryRun) {
             throw new Error(`Output path is a directory: ${outputPath}`);
           }
           fs.unlinkSync(outputPath);
-        } catch (unlinkErr) {
+        } catch (error__) {
           // Ignore ENOENT (missing destination is fine); rethrow other errors
           if (
             !(
-              unlinkErr &&
-              typeof unlinkErr === "object" &&
-              "code" in unlinkErr &&
-              unlinkErr.code === "ENOENT"
+              error__ &&
+              typeof error__ === "object" &&
+              "code" in error__ &&
+              error__.code === "ENOENT"
             )
           ) {
-            throw unlinkErr;
+            throw error__;
           }
         }
         fs.renameSync(tmpPath, outputPath);

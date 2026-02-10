@@ -252,8 +252,8 @@ function normalizeFiles(value) {
   const str = String(value);
   return str
     .split(/[,;\n]+/)
-    .map((f) => f.trim().replace(/^`|`$/g, ""))
-    .filter((f) => f);
+    .map((f) => f.trim().replace(/(?:^`)|(?:`$)/g, ""))
+    .filter(Boolean);
 }
 
 /**
@@ -272,7 +272,7 @@ function normalizeAcceptanceTests(value) {
     return str
       .split("\n")
       .map((t) => t.replace(/^[-*\d.]+\s*/, "").trim())
-      .filter((t) => t);
+      .filter(Boolean);
   }
 
   return [str];
