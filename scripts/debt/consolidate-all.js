@@ -9,9 +9,9 @@
  * Usage: node scripts/debt/consolidate-all.js
  */
 
-const { execFileSync } = require("child_process");
-const path = require("path");
-const fs = require("fs");
+const { execFileSync } = require("node:child_process");
+const path = require("node:path");
+const fs = require("node:fs");
 
 const SCRIPTS_DIR = __dirname;
 

@@ -13,8 +13,8 @@
  *   3. .env.local: SONAR_TOKEN
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Try to load dotenv if available
 try {
@@ -94,7 +94,7 @@ async function fetchSonarCloudIssues(token, componentKey) {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        Authorization: `Basic ${Buffer.from(`${token}:`).toString("base64")}`,
+        Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
       },
     }).finally(() => clearTimeout(timeout));
 
@@ -148,7 +148,7 @@ async function fetchSonarCloudHotspots(token, componentKey) {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        Authorization: `Basic ${Buffer.from(`${token}:`).toString("base64")}`,
+        Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
       },
     }).finally(() => clearTimeout(timeout));
 

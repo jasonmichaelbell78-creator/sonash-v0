@@ -286,7 +286,11 @@ function checkStaleness(lastSyncedStr) {
   }
 
   const [, year, month, day] = match;
-  const lastSynced = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const lastSynced = new Date(
+    Number.parseInt(year),
+    Number.parseInt(month) - 1,
+    Number.parseInt(day)
+  );
   const now = new Date();
   const daysDiff = Math.floor((now - lastSynced) / (1000 * 60 * 60 * 24));
 
@@ -405,7 +409,14 @@ function formatOutput(results) {
     console.log(`   Last Synced: ${pair.lastSynced}\n`);
 
     for (const issue of pair.issues) {
-      const icon = issue.severity === "CRITICAL" ? "❌" : issue.severity === "MAJOR" ? "⚠️" : "ℹ️";
+      let icon;
+      if (issue.severity === "CRITICAL") {
+        icon = "❌";
+      } else if (issue.severity === "MAJOR") {
+        icon = "⚠️";
+      } else {
+        icon = "ℹ️";
+      }
 
       if (issue.type === "placeholders") {
         console.log(`   ${icon} PLACEHOLDERS: ${issue.count} placeholder(s) need replacement`);

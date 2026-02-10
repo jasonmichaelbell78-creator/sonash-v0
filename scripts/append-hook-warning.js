@@ -14,8 +14,8 @@
  * @created 2026-01-28
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const ROOT_DIR = path.join(__dirname, "..");
 const WARNINGS_FILE = path.join(ROOT_DIR, ".claude", "hook-warnings.json");

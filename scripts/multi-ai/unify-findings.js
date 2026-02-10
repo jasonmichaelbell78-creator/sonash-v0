@@ -47,7 +47,7 @@ function validateSessionPath(sessionPath) {
 
 // Severity and effort weights for priority scoring
 const SEVERITY_WEIGHTS = { S0: 100, S1: 50, S2: 20, S3: 5 };
-const EFFORT_WEIGHTS = { E0: 0.5, E1: 1.0, E2: 2.0, E3: 4.0 };
+const EFFORT_WEIGHTS = { E0: 0.5, E1: 1, E2: 2, E3: 4 };
 
 // Cross-cutting multiplier (increases priority for multi-category findings)
 const CROSS_CUTTING_MULTIPLIER_PER_CATEGORY = 0.5;
@@ -96,7 +96,7 @@ function extractNormalizedFiles(finding) {
 
   return finding.files
     .map((f) => f.replace(/:+\d+$/, "").trim()) // Remove line numbers
-    .filter((f) => f);
+    .filter(Boolean);
 }
 
 /**
@@ -107,7 +107,7 @@ function extractNormalizedFiles(finding) {
  */
 function calculatePriorityScore(finding) {
   const severityWeight = SEVERITY_WEIGHTS[finding.severity] || 20;
-  const effortWeight = EFFORT_WEIGHTS[finding.effort] || 1.0;
+  const effortWeight = EFFORT_WEIGHTS[finding.effort] || 1;
 
   // Cross-cutting multiplier based on number of categories
   const categoryCount = finding.categories?.length || 1;
@@ -305,7 +305,7 @@ function mergeRelatedFindings(allFindings, fileMap) {
       const primaryFinding = representativeFindings.reduce((best, curr) => {
         const sevRank = { S0: 0, S1: 1, S2: 2, S3: 3 };
         return (sevRank[curr.severity] || 2) < (sevRank[best.severity] || 2) ? curr : best;
-      });
+      }, representativeFindings[0]);
 
       const combinedSources = representativeFindings.flatMap((f) => f.sources || []);
       const uniqueSources = Array.from(new Map(combinedSources.map((s) => [s.source, s])).values());
@@ -552,7 +552,7 @@ export async function unifyFindings(sessionPath) {
   const categoryStats = {};
 
   for (const file of canonFiles) {
-    const category = file.replace("CANON-", "").replace(".jsonl", "").toLowerCase();
+    const category = file.replaceAll("CANON-", "").replaceAll(".jsonl", "").toLowerCase();
     const findings = parseJsonlFile(join(canonDir, file));
 
     categoryStats[category] = {
@@ -583,7 +583,7 @@ export async function unifyFindings(sessionPath) {
   console.log(`Cross-cutting files detected: ${crossCutting.length}`);
 
   // Merge related findings
-  const { merged, mergeLog } = mergeRelatedFindings(allFindings, fileMap);
+  const { merged } = mergeRelatedFindings(allFindings, fileMap);
   console.log(`After merging: ${merged.length} unified findings`);
 
   // Detect dependency chains
@@ -706,11 +706,15 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     process.exit(1);
   }
 
-  unifyFindings(safeSessionPath).then(({ findings, summary }) => {
+  try {
+    const { findings, summary } = await unifyFindings(safeSessionPath);
     if (summary.error) {
       console.error(`Error: ${summary.error}`);
       process.exit(1);
     }
     console.log(`\nUnification complete: ${findings.length} unified findings`);
-  });
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
 }

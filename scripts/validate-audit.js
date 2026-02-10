@@ -463,19 +463,195 @@ function checkDuplicates(findings) {
  * @param {Array<Object>} findings - Audit findings to validate
  * @returns {Array<Object>} Blocking violations
  */
+/**
+ * Add a blocking violation to the violations array
+ */
+function addBlockingViolation(violations, type, findingId, severity, message) {
+  violations.push({ type, findingId, severity, message, blocking: true });
+}
+
+/**
+ * Validate confidence and cross_ref fields for S0/S1 finding
+ */
+function validateS0S1ConfidenceAndCrossRef(finding, prefix, violations) {
+  if (finding.confidence === "LOW") {
+    addBlockingViolation(
+      violations,
+      "LOW_CONFIDENCE_S0S1",
+      finding.id,
+      finding.severity,
+      `${prefix}: LOW confidence not allowed for S0/S1 findings. Upgrade confidence or downgrade severity.`
+    );
+  }
+
+  if (finding.cross_ref === "MANUAL_ONLY") {
+    addBlockingViolation(
+      violations,
+      "MANUAL_ONLY_S0S1",
+      finding.id,
+      finding.severity,
+      `${prefix}: MANUAL_ONLY not allowed for S0/S1 findings. Require tool validation or downgrade severity.`
+    );
+  }
+}
+
+/**
+ * Validate first_pass within verification_steps
+ */
+function validateFirstPass(vs, finding, prefix, violations) {
+  if (!vs.first_pass) {
+    addBlockingViolation(
+      violations,
+      "MISSING_FIRST_PASS",
+      finding.id,
+      finding.severity,
+      `${prefix}: Missing 'verification_steps.first_pass' object.`
+    );
+    return;
+  }
+
+  if (!vs.first_pass.method || !VALID_FIRST_PASS_METHODS.has(vs.first_pass.method)) {
+    addBlockingViolation(
+      violations,
+      "INVALID_FIRST_PASS_METHOD",
+      finding.id,
+      finding.severity,
+      `${prefix}: Invalid first_pass.method '${vs.first_pass.method}'. Must be one of: ${[...VALID_FIRST_PASS_METHODS].join(", ")}`
+    );
+  }
+  if (
+    !Array.isArray(vs.first_pass.evidence_collected) ||
+    vs.first_pass.evidence_collected.length < 1
+  ) {
+    addBlockingViolation(
+      violations,
+      "EMPTY_FIRST_PASS_EVIDENCE",
+      finding.id,
+      finding.severity,
+      `${prefix}: first_pass.evidence_collected must have at least 1 item.`
+    );
+  }
+}
+
+/**
+ * Validate second_pass within verification_steps
+ */
+function validateSecondPass(vs, finding, prefix, violations) {
+  if (!vs.second_pass) {
+    addBlockingViolation(
+      violations,
+      "MISSING_SECOND_PASS",
+      finding.id,
+      finding.severity,
+      `${prefix}: Missing 'verification_steps.second_pass' object.`
+    );
+    return;
+  }
+
+  if (!vs.second_pass.method || !VALID_SECOND_PASS_METHODS.has(vs.second_pass.method)) {
+    addBlockingViolation(
+      violations,
+      "INVALID_SECOND_PASS_METHOD",
+      finding.id,
+      finding.severity,
+      `${prefix}: Invalid second_pass.method '${vs.second_pass.method}'. Must be one of: ${[...VALID_SECOND_PASS_METHODS].join(", ")}`
+    );
+  }
+  if (vs.second_pass.confirmed !== true) {
+    addBlockingViolation(
+      violations,
+      "SECOND_PASS_NOT_CONFIRMED",
+      finding.id,
+      finding.severity,
+      `${prefix}: second_pass.confirmed must be true. If not confirmed, downgrade severity.`
+    );
+  }
+}
+
+/**
+ * Validate tool_confirmation within verification_steps
+ */
+function validateToolConfirmation(vs, finding, prefix, violations) {
+  if (!vs.tool_confirmation) {
+    addBlockingViolation(
+      violations,
+      "MISSING_TOOL_CONFIRMATION",
+      finding.id,
+      finding.severity,
+      `${prefix}: Missing 'verification_steps.tool_confirmation' object.`
+    );
+    return;
+  }
+
+  if (!vs.tool_confirmation.tool || !VALID_TOOL_CONFIRMATIONS.has(vs.tool_confirmation.tool)) {
+    addBlockingViolation(
+      violations,
+      "INVALID_TOOL_CONFIRMATION",
+      finding.id,
+      finding.severity,
+      `${prefix}: Invalid tool_confirmation.tool '${vs.tool_confirmation.tool}'. Must be one of: ${[...VALID_TOOL_CONFIRMATIONS].join(", ")}`
+    );
+  }
+  if (
+    typeof vs.tool_confirmation.reference !== "string" ||
+    vs.tool_confirmation.reference.trim() === ""
+  ) {
+    addBlockingViolation(
+      violations,
+      "MISSING_TOOL_REFERENCE",
+      finding.id,
+      finding.severity,
+      `${prefix}: tool_confirmation.reference must be a non-empty string.`
+    );
+  }
+}
+
+/**
+ * Validate verification_steps structure for a single S0/S1 finding
+ */
+function validateVerificationSteps(finding, prefix, violations) {
+  if (!finding.verification_steps) {
+    addBlockingViolation(
+      violations,
+      "MISSING_VERIFICATION_STEPS",
+      finding.id,
+      finding.severity,
+      `${prefix}: Missing required 'verification_steps' object for S0/S1 findings.`
+    );
+    return;
+  }
+
+  const vs = finding.verification_steps;
+  validateFirstPass(vs, finding, prefix, violations);
+  validateSecondPass(vs, finding, prefix, violations);
+  validateToolConfirmation(vs, finding, prefix, violations);
+}
+
+/**
+ * Validate S0/S1 findings with strict requirements (Session #98)
+ * Returns blocking violations for:
+ * - LOW confidence on S0/S1
+ * - MANUAL_ONLY verification on S0/S1
+ * - Missing verification_steps
+ * - second_pass.confirmed !== true
+ * - Evidence array < 2 items
+ *
+ * @param {Array<Object>} findings - Audit findings to validate
+ * @returns {Array<Object>} Blocking violations
+ */
 function validateS0S1Strict(findings) {
   const violations = [];
 
   // Review #204 R3: Fail closed on malformed JSONL (prevents S0/S1 evasion)
   const parseErrors = findings.filter((f) => f._parseError);
   if (parseErrors.length > 0) {
-    violations.push({
-      type: "JSONL_PARSE_ERROR",
-      findingId: null,
-      severity: "S0/S1",
-      message: `Audit file contains ${parseErrors.length} malformed JSONL line(s); strict S0/S1 validation requires a fully parseable file.`,
-      blocking: true,
-    });
+    addBlockingViolation(
+      violations,
+      "JSONL_PARSE_ERROR",
+      null,
+      "S0/S1",
+      `Audit file contains ${parseErrors.length} malformed JSONL line(s); strict S0/S1 validation requires a fully parseable file.`
+    );
   }
 
   const s0s1Findings = findings.filter(
@@ -485,147 +661,18 @@ function validateS0S1Strict(findings) {
   for (const finding of s0s1Findings) {
     const prefix = `${finding.id || "unknown"} (${finding.severity})`;
 
-    // Check 1: LOW confidence is blocking for S0/S1
-    if (finding.confidence === "LOW") {
-      violations.push({
-        type: "LOW_CONFIDENCE_S0S1",
-        findingId: finding.id,
-        severity: finding.severity,
-        message: `${prefix}: LOW confidence not allowed for S0/S1 findings. Upgrade confidence or downgrade severity.`,
-        blocking: true,
-      });
-    }
+    validateS0S1ConfidenceAndCrossRef(finding, prefix, violations);
+    validateVerificationSteps(finding, prefix, violations);
 
-    // Check 2: MANUAL_ONLY cross_ref is blocking for S0/S1
-    if (finding.cross_ref === "MANUAL_ONLY") {
-      violations.push({
-        type: "MANUAL_ONLY_S0S1",
-        findingId: finding.id,
-        severity: finding.severity,
-        message: `${prefix}: MANUAL_ONLY not allowed for S0/S1 findings. Require tool validation or downgrade severity.`,
-        blocking: true,
-      });
-    }
-
-    // Check 3: Missing verification_steps
-    if (!finding.verification_steps) {
-      violations.push({
-        type: "MISSING_VERIFICATION_STEPS",
-        findingId: finding.id,
-        severity: finding.severity,
-        message: `${prefix}: Missing required 'verification_steps' object for S0/S1 findings.`,
-        blocking: true,
-      });
-      continue; // Skip further verification_steps checks
-    }
-
-    const vs = finding.verification_steps;
-
-    // Check 4: Validate first_pass
-    if (!vs.first_pass) {
-      violations.push({
-        type: "MISSING_FIRST_PASS",
-        findingId: finding.id,
-        severity: finding.severity,
-        message: `${prefix}: Missing 'verification_steps.first_pass' object.`,
-        blocking: true,
-      });
-    } else {
-      if (!vs.first_pass.method || !VALID_FIRST_PASS_METHODS.has(vs.first_pass.method)) {
-        violations.push({
-          type: "INVALID_FIRST_PASS_METHOD",
-          findingId: finding.id,
-          severity: finding.severity,
-          message: `${prefix}: Invalid first_pass.method '${vs.first_pass.method}'. Must be one of: ${[...VALID_FIRST_PASS_METHODS].join(", ")}`,
-          blocking: true,
-        });
-      }
-      if (
-        !Array.isArray(vs.first_pass.evidence_collected) ||
-        vs.first_pass.evidence_collected.length < 1
-      ) {
-        violations.push({
-          type: "EMPTY_FIRST_PASS_EVIDENCE",
-          findingId: finding.id,
-          severity: finding.severity,
-          message: `${prefix}: first_pass.evidence_collected must have at least 1 item.`,
-          blocking: true,
-        });
-      }
-    }
-
-    // Check 5: Validate second_pass
-    if (!vs.second_pass) {
-      violations.push({
-        type: "MISSING_SECOND_PASS",
-        findingId: finding.id,
-        severity: finding.severity,
-        message: `${prefix}: Missing 'verification_steps.second_pass' object.`,
-        blocking: true,
-      });
-    } else {
-      if (!vs.second_pass.method || !VALID_SECOND_PASS_METHODS.has(vs.second_pass.method)) {
-        violations.push({
-          type: "INVALID_SECOND_PASS_METHOD",
-          findingId: finding.id,
-          severity: finding.severity,
-          message: `${prefix}: Invalid second_pass.method '${vs.second_pass.method}'. Must be one of: ${[...VALID_SECOND_PASS_METHODS].join(", ")}`,
-          blocking: true,
-        });
-      }
-      if (vs.second_pass.confirmed !== true) {
-        violations.push({
-          type: "SECOND_PASS_NOT_CONFIRMED",
-          findingId: finding.id,
-          severity: finding.severity,
-          message: `${prefix}: second_pass.confirmed must be true. If not confirmed, downgrade severity.`,
-          blocking: true,
-        });
-      }
-    }
-
-    // Check 6: Validate tool_confirmation
-    if (!vs.tool_confirmation) {
-      violations.push({
-        type: "MISSING_TOOL_CONFIRMATION",
-        findingId: finding.id,
-        severity: finding.severity,
-        message: `${prefix}: Missing 'verification_steps.tool_confirmation' object.`,
-        blocking: true,
-      });
-    } else {
-      if (!vs.tool_confirmation.tool || !VALID_TOOL_CONFIRMATIONS.has(vs.tool_confirmation.tool)) {
-        violations.push({
-          type: "INVALID_TOOL_CONFIRMATION",
-          findingId: finding.id,
-          severity: finding.severity,
-          message: `${prefix}: Invalid tool_confirmation.tool '${vs.tool_confirmation.tool}'. Must be one of: ${[...VALID_TOOL_CONFIRMATIONS].join(", ")}`,
-          blocking: true,
-        });
-      }
-      if (
-        typeof vs.tool_confirmation.reference !== "string" ||
-        vs.tool_confirmation.reference.trim() === ""
-      ) {
-        violations.push({
-          type: "MISSING_TOOL_REFERENCE",
-          findingId: finding.id,
-          severity: finding.severity,
-          message: `${prefix}: tool_confirmation.reference must be a non-empty string.`,
-          blocking: true,
-        });
-      }
-    }
-
-    // Check 7: Evidence array should have >= 2 items for S0/S1
+    // Evidence array should have >= 2 items for S0/S1
     if (!Array.isArray(finding.evidence) || finding.evidence.length < 2) {
-      violations.push({
-        type: "INSUFFICIENT_EVIDENCE",
-        findingId: finding.id,
-        severity: finding.severity,
-        message: `${prefix}: S0/S1 findings require at least 2 evidence items (found ${finding.evidence?.length ?? 0}).`,
-        blocking: true,
-      });
+      addBlockingViolation(
+        violations,
+        "INSUFFICIENT_EVIDENCE",
+        finding.id,
+        finding.severity,
+        `${prefix}: S0/S1 findings require at least 2 evidence items (found ${finding.evidence?.length ?? 0}).`
+      );
     }
   }
 
@@ -890,7 +937,7 @@ function findRecentAudits() {
   return audits.sort((a, b) => b.name.localeCompare(a.name));
 }
 
-async function main() {
+try {
   const args = process.argv.slice(2);
 
   if (args.includes("--help") || args.includes("-h")) {
@@ -966,15 +1013,15 @@ Options:
       // In strict mode, blocking violations cause exit 1
       if (strictS0S1 && summary.blocked) allPassed = false;
     } catch (err) {
-      console.error(`❌ Error validating ${file.path}: ${err.message}`);
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`❌ Error validating ${file.path}: ${msg}`);
       allPassed = false;
     }
   }
 
   process.exit(allPassed ? 0 : 1);
-}
-
-main().catch((err) => {
-  console.error("Error:", err.message);
+} catch (err) {
+  const errMsg = err instanceof Error ? err.message : String(err);
+  console.error("Error:", errMsg);
   process.exit(1);
-});
+}

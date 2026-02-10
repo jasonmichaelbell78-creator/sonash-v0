@@ -89,7 +89,7 @@ async function getCoordinates(address: string): Promise<{ lat: number; lng: numb
       const res = await fetch(url, { headers: { "User-Agent": "SonashApp/1.0" } });
       const data: Array<{ lat: string; lon: string }> = await res.json();
       if (data && data.length > 0) {
-        const loc = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        const loc = { lat: Number.parseFloat(data[0].lat), lng: Number.parseFloat(data[0].lon) };
         geocodingCache[address] = loc;
         process.stdout.write("."); // Progress dot
         return loc;
@@ -125,10 +125,14 @@ async function processLine(line: string, index: number): Promise<Meeting | null>
   if (time.toLowerCase().includes("pm") || time.toLowerCase().includes("am")) {
     // Basic converter
     const [timePart, modifier] = time.split(" ");
-    const [hours, minutes] = timePart.split(":");
-    if (modifier.toLowerCase() === "pm" && hours !== "12") hours = String(parseInt(hours) + 12);
+    const [hoursRaw, minutes] = timePart.split(":");
+    if (!hoursRaw) return null;
+    const safeMinutes = minutes || "00";
+    let hours = hoursRaw;
+    if (modifier.toLowerCase() === "pm" && hours !== "12")
+      hours = String(Number.parseInt(hours, 10) + 12);
     if (modifier.toLowerCase() === "am" && hours === "12") hours = "00";
-    time24 = `${hours.padStart(2, "0")}:${minutes || "00"}`;
+    time24 = `${hours.padStart(2, "0")}:${safeMinutes}`;
   }
 
   const fullAddress = `${streetAddress}, ${city}, TN`;
@@ -154,7 +158,7 @@ async function processLine(line: string, index: number): Promise<Meeting | null>
   };
 }
 
-async function main() {
+try {
   console.log(`Starting Import... Mode: ${GOOGLE_MAPS_KEY ? "FAST (Google)" : "SLOW (Nominatim)"}`);
 
   const fileStream = fs.createReadStream(CSV_FILE);
@@ -218,9 +222,7 @@ async function main() {
   }
 
   console.log("\nDone! Success.");
-}
-
-main().catch((error: unknown) => {
+} catch (error: unknown) {
   console.error("❌ Unexpected error:", sanitizeError(error));
   process.exit(1);
-});
+}

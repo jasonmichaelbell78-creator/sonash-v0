@@ -29,6 +29,68 @@ const PLAN_PATH = join(
   "INTEGRATED_IMPROVEMENT_PLAN.md"
 );
 
+/**
+ * Extract the content of a specific phase section
+ * @param {string} content - Full document content
+ * @param {string} phase - Phase title to find
+ * @returns {string|null} Phase content or null if not found
+ */
+function extractPhaseContent(content, phase) {
+  const header = `## 📋 ${phase}`;
+  const phaseStart = content.indexOf(header);
+  if (phaseStart === -1) return null;
+
+  const searchStart = phaseStart + header.length;
+  const nextPhaseMatch = content.slice(searchStart).match(/\n## 📋 PHASE/);
+  const phaseEnd = nextPhaseMatch ? searchStart + nextPhaseMatch.index : content.length;
+  return content.slice(phaseStart, phaseEnd);
+}
+
+/**
+ * Validate a single phase section for required documentation
+ * @param {string} phaseContent - Content of the phase section
+ * @param {string} phase - Phase title for error messages
+ * @param {string[]} issues - Array to push issues to
+ * @returns {boolean} True if phase is valid
+ */
+function validateSinglePhase(phaseContent, phase, issues) {
+  let valid = true;
+
+  // Check 1: "What Was Accomplished" section exists
+  const hasAccomplished = /### 📊 What Was Accomplished/.test(phaseContent);
+  if (hasAccomplished) {
+    console.log('  ✅ Has "What Was Accomplished" section');
+  } else {
+    console.log('  ❌ Missing "What Was Accomplished" section');
+    issues.push(`${phase}: Missing "What Was Accomplished" section`);
+    valid = false;
+  }
+
+  // Check 2: Acceptance criteria have some checked items
+  const criteriaChecked = (phaseContent.match(/- \[x\]/g) || []).length;
+  const criteriaTotal = (phaseContent.match(/- \[[ x]\]/g) || []).length;
+
+  if (criteriaTotal > 0 && criteriaChecked === 0) {
+    console.log("  ❌ No acceptance criteria marked complete");
+    issues.push(`${phase}: No acceptance criteria checked`);
+    valid = false;
+  } else if (criteriaTotal > 0) {
+    console.log(`  ✅ Acceptance criteria: ${criteriaChecked}/${criteriaTotal} checked`);
+  }
+
+  // Check 3: Completed date exists
+  const hasCompletedDate = /\*\*Completed:\*\*\s*\d{4}-\d{2}-\d{2}/.test(phaseContent);
+  if (hasCompletedDate) {
+    console.log("  ✅ Has completion date");
+  } else {
+    console.log('  ❌ Missing "Completed" date');
+    issues.push(`${phase}: Missing completion date`);
+    valid = false;
+  }
+
+  return valid;
+}
+
 function main() {
   console.log("🔍 Validating Phase Completion...\n");
 
@@ -65,49 +127,15 @@ function main() {
   for (const phase of completedPhases) {
     console.log(`Checking: ${phase}`);
 
-    // Find the phase section
-    const phaseStart = content.indexOf(`## 📋 ${phase}`);
-    if (phaseStart === -1) {
+    const phaseContent = extractPhaseContent(content, phase);
+    if (!phaseContent) {
       console.log(`  ⚠️  Could not find phase section`);
+      console.log("");
       continue;
     }
 
-    // Find next phase section (or end of file)
-    const nextPhaseMatch = content.slice(phaseStart + 10).match(/\n## 📋 PHASE/);
-    const phaseEnd = nextPhaseMatch ? phaseStart + 10 + nextPhaseMatch.index : content.length;
-
-    const phaseContent = content.slice(phaseStart, phaseEnd);
-
-    // Check 1: "What Was Accomplished" section exists
-    const hasAccomplished = /### 📊 What Was Accomplished/.test(phaseContent);
-    if (!hasAccomplished) {
-      console.log('  ❌ Missing "What Was Accomplished" section');
-      issues.push(`${phase}: Missing "What Was Accomplished" section`);
+    if (!validateSinglePhase(phaseContent, phase, issues)) {
       allValid = false;
-    } else {
-      console.log('  ✅ Has "What Was Accomplished" section');
-    }
-
-    // Check 2: Acceptance criteria have some checked items
-    const criteriaChecked = (phaseContent.match(/- \[x\]/g) || []).length;
-    const criteriaTotal = (phaseContent.match(/- \[[ x]\]/g) || []).length;
-
-    if (criteriaTotal > 0 && criteriaChecked === 0) {
-      console.log("  ❌ No acceptance criteria marked complete");
-      issues.push(`${phase}: No acceptance criteria checked`);
-      allValid = false;
-    } else if (criteriaTotal > 0) {
-      console.log(`  ✅ Acceptance criteria: ${criteriaChecked}/${criteriaTotal} checked`);
-    }
-
-    // Check 3: Completed date exists
-    const hasCompletedDate = /\*\*Completed:\*\*\s*\d{4}-\d{2}-\d{2}/.test(phaseContent);
-    if (!hasCompletedDate) {
-      console.log('  ❌ Missing "Completed" date');
-      issues.push(`${phase}: Missing completion date`);
-      allValid = false;
-    } else {
-      console.log("  ✅ Has completion date");
     }
 
     console.log("");

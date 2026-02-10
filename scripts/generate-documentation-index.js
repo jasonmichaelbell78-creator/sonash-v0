@@ -620,9 +620,13 @@ function formatDocumentRow(doc, referenceGraph) {
   const inCount = refs ? refs.inbound.length : 0;
   const outCount = refs ? refs.outbound.length : 0;
   const refStr = `↓${inCount} ↑${outCount}`;
-  let desc = doc.description
-    ? doc.description.slice(0, 60) + (doc.description.length > 60 ? "..." : "")
-    : "-";
+  let desc;
+  if (doc.description) {
+    const suffix = doc.description.length > 60 ? "..." : "";
+    desc = doc.description.slice(0, 60) + suffix;
+  } else {
+    desc = "-";
+  }
   desc = desc.replace(/\|/g, "\\|");
   const linkPath = encodeMarkdownPath(doc.path);
   const safeTitle = doc.title.replace(/\|/g, "\\|");
@@ -671,12 +675,14 @@ function generateDocsByCategorySection(docs, referenceGraph) {
  */
 function generateReferenceGraphSection(referenceGraph, docsByPath) {
   const lines = [];
-  lines.push("## Reference Graph");
-  lines.push("");
-  lines.push("### Most Referenced Documents (Inbound Links)");
-  lines.push("");
-  lines.push("Documents that are linked to most frequently:");
-  lines.push("");
+  lines.push(
+    "## Reference Graph",
+    "",
+    "### Most Referenced Documents (Inbound Links)",
+    "",
+    "Documents that are linked to most frequently:",
+    ""
+  );
 
   const byInbound = [...referenceGraph.entries()]
     .map(([path, refs]) => ({ path, count: refs.inbound.length, refs: refs.inbound }))
@@ -684,8 +690,10 @@ function generateReferenceGraphSection(referenceGraph, docsByPath) {
     .sort((a, b) => b.count - a.count)
     .slice(0, 20);
 
-  lines.push("| Document | Inbound Links | Referenced By |");
-  lines.push("|----------|---------------|---------------|");
+  lines.push(
+    "| Document | Inbound Links | Referenced By |",
+    "|----------|---------------|---------------|"
+  );
   for (const { path, count, refs } of byInbound) {
     const doc = docsByPath.get(path);
     const title = doc ? doc.title : basename(path, ".md");
@@ -699,10 +707,12 @@ function generateReferenceGraphSection(referenceGraph, docsByPath) {
   }
   lines.push("");
 
-  lines.push("### Most Linking Documents (Outbound Links)");
-  lines.push("");
-  lines.push("Documents that link to other documents most frequently:");
-  lines.push("");
+  lines.push(
+    "### Most Linking Documents (Outbound Links)",
+    "",
+    "Documents that link to other documents most frequently:",
+    ""
+  );
 
   const byOutbound = [...referenceGraph.entries()]
     .map(([path, refs]) => ({ path, count: refs.outbound.length }))
@@ -710,17 +720,14 @@ function generateReferenceGraphSection(referenceGraph, docsByPath) {
     .sort((a, b) => b.count - a.count)
     .slice(0, 20);
 
-  lines.push("| Document | Outbound Links |");
-  lines.push("|----------|----------------|");
+  lines.push("| Document | Outbound Links |", "|----------|----------------|");
   for (const { path, count } of byOutbound) {
     const doc = docsByPath.get(path);
     const title = doc ? doc.title : basename(path, ".md");
     const linkPath = encodeMarkdownPath(path);
     lines.push(`| [${escapeTableCell(title)}](${linkPath}) | ${count} |`);
   }
-  lines.push("");
-  lines.push("---");
-  lines.push("");
+  lines.push("", "---", "");
   return lines;
 }
 

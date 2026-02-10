@@ -272,6 +272,118 @@ function processFileForMapping(filepath, filename, idMap, idMapping, globalCount
   return { findings: mappedFindings, counter, category };
 }
 
+/**
+ * PASS 1: Build ID mapping for all findings across all files
+ */
+function buildIdMapping(files, directory, verbose) {
+  const idMapping = [];
+  // SECURITY: Use Map instead of plain object to prevent prototype pollution
+  const idMap = new Map(); // old_id -> new_id lookup
+  let globalCounter = 1;
+  const fileData = []; // Store parsed data for pass 2
+
+  for (const filename of files) {
+    const filepath = join(directory, filename);
+    // Review #187: Wrap in try/catch to handle duplicate ID errors gracefully
+    try {
+      const result = processFileForMapping(
+        filepath,
+        filename,
+        idMap,
+        idMapping,
+        globalCounter,
+        verbose
+      );
+
+      if (result.findings) {
+        fileData.push({ filepath, filename, category: result.category, findings: result.findings });
+        globalCounter = result.counter;
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`\n❌ Failed while processing ${filename}: ${message}`);
+      process.exit(2);
+    }
+  }
+
+  return { idMapping, idMap, globalCounter, fileData };
+}
+
+/**
+ * PASS 2: Rewrite ID references using the complete mapping
+ */
+function rewriteAllIdReferences(fileData, idMap, dryRun, verbose) {
+  let referencesUpdated = 0;
+
+  for (const { filepath, filename, category, findings } of fileData) {
+    console.log(`\n  ${filename} (${category})`);
+
+    const updatedFindings = findings.map((finding) => {
+      const before = JSON.stringify(finding);
+      const updated = rewriteIdReferences(finding, idMap);
+      const after = JSON.stringify(updated);
+      if (before !== after) {
+        referencesUpdated++;
+        if (verbose) {
+          console.log(`    ${updated.canonical_id}: Updated references`);
+        }
+      }
+      return updated;
+    });
+
+    if (dryRun) {
+      console.log(`    Would update ${updatedFindings.length} findings`);
+    } else {
+      try {
+        writeFileSync(filepath, toJsonl(updatedFindings));
+        console.log(`    ✓ Updated ${updatedFindings.length} findings`);
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        console.error(`    Error writing ${filename}: ${errMsg}`);
+      }
+    }
+  }
+
+  return referencesUpdated;
+}
+
+/**
+ * Write the ID mapping file to disk
+ */
+function writeIdMappingFile(directory, globalCounter, idMapping, dryRun) {
+  if (dryRun) return;
+
+  const mappingPath = join(directory, "ID_MAPPING.json");
+  const mappingContent = {
+    generated: new Date().toISOString(),
+    total_findings: globalCounter - 1,
+    mapping: idMapping,
+  };
+
+  try {
+    writeFileSync(mappingPath, JSON.stringify(mappingContent, null, 2));
+    console.log(`\n✓ ID mapping saved to ${mappingPath}`);
+  } catch (err) {
+    console.error(`Error writing ID mapping: ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
+/**
+ * Print normalization summary
+ */
+function printNormalizationSummary(fileCount, globalCounter, dryRun) {
+  console.log("\n" + "=".repeat(50));
+  console.log("SUMMARY");
+  console.log("=".repeat(50));
+  console.log(`Files processed: ${fileCount}`);
+  console.log(`Findings renumbered: ${globalCounter - 1}`);
+  console.log(`ID range: CANON-0001 to CANON-${String(globalCounter - 1).padStart(4, "0")}`);
+
+  if (dryRun) {
+    console.log("\n[DRY RUN] No files were modified. Run without --dry-run to apply changes.");
+  }
+}
+
 function main() {
   const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
   const dryRun = process.argv.includes("--dry-run");
@@ -303,100 +415,21 @@ function main() {
 
   // PASS 1: Build ID mapping for all findings
   console.log("\nPass 1: Building ID mapping...");
-  const idMapping = [];
-  // SECURITY: Use Map instead of plain object to prevent prototype pollution
-  const idMap = new Map(); // old_id -> new_id lookup
-  let globalCounter = 1;
-  const fileData = []; // Store parsed data for pass 2
-
-  for (const filename of files) {
-    const filepath = join(directory, filename);
-    // Review #187: Wrap in try/catch to handle duplicate ID errors gracefully
-    try {
-      const result = processFileForMapping(
-        filepath,
-        filename,
-        idMap,
-        idMapping,
-        globalCounter,
-        verbose
-      );
-
-      if (result.findings) {
-        fileData.push({ filepath, filename, category: result.category, findings: result.findings });
-        globalCounter = result.counter;
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.error(`\n❌ Failed while processing ${filename}: ${message}`);
-      process.exit(2);
-    }
-  }
+  const { idMapping, idMap, globalCounter, fileData } = buildIdMapping(files, directory, verbose);
 
   // PASS 2: Rewrite ID references using the complete mapping
   console.log("\nPass 2: Rewriting ID references...");
-  let referencesUpdated = 0;
-
-  for (const { filepath, filename, category, findings } of fileData) {
-    console.log(`\n  ${filename} (${category})`);
-
-    const updatedFindings = findings.map((finding) => {
-      const before = JSON.stringify(finding);
-      const updated = rewriteIdReferences(finding, idMap);
-      const after = JSON.stringify(updated);
-      if (before !== after) {
-        referencesUpdated++;
-        if (verbose) {
-          console.log(`    ${updated.canonical_id}: Updated references`);
-        }
-      }
-      return updated;
-    });
-
-    if (!dryRun) {
-      try {
-        writeFileSync(filepath, toJsonl(updatedFindings));
-        console.log(`    ✓ Updated ${updatedFindings.length} findings`);
-      } catch (err) {
-        console.error(`    Error writing ${filename}: ${err.message}`);
-      }
-    } else {
-      console.log(`    Would update ${updatedFindings.length} findings`);
-    }
-  }
+  const referencesUpdated = rewriteAllIdReferences(fileData, idMap, dryRun, verbose);
 
   if (referencesUpdated > 0) {
     console.log(`\n  ✓ Rewrote ${referencesUpdated} ID reference(s)`);
   }
 
   // Write ID mapping file
-  const mappingPath = join(directory, "ID_MAPPING.json");
-  const mappingContent = {
-    generated: new Date().toISOString(),
-    total_findings: globalCounter - 1,
-    mapping: idMapping,
-  };
-
-  if (!dryRun) {
-    try {
-      writeFileSync(mappingPath, JSON.stringify(mappingContent, null, 2));
-      console.log(`\n✓ ID mapping saved to ${mappingPath}`);
-    } catch (err) {
-      console.error(`Error writing ID mapping: ${err.message}`);
-    }
-  }
+  writeIdMappingFile(directory, globalCounter, idMapping, dryRun);
 
   // Summary
-  console.log("\n" + "=".repeat(50));
-  console.log("SUMMARY");
-  console.log("=".repeat(50));
-  console.log(`Files processed: ${files.length}`);
-  console.log(`Findings renumbered: ${globalCounter - 1}`);
-  console.log(`ID range: CANON-0001 to CANON-${String(globalCounter - 1).padStart(4, "0")}`);
-
-  if (dryRun) {
-    console.log("\n[DRY RUN] No files were modified. Run without --dry-run to apply changes.");
-  }
+  printNormalizationSummary(files.length, globalCounter, dryRun);
 }
 
 main();

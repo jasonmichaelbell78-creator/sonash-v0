@@ -153,7 +153,7 @@ function sanitizeDateString(dateString) {
   }
 
   const parsed = new Date(trimmed);
-  if (isNaN(parsed.getTime())) {
+  if (Number.isNaN(parsed.getTime())) {
     return "2025-01-01";
   }
 
@@ -170,7 +170,7 @@ function sanitizeDateString(dateString) {
 function getNextDay(dateString) {
   // Parse as UTC midnight to avoid timezone-related off-by-one errors (Review #198)
   const date = new Date(dateString + "T00:00:00Z");
-  if (isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime())) {
     // Review #204: Fail closed - return empty string so callers treat as no-op
     // This prevents command injection if sanitizeDateString somehow fails
     return "";
@@ -339,7 +339,7 @@ async function fetchSonarCloudData() {
 
   const headers = {
     Accept: "application/json",
-    Authorization: `Basic ${Buffer.from(`${SONAR_CONFIG.token}:`).toString("base64")}`,
+    Authorization: `Basic ${Buffer.from(SONAR_CONFIG.token + ":").toString("base64")}`,
   };
 
   const controller = new AbortController();
@@ -479,7 +479,7 @@ function getCategoryAuditDates(content) {
       .join("-");
     // Match category row — handle both hyphens and spaces in multi-word names
     const displayNamePattern = displayName.replace(/-/g, "[-\\s]+");
-    const rowPattern = new RegExp(`^\\|\\s*${displayNamePattern}\\s*\\|\\s*([^|]+)\\|`, "mi");
+    const rowPattern = new RegExp(String.raw`^\|\s*${displayNamePattern}\s*\|\s*([^|]+)\|`, "mi");
     const match = thresholdsSection.match(rowPattern);
     if (match) {
       const cellContent = match[1].trim();
@@ -856,8 +856,14 @@ function printSonarCloudSection(sonarData, sonarError) {
     return;
   }
 
-  const gateIcon =
-    sonarData.qualityGate === "OK" ? "✅" : sonarData.qualityGate === "ERROR" ? "❌" : "⚠️";
+  let gateIcon;
+  if (sonarData.qualityGate === "OK") {
+    gateIcon = "✅";
+  } else if (sonarData.qualityGate === "ERROR") {
+    gateIcon = "❌";
+  } else {
+    gateIcon = "⚠️";
+  }
   console.log(`Quality Gate: ${gateIcon} ${sonarData.qualityGate}`);
   console.log(`\nIssue Counts:`);
   console.log(`  Bugs:            ${sonarData.bugs}`);
@@ -951,12 +957,8 @@ function getRepoStartDate() {
   return result.success && result.output ? sanitizeDateString(result.output) : "2025-01-01";
 }
 
-/**
- * Main function - orchestrates review trigger checking
- * Reads AUDIT_TRACKER.md, checks per-category thresholds, and outputs results
- * @returns {Promise<void>} Exits with code 0 (no review needed), 1 (review recommended), or 2 (error)
- */
-async function main() {
+// Run
+try {
   // Read AUDIT_TRACKER.md
   const trackerResult = safeReadFile(TRACKER_PATH, "AUDIT_TRACKER.md");
   const trackerContent = trackerResult.success ? trackerResult.content : "";
@@ -1042,10 +1044,7 @@ async function main() {
 
   // Exit code
   process.exit(reviewNeeded ? 1 : 0);
-}
-
-// Run
-main().catch((error) => {
+} catch (error) {
   const msg = sanitizeError(error);
   if (JSON_OUTPUT) {
     console.log(JSON.stringify({ error: msg }));
@@ -1053,4 +1052,4 @@ main().catch((error) => {
     console.error("❌ Unexpected error:", msg);
   }
   process.exit(2);
-});
+}

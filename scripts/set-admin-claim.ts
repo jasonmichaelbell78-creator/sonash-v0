@@ -52,51 +52,6 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-async function setAdminClaim(email: string) {
-  try {
-    const auth = admin.auth();
-
-    // Find user by email
-    const user = await auth.getUserByEmail(email);
-
-    // Set admin custom claim
-    await auth.setCustomUserClaims(user.uid, { admin: true });
-
-    // Audit trail: timestamp, operator, action, target (masked)
-    const auditEntry = {
-      timestamp: new Date().toISOString(),
-      operator: getOperatorIdentity(),
-      action: "SET_ADMIN_CLAIM",
-      target: maskEmail(email),
-      targetUid: maskUid(user.uid),
-      result: "SUCCESS",
-    };
-    console.log(`[AUDIT] ${JSON.stringify(auditEntry)}`);
-    console.log(`✅ Admin claim set for ${maskEmail(email)} (uid: ${maskUid(user.uid)})`);
-    console.log("   User must sign out and sign back in for changes to take effect.");
-    process.exit(0);
-  } catch (error) {
-    // Audit trail for failures too
-    const auditEntry = {
-      timestamp: new Date().toISOString(),
-      operator: getOperatorIdentity(),
-      action: "SET_ADMIN_CLAIM",
-      target: maskEmail(email),
-      result: "FAILURE",
-      errorCode: (error as { code?: string }).code || "unknown",
-    };
-    console.log(`[AUDIT] ${JSON.stringify(auditEntry)}`);
-
-    if ((error as { code?: string }).code === "auth/user-not-found") {
-      console.error(`❌ User not found: ${maskEmail(email)}`);
-    } else {
-      // Use sanitizeError to avoid exposing sensitive paths
-      console.error("❌ Error setting admin claim:", sanitizeError(error));
-    }
-    process.exit(1);
-  }
-}
-
 // Get email from command line args
 const email = process.argv[2];
 
@@ -106,4 +61,45 @@ if (!email) {
   process.exit(1);
 }
 
-setAdminClaim(email);
+try {
+  const auth = admin.auth();
+
+  // Find user by email
+  const user = await auth.getUserByEmail(email);
+
+  // Set admin custom claim
+  await auth.setCustomUserClaims(user.uid, { admin: true });
+
+  // Audit trail: timestamp, operator, action, target (masked)
+  const auditEntry = {
+    timestamp: new Date().toISOString(),
+    operator: getOperatorIdentity(),
+    action: "SET_ADMIN_CLAIM",
+    target: maskEmail(email),
+    targetUid: maskUid(user.uid),
+    result: "SUCCESS",
+  };
+  console.log(`[AUDIT] ${JSON.stringify(auditEntry)}`);
+  console.log(`✅ Admin claim set for ${maskEmail(email)} (uid: ${maskUid(user.uid)})`);
+  console.log("   User must sign out and sign back in for changes to take effect.");
+  process.exit(0);
+} catch (error) {
+  // Audit trail for failures too
+  const auditEntry = {
+    timestamp: new Date().toISOString(),
+    operator: getOperatorIdentity(),
+    action: "SET_ADMIN_CLAIM",
+    target: maskEmail(email),
+    result: "FAILURE",
+    errorCode: (error as { code?: string }).code || "unknown",
+  };
+  console.log(`[AUDIT] ${JSON.stringify(auditEntry)}`);
+
+  if ((error as { code?: string }).code === "auth/user-not-found") {
+    console.error(`❌ User not found: ${maskEmail(email)}`);
+  } else {
+    // Use sanitizeError to avoid exposing sensitive paths
+    console.error("❌ Error setting admin claim:", sanitizeError(error));
+  }
+  process.exit(1);
+}

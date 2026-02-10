@@ -31,19 +31,19 @@
  * See: docs/templates/JSONL_SCHEMA_STANDARD.md for field mapping documentation
  */
 
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const os = require("os");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
+const os = require("node:os");
+const { execFileSync } = require("node:child_process");
 
 // Prototype pollution protection - filter dangerous keys from untrusted objects
-const DANGEROUS_KEYS = ["__proto__", "constructor", "prototype"];
+const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 function safeCloneObject(obj) {
   if (obj === null || typeof obj !== "object") return obj;
   const result = {};
   for (const key of Object.keys(obj)) {
-    if (!DANGEROUS_KEYS.includes(key)) {
+    if (!DANGEROUS_KEYS.has(key)) {
       result[key] = obj[key];
     }
   }
@@ -155,7 +155,7 @@ function mapDocStandardsToTdms(item) {
         if (lineMatch) {
           mapped.file = lineMatch[1];
           if (!item.line) {
-            mapped.line = parseInt(lineMatch[2], 10);
+            mapped.line = Number.parseInt(lineMatch[2], 10);
             metadata.mappings_applied.push("files[0]→file+line");
           } else {
             metadata.mappings_applied.push("files[0]→file");
@@ -220,7 +220,7 @@ function getNextDebtId(existingItems) {
     if (item.id) {
       const match = item.id.match(/DEBT-(\d+)/);
       if (match) {
-        const num = parseInt(match[1], 10);
+        const num = Number.parseInt(match[1], 10);
         if (num > maxId) maxId = num;
       }
     }
@@ -256,7 +256,7 @@ function validateAndNormalize(item, sourceFile) {
     line:
       typeof mappedItem.line === "number"
         ? mappedItem.line
-        : parseInt(String(mappedItem.line), 10) || 0,
+        : Number.parseInt(String(mappedItem.line), 10) || 0,
     title: (mappedItem.title || "Untitled").substring(0, 500),
     description: mappedItem.description || "",
     recommendation: mappedItem.recommendation || "",
@@ -290,9 +290,9 @@ function loadMasterDebt() {
   let content;
   try {
     content = fs.readFileSync(MASTER_FILE, "utf8");
-  } catch (readErr) {
+  } catch (error_) {
     console.error(
-      `⚠️ Warning: Failed to read MASTER_DEBT.jsonl: ${readErr instanceof Error ? readErr.message : String(readErr)}`
+      `⚠️ Warning: Failed to read MASTER_DEBT.jsonl: ${error_ instanceof Error ? error_.message : String(error_)}`
     );
     return [];
   }
@@ -344,6 +344,160 @@ function logIntake(activity) {
   fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
+// Print processing results (new items, duplicates, errors, format stats)
+function printProcessingResults(newItems, duplicates, errors, formatStats) {
+  console.log("📊 Processing Results:\n");
+  console.log(`  ✅ New items to add: ${newItems.length}`);
+  console.log(`  ⏭️  Duplicates skipped: ${duplicates.length}`);
+  console.log(`  ❌ Validation errors: ${errors.length}`);
+
+  if (formatStats["doc-standards"] > 0) {
+    console.log(`\n  📋 Format Detection:`);
+    console.log(`    - TDMS format: ${formatStats.tdms} items`);
+    console.log(
+      `    - Doc Standards format: ${formatStats["doc-standards"]} items (mapped to TDMS)`
+    );
+    if (Object.keys(formatStats.mappings).length > 0) {
+      console.log(`    - Field mappings applied:`);
+      for (const [mapping, count] of Object.entries(formatStats.mappings)) {
+        console.log(`        ${mapping}: ${count}`);
+      }
+    }
+    if (formatStats.confidenceLogs.length > 0) {
+      console.log(`    - Confidence values logged: ${formatStats.confidenceLogs.length} items`);
+    }
+  }
+
+  if (duplicates.length > 0 && duplicates.length <= 10) {
+    console.log("\n  Skipped duplicates:");
+    for (const dup of duplicates) {
+      console.log(`    - "${dup.input}..." (exists as ${dup.existingId})`);
+    }
+  }
+
+  if (errors.length > 0 && errors.length <= 10) {
+    console.log("\n  Validation errors:");
+    for (const err of errors) {
+      console.log(`    Line ${err.line}: ${err.errors.join(", ")}`);
+    }
+  }
+}
+
+// Read dedup log and compute per-pass breakdown, review count, and cluster count
+function readDedupStats(finalItems) {
+  const dedupBreakdown = {};
+  let reviewCount = 0;
+  let clusterCount = 0;
+
+  try {
+    const dedupLogPath = path.join(DEBT_DIR, "logs/dedup-log.jsonl");
+    const dedupLogContent = fs.readFileSync(dedupLogPath, "utf8");
+    const logEntries = dedupLogContent.split("\n").filter((l) => l.trim());
+    for (const entry of logEntries) {
+      try {
+        const e = JSON.parse(entry);
+        const passNum = Number.parseInt(String(e.pass), 10);
+        if (!Number.isFinite(passNum) || passNum < 0) continue;
+        const key = `pass_${passNum}`;
+        dedupBreakdown[key] = (dedupBreakdown[key] || 0) + 1;
+      } catch {
+        /* skip unparseable log entry */
+      }
+    }
+  } catch {
+    /* dedup log not available */
+  }
+
+  try {
+    const reviewPath = path.join(DEBT_DIR, "raw/review-needed.jsonl");
+    if (fs.existsSync(reviewPath)) {
+      reviewCount = fs
+        .readFileSync(reviewPath, "utf8")
+        .split("\n")
+        .filter((l) => l.trim()).length;
+    }
+  } catch {
+    /* review file not available */
+  }
+
+  const clusterIds = new Set();
+  for (const item of finalItems) {
+    if (item.cluster_id) clusterIds.add(item.cluster_id);
+  }
+  clusterCount = clusterIds.size;
+
+  return { dedupBreakdown, reviewCount, clusterCount };
+}
+
+// Print final intake & dedup report
+function printIntakeReport({
+  inputLines,
+  newItems,
+  duplicates,
+  errors,
+  existingItems,
+  dedupRan,
+  viewsRan,
+}) {
+  const finalItems = viewsRan ? loadMasterDebt() : existingItems;
+  const beforeDedup = existingItems.length + newItems.length;
+  const dedupRemoved = dedupRan && viewsRan ? Math.max(0, beforeDedup - finalItems.length) : 0;
+
+  console.log("\n" + "═".repeat(60));
+  console.log("  INTAKE & DEDUP REPORT");
+  console.log("═".repeat(60));
+  console.log(`  📥 Input:     ${inputLines.length} findings from audit`);
+  if (newItems.length > 0) {
+    console.log(
+      `  ✅ Ingested:  ${newItems.length} new items (${newItems[0]?.id} – ${newItems[newItems.length - 1]?.id})`
+    );
+  } else {
+    console.log(`  ✅ Ingested:  ${newItems.length} new items`);
+  }
+  console.log(`  ⏭️  Hash dupes: ${duplicates.length} exact duplicates skipped`);
+  console.log(`  ❌ Errors:    ${errors.length} validation failures`);
+
+  if (dedupRan) {
+    const { dedupBreakdown, reviewCount, clusterCount } = readDedupStats(finalItems);
+    console.log("");
+    console.log("  🔄 Multi-Pass Dedup:");
+    const passNames = {
+      pass_0: "Parametric (numbers stripped)",
+      pass_1: "Exact hash match",
+      pass_2: "Near match (file+line+title)",
+      pass_3: "Semantic (file+title >90%)",
+      pass_4: "Cross-source (SonarCloud↔audit)",
+      pass_5: "Systemic pattern annotation",
+    };
+    for (const [key, name] of Object.entries(passNames)) {
+      const count = dedupBreakdown[key] || 0;
+      if (count > 0) {
+        console.log(`     ${name}: ${count}`);
+      }
+    }
+    console.log(`     Total merged: ${dedupRemoved}`);
+    if (clusterCount > 0) {
+      console.log(`     Systemic patterns: ${clusterCount} clusters identified`);
+    }
+    if (reviewCount > 0) {
+      console.log(`     ⚠️  ${reviewCount} items flagged for manual review`);
+    }
+  }
+
+  const sevCounts = {};
+  for (const item of finalItems) {
+    sevCounts[item.severity] = (sevCounts[item.severity] || 0) + 1;
+  }
+
+  console.log("");
+  console.log("  📊 MASTER_DEBT.jsonl:");
+  console.log(`     Total: ${finalItems.length} items`);
+  console.log(
+    `     S0: ${sevCounts.S0 || 0} | S1: ${sevCounts.S1 || 0} | S2: ${sevCounts.S2 || 0} | S3: ${sevCounts.S3 || 0}`
+  );
+  console.log("═".repeat(60));
+}
+
 // Main function
 async function main() {
   const args = process.argv.slice(2);
@@ -376,9 +530,9 @@ async function main() {
   let inputContent;
   try {
     inputContent = fs.readFileSync(inputFile, "utf8");
-  } catch (readErr) {
+  } catch (error_) {
     console.error(
-      `Error: Failed to read input file: ${readErr instanceof Error ? readErr.message : String(readErr)}`
+      `Error: Failed to read input file: ${error_ instanceof Error ? error_.message : String(error_)}`
     );
     process.exit(1);
   }
@@ -466,42 +620,7 @@ async function main() {
   }
 
   // Report results
-  console.log("📊 Processing Results:\n");
-  console.log(`  ✅ New items to add: ${newItems.length}`);
-  console.log(`  ⏭️  Duplicates skipped: ${duplicates.length}`);
-  console.log(`  ❌ Validation errors: ${errors.length}`);
-
-  // Report format detection statistics
-  if (formatStats["doc-standards"] > 0) {
-    console.log(`\n  📋 Format Detection:`);
-    console.log(`    - TDMS format: ${formatStats.tdms} items`);
-    console.log(
-      `    - Doc Standards format: ${formatStats["doc-standards"]} items (mapped to TDMS)`
-    );
-    if (Object.keys(formatStats.mappings).length > 0) {
-      console.log(`    - Field mappings applied:`);
-      for (const [mapping, count] of Object.entries(formatStats.mappings)) {
-        console.log(`        ${mapping}: ${count}`);
-      }
-    }
-    if (formatStats.confidenceLogs.length > 0) {
-      console.log(`    - Confidence values logged: ${formatStats.confidenceLogs.length} items`);
-    }
-  }
-
-  if (duplicates.length > 0 && duplicates.length <= 10) {
-    console.log("\n  Skipped duplicates:");
-    for (const dup of duplicates) {
-      console.log(`    - "${dup.input}..." (exists as ${dup.existingId})`);
-    }
-  }
-
-  if (errors.length > 0 && errors.length <= 10) {
-    console.log("\n  Validation errors:");
-    for (const err of errors) {
-      console.log(`    Line ${err.line}: ${err.errors.join(", ")}`);
-    }
-  }
+  printProcessingResults(newItems, duplicates, errors, formatStats);
 
   // Write new items
   if (newItems.length === 0) {
@@ -599,99 +718,16 @@ async function main() {
     );
   }
 
-  // Read final count and dedup stats for on-screen report
-  const finalItems = viewsRan ? loadMasterDebt() : existingItems;
-  const beforeDedup = existingItems.length + newItems.length;
-  const dedupRemoved = dedupRan && viewsRan ? Math.max(0, beforeDedup - finalItems.length) : 0;
-
-  // Read dedup log for per-pass breakdown
-  let dedupBreakdown = {};
-  let reviewCount = 0;
-  let clusterCount = 0;
-  if (dedupRan) {
-    try {
-      const dedupLogPath = path.join(DEBT_DIR, "logs/dedup-log.jsonl");
-      const dedupLogContent = fs.readFileSync(dedupLogPath, "utf8");
-      const logEntries = dedupLogContent.split("\n").filter((l) => l.trim());
-      for (const entry of logEntries) {
-        try {
-          const e = JSON.parse(entry);
-          const key = `pass_${e.pass}`;
-          dedupBreakdown[key] = (dedupBreakdown[key] || 0) + 1;
-        } catch {
-          /* skip unparseable log entry */
-        }
-      }
-    } catch {
-      /* dedup log not available */
-    }
-    try {
-      const reviewPath = path.join(DEBT_DIR, "raw/review-needed.jsonl");
-      if (fs.existsSync(reviewPath)) {
-        reviewCount = fs
-          .readFileSync(reviewPath, "utf8")
-          .split("\n")
-          .filter((l) => l.trim()).length;
-      }
-    } catch {
-      /* review file not available */
-    }
-    // Count systemic clusters in final items
-    const clusterIds = new Set();
-    for (const item of finalItems) {
-      if (item.cluster_id) clusterIds.add(item.cluster_id);
-    }
-    clusterCount = clusterIds.size;
-  }
-
-  // Severity breakdown of final items
-  const sevCounts = {};
-  for (const item of finalItems) {
-    sevCounts[item.severity] = (sevCounts[item.severity] || 0) + 1;
-  }
-
-  // On-screen report
-  console.log("\n" + "═".repeat(60));
-  console.log("  INTAKE & DEDUP REPORT");
-  console.log("═".repeat(60));
-  console.log(`  📥 Input:     ${inputLines.length} findings from audit`);
-  console.log(
-    `  ✅ Ingested:  ${newItems.length} new items (${newItems[0]?.id} – ${newItems[newItems.length - 1]?.id})`
-  );
-  console.log(`  ⏭️  Hash dupes: ${duplicates.length} exact duplicates skipped`);
-  console.log(`  ❌ Errors:    ${errors.length} validation failures`);
-  if (dedupRan) {
-    console.log("");
-    console.log("  🔄 Multi-Pass Dedup:");
-    const passNames = {
-      pass_0: "Parametric (numbers stripped)",
-      pass_1: "Exact hash match",
-      pass_2: "Near match (file+line+title)",
-      pass_3: "Semantic (file+title >90%)",
-      pass_4: "Cross-source (SonarCloud↔audit)",
-      pass_5: "Systemic pattern annotation",
-    };
-    for (const [key, name] of Object.entries(passNames)) {
-      const count = dedupBreakdown[key] || 0;
-      if (count > 0) {
-        console.log(`     ${name}: ${count}`);
-      }
-    }
-    console.log(`     Total merged: ${dedupRemoved}`);
-    if (clusterCount > 0) {
-      console.log(`     Systemic patterns: ${clusterCount} clusters identified`);
-    }
-    if (reviewCount > 0) {
-      console.log(`     ⚠️  ${reviewCount} items flagged for manual review`);
-    }
-  }
-  console.log("");
-  console.log("  📊 MASTER_DEBT.jsonl:");
-  console.log(`     Total: ${finalItems.length} items`);
-  console.log(
-    `     S0: ${sevCounts.S0 || 0} | S1: ${sevCounts.S1 || 0} | S2: ${sevCounts.S2 || 0} | S3: ${sevCounts.S3 || 0}`
-  );
-  console.log("═".repeat(60));
+  // Print final intake & dedup report
+  printIntakeReport({
+    inputLines,
+    newItems,
+    duplicates,
+    errors,
+    existingItems,
+    dedupRan,
+    viewsRan,
+  });
 }
 
 main().catch((err) => {

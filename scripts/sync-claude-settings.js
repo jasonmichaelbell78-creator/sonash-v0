@@ -13,9 +13,9 @@
  *   node scripts/sync-claude-settings.js --diff     # Show differences
  */
 
-const fs = require("fs");
-const path = require("path");
-const os = require("os");
+const fs = require("node:fs");
+const path = require("node:path");
+const os = require("node:os");
 
 // Paths
 const HOME = os.homedir();
@@ -382,7 +382,14 @@ function diffCommand() {
       hasDiffs = true;
       console.log("Settings differences:");
       for (const d of diffs) {
-        const symbol = d.type === "added" ? "+" : d.type === "removed" ? "-" : "~";
+        let symbol;
+        if (d.type === "added") {
+          symbol = "+";
+        } else if (d.type === "removed") {
+          symbol = "-";
+        } else {
+          symbol = "~";
+        }
         console.log(`  ${symbol} ${d.path}`);
         // Qodo R12: Don't log full values - may contain secrets/tokens
         if (d.type === "changed") {
@@ -460,7 +467,7 @@ function diffCommand() {
         } else {
           console.log(`  = ${agent} (in sync)`);
         }
-      } catch (_e) {
+      } catch (error_) {
         hasDiffs = true;
         console.log(`  ? ${agent} (read error)`);
       }

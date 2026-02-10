@@ -248,12 +248,12 @@ function main() {
   checkTrackNaming(roadmapContent, "ROADMAP.md");
 
   // Run checks on ROADMAP_FUTURE.md if it exists
-  if (!futureContent) {
-    console.warn("⚠️  Skipping ROADMAP_FUTURE.md checks; file not found or unreadable.");
-  } else {
+  if (futureContent) {
     console.log("📄 Checking ROADMAP_FUTURE.md...");
     checkVersionConsistency(futureContent, "ROADMAP_FUTURE.md");
     checkLinkedDocuments(futureContent, "ROADMAP_FUTURE.md");
+  } else {
+    console.warn("⚠️  Skipping ROADMAP_FUTURE.md checks; file not found or unreadable.");
   }
 
   // Cross-document checks

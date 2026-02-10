@@ -27,7 +27,7 @@ function sanitizeError(error) {
     .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
     .replace(/\/home\/[^/\s]+/gi, "[HOME]")
     .replace(/\/Users\/[^/\s]+/gi, "[HOME]")
-    .replace(/[A-Za-z]:\\[^\s]+/gi, "[PATH]")
+    .replace(/[A-Z]:\\[^\s]+/gi, "[PATH]")
     .replace(/\/[^\s]*\/[^\s]+/g, "[PATH]");
 }
 
@@ -276,7 +276,7 @@ function parseCliArgs(args, schema) {
     if (def.type === "boolean") {
       options[arg] = true;
     } else {
-      const next = args[i + 1];
+      const next = args[++i]; // Consume next arg (the value)
 
       // Validate value exists and isn't another flag
       if (!next || next.startsWith("--")) {
@@ -285,8 +285,8 @@ function parseCliArgs(args, schema) {
       }
 
       if (def.type === "number") {
-        const num = parseInt(next, 10);
-        if (isNaN(num)) {
+        const num = Number.parseInt(next, 10);
+        if (Number.isNaN(num)) {
           errors.push(`${arg} must be a number`);
           continue;
         }
@@ -302,8 +302,6 @@ function parseCliArgs(args, schema) {
       } else {
         options[arg] = next;
       }
-
-      i++; // Skip next arg (the value)
     }
   }
 

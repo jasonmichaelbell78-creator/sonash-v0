@@ -38,11 +38,11 @@ function extractPatterns(content, source) {
   const patterns = new Map();
 
   // Only match explicit pattern references (avoid PR/issue numbers like "PR #14")
-  const regex = /(?:^|\b)[Pp]attern\s+#(\d+)(?:\b|[^0-9])/gm;
+  const regex = /(?:^|\b)[Pp]attern\s+#(\d+)(?:\b|\D)/gm;
   let match;
 
   while ((match = regex.exec(content)) !== null) {
-    const num = parseInt(match[1], 10);
+    const num = Number.parseInt(match[1], 10);
     if (num > 0 && num < 1000) {
       // Reasonable pattern number range
       if (!patterns.has(num)) {
@@ -64,7 +64,7 @@ function isPatternAutomated(checkerContent, patternNum) {
   const patterns = [
     new RegExp(`#${patternNum}(?![0-9])`),
     new RegExp(`Pattern ${patternNum}(?![0-9])`),
-    new RegExp(`Review #\\d+.*#${patternNum}(?![0-9])`),
+    new RegExp(String.raw`Review #\d+.*#${patternNum}(?![0-9])`),
   ];
 
   return patterns.some((p) => p.test(checkerContent));
@@ -85,21 +85,9 @@ function isPatternInChecklist(checklistContent, patternNum) {
 }
 
 /**
- * Main sync check
+ * Read all source files, returning empty string for missing/unreadable files
  */
-function checkPatternSync() {
-  console.log("🔍 Pattern Sync Checker\n");
-  console.log("Checking consistency between documentation and automation...\n");
-
-  const results = {
-    documented: new Set(),
-    automated: new Set(),
-    inChecklist: new Set(),
-    inHelpers: new Set(),
-    gaps: [],
-  };
-
-  // Read all files
+function readAllFiles() {
   const contents = {};
   for (const [key, filePath] of Object.entries(FILES)) {
     if (existsSync(filePath)) {
@@ -114,67 +102,62 @@ function checkPatternSync() {
       contents[key] = "";
     }
   }
+  return contents;
+}
 
-  // Extract documented patterns from CODE_PATTERNS.md
+/**
+ * Collect all documented pattern numbers from CODE_PATTERNS.md and learnings log
+ */
+function collectDocumentedPatterns(contents) {
+  const documented = new Set();
+
   const codePatternsMatch = contents.codePatterns.match(/## Pattern #(\d+)/g) || [];
   for (const m of codePatternsMatch) {
-    const num = parseInt(m.match(/\d+/)[0], 10);
-    results.documented.add(num);
+    const num = Number.parseInt(m.match(/\d+/)[0], 10);
+    documented.add(num);
   }
 
-  // Also check learnings log for newer patterns not yet consolidated
   const learningsPatterns = extractPatterns(contents.learningsLog, "learnings");
   for (const num of learningsPatterns.keys()) {
-    results.documented.add(num);
+    documented.add(num);
   }
 
-  // Check which patterns are automated
-  for (const num of results.documented) {
-    if (isPatternAutomated(contents.patternChecker, num)) {
-      results.automated.add(num);
-    }
-    if (isPatternInChecklist(contents.securityChecklist, num)) {
-      results.inChecklist.add(num);
-    }
-    if (isPatternInHelpers(contents.securityHelpers, num)) {
-      results.inHelpers.add(num);
-    }
-  }
+  return documented;
+}
 
-  // Find gaps
-  for (const num of results.documented) {
-    const isAutomated = results.automated.has(num);
-    const hasChecklist = results.inChecklist.has(num);
-    const hasHelper = results.inHelpers.has(num);
+/**
+ * Find patterns with missing automation or checklist coverage
+ */
+function findGaps(documented, contents) {
+  const automated = new Set();
+  const inChecklist = new Set();
+  const inHelpers = new Set();
+  const gaps = [];
 
-    if (!isAutomated || !hasChecklist) {
-      results.gaps.push({
+  for (const num of documented) {
+    if (isPatternAutomated(contents.patternChecker, num)) automated.add(num);
+    if (isPatternInChecklist(contents.securityChecklist, num)) inChecklist.add(num);
+    if (isPatternInHelpers(contents.securityHelpers, num)) inHelpers.add(num);
+
+    if (!automated.has(num) || !inChecklist.has(num)) {
+      gaps.push({
         pattern: num,
-        automated: isAutomated,
-        checklist: hasChecklist,
-        helper: hasHelper,
+        automated: automated.has(num),
+        checklist: inChecklist.has(num),
+        helper: inHelpers.has(num),
       });
     }
   }
 
-  // Report results
-  console.log("📊 Summary:");
-  console.log(`   Documented patterns: ${results.documented.size}`);
-  console.log(`   Automated in checker: ${results.automated.size}`);
-  console.log(`   In security checklist: ${results.inChecklist.size}`);
-  console.log(`   Have helper functions: ${results.inHelpers.size}`);
-  console.log();
+  return { automated, inChecklist, inHelpers, gaps };
+}
 
-  if (results.gaps.length === 0) {
-    console.log("✅ All patterns are synced!\n");
-    return { success: true, gaps: [] };
-  }
-
-  console.log(`⚠️  Found ${results.gaps.length} pattern(s) with gaps:\n`);
-
-  // Group by what's missing
-  const missingAutomation = results.gaps.filter((g) => !g.automated);
-  const missingChecklist = results.gaps.filter((g) => !g.checklist && g.automated);
+/**
+ * Print gap details grouped by missing automation vs missing checklist
+ */
+function reportGaps(gaps) {
+  const missingAutomation = gaps.filter((g) => !g.automated);
+  const missingChecklist = gaps.filter((g) => !g.checklist && g.automated);
 
   if (missingAutomation.length > 0) {
     console.log("Missing automation in check-pattern-compliance.js:");
@@ -192,7 +175,6 @@ function checkPatternSync() {
     console.log();
   }
 
-  // Recommendations
   console.log("📝 Recommendations:\n");
 
   if (missingAutomation.length > 0) {
@@ -218,8 +200,36 @@ function checkPatternSync() {
     "Note: Not all patterns can be automated. Patterns requiring\n" +
       "semantic analysis may only exist in the checklist.\n"
   );
+}
 
-  return { success: false, gaps: results.gaps };
+/**
+ * Main sync check
+ */
+function checkPatternSync() {
+  console.log("🔍 Pattern Sync Checker\n");
+  console.log("Checking consistency between documentation and automation...\n");
+
+  const contents = readAllFiles();
+  const documented = collectDocumentedPatterns(contents);
+  const { automated, inChecklist, inHelpers, gaps } = findGaps(documented, contents);
+
+  // Report results
+  console.log("📊 Summary:");
+  console.log(`   Documented patterns: ${documented.size}`);
+  console.log(`   Automated in checker: ${automated.size}`);
+  console.log(`   In security checklist: ${inChecklist.size}`);
+  console.log(`   Have helper functions: ${inHelpers.size}`);
+  console.log();
+
+  if (gaps.length === 0) {
+    console.log("✅ All patterns are synced!\n");
+    return { success: true, gaps: [] };
+  }
+
+  console.log(`⚠️  Found ${gaps.length} pattern(s) with gaps:\n`);
+  reportGaps(gaps);
+
+  return { success: false, gaps };
 }
 
 /**
@@ -240,7 +250,7 @@ function getPatternDetails(patternNum) {
   const lines = content.split("\n");
   let capturing = false;
   let result = [];
-  const patternStart = new RegExp(`^\\*\\*Pattern #${patternNum}(?![0-9])`, "i");
+  const patternStart = new RegExp(String.raw`^\*\*Pattern #${patternNum}(?![0-9])`, "i");
   const patternEnd = /^\*\*(?:Pattern #|Resolution)/i;
 
   for (const line of lines) {

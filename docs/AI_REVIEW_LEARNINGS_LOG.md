@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 15.0 **Created:** 2026-01-02 **Last Updated:** 2026-02-07
+**Document Version:** 15.0 **Created:** 2026-01-02 **Last Updated:** 2026-02-10
 
 ## Purpose
 
@@ -322,7 +322,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 4 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 10 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
@@ -671,6 +671,204 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #279: PR #355 R6 — Qodo Round 6 Deterministic IDs + Loop Fix (2026-02-10)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions **PR/Branch:**
+claude/branch-workflow-question-cgHVF (PR #355) **Suggestions:** 11 total
+(Critical: 0, Major: 2, Minor: 2, Trivial: 0, Rejected: 7)
+
+**Patterns Identified:**
+
+1. [Break after success in geocode loop]: After a successful geocode + Firestore
+   update, the inner query loop continued to next query unnecessarily, wasting
+   API calls. Fix: `break` after `found = true`
+   - Root cause: R5 early-return refactor removed the if block that naturally
+     ended processing, but didn't add break
+   - Prevention: When flattening if-else with early continue, add break at end
+2. [Deterministic finding IDs]: Using `Date.now()` + `randomUUID()` for finding
+   IDs makes them non-deterministic across runs, breaking dedup pipelines. Fix:
+   hash stable inputs (idSuffix + relativePath) for reproducible IDs
+3. [TLA false positive x5]: validate-audit.js (no TLA — standard try/catch),
+   set-admin-claim.ts, seed-meetings.ts all use import → ESM auto-detect
+   (REJECTED, same as R1-R5)
+4. [Already-guarded null check]: validate-audit-integration.js line 369 already
+   checks `!item.verification_steps` before line 380 (REJECTED — false positive)
+
+**Files Changed:** enrich-addresses.ts, check-doc-placement.js,
+aggregate-audit-findings.js, transform-jsonl-schema.js
+
+---
+
+#### Review #278: PR #355 R5 — Qodo Round 5 Critical Bug + Robustness (2026-02-10)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions **PR/Branch:**
+claude/branch-workflow-question-cgHVF (PR #355) **Suggestions:** 12 total
+(Critical: 1, Major: 2, Minor: 6, Trivial: 0, Rejected: 3)
+
+**Patterns Identified:**
+
+1. [Illegal continue in function]: `continue` is only valid inside loops, not in
+   function bodies — seed-real-data.ts used `continue` inside `processLine()`
+   which is a syntax error. Fix: `return null`
+   - Root cause: R2 refactored const→let but didn't catch the continue
+   - Prevention: Always verify control flow statements match their scope
+2. [Divide-by-zero guard]: Division for percentage calculation without checking
+   denominator can produce NaN — guard with `> 0` check
+3. [Corrupted cache validation]: Before comparing cached vs new values with
+   Math.abs, validate cached values are finite numbers — NaN produces NaN
+4. [Dead variable compliance]: Unused `_rawAddr` with underscore prefix violates
+   meaningful naming compliance — remove rather than prefix
+5. [TLA false positive x3]: check-review-needed.js, retry-failures.ts both use
+   import statements — Node v22 ESM auto-detect (REJECTED, same as R1-R4)
+6. [Per-field sanitization]: Over-engineering — router shouldn't couple to
+   handler-specific field names (REJECTED)
+
+**Files Changed:** seed-real-data.ts, aggregate-audit-findings.js,
+sync-geocache.ts, assign-roadmap-refs.js, normalize-canon-ids.js,
+enrich-addresses.ts, transform-jsonl-schema.js
+
+---
+
+#### Review #277: PR #355 R4 — Qodo Round 4 Defensive Guards + Shape Validation (2026-02-10)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions **PR/Branch:**
+claude/branch-workflow-question-cgHVF (PR #355) **Suggestions:** 12 total
+(Critical: 0, Major: 4, Minor: 6, Trivial: 0, Rejected: 2)
+
+**Patterns Identified:**
+
+1. [Summary count mismatch]: check-external-links.js "Passed" count used
+   results.filter which counted per-reference, not per-unique-URL
+   - Fix: Use `uniqueUrlCount - failed` for consistent unique-URL counting
+2. [Args shape validation]: MCP handler `args || {}` only guards null, not
+   arrays or non-object types. Validate with
+   `typeof === "object" && !Array.isArray`
+3. [Independent rollback]: When rolling back two files, catch each truncation
+   independently so one failure doesn't prevent the other
+4. [Unused variable dead code]: streetClean assigned outside function that
+   already computes it internally — remove outer dead assignment
+5. [Enrich without zip]: Requiring zip before writing coordinates loses valid
+   geo data — enrich coordinates even when zip is unavailable
+6. [Compare both axes]: Cache staleness check compared only lat, missing
+   longitude drift — compare both lat and lng
+7. [parseInt for integer pass]: Use parseInt for dedup pass numbers to ensure
+   integer keys, not floating-point from Number()
+8. [MAX_SAFE_INTEGER bound]: Line number validation lacked upper bound — add
+   MAX_SAFE_INTEGER check to prevent overflow
+9. [TLA false positive x2]: phase-complete-check.js and sonarcloud-server.js
+   both use import statements — Node v22 auto-detects ESM (REJECTED)
+
+**Files Changed:** validate-audit.js, check-external-links.js,
+assign-roadmap-refs.js, retry-failures.ts, enrich-addresses.ts,
+sync-geocache.ts, sync-sonarcloud.js, sonarcloud-server.js, intake-audit.js,
+intake-manual.js
+
+---
+
+#### Review #276: PR #355 R3 — Qodo Round 3 Robustness + Coordinates (2026-02-10)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions **PR/Branch:**
+claude/branch-workflow-question-cgHVF (PR #355) **Suggestions:** 14 total
+(Critical: 0, Major: 5, Minor: 7, Trivial: 0, Rejected: 2)
+
+**Patterns Identified:**
+
+1. [Coordinate validation]: parseFloat can return NaN; always guard with
+   Number.isFinite before writing to Firestore
+   - Root cause: No validation between parse and write
+   - Prevention: Always validate parsed numbers before DB operations
+2. [Falsy coordinate check]: coordinates.lat && coordinates.lng fails for 0
+   - Root cause: Using truthy check on numeric values
+   - Prevention: Use typeof === "number" && Number.isFinite
+3. [Fail-closed security]: isContainedRealPath should return false on any error,
+   not just ENOENT
+   - Root cause: R2 fix was too specific (ENOENT-only)
+   - Prevention: Security functions should always fail-closed
+
+**Resolution:**
+
+- Fixed: 12 items
+- Deferred: 0 items
+- Rejected: 2 items (TLA false positive, placeholder email not real PII)
+
+**Key Learnings:**
+
+- Coordinate validation is a recurring pattern across geocoding scripts
+- Security checkers should fail-closed (return false) not fail-open (throw)
+- File truncation rollback needs both files for true atomicity
+
+---
+
+#### Review #275: PR #355 R2 — Qodo Round 2 Compliance + Suggestions (2026-02-10)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions **PR/Branch:**
+claude/branch-workflow-question-cgHVF (PR #355) **Suggestions:** 17 total
+(Critical: 1, Major: 4, Minor: 7, Trivial: 2, Rejected: 3)
+
+**Patterns Identified:**
+
+1. [const reassignment]: Destructured const then reassigned — runtime TypeError
+   - Root cause: Wave 2 TLA conversion preserved const destructuring
+   - Prevention: TypeScript strict mode catches this; run tsc before push
+2. [TLA false positive persistence]: Same TLA false positive re-flagged
+   - Root cause: Qodo doesn't detect Node v22 ESM auto-detection
+   - Prevention: Document in rejection notes for future rounds
+3. [Input validation at boundaries]: CLI args need validation after parseInt
+   - Root cause: parseInt returns NaN for invalid input
+   - Prevention: Always validate parsed numeric args with Number.isFinite
+
+**Resolution:**
+
+- Fixed: 14 items
+- Deferred: 0 items
+- Rejected: 3 items (TLA false positives — all files use import statements)
+
+**Key Learnings:**
+
+- const vs let destructuring is a common bug when refactoring loops
+- Qodo re-flags rejected items if not explicitly marked in PR comments
+- File truncation is more robust than read-compare-write for rollbacks
+
+---
+
+#### Review #274: PR #355 — GRAND PLAN Sprint 1 Code Quality Review (2026-02-10)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + SonarCloud + CI Pattern
+Compliance **PR/Branch:** claude/branch-workflow-question-cgHVF (PR #355)
+**Suggestions:** 33 total (Critical: 1, Major: 15, Minor: 10, Trivial: 2,
+Rejected: 5)
+
+**Patterns Identified:**
+
+1. [readFileSync try/catch]: 12 readFileSync calls without try/catch (CI
+   blocker)
+   - Root cause: Wave refactoring preserved existsSync but didn't add try/catch
+   - Prevention: Pattern checker correctly catches these
+2. [Top-level await false positive]: Qodo flagged TLA in ESM files as CJS error
+   - Root cause: Node v22 auto-detects ESM syntax; tsx handles TS files
+   - Prevention: Check for import statements before assuming CJS
+3. [Merge audit logging]: dedup-multi-pass swapOrder not reflected in log entry
+   - Root cause: Log entry pushed from matchResult without updating kept/removed
+   - Prevention: Always derive log fields from actual merge direction
+4. [PII in geocoding logs]: Address strings logged in "no results" path
+   - Root cause: Debug logging included full query string
+   - Prevention: Mask or omit user data from log messages
+
+**Resolution:**
+
+- Fixed: 28 items
+- Deferred: 0 items
+- Rejected: 5 items (3 false positive TLA, 1 early return changes behavior, 1
+  Set.freeze low impact)
+
+**Key Learnings:**
+
+- Node v22 module auto-detection makes TLA valid in .js files with imports
+- readFileSync pattern remains most common CI blocker across PRs
+- Qodo Impact 10 ratings can still be false positives — always verify
 
 ---
 

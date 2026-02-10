@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-09 **Active Documents:** 265 **Archived Documents:** 93
+**Generated:** 2026-02-10 **Active Documents:** 265 **Archived Documents:** 93
 
 ---
 
@@ -72,11 +72,11 @@ _Essential project-level documentation_
 | [AI Context & Rules for SoNash](claude.md)              | This document provides essential context and rules for AI as...   | ↓4 ↑8      | 2026-02-09    |
 | [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-09    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓13 ↑6     | 2026-02-09    |
-| [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓14 ↑9     | 2026-02-09    |
-| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-09    |
-| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-09    |
+| [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓14 ↑9     | 2026-02-10    |
+| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-10    |
+| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-10    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-09    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-09    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-10    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                 | ↓4 ↑6      | 2026-02-09    |
 
 ### Core Documentation (Tier 2)
@@ -96,11 +96,11 @@ _Main documentation directory_
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                                         | Each AI review is an opportunity to improve future work. Sys...   | ↓9 ↑2      | 2026-02-09    |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                         | -                                                                 | ↓3 ↑4      | 2026-02-09    |
 | [ADR-NNN: [Short Title]](docs/decisions/TEMPLATE.md)                                                                           | [Briefly describe the purpose of this ADR - what decision do...   | ↓1 ↑0      | 2026-02-09    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                     | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-09    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                     | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-10    |
 | [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                                                | This guide covers Firebase App Check configuration for the S...   | ↓2 ↑0      | 2026-02-09    |
 | [Architecture Decision Records (ADRs)](docs/decisions/README.md)                                                               | This directory contains Architecture Decision Records (ADRs)...   | ↓0 ↑1      | 2026-02-09    |
-| [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                                         | Track single-session and multi-AI audit completions for thre...   | ↓1 ↑2      | 2026-02-09    |
-| [Automation Audit Report — 2026-02-09](docs/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md)         | - **Total findings:** 258                                         | ↓1 ↑0      | 2026-02-09    |
+| [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                                         | Track single-session and multi-AI audit completions for thre...   | ↓1 ↑2      | 2026-02-10    |
+| [Automation Audit Report — 2026-02-09](docs/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md)         | - **Total findings:** 258                                         | ↓1 ↑0      | 2026-02-10    |
 | [CI Quality Gates: Non-Blocking → Blocking Conversion Plan](docs/plans/CI_GATES_BLOCKING_PLAN.md)                              | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-09    |
 | [Context Preservation Pattern](docs/patterns/context-preservation-pattern.md)                                                  | This document describes the Context Preservation Pattern for...   | ↓0 ↑0      | 2026-02-09    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                                                                         | Track template-instance relationships,                            | ↓2 ↑1      | 2026-02-09    |
@@ -138,27 +138,27 @@ _Main documentation directory_
 | [SoNash Documentation Plan Map](docs/PLAN_MAP.md)                                                                              | Provide a visual map of documentation relationships, hierarc...   | ↓0 ↑0      | 2026-02-09    |
 | [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                                              | -                                                                 | ↓7 ↑4      | 2026-02-09    |
 | [SoNash Testing User Manual](docs/plans/TESTING_USER_MANUAL.md)                                                                | <!-- prettier-ignore-start -->                                    | ↓5 ↑0      | 2026-02-09    |
-| [Stage 1 - Ci Config 1D Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1d-ci-config.md)                  | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-09    |
-| [Stage 1 - Firebase 1E Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1e-firebase.md)                    | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-09    |
-| [Stage 1 - Hooks 1A Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1a-hooks.md)                          | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-09    |
-| [Stage 1 - Mcp 1F Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1f-mcp.md)                              | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-09    |
-| [Stage 1 - Scripts 1B Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1b-scripts.md)                      | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-09    |
-| [Stage 1C: Claude Skills and Commands Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1c-skills.md)       | -                                                                 | ↓0 ↑0      | 2026-02-09    |
+| [Stage 1 - Ci Config 1D Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1d-ci-config.md)                  | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-10    |
+| [Stage 1 - Firebase 1E Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1e-firebase.md)                    | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-10    |
+| [Stage 1 - Hooks 1A Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1a-hooks.md)                          | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-10    |
+| [Stage 1 - Mcp 1F Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1f-mcp.md)                              | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-10    |
+| [Stage 1 - Scripts 1B Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1b-scripts.md)                      | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-10    |
+| [Stage 1C: Claude Skills and Commands Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1c-skills.md)       | -                                                                 | ↓0 ↑0      | 2026-02-10    |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                                                           | <!-- prettier-ignore-start -->                                    | ↓1 ↑3      | 2026-02-09    |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)                                                         | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-09    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)                                                         | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-09    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)                                                             | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-09    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                                                           | <!-- prettier-ignore-start -->                                    | ↓4 ↑4      | 2026-02-09    |
-| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                                         | This document provides step-by-step procedures for managing ...   | ↓12 ↑2     | 2026-02-09    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)                                                         | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-10    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)                                                         | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-10    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)                                                             | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-10    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                                                           | <!-- prettier-ignore-start -->                                    | ↓4 ↑4      | 2026-02-10    |
+| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                                         | This document provides step-by-step procedures for managing ...   | ↓12 ↑2     | 2026-02-10    |
 | [Technical Debt Management System (TDMS) - Implementation Plan](docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)           | This plan establishes a unified Technical Debt Management Sy...   | ↓4 ↑1      | 2026-02-09    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                                                                       | This document provides a real-time dashboard of technical de...   | ↓1 ↑0      | 2026-02-09    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                                                                       | This document provides a real-time dashboard of technical de...   | ↓1 ↑0      | 2026-02-10    |
 | [Testing Infrastructure Plan](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)                                                       | This document outlines a comprehensive testing infrastructur...   | ↓1 ↑2      | 2026-02-09    |
 | [Testing Plan](docs/TESTING_PLAN.md)                                                                                           | Comprehensive testing guidance for the SoNash application, i...   | ↓5 ↑1      | 2026-02-09    |
 | [Track A Admin Panel Testing Plan](docs/plans/TRACK_A_TESTING_PLAN.md)                                                         | Comprehensive testing plan for Track A Admin Panel features ...   | ↓1 ↑0      | 2026-02-09    |
 | [Track A Manual Testing Checklist](docs/plans/TRACK_A_MANUAL_TEST_CHECKLIST.md)                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-09    |
 | [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)                                                           | -                                                                 | ↓2 ↑1      | 2026-02-09    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md)                                                   | <!-- prettier-ignore-start -->                                    | ↓0 ↑2      | 2026-02-09    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)                                                          | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-09    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)                                                          | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-10    |
 
 ### Agent Documentation (Tier 3)
 
@@ -255,7 +255,7 @@ _Claude Code skills_
 | [Senior Qa](.claude/skills/senior-qa/SKILL.md)                                                                                      | Complete toolkit for senior qa with modern tools and best pr...   | ↓0 ↑0      | 2026-02-09    |
 | [Session Begin Checklist](.claude/skills/session-begin/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-09    |
 | [Session Checkpoint](.claude/skills/checkpoint/SKILL.md)                                                                            | -                                                                 | ↓0 ↑0      | 2026-02-09    |
-| [Session End Checklist](.claude/skills/session-end/SKILL.md)                                                                        | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-02-09    |
+| [Session End Checklist](.claude/skills/session-end/SKILL.md)                                                                        | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-02-10    |
 | [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)                                                              | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-09    |
 | [Single-Session Engineering Productivity Audit](.claude/skills/audit-engineering-productivity/SKILL.md)                             | Evaluates developer experience (DX), debugging capabilities,...   | ↓0 ↑0      | 2026-02-09    |
 | [Single-Session Performance Audit](.claude/skills/audit-performance/SKILL.md)                                                       | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-09    |
@@ -329,7 +329,7 @@ _Uncategorized_
 | [AI Review Output Examples](.claude/review-examples.md)                  | Real-world examples of what each review type produces. Use t... | ↓0 ↑0      | 2026-02-09    |
 | [AI Review Prompts - Quick Reference](.claude/review-quick-reference.md) | Quick lookup for specialized review prompts. See full detail... | ↓0 ↑0      | 2026-02-09    |
 | [AI Review Prompts for Non-Code Artifacts](.claude/review-prompts.md)    | Specialized review prompts optimized for Claude Code integra... | ↓0 ↑0      | 2026-02-09    |
-| [Claude Code Command Reference](.claude/COMMAND_REFERENCE.md)            | Comprehensive                                                   | ↓3 ↑0      | 2026-02-09    |
+| [Claude Code Command Reference](.claude/COMMAND_REFERENCE.md)            | Comprehensive                                                   | ↓3 ↑0      | 2026-02-10    |
 | [Claude Hooks Documentation](.claude/HOOKS.md)                           | Prepare development environment for new session                 | ↓2 ↑5      | 2026-02-09    |
 | [Cross-Platform Claude Code Setup](.claude/CROSS_PLATFORM_SETUP.md)      | This guide explains how to set up Claude Code consistently a... | ↓3 ↑0      | 2026-02-09    |
 | [Required Plugins for Claude Code](.claude/REQUIRED_PLUGINS.md)          | This document lists all plugins required for full functional... | ↓2 ↑0      | 2026-02-09    |
@@ -391,7 +391,7 @@ _Uncategorized_
 | --------------------------------------------------------------------------------------------------------- | --------------------------------- | ---------- | ------------- |
 | [Audit Template & Schema Full Overhaul Plan](.claude/plans/audit-template-schema-overhaul.md)             | -                                 | ↓0 ↑0      | 2026-02-09    |
 | [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md) | Create a comprehensive tool that: | ↓0 ↑0      | 2026-02-09    |
-| [Plan: Manifest JSON Refactors](.claude/plans/manifest-json-refactors.md)                                 | -                                 | ↓0 ↑0      | 2026-02-09    |
+| [Plan: Manifest JSON Refactors](.claude/plans/manifest-json-refactors.md)                                 | -                                 | ↓0 ↑0      | 2026-02-10    |
 
 ### .github (Tier 4)
 
@@ -1081,7 +1081,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-09 | Auto-generated from codebase scan |
+| Auto    | 2026-02-10 | Auto-generated from codebase scan |
 
 ---
 

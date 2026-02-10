@@ -60,7 +60,7 @@ function getDocumentedSessions() {
     return matches
       .map((m) => {
         const num = m.match(/#(\d+)/);
-        return num ? parseInt(num[1], 10) : null;
+        return num ? Number.parseInt(num[1], 10) : null;
       })
       .filter(Boolean);
   } catch {
@@ -75,7 +75,7 @@ function getCurrentSessionCounter() {
   try {
     const content = fs.readFileSync(SESSION_CONTEXT, "utf8");
     const match = content.match(/\*\*Current Session Count\*\*:\s*(\d+)/);
-    return match ? parseInt(match[1], 10) : null;
+    return match ? Number.parseInt(match[1], 10) : null;
   } catch {
     return null;
   }
@@ -86,7 +86,7 @@ function getCurrentSessionCounter() {
  */
 function getRecentCommitsFromGit(count) {
   try {
-    const safeCount = String(Math.max(1, Math.min(parseInt(count, 10) || 50, 500)));
+    const safeCount = String(Math.max(1, Math.min(Number.parseInt(count, 10) || 50, 500)));
     const output = execFileSync(
       "git",
       ["log", `--format=%H\x1f%h\x1f%s\x1f%ad`, "--date=iso-strict", `-${safeCount}`],
@@ -219,7 +219,7 @@ function main() {
   // Group commits by session
   const sessionGroups = groupBySession(commits);
   const loggedSessions = Object.keys(sessionGroups)
-    .map((s) => (s === "unknown" || s === "null" ? null : parseInt(s, 10)))
+    .map((s) => (s === "unknown" || s === "null" ? null : Number.parseInt(s, 10)))
     .filter(Boolean);
 
   // Find gaps: sessions that appear in commit log but not in SESSION_CONTEXT.md

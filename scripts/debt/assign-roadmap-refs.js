@@ -29,8 +29,8 @@
  *   --report     Generate detailed assignment report
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -39,8 +39,7 @@ const BACKUP_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl.bak");
 // Parse command line arguments
 function parseArgs(args) {
   const parsed = { dryRun: false, verbose: false, report: false };
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
+  for (const arg of args) {
     if (arg === "--dry-run") parsed.dryRun = true;
     else if (arg === "--verbose") parsed.verbose = true;
     else if (arg === "--report") parsed.report = true;
@@ -120,6 +119,113 @@ function getTrackAssignment(item) {
 
   // Fallback for any unhandled category
   return "M2.1";
+}
+
+/**
+ * Generate a detailed assignment report as markdown
+ *
+ * @param {object} stats - Assignment statistics
+ * @param {Array<[string, number]>} sortedTracks - Track assignments sorted by count
+ * @param {boolean} dryRun - If true, skip writing the file
+ */
+function generateAssignmentReport(stats, sortedTracks, dryRun) {
+  const reportPath = path.join(DEBT_DIR, "roadmap-assignment-report.md");
+  let report = `# Roadmap Reference Assignment Report\n\n`;
+  report += `**Generated:** ${new Date().toISOString()}\n\n`;
+  report += `## Summary\n\n`;
+  report += `- Total items: ${stats.total}\n`;
+  report += `- Already assigned: ${stats.alreadyAssigned}\n`;
+  report += `- Newly assigned: ${stats.newlyAssigned}\n\n`;
+  report += `## By Track\n\n`;
+  report += `| Track | Count |\n|-------|-------|\n`;
+  for (const [track, count] of sortedTracks) {
+    report += `| ${track} | ${count} |\n`;
+  }
+  report += `\n## Assignment Rules\n\n`;
+  report += `| Category | File Pattern | Track |\n|----------|--------------|-------|\n`;
+  report += `| security | * | Track-S |\n`;
+  report += `| performance | * | Track-P |\n`;
+  report += `| process | * | Track-D |\n`;
+  report += `| refactoring | * | M2.3-REF |\n`;
+  report += `| documentation | * | M1.5 |\n`;
+  report += `| code-quality | scripts/ | Track-E |\n`;
+  report += `| code-quality | .claude/ | Track-E |\n`;
+  report += `| code-quality | .github/ | Track-D |\n`;
+  report += `| code-quality | tests/ | Track-T |\n`;
+  report += `| code-quality | functions/ | M2.2 |\n`;
+  report += `| code-quality | components/, lib/, app/, hooks/ | M2.1 |\n`;
+  report += `| code-quality | docs/ | M1.5 |\n`;
+  report += `| code-quality | (default) | M2.1 |\n`;
+
+  if (!dryRun) {
+    fs.writeFileSync(reportPath, report, "utf8");
+    console.log(`\n📝 Report saved to: ${reportPath}`);
+  }
+}
+
+/**
+ * Sync updated items to raw/deduped.jsonl using in-place update
+ * Uses atomic write (tmp + rename) with Windows-safe fallback
+ *
+ * @param {Map} updatedItems - Map of item ID to updated item object
+ */
+function syncUpdatedItemsToDeduped(updatedItems) {
+  const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
+  if (!fs.existsSync(DEDUPED_FILE)) return;
+
+  try {
+    const dedupedContent = fs.readFileSync(DEDUPED_FILE, "utf8");
+    const dedupedLines = dedupedContent.split("\n");
+    const dedupedUpdated = dedupedLines.map((line) => {
+      if (!line.trim()) return line;
+      try {
+        const item = JSON.parse(line);
+        if (item.id && updatedItems.has(item.id)) {
+          return JSON.stringify(updatedItems.get(item.id));
+        }
+      } catch {
+        // keep original line if not valid JSON
+      }
+      return line;
+    });
+    const tmpDeduped = `${DEDUPED_FILE}.tmp`;
+    fs.writeFileSync(tmpDeduped, dedupedUpdated.join("\n") + "\n");
+    atomicRename(tmpDeduped, DEDUPED_FILE);
+  } catch (syncErr) {
+    console.warn(
+      `⚠️ Warning: Could not sync to deduped.jsonl: ${syncErr instanceof Error ? syncErr.message : String(syncErr)}`
+    );
+  }
+}
+
+/**
+ * Atomic rename with Windows-safe fallback (rm + rename if direct rename fails)
+ *
+ * @param {string} tmpPath - Temporary file path (source)
+ * @param {string} destPath - Destination file path
+ */
+function atomicRename(tmpPath, destPath) {
+  try {
+    fs.renameSync(tmpPath, destPath);
+  } catch (error) {
+    const code =
+      error && typeof error === "object" && typeof error.code === "string" ? error.code : undefined;
+    if (code === "EPERM" || code === "EEXIST" || code === "EACCES" || code === "EBUSY") {
+      try {
+        fs.rmSync(destPath, { force: true });
+        fs.renameSync(tmpPath, destPath);
+      } catch (fallbackErr) {
+        try {
+          fs.unlinkSync(tmpPath);
+        } catch {
+          // ignore cleanup errors
+        }
+        throw fallbackErr;
+      }
+    } else {
+      throw error;
+    }
+  }
 }
 
 function main() {
@@ -223,39 +329,7 @@ function main() {
   }
 
   if (opts.report) {
-    // Generate detailed report
-    const reportPath = path.join(DEBT_DIR, "roadmap-assignment-report.md");
-    let report = `# Roadmap Reference Assignment Report\n\n`;
-    report += `**Generated:** ${new Date().toISOString()}\n\n`;
-    report += `## Summary\n\n`;
-    report += `- Total items: ${stats.total}\n`;
-    report += `- Already assigned: ${stats.alreadyAssigned}\n`;
-    report += `- Newly assigned: ${stats.newlyAssigned}\n\n`;
-    report += `## By Track\n\n`;
-    report += `| Track | Count |\n|-------|-------|\n`;
-    for (const [track, count] of sortedTracks) {
-      report += `| ${track} | ${count} |\n`;
-    }
-    report += `\n## Assignment Rules\n\n`;
-    report += `| Category | File Pattern | Track |\n|----------|--------------|-------|\n`;
-    report += `| security | * | Track-S |\n`;
-    report += `| performance | * | Track-P |\n`;
-    report += `| process | * | Track-D |\n`;
-    report += `| refactoring | * | M2.3-REF |\n`;
-    report += `| documentation | * | M1.5 |\n`;
-    report += `| code-quality | scripts/ | Track-E |\n`;
-    report += `| code-quality | .claude/ | Track-E |\n`;
-    report += `| code-quality | .github/ | Track-D |\n`;
-    report += `| code-quality | tests/ | Track-T |\n`;
-    report += `| code-quality | functions/ | M2.2 |\n`;
-    report += `| code-quality | components/, lib/, app/, hooks/ | M2.1 |\n`;
-    report += `| code-quality | docs/ | M1.5 |\n`;
-    report += `| code-quality | (default) | M2.1 |\n`;
-
-    if (!opts.dryRun) {
-      fs.writeFileSync(reportPath, report, "utf8");
-      console.log(`\n📝 Report saved to: ${reportPath}`);
-    }
+    generateAssignmentReport(stats, sortedTracks, opts.dryRun);
   }
 
   if (opts.dryRun) {
@@ -266,8 +340,8 @@ function main() {
     try {
       fs.copyFileSync(MASTER_FILE, BACKUP_FILE);
       console.log(`\n💾 Backup created: ${BACKUP_FILE}`);
-    } catch (backupErr) {
-      const errMsg = backupErr instanceof Error ? backupErr.message : String(backupErr);
+    } catch (error_) {
+      const errMsg = error_ instanceof Error ? error_.message : String(error_);
       console.error(`❌ Failed to create backup file: ${errMsg}`);
       process.exit(4);
     }
@@ -282,57 +356,17 @@ function main() {
       fs.renameSync(TEMP_FILE, MASTER_FILE);
 
       // Sync updated items to raw/deduped.jsonl (in-place update, not full copy)
-      const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
-      if (fs.existsSync(DEDUPED_FILE)) {
-        try {
-          const dedupedContent = fs.readFileSync(DEDUPED_FILE, "utf8");
-          const dedupedLines = dedupedContent.split("\n");
-          const dedupedUpdated = dedupedLines.map((line) => {
-            if (!line.trim()) return line;
-            try {
-              const item = JSON.parse(line);
-              if (item.id && updatedItems.has(item.id)) {
-                return JSON.stringify(updatedItems.get(item.id));
-              }
-            } catch {
-              // keep original line if not valid JSON
-            }
-            return line;
-          });
-          const tmpDeduped = `${DEDUPED_FILE}.tmp`;
-          fs.writeFileSync(tmpDeduped, dedupedUpdated.join("\n") + "\n");
-          try {
-            fs.renameSync(tmpDeduped, DEDUPED_FILE);
-          } catch {
-            // Windows may fail rename if dest exists; fallback to rm + rename
-            try {
-              fs.rmSync(DEDUPED_FILE, { force: true });
-              fs.renameSync(tmpDeduped, DEDUPED_FILE);
-            } catch (fallbackErr) {
-              try {
-                fs.unlinkSync(tmpDeduped);
-              } catch {
-                // ignore cleanup errors
-              }
-              throw fallbackErr;
-            }
-          }
-        } catch (syncErr) {
-          console.warn(
-            `⚠️ Warning: Could not sync to deduped.jsonl: ${syncErr instanceof Error ? syncErr.message : String(syncErr)}`
-          );
-        }
-      }
+      syncUpdatedItemsToDeduped(updatedItems);
 
       console.log("✅ MASTER_DEBT.jsonl updated successfully");
-    } catch (writeErr) {
+    } catch (error_) {
       // Clean up temp file on failure
       try {
         fs.unlinkSync(TEMP_FILE);
-      } catch (_e) {
+      } catch {
         /* ignore cleanup errors */
       }
-      const errMsg = writeErr instanceof Error ? writeErr.message : String(writeErr);
+      const errMsg = error_ instanceof Error ? error_.message : String(error_);
       console.error(`❌ Failed to write MASTER_DEBT.jsonl: ${errMsg}`);
       process.exit(4);
     }

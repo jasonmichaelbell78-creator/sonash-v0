@@ -31,7 +31,7 @@ const args = process.argv.slice(2);
 const phaseArg = args.find((a) => a.startsWith("--phase="));
 const extractLearnings = args.includes("--extract-learnings");
 const summaryOnly = args.includes("--summary");
-const phase = phaseArg ? parseInt(phaseArg.split("=")[1], 10) : null;
+const phase = phaseArg ? Number.parseInt(phaseArg.split("=")[1], 10) : null;
 
 if (!phase || phase < 1 || phase > 5) {
   console.error(
@@ -155,6 +155,32 @@ function extractRuleFromLines(lines, startIndex) {
   return null;
 }
 
+/**
+ * Detect section transitions and update parsing state
+ * Returns the new inSecuritySection state, or null if not a section header
+ */
+function detectSectionTransition(line) {
+  if (line.startsWith("## 🔒 Security Hotspots")) return true;
+  if (line.startsWith("## 📂 All Issues by File")) return false;
+  return null;
+}
+
+/**
+ * Parse a single issue line and add to appropriate target list
+ */
+function parseIssueLine(line, lines, lineIndex, currentFile, inSecuritySection, issues, hotspots) {
+  const issueMatch = line.match(/^#### .{0,500}? Line (\d+|N\/A):\s{0,50}(.{0,500})$/u);
+  if (!issueMatch || !currentFile) return;
+
+  const extractedRule = extractRuleFromLines(lines, lineIndex + 1);
+  // Skip entries without a valid rule to prevent incorrect failures (Review #184 - Qodo)
+  if (!extractedRule) return;
+
+  const lineNum = issueMatch[1] === "N/A" ? null : Number.parseInt(issueMatch[1], 10);
+  const target = inSecuritySection ? hotspots : issues;
+  target.push({ file: currentFile, line: lineNum, message: issueMatch[2], rule: extractedRule });
+}
+
 // Load and parse the detailed report to extract issues
 function loadIssuesFromReport() {
   const content = readFileOrExit(DETAILED_REPORT, "Detailed report");
@@ -168,35 +194,19 @@ function loadIssuesFromReport() {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Detect section transitions
-    if (line.startsWith("## 🔒 Security Hotspots")) {
-      inSecuritySection = true;
-      continue;
-    }
-    if (line.startsWith("## 📂 All Issues by File")) {
-      inSecuritySection = false;
+    const sectionState = detectSectionTransition(line);
+    if (sectionState !== null) {
+      inSecuritySection = sectionState;
       continue;
     }
 
-    // Check for file header
     const fileMatch = line.match(/### 📁 `([^`]+)`/);
     if (fileMatch) {
       currentFile = fileMatch[1];
       continue;
     }
 
-    // Check for issue header
-    const issueMatch = line.match(/^#### .{0,500}? Line (\d+|N\/A):\s{0,50}(.{0,500})$/u);
-    if (issueMatch && currentFile) {
-      const lineNum = issueMatch[1] === "N/A" ? null : parseInt(issueMatch[1], 10);
-      const message = issueMatch[2];
-      const extractedRule = extractRuleFromLines(lines, i + 1);
-      // Skip entries without a valid rule to prevent incorrect failures (Review #184 - Qodo)
-      if (!extractedRule) continue;
-
-      const target = inSecuritySection ? hotspots : issues;
-      target.push({ file: currentFile, line: lineNum, message, rule: extractedRule });
-    }
+    parseIssueLine(line, lines, i, currentFile, inSecuritySection, issues, hotspots);
   }
 
   return { issues, hotspots };
@@ -379,7 +389,6 @@ function isIssueTracked(issue, entries) {
 
 // Generate learnings from the phase
 function extractPhaseLearnings(phaseNum, issues, hotspots) {
-  const _phaseConfig = PHASE_RULES[phaseNum];
   const learnings = [];
 
   // Group by rule

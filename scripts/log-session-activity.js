@@ -47,9 +47,9 @@ const SECRET_PATTERNS = [
   // Tokens with 24+ chars containing both letters and digits
   /\b(?=[A-Za-z0-9_-]{24,}\b)(?=[A-Za-z0-9_-]*[A-Za-z])(?=[A-Za-z0-9_-]*\d)[A-Za-z0-9_-]+\b/g,
   // Bearer tokens
-  /bearer\s+[A-Za-z0-9._-]+/gi,
+  /bearer\s+[A-Z0-9._-]+/gi,
   // Basic auth
-  /basic\s+[A-Za-z0-9+/=]+/gi,
+  /basic\s+[A-Z0-9+/=]+/gi,
   // Key=value patterns with sensitive names
   /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*\S+/gi,
 ];
@@ -170,7 +170,7 @@ function logEvent(eventData) {
     if (fs.existsSync(LOG_FILE)) {
       const stats = fs.statSync(LOG_FILE);
       if (stats.size > MAX_LOG_SIZE) {
-        const backupFile = LOG_FILE.replace(".jsonl", `-${Date.now()}.jsonl`);
+        const backupFile = LOG_FILE.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
         fs.renameSync(LOG_FILE, backupFile);
         console.log(`Log rotated to ${path.basename(backupFile)}`);
       }
@@ -429,7 +429,7 @@ function clearLog() {
   ensureLogDir();
   if (fs.existsSync(LOG_FILE)) {
     // Archive old log before clearing
-    const backupFile = LOG_FILE.replace(".jsonl", `-archived-${Date.now()}.jsonl`);
+    const backupFile = LOG_FILE.replaceAll(".jsonl", `-archived-${Date.now()}.jsonl`);
     fs.renameSync(LOG_FILE, backupFile);
     console.log(`Previous session log archived to ${path.basename(backupFile)}`);
   }

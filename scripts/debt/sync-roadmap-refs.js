@@ -9,9 +9,9 @@
  *   node scripts/debt/sync-roadmap-refs.js               # Report + suggest fixes
  */
 
-import { readFileSync, existsSync } from "fs";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
+import { readFileSync, existsSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -37,7 +37,14 @@ function loadDebtIds() {
 
   const ids = new Set();
   try {
-    const content = readFileSync(MASTER_DEBT_PATH, "utf8");
+    let content;
+    try {
+      content = readFileSync(MASTER_DEBT_PATH, "utf8");
+    } catch (readErr) {
+      const errMsg = readErr instanceof Error ? readErr.message : String(readErr);
+      console.error(`Failed to read MASTER_DEBT.jsonl: ${errMsg}`);
+      process.exit(1);
+    }
     const lines = content.split("\n").filter((line) => line.trim());
 
     for (const line of lines) {
@@ -51,7 +58,8 @@ function loadDebtIds() {
       }
     }
   } catch (err) {
-    console.error(`❌ Error reading MASTER_DEBT.jsonl: ${err.message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Error reading MASTER_DEBT.jsonl: ${errMsg}`);
     process.exit(1);
   }
 
@@ -68,7 +76,14 @@ function findDebtRefs(filePath) {
 
   const refs = [];
   try {
-    const content = readFileSync(filePath, "utf8");
+    let content;
+    try {
+      content = readFileSync(filePath, "utf8");
+    } catch (readErr) {
+      const errMsg = readErr instanceof Error ? readErr.message : String(readErr);
+      console.error(`Failed to read ${filePath}: ${errMsg}`);
+      return [];
+    }
     const lines = content.split("\n");
 
     const debtPattern = /DEBT-\d{4,}/gi;
@@ -86,7 +101,8 @@ function findDebtRefs(filePath) {
       }
     }
   } catch (err) {
-    console.error(`❌ Error reading ${filePath}: ${err.message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Error reading ${filePath}: ${errMsg}`);
   }
 
   return refs;

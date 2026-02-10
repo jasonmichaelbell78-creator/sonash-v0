@@ -31,7 +31,6 @@ import {
   unlinkSync,
   mkdirSync,
   readdirSync,
-  statSync,
   lstatSync,
   realpathSync,
 } from "node:fs";
@@ -344,8 +343,8 @@ function updateCrossReferences(oldPath, _newPath) {
   // Match: [text](./FILENAME.md), [text](FILENAME.md), [text](./docs/FILENAME.md), etc.
   // Note: NO 'g' flag - using .test() in loop with 'g' flag causes bugs (stateful lastIndex)
   const patterns = [
-    new RegExp(`\\]\\(\\.?\\/?${escapeRegex(oldFilename)}\\)`),
-    new RegExp(`\\]\\(\\.?\\/?(?:docs\\/)?${escapeRegex(oldFilename)}\\)`),
+    new RegExp(String.raw`\]\(\.?\/?${escapeRegex(oldFilename)}\)`),
+    new RegExp(String.raw`\]\(\.?\/?(?:docs\/)?${escapeRegex(oldFilename)}\)`),
   ];
 
   for (const filePath of markdownFiles) {
@@ -380,7 +379,7 @@ function updateCrossReferences(oldPath, _newPath) {
 
           // Replace the link (relativePath already has correct structure)
           const newLine = line.replace(
-            new RegExp(`\\]\\(\\.?\\/?(?:docs\\/)?${escapeRegex(oldFilename)}\\)`, "g"),
+            new RegExp(String.raw`\]\(\.?\/?(?:docs\/)?${escapeRegex(oldFilename)}\)`, "g"),
             `](${relativePath})`
           );
 

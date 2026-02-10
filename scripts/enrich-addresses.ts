@@ -12,7 +12,7 @@ const DELAY_MS = 1100; // > 1 second to be safe and respectful
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function enrichAddresses() {
+try {
   console.log("🚀 Starting Address Enrichment (OSM/Nominatim)...\n");
 
   // 1. Initialize Firebase Admin
@@ -44,9 +44,8 @@ async function enrichAddresses() {
 
   if (snapshot.empty) {
     console.log("⚠️ No meetings found.");
-    return;
+    process.exit(0);
   }
-
   // Process all documents that have a valid address
   const toProcess = snapshot.docs.filter((doc) => {
     const data = doc.data();
@@ -64,7 +63,7 @@ async function enrichAddresses() {
   let successCount = 0;
   let failCount = 0;
   let skippedCount = 0;
-  const failedLog: Array<{ original: string; cleaned: string; id: string }> = [];
+  const failedLog: Array<{ id: string }> = [];
 
   // Helper to clean address for OSM
   const cleanAddress = (addr: string) => {
@@ -101,9 +100,7 @@ async function enrichAddresses() {
 
     // Skip if really no address data
     if (!rawAddress || rawAddress.trim().length < 5) {
-      console.log(
-        `[${index + 1}/${toProcess.length}] ⏭️  Skipped (Invalid address): "${rawAddress}"`
-      );
+      console.log(`[${index + 1}/${toProcess.length}] ⏭️  Skipped (Invalid address): ID ${doc.id}`);
       skippedCount++;
       continue;
     }
@@ -121,11 +118,8 @@ async function enrichAddresses() {
       queries.push(`${streetClean}, ${neighborhood}, TN, USA`);
     }
 
-    // 2. Precise with current database city
-    queries.push(`${streetClean}, ${currentCity}, TN, USA`);
-
-    // 3. Fallback: "123 Main St, TN" (Let OSM find better city)
-    queries.push(`${streetClean}, TN, USA`);
+    // 2. Precise with current database city + 3. Fallback
+    queries.push(`${streetClean}, ${currentCity}, TN, USA`, `${streetClean}, TN, USA`);
 
     let found = false;
 
@@ -154,44 +148,48 @@ async function enrichAddresses() {
         if (results && results.length > 0) {
           const result = results[0];
           const addr = result.address;
+          if (!addr) continue; // Skip if no address details returned
 
           // Extract fields
           const newZip = addr.postcode;
           // OSM returns variable admin levels
           const newCity =
             addr.city || addr.town || addr.village || addr.hamlet || addr.suburb || currentCity;
-          const lat = parseFloat(result.lat);
-          const lon = parseFloat(result.lon);
+          const lat = Number.parseFloat(result.lat);
+          const lon = Number.parseFloat(result.lon);
 
-          if (newZip) {
-            // Update Firestore
-            await doc.ref.update({
-              city: newCity,
-              zip: newZip,
-              coordinates: { lat, lng: lon },
-            });
-
-            console.log(`[${index + 1}/${toProcess.length}] ✅ Enriched: "${rawAddress}"`);
-            console.log(`   └-> ${newCity}, ${newZip} @ [${lat.toFixed(5)}, ${lon.toFixed(5)}]`);
-            successCount++;
-            found = true;
+          if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+            console.log(
+              `[${index + 1}/${toProcess.length}] 🔸 Invalid coordinates from geocoder: ID ${doc.id}`
+            );
+            continue;
           }
+
+          // Update Firestore — enrich coordinates even without zip
+          const updateFields: Record<string, unknown> = {
+            city: newCity,
+            coordinates: { lat, lng: lon },
+          };
+          if (newZip) updateFields.zip = newZip;
+          await doc.ref.update(updateFields);
+
+          console.log(`[${index + 1}/${toProcess.length}] ✅ Enriched: ID ${doc.id}`);
+          console.log(
+            `   └-> ${newCity}${newZip ? `, ${newZip}` : ""} @ [${lat.toFixed(5)}, ${lon.toFixed(5)}]`
+          );
+          successCount++;
+          found = true;
+          break;
         }
       } catch (error) {
-        console.error(`   💥 Error searching: "${query}"`, error);
+        console.error(`   💥 Error during geocode query:`, sanitizeError(error));
       }
     }
 
     if (!found) {
-      console.log(
-        `[${index + 1}/${toProcess.length}] ❌ Not Found (All attempts failed for: "${rawAddress}") - Tried: "${streetClean}"`
-      );
+      console.log(`[${index + 1}/${toProcess.length}] ❌ Not Found: ID ${doc.id}`);
       failCount++;
-      failedLog.push({
-        original: rawAddress,
-        cleaned: streetClean,
-        id: doc.id,
-      });
+      failedLog.push({ id: doc.id });
     }
   }
 
@@ -210,9 +208,7 @@ async function enrichAddresses() {
   console.log(`❌ Failed/Not Found: ${failCount}`);
   console.log(`⏭️  Skipped: ${skippedCount}`);
   console.log("============================================================\n");
-}
-
-enrichAddresses().catch((error: unknown) => {
+} catch (error: unknown) {
   console.error("❌ Unexpected error:", sanitizeError(error));
   process.exit(1);
-});
+}

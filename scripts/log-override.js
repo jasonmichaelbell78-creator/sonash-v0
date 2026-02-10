@@ -55,9 +55,9 @@ const SECRET_PATTERNS = [
   // Likely secret tokens: 24+ chars, must contain both letters and digits (reduces SHA/word false positives)
   /\b(?=[A-Za-z0-9_-]{24,}\b)(?=[A-Za-z0-9_-]*[A-Za-z])(?=[A-Za-z0-9_-]*\d)[A-Za-z0-9_-]+\b/g,
   // Bearer tokens
-  /bearer\s+[A-Za-z0-9._-]+/gi,
+  /bearer\s+[A-Z0-9._-]+/gi,
   // Basic auth
-  /basic\s+[A-Za-z0-9+/=]+/gi,
+  /basic\s+[A-Z0-9+/=]+/gi,
   // Key=value patterns with sensitive names
   /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*\S+/gi,
 ];
@@ -147,7 +147,7 @@ function logOverride(check, reason) {
     if (fs.existsSync(OVERRIDE_LOG)) {
       const stats = fs.statSync(OVERRIDE_LOG);
       if (stats.size > MAX_LOG_SIZE) {
-        const backupFile = OVERRIDE_LOG.replace(".jsonl", `-${Date.now()}.jsonl`);
+        const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
         fs.renameSync(OVERRIDE_LOG, backupFile);
         console.log(`Override log rotated to ${path.basename(backupFile)}`);
       }
@@ -247,7 +247,7 @@ function listOverrides() {
 function clearLog() {
   ensureLogDir();
   if (fs.existsSync(OVERRIDE_LOG)) {
-    const backupFile = OVERRIDE_LOG.replace(".jsonl", `-archived-${Date.now()}.jsonl`);
+    const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-archived-${Date.now()}.jsonl`);
     fs.renameSync(OVERRIDE_LOG, backupFile);
     console.log(`Override log archived to ${path.basename(backupFile)}`);
   }

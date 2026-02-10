@@ -19,8 +19,8 @@
  *   node scripts/audit/transform-jsonl-schema.js <input.jsonl> [--output <output.jsonl>] [--dry-run]
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { loadConfig } = require("../config/load-config");
 
 // Cache audit schema at module scope (avoid re-reading per item)
@@ -30,11 +30,11 @@ try {
   const severities = Array.isArray(auditSchema.validSeverities)
     ? auditSchema.validSeverities
     : ["S0", "S1", "S2", "S3"];
-  VALID_SEVERITIES_CACHED = Object.freeze([...severities]);
+  VALID_SEVERITIES_CACHED = Object.freeze(new Set(severities));
 } catch (configErr) {
   const msg = configErr instanceof Error ? configErr.message : String(configErr);
   console.error(`Warning: failed to load audit-schema config: ${msg}. Using defaults.`);
-  VALID_SEVERITIES_CACHED = Object.freeze(["S0", "S1", "S2", "S3"]);
+  VALID_SEVERITIES_CACHED = Object.freeze(new Set(["S0", "S1", "S2", "S3"]));
 }
 
 // Project root for path containment validation
@@ -176,7 +176,7 @@ function normalizeCategory(category) {
   const lower = trimmed.toLowerCase();
 
   // Valid normalized categories
-  const validCategories = [
+  const validCategories = new Set([
     "security",
     "performance",
     "code-quality",
@@ -184,10 +184,10 @@ function normalizeCategory(category) {
     "process",
     "refactoring",
     "engineering-productivity",
-  ];
+  ]);
 
   // Check if already normalized (case/whitespace tolerant)
-  if (validCategories.includes(lower)) return lower;
+  if (validCategories.has(lower)) return lower;
 
   // Try lookup in category map
   if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
@@ -237,6 +237,232 @@ function generateFingerprint(item, normalizedCategory) {
   return `${normalizedCategory}::${file}::${id}`;
 }
 
+/**
+ * Transform files field to normalized array
+ * @returns {{ files: string[], issues: string[] }}
+ */
+function transformFiles(item) {
+  const issues = [];
+  let files = item.files;
+
+  if (!files || !Array.isArray(files)) {
+    if (item.file) {
+      files = item.line ? [`${item.file}:${item.line}`] : [item.file];
+      issues.push(`file → files array`);
+    } else {
+      files = ["unknown"];
+      issues.push(`missing files`);
+    }
+  } else {
+    files = files.filter((v) => typeof v === "string" && v.trim()).map((v) => v.trim());
+    if (files.length === 0) {
+      files = ["unknown"];
+      issues.push(`normalized empty files → ["unknown"]`);
+    }
+  }
+
+  return { files, issues };
+}
+
+/**
+ * Transform confidence to normalized number 0-100
+ * @returns {{ confidence: number, issues: string[] }}
+ */
+function transformConfidence(item) {
+  const issues = [];
+  let confidence = item.confidence;
+
+  if (typeof confidence === "string") {
+    const normalized = confidence.trim().toUpperCase();
+    confidence = CONFIDENCE_MAP[normalized] || 70;
+    issues.push(`confidence: "${item.confidence}" → ${confidence}`);
+  } else if (typeof confidence !== "number" || !Number.isFinite(confidence)) {
+    confidence = 70;
+    issues.push(`confidence: missing/invalid → 70`);
+  } else {
+    const clamped = Math.max(0, Math.min(100, confidence));
+    if (clamped !== confidence) {
+      issues.push(`confidence: out-of-range ${confidence} → ${clamped}`);
+      confidence = clamped;
+    }
+  }
+
+  return { confidence, issues };
+}
+
+/**
+ * Ensure acceptance_tests is a valid array
+ * @returns {{ acceptance_tests: string[], issues: string[] }}
+ */
+function transformAcceptanceTests(item) {
+  const issues = [];
+  const DEFAULT_TESTS = ["Verify the fix addresses the issue", "Run relevant tests"];
+  let acceptance_tests = item.acceptance_tests;
+
+  if (!acceptance_tests || !Array.isArray(acceptance_tests) || acceptance_tests.length === 0) {
+    if (Array.isArray(item.verification_steps) && item.verification_steps.length > 0) {
+      acceptance_tests = item.verification_steps
+        .filter((v) => typeof v === "string" && v.trim())
+        .map((v) => v.trim());
+      issues.push(`verification_steps → acceptance_tests`);
+    } else {
+      acceptance_tests = DEFAULT_TESTS;
+      issues.push(`added default acceptance_tests`);
+    }
+  } else {
+    acceptance_tests = acceptance_tests
+      .filter((v) => typeof v === "string" && v.trim())
+      .map((v) => v.trim());
+  }
+
+  if (acceptance_tests.length === 0) {
+    acceptance_tests = DEFAULT_TESTS;
+    issues.push(`normalized empty acceptance_tests → defaults`);
+  }
+
+  return { acceptance_tests, issues };
+}
+
+/**
+ * Detect tool name from verification step references
+ */
+function detectToolFromRefs(toolRefs) {
+  if (toolRefs.length === 0) return "NONE";
+  const first = toolRefs[0].toLowerCase();
+  if (first.includes("eslint")) return "eslint";
+  if (first.includes("typescript")) return "typescript";
+  return "patterns_check";
+}
+
+/**
+ * Categorize verification steps into evidence, review, and tool references
+ */
+function categorizeVerificationSteps(steps) {
+  if (!steps) return { evidenceItems: [], reviewItems: [], toolRefs: [] };
+
+  return steps.reduce(
+    (acc, v) => {
+      const lower = v.toLowerCase();
+      if (
+        lower.includes("eslint") ||
+        lower.includes("lint") ||
+        lower.includes("npm") ||
+        lower.includes("typescript") ||
+        lower.includes("sonar")
+      ) {
+        acc.toolRefs.push(v);
+      } else if (
+        lower.includes("review") ||
+        lower.includes("verify") ||
+        lower.includes("confirm")
+      ) {
+        acc.reviewItems.push(v);
+      } else if (
+        lower.includes("grep") ||
+        lower.includes("search") ||
+        lower.includes("run") ||
+        lower.includes("check")
+      ) {
+        acc.evidenceItems.push(v);
+      }
+      return acc;
+    },
+    { evidenceItems: [], reviewItems: [], toolRefs: [] }
+  );
+}
+
+/**
+ * Build verification_steps from array-style input
+ */
+function buildVerificationStepsFromArray(steps) {
+  const { evidenceItems, reviewItems, toolRefs } = categorizeVerificationSteps(steps);
+
+  return {
+    first_pass: {
+      method:
+        evidenceItems.length > 0 && evidenceItems[0].toLowerCase().includes("grep")
+          ? "grep"
+          : "code_search",
+      evidence_collected:
+        evidenceItems.length > 0
+          ? evidenceItems
+          : steps.length > 0
+            ? steps
+            : ["See files array for affected locations"],
+    },
+    second_pass: {
+      method: reviewItems.length > 0 ? "contextual_review" : "manual_verification",
+      confirmed: true,
+      notes: reviewItems.length > 0 ? reviewItems.join("; ") : "Confirmed via dual-pass review",
+    },
+    tool_confirmation: {
+      tool: detectToolFromRefs(toolRefs),
+      reference: toolRefs.length > 0 ? toolRefs[0] : "Manual verification only",
+    },
+  };
+}
+
+/**
+ * Build verification_steps for S0/S1 findings
+ * @returns {{ verification_steps: object, issue: string }}
+ */
+function buildVerificationSteps(item) {
+  const defaultVerificationSteps = {
+    first_pass: {
+      method: "code_search",
+      evidence_collected: [
+        (item.evidence && item.evidence[0]) || "See files array for affected locations",
+      ],
+    },
+    second_pass: {
+      method: "manual_verification",
+      confirmed: true,
+      notes: "Confirmed during audit review",
+    },
+    tool_confirmation: {
+      tool: "NONE",
+      reference: "No automated tool confirmation available",
+    },
+  };
+
+  // Array-style verification_steps → object structure
+  if (Array.isArray(item.verification_steps) && item.verification_steps.length > 0) {
+    const steps = item.verification_steps.filter((v) => typeof v === "string" && v.trim());
+    return {
+      verification_steps: buildVerificationStepsFromArray(steps),
+      issue: "verification_steps: array → object structure",
+    };
+  }
+
+  // Already in object format - deep merge with defaults
+  if (
+    item.verification_steps &&
+    typeof item.verification_steps === "object" &&
+    !Array.isArray(item.verification_steps)
+  ) {
+    const provided = item.verification_steps;
+    return {
+      verification_steps: {
+        ...defaultVerificationSteps,
+        ...provided,
+        first_pass: { ...defaultVerificationSteps.first_pass, ...(provided.first_pass || {}) },
+        second_pass: { ...defaultVerificationSteps.second_pass, ...(provided.second_pass || {}) },
+        tool_confirmation: {
+          ...defaultVerificationSteps.tool_confirmation,
+          ...(provided.tool_confirmation || {}),
+        },
+      },
+      issue: "verification_steps: normalized object structure",
+    };
+  }
+
+  // No existing verification_steps - use defaults
+  return {
+    verification_steps: defaultVerificationSteps,
+    issue: "added default verification_steps for S0/S1",
+  };
+}
+
 function transformItem(item, index) {
   const issues = [];
 
@@ -251,42 +477,12 @@ function transformItem(item, index) {
   const fingerprint = generateFingerprint(item, normalizedCategory);
 
   // Transform files
-  let files = item.files;
-  if (!files || !Array.isArray(files)) {
-    if (item.file) {
-      files = item.line ? [`${item.file}:${item.line}`] : [item.file];
-      issues.push(`file → files array`);
-    } else {
-      files = ["unknown"];
-      issues.push(`missing files`);
-    }
-  } else {
-    // Normalize existing array to non-empty strings only
-    files = files.filter((v) => typeof v === "string" && v.trim()).map((v) => v.trim());
-    if (files.length === 0) {
-      files = ["unknown"];
-      issues.push(`normalized empty files → ["unknown"]`);
-    }
-  }
+  const filesResult = transformFiles(item);
+  issues.push(...filesResult.issues);
 
   // Transform confidence
-  let confidence = item.confidence;
-  if (typeof confidence === "string") {
-    // Normalize string: trim and uppercase for lookup
-    const normalized = confidence.trim().toUpperCase();
-    confidence = CONFIDENCE_MAP[normalized] || 70;
-    issues.push(`confidence: "${item.confidence}" → ${confidence}`);
-  } else if (typeof confidence !== "number" || !Number.isFinite(confidence)) {
-    confidence = 70;
-    issues.push(`confidence: missing/invalid → 70`);
-  } else {
-    // Clamp numeric confidence to valid range 0-100
-    const clamped = Math.max(0, Math.min(100, confidence));
-    if (clamped !== confidence) {
-      issues.push(`confidence: out-of-range ${confidence} → ${clamped}`);
-      confidence = clamped;
-    }
-  }
+  const confResult = transformConfidence(item);
+  issues.push(...confResult.issues);
 
   // Transform description → why_it_matters
   let why_it_matters = item.why_it_matters;
@@ -309,46 +505,20 @@ function transformItem(item, index) {
   }
 
   // Ensure acceptance_tests
-  let acceptance_tests = item.acceptance_tests;
-  if (!acceptance_tests || !Array.isArray(acceptance_tests) || acceptance_tests.length === 0) {
-    // Try to derive from verification_steps
-    if (
-      item.verification_steps &&
-      Array.isArray(item.verification_steps) &&
-      item.verification_steps.length > 0
-    ) {
-      acceptance_tests = item.verification_steps
-        .filter((v) => typeof v === "string" && v.trim())
-        .map((v) => v.trim());
-      issues.push(`verification_steps → acceptance_tests`);
-    } else {
-      acceptance_tests = ["Verify the fix addresses the issue", "Run relevant tests"];
-      issues.push(`added default acceptance_tests`);
-    }
-  } else {
-    // Validate existing acceptance_tests array
-    acceptance_tests = acceptance_tests
-      .filter((v) => typeof v === "string" && v.trim())
-      .map((v) => v.trim());
-  }
+  const testsResult = transformAcceptanceTests(item);
+  issues.push(...testsResult.issues);
 
-  // Fallback if all entries were invalid
-  if (acceptance_tests.length === 0) {
-    acceptance_tests = ["Verify the fix addresses the issue", "Run relevant tests"];
-    issues.push(`normalized empty acceptance_tests → defaults`);
-  }
-
-  // Validate severity (case-insensitive - normalize to uppercase)
+  // Validate severity
   const severityInput = typeof item.severity === "string" ? item.severity.trim().toUpperCase() : "";
-  let severity = VALID_SEVERITIES_CACHED.includes(severityInput) ? severityInput : "S2";
+  let severity = VALID_SEVERITIES_CACHED.has(severityInput) ? severityInput : "S2";
   if (severity !== item.severity) {
     issues.push(`severity: "${item.severity}" → ${severity}`);
   }
 
-  // Validate effort (case-insensitive - normalize to uppercase)
-  const VALID_EFFORTS = ["E0", "E1", "E2", "E3"];
+  // Validate effort
+  const VALID_EFFORTS = new Set(["E0", "E1", "E2", "E3"]);
   const effortInput = typeof item.effort === "string" ? item.effort.trim().toUpperCase() : "";
-  let effort = VALID_EFFORTS.includes(effortInput) ? effortInput : "E2";
+  let effort = VALID_EFFORTS.has(effortInput) ? effortInput : "E2";
   if (effort !== item.effort) {
     issues.push(`effort: "${item.effort}" → ${effort}`);
   }
@@ -369,11 +539,11 @@ function transformItem(item, index) {
     fingerprint: fingerprint,
     severity: severity,
     effort: effort,
-    confidence: confidence,
-    files: files,
+    confidence: confResult.confidence,
+    files: filesResult.files,
     why_it_matters: why_it_matters,
     suggested_fix: suggested_fix,
-    acceptance_tests: acceptance_tests,
+    acceptance_tests: testsResult.acceptance_tests,
   };
 
   // Preserve evidence if exists
@@ -381,114 +551,11 @@ function transformItem(item, index) {
     transformed.evidence = item.evidence;
   }
 
-  // Convert and preserve verification_steps for S0/S1 (required structure per JSONL_SCHEMA_STANDARD.md)
-  // Use normalized severity variable, not item.severity
+  // Build verification_steps for S0/S1
   if (severity === "S0" || severity === "S1") {
-    // Default verification_steps structure
-    const defaultVerificationSteps = {
-      first_pass: {
-        method: "code_search",
-        evidence_collected: [
-          (item.evidence && item.evidence[0]) || "See files array for affected locations",
-        ],
-      },
-      second_pass: {
-        method: "manual_verification",
-        confirmed: true,
-        notes: "Confirmed during audit review",
-      },
-      tool_confirmation: {
-        tool: "NONE",
-        reference: "No automated tool confirmation available",
-      },
-    };
-
-    // Convert array-style verification_steps to object structure
-    if (Array.isArray(item.verification_steps) && item.verification_steps.length > 0) {
-      // Filter to only valid strings before processing
-      const steps = item.verification_steps.filter((v) => typeof v === "string" && v.trim());
-
-      // Extract evidence from array items for first_pass (case-insensitive)
-      const evidenceItems = steps.filter((v) => {
-        const lower = v.toLowerCase();
-        return (
-          lower.includes("grep") ||
-          lower.includes("search") ||
-          lower.includes("run") ||
-          lower.includes("check")
-        );
-      });
-      const reviewItems = steps.filter((v) => {
-        const lower = v.toLowerCase();
-        return lower.includes("review") || lower.includes("verify") || lower.includes("confirm");
-      });
-      const toolRefs = steps.filter((v) => {
-        const lower = v.toLowerCase();
-        return (
-          lower.includes("eslint") ||
-          lower.includes("lint") ||
-          lower.includes("npm") ||
-          lower.includes("typescript") ||
-          lower.includes("sonar")
-        );
-      });
-
-      transformed.verification_steps = {
-        first_pass: {
-          method:
-            evidenceItems.length > 0 && evidenceItems[0].toLowerCase().includes("grep")
-              ? "grep"
-              : "code_search",
-          evidence_collected:
-            evidenceItems.length > 0 ? evidenceItems : [steps[0] || "Initial code review"],
-        },
-        second_pass: {
-          method: reviewItems.length > 0 ? "contextual_review" : "manual_verification",
-          confirmed: true,
-          notes: reviewItems.length > 0 ? reviewItems.join("; ") : "Confirmed via dual-pass review",
-        },
-        tool_confirmation: {
-          tool:
-            toolRefs.length > 0 && toolRefs[0].toLowerCase().includes("eslint")
-              ? "eslint"
-              : toolRefs.length > 0 && toolRefs[0].toLowerCase().includes("typescript")
-                ? "typescript"
-                : toolRefs.length > 0
-                  ? "patterns_check"
-                  : "NONE",
-          reference: toolRefs.length > 0 ? toolRefs[0] : "Manual verification only",
-        },
-      };
-      issues.push("verification_steps: array → object structure");
-    } else if (
-      item.verification_steps &&
-      typeof item.verification_steps === "object" &&
-      !Array.isArray(item.verification_steps)
-    ) {
-      // Already in object format - deep merge with defaults to ensure all required fields
-      const provided = item.verification_steps;
-      transformed.verification_steps = {
-        ...defaultVerificationSteps,
-        ...provided,
-        first_pass: {
-          ...defaultVerificationSteps.first_pass,
-          ...(provided.first_pass || {}),
-        },
-        second_pass: {
-          ...defaultVerificationSteps.second_pass,
-          ...(provided.second_pass || {}),
-        },
-        tool_confirmation: {
-          ...defaultVerificationSteps.tool_confirmation,
-          ...(provided.tool_confirmation || {}),
-        },
-      };
-      issues.push("verification_steps: normalized object structure");
-    } else {
-      // Generate default verification_steps for S0/S1 without existing ones
-      transformed.verification_steps = defaultVerificationSteps;
-      issues.push("added default verification_steps for S0/S1");
-    }
+    const vsResult = buildVerificationSteps(item);
+    transformed.verification_steps = vsResult.verification_steps;
+    issues.push(vsResult.issue);
   }
 
   // Add notes for preserved metadata
@@ -568,7 +635,9 @@ function processFile(inputPath, outputPath, dryRun) {
     return 0;
   }
 
-  if (!dryRun) {
+  if (dryRun) {
+    console.log(`  (dry-run - no changes written)`);
+  } else {
     // Write output atomically (tmp file + rename) to prevent corruption
     // Use unique temp file name with PID/timestamp to prevent race conditions
     const dir = path.dirname(outputPath);
@@ -602,7 +671,7 @@ function processFile(inputPath, outputPath, dryRun) {
       // Atomic rename (with Windows fallback)
       try {
         fs.renameSync(tmpPath, outputPath);
-      } catch (renameErr) {
+      } catch (error_) {
         // Windows can fail to overwrite existing destination; fall back to unlink+rename
         try {
           const st = fs.statSync(outputPath);
@@ -610,17 +679,17 @@ function processFile(inputPath, outputPath, dryRun) {
             throw new Error(`Output path is a directory: ${outputPath}`);
           }
           fs.unlinkSync(outputPath);
-        } catch (unlinkErr) {
+        } catch (error__) {
           // Ignore ENOENT (missing destination is fine); rethrow other errors
           if (
             !(
-              unlinkErr &&
-              typeof unlinkErr === "object" &&
-              "code" in unlinkErr &&
-              unlinkErr.code === "ENOENT"
+              error__ &&
+              typeof error__ === "object" &&
+              "code" in error__ &&
+              error__.code === "ENOENT"
             )
           ) {
-            throw unlinkErr;
+            throw error__;
           }
         }
         fs.renameSync(tmpPath, outputPath);
@@ -641,8 +710,6 @@ function processFile(inputPath, outputPath, dryRun) {
       process.exitCode = 1;
       return 0;
     }
-  } else {
-    console.log(`  (dry-run - no changes written)`);
   }
 
   return results.length;

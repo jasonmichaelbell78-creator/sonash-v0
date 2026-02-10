@@ -154,8 +154,8 @@ function determineTier(filePath, _content) {
  * @returns {string} - Content with normalized LF line endings
  */
 function normalizeLineEndings(content) {
-  // S7781: Use replaceAll() for regex with global flag
-  return content.replaceAll(/\r\n/g, "\n").replaceAll(/\r/g, "\n");
+  // S7781: Use string args with replaceAll() instead of regex
+  return content.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
 }
 
 /**
@@ -239,7 +239,7 @@ function parseDate(dateStr) {
   // Try various date formats
   const date = new Date(dateStr);
 
-  if (isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime())) {
     return { valid: false, error: `Invalid date format: "${dateStr}"` };
   }
 
@@ -298,8 +298,8 @@ function isPlaceholderLink(text, target) {
   // Review #206: Require exact match, not just both being generic words
   const normalizedText = text.trim().toLowerCase();
   const normalizedTargetLower = normalizedTarget.toLowerCase();
-  const genericWords = ["text", "link", "file", "path", "url", "title", "name"];
-  if (normalizedText === normalizedTargetLower && genericWords.includes(normalizedText)) {
+  const genericWords = new Set(["text", "link", "file", "path", "url", "title", "name"]);
+  if (normalizedText === normalizedTargetLower && genericWords.has(normalizedText)) {
     return true;
   }
 
@@ -520,7 +520,7 @@ function validateMetadataDate(metadata, tier, warnings) {
   }
 
   // Check if date is stale (> 90 days for active docs)
-  const daysSinceUpdate = Math.floor((new Date() - dateResult.date) / (1000 * 60 * 60 * 24));
+  const daysSinceUpdate = Math.floor((Date.now() - dateResult.date) / (1000 * 60 * 60 * 24));
   if (daysSinceUpdate > 90 && tier <= 3) {
     warnings.push(`Document may be stale: last updated ${daysSinceUpdate} days ago`);
   }

@@ -37,8 +37,8 @@ function getComputedCount(content, lastConsolidated) {
 
   const allNums = [];
   for (const m of content.matchAll(versionRegex)) {
-    allNums.push(parseInt(m[1], 10));
-    if (m[2]) allNums.push(parseInt(m[2], 10));
+    allNums.push(Number.parseInt(m[1], 10));
+    if (m[2]) allNums.push(Number.parseInt(m[2], 10));
   }
   const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
@@ -58,7 +58,7 @@ function getLastConsolidatedReview(content) {
 
     const triggerMatch = triggerSection.match(/\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i);
     if (triggerMatch) {
-      return parseInt(triggerMatch[1], 10);
+      return Number.parseInt(triggerMatch[1], 10);
     }
   }
 
@@ -70,24 +70,22 @@ function getLastConsolidatedReview(content) {
  */
 function getManualCount(content) {
   const counterMatch = content.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
-  return counterMatch ? parseInt(counterMatch[1], 10) : 0;
+  return counterMatch ? Number.parseInt(counterMatch[1], 10) : 0;
 }
 
 function main() {
   let content;
   try {
     content = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
-  } catch (readErr) {
+  } catch (error_) {
     const code =
-      readErr && typeof readErr === "object" && "code" in readErr
-        ? String(readErr.code)
-        : undefined;
+      error_ && typeof error_ === "object" && "code" in error_ ? String(error_.code) : undefined;
 
     if (code === "ENOENT") {
       console.error("❌ AI_REVIEW_LEARNINGS_LOG.md not found");
     } else {
       console.error(
-        `❌ Failed to read file: ${readErr instanceof Error ? readErr.message : String(readErr)}`
+        `❌ Failed to read file: ${error_ instanceof Error ? error_.message : String(error_)}`
       );
     }
     process.exitCode = 2;

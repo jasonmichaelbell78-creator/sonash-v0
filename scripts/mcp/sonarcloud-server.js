@@ -281,186 +281,149 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
+// Helper to wrap JSON result into MCP text content
+function jsonContent(data) {
+  return {
+    content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
+  };
+}
+
+// Tool handler: get_security_hotspots
+async function handleGetSecurityHotspots(args) {
+  validateRequired(args, "projectKey");
+
+  const params = {
+    projectKey: args.projectKey.trim(),
+    pullRequest: args.pullRequest?.trim(),
+    status: args.status || "TO_REVIEW",
+  };
+
+  const { items: allHotspots, truncated } = await sonarFetchAll(
+    "/api/hotspots/search",
+    params,
+    "hotspots"
+  );
+
+  const hotspots = allHotspots.map((h) => ({
+    key: h.key,
+    message: h.message,
+    file: h.component?.split(":").pop() || h.component,
+    line: h.line,
+    status: h.status,
+    vulnerabilityProbability: h.vulnerabilityProbability,
+    securityCategory: h.securityCategory,
+    rule: h.ruleKey,
+  }));
+
+  return jsonContent({ total: hotspots.length, truncated, hotspots });
+}
+
+// Tool handler: get_issues
+async function handleGetIssues(args) {
+  validateRequired(args, "projectKey");
+
+  const params = {
+    componentKeys: args.projectKey.trim(),
+    pullRequest: args.pullRequest?.trim(),
+    types: args.types?.trim(),
+    severities: args.severities?.trim(),
+    resolved: "false",
+  };
+
+  const { items: allIssues, truncated } = await sonarFetchAll(
+    "/api/issues/search",
+    params,
+    "issues"
+  );
+
+  const issues = allIssues.map((i) => ({
+    key: i.key,
+    type: i.type,
+    severity: i.severity,
+    message: i.message,
+    file: i.component?.split(":").pop() || i.component,
+    line: i.line,
+    rule: i.rule,
+    effort: i.effort,
+  }));
+
+  return jsonContent({ total: issues.length, truncated, issues });
+}
+
+// Tool handler: get_quality_gate
+async function handleGetQualityGate(args) {
+  validateRequired(args, "projectKey");
+
+  const params = {
+    projectKey: args.projectKey.trim(),
+    pullRequest: args.pullRequest?.trim(),
+  };
+
+  const data = await sonarFetch("/api/qualitygates/project_status", params);
+
+  return jsonContent({
+    status: data.projectStatus?.status,
+    conditions: data.projectStatus?.conditions?.map((c) => ({
+      metric: c.metricKey,
+      status: c.status,
+      actualValue: c.actualValue,
+      errorThreshold: c.errorThreshold,
+    })),
+  });
+}
+
+// Tool handler: get_hotspot_details
+async function handleGetHotspotDetails(args) {
+  validateRequired(args, "hotspotKey");
+
+  const data = await sonarFetch("/api/hotspots/show", {
+    hotspot: args.hotspotKey.trim(),
+  });
+
+  return jsonContent({
+    key: data.key,
+    message: data.message,
+    file: data.component?.path,
+    line: data.line,
+    status: data.status,
+    rule: {
+      key: data.rule?.key,
+      name: data.rule?.name,
+      securityCategory: data.rule?.securityCategory,
+      vulnerabilityProbability: data.rule?.vulnerabilityProbability,
+      riskDescription: data.rule?.riskDescription,
+      vulnerabilityDescription: data.rule?.vulnerabilityDescription,
+      fixRecommendations: data.rule?.fixRecommendations,
+    },
+  });
+}
+
+// Tool handler dispatch map
+const TOOL_HANDLERS = {
+  get_security_hotspots: handleGetSecurityHotspots,
+  get_issues: handleGetIssues,
+  get_quality_gate: handleGetQualityGate,
+  get_hotspot_details: handleGetHotspotDetails,
+};
+
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   try {
-    switch (name) {
-      case "get_security_hotspots": {
-        // Validate required inputs
-        validateRequired(args, "projectKey");
-
-        const params = {
-          projectKey: args.projectKey.trim(),
-          pullRequest: args.pullRequest?.trim(),
-          status: args.status || "TO_REVIEW",
-        };
-
-        // Use pagination to get all hotspots
-        const { items: allHotspots, truncated } = await sonarFetchAll(
-          "/api/hotspots/search",
-          params,
-          "hotspots"
-        );
-
-        // Format hotspots with relevant details
-        const hotspots = allHotspots.map((h) => ({
-          key: h.key,
-          message: h.message,
-          file: h.component?.split(":").pop() || h.component,
-          line: h.line,
-          status: h.status,
-          vulnerabilityProbability: h.vulnerabilityProbability,
-          securityCategory: h.securityCategory,
-          rule: h.ruleKey,
-        }));
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(
-                {
-                  total: hotspots.length,
-                  truncated,
-                  hotspots,
-                },
-                null,
-                2
-              ),
-            },
-          ],
-        };
-      }
-
-      case "get_issues": {
-        // Validate required inputs
-        validateRequired(args, "projectKey");
-
-        const params = {
-          componentKeys: args.projectKey.trim(),
-          pullRequest: args.pullRequest?.trim(),
-          types: args.types?.trim(),
-          severities: args.severities?.trim(),
-          resolved: "false",
-        };
-
-        // Use pagination to get all issues
-        const { items: allIssues, truncated } = await sonarFetchAll(
-          "/api/issues/search",
-          params,
-          "issues"
-        );
-
-        const issues = allIssues.map((i) => ({
-          key: i.key,
-          type: i.type,
-          severity: i.severity,
-          message: i.message,
-          file: i.component?.split(":").pop() || i.component,
-          line: i.line,
-          rule: i.rule,
-          effort: i.effort,
-        }));
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(
-                {
-                  total: issues.length,
-                  truncated,
-                  issues,
-                },
-                null,
-                2
-              ),
-            },
-          ],
-        };
-      }
-
-      case "get_quality_gate": {
-        // Validate required inputs
-        validateRequired(args, "projectKey");
-
-        const params = {
-          projectKey: args.projectKey.trim(),
-          pullRequest: args.pullRequest?.trim(),
-        };
-
-        const data = await sonarFetch("/api/qualitygates/project_status", params);
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(
-                {
-                  status: data.projectStatus?.status,
-                  conditions: data.projectStatus?.conditions?.map((c) => ({
-                    metric: c.metricKey,
-                    status: c.status,
-                    actualValue: c.actualValue,
-                    errorThreshold: c.errorThreshold,
-                  })),
-                },
-                null,
-                2
-              ),
-            },
-          ],
-        };
-      }
-
-      case "get_hotspot_details": {
-        // Validate required inputs
-        validateRequired(args, "hotspotKey");
-
-        const data = await sonarFetch("/api/hotspots/show", {
-          hotspot: args.hotspotKey.trim(),
-        });
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(
-                {
-                  key: data.key,
-                  message: data.message,
-                  file: data.component?.path,
-                  line: data.line,
-                  status: data.status,
-                  rule: {
-                    key: data.rule?.key,
-                    name: data.rule?.name,
-                    securityCategory: data.rule?.securityCategory,
-                    vulnerabilityProbability: data.rule?.vulnerabilityProbability,
-                    riskDescription: data.rule?.riskDescription,
-                    vulnerabilityDescription: data.rule?.vulnerabilityDescription,
-                    fixRecommendations: data.rule?.fixRecommendations,
-                  },
-                },
-                null,
-                2
-              ),
-            },
-          ],
-        };
-      }
-
-      default:
-        throw new Error(`Unknown tool: ${name}`);
+    const handler = TOOL_HANDLERS[name];
+    if (!handler) {
+      throw new Error(`Unknown tool: ${name}`);
     }
+    const safeArgs = args && typeof args === "object" && !Array.isArray(args) ? args : {};
+    return await handler(safeArgs);
   } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
     return {
       content: [
         {
           type: "text",
-          text: `Error: ${error.message}`,
+          text: `Error: ${msg}`,
         },
       ],
       isError: true,
@@ -469,7 +432,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 // Start the server
-async function main() {
+try {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("SonarCloud MCP server running on stdio");
@@ -481,10 +444,8 @@ async function main() {
       "Warning: SONAR_TOKEN not set. Set it via environment variable for authenticated access."
     );
   }
-}
-
-main().catch((error) => {
+} catch (error) {
   // Sanitize error output - don't expose stack traces
   console.error(`Fatal error: ${error.message || "Unknown error"}`);
   process.exit(1);
-});
+}

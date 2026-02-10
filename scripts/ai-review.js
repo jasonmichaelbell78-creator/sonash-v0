@@ -390,9 +390,8 @@ function main() {
     console.log(reviewRequest);
     console.log("=".repeat(80));
     console.log("\nSuggested command:");
-    console.log(
-      `  claude chat < <(node scripts/ai-review.js --type=${config.type} ${config.file ? `--file=${config.file}` : "--staged"})`
-    );
+    const fileFlag = config.file ? `--file=${config.file}` : "--staged";
+    console.log(`  claude chat < <(node scripts/ai-review.js --type=${config.type} ${fileFlag})`);
   }
 }
 

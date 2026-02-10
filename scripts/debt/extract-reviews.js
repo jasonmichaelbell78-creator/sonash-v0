@@ -12,8 +12,8 @@
  * - Net-new findings
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { glob } = require("glob");
 
 const REVIEWS_DIR = path.join(__dirname, "../../docs/reviews");
@@ -57,7 +57,7 @@ function extractFile(item) {
 
 function extractLine(item) {
   if (typeof item.line === "number") return item.line;
-  if (typeof item.line === "string") return parseInt(item.line, 10) || 0;
+  if (typeof item.line === "string") return Number.parseInt(item.line, 10) || 0;
   return 0;
 }
 
@@ -169,7 +169,14 @@ async function main() {
 
   for (const file of reviewFiles) {
     const relPath = path.relative(path.join(__dirname, "../.."), file);
-    const content = fs.readFileSync(file, "utf8");
+    let content;
+    try {
+      content = fs.readFileSync(file, "utf8");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.warn(`  ⚠️ Failed to read ${relPath}: ${errMsg}`);
+      continue;
+    }
     const lines = content.split("\n").filter((line) => line.trim());
 
     let fileItemCount = 0;
@@ -186,7 +193,8 @@ async function main() {
         items.push(processed);
         fileItemCount++;
       } catch (err) {
-        console.warn(`  ⚠️ Failed to parse line in ${relPath}: ${err.message}`);
+        const errMsg = err instanceof Error ? err.message : String(err);
+        console.warn(`  ⚠️ Failed to parse line in ${relPath}: ${errMsg}`);
       }
     }
 
@@ -205,7 +213,14 @@ async function main() {
 
   for (const file of aggregationFiles) {
     const relPath = path.relative(path.join(__dirname, "../.."), file);
-    const content = fs.readFileSync(file, "utf8");
+    let content;
+    try {
+      content = fs.readFileSync(file, "utf8");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.warn(`  ⚠️ Failed to read ${relPath}: ${errMsg}`);
+      continue;
+    }
     const lines = content.split("\n").filter((line) => line.trim());
 
     let fileItemCount = 0;
@@ -222,7 +237,8 @@ async function main() {
         items.push(processed);
         fileItemCount++;
       } catch (err) {
-        console.warn(`  ⚠️ Failed to parse line in ${relPath}: ${err.message}`);
+        const errMsg = err instanceof Error ? err.message : String(err);
+        console.warn(`  ⚠️ Failed to parse line in ${relPath}: ${errMsg}`);
       }
     }
 
@@ -266,4 +282,9 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+const { sanitizeError } = require("../lib/security-helpers.js");
+
+main().catch((err) => {
+  console.error("Fatal error:", sanitizeError(err));
+  process.exit(1);
+});

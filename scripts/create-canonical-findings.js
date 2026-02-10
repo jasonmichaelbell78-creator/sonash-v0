@@ -37,7 +37,14 @@ if (!existsSync(NET_NEW_FILE)) {
   process.exit(1);
 }
 
-const rawNetNew = readFileSync(NET_NEW_FILE, "utf-8").trim();
+let rawNetNew;
+try {
+  rawNetNew = readFileSync(NET_NEW_FILE, "utf-8").trim();
+} catch (err) {
+  const errMsg = err instanceof Error ? err.message : String(err);
+  console.error(`Failed to read ${NET_NEW_FILE}: ${errMsg}`);
+  process.exit(1);
+}
 if (!rawNetNew) {
   console.log(`No NET NEW findings found in: ${NET_NEW_FILE}`);
   process.exit(0);
@@ -87,7 +94,8 @@ if (existsSync(MASTER_FILE)) {
       })
       .filter(Boolean);
   } catch (e) {
-    console.warn(`Warning: Could not read existing MASTER_FINDINGS.jsonl: ${e.message}`);
+    const errMsg = e instanceof Error ? e.message : String(e);
+    console.warn(`Warning: Could not read existing MASTER_FINDINGS.jsonl: ${errMsg}`);
     existingCanonical = [];
   }
 }
@@ -99,7 +107,7 @@ const existingOriginalIds = new Set(existingCanonical.map((f) => f.original_id).
 let maxCanonId = 0;
 for (const f of existingCanonical) {
   const match = String(f.id || "").match(/CANON-(\d+)/);
-  if (match) maxCanonId = Math.max(maxCanonId, parseInt(match[1], 10));
+  if (match) maxCanonId = Math.max(maxCanonId, Number.parseInt(match[1], 10));
 }
 
 // Filter out duplicates and assign canonical IDs

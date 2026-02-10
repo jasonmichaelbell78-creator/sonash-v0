@@ -853,7 +853,7 @@ function normalizeConfidence(value) {
   // Percentage string
   const pctMatch = str.match(/(\d+)%?/);
   if (pctMatch) {
-    const num = parseInt(pctMatch[1], 10);
+    const num = Number.parseInt(pctMatch[1], 10);
     if (num >= 0 && num <= 100) return num;
   }
 
@@ -872,7 +872,7 @@ function parseFileList(value) {
   const str = String(value);
 
   // Split by common separators
-  const parts = str.split(/[,;\n]+/).map((p) => p.trim().replace(/^`|`$/g, ""));
+  const parts = str.split(/[,;\n]+/).map((p) => p.trim().replace(/(?:^`)|(?:`$)/g, ""));
 
   // Filter to valid-looking file paths
   return parts.filter((p) => {

@@ -229,10 +229,8 @@ function generateSearchableText(type: string, data: Record<string, unknown>): st
   return parts.filter(Boolean).join(" ").toLowerCase().trim();
 }
 
-/**
- * Main migration function
- */
-async function runMigration() {
+// Run migration
+try {
   console.log("Starting migration to unified journal...\n");
 
   const stats: MigrationStats = {
@@ -291,10 +289,7 @@ async function runMigration() {
     console.log(`\nErrors (${stats.errors.length}):`);
     stats.errors.forEach((e) => console.log(`  - ${e}`));
   }
-}
-
-// Run if called directly
-runMigration().catch((error: unknown) => {
+} catch (error: unknown) {
   console.error("❌ Unexpected error:", sanitizeError(error));
   process.exit(1);
-});
+}

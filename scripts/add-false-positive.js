@@ -345,7 +345,7 @@ Examples:
 `);
 }
 
-async function main() {
+try {
   const args = parseArgs();
 
   if (args.help) {
@@ -410,9 +410,7 @@ async function main() {
   const saved = saveFalsePositive(entry);
   console.log(`✅ Added false positive: ${saved.id}`);
   console.log(JSON.stringify(saved, null, 2));
-}
-
-main().catch((err) => {
+} catch (err) {
   console.error("Error:", err.message);
   process.exit(1);
-});
+}

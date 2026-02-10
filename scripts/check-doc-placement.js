@@ -30,6 +30,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "
 import { join, dirname, basename, relative, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
+import crypto from "node:crypto";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -154,35 +155,50 @@ function countWords(content) {
 }
 
 /**
+ * Check if a file matches a tier definition by explicit location name or patterns
+ *
+ * @param {string} relativePath - Forward-slash normalized relative path
+ * @param {string} fileName - Base file name
+ * @param {object} def - Tier definition with locations and patterns
+ * @returns {boolean} True if the file matches this tier
+ */
+function matchesTierDefinition(relativePath, fileName, def) {
+  // Check explicit file name matches
+  if (def.locations && def.locations.includes(fileName)) {
+    return true;
+  }
+
+  // Check regex patterns against path and file name
+  if (def.patterns) {
+    for (const pattern of def.patterns) {
+      if (pattern.test(relativePath) || pattern.test(fileName)) {
+        return true;
+      }
+    }
+  }
+
+  // Check location prefix matches
+  if (def.locations) {
+    for (const loc of def.locations) {
+      if (relativePath.startsWith(loc)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
  * Determine the tier of a document
- * TODO: Refactor to reduce cognitive complexity (currently 23, target 15)
  */
 function determineTier(filePath) {
   const fileName = basename(filePath);
   const relativePath = relative(ROOT, filePath).replaceAll(/\\/g, "/");
 
-  // Check explicit file matches first
   for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
-    if (def.locations && def.locations.includes(fileName)) {
+    if (matchesTierDefinition(relativePath, fileName, def)) {
       return Number.parseInt(tier, 10);
-    }
-  }
-
-  // Check path patterns
-  for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
-    if (def.patterns) {
-      for (const pattern of def.patterns) {
-        if (pattern.test(relativePath) || pattern.test(fileName)) {
-          return Number.parseInt(tier, 10);
-        }
-      }
-    }
-    if (def.locations) {
-      for (const loc of def.locations) {
-        if (relativePath.startsWith(loc)) {
-          return Number.parseInt(tier, 10);
-        }
-      }
     }
   }
 
@@ -225,8 +241,51 @@ function checkFileLocation(filePath) {
 }
 
 /**
+ * Create an age-based archive finding if the file exceeds the threshold
+ *
+ * @param {string} filePath - Absolute file path
+ * @param {string} relativePath - Relative path for reporting
+ * @param {number} thresholdDays - Maximum age in days before flagging
+ * @param {string} idSuffix - Suffix for finding ID (e.g., "OLD", "AUDIT")
+ * @param {string} title - Finding title
+ * @param {function} descriptionFn - Function(daysSinceModified) returning description string
+ * @returns {object|null} Finding object or null if under threshold
+ */
+function createAgeFinding(filePath, relativePath, thresholdDays, idSuffix, title, descriptionFn) {
+  const gitDate = getGitLastModified(filePath);
+  if (!gitDate) return null;
+
+  const daysSinceModified = Math.floor((Date.now() - gitDate.getTime()) / (1000 * 60 * 60 * 24));
+  if (daysSinceModified <= thresholdDays) return null;
+
+  const stableIdPart = crypto
+    .createHash("sha256")
+    .update(`${idSuffix}:${relativePath}`)
+    .digest("hex")
+    .slice(0, 12);
+
+  return {
+    id: `DOC-LIFECYCLE-${idSuffix}-${stableIdPart}`,
+    category: "documentation",
+    severity: "S3",
+    effort: "E1",
+    confidence: "MEDIUM",
+    verified: "TOOL_VALIDATED",
+    file: relativePath,
+    line: 1,
+    title,
+    description: descriptionFn(daysSinceModified),
+    recommendation: `Run: node scripts/archive-doc.js "${relativePath}"`,
+    evidence: [
+      `Last modified: ${gitDate.toISOString().split("T")[0]}`,
+      `Days old: ${daysSinceModified}`,
+    ],
+    cross_ref: "archive_check",
+  };
+}
+
+/**
  * Check for archive candidates
- * TODO: Refactor to reduce cognitive complexity (currently 16, target 15)
  */
 function checkArchiveCandidate(filePath, content) {
   const findings = [];
@@ -269,62 +328,29 @@ function checkArchiveCandidate(filePath, content) {
 
   // Check for old session handoffs
   if (/SESSION.*HANDOFF|HANDOFF.*SESSION/i.test(fileName)) {
-    const gitDate = getGitLastModified(filePath);
-    if (gitDate) {
-      const daysSinceModified = Math.floor(
-        (Date.now() - gitDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (daysSinceModified > 30) {
-        findings.push({
-          id: `DOC-LIFECYCLE-OLD-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-          category: "documentation",
-          severity: "S3",
-          effort: "E1",
-          confidence: "MEDIUM",
-          verified: "TOOL_VALIDATED",
-          file: relativePath,
-          line: 1,
-          title: "Old session handoff - archive candidate",
-          description: `Session handoff is ${daysSinceModified} days old (>30 days threshold)`,
-          recommendation: `Run: node scripts/archive-doc.js "${relativePath}"`,
-          evidence: [
-            `Last modified: ${gitDate.toISOString().split("T")[0]}`,
-            `Days old: ${daysSinceModified}`,
-          ],
-          cross_ref: "archive_check",
-        });
-      }
-    }
+    const finding = createAgeFinding(
+      filePath,
+      relativePath,
+      30,
+      "OLD",
+      "Old session handoff - archive candidate",
+      (days) => `Session handoff is ${days} days old (>30 days threshold)`
+    );
+    if (finding) findings.push(finding);
   }
 
   // Check for old audit results
   if (/audit-\d{4}-\d{2}-\d{2}/i.test(fileName)) {
-    const gitDate = getGitLastModified(filePath);
-    if (gitDate) {
-      const daysSinceModified = Math.floor(
-        (Date.now() - gitDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (daysSinceModified > 60) {
-        findings.push({
-          id: `DOC-LIFECYCLE-AUDIT-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-          category: "documentation",
-          severity: "S3",
-          effort: "E1",
-          confidence: "MEDIUM",
-          verified: "TOOL_VALIDATED",
-          file: relativePath,
-          line: 1,
-          title: "Old audit result - archive candidate",
-          description: `Audit result is ${daysSinceModified} days old (>60 days threshold). Content may already be in MASTER_DEBT.jsonl.`,
-          recommendation: `Run: node scripts/archive-doc.js "${relativePath}"`,
-          evidence: [
-            `Last modified: ${gitDate.toISOString().split("T")[0]}`,
-            `Days old: ${daysSinceModified}`,
-          ],
-          cross_ref: "archive_check",
-        });
-      }
-    }
+    const finding = createAgeFinding(
+      filePath,
+      relativePath,
+      60,
+      "AUDIT",
+      "Old audit result - archive candidate",
+      (days) =>
+        `Audit result is ${days} days old (>60 days threshold). Content may already be in MASTER_DEBT.jsonl.`
+    );
+    if (finding) findings.push(finding);
   }
 
   return findings;
@@ -530,8 +556,60 @@ function checkDocument(filePath) {
 }
 
 /**
+ * Write findings to output file or stdout
+ */
+function outputFindings(allFindings) {
+  if (OUTPUT_FILE) {
+    const output = JSON_OUTPUT
+      ? JSON.stringify(allFindings, null, 2)
+      : allFindings.map((f) => JSON.stringify(f)).join("\n");
+
+    writeFileSync(OUTPUT_FILE, output + "\n");
+
+    if (!QUIET) {
+      console.log(`\n📄 Results written to: ${OUTPUT_FILE}`);
+    }
+  } else if (JSON_OUTPUT) {
+    console.log(JSON.stringify(allFindings, null, 2));
+  } else if (allFindings.length > 0) {
+    console.log("\n📋 JSONL Findings:\n");
+    for (const finding of allFindings) {
+      console.log(JSON.stringify(finding));
+    }
+  }
+}
+
+/**
+ * Print summary of findings grouped by type
+ */
+function printSummary(allFindings, fileCount) {
+  if (QUIET) return;
+
+  const locationIssues = allFindings.filter((f) => f.title.includes("location"));
+  const archiveCandidates = allFindings.filter((f) => f.title.includes("archive"));
+  const cleanupCandidates = allFindings.filter(
+    (f) => f.title.includes("empty") || f.title.includes("draft") || f.title.includes("Temporary")
+  );
+  const staleIssues = allFindings.filter((f) => f.title.includes("Stale"));
+
+  console.log("\n─".repeat(50));
+  console.log("\n📊 Summary:");
+  console.log(`   Files checked: ${fileCount}`);
+  console.log(`   Total findings: ${allFindings.length}`);
+  console.log(`     - Location issues: ${locationIssues.length}`);
+  console.log(`     - Archive candidates: ${archiveCandidates.length}`);
+  console.log(`     - Cleanup candidates: ${cleanupCandidates.length}`);
+  console.log(`     - Stale documents: ${staleIssues.length}`);
+
+  if (allFindings.length === 0) {
+    console.log("\n✅ All documentation placements are correct!");
+  } else {
+    console.log(`\n❌ ${allFindings.length} placement/lifecycle issue(s) found.`);
+  }
+}
+
+/**
  * Main function
- * TODO: Refactor to reduce cognitive complexity (currently 19, target 15)
  */
 function main() {
   if (!QUIET) {
@@ -558,51 +636,8 @@ function main() {
     allFindings.push(...findings);
   }
 
-  // Output results
-  if (OUTPUT_FILE) {
-    const output = JSON_OUTPUT
-      ? JSON.stringify(allFindings, null, 2)
-      : allFindings.map((f) => JSON.stringify(f)).join("\n");
-
-    writeFileSync(OUTPUT_FILE, output + "\n");
-
-    if (!QUIET) {
-      console.log(`\n📄 Results written to: ${OUTPUT_FILE}`);
-    }
-  } else if (JSON_OUTPUT) {
-    console.log(JSON.stringify(allFindings, null, 2));
-  } else if (allFindings.length > 0) {
-    console.log("\n📋 JSONL Findings:\n");
-    for (const finding of allFindings) {
-      console.log(JSON.stringify(finding));
-    }
-  }
-
-  // Group findings by type for summary
-  const locationIssues = allFindings.filter((f) => f.title.includes("location"));
-  const archiveCandidates = allFindings.filter((f) => f.title.includes("archive"));
-  const cleanupCandidates = allFindings.filter(
-    (f) => f.title.includes("empty") || f.title.includes("draft") || f.title.includes("Temporary")
-  );
-  const staleIssues = allFindings.filter((f) => f.title.includes("Stale"));
-
-  // Summary
-  if (!QUIET) {
-    console.log("\n─".repeat(50));
-    console.log("\n📊 Summary:");
-    console.log(`   Files checked: ${filesToCheck.length}`);
-    console.log(`   Total findings: ${allFindings.length}`);
-    console.log(`     - Location issues: ${locationIssues.length}`);
-    console.log(`     - Archive candidates: ${archiveCandidates.length}`);
-    console.log(`     - Cleanup candidates: ${cleanupCandidates.length}`);
-    console.log(`     - Stale documents: ${staleIssues.length}`);
-
-    if (allFindings.length === 0) {
-      console.log("\n✅ All documentation placements are correct!");
-    } else {
-      console.log(`\n❌ ${allFindings.length} placement/lifecycle issue(s) found.`);
-    }
-  }
+  outputFindings(allFindings);
+  printSummary(allFindings, filesToCheck.length);
 
   process.exit(allFindings.length > 0 ? 1 : 0);
 }

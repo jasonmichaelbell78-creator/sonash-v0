@@ -115,7 +115,7 @@ function updateSessionContext() {
 
   // Update "Uncommitted Work: Yes" to "Uncommitted Work: No"
   if (content.includes("**Uncommitted Work**: Yes")) {
-    content = content.replace("**Uncommitted Work**: Yes", "**Uncommitted Work**: No");
+    content = content.replaceAll("**Uncommitted Work**: Yes", "**Uncommitted Work**: No");
     try {
       fs.writeFileSync(SESSION_CONTEXT_PATH, content);
     } catch (err) {

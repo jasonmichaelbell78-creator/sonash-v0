@@ -453,6 +453,206 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode, planWas
   return results;
 }
 
+/**
+ * Sanitize paths and control characters in command output
+ */
+function sanitizeOutput(output) {
+  if (!output) return "";
+  return (
+    String(output)
+      // Normalize Windows CRLF to LF everywhere
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "")
+      // Strip ANSI escape sequences (colors/cursor movement) to prevent terminal injection in CI logs
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping ANSI escape sequences for CI safety
+      .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, "") // eslint-disable-line no-control-regex
+      // Strip OSC escape sequences (Operating System Commands like title changes)
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping OSC escape sequences for CI safety
+      .replace(/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g, "") // eslint-disable-line no-control-regex
+      // Strip control chars while preserving safe whitespace (\t\n)
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters for terminal/CI safety
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "") // eslint-disable-line no-control-regex
+      .replace(/\/home\/[^/\s]+/g, "[HOME]")
+      .replace(/\/Users\/[^/\s]+/g, "[HOME]")
+      // Handle any Windows drive letter, case-insensitive
+      .replace(/[A-Z]:\\Users\\[^\\/]+/gi, "[HOME]")
+  );
+}
+
+/**
+ * Run ESLint check and record results
+ * @returns {{passed: boolean, failure?: string}}
+ */
+function runLintCheck() {
+  console.log("▶ Running ESLint...");
+  try {
+    const lintOutput = execSync("npm run lint", {
+      encoding: "utf-8",
+      stdio: "pipe",
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    console.log(sanitizeOutput(lintOutput));
+    console.log("  ✅ ESLint passed");
+    return { passed: true };
+  } catch (err) {
+    if (err.stdout) console.log(sanitizeOutput(err.stdout));
+    if (err.stderr) console.error(sanitizeOutput(err.stderr));
+    console.log("  ❌ ESLint has errors");
+    return { passed: false, failure: "ESLint errors must be fixed" };
+  }
+}
+
+/**
+ * Run test suite check and record results
+ * @returns {{passed: boolean, failure?: string}}
+ */
+function runTestCheck() {
+  console.log("▶ Running tests...");
+  try {
+    const testOutput = execSync("npm test", {
+      encoding: "utf-8",
+      stdio: "pipe",
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    const lines = testOutput.split("\n");
+    const summaryLines = lines.filter((l) => {
+      const lower = l.toLowerCase();
+      return (
+        lower.includes("tests") ||
+        lower.includes("pass") ||
+        lower.includes("fail") ||
+        lower.includes("skip")
+      );
+    });
+    if (summaryLines.length > 0) {
+      console.log(sanitizeOutput(summaryLines.join("\n")));
+    }
+    console.log("  ✅ Tests passed");
+    return { passed: true };
+  } catch (err) {
+    if (err.stdout) {
+      const sanitized = sanitizeOutput(err.stdout);
+      const lines = sanitized.split("\n").slice(-20);
+      console.log(lines.join("\n"));
+    }
+    if (err.stderr) console.error(sanitizeOutput(err.stderr));
+    console.log("  ❌ Tests failed");
+    return { passed: false, failure: "Tests must pass" };
+  }
+}
+
+/**
+ * Run automated lint and test checks, collecting failures
+ * @param {boolean} isDryRun - Whether to skip actual checks
+ * @param {string[]} failures - Array to push failures to
+ * @returns {boolean} True if all checks passed
+ */
+function runAutomatedChecks(isDryRun, failures) {
+  if (isDryRun) {
+    console.log("▶ ESLint: skipped (--dry-run)");
+    console.log("▶ Tests: skipped (--dry-run)");
+    return true;
+  }
+
+  let allPassed = true;
+
+  const lintResult = runLintCheck();
+  if (!lintResult.passed) {
+    failures.push(lintResult.failure);
+    allPassed = false;
+  }
+
+  const testResult = runTestCheck();
+  if (!testResult.passed) {
+    failures.push(testResult.failure);
+    allPassed = false;
+  }
+
+  return allPassed;
+}
+
+/**
+ * Run manual verification questions in interactive mode
+ * @param {string[]} failures - Array to push failures to
+ * @returns {Promise<boolean>} True if all questions passed
+ */
+async function runManualVerification(failures) {
+  console.log("━━━ DELIVERABLE AUDIT (Manual Verification) ━━━");
+  console.log("");
+  console.log("Answer honestly - this protects quality:");
+  console.log("");
+
+  const questions = [
+    {
+      q: "Have you reviewed the original deliverables list for this phase? (y/n): ",
+      fail: "Must review original deliverables before marking complete",
+    },
+    {
+      q: "Does EVERY deliverable exist and work correctly? (y/n): ",
+      fail: "All deliverables must exist and function",
+    },
+    {
+      q: "Have you tested each script/feature with real data? (y/n): ",
+      fail: "All deliverables must be tested",
+    },
+    {
+      q: "Are acceptance criteria from the plan ALL met? (y/n): ",
+      fail: "All acceptance criteria must be met",
+    },
+    {
+      q: "Have you documented what was accomplished? (y/n): ",
+      fail: "Work must be documented before completion",
+    },
+    {
+      q: "Did you run npm run lint AND npm test before EVERY commit? (y/n): ",
+      fail: "Lint and test must run before every commit",
+    },
+    {
+      q: "Did you complete the Agent/Skill/MCP/Hook/Script audit (per /session-end)? (y/n): ",
+      fail: "Agent/Skill/MCP audit must be completed - run /session-end",
+    },
+  ];
+
+  let allPassed = true;
+  for (const { q, fail } of questions) {
+    const passed = await ask(q);
+    if (!passed) {
+      console.log(`  ❌ ${fail}`);
+      failures.push(fail);
+      allPassed = false;
+    } else {
+      console.log("  ✅ Confirmed");
+    }
+  }
+  return allPassed;
+}
+
+/**
+ * Print final result and exit
+ */
+function printResultAndExit(allPassed, failures) {
+  console.log("");
+  console.log("━━━ RESULT ━━━");
+  console.log("");
+
+  if (allPassed) {
+    console.log("✅ ALL CHECKS PASSED");
+    console.log("");
+    console.log("You may now mark this phase as COMPLETE.");
+    console.log("");
+    process.exit(0);
+  } else {
+    console.log("❌ CHECKS FAILED - DO NOT MARK COMPLETE");
+    console.log("");
+    console.log("Issues to resolve:");
+    failures.forEach((f, i) => console.log(`  ${i + 1}. ${f}`));
+    console.log("");
+    console.log("Fix these issues, then run this check again.");
+    console.log("");
+    process.exit(1);
+  }
+}
+
 async function main() {
   console.log("");
   console.log("═══════════════════════════════════════════════════════════");
@@ -469,94 +669,8 @@ async function main() {
   console.log("━━━ AUTOMATED CHECKS ━━━");
   console.log("");
 
-  // Helper to sanitize paths and control characters in output
-  const sanitizeOutput = (output) => {
-    if (!output) return "";
-    return (
-      String(output)
-        // Normalize Windows CRLF to LF everywhere
-        .replace(/\r\n/g, "\n")
-        .replace(/\r/g, "")
-        // Strip ANSI escape sequences (colors/cursor movement) to prevent terminal injection in CI logs
-        // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping ANSI escape sequences for CI safety
-        .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, "") // eslint-disable-line no-control-regex
-        // Strip OSC escape sequences (Operating System Commands like title changes)
-        // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping OSC escape sequences for CI safety
-        .replace(/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g, "") // eslint-disable-line no-control-regex
-        // Strip control chars while preserving safe whitespace (\t\n)
-        // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters for terminal/CI safety
-        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "") // eslint-disable-line no-control-regex
-        .replace(/\/home\/[^/\s]+/g, "[HOME]")
-        .replace(/\/Users\/[^/\s]+/g, "[HOME]")
-        // Handle any Windows drive letter, case-insensitive
-        .replace(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]")
-    );
-  };
-
-  // Lint check - capture and sanitize output to avoid exposing paths
-  // Note: Using stdio: 'pipe' for cross-platform compatibility (avoids shell-dependent 2>&1)
-  // Using maxBuffer: 10MB to prevent buffer overflow on large output
-  if (isDryRun) {
-    console.log("▶ ESLint: skipped (--dry-run)");
-    console.log("▶ Tests: skipped (--dry-run)");
-  } else {
-    console.log("▶ Running ESLint...");
-    try {
-      const lintOutput = execSync("npm run lint", {
-        encoding: "utf-8",
-        stdio: "pipe",
-        maxBuffer: 10 * 1024 * 1024,
-      });
-      console.log(sanitizeOutput(lintOutput));
-      console.log("  ✅ ESLint passed");
-    } catch (err) {
-      // ESLint failed - show sanitized output (err.stdout/stderr captured by stdio: 'pipe')
-      if (err.stdout) console.log(sanitizeOutput(err.stdout));
-      if (err.stderr) console.error(sanitizeOutput(err.stderr));
-      console.log("  ❌ ESLint has errors");
-      failures.push("ESLint errors must be fixed");
-      allPassed = false;
-    }
-
-    // Test check - capture and sanitize output
-    // Note: Using stdio: 'pipe' for cross-platform compatibility
-    // Using maxBuffer: 10MB to prevent buffer overflow on large output
-    console.log("▶ Running tests...");
-    try {
-      const testOutput = execSync("npm test", {
-        encoding: "utf-8",
-        stdio: "pipe",
-        maxBuffer: 10 * 1024 * 1024,
-      });
-      // Only show summary, not full output (too verbose)
-      // Use case-insensitive matching to catch PASS/FAIL/Tests: etc.
-      const lines = testOutput.split("\n");
-      const summaryLines = lines.filter((l) => {
-        const lower = l.toLowerCase();
-        return (
-          lower.includes("tests") ||
-          lower.includes("pass") ||
-          lower.includes("fail") ||
-          lower.includes("skip")
-        );
-      });
-      if (summaryLines.length > 0) {
-        console.log(sanitizeOutput(summaryLines.join("\n")));
-      }
-      console.log("  ✅ Tests passed");
-    } catch (err) {
-      // Tests failed - show sanitized error output (err.stdout/stderr captured by stdio: 'pipe')
-      if (err.stdout) {
-        const sanitized = sanitizeOutput(err.stdout);
-        // Show last 20 lines to see failure info
-        const lines = sanitized.split("\n").slice(-20);
-        console.log(lines.join("\n"));
-      }
-      if (err.stderr) console.error(sanitizeOutput(err.stderr));
-      console.log("  ❌ Tests failed");
-      failures.push("Tests must pass");
-      allPassed = false;
-    }
+  if (!runAutomatedChecks(isDryRun, failures)) {
+    allPassed = false;
   }
 
   console.log("");
@@ -584,75 +698,13 @@ async function main() {
     console.log("");
     closeRl();
   } else {
-    console.log("━━━ DELIVERABLE AUDIT (Manual Verification) ━━━");
-    console.log("");
-    console.log("Answer honestly - this protects quality:");
-    console.log("");
-
-    const questions = [
-      {
-        q: "Have you reviewed the original deliverables list for this phase? (y/n): ",
-        fail: "Must review original deliverables before marking complete",
-      },
-      {
-        q: "Does EVERY deliverable exist and work correctly? (y/n): ",
-        fail: "All deliverables must exist and function",
-      },
-      {
-        q: "Have you tested each script/feature with real data? (y/n): ",
-        fail: "All deliverables must be tested",
-      },
-      {
-        q: "Are acceptance criteria from the plan ALL met? (y/n): ",
-        fail: "All acceptance criteria must be met",
-      },
-      {
-        q: "Have you documented what was accomplished? (y/n): ",
-        fail: "Work must be documented before completion",
-      },
-      {
-        q: "Did you run npm run lint AND npm test before EVERY commit? (y/n): ",
-        fail: "Lint and test must run before every commit",
-      },
-      {
-        q: "Did you complete the Agent/Skill/MCP/Hook/Script audit (per /session-end)? (y/n): ",
-        fail: "Agent/Skill/MCP audit must be completed - run /session-end",
-      },
-    ];
-
-    for (const { q, fail } of questions) {
-      const passed = await ask(q);
-      if (!passed) {
-        console.log(`  ❌ ${fail}`);
-        failures.push(fail);
-        allPassed = false;
-      } else {
-        console.log("  ✅ Confirmed");
-      }
+    if (!(await runManualVerification(failures))) {
+      allPassed = false;
     }
     closeRl();
-  } // end of !isAutoMode block
-
-  console.log("");
-  console.log("━━━ RESULT ━━━");
-  console.log("");
-
-  if (allPassed) {
-    console.log("✅ ALL CHECKS PASSED");
-    console.log("");
-    console.log("You may now mark this phase as COMPLETE.");
-    console.log("");
-    process.exit(0);
-  } else {
-    console.log("❌ CHECKS FAILED - DO NOT MARK COMPLETE");
-    console.log("");
-    console.log("Issues to resolve:");
-    failures.forEach((f, i) => console.log(`  ${i + 1}. ${f}`));
-    console.log("");
-    console.log("Fix these issues, then run this check again.");
-    console.log("");
-    process.exit(1);
   }
+
+  printResultAndExit(allPassed, failures);
 }
 
 // Export functions for testing
@@ -670,7 +722,9 @@ try {
 }
 
 if (isMainModule) {
-  main().catch((err) => {
+  try {
+    await main();
+  } catch (err) {
     // Sanitize error output - avoid exposing file paths, stack traces, and control characters
     // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
     // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
@@ -682,9 +736,9 @@ if (isMainModule) {
       .replace(/\/home\/[^/\s]+/g, "[HOME]")
       .replace(/\/Users\/[^/\s]+/g, "[HOME]")
       // Handle any Windows drive letter, case-insensitive
-      .replace(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]");
+      .replace(/[A-Z]:\\Users\\[^\\/]+/gi, "[HOME]");
     console.error("Script error:", safeMessage);
     closeRl();
     process.exit(1);
-  });
+  }
 }

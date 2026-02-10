@@ -105,7 +105,7 @@ function resetCategoryRow(content, category, auditType) {
   // Format: | Category | Last Audit | Commits Since | Files Since | Trigger At |
   const displayNamePattern = escapeRegex(displayName).replace(/\\-/g, "[-\\s]+");
   const rowPattern = new RegExp(
-    `^(\\|\\s*${displayNamePattern}\\s*\\|)[^|\\n]+\\|[^|\\n]+\\|[^|\\n]+\\|(.*)$`,
+    String.raw`^(\|\s*${displayNamePattern}\s*\|)[^|\n]+\|[^|\n]+\|[^|\n]+\|(.*)$`,
     "mi"
   );
 

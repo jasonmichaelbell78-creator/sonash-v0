@@ -29,10 +29,10 @@
  *     --effort E2
  */
 
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const { execSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
+const { execSync } = require("node:child_process");
 const { sanitizeError } = require("../lib/security-helpers.js");
 
 const { loadConfig } = require("../config/load-config");
@@ -68,8 +68,7 @@ function parseArgs(args) {
       const key = arg.substring(2);
       const value = args[i + 1];
       if (value && !value.startsWith("--")) {
-        parsed[key] = value;
-        i++;
+        parsed[key] = args[++i];
       }
     }
   }
@@ -102,7 +101,7 @@ function getNextDebtId(existingItems) {
     if (item.id) {
       const match = item.id.match(/DEBT-(\d+)/);
       if (match) {
-        const num = parseInt(match[1], 10);
+        const num = Number.parseInt(match[1], 10);
         if (num > maxId) maxId = num;
       }
     }
@@ -167,6 +166,180 @@ function logIntake(activity) {
   fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
+// Validate all required and optional fields, exit on error
+function validateInput(parsed) {
+  const errors = [];
+  if (!parsed.file) errors.push("--file is required");
+  if (!parsed.title) errors.push("--title is required");
+  if (!parsed.severity) errors.push("--severity is required");
+  if (!parsed.category) errors.push("--category is required");
+
+  if (errors.length > 0) {
+    console.error("Error: Missing required arguments:");
+    for (const err of errors) {
+      console.error(`  - ${err}`);
+    }
+    process.exit(1);
+  }
+
+  if (!VALID_SEVERITIES.includes(parsed.severity)) {
+    console.error(
+      `Error: Invalid severity "${parsed.severity}". Must be one of: ${VALID_SEVERITIES.join(", ")}`
+    );
+    process.exit(1);
+  }
+
+  if (!VALID_CATEGORIES.includes(parsed.category)) {
+    console.error(
+      `Error: Invalid category "${parsed.category}". Must be one of: ${VALID_CATEGORIES.join(", ")}`
+    );
+    process.exit(1);
+  }
+
+  const type = parsed.type || "tech-debt";
+  if (!VALID_TYPES.includes(type)) {
+    console.error(`Error: Invalid type "${type}". Must be one of: ${VALID_TYPES.join(", ")}`);
+    process.exit(1);
+  }
+
+  const effort = parsed.effort || "E1";
+  if (!VALID_EFFORTS.includes(effort)) {
+    console.error(`Error: Invalid effort "${effort}". Must be one of: ${VALID_EFFORTS.join(", ")}`);
+    process.exit(1);
+  }
+
+  // Validate line number if provided
+  if (parsed.line !== undefined) {
+    const raw = String(parsed.line).trim();
+    if (!/^\d+$/.test(raw)) {
+      console.error(`Error: --line must be a non-negative integer, got: ${parsed.line}`);
+      process.exit(1);
+    }
+    const lineNum = Number.parseInt(raw, 10);
+    if (
+      !Number.isFinite(lineNum) ||
+      lineNum < 0 ||
+      lineNum > Number.MAX_SAFE_INTEGER ||
+      !Number.isInteger(lineNum)
+    ) {
+      console.error(`Error: --line must be a non-negative integer, got: ${parsed.line}`);
+      process.exit(1);
+    }
+  }
+
+  return { type, effort };
+}
+
+// Build a new debt item from parsed input
+function buildNewItem(parsed, type, effort) {
+  return {
+    source_id: `manual:${crypto.randomUUID()}`,
+    source_file: "manual-entry",
+    category: parsed.category,
+    severity: parsed.severity,
+    type: type,
+    file: normalizeFilePath(parsed.file),
+    line: Number.parseInt(parsed.line, 10) || 0,
+    title: parsed.title.substring(0, 500),
+    description: parsed.description || "",
+    recommendation: parsed.recommendation || "",
+    effort: effort,
+    status: "NEW",
+    roadmap_ref: parsed.roadmap || null,
+    created: new Date().toISOString().split("T")[0],
+    verified_by: null,
+    resolution: null,
+  };
+}
+
+// Display the new item details
+function displayNewItem(newItem) {
+  console.log("  New item to add:");
+  console.log(`    ID:             ${newItem.id}`);
+  console.log(`    File:           ${newItem.file}:${newItem.line}`);
+  console.log(
+    `    Title:          ${newItem.title.substring(0, 50)}${newItem.title.length > 50 ? "..." : ""}`
+  );
+  console.log(`    Severity:       ${newItem.severity}`);
+  console.log(`    Category:       ${newItem.category}`);
+  console.log(`    Type:           ${newItem.type}`);
+  console.log(`    Effort:         ${newItem.effort}`);
+  if (newItem.description) {
+    console.log(
+      `    Description:    ${newItem.description.substring(0, 50)}${newItem.description.length > 50 ? "..." : ""}`
+    );
+  }
+  if (newItem.recommendation) {
+    console.log(
+      `    Recommendation: ${newItem.recommendation.substring(0, 50)}${newItem.recommendation.length > 50 ? "..." : ""}`
+    );
+  }
+  if (newItem.roadmap_ref) {
+    console.log(`    ROADMAP:        ${newItem.roadmap_ref}`);
+  }
+}
+
+// Write item to both deduped and master files with rollback on failure
+function writeItemToFiles(newItem) {
+  console.log("\n📝 Writing to raw/deduped.jsonl (source file)...");
+  const rawDir = path.dirname(DEDUPED_FILE);
+  fs.mkdirSync(rawDir, { recursive: true });
+  const newItemJson = JSON.stringify(newItem) + "\n";
+
+  try {
+    fs.appendFileSync(DEDUPED_FILE, newItemJson);
+  } catch (writeError) {
+    console.error(`Error writing to deduped file: ${sanitizeError(writeError)}`);
+    process.exit(1);
+  }
+
+  console.log("📝 Writing to MASTER_DEBT.jsonl...");
+  try {
+    fs.appendFileSync(MASTER_FILE, newItemJson);
+  } catch (writeError) {
+    console.error(`Error writing to master file: ${sanitizeError(writeError)}`);
+    rollbackDedupedFile(newItemJson);
+    process.exit(1);
+  }
+}
+
+// Rollback deduped file by removing the last appended line (verified)
+function rollbackDedupedFile(appendedLine) {
+  try {
+    const deduped = fs.readFileSync(DEDUPED_FILE, "utf8");
+    const lines = deduped.split("\n");
+
+    // Guard for empty files
+    if (lines.length === 0) {
+      console.warn("  ⚠️ Rollback skipped: deduped file is empty");
+      return;
+    }
+
+    if (lines.length >= 2 && lines[lines.length - 1] === "") {
+      lines.pop();
+    }
+
+    if (lines.length === 0) {
+      console.warn("  ⚠️ Rollback skipped: deduped file is empty after removing trailing newline");
+      return;
+    }
+
+    // Normalize lines for comparison - strip \r and trimEnd
+    const lastLine = lines[lines.length - 1].replace(/\r/g, "").trimEnd();
+    const expectedLine = appendedLine.replace(/\n$/, "").replace(/\r/g, "").trimEnd();
+
+    if (lastLine !== expectedLine) {
+      console.warn("  ⚠️ Rollback skipped: last line does not match the appended entry");
+      return;
+    }
+    lines.pop();
+    fs.writeFileSync(DEDUPED_FILE, lines.length ? lines.join("\n") + "\n" : "");
+    console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
+  } catch (rollbackError) {
+    console.error(`  ⚠️ Failed to rollback deduped file: ${sanitizeError(rollbackError)}`);
+  }
+}
+
 // Main function
 async function main() {
   const args = process.argv.slice(2);
@@ -207,79 +380,14 @@ Example:
   }
 
   const parsed = parseArgs(args);
-
-  // Validate required fields
-  const errors = [];
-  if (!parsed.file) errors.push("--file is required");
-  if (!parsed.title) errors.push("--title is required");
-  if (!parsed.severity) errors.push("--severity is required");
-  if (!parsed.category) errors.push("--category is required");
-
-  if (errors.length > 0) {
-    console.error("Error: Missing required arguments:");
-    for (const err of errors) {
-      console.error(`  - ${err}`);
-    }
-    process.exit(1);
-  }
-
-  // Validate severity
-  if (!VALID_SEVERITIES.includes(parsed.severity)) {
-    console.error(
-      `Error: Invalid severity "${parsed.severity}". Must be one of: ${VALID_SEVERITIES.join(", ")}`
-    );
-    process.exit(1);
-  }
-
-  // Validate category
-  if (!VALID_CATEGORIES.includes(parsed.category)) {
-    console.error(
-      `Error: Invalid category "${parsed.category}". Must be one of: ${VALID_CATEGORIES.join(", ")}`
-    );
-    process.exit(1);
-  }
-
-  // Validate type if provided
-  const type = parsed.type || "tech-debt";
-  if (!VALID_TYPES.includes(type)) {
-    console.error(`Error: Invalid type "${type}". Must be one of: ${VALID_TYPES.join(", ")}`);
-    process.exit(1);
-  }
-
-  // Validate effort if provided
-  const effort = parsed.effort || "E1";
-  if (!VALID_EFFORTS.includes(effort)) {
-    console.error(`Error: Invalid effort "${effort}". Must be one of: ${VALID_EFFORTS.join(", ")}`);
-    process.exit(1);
-  }
+  const { type, effort } = validateInput(parsed);
 
   console.log("📥 Intake: Adding manual entry...\n");
 
-  // Load existing items
   const existingItems = loadMasterDebt();
   const existingHashes = new Set(existingItems.map((item) => item.content_hash));
 
-  // Create the new item
-  const newItem = {
-    source_id: `manual:${crypto.randomUUID()}`,
-    source_file: "manual-entry",
-    category: parsed.category,
-    severity: parsed.severity,
-    type: type,
-    file: normalizeFilePath(parsed.file),
-    line: parseInt(parsed.line, 10) || 0,
-    title: parsed.title.substring(0, 500),
-    description: parsed.description || "",
-    recommendation: parsed.recommendation || "",
-    effort: effort,
-    status: "NEW",
-    roadmap_ref: parsed.roadmap || null,
-    created: new Date().toISOString().split("T")[0],
-    verified_by: null,
-    resolution: null,
-  };
-
-  // Generate content hash
+  const newItem = buildNewItem(parsed, type, effort);
   newItem.content_hash = generateContentHash(newItem);
 
   // Check for duplicate
@@ -290,83 +398,18 @@ Example:
     process.exit(0);
   }
 
-  // Assign DEBT ID
   const nextId = getNextDebtId(existingItems);
   newItem.id = `DEBT-${String(nextId).padStart(4, "0")}`;
 
-  // Display item
-  console.log("  New item to add:");
-  console.log(`    ID:             ${newItem.id}`);
-  console.log(`    File:           ${newItem.file}:${newItem.line}`);
-  console.log(
-    `    Title:          ${newItem.title.substring(0, 50)}${newItem.title.length > 50 ? "..." : ""}`
-  );
-  console.log(`    Severity:       ${newItem.severity}`);
-  console.log(`    Category:       ${newItem.category}`);
-  console.log(`    Type:           ${newItem.type}`);
-  console.log(`    Effort:         ${newItem.effort}`);
-  if (newItem.description) {
-    console.log(
-      `    Description:    ${newItem.description.substring(0, 50)}${newItem.description.length > 50 ? "..." : ""}`
-    );
-  }
-  if (newItem.recommendation) {
-    console.log(
-      `    Recommendation: ${newItem.recommendation.substring(0, 50)}${newItem.recommendation.length > 50 ? "..." : ""}`
-    );
-  }
-  if (newItem.roadmap_ref) {
-    console.log(`    ROADMAP:        ${newItem.roadmap_ref}`);
-  }
+  displayNewItem(newItem);
 
   if (parsed.dryRun) {
     console.log("\n🔍 DRY RUN: No changes written.");
     process.exit(0);
   }
 
-  // Write to source file FIRST to prevent data loss if script fails mid-write
-  // (generate-views.js reads from deduped.jsonl and overwrites MASTER_DEBT.jsonl)
-  console.log("\n📝 Writing to raw/deduped.jsonl (source file)...");
-  const rawDir = path.dirname(DEDUPED_FILE);
-  // mkdirSync with recursive:true handles existing dirs - no existsSync needed
-  fs.mkdirSync(rawDir, { recursive: true });
-  const newItemJson = JSON.stringify(newItem) + "\n";
-  try {
-    fs.appendFileSync(DEDUPED_FILE, newItemJson);
-  } catch (writeError) {
-    // Use sanitizeError to prevent path leaks in error messages
-    console.error(`Error writing to deduped file: ${sanitizeError(writeError)}`);
-    process.exit(1);
-  }
+  writeItemToFiles(newItem);
 
-  // Then write to derived file
-  console.log("📝 Writing to MASTER_DEBT.jsonl...");
-  try {
-    fs.appendFileSync(MASTER_FILE, newItemJson);
-  } catch (writeError) {
-    // Use sanitizeError to prevent path leaks in error messages
-    console.error(`Error writing to master file: ${sanitizeError(writeError)}`);
-
-    // Rollback: remove the line we just appended to DEDUPED_FILE
-    // to maintain consistency between the two files
-    try {
-      const deduped = fs.readFileSync(DEDUPED_FILE, "utf8");
-      const lines = deduped.split("\n");
-      // Remove trailing empty line (from final newline) and the appended item line
-      if (lines.length >= 2 && lines[lines.length - 1] === "") {
-        lines.pop();
-      }
-      lines.pop();
-      fs.writeFileSync(DEDUPED_FILE, lines.length ? lines.join("\n") + "\n" : "");
-      console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
-    } catch (rollbackError) {
-      console.error(`  ⚠️ Failed to rollback deduped file: ${sanitizeError(rollbackError)}`);
-    }
-
-    process.exit(1);
-  }
-
-  // Log intake activity
   logIntake({
     action: "intake-manual",
     item_id: newItem.id,
@@ -375,7 +418,6 @@ Example:
     category: newItem.category,
   });
 
-  // Regenerate views
   console.log("🔄 Regenerating views...");
   try {
     execSync("node scripts/debt/generate-views.js", { stdio: "inherit" });

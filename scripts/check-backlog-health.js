@@ -26,10 +26,10 @@ const __dirname = dirname(__filename);
 
 // Configuration (can be overridden via env vars)
 const CONFIG = {
-  S1_MAX_DAYS: parseInt(process.env.BACKLOG_S1_MAX_DAYS, 10) || 7,
-  S2_MAX_DAYS: parseInt(process.env.BACKLOG_S2_MAX_DAYS, 10) || 14,
-  MAX_ITEMS: parseInt(process.env.BACKLOG_MAX_ITEMS, 10) || 25,
-  BLOCK_S1_DAYS: parseInt(process.env.BACKLOG_BLOCK_S1_DAYS, 10) || 14,
+  S1_MAX_DAYS: Number.parseInt(process.env.BACKLOG_S1_MAX_DAYS, 10) || 7,
+  S2_MAX_DAYS: Number.parseInt(process.env.BACKLOG_S2_MAX_DAYS, 10) || 14,
+  MAX_ITEMS: Number.parseInt(process.env.BACKLOG_MAX_ITEMS, 10) || 25,
+  BLOCK_S1_DAYS: Number.parseInt(process.env.BACKLOG_BLOCK_S1_DAYS, 10) || 14,
 };
 
 /**

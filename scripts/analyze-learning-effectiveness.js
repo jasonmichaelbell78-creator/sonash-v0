@@ -250,7 +250,7 @@ class LearningEffectivenessAnalyzer {
 
       const reviewMatch = line.match(/^####\s+Review\s+#(\d+)/);
       if (reviewMatch) {
-        const reviewNum = parseInt(reviewMatch[1]);
+        const reviewNum = Number.parseInt(reviewMatch[1]);
 
         // Skip duplicate reviews (can appear in both archive and current log)
         if (seenReviewNumbers.has(reviewNum)) {
@@ -362,7 +362,7 @@ class LearningEffectivenessAnalyzer {
       const reviewMatches = line.match(/Review #(\d+)/g);
       if (reviewMatches && currentPattern) {
         reviewMatches.forEach((match) => {
-          const num = parseInt(match.replace("Review #", ""));
+          const num = Number.parseInt(match.replaceAll("Review #", ""));
           if (!currentPattern.sourceReviews.includes(num)) {
             currentPattern.sourceReviews.push(num);
           }
@@ -476,7 +476,7 @@ class LearningEffectivenessAnalyzer {
     const matches = keywords.filter((kw) => {
       // Escape special regex chars in keyword, then match at word boundaries
       const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const wordBoundaryRegex = new RegExp(`\\b${escaped}\\b`, "i");
+      const wordBoundaryRegex = new RegExp(String.raw`\b${escaped}\b`, "i");
       return wordBoundaryRegex.test(text);
     }).length;
     return matches / keywords.length;
@@ -593,10 +593,19 @@ class LearningEffectivenessAnalyzer {
       .slice(0, 40);
     const safeName = sanitized || `pattern-${Date.now()}`;
 
+    let priority;
+    if (result.recurrences >= 5) {
+      priority = "HIGH";
+    } else if (result.recurrences >= 3) {
+      priority = "MEDIUM";
+    } else {
+      priority = "LOW";
+    }
+
     return {
       action: `Add to check-pattern-compliance.js`,
       patternId: safeName,
-      priority: result.recurrences >= 5 ? "HIGH" : result.recurrences >= 3 ? "MEDIUM" : "LOW",
+      priority,
       effort: "30-60 minutes",
     };
   }
@@ -1220,27 +1229,25 @@ function parseArgs(args) {
     const arg = args[i];
 
     if (arg === "--since-review") {
-      const next = args[i + 1];
+      const next = args[++i];
       if (!next || next.startsWith("--")) {
         throw new Error('Missing value for --since-review (e.g. "--since-review 150")');
       }
-      const reviewNum = parseInt(next, 10);
-      if (isNaN(reviewNum) || reviewNum < 1) {
+      const reviewNum = Number.parseInt(next, 10);
+      if (Number.isNaN(reviewNum) || reviewNum < 1) {
         throw new Error(`Invalid --since-review value: "${next}" (must be a positive integer)`);
       }
       options.sinceReview = reviewNum;
-      i++;
     } else if (arg === "--auto") {
       options.auto = true;
     } else if (arg === "--detailed") {
       options.detailed = true;
     } else if (arg === "--file") {
-      const next = args[i + 1];
+      const next = args[++i];
       if (!next || next.startsWith("--")) {
         throw new Error('Missing value for --file (e.g. "--file docs/archive/REVIEWS_180-201.md")');
       }
       options.inputFile = next;
-      i++;
     } else if (arg === "--all-archives") {
       options.allArchives = true;
     }

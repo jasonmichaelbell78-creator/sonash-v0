@@ -15,9 +15,9 @@
  *   node scripts/debt/resolve-bulk.js --pr 123 --file resolved-ids.txt
  */
 
-const fs = require("fs");
-const path = require("path");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execFileSync } = require("node:child_process");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -32,11 +32,9 @@ function parseArgs(args) {
     if (arg === "--dry-run") {
       parsed.dryRun = true;
     } else if (arg === "--pr" && args[i + 1]) {
-      parsed.pr = parseInt(args[i + 1], 10);
-      i++;
+      parsed.pr = Number.parseInt(args[++i], 10);
     } else if (arg === "--file" && args[i + 1]) {
-      parsed.file = args[i + 1];
-      i++;
+      parsed.file = args[++i];
     } else if (arg.match(/^DEBT-\d+$/)) {
       parsed.debtIds.push(arg);
     }
@@ -49,7 +47,14 @@ function loadMasterDebt() {
   if (!fs.existsSync(MASTER_FILE)) {
     return [];
   }
-  const content = fs.readFileSync(MASTER_FILE, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(MASTER_FILE, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to read ${MASTER_FILE}: ${errMsg}`);
+    process.exit(1);
+  }
   const lines = content.split("\n").filter((line) => line.trim());
 
   const items = [];
@@ -59,7 +64,8 @@ function loadMasterDebt() {
     try {
       items.push(JSON.parse(lines[i]));
     } catch (err) {
-      badLines.push({ line: i + 1, message: err.message });
+      const errMsg = err instanceof Error ? err.message : String(err);
+      badLines.push({ line: i + 1, message: errMsg });
     }
   }
 
@@ -117,7 +123,14 @@ function loadIdsFromFile(filePath) {
     console.error(`Error: File not found: ${filePath}`);
     process.exit(1);
   }
-  const content = fs.readFileSync(filePath, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(filePath, "utf8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to read ${filePath}: ${errMsg}`);
+    process.exit(1);
+  }
   const ids = content
     .split("\n")
     .map((line) => line.trim())
@@ -271,6 +284,7 @@ Example:
 }
 
 main().catch((err) => {
-  console.error("Fatal error:", err.message);
+  const errMsg = err instanceof Error ? err.message : String(err);
+  console.error("Fatal error:", errMsg);
   process.exit(1);
 });

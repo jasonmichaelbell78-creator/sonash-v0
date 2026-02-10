@@ -39,7 +39,7 @@ function parseTime(timeStr: string): string {
   const match = timeStr.trim().match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
   if (!match) return timeStr;
 
-  let hours = parseInt(match[1], 10);
+  let hours = Number.parseInt(match[1], 10);
   const minutes = match[2];
   const period = match[3].toUpperCase();
 
@@ -55,7 +55,7 @@ const geocodingCache: Record<string, { lat: number; lng: number }> = JSON.parse(
   readFileSync(cachePath, "utf-8")
 );
 
-async function importMeetings() {
+try {
   const csvPath = join(process.cwd(), "SoNash_Meetings__cleaned.csv");
   const rawData = readFileSync(csvPath, "utf-8");
   const lines = rawData.split("\n");
@@ -76,7 +76,7 @@ async function importMeetings() {
     // CSV split handling quotes
     const cols = line
       .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-      .map((s) => s.trim().replace(/^"|"$/g, ""));
+      .map((s) => s.trim().replace(/(?:^")|(?:"$)/g, ""));
 
     if (cols.length < 7) {
       console.warn(`Skipping invalid line ${i + 2}: ${line}`);
@@ -128,10 +128,8 @@ async function importMeetings() {
 
   console.log(`✅ Successfully imported ${totalImported} meetings.`);
   process.exit(0);
-}
-
-importMeetings().catch((error) => {
+} catch (error) {
   // Use sanitizeError to avoid exposing sensitive paths
   console.error("❌ Import failed:", sanitizeError(error));
   process.exit(1);
-});
+}

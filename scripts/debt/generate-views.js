@@ -14,8 +14,8 @@
  *   - docs/technical-debt/LEGACY_ID_MAPPING.json
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
@@ -96,7 +96,7 @@ function loadExistingItems() {
           if (item.id) {
             const match = item.id.match(/DEBT-(\d+)/);
             if (match) {
-              const num = parseInt(match[1], 10);
+              const num = Number.parseInt(match[1], 10);
               if (num > maxId) maxId = num;
             }
             // Store full item for field preservation (only for valid DEBT-XXXX IDs)
@@ -126,22 +126,19 @@ function loadExistingItems() {
   return { idMap, itemMap, maxId };
 }
 
-function main() {
-  console.log("📝 Generating TDMS views and final output...\n");
-
+// Read and parse deduped items, assigning stable DEBT-XXXX IDs
+function readAndAssignIds() {
   if (!fs.existsSync(INPUT_FILE)) {
     console.error(`❌ Input file not found: ${INPUT_FILE}`);
     console.error("   Run dedup-multi-pass.js first.");
     process.exit(1);
   }
 
-  // Load existing items to preserve IDs and status/resolution fields
   const { idMap, itemMap, maxId } = loadExistingItems();
   let nextId = maxId + 1;
   let preservedCount = 0;
   let newCount = 0;
 
-  // Read deduped items with safe JSON parsing
   let content;
   try {
     content = fs.readFileSync(INPUT_FILE, "utf8");
@@ -152,9 +149,7 @@ function main() {
   }
   const lines = content.split("\n").filter((line) => line.trim());
 
-  // Track used IDs to prevent duplicates in current run
   const usedIds = new Set();
-
   const items = [];
   const parseErrors = [];
 
@@ -167,122 +162,104 @@ function main() {
       continue;
     }
 
-    // Try to find existing ID (preserve stable IDs)
-    // Priority: fingerprint > content_hash > source_id (fingerprint is most stable)
-    let existingId = null;
-    if (item.fingerprint) {
-      existingId = idMap.get(`fp:${item.fingerprint}`);
-    }
-    if (!existingId && item.content_hash) {
-      existingId = idMap.get(`hash:${item.content_hash}`);
-    }
-    if (!existingId && item.source_id) {
-      existingId = idMap.get(`source:${item.source_id}`);
-    }
-    // Also check merged_from source IDs as fallback
-    if (!existingId && Array.isArray(item.merged_from)) {
-      for (const srcId of item.merged_from) {
-        existingId = idMap.get(`source:${srcId}`);
-        if (existingId) break;
-      }
-    }
-
-    // Check if existingId is already used in this run to prevent duplicates
-    if (existingId && !usedIds.has(existingId)) {
-      item.id = existingId;
-      usedIds.add(existingId);
-      preservedCount++;
-    } else {
-      // Assign new ID if no stable ID exists OR the stable ID is already used
-      item.id = generateDebtId(nextId);
-      usedIds.add(item.id);
+    const assignResult = assignStableId(item, idMap, usedIds, nextId);
+    item.id = assignResult.id;
+    usedIds.add(item.id);
+    if (assignResult.isNew) {
       nextId++;
       newCount++;
+    } else {
+      preservedCount++;
     }
 
-    // Ensure required fields have defaults (intake items may lack source_id/status)
-    if (!item.source_id) {
-      item.source_id = item.fingerprint ? `intake:${item.fingerprint}` : `intake:${item.id}`;
-    }
-    if (!item.status) {
-      item.status = "NEW";
-    }
-
-    // Preserve status/resolution/verification fields from existing MASTER items
-    // This ensures verification results survive view regeneration
-    const existing = itemMap.get(item.id);
-    if (existing) {
-      for (const field of PRESERVED_FIELDS) {
-        const hasExisting = existing[field] !== undefined && existing[field] !== null;
-        const newIsUnset = item[field] === undefined || item[field] === null;
-        const newIsDefaultStatus = field === "status" && item.status === "NEW";
-        if (hasExisting && (newIsUnset || newIsDefaultStatus)) {
-          item[field] = existing[field];
-        }
-      }
-    }
-
+    ensureDefaults(item);
+    preserveExistingFields(item, itemMap);
     items.push(item);
   }
 
-  // Report parse errors
-  if (parseErrors.length > 0) {
-    console.error(`⚠️ Warning: ${parseErrors.length} invalid JSON line(s) in input file`);
-    for (const e of parseErrors.slice(0, 5)) {
-      console.error(`   Line ${e.line}: ${e.message}`);
-    }
-    if (parseErrors.length > 5) {
-      console.error(`   ... and ${parseErrors.length - 5} more`);
-    }
-    console.log();
-  }
-
+  reportParseErrors(parseErrors);
   console.log(`  📊 Processing ${items.length} items`);
   console.log(`     Preserved IDs: ${preservedCount}, New IDs: ${newCount}\n`);
 
-  // Write MASTER_DEBT.jsonl in stable ID order (prevents gratuitous diffs)
+  return { items, preservedCount, newCount };
+}
+
+// Try to find an existing stable ID for an item
+function assignStableId(item, idMap, usedIds, nextId) {
+  let existingId = null;
+  if (item.fingerprint) {
+    existingId = idMap.get(`fp:${item.fingerprint}`);
+  }
+  if (!existingId && item.content_hash) {
+    existingId = idMap.get(`hash:${item.content_hash}`);
+  }
+  if (!existingId && item.source_id) {
+    existingId = idMap.get(`source:${item.source_id}`);
+  }
+  if (!existingId && Array.isArray(item.merged_from)) {
+    for (const srcId of item.merged_from) {
+      existingId = idMap.get(`source:${srcId}`);
+      if (existingId) break;
+    }
+  }
+
+  if (existingId && !usedIds.has(existingId)) {
+    return { id: existingId, isNew: false };
+  }
+  return { id: generateDebtId(nextId), isNew: true };
+}
+
+// Ensure required fields have defaults
+function ensureDefaults(item) {
+  if (!item.source_id) {
+    item.source_id = item.fingerprint ? `intake:${item.fingerprint}` : `intake:${item.id}`;
+  }
+  if (!item.status) {
+    item.status = "NEW";
+  }
+}
+
+// Preserve fields from existing MASTER items during regeneration
+function preserveExistingFields(item, itemMap) {
+  const existing = itemMap.get(item.id);
+  if (!existing) return;
+
+  for (const field of PRESERVED_FIELDS) {
+    const hasExisting = existing[field] !== undefined && existing[field] !== null;
+    const newIsUnset = item[field] === undefined || item[field] === null;
+    const newIsDefaultStatus = field === "status" && item.status === "NEW";
+    if (hasExisting && (newIsUnset || newIsDefaultStatus)) {
+      item[field] = existing[field];
+    }
+  }
+}
+
+// Report JSON parse errors
+function reportParseErrors(parseErrors) {
+  if (parseErrors.length === 0) return;
+  console.error(`⚠️ Warning: ${parseErrors.length} invalid JSON line(s) in input file`);
+  for (const e of parseErrors.slice(0, 5)) {
+    console.error(`   Line ${e.line}: ${e.message}`);
+  }
+  if (parseErrors.length > 5) {
+    console.error(`   ... and ${parseErrors.length - 5} more`);
+  }
+  console.log();
+}
+
+// Write MASTER_DEBT.jsonl sorted by stable ID order
+function writeMasterFile(items) {
   const idSorted = [...items].sort((a, b) => {
-    const aNum = parseInt((a.id || "").replace("DEBT-", ""), 10) || 0;
-    const bNum = parseInt((b.id || "").replace("DEBT-", ""), 10) || 0;
+    const aNum = Number.parseInt((a.id || "").replaceAll("DEBT-", ""), 10) || 0;
+    const bNum = Number.parseInt((b.id || "").replaceAll("DEBT-", ""), 10) || 0;
     return aNum - bNum;
   });
-  const masterLines = idSorted.map((item) => JSON.stringify(item));
-  fs.writeFileSync(MASTER_FILE, masterLines.join("\n") + "\n");
+  fs.writeFileSync(MASTER_FILE, idSorted.map((item) => JSON.stringify(item)).join("\n") + "\n");
   console.log(`  ✅ ${MASTER_FILE}`);
+}
 
-  // Warn if many new IDs were assigned (potential instability)
-  if (newCount > 0 && preservedCount > 0) {
-    const newPct = ((newCount / items.length) * 100).toFixed(1);
-    if (newCount > 10) {
-      console.log(`  ⚠️  ${newCount} new IDs assigned (${newPct}%) - check for ID drift`);
-    }
-  }
-
-  // Sort by severity for view file ordering
-  items.sort(severitySort);
-
-  // Ensure directories exist
-  if (!fs.existsSync(VIEWS_DIR)) {
-    fs.mkdirSync(VIEWS_DIR, { recursive: true });
-  }
-
-  // Build legacy ID mapping
-  const legacyMapping = {};
-  for (const item of items) {
-    if (item.original_id) {
-      legacyMapping[item.original_id] = item.id;
-    }
-    if (item.source_id) {
-      legacyMapping[item.source_id] = item.id;
-    }
-  }
-
-  // Write LEGACY_ID_MAPPING.json
-  fs.writeFileSync(LEGACY_MAP_FILE, JSON.stringify(legacyMapping, null, 2));
-  console.log(`  ✅ ${LEGACY_MAP_FILE}`);
-
-  // Generate INDEX.md
-  const today = formatDate(new Date());
+// Group items by severity, category, and status
+function groupItems(items) {
   const bySeverity = { S0: [], S1: [], S2: [], S3: [] };
   const byCategory = {};
   const byStatus = {};
@@ -298,6 +275,26 @@ function main() {
     byStatus[item.status].push(item);
   }
 
+  return { bySeverity, byCategory, byStatus };
+}
+
+// Generate and write all markdown view files
+function generateViewFiles(items, bySeverity, byCategory, byStatus) {
+  const today = formatDate(new Date());
+
+  if (!fs.existsSync(VIEWS_DIR)) {
+    fs.mkdirSync(VIEWS_DIR, { recursive: true });
+  }
+
+  generateIndexFile(items, bySeverity, byCategory, byStatus, today);
+  generateSeverityView(bySeverity, today);
+  generateCategoryView(byCategory, today);
+  generateStatusView(byStatus, today);
+  generateVerificationQueue(byStatus, today);
+}
+
+// Generate INDEX.md
+function generateIndexFile(items, bySeverity, byCategory, byStatus, today) {
   let indexMd = generateHeader("Technical Debt Index", today);
   indexMd += `**Total Items:** ${items.length}
 
@@ -314,13 +311,13 @@ function main() {
 |----------|-------|
 ${Object.entries(byCategory)
   .sort((a, b) => b[1].length - a[1].length)
-  .map(([cat, items]) => `| ${cat} | ${items.length} |`)
+  .map(([cat, catItems]) => `| ${cat} | ${catItems.length} |`)
   .join("\n")}
 
 | Status | Count |
 |--------|-------|
 ${Object.entries(byStatus)
-  .map(([status, items]) => `| ${status} | ${items.length} |`)
+  .map(([status, statusItems]) => `| ${status} | ${statusItems.length} |`)
   .join("\n")}
 
 ## Views
@@ -366,14 +363,15 @@ ${
 
   fs.writeFileSync(INDEX_FILE, indexMd);
   console.log(`  ✅ ${INDEX_FILE}`);
+}
 
-  // Generate views/by-severity.md
+// Generate views/by-severity.md
+function generateSeverityView(bySeverity, today) {
   let severityMd = generateHeader("Technical Debt by Severity", today);
+  const sevNames = { S0: "Critical", S1: "High", S2: "Medium", S3: "Low" };
 
   for (const sev of ["S0", "S1", "S2", "S3"]) {
     const sevItems = bySeverity[sev] || [];
-    const sevNames = { S0: "Critical", S1: "High", S2: "Medium", S3: "Low" };
-
     severityMd += `## ${sev} - ${sevNames[sev]} (${sevItems.length})\n\n`;
 
     if (sevItems.length === 0) {
@@ -389,8 +387,10 @@ ${
 
   fs.writeFileSync(path.join(VIEWS_DIR, "by-severity.md"), severityMd);
   console.log(`  ✅ ${path.join(VIEWS_DIR, "by-severity.md")}`);
+}
 
-  // Generate views/by-category.md
+// Generate views/by-category.md
+function generateCategoryView(byCategory, today) {
   let categoryMd = generateHeader("Technical Debt by Category", today);
 
   for (const cat of Object.keys(byCategory).sort()) {
@@ -405,8 +405,10 @@ ${
 
   fs.writeFileSync(path.join(VIEWS_DIR, "by-category.md"), categoryMd);
   console.log(`  ✅ ${path.join(VIEWS_DIR, "by-category.md")}`);
+}
 
-  // Generate views/by-status.md
+// Generate views/by-status.md
+function generateStatusView(byStatus, today) {
   let statusMd = generateHeader("Technical Debt by Status", today);
 
   for (const status of ["NEW", "VERIFIED", "IN_PROGRESS", "RESOLVED", "FALSE_POSITIVE"]) {
@@ -426,8 +428,10 @@ ${
 
   fs.writeFileSync(path.join(VIEWS_DIR, "by-status.md"), statusMd);
   console.log(`  ✅ ${path.join(VIEWS_DIR, "by-status.md")}`);
+}
 
-  // Generate views/verification-queue.md
+// Generate views/verification-queue.md
+function generateVerificationQueue(byStatus, today) {
   const newItems = byStatus.NEW || [];
   let verifyMd = generateHeader("Verification Queue", today);
   verifyMd += `**Items Needing Verification:** ${newItems.length}
@@ -448,6 +452,35 @@ Run \`verify-technical-debt\` skill to process this queue.
 
   fs.writeFileSync(path.join(VIEWS_DIR, "verification-queue.md"), verifyMd);
   console.log(`  ✅ ${path.join(VIEWS_DIR, "verification-queue.md")}`);
+}
+
+function main() {
+  console.log("📝 Generating TDMS views and final output...\n");
+
+  const { items, newCount, preservedCount } = readAndAssignIds();
+
+  writeMasterFile(items);
+
+  // Warn if many new IDs were assigned (potential instability)
+  if (newCount > 0 && preservedCount > 0 && newCount > 10) {
+    const newPct = ((newCount / items.length) * 100).toFixed(1);
+    console.log(`  ⚠️  ${newCount} new IDs assigned (${newPct}%) - check for ID drift`);
+  }
+
+  items.sort(severitySort);
+
+  // Build and write legacy ID mapping
+  const legacyMapping = {};
+  for (const item of items) {
+    if (item.original_id) legacyMapping[item.original_id] = item.id;
+    if (item.source_id) legacyMapping[item.source_id] = item.id;
+  }
+  fs.writeFileSync(LEGACY_MAP_FILE, JSON.stringify(legacyMapping, null, 2));
+  console.log(`  ✅ ${LEGACY_MAP_FILE}`);
+
+  // Group and generate views
+  const { bySeverity, byCategory, byStatus } = groupItems(items);
+  generateViewFiles(items, bySeverity, byCategory, byStatus);
 
   console.log(`\n✅ All views generated successfully!`);
   console.log(`\n📊 Final Summary:`);

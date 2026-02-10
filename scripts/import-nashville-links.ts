@@ -191,72 +191,64 @@ const nashvilleLinks = [
   },
 ];
 
-async function importNashvilleLinks() {
+// Run import
+try {
   console.log("🚀 Starting Nashville Recovery Resources Import...\n");
 
-  try {
-    const linksRef = db.collection("quick_links");
-    let addedCount = 0;
-    let skippedCount = 0;
+  const linksRef = db.collection("quick_links");
+  let addedCount = 0;
+  let skippedCount = 0;
 
-    for (const link of nashvilleLinks) {
-      // Use deterministic ID for idempotency (avoid composite index requirement)
-      const docId = `${link.category}__${link.title}`
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric with hyphens
-        .replace(/(^-|-$)/g, ""); // Trim leading/trailing hyphens
+  for (const link of nashvilleLinks) {
+    // Use deterministic ID for idempotency (avoid composite index requirement)
+    const docId = `${link.category}__${link.title}`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric with hyphens
+      .replace(/(^-|-$)/g, ""); // Trim leading/trailing hyphens
 
-      const docRef = linksRef.doc(docId);
-      const existingDoc = await docRef.get();
+    const docRef = linksRef.doc(docId);
+    const existingDoc = await docRef.get();
 
-      if (existingDoc.exists) {
-        console.log(`  ⏭️  Skipped: ${link.title} (already exists)`);
-        skippedCount++;
-        continue;
-      }
-
-      await docRef.set(
-        {
-          ...link,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          source: "import-nashville-links", // Track import source
-        },
-        { merge: true }
-      );
-      console.log(`  ✅ Added: ${link.title} (${link.category})`);
-      addedCount++;
+    if (existingDoc.exists) {
+      console.log(`  ⏭️  Skipped: ${link.title} (already exists)`);
+      skippedCount++;
+      continue;
     }
 
-    console.log(`\n🎉 Import complete!`);
-    console.log(`\nTotal links processed: ${nashvilleLinks.length}`);
-    console.log(`Links added: ${addedCount}`);
-    console.log(`Links skipped: ${skippedCount}`);
-    console.log(`\nBreakdown by category:`);
-    const categoryCounts = nashvilleLinks.reduce(
-      (acc, link) => {
-        acc[link.category] = (acc[link.category] || 0) + 1;
-        return acc;
+    await docRef.set(
+      {
+        ...link,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        source: "import-nashville-links", // Track import source
       },
-      {} as Record<string, number>
+      { merge: true }
     );
-
-    Object.entries(categoryCounts).forEach(([category, count]) => {
-      console.log(`  - ${category}: ${count} links`);
-    });
-  } catch (error) {
-    // Use sanitizeError to avoid exposing sensitive paths
-    console.error("❌ Import failed:", sanitizeError(error));
-    throw error;
+    console.log(`  ✅ Added: ${link.title} (${link.category})`);
+    addedCount++;
   }
-}
 
-// Run import
-importNashvilleLinks()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    // Use sanitizeError to avoid exposing sensitive paths
-    console.error(sanitizeError(error));
-    process.exit(1);
+  console.log(`\n🎉 Import complete!`);
+  console.log(`\nTotal links processed: ${nashvilleLinks.length}`);
+  console.log(`Links added: ${addedCount}`);
+  console.log(`Links skipped: ${skippedCount}`);
+  console.log(`\nBreakdown by category:`);
+  const categoryCounts = nashvilleLinks.reduce(
+    (acc, link) => {
+      acc[link.category] = (acc[link.category] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+
+  Object.entries(categoryCounts).forEach(([category, count]) => {
+    console.log(`  - ${category}: ${count} links`);
   });
+
+  process.exit(0);
+} catch (error) {
+  // Use sanitizeError to avoid exposing sensitive paths
+  console.error("❌ Import failed:", sanitizeError(error));
+  process.exit(1);
+}

@@ -223,7 +223,7 @@ function parseTableRow(row, rowIndex) {
 
   // Parse progress percentage (handle "~50%", "100%", "0%")
   const progressMatch = progressStr.match(/~?(\d{1,4})%/);
-  const progress = progressMatch ? parseInt(progressMatch[1], 10) : 0;
+  const progress = progressMatch ? Number.parseInt(progressMatch[1], 10) : 0;
 
   return { milestone: { name, status, progress, target, priority } };
 }
@@ -540,11 +540,11 @@ function main() {
 
   // Step 4: Get overall progress
   let overallProgress = getOverallProgress(roadmapResult.content);
-  if (!overallProgress) {
+  if (overallProgress) {
+    console.log(`\nOverall progress from ROADMAP.md: ${overallProgress}`);
+  } else {
     overallProgress = calculateOverallProgress(milestones);
     console.log(`\nCalculated overall progress: ${overallProgress}`);
-  } else {
-    console.log(`\nOverall progress from ROADMAP.md: ${overallProgress}`);
   }
 
   // Step 5: Generate new status section
