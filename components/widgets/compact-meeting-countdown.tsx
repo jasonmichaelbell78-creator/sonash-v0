@@ -114,6 +114,37 @@ function parseMinutesSinceMidnight(timeStr: string): number | null {
 }
 
 /**
+ * Pick the nearest meeting from a list, prioritizing proximity if location is available.
+ * Falls back to the first meeting (soonest by time) if no nearby meetings or no location.
+ */
+function pickNearestMeeting(
+  meetings: Meeting[],
+  userLocation: { lat: number; lng: number } | null,
+  locationStatus: string
+): Meeting | null {
+  if (meetings.length === 0) return null;
+
+  if (userLocation && locationStatus === "granted") {
+    const nearbyMeetings = meetings.filter((meeting) => {
+      if (!meeting.coordinates) return false;
+      const distance = calculateDistance(userLocation, meeting.coordinates);
+      return distance <= MAX_DISTANCE_MILES;
+    });
+
+    if (nearbyMeetings.length > 0) {
+      return nearbyMeetings.reduce((nearest, meeting) => {
+        if (!meeting.coordinates || !nearest.coordinates) return nearest;
+        const distToMeeting = calculateDistance(userLocation, meeting.coordinates);
+        const distToNearest = calculateDistance(userLocation, nearest.coordinates);
+        return distToMeeting < distToNearest ? meeting : nearest;
+      }, nearbyMeetings[0]);
+    }
+  }
+
+  return meetings[0];
+}
+
+/**
  * Next Closest Meeting Widget
  * Shows the soonest meeting within 10 miles (if geolocation enabled)
  * Falls back to soonest meeting anywhere if:
@@ -154,58 +185,14 @@ export default function CompactMeetingCountdown() {
 
         let selectedMeeting: Meeting | null = null;
 
-        // If we have user location and it's granted, prioritize nearest meeting within 10 miles
-        if (userLocation && locationStatus === "granted") {
-          // Filter to meetings within 10 miles that have coordinates
-          const nearbyMeetings = upcomingToday.filter((meeting) => {
-            if (!meeting.coordinates) return false;
-            const distance = calculateDistance(userLocation, meeting.coordinates);
-            return distance <= MAX_DISTANCE_MILES;
-          });
-
-          if (nearbyMeetings.length > 0) {
-            // Find the nearest one by distance
-            selectedMeeting = nearbyMeetings.reduce((nearest, meeting) => {
-              if (!meeting.coordinates || !nearest.coordinates) return nearest;
-              const distToMeeting = calculateDistance(userLocation, meeting.coordinates);
-              const distToNearest = calculateDistance(userLocation, nearest.coordinates);
-              return distToMeeting < distToNearest ? meeting : nearest;
-            }, nearbyMeetings[0]);
-          }
-        }
-
-        // Fallback: if no nearby meeting found, use soonest meeting anywhere
-        if (!selectedMeeting && upcomingToday.length > 0) {
-          selectedMeeting = upcomingToday[0]; // Already sorted by time from getMeetingsByDay
-        }
+        selectedMeeting = pickNearestMeeting(upcomingToday, userLocation, locationStatus);
 
         // If no more meetings today, find first meeting tomorrow
         if (!selectedMeeting) {
           const tomorrow = days[(now.getDay() + 1) % 7];
           const tomorrowsMeetings = await MeetingsService.getMeetingsByDay(tomorrow);
-
           if (tomorrowsMeetings.length > 0) {
-            // Same proximity logic for tomorrow
-            if (userLocation && locationStatus === "granted") {
-              const nearbyTomorrow = tomorrowsMeetings.filter((meeting) => {
-                if (!meeting.coordinates) return false;
-                const distance = calculateDistance(userLocation, meeting.coordinates);
-                return distance <= MAX_DISTANCE_MILES;
-              });
-
-              if (nearbyTomorrow.length > 0) {
-                selectedMeeting = nearbyTomorrow.reduce((nearest, meeting) => {
-                  if (!meeting.coordinates || !nearest.coordinates) return nearest;
-                  const distToMeeting = calculateDistance(userLocation, meeting.coordinates);
-                  const distToNearest = calculateDistance(userLocation, nearest.coordinates);
-                  return distToMeeting < distToNearest ? meeting : nearest;
-                }, nearbyTomorrow[0]);
-              }
-            }
-
-            if (!selectedMeeting) {
-              selectedMeeting = tomorrowsMeetings[0];
-            }
+            selectedMeeting = pickNearestMeeting(tomorrowsMeetings, userLocation, locationStatus);
           }
         }
 

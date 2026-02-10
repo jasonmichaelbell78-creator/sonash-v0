@@ -672,6 +672,162 @@ function UserCorrelationSection({
   );
 }
 
+function filterIssuesByTimeframe(issues: SentryIssueSummary[], timeframe: TimeframePreset) {
+  const { startDate, endDate } = getTimeframeDates(timeframe);
+  const filteredIssues = issues.filter((issue) => {
+    if (!issue.lastSeen) return false;
+    const lastSeenDate = new Date(issue.lastSeen);
+    if (Number.isNaN(lastSeenDate.getTime())) return false;
+    return lastSeenDate >= startDate && lastSeenDate <= endDate;
+  });
+  const totalEvents = filteredIssues.reduce((sum, i) => sum + i.count, 0);
+  const affectedUsers = filteredIssues.reduce((sum, i) => sum + (i.userCount ?? 0), 0);
+  return { filteredIssues, startDate, endDate, totalEvents, affectedUsers };
+}
+
+const TIMEFRAME_LABELS: Record<TimeframePreset, string> = {
+  "1h": "Last 1 hour",
+  "6h": "Last 6 hours",
+  "24h": "Last 24 hours",
+  "7d": "Last 7 days",
+  "30d": "Last 30 days",
+};
+
+interface ExportDropdownProps {
+  issues: SentryIssueSummary[];
+  loading: boolean;
+}
+
+function ExportDropdown({ issues, loading }: ExportDropdownProps) {
+  const [exportTimeframe, setExportTimeframe] = useState<TimeframePreset>("24h");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const copySuccessTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copySuccessTimeoutRef.current) {
+        clearTimeout(copySuccessTimeoutRef.current);
+        copySuccessTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowDropdown(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showDropdown]);
+
+  const handleExportDownload = () => {
+    const { filteredIssues, startDate, endDate, totalEvents, affectedUsers } =
+      filterIssuesByTimeframe(issues, exportTimeframe);
+    const exportData = createAdminErrorsExport(
+      filteredIssues,
+      { type: "preset", preset: exportTimeframe, startDate, endDate },
+      { totalEvents, uniqueIssues: filteredIssues.length, affectedUsers }
+    );
+    downloadErrorExport(exportData, `sentry-errors-${exportTimeframe}-${Date.now()}.json`);
+    setShowDropdown(false);
+  };
+
+  const handleExportCopy = async () => {
+    const { filteredIssues, startDate, endDate, totalEvents, affectedUsers } =
+      filterIssuesByTimeframe(issues, exportTimeframe);
+    const exportData = createAdminErrorsExport(
+      filteredIssues,
+      { type: "preset", preset: exportTimeframe, startDate, endDate },
+      { totalEvents, uniqueIssues: filteredIssues.length, affectedUsers }
+    );
+    const success = await copyErrorExportToClipboard(exportData);
+    if (success) {
+      setCopySuccess(true);
+      if (copySuccessTimeoutRef.current) clearTimeout(copySuccessTimeoutRef.current);
+      copySuccessTimeoutRef.current = setTimeout(() => {
+        copySuccessTimeoutRef.current = null;
+        setCopySuccess(false);
+      }, 2000);
+    }
+    setShowDropdown(false);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setShowDropdown(!showDropdown)}
+        disabled={loading || issues.length === 0}
+        className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <Download className="h-4 w-4" />
+        Export
+        <ChevronDown className="h-3 w-3" />
+      </button>
+
+      {showDropdown && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setShowDropdown(false)}
+            onKeyDown={(e) => e.key === "Escape" && setShowDropdown(false)}
+            role="presentation"
+          />
+          <div className="absolute right-0 mt-2 w-64 rounded-md border border-amber-200 bg-white shadow-lg z-20">
+            <div className="p-3 border-b border-amber-100">
+              <label className="block text-xs font-medium text-amber-700 mb-1.5">Timeframe</label>
+              <select
+                value={exportTimeframe}
+                onChange={(e) => setExportTimeframe(e.target.value as TimeframePreset)}
+                className="w-full rounded-md border border-amber-200 px-2 py-1.5 text-sm text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              >
+                {(Object.keys(TIMEFRAME_LABELS) as TimeframePreset[]).map((preset) => (
+                  <option key={preset} value={preset}>
+                    {TIMEFRAME_LABELS[preset]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="p-2 space-y-1">
+              <button
+                onClick={handleExportDownload}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-amber-900 hover:bg-amber-50 rounded-md"
+              >
+                <Download className="h-4 w-4" />
+                Download JSON
+              </button>
+              <button
+                onClick={handleExportCopy}
+                className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md ${
+                  copySuccess ? "text-green-700 bg-green-50" : "text-amber-900 hover:bg-amber-50"
+                }`}
+              >
+                {copySuccess ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    Copy to Clipboard
+                  </>
+                )}
+              </button>
+            </div>
+            <div className="px-3 py-2 bg-amber-50 border-t border-amber-100 rounded-b-md">
+              <p className="text-xs text-amber-600">
+                Export for Claude Code debugging. PII is redacted.
+              </p>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function ErrorsTab() {
   const [summary, setSummary] = useState<SentryErrorSummaryResponse["summary"] | null>(null);
   const [issues, setIssues] = useState<SentryIssueSummary[]>([]);
@@ -695,39 +851,6 @@ export function ErrorsTab() {
     },
     [setActiveTab]
   );
-
-  // Export state
-  const [exportTimeframe, setExportTimeframe] = useState<TimeframePreset>("24h");
-  const [showExportDropdown, setShowExportDropdown] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
-
-  // CLEANUP: Track timeout to clear on unmount
-  const copySuccessTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Clear timeout on unmount to prevent React warnings
-  useEffect(() => {
-    return () => {
-      if (copySuccessTimeoutRef.current) {
-        clearTimeout(copySuccessTimeoutRef.current);
-        copySuccessTimeoutRef.current = null;
-      }
-    };
-  }, []);
-
-  // ACCESSIBILITY: Global Escape key handler for closing export dropdown
-  // Note: onKeyDown on divs doesn't work because divs don't receive keyboard focus
-  useEffect(() => {
-    if (!showExportDropdown) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setShowExportDropdown(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showExportDropdown]);
 
   const trendDirection = useMemo(() => {
     if (!summary) return null;
@@ -794,69 +917,6 @@ export function ErrorsTab() {
     refresh();
   }, [refresh]);
 
-  // Export functions
-  const createExportData = () => {
-    const { startDate, endDate } = getTimeframeDates(exportTimeframe);
-
-    // Filter issues within the timeframe
-    // ROBUSTNESS: Validate date parsing to prevent invalid date comparisons
-    const filteredIssues = issues.filter((issue) => {
-      if (!issue.lastSeen) return false;
-      const lastSeenDate = new Date(issue.lastSeen);
-      if (Number.isNaN(lastSeenDate.getTime())) return false;
-      return lastSeenDate >= startDate && lastSeenDate <= endDate;
-    });
-
-    const totalEvents = filteredIssues.reduce((sum, i) => sum + i.count, 0);
-    const affectedUsers = filteredIssues.reduce((sum, i) => sum + (i.userCount ?? 0), 0);
-
-    return createAdminErrorsExport(
-      filteredIssues,
-      {
-        type: "preset",
-        preset: exportTimeframe,
-        startDate,
-        endDate,
-      },
-      {
-        totalEvents,
-        uniqueIssues: filteredIssues.length,
-        affectedUsers,
-      }
-    );
-  };
-
-  const handleExportDownload = () => {
-    const exportData = createExportData();
-    downloadErrorExport(exportData, `sentry-errors-${exportTimeframe}-${Date.now()}.json`);
-    setShowExportDropdown(false);
-  };
-
-  const handleExportCopy = async () => {
-    const exportData = createExportData();
-    const success = await copyErrorExportToClipboard(exportData);
-
-    if (success) {
-      setCopySuccess(true);
-
-      // Clear any existing timeout before setting a new one
-      if (copySuccessTimeoutRef.current) clearTimeout(copySuccessTimeoutRef.current);
-      copySuccessTimeoutRef.current = setTimeout(() => {
-        copySuccessTimeoutRef.current = null;
-        setCopySuccess(false);
-      }, 2000);
-    }
-    setShowExportDropdown(false);
-  };
-
-  const timeframeLabels: Record<TimeframePreset, string> = {
-    "1h": "Last 1 hour",
-    "6h": "Last 6 hours",
-    "24h": "Last 24 hours",
-    "7d": "Last 7 days",
-    "30d": "Last 30 days",
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -870,82 +930,7 @@ export function ErrorsTab() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* Export Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setShowExportDropdown(!showExportDropdown)}
-              disabled={loading || issues.length === 0}
-              className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Download className="h-4 w-4" />
-              Export
-              <ChevronDown className="h-3 w-3" />
-            </button>
-
-            {showExportDropdown && (
-              <>
-                {/* Backdrop to close dropdown - click or Escape to close */}
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setShowExportDropdown(false)}
-                  onKeyDown={(e) => e.key === "Escape" && setShowExportDropdown(false)}
-                  role="presentation"
-                />
-                <div className="absolute right-0 mt-2 w-64 rounded-md border border-amber-200 bg-white shadow-lg z-20">
-                  <div className="p-3 border-b border-amber-100">
-                    <label className="block text-xs font-medium text-amber-700 mb-1.5">
-                      Timeframe
-                    </label>
-                    <select
-                      value={exportTimeframe}
-                      onChange={(e) => setExportTimeframe(e.target.value as TimeframePreset)}
-                      className="w-full rounded-md border border-amber-200 px-2 py-1.5 text-sm text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    >
-                      {(Object.keys(timeframeLabels) as TimeframePreset[]).map((preset) => (
-                        <option key={preset} value={preset}>
-                          {timeframeLabels[preset]}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="p-2 space-y-1">
-                    <button
-                      onClick={handleExportDownload}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-amber-900 hover:bg-amber-50 rounded-md"
-                    >
-                      <Download className="h-4 w-4" />
-                      Download JSON
-                    </button>
-                    <button
-                      onClick={handleExportCopy}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md ${
-                        copySuccess
-                          ? "text-green-700 bg-green-50"
-                          : "text-amber-900 hover:bg-amber-50"
-                      }`}
-                    >
-                      {copySuccess ? (
-                        <>
-                          <Check className="h-4 w-4" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4" />
-                          Copy to Clipboard
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <div className="px-3 py-2 bg-amber-50 border-t border-amber-100 rounded-b-md">
-                    <p className="text-xs text-amber-600">
-                      Export for Claude Code debugging. PII is redacted.
-                    </p>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+          <ExportDropdown issues={issues} loading={loading} />
 
           <button
             onClick={refresh}
