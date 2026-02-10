@@ -469,6 +469,8 @@ invoked using the **Skill tool**.
 - `mcp-builder` → Use when creating MCP server integrations
 - `gh-fix-ci` → Use when GitHub Actions CI/CD fails
 - `markitdown` → Use when converting documents to Markdown
+- `task-next` → Use to see dependency-resolved next tasks from ROADMAP.md
+- `session-end` → Use at end of session (captures velocity metrics)
 
 **Priority Order:**
 

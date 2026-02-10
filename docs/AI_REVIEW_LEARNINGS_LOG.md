@@ -518,7 +518,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 1     | <10    | ✅     |
+| Reviews since last consolidation | 2     | <10    | ✅     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -671,6 +671,42 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #280: Qodo Evidence Deduplication in JSONL Debt Files (2026-02-10)
+
+**Source:** Qodo Code Suggestions **PR/Branch:**
+claude/analyze-repo-install-ceMkn **Suggestions:** 21 total across 2 rounds
+(Critical: 0, Major: 0, Minor: 13, Trivial: 1, Rejected: 7)
+
+**Patterns Identified:**
+
+1. [Duplicate evidence in JSONL]: The audit pipeline's normalize/aggregate steps
+   were producing duplicate `code_reference` + `description` pairs in evidence
+   arrays (3-5 copies per entry). Affected 28 entries across all 3 JSONL files.
+   - Root cause: Upstream aggregation script merges evidence without dedup
+   - Prevention: Created `scripts/debt/dedup-evidence.js` for batch cleanup;
+     consider adding dedup to the aggregation pipeline itself
+2. [Meaningless merged_from]: Records with `source_id:"unknown"` also had
+   `merged_from:["unknown"]` providing no provenance value
+   - Fix: Script removes these automatically
+
+**Resolution:**
+
+- Fixed: 14 items (all via dedup script — 84 total entries fixed across 3 files)
+- Deferred: 0
+- Rejected: 7 (R2: stale content_hash × 5, restore merged_from, schema change)
+
+**Key Learnings:**
+
+- Qodo found 14 instances but the script found 28 per file — always fix
+  systemically, not just the flagged instances
+- Evidence deduplication should ideally happen at aggregation time, not as
+  post-hoc cleanup
+- R2 false positive: Qodo flagged content_hash as stale after evidence edits,
+  but `generateContentHash()` uses file|line|title|description — NOT evidence.
+  Always verify hash computation before recomputing
 
 ---
 

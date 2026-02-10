@@ -497,6 +497,9 @@ npm audit fix
 | `node scripts/sync-claude-settings.js --import` | Claude settings sync       | Import global Claude Code settings from repo          |
 | `node scripts/sync-claude-settings.js --export` | Claude settings sync       | Export local settings to repo template                |
 | `node scripts/sync-claude-settings.js --diff`   | Claude settings sync       | Compare local vs repo settings                        |
+| `node scripts/tasks/resolve-dependencies.js`    | Dependency-aware task next | Kahn's topological sort on ROADMAP.md `[depends:]`    |
+| `node scripts/velocity/track-session.js`        | Velocity tracking          | Capture session completions to JSONL                  |
+| `node scripts/velocity/generate-report.js`      | Velocity report            | Rolling avg, trend, burn-down from JSONL              |
 
 ### Prettier (Code Formatting)
 
@@ -683,11 +686,11 @@ Configured in `.claude/settings.json`.
 
 **UserPromptSubmit Hooks:**
 
-| Hook                    | Action | Purpose                       |
-| ----------------------- | ------ | ----------------------------- |
-| analyze-user-request.js | Prompt | Check PRE-TASK triggers       |
-| session-end-reminder.js | Prompt | Detect session ending phrases |
-| plan-mode-suggestion.js | Prompt | Suggest Plan mode for complex |
+| Hook                    | Action | Purpose                                                          |
+| ----------------------- | ------ | ---------------------------------------------------------------- |
+| analyze-user-request.js | Prompt | Check PRE-TASK triggers (v2.0: tightened matching, stderr hints) |
+| session-end-reminder.js | Prompt | Detect session ending phrases                                    |
+| plan-mode-suggestion.js | Prompt | Suggest Plan mode for complex                                    |
 
 > **BLOCKING hooks**: firestore-write-block.js and test-mocking-validator.js
 > will prevent operations that violate security patterns. All other hooks
