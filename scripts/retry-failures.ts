@@ -117,7 +117,8 @@ try {
         : undefined;
     const queries = buildGeoQueries(streetClean, city, neighborhood);
 
-    for (const query of queries) {
+    for (let i = 0; i < queries.length; i++) {
+      const query = queries[i];
       try {
         const coords = await tryGeocode(query);
         if (coords) {
@@ -125,7 +126,7 @@ try {
           console.log(`   ✅ Success! Found: [${coords.lat}, ${coords.lon}]`);
           return true;
         }
-        console.log(`   🔸 No results for query ${queries.indexOf(query) + 1}/${queries.length}`);
+        console.log(`   🔸 No results for query ${i + 1}/${queries.length}`);
       } catch (error: unknown) {
         // Query intentionally omitted from logs to avoid exposing address data
         console.error(`   ⚠️ Error querying geocode API`);
@@ -153,6 +154,14 @@ try {
     const data = docSnap.data();
     if (!data || !data.address) {
       console.log(`[${index + 1}/${failures.length}] ⚠️  Skipped (No address in DB): ID ${docId}`);
+      continue;
+    }
+
+    // Guard malformed address values
+    if (typeof data.address !== "string" || data.address.length < 5) {
+      console.log(
+        `[${index + 1}/${failures.length}] ⚠️  Skipped (Invalid address type or too short): ID ${docId}`
+      );
       continue;
     }
 

@@ -396,6 +396,7 @@ function readDedupStats(finalItems) {
     for (const entry of logEntries) {
       try {
         const e = JSON.parse(entry);
+        if (!Number.isFinite(e.pass)) continue;
         const key = `pass_${e.pass}`;
         dedupBreakdown[key] = (dedupBreakdown[key] || 0) + 1;
       } catch {
@@ -445,9 +446,13 @@ function printIntakeReport({
   console.log("  INTAKE & DEDUP REPORT");
   console.log("═".repeat(60));
   console.log(`  📥 Input:     ${inputLines.length} findings from audit`);
-  console.log(
-    `  ✅ Ingested:  ${newItems.length} new items (${newItems[0]?.id} – ${newItems[newItems.length - 1]?.id})`
-  );
+  if (newItems.length > 0) {
+    console.log(
+      `  ✅ Ingested:  ${newItems.length} new items (${newItems[0]?.id} – ${newItems[newItems.length - 1]?.id})`
+    );
+  } else {
+    console.log(`  ✅ Ingested:  ${newItems.length} new items`);
+  }
   console.log(`  ⏭️  Hash dupes: ${duplicates.length} exact duplicates skipped`);
   console.log(`  ❌ Errors:    ${errors.length} validation failures`);
 

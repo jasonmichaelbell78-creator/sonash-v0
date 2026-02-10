@@ -208,6 +208,15 @@ function validateInput(parsed) {
     process.exit(1);
   }
 
+  // Validate line number if provided
+  if (parsed.line !== undefined) {
+    const lineNum = Number.parseInt(parsed.line, 10);
+    if (!Number.isFinite(lineNum) || lineNum < 0 || !Number.isInteger(lineNum)) {
+      console.error(`Error: --line must be a non-negative integer, got: ${parsed.line}`);
+      process.exit(1);
+    }
+  }
+
   return { type, effort };
 }
 
@@ -289,11 +298,27 @@ function rollbackDedupedFile(appendedLine) {
   try {
     const deduped = fs.readFileSync(DEDUPED_FILE, "utf8");
     const lines = deduped.split("\n");
+
+    // Guard for empty files
+    if (lines.length === 0) {
+      console.warn("  ⚠️ Rollback skipped: deduped file is empty");
+      return;
+    }
+
     if (lines.length >= 2 && lines[lines.length - 1] === "") {
       lines.pop();
     }
-    const lastLine = lines[lines.length - 1];
-    if (lastLine !== appendedLine.replace(/\n$/, "")) {
+
+    if (lines.length === 0) {
+      console.warn("  ⚠️ Rollback skipped: deduped file is empty after removing trailing newline");
+      return;
+    }
+
+    // Normalize lines for comparison - strip \r and trimEnd
+    const lastLine = lines[lines.length - 1].replace(/\r/g, "").trimEnd();
+    const expectedLine = appendedLine.replace(/\n$/, "").replace(/\r/g, "").trimEnd();
+
+    if (lastLine !== expectedLine) {
       console.warn("  ⚠️ Rollback skipped: last line does not match the appended entry");
       return;
     }

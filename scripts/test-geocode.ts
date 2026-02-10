@@ -11,7 +11,7 @@ const ADDRESS = "123 Main St, Nashville, TN";
 
 try {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(ADDRESS)}&key=${API_KEY}`;
-  console.log(`Testing URL: ${url.replace(new RegExp(API_KEY, "g"), "***")}`);
+  console.log(`Testing URL: ${url.replaceAll(API_KEY, "***")}`);
 
   const response = await fetch(url);
   const data = await response.json();

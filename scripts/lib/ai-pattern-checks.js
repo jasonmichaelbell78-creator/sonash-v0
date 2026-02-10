@@ -124,7 +124,8 @@ function isContainedRealPath(filePath) {
     const relReal = path.relative(cwd, real);
     return !isPathTraversal(relReal);
   } catch (error) {
-    if (error.code === "ENOENT") {
+    const code = error && typeof error === "object" && "code" in error ? error.code : null;
+    if (code === "ENOENT") {
       return false;
     }
     throw error;

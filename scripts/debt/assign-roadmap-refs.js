@@ -208,7 +208,7 @@ function atomicRename(tmpPath, destPath) {
   try {
     fs.renameSync(tmpPath, destPath);
   } catch (error) {
-    if (error.code === "EPERM" || error.code === "EEXIST") {
+    if (error.code === "EPERM" || error.code === "EEXIST" || error.code === "EACCES") {
       try {
         fs.rmSync(destPath, { force: true });
         fs.renameSync(tmpPath, destPath);
@@ -221,6 +221,11 @@ function atomicRename(tmpPath, destPath) {
         throw fallbackErr;
       }
     } else {
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        // ignore cleanup errors
+      }
       throw error;
     }
   }

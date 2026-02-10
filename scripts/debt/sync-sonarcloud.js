@@ -601,6 +601,15 @@ function writeNewItems(newItems) {
   const newLinesStr = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
   fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
 
+  // Capture file size before appending for efficient rollback
+  let dedupedSizeBeforeAppend = 0;
+  try {
+    const stats = fs.statSync(DEDUPED_FILE);
+    dedupedSizeBeforeAppend = stats.size;
+  } catch {
+    // File doesn't exist yet, size = 0
+  }
+
   try {
     fs.appendFileSync(DEDUPED_FILE, newLinesStr);
   } catch (error) {
@@ -616,13 +625,8 @@ function writeNewItems(newItems) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error(`❌ Failed to write to MASTER_DEBT.jsonl: ${msg}`);
     try {
-      const content = fs.readFileSync(DEDUPED_FILE, "utf8");
-      if (content.endsWith(newLinesStr)) {
-        fs.writeFileSync(DEDUPED_FILE, content.slice(0, -newLinesStr.length));
-        console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
-      } else {
-        console.warn("  ⚠️ Skip rollback: deduped.jsonl changed since append");
-      }
+      fs.truncateSync(DEDUPED_FILE, dedupedSizeBeforeAppend);
+      console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
     } catch {
       // best-effort rollback only
     }

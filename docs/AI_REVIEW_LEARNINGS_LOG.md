@@ -322,7 +322,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 5 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 6 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
@@ -671,6 +671,38 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #275: PR #355 R2 — Qodo Round 2 Compliance + Suggestions (2026-02-10)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions **PR/Branch:**
+claude/branch-workflow-question-cgHVF (PR #355) **Suggestions:** 17 total
+(Critical: 1, Major: 4, Minor: 7, Trivial: 2, Rejected: 3)
+
+**Patterns Identified:**
+
+1. [const reassignment]: Destructured const then reassigned — runtime TypeError
+   - Root cause: Wave 2 TLA conversion preserved const destructuring
+   - Prevention: TypeScript strict mode catches this; run tsc before push
+2. [TLA false positive persistence]: Same TLA false positive re-flagged
+   - Root cause: Qodo doesn't detect Node v22 ESM auto-detection
+   - Prevention: Document in rejection notes for future rounds
+3. [Input validation at boundaries]: CLI args need validation after parseInt
+   - Root cause: parseInt returns NaN for invalid input
+   - Prevention: Always validate parsed numeric args with Number.isFinite
+
+**Resolution:**
+
+- Fixed: 14 items
+- Deferred: 0 items
+- Rejected: 3 items (TLA false positives — all files use import statements)
+
+**Key Learnings:**
+
+- const vs let destructuring is a common bug when refactoring loops
+- Qodo re-flags rejected items if not explicitly marked in PR comments
+- File truncation is more robust than read-compare-write for rollbacks
 
 ---
 
