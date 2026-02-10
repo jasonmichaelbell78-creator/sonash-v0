@@ -68,7 +68,15 @@ try {
       // Checking `MeetingMap` usage would be ideal, but usually it looks up by the string displayed.
       // Let's assume keys are "123 Main St, Nashville, TN"
 
-      if (data.address && data.coordinates && data.coordinates.lat && data.coordinates.lng) {
+      const coords = data.coordinates;
+      const hasValidCoords =
+        coords &&
+        typeof coords.lat === "number" &&
+        typeof coords.lng === "number" &&
+        Number.isFinite(coords.lat) &&
+        Number.isFinite(coords.lng);
+
+      if (data.address && hasValidCoords) {
         // Construct the likely lookup keys.
         // 1. Full combo
         const fullAddr = `${data.address}, ${data.city || "Nashville"}, ${data.state || "TN"}`;
@@ -88,16 +96,16 @@ try {
           // E.g. if the DB has newer verified data vs old cache.
           // Since we just ran enrichment, DB is truth.
           const oldLat = cache[fullAddr].lat;
-          const newLat = data.coordinates.lat;
+          const newLat = coords.lat;
 
           if (Math.abs(oldLat - newLat) > 0.0001) {
-            cache[fullAddr] = data.coordinates;
+            cache[fullAddr] = coords;
             addedCount++; // Count as update
           } else {
             skippedCount++;
           }
         } else {
-          cache[fullAddr] = data.coordinates;
+          cache[fullAddr] = coords;
           addedCount++;
         }
       }

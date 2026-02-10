@@ -221,11 +221,6 @@ function atomicRename(tmpPath, destPath) {
         throw fallbackErr;
       }
     } else {
-      try {
-        fs.unlinkSync(tmpPath);
-      } catch {
-        // ignore cleanup errors
-      }
       throw error;
     }
   }

@@ -210,6 +210,11 @@ function validateInput(parsed) {
 
   // Validate line number if provided
   if (parsed.line !== undefined) {
+    const raw = String(parsed.line).trim();
+    if (!/^\d+$/.test(raw)) {
+      console.error(`Error: --line must be a non-negative integer, got: ${parsed.line}`);
+      process.exit(1);
+    }
     const lineNum = Number.parseInt(parsed.line, 10);
     if (!Number.isFinite(lineNum) || lineNum < 0 || !Number.isInteger(lineNum)) {
       console.error(`Error: --line must be a non-negative integer, got: ${parsed.line}`);

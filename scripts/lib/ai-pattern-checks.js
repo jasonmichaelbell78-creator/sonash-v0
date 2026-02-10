@@ -123,12 +123,8 @@ function isContainedRealPath(filePath) {
     const real = realpathSync(filePath);
     const relReal = path.relative(cwd, real);
     return !isPathTraversal(relReal);
-  } catch (error) {
-    const code = error && typeof error === "object" && "code" in error ? error.code : null;
-    if (code === "ENOENT") {
-      return false;
-    }
-    throw error;
+  } catch {
+    return false;
   }
 }
 

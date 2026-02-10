@@ -158,7 +158,8 @@ try {
     }
 
     // Guard malformed address values
-    if (typeof data.address !== "string" || data.address.length < 5) {
+    const address = typeof data.address === "string" ? data.address.trim() : "";
+    if (address.length < 5) {
       console.log(
         `[${index + 1}/${failures.length}] ⚠️  Skipped (Invalid address type or too short): ID ${docId}`
       );

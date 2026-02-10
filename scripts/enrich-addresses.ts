@@ -158,7 +158,7 @@ try {
           const lat = Number.parseFloat(result.lat);
           const lon = Number.parseFloat(result.lon);
 
-          if (newZip) {
+          if (newZip && Number.isFinite(lat) && Number.isFinite(lon)) {
             // Update Firestore
             await doc.ref.update({
               city: newCity,

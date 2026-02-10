@@ -583,7 +583,7 @@ function collectUrlsFromFiles(filesToCheck) {
 async function checkAllUrls(allUrls, uniqueUrls) {
   const results = [];
   let checked = 0;
-  let failed = 0;
+  let failedUrls = 0;
 
   for (const url of uniqueUrls) {
     checked++;
@@ -606,8 +606,9 @@ async function checkAllUrls(allUrls, uniqueUrls) {
         redirect: checkResult.redirect,
         error: checkResult.error,
       });
-      if (!checkResult.ok) failed++;
     }
+
+    if (!checkResult.ok) failedUrls++;
 
     if (!checkResult.ok && !QUIET) {
       const errorSuffix = checkResult.error ? ` (${checkResult.error})` : "";
@@ -615,7 +616,7 @@ async function checkAllUrls(allUrls, uniqueUrls) {
     }
   }
 
-  return { results, failed };
+  return { results, failed: failedUrls };
 }
 
 /**

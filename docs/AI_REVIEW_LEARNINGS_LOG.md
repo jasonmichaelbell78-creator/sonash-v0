@@ -322,7 +322,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 7 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After 10 more reviews
 
 ### When to Consolidate
@@ -671,6 +671,40 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #276: PR #355 R3 — Qodo Round 3 Robustness + Coordinates (2026-02-10)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions **PR/Branch:**
+claude/branch-workflow-question-cgHVF (PR #355) **Suggestions:** 14 total
+(Critical: 0, Major: 5, Minor: 7, Trivial: 0, Rejected: 2)
+
+**Patterns Identified:**
+
+1. [Coordinate validation]: parseFloat can return NaN; always guard with
+   Number.isFinite before writing to Firestore
+   - Root cause: No validation between parse and write
+   - Prevention: Always validate parsed numbers before DB operations
+2. [Falsy coordinate check]: coordinates.lat && coordinates.lng fails for 0
+   - Root cause: Using truthy check on numeric values
+   - Prevention: Use typeof === "number" && Number.isFinite
+3. [Fail-closed security]: isContainedRealPath should return false on any error,
+   not just ENOENT
+   - Root cause: R2 fix was too specific (ENOENT-only)
+   - Prevention: Security functions should always fail-closed
+
+**Resolution:**
+
+- Fixed: 12 items
+- Deferred: 0 items
+- Rejected: 2 items (TLA false positive, placeholder email not real PII)
+
+**Key Learnings:**
+
+- Coordinate validation is a recurring pattern across geocoding scripts
+- Security checkers should fail-closed (return false) not fail-open (throw)
+- File truncation rollback needs both files for true atomicity
 
 ---
 

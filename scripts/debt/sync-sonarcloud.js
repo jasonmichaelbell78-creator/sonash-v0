@@ -619,6 +619,12 @@ function writeNewItems(newItems) {
   }
 
   console.log("📝 Writing new items to MASTER_DEBT.jsonl...");
+  let masterSizeBeforeAppend = 0;
+  try {
+    masterSizeBeforeAppend = fs.statSync(MASTER_FILE).size;
+  } catch {
+    // File doesn't exist yet, size = 0
+  }
   try {
     fs.appendFileSync(MASTER_FILE, newLinesStr);
   } catch (error) {
@@ -626,6 +632,7 @@ function writeNewItems(newItems) {
     console.error(`❌ Failed to write to MASTER_DEBT.jsonl: ${msg}`);
     try {
       fs.truncateSync(DEDUPED_FILE, dedupedSizeBeforeAppend);
+      fs.truncateSync(MASTER_FILE, masterSizeBeforeAppend);
       console.warn("  ⚠️ Rolled back deduped.jsonl to maintain consistency");
     } catch {
       // best-effort rollback only

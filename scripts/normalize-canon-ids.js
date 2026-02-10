@@ -363,7 +363,7 @@ function writeIdMappingFile(directory, globalCounter, idMapping, dryRun) {
     writeFileSync(mappingPath, JSON.stringify(mappingContent, null, 2));
     console.log(`\n✓ ID mapping saved to ${mappingPath}`);
   } catch (err) {
-    console.error(`Error writing ID mapping: ${err.message}`);
+    console.error(`Error writing ID mapping: ${err instanceof Error ? err.message : String(err)}`);
   }
 }
 

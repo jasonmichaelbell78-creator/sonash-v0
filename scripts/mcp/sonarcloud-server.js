@@ -415,7 +415,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     if (!handler) {
       throw new Error(`Unknown tool: ${name}`);
     }
-    return await handler(args);
+    return await handler(args || {});
   } catch (error) {
     return {
       content: [
