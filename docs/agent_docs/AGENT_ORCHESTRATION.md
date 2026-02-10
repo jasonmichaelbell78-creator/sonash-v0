@@ -6,8 +6,10 @@
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
-**Purpose:** Detailed guidance for parallelizing agents, forming teams, and
-managing multi-agent coordination. Loaded on-demand when spawning agents.
+## Purpose
+
+Detailed guidance for parallelizing agents, forming teams, and managing
+multi-agent coordination. Loaded on-demand when spawning agents.
 
 **Source:** Extracted from claude.md Sections 6.2-6.7 (v4.2)
 
@@ -206,3 +208,9 @@ If a team approaches its token budget, the lead should:
 - Session is already past 50% context usage (team overhead risks compaction)
 - Simple bug fixes, even across multiple files
 - Hook/script development (shell-based, no team benefit)
+
+## Version History
+
+| Version | Date       | Change                                  |
+| ------- | ---------- | --------------------------------------- |
+| 1.0     | 2026-02-10 | Extracted from claude.md v4.2 S6.2-S6.7 |

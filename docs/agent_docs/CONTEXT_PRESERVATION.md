@@ -6,8 +6,10 @@
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
-**Purpose:** Detailed guidance for preventing loss of important decisions and
-state during context compaction. Loaded on-demand by compaction hooks.
+## Purpose
+
+Detailed guidance for preventing loss of important decisions and state during
+context compaction. Loaded on-demand by compaction hooks.
 
 **Source:** Extracted from claude.md Section 7 (v4.2)
 
@@ -115,3 +117,9 @@ separate context window:
   status).
 - **Budget monitoring:** If total team token usage exceeds 80% of budget, lead
   should proactively wind down the team to prevent mid-work compaction.
+
+## Version History
+
+| Version | Date       | Change                           |
+| ------- | ---------- | -------------------------------- |
+| 1.0     | 2026-02-10 | Extracted from claude.md v4.2 S7 |

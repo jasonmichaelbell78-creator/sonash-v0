@@ -32,7 +32,15 @@ const ROADMAP_PATH = path.join(PROJECT_ROOT, "ROADMAP.md");
  * Parse ROADMAP.md and extract task items with their status and dependencies
  */
 function parseTasks() {
-  const content = fs.readFileSync(ROADMAP_PATH, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(ROADMAP_PATH, "utf8");
+  } catch (err) {
+    process.stderr.write(
+      `Error reading ROADMAP.md: ${err instanceof Error ? err.message : String(err)}\n`
+    );
+    return new Map();
+  }
   const lines = content.split("\n");
   const tasks = new Map(); // id -> { id, title, completed, depends, track, line }
   let currentTrack = "";
@@ -50,8 +58,9 @@ function parseTasks() {
     // Match task items: - [ ] **B3:** Description [depends: B1, B2]
     // or: - [x] **B3:** Description
     // Also handles CANON-XXXX and DEBT-XXXX
+    // Note: Uses {0,10} and {1,500} bounds to prevent regex DoS (SonarCloud S5852)
     const taskMatch = line.match(
-      /^[ \t]*-\s*\[([ x])\]\s*\*\*([A-Z][A-Z0-9]*(?:-\d+)?):?\*\*\s*(.+)/i
+      /^[ \t]{0,10}-\s{0,5}\[([ x])\]\s{0,5}\*\*([A-Z][A-Z0-9]{0,20}(?:-\d{1,6})?):?\*\*\s{0,5}(.{1,500})/i
     );
     if (taskMatch) {
       const completed = taskMatch[1] === "x";
@@ -60,14 +69,14 @@ function parseTasks() {
 
       // Extract [depends: ...] annotation
       const depends = [];
-      const depMatch = description.match(/\[depends?:\s*([^\]]+)\]/i);
+      const depMatch = description.match(/\[depends?:\s{0,5}([^\]]{1,200})\]/i);
       if (depMatch) {
         const depIds = depMatch[1].split(/[,\s]+/).filter(Boolean);
         for (const dep of depIds) {
           depends.push(dep.toUpperCase().trim());
         }
         // Remove the annotation from description
-        description = description.replace(/\s*\[depends?:\s*[^\]]+\]/i, "").trim();
+        description = description.replace(/\s{0,5}\[depends?:\s{0,5}[^\]]{1,200}\]/i, "").trim();
       }
 
       tasks.set(id, {

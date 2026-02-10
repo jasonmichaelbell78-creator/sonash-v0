@@ -27,8 +27,17 @@ function loadEntries() {
     return [];
   }
 
-  return fs
-    .readFileSync(VELOCITY_LOG, "utf8")
+  let raw;
+  try {
+    raw = fs.readFileSync(VELOCITY_LOG, "utf8");
+  } catch (err) {
+    process.stderr.write(
+      `Warning: Could not read velocity log: ${err instanceof Error ? err.message : String(err)}\n`
+    );
+    return [];
+  }
+
+  return raw
     .trim()
     .split("\n")
     .filter(Boolean)
@@ -52,7 +61,10 @@ function countRemainingItems() {
       remaining: unchecked ? unchecked.length : 0,
       completed: checked ? checked.length : 0,
     };
-  } catch {
+  } catch (err) {
+    process.stderr.write(
+      `Warning: Could not read ROADMAP.md: ${err instanceof Error ? err.message : String(err)}\n`
+    );
     return { remaining: 0, completed: 0 };
   }
 }

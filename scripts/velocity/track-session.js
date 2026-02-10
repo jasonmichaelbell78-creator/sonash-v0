@@ -38,8 +38,11 @@ function getSessionNumber() {
     if (match) {
       return parseInt(match[1], 10);
     }
-  } catch {
-    // Fall through
+  } catch (err) {
+    // SESSION_CONTEXT.md may not exist — fall through to return null
+    process.stderr.write(
+      `Note: Could not read SESSION_CONTEXT.md: ${err instanceof Error ? err.message : String(err)}\n`
+    );
   }
 
   return null;
@@ -55,15 +58,21 @@ function getCompletedItems() {
       encoding: "utf8",
       timeout: 10000,
     });
-  } catch {
+  } catch (err) {
     // If HEAD~1 doesn't exist or diff fails, try against staged
+    process.stderr.write(
+      `Note: git diff HEAD~1 failed, trying staged: ${err instanceof Error ? err.message : String(err)}\n`
+    );
     try {
       diff = execSync("git diff --cached -- ROADMAP.md", {
         cwd: PROJECT_ROOT,
         encoding: "utf8",
         timeout: 10000,
       });
-    } catch {
+    } catch (err2) {
+      process.stderr.write(
+        `Note: git diff --cached also failed: ${err2 instanceof Error ? err2.message : String(err2)}\n`
+      );
       return { items: [], tracks: [] };
     }
   }
@@ -110,8 +119,10 @@ function getSprintName() {
     if (milestoneMatch) {
       return milestoneMatch[0].trim();
     }
-  } catch {
-    // Fall through
+  } catch (err) {
+    process.stderr.write(
+      `Note: Could not read ROADMAP.md for sprint name: ${err instanceof Error ? err.message : String(err)}\n`
+    );
   }
   return "unknown";
 }
@@ -194,8 +205,10 @@ function printRollingAverage() {
     }
 
     console.log(`  Rolling avg: ${avg} items/session (last ${recent.length} sessions, ${trend})`);
-  } catch {
-    // Silently skip if log is corrupted
+  } catch (err) {
+    process.stderr.write(
+      `Warning: Could not compute rolling average: ${err instanceof Error ? err.message : String(err)}\n`
+    );
   }
 }
 

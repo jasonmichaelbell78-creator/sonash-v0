@@ -59,9 +59,11 @@ function matchesWord(pattern) {
   return regex.test(requestLower);
 }
 
-// Helper for multi-word phrase matching
+// Helper for multi-word phrase matching with word boundaries
 function matchesPhrase(phrase) {
-  return requestLower.includes(phrase.toLowerCase());
+  const escaped = phrase.toLowerCase().replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+  const regex = new RegExp(`(^|[^a-z0-9])(${escaped})([^a-z0-9]|$)`, "i");
+  return regex.test(requestLower);
 }
 
 // Output to stdout (context-consuming) for high-confidence matches
@@ -71,10 +73,9 @@ function directiveStdout(msg) {
 }
 
 // Output to stderr (user-visible only) for low-confidence matches
+// Does NOT exit — allows lower-priority categories to still be checked
 function suggestStderr(msg) {
   process.stderr.write(msg + "\n");
-  console.log("ok");
-  process.exit(0);
 }
 
 // Priority 1: SECURITY (HIGHEST)
@@ -102,6 +103,7 @@ for (const pattern of securityStrong) {
 }
 // Low confidence: broad words that could be security but often aren't
 const securityWeak = ["auth", "token", "secret", "permission"];
+let hasSecurityWeakMatch = false;
 for (const pattern of securityWeak) {
   if (matchesWord(pattern)) {
     // Only trigger if combined with security-adjacent context
@@ -114,8 +116,11 @@ for (const pattern of securityWeak) {
     ) {
       directiveStdout("PRE-TASK: MUST use security-auditor agent");
     }
-    suggestStderr("Hint: If this is security-related, consider using security-auditor agent");
+    hasSecurityWeakMatch = true;
   }
+}
+if (hasSecurityWeakMatch) {
+  suggestStderr("Hint: If this is security-related, consider using security-auditor agent");
 }
 
 // Priority 2: Bug/Error/Debugging

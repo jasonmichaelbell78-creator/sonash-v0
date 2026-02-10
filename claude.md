@@ -1,6 +1,16 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 5.0 **Last Updated:** 2026-02-10
+<!-- prettier-ignore-start -->
+**Document Version:** 5.1
+**Last Updated:** 2026-02-10
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
+
+## Purpose
+
+Core rules and constraints loaded on every AI turn. Kept minimal (~120 lines) to
+reduce token waste. Situational guidance lives in on-demand reference docs (see
+Section 7).
 
 ---
 
@@ -116,3 +126,11 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 **Before refactoring**: Check `SESSION_CONTEXT.md` and `ROADMAP.md` first.
 **Before adding features**: Align with ROADMAP.md vision (Privacy-First,
 Evidence-Based).
+
+## Version History
+
+| Version | Date       | Change                                            |
+| ------- | ---------- | ------------------------------------------------- |
+| 5.1     | 2026-02-10 | Add Purpose/Version History for CI doc lint       |
+| 5.0     | 2026-02-10 | 77% reduction: 497→118 lines, extract to ref docs |
+| 4.2     | 2026-02-09 | Agent teams, compaction safety layers             |
