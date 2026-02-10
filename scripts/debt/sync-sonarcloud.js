@@ -519,6 +519,92 @@ async function resolveStaleItems(options) {
   return { resolved: resolvedCount };
 }
 
+// Resolve configuration from CLI args, env vars, and sonar-project.properties
+function resolveConfig(parsed) {
+  const sonarProps = readSonarProperties();
+  const token = process.env.SONAR_TOKEN;
+  const org = parsed.org || process.env.SONAR_ORG || sonarProps.org;
+  const projectInput =
+    parsed.project || process.env.SONAR_PROJECT || sonarProps.project || "sonash";
+  const project =
+    org && projectInput.startsWith(`${org}_`) ? projectInput.slice(org.length + 1) : projectInput;
+
+  if (!token) {
+    console.error("Error: SONAR_TOKEN environment variable is required");
+    console.error("  Set it in .env.local or export SONAR_TOKEN=your_token");
+    process.exit(1);
+  }
+
+  if (!org) {
+    console.error("Error: SonarCloud organization is required");
+    console.error("  Use --org flag or set SONAR_ORG environment variable");
+    process.exit(1);
+  }
+
+  return { token, org, project };
+}
+
+// Regenerate views (shared helper)
+function regenerateViews(label = "") {
+  console.log(`🔄 Regenerating views${label}...`);
+  try {
+    execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
+      stdio: "inherit",
+    });
+  } catch {
+    console.warn(
+      "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
+    );
+  }
+}
+
+// Deduplicate fetched issues against existing items, assign IDs
+function deduplicateAndAssignIds(issues, existingItems) {
+  const existingSonarKeys = new Set(
+    existingItems.filter((item) => item.sonar_key).map((item) => item.sonar_key)
+  );
+  const existingHashes = new Set(existingItems.map((item) => item.content_hash));
+
+  const newItems = [];
+  const alreadyTracked = [];
+  const contentDuplicates = [];
+  let nextId = getNextDebtId(existingItems);
+
+  for (const issue of issues) {
+    if (existingSonarKeys.has(issue.key)) {
+      alreadyTracked.push(issue.key);
+      continue;
+    }
+
+    const converted = convertIssue(issue);
+    converted.content_hash = generateContentHash(converted);
+
+    if (existingHashes.has(converted.content_hash)) {
+      contentDuplicates.push(converted.title.substring(0, 40));
+      continue;
+    }
+
+    converted.id = `DEBT-${String(nextId).padStart(4, "0")}`;
+    nextId++;
+    newItems.push(converted);
+    existingHashes.add(converted.content_hash);
+  }
+
+  return { newItems, alreadyTracked, contentDuplicates };
+}
+
+// Write new items to both deduped and master files
+function writeNewItems(newItems) {
+  const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
+  console.log("\n📝 Writing new items to raw/deduped.jsonl...");
+  const newLinesStr = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
+  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
+  fs.appendFileSync(DEDUPED_FILE, newLinesStr);
+
+  console.log("📝 Writing new items to MASTER_DEBT.jsonl...");
+  fs.appendFileSync(MASTER_FILE, newLinesStr);
+}
+
 // Main function
 async function main() {
   const args = process.argv.slice(2);
@@ -547,27 +633,7 @@ Environment variables:
   }
 
   const parsed = parseArgs(args);
-
-  // Get configuration: CLI args > env vars > sonar-project.properties > hardcoded
-  const sonarProps = readSonarProperties();
-  const token = process.env.SONAR_TOKEN;
-  const org = parsed.org || process.env.SONAR_ORG || sonarProps.org;
-  const projectInput =
-    parsed.project || process.env.SONAR_PROJECT || sonarProps.project || "sonash";
-  const project =
-    org && projectInput.startsWith(`${org}_`) ? projectInput.slice(org.length + 1) : projectInput;
-
-  if (!token) {
-    console.error("Error: SONAR_TOKEN environment variable is required");
-    console.error("  Set it in .env.local or export SONAR_TOKEN=your_token");
-    process.exit(1);
-  }
-
-  if (!org) {
-    console.error("Error: SonarCloud organization is required");
-    console.error("  Use --org flag or set SONAR_ORG environment variable");
-    process.exit(1);
-  }
+  const { token, org, project } = resolveConfig(parsed);
 
   const resolveOnly = parsed.resolve && !parsed.full;
   const doResolve = parsed.resolve || parsed.full;
@@ -581,25 +647,12 @@ Environment variables:
       dryRun: parsed.dryRun,
       force: parsed.force,
     });
-
-    if (result.resolved > 0 && !parsed.dryRun) {
-      console.log("🔄 Regenerating views...");
-      try {
-        execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
-          stdio: "inherit",
-        });
-      } catch {
-        console.warn(
-          "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
-        );
-      }
-    }
+    if (result.resolved > 0 && !parsed.dryRun) regenerateViews();
     process.exit(0);
   }
 
   console.log("🔄 Sync: Fetching from SonarCloud...\n");
 
-  // Fetch issues from SonarCloud
   let issues;
   try {
     issues = await fetchSonarCloudIssues({
@@ -622,42 +675,11 @@ Environment variables:
     process.exit(0);
   }
 
-  // Load existing items
   const existingItems = loadMasterDebt();
-  const existingSonarKeys = new Set(
-    existingItems.filter((item) => item.sonar_key).map((item) => item.sonar_key)
+  const { newItems, alreadyTracked, contentDuplicates } = deduplicateAndAssignIds(
+    issues,
+    existingItems
   );
-  const existingHashes = new Set(existingItems.map((item) => item.content_hash));
-
-  // Convert and check for duplicates
-  const newItems = [];
-  const alreadyTracked = [];
-  const contentDuplicates = [];
-  let nextId = getNextDebtId(existingItems);
-
-  for (const issue of issues) {
-    // Check if already tracked by SonarCloud key
-    if (existingSonarKeys.has(issue.key)) {
-      alreadyTracked.push(issue.key);
-      continue;
-    }
-
-    const converted = convertIssue(issue);
-    converted.content_hash = generateContentHash(converted);
-
-    // Check for content duplicate
-    if (existingHashes.has(converted.content_hash)) {
-      contentDuplicates.push(converted.title.substring(0, 40));
-      continue;
-    }
-
-    // Assign DEBT ID
-    converted.id = `DEBT-${String(nextId).padStart(4, "0")}`;
-    nextId++;
-
-    newItems.push(converted);
-    existingHashes.add(converted.content_hash);
-  }
 
   // Report results
   console.log("\n📊 Sync Results:\n");
@@ -685,7 +707,6 @@ Environment variables:
     process.exit(0);
   }
 
-  // Confirm before writing
   if (!parsed.force) {
     const confirmed = await confirm(`\nAdd ${newItems.length} new items to MASTER_DEBT.jsonl?`);
     if (!confirmed) {
@@ -694,19 +715,8 @@ Environment variables:
     }
   }
 
-  // Write to raw/deduped.jsonl FIRST (source of truth for generate-views.js)
-  const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
-  console.log("\n📝 Writing new items to raw/deduped.jsonl...");
-  const newLines = newItems.map((item) => JSON.stringify(item));
-  const newLinesStr = newLines.join("\n") + "\n";
-  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
-  fs.appendFileSync(DEDUPED_FILE, newLinesStr);
+  writeNewItems(newItems);
 
-  // Also write to MASTER_DEBT.jsonl (derived file, regenerated by generate-views.js)
-  console.log("📝 Writing new items to MASTER_DEBT.jsonl...");
-  fs.appendFileSync(MASTER_FILE, newLinesStr);
-
-  // Log intake activity
   logIntake({
     action: "sync-sonarcloud",
     project: `${org}_${project}`,
@@ -718,20 +728,8 @@ Environment variables:
     last_id: newItems[newItems.length - 1]?.id,
   });
 
-  // Regenerate views
-  console.log("🔄 Regenerating views...");
-  try {
-    // Use execFileSync with absolute path for robustness
-    execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
-      stdio: "inherit",
-    });
-  } catch {
-    console.warn(
-      "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
-    );
-  }
+  regenerateViews();
 
-  // Summary
   console.log("\n✅ Sync complete!");
   console.log(
     `  📈 Added ${newItems.length} new items (${newItems[0]?.id} - ${newItems[newItems.length - 1]?.id})`
@@ -748,19 +746,7 @@ Environment variables:
       dryRun: parsed.dryRun,
       force: parsed.force,
     });
-
-    if (result.resolved > 0 && !parsed.dryRun) {
-      console.log("🔄 Regenerating views (post-resolve)...");
-      try {
-        execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
-          stdio: "inherit",
-        });
-      } catch {
-        console.warn(
-          "  ⚠️ Failed to regenerate views. Run manually: node scripts/debt/generate-views.js"
-        );
-      }
-    }
+    if (result.resolved > 0 && !parsed.dryRun) regenerateViews(" (post-resolve)");
   }
 }
 

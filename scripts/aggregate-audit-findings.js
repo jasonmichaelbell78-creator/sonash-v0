@@ -1441,27 +1441,14 @@ function printSummary(stats, masterList, severityCounts, bucketCounts, crossRefS
 }
 
 /**
- * Main aggregation function
+ * Parse all source files and collect raw findings (Phase 1)
  */
-function aggregate() {
-  console.log("=== Master Issue Aggregation ===\n");
-
-  const allFindings = [];
-  const stats = {
-    singleSession: 0,
-    canon: 0,
-    backlog: 0,
-    auditBacklog: 0,
-    total: 0,
-  };
-
-  // Phase 1: Parse all sources
+function parseAllSources(allFindings, stats) {
   console.log("Phase 1: Parsing all sources...");
 
   parseSingleSessionAudits(allFindings, stats);
   parseCanonFiles(allFindings, stats);
 
-  // Parse REFACTOR_BACKLOG.md
   const backlogItems = parseMarkdownBacklog(CONFIG.refactorBacklog);
   console.log(`  - REFACTOR_BACKLOG.md: ${backlogItems.length} items`);
   for (const item of backlogItems) {
@@ -1469,7 +1456,6 @@ function aggregate() {
     stats.backlog++;
   }
 
-  // Parse AUDIT_FINDINGS_BACKLOG.md
   const auditBacklogItems = parseAuditFindingsBacklog(CONFIG.auditBacklog);
   console.log(`  - AUDIT_FINDINGS_BACKLOG.md: ${auditBacklogItems.length} items`);
   for (const item of auditBacklogItems) {
@@ -1479,42 +1465,43 @@ function aggregate() {
 
   stats.total = allFindings.length;
   console.log(`\nTotal raw findings: ${stats.total}`);
+}
 
-  // Ensure output directory exists before writing files
+/**
+ * Write JSONL helper
+ */
+function writeJsonl(filePath, items) {
+  writeFileSync(filePath, items.map((f) => JSON.stringify(f)).join("\n"));
+}
+
+/**
+ * Deduplicate, cross-reference, and write intermediate files (Phases 2-3.5)
+ */
+function deduplicateAndCrossReference(allFindings, stats) {
   if (!existsSync(CONFIG.outputDir)) {
     mkdirSync(CONFIG.outputDir, { recursive: true });
     console.log(`  Created output directory: ${CONFIG.outputDir}`);
   }
 
-  // Write raw findings
-  const rawFindingsPath = join(CONFIG.outputDir, "raw-findings.jsonl");
-  writeFileSync(rawFindingsPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
-  console.log(`  Wrote: ${rawFindingsPath}`);
+  writeJsonl(join(CONFIG.outputDir, "raw-findings.jsonl"), allFindings);
+  console.log(`  Wrote: ${join(CONFIG.outputDir, "raw-findings.jsonl")}`);
 
-  // Phase 2: Already normalized during parsing
   console.log("\nPhase 2: Schema normalization complete (done during parsing)");
-  const normalizedPath = join(CONFIG.outputDir, "normalized-findings.jsonl");
-  writeFileSync(normalizedPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
-  console.log(`  Wrote: ${normalizedPath}`);
+  writeJsonl(join(CONFIG.outputDir, "normalized-findings.jsonl"), allFindings);
+  console.log(`  Wrote: ${join(CONFIG.outputDir, "normalized-findings.jsonl")}`);
 
-  // Phase 3: Deduplication
   console.log("\nPhase 3: Deduplicating findings...");
   const { uniqueFindings, dedupLog } = deduplicateFindings(allFindings);
   console.log(
     `  Deduplicated: ${stats.total} -> ${uniqueFindings.length} (${Math.round((1 - uniqueFindings.length / stats.total) * 100)}% reduction)`
   );
 
-  // Write dedup log
-  const dedupLogPath = join(CONFIG.outputDir, "dedup-log.jsonl");
-  writeFileSync(dedupLogPath, dedupLog.map((l) => JSON.stringify(l)).join("\n"));
-  console.log(`  Wrote: ${dedupLogPath} (${dedupLog.length} merge decisions)`);
+  writeJsonl(join(CONFIG.outputDir, "dedup-log.jsonl"), dedupLog);
+  console.log(`  Wrote: dedup-log.jsonl (${dedupLog.length} merge decisions)`);
 
-  // Write unique findings
-  const uniquePath = join(CONFIG.outputDir, "unique-findings.jsonl");
-  writeFileSync(uniquePath, uniqueFindings.map((f) => JSON.stringify(f)).join("\n"));
-  console.log(`  Wrote: ${uniquePath}`);
+  writeJsonl(join(CONFIG.outputDir, "unique-findings.jsonl"), uniqueFindings);
+  console.log(`  Wrote: unique-findings.jsonl`);
 
-  // Phase 3.5: Cross-reference with ROADMAP and TECHNICAL_DEBT (Session #116)
   console.log("\nPhase 3.5: Cross-referencing with ROADMAP and TECHNICAL_DEBT...");
   const roadmapItems = parseRoadmapItems(CONFIG.roadmapPath);
   const techDebtItems = parseTechDebtItems(CONFIG.techDebtPath);
@@ -1532,18 +1519,20 @@ function aggregate() {
   console.log(`    Already tracked: ${crossRefStats.alreadyTracked}`);
   console.log(`    NET NEW: ${crossRefStats.netNew}`);
 
-  // Write cross-reference log
-  const crossRefLogPath = join(CONFIG.outputDir, "crossref-log.jsonl");
-  writeFileSync(crossRefLogPath, crossRefLog.map((l) => JSON.stringify(l)).join("\n"));
-  console.log(`  Wrote: ${crossRefLogPath} (${crossRefLog.length} matches)`);
+  writeJsonl(join(CONFIG.outputDir, "crossref-log.jsonl"), crossRefLog);
+  console.log(`  Wrote: crossref-log.jsonl (${crossRefLog.length} matches)`);
 
-  // Write NET NEW findings only
   const netNewFindings = crossReferencedFindings.filter((f) => f.roadmap_status === "net_new");
-  const netNewPath = join(CONFIG.outputDir, "net-new-findings.jsonl");
-  writeFileSync(netNewPath, netNewFindings.map((f) => JSON.stringify(f)).join("\n"));
-  console.log(`  Wrote: ${netNewPath} (${netNewFindings.length} NET NEW items)`);
+  writeJsonl(join(CONFIG.outputDir, "net-new-findings.jsonl"), netNewFindings);
+  console.log(`  Wrote: net-new-findings.jsonl (${netNewFindings.length} NET NEW items)`);
 
-  // Phase 4: Prioritize and categorize
+  return { crossReferencedFindings, crossRefStats };
+}
+
+/**
+ * Build prioritized master list from cross-referenced findings (Phase 4)
+ */
+function buildMasterList(crossReferencedFindings) {
   console.log("\nPhase 4: Prioritizing and categorizing...");
 
   let masterId = 1;
@@ -1567,25 +1556,26 @@ function aggregate() {
       pr_bucket: prBucket,
       original_id: finding.original_id,
       merged_from: finding.merged_from,
-      // Cross-reference fields (Session #116)
       roadmap_status: finding.roadmap_status,
       matched_roadmap_item: finding.matched_roadmap_item,
       matched_tech_debt_item: finding.matched_tech_debt_item,
     };
   });
 
-  // Sort by priority score descending
   masterList.sort((a, b) => b.priority_score - a.priority_score);
 
-  // Write master list
-  const masterListPath = join(CONFIG.outputDir, "MASTER_ISSUE_LIST.jsonl");
-  writeFileSync(masterListPath, masterList.map((m) => JSON.stringify(m)).join("\n"));
-  console.log(`  Wrote: ${masterListPath}`);
+  writeJsonl(join(CONFIG.outputDir, "MASTER_ISSUE_LIST.jsonl"), masterList);
+  console.log(`  Wrote: ${join(CONFIG.outputDir, "MASTER_ISSUE_LIST.jsonl")}`);
 
-  // Phase 5: Generate reports
+  return masterList;
+}
+
+/**
+ * Generate reports and print summary (Phase 5)
+ */
+function generateReports(masterList, stats, crossRefStats) {
   console.log("\nPhase 5: Generating markdown reports...");
 
-  // Generate summary statistics
   const severityCounts = { S0: 0, S1: 0, S2: 0, S3: 0 };
   const categoryCounts = {};
   const bucketCounts = {};
@@ -1596,7 +1586,6 @@ function aggregate() {
     bucketCounts[item.pr_bucket] = (bucketCounts[item.pr_bucket] || 0) + 1;
   }
 
-  // Generate MASTER_ISSUE_LIST.md
   const masterMd = generateMasterIssueMd(
     masterList,
     severityCounts,
@@ -1605,18 +1594,44 @@ function aggregate() {
     stats,
     crossRefStats
   );
-  const masterMdPath = join(CONFIG.outputDir, "MASTER_ISSUE_LIST.md");
-  writeFileSync(masterMdPath, masterMd);
-  console.log(`  Wrote: ${masterMdPath}`);
+  writeFileSync(join(CONFIG.outputDir, "MASTER_ISSUE_LIST.md"), masterMd);
+  console.log(`  Wrote: MASTER_ISSUE_LIST.md`);
 
-  // Generate IMPLEMENTATION_PLAN.md
   const implPlan = generateImplementationPlan(masterList, bucketCounts);
-  const implPlanPath = join(CONFIG.outputDir, "IMPLEMENTATION_PLAN.md");
-  writeFileSync(implPlanPath, implPlan);
-  console.log(`  Wrote: ${implPlanPath}`);
+  writeFileSync(join(CONFIG.outputDir, "IMPLEMENTATION_PLAN.md"), implPlan);
+  console.log(`  Wrote: IMPLEMENTATION_PLAN.md`);
 
-  // Print summary
   printSummary(stats, masterList, severityCounts, bucketCounts, crossRefStats);
+
+  return { severityCounts, categoryCounts, bucketCounts };
+}
+
+/**
+ * Main aggregation function
+ */
+function aggregate() {
+  console.log("=== Master Issue Aggregation ===\n");
+
+  const allFindings = [];
+  const stats = {
+    singleSession: 0,
+    canon: 0,
+    backlog: 0,
+    auditBacklog: 0,
+    total: 0,
+  };
+
+  parseAllSources(allFindings, stats);
+  const { crossReferencedFindings, crossRefStats } = deduplicateAndCrossReference(
+    allFindings,
+    stats
+  );
+  const masterList = buildMasterList(crossReferencedFindings);
+  const { severityCounts, categoryCounts, bucketCounts } = generateReports(
+    masterList,
+    stats,
+    crossRefStats
+  );
 
   return { masterList, stats, severityCounts, categoryCounts, bucketCounts, crossRefStats };
 }

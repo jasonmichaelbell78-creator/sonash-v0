@@ -94,6 +94,83 @@ function validatePackageJsonPath(packageJsonPath) {
 }
 
 /**
+ * Check if a relative path escapes the project root (path traversal protection)
+ * R3: Handles Windows cross-drive paths and .. traversal
+ *
+ * @param {string} relPath - Relative path to check
+ * @returns {boolean} True if path escapes project root
+ */
+function isPathTraversal(relPath) {
+  return (
+    path.isAbsolute(relPath) || /^[A-Za-z]:[\\/]/.test(relPath) || /^\.\.(?:[\\/]|$)/.test(relPath)
+  );
+}
+
+/**
+ * Check if a symlink target stays within project root
+ * R3: Resolves symlinks and validates containment
+ *
+ * @param {string} filePath - Path to check
+ * @returns {boolean} True if real path is contained within project root
+ */
+function isContainedRealPath(filePath) {
+  const { realpathSync } = require("node:fs");
+  const cwd = process.cwd();
+  try {
+    const real = realpathSync(filePath);
+    const relReal = path.relative(cwd, real);
+    return !isPathTraversal(relReal);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Build file resolution candidates for a base path
+ * Tries the base path itself, common extensions, and index files
+ *
+ * @param {string} base - Base file path to resolve
+ * @returns {string[]} Array of candidate paths to check
+ */
+function buildResolutionCandidates(base) {
+  return [
+    base,
+    `${base}.ts`,
+    `${base}.tsx`,
+    `${base}.js`,
+    `${base}.jsx`,
+    path.join(base, "index.ts"),
+    path.join(base, "index.tsx"),
+    path.join(base, "index.js"),
+    path.join(base, "index.jsx"),
+  ];
+}
+
+/**
+ * Resolve a file path with containment checks (shared by path-alias and absolute-path)
+ * Prevents path traversal outside project root and validates symlink targets
+ *
+ * @param {string} base - Resolved base path
+ * @param {string} type - Import type to return on success ("path-alias" or "absolute-path")
+ * @returns {{ exists: boolean, type: string|null }} Import status
+ */
+function resolveFileWithContainment(base, type) {
+  const cwd = process.cwd();
+  const baseRel = path.relative(cwd, base);
+
+  // Prevent path traversal outside project root
+  if (isPathTraversal(baseRel)) {
+    return { exists: false, type: null };
+  }
+
+  const candidates = buildResolutionCandidates(base);
+  if (candidates.some((p) => existsSync(p) && isContainedRealPath(p))) {
+    return { exists: true, type };
+  }
+  return { exists: false, type: null };
+}
+
+/**
  * Check if an import exists in package.json dependencies
  *
  * @param {string} importName - Package name from import statement
@@ -156,52 +233,9 @@ function checkImportExists(importName, packageJsonPath = "package.json") {
   // Addresses [12] path aliases with containment check (R2/R3 security fix)
   // Using regex instead of startsWith() to avoid pattern compliance false positives
   if (/^@\//.test(importName) || /^~\//.test(importName)) {
-    const { realpathSync } = require("node:fs");
-    const cwd = process.cwd();
     const rel = importName.slice(2);
-    const base = path.resolve(cwd, rel);
-
-    // Prevent path traversal outside project root (R3: Windows cross-drive check)
-    const baseRel = path.relative(cwd, base);
-    if (
-      path.isAbsolute(baseRel) ||
-      /^[A-Za-z]:[\\/]/.test(baseRel) ||
-      /^\.\.(?:[\\/]|$)/.test(baseRel)
-    ) {
-      return { exists: false, type: null };
-    }
-
-    const candidates = [
-      base,
-      `${base}.ts`,
-      `${base}.tsx`,
-      `${base}.js`,
-      `${base}.jsx`,
-      path.join(base, "index.ts"),
-      path.join(base, "index.tsx"),
-      path.join(base, "index.js"),
-      path.join(base, "index.jsx"),
-    ];
-
-    // R3: Check symlink targets stay within project root
-    const isContainedRealPath = (p) => {
-      try {
-        const real = realpathSync(p);
-        const relReal = path.relative(cwd, real);
-        return (
-          !path.isAbsolute(relReal) &&
-          !/^[A-Za-z]:[\\/]/.test(relReal) &&
-          !/^\.\.(?:[\\/]|$)/.test(relReal)
-        );
-      } catch {
-        return false;
-      }
-    };
-
-    if (candidates.some((p) => existsSync(p) && isContainedRealPath(p))) {
-      return { exists: true, type: "path-alias" };
-    }
-    return { exists: false, type: null };
+    const base = path.resolve(process.cwd(), rel);
+    return resolveFileWithContainment(base, "path-alias");
   }
 
   // Relative imports (starts with . only)
@@ -213,53 +247,10 @@ function checkImportExists(importName, packageJsonPath = "package.json") {
   // Absolute path imports - treat as project-root-relative, not filesystem-absolute
   // Addresses [10] with containment check (R2/R3 security fix)
   if (/^[/\\]/.test(importName)) {
-    const { realpathSync } = require("node:fs");
-    const cwd = process.cwd();
     // Strip leading slashes and treat as project-relative
     const spec = importName.replace(/^[/\\]+/, "");
-    const abs = path.resolve(cwd, spec);
-
-    // Prevent path traversal outside project root (R3: Windows cross-drive check)
-    const absRel = path.relative(cwd, abs);
-    if (
-      path.isAbsolute(absRel) ||
-      /^[A-Za-z]:[\\/]/.test(absRel) ||
-      /^\.\.(?:[\\/]|$)/.test(absRel)
-    ) {
-      return { exists: false, type: null };
-    }
-
-    const candidates = [
-      abs,
-      `${abs}.ts`,
-      `${abs}.tsx`,
-      `${abs}.js`,
-      `${abs}.jsx`,
-      path.join(abs, "index.ts"),
-      path.join(abs, "index.tsx"),
-      path.join(abs, "index.js"),
-      path.join(abs, "index.jsx"),
-    ];
-
-    // R3: Check symlink targets stay within project root
-    const isContainedRealPath = (p) => {
-      try {
-        const real = realpathSync(p);
-        const relReal = path.relative(cwd, real);
-        return (
-          !path.isAbsolute(relReal) &&
-          !/^[A-Za-z]:[\\/]/.test(relReal) &&
-          !/^\.\.(?:[\\/]|$)/.test(relReal)
-        );
-      } catch {
-        return false;
-      }
-    };
-
-    if (candidates.some((p) => existsSync(p) && isContainedRealPath(p))) {
-      return { exists: true, type: "absolute-path" };
-    }
-    return { exists: false, type: null };
+    const abs = path.resolve(process.cwd(), spec);
+    return resolveFileWithContainment(abs, "absolute-path");
   }
 
   return { exists: false, type: null };
@@ -551,4 +542,8 @@ module.exports = {
   clamp0to100,
   loadPackageJson,
   validatePackageJsonPath,
+  isPathTraversal,
+  isContainedRealPath,
+  buildResolutionCandidates,
+  resolveFileWithContainment,
 };

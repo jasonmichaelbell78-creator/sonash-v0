@@ -72,6 +72,62 @@ function loadMasterDebt() {
   return items;
 }
 
+/**
+ * Check if an item is unresolved (not RESOLVED or FALSE_POSITIVE)
+ */
+function isOpenItem(item) {
+  return item.status !== "RESOLVED" && item.status !== "FALSE_POSITIVE";
+}
+
+/**
+ * Track alert items for unresolved S0/S1 severity
+ *
+ * @param {object} item - Debt item
+ * @param {object} alerts - Alerts accumulator with s0 and s1 arrays
+ */
+function trackAlertItem(item, alerts) {
+  if (!isOpenItem(item)) return;
+
+  const alertEntry = {
+    id: item.id,
+    title: item.title?.substring(0, 60) || "No title",
+    file: item.file,
+    line: item.line,
+  };
+
+  if (item.severity === "S0") {
+    alerts.s0.push(alertEntry);
+  } else if (item.severity === "S1") {
+    alerts.s1.push(alertEntry);
+  }
+}
+
+/**
+ * Calculate age in days for an open item, updating age tracking state
+ * Returns early for resolved items, invalid timestamps, or future dates
+ *
+ * @param {object} item - Debt item
+ * @param {Date} now - Current date
+ * @param {object} ageState - Mutable state: { totalAgeDays, openCount, oldestAge, oldestItem }
+ */
+function trackItemAge(item, now, ageState) {
+  if (!isOpenItem(item)) return;
+  if (!item.created_at) return;
+
+  const createdMs = new Date(item.created_at).getTime();
+  if (!Number.isFinite(createdMs)) return;
+
+  const ageDays = Math.floor((now.getTime() - createdMs) / (1000 * 60 * 60 * 24));
+  if (ageDays < 0) return; // Prevent negative age metrics (future timestamps)
+
+  ageState.totalAgeDays += ageDays;
+  ageState.openCount++;
+  if (ageDays > ageState.oldestAge) {
+    ageState.oldestAge = ageDays;
+    ageState.oldestItem = item;
+  }
+}
+
 // Calculate metrics
 function calculateMetrics(items) {
   const now = new Date();
@@ -82,77 +138,25 @@ function calculateMetrics(items) {
   const bySeverity = { S0: 0, S1: 0, S2: 0, S3: 0 };
   const byCategory = {};
   const bySource = {};
-
-  // Alert items (S0 and S1 that aren't resolved)
-  const alerts = {
-    s0: [],
-    s1: [],
-  };
-
-  // Age tracking for open items
-  let totalAgeDays = 0;
-  let openCount = 0;
-  let oldestItem = null;
-  let oldestAge = 0;
+  const alerts = { s0: [], s1: [] };
+  const ageState = { totalAgeDays: 0, openCount: 0, oldestAge: 0, oldestItem: null };
 
   for (const item of items) {
-    // Count by status
     byStatus[item.status] = (byStatus[item.status] || 0) + 1;
-
-    // Count by severity
     bySeverity[item.severity] = (bySeverity[item.severity] || 0) + 1;
-
-    // Count by category
     byCategory[item.category] = (byCategory[item.category] || 0) + 1;
+    bySource[item.source || "unknown"] = (bySource[item.source || "unknown"] || 0) + 1;
 
-    // Count by source
-    const source = item.source || "unknown";
-    bySource[source] = (bySource[source] || 0) + 1;
-
-    // Track alerts for unresolved S0/S1
-    if (item.status !== "RESOLVED" && item.status !== "FALSE_POSITIVE") {
-      if (item.severity === "S0") {
-        alerts.s0.push({
-          id: item.id,
-          title: item.title?.substring(0, 60) || "No title",
-          file: item.file,
-          line: item.line,
-        });
-      } else if (item.severity === "S1") {
-        alerts.s1.push({
-          id: item.id,
-          title: item.title?.substring(0, 60) || "No title",
-          file: item.file,
-          line: item.line,
-        });
-      }
-
-      // Calculate age for open items
-      if (item.created_at) {
-        const createdDate = new Date(item.created_at);
-        // Review #224: Validate timestamp is valid before age calculation
-        const createdMs = createdDate.getTime();
-        if (Number.isFinite(createdMs)) {
-          const ageDays = Math.floor((now.getTime() - createdMs) / (1000 * 60 * 60 * 24));
-          // Review #224 Qodo R5: Prevent negative age metrics (future timestamps)
-          if (ageDays >= 0) {
-            totalAgeDays += ageDays;
-            openCount++;
-            if (ageDays > oldestAge) {
-              oldestAge = ageDays;
-              oldestItem = item;
-            }
-          }
-        }
-      }
-    }
+    trackAlertItem(item, alerts);
+    trackItemAge(item, now, ageState);
   }
 
   // Calculate derived metrics
   const totalItems = items.length;
   const resolvedItems = byStatus.RESOLVED || 0;
   const openItems = totalItems - resolvedItems - (byStatus.FALSE_POSITIVE || 0);
-  const avgAgeDays = openCount > 0 ? Math.round(totalAgeDays / openCount) : 0;
+  const avgAgeDays =
+    ageState.openCount > 0 ? Math.round(ageState.totalAgeDays / ageState.openCount) : 0;
   const resolutionRate = totalItems > 0 ? Math.round((resolvedItems / totalItems) * 100) : 0;
 
   return {
@@ -177,8 +181,8 @@ function calculateMetrics(items) {
     },
     health: {
       avg_age_days: avgAgeDays,
-      oldest_age_days: oldestAge,
-      oldest_item_id: oldestItem?.id || null,
+      oldest_age_days: ageState.oldestAge,
+      oldest_item_id: ageState.oldestItem?.id || null,
       verification_queue_size: byStatus.NEW || 0,
     },
   };

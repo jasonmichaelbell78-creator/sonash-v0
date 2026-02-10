@@ -57,74 +57,73 @@ const TRIGGERS = {
   },
 };
 
-// Get staged files for push
-// Returns null on complete failure (fail-closed for security)
-// Uses spawnSync with shell:false to prevent command injection
-function getStagedFiles() {
-  // Dynamically resolve base branch (origin/main, main, or master)
-  const baseCandidates = ["origin/main", "main", "master"];
-  let baseRef = null;
+/**
+ * Run a git diff command and return parsed file list, or null on failure
+ */
+function tryGitDiff(gitArgs) {
+  const result = spawnSync("git", gitArgs, {
+    encoding: "utf-8",
+    timeout: 5000,
+  });
+  if (result.status === 0) {
+    return result.stdout.split("\n").filter((f) => f.trim());
+  }
+  return null;
+}
 
+/**
+ * Resolve the base branch reference (origin/main, main, or master)
+ */
+function resolveBaseRef() {
+  const baseCandidates = ["origin/main", "main", "master"];
   for (const candidate of baseCandidates) {
     const verify = spawnSync("git", ["rev-parse", "--verify", candidate], {
       encoding: "utf-8",
       timeout: 3000,
     });
-    if (verify.status === 0) {
-      baseRef = candidate;
-      break;
-    }
+    if (verify.status === 0) return candidate;
   }
+  return null;
+}
+
+/**
+ * Try to get changed files using merge-base against a base ref
+ */
+function tryMergeBaseDiff(baseRef) {
+  const mergeBaseResult = spawnSync("git", ["merge-base", "HEAD", baseRef], {
+    encoding: "utf-8",
+    timeout: 5000,
+  });
+
+  if (mergeBaseResult.status !== 0 || !mergeBaseResult.stdout) return null;
+
+  const mergeBase = mergeBaseResult.stdout.trim();
+  return tryGitDiff(["diff", "--name-only", `${mergeBase}..HEAD`]);
+}
+
+// Get staged files for push
+// Returns null on complete failure (fail-closed for security)
+// Uses spawnSync with shell:false to prevent command injection
+function getStagedFiles() {
+  const baseRef = resolveBaseRef();
 
   if (baseRef) {
     // Try git merge-base for reliable branch divergence detection
-    const mergeBaseResult = spawnSync("git", ["merge-base", "HEAD", baseRef], {
-      encoding: "utf-8",
-      timeout: 5000,
-    });
-
-    if (mergeBaseResult.status === 0 && mergeBaseResult.stdout) {
-      const mergeBase = mergeBaseResult.stdout.trim();
-      const diffResult = spawnSync("git", ["diff", "--name-only", `${mergeBase}..HEAD`], {
-        encoding: "utf-8",
-        timeout: 5000,
-      });
-
-      if (diffResult.status === 0) {
-        return diffResult.stdout.split("\n").filter((f) => f.trim());
-      }
-    }
+    const mergeBaseFiles = tryMergeBaseDiff(baseRef);
+    if (mergeBaseFiles) return mergeBaseFiles;
 
     // Fallback 1: try simple diff against base ref
-    const fallback1 = spawnSync("git", ["diff", "--name-only", `${baseRef}..HEAD`], {
-      encoding: "utf-8",
-      timeout: 5000,
-    });
-
-    if (fallback1.status === 0) {
-      return fallback1.stdout.split("\n").filter((f) => f.trim());
-    }
+    const simpleDiff = tryGitDiff(["diff", "--name-only", `${baseRef}..HEAD`]);
+    if (simpleDiff) return simpleDiff;
   }
 
   // Fallback 2: get files in last commit
-  const fallback2 = spawnSync("git", ["diff", "--name-only", "HEAD~1"], {
-    encoding: "utf-8",
-    timeout: 5000,
-  });
-
-  if (fallback2.status === 0) {
-    return fallback2.stdout.split("\n").filter((f) => f.trim());
-  }
+  const lastCommitDiff = tryGitDiff(["diff", "--name-only", "HEAD~1"]);
+  if (lastCommitDiff) return lastCommitDiff;
 
   // Fallback 3: staged changes only (works on initial commits / shallow clones)
-  const fallback3 = spawnSync("git", ["diff", "--name-only", "--cached"], {
-    encoding: "utf-8",
-    timeout: 5000,
-  });
-
-  if (fallback3.status === 0) {
-    return fallback3.stdout.split("\n").filter((f) => f.trim());
-  }
+  const cachedDiff = tryGitDiff(["diff", "--name-only", "--cached"]);
+  if (cachedDiff) return cachedDiff;
 
   // Fail-closed: return null to signal complete failure
   // This prevents silently bypassing security checks

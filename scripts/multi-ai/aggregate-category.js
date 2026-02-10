@@ -238,6 +238,122 @@ function mergeFindings(primary, secondary) {
 }
 
 /**
+ * Try to merge finding by exact fingerprint match (Tier 1)
+ * @returns {{ merged: boolean, logEntry?: object }}
+ */
+function tryFingerprintMerge(finding, unique, fingerprintIndex) {
+  if (!finding.fingerprint || !fingerprintIndex.has(finding.fingerprint)) {
+    return { merged: false };
+  }
+  const existingIdx = fingerprintIndex.get(finding.fingerprint);
+  unique[existingIdx] = mergeFindings(unique[existingIdx], finding);
+  return {
+    merged: true,
+    logEntry: {
+      action: "merged",
+      reason: "fingerprint_match",
+      finding1: unique[existingIdx].fingerprint,
+      finding2: finding.fingerprint,
+    },
+  };
+}
+
+/**
+ * Try to merge finding by file:line match (Tier 2)
+ * @returns {{ merged: boolean, logEntry?: object }}
+ */
+function tryFileLineMerge(finding, unique, fileLineIndex) {
+  const fileLineKey = getFileLineKey(finding);
+  if (!fileLineKey || !fileLineIndex.has(fileLineKey)) {
+    return { merged: false };
+  }
+  const candidates = fileLineIndex.get(fileLineKey);
+  for (const candidateIdx of candidates) {
+    const candidate = unique[candidateIdx];
+    const similarity = calculateSimilarity(finding.title, candidate.title);
+    if (similarity > 0.5) {
+      unique[candidateIdx] = mergeFindings(candidate, finding);
+      return {
+        merged: true,
+        logEntry: {
+          action: "merged",
+          reason: "file_line_match",
+          key: fileLineKey,
+          similarity,
+        },
+      };
+    }
+  }
+  return { merged: false };
+}
+
+/**
+ * Try to merge finding by title similarity (Tier 3)
+ * @returns {{ merged: boolean, logEntry?: object }}
+ */
+function tryTitleMerge(finding, unique, titleIndex) {
+  const normalizedTitle = normalizeTitle(finding.title);
+  if (!normalizedTitle) return { merged: false };
+
+  // Exact normalized title match
+  if (titleIndex.has(normalizedTitle)) {
+    const existingIdx = titleIndex.get(normalizedTitle);
+    unique[existingIdx] = mergeFindings(unique[existingIdx], finding);
+    return {
+      merged: true,
+      logEntry: {
+        action: "merged",
+        reason: "title_exact_match",
+        title: finding.title?.substring(0, 50),
+      },
+    };
+  }
+
+  // Fuzzy title match (same category only)
+  for (const [existingTitle, existingIdx] of titleIndex) {
+    const similarity = calculateSimilarity(normalizedTitle, existingTitle);
+    if (
+      similarity >= TITLE_SIMILARITY_THRESHOLD &&
+      finding.category === unique[existingIdx].category
+    ) {
+      unique[existingIdx] = mergeFindings(unique[existingIdx], finding);
+      return {
+        merged: true,
+        logEntry: {
+          action: "merged",
+          reason: "title_similarity",
+          similarity,
+          title1: finding.title?.substring(0, 50),
+          title2: unique[existingIdx].title?.substring(0, 50),
+        },
+      };
+    }
+  }
+
+  return { merged: false };
+}
+
+/**
+ * Add a new unique finding to the indices
+ */
+function addToIndices(finding, idx, fingerprintIndex, fileLineIndex, titleIndex) {
+  if (finding.fingerprint) {
+    fingerprintIndex.set(finding.fingerprint, idx);
+  }
+  const fileLineKey = getFileLineKey(finding);
+  if (fileLineKey) {
+    if (!fileLineIndex.has(fileLineKey)) {
+      fileLineIndex.set(fileLineKey, []);
+    }
+    fileLineIndex.get(fileLineKey).push(idx);
+  }
+  const normalizedTitle = normalizeTitle(finding.title);
+  if (normalizedTitle) {
+    titleIndex.set(normalizedTitle, idx);
+  }
+}
+
+/**
  * Deduplicate findings using multi-tier strategy
  * @param {object[]} findings - Array of findings with source info
  * @returns {{ unique: object[], dedupLog: object[] }}
@@ -247,110 +363,34 @@ function deduplicateFindings(findings) {
   const unique = [];
 
   // Index structures for efficient lookup
-  const fingerprintIndex = new Map(); // fingerprint → finding index
-  const fileLineIndex = new Map(); // file:line → finding indices
-  const titleIndex = new Map(); // normalized title → finding indices
+  const fingerprintIndex = new Map();
+  const fileLineIndex = new Map();
+  const titleIndex = new Map();
 
-  for (let i = 0; i < findings.length; i++) {
-    const finding = findings[i];
-    let merged = false;
-
-    // Tier 1: Exact fingerprint match
-    if (finding.fingerprint && fingerprintIndex.has(finding.fingerprint)) {
-      const existingIdx = fingerprintIndex.get(finding.fingerprint);
-      unique[existingIdx] = mergeFindings(unique[existingIdx], finding);
-      dedupLog.push({
-        action: "merged",
-        reason: "fingerprint_match",
-        finding1: unique[existingIdx].fingerprint,
-        finding2: finding.fingerprint,
-      });
-      merged = true;
+  for (const finding of findings) {
+    // Try each dedup tier in priority order
+    const tier1 = tryFingerprintMerge(finding, unique, fingerprintIndex);
+    if (tier1.merged) {
+      dedupLog.push(tier1.logEntry);
+      continue;
     }
 
-    // Tier 2: File:line match
-    if (!merged) {
-      const fileLineKey = getFileLineKey(finding);
-      if (fileLineKey && fileLineIndex.has(fileLineKey)) {
-        const candidates = fileLineIndex.get(fileLineKey);
-        for (const candidateIdx of candidates) {
-          const candidate = unique[candidateIdx];
-          // Additional check: title similarity should be reasonable
-          const similarity = calculateSimilarity(finding.title, candidate.title);
-          if (similarity > 0.5) {
-            unique[candidateIdx] = mergeFindings(candidate, finding);
-            dedupLog.push({
-              action: "merged",
-              reason: "file_line_match",
-              key: fileLineKey,
-              similarity,
-            });
-            merged = true;
-            break;
-          }
-        }
-      }
+    const tier2 = tryFileLineMerge(finding, unique, fileLineIndex);
+    if (tier2.merged) {
+      dedupLog.push(tier2.logEntry);
+      continue;
     }
 
-    // Tier 3: Title similarity match (same category only)
-    if (!merged) {
-      const normalizedTitle = normalizeTitle(finding.title);
-      if (normalizedTitle && titleIndex.has(normalizedTitle)) {
-        // Exact normalized title match
-        const existingIdx = titleIndex.get(normalizedTitle);
-        unique[existingIdx] = mergeFindings(unique[existingIdx], finding);
-        dedupLog.push({
-          action: "merged",
-          reason: "title_exact_match",
-          title: finding.title?.substring(0, 50),
-        });
-        merged = true;
-      } else if (normalizedTitle) {
-        // Check for similar titles
-        for (const [existingTitle, existingIdx] of titleIndex) {
-          const similarity = calculateSimilarity(normalizedTitle, existingTitle);
-          if (similarity >= TITLE_SIMILARITY_THRESHOLD) {
-            // Also verify same category
-            if (finding.category === unique[existingIdx].category) {
-              unique[existingIdx] = mergeFindings(unique[existingIdx], finding);
-              dedupLog.push({
-                action: "merged",
-                reason: "title_similarity",
-                similarity,
-                title1: finding.title?.substring(0, 50),
-                title2: unique[existingIdx].title?.substring(0, 50),
-              });
-              merged = true;
-              break;
-            }
-          }
-        }
-      }
+    const tier3 = tryTitleMerge(finding, unique, titleIndex);
+    if (tier3.merged) {
+      dedupLog.push(tier3.logEntry);
+      continue;
     }
 
     // Not merged - add as new unique finding
-    if (!merged) {
-      const idx = unique.length;
-      unique.push(finding);
-
-      // Update indices
-      if (finding.fingerprint) {
-        fingerprintIndex.set(finding.fingerprint, idx);
-      }
-
-      const fileLineKey = getFileLineKey(finding);
-      if (fileLineKey) {
-        if (!fileLineIndex.has(fileLineKey)) {
-          fileLineIndex.set(fileLineKey, []);
-        }
-        fileLineIndex.get(fileLineKey).push(idx);
-      }
-
-      const normalizedTitle = normalizeTitle(finding.title);
-      if (normalizedTitle) {
-        titleIndex.set(normalizedTitle, idx);
-      }
-    }
+    const idx = unique.length;
+    unique.push(finding);
+    addToIndices(finding, idx, fingerprintIndex, fileLineIndex, titleIndex);
   }
 
   return { unique, dedupLog };

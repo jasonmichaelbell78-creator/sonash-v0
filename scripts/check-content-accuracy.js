@@ -432,8 +432,58 @@ function checkDocument(filePath) {
 }
 
 /**
+ * Write findings to output file or stdout
+ */
+function outputFindings(allFindings) {
+  if (OUTPUT_FILE) {
+    const output = JSON_OUTPUT
+      ? JSON.stringify(allFindings, null, 2)
+      : allFindings.map((f) => JSON.stringify(f)).join("\n");
+
+    writeFileSync(OUTPUT_FILE, output + "\n");
+
+    if (!QUIET) {
+      console.log(`\n📄 Results written to: ${OUTPUT_FILE}`);
+    }
+  } else if (JSON_OUTPUT) {
+    console.log(JSON.stringify(allFindings, null, 2));
+  } else if (allFindings.length > 0) {
+    console.log("\n📋 JSONL Findings:\n");
+    for (const finding of allFindings) {
+      console.log(JSON.stringify(finding));
+    }
+  }
+}
+
+/**
+ * Print summary of findings grouped by type
+ */
+function printSummary(allFindings, fileCount) {
+  if (QUIET) return;
+
+  const versionIssues = allFindings.filter((f) => f.title.includes("version"));
+  const pathIssues = allFindings.filter((f) => f.title.includes("path"));
+  const npmIssues = allFindings.filter((f) => f.title.includes("npm"));
+  const codeIssues = allFindings.filter((f) => f.title.includes("Code"));
+
+  console.log("\n─".repeat(50));
+  console.log("\n📊 Summary:");
+  console.log(`   Files checked: ${fileCount}`);
+  console.log(`   Total findings: ${allFindings.length}`);
+  console.log(`     - Version mismatches: ${versionIssues.length}`);
+  console.log(`     - Broken paths: ${pathIssues.length}`);
+  console.log(`     - Unknown npm scripts: ${npmIssues.length}`);
+  console.log(`     - Code block issues: ${codeIssues.length}`);
+
+  if (allFindings.length === 0) {
+    console.log("\n✅ All documentation content is accurate!");
+  } else {
+    console.log(`\n❌ ${allFindings.length} accuracy issue(s) found.`);
+  }
+}
+
+/**
  * Main function
- * TODO: Refactor to reduce cognitive complexity (currently 19, target 15)
  */
 function main() {
   if (!QUIET) {
@@ -460,49 +510,8 @@ function main() {
     allFindings.push(...findings);
   }
 
-  // Output results
-  if (OUTPUT_FILE) {
-    const output = JSON_OUTPUT
-      ? JSON.stringify(allFindings, null, 2)
-      : allFindings.map((f) => JSON.stringify(f)).join("\n");
-
-    writeFileSync(OUTPUT_FILE, output + "\n");
-
-    if (!QUIET) {
-      console.log(`\n📄 Results written to: ${OUTPUT_FILE}`);
-    }
-  } else if (JSON_OUTPUT) {
-    console.log(JSON.stringify(allFindings, null, 2));
-  } else if (allFindings.length > 0) {
-    console.log("\n📋 JSONL Findings:\n");
-    for (const finding of allFindings) {
-      console.log(JSON.stringify(finding));
-    }
-  }
-
-  // Group findings by type for summary
-  const versionIssues = allFindings.filter((f) => f.title.includes("version"));
-  const pathIssues = allFindings.filter((f) => f.title.includes("path"));
-  const npmIssues = allFindings.filter((f) => f.title.includes("npm"));
-  const codeIssues = allFindings.filter((f) => f.title.includes("Code"));
-
-  // Summary
-  if (!QUIET) {
-    console.log("\n─".repeat(50));
-    console.log("\n📊 Summary:");
-    console.log(`   Files checked: ${filesToCheck.length}`);
-    console.log(`   Total findings: ${allFindings.length}`);
-    console.log(`     - Version mismatches: ${versionIssues.length}`);
-    console.log(`     - Broken paths: ${pathIssues.length}`);
-    console.log(`     - Unknown npm scripts: ${npmIssues.length}`);
-    console.log(`     - Code block issues: ${codeIssues.length}`);
-
-    if (allFindings.length === 0) {
-      console.log("\n✅ All documentation content is accurate!");
-    } else {
-      console.log(`\n❌ ${allFindings.length} accuracy issue(s) found.`);
-    }
-  }
+  outputFindings(allFindings);
+  printSummary(allFindings, filesToCheck.length);
 
   process.exit(allFindings.length > 0 ? 1 : 0);
 }

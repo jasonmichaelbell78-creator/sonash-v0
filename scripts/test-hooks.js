@@ -287,20 +287,87 @@ function runHookTest(hookPath, input) {
   };
 }
 
+/**
+ * Record a test result and log it
+ */
+function recordResult(stats, hookFile, testName, passed, errorMsg) {
+  stats.totalTests++;
+  if (passed) {
+    log(`  ✓ ${testName}`, "green");
+    stats.passedTests++;
+  } else {
+    log(`  ✗ ${testName}: ${errorMsg}`, "red");
+    stats.failedTests++;
+    stats.failures.push({ hook: hookFile, test: testName, error: errorMsg });
+  }
+  return passed;
+}
+
+/**
+ * Run basic execution test for a hook (with or without "ok" output check)
+ */
+function runBasicExecutionTest(stats, hookFile, hookPath, testDef) {
+  const basicResult = runHookTest(hookPath, "");
+  const skipOkCheck = testDef && testDef.skipBasicExecution;
+  const label = skipOkCheck ? "Basic execution (exits cleanly)" : "Basic execution (no input)";
+
+  const passed = skipOkCheck
+    ? basicResult.exitCode === 0
+    : basicResult.exitCode === 0 && basicResult.stdout.includes("ok");
+
+  recordResult(
+    stats,
+    hookFile,
+    label,
+    passed,
+    `exit=${basicResult.exitCode}${basicResult.stderr ? `: ${basicResult.stderr}` : ""}`
+  );
+}
+
+/**
+ * Evaluate a single test case result against expectations
+ */
+function evaluateTestCase(test, result) {
+  if (test.expectOk) {
+    if (result.exitCode !== 0 || !result.stdout.includes("ok")) {
+      return `Expected ok but got exit=${result.exitCode}`;
+    }
+  } else {
+    if (result.exitCode === 0 && result.stdout.includes("ok")) {
+      return "Expected block but got ok";
+    }
+  }
+
+  if (test.expectStderr && !test.expectStderr.test(result.stderr)) {
+    return `Expected stderr to match ${test.expectStderr}`;
+  }
+
+  return null; // No error = passed
+}
+
+/**
+ * Run defined test cases for a hook
+ */
+function runDefinedTestCases(stats, hookFile, hookPath, testDef) {
+  if (!testDef || !testDef.tests) return;
+
+  for (const test of testDef.tests) {
+    const result = runHookTest(hookPath, test.input);
+    const errorMsg = evaluateTestCase(test, result);
+    recordResult(stats, hookFile, test.name, errorMsg === null, errorMsg || "");
+  }
+}
+
 // Main test runner
 function runTests() {
   log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "blue");
   log("  🔬 HOOK HEALTH TEST SUITE", "blue");
   log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n", "blue");
 
-  let totalTests = 0;
-  let passedTests = 0;
-  let failedTests = 0;
-  const failures = [];
+  const stats = { totalTests: 0, passedTests: 0, failedTests: 0, failures: [] };
 
   // Get all hook files
   const hookFiles = fs.readdirSync(hooksDir).filter((f) => f.endsWith(".js"));
-
   log(`Found ${hookFiles.length} hooks to test\n`, "gray");
 
   for (const hookFile of hookFiles) {
@@ -310,92 +377,24 @@ function runTests() {
     log(`📄 ${hookFile}`, "yellow");
 
     // 1. Syntax validation
-    totalTests++;
     const syntaxResult = validateSyntax(hookPath);
-    if (syntaxResult.valid) {
-      log("  ✓ Syntax valid", "green");
-      passedTests++;
-    } else {
-      log(`  ✗ Syntax error: ${syntaxResult.error}`, "red");
-      failedTests++;
-      failures.push({ hook: hookFile, test: "Syntax", error: syntaxResult.error });
+    const syntaxPassed = recordResult(
+      stats,
+      hookFile,
+      "Syntax valid",
+      syntaxResult.valid,
+      syntaxResult.error || ""
+    );
+    if (!syntaxPassed) {
+      log(""); // Blank line between hooks
       continue; // Skip other tests if syntax fails
     }
 
-    // 2. Basic execution (no input)
-    // Some hooks don't output "ok" - they just exit cleanly
-    if (testDef && testDef.skipBasicExecution) {
-      totalTests++;
-      const basicResult = runHookTest(hookPath, "");
-      if (basicResult.exitCode === 0) {
-        log("  ✓ Basic execution (exits cleanly)", "green");
-        passedTests++;
-      } else {
-        log(`  ✗ Basic execution failed: exit=${basicResult.exitCode}`, "red");
-        failedTests++;
-        failures.push({
-          hook: hookFile,
-          test: "Basic execution",
-          error: `Exit ${basicResult.exitCode}: ${basicResult.stderr}`,
-        });
-      }
-    } else {
-      totalTests++;
-      const basicResult = runHookTest(hookPath, "");
-      if (basicResult.exitCode === 0 && basicResult.stdout.includes("ok")) {
-        log("  ✓ Basic execution (no input)", "green");
-        passedTests++;
-      } else {
-        log(`  ✗ Basic execution failed: exit=${basicResult.exitCode}`, "red");
-        failedTests++;
-        failures.push({
-          hook: hookFile,
-          test: "Basic execution",
-          error: `Exit ${basicResult.exitCode}: ${basicResult.stderr}`,
-        });
-      }
-    }
+    // 2. Basic execution
+    runBasicExecutionTest(stats, hookFile, hookPath, testDef);
 
     // 3. Defined test cases
-    if (testDef && testDef.tests) {
-      for (const test of testDef.tests) {
-        totalTests++;
-        const result = runHookTest(hookPath, test.input);
-
-        let passed = true;
-        let errorMsg = "";
-
-        // Check exit code expectation
-        if (test.expectOk) {
-          if (result.exitCode !== 0 || !result.stdout.includes("ok")) {
-            passed = false;
-            errorMsg = `Expected ok but got exit=${result.exitCode}`;
-          }
-        } else {
-          if (result.exitCode === 0 && result.stdout.includes("ok")) {
-            passed = false;
-            errorMsg = "Expected block but got ok";
-          }
-        }
-
-        // Check stderr expectation
-        if (passed && test.expectStderr) {
-          if (!test.expectStderr.test(result.stderr)) {
-            passed = false;
-            errorMsg = `Expected stderr to match ${test.expectStderr}`;
-          }
-        }
-
-        if (passed) {
-          log(`  ✓ ${test.name}`, "green");
-          passedTests++;
-        } else {
-          log(`  ✗ ${test.name}: ${errorMsg}`, "red");
-          failedTests++;
-          failures.push({ hook: hookFile, test: test.name, error: errorMsg });
-        }
-      }
-    }
+    runDefinedTestCases(stats, hookFile, hookPath, testDef);
 
     log(""); // Blank line between hooks
   }
@@ -405,13 +404,13 @@ function runTests() {
   log("  📊 TEST SUMMARY", "blue");
   log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n", "blue");
 
-  log(`  Total tests:  ${totalTests}`);
-  log(`  Passed:       ${passedTests}`, "green");
-  log(`  Failed:       ${failedTests}`, failedTests > 0 ? "red" : "green");
+  log(`  Total tests:  ${stats.totalTests}`);
+  log(`  Passed:       ${stats.passedTests}`, "green");
+  log(`  Failed:       ${stats.failedTests}`, stats.failedTests > 0 ? "red" : "green");
 
-  if (failures.length > 0) {
+  if (stats.failures.length > 0) {
     log("\n  Failures:", "red");
-    for (const f of failures) {
+    for (const f of stats.failures) {
       log(`    - ${f.hook} / ${f.test}`, "red");
       log(`      ${f.error}`, "gray");
     }
@@ -420,7 +419,7 @@ function runTests() {
   log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n", "blue");
 
   // Exit with failure if any tests failed
-  process.exit(failedTests > 0 ? 1 : 0);
+  process.exit(stats.failedTests > 0 ? 1 : 0);
 }
 
 // Run if executed directly

@@ -60,6 +60,71 @@ try {
       .trim();
   };
 
+  /**
+   * Build geocoding query strings for an address
+   */
+  function buildGeoQueries(streetClean: string, city: string, neighborhood?: string): string[] {
+    const queries: string[] = [];
+    if (neighborhood && neighborhood !== "Nashville" && neighborhood.length > 2) {
+      queries.push(`${streetClean}, ${neighborhood}, TN, USA`);
+    }
+    queries.push(`${streetClean}, ${city}, TN, USA`, `${streetClean}, TN, USA`);
+    return queries;
+  }
+
+  /**
+   * Try geocoding a single query string. Returns {lat, lon} or null.
+   */
+  async function tryGeocode(query: string): Promise<{ lat: number; lon: number } | null> {
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+
+    const url = `${NOMINATIM_BASE_URL}?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1`;
+    const curlCommand = `curl -s -H "User-Agent: ${USER_AGENT}" -H "Referer: https://sonash.app" "${url}"`;
+    const responseText = execSync(curlCommand, { encoding: "utf8", maxBuffer: 1024 * 1024 });
+
+    const results = JSON.parse(responseText) as Array<{
+      lat: string;
+      lon: string;
+      address?: Record<string, string>;
+    }>;
+
+    if (!results || results.length === 0) return null;
+
+    return {
+      lat: Number.parseFloat(results[0].lat),
+      lon: Number.parseFloat(results[0].lon),
+    };
+  }
+
+  /**
+   * Retry geocoding for a single failure record. Returns true if resolved.
+   */
+  async function retryOneFailure(
+    docRef: FirebaseFirestore.DocumentReference,
+    data: FirebaseFirestore.DocumentData
+  ): Promise<boolean> {
+    const streetClean = cleanAddress(data.address);
+    const queries = buildGeoQueries(streetClean, data.city || "Nashville", data.neighborhood);
+
+    for (const query of queries) {
+      try {
+        const coords = await tryGeocode(query);
+        if (coords) {
+          await docRef.update({ coordinates: { lat: coords.lat, lng: coords.lon } });
+          console.log(`   ✅ Success! Found: [${coords.lat}, ${coords.lon}]`);
+          return true;
+        }
+        console.log(`   🔸 No results for: "${query}"`);
+      } catch (error: unknown) {
+        // Query intentionally omitted from logs to avoid exposing address data
+        console.error(`   ⚠️ Error querying geocode API`);
+        console.error(`      Error details: ${sanitizeError(error)}`);
+      }
+    }
+
+    return false;
+  }
+
   let successCount = 0;
   let failCount = 0;
 
@@ -80,79 +145,15 @@ try {
       continue;
     }
 
-    // Use the LATEST address from DB (in case user fixed it manually in Admin UI)
-    const currentAddress = data.address; // Should be the fixed version
-    const streetClean = cleanAddress(currentAddress);
-    const currentCity = data.city || "Nashville";
-    const neighborhood = data.neighborhood;
-
+    const streetClean = cleanAddress(data.address);
     console.log(
-      `[${index + 1}/${failures.length}] 🔄 Retrying ID: ${docId} | Addr: "${currentAddress}" -> "${streetClean}"`
+      `[${index + 1}/${failures.length}] 🔄 Retrying ID: ${docId} | Addr: "${data.address}" -> "${streetClean}"`
     );
 
-    const queries = [];
-    if (neighborhood && neighborhood !== "Nashville" && neighborhood.length > 2) {
-      queries.push(`${streetClean}, ${neighborhood}, TN, USA`);
-    }
-    queries.push(`${streetClean}, ${currentCity}, TN, USA`, `${streetClean}, TN, USA`);
-
-    let found = false;
-
-    for (const query of queries) {
-      if (found) break;
-
-      try {
-        // Rate limit - Increased to 2500ms to avoid OpenStreetMap rate limiting
-        await new Promise((resolve) => setTimeout(resolve, 2500));
-
-        const url = `${NOMINATIM_BASE_URL}?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1`;
-
-        // Use curl instead of fetch due to environment limitations
-        const curlCommand = `curl -s -H "User-Agent: ${USER_AGENT}" -H "Referer: https://sonash.app" "${url}"`;
-        const responseText = execSync(curlCommand, { encoding: "utf8", maxBuffer: 1024 * 1024 });
-
-        const results = JSON.parse(responseText) as Array<{
-          lat: string;
-          lon: string;
-          address?: Record<string, string>;
-        }>;
-
-        if (results && results.length > 0) {
-          const result = results[0];
-          const _addrInfo = result.address; // Might need detailed 'addressdetails=1' if using reverse param, but standard search returns basics
-
-          // Note: 'search' endpoint JSON result structure usually has 'lat', 'lon', 'display_name'.
-          // To get decomposed address (zip, city) reliably, we usually need '&addressdetails=1'.
-          // Let's ensure we fetch details if we want new zip.
-          // Actually, let's just use the coordinates found and maybe update zip/city if we can extract them?
-          // Nominatim 'search' output with 'addressdetails=1' is best.
-
-          // Let's refine the fetch URL slightly to be sure we get address parts
-          // (The previous script might have relied on implicit structure or just coordinates)
-          // If we just want coordinates, result.lat/lon is enough.
-
-          const lat = Number.parseFloat(result.lat);
-          const lon = Number.parseFloat(result.lon);
-
-          await docRef.update({
-            coordinates: { lat, lng: lon },
-          });
-
-          console.log(`   ✅ Success! Found: [${lat}, ${lon}]`);
-          successCount++;
-          found = true;
-        } else {
-          // Log empty result key for debugging
-          console.log(`   🔸 No results for: "${query}"`);
-        }
-      } catch (error: unknown) {
-        // Query intentionally omitted from logs to avoid exposing address data
-        console.error(`   ⚠️ Error querying geocode API`);
-        console.error(`      Error details: ${sanitizeError(error)}`);
-      }
-    }
-
-    if (!found) {
+    const found = await retryOneFailure(docRef, data);
+    if (found) {
+      successCount++;
+    } else {
       console.log(`   ❌ Still not found.`);
       failCount++;
     }

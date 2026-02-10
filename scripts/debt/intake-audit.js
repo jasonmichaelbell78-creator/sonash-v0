@@ -344,6 +344,154 @@ function logIntake(activity) {
   fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
+// Print processing results (new items, duplicates, errors, format stats)
+function printProcessingResults(newItems, duplicates, errors, formatStats) {
+  console.log("📊 Processing Results:\n");
+  console.log(`  ✅ New items to add: ${newItems.length}`);
+  console.log(`  ⏭️  Duplicates skipped: ${duplicates.length}`);
+  console.log(`  ❌ Validation errors: ${errors.length}`);
+
+  if (formatStats["doc-standards"] > 0) {
+    console.log(`\n  📋 Format Detection:`);
+    console.log(`    - TDMS format: ${formatStats.tdms} items`);
+    console.log(
+      `    - Doc Standards format: ${formatStats["doc-standards"]} items (mapped to TDMS)`
+    );
+    if (Object.keys(formatStats.mappings).length > 0) {
+      console.log(`    - Field mappings applied:`);
+      for (const [mapping, count] of Object.entries(formatStats.mappings)) {
+        console.log(`        ${mapping}: ${count}`);
+      }
+    }
+    if (formatStats.confidenceLogs.length > 0) {
+      console.log(`    - Confidence values logged: ${formatStats.confidenceLogs.length} items`);
+    }
+  }
+
+  if (duplicates.length > 0 && duplicates.length <= 10) {
+    console.log("\n  Skipped duplicates:");
+    for (const dup of duplicates) {
+      console.log(`    - "${dup.input}..." (exists as ${dup.existingId})`);
+    }
+  }
+
+  if (errors.length > 0 && errors.length <= 10) {
+    console.log("\n  Validation errors:");
+    for (const err of errors) {
+      console.log(`    Line ${err.line}: ${err.errors.join(", ")}`);
+    }
+  }
+}
+
+// Read dedup log and compute per-pass breakdown, review count, and cluster count
+function readDedupStats(finalItems) {
+  const dedupBreakdown = {};
+  let reviewCount = 0;
+  let clusterCount = 0;
+
+  try {
+    const dedupLogPath = path.join(DEBT_DIR, "logs/dedup-log.jsonl");
+    const dedupLogContent = fs.readFileSync(dedupLogPath, "utf8");
+    const logEntries = dedupLogContent.split("\n").filter((l) => l.trim());
+    for (const entry of logEntries) {
+      try {
+        const e = JSON.parse(entry);
+        const key = `pass_${e.pass}`;
+        dedupBreakdown[key] = (dedupBreakdown[key] || 0) + 1;
+      } catch {
+        /* skip unparseable log entry */
+      }
+    }
+  } catch {
+    /* dedup log not available */
+  }
+
+  try {
+    const reviewPath = path.join(DEBT_DIR, "raw/review-needed.jsonl");
+    if (fs.existsSync(reviewPath)) {
+      reviewCount = fs
+        .readFileSync(reviewPath, "utf8")
+        .split("\n")
+        .filter((l) => l.trim()).length;
+    }
+  } catch {
+    /* review file not available */
+  }
+
+  const clusterIds = new Set();
+  for (const item of finalItems) {
+    if (item.cluster_id) clusterIds.add(item.cluster_id);
+  }
+  clusterCount = clusterIds.size;
+
+  return { dedupBreakdown, reviewCount, clusterCount };
+}
+
+// Print final intake & dedup report
+function printIntakeReport({
+  inputLines,
+  newItems,
+  duplicates,
+  errors,
+  existingItems,
+  dedupRan,
+  viewsRan,
+}) {
+  const finalItems = viewsRan ? loadMasterDebt() : existingItems;
+  const beforeDedup = existingItems.length + newItems.length;
+  const dedupRemoved = dedupRan && viewsRan ? Math.max(0, beforeDedup - finalItems.length) : 0;
+
+  console.log("\n" + "═".repeat(60));
+  console.log("  INTAKE & DEDUP REPORT");
+  console.log("═".repeat(60));
+  console.log(`  📥 Input:     ${inputLines.length} findings from audit`);
+  console.log(
+    `  ✅ Ingested:  ${newItems.length} new items (${newItems[0]?.id} – ${newItems[newItems.length - 1]?.id})`
+  );
+  console.log(`  ⏭️  Hash dupes: ${duplicates.length} exact duplicates skipped`);
+  console.log(`  ❌ Errors:    ${errors.length} validation failures`);
+
+  if (dedupRan) {
+    const { dedupBreakdown, reviewCount, clusterCount } = readDedupStats(finalItems);
+    console.log("");
+    console.log("  🔄 Multi-Pass Dedup:");
+    const passNames = {
+      pass_0: "Parametric (numbers stripped)",
+      pass_1: "Exact hash match",
+      pass_2: "Near match (file+line+title)",
+      pass_3: "Semantic (file+title >90%)",
+      pass_4: "Cross-source (SonarCloud↔audit)",
+      pass_5: "Systemic pattern annotation",
+    };
+    for (const [key, name] of Object.entries(passNames)) {
+      const count = dedupBreakdown[key] || 0;
+      if (count > 0) {
+        console.log(`     ${name}: ${count}`);
+      }
+    }
+    console.log(`     Total merged: ${dedupRemoved}`);
+    if (clusterCount > 0) {
+      console.log(`     Systemic patterns: ${clusterCount} clusters identified`);
+    }
+    if (reviewCount > 0) {
+      console.log(`     ⚠️  ${reviewCount} items flagged for manual review`);
+    }
+  }
+
+  const sevCounts = {};
+  for (const item of finalItems) {
+    sevCounts[item.severity] = (sevCounts[item.severity] || 0) + 1;
+  }
+
+  console.log("");
+  console.log("  📊 MASTER_DEBT.jsonl:");
+  console.log(`     Total: ${finalItems.length} items`);
+  console.log(
+    `     S0: ${sevCounts.S0 || 0} | S1: ${sevCounts.S1 || 0} | S2: ${sevCounts.S2 || 0} | S3: ${sevCounts.S3 || 0}`
+  );
+  console.log("═".repeat(60));
+}
+
 // Main function
 async function main() {
   const args = process.argv.slice(2);
@@ -466,42 +614,7 @@ async function main() {
   }
 
   // Report results
-  console.log("📊 Processing Results:\n");
-  console.log(`  ✅ New items to add: ${newItems.length}`);
-  console.log(`  ⏭️  Duplicates skipped: ${duplicates.length}`);
-  console.log(`  ❌ Validation errors: ${errors.length}`);
-
-  // Report format detection statistics
-  if (formatStats["doc-standards"] > 0) {
-    console.log(`\n  📋 Format Detection:`);
-    console.log(`    - TDMS format: ${formatStats.tdms} items`);
-    console.log(
-      `    - Doc Standards format: ${formatStats["doc-standards"]} items (mapped to TDMS)`
-    );
-    if (Object.keys(formatStats.mappings).length > 0) {
-      console.log(`    - Field mappings applied:`);
-      for (const [mapping, count] of Object.entries(formatStats.mappings)) {
-        console.log(`        ${mapping}: ${count}`);
-      }
-    }
-    if (formatStats.confidenceLogs.length > 0) {
-      console.log(`    - Confidence values logged: ${formatStats.confidenceLogs.length} items`);
-    }
-  }
-
-  if (duplicates.length > 0 && duplicates.length <= 10) {
-    console.log("\n  Skipped duplicates:");
-    for (const dup of duplicates) {
-      console.log(`    - "${dup.input}..." (exists as ${dup.existingId})`);
-    }
-  }
-
-  if (errors.length > 0 && errors.length <= 10) {
-    console.log("\n  Validation errors:");
-    for (const err of errors) {
-      console.log(`    Line ${err.line}: ${err.errors.join(", ")}`);
-    }
-  }
+  printProcessingResults(newItems, duplicates, errors, formatStats);
 
   // Write new items
   if (newItems.length === 0) {
@@ -599,99 +712,16 @@ async function main() {
     );
   }
 
-  // Read final count and dedup stats for on-screen report
-  const finalItems = viewsRan ? loadMasterDebt() : existingItems;
-  const beforeDedup = existingItems.length + newItems.length;
-  const dedupRemoved = dedupRan && viewsRan ? Math.max(0, beforeDedup - finalItems.length) : 0;
-
-  // Read dedup log for per-pass breakdown
-  let dedupBreakdown = {};
-  let reviewCount = 0;
-  let clusterCount = 0;
-  if (dedupRan) {
-    try {
-      const dedupLogPath = path.join(DEBT_DIR, "logs/dedup-log.jsonl");
-      const dedupLogContent = fs.readFileSync(dedupLogPath, "utf8");
-      const logEntries = dedupLogContent.split("\n").filter((l) => l.trim());
-      for (const entry of logEntries) {
-        try {
-          const e = JSON.parse(entry);
-          const key = `pass_${e.pass}`;
-          dedupBreakdown[key] = (dedupBreakdown[key] || 0) + 1;
-        } catch {
-          /* skip unparseable log entry */
-        }
-      }
-    } catch {
-      /* dedup log not available */
-    }
-    try {
-      const reviewPath = path.join(DEBT_DIR, "raw/review-needed.jsonl");
-      if (fs.existsSync(reviewPath)) {
-        reviewCount = fs
-          .readFileSync(reviewPath, "utf8")
-          .split("\n")
-          .filter((l) => l.trim()).length;
-      }
-    } catch {
-      /* review file not available */
-    }
-    // Count systemic clusters in final items
-    const clusterIds = new Set();
-    for (const item of finalItems) {
-      if (item.cluster_id) clusterIds.add(item.cluster_id);
-    }
-    clusterCount = clusterIds.size;
-  }
-
-  // Severity breakdown of final items
-  const sevCounts = {};
-  for (const item of finalItems) {
-    sevCounts[item.severity] = (sevCounts[item.severity] || 0) + 1;
-  }
-
-  // On-screen report
-  console.log("\n" + "═".repeat(60));
-  console.log("  INTAKE & DEDUP REPORT");
-  console.log("═".repeat(60));
-  console.log(`  📥 Input:     ${inputLines.length} findings from audit`);
-  console.log(
-    `  ✅ Ingested:  ${newItems.length} new items (${newItems[0]?.id} – ${newItems[newItems.length - 1]?.id})`
-  );
-  console.log(`  ⏭️  Hash dupes: ${duplicates.length} exact duplicates skipped`);
-  console.log(`  ❌ Errors:    ${errors.length} validation failures`);
-  if (dedupRan) {
-    console.log("");
-    console.log("  🔄 Multi-Pass Dedup:");
-    const passNames = {
-      pass_0: "Parametric (numbers stripped)",
-      pass_1: "Exact hash match",
-      pass_2: "Near match (file+line+title)",
-      pass_3: "Semantic (file+title >90%)",
-      pass_4: "Cross-source (SonarCloud↔audit)",
-      pass_5: "Systemic pattern annotation",
-    };
-    for (const [key, name] of Object.entries(passNames)) {
-      const count = dedupBreakdown[key] || 0;
-      if (count > 0) {
-        console.log(`     ${name}: ${count}`);
-      }
-    }
-    console.log(`     Total merged: ${dedupRemoved}`);
-    if (clusterCount > 0) {
-      console.log(`     Systemic patterns: ${clusterCount} clusters identified`);
-    }
-    if (reviewCount > 0) {
-      console.log(`     ⚠️  ${reviewCount} items flagged for manual review`);
-    }
-  }
-  console.log("");
-  console.log("  📊 MASTER_DEBT.jsonl:");
-  console.log(`     Total: ${finalItems.length} items`);
-  console.log(
-    `     S0: ${sevCounts.S0 || 0} | S1: ${sevCounts.S1 || 0} | S2: ${sevCounts.S2 || 0} | S3: ${sevCounts.S3 || 0}`
-  );
-  console.log("═".repeat(60));
+  // Print final intake & dedup report
+  printIntakeReport({
+    inputLines,
+    newItems,
+    duplicates,
+    errors,
+    existingItems,
+    dedupRan,
+    viewsRan,
+  });
 }
 
 main().catch((err) => {

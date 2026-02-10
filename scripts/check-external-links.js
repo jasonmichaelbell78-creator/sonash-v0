@@ -97,76 +97,68 @@ function sanitizeUrlForLogging(urlString) {
 }
 
 /**
+ * Check if an IPv4 address is in a private/internal range
+ * @param {string} ip - IPv4 address string
+ * @returns {boolean} - true if internal
+ */
+function isInternalIPv4(ip) {
+  const parts = ip.split(".").map(Number);
+  if (parts.length !== 4 || parts.some((p) => Number.isNaN(p))) {
+    return true; // Invalid IP format, block it
+  }
+
+  const [a, b] = parts;
+
+  if (a === 127) return true; // 127.0.0.0/8 - Loopback
+  if (a === 10) return true; // 10.0.0.0/8 - RFC1918
+  if (a === 172 && b >= 16 && b <= 31) return true; // 172.16.0.0/12 - RFC1918
+  if (a === 192 && b === 168) return true; // 192.168.0.0/16 - RFC1918
+  if (a === 169 && b === 254) return true; // 169.254.0.0/16 - Link-local
+  if (a === 0) return true; // 0.0.0.0/8 - Current network
+  if (a >= 224 && a <= 239) return true; // 224.0.0.0/4 - Multicast
+  if (a >= 240) return true; // 240.0.0.0/4 - Reserved
+
+  return false;
+}
+
+/**
+ * Check if an IPv6 address is in a private/internal range
+ * @param {string} ip - IPv6 address string
+ * @returns {boolean} - true if internal
+ */
+function isInternalIPv6(ip) {
+  const normalized = ip.toLowerCase();
+
+  // Loopback
+  if (normalized === "::1" || normalized === "0:0:0:0:0:0:0:1") return true;
+
+  // Unique local addresses (fc00::/7)
+  if (normalized.startsWith("fc") || normalized.startsWith("fd")) return true;
+
+  // Link-local (fe80::/10)
+  if (/^fe[89ab]/.test(normalized)) return true;
+
+  // Unspecified address
+  if (normalized === "::" || normalized === "0:0:0:0:0:0:0:0") return true;
+
+  // IPv4-mapped IPv6 (::ffff:x.x.x.x)
+  const ipv4MappedMatch = normalized.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+  if (ipv4MappedMatch) {
+    return isInternalIPv4(ipv4MappedMatch[1]);
+  }
+
+  return false;
+}
+
+/**
  * SSRF Protection: Check if an IP address is in a private/internal range
  * Blocks: localhost, RFC1918, link-local (cloud metadata), IPv6 equivalents
  * @param {string} ip - IP address to check
  * @returns {boolean} - true if IP is internal/blocked
  */
-// TODO: Refactor to reduce cognitive complexity (currently 34, target 15)
 function isInternalIP(ip) {
-  // IPv4 checks
-  if (ip.includes(".")) {
-    const parts = ip.split(".").map(Number);
-    if (parts.length !== 4 || parts.some((p) => Number.isNaN(p))) {
-      return true; // Invalid IP format, block it
-    }
-
-    const [a, b] = parts;
-
-    // 127.0.0.0/8 - Loopback (localhost)
-    if (a === 127) return true;
-
-    // 10.0.0.0/8 - RFC1918 Private
-    if (a === 10) return true;
-
-    // 172.16.0.0/12 - RFC1918 Private (172.16.x.x - 172.31.x.x)
-    if (a === 172 && b >= 16 && b <= 31) return true;
-
-    // 192.168.0.0/16 - RFC1918 Private
-    if (a === 192 && b === 168) return true;
-
-    // 169.254.0.0/16 - Link-local (AWS/GCP/Azure metadata at 169.254.169.254)
-    if (a === 169 && b === 254) return true;
-
-    // 0.0.0.0/8 - Current network
-    if (a === 0) return true;
-
-    // 224.0.0.0/4 - Multicast
-    if (a >= 224 && a <= 239) return true;
-
-    // 240.0.0.0/4 - Reserved
-    if (a >= 240) return true;
-  }
-
-  // IPv6 checks
-  if (ip.includes(":")) {
-    const normalized = ip.toLowerCase();
-
-    // ::1 - IPv6 loopback
-    if (normalized === "::1" || normalized === "0:0:0:0:0:0:0:1") return true;
-
-    // fc00::/7 - Unique local addresses (fd00::/8 and fc00::/8)
-    if (normalized.startsWith("fc") || normalized.startsWith("fd")) return true;
-
-    // fe80::/10 - Link-local
-    if (
-      normalized.startsWith("fe8") ||
-      normalized.startsWith("fe9") ||
-      normalized.startsWith("fea") ||
-      normalized.startsWith("feb")
-    )
-      return true;
-
-    // :: - Unspecified address
-    if (normalized === "::" || normalized === "0:0:0:0:0:0:0:0") return true;
-
-    // IPv4-mapped IPv6 (::ffff:x.x.x.x)
-    const ipv4MappedMatch = normalized.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-    if (ipv4MappedMatch) {
-      return isInternalIP(ipv4MappedMatch[1]);
-    }
-  }
-
+  if (ip.includes(".")) return isInternalIPv4(ip);
+  if (ip.includes(":")) return isInternalIPv6(ip);
   return false;
 }
 
@@ -565,28 +557,10 @@ function generateFinding(urlInfo, checkResult) {
 }
 
 /**
- * Main function
+ * Extract all URLs from the given files
+ * @returns {Array<{url: string, line: number, text: string, file: string}>}
  */
-// TODO: Refactor to reduce cognitive complexity (currently 39, target 15)
-async function main() {
-  if (!QUIET) {
-    console.log("🔗 Checking external links in documentation...\n");
-  }
-
-  // Determine files to check
-  const filesToCheck =
-    fileArgs.length > 0 ? fileArgs.filter((f) => existsSync(f)) : findMarkdownFiles(ROOT);
-
-  if (filesToCheck.length === 0) {
-    console.log("No markdown files found to check.");
-    process.exit(0);
-  }
-
-  if (!QUIET) {
-    console.log(`Scanning ${filesToCheck.length} file(s) for external URLs...\n`);
-  }
-
-  // Extract all URLs from all files
+function collectUrlsFromFiles(filesToCheck) {
   const allUrls = [];
   for (const file of filesToCheck) {
     try {
@@ -599,33 +573,29 @@ async function main() {
       }
     }
   }
+  return allUrls;
+}
 
-  // Deduplicate URLs for checking (but keep all references for reporting)
-  const uniqueUrls = [...new Set(allUrls.map((u) => u.url))];
-
-  if (!QUIET) {
-    console.log(`Found ${allUrls.length} URL references (${uniqueUrls.length} unique URLs)\n`);
-  }
-
-  // Check each unique URL
+/**
+ * Check all unique URLs and build results array
+ * @returns {Promise<{results: object[], failed: number}>}
+ */
+async function checkAllUrls(allUrls, uniqueUrls) {
   const results = [];
   let checked = 0;
   let failed = 0;
 
   for (const url of uniqueUrls) {
     checked++;
-
     if (VERBOSE) {
       console.log(`[${checked}/${uniqueUrls.length}] Checking: ${sanitizeUrlForLogging(url)}...`);
     }
 
     const checkResult = await checkUrl(url);
-
-    // Find all references to this URL
     const urlRefs = allUrls.filter((u) => u.url === url);
 
     for (const urlInfo of urlRefs) {
-      const finding = {
+      results.push({
         url: urlInfo.url,
         file: urlInfo.file,
         line: urlInfo.line,
@@ -635,13 +605,8 @@ async function main() {
         responseTime: checkResult.responseTime,
         redirect: checkResult.redirect,
         error: checkResult.error,
-      };
-
-      results.push(finding);
-
-      if (!checkResult.ok) {
-        failed++;
-      }
+      });
+      if (!checkResult.ok) failed++;
     }
 
     if (!checkResult.ok && !QUIET) {
@@ -650,20 +615,19 @@ async function main() {
     }
   }
 
-  // Generate JSONL findings for failed links
-  const findings = results.filter((r) => !r.ok).map((r) => generateFinding(r, r));
+  return { results, failed };
+}
 
-  // Output results
+/**
+ * Write findings output to file or stdout
+ */
+function outputFindings(findings) {
   if (OUTPUT_FILE) {
     const output = JSON_OUTPUT
       ? JSON.stringify(findings, null, 2)
       : findings.map((f) => JSON.stringify(f)).join("\n");
-
     writeFileSync(OUTPUT_FILE, output + "\n");
-
-    if (!QUIET) {
-      console.log(`\n📄 Results written to: ${OUTPUT_FILE}`);
-    }
+    if (!QUIET) console.log(`\n📄 Results written to: ${OUTPUT_FILE}`);
   } else if (JSON_OUTPUT) {
     console.log(JSON.stringify(findings, null, 2));
   } else if (findings.length > 0) {
@@ -672,22 +636,56 @@ async function main() {
       console.log(JSON.stringify(finding));
     }
   }
+}
 
-  // Summary
+/**
+ * Print summary of link check results
+ */
+function printLinkSummary(uniqueUrlCount, totalRefCount, results, failed) {
+  if (QUIET) return;
+  console.log("\n─".repeat(50));
+  console.log("\n📊 Summary:");
+  console.log(`   URLs checked: ${uniqueUrlCount}`);
+  console.log(`   Total references: ${totalRefCount}`);
+  console.log(`   Failed: ${failed}`);
+  console.log(`   Passed: ${results.filter((r) => r.ok).length}`);
+  console.log(
+    failed === 0 ? "\n✅ All external links are valid!" : `\n❌ ${failed} broken link(s) found.`
+  );
+}
+
+/**
+ * Main function
+ */
+async function main() {
   if (!QUIET) {
-    console.log("\n─".repeat(50));
-    console.log("\n📊 Summary:");
-    console.log(`   URLs checked: ${uniqueUrls.length}`);
-    console.log(`   Total references: ${allUrls.length}`);
-    console.log(`   Failed: ${failed}`);
-    console.log(`   Passed: ${results.filter((r) => r.ok).length}`);
-
-    if (failed === 0) {
-      console.log("\n✅ All external links are valid!");
-    } else {
-      console.log(`\n❌ ${failed} broken link(s) found.`);
-    }
+    console.log("🔗 Checking external links in documentation...\n");
   }
+
+  const filesToCheck =
+    fileArgs.length > 0 ? fileArgs.filter((f) => existsSync(f)) : findMarkdownFiles(ROOT);
+
+  if (filesToCheck.length === 0) {
+    console.log("No markdown files found to check.");
+    process.exit(0);
+  }
+
+  if (!QUIET) {
+    console.log(`Scanning ${filesToCheck.length} file(s) for external URLs...\n`);
+  }
+
+  const allUrls = collectUrlsFromFiles(filesToCheck);
+  const uniqueUrls = [...new Set(allUrls.map((u) => u.url))];
+
+  if (!QUIET) {
+    console.log(`Found ${allUrls.length} URL references (${uniqueUrls.length} unique URLs)\n`);
+  }
+
+  const { results, failed } = await checkAllUrls(allUrls, uniqueUrls);
+  const findings = results.filter((r) => !r.ok).map((r) => generateFinding(r, r));
+
+  outputFindings(findings);
+  printLinkSummary(uniqueUrls.length, allUrls.length, results, failed);
 
   process.exit(failed > 0 ? 1 : 0);
 }

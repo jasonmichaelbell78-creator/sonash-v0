@@ -26,12 +26,10 @@ const DAY_TO_INDEX: Record<string, number> = {
   saturday: 6,
 };
 
-// Run migration
-try {
-  console.log("🚀 Starting migration: Adding dayIndex to meetings...\n");
-
-  // Initialize Firebase Admin SDK
-  // Using firebase-service-account.json from project root
+/**
+ * Initialize Firebase Admin SDK, allowing re-initialization
+ */
+function initFirebaseAdmin(): void {
   try {
     const serviceAccountPath = path.join(process.cwd(), "firebase-service-account.json");
     const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
@@ -40,24 +38,89 @@ try {
     });
     console.log("✅ Firebase Admin initialized\n");
   } catch (error: unknown) {
-    // Allow re-running in environments where Admin may already be initialized
     if ((error as { code?: string })?.code === "app/duplicate-app") {
       console.log("ℹ️ Firebase Admin already initialized; continuing...\n");
-    } else {
-      console.error(
-        "❌ Failed to initialize Firebase Admin. Make sure firebase-service-account.json exists."
-      );
-      console.error("   This file should be in the project root.\n");
-      // Use sanitizeError to avoid exposing sensitive paths
-      console.error("Error details:", sanitizeError(error));
-      process.exit(1);
+      return;
     }
+    console.error(
+      "❌ Failed to initialize Firebase Admin. Make sure firebase-service-account.json exists."
+    );
+    console.error("   This file should be in the project root.\n");
+    console.error("Error details:", sanitizeError(error));
+    process.exit(1);
   }
+}
+
+/**
+ * Resolve dayIndex for a single meeting document.
+ * Returns the dayIndex number, or null with a logged error/skip message.
+ */
+function resolveDayIndex(
+  doc: FirebaseFirestore.QueryDocumentSnapshot,
+  stats: { skippedCount: number; errorCount: number }
+): number | null {
+  const data = doc.data();
+
+  if (typeof data.dayIndex === "number") {
+    stats.skippedCount++;
+    console.log(`⏭️  Skipped ${doc.id}: dayIndex already exists (${data.dayIndex})`);
+    return null;
+  }
+
+  if (!data.day || typeof data.day !== "string") {
+    stats.errorCount++;
+    console.error(`❌ Error ${doc.id}: Missing or invalid 'day' field`);
+    return null;
+  }
+
+  const dayIndex = DAY_TO_INDEX[data.day.toLowerCase()];
+  if (dayIndex === undefined) {
+    stats.errorCount++;
+    console.error(`❌ Error ${doc.id}: Invalid day name "${data.day}"`);
+    return null;
+  }
+
+  return dayIndex;
+}
+
+/**
+ * Print migration summary and exit
+ */
+function printSummary(
+  successCount: number,
+  skippedCount: number,
+  errorCount: number,
+  total: number
+): void {
+  console.log("\n" + "=".repeat(60));
+  console.log("📋 Migration Summary:");
+  console.log("=".repeat(60));
+  console.log(`✅ Successfully migrated: ${successCount}`);
+  console.log(`⏭️  Skipped (already migrated): ${skippedCount}`);
+  console.log(`❌ Errors: ${errorCount}`);
+  console.log(`📊 Total processed: ${total}`);
+  console.log("=".repeat(60));
+
+  if (errorCount > 0) {
+    console.log("\n⚠️  Some meetings had errors. Please review the log above.");
+    process.exit(1);
+  }
+
+  console.log("\n🎉 Migration completed successfully!");
+  console.log("\n📌 Next steps:");
+  console.log("   1. Deploy the new Firestore index:");
+  console.log("      firebase deploy --only firestore:indexes");
+  console.log("   2. Test pagination in the app");
+}
+
+// Run migration
+try {
+  console.log("🚀 Starting migration: Adding dayIndex to meetings...\n");
+
+  initFirebaseAdmin();
 
   const db = getFirestore();
   const meetingsRef = db.collection("meetings");
-
-  // Get all meetings
   const snapshot = await meetingsRef.get();
   console.log(`📊 Found ${snapshot.size} meetings to migrate\n`);
 
@@ -65,47 +128,19 @@ try {
     console.log("⚠️  No meetings found in Firestore. Nothing to migrate.");
   } else {
     let successCount = 0;
-    let errorCount = 0;
-    let skippedCount = 0;
-
-    // Use batched writes for efficiency (max 500 per batch)
+    const stats = { skippedCount: 0, errorCount: 0 };
     const batchSize = 500;
     let batch = db.batch();
     let operationCount = 0;
 
     for (const doc of snapshot.docs) {
-      const data = doc.data();
+      const dayIndex = resolveDayIndex(doc, stats);
+      if (dayIndex === null) continue;
 
-      // Skip if dayIndex already exists
-      if (typeof data.dayIndex === "number") {
-        skippedCount++;
-        console.log(`⏭️  Skipped ${doc.id}: dayIndex already exists (${data.dayIndex})`);
-        continue;
-      }
-
-      // Validate day field
-      if (!data.day || typeof data.day !== "string") {
-        errorCount++;
-        console.error(`❌ Error ${doc.id}: Missing or invalid 'day' field`);
-        continue;
-      }
-
-      // Get dayIndex from day name
-      const dayIndex = DAY_TO_INDEX[data.day.toLowerCase()];
-      if (dayIndex === undefined) {
-        errorCount++;
-        console.error(`❌ Error ${doc.id}: Invalid day name "${data.day}"`);
-        continue;
-      }
-
-      // Add to batch
-      // Add to batch
       batch.update(doc.ref, { dayIndex });
       operationCount++;
+      console.log(`✅ Queued ${doc.id}: ${doc.data().day} → dayIndex: ${dayIndex}`);
 
-      console.log(`✅ Queued ${doc.id}: ${data.day} → dayIndex: ${dayIndex}`);
-
-      // Commit batch if we've reached the limit
       if (operationCount >= batchSize) {
         await batch.commit();
         successCount += operationCount;
@@ -115,38 +150,17 @@ try {
       }
     }
 
-    // Commit any remaining operations
     if (operationCount > 0) {
       await batch.commit();
       successCount += operationCount;
       console.log(`\n💾 Committed final batch of ${operationCount} updates\n`);
     }
 
-    // Summary
-    console.log("\n" + "=".repeat(60));
-    console.log("📋 Migration Summary:");
-    console.log("=".repeat(60));
-    console.log(`✅ Successfully migrated: ${successCount}`);
-    console.log(`⏭️  Skipped (already migrated): ${skippedCount}`);
-    console.log(`❌ Errors: ${errorCount}`);
-    console.log(`📊 Total processed: ${snapshot.size}`);
-    console.log("=".repeat(60));
-
-    if (errorCount > 0) {
-      console.log("\n⚠️  Some meetings had errors. Please review the log above.");
-      process.exit(1);
-    } else {
-      console.log("\n🎉 Migration completed successfully!");
-      console.log("\n📌 Next steps:");
-      console.log("   1. Deploy the new Firestore index:");
-      console.log("      firebase deploy --only firestore:indexes");
-      console.log("   2. Test pagination in the app");
-    }
+    printSummary(successCount, stats.skippedCount, stats.errorCount, snapshot.size);
   }
 
   process.exit(0);
 } catch (error) {
-  // Use sanitizeError to avoid exposing sensitive paths
   console.error("Unexpected error:", sanitizeError(error));
   process.exit(1);
 }

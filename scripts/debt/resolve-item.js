@@ -98,6 +98,146 @@ function logResolution(activity) {
   fs.appendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
 }
 
+// Validate parsed arguments, exit on errors
+function validateArgs(parsed) {
+  if (!parsed.debtId) {
+    console.error("Error: DEBT-XXXX ID is required");
+    process.exit(1);
+  }
+  if (parsed.falsePositive && !parsed.reason) {
+    console.error("Error: --reason is required with --false-positive");
+    process.exit(1);
+  }
+}
+
+// Find and validate item exists and is not already resolved
+function findItem(items, debtId) {
+  const itemIndex = items.findIndex((item) => item.id === debtId);
+  if (itemIndex === -1) {
+    console.error(`Error: Item not found: ${debtId}`);
+    process.exit(1);
+  }
+
+  const item = items[itemIndex];
+
+  if (item.status === "RESOLVED") {
+    console.log(`⚠️ Item ${debtId} is already RESOLVED`);
+    console.log(`  Resolved on: ${item.resolution?.date || "unknown"}`);
+    process.exit(0);
+  }
+  if (item.status === "FALSE_POSITIVE") {
+    console.log(`⚠️ Item ${debtId} is already marked as FALSE_POSITIVE`);
+    process.exit(0);
+  }
+
+  return { item, itemIndex };
+}
+
+// Display item info and planned action
+function displayItemInfo(item, parsed) {
+  console.log(`  Item: ${item.id}`);
+  console.log(`  Title: ${item.title.substring(0, 60)}${item.title.length > 60 ? "..." : ""}`);
+  console.log(`  File: ${item.file}:${item.line}`);
+  console.log(`  Severity: ${item.severity}`);
+  console.log(`  Current Status: ${item.status}`);
+
+  if (parsed.falsePositive) {
+    console.log(`\n  Action: Mark as FALSE_POSITIVE`);
+    console.log(`  Reason: ${parsed.reason}`);
+  } else {
+    console.log(`\n  Action: Mark as RESOLVED`);
+    if (parsed.pr) {
+      console.log(`  PR: #${parsed.pr}`);
+    }
+  }
+}
+
+// Attempt to restore master file from backup
+function restoreMasterBackup(masterBackup) {
+  if (masterBackup !== null) {
+    try {
+      fs.writeFileSync(MASTER_FILE, masterBackup);
+    } catch {
+      // Ignore restore errors; user will need to recover from VCS
+    }
+  }
+}
+
+// Handle critical write error with rollback attempt
+function handleWriteError(itemId, writeError, masterBackup, masterUpdated = true) {
+  if (masterUpdated) {
+    restoreMasterBackup(masterBackup);
+  }
+  console.error(`\n❌ Critical Error: Failed to write updates for ${itemId}.`);
+  console.error("   The master file may be out of sync. Please restore from version control.");
+  console.error(`   Error: ${writeError.message}`);
+  process.exit(1);
+}
+
+// Apply false positive resolution
+function applyFalsePositive(items, item, itemIndex, parsed, now, masterBackup) {
+  item.status = "FALSE_POSITIVE";
+  item.resolution = {
+    type: "false_positive",
+    reason: parsed.reason,
+    date: now,
+  };
+
+  items.splice(itemIndex, 1);
+
+  let masterUpdated = false;
+  try {
+    saveMasterDebt(items);
+    masterUpdated = true;
+    appendFalsePositive(item);
+    logResolution({
+      action: "false_positive",
+      item_id: item.id,
+      reason: parsed.reason,
+    });
+  } catch (writeError) {
+    handleWriteError(item.id, writeError, masterBackup, masterUpdated);
+  }
+
+  console.log(`\n✅ Marked ${item.id} as FALSE_POSITIVE`);
+  console.log(`  Moved to FALSE_POSITIVES.jsonl`);
+}
+
+// Apply resolved status
+function applyResolved(items, item, parsed, now, masterBackup) {
+  item.status = "RESOLVED";
+  item.resolution = {
+    type: "resolved",
+    pr: parsed.pr || null,
+    date: now,
+  };
+
+  try {
+    saveMasterDebt(items);
+    logResolution({
+      action: "resolved",
+      item_id: item.id,
+      pr: parsed.pr || null,
+    });
+  } catch (writeError) {
+    handleWriteError(item.id, writeError, masterBackup);
+  }
+
+  console.log(`\n✅ Marked ${item.id} as RESOLVED`);
+}
+
+// Regenerate views after resolution
+function regenerateViews() {
+  console.log("\n🔄 Regenerating views...");
+  try {
+    execSync(`"${process.execPath}" scripts/debt/generate-views.js`, { stdio: "inherit" });
+  } catch {
+    console.warn(
+      `  ⚠️ Failed to regenerate views. Run manually: "${process.execPath}" scripts/debt/generate-views.js`
+    );
+  }
+}
+
 // Main function
 async function main() {
   const args = process.argv.slice(2);
@@ -120,156 +260,30 @@ Example:
   }
 
   const parsed = parseArgs(args);
-
-  // Validate arguments
-  if (!parsed.debtId) {
-    console.error("Error: DEBT-XXXX ID is required");
-    process.exit(1);
-  }
-
-  if (parsed.falsePositive && !parsed.reason) {
-    console.error("Error: --reason is required with --false-positive");
-    process.exit(1);
-  }
+  validateArgs(parsed);
 
   console.log("🔧 Resolving technical debt item...\n");
 
-  // Load items
   const items = loadMasterDebt();
-  const itemIndex = items.findIndex((item) => item.id === parsed.debtId);
+  const { item, itemIndex } = findItem(items, parsed.debtId);
 
-  if (itemIndex === -1) {
-    console.error(`Error: Item not found: ${parsed.debtId}`);
-    process.exit(1);
-  }
-
-  const item = items[itemIndex];
-
-  // Check if already resolved
-  if (item.status === "RESOLVED") {
-    console.log(`⚠️ Item ${parsed.debtId} is already RESOLVED`);
-    console.log(`  Resolved on: ${item.resolution?.date || "unknown"}`);
-    process.exit(0);
-  }
-
-  if (item.status === "FALSE_POSITIVE") {
-    console.log(`⚠️ Item ${parsed.debtId} is already marked as FALSE_POSITIVE`);
-    process.exit(0);
-  }
-
-  // Display item info
-  console.log(`  Item: ${item.id}`);
-  console.log(`  Title: ${item.title.substring(0, 60)}${item.title.length > 60 ? "..." : ""}`);
-  console.log(`  File: ${item.file}:${item.line}`);
-  console.log(`  Severity: ${item.severity}`);
-  console.log(`  Current Status: ${item.status}`);
-
-  if (parsed.falsePositive) {
-    console.log(`\n  Action: Mark as FALSE_POSITIVE`);
-    console.log(`  Reason: ${parsed.reason}`);
-  } else {
-    console.log(`\n  Action: Mark as RESOLVED`);
-    if (parsed.pr) {
-      console.log(`  PR: #${parsed.pr}`);
-    }
-  }
+  displayItemInfo(item, parsed);
 
   if (parsed.dryRun) {
     console.log("\n🔍 DRY RUN: No changes written.");
     process.exit(0);
   }
 
-  // Update the item
   const now = new Date().toISOString().split("T")[0];
-
-  // Backup master file before modification for potential rollback (use null to detect initially empty)
   const masterBackup = fs.existsSync(MASTER_FILE) ? fs.readFileSync(MASTER_FILE, "utf8") : null;
 
   if (parsed.falsePositive) {
-    // Mark as false positive and move to separate file
-    item.status = "FALSE_POSITIVE";
-    item.resolution = {
-      type: "false_positive",
-      reason: parsed.reason,
-      date: now,
-    };
-
-    // Remove from master list in memory
-    items.splice(itemIndex, 1);
-
-    // Perform all write operations together with error handling
-    let masterUpdated = false;
-    try {
-      saveMasterDebt(items);
-      masterUpdated = true;
-      appendFalsePositive(item);
-      logResolution({
-        action: "false_positive",
-        item_id: item.id,
-        reason: parsed.reason,
-      });
-    } catch (writeError) {
-      // Attempt to restore master file if we updated it but subsequent writes failed
-      if (masterUpdated && masterBackup !== null) {
-        try {
-          fs.writeFileSync(MASTER_FILE, masterBackup);
-        } catch {
-          // Ignore restore errors; user will need to recover from VCS
-        }
-      }
-      console.error(`\n❌ Critical Error: Failed to write updates for ${item.id}.`);
-      console.error("   The master file may be out of sync. Please restore from version control.");
-      console.error(`   Error: ${writeError.message}`);
-      process.exit(1);
-    }
-
-    console.log(`\n✅ Marked ${item.id} as FALSE_POSITIVE`);
-    console.log(`  Moved to FALSE_POSITIVES.jsonl`);
+    applyFalsePositive(items, item, itemIndex, parsed, now, masterBackup);
   } else {
-    // Mark as resolved
-    item.status = "RESOLVED";
-    item.resolution = {
-      type: "resolved",
-      pr: parsed.pr || null,
-      date: now,
-    };
-
-    try {
-      saveMasterDebt(items);
-      logResolution({
-        action: "resolved",
-        item_id: item.id,
-        pr: parsed.pr || null,
-      });
-    } catch (writeError) {
-      // Attempt to restore master file
-      if (masterBackup !== null) {
-        try {
-          fs.writeFileSync(MASTER_FILE, masterBackup);
-        } catch {
-          // Ignore restore errors; user will need to recover from VCS
-        }
-      }
-      console.error(`\n❌ Critical Error: Failed to write updates for ${item.id}.`);
-      console.error("   The master file may be out of sync. Please restore from version control.");
-      console.error(`   Error: ${writeError.message}`);
-      process.exit(1);
-    }
-
-    console.log(`\n✅ Marked ${item.id} as RESOLVED`);
+    applyResolved(items, item, parsed, now, masterBackup);
   }
 
-  // Regenerate views
-  console.log("\n🔄 Regenerating views...");
-  try {
-    // Use process.execPath to ensure same Node.js executable is used
-    execSync(`"${process.execPath}" scripts/debt/generate-views.js`, { stdio: "inherit" });
-  } catch {
-    console.warn(
-      `  ⚠️ Failed to regenerate views. Run manually: "${process.execPath}" scripts/debt/generate-views.js`
-    );
-  }
-
+  regenerateViews();
   console.log(`\n📊 Remaining items in MASTER_DEBT.jsonl: ${items.length}`);
 }
 
