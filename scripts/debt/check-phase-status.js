@@ -8,8 +8,8 @@
  * Usage: node scripts/debt/check-phase-status.js
  */
 
-import { existsSync, readdirSync, readFileSync } from "fs";
-import { join } from "path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { sanitizeError } from "../lib/sanitize-error.js";
 
 const DEBT_DIR = "docs/technical-debt";

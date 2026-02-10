@@ -89,7 +89,7 @@ async function getCoordinates(address: string): Promise<{ lat: number; lng: numb
       const res = await fetch(url, { headers: { "User-Agent": "SonashApp/1.0" } });
       const data: Array<{ lat: string; lon: string }> = await res.json();
       if (data && data.length > 0) {
-        const loc = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        const loc = { lat: Number.parseFloat(data[0].lat), lng: Number.parseFloat(data[0].lon) };
         geocodingCache[address] = loc;
         process.stdout.write("."); // Progress dot
         return loc;
@@ -126,7 +126,8 @@ async function processLine(line: string, index: number): Promise<Meeting | null>
     // Basic converter
     const [timePart, modifier] = time.split(" ");
     const [hours, minutes] = timePart.split(":");
-    if (modifier.toLowerCase() === "pm" && hours !== "12") hours = String(parseInt(hours) + 12);
+    if (modifier.toLowerCase() === "pm" && hours !== "12")
+      hours = String(Number.parseInt(hours) + 12);
     if (modifier.toLowerCase() === "am" && hours === "12") hours = "00";
     time24 = `${hours.padStart(2, "0")}:${minutes || "00"}`;
   }

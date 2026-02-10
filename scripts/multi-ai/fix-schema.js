@@ -233,7 +233,7 @@ function normalizeConfidence(value) {
   // Percentage
   const numMatch = str.match(/(\d+)/);
   if (numMatch) {
-    const num = parseInt(numMatch[1], 10);
+    const num = Number.parseInt(numMatch[1], 10);
     if (num >= 0 && num <= 100) return num;
   }
 

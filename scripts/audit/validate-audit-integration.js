@@ -21,10 +21,10 @@
  * @version 1.0.0
  */
 
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
+const { execFileSync } = require("node:child_process");
 const { loadConfig } = require("../config/load-config");
 
 // Import error sanitization helper
@@ -589,7 +589,7 @@ function captureBaseline() {
       if (item.id) {
         const match = item.id.match(/DEBT-(\d+)/);
         if (match) {
-          const num = parseInt(match[1], 10);
+          const num = Number.parseInt(match[1], 10);
           if (num > maxId) maxId = num;
         }
       }
@@ -626,8 +626,8 @@ function compareBaseline(baseline) {
 
   // Find new DEBT-IDs
   if (baseline.lastDebtId && current.lastDebtId) {
-    const baselineNum = parseInt(baseline.lastDebtId.replace("DEBT-", ""), 10);
-    const currentNum = parseInt(current.lastDebtId.replace("DEBT-", ""), 10);
+    const baselineNum = Number.parseInt(baseline.lastDebtId.replaceAll("DEBT-", ""), 10);
+    const currentNum = Number.parseInt(current.lastDebtId.replaceAll("DEBT-", ""), 10);
     for (let i = baselineNum + 1; i <= currentNum; i++) {
       comparison.changes.newDebtIds.push(`DEBT-${String(i).padStart(4, "0")}`);
     }
@@ -868,12 +868,12 @@ function validateTdmsIntake(jsonlFile) {
     // Parse output for metrics
     const newItemsMatch = output.match(/New items to add:\s*(\d+)/);
     if (newItemsMatch) {
-      results.itemsToAdd = parseInt(newItemsMatch[1], 10);
+      results.itemsToAdd = Number.parseInt(newItemsMatch[1], 10);
     }
 
     const duplicatesMatch = output.match(/Duplicates skipped:\s*(\d+)/);
     if (duplicatesMatch) {
-      results.duplicatesSkipped = parseInt(duplicatesMatch[1], 10);
+      results.duplicatesSkipped = Number.parseInt(duplicatesMatch[1], 10);
     }
 
     console.log(`  Dry-run successful:`);
@@ -1110,7 +1110,7 @@ async function main() {
     }
 
     case "validate-stage": {
-      const stageNum = parseInt(args[1], 10);
+      const stageNum = Number.parseInt(args[1], 10);
       if (![1, 2, 3].includes(stageNum)) {
         console.error("Usage: validate-stage <1|2|3>");
         process.exit(1);

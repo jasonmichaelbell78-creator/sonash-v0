@@ -11,9 +11,9 @@
  * - Generates deterministic hashes for deduplication
  */
 
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
 const { glob } = require("glob");
 const { loadConfig } = require("../config/load-config");
 

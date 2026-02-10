@@ -465,7 +465,7 @@ function parseRoadmapItems(filePath) {
       for (const match of fileLineMatches) {
         files.push(match[1]);
         if (match[3]) {
-          fileLines.push({ file: match[1], line: parseInt(match[3], 10) });
+          fileLines.push({ file: match[1], line: Number.parseInt(match[3], 10) });
         }
       }
 
@@ -508,7 +508,7 @@ function parseRoadmapItems(filePath) {
       for (const match of fileLineMatches) {
         files.push(match[1]);
         if (match[3]) {
-          fileLines.push({ file: match[1], line: parseInt(match[3], 10) });
+          fileLines.push({ file: match[1], line: Number.parseInt(match[3], 10) });
         }
       }
 
@@ -549,7 +549,7 @@ function parseRoadmapItems(filePath) {
         const lineMatch = path.match(/^(.+):(\d+)$/);
         if (lineMatch) {
           files.push(lineMatch[1]);
-          fileLines.push({ file: lineMatch[1], line: parseInt(lineMatch[2], 10) });
+          fileLines.push({ file: lineMatch[1], line: Number.parseInt(lineMatch[2], 10) });
         } else {
           files.push(path);
         }
@@ -757,7 +757,7 @@ function crossReferenceWithTrackedItems(findings, roadmapItems, techDebtItems) {
       // Check all roadmap items with file:line references
       for (const [key, items] of roadmapByFileLine) {
         if (key.startsWith(basename + ":")) {
-          const roadmapLine = parseInt(key.split(":")[1], 10);
+          const roadmapLine = Number.parseInt(key.split(":")[1], 10);
           if (
             Number.isFinite(roadmapLine) &&
             Math.abs(findingLine - roadmapLine) <= LINE_PROXIMITY_THRESHOLD

@@ -552,7 +552,7 @@ export async function unifyFindings(sessionPath) {
   const categoryStats = {};
 
   for (const file of canonFiles) {
-    const category = file.replace("CANON-", "").replace(".jsonl", "").toLowerCase();
+    const category = file.replaceAll("CANON-", "").replaceAll(".jsonl", "").toLowerCase();
     const findings = parseJsonlFile(join(canonDir, file));
 
     categoryStats[category] = {

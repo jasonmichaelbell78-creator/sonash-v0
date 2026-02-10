@@ -132,8 +132,8 @@ async function retryFailures() {
           // (The previous script might have relied on implicit structure or just coordinates)
           // If we just want coordinates, result.lat/lon is enough.
 
-          const lat = parseFloat(result.lat);
-          const lon = parseFloat(result.lon);
+          const lat = Number.parseFloat(result.lat);
+          const lon = Number.parseFloat(result.lon);
 
           await docRef.update({
             coordinates: { lat, lng: lon },

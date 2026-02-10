@@ -147,7 +147,7 @@ function logOverride(check, reason) {
     if (fs.existsSync(OVERRIDE_LOG)) {
       const stats = fs.statSync(OVERRIDE_LOG);
       if (stats.size > MAX_LOG_SIZE) {
-        const backupFile = OVERRIDE_LOG.replace(".jsonl", `-${Date.now()}.jsonl`);
+        const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
         fs.renameSync(OVERRIDE_LOG, backupFile);
         console.log(`Override log rotated to ${path.basename(backupFile)}`);
       }
@@ -247,7 +247,7 @@ function listOverrides() {
 function clearLog() {
   ensureLogDir();
   if (fs.existsSync(OVERRIDE_LOG)) {
-    const backupFile = OVERRIDE_LOG.replace(".jsonl", `-archived-${Date.now()}.jsonl`);
+    const backupFile = OVERRIDE_LOG.replaceAll(".jsonl", `-archived-${Date.now()}.jsonl`);
     fs.renameSync(OVERRIDE_LOG, backupFile);
     console.log(`Override log archived to ${path.basename(backupFile)}`);
   }

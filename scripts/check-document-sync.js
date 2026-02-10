@@ -286,7 +286,11 @@ function checkStaleness(lastSyncedStr) {
   }
 
   const [, year, month, day] = match;
-  const lastSynced = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const lastSynced = new Date(
+    Number.parseInt(year),
+    Number.parseInt(month) - 1,
+    Number.parseInt(day)
+  );
   const now = new Date();
   const daysDiff = Math.floor((now - lastSynced) / (1000 * 60 * 60 * 24));
 

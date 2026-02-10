@@ -12,8 +12,8 @@
  * - Net-new findings
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { glob } = require("glob");
 
 const REVIEWS_DIR = path.join(__dirname, "../../docs/reviews");
@@ -57,7 +57,7 @@ function extractFile(item) {
 
 function extractLine(item) {
   if (typeof item.line === "number") return item.line;
-  if (typeof item.line === "string") return parseInt(item.line, 10) || 0;
+  if (typeof item.line === "string") return Number.parseInt(item.line, 10) || 0;
   return 0;
 }
 

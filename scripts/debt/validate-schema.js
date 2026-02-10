@@ -16,8 +16,8 @@
  *   2 - File not found or parse error
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { loadConfig } = require("../config/load-config");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");

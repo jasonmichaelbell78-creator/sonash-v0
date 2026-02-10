@@ -31,11 +31,11 @@
  * See: docs/templates/JSONL_SCHEMA_STANDARD.md for field mapping documentation
  */
 
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const os = require("os");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
+const os = require("node:os");
+const { execFileSync } = require("node:child_process");
 
 // Prototype pollution protection - filter dangerous keys from untrusted objects
 const DANGEROUS_KEYS = ["__proto__", "constructor", "prototype"];
@@ -155,7 +155,7 @@ function mapDocStandardsToTdms(item) {
         if (lineMatch) {
           mapped.file = lineMatch[1];
           if (!item.line) {
-            mapped.line = parseInt(lineMatch[2], 10);
+            mapped.line = Number.parseInt(lineMatch[2], 10);
             metadata.mappings_applied.push("files[0]→file+line");
           } else {
             metadata.mappings_applied.push("files[0]→file");
@@ -220,7 +220,7 @@ function getNextDebtId(existingItems) {
     if (item.id) {
       const match = item.id.match(/DEBT-(\d+)/);
       if (match) {
-        const num = parseInt(match[1], 10);
+        const num = Number.parseInt(match[1], 10);
         if (num > maxId) maxId = num;
       }
     }
@@ -256,7 +256,7 @@ function validateAndNormalize(item, sourceFile) {
     line:
       typeof mappedItem.line === "number"
         ? mappedItem.line
-        : parseInt(String(mappedItem.line), 10) || 0,
+        : Number.parseInt(String(mappedItem.line), 10) || 0,
     title: (mappedItem.title || "Untitled").substring(0, 500),
     description: mappedItem.description || "",
     recommendation: mappedItem.recommendation || "",

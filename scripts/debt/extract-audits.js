@@ -12,8 +12,8 @@
  * - Canonical MASTER_FINDINGS (CANON-*)
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { glob } = require("glob");
 
 const AUDITS_DIR = path.join(__dirname, "../../docs/audits");
@@ -59,7 +59,7 @@ function extractFile(item) {
 // Extract line number
 function extractLine(item) {
   if (typeof item.line === "number") return item.line;
-  if (typeof item.line === "string") return parseInt(item.line, 10) || 0;
+  if (typeof item.line === "string") return Number.parseInt(item.line, 10) || 0;
   return 0;
 }
 

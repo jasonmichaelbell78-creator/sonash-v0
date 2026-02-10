@@ -15,9 +15,9 @@
  *   node scripts/debt/resolve-bulk.js --pr 123 --file resolved-ids.txt
  */
 
-const fs = require("fs");
-const path = require("path");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execFileSync } = require("node:child_process");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -32,7 +32,7 @@ function parseArgs(args) {
     if (arg === "--dry-run") {
       parsed.dryRun = true;
     } else if (arg === "--pr" && args[i + 1]) {
-      parsed.pr = parseInt(args[i + 1], 10);
+      parsed.pr = Number.parseInt(args[i + 1], 10);
       i++;
     } else if (arg === "--file" && args[i + 1]) {
       parsed.file = args[i + 1];

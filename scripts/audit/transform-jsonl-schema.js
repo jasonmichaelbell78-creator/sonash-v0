@@ -19,8 +19,8 @@
  *   node scripts/audit/transform-jsonl-schema.js <input.jsonl> [--output <output.jsonl>] [--dry-run]
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { loadConfig } = require("../config/load-config");
 
 // Cache audit schema at module scope (avoid re-reading per item)

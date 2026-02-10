@@ -31,7 +31,7 @@ const args = process.argv.slice(2);
 const phaseArg = args.find((a) => a.startsWith("--phase="));
 const extractLearnings = args.includes("--extract-learnings");
 const summaryOnly = args.includes("--summary");
-const phase = phaseArg ? parseInt(phaseArg.split("=")[1], 10) : null;
+const phase = phaseArg ? Number.parseInt(phaseArg.split("=")[1], 10) : null;
 
 if (!phase || phase < 1 || phase > 5) {
   console.error(
@@ -188,7 +188,7 @@ function loadIssuesFromReport() {
     // Check for issue header
     const issueMatch = line.match(/^#### .{0,500}? Line (\d+|N\/A):\s{0,50}(.{0,500})$/u);
     if (issueMatch && currentFile) {
-      const lineNum = issueMatch[1] === "N/A" ? null : parseInt(issueMatch[1], 10);
+      const lineNum = issueMatch[1] === "N/A" ? null : Number.parseInt(issueMatch[1], 10);
       const message = issueMatch[2];
       const extractedRule = extractRuleFromLines(lines, i + 1);
       // Skip entries without a valid rule to prevent incorrect failures (Review #184 - Qodo)

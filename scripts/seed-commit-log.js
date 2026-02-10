@@ -18,7 +18,7 @@ const { execFileSync } = require("node:child_process");
 
 const projectDir = path.resolve(process.cwd());
 const COMMIT_LOG = path.join(projectDir, ".claude", "state", "commit-log.jsonl");
-const count = parseInt(process.argv[2], 10) || 50;
+const count = Number.parseInt(process.argv[2], 10) || 50;
 
 function gitExec(args) {
   try {

@@ -99,7 +99,7 @@ const existingOriginalIds = new Set(existingCanonical.map((f) => f.original_id).
 let maxCanonId = 0;
 for (const f of existingCanonical) {
   const match = String(f.id || "").match(/CANON-(\d+)/);
-  if (match) maxCanonId = Math.max(maxCanonId, parseInt(match[1], 10));
+  if (match) maxCanonId = Math.max(maxCanonId, Number.parseInt(match[1], 10));
 }
 
 // Filter out duplicates and assign canonical IDs

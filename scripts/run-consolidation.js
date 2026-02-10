@@ -100,7 +100,7 @@ function getHighestReviewNumber(content) {
   let highest = 0;
 
   while ((match = versionRegex.exec(content)) !== null) {
-    const reviewNum = parseInt(match[1], 10);
+    const reviewNum = Number.parseInt(match[1], 10);
     if (reviewNum > highest) {
       highest = reviewNum;
     }
@@ -119,7 +119,7 @@ function getLastConsolidatedReview(content) {
     /### Last Consolidation[\s\S]{0,500}?\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i
   );
   if (sectionMatch) {
-    return parseInt(sectionMatch[1], 10);
+    return Number.parseInt(sectionMatch[1], 10);
   }
 
   // Fallback: "Consolidation Trigger" section (this is where the script updates the range)
@@ -132,14 +132,14 @@ function getLastConsolidatedReview(content) {
 
     const triggerMatch = triggerSection.match(/\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i);
     if (triggerMatch) {
-      return parseInt(triggerMatch[1], 10);
+      return Number.parseInt(triggerMatch[1], 10);
     }
   }
 
   // Fallback: "Active reviews now #X-Y" indicates reviews up to X-1 were consolidated
   const activeMatch = content.match(/Active reviews(?:\s+now)?\s+#(\d+)-/i);
   if (activeMatch) {
-    return parseInt(activeMatch[1], 10) - 1;
+    return Number.parseInt(activeMatch[1], 10) - 1;
   }
 
   return 0;
@@ -157,7 +157,7 @@ function getConsolidationStatus(content) {
   const versionRegex =
     /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):/g;
 
-  const allNums = Array.from(content.matchAll(versionRegex), (m) => parseInt(m[1], 10));
+  const allNums = Array.from(content.matchAll(versionRegex), (m) => Number.parseInt(m[1], 10));
   const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
   // Review #216: Use reduce to avoid -Infinity and stack overflow on large arrays
@@ -177,7 +177,7 @@ function getConsolidationStatus(content) {
 
   // MANUAL: Extract consolidation counter for cross-validation
   const counterMatch = section.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
-  const manualCount = counterMatch ? parseInt(counterMatch[1], 10) || 0 : 0;
+  const manualCount = counterMatch ? Number.parseInt(counterMatch[1], 10) || 0 : 0;
 
   // Cross-validation: warn if manual counter drifted from computed
   if (manualCount !== computedCount && !quiet) {
@@ -215,7 +215,7 @@ function extractRecentReviews(content, lastReviewNum) {
   let match;
 
   while ((match = versionRegex.exec(content)) !== null) {
-    const reviewNum = parseInt(match[1], 10);
+    const reviewNum = Number.parseInt(match[1], 10);
     const description = match[2].trim();
 
     if (reviewNum > lastReviewNum) {

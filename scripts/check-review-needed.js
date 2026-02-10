@@ -153,7 +153,7 @@ function sanitizeDateString(dateString) {
   }
 
   const parsed = new Date(trimmed);
-  if (isNaN(parsed.getTime())) {
+  if (Number.isNaN(parsed.getTime())) {
     return "2025-01-01";
   }
 
@@ -170,7 +170,7 @@ function sanitizeDateString(dateString) {
 function getNextDay(dateString) {
   // Parse as UTC midnight to avoid timezone-related off-by-one errors (Review #198)
   const date = new Date(dateString + "T00:00:00Z");
-  if (isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime())) {
     // Review #204: Fail closed - return empty string so callers treat as no-op
     // This prevents command injection if sanitizeDateString somehow fails
     return "";

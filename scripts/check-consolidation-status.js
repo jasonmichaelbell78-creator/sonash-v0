@@ -37,10 +37,10 @@ function getHighestReviewNumber(content) {
   let highest = 0;
 
   while ((match = versionRegex.exec(content)) !== null) {
-    const reviewNum = parseInt(match[1], 10);
+    const reviewNum = Number.parseInt(match[1], 10);
     if (reviewNum > highest) highest = reviewNum;
     if (match[2]) {
-      const rangeEnd = parseInt(match[2], 10);
+      const rangeEnd = Number.parseInt(match[2], 10);
       if (rangeEnd > highest) highest = rangeEnd;
     }
   }
@@ -58,7 +58,7 @@ function getLastConsolidatedReview(content) {
     /### Last Consolidation[\s\S]{0,500}?\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i
   );
   if (sectionMatch) {
-    return parseInt(sectionMatch[1], 10);
+    return Number.parseInt(sectionMatch[1], 10);
   }
 
   // Fallback: "Consolidation Trigger" section (this is where the script updates the range)
@@ -71,14 +71,14 @@ function getLastConsolidatedReview(content) {
 
     const triggerMatch = triggerSection.match(/\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i);
     if (triggerMatch) {
-      return parseInt(triggerMatch[1], 10);
+      return Number.parseInt(triggerMatch[1], 10);
     }
   }
 
   // Fallback: "Active reviews now #X-Y" indicates reviews up to X-1 were consolidated
   const activeMatch = content.match(/Active reviews(?:\s+now)?\s+#(\d+)-/i);
   if (activeMatch) {
-    return parseInt(activeMatch[1], 10) - 1;
+    return Number.parseInt(activeMatch[1], 10) - 1;
   }
 
   return 0;
@@ -112,8 +112,8 @@ function main() {
 
     const allNums = [];
     for (const m of activeContent.matchAll(versionRegex)) {
-      allNums.push(parseInt(m[1], 10));
-      if (m[2]) allNums.push(parseInt(m[2], 10));
+      allNums.push(Number.parseInt(m[1], 10));
+      if (m[2]) allNums.push(Number.parseInt(m[2], 10));
     }
     const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
@@ -123,7 +123,7 @@ function main() {
 
     // MANUAL: Extract consolidation counter for cross-validation
     const counterMatch = activeContent.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
-    const manualCount = counterMatch ? parseInt(counterMatch[1], 10) || 0 : 0;
+    const manualCount = counterMatch ? Number.parseInt(counterMatch[1], 10) || 0 : 0;
 
     // Extract status (whitespace-flexible)
     const statusMatch = activeContent.match(/\*\*Status:\*\*\s+([^\n]+)/);

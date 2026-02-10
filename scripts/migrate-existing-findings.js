@@ -53,7 +53,7 @@ existingFindings.forEach((f) => {
   // Guard against missing id field to prevent crash
   const match = String(f.id || "").match(/CANON-(\d+)/);
   if (match) {
-    const num = parseInt(match[1], 10);
+    const num = Number.parseInt(match[1], 10);
     if (num > maxCanonId) maxCanonId = num;
   }
 });

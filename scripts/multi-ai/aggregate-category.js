@@ -421,7 +421,7 @@ export async function aggregateCategory(sessionPath, category) {
   const sourceStats = {};
 
   for (const file of files) {
-    const sourceName = file.replace(`${category}-`, "").replace(".jsonl", "");
+    const sourceName = file.replace(`${category}-`, "").replaceAll(".jsonl", "");
     const findings = parseJsonlFile(join(rawDir, file));
 
     sourceStats[sourceName] = findings.length;
@@ -550,7 +550,7 @@ export function getCategorySources(sessionPath, category) {
   let totalFindings = 0;
 
   for (const file of files) {
-    const sourceName = file.replace(`${category}-`, "").replace(".jsonl", "");
+    const sourceName = file.replace(`${category}-`, "").replaceAll(".jsonl", "");
     let content;
     try {
       content = readFileSync(join(rawDir, file), "utf-8");

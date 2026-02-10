@@ -26,12 +26,12 @@
  *   node scripts/debt/sync-sonarcloud.js --severity BLOCKER,CRITICAL --force
  */
 
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const { execFileSync } = require("child_process");
-const readline = require("readline");
-const os = require("os");
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
+const { execFileSync } = require("node:child_process");
+const readline = require("node:readline");
+const os = require("node:os");
 
 // Try to load dotenv if available
 try {
@@ -172,7 +172,7 @@ function getNextDebtId(existingItems) {
     if (item.id) {
       const match = item.id.match(/DEBT-(\d+)/);
       if (match) {
-        const num = parseInt(match[1], 10);
+        const num = Number.parseInt(match[1], 10);
         if (num > maxId) maxId = num;
       }
     }

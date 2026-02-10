@@ -29,10 +29,10 @@
  *     --effort E2
  */
 
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const { execSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
+const { execSync } = require("node:child_process");
 const { sanitizeError } = require("../lib/security-helpers.js");
 
 const { loadConfig } = require("../config/load-config");
@@ -102,7 +102,7 @@ function getNextDebtId(existingItems) {
     if (item.id) {
       const match = item.id.match(/DEBT-(\d+)/);
       if (match) {
-        const num = parseInt(match[1], 10);
+        const num = Number.parseInt(match[1], 10);
         if (num > maxId) maxId = num;
       }
     }
@@ -267,7 +267,7 @@ Example:
     severity: parsed.severity,
     type: type,
     file: normalizeFilePath(parsed.file),
-    line: parseInt(parsed.line, 10) || 0,
+    line: Number.parseInt(parsed.line, 10) || 0,
     title: parsed.title.substring(0, 500),
     description: parsed.description || "",
     recommendation: parsed.recommendation || "",

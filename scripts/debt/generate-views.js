@@ -14,8 +14,8 @@
  *   - docs/technical-debt/LEGACY_ID_MAPPING.json
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
@@ -96,7 +96,7 @@ function loadExistingItems() {
           if (item.id) {
             const match = item.id.match(/DEBT-(\d+)/);
             if (match) {
-              const num = parseInt(match[1], 10);
+              const num = Number.parseInt(match[1], 10);
               if (num > maxId) maxId = num;
             }
             // Store full item for field preservation (only for valid DEBT-XXXX IDs)
@@ -242,8 +242,8 @@ function main() {
 
   // Write MASTER_DEBT.jsonl in stable ID order (prevents gratuitous diffs)
   const idSorted = [...items].sort((a, b) => {
-    const aNum = parseInt((a.id || "").replace("DEBT-", ""), 10) || 0;
-    const bNum = parseInt((b.id || "").replace("DEBT-", ""), 10) || 0;
+    const aNum = Number.parseInt((a.id || "").replaceAll("DEBT-", ""), 10) || 0;
+    const bNum = Number.parseInt((b.id || "").replaceAll("DEBT-", ""), 10) || 0;
     return aNum - bNum;
   });
   const masterLines = idSorted.map((item) => JSON.stringify(item));

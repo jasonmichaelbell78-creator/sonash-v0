@@ -16,9 +16,9 @@
  *   node scripts/debt/resolve-item.js DEBT-0042 --false-positive --reason "Not applicable"
  */
 
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execSync } = require("node:child_process");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -36,7 +36,7 @@ function parseArgs(args) {
     } else if (arg === "--false-positive") {
       parsed.falsePositive = true;
     } else if (arg === "--pr" && args[i + 1]) {
-      parsed.pr = parseInt(args[i + 1], 10);
+      parsed.pr = Number.parseInt(args[i + 1], 10);
       i++;
     } else if (arg === "--reason" && args[i + 1]) {
       parsed.reason = args[i + 1];

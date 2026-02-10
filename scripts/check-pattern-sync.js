@@ -42,7 +42,7 @@ function extractPatterns(content, source) {
   let match;
 
   while ((match = regex.exec(content)) !== null) {
-    const num = parseInt(match[1], 10);
+    const num = Number.parseInt(match[1], 10);
     if (num > 0 && num < 1000) {
       // Reasonable pattern number range
       if (!patterns.has(num)) {
@@ -118,7 +118,7 @@ function checkPatternSync() {
   // Extract documented patterns from CODE_PATTERNS.md
   const codePatternsMatch = contents.codePatterns.match(/## Pattern #(\d+)/g) || [];
   for (const m of codePatternsMatch) {
-    const num = parseInt(m.match(/\d+/)[0], 10);
+    const num = Number.parseInt(m.match(/\d+/)[0], 10);
     results.documented.add(num);
   }
 

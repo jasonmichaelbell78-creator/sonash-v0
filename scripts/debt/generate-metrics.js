@@ -17,8 +17,8 @@
  *   - Manually when needed
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(BASE_DIR, "MASTER_DEBT.jsonl");

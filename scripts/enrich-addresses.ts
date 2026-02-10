@@ -160,8 +160,8 @@ async function enrichAddresses() {
           // OSM returns variable admin levels
           const newCity =
             addr.city || addr.town || addr.village || addr.hamlet || addr.suburb || currentCity;
-          const lat = parseFloat(result.lat);
-          const lon = parseFloat(result.lon);
+          const lat = Number.parseFloat(result.lat);
+          const lon = Number.parseFloat(result.lon);
 
           if (newZip) {
             // Update Firestore

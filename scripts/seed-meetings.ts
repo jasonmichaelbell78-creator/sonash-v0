@@ -39,7 +39,7 @@ function parseTime(timeStr: string): string {
   const match = timeStr.trim().match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
   if (!match) return timeStr;
 
-  let hours = parseInt(match[1], 10);
+  let hours = Number.parseInt(match[1], 10);
   const minutes = match[2];
   const period = match[3].toUpperCase();
 

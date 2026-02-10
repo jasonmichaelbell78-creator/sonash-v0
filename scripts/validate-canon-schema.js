@@ -85,7 +85,7 @@ function validateEnumField(finding, lineNum, result, field, validValues, isError
   if (isError) {
     result.addError(lineNum, field, message);
   } else {
-    result.addWarning(lineNum, field, message.replace("Invalid", "Non-standard"));
+    result.addWarning(lineNum, field, message.replaceAll("Invalid", "Non-standard"));
   }
 }
 

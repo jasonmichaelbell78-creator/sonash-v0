@@ -4,8 +4,8 @@
  * Extract JSONL findings from agent output files.
  * Usage: node scripts/multi-ai/extract-agent-findings.js <output-file> <dest-jsonl>
  */
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const outputFile = process.argv[2];
 const destFile = process.argv[3];

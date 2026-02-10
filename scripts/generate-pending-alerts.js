@@ -16,8 +16,8 @@
  * @created 2026-01-28
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const ROOT_DIR = path.join(__dirname, "..");
 const ALERTS_FILE = path.join(ROOT_DIR, ".claude", "pending-alerts.json");
@@ -69,7 +69,7 @@ function scanDeferredItems() {
     );
 
     if (deferredSectionMatch) {
-      const count = parseInt(deferredSectionMatch[1], 10);
+      const count = Number.parseInt(deferredSectionMatch[1], 10);
       const sectionText = deferredSectionMatch[2];
 
       if (count > 0) {

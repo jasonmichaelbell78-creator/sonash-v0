@@ -13,9 +13,9 @@
  *   node scripts/sync-claude-settings.js --diff     # Show differences
  */
 
-const fs = require("fs");
-const path = require("path");
-const os = require("os");
+const fs = require("node:fs");
+const path = require("node:path");
+const os = require("node:os");
 
 // Paths
 const HOME = os.homedir();

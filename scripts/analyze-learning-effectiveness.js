@@ -250,7 +250,7 @@ class LearningEffectivenessAnalyzer {
 
       const reviewMatch = line.match(/^####\s+Review\s+#(\d+)/);
       if (reviewMatch) {
-        const reviewNum = parseInt(reviewMatch[1]);
+        const reviewNum = Number.parseInt(reviewMatch[1]);
 
         // Skip duplicate reviews (can appear in both archive and current log)
         if (seenReviewNumbers.has(reviewNum)) {
@@ -362,7 +362,7 @@ class LearningEffectivenessAnalyzer {
       const reviewMatches = line.match(/Review #(\d+)/g);
       if (reviewMatches && currentPattern) {
         reviewMatches.forEach((match) => {
-          const num = parseInt(match.replace("Review #", ""));
+          const num = Number.parseInt(match.replaceAll("Review #", ""));
           if (!currentPattern.sourceReviews.includes(num)) {
             currentPattern.sourceReviews.push(num);
           }
@@ -1224,8 +1224,8 @@ function parseArgs(args) {
       if (!next || next.startsWith("--")) {
         throw new Error('Missing value for --since-review (e.g. "--since-review 150")');
       }
-      const reviewNum = parseInt(next, 10);
-      if (isNaN(reviewNum) || reviewNum < 1) {
+      const reviewNum = Number.parseInt(next, 10);
+      if (Number.isNaN(reviewNum) || reviewNum < 1) {
         throw new Error(`Invalid --since-review value: "${next}" (must be a positive integer)`);
       }
       options.sinceReview = reviewNum;

@@ -239,7 +239,7 @@ function parseDate(dateStr) {
   // Try various date formats
   const date = new Date(dateStr);
 
-  if (isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime())) {
     return { valid: false, error: `Invalid date format: "${dateStr}"` };
   }
 

@@ -18,9 +18,9 @@
  * 5. Systemic pattern grouper: Annotate items with same title across >=3 files
  */
 
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
 
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/normalized-all.jsonl");
 const OUTPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");

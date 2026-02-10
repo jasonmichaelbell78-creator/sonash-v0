@@ -170,7 +170,7 @@ function logEvent(eventData) {
     if (fs.existsSync(LOG_FILE)) {
       const stats = fs.statSync(LOG_FILE);
       if (stats.size > MAX_LOG_SIZE) {
-        const backupFile = LOG_FILE.replace(".jsonl", `-${Date.now()}.jsonl`);
+        const backupFile = LOG_FILE.replaceAll(".jsonl", `-${Date.now()}.jsonl`);
         fs.renameSync(LOG_FILE, backupFile);
         console.log(`Log rotated to ${path.basename(backupFile)}`);
       }
@@ -429,7 +429,7 @@ function clearLog() {
   ensureLogDir();
   if (fs.existsSync(LOG_FILE)) {
     // Archive old log before clearing
-    const backupFile = LOG_FILE.replace(".jsonl", `-archived-${Date.now()}.jsonl`);
+    const backupFile = LOG_FILE.replaceAll(".jsonl", `-archived-${Date.now()}.jsonl`);
     fs.renameSync(LOG_FILE, backupFile);
     console.log(`Previous session log archived to ${path.basename(backupFile)}`);
   }

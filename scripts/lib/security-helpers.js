@@ -285,8 +285,8 @@ function parseCliArgs(args, schema) {
       }
 
       if (def.type === "number") {
-        const num = parseInt(next, 10);
-        if (isNaN(num)) {
+        const num = Number.parseInt(next, 10);
+        if (Number.isNaN(num)) {
           errors.push(`${arg} must be a number`);
           continue;
         }
