@@ -60,9 +60,15 @@ function matchesWord(pattern) {
 }
 
 // Helper for multi-word phrase matching with word boundaries
+// Tokenizes phrase and allows varied spacing/punctuation between words
 function matchesPhrase(phrase) {
-  const escaped = phrase.toLowerCase().replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
-  const regex = new RegExp(`(^|[^a-z0-9])(${escaped})([^a-z0-9]|$)`, "i");
+  const tokens = phrase
+    .toLowerCase()
+    .trim()
+    .split(/\s+/)
+    .map((t) => t.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"));
+  const joined = tokens.join("[^a-z0-9]+");
+  const regex = new RegExp(`(^|[^a-z0-9])(${joined})([^a-z0-9]|$)`, "i");
   return regex.test(requestLower);
 }
 

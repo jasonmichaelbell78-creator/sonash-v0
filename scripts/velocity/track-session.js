@@ -169,14 +169,19 @@ function run() {
     sprint,
   };
 
-  // Ensure state directory exists
-  const stateDir = path.dirname(VELOCITY_LOG);
-  if (!fs.existsSync(stateDir)) {
-    fs.mkdirSync(stateDir, { recursive: true });
+  // Ensure state directory exists and write entry
+  try {
+    const stateDir = path.dirname(VELOCITY_LOG);
+    if (!fs.existsSync(stateDir)) {
+      fs.mkdirSync(stateDir, { recursive: true });
+    }
+    // Append to JSONL
+    fs.appendFileSync(VELOCITY_LOG, JSON.stringify(entry) + "\n", "utf8");
+  } catch (err) {
+    process.stderr.write(
+      `Warning: Could not write velocity log: ${err instanceof Error ? err.message : String(err)}\n`
+    );
   }
-
-  // Append to JSONL
-  fs.appendFileSync(VELOCITY_LOG, JSON.stringify(entry) + "\n", "utf8");
 
   // Print summary
   if (items.length === 0) {

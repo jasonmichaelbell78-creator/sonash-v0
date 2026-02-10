@@ -67,6 +67,15 @@ function parseTasks() {
       const id = taskMatch[2].toUpperCase();
       let description = taskMatch[3].trim();
 
+      // Support wrapped dependency annotations on the next indented line:
+      //   - [ ] **B10:** Description **NEW**
+      //         [depends: B4]
+      const nextLine = lines[i + 1] || "";
+      if (/^[ \t]{2,}\[depends?:/i.test(nextLine) && !/\[depends?:/i.test(description)) {
+        description = `${description} ${nextLine.trim()}`;
+        i += 1; // consume continuation line
+      }
+
       // Extract [depends: ...] annotation
       const depends = [];
       const depMatch = description.match(/\[depends?:\s{0,5}([^\]]{1,200})\]/i);
@@ -172,11 +181,16 @@ function topologicalOrder(tasks) {
     if (deg === 0 && tasks.has(id)) queue.push(id);
   }
 
+  // BFS with index pointer (O(1) dequeue instead of O(n) shift)
   const result = [];
-  while (queue.length > 0) {
-    const id = queue.shift();
+  const seen = new Set();
+  for (let qi = 0; qi < queue.length; qi++) {
+    const id = queue[qi];
     const t = tasks.get(id);
-    if (t) result.push(t);
+    if (t) {
+      result.push(t);
+      seen.add(id);
+    }
 
     for (const next of dependents.get(id) || []) {
       indegree.set(next, (indegree.get(next) || 0) - 1);
@@ -186,8 +200,8 @@ function topologicalOrder(tasks) {
 
   // If cycle prevented full ordering, append remaining tasks
   if (result.length < tasks.size) {
-    for (const [, task] of tasks) {
-      if (!result.includes(task)) result.push(task);
+    for (const [id, task] of tasks) {
+      if (!seen.has(id)) result.push(task);
     }
   }
 
@@ -201,35 +215,35 @@ function detectCircles(tasks) {
   const circles = [];
   const visited = new Set();
   const inStack = new Set();
+  const stack = []; // shared path stack (avoids O(n) array copies per DFS call)
 
-  function dfs(id, pathSoFar) {
+  function dfs(id) {
+    if (!tasks.has(id)) return; // skip deps not in task list
+
     if (inStack.has(id)) {
-      // Found a cycle
-      const cycleStart = pathSoFar.indexOf(id);
-      circles.push(pathSoFar.slice(cycleStart).concat(id));
+      // Found a cycle — extract from stack
+      const cycleStart = stack.indexOf(id);
+      if (cycleStart !== -1) circles.push(stack.slice(cycleStart).concat(id));
       return;
     }
-    if (visited.has(id)) {
-      return;
-    }
+    if (visited.has(id)) return;
 
     visited.add(id);
     inStack.add(id);
+    stack.push(id);
 
     const task = tasks.get(id);
-    if (task) {
-      for (const dep of task.depends) {
-        dfs(dep, [...pathSoFar, id]);
-      }
+    for (const dep of task.depends) {
+      if (!tasks.has(dep)) continue;
+      dfs(dep);
     }
 
+    stack.pop();
     inStack.delete(id);
   }
 
   for (const [id] of tasks) {
-    if (!visited.has(id)) {
-      dfs(id, []);
-    }
+    if (!visited.has(id)) dfs(id);
   }
 
   return circles;
