@@ -52,6 +52,9 @@ dataconnect/
 # auto-generated pattern suggestions
 scripts/suggested-patterns.json
 
+# ephemeral session state (velocity tracking)
+.claude/state/velocity-log.jsonl
+
 # SonarQube/SonarCloud analysis data (large generated files - use CI artifacts instead)
 docs/analysis/sonarqube-issues-*.json
 .sonar/
