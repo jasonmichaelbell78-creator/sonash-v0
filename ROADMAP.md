@@ -468,6 +468,13 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 - [x] **E15:** Create SKILL_INDEX.md (30min) - ✅ Session #113
 - [ ] **E16:** Consolidate audit skills (2hr) - Merge 9 /audit-\* into single
       /audit
+- [x] **E17:** claude.md context optimization (1hr) - Slimmed 497→~130 lines,
+      extracted to AGENT_ORCHESTRATION.md + CONTEXT_PRESERVATION.md ✅ PR #356
+- [x] **E18:** Dependency-aware task ordering (2hr) - `/task-next` skill +
+      Kahn's topological sort via `scripts/tasks/resolve-dependencies.js` ✅ PR
+      #356
+- [x] **E19:** JSONL-based velocity tracking (2hr) -
+      `scripts/velocity/track-session.js` + `generate-report.js` ✅ PR #356
 
 ### Track O - Owner Actions (Jason - Manual Setup)
 
