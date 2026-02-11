@@ -158,6 +158,21 @@ found:
 - The hook uses `console.error` for output, which isn't displayed to the user
 - **Perceived issue**: No visible feedback, not a functionality problem
 
+### Doc Index Staleness Check: FIXED (Session #149)
+
+Pre-commit check #8 had a timing race condition with lint-staged v16:
+
+1. User stages `DOCUMENTATION_INDEX.md` + other `.md` files
+2. lint-staged v16 stash/restore cycle runs (step 2 of pre-commit)
+3. Restore can drop `DOCUMENTATION_INDEX.md` from staging area
+4. Check #8 reads `STAGED_FILES` after lint-staged → doesn't find the index
+5. False-positive failure: "DOCUMENTATION_INDEX.md not updated"
+
+**Fix**: Changed check #8 from "verify index is staged" to "auto-regenerate and
+auto-stage the index". This eliminates the timing dependency entirely. The hook
+now runs `npm run docs:index && git add DOCUMENTATION_INDEX.md` automatically
+when `.md` files are in the commit.
+
 ### Cross-Platform Compatibility: STRONG
 
 - All Node.js hooks include `process.platform === "win32"` checks
