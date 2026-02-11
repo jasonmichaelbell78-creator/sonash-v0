@@ -40,8 +40,9 @@ function getStateDir(projectDir) {
   const dir = path.join(projectDir, STATE_DIR);
   try {
     fs.mkdirSync(dir, { recursive: true });
-  } catch {
-    // Directory may already exist
+  } catch (err) {
+    // mkdirSync with recursive:true only throws on real errors (not EEXIST)
+    console.warn(`state-utils: failed to create state dir: ${err.message}`);
   }
   return dir;
 }

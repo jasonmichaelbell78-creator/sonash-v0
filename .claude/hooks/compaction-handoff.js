@@ -79,11 +79,12 @@ function saveJson(filePath, data) {
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
     fs.renameSync(tmpPath, filePath);
     return true;
-  } catch {
+  } catch (err) {
+    console.warn(`compaction-handoff: failed to save ${path.basename(filePath)}: ${err.message}`);
     try {
       fs.rmSync(tmpPath, { force: true });
     } catch {
-      // ignore
+      // cleanup failure is non-critical
     }
     return false;
   }

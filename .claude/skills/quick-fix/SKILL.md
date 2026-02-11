@@ -1,3 +1,9 @@
+---
+name: quick-fix
+description:
+  Auto-suggest fixes for common pre-commit and pattern compliance issues
+---
+
 # quick-fix Skill
 
 Auto-suggest fixes for common pre-commit and pattern compliance issues.
@@ -118,4 +124,4 @@ Apply auto-fixes? [Y/n]
 
 - Pre-commit hook - Runs lint, patterns, tests
 - scripts/check-pattern-compliance.js - Pattern checker
-- .eslintrc.json - ESLint configuration
+- eslint.config.mjs - ESLint configuration

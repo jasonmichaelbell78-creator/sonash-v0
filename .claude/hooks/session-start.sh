@@ -234,7 +234,7 @@ if [[ -d "functions" ]]; then
   else
     echo "📦 Skipping Firebase Functions dependencies (unchanged since last install)"
     # Still need to build if lib/ doesn't exist or is stale
-    if [[ ! -d "functions/lib" ]] || [ "functions/src" -nt "functions/lib" ]]; then
+    if [[ ! -d "functions/lib" ]] || [[ "functions/src" -nt "functions/lib" ]]; then
       run_npm_with_timeout "Building Firebase Functions" \
         "cd functions && npm run build" 60
     else
@@ -371,7 +371,7 @@ if node "$REPO_ROOT/scripts/generate-pending-alerts.js" 2>/dev/null; then
       echo ""
       echo "📌 These alerts will be discussed with Claude. Press ENTER to continue..."
       # Review #322 Round 3: Check for interactive terminal to avoid hanging in CI/CD
-      if [ -t 0 ] && [ -r /dev/tty ]; then
+      if [[ -t 0 ]] && [[ -r /dev/tty ]]; then
         read -r < /dev/tty || true
       else
         echo "   (non-interactive; skipping acknowledgment prompt)"
@@ -407,3 +407,5 @@ echo "💡 Tips:"
 echo "   - Review claude.md + docs/agent_docs/CODE_PATTERNS.md for anti-patterns"
 echo "   - Use TodoWrite for complex tasks (3+ steps)"
 echo "   - Update SESSION_CONTEXT.md at end of session"
+
+exit 0

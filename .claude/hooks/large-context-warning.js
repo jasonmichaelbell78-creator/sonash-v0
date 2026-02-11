@@ -114,8 +114,8 @@ try {
     fs.mkdirSync(hooksDir, { recursive: true });
   }
   fs.writeFileSync(stateFilePath, JSON.stringify(state, null, 2));
-} catch {
-  // Ignore state save errors
+} catch (err) {
+  console.warn(`large-context-warning: failed to save state: ${err.message}`);
 }
 
 // Resolve full path for line counting
@@ -154,8 +154,8 @@ if (state.filesRead.length >= SESSION_FILE_LIMIT && !state.warningShown) {
   // Update state with warning shown flag
   try {
     fs.writeFileSync(stateFilePath, JSON.stringify(state, null, 2));
-  } catch {
-    // Ignore
+  } catch (err) {
+    console.warn(`large-context-warning: failed to update state: ${err.message}`);
   }
 }
 

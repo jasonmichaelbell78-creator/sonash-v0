@@ -1,3 +1,10 @@
+---
+name: test-suite
+description:
+  Multi-phase UI testing orchestration for SoNash using Playwright MCP or Chrome
+  Extension
+---
+
 # /test-suite — Unified Testing Suite
 
 <!-- prettier-ignore-start -->

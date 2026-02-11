@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-/* global require, process, console */
-/* eslint-disable @typescript-eslint/no-require-imports */
+/* global process, console */
 /**
  * decision-save-prompt.js - PostToolUse hook for decision documentation
  *

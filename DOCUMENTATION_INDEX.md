@@ -76,7 +76,7 @@ _Essential project-level documentation_
 | [AI Context & Rules for SoNash](claude.md)              | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑7      | 2026-02-10    |
 | [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-10    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓12 ↑6     | 2026-02-09    |
-| [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓13 ↑9     | 2026-02-10    |
+| [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓13 ↑9     | 2026-02-11    |
 | [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-11    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-10    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-05    |
@@ -182,7 +182,7 @@ _Claude Code skills_
 
 | Document                                                                                                                            | Description                                                       | References | Last Modified |
 | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
-| [/test-suite — Unified Testing Suite](.claude/skills/test-suite/SKILL.md)                                                           | Multi-phase UI testing orchestration for SoNash. Runs smoke ...   | ↓0 ↑0      | 2026-02-09    |
+| [/test-suite — Unified Testing Suite](.claude/skills/test-suite/SKILL.md)                                                           | Multi-phase UI testing orchestration for SoNash. Runs smoke ...   | ↓0 ↑0      | 2026-02-11    |
 | [Academic Test: Systematic Debugging Skill](.claude/skills/systematic-debugging/test-academic.md)                                   | You have access to the systematic debugging skill at              | ↓0 ↑0      | 2026-01-17    |
 | [Add Deferred PR Debt](.claude/skills/add-deferred-debt/SKILL.md)                                                                   | -                                                                 | ↓0 ↑0      | 2026-02-02    |
 | [Add Manual Technical Debt](.claude/skills/add-manual-debt/SKILL.md)                                                                | -                                                                 | ↓0 ↑0      | 2026-02-02    |
@@ -192,7 +192,7 @@ _Claude Code skills_
 | [Architecture Patterns](.claude/skills/senior-fullstack/references/architecture_patterns.md)                                        | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Artifacts Builder](.claude/skills/artifacts-builder/SKILL.md)                                                                      | To build powerful frontend claude.ai artifacts, follow these...   | ↓0 ↑0      | 2026-01-17    |
 | [Audit Aggregator Agent](.claude/skills/audit-aggregator/SKILL.md)                                                                  | -                                                                 | ↓0 ↑0      | 2026-02-04    |
-| [Audit Validation Wrapper](.claude/skills/audit-validation-wrapper/SKILL.md)                                                        | -                                                                 | ↓0 ↑0      | 2026-02-04    |
+| [Audit Validation Wrapper](.claude/skills/audit-validation-wrapper/SKILL.md)                                                        | -                                                                 | ↓0 ↑1      | 2026-02-11    |
 | [Backend Security Practices](.claude/skills/senior-backend/references/backend_security_practices.md)                                | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Cicd Pipeline Guide](.claude/skills/senior-devops/references/cicd_pipeline_guide.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Code Review Agent](.claude/skills/requesting-code-review/code-reviewer.md)                                                         | You are reviewing code changes for production readiness.          | ↓0 ↑0      | 2026-01-17    |
@@ -201,7 +201,7 @@ _Claude Code skills_
 | [Coding Standards](.claude/skills/code-reviewer/references/coding_standards.md)                                                     | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Common Antipatterns](.claude/skills/code-reviewer/references/common_antipatterns.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Comprehensive Automation Audit](.claude/skills/audit-process/SKILL.md)                                                             | -                                                                 | ↓1 ↑0      | 2026-02-09    |
-| [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)                                        | -                                                                 | ↓0 ↑0      | 2026-02-09    |
+| [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)                                        | -                                                                 | ↓1 ↑0      | 2026-02-09    |
 | [Condition-Based Waiting](.claude/skills/systematic-debugging/condition-based-waiting.md)                                           | Flaky tests often guess at timing with arbitrary delays. Thi...   | ↓0 ↑0      | 2026-01-17    |
 | [Content Research Writer](.claude/skills/content-research-writer/SKILL.md)                                                          | This skill acts as your writing partner, helping you researc...   | ↓0 ↑0      | 2026-01-17    |
 | [Creation Log: Systematic Debugging Skill](.claude/skills/systematic-debugging/CREATION-LOG.md)                                     | Reference example of extracting, structuring, and bulletproo...   | ↓0 ↑0      | 2026-01-17    |
@@ -212,7 +212,7 @@ _Claude Code skills_
 | [Deployment Strategies](.claude/skills/senior-devops/references/deployment_strategies.md)                                           | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Developer Growth Analysis](.claude/skills/developer-growth-analysis/SKILL.md)                                                      | This skill provides personalized feedback on your recent cod...   | ↓0 ↑0      | 2026-01-17    |
 | [Development Workflows](.claude/skills/senior-fullstack/references/development_workflows.md)                                        | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
-| [docs-update Skill](.claude/skills/docs-update/SKILL.md)                                                                            | Automatically update documentation artifacts when markdown f...   | ↓0 ↑0      | 2026-02-02    |
+| [docs-update Skill](.claude/skills/docs-update/SKILL.md)                                                                            | Automatically update documentation artifacts when markdown f...   | ↓0 ↑0      | 2026-02-11    |
 | [Document Sync Check](.claude/skills/docs-sync/SKILL.md)                                                                            | Run the automated document template-instance synchronization...   | ↓0 ↑0      | 2026-01-21    |
 | [Documentation Optimizer](.claude/skills/doc-optimizer/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-09    |
 | [Excel Analysis](.claude/skills/excel-analysis/SKILL.md)                                                                            | Read Excel files with pandas:                                     | ↓0 ↑0      | 2026-01-17    |
@@ -248,7 +248,7 @@ _Claude Code skills_
 | [Pressure Test 3: Authority + Social Pressure](.claude/skills/systematic-debugging/test-pressure-3.md)                              | -                                                                 | ↓0 ↑0      | 2026-01-17    |
 | [Python MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/python_mcp_server.md)                                 | This document provides Python-specific best practices and ex...   | ↓1 ↑0      | 2026-01-17    |
 | [Qa Best Practices](.claude/skills/senior-qa/references/qa_best_practices.md)                                                       | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
-| [quick-fix Skill](.claude/skills/quick-fix/SKILL.md)                                                                                | Auto-suggest fixes for common pre-commit and pattern complia...   | ↓0 ↑0      | 2026-02-02    |
+| [quick-fix Skill](.claude/skills/quick-fix/SKILL.md)                                                                                | Auto-suggest fixes for common pre-commit and pattern complia...   | ↓0 ↑0      | 2026-02-11    |
 | [React Patterns](.claude/skills/senior-frontend/references/react_patterns.md)                                                       | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Requesting Code Review](.claude/skills/requesting-code-review/SKILL.md)                                                            | Dispatch superpowers:code-reviewer subagent to catch issues ...   | ↓0 ↑0      | 2026-01-17    |
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-17    |
@@ -259,7 +259,7 @@ _Claude Code skills_
 | [Senior Frontend](.claude/skills/senior-frontend/SKILL.md)                                                                          | Complete toolkit for senior frontend with modern tools and b...   | ↓0 ↑0      | 2026-01-17    |
 | [Senior Fullstack](.claude/skills/senior-fullstack/SKILL.md)                                                                        | Complete toolkit for senior fullstack with modern tools and ...   | ↓0 ↑0      | 2026-01-17    |
 | [Senior Qa](.claude/skills/senior-qa/SKILL.md)                                                                                      | Complete toolkit for senior qa with modern tools and best pr...   | ↓0 ↑0      | 2026-01-17    |
-| [Session Begin Checklist](.claude/skills/session-begin/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-10    |
+| [Session Begin Checklist](.claude/skills/session-begin/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-11    |
 | [Session Checkpoint](.claude/skills/checkpoint/SKILL.md)                                                                            | -                                                                 | ↓0 ↑0      | 2026-02-05    |
 | [Session End Checklist](.claude/skills/session-end/SKILL.md)                                                                        | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-02-10    |
 | [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)                                                              | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-09    |
@@ -270,7 +270,7 @@ _Claude Code skills_
 | [SKILL](.claude/skills/frontend-design/SKILL.md)                                                                                    | -                                                                 | ↓0 ↑0      | 2026-01-17    |
 | [Skill Creator](.claude/skills/skill-creator/SKILL.md)                                                                              | This skill provides guidance for creating effective skills.       | ↓0 ↑0      | 2026-01-17    |
 | [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-02-09    |
-| [SonarCloud Cleanup Sprint](.claude/skills/sonarcloud-sprint/SKILL.md)                                                              | Automate the SonarCloud analysis and cleanup workflow:            | ↓0 ↑0      | 2026-01-21    |
+| [SonarCloud Cleanup Sprint](.claude/skills/sonarcloud-sprint/SKILL.md)                                                              | Automate the SonarCloud analysis and cleanup workflow:            | ↓0 ↑0      | 2026-02-11    |
 | [SonarCloud Debt Sync (Deprecated)](.claude/skills/sync-sonarcloud-debt/SKILL.md)                                                   | > **This skill is deprecated.** Use `/sonarcloud` instead, w...   | ↓0 ↑0      | 2026-02-05    |
 | [SonarCloud Integration](.claude/skills/sonarcloud/SKILL.md)                                                                        | Unified orchestrator for all SonarCloud operations against t...   | ↓0 ↑2      | 2026-02-06    |
 | [System Design Workflows](.claude/skills/senior-architect/references/system_design_workflows.md)                                    | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
@@ -538,7 +538,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**194 orphaned documents:**
+**193 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [Find Skills](.agents/skills/find-skills/SKILL.md)
@@ -591,7 +591,6 @@ Documents with no inbound links (not referenced by any other document):
 - [Artifacts Builder](.claude/skills/artifacts-builder/SKILL.md)
 - [Audit Aggregator Agent](.claude/skills/audit-aggregator/SKILL.md)
 - [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)
-- [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)
 - [Single-Session Engineering Productivity Audit](.claude/skills/audit-engineering-productivity/SKILL.md)
 - [Single-Session Performance Audit](.claude/skills/audit-performance/SKILL.md)
 - [Single-Session Refactoring Audit](.claude/skills/audit-refactoring/SKILL.md)
@@ -891,7 +890,7 @@ Documents with no inbound links (not referenced by any other document):
 | 145 | [.claude/skills/systematic-debugging/test-pressure-2.md](.claude/skills/systematic-debugging/test-pressure-2.md)                                                 | Pressure Test 2: Sunk Cost + Exhaustion                            | 3    | -                                                                               |
 | 146 | [.claude/skills/systematic-debugging/test-pressure-3.md](.claude/skills/systematic-debugging/test-pressure-3.md)                                                 | Pressure Test 3: Authority + Social Pressure                       | 3    | -                                                                               |
 | 147 | [.claude/skills/task-next/SKILL.md](.claude/skills/task-next/SKILL.md)                                                                                           | Task Next - Dependency-Aware Task Selection                        | 3    | -                                                                               |
-| 148 | [.claude/skills/test-suite/SKILL.md](.claude/skills/test-suite/SKILL.md)                                                                                         | /test-suite — Unified Testing Suite                                | 3    | ACTIVE                                                                          |
+| 148 | [.claude/skills/test-suite/SKILL.md](.claude/skills/test-suite/SKILL.md)                                                                                         | /test-suite — Unified Testing Suite                                | 3    | -                                                                               |
 | 149 | [.claude/skills/ui-design-system/SKILL.md](.claude/skills/ui-design-system/SKILL.md)                                                                             | UI Design System                                                   | 3    | -                                                                               |
 | 150 | [.claude/skills/using-superpowers/SKILL.md](.claude/skills/using-superpowers/SKILL.md)                                                                           | Using Skills                                                       | 3    | -                                                                               |
 | 151 | [.claude/skills/ux-researcher-designer/SKILL.md](.claude/skills/ux-researcher-designer/SKILL.md)                                                                 | UX Researcher &amp; Designer                                       | 3    | -                                                                               |

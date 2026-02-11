@@ -117,8 +117,8 @@ function writeState(state) {
   const statePath = path.join(projectDir, STATE_FILE);
   try {
     fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
-  } catch {
-    // Ignore errors
+  } catch (err) {
+    console.warn(`agent-trigger-enforcer: failed to write state: ${err.message}`);
   }
 }
 
@@ -286,8 +286,8 @@ if (applicableAgents.some((a) => a.agent === "code-reviewer")) {
     const reviewDir = path.dirname(reviewQueuePath);
     fs.mkdirSync(reviewDir, { recursive: true });
     fs.writeFileSync(reviewQueuePath, JSON.stringify(reviewQueue, null, 2));
-  } catch {
-    // Non-critical - ignore write failures
+  } catch (err) {
+    console.warn(`agent-trigger-enforcer: failed to write review queue: ${err.message}`);
   }
 }
 

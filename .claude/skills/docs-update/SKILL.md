@@ -1,3 +1,9 @@
+---
+name: docs-update
+description:
+  Automatically update documentation artifacts when markdown files change
+---
+
 # docs-update Skill
 
 Automatically update documentation artifacts when markdown files change.

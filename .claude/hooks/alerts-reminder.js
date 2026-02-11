@@ -16,8 +16,6 @@ const path = require("node:path");
 
 const ROOT_DIR = path.resolve(__dirname, "../..");
 const ALERTS_FILE = path.join(ROOT_DIR, ".claude", "pending-alerts.json");
-// Review #322: Fixed path to match session-start.js location
-const SESSION_STATE_FILE = path.join(ROOT_DIR, ".claude", "hooks", ".session-state.json");
 const ALERTS_ACK_FILE = path.join(ROOT_DIR, ".claude", "alerts-acknowledged.json");
 const PENDING_MCP_SAVE_FILE = path.join(ROOT_DIR, ".claude", "pending-mcp-save.json");
 const CONTEXT_TRACKING_FILE = path.join(

@@ -19,10 +19,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync } = require("node:child_process");
-
 // Configuration
-const TOOL_CALL_THRESHOLD = 30; // Save after this many tool calls
 const FILE_READ_THRESHOLD = 20; // Or after this many file reads
 const SAVE_INTERVAL_MINUTES = 15; // Don't save more often than this
 
@@ -84,7 +81,8 @@ function saveJson(filePath, data) {
     }
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
     return true;
-  } catch {
+  } catch (err) {
+    console.warn(`auto-save-context: failed to save ${path.basename(filePath)}: ${err.message}`);
     return false;
   }
 }

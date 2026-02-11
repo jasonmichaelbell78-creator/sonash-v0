@@ -73,8 +73,8 @@ function readSessionState() {
     if (fs.existsSync(SESSION_STATE_FILE)) {
       return JSON.parse(fs.readFileSync(SESSION_STATE_FILE, "utf8"));
     }
-  } catch {
-    // Ignore errors
+  } catch (err) {
+    console.error(`session-start: failed to read session state: ${err.message}`);
   }
   return null;
 }
@@ -85,8 +85,8 @@ function readSessionState() {
 function writeSessionState(state) {
   try {
     fs.writeFileSync(SESSION_STATE_FILE, JSON.stringify(state, null, 2));
-  } catch {
-    // Ignore errors
+  } catch (err) {
+    console.error(`session-start: failed to write session state: ${err.message}`);
   }
 }
 
@@ -176,8 +176,8 @@ function checkSecretsStatus() {
         looksLikeRealToken(readEnvVar(content, "GITHUB_TOKEN")) ||
         looksLikeRealToken(readEnvVar(content, "SONAR_TOKEN")) ||
         looksLikeRealToken(readEnvVar(content, "CONTEXT7_API_KEY"));
-    } catch {
-      // Ignore read errors
+    } catch (err) {
+      console.warn(`session-start: failed to read .env.local: ${err.message}`);
     }
   }
 
@@ -484,7 +484,7 @@ try {
   } catch {
     // File doesn't exist or is malformed - don't break session-start
   }
-} catch (error) {
+} catch {
   console.log("   ⚠️ Alerts generation skipped");
   warnings++;
 }

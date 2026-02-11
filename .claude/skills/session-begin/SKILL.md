@@ -324,7 +324,7 @@ npm run session:gaps
 
 **After resolving tech debt items:**
 
-1. Mark item as resolved in TECHNICAL_DEBT_MASTER.md
+1. Mark item as resolved in `docs/technical-debt/MASTER_DEBT.jsonl`
 2. Update ROADMAP.md if item was in a sprint track
 3. Note in session summary
 
@@ -340,8 +340,8 @@ npm run crossdoc:check
 **Key dependencies to verify:**
 
 - ROADMAP.md ↔ SESSION_CONTEXT.md (priorities match)
-- TECHNICAL_DEBT_MASTER.md ↔ ROADMAP.md (tech debt section current)
-- Audit findings ↔ TECHNICAL_DEBT_MASTER.md (new findings consolidated)
+- `MASTER_DEBT.jsonl` ↔ ROADMAP.md (tech debt section current)
+- Audit findings ↔ `MASTER_DEBT.jsonl` (new findings consolidated)
 
 **See:** [DOCUMENT_DEPENDENCIES.md](../../docs/DOCUMENT_DEPENDENCIES.md) for
 full dependency matrix.

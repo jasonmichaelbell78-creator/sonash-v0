@@ -102,8 +102,9 @@ function saveLastHead(head) {
       JSON.stringify({ lastHead: head, updatedAt: new Date().toISOString() })
     );
     fs.renameSync(tmpPath, TRACKER_STATE);
-  } catch {
+  } catch (err) {
     // Non-critical — worst case we re-log the same commit next time
+    console.warn(`commit-tracker: failed to save HEAD state: ${err.message}`);
   }
 }
 

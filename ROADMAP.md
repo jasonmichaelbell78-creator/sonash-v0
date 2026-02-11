@@ -291,16 +291,16 @@ reliability, and solo developer automations.
 > **Sprint manifest files:** `docs/technical-debt/logs/sprint-N-ids.json`
 > contain every DEBT-XXXX ID for each sprint, grouped by file.
 
-| Sprint | Directory Group            | Items | Files | Risk     | Status  |
-| ------ | -------------------------- | ----: | ----: | -------- | ------- |
-| 1      | `scripts/`                 |   601 |   106 | Low      | ✅ Done |
-| 2      | `components/`              |   334 |   100 | Moderate | ✅ Done |
-| 3      | `.claude/` + `docs/`       |   241 |    84 | Zero     | Pending |
-| 4      | `lib/` + `hooks/` + `app/` |   160 |    40 | Moderate | Pending |
-| 5      | `.github/` + config        |   154 |    40 | Moderate | Pending |
-| 6      | `functions/` + rules       |    80 |     9 | High     | Pending |
-| 7      | `tests/` + systemic        |   151 |    12 | Mixed    | Pending |
-| skip   | Dedicated sessions         |     6 |     - | -        | Later   |
+| Sprint | Directory Group            | Items | Files | Risk     | Status         |
+| ------ | -------------------------- | ----: | ----: | -------- | -------------- |
+| 1      | `scripts/`                 |   601 |   106 | Low      | ✅ Done        |
+| 2      | `components/`              |   334 |   100 | Moderate | ✅ Done        |
+| 3      | `.claude/` + `docs/`       |   241 |    84 | Zero     | 🔄 In Progress |
+| 4      | `lib/` + `hooks/` + `app/` |   160 |    40 | Moderate | Pending        |
+| 5      | `.github/` + config        |   154 |    40 | Moderate | Pending        |
+| 6      | `functions/` + rules       |    80 |     9 | High     | Pending        |
+| 7      | `tests/` + systemic        |   151 |    12 | Mixed    | Pending        |
+| skip   | Dedicated sessions         |     6 |     - | -        | Later          |
 
 **Approach:** File-based (not category-based) to avoid revisiting files. Each
 sprint uses parallel agents + wave-based execution + per-wave commits.
