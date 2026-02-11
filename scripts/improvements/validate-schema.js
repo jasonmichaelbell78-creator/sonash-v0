@@ -19,6 +19,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { loadConfig } = require("../config/load-config");
+const { validateAndVerifyPath } = require("../lib/validate-paths");
 
 const IMPROVEMENTS_DIR = path.join(__dirname, "../../docs/improvements");
 const DEFAULT_FILE = path.join(IMPROVEMENTS_DIR, "MASTER_IMPROVEMENTS.jsonl");
@@ -37,8 +38,29 @@ const VALID_IMPACTS = schema.validImpacts;
 const VALID_EFFORTS = schema.validEfforts;
 const VALID_STATUSES = schema.validStatuses;
 const CONFIDENCE_THRESHOLD = schema.confidenceThreshold;
-const ID_PATTERN = new RegExp(schema.idPattern);
 const REQUIRED_FIELDS = schema.requiredFields;
+
+if (
+  !Array.isArray(VALID_CATEGORIES) ||
+  !Array.isArray(VALID_IMPACTS) ||
+  !Array.isArray(VALID_EFFORTS) ||
+  !Array.isArray(VALID_STATUSES) ||
+  !Array.isArray(REQUIRED_FIELDS) ||
+  typeof CONFIDENCE_THRESHOLD !== "number" ||
+  typeof schema.idPattern !== "string"
+) {
+  console.error("Error: invalid improvement-schema config (unexpected shape/types).");
+  process.exit(2);
+}
+
+let ID_PATTERN;
+try {
+  ID_PATTERN = new RegExp(schema.idPattern);
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`Error: invalid improvement-schema idPattern regex: ${msg}`);
+  process.exit(2);
+}
 
 // Parse command line arguments
 function parseArgs(args) {
@@ -72,7 +94,9 @@ function validateItem(item, lineNum) {
 
   // Validate ID format
   if (item.id && !ID_PATTERN.test(item.id)) {
-    errors.push(`Line ${lineNum}: Invalid ID format: "${item.id}" (expected ENH-XXXX)`);
+    errors.push(
+      `Line ${lineNum}: Invalid ID format: "${item.id}" (expected pattern: ${schema.idPattern})`
+    );
   }
 
   // Validate category
@@ -170,6 +194,16 @@ Exit codes:
   const parsed = parseArgs(args);
   const filePath = parsed.file || DEFAULT_FILE;
 
+  // Security: validate path when user provides custom file
+  if (parsed.file) {
+    const projectDir = path.resolve(__dirname, "../..");
+    const validation = validateAndVerifyPath(parsed.file, projectDir);
+    if (!validation.valid) {
+      console.error(`Error: ${validation.error}`);
+      process.exit(2);
+    }
+  }
+
   if (!parsed.quiet) {
     console.log("Validating improvement schema...\n");
     console.log(`  File: ${filePath}`);
@@ -189,13 +223,14 @@ Exit codes:
     console.error(`Error reading file: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(2);
   }
-  const lines = content.split("\n").filter((line) => line.trim());
+  const lines = content.split("\n");
 
   if (!parsed.quiet) {
-    console.log(`  Items: ${lines.length}\n`);
+    const nonEmpty = lines.filter((l) => l.trim()).length;
+    console.log(`  Items: ${nonEmpty}\n`);
   }
 
-  if (lines.length === 0) {
+  if (lines.every((l) => !l.trim())) {
     if (!parsed.quiet) {
       console.log("  No items to validate (empty file).\n");
       console.log("Schema validation PASSED (empty file)");
@@ -213,6 +248,7 @@ Exit codes:
   for (let i = 0; i < lines.length; i++) {
     const lineNum = i + 1;
     const line = lines[i];
+    if (!line.trim()) continue;
 
     try {
       const item = JSON.parse(line);
@@ -242,7 +278,9 @@ Exit codes:
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      allErrors.push(`Line ${lineNum}: JSON parse error: ${msg}`);
+      allErrors.push(
+        `Line ${lineNum}: JSON parse error: ${msg} — Content: ${line.substring(0, 100)}`
+      );
     }
   }
 
@@ -281,7 +319,7 @@ Exit codes:
   // Summary
   if (!parsed.quiet) {
     console.log("\nSummary:");
-    console.log(`  Total items: ${lines.length}`);
+    console.log(`  Total items: ${lines.filter((l) => l.trim()).length}`);
     console.log(`  Unique IDs: ${seenIds.size}`);
     console.log(`  Errors: ${allErrors.length}`);
     console.log(`  Warnings: ${allWarnings.length}`);

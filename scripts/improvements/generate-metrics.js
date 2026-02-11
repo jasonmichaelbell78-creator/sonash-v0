@@ -113,7 +113,7 @@ function trackAlertItem(item, alerts) {
 function trackItemAge(item, now, ageState) {
   if (!isOpenItem(item)) return;
 
-  const createdValue = item.created_at || item.created;
+  const createdValue = item.created;
   if (!createdValue) return;
 
   const createdMs = new Date(createdValue).getTime();

@@ -90,8 +90,35 @@ function loadMasterImprovements() {
     console.error(`Failed to read ${MASTER_FILE}: ${errMsg}`);
     process.exit(1);
   }
-  const lines = content.split("\n").filter((line) => line.trim());
-  return lines.map((line) => JSON.parse(line));
+
+  const lines = content.split("\n");
+  const items = [];
+  const badLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line.trim()) continue;
+    try {
+      items.push(JSON.parse(line));
+    } catch (err) {
+      badLines.push({
+        line: i + 1,
+        message: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+
+  if (badLines.length > 0) {
+    console.warn(`Warning: ${badLines.length} invalid JSON line(s) in ${MASTER_FILE}`);
+    for (const b of badLines.slice(0, 5)) {
+      console.warn(`   Line ${b.line}: ${b.message}`);
+    }
+    if (badLines.length > 5) {
+      console.warn(`   ... and ${badLines.length - 5} more`);
+    }
+  }
+
+  return items;
 }
 
 // Save items to MASTER_IMPROVEMENTS.jsonl with atomic write

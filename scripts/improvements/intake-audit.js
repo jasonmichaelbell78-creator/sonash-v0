@@ -47,10 +47,13 @@ const { execFileSync } = require("node:child_process");
 const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 function safeCloneObject(obj) {
   if (obj === null || typeof obj !== "object") return obj;
+  if (Array.isArray(obj)) {
+    return obj.map(safeCloneObject);
+  }
   const result = {};
   for (const key of Object.keys(obj)) {
     if (!DANGEROUS_KEYS.has(key)) {
-      result[key] = obj[key];
+      result[key] = safeCloneObject(obj[key]);
     }
   }
   return result;
@@ -83,7 +86,7 @@ const VALID_STATUSES = schema.validStatuses;
 
 // Generate content hash for deduplication
 function generateContentHash(item) {
-  const normalizedFile = (item.file || "").replace(/^\.\//, "").replace(/^\//, "").toLowerCase();
+  const normalizedFile = normalizeFilePath(item.file || "").toLowerCase();
   const hashInput = [
     normalizedFile,
     item.line || 0,
@@ -131,7 +134,7 @@ function normalizeFilePath(filePath) {
  * @param {Object} item - Raw input item (may be enhancement audit or IMS format)
  * @returns {Object} - Item normalized to IMS format with metadata
  */
-function mapDocStandardsToIms(item) {
+function mapEnhancementAuditToIms(item) {
   // Use safe clone to prevent prototype pollution from untrusted JSONL input
   const mapped = safeCloneObject(item);
   const metadata = { format_detected: "ims", mappings_applied: [] };
@@ -249,7 +252,7 @@ function validateAndNormalize(item, sourceFile) {
   const errors = [];
 
   // First, apply enhancement audit -> IMS field mapping
-  const { item: mappedItem, metadata: mappingMetadata } = mapDocStandardsToIms(item);
+  const { item: mappedItem, metadata: mappingMetadata } = mapEnhancementAuditToIms(item);
 
   // Required fields check (after mapping)
   if (!mappedItem.title) errors.push("Missing required field: title");

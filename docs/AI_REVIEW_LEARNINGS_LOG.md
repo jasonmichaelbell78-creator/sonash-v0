@@ -324,7 +324,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
 **Status:** ✅ UP TO DATE **Last consolidation:** 2026-02-10 (Consolidation #18,
 Reviews #266-284)
 
@@ -768,6 +768,44 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #283: PR #360 — IMS Pipeline Bug Fixes & Security Hardening (2026-02-11)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + CI Failure **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 19 total (Critical: 1,
+Major: 5, Minor: 8, Trivial: 1, Deferred: 4)
+
+**Patterns Identified:**
+
+1. **severity/impact field mismatch**: IMS items use `impact` field but
+   mergeItems referenced `severity` — caused silent merge logic failure
+   - Root cause: Copy from TDMS code which uses `severity` field
+   - Prevention: Field name review when adapting code between systems
+2. **Blank line filtering corrupts line numbers**: Filtering blank lines before
+   iterating makes error line numbers wrong
+   - Root cause: `content.split("\n").filter(...)` loses original line indexes
+   - Prevention: Iterate all lines, skip blanks inside loop
+3. **Shallow clone insufficient for prototype pollution**: safeCloneObject only
+   cloned top-level — nested objects/arrays still shared
+   - Root cause: Incomplete recursive implementation
+   - Prevention: Always deep-clone when dealing with untrusted JSONL input
+
+**Resolution:**
+
+- Fixed: 15 items
+- Deferred: 4 items (with TDMS tracking)
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- When adapting TDMS patterns to IMS, field names MUST be audited (severity vs
+  impact)
+- JSONL parsing should always preserve original line numbers
+- safeCloneObject needs recursive deep clone for nested untrusted data
+- Cross-source path normalization needs a dedicated normalizeFilePath function,
+  not normalizeText (which strips path separators)
 
 ---
 

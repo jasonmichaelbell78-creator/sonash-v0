@@ -148,10 +148,10 @@ function mergeItems(primary, secondary) {
 
   // Keep more severe impact (I0=highest, unknown should not win)
   const impactRank = { I0: 0, I1: 1, I2: 2, I3: 3 };
-  const primaryRank = impactRank[primary.severity] ?? 99;
-  const secondaryRank = impactRank[secondary.severity] ?? 99;
+  const primaryRank = impactRank[primary.impact] ?? 99;
+  const secondaryRank = impactRank[secondary.impact] ?? 99;
   if (secondaryRank < primaryRank) {
-    merged.severity = secondary.severity;
+    merged.impact = secondary.impact;
   }
 
   // Track merge sources (only add valid source_id strings, prevent duplicates)
@@ -495,6 +495,12 @@ function runPass3SemanticMatch(pass2Items, dedupLog, reviewNeeded) {
   );
 }
 
+// Normalize file path for cross-source comparison
+function normalizeFilePathForComparison(filePath) {
+  if (!filePath) return "";
+  return filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "").toLowerCase();
+}
+
 // Pass 4: Cross-source match (IMS <-> TDMS overlap detection)
 // Unlike TDMS Pass 4, this does NOT merge items. It flags overlaps for review.
 function runPass4CrossSource(pass3Items, dedupLog, reviewNeeded) {
@@ -511,7 +517,9 @@ function runPass4CrossSource(pass3Items, dedupLog, reviewNeeded) {
   // Build a lookup by file for efficient matching
   const debtByFile = new Map();
   for (const debtItem of debtItems) {
-    const file = typeof debtItem.file === "string" ? debtItem.file : "";
+    const file = normalizeFilePathForComparison(
+      typeof debtItem.file === "string" ? debtItem.file : ""
+    );
     if (!file) continue;
     if (!debtByFile.has(file)) {
       debtByFile.set(file, []);
@@ -522,7 +530,9 @@ function runPass4CrossSource(pass3Items, dedupLog, reviewNeeded) {
   let flaggedCount = 0;
 
   for (const enhItem of pass3Items) {
-    const enhFile = typeof enhItem.file === "string" ? enhItem.file : "";
+    const enhFile = normalizeFilePathForComparison(
+      typeof enhItem.file === "string" ? enhItem.file : ""
+    );
     if (!enhFile) continue;
 
     const matchingDebtItems = debtByFile.get(enhFile);
@@ -668,6 +678,8 @@ function writeOutputFiles(pass5Items, dedupLog, reviewNeeded) {
       REVIEW_FILE,
       reviewNeeded.map((entry) => JSON.stringify(entry)).join("\n") + "\n"
     );
+  } else if (fs.existsSync(REVIEW_FILE)) {
+    fs.unlinkSync(REVIEW_FILE);
   }
 }
 
