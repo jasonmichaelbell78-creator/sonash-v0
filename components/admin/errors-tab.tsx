@@ -703,9 +703,11 @@ function ExportDropdown({ issues, loading }: Readonly<ExportDropdownProps>) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const copySuccessTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
     return () => {
+      isMountedRef.current = false;
       if (copySuccessTimeoutRef.current) {
         clearTimeout(copySuccessTimeoutRef.current);
         copySuccessTimeoutRef.current = null;
@@ -715,11 +717,12 @@ function ExportDropdown({ issues, loading }: Readonly<ExportDropdownProps>) {
 
   useEffect(() => {
     if (!showDropdown) return;
+    if (globalThis.window === undefined) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setShowDropdown(false);
     };
-    globalThis.addEventListener("keydown", handleKeyDown);
-    return () => globalThis.removeEventListener("keydown", handleKeyDown);
+    globalThis.window.addEventListener("keydown", handleKeyDown);
+    return () => globalThis.window.removeEventListener("keydown", handleKeyDown);
   }, [showDropdown]);
 
   const handleExportDownload = () => {
@@ -743,10 +746,12 @@ function ExportDropdown({ issues, loading }: Readonly<ExportDropdownProps>) {
       { totalEvents, uniqueIssues: filteredIssues.length, affectedUsers }
     );
     const success = await copyErrorExportToClipboard(exportData);
+    if (!isMountedRef.current) return;
     if (success) {
       setCopySuccess(true);
       if (copySuccessTimeoutRef.current) clearTimeout(copySuccessTimeoutRef.current);
       copySuccessTimeoutRef.current = setTimeout(() => {
+        if (!isMountedRef.current) return;
         copySuccessTimeoutRef.current = null;
         setCopySuccess(false);
       }, 2000);
@@ -784,7 +789,12 @@ function ExportDropdown({ issues, loading }: Readonly<ExportDropdownProps>) {
               <select
                 id="errors-export-timeframe"
                 value={exportTimeframe}
-                onChange={(e) => setExportTimeframe(e.target.value as TimeframePreset)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val in TIMEFRAME_LABELS) {
+                    setExportTimeframe(val as TimeframePreset);
+                  }
+                }}
                 className="w-full rounded-md border border-amber-200 px-2 py-1.5 text-sm text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 {(Object.keys(TIMEFRAME_LABELS) as TimeframePreset[]).map((preset) => (
@@ -846,7 +856,7 @@ export function ErrorsTab() {
     (uid: string) => {
       // Store the target user ID for the users tab to pick up
       try {
-        if (typeof globalThis.window !== "undefined") {
+        if (globalThis.window !== undefined) {
           sessionStorage.setItem("admin_navigate_to_user", uid);
         }
       } catch (err) {

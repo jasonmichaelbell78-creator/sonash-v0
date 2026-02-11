@@ -227,8 +227,29 @@ function LogRow({ log, isExpanded, onToggle }: Readonly<LogRowProps>) {
   );
 }
 
-const SENSITIVE_KEY_PATTERN =
-  /^(api[_-]?key|secret|password|token|credential|authorization|cookie|session[_-]?id|connection[_-]?string|private[_-]?key)$/i;
+const SENSITIVE_KEYS = new Set([
+  "api_key",
+  "api-key",
+  "apikey",
+  "secret",
+  "password",
+  "passwd",
+  "pwd",
+  "token",
+  "auth",
+  "authorization",
+  "cookie",
+  "credential",
+  "session_id",
+  "session-id",
+  "sessionid",
+  "connection_string",
+  "connection-string",
+  "connectionstring",
+  "private_key",
+  "private-key",
+  "privatekey",
+]);
 
 function redactPii(value: string): string {
   return value
@@ -252,13 +273,17 @@ function deepRedactValue(input: unknown, seen = new WeakSet<object>()): unknown 
 
     const proto = Object.getPrototypeOf(input);
     if (proto !== Object.prototype && proto !== null) {
-      return redactPii(String(input));
+      try {
+        return redactPii(String(input));
+      } catch {
+        return "[REDACTED_UNSERIALIZABLE_OBJECT]";
+      }
     }
 
     return Object.fromEntries(
       Object.entries(input as Record<string, unknown>).map(([k, v]) => [
         k,
-        SENSITIVE_KEY_PATTERN.test(k) ? "[REDACTED_SENSITIVE]" : deepRedactValue(v, seen),
+        SENSITIVE_KEYS.has(k.toLowerCase()) ? "[REDACTED_SENSITIVE]" : deepRedactValue(v, seen),
       ])
     );
   }

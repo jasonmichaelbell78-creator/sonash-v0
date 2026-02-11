@@ -29,7 +29,7 @@ export function FireworkBurst({
 }: Readonly<FireworkBurstProps>) {
   // Use lazy initialization to avoid calling Math.random during render
   const [fireworks] = useState<Firework[]>(() => {
-    if (typeof globalThis.window === "undefined") return [];
+    if (globalThis.window === undefined) return [];
 
     const createFirework = (id: number): Firework => {
       const sparkCount = 24; // Number of sparks per firework
@@ -52,7 +52,7 @@ export function FireworkBurst({
     return Array.from({ length: count }, (_, i) => createFirework(i));
   });
 
-  if (typeof globalThis.window === "undefined") return null;
+  if (globalThis.window === undefined) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">

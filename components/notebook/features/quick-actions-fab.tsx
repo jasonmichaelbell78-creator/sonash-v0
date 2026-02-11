@@ -33,7 +33,9 @@ export function QuickActionsFab({ onNavigate, onQuickMood }: Readonly<QuickActio
       color: "bg-blue-500 hover:bg-blue-600",
       onClick: () => {
         // Future: integrate with contacts
-        globalThis.location.href = "tel:";
+        if (globalThis.window !== undefined && globalThis.location) {
+          globalThis.location.href = "tel:";
+        }
         setIsOpen(false);
       },
     },

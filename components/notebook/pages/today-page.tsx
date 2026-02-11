@@ -78,13 +78,13 @@ function calculateCleanTimeParts(start: Date): DurationPart[] | null {
  * Fetch weekly stats (days logged and current streak) for a user
  */
 async function fetchWeeklyStats(userId: string): Promise<{ daysLogged: number; streak: number }> {
-  const { collection, query, where, getDocs, orderBy } = await import("firebase/firestore");
+  const { collection, query, where, getDocs, orderBy, limit } = await import("firebase/firestore");
 
   const sevenDaysAgo = subDays(startOfDay(new Date()), 6);
   const sevenDaysAgoId = format(sevenDaysAgo, "yyyy-MM-dd");
 
   const logsRef = collection(db, `users/${userId}/daily_logs`);
-  const q = query(logsRef, where("date", ">=", sevenDaysAgoId), orderBy("date", "desc"));
+  const q = query(logsRef, where("date", ">=", sevenDaysAgoId), orderBy("date", "desc"), limit(7));
   const snapshot = await getDocs(q);
 
   const uniqueDays = new Set(snapshot.docs.map((doc) => doc.data().date as string));

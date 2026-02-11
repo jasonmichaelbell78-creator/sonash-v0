@@ -15,10 +15,16 @@ export function InstallPrompt() {
   const [isVisible, setIsVisible] = useState(false);
   // Detect iOS during state initialization
   const [isIOS] = useState(() => {
-    if (typeof globalThis.window === "undefined") return false;
-    const userAgent = globalThis.navigator.userAgent.toLowerCase();
+    if (globalThis.window === undefined) return false;
+    const userAgent =
+      typeof globalThis.navigator?.userAgent === "string"
+        ? globalThis.navigator.userAgent.toLowerCase()
+        : "";
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
-    const isStandalone = globalThis.matchMedia("(display-mode: standalone)").matches;
+    const isStandalone =
+      typeof globalThis.matchMedia === "function"
+        ? globalThis.matchMedia("(display-mode: standalone)").matches
+        : false;
     return isIosDevice && !isStandalone;
   });
 

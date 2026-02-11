@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-  # Preview deploys disabled until GitHub repo variables are configured
-  # See SESSION_CONTEXT.md TODO for NEXT_PUBLIC_FIREBASE_* vars
+  # Preview deploys disabled — GitHub repo variables not configured
   # pull_request_target:
   #   branches:
   #     - main

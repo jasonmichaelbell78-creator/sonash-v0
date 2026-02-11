@@ -30,7 +30,7 @@ export function ConfettiBurst({
 }: Readonly<ConfettiBurstProps>) {
   // Use lazy initialization to avoid setState in effect
   const [pieces] = useState<ConfettiPiece[]>(() => {
-    if (typeof globalThis.window === "undefined") return [];
+    if (globalThis.window === undefined) return [];
 
     return Array.from({ length: intensity }, (_, i) => {
       const shapes: ("circle" | "square" | "rectangle")[] = ["circle", "square", "rectangle"];
@@ -49,7 +49,7 @@ export function ConfettiBurst({
     });
   });
 
-  if (typeof globalThis.window === "undefined") return null;
+  if (globalThis.window === undefined) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
