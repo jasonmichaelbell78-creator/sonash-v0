@@ -18,6 +18,20 @@
 
 ---
 
+## AI Instructions
+
+> For detailed AI update instructions, cross-document update triggers, and
+> validation commands, see [CLAUDE.md Section 6](./CLAUDE.md).
+
+**Quick Reference:**
+
+- **Active sprint work** → Update task checkboxes and progress %
+- **Future milestone details** → Add to [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md)
+- **Completed items** → Archive to [ROADMAP_LOG.md](./ROADMAP_LOG.md)
+- **Validation:** `npm run docs:update-readme`, `npm run roadmap:validate`
+
+---
+
 ## 1. 🎯 Document Purpose
 
 This is the **CANONICAL** product roadmap for SoNash. This document serves as:
@@ -2948,21 +2962,7 @@ trigger matrix and cross-document update rules, see
 
 ---
 
-## 26. 🤖 AI Instructions
-
-> For detailed AI update instructions, cross-document update triggers, and
-> validation commands, see [CLAUDE.md Section 6](./CLAUDE.md).
-
-**Quick Reference:**
-
-- **Active sprint work** → Update task checkboxes and progress %
-- **Future milestone details** → Add to [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md)
-- **Completed items** → Archive to [ROADMAP_LOG.md](./ROADMAP_LOG.md)
-- **Validation:** `npm run docs:update-readme`, `npm run roadmap:validate`
-
----
-
-## 27. 🗓️ Version History
+## 26. 🗓️ Version History
 
 | Version | Session | Changes                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

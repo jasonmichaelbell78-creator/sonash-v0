@@ -4,6 +4,20 @@
 
 ---
 
+## 🤖 AI Instructions
+
+When maintaining this document:
+
+1. **Update "Quick Start"** when Node.js version or Firebase CLI requirements
+   change
+2. **Update "Environment Setup"** when new env vars or Firebase config is added
+3. **Update "Testing"** section when test coverage or CI/CD procedures change
+4. **Update "Deployment"** when Firebase services or deployment flow change
+5. **Verify all commands work** before committing changes (run them!)
+6. **Keep troubleshooting current** - add new common issues as discovered
+
+---
+
 ## 🎯 Purpose & Scope
 
 This guide provides everything needed to set up and develop on the SoNash
@@ -1246,20 +1260,6 @@ summary command; full dashboard is larger scope.
 - Deployment process changes
 - New development workflows are established
 - Troubleshooting guides need updates
-
----
-
-## 🤖 AI Instructions
-
-When maintaining this document:
-
-1. **Update "Quick Start"** when Node.js version or Firebase CLI requirements
-   change
-2. **Update "Environment Setup"** when new env vars or Firebase config is added
-3. **Update "Testing"** section when test coverage or CI/CD procedures change
-4. **Update "Deployment"** when Firebase services or deployment flow change
-5. **Verify all commands work** before committing changes (run them!)
-6. **Keep troubleshooting current** - add new common issues as discovered
 
 ---
 
