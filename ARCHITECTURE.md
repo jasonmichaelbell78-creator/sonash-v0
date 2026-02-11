@@ -4,6 +4,18 @@
 
 ---
 
+## 🤖 AI Instructions
+
+When working with this architecture:
+
+1. **Follow established patterns** documented in Component Patterns section
+2. **Check security constraints** before adding new data paths
+3. **Update schemas** in this doc when modifying Firestore structure
+4. **Test security rules** after any changes to data architecture
+5. **Document new patterns** when creating reusable components
+
+---
+
 ## 🎯 Purpose
 
 This document provides the **technical architecture reference** for SoNash. It
@@ -756,18 +768,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
 - Adding new component patterns
 - Modifying tech stack (adding/removing dependencies)
 - Changing data flow or system architecture
-
----
-
-## 🤖 AI Instructions
-
-When working with this architecture:
-
-1. **Follow established patterns** documented in Component Patterns section
-2. **Check security constraints** before adding new data paths
-3. **Update schemas** in this doc when modifying Firestore structure
-4. **Test security rules** after any changes to data architecture
-5. **Document new patterns** when creating reusable components
 
 ---
 

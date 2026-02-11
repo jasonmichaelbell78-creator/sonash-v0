@@ -88,6 +88,7 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 
 | Trigger                       | Action                       | Tool  |
 | ----------------------------- | ---------------------------- | ----- |
+| Thorough planning requested   | `deep-plan` skill            | Skill |
 | Bug/error/unexpected behavior | `systematic-debugging`       | Skill |
 | Exploring unfamiliar code     | `Explore` agent              | Task  |
 | Multi-step implementation     | `Plan` agent                 | Task  |

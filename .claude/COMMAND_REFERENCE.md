@@ -83,6 +83,29 @@ security review for auth, input validation, secrets management **Example:**
 compliance check **Note:** S0/S1 findings require `verification_steps` (Session
 #98)
 
+### `/audit-enhancements`
+
+**Description:** Run a comprehensive enhancement audit across the entire project
+— code, product, UX, content, workflows, infrastructure, external services, and
+meta-tooling **When to use:** When looking for improvement opportunities beyond
+bug fixes and tech debt **Example:** `/audit-enhancements` **Parameters:** None
+**Output:** Enhancement findings ingested into `MASTER_IMPROVEMENTS.jsonl` (IMS)
+with ENH-XXXX IDs **Note:** Uses 4-phase adaptive architecture with 8 parallel
+agents; findings scored on I0-I3 impact scale; honesty guardrails require
+counter-arguments and 70% confidence threshold
+
+### `/deep-plan`
+
+**Description:** Structured discovery-first planning for complex tasks **When to
+use:** When a task is ambiguous with 5+ design decisions, when the user asks for
+thorough planning, or when creating a new system/skill/major feature
+**Example:** `/deep-plan` **Parameters:** None **Output:** Decision record
+table + structured implementation plan with file lists and step-by-step
+instructions **Note:** 5 phases: Discovery (10-25 categorized questions) ->
+Decision Record -> Plan -> Approval Gate -> Parallel Execution. Differs from
+regular plan mode by front-loading all decisions through exhaustive Q&A before
+writing any plan.
+
 ### `/doc-optimizer`
 
 **Description:** Scan all docs, auto-fix formatting/headers/links, report issues
@@ -120,7 +143,8 @@ security patterns
 **Description:** Complete verification steps before ending session **When to
 use:** **END OF EVERY SESSION** - ensures all work is committed and tracked
 **Example:** `/session-end` **Parameters:** None **Output:** Completion
-checklist, TDMS consolidation (6-pass dedup), and session summary
+checklist, session archival (keeps last 3 in SESSION_CONTEXT.md), TDMS
+consolidation (6-pass dedup), and session summary
 
 ### `/alerts`
 
@@ -875,10 +899,11 @@ session **Parameters:** None **Related npm scripts:** `session:gaps`,
 #### `session-end`
 
 **Description:** Complete verification steps before ending the session. Includes
-mandatory auto-commit script (`npm run session:end`) that commits and pushes
-SESSION_CONTEXT.md updates to ensure session-end is never forgotten. **When to
-use:** **END OF EVERY SESSION** **Example:** Final action before closing
-**Parameters:** None **Added:** Auto-commit mechanism in Session #115
+mandatory session archival (keep last 3 sessions in SESSION_CONTEXT.md, archive
+older to SESSION_HISTORY.md) and auto-commit script (`npm run session:end`) that
+commits and pushes updates. **When to use:** **END OF EVERY SESSION**
+**Example:** Final action before closing **Parameters:** None **Added:**
+Auto-commit mechanism in Session #115, session archival in Session #149
 
 ---
 

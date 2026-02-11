@@ -1,6 +1,6 @@
 # SoNash Documentation Plan Map
 
-**Last Updated:** 2026-02-07 | **Version:** 1.9
+**Last Updated:** 2026-02-11 | **Version:** 2.0
 
 ---
 
@@ -79,13 +79,19 @@ ROADMAP.md
     │    └─ Plan to convert non-blocking CI checks to blocking
     │    └─ Phase 1 complete: 2/6 gates now blocking (2026-02-02)
     │
-    └──► docs/technical-debt/ (Canonical location - ACTIVE)
-         ├── MASTER_DEBT.jsonl (868 items, single source of truth)
+    ├──► docs/technical-debt/ (TDMS - Canonical location - ACTIVE)
+    │    ├── MASTER_DEBT.jsonl (868 items, single source of truth)
+    │    ├── INDEX.md (Human-readable summary)
+    │    ├── PROCEDURE.md (System documentation)
+    │    ├── METRICS.md / metrics.json (Dashboard integration)
+    │    ├── PHASE_*_AUDIT.md (Audit reports for all 17 phases)
+    │    └── views/ (by-severity, by-category, by-status, verification-queue)
+    │
+    └──► docs/improvements/ (IMS - Canonical location - ACTIVE)
+         ├── MASTER_IMPROVEMENTS.jsonl (ENH-XXXX IDs, single source of truth)
          ├── INDEX.md (Human-readable summary)
-         ├── PROCEDURE.md (System documentation)
          ├── METRICS.md / metrics.json (Dashboard integration)
-         ├── PHASE_*_AUDIT.md (Audit reports for all 17 phases)
-         └── views/ (by-severity, by-category, by-status, verification-queue)
+         └── views/ (by-impact, by-category, by-status, review-queue)
 ```
 
 > **Note:** `docs/aggregation/` and `docs/audits/canonical/` have been archived
@@ -199,6 +205,8 @@ docs/archive/
 | **TDMS Plan changes**         | **Audit skills, pr-review skill, SESSION_CONTEXT**     |
 | **New technical debt found**  | **MASTER_DEBT.jsonl → ROADMAP.md (via DEBT-XXXX)**     |
 | **Debt item resolved**        | **MASTER_DEBT.jsonl status, ROADMAP.md checkbox**      |
+| **New enhancement found**     | **MASTER_IMPROVEMENTS.jsonl → views (via ENH-XXXX)**   |
+| **Enhancement implemented**   | **MASTER_IMPROVEMENTS.jsonl status, ROADMAP.md ref**   |
 
 ---
 
@@ -214,19 +222,22 @@ docs/archive/
 | **Manage technical debt** | **docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md** |
 | Find technical debt       | docs/technical-debt/MASTER_DEBT.jsonl (canonical)       |
 | View debt metrics         | docs/technical-debt/METRICS.md or metrics.json          |
+| **Find enhancements**     | **docs/improvements/MASTER_IMPROVEMENTS.jsonl (IMS)**   |
+| View enhancement metrics  | docs/improvements/METRICS.md or metrics.json            |
 
 ---
 
 ## Version History
 
-| Version | Date       | Description                                                  |
-| ------- | ---------- | ------------------------------------------------------------ |
-| 1.9     | 2026-02-07 | Added test-suite sync triggers, TESTING_USER_MANUAL.md links |
-| 1.7     | 2026-02-01 | TDMS ALL 17 PHASES COMPLETE - System fully operational       |
-| 1.6     | 2026-01-31 | TDMS Phases 6-8 complete, Phase 9b added (audit integration) |
-| 1.5     | 2026-01-30 | TDMS Phase 4 complete, validation scripts built              |
-| 1.4     | 2026-01-30 | TDMS Phase 3 complete, intake scripts built                  |
-| 1.3     | 2026-01-30 | TDMS Phase 2 complete, PROCEDURE.md created                  |
-| 1.2     | 2026-01-30 | TDMS Phase 1 complete, docs/technical-debt/ now active       |
-| 1.1     | 2026-01-30 | Added TDMS plan references, updated sync triggers            |
-| 1.0     | 2026-01-20 | Initial plan map created after document archival             |
+| Version | Date       | Description                                                                    |
+| ------- | ---------- | ------------------------------------------------------------------------------ |
+| 2.0     | 2026-02-11 | Added IMS (docs/improvements/) hierarchy, enhancement sync triggers, quick nav |
+| 1.9     | 2026-02-07 | Added test-suite sync triggers, TESTING_USER_MANUAL.md links                   |
+| 1.7     | 2026-02-01 | TDMS ALL 17 PHASES COMPLETE - System fully operational                         |
+| 1.6     | 2026-01-31 | TDMS Phases 6-8 complete, Phase 9b added (audit integration)                   |
+| 1.5     | 2026-01-30 | TDMS Phase 4 complete, validation scripts built                                |
+| 1.4     | 2026-01-30 | TDMS Phase 3 complete, intake scripts built                                    |
+| 1.3     | 2026-01-30 | TDMS Phase 2 complete, PROCEDURE.md created                                    |
+| 1.2     | 2026-01-30 | TDMS Phase 1 complete, docs/technical-debt/ now active                         |
+| 1.1     | 2026-01-30 | Added TDMS plan references, updated sync triggers                              |
+| 1.0     | 2026-01-20 | Initial plan map created after document archival                               |

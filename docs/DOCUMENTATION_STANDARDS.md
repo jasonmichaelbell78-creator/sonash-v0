@@ -60,6 +60,10 @@ When creating documentation:
 
 - Select correct template for document type
 - Include all required sections for the tier level
+- **AI Instructions section MUST be near the top** (after title and metadata)
+  - LLMs read top-to-bottom; instructions at the bottom of long documents are
+    often missed
+  - Place immediately after the metadata block, before main content
 - Validate with docs:check before committing
 
 ---
@@ -487,14 +491,16 @@ commands, file names
 
 1. **Document title** (H1)
 2. **Metadata block** (see standards above)
-3. **Purpose/Overview section** (what is this doc for?)
-4. **Main content** (tier-specific)
-5. **Version history table** (at bottom)
+3. **AI Instructions** (immediately after metadata - MUST be near top)
+4. **Purpose/Overview section** (what is this doc for?)
+5. **Main content** (tier-specific)
+6. **Version history table** (at bottom)
 
 ### Tier-Specific Requirements
 
 **Tier 1 (Canonical)**:
 
+- 🤖 AI Instructions (MUST be near top, after metadata)
 - 📋 Document Purpose
 - 📋 How to Use This Document
 - 📝 How to Update This Document
@@ -503,10 +509,10 @@ commands, file names
 - 📚 Main Content Sections
 - 📝 Update Triggers
 - 🗓️ Version History
-- 🤖 AI Instructions
 
 **Tier 2 (Foundation)**:
 
+- 🤖 AI Instructions (MUST be near top, after metadata)
 - 📋 Purpose & Scope
 - 🎯 Quick Start (optional but recommended)
 - 📚 Main Technical Content
@@ -515,10 +521,10 @@ commands, file names
 - 🔄 Update Procedures
 - 🔗 References
 - 🗓️ Version History
-- 🤖 AI Instructions
 
 **Tier 3 (Planning)**:
 
+- 🤖 AI Instructions (MUST be near top, after metadata)
 - 📋 Purpose & Scope
 - 🗺️ Status Dashboard
 - 🎯 Objectives & Requirements
@@ -528,10 +534,10 @@ commands, file names
 - ✅ Acceptance Criteria
 - 📊 Progress Tracking
 - 🗓️ Version History
-- 🤖 AI Instructions
 
 **Tier 4 (Reference)**:
 
+- 🤖 AI Instructions (MUST be near top, after metadata)
 - 📋 Purpose & Scope
 - 🎯 Quick Reference
 - 📖 Complete Workflow/Process
@@ -539,7 +545,6 @@ commands, file names
 - 🚨 Common Issues & Solutions
 - 💡 Best Practices
 - 🗓️ Version History
-- 🤖 AI Instructions
 
 **Tier 5 (Guides)**:
 

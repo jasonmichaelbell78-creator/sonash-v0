@@ -6,6 +6,42 @@ AI assistants **When to Use**: Start of EVERY session **Last Updated**:
 
 ---
 
+## 🤖 AI Instructions
+
+**For AI Assistants reading this:**
+
+**At session start:**
+
+1. **ALWAYS** read this document first
+2. Follow Session Startup Checklist (Quick Reference section)
+3. Use Documentation Hierarchy to navigate efficiently
+4. Check for active blockers before starting work
+
+**During session:**
+
+1. Follow Standard Procedures for all workflows
+2. Reference Navigation Map when looking for information
+3. Use Common Scenarios as templates
+4. Update documentation as you work
+
+**At session end:**
+
+1. Update SESSION_CONTEXT.md
+2. Update relevant planning docs
+3. Add entry to compliance log in
+   [COORDINATOR.md](./docs/multi-ai-audit/COORDINATOR.md)
+4. Commit documentation changes
+5. Verify all work documented
+
+**When updating this document:**
+
+1. Preserve structure and organization
+2. Keep Quick Reference current
+3. Update Navigation Map when docs change
+4. Test all links before committing
+
+---
+
 ## 📋 Purpose & Scope
 
 ### What This Document Provides
@@ -828,42 +864,6 @@ Use this template when completing any phase/milestone:
 | 1.2     | 2026-01-01 | Added MANDATORY Deliverable Audit Procedure as global standard for phase/milestone completion                                                                                                        | Claude      |
 | 1.1     | 2026-01-01 | Added GLOBAL_SECURITY_STANDARDS.md as mandatory step 2 in session startup                                                                                                                            | Claude      |
 | 1.0     | 2025-12-31 | Initial AI workflow guide created; includes CodeRabbit process reference                                                                                                                             | Claude Code |
-
----
-
-## 🤖 AI Instructions
-
-**For AI Assistants reading this:**
-
-**At session start:**
-
-1. **ALWAYS** read this document first
-2. Follow Session Startup Checklist (Quick Reference section)
-3. Use Documentation Hierarchy to navigate efficiently
-4. Check for active blockers before starting work
-
-**During session:**
-
-1. Follow Standard Procedures for all workflows
-2. Reference Navigation Map when looking for information
-3. Use Common Scenarios as templates
-4. Update documentation as you work
-
-**At session end:**
-
-1. Update SESSION_CONTEXT.md
-2. Update relevant planning docs
-3. Add entry to compliance log in
-   [COORDINATOR.md](./docs/multi-ai-audit/COORDINATOR.md)
-4. Commit documentation changes
-5. Verify all work documented
-
-**When updating this document:**
-
-1. Preserve structure and organization
-2. Keep Quick Reference current
-3. Update Navigation Map when docs change
-4. Test all links before committing
 
 ---
 

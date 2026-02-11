@@ -6,7 +6,8 @@
     "documentation",
     "process",
     "refactoring",
-    "engineering-productivity"
+    "engineering-productivity",
+    "enhancements"
   ],
   "validSeverities": ["S0", "S1", "S2", "S3"],
   "validTypes": ["bug", "code-smell", "vulnerability", "hotspot", "tech-debt", "process-gap"],

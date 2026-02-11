@@ -146,20 +146,22 @@ Blocks when you modify documents that have known dependencies:
 See:
 [DOCUMENT_DEPENDENCIES.md](./DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
 
-### Documentation Index Staleness (Check 8) - BLOCKING
+### Documentation Index Staleness (Check 8) - AUTO-FIX
 
-**Added in Session #103.** Prevents commit if new .md files are being added but
-`DOCUMENTATION_INDEX.md` is not staged. Override with
-`SKIP_DOC_INDEX_CHECK=1 git commit ...`
+**Added in Session #103. Updated Session #150:** Now auto-regenerates AND
+formats DOCUMENTATION_INDEX.md when .md files are staged. The hook runs
+`npm run docs:index` followed by `npx prettier --write` to ensure CI Prettier
+checks pass. Override with `SKIP_DOC_INDEX_CHECK=1 git commit ...`
 
-| When Triggered                         | Resolution                                                 |
-| -------------------------------------- | ---------------------------------------------------------- |
-| New .md file added (git diff-filter=A) | Run `npm run docs:index && git add DOCUMENTATION_INDEX.md` |
-| DOCUMENTATION_INDEX.md already staged  | Check passes                                               |
+| When Triggered                        | Resolution                                   |
+| ------------------------------------- | -------------------------------------------- |
+| .md file staged (git diff-filter=ADM) | Auto-runs `docs:index` + Prettier, re-stages |
+| DOCUMENTATION_INDEX.md already staged | Check passes                                 |
 
-> **Why blocking:** DOCUMENTATION_INDEX.md is the canonical auto-generated index
-> of all documentation. If new docs are added without regenerating the index,
-> the index becomes stale and unusable for navigation.
+> **Why auto-fix:** DOCUMENTATION_INDEX.md is the canonical auto-generated index
+> of all documentation. The pre-commit hook auto-regenerates and formats it to
+> prevent CI Prettier failures (fixed in Session #150 after 3 consecutive CI
+> failures).
 
 ### Document Header Validation (Check 8.5) - BLOCKING for new docs
 
@@ -644,7 +646,7 @@ cat .claude/settings.json | jq '.hooks.PostToolUse'
 | ----------------------- | ------------------------------------------------------------------------------------------------------------ |
 | analyze-user-request.js | Check PRE-TASK triggers for agent usage (v2.0: tightened compound matching, low-confidence hints via stderr) |
 | session-end-reminder.js | Detect session ending phrases                                                                                |
-| plan-mode-suggestion.js | Suggest Plan mode for complex tasks                                                                          |
+| plan-mode-suggestion.js | Suggest Plan mode or /deep-plan for complex tasks                                                            |
 
 ### Compliance Status
 

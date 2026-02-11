@@ -1,11 +1,14 @@
 # Audit Tracker
 
-**Document Version:** 2.5 **Created:** 2026-01-08 **Last Updated:** 2026-02-03
+**Document Version:** 2.6 **Created:** 2026-01-08 **Last Updated:** 2026-02-11
 **Purpose:** Track single-session and multi-AI audit completions for threshold
 management
 
 > **Related:** [TECHNICAL_DEBT_MASTER.md](./technical-debt/INDEX.md) ← Single
 > source of truth for all technical debt items (Session #98)
+>
+> **Related:** [MASTER_IMPROVEMENTS.jsonl](./improvements/INDEX.md) ← Single
+> source of truth for all enhancement items (IMS, Session #149)
 
 ---
 
@@ -51,6 +54,7 @@ When tracking audits:
 | Documentation            | 2026-02-07 (Comprehensive) | 0             | 0           | 20 doc files changed OR 30 commits        |
 | Process                  | 2026-02-09 (Single)        | 0             | 0           | Any CI/hook file changed OR 30 commits    |
 | Engineering-Productivity | 2026-02-07 (Comprehensive) | 0             | 0           | 30 commits OR DX-impacting changes        |
+| **Enhancements**         | _Never_                    | —             | —           | 40 commits OR major feature complete      |
 
 ### Multi-AI Audit Thresholds (Cross-Category)
 
@@ -239,6 +243,7 @@ deduplication/aggregation (e.g., 28 raw findings from 5 models).
 
 | Version | Date       | Changes                                                                                                                                                                   |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.6     | 2026-02-11 | Added Enhancements category (IMS); linked MASTER_IMPROVEMENTS.jsonl as parallel source of truth; enhancement audit threshold added                                        |
 | 2.5     | 2026-02-03 | **COMPREHENSIVE AUDIT (7 domains):** Added Engineering-Productivity category; 132 raw → 30 unique findings; TDMS intake DEBT-0870-0899; all thresholds reset              |
 | 2.4     | 2026-01-31 | **FIX:** Updated last audit dates from 2026-01-24 to 2026-01-30 (Session #116 comprehensive audit wasn't tracked)                                                         |
 | 2.2     | 2026-01-24 | **COMPREHENSIVE AUDIT:** 6 parallel agents, 115 findings (9 S0, 28 S1, 46 S2, 32 S3), 110h remediation; ALL thresholds reset; CRITICAL: 2 credential exposures found      |

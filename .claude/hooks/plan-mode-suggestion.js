@@ -126,13 +126,12 @@ if (shouldSuggest && !isSimpleRequest) {
   console.error("\ud83d\udcdd  MULTI-STEP TASK DETECTED");
   console.error("\u2501".repeat(28));
   console.error("This looks like a complex task that might benefit from");
-  console.error("using Plan mode for better organization.");
+  console.error("planning before implementation.");
   console.error("");
-  console.error("Plan mode helps with:");
-  console.error("  \u2714 Breaking down complex tasks into steps");
-  console.error("  \u2714 Identifying dependencies between steps");
-  console.error("  \u2714 Considering trade-offs before implementation");
-  console.error("  \u2714 Getting user approval before major changes");
+  console.error("Options:");
+  console.error("  \u2022 Plan mode - Quick planning (2-3 questions, then plan)");
+  console.error("  \u2022 /deep-plan - Exhaustive discovery (10-25 questions,");
+  console.error("    decision record, then detailed plan with approval gate)");
   console.error("");
 
   // Show what triggered the suggestion
@@ -145,6 +144,7 @@ if (shouldSuggest && !isSimpleRequest) {
 
   console.error("");
   console.error('Say "continue without plan" to proceed directly.');
+  console.error('Say "/deep-plan" for thorough discovery-first planning.');
   console.error("\u2501".repeat(28));
 }
 

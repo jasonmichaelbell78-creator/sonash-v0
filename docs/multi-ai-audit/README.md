@@ -65,8 +65,16 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 
 ### Step 4: INTEGRATE
 
+**For debt/quality findings (TDMS):**
+
 1. Run: `node scripts/debt/intake-audit.js <deduped-file>.jsonl`
 2. Verify: `npm run tdms:views`
+3. Update coordinator with audit results
+
+**For enhancement findings (IMS):**
+
+1. Run: `node scripts/improvements/intake-audit.js <deduped-file>.jsonl`
+2. Verify: `npm run ims:views`
 3. Update coordinator with audit results
 
 ---
@@ -82,6 +90,7 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 | Documentation            | [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)                       | Links, coverage, staleness, tier compliance    |
 | Process/Automation       | [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)                                   | CI/CD, hooks, automation, golden path          |
 | Engineering Productivity | [ENGINEERING_PRODUCTIVITY_AUDIT.md](./templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | DX friction, debugging, offline gaps           |
+| **Enhancements**         | [ENHANCEMENT_AUDIT.md](./templates/ENHANCEMENT_AUDIT.md)                           | Improvements beyond debt: UX, architecture, DX |
 
 ---
 
@@ -97,12 +106,16 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 
 ## Automation & Scripts
 
-| Command                                | Purpose                                |
-| -------------------------------------- | -------------------------------------- |
-| `npm run aggregate:audit-findings`     | Run 2-tier aggregation on raw findings |
-| `npm run tdms:views`                   | Regenerate TDMS dashboard views        |
-| `node scripts/debt/intake-audit.js`    | Ingest audit findings into TDMS        |
-| `node scripts/debt/validate-schema.js` | Validate JSONL files against schema    |
+| Command                                | Purpose                                  |
+| -------------------------------------- | ---------------------------------------- |
+| `npm run aggregate:audit-findings`     | Run 2-tier aggregation on raw findings   |
+| `npm run tdms:views`                   | Regenerate TDMS dashboard views          |
+| `node scripts/debt/intake-audit.js`    | Ingest audit findings into TDMS          |
+| `node scripts/debt/validate-schema.js` | Validate JSONL files against TDMS schema |
+| `npm run ims:intake`                   | Ingest enhancement findings into IMS     |
+| `npm run ims:views`                    | Regenerate IMS dashboard views           |
+| `npm run ims:validate`                 | Validate JSONL files against IMS schema  |
+| `npm run ims:metrics`                  | Generate IMS metrics dashboard           |
 
 ---
 
@@ -132,16 +145,20 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
   coordinator)
 - [docs/technical-debt/PROCEDURE.md](../technical-debt/PROCEDURE.md) - TDMS
   procedures
+- [docs/improvements/INDEX.md](../improvements/INDEX.md) - IMS improvement index
 - [docs/templates/JSONL_SCHEMA_STANDARD.md](../templates/JSONL_SCHEMA_STANDARD.md) -
-  Canonical schema
+  TDMS canonical schema
+- [docs/templates/IMPROVEMENT_JSONL_SCHEMA.md](../templates/IMPROVEMENT_JSONL_SCHEMA.md) -
+  IMS canonical schema
 
 ---
 
 ## Version History
 
-| Version | Date       | Changes                                              | Author |
-| ------- | ---------- | ---------------------------------------------------- | ------ |
-| 1.0     | 2026-02-04 | Initial creation during multi-ai-audit consolidation | Claude |
+| Version | Date       | Changes                                                             | Author |
+| ------- | ---------- | ------------------------------------------------------------------- | ------ |
+| 1.1     | 2026-02-11 | Added Enhancement Audit type (IMS), IMS scripts & schema references | Claude |
+| 1.0     | 2026-02-04 | Initial creation during multi-ai-audit consolidation                | Claude |
 
 ---
 

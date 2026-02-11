@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 15.7 **Created:** 2026-01-02 **Last Updated:** 2026-02-10
+**Document Version:** 16.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
 
 ## Purpose
 
@@ -28,6 +28,15 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.6    | 2026-02-11 | Review #294: PR #360 R12 — CI fix: eslint-disable block for control-char regex, sanitizeLogSnippet extraction, BiDi control strip, escapeMarkdown String coercion + \r\n, valid-only ENH-ID idMap, TOCTOU symlink recheck before unlink, EEXIST recovery for resolve-item, strict digits-only line parsing, decoupled log/review writes, toLineNumber reject 0/negative, Windows-safe metrics rename. Active reviews #266-294.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 16.5    | 2026-02-11 | Review #293: PR #360 R11 — Markdown injection (HTML strip in escapeMarkdown), stale temp EEXIST recovery, safeCloneObject throw on deep nesting + module-scope in dedup, deduped.jsonl non-fatal write, non-critical log/review write guard, safeCloneObject for MASTER_DEBT.jsonl, terminal escape sanitization, robust line number sanitization, Windows-safe unlink-before-rename, schema config validation. Active reviews #266-293.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 16.4    | 2026-02-11 | Review #292: PR #360 R10 — assertNotSymlink fail-closed (rethrow unknown errors, all 5 files), safeCloneObject in resolve-item.js + validate-schema.js, temp-file symlink+wx flag (dedup-multi-pass.js + generate-views.js), atomic writes for metrics.json + METRICS.md, atomic rollback restore, existingEvidence sanitization, line number validation, Pass 2 DoS cap (5000 items), dedup run_metadata audit trail, pipeline write error handling. Active reviews #266-292.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 16.3    | 2026-02-11 | Review #291: PR #360 R9 — Prototype pollution guard (safeCloneObject in dedup-multi-pass.js + generate-views.js), assertNotSymlink EACCES/EPERM fail-closed (all 5 files), atomic write for generate-views.js MASTER_FILE, schema-stable reviewNeeded entries, symlink guards on generate-metrics.js (3 write paths) + resolve-item.js (saveMasterImprovements + logResolution), acceptance evidence sanitization, BOM strip in resolve-item.js. Active reviews #266-291.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 16.2    | 2026-02-11 | Review #290: PR #360 R8 — CI fix (assertNotSymlink instanceof Error), Pass 0 no-file guard, symlink guards on generate-views.js + logIntake(), enhancement-audit format precision, \_\_dirname child script, fingerprint type guard, Pass 3 comparison cap (50k), isStringArray for-loop + Number.isFinite. Consolidation counter 8→9 (consolidation due). Active reviews #266-290.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 16.1    | 2026-02-11 | Review #289: PR #360 R7 — Symlink guards (intake-audit + dedup), Pass 3 grouped by file (O(n²) → O(n²/k)), regex flag preservation, non-fatal operator hash, honesty guard (counter_argument), non-object JSONL rejection in dedup, whitespace-only required field validation, timestamp spread in resolve-item, hardened schema config (isStringArray + confidence range). Consolidation counter 7→8 (consolidation due). Active reviews #266-289.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 16.0    | 2026-02-11 | Review #288: PR #360 R6 — Pass 3 semantic match changed to flag-only (no destructive merge), PII removal (hash operator, basename input_file), timestamp integrity (spread order), stateful regex guard, normalizeFilePath line-suffix stripping, non-object JSONL validation, accurate ingestion outcome, empty evidence cleanup. Consolidation counter 6→7 (consolidation due). Active reviews #266-288.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 15.9    | 2026-02-11 | Review #287: PR #360 R5 — impactSort falsy bug (                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | → ??), ID drift from @line: suffix, missing title guard, always-sanitize evidence, BOM in intake JSONL, logIntake outcome field + try/catch. Consolidation counter 5→6. Active reviews #266-287.                                                                  |
+| 15.8    | 2026-02-11 | Review #286: PR #360 R4 — Prototype pollution (safeCloneObject after parse), TOCTOU (use realPath), evidence sanitization, BOM handling, absolute script paths, logging try/catch, stderr for errors. ENH-0003 (Markdown injection) routed to IMS. Consolidation counter 4→5. Active reviews #266-286.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 15.7    | 2026-02-10 | Review #282: PR #358 R2 — SSR guards, regex simplification, key stability (24 items - 0 CRITICAL, 1 MAJOR SonarCloud, 21 MINOR, 2 REJECTED). **MAJOR**: Replace SENSITIVE_KEY_PATTERN regex (complexity 21) with Set-based SENSITIVE_KEYS lookup. **MINOR**: 8× typeof→direct undefined comparison (SonarCloud), SSR guards (keydown/confirm/location/navigator/matchMedia), unmount guard for async copy, select value validation, composite React keys (2 files), Firestore limit(7), window ref for event listeners (2 files), try/catch String(input), deploy-firebase TODO removal, robust reload. **REJECTED**: auth-error-banner toast dedup (works correctly), NightReviewCard React namespace type (too minor). Consolidation counter 11→12 (consolidation due). Active reviews #266-282.                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 15.6    | 2026-02-10 | Review #281: PR #358 Sprint 2 — Shared State, Redaction, Key Stability (9 items - 1 MAJOR, 7 MINOR, 1 TRIVIAL, 0 REJECTED). **MAJOR**: Module-level Set shared state bug in auth-error-banner.tsx → useState. **MINOR**: Key-name-based PII redaction (SENSITIVE_KEY_PATTERN), deepRedactValue null check, composite React keys (3 files), guard clause for optional params, SSR-safe reload. **TRIVIAL**: Removed redundant onKeyDown on backdrop div. Consolidation counter 10→11 (consolidation due). Active reviews #266-281.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | 15.5    | 2026-02-09 | Review #272: PR #352 Round 6 — FINAL loadConfig sweep (12 items - 1 Security, 8 MAJOR, 2 MINOR, 1 REJECTED). **SECURITY**: Path traversal guard in load-config.js (reject .., /, \\). **MAJOR**: Complete sweep of ALL remaining unguarded loadConfig calls (6 files: validate-schema.js, normalize-all.js, intake-manual.js, intake-audit.js, intake-pr-deferred.js, validate-skill-config.js), description fallback YAML artifact filter, path-boundary archive regex, overlapping trigger exclusion. **REJECTED**: audit-schema.json category rename + 3 shape validation suggestions (over-engineering). **MILESTONE**: Zero unguarded loadConfig calls remain in codebase. Consolidation counter 7→8. Active reviews #266-272.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
@@ -324,9 +333,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
-**Status:** ✅ UP TO DATE **Last consolidation:** 2026-02-10 (Consolidation #18,
-Reviews #266-284)
+**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #299 Reviews
+#266-284)
 
 ### When to Consolidate
 
@@ -348,8 +357,8 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-02-07 (Session #140)
-- **Reviews consolidated:** #254-#265 (12 reviews)
+- **Date:** 2026-02-11 (Session #114+)
+- **Reviews consolidated:** #268-#289 (11 reviews)
 - **Patterns added to CODE_PATTERNS.md v2.6:**
   - **Security (4 patterns):**
     - PII in audit reports (hashed identifiers)
@@ -768,6 +777,492 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #294: PR #360 R12 — CI Fix, TOCTOU Recheck, BiDi Strip, ID Validation, Log Decoupling (2026-02-11)
+
+**Source:** CI Failure (ESLint no-control-regex) + Qodo Compliance R12 + Qodo
+Code Suggestions R12 **PR/Branch:** claude/new-session-NgVGX (PR #360)
+**Suggestions:** 12 code + 2 compliance (Security: 2, Medium: 7, Low: 3,
+Compliance: 2)
+
+**Patterns Identified:**
+
+1. **CI failure**: `eslint-disable-next-line` doesn't work when the regex is on
+   a subsequent line from `.replace(` — use block-level
+   `eslint-disable`/`enable` instead.
+2. **TOCTOU recheck**: assertNotSymlink must be called immediately before
+   unlinkSync, not just at function entry, to close the race window.
+3. **BiDi spoofing**: Unicode bidirectional control characters (\u202A-\u202E,
+   \u2066-\u2069) can spoof terminal/log output — strip them.
+4. **escapeMarkdown robustness**: Non-string inputs need String() coercion; \r\n
+   should be normalized, not just \n.
+5. **ID propagation**: Only valid ENH-XXXX IDs should populate idMap —
+   invalid/legacy IDs should not be mapped for stable lookup.
+6. **Log decoupling**: Separate try/catch for log vs review file writes prevents
+   one failure from blocking the other.
+7. **Line number strictness**: parseInt("12abc", 10) silently returns 12 — use
+   digits-only regex guard.
+
+**Resolution:**
+
+- Fixed: 12 items across 6 scripts + learnings log
+- Deferred: 0
+- CI: green (0 ESLint errors)
+
+**Key Learnings:**
+
+- `eslint-disable-next-line` applies to the NEXT LINE only; multi-line
+  `.replace()` calls put the regex on line+2, requiring block-level
+  disable/enable
+- Extracted `sanitizeLogSnippet()` with compiled regexes at module scope for
+  reuse
+- TOCTOU mitigation: re-assert symlink check immediately before destructive
+  operation
+- BiDi control chars: `/[\u202A-\u202E\u2066-\u2069]/g`
+- `String(text)` coercion handles numeric/boolean inputs in escapeMarkdown
+- `/^\d+$/.test(s)` guards parseInt from accepting malformed strings like
+  "12abc"
+- `toLineNumber()` should reject 0 and negative values for line numbers
+
+---
+
+#### Review #293: PR #360 R11 — Markdown Injection, EEXIST Recovery, Windows Compat, Schema Validation (2026-02-11)
+
+**Source:** Qodo Compliance R11 + Qodo Code Suggestions R11 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 11 code + 2 compliance
+(Security: 2, Medium: 7, Low: 2, Compliance: 2)
+
+**Patterns Identified:**
+
+1. **Markdown injection**: escapeMarkdown only handled pipe/newline — need HTML
+   tag stripping to prevent `<script>` injection in rendered Markdown views.
+2. **Stale temp files**: `wx` flag fails on EEXIST if a previous run crashed —
+   need cleanup-and-retry fallback.
+3. **Deep nesting**: safeCloneObject silently truncated at depth 200 — should
+   throw to surface malicious/malformed input explicitly.
+4. **Non-fatal fallback writes**: deduped.jsonl is regenerated by dedup
+   pipeline, so write failure should warn rather than exit(2).
+5. **Cross-source pollution**: MASTER_DEBT.jsonl parser lacked safeCloneObject
+   protection (moved safeCloneObject to module scope).
+6. **Terminal escape injection**: Untrusted content in error messages could
+   inject ANSI escape sequences into terminal output.
+7. **Windows compat**: fs.renameSync fails on Windows when destination exists —
+   need unlink-before-rename pattern.
+
+**Resolution:**
+
+- Fixed: 11 items across 7 files (6 scripts + learnings log)
+- Deferred: 0
+
+**Key Learnings:**
+
+- `<[^>]*>` regex strips HTML tags from Markdown output to prevent injection
+- EEXIST recovery: unlink stale tmp + retry with wx flag
+- safeCloneObject should throw on depth > 200, not silently truncate
+- Fallback/regenerable files should use console.warn, not process.exit
+- Terminal escape strip regex:
+  `/[\u001b\u009b][[()#;?]*...[0-9A-ORZcf-nqry=><]/g`
+- Windows rename compat: `if (existsSync) unlinkSync` before `renameSync`
+- Schema config arrays should be validated immediately after load
+
+---
+
+#### Review #292: PR #360 R10 — Fail-Closed Guards, safeClone Coverage, DoS Cap, Audit Trail (2026-02-11)
+
+**Source:** Qodo Compliance R10 + Qodo Code Suggestions R10 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 11 code + 4 compliance
+(High: 5, Medium: 4, Low: 2, Compliance: 4)
+
+**Patterns Identified:**
+
+1. **assertNotSymlink fail-closed**: Previous impl swallowed unknown errors —
+   must rethrow to prevent silent bypass of symlink protection.
+2. **safeCloneObject coverage gap**: resolve-item.js and validate-schema.js
+   parsed JSONL without prototype pollution protection (dedup + generate-views
+   already had it).
+3. **Temp file hardening**: Atomic write tmp files need their own symlink
+   check + `wx` flag to prevent TOCTOU race conditions.
+4. **Algorithmic DoS**: Pass 2 (near-match) was unbounded O(n^2) — added
+   5000-item cap.
+5. **Audit trail**: dedup-log.jsonl lacked operator/timestamp metadata for
+   traceability.
+6. **Pipeline write resilience**: Append writes to
+   normalized-all.jsonl/deduped.jsonl were unwrapped, risking partial state on
+   I/O failure.
+
+**Resolution:**
+
+- Fixed: 11 items across 7 files (5 scripts + validate-schema + learnings log)
+- Deferred: 1 (evidence data dedup — pipeline handles)
+
+**Key Learnings:**
+
+- assertNotSymlink must rethrow at end of catch to fail closed on unexpected
+  errors
+- `{ flag: "wx" }` prevents overwriting existing tmp files (TOCTOU defense)
+- Pairwise pass cap (MAX_PAIRWISE_ITEMS=5000) prevents quadratic blowup
+- run_metadata entry in dedup log enables standalone execution reconstruction
+- Pipeline append writes need try/catch + process.exit(2) for controlled failure
+- Sanitize BOTH existing evidence and new acceptance evidence for consistency
+
+---
+
+#### Review #291: PR #360 R9 — Prototype Pollution Guard, Fail-Closed Symlink, Atomic Writes (2026-02-11)
+
+**Source:** Qodo Compliance R9 + Qodo Code Suggestions R9 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 12 total (High: 5, Medium:
+3, Low: 3, Deferred: 1)
+
+**Patterns Identified:**
+
+1. **Prototype pollution**: JSONL records parsed from disk need `__proto__`,
+   `constructor`, `prototype` keys stripped before spread/merge —
+   `safeCloneObject`.
+2. **Fail-closed symlink guard**: EACCES/EPERM during lstat means we can't
+   verify symlink status — must refuse write, not silently proceed.
+3. **Atomic write for canonical output**: MASTER_IMPROVEMENTS.jsonl needs atomic
+   write-to-tmp-then-rename in generate-views.js (already done in
+   resolve-item.js).
+4. **Schema-stable reviewNeeded entries**: `item_a` should always be a full item
+   (or null), metadata goes in a separate `meta` field.
+5. **Symlink guard coverage**: generate-metrics.js (3 write paths) and
+   resolve-item.js (saveMasterImprovements + logResolution) were unguarded.
+
+**Resolution:**
+
+- Fixed: 10 items across 5 files
+- Deferred: 1 (evidence dedup data fix — pipeline handles)
+
+**Key Learnings:**
+
+- `safeCloneObject` with `Object.create(null)` prevents prototype pollution from
+  JSONL
+- Fail-closed: if lstat throws EACCES/EPERM, throw rather than silently continue
+- Atomic write pattern: writeFileSync to `.tmp.${pid}` + renameSync + finally
+  cleanup
+- reviewNeeded entries: consistent shape (`item_a`, `item_b`, `meta`) aids
+  downstream
+- Acceptance evidence: sanitize with type coercion, trim, filter, and length cap
+  (500)
+- BOM strip on first line + CRLF trimEnd prevents parse failures on
+  Windows-edited files
+
+---
+
+#### Review #290: PR #360 R8 — CI Fix, Pass 0 No-File Guard, Symlink Guards Expansion, Format Precision (2026-02-11)
+
+**Source:** Qodo Compliance R8 + Qodo Code Suggestions R8 + CI Failure
+**PR/Branch:** claude/new-session-NgVGX (PR #360) **Suggestions:** 12 total
+(Blocker: 2, High: 1, Minor: 8, Deferred: 1)
+
+**Patterns Identified:**
+
+1. **CI blocker**: Pattern checker flagged `err.message` in assertNotSymlink
+   catch blocks — needed `instanceof Error` guard to satisfy automated checker.
+2. **Pass 0 no-file guard**: Items without file paths were grouped together by
+   empty string key, causing unrelated items to merge. Use `randomUUID()` keys.
+3. **Symlink guard expansion**: logIntake() and all generate-views.js write
+   paths needed assertNotSymlink() before writes.
+4. **Enhancement-audit format precision**: Truthy checks on fields like `[]` or
+   `""` could false-positive; need type-precise checks.
+5. **Pass 3 safety cap**: 50,000 comparison cap per file group prevents hang on
+   pathological inputs.
+
+**Resolution:**
+
+- Fixed: 11 items (2 CI blockers + 9 improvements)
+- Deferred: 1 (evidence dedup data fix — pipeline handles)
+
+**Key Learnings:**
+
+- Pattern checker requires `instanceof Error` before `.message` — use canonical
+  form
+- Pass 0 parametric dedup: items without `file` must not share group keys
+- `crypto.randomUUID()` creates unique keys for ungroupable items
+- Enhancement-audit detection: check `typeof === "string" && trim()` and
+  `Array.isArray && length > 0`
+- `__dirname` for child script paths ensures CWD independence
+- Fingerprint field needs type guard (`typeof !== "string"` → error, not crash)
+- Number.isFinite rejects NaN/Infinity; for-loop catches sparse array holes
+
+---
+
+#### Review #289: PR #360 R7 — Symlink Guards, Pass 3 File Grouping, Schema Hardening, Honesty Guard (2026-02-11)
+
+**Source:** Qodo Compliance R7 + Qodo Code Suggestions R7 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 12 total (Major: 1, Minor:
+9, Deferred: 2)
+
+**Patterns Identified:**
+
+1. **Symlink file overwrite**: Writing to fixed JSONL paths without checking for
+   symlinks enables local arbitrary file write. Added `assertNotSymlink()` guard
+   using `fs.lstatSync()` before all file writes.
+2. **Pass 3 file grouping**: Grouping items by file path before pairwise
+   comparison reduces semantic match cost from O(n²) to O(n²/k) where k is the
+   number of unique files. Partially addresses DEBT-2747.
+3. **Honesty guard**: Enhancement-audit format items should require
+   `counter_argument` to maintain data integrity.
+4. **Schema config hardening**: Array validation should check element types, not
+   just `Array.isArray()`. Confidence threshold needs range bounds (0-100).
+
+**Resolution:**
+
+- Fixed: 10 items
+- Skipped: 0
+- Deferred: 2 (evidence dedup data fix, placeholder provenance data fix —
+  pipeline handles)
+
+**Key Learnings:**
+
+- Symlink guard pattern: `fs.lstatSync().isSymbolicLink()` before writes, ENOENT
+  is safe
+- File grouping for pairwise passes reduces complexity proportionally to file
+  distribution
+- `new RegExp(source)` drops flags — use
+  `new RegExp(source, flags.replace(/g|y/g, ""))` + `lastIndex=0`
+- Non-fatal operator hashing: initialize with fallback, single try/catch,
+  String() coercion
+- Honesty guard: `counter_argument` required for enhancement-audit format inputs
+- Whitespace-only strings should be treated as missing for required fields
+- Schema arrays should validate element types (isStringArray), not just
+  Array.isArray
+- Confidence threshold needs range validation (0-100) in schema config
+
+---
+
+#### Review #288: PR #360 R6 — Semantic Merge Logic, PII in Logs, Timestamp Integrity, Path Normalization (2026-02-11)
+
+**Source:** Qodo Compliance R6 + Qodo Code Suggestions R6 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 10 total (Major: 2, Minor:
+6, Deferred: 2)
+
+**Patterns Identified:**
+
+1. **Flag-only vs destructive merge**: Pass 3 semantic matches were flagged for
+   review AND merged simultaneously — defeating the purpose of the review flag.
+   Changed to flag-only (no merge) so human review is meaningful.
+2. **PII in audit logs**: Raw operator username and full input_file paths
+   constitute PII. Hash the operator (SHA-256 truncated to 12 chars) and log
+   only `path.basename(inputFile)`.
+3. **Timestamp integrity**: `{ timestamp, ...activity }` lets the activity
+   object overwrite the timestamp. Reversed spread order:
+   `{ ...activity, timestamp }`.
+4. **Stateful regex in loops**: `RegExp.test()` with global/sticky flags has
+   stateful `lastIndex`, causing intermittent failures in loops.
+
+**Resolution:**
+
+- Fixed: 8 items
+- Skipped: 0
+- Deferred: 2 (streaming JSONL — arch change; dedup audit coverage — scope
+  expansion)
+
+**Key Learnings:**
+
+- Semantic match Pass 3 should flag-only, not merge — uncertain items need human
+  review
+- PII compliance: hash usernames, log only basenames of file paths
+- Spread order matters: `{ ...obj, timestamp }` protects system-generated fields
+- Guard `RegExp.test()` in loops against stateful g/y flags
+- `normalizeFilePath` should strip trailing `:line` suffixes for hash
+  consistency
+- Non-object JSON (null, arrays, primitives) can pass `JSON.parse()` — validate
+  type
+- Audit outcome should reflect scope: "ingested" vs "success" when downstream
+  steps remain
+- Empty evidence arrays should be deleted, not set to `[]`
+
+---
+
+#### Review #287: PR #360 R5 — impactSort Falsy Bug, ID Drift, Audit Outcome, Evidence Sanitization (2026-02-11)
+
+**Source:** Qodo Compliance R5 + Qodo Code Suggestions R5 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 8 total (Major: 2, Minor: 5,
+Deferred: 1)
+
+**Patterns Identified:**
+
+1. **Falsy 0 in lookup tables**: `order[a.impact] || 4` treats I0 (value 0) as
+   falsy, making I0 items sort last instead of first. Use `??` (nullish
+   coalescing) for numeric lookup tables.
+2. **ID drift from @line: suffixes in merged_from**: Source IDs with `@line:N`
+   suffixes don't match their base form during ID lookup, causing duplicate ENH
+   IDs across regeneration cycles.
+3. **Always sanitize, not just on merge**: Evidence arrays should be sanitized
+   unconditionally, not only when secondary has items — otherwise malformed data
+   in primary persists.
+4. **Audit log outcome field**: Without an explicit success/failure outcome,
+   downstream consumers must infer result from error counts.
+
+**Resolution:**
+
+- Fixed: 7 items
+- Skipped: 0
+- Deferred: 1 (resource exhaustion — already DEBT-2747 S2 scope)
+
+**Key Learnings:**
+
+- `||` vs `??` for numeric lookup: 0 is falsy, null/undefined are nullish
+- merged_from IDs with @line: suffixes need base-form normalization for stable
+  lookups
+- Evidence sanitization must run unconditionally (no guard on secondary length)
+- Audit logs need explicit outcome field (success/partial_failure/failure)
+- logIntake needs same try/catch pattern as logResolution (Review #286 R4)
+- BOM stripping needed in intake-audit.js too, not just validate-schema.js
+
+---
+
+#### Review #286: PR #360 R4 — Prototype Pollution, TOCTOU, Evidence Sanitization, CLI Robustness (2026-02-11)
+
+**Source:** Qodo Compliance R4 + Qodo Code Suggestions R4 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 11 total (Major: 2, Minor:
+5, Trivial: 1, Deferred: 3 — 1 new IMS + 2 already tracked)
+
+**Patterns Identified:**
+
+1. **safeCloneObject must be applied immediately after JSON.parse**: The
+   prototype pollution fix (safeCloneObject) was being bypassed because the raw
+   parsed object was passed to validateAndNormalize before cloning. Clone at the
+   earliest point possible.
+2. **TOCTOU in path validation**: validateAndVerifyPath returns a realPath but
+   the code was still using the original filePath for subsequent reads. Always
+   use the validated realPath for file operations.
+3. **Evidence array type sanitization**: Evidence arrays from JSONL may contain
+   non-string values. Filter to strings + trim + deduplicate.
+4. **UTF-8 BOM on first line**: Files saved from Windows editors may have BOM
+   prefix that breaks JSON.parse on line 1.
+5. **Absolute script paths in execFileSync**: Using relative paths like
+   "scripts/improvements/..." fails if CWD is not project root. Use
+   path.join(\_\_dirname, ...) instead.
+
+**Resolution:**
+
+- Fixed: 8 items
+- Skipped: 0
+- Deferred: 3 (1 new ENH-0003 Markdown injection, 2 already tracked)
+
+**Key Learnings:**
+
+- safeCloneObject must wrap JSON.parse output BEFORE any property access
+- TOCTOU: always use validated/resolved path for all subsequent file operations
+- Evidence arrays need type + trim + dedup sanitization (not just Array.isArray)
+- BOM stripping is essential for cross-platform JSONL parsing
+- CLI scripts must use \_\_dirname-relative paths for execFileSync portability
+- Logging functions should never crash the main flow — wrap in try/catch
+- Validation errors go to stderr (console.error), not stdout (console.log)
+
+---
+
+#### Review #285: PR #360 R3 — Pre-commit Hook Fix, Final severity Sweep, Defensive Parsing (2026-02-11)
+
+**Source:** Qodo Code Suggestions R3 + CI Failure **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 7 total (Critical: 1, Major:
+2, Minor: 4)
+
+**Patterns Identified:**
+
+1. **DOCUMENTATION_INDEX.md Prettier CI failure (3rd occurrence!)**: Root cause
+   identified — pre-commit hook regenerates the file AFTER lint-staged runs
+   Prettier, so the regenerated file is unformatted. Fixed by adding
+   `npx prettier --write` after `npm run docs:index` in the hook.
+2. **severity→impact in resolve-item.js:220**: Yet another missed occurrence. R1
+   fixed mergeItems, R2 fixed hasHighImpact/clustering/counts, R3 fixed display
+   output. Lesson: field renames need `grep -rn` across the ENTIRE
+   scripts/improvements/ directory, not just individual files.
+3. **Object.create(null) for prototype-less clones**: Using `{}` still has
+   Object.prototype, while `Object.create(null)` is truly safe for untrusted
+   data.
+
+**Resolution:**
+
+- Fixed: 7 items
+- Skipped: 0
+- Deferred: 0
+
+**Key Learnings:**
+
+- Pre-commit hooks that regenerate files MUST re-run formatters before staging
+- Field renames across a codebase need `grep -rn` on the ENTIRE directory
+- Three rounds to fully sweep severity→impact proves grep-first approach is
+  essential
+- Object.create(null) is safer than {} for untrusted data cloning
+
+---
+
+#### Review #284: PR #360 R2 — Remaining severity/impact + Security Depth (2026-02-11)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions R2 + CI Failure
+**PR/Branch:** claude/new-session-NgVGX (PR #360) **Suggestions:** 12 total
+(Critical: 1, Major: 3, Minor: 4, Skipped: 2, Deferred: 2)
+
+**Patterns Identified:**
+
+1. **Incomplete severity→impact sweep**: R1 only fixed mergeItems but missed
+   hasHighImpact check, clustering primary selection, and final impact counts —
+   3 more occurrences of `.severity` that should be `.impact`
+   - Root cause: Searching for pattern in one function, not globally
+   - Prevention: Always `grep -n .severity` across entire file after field
+     rename
+2. **Recursive clone without depth limit**: Deep clone can stack overflow on
+   deeply-nested untrusted JSONL — need depth cap
+3. **IMS routing established**: Design decisions now route to IMS (ENH-XXXX),
+   technical debt routes to TDMS (DEBT-XXXX). Routing rule added to
+   AI_REVIEW_PROCESS.md
+
+**Resolution:**
+
+- Fixed: 8 items (including 3 additional severity→impact bugs found by R2)
+- Skipped: 2 items (regex lastIndex non-issue, counter_argument already tracked)
+- Deferred to IMS: 2 items (ENH-0001, ENH-0002)
+
+**Key Learnings:**
+
+- When fixing a field rename (severity→impact), ALWAYS grep the entire file for
+  ALL occurrences — not just the first function found
+- Deep clone of untrusted data needs recursion depth limits
+- Deferred PR items must be routed to the correct system (IMS vs TDMS) at time
+  of deferral, not left as notes
+
+---
+
+#### Review #283: PR #360 — IMS Pipeline Bug Fixes & Security Hardening (2026-02-11)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + CI Failure **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 19 total (Critical: 1,
+Major: 5, Minor: 8, Trivial: 1, Deferred: 4)
+
+**Patterns Identified:**
+
+1. **severity/impact field mismatch**: IMS items use `impact` field but
+   mergeItems referenced `severity` — caused silent merge logic failure
+   - Root cause: Copy from TDMS code which uses `severity` field
+   - Prevention: Field name review when adapting code between systems
+2. **Blank line filtering corrupts line numbers**: Filtering blank lines before
+   iterating makes error line numbers wrong
+   - Root cause: `content.split("\n").filter(...)` loses original line indexes
+   - Prevention: Iterate all lines, skip blanks inside loop
+3. **Shallow clone insufficient for prototype pollution**: safeCloneObject only
+   cloned top-level — nested objects/arrays still shared
+   - Root cause: Incomplete recursive implementation
+   - Prevention: Always deep-clone when dealing with untrusted JSONL input
+
+**Resolution:**
+
+- Fixed: 15 items
+- Deferred: 4 items (with TDMS tracking)
+- Rejected: 0 items
+
+**Key Learnings:**
+
+- When adapting TDMS patterns to IMS, field names MUST be audited (severity vs
+  impact)
+- JSONL parsing should always preserve original line numbers
+- safeCloneObject needs recursive deep clone for nested untrusted data
+- Cross-source path normalization needs a dedicated normalizeFilePath function,
+  not normalizeText (which strips path separators)
 
 ---
 
