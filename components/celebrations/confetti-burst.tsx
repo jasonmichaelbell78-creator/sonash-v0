@@ -62,8 +62,11 @@ export function ConfettiBurst({
             backgroundColor: piece.color,
             width: piece.shape === "rectangle" ? piece.size * 1.5 : piece.size,
             height: piece.size,
-            borderRadius:
-              piece.shape === "circle" ? "50%" : piece.shape === "square" ? "2px" : "1px",
+            borderRadius: (() => {
+              if (piece.shape === "circle") return "50%";
+              if (piece.shape === "square") return "2px";
+              return "1px";
+            })(),
           }}
           initial={{
             y: piece.y,

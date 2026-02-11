@@ -189,13 +189,12 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             (s, i) => (
               <div
                 key={s}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  step === s
-                    ? "bg-stone-800"
-                    : ["welcome", "clean-date", "sponsor", "privacy", "tour"].indexOf(step) > i
-                      ? "bg-stone-400"
-                      : "bg-stone-300"
-                }`}
+                className={`w-2 h-2 rounded-full transition-colors ${(() => {
+                  if (step === s) return "bg-stone-800";
+                  if (["welcome", "clean-date", "sponsor", "privacy", "tour"].indexOf(step) > i)
+                    return "bg-stone-400";
+                  return "bg-stone-300";
+                })()}`}
               />
             )
           )}

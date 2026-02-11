@@ -27,14 +27,14 @@ export function MilestoneModal({
   onClose,
   intensity: _intensity = "high",
 }: MilestoneModalProps) {
-  const Icon =
-    daysClean && daysClean >= 365
-      ? MILESTONE_ICONS.year
-      : daysClean && daysClean >= 30
-        ? MILESTONE_ICONS.month
-        : daysClean && daysClean >= 7
-          ? MILESTONE_ICONS.week
-          : MILESTONE_ICONS.default;
+  let Icon = MILESTONE_ICONS.default;
+  if (daysClean && daysClean >= 365) {
+    Icon = MILESTONE_ICONS.year;
+  } else if (daysClean && daysClean >= 30) {
+    Icon = MILESTONE_ICONS.month;
+  } else if (daysClean && daysClean >= 7) {
+    Icon = MILESTONE_ICONS.week;
+  }
 
   return (
     <AnimatePresence>

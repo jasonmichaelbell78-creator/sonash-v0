@@ -283,21 +283,21 @@ const meetingsConfig: AdminCrudConfig<Meeting> = {
     {
       key: "type",
       label: "Type",
-      render: (meeting) => (
-        <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
-            meeting.type === "AA"
-              ? "bg-blue-100 text-blue-700"
-              : meeting.type === "NA"
-                ? "bg-green-100 text-green-700"
-                : meeting.type === "CA"
-                  ? "bg-purple-100 text-purple-700"
-                  : "bg-gray-100 text-gray-700"
-          }`}
-        >
-          {meeting.type}
-        </span>
-      ),
+      render: (meeting) => {
+        let colorClasses = "bg-gray-100 text-gray-700";
+        if (meeting.type === "AA") {
+          colorClasses = "bg-blue-100 text-blue-700";
+        } else if (meeting.type === "NA") {
+          colorClasses = "bg-green-100 text-green-700";
+        } else if (meeting.type === "CA") {
+          colorClasses = "bg-purple-100 text-purple-700";
+        }
+        return (
+          <span className={`px-2 py-1 rounded text-xs font-medium ${colorClasses}`}>
+            {meeting.type}
+          </span>
+        );
+      },
     },
     { key: "day", label: "Day" },
     { key: "time", label: "Time" },

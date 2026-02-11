@@ -1163,17 +1163,19 @@ function AdminActionsSection({
           }`}
           title={profile.email ? undefined : "User has no email address"}
         >
-          {sendingPasswordReset ? (
+          {sendingPasswordReset && (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
               Sending...
             </>
-          ) : passwordResetSent ? (
+          )}
+          {!sendingPasswordReset && passwordResetSent && (
             <>
               <CheckCircle className="w-4 h-4" />
               Email Sent!
             </>
-          ) : (
+          )}
+          {!sendingPasswordReset && !passwordResetSent && (
             <>
               <KeyRound className="w-4 h-4" />
               Reset Password

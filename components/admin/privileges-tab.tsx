@@ -27,6 +27,11 @@ interface PrivilegeType {
   isDefault?: boolean;
 }
 
+const shieldColorMap: Record<string, string> = {
+  admin: "text-red-500",
+  premium: "text-purple-500",
+};
+
 // Built-in types that cannot be deleted (but can be viewed)
 const BUILT_IN_TYPES = ["admin", "free", "premium"];
 
@@ -472,13 +477,7 @@ export function PrivilegesTab() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <Shield
-                          className={`w-5 h-5 ${
-                            type.id === "admin"
-                              ? "text-red-500"
-                              : type.id === "premium"
-                                ? "text-purple-500"
-                                : "text-amber-500"
-                          }`}
+                          className={`w-5 h-5 ${shieldColorMap[type.id] ?? "text-amber-500"}`}
                         />
                         <div>
                           <div className="font-medium text-amber-900 flex items-center gap-2">

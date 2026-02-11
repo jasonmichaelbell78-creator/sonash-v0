@@ -659,13 +659,13 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
               disabled={isSaving}
               className="bg-indigo-600 hover:bg-indigo-500 text-white min-w-[100px]"
             >
-              {isSaving ? (
-                <span className="animate-spin">⌛</span>
-              ) : step === 4 ? (
+              {isSaving && <span className="animate-spin">⌛</span>}
+              {!isSaving && step === 4 && (
                 <>
                   <Save className="w-4 h-4 mr-2" /> Finish
                 </>
-              ) : (
+              )}
+              {!isSaving && step !== 4 && (
                 <>
                   Next <ChevronRight className="w-4 h-4 ml-2" />
                 </>

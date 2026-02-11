@@ -49,6 +49,13 @@ export function CelebrationOverlay({ event, onClose }: CelebrationOverlayProps) 
   // High intensity: Confetti + Modal (+ Fireworks for year milestone)
   const isYearMilestone = type === "one-year" || (daysClean && daysClean >= 365);
 
+  let milestoneTitle = "Milestone!";
+  if (type === "one-year") {
+    milestoneTitle = "1 Year Clean!";
+  } else if (daysClean) {
+    milestoneTitle = `${daysClean} Days!`;
+  }
+
   return (
     <>
       {/* Confetti for all high-intensity celebrations */}
@@ -60,9 +67,7 @@ export function CelebrationOverlay({ event, onClose }: CelebrationOverlayProps) 
       {/* Modal */}
       <MilestoneModal
         isOpen={true}
-        title={
-          type === "one-year" ? "1 Year Clean!" : daysClean ? `${daysClean} Days!` : "Milestone!"
-        }
+        title={milestoneTitle}
         message={message || "Amazing achievement!"}
         daysClean={daysClean}
         onClose={onClose}

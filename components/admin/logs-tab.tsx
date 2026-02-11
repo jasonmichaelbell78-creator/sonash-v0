@@ -671,15 +671,17 @@ export function LogsTab() {
       </div>
 
       {/* Logs Table */}
-      {loading ? (
+      {loading && (
         <div className="rounded-lg border border-amber-100 bg-white p-6 text-amber-700">
           Loading logs...
         </div>
-      ) : filteredLogs.length === 0 ? (
+      )}
+      {!loading && filteredLogs.length === 0 && (
         <div className="rounded-lg border border-amber-100 bg-white p-6 text-amber-700">
           No logs found for the selected filter.
         </div>
-      ) : (
+      )}
+      {!loading && filteredLogs.length > 0 && (
         <div className="rounded-lg border border-amber-100 bg-white overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-amber-100 text-sm">

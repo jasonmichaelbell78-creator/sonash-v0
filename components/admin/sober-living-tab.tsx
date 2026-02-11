@@ -141,19 +141,24 @@ const soberLivingConfig: AdminCrudConfig<SoberLivingHome> = {
     {
       key: "gender",
       label: "Gender",
-      render: (home) => (
-        <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 ${
-            home.gender === "Men"
-              ? "border-blue-200 bg-blue-50 text-blue-700"
-              : home.gender === "Women"
-                ? "border-pink-200 bg-pink-50 text-pink-700"
-                : "border-purple-200 bg-purple-50 text-purple-700"
-          }`}
-        >
-          {home.gender === "Men" ? "M" : home.gender === "Women" ? "W" : "C"}
-        </div>
-      ),
+      render: (home) => {
+        let genderClasses = "border-purple-200 bg-purple-50 text-purple-700";
+        let genderLabel = "C";
+        if (home.gender === "Men") {
+          genderClasses = "border-blue-200 bg-blue-50 text-blue-700";
+          genderLabel = "M";
+        } else if (home.gender === "Women") {
+          genderClasses = "border-pink-200 bg-pink-50 text-pink-700";
+          genderLabel = "W";
+        }
+        return (
+          <div
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 ${genderClasses}`}
+          >
+            {genderLabel}
+          </div>
+        );
+      },
     },
     {
       key: "name",

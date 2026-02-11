@@ -48,11 +48,12 @@ export default function SpotCheckCard({ className, ...props }: SpotCheckCardProp
 
   useEffect(() => {
     if (!isListening) return;
-    const newText = textBeforeSpeakingRef.current
-      ? transcript
+    let newText = transcript;
+    if (textBeforeSpeakingRef.current) {
+      newText = transcript
         ? `${textBeforeSpeakingRef.current} ${transcript}`
-        : textBeforeSpeakingRef.current
-      : transcript;
+        : textBeforeSpeakingRef.current;
+    }
     setAction(newText);
   }, [transcript, isListening]);
 
