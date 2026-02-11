@@ -69,32 +69,32 @@ recovery practices.
 
 ## 4. 📊 Milestones Overview
 
-| Milestone                           | Status      | Progress         | Phase       | Priority   | Items |
-| ----------------------------------- | ----------- | ---------------- | ----------- | ---------- | ----- |
-| **M0 - Baseline**                   | ✅ Complete | 100%             | Foundation  | Foundation | -     |
-| **M1 - Foundation**                 | ✅ Complete | 100%             | Foundation  | P0         | -     |
-| **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -     |
-| **🧹 GRAND PLAN: Debt Elimination** | 🔄 ACTIVE   | ~54% (935/1,727) | Parallel    | **P0**     | 1,727 |
-| **🚀 Operational Visibility**       | 🔄 ACTIVE   | ~25%             | Foundation  | **P0**     | ~105  |
-| **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19   |
-| **M1.6 - Admin Panel + UX**         | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15   |
-| **M2 - Architecture**               | ⏸️ Optional | 0%               | Parallel    | P2         | ~72   |
-| ↳ M2.1 Code Quality                 |             |                  | Parallel    | P2         | ~25   |
-| ↳ M2.2 Monitoring                   |             |                  | Parallel    | P2         | ~25   |
-| ↳ M2.3 Infrastructure               |             |                  | Parallel    | P2         | ~22   |
-| **M3 - Meetings**                   | 📋 Planned  | 0%               | Core        | P1         | 6     |
-| **M4 - Expansion**                  | 📋 Planned  | 0%               | Core        | P1         | ~8    |
-| **M4.5 - Security & Privacy**       | 📋 Planned  | 0%               | Core        | **P0**     | 13    |
-| **M5 - Offline + Steps**            | 📋 Planned  | 0%               | Enhancement | P1         | 23    |
-| **M6 - Journaling + Safety**        | 📋 Planned  | 0%               | Enhancement | P1         | 26    |
-| **M7 - Fellowship Suite**           | 📋 Planned  | 0%               | Enhancement | P1         | ~55   |
-| ↳ M7.1 Sponsor & Sharing            |             |                  | Enhancement | P1         | ~15   |
-| ↳ M7.2 Exports & Reports            |             |                  | Enhancement | P1         | ~14   |
-| ↳ M7.3 Nashville & Knowledge        |             |                  | Enhancement | P1         | ~21   |
-| ↳ M7.4 Personalization              |             |                  | Enhancement | P2         | ~17   |
-| **M8 - Speakers**                   | 📋 Planned  | 0%               | Advanced    | P2         | 3     |
-| **M9 - Native App**                 | 📋 Planned  | 0%               | Advanced    | P2         | 15    |
-| **M10 - Monetization + Future**     | 🔬 Research | 0%               | Future      | P2         | ~15   |
+| Milestone                           | Status      | Progress           | Phase       | Priority   | Items |
+| ----------------------------------- | ----------- | ------------------ | ----------- | ---------- | ----- |
+| **M0 - Baseline**                   | ✅ Complete | 100%               | Foundation  | Foundation | -     |
+| **M1 - Foundation**                 | ✅ Complete | 100%               | Foundation  | P0         | -     |
+| **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps)   | Foundation  | DONE       | -     |
+| **🧹 GRAND PLAN: Debt Elimination** | 🔄 ACTIVE   | ~68% (1,176/1,727) | Parallel    | **P0**     | 1,727 |
+| **🚀 Operational Visibility**       | 🔄 ACTIVE   | ~25%               | Foundation  | **P0**     | ~105  |
+| **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%               | Foundation  | P1         | ~19   |
+| **M1.6 - Admin Panel + UX**         | ⏸️ Paused   | ~75%               | Foundation  | P1         | ~15   |
+| **M2 - Architecture**               | ⏸️ Optional | 0%                 | Parallel    | P2         | ~72   |
+| ↳ M2.1 Code Quality                 |             |                    | Parallel    | P2         | ~25   |
+| ↳ M2.2 Monitoring                   |             |                    | Parallel    | P2         | ~25   |
+| ↳ M2.3 Infrastructure               |             |                    | Parallel    | P2         | ~22   |
+| **M3 - Meetings**                   | 📋 Planned  | 0%                 | Core        | P1         | 6     |
+| **M4 - Expansion**                  | 📋 Planned  | 0%                 | Core        | P1         | ~8    |
+| **M4.5 - Security & Privacy**       | 📋 Planned  | 0%                 | Core        | **P0**     | 13    |
+| **M5 - Offline + Steps**            | 📋 Planned  | 0%                 | Enhancement | P1         | 23    |
+| **M6 - Journaling + Safety**        | 📋 Planned  | 0%                 | Enhancement | P1         | 26    |
+| **M7 - Fellowship Suite**           | 📋 Planned  | 0%                 | Enhancement | P1         | ~55   |
+| ↳ M7.1 Sponsor & Sharing            |             |                    | Enhancement | P1         | ~15   |
+| ↳ M7.2 Exports & Reports            |             |                    | Enhancement | P1         | ~14   |
+| ↳ M7.3 Nashville & Knowledge        |             |                    | Enhancement | P1         | ~21   |
+| ↳ M7.4 Personalization              |             |                    | Enhancement | P2         | ~17   |
+| **M8 - Speakers**                   | 📋 Planned  | 0%                 | Advanced    | P2         | 3     |
+| **M9 - Native App**                 | 📋 Planned  | 0%                 | Advanced    | P2         | 15    |
+| **M10 - Monetization + Future**     | 🔬 Research | 0%                 | Future      | P2         | ~15   |
 
 ### Timing System (Session #128)
 
@@ -291,16 +291,16 @@ reliability, and solo developer automations.
 > **Sprint manifest files:** `docs/technical-debt/logs/sprint-N-ids.json`
 > contain every DEBT-XXXX ID for each sprint, grouped by file.
 
-| Sprint | Directory Group            | Items | Files | Risk     | Status         |
-| ------ | -------------------------- | ----: | ----: | -------- | -------------- |
-| 1      | `scripts/`                 |   601 |   106 | Low      | ✅ Done        |
-| 2      | `components/`              |   334 |   100 | Moderate | ✅ Done        |
-| 3      | `.claude/` + `docs/`       |   241 |    84 | Zero     | 🔄 In Progress |
-| 4      | `lib/` + `hooks/` + `app/` |   160 |    40 | Moderate | Pending        |
-| 5      | `.github/` + config        |   154 |    40 | Moderate | Pending        |
-| 6      | `functions/` + rules       |    80 |     9 | High     | Pending        |
-| 7      | `tests/` + systemic        |   151 |    12 | Mixed    | Pending        |
-| skip   | Dedicated sessions         |     6 |     - | -        | Later          |
+| Sprint | Directory Group            | Items | Files | Risk     | Status  |
+| ------ | -------------------------- | ----: | ----: | -------- | ------- |
+| 1      | `scripts/`                 |   601 |   106 | Low      | ✅ Done |
+| 2      | `components/`              |   334 |   100 | Moderate | ✅ Done |
+| 3      | `.claude/` + `docs/`       |   241 |    84 | Zero     | ✅ Done |
+| 4      | `lib/` + `hooks/` + `app/` |   160 |    40 | Moderate | Pending |
+| 5      | `.github/` + config        |   154 |    40 | Moderate | Pending |
+| 6      | `functions/` + rules       |    80 |     9 | High     | Pending |
+| 7      | `tests/` + systemic        |   151 |    12 | Mixed    | Pending |
+| skip   | Dedicated sessions         |     6 |     - | -        | Later   |
 
 **Approach:** File-based (not category-based) to avoid revisiting files. Each
 sprint uses parallel agents + wave-based execution + per-wave commits.
