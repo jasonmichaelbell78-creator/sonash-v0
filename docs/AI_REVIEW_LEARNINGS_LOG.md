@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 15.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-10
+**Document Version:** 15.7 **Created:** 2026-01-02 **Last Updated:** 2026-02-10
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15.7    | 2026-02-10 | Review #282: PR #358 R2 — SSR guards, regex simplification, key stability (24 items - 0 CRITICAL, 1 MAJOR SonarCloud, 21 MINOR, 2 REJECTED). **MAJOR**: Replace SENSITIVE_KEY_PATTERN regex (complexity 21) with Set-based SENSITIVE_KEYS lookup. **MINOR**: 8× typeof→direct undefined comparison (SonarCloud), SSR guards (keydown/confirm/location/navigator/matchMedia), unmount guard for async copy, select value validation, composite React keys (2 files), Firestore limit(7), window ref for event listeners (2 files), try/catch String(input), deploy-firebase TODO removal, robust reload. **REJECTED**: auth-error-banner toast dedup (works correctly), NightReviewCard React namespace type (too minor). Consolidation counter 11→12 (consolidation due). Active reviews #266-282.                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 15.6    | 2026-02-10 | Review #281: PR #358 Sprint 2 — Shared State, Redaction, Key Stability (9 items - 1 MAJOR, 7 MINOR, 1 TRIVIAL, 0 REJECTED). **MAJOR**: Module-level Set shared state bug in auth-error-banner.tsx → useState. **MINOR**: Key-name-based PII redaction (SENSITIVE_KEY_PATTERN), deepRedactValue null check, composite React keys (3 files), guard clause for optional params, SSR-safe reload. **TRIVIAL**: Removed redundant onKeyDown on backdrop div. Consolidation counter 10→11 (consolidation due). Active reviews #266-281.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | 15.5    | 2026-02-09 | Review #272: PR #352 Round 6 — FINAL loadConfig sweep (12 items - 1 Security, 8 MAJOR, 2 MINOR, 1 REJECTED). **SECURITY**: Path traversal guard in load-config.js (reject .., /, \\). **MAJOR**: Complete sweep of ALL remaining unguarded loadConfig calls (6 files: validate-schema.js, normalize-all.js, intake-manual.js, intake-audit.js, intake-pr-deferred.js, validate-skill-config.js), description fallback YAML artifact filter, path-boundary archive regex, overlapping trigger exclusion. **REJECTED**: audit-schema.json category rename + 3 shape validation suggestions (over-engineering). **MILESTONE**: Zero unguarded loadConfig calls remain in codebase. Consolidation counter 7→8. Active reviews #266-272.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 15.4    | 2026-02-09 | Review #271: PR #352 Round 5 - Qodo Suggestions + Compliance (7 items - 4 MAJOR, 2 MINOR, 1 REJECTED). **MAJOR**: Stateful regex bug (g flag removed from skill-config.json deprecatedPatterns), path-boundary anchored excludePaths regex (agent-triggers.json), unguarded loadConfig try/catch (check-pattern-compliance.js + generate-documentation-index.js + surface-lessons-learned.js). **MINOR**: Empty patterns fail-closed (ai-pattern-checks.js). **REJECTED**: check-review-needed.js 15-line shape validation (over-engineering). Consolidation counter 6→7. Active reviews #266-271.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -323,7 +324,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 11 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 12 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** Now
 
 ### When to Consolidate
@@ -672,6 +673,48 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #282: PR #358 R2 — SSR Guards, Regex Simplification, Key Stability (2026-02-10)
+
+**Source:** SonarCloud + Qodo Code Suggestions **PR/Branch:**
+claude/analyze-repo-install-ceMkn (PR #358) **Suggestions:** 26 total (Critical:
+0, Major: 1, Minor: 21, Trivial: 2, Rejected: 2)
+
+**Patterns Identified:**
+
+1. [Regex complexity → Set lookup]: SonarCloud flagged `SENSITIVE_KEY_PATTERN`
+   regex at complexity 21 (max 20). Replaced with `SENSITIVE_KEYS` Set for O(1)
+   case-insensitive lookup — simpler, faster, and more extensible.
+2. [typeof vs direct undefined]: SonarCloud prefers
+   `globalThis.window === undefined` over
+   `typeof globalThis.window === "undefined"` for property access on
+   always-defined globals. Fixed 8 occurrences across 6 files.
+3. [SSR guards for browser APIs]: Multiple components used `globalThis` APIs
+   (addEventListener, confirm, matchMedia, navigator, location) without SSR
+   guards. Added `globalThis.window === undefined` early returns and window
+   refs.
+4. [Unmount guards for async operations]: `handleExportCopy` in errors-tab used
+   await without checking if component was still mounted. Added `isMountedRef`.
+
+**Resolution:**
+
+- Fixed: 24 items (1 Major, 21 Minor, 2 Trivial)
+- Deferred: 0
+- Rejected: 2 (auth-error-banner toast dedup — works correctly after #281 fix;
+  NightReviewCard React namespace type — too minor, standard pattern)
+
+**Key Learnings:**
+
+- Set-based key lookup is preferable to regex for sensitive field detection —
+  zero complexity cost, O(1) performance, easy to extend
+- `typeof x === "undefined"` is only needed for undeclared variables; for
+  properties of defined objects, direct comparison is cleaner
+- When using `globalThis` for browser APIs, always guard with
+  `globalThis.window === undefined` and assign `const win = globalThis.window`
+  for consistent use
+- Firestore queries should use `limit()` when the max result count is known
 
 ---
 
