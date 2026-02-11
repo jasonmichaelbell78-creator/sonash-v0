@@ -72,7 +72,7 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   handleReload = (): void => {
-    globalThis.location.reload();
+    globalThis.location?.reload?.();
   };
 
   handleDownloadReport = (): void => {

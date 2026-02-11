@@ -227,6 +227,9 @@ function LogRow({ log, isExpanded, onToggle }: Readonly<LogRowProps>) {
   );
 }
 
+const SENSITIVE_KEY_PATTERN =
+  /^(api[_-]?key|secret|password|token|credential|authorization|cookie|session[_-]?id|connection[_-]?string|private[_-]?key)$/i;
+
 function redactPii(value: string): string {
   return value
     .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "[REDACTED_EMAIL]")
@@ -236,13 +239,14 @@ function redactPii(value: string): string {
 }
 
 function deepRedactValue(input: unknown, seen = new WeakSet<object>()): unknown {
+  if (input === null) return null;
   if (typeof input === "string") return redactPii(input);
   if (typeof input === "bigint") return input.toString();
   if (typeof input === "function") return "[REDACTED_FUNCTION]";
   if (typeof input === "symbol") return "[REDACTED_SYMBOL]";
   if (Array.isArray(input)) return input.map((item) => deepRedactValue(item, seen));
 
-  if (input && typeof input === "object") {
+  if (typeof input === "object") {
     if (seen.has(input)) return "[REDACTED_CIRCULAR]";
     seen.add(input);
 
@@ -254,7 +258,7 @@ function deepRedactValue(input: unknown, seen = new WeakSet<object>()): unknown 
     return Object.fromEntries(
       Object.entries(input as Record<string, unknown>).map(([k, v]) => [
         k,
-        deepRedactValue(v, seen),
+        SENSITIVE_KEY_PATTERN.test(k) ? "[REDACTED_SENSITIVE]" : deepRedactValue(v, seen),
       ])
     );
   }

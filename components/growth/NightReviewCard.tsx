@@ -459,6 +459,7 @@ function updateSpeechField(
   setSurrender: (v: string) => void,
   setReflectionAnswers: React.Dispatch<React.SetStateAction<Record<string, string>>>
 ): void {
+  if (!fieldId) return;
   if (fieldId === "gratitude") {
     setGratitude(text);
   } else if (fieldId === "surrender") {

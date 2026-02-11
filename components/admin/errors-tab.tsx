@@ -240,8 +240,8 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: Readonly<ErrorRowP
                 <div>
                   <h4 className="text-sm font-semibold text-amber-900 mb-2">Possible causes</h4>
                   <ul className="list-disc list-inside space-y-1">
-                    {knowledge.possibleCauses.map((cause) => (
-                      <li key={cause} className="text-sm text-amber-700">
+                    {knowledge.possibleCauses.map((cause, index) => (
+                      <li key={`${cause}-${index}`} className="text-sm text-amber-700">
                         {cause}
                       </li>
                     ))}
@@ -257,8 +257,8 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: Readonly<ErrorRowP
                     Suggested remediations
                   </h4>
                   <ol className="list-decimal list-inside space-y-1">
-                    {knowledge.remediations.map((step) => (
-                      <li key={step} className="text-sm text-amber-700">
+                    {knowledge.remediations.map((step, index) => (
+                      <li key={`${step}-${index}`} className="text-sm text-amber-700">
                         {step}
                       </li>
                     ))}
@@ -771,7 +771,6 @@ function ExportDropdown({ issues, loading }: Readonly<ExportDropdownProps>) {
           <div
             className="fixed inset-0 z-10"
             onClick={() => setShowDropdown(false)}
-            onKeyDown={(e) => e.key === "Escape" && setShowDropdown(false)}
             role="presentation"
           />
           <div className="absolute right-0 mt-2 w-64 rounded-md border border-amber-200 bg-white shadow-lg z-20">

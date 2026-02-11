@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 15.0 **Created:** 2026-01-02 **Last Updated:** 2026-02-10
+**Document Version:** 15.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-10
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15.6    | 2026-02-10 | Review #281: PR #358 Sprint 2 — Shared State, Redaction, Key Stability (9 items - 1 MAJOR, 7 MINOR, 1 TRIVIAL, 0 REJECTED). **MAJOR**: Module-level Set shared state bug in auth-error-banner.tsx → useState. **MINOR**: Key-name-based PII redaction (SENSITIVE_KEY_PATTERN), deepRedactValue null check, composite React keys (3 files), guard clause for optional params, SSR-safe reload. **TRIVIAL**: Removed redundant onKeyDown on backdrop div. Consolidation counter 10→11 (consolidation due). Active reviews #266-281.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | 15.5    | 2026-02-09 | Review #272: PR #352 Round 6 — FINAL loadConfig sweep (12 items - 1 Security, 8 MAJOR, 2 MINOR, 1 REJECTED). **SECURITY**: Path traversal guard in load-config.js (reject .., /, \\). **MAJOR**: Complete sweep of ALL remaining unguarded loadConfig calls (6 files: validate-schema.js, normalize-all.js, intake-manual.js, intake-audit.js, intake-pr-deferred.js, validate-skill-config.js), description fallback YAML artifact filter, path-boundary archive regex, overlapping trigger exclusion. **REJECTED**: audit-schema.json category rename + 3 shape validation suggestions (over-engineering). **MILESTONE**: Zero unguarded loadConfig calls remain in codebase. Consolidation counter 7→8. Active reviews #266-272.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 15.4    | 2026-02-09 | Review #271: PR #352 Round 5 - Qodo Suggestions + Compliance (7 items - 4 MAJOR, 2 MINOR, 1 REJECTED). **MAJOR**: Stateful regex bug (g flag removed from skill-config.json deprecatedPatterns), path-boundary anchored excludePaths regex (agent-triggers.json), unguarded loadConfig try/catch (check-pattern-compliance.js + generate-documentation-index.js + surface-lessons-learned.js). **MINOR**: Empty patterns fail-closed (ai-pattern-checks.js). **REJECTED**: check-review-needed.js 15-line shape validation (over-engineering). Consolidation counter 6→7. Active reviews #266-271.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 15.3    | 2026-02-09 | Review #270: PR #352 Round 4 - Qodo Suggestions + Compliance (7 items - 4 MAJOR, 1 MINOR, 1 REJECTED, 1 INFORMATIONAL). **MAJOR**: YAML block scalar handling in parseFrontmatter (generate-skill-registry.js), silent catch→console.warn (search-capabilities.js), unguarded loadConfigWithRegex try/catch (check-review-needed.js + ai-pattern-checks.js). **REJECTED**: sanitizeError guard in validate-audit-integration.js (already has inline fallback via try/catch). Consolidation counter 5→6. Active reviews #266-270.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -322,8 +323,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 10 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After 10 more reviews
+**Reviews since last consolidation:** 11 **Consolidation threshold:** 10 reviews
+**Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** Now
 
 ### When to Consolidate
 
@@ -671,6 +672,46 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #281: PR #358 Sprint 2 — Shared State, Redaction, Key Stability (2026-02-10)
+
+**Source:** Qodo Compliance + Code Suggestions **PR/Branch:**
+claude/analyze-repo-install-ceMkn (PR #358) **Suggestions:** 9 total (Critical:
+0, Major: 1, Minor: 7, Trivial: 1, Rejected: 0)
+
+**Patterns Identified:**
+
+1. [Module-level shared state bug]: `auth-error-banner.tsx` used a module-level
+   `Set` for `seenMessages` — shared across all component instances and persists
+   after unmount. Fix: Move to `useState` with functional updater.
+   - Root cause: Module-scope variables in React components are singletons
+   - Prevention: Never use module-level mutable state for per-instance data
+2. [Key-name-based PII redaction]: `deepRedactValue` only checked value patterns
+   (emails, tokens) but not key names (`api_key`, `password`, `secret`). Fix:
+   Added `SENSITIVE_KEY_PATTERN` regex to redact by field name.
+3. [Composite React keys]: Several lists used non-unique keys (`cause`, `date`,
+   `resource.id`) that could collide. Fix: Composite keys with index suffix.
+4. [SSR-safe reload]: `globalThis.location.reload()` can throw in SSR. Fix:
+   Optional chaining `globalThis.location?.reload?.()`.
+
+**Resolution:**
+
+- Fixed: 9 items (1 MAJOR, 7 MINOR, 1 TRIVIAL)
+- Deferred: 0
+- Rejected: 0
+
+**Key Learnings:**
+
+- Module-scope `Set`/`Map` in React components = shared singleton bug. Always
+  use `useState` or `useRef` for per-instance mutable state
+- PII redaction needs both value-pattern AND key-name matching for defense in
+  depth
+- When lists may have duplicate values, always use composite keys
+  (`${value}-${index}`)
+- Guard clauses (`if (!x) return`) are cleaner than nested conditionals for
+  optional parameters
 
 ---
 

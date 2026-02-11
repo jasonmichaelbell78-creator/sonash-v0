@@ -374,7 +374,7 @@ function ResourceCardsGrid({ resources, onClick }: Readonly<ResourceCardProps>) 
     <div className="space-y-3">
       {resources.map((resource, index) => (
         <button
-          key={resource.id}
+          key={resource.id ?? `${resource.title}-${index}`}
           onClick={() => onClick(resource.title, resource.id)}
           className="w-full text-left p-4 border border-amber-200/50 rounded-lg hover:bg-amber-50 transition-colors group shadow-sm"
         >
