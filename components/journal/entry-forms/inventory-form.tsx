@@ -12,7 +12,7 @@ interface InventoryFormProps {
   onSuccess: () => void;
 }
 
-export function InventoryForm({ onClose, onSuccess }: InventoryFormProps) {
+export function InventoryForm({ onClose, onSuccess }: Readonly<InventoryFormProps>) {
   const { addEntry } = useJournal();
   const [formData, setFormData] = React.useState({
     resentments: "",

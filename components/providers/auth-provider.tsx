@@ -35,7 +35,7 @@ interface UnifiedAuthProviderProps {
  * Wrapping order matters - inner providers can access outer ones:
  * AuthProvider (outermost) → ProfileProvider → DailyLogProvider (innermost)
  */
-export function AuthProvider({ children }: UnifiedAuthProviderProps) {
+export function AuthProvider({ children }: Readonly<UnifiedAuthProviderProps>) {
   // Track user for passing to child providers
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 

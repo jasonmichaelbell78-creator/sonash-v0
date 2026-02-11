@@ -24,7 +24,7 @@ interface CelebrationContextType {
 
 const CelebrationContext = createContext<CelebrationContextType | null>(null);
 
-export function CelebrationProvider({ children }: { children: ReactNode }) {
+export function CelebrationProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [activeEvent, setActiveEvent] = useState<CelebrationEvent | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

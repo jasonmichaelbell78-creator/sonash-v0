@@ -17,10 +17,10 @@ import { Textarea } from "@/components/ui/textarea";
 function SoberLivingForm({
   formData,
   setFormData,
-}: {
+}: Readonly<{
   formData: Partial<SoberLivingHome>;
   setFormData: (data: Partial<SoberLivingHome>) => void;
-}) {
+}>) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };

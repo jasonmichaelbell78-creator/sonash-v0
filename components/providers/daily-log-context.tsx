@@ -28,7 +28,7 @@ interface DailyLogProviderProps {
   user: User | null;
 }
 
-export function DailyLogProvider({ children, user }: DailyLogProviderProps) {
+export function DailyLogProvider({ children, user }: Readonly<DailyLogProviderProps>) {
   const [todayLog, setTodayLog] = useState<DailyLog | null>(null);
   const [todayLogError, setTodayLogError] = useState<string | null>(null);
 

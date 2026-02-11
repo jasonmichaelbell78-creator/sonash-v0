@@ -28,10 +28,10 @@ async function seedGlossary() {
 function GlossaryForm({
   formData,
   setFormData,
-}: {
+}: Readonly<{
   formData: Partial<GlossaryTerm>;
   setFormData: (data: Partial<GlossaryTerm>) => void;
-}) {
+}>) {
   return (
     <div className="space-y-4 py-4">
       <div className="space-y-2">

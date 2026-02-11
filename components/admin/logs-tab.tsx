@@ -170,7 +170,7 @@ interface LogRowProps {
   onToggle: () => void;
 }
 
-function LogRow({ log, isExpanded, onToggle }: LogRowProps) {
+function LogRow({ log, isExpanded, onToggle }: Readonly<LogRowProps>) {
   return (
     <>
       <tr className="hover:bg-amber-50 transition-colors">

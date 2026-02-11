@@ -271,7 +271,7 @@ export default function PrayersTab() {
                   <div
                     key={prayer.id}
                     className={`p-4 bg-white border border-purple-100 rounded-lg ${
-                      !prayer.isActive ? "opacity-50" : ""
+                      prayer.isActive ? "" : "opacity-50"
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">

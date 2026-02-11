@@ -45,7 +45,7 @@ interface AdminCrudTableProps<T extends BaseEntity> {
   config: AdminCrudConfig<T>;
 }
 
-export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableProps<T>) {
+export function AdminCrudTable<T extends BaseEntity>({ config }: Readonly<AdminCrudTableProps<T>>) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");

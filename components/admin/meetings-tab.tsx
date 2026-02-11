@@ -180,10 +180,10 @@ function LocationDetailsSection({
 function MeetingForm({
   formData,
   setFormData,
-}: {
+}: Readonly<{
   formData: Partial<Meeting>;
   setFormData: (data: Partial<Meeting>) => void;
-}) {
+}>) {
   return (
     <div className="space-y-4 py-4">
       <div>

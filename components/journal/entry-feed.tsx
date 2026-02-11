@@ -255,7 +255,7 @@ function EntryDetailContent({ entry }: Readonly<{ entry: JournalEntry }>) {
   }
 }
 
-export function EntryFeed({ entries, filter }: EntryFeedProps) {
+export function EntryFeed({ entries, filter }: Readonly<EntryFeedProps>) {
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 

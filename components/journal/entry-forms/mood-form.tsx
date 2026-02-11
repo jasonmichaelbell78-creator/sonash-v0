@@ -22,7 +22,7 @@ const MOOD_OPTIONS = [
   { emoji: "😤", label: "Angry" },
 ];
 
-export function MoodForm({ onClose, onSuccess }: MoodFormProps) {
+export function MoodForm({ onClose, onSuccess }: Readonly<MoodFormProps>) {
   const { addEntry } = useJournal();
   const [mood, setMood] = React.useState<string | null>(null);
   const [intensity, setIntensity] = React.useState(5);

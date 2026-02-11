@@ -61,7 +61,7 @@ const ribbons = [
   },
 ];
 
-export function RibbonNav({ activeTab, onTabChange }: RibbonNavProps) {
+export function RibbonNav({ activeTab, onTabChange }: Readonly<RibbonNavProps>) {
   return (
     <div className="mb-6">
       {/* Filter tabs */}

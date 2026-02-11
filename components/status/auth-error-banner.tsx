@@ -11,7 +11,7 @@ interface AuthErrorBannerProps {
 
 const seenMessages = new Set<string>();
 
-export function AuthErrorBanner({ className }: AuthErrorBannerProps) {
+export function AuthErrorBanner({ className }: Readonly<AuthErrorBannerProps>) {
   const { profileError, todayLogError, profileNotFound } = useAuth();
 
   const messages = useMemo(() => {

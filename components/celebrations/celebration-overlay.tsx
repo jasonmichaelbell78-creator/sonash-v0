@@ -12,7 +12,7 @@ interface CelebrationOverlayProps {
   onClose: () => void;
 }
 
-export function CelebrationOverlay({ event, onClose }: CelebrationOverlayProps) {
+export function CelebrationOverlay({ event, onClose }: Readonly<CelebrationOverlayProps>) {
   const { type, intensity, message, daysClean } = event;
 
   // Determine which icon to use for subtle celebrations

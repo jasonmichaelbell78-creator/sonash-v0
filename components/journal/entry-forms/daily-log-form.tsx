@@ -22,7 +22,7 @@ const MOOD_OPTIONS = [
   { emoji: "😤", label: "Angry" },
 ];
 
-export function DailyLogForm({ onClose, onSuccess }: DailyLogFormProps) {
+export function DailyLogForm({ onClose, onSuccess }: Readonly<DailyLogFormProps>) {
   const { addEntry } = useJournal();
   const [mood, setMood] = React.useState<string | null>(null);
   const [cravings, setCravings] = React.useState<boolean | null>(null);

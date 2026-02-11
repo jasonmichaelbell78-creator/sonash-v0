@@ -51,7 +51,7 @@ interface DevTabsProps {
   setActiveTab: (tab: DevTabId) => void;
 }
 
-export function DevTabs({ activeTab, setActiveTab }: DevTabsProps) {
+export function DevTabs({ activeTab, setActiveTab }: Readonly<DevTabsProps>) {
   return (
     <nav className="bg-gray-800 border-b border-gray-700">
       <div className="max-w-7xl mx-auto px-6">

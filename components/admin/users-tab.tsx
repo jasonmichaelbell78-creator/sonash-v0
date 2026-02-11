@@ -335,8 +335,8 @@ function useEscapeKeyHandler(
       }
       setSelectedUser(null);
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    globalThis.addEventListener("keydown", handleKeyDown);
+    return () => globalThis.removeEventListener("keydown", handleKeyDown);
   }, [selectedUid, deleteDialogStep, closeDeleteDialog, setSelectedUser]);
 }
 

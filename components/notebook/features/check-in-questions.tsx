@@ -31,7 +31,7 @@ export function CheckInQuestions({
   used,
   onCravingsChange,
   onUsedChange,
-}: CheckInQuestionsProps) {
+}: Readonly<CheckInQuestionsProps>) {
   return (
     <div className="space-y-3 pl-1" role="group" aria-label="Daily check-in questions">
       {/* Cravings question */}

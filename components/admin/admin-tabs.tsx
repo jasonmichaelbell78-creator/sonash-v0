@@ -66,13 +66,13 @@ export function AdminTabs() {
 
   const TabButton = ({
     tab,
-  }: {
+  }: Readonly<{
     tab: {
       id: AdminTabId;
       label: string;
       icon: React.ComponentType<{ className?: string }>;
     };
-  }) => {
+  }>) => {
     const Icon = tab.icon;
     const selected = activeTab === tab.id;
     return (

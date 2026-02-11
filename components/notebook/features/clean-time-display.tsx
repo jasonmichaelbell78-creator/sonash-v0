@@ -61,7 +61,7 @@ function buildTimeParts(duration: Duration): TimePart[] {
  * @example
  * <CleanTimeDisplay cleanStart={profile.cleanStart} />
  */
-export function CleanTimeDisplay({ cleanStart }: CleanTimeDisplayProps) {
+export function CleanTimeDisplay({ cleanStart }: Readonly<CleanTimeDisplayProps>) {
   if (!cleanStart) {
     return (
       <div>

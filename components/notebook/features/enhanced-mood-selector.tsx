@@ -51,7 +51,7 @@ export function EnhancedMoodSelector({
   value,
   onChange,
   showKeyboardShortcuts = true,
-}: EnhancedMoodSelectorProps) {
+}: Readonly<EnhancedMoodSelectorProps>) {
   const [hoveredMood, setHoveredMood] = useState<string | null>(null);
 
   // Keyboard shortcuts for desktop
@@ -73,8 +73,8 @@ export function EnhancedMoodSelector({
       }
     };
 
-    window.addEventListener("keypress", handleKeyPress);
-    return () => window.removeEventListener("keypress", handleKeyPress);
+    globalThis.addEventListener("keypress", handleKeyPress);
+    return () => globalThis.removeEventListener("keypress", handleKeyPress);
   }, [showKeyboardShortcuts, onChange]);
 
   return (

@@ -10,7 +10,7 @@ interface EntryWizardProps {
   onClose: () => void;
 }
 
-export function EntryWizard({ type, onClose }: EntryWizardProps) {
+export function EntryWizard({ type, onClose }: Readonly<EntryWizardProps>) {
   const { addEntry } = useJournal();
   const [submitting, setSubmitting] = useState(false);
 

@@ -48,7 +48,11 @@ const menuItems = [
   },
 ] as const;
 
-export function EntryCreatorMenu({ isOpen, onClose, onSelectType }: EntryCreatorMenuProps) {
+export function EntryCreatorMenu({
+  isOpen,
+  onClose,
+  onSelectType,
+}: Readonly<EntryCreatorMenuProps>) {
   if (!isOpen) return null;
 
   return (

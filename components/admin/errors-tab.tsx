@@ -136,7 +136,7 @@ interface ErrorRowProps {
   knowledge: ErrorKnowledge;
 }
 
-function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
+function ErrorRow({ issue, isExpanded, onToggle, knowledge }: Readonly<ErrorRowProps>) {
   const sanitizedTitle = redactSensitive(issue.title);
 
   // Calculate dates once at component start (performance optimization)
@@ -396,8 +396,8 @@ function UserActivityModal({
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    globalThis.addEventListener("keydown", handleKeyDown);
+    return () => globalThis.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
   return (
@@ -698,7 +698,7 @@ interface ExportDropdownProps {
   loading: boolean;
 }
 
-function ExportDropdown({ issues, loading }: ExportDropdownProps) {
+function ExportDropdown({ issues, loading }: Readonly<ExportDropdownProps>) {
   const [exportTimeframe, setExportTimeframe] = useState<TimeframePreset>("24h");
   const [showDropdown, setShowDropdown] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -718,8 +718,8 @@ function ExportDropdown({ issues, loading }: ExportDropdownProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setShowDropdown(false);
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    globalThis.addEventListener("keydown", handleKeyDown);
+    return () => globalThis.removeEventListener("keydown", handleKeyDown);
   }, [showDropdown]);
 
   const handleExportDownload = () => {
@@ -847,7 +847,7 @@ export function ErrorsTab() {
     (uid: string) => {
       // Store the target user ID for the users tab to pick up
       try {
-        if (typeof window !== "undefined") {
+        if (typeof globalThis.window !== "undefined") {
           sessionStorage.setItem("admin_navigate_to_user", uid);
         }
       } catch (err) {

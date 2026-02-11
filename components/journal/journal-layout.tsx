@@ -6,7 +6,7 @@ interface JournalLayoutProps {
   children: React.ReactNode;
 }
 
-export function JournalLayout({ children }: JournalLayoutProps) {
+export function JournalLayout({ children }: Readonly<JournalLayoutProps>) {
   return (
     <div className="relative min-h-screen w-full bg-[#111] flex items-center justify-center p-4 md:p-8">
       {/* Notebook Container */}

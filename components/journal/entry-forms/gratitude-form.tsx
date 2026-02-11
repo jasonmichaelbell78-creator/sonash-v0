@@ -12,7 +12,7 @@ interface GratitudeFormProps {
   onSuccess: () => void;
 }
 
-export function GratitudeForm({ onClose, onSuccess }: GratitudeFormProps) {
+export function GratitudeForm({ onClose, onSuccess }: Readonly<GratitudeFormProps>) {
   const { addEntry } = useJournal();
   const [items, setItems] = React.useState<string[]>(["", "", ""]);
   const [isSubmitting, setIsSubmitting] = React.useState(false);

@@ -694,7 +694,7 @@ export default function Step1WorksheetCard({
     const hasUnsavedChanges = JSON.stringify(data) !== JSON.stringify(lastSavedData);
 
     if (hasUnsavedChanges && hasContent) {
-      const confirmed = window.confirm(
+      const confirmed = globalThis.confirm(
         "You have unsaved changes. Your work has been auto-saved as a draft, but it won't appear in your journal until you manually save. Exit anyway?"
       );
       if (!confirmed) return;

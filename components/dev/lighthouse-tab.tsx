@@ -61,7 +61,7 @@ function getScoreBg(score: number): string {
 }
 
 // Score badge component
-function ScoreBadge({ score, label }: { score: number; label: string }) {
+function ScoreBadge({ score, label }: Readonly<{ score: number; label: string }>) {
   return (
     <div className={`text-center p-2 rounded ${getScoreBg(score)}`}>
       <div className={`text-2xl font-bold ${getScoreColor(score)}`}>{score}</div>

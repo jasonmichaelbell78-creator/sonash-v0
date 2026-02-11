@@ -28,10 +28,10 @@ async function seedSlogans() {
 function SlogansForm({
   formData,
   setFormData,
-}: {
+}: Readonly<{
   formData: Partial<Slogan>;
   setFormData: (data: Partial<Slogan>) => void;
-}) {
+}>) {
   return (
     <div className="space-y-4 py-4">
       <div className="space-y-2">

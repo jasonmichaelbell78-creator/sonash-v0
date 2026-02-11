@@ -6,7 +6,11 @@ interface CheckInProgressProps {
   steps: Array<{ id: string; label: string; completed: boolean }>;
 }
 
-export function CheckInProgress({ currentStep, totalSteps, steps }: CheckInProgressProps) {
+export function CheckInProgress({
+  currentStep,
+  totalSteps,
+  steps,
+}: Readonly<CheckInProgressProps>) {
   return (
     <div className="mb-6 bg-amber-50/50 border border-amber-100 rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">

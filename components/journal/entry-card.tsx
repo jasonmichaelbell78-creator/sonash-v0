@@ -296,7 +296,7 @@ function formatEntryTime(createdAt: string | number | Date | undefined): string 
   });
 }
 
-export function EntryCard({ entry, index, onClick }: EntryCardProps) {
+export function EntryCard({ entry, index, onClick }: Readonly<EntryCardProps>) {
   const rotateValue = ENTRY_ROTATION[entry.type] ?? 0;
   const isCompact = entry.type === "mood" || entry.type === "gratitude";
 

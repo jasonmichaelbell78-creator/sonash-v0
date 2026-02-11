@@ -285,7 +285,7 @@ export default function LinksTab() {
                   <div
                     key={link.id}
                     className={`flex items-center justify-between p-3 bg-white border border-amber-100 rounded-lg ${
-                      !link.isActive ? "opacity-50" : ""
+                      link.isActive ? "" : "opacity-50"
                     }`}
                   >
                     <div className="flex-1">

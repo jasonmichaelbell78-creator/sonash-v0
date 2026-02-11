@@ -14,7 +14,7 @@ interface QuickActionsFabProps {
 // - Allow users to reorder actions
 // - Allow users to add custom phone numbers (sponsor, etc.)
 // - Consider settings panel in More tab
-export function QuickActionsFab({ onNavigate, onQuickMood }: QuickActionsFabProps) {
+export function QuickActionsFab({ onNavigate, onQuickMood }: Readonly<QuickActionsFabProps>) {
   const [isOpen, setIsOpen] = useState(false);
 
   const actions = [
@@ -33,7 +33,7 @@ export function QuickActionsFab({ onNavigate, onQuickMood }: QuickActionsFabProp
       color: "bg-blue-500 hover:bg-blue-600",
       onClick: () => {
         // Future: integrate with contacts
-        window.location.href = "tel:";
+        globalThis.location.href = "tel:";
         setIsOpen(false);
       },
     },

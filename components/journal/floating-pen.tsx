@@ -9,7 +9,7 @@ interface FloatingPenProps {
   onClick?: () => void;
 }
 
-export function FloatingPen({ onClick }: FloatingPenProps) {
+export function FloatingPen({ onClick }: Readonly<FloatingPenProps>) {
   return (
     <motion.button
       whileHover={{ scale: 1.1, rotate: 15 }}

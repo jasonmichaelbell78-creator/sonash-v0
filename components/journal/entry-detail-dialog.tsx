@@ -264,7 +264,7 @@ function EntryDetailContent({ entry }: Readonly<{ entry: JournalEntry }>) {
   }
 }
 
-export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
+export function EntryDetailDialog({ entry, onClose }: Readonly<EntryDetailDialogProps>) {
   if (!entry) return null;
 
   return (

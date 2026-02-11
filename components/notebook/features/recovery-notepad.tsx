@@ -30,7 +30,7 @@ export function RecoveryNotepad({
   isEditingRef,
   isSaving,
   saveComplete,
-}: RecoveryNotepadProps) {
+}: Readonly<RecoveryNotepadProps>) {
   return (
     <div className="relative group">
       <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>

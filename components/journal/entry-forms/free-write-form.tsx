@@ -12,7 +12,7 @@ interface FreeWriteFormProps {
   onSuccess: () => void;
 }
 
-export function FreeWriteForm({ onClose, onSuccess }: FreeWriteFormProps) {
+export function FreeWriteForm({ onClose, onSuccess }: Readonly<FreeWriteFormProps>) {
   const { addEntry } = useJournal();
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");

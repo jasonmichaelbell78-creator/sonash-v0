@@ -25,7 +25,7 @@ export function MeetingDetailsDialog({
   open,
   onOpenChange,
   userLocation,
-}: MeetingDetailsDialogProps) {
+}: Readonly<MeetingDetailsDialogProps>) {
   if (!meeting) return null;
 
   const getMeetingDistance = (): string | null => {
