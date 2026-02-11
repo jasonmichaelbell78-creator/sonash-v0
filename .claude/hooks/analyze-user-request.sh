@@ -102,3 +102,5 @@ fi
 
 # No specific trigger matched
 echo "ok"
+
+exit 0

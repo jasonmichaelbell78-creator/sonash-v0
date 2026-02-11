@@ -91,3 +91,5 @@ fi
 
 # No specific requirements
 echo "ok"
+
+exit 0

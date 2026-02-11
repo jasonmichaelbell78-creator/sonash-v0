@@ -1,7 +1,7 @@
 # Code Review Patterns Reference
 
-**Document Version:** 2.6 **Source:** Distilled from 265 AI code reviews **Last
-Updated:** 2026-02-07
+**Document Version:** 2.7 **Source:** Distilled from 284 AI code reviews **Last
+Updated:** 2026-02-10
 
 ---
 
@@ -387,40 +387,46 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ## CI/Automation
 
-| Priority | Pattern                 | Rule                                                                       | Why                                                              |
-| -------- | ----------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| 🟡       | CI mode                 | Check ALL, no truncation                                                   | Limits for interactive only                                      |
-| 🟡       | Invalid files           | Fail on exists && !valid && required                                       | Not just missing                                                 |
-| 🟡       | Explicit flags          | Fail explicitly if flag target missing                                     | Even interactive                                                 |
-| 🟡       | Readline close          | Create helper, call on all paths                                           | Prevent hang                                                     |
-| 🟡       | File moves              | grep for filename in .github/, scripts/                                    | Update CI refs                                                   |
-| 🟡       | JSON output isolation   | Guard all console.error when JSON mode active                              | Mixed output breaks parsers                                      |
-| 🟡       | Empty-state guards      | Handle "no prior data" case in triggers                                    | Prevents false positives on fresh projects                       |
-| 🟡       | Unimplemented CLI flags | Block with error message, exit code 2                                      | Silent acceptance = false confidence                             |
-| 🔴       | CLI arg separator       | Use `--` before file args: `script -- $FILES`                              | Prevents `-filename` injection                                   |
-| 🔴       | Quote shell arguments   | Always quote `$ARGS` in shell hook settings                                | Command injection prevention                                     |
-| 🔴       | Project dir validation  | Validate cwd is within expected project root                               | Prevent traversal in hooks                                       |
-| 🟡       | Cross-platform paths    | Use `path.sep` and normalize backslashes                                   | Windows compatibility                                            |
-| 🟡       | Exit code best practice | Use `process.exitCode` not `process.exit()`                                | Allows buffer flush                                              |
-| 🟡       | Per-item error handling | try/catch around individual job items                                      | One failure shouldn't abort entire job                           |
-| 🟡       | Complete cleanup loops  | Loop until no documents match, not one batch                               | Cleanup jobs may have more than 500 items                        |
-| 🟡       | Pre-push file selection | Use `git diff @{u}...HEAD` for pushed commits                              | Pre-commit uses staged, pre-push uses diff                       |
-| 🟡       | JSONL line parsing      | Parse line-by-line with try/catch, track line numbers                      | Single corrupt line shouldn't crash script (Review #218)         |
-| 🔴       | Atomic file writes      | Write to `.tmp` then `fs.renameSync` for critical files                    | Interrupted write leaves corrupt file (Review #218, #224)        |
-| 🟡       | Stable ID preservation  | Never reassign IDs once allocated; IDs are immutable                       | Downstream consumers depend on stable refs (Review #218)         |
-| 🟡       | API pagination          | Always check for pagination in external APIs; fetch all                    | APIs default to partial results (Review #218)                    |
-| 🟡       | Multi-file rollback     | If second write fails, undo first to maintain consistency                  | Partial writes leave inconsistent state (Review #223)            |
-| 🟡       | Glob self-inclusion     | Use explicit file lists, not globs that include output file                | `cat *.jsonl > merged.jsonl` includes output (Review #221)       |
-| 🟡       | Windows atomic rename   | Use `fs.rmSync()` before `fs.renameSync()` on Windows                      | Windows rename fails if destination exists (Review #224)         |
-| 🟡       | Parallel agent review   | For 50+ review items, spawn specialized agents by concern area in parallel | Sequential review misses cross-cutting issues (Review #225)      |
-| 🟡       | Delimiter consistency   | Use `\x1f` (Unit Separator) not `\|` for git log format fields             | Commit messages containing `\|` corrupt parsing (Review #264)    |
-| 🟡       | pathExcludeList updates | When deleting scripts, remove their entries from `pathExcludeList` arrays  | Stale excludes mask new violations (Review #260)                 |
-| 🟡       | Fence block handling    | Track ``` state to skip code blocks during markdown parsing                | Pattern matchers fire on code examples (Review #261)             |
-| 🟡       | Rename fallback guard   | try/catch around `fs.renameSync` with `fs.writeFileSync` fallback          | Cross-drive renames fail on Windows (Review #265)                |
-| 🟡       | Trailing newline JSONL  | End JSONL files with `\n`: `entries.join("\n") + "\n"`                     | Missing trailing newline breaks append operations (Review #264)  |
-| 🟡       | Content normalization   | Normalize CRLF + trim before comparing file content for changes            | Whitespace differences cause false-positive diffs (Review #262)  |
-| 🟡       | Silent parse prevention | Log warning on unparseable JSONL lines instead of silently filtering       | `.filter(Boolean)` hides data corruption (Review #263)           |
-| 🟡       | Stale review detection  | Compare review "up to commit" against current HEAD before acting           | Multi-round reviews may repeat already-fixed items (Review #260) |
+| Priority | Pattern                       | Rule                                                                       | Why                                                                      |
+| -------- | ----------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 🟡       | CI mode                       | Check ALL, no truncation                                                   | Limits for interactive only                                              |
+| 🟡       | Invalid files                 | Fail on exists && !valid && required                                       | Not just missing                                                         |
+| 🟡       | Explicit flags                | Fail explicitly if flag target missing                                     | Even interactive                                                         |
+| 🟡       | Readline close                | Create helper, call on all paths                                           | Prevent hang                                                             |
+| 🟡       | File moves                    | grep for filename in .github/, scripts/                                    | Update CI refs                                                           |
+| 🟡       | JSON output isolation         | Guard all console.error when JSON mode active                              | Mixed output breaks parsers                                              |
+| 🟡       | Empty-state guards            | Handle "no prior data" case in triggers                                    | Prevents false positives on fresh projects                               |
+| 🟡       | Unimplemented CLI flags       | Block with error message, exit code 2                                      | Silent acceptance = false confidence                                     |
+| 🔴       | CLI arg separator             | Use `--` before file args: `script -- $FILES`                              | Prevents `-filename` injection                                           |
+| 🔴       | Quote shell arguments         | Always quote `$ARGS` in shell hook settings                                | Command injection prevention                                             |
+| 🔴       | Project dir validation        | Validate cwd is within expected project root                               | Prevent traversal in hooks                                               |
+| 🟡       | Cross-platform paths          | Use `path.sep` and normalize backslashes                                   | Windows compatibility                                                    |
+| 🟡       | Exit code best practice       | Use `process.exitCode` not `process.exit()`                                | Allows buffer flush                                                      |
+| 🟡       | Per-item error handling       | try/catch around individual job items                                      | One failure shouldn't abort entire job                                   |
+| 🟡       | Complete cleanup loops        | Loop until no documents match, not one batch                               | Cleanup jobs may have more than 500 items                                |
+| 🟡       | Pre-push file selection       | Use `git diff @{u}...HEAD` for pushed commits                              | Pre-commit uses staged, pre-push uses diff                               |
+| 🟡       | JSONL line parsing            | Parse line-by-line with try/catch, track line numbers                      | Single corrupt line shouldn't crash script (Review #218)                 |
+| 🔴       | Atomic file writes            | Write to `.tmp` then `fs.renameSync` for critical files                    | Interrupted write leaves corrupt file (Review #218, #224)                |
+| 🟡       | Stable ID preservation        | Never reassign IDs once allocated; IDs are immutable                       | Downstream consumers depend on stable refs (Review #218)                 |
+| 🟡       | API pagination                | Always check for pagination in external APIs; fetch all                    | APIs default to partial results (Review #218)                            |
+| 🟡       | Multi-file rollback           | If second write fails, undo first to maintain consistency                  | Partial writes leave inconsistent state (Review #223)                    |
+| 🟡       | Glob self-inclusion           | Use explicit file lists, not globs that include output file                | `cat *.jsonl > merged.jsonl` includes output (Review #221)               |
+| 🟡       | Windows atomic rename         | Use `fs.rmSync()` before `fs.renameSync()` on Windows                      | Windows rename fails if destination exists (Review #224)                 |
+| 🟡       | Parallel agent review         | For 50+ review items, spawn specialized agents by concern area in parallel | Sequential review misses cross-cutting issues (Review #225)              |
+| 🟡       | Delimiter consistency         | Use `\x1f` (Unit Separator) not `\|` for git log format fields             | Commit messages containing `\|` corrupt parsing (Review #264)            |
+| 🟡       | pathExcludeList updates       | When deleting scripts, remove their entries from `pathExcludeList` arrays  | Stale excludes mask new violations (Review #260)                         |
+| 🟡       | Fence block handling          | Track ``` state to skip code blocks during markdown parsing                | Pattern matchers fire on code examples (Review #261)                     |
+| 🟡       | Rename fallback guard         | try/catch around `fs.renameSync` with `fs.writeFileSync` fallback          | Cross-drive renames fail on Windows (Review #265)                        |
+| 🟡       | Trailing newline JSONL        | End JSONL files with `\n`: `entries.join("\n") + "\n"`                     | Missing trailing newline breaks append operations (Review #264)          |
+| 🟡       | Content normalization         | Normalize CRLF + trim before comparing file content for changes            | Whitespace differences cause false-positive diffs (Review #262)          |
+| 🟡       | Silent parse prevention       | Log warning on unparseable JSONL lines instead of silently filtering       | `.filter(Boolean)` hides data corruption (Review #263)                   |
+| 🟡       | Stale review detection        | Compare review "up to commit" against current HEAD before acting           | Multi-round reviews may repeat already-fixed items (Review #260)         |
+| 🟡       | Module-scope config try/catch | Wrap module-level `loadConfig()` in try/catch with fallback defaults       | Module scope has no caller to propagate errors to (Reviews #267-#272)    |
+| 🟡       | Path info redaction           | Use `path.basename(filePath)` in error/warning logs, not full path         | Full paths leak directory structure to output (Reviews #266, #284)       |
+| 🟡       | Silent catch prevention       | Always add `console.warn()` or explanatory comment in catch blocks         | Empty catches hide bugs and reduce debuggability (Reviews #269, #283)    |
+| 🟡       | Number.isFinite guards        | Guard numeric inputs with `Number.isFinite(n)` before math operations      | NaN/Infinity propagate silently through calculations (Reviews #275-#277) |
+| 🟡       | Fail-closed validation        | Security validation functions must return `false` on error, never throw    | Exceptions bypass security checks entirely (Reviews #269, #271, #276)    |
+| 🟡       | Atomic write cleanup          | Add `try { fs.rmSync(tmpPath, { force: true }) } catch {}` in write catch  | Failed atomic writes leave orphan .tmp files (Reviews #283, #284)        |
 
 ---
 
@@ -510,29 +516,30 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ## React/Frontend
 
-| Priority | Pattern                        | Rule                                                                  | Why                                                          |
-| -------- | ------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
-| 🟡       | Accessible toggle switches     | Use `<button role="switch" aria-checked>` not `<div onClick>`         | Keyboard support, screen readers                             |
-| 🟡       | Local date extraction          | Use `getFullYear()/getMonth()/getDate()` not `toISOString()`          | toISOString() converts to UTC, shifts dates                  |
-| 🟡       | Preference spread on update    | `{ ...existing.preferences, [field]: value }` not direct assign       | Prevents losing unmodified fields                            |
-| 🟡       | useEffect state dependency     | Avoid state vars in deps that trigger re-subscriptions                | Creates multiple subscriptions                               |
-| 🟡       | Firestore Timestamp handling   | Check for `.toDate()` method on timestamp fields                      | Data may be Timestamp object or string                       |
-| 🟡       | Module-level init flags        | `let didInit = false` outside component for side effects              | Prevents double-init in React Strict Mode                    |
-| 🟡       | Async cleanup pattern          | `let isCancelled = false` with `return () => { isCancelled = true }`  | Prevents state updates after unmount                         |
-| 🟡       | useMemo for derived data       | Memoize arrays mapped with derived fields                             | Prevents recalculation every render                          |
-| 🟡       | Null guards at render boundary | Check `if (!user) return null` even if state "guarantees" it          | Defense in depth for edge cases                              |
-| 🟡       | finally for state cleanup      | Use `finally { setLoading(false) }` not duplicate in try/catch        | Consistent cleanup regardless of success/failure             |
-| 🟡       | Error user-facing messages     | Generic messages to user; log errorCode only                          | Firebase errors can leak implementation details              |
-| 🟡       | Cursor pagination batch jobs   | Use `startAfter(lastDoc)` not `hasMore = size === limit`              | Prevents infinite loops when items fail                      |
-| 🟡       | Firestore-first operation      | Write Firestore before Auth/external services                         | Easier rollback on external failure                          |
-| 🟡       | Capture before transaction     | Store original values before transaction for rollback                 | Full restoration if post-transaction steps fail              |
-| 🟡       | Primitive useEffect deps       | Use `user?.uid` not `user` object in dependency array                 | Prevents unnecessary re-renders                              |
-| 🟡       | Functional setState updates    | Use `setState((prev) => ...)` in useCallback                          | Avoids stale closure state                                   |
-| ⚪       | data-testid for test selectors | Use `data-testid="{feature}-{element}"` on key interactive elements   | Stable selectors for automated UI testing protocols          |
-| 🟡       | Claims preservation            | `setCustomUserClaims({ ...existing, newClaim })` spread first         | Firebase replaces entire claims object                       |
-| 🟡       | React state updaters pure      | Move side effects (localStorage/Firestore) from setState to useEffect | State updaters called twice in Strict Mode (Review #207)     |
-| 🟡       | Storage operations isolation   | Independent try/catch for localStorage vs Firestore saves             | One failing shouldn't block the other (Review #207)          |
-| 🟡       | npm script arg separator       | Use `npm run script -- --flag` to pass args to underlying command     | Args before `--` go to npm, after go to script (Review #207) |
+| Priority | Pattern                        | Rule                                                                  | Why                                                                     |
+| -------- | ------------------------------ | --------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 🟡       | Accessible toggle switches     | Use `<button role="switch" aria-checked>` not `<div onClick>`         | Keyboard support, screen readers                                        |
+| 🟡       | Local date extraction          | Use `getFullYear()/getMonth()/getDate()` not `toISOString()`          | toISOString() converts to UTC, shifts dates                             |
+| 🟡       | Preference spread on update    | `{ ...existing.preferences, [field]: value }` not direct assign       | Prevents losing unmodified fields                                       |
+| 🟡       | useEffect state dependency     | Avoid state vars in deps that trigger re-subscriptions                | Creates multiple subscriptions                                          |
+| 🟡       | Firestore Timestamp handling   | Check for `.toDate()` method on timestamp fields                      | Data may be Timestamp object or string                                  |
+| 🟡       | Module-level init flags        | `let didInit = false` outside component for side effects              | Prevents double-init in React Strict Mode                               |
+| 🟡       | Async cleanup pattern          | `let isCancelled = false` with `return () => { isCancelled = true }`  | Prevents state updates after unmount                                    |
+| 🟡       | useMemo for derived data       | Memoize arrays mapped with derived fields                             | Prevents recalculation every render                                     |
+| 🟡       | Null guards at render boundary | Check `if (!user) return null` even if state "guarantees" it          | Defense in depth for edge cases                                         |
+| 🟡       | finally for state cleanup      | Use `finally { setLoading(false) }` not duplicate in try/catch        | Consistent cleanup regardless of success/failure                        |
+| 🟡       | Error user-facing messages     | Generic messages to user; log errorCode only                          | Firebase errors can leak implementation details                         |
+| 🟡       | Cursor pagination batch jobs   | Use `startAfter(lastDoc)` not `hasMore = size === limit`              | Prevents infinite loops when items fail                                 |
+| 🟡       | Firestore-first operation      | Write Firestore before Auth/external services                         | Easier rollback on external failure                                     |
+| 🟡       | Capture before transaction     | Store original values before transaction for rollback                 | Full restoration if post-transaction steps fail                         |
+| 🟡       | Primitive useEffect deps       | Use `user?.uid` not `user` object in dependency array                 | Prevents unnecessary re-renders                                         |
+| 🟡       | Functional setState updates    | Use `setState((prev) => ...)` in useCallback                          | Avoids stale closure state                                              |
+| ⚪       | data-testid for test selectors | Use `data-testid="{feature}-{element}"` on key interactive elements   | Stable selectors for automated UI testing protocols                     |
+| 🟡       | Claims preservation            | `setCustomUserClaims({ ...existing, newClaim })` spread first         | Firebase replaces entire claims object                                  |
+| 🟡       | React state updaters pure      | Move side effects (localStorage/Firestore) from setState to useEffect | State updaters called twice in Strict Mode (Review #207)                |
+| 🟡       | Storage operations isolation   | Independent try/catch for localStorage vs Firestore saves             | One failing shouldn't block the other (Review #207)                     |
+| 🟡       | npm script arg separator       | Use `npm run script -- --flag` to pass args to underlying command     | Args before `--` go to npm, after go to script (Review #207)            |
+| 🟡       | React key stability            | Use stable identifiers (`id`, unique field) not array index for keys  | Index keys cause state bugs on list reorder/filter (Reviews #281, #282) |
 
 ---
 
@@ -569,6 +576,7 @@ for the pattern details and fix guidance.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.7     | 2026-02-10 | **CONSOLIDATION #18: Reviews #266-284** (19 reviews). Added 7 patterns: 6 CI/Automation (module-scope config try/catch, path info redaction, silent catch prevention, Number.isFinite guards, fail-closed validation, atomic write cleanup); 1 React/Frontend (key stability). Source: Sprint 3 .claude/hooks fixes, PR #358/#359 reviews (Qodo/SonarCloud rounds).                                                                                                                                                                                                                                                                                                                                                     |
 | 2.6     | 2026-02-07 | **CONSOLIDATION #17: Reviews #254-265** (12 reviews). Added 23 patterns: 4 Security (PII in reports, operator hashing, backup-swap atomic write, token exposure); 7 JS/TS (section-scoped parsing, empty entries guard, multi-word capitalization, safe JSON helper, brace tracking, multi-line JSON, table-column dates); 8 CI/Automation (delimiter consistency, pathExcludeList, fence handling, rename fallback, trailing newline, content normalization, silent parse prevention, stale review detection); 3 Process Management (trigger validation, operator tracking, design decision docs); 1 Bash/Shell (here-string interpolation). Source: PR #346 Audit Trigger Reset reviews (Qodo/SonarCloud rounds 1-6). |
 | 2.5     | 2026-02-02 | **CONSOLIDATION #16: Reviews #213-224** (12 reviews). Added 22 patterns: 2 GitHub Actions CRITICAL (script injection via env vars); 9 JS/TS (Math.max empty array, spread limits, nullish coalescing, gap-safe counting, statSync race, range clamping, platform root, regex anchoring); 8 CI/Automation (JSONL line parsing, atomic writes, stable IDs, API pagination, multi-file rollback, glob self-inclusion, Windows atomic rename); 3 Documentation (Unicode property escapes, Markdown parentheses, ADM filter). Source: TDMS PR #328, Cross-Platform Config, Process Audit, Doc Compliance reviews.                                                                                                            |
 | 2.4     | 2026-01-29 | **CONSOLIDATION #15: Reviews #202-212** (11 reviews). Added React/Frontend patterns (11 new patterns), Security patterns (12 new patterns). Source: Audit sessions #114-#115, Learning Effectiveness Analyzer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |

@@ -79,11 +79,16 @@ function saveJson(filePath, data) {
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
     fs.renameSync(tmpPath, filePath);
     return true;
-  } catch {
+  } catch (err) {
+    console.warn(
+      `compaction-handoff: failed to save ${path.basename(filePath)}: ${err instanceof Error ? err.message : String(err)}`
+    );
     try {
       fs.rmSync(tmpPath, { force: true });
-    } catch {
-      // ignore
+    } catch (cleanupErr) {
+      console.warn(
+        `compaction-handoff: cleanup failed for ${path.basename(tmpPath)}: ${cleanupErr instanceof Error ? cleanupErr.message : String(cleanupErr)}`
+      );
     }
     return false;
   }

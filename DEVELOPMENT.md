@@ -234,7 +234,7 @@ npm run test:coverage
 
 **Current Status:**
 
-- ✅ 115/116 tests passing (99.1%)
+- ✅ 293/294 tests passing (99.7%)
 - ✅ Security validation tests
 - ✅ Date utilities
 - ✅ Firebase type guards
@@ -444,7 +444,7 @@ firebase deploy
 - **Prettier** - Code formatting
 - **madge** - Circular dependency detection
 - **knip** - Unused export detection
-- **Node test runner** - Built-in testing (116 tests)
+- **Node test runner** - Built-in testing (294 tests)
 - **c8** - Code coverage
 - **Husky** - Git hooks (pre-commit, pre-push)
 
@@ -483,7 +483,7 @@ npm audit fix
 | `npm run format:check`                          | Prettier check             | For CI (no changes)                                   |
 | `npm run deps:circular`                         | Check circular deps        | Uses madge                                            |
 | `npm run deps:unused`                           | Find unused exports        | Uses knip                                             |
-| `npm test`                                      | Run all tests              | 116 tests (1 skipped)                                 |
+| `npm test`                                      | Run all tests              | 294 tests (1 skipped)                                 |
 | `npm run test:coverage`                         | Test with coverage         | Uses c8                                               |
 | `npm run validate:canon`                        | Validate CANON files       | Checks audit output schema                            |
 | `npm run crossdoc:check`                        | Cross-doc deps             | Blocks if deps missing                                |

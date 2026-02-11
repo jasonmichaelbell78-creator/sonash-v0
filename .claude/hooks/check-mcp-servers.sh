@@ -70,3 +70,5 @@ fi
 
 # Output only server names - no URLs, tokens, headers, or other config
 echo "Available MCP servers: $SERVER_NAMES. Use mcp__<server>__<tool> to invoke."
+
+exit 0

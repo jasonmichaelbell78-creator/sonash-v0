@@ -115,10 +115,25 @@ function readState() {
  */
 function writeState(state) {
   const statePath = path.join(projectDir, STATE_FILE);
+  const tmpPath = `${statePath}.tmp`;
   try {
-    fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
-  } catch {
-    // Ignore errors
+    fs.mkdirSync(path.dirname(statePath), { recursive: true });
+    fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+    try {
+      fs.rmSync(statePath, { force: true });
+    } catch {
+      // best-effort; destination may not exist
+    }
+    fs.renameSync(tmpPath, statePath);
+  } catch (err) {
+    console.warn(
+      `agent-trigger-enforcer: failed to write state: ${err instanceof Error ? err.message : String(err)}`
+    );
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      // cleanup failure is non-critical
+    }
   }
 }
 
@@ -282,12 +297,26 @@ if (applicableAgents.some((a) => a.agent === "code-reviewer")) {
   }
 
   // Write review queue (ensure directory exists)
+  const tmpReviewPath = `${reviewQueuePath}.tmp`;
   try {
     const reviewDir = path.dirname(reviewQueuePath);
     fs.mkdirSync(reviewDir, { recursive: true });
-    fs.writeFileSync(reviewQueuePath, JSON.stringify(reviewQueue, null, 2));
-  } catch {
-    // Non-critical - ignore write failures
+    fs.writeFileSync(tmpReviewPath, JSON.stringify(reviewQueue, null, 2));
+    try {
+      fs.rmSync(reviewQueuePath, { force: true });
+    } catch {
+      // best-effort; destination may not exist
+    }
+    fs.renameSync(tmpReviewPath, reviewQueuePath);
+  } catch (err) {
+    console.warn(
+      `agent-trigger-enforcer: failed to write review queue: ${err instanceof Error ? err.message : String(err)}`
+    );
+    try {
+      fs.rmSync(tmpReviewPath, { force: true });
+    } catch {
+      // cleanup failure is non-critical
+    }
   }
 }
 

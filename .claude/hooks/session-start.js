@@ -73,8 +73,10 @@ function readSessionState() {
     if (fs.existsSync(SESSION_STATE_FILE)) {
       return JSON.parse(fs.readFileSync(SESSION_STATE_FILE, "utf8"));
     }
-  } catch {
-    // Ignore errors
+  } catch (err) {
+    console.error(
+      `session-start: failed to read session state: ${err instanceof Error ? err.message : String(err)}`
+    );
   }
   return null;
 }
@@ -83,10 +85,25 @@ function readSessionState() {
  * Write session state to file
  */
 function writeSessionState(state) {
+  const tmpPath = `${SESSION_STATE_FILE}.tmp`;
   try {
-    fs.writeFileSync(SESSION_STATE_FILE, JSON.stringify(state, null, 2));
-  } catch {
-    // Ignore errors
+    fs.mkdirSync(path.dirname(SESSION_STATE_FILE), { recursive: true });
+    fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+    try {
+      fs.rmSync(SESSION_STATE_FILE, { force: true });
+    } catch {
+      // best-effort; destination may not exist
+    }
+    fs.renameSync(tmpPath, SESSION_STATE_FILE);
+  } catch (err) {
+    console.error(
+      `session-start: failed to write session state: ${err instanceof Error ? err.message : String(err)}`
+    );
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      // cleanup failure is non-critical
+    }
   }
 }
 
@@ -176,8 +193,10 @@ function checkSecretsStatus() {
         looksLikeRealToken(readEnvVar(content, "GITHUB_TOKEN")) ||
         looksLikeRealToken(readEnvVar(content, "SONAR_TOKEN")) ||
         looksLikeRealToken(readEnvVar(content, "CONTEXT7_API_KEY"));
-    } catch {
-      // Ignore read errors
+    } catch (err) {
+      console.warn(
+        `session-start: failed to read .env.local: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
 
@@ -481,11 +500,15 @@ try {
       // Note: Blocking prompts don't work in Claude Code's hook environment (no TTY)
       // The alerts are saved to pending-alerts.json for Claude to read and surface
     }
-  } catch {
-    // File doesn't exist or is malformed - don't break session-start
+  } catch (parseErr) {
+    console.warn(
+      `session-start: alerts file unreadable: ${parseErr instanceof Error ? parseErr.message : String(parseErr)}`
+    );
   }
-} catch (error) {
-  console.log("   ⚠️ Alerts generation skipped");
+} catch (err) {
+  console.warn(
+    `session-start: alerts generation skipped: ${err instanceof Error ? err.message : String(err)}`
+  );
   warnings++;
 }
 

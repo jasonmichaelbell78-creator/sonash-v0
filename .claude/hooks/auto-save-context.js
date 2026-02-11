@@ -19,10 +19,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync } = require("node:child_process");
-
 // Configuration
-const TOOL_CALL_THRESHOLD = 30; // Save after this many tool calls
 const FILE_READ_THRESHOLD = 20; // Or after this many file reads
 const SAVE_INTERVAL_MINUTES = 15; // Don't save more often than this
 
@@ -77,14 +74,29 @@ function loadJson(filePath) {
  * Save JSON file safely
  */
 function saveJson(filePath, data) {
+  const tmpPath = `${filePath}.tmp`;
   try {
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
+    try {
+      fs.rmSync(filePath, { force: true });
+    } catch {
+      // best-effort; destination may not exist
+    }
+    fs.renameSync(tmpPath, filePath);
     return true;
-  } catch {
+  } catch (err) {
+    console.warn(
+      `auto-save-context: failed to save ${path.basename(filePath)}: ${err instanceof Error ? err.message : String(err)}`
+    );
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      // cleanup failure is non-critical
+    }
     return false;
   }
 }

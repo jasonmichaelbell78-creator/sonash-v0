@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-/* global require, process, console */
-/* eslint-disable @typescript-eslint/no-require-imports */
+/* global process, console */
 /**
  * plan-mode-suggestion.js - UserPromptSubmit hook for complex task detection
  *

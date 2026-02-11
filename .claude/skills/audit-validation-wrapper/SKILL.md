@@ -299,8 +299,8 @@ Commands:
 - [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Schema
   requirements
 - [intake-audit.js](scripts/debt/intake-audit.js) - TDMS intake script
-- [audit-comprehensive](../.claude/skills/audit-comprehensive/SKILL.md) - Main
-  audit orchestrator
+- [audit-comprehensive](../audit-comprehensive/SKILL.md) - Main audit
+  orchestrator
 - [validate-audit.js](scripts/validate-audit.js) - Existing S0/S1 validation
 
 ---

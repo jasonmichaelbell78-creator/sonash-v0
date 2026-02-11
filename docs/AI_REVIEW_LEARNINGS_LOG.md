@@ -324,8 +324,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 12 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** Now
+**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
+**Status:** ✅ UP TO DATE **Last consolidation:** 2026-02-10 (Consolidation #18,
+Reviews #266-284)
 
 ### When to Consolidate
 
@@ -520,7 +521,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 2     | <10    | ✅     |
+| Reviews since last consolidation | 0     | <10    | ✅     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -673,6 +674,100 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #285: PR #359 R3 — Windows Atomic Writes, Null State Dir, Evidence Dedup (2026-02-11)
+
+**Source:** Qodo Code Suggestions **PR/Branch:** PR #359
+(claude/analyze-repo-install-ceMkn) **Suggestions:** 11 total (Critical: 0,
+Major: 0, Medium: 8, Low: 3)
+
+**Accepted (10):**
+
+1. **state-utils.js getStateDir null fallback**: Return `null` instead of
+   `projectDir` when state dir creation fails — prevents writing to wrong
+   location. Updated all 4 callers with null guards.
+2. **Windows-safe atomic writes (7 locations)**: Added
+   `fs.rmSync(dest, {force: true})` before `fs.renameSync()` across
+   session-start.js, large-context-warning.js (2x), agent-trigger-enforcer.js
+   (2x), commit-tracker.js, auto-save-context.js. Also added `.tmp` cleanup in
+   catch blocks where missing.
+3. **DEBT-2450 evidence dedup**: Removed duplicated `code_reference` and
+   `description` objects in MASTER_DEBT.jsonl and deduped.jsonl.
+
+**Deferred (1):**
+
+1. **merged_from unknown removal**: Removing `merged_from: ["unknown"]` could
+   break downstream scripts that expect the field to always exist.
+
+**Key Pattern:** Windows `fs.renameSync` fails if destination exists — always
+`rmSync` first. This is CODE_PATTERNS.md "Windows atomic rename" pattern
+(already documented).
+
+---
+
+#### Review #284: PR #359 R2 — Path Redaction, Atomic Writes, State Dir Fallback (2026-02-10)
+
+**Source:** Qodo Compliance + Code Suggestions **PR/Branch:** PR #359
+(claude/analyze-repo-install-ceMkn) **Suggestions:** 7 total (Critical: 0,
+Major: 2, Minor: 5, Trivial: 0)
+
+**Patterns Identified:**
+
+1. **Path info leakage (conflicting reviews)**: Review #283 Qodo asked for full
+   paths; Review #284 Qodo flagged full paths as security risk. Resolution: use
+   `path.basename()` — security wins over debuggability
+   - Root cause: Reviewers optimize for different concerns
+   - Prevention: Default to `path.basename()` in hook logs
+2. **Non-atomic file writes**: `writeFileSync` without tmp+rename risks
+   corruption on interruption
+   - Root cause: Original code used simple writeFileSync
+   - Prevention: Always use tmp+rename pattern for state files
+
+**Resolution:**
+
+- Fixed: 7 items (2 path redaction, 4 atomic writes, 1 state dir fallback)
+- Deferred: 0
+- Rejected: 0
+
+**Key Learnings:**
+
+- When reviewers conflict, security concerns take priority
+- Atomic write pattern: `writeFileSync(tmp) → renameSync(tmp, target)`
+- State dir creation should fall back to projectDir on failure
+
+---
+
+#### Review #283: PR #359 — Unsafe err.message, Silent Catches, Full Filepath Logging (2026-02-10)
+
+**Source:** SonarCloud + Qodo + CI Pattern Compliance **PR/Branch:** PR #359
+(claude/analyze-repo-install-ceMkn) **Suggestions:** 15 total (Critical: 9,
+Major: 0, Minor: 4, Trivial: 0)
+
+**Patterns Identified:**
+
+1. **Unsafe err.message access (recurring)**: Wave 2 agents added `console.warn`
+   with `err.message` but didn't use safe pattern
+   - Root cause: Agent prompt didn't specify the safe pattern explicitly
+   - Prevention: Pattern checker catches this in CI; always use
+     `err instanceof Error ? err.message : String(err)`
+2. **Silent catch blocks**: Empty catches swallow errors, hindering debugging
+   - Root cause: Defensive "don't break hooks" approach went too far
+   - Prevention: Always log at minimum `console.warn` with context
+
+**Resolution:**
+
+- Fixed: 13 items (9 unsafe err.message, 2 silent catches, 2 filepath logging)
+- Deferred: 2 items (atomic writes for state files — architectural change)
+- Rejected: 1 item (SonarCloud L396 false positive — checklist text contains
+  "Error" word)
+
+**Key Learnings:**
+
+- Agent-generated code must be validated against project pattern rules
+- The `err instanceof Error ? err.message : String(err)` pattern is enforced by
+  CI — new code MUST use it
 
 ---
 
