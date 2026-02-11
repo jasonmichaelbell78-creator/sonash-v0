@@ -94,6 +94,18 @@ with ENH-XXXX IDs **Note:** Uses 4-phase adaptive architecture with 8 parallel
 agents; findings scored on I0-I3 impact scale; honesty guardrails require
 counter-arguments and 70% confidence threshold
 
+### `/deep-plan`
+
+**Description:** Structured discovery-first planning for complex tasks **When to
+use:** When a task is ambiguous with 5+ design decisions, when the user asks for
+thorough planning, or when creating a new system/skill/major feature
+**Example:** `/deep-plan` **Parameters:** None **Output:** Decision record
+table + structured implementation plan with file lists and step-by-step
+instructions **Note:** 5 phases: Discovery (10-25 categorized questions) ->
+Decision Record -> Plan -> Approval Gate -> Parallel Execution. Differs from
+regular plan mode by front-loading all decisions through exhaustive Q&A before
+writing any plan.
+
 ### `/doc-optimizer`
 
 **Description:** Scan all docs, auto-fix formatting/headers/links, report issues
