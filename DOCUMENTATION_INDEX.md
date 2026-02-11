@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-10 **Active Documents:** 273 **Archived Documents:** 93
+**Generated:** 2026-02-11 **Active Documents:** 273 **Archived Documents:** 93
 
 ---
 
@@ -77,10 +77,10 @@ _Essential project-level documentation_
 | [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-10    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓12 ↑6     | 2026-02-09    |
 | [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓13 ↑9     | 2026-02-10    |
-| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-10    |
+| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-11    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-10    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-05    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-10    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-11    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                 | ↓4 ↑6      | 2026-02-09    |
 
 ### Core Documentation (Tier 2)
@@ -1134,7 +1134,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-10 | Auto-generated from codebase scan |
+| Auto    | 2026-02-11 | Auto-generated from codebase scan |
 
 ---
 

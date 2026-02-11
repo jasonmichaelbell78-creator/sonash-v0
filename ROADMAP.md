@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.23
-**Last Updated:** Session #143d
+**Document Version:** 3.24
+**Last Updated:** Session #147
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
@@ -74,7 +74,7 @@ recovery practices.
 | **M0 - Baseline**                   | ✅ Complete | 100%             | Foundation  | Foundation | -     |
 | **M1 - Foundation**                 | ✅ Complete | 100%             | Foundation  | P0         | -     |
 | **Integrated Improvement Plan**     | ✅ Complete | 100% (9/9 steps) | Foundation  | DONE       | -     |
-| **🧹 GRAND PLAN: Debt Elimination** | 📋 Planned  | 0% (0/1,727)     | Parallel    | **P0**     | 1,727 |
+| **🧹 GRAND PLAN: Debt Elimination** | 🔄 ACTIVE   | ~54% (935/1,727) | Parallel    | **P0**     | 1,727 |
 | **🚀 Operational Visibility**       | 🔄 ACTIVE   | ~25%             | Foundation  | **P0**     | ~105  |
 | **M1.5 - Quick Wins**               | ⏸️ Paused   | ~20%             | Foundation  | P1         | ~19   |
 | **M1.6 - Admin Panel + UX**         | ⏸️ Paused   | ~75%             | Foundation  | P1         | ~15   |
@@ -293,8 +293,8 @@ reliability, and solo developer automations.
 
 | Sprint | Directory Group            | Items | Files | Risk     | Status  |
 | ------ | -------------------------- | ----: | ----: | -------- | ------- |
-| 1      | `scripts/`                 |   601 |   106 | Low      | Pending |
-| 2      | `components/`              |   334 |   100 | Moderate | Pending |
+| 1      | `scripts/`                 |   601 |   106 | Low      | ✅ Done |
+| 2      | `components/`              |   334 |   100 | Moderate | ✅ Done |
 | 3      | `.claude/` + `docs/`       |   241 |    84 | Zero     | Pending |
 | 4      | `lib/` + `hooks/` + `app/` |   160 |    40 | Moderate | Pending |
 | 5      | `.github/` + config        |   154 |    40 | Moderate | Pending |
