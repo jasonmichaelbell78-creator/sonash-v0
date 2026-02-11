@@ -34,11 +34,11 @@ const CONTROL_CHAR_RE = /[\u0000-\u0019\u007f-\u009f]/g;
 const BIDI_CONTROL_RE = /[\u202A-\u202E\u2066-\u2069]/g;
 
 function sanitizeLogSnippet(text, maxLen = 100) {
-  return text
-    .substring(0, maxLen)
+  const cleaned = String(text)
     .replace(ANSI_ESCAPE_RE, "")
     .replace(CONTROL_CHAR_RE, "")
     .replace(BIDI_CONTROL_RE, "");
+  return cleaned.substring(0, maxLen);
 }
 
 // Valid schema values — single source of truth: scripts/config/improvement-schema.json

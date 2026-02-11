@@ -333,19 +333,22 @@ function validateAndNormalize(item, sourceFile) {
     // Preserve numeric line info - parse strings, keep numbers, default to 0
     // Robust line sanitization: ensure non-negative integer, digits-only (Review #293 R11, #294 R12)
     line: (() => {
+      const MAX_LINE = 1_000_000;
       if (typeof mappedItem.line === "number") {
         if (!Number.isFinite(mappedItem.line)) return 0;
         const n = Math.floor(mappedItem.line);
-        return n > 0 ? n : 0;
+        if (!Number.isSafeInteger(n)) return 0;
+        return n > 0 ? Math.min(n, MAX_LINE) : 0;
       }
       const s = String(mappedItem.line ?? "").trim();
       if (!/^\d+$/.test(s)) return 0;
       const n = Number(s);
-      return n > 0 ? n : 0;
+      if (!Number.isSafeInteger(n)) return 0;
+      return n > 0 ? Math.min(n, MAX_LINE) : 0;
     })(),
     title: (mappedItem.title || "Untitled").substring(0, 500),
-    description: mappedItem.description || "",
-    recommendation: mappedItem.recommendation || "",
+    description: String(mappedItem.description || "").substring(0, 20_000),
+    recommendation: String(mappedItem.recommendation || "").substring(0, 20_000),
     status: "PROPOSED",
     created: new Date().toISOString().split("T")[0],
     verified_by: null,

@@ -68,6 +68,8 @@ function escapeMarkdown(text) {
   const s = String(text);
   return s
     .replace(/<[^>]*>/g, "") // Strip HTML tags
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1") // Strip markdown images
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // Strip markdown links (keep text)
     .replace(/\|/g, "\\|")
     .replace(/\r?\n/g, " ");
 }
@@ -126,14 +128,13 @@ function loadExistingItems() {
 
           const isValidEnhId = /^ENH-\d+$/.test(item.id);
 
-          const match = item.id.match(/ENH-(\d+)/);
-          if (match) {
-            const num = Number.parseInt(match[1], 10);
-            if (num > maxId) maxId = num;
-          }
-
           // Store full item for field preservation (only for valid ENH-XXXX IDs)
           if (isValidEnhId) {
+            const match = item.id.match(/^ENH-(\d+)$/);
+            if (match) {
+              const num = Number.parseInt(match[1], 10);
+              if (num > maxId) maxId = num;
+            }
             itemMap.set(item.id, item);
 
             // Map by content_hash, source_id, AND fingerprint for stable ID lookup
@@ -328,6 +329,11 @@ function writeMasterFile(items) {
       encoding: "utf8",
       flag: "wx",
     });
+    // Windows-safe rename: unlink destination first
+    if (fs.existsSync(MASTER_FILE)) {
+      assertNotSymlink(MASTER_FILE);
+      fs.unlinkSync(MASTER_FILE);
+    }
     fs.renameSync(tmpMaster, MASTER_FILE);
   } finally {
     if (fs.existsSync(tmpMaster)) {

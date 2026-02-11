@@ -286,10 +286,13 @@ function readMasterDebt() {
 
 // Helper to convert a value to a positive line number or null (Review #294 R12: reject 0/negative)
 function toLineNumber(v) {
+  const MAX_LINE = 1_000_000;
   const n = typeof v === "number" ? v : Number(v);
   if (!Number.isFinite(n)) return null;
   const i = Math.floor(n);
-  return i > 0 ? i : null;
+  if (!Number.isSafeInteger(i)) return null;
+  if (i <= 0) return null;
+  return Math.min(i, MAX_LINE);
 }
 
 // Flag high-impact parametric group items for review instead of merging
@@ -820,6 +823,11 @@ function writeOutputFiles(pass5Items, dedupLog, reviewNeeded) {
       encoding: "utf8",
       flag: "wx",
     });
+    // Windows-safe rename: unlink destination first
+    if (fs.existsSync(OUTPUT_FILE)) {
+      assertNotSymlink(OUTPUT_FILE);
+      fs.unlinkSync(OUTPUT_FILE);
+    }
     fs.renameSync(tmpOutput, OUTPUT_FILE);
   } catch (err) {
     try {

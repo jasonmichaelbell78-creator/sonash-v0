@@ -29,6 +29,21 @@ const METRICS_LOG = path.join(LOG_DIR, "metrics-log.jsonl");
 
 const verbose = process.argv.includes("--verbose");
 
+// Prototype pollution protection - filter dangerous keys from untrusted JSONL objects
+const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+function safeCloneObject(obj, depth = 0) {
+  if (obj === null || typeof obj !== "object") return obj;
+  if (depth > 200) return Array.isArray(obj) ? [] : Object.create(null);
+  if (Array.isArray(obj)) return obj.map((v) => safeCloneObject(v, depth + 1));
+  const result = Object.create(null);
+  for (const key of Object.keys(obj)) {
+    if (!DANGEROUS_KEYS.has(key)) {
+      result[key] = safeCloneObject(obj[key], depth + 1);
+    }
+  }
+  return result;
+}
+
 // Symlink guard: refuse to write through symlinks (Review #291 R9)
 function assertNotSymlink(filePath) {
   try {
@@ -45,6 +60,55 @@ function assertNotSymlink(filePath) {
     }
     // Fail closed: rethrow any unexpected errors (Review #292 R10)
     throw err;
+  }
+}
+
+// Atomic write with backup-then-swap: prevents data loss if rename fails
+function atomicWriteWithBackup(destPath, content) {
+  const tmpFile = destPath + `.tmp.${process.pid}`;
+  const backupFile = destPath + `.bak.${process.pid}`;
+  assertNotSymlink(tmpFile);
+  // Clean up stale tmp from prior crash
+  if (fs.existsSync(tmpFile)) {
+    try {
+      fs.unlinkSync(tmpFile);
+    } catch {
+      /* ignore */
+    }
+  }
+  fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
+  try {
+    // Backup existing destination before replacing
+    if (fs.existsSync(destPath)) {
+      assertNotSymlink(destPath);
+      assertNotSymlink(backupFile);
+      fs.renameSync(destPath, backupFile);
+    }
+    fs.renameSync(tmpFile, destPath);
+    // Success — remove backup
+    if (fs.existsSync(backupFile)) {
+      try {
+        fs.unlinkSync(backupFile);
+      } catch {
+        /* ignore */
+      }
+    }
+  } catch (e) {
+    // Rollback: restore backup if destination is gone
+    try {
+      if (fs.existsSync(backupFile) && !fs.existsSync(destPath)) {
+        fs.renameSync(backupFile, destPath);
+      }
+    } catch {
+      /* ignore rollback errors */
+    }
+    // Clean up tmp
+    try {
+      fs.unlinkSync(tmpFile);
+    } catch {
+      /* ignore */
+    }
+    throw e;
   }
 }
 
@@ -76,7 +140,11 @@ function loadMasterImprovements() {
 
   for (let i = 0; i < lines.length; i++) {
     try {
-      items.push(JSON.parse(lines[i]));
+      const parsed = JSON.parse(lines[i]);
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        throw new Error("Invalid item type (expected JSON object)");
+      }
+      items.push(safeCloneObject(parsed));
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       errors.push({ line: i + 1, error: errMsg });
@@ -154,24 +222,27 @@ function calculateMetrics(items) {
   const now = new Date();
   const today = formatDate(now);
 
-  // Initialize counters
-  const byStatus = {
+  // Initialize counters (Object.create(null) prevents prototype pollution from untrusted keys)
+  const byStatus = Object.assign(Object.create(null), {
     PROPOSED: 0,
     ACCEPTED: 0,
     DECLINED: 0,
     DEFERRED: 0,
     IMPLEMENTED: 0,
     STALE: 0,
-  };
-  const byImpact = { I0: 0, I1: 0, I2: 0, I3: 0 };
-  const byCategory = {};
+  });
+  const byImpact = Object.assign(Object.create(null), { I0: 0, I1: 0, I2: 0, I3: 0 });
+  const byCategory = Object.create(null);
   const alerts = { i0: [], i1: [] };
   const ageState = { totalAgeDays: 0, openCount: 0, oldestAge: 0, oldestItem: null };
 
+  const isSafeKey = (k) =>
+    typeof k === "string" && k !== "__proto__" && k !== "constructor" && k !== "prototype";
+
   for (const item of items) {
-    byStatus[item.status] = (byStatus[item.status] || 0) + 1;
-    byImpact[item.impact] = (byImpact[item.impact] || 0) + 1;
-    byCategory[item.category] = (byCategory[item.category] || 0) + 1;
+    if (isSafeKey(item.status)) byStatus[item.status] = (byStatus[item.status] || 0) + 1;
+    if (isSafeKey(item.impact)) byImpact[item.impact] = (byImpact[item.impact] || 0) + 1;
+    if (isSafeKey(item.category)) byCategory[item.category] = (byCategory[item.category] || 0) + 1;
 
     trackAlertItem(item, alerts);
     trackItemAge(item, now, ageState);
@@ -389,84 +460,13 @@ function main() {
   try {
     fs.mkdirSync(BASE_DIR, { recursive: true });
 
-    // Atomic write metrics.json (Review #292 R10, #293 R11: EEXIST recovery)
-    assertNotSymlink(METRICS_JSON);
-    const tmpMetricsJson = METRICS_JSON + `.tmp.${process.pid}`;
-    try {
-      assertNotSymlink(tmpMetricsJson);
-      try {
-        fs.writeFileSync(tmpMetricsJson, JSON.stringify(metrics, null, 2) + "\n", {
-          encoding: "utf8",
-          flag: "wx",
-        });
-      } catch (wxErr) {
-        if (wxErr && typeof wxErr === "object" && wxErr.code === "EEXIST") {
-          try {
-            fs.unlinkSync(tmpMetricsJson);
-          } catch {
-            /* ignore cleanup errors */
-          }
-          fs.writeFileSync(tmpMetricsJson, JSON.stringify(metrics, null, 2) + "\n", {
-            encoding: "utf8",
-            flag: "wx",
-          });
-        } else {
-          throw wxErr;
-        }
-      }
-      // Windows-safe rename: unlink destination first (Review #294 R12)
-      if (fs.existsSync(METRICS_JSON)) {
-        assertNotSymlink(METRICS_JSON);
-        fs.unlinkSync(METRICS_JSON);
-      }
-      fs.renameSync(tmpMetricsJson, METRICS_JSON);
-      console.log(`  Written: ${METRICS_JSON}`);
-    } finally {
-      if (fs.existsSync(tmpMetricsJson)) {
-        try {
-          fs.unlinkSync(tmpMetricsJson);
-        } catch {
-          /* ignore cleanup errors */
-        }
-      }
-    }
+    // Atomic write with backup-then-swap pattern for data safety
+    atomicWriteWithBackup(METRICS_JSON, JSON.stringify(metrics, null, 2) + "\n");
+    console.log(`  Written: ${METRICS_JSON}`);
 
-    // Atomic write METRICS.md (Review #292 R10, #293 R11: EEXIST recovery)
-    assertNotSymlink(METRICS_MD);
-    const tmpMetricsMd = METRICS_MD + `.tmp.${process.pid}`;
-    try {
-      assertNotSymlink(tmpMetricsMd);
-      const metricsMd = generateMetricsMd(metrics);
-      try {
-        fs.writeFileSync(tmpMetricsMd, metricsMd, { encoding: "utf8", flag: "wx" });
-      } catch (wxErr) {
-        if (wxErr && typeof wxErr === "object" && wxErr.code === "EEXIST") {
-          try {
-            fs.unlinkSync(tmpMetricsMd);
-          } catch {
-            /* ignore cleanup errors */
-          }
-          fs.writeFileSync(tmpMetricsMd, metricsMd, { encoding: "utf8", flag: "wx" });
-        } else {
-          throw wxErr;
-        }
-      }
-      // Windows-safe rename: unlink destination first (Review #294 R12)
-      if (fs.existsSync(METRICS_MD)) {
-        assertNotSymlink(METRICS_MD);
-        fs.unlinkSync(METRICS_MD);
-      }
-      fs.renameSync(tmpMetricsMd, METRICS_MD);
-      console.log(`  Written: ${METRICS_MD}`);
-    } finally {
-      if (fs.existsSync(tmpMetricsMd)) {
-        try {
-          fs.unlinkSync(tmpMetricsMd);
-        } catch {
-          /* ignore cleanup errors */
-        }
-      }
-    }
+    const metricsMd = generateMetricsMd(metrics);
+    atomicWriteWithBackup(METRICS_MD, metricsMd);
+    console.log(`  Written: ${METRICS_MD}`);
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     console.error(`Failed to write metrics files: ${errMsg}`);

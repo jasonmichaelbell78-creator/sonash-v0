@@ -159,47 +159,60 @@ function assertNotSymlink(filePath) {
   }
 }
 
-// Save items to MASTER_IMPROVEMENTS.jsonl with atomic write
+// Save items to MASTER_IMPROVEMENTS.jsonl with atomic backup-then-swap
 function saveMasterImprovements(items) {
   const lines = items.map((item) => JSON.stringify(item));
   const content = lines.join("\n") + "\n";
 
-  // Atomic write: write to temp file then rename
   const dir = path.dirname(MASTER_FILE);
   const tmpFile = path.join(dir, `.MASTER_IMPROVEMENTS.jsonl.tmp.${process.pid}`);
+  const backupFile = path.join(dir, `.MASTER_IMPROVEMENTS.jsonl.bak.${process.pid}`);
 
   assertNotSymlink(MASTER_FILE);
   assertNotSymlink(tmpFile);
 
-  try {
-    try {
-      fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
-    } catch (wxErr) {
-      if (wxErr && typeof wxErr === "object" && wxErr.code === "EEXIST") {
-        try {
-          fs.unlinkSync(tmpFile);
-        } catch {
-          // Ignore cleanup errors
-        }
-        fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
-      } else {
-        throw wxErr;
-      }
-    }
-    // Windows-safe rename: unlink destination first (Review #293 R11, #294 R12: TOCTOU recheck)
-    if (fs.existsSync(MASTER_FILE)) {
-      assertNotSymlink(MASTER_FILE);
-      fs.unlinkSync(MASTER_FILE);
-    }
-    fs.renameSync(tmpFile, MASTER_FILE);
-  } catch (err) {
-    // Clean up temp file on error
+  // Clean up stale tmp from prior crash
+  if (fs.existsSync(tmpFile)) {
     try {
       fs.unlinkSync(tmpFile);
     } catch {
-      // Ignore cleanup errors
+      /* ignore */
     }
-    throw err;
+  }
+  fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
+
+  try {
+    // Backup existing file before replacing
+    if (fs.existsSync(MASTER_FILE)) {
+      assertNotSymlink(MASTER_FILE);
+      assertNotSymlink(backupFile);
+      fs.renameSync(MASTER_FILE, backupFile);
+    }
+    fs.renameSync(tmpFile, MASTER_FILE);
+    // Success — remove backup
+    if (fs.existsSync(backupFile)) {
+      try {
+        fs.unlinkSync(backupFile);
+      } catch {
+        /* ignore */
+      }
+    }
+  } catch (e) {
+    // Rollback: restore backup if destination is gone
+    try {
+      if (fs.existsSync(backupFile) && !fs.existsSync(MASTER_FILE)) {
+        fs.renameSync(backupFile, MASTER_FILE);
+      }
+    } catch {
+      /* ignore rollback errors */
+    }
+    // Clean up tmp
+    try {
+      fs.unlinkSync(tmpFile);
+    } catch {
+      /* ignore */
+    }
+    throw e;
   }
 }
 
@@ -299,7 +312,7 @@ function displayItemInfo(item, parsed) {
   }
 }
 
-// Attempt to restore master file from backup (Review #292 R10: atomic + symlink guard)
+// Attempt to restore master file from backup (best-effort rollback)
 function restoreMasterBackup(masterBackup) {
   if (masterBackup !== null) {
     const dir = path.dirname(MASTER_FILE);
@@ -307,18 +320,33 @@ function restoreMasterBackup(masterBackup) {
     try {
       assertNotSymlink(MASTER_FILE);
       assertNotSymlink(tmpFile);
+      if (fs.existsSync(tmpFile)) {
+        try {
+          fs.unlinkSync(tmpFile);
+        } catch {
+          /* ignore */
+        }
+      }
       fs.writeFileSync(tmpFile, masterBackup, { encoding: "utf8", flag: "wx" });
-      // Windows-safe rename: unlink destination first (Review #293 R11, #294 R12: TOCTOU recheck)
+      // Backup-then-swap for safe restore
+      const restoreBackup = MASTER_FILE + `.restore-bak.${process.pid}`;
       if (fs.existsSync(MASTER_FILE)) {
-        assertNotSymlink(MASTER_FILE);
-        fs.unlinkSync(MASTER_FILE);
+        assertNotSymlink(restoreBackup);
+        fs.renameSync(MASTER_FILE, restoreBackup);
       }
       fs.renameSync(tmpFile, MASTER_FILE);
+      if (fs.existsSync(restoreBackup)) {
+        try {
+          fs.unlinkSync(restoreBackup);
+        } catch {
+          /* ignore */
+        }
+      }
     } catch {
       try {
         fs.unlinkSync(tmpFile);
       } catch {
-        // Ignore cleanup errors
+        /* ignore */
       }
       // Ignore restore errors; user will need to recover from VCS
     }
