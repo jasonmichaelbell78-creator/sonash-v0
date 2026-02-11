@@ -25,6 +25,18 @@ Review what was done this session:
 git log --oneline -5
 ```
 
+## 3b. Session Context Archival (MANDATORY)
+
+**Keep SESSION_CONTEXT.md to the last 3 session summaries.** Archive older
+summaries to [SESSION_HISTORY.md](../../docs/SESSION_HISTORY.md):
+
+1. Check how many session summaries are in SESSION_CONTEXT.md
+2. If more than 3: move the oldest summaries to `docs/SESSION_HISTORY.md`
+   - Add new entries at the **top** of the most recent month section
+   - Use format: `### Session #N (YYYY-MM-DD)` with `**Focus**:` line
+3. Update SESSION_CONTEXT.md "Recent Session Summaries" with this session's work
+4. Target: SESSION_CONTEXT.md should stay under ~300 lines
+
 ## 4. Agent Compliance Review
 
 Check if agents suggested during the session were actually invoked:

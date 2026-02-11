@@ -120,7 +120,8 @@ security patterns
 **Description:** Complete verification steps before ending session **When to
 use:** **END OF EVERY SESSION** - ensures all work is committed and tracked
 **Example:** `/session-end` **Parameters:** None **Output:** Completion
-checklist, TDMS consolidation (6-pass dedup), and session summary
+checklist, session archival (keeps last 3 in SESSION_CONTEXT.md), TDMS
+consolidation (6-pass dedup), and session summary
 
 ### `/alerts`
 
@@ -875,10 +876,11 @@ session **Parameters:** None **Related npm scripts:** `session:gaps`,
 #### `session-end`
 
 **Description:** Complete verification steps before ending the session. Includes
-mandatory auto-commit script (`npm run session:end`) that commits and pushes
-SESSION_CONTEXT.md updates to ensure session-end is never forgotten. **When to
-use:** **END OF EVERY SESSION** **Example:** Final action before closing
-**Parameters:** None **Added:** Auto-commit mechanism in Session #115
+mandatory session archival (keep last 3 sessions in SESSION_CONTEXT.md, archive
+older to SESSION_HISTORY.md) and auto-commit script (`npm run session:end`) that
+commits and pushes updates. **When to use:** **END OF EVERY SESSION**
+**Example:** Final action before closing **Parameters:** None **Added:**
+Auto-commit mechanism in Session #115, session archival in Session #149
 
 ---
 
