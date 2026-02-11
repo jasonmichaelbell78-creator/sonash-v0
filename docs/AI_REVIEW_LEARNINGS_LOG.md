@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 15.7 **Created:** 2026-01-02 **Last Updated:** 2026-02-10
+**Document Version:** 15.8 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15.8    | 2026-02-11 | Review #286: PR #360 R4 — Prototype pollution (safeCloneObject after parse), TOCTOU (use realPath), evidence sanitization, BOM handling, absolute script paths, logging try/catch, stderr for errors. ENH-0003 (Markdown injection) routed to IMS. Consolidation counter 4→5. Active reviews #266-286.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 15.7    | 2026-02-10 | Review #282: PR #358 R2 — SSR guards, regex simplification, key stability (24 items - 0 CRITICAL, 1 MAJOR SonarCloud, 21 MINOR, 2 REJECTED). **MAJOR**: Replace SENSITIVE_KEY_PATTERN regex (complexity 21) with Set-based SENSITIVE_KEYS lookup. **MINOR**: 8× typeof→direct undefined comparison (SonarCloud), SSR guards (keydown/confirm/location/navigator/matchMedia), unmount guard for async copy, select value validation, composite React keys (2 files), Firestore limit(7), window ref for event listeners (2 files), try/catch String(input), deploy-firebase TODO removal, robust reload. **REJECTED**: auth-error-banner toast dedup (works correctly), NightReviewCard React namespace type (too minor). Consolidation counter 11→12 (consolidation due). Active reviews #266-282.                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 15.6    | 2026-02-10 | Review #281: PR #358 Sprint 2 — Shared State, Redaction, Key Stability (9 items - 1 MAJOR, 7 MINOR, 1 TRIVIAL, 0 REJECTED). **MAJOR**: Module-level Set shared state bug in auth-error-banner.tsx → useState. **MINOR**: Key-name-based PII redaction (SENSITIVE_KEY_PATTERN), deepRedactValue null check, composite React keys (3 files), guard clause for optional params, SSR-safe reload. **TRIVIAL**: Removed redundant onKeyDown on backdrop div. Consolidation counter 10→11 (consolidation due). Active reviews #266-281.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | 15.5    | 2026-02-09 | Review #272: PR #352 Round 6 — FINAL loadConfig sweep (12 items - 1 Security, 8 MAJOR, 2 MINOR, 1 REJECTED). **SECURITY**: Path traversal guard in load-config.js (reject .., /, \\). **MAJOR**: Complete sweep of ALL remaining unguarded loadConfig calls (6 files: validate-schema.js, normalize-all.js, intake-manual.js, intake-audit.js, intake-pr-deferred.js, validate-skill-config.js), description fallback YAML artifact filter, path-boundary archive regex, overlapping trigger exclusion. **REJECTED**: audit-schema.json category rename + 3 shape validation suggestions (over-engineering). **MILESTONE**: Zero unguarded loadConfig calls remain in codebase. Consolidation counter 7→8. Active reviews #266-272.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
@@ -768,6 +769,47 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #286: PR #360 R4 — Prototype Pollution, TOCTOU, Evidence Sanitization, CLI Robustness (2026-02-11)
+
+**Source:** Qodo Compliance R4 + Qodo Code Suggestions R4 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 11 total (Major: 2, Minor:
+5, Trivial: 1, Deferred: 3 — 1 new IMS + 2 already tracked)
+
+**Patterns Identified:**
+
+1. **safeCloneObject must be applied immediately after JSON.parse**: The
+   prototype pollution fix (safeCloneObject) was being bypassed because the raw
+   parsed object was passed to validateAndNormalize before cloning. Clone at the
+   earliest point possible.
+2. **TOCTOU in path validation**: validateAndVerifyPath returns a realPath but
+   the code was still using the original filePath for subsequent reads. Always
+   use the validated realPath for file operations.
+3. **Evidence array type sanitization**: Evidence arrays from JSONL may contain
+   non-string values. Filter to strings + trim + deduplicate.
+4. **UTF-8 BOM on first line**: Files saved from Windows editors may have BOM
+   prefix that breaks JSON.parse on line 1.
+5. **Absolute script paths in execFileSync**: Using relative paths like
+   "scripts/improvements/..." fails if CWD is not project root. Use
+   path.join(\_\_dirname, ...) instead.
+
+**Resolution:**
+
+- Fixed: 8 items
+- Skipped: 0
+- Deferred: 3 (1 new ENH-0003 Markdown injection, 2 already tracked)
+
+**Key Learnings:**
+
+- safeCloneObject must wrap JSON.parse output BEFORE any property access
+- TOCTOU: always use validated/resolved path for all subsequent file operations
+- Evidence arrays need type + trim + dedup sanitization (not just Array.isArray)
+- BOM stripping is essential for cross-platform JSONL parsing
+- CLI scripts must use \_\_dirname-relative paths for execFileSync portability
+- Logging functions should never crash the main flow — wrap in try/catch
+- Validation errors go to stderr (console.error), not stdout (console.log)
 
 ---
 

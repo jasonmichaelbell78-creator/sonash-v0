@@ -201,22 +201,24 @@ Exit codes:
     console.error(`Error: ${validation.error}`);
     process.exit(2);
   }
+  // Use the validated realPath to prevent TOCTOU race (Review #286 R4)
+  const safeFilePath = validation.realPath ?? filePath;
 
   if (!parsed.quiet) {
     console.log("Validating improvement schema...\n");
-    console.log(`  File: ${filePath}`);
+    console.log(`  File: ${safeFilePath}`);
   }
 
   // Check file exists
-  if (!fs.existsSync(filePath)) {
-    console.error(`Error: File not found: ${filePath}`);
+  if (!fs.existsSync(safeFilePath)) {
+    console.error(`Error: File not found: ${safeFilePath}`);
     process.exit(2);
   }
 
   // Read and parse file
   let content;
   try {
-    content = fs.readFileSync(filePath, "utf8");
+    content = fs.readFileSync(safeFilePath, "utf8");
   } catch (err) {
     console.error(`Error reading file: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(2);
@@ -245,7 +247,9 @@ Exit codes:
 
   for (let i = 0; i < lines.length; i++) {
     const lineNum = i + 1;
-    const line = lines[i].trimEnd(); // Handle CRLF line endings
+    let line = lines[i].trimEnd(); // Handle CRLF line endings
+    // Strip UTF-8 BOM from first line to prevent JSON.parse failure (Review #286 R4)
+    if (lineNum === 1) line = line.replace(/^\uFEFF/, "");
     if (!line.trim()) continue;
 
     try {
@@ -303,12 +307,12 @@ Exit codes:
 
   // Output results
   if (allErrors.length > 0) {
-    console.log("Validation Errors:\n");
+    console.error("Validation Errors:\n");
     for (const err of allErrors.slice(0, 20)) {
-      console.log(`  ${err}`);
+      console.error(`  ${err}`);
     }
     if (allErrors.length > 20) {
-      console.log(`  ... and ${allErrors.length - 20} more errors`);
+      console.error(`  ... and ${allErrors.length - 20} more errors`);
     }
   }
 

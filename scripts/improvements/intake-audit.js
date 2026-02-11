@@ -691,7 +691,7 @@ async function main() {
   };
 
   for (let i = 0; i < inputLines.length; i++) {
-    const line = inputLines[i];
+    const line = inputLines[i].trimEnd(); // Handle CRLF line endings (Review #286 R4)
     try {
       const inputItem = JSON.parse(line);
 
@@ -705,7 +705,9 @@ async function main() {
         continue;
       }
 
-      const result = validateAndNormalize(inputItem, inputFile);
+      // Security: sanitize parsed object to prevent prototype pollution (Review #286 R4)
+      const sanitizedItem = safeCloneObject(inputItem);
+      const result = validateAndNormalize(sanitizedItem, inputFile);
 
       if (!result.valid) {
         errors.push({ line: i + 1, errors: result.errors });
@@ -846,7 +848,7 @@ async function main() {
   console.log("Running multi-pass dedup pipeline...");
   let dedupRan = false;
   try {
-    execFileSync(process.execPath, ["scripts/improvements/dedup-multi-pass.js"], {
+    execFileSync(process.execPath, [path.join(__dirname, "dedup-multi-pass.js")], {
       stdio: "inherit",
     });
     dedupRan = true;
@@ -860,7 +862,7 @@ async function main() {
   console.log("Regenerating views...");
   let viewsRan = false;
   try {
-    execFileSync(process.execPath, ["scripts/improvements/generate-views.js"], {
+    execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
       stdio: "inherit",
     });
     viewsRan = true;

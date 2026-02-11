@@ -144,16 +144,21 @@ function saveMasterImprovements(items) {
   }
 }
 
-// Log resolution activity
+// Log resolution activity (wrapped in try/catch so logging failure doesn't crash main flow - Review #286 R4)
 function logResolution(activity) {
-  if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(LOG_DIR)) {
+      fs.mkdirSync(LOG_DIR, { recursive: true });
+    }
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      ...activity,
+    };
+    fs.appendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n", "utf8");
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`Warning: Failed to write resolution log: ${msg}`);
   }
-  const logEntry = {
-    timestamp: new Date().toISOString(),
-    ...activity,
-  };
-  fs.appendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n");
 }
 
 // Validate parsed arguments, exit on errors
