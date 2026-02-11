@@ -18,6 +18,29 @@ import {
 import { Loader2, Plus, Search } from "lucide-react";
 import type { AdminCrudConfig, BaseEntity } from "./admin-crud-types";
 
+/**
+ * Check if an item passes all custom filter criteria
+ */
+function matchesCustomFilters<T extends BaseEntity>(
+  item: T,
+  filterConfigs: AdminCrudConfig<T>["filters"],
+  activeFilters: Record<string, string>
+): boolean {
+  if (!filterConfigs) return true;
+
+  for (const filter of filterConfigs) {
+    const filterValue = activeFilters[filter.key];
+    if (filterValue && filterValue !== "all") {
+      const itemValue = filter.getValue
+        ? filter.getValue(item)
+        : String(item[filter.key as keyof T]);
+      if (itemValue !== filterValue) return false;
+    }
+  }
+
+  return true;
+}
+
 interface AdminCrudTableProps<T extends BaseEntity> {
   config: AdminCrudConfig<T>;
 }
@@ -90,7 +113,6 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
 
   // Filter items
   const filteredItems = items.filter((item) => {
-    // Search filter
     const matchesSearch = config.searchFields.some((field) => {
       const value = item[field];
       return value && String(value).toLowerCase().includes(searchTerm.toLowerCase());
@@ -98,21 +120,7 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
 
     if (!matchesSearch) return false;
 
-    // Custom filters
-    if (config.filters) {
-      for (const filter of config.filters) {
-        const filterValue = filters[filter.key];
-        if (filterValue && filterValue !== "all") {
-          const itemValue = filter.getValue
-            ? filter.getValue(item)
-            : String(item[filter.key as keyof T]);
-
-          if (itemValue !== filterValue) return false;
-        }
-      }
-    }
-
-    return true;
+    return matchesCustomFilters(item, config.filters, filters);
   });
 
   // Open add modal

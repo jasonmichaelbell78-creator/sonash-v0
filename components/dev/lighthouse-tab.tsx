@@ -70,6 +70,20 @@ function ScoreBadge({ score, label }: { score: number; label: string }) {
   );
 }
 
+/**
+ * Map Firestore error codes to user-friendly messages
+ */
+function classifyFirestoreError(errorCode: string | undefined): string {
+  const errorMessages: Record<string, string> = {
+    "permission-denied": "Access denied - admin privileges required",
+    unavailable: "Network error - please check your connection",
+    "network-request-failed": "Network error - please check your connection",
+    "failed-precondition":
+      "Firestore index required - check required indexes for Lighthouse history",
+  };
+  return errorMessages[errorCode ?? ""] ?? "Failed to load Lighthouse data";
+}
+
 export function LighthouseTab() {
   const [latestRun, setLatestRun] = useState<LighthouseRun | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,29 +126,7 @@ export function LighthouseTab() {
           context: "lighthouse-tab",
         });
 
-        // Handle permission denied
-        if (errorCode === "permission-denied") {
-          setError("Access denied - admin privileges required");
-          setLatestRun(null);
-          return;
-        }
-
-        // Handle network errors distinctly
-        if (errorCode === "unavailable" || errorCode === "network-request-failed") {
-          setError("Network error - please check your connection");
-          setLatestRun(null);
-          return;
-        }
-
-        // Index missing / query requires precondition (often a Firestore index)
-        if (errorCode === "failed-precondition") {
-          setError("Firestore index required - check required indexes for Lighthouse history");
-          setLatestRun(null);
-          return;
-        }
-
-        // Other errors
-        setError("Failed to load Lighthouse data");
+        setError(classifyFirestoreError(errorCode));
         setLatestRun(null);
       } finally {
         if (!isCancelled) setLoading(false);

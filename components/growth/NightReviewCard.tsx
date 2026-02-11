@@ -439,6 +439,25 @@ function Step4Closing({
   );
 }
 
+/**
+ * Route speech transcript text to the correct form field
+ */
+function updateSpeechField(
+  fieldId: string,
+  text: string,
+  setGratitude: (v: string) => void,
+  setSurrender: (v: string) => void,
+  setReflectionAnswers: React.Dispatch<React.SetStateAction<Record<string, string>>>
+): void {
+  if (fieldId === "gratitude") {
+    setGratitude(text);
+  } else if (fieldId === "surrender") {
+    setSurrender(text);
+  } else if (REFLECTIONS.some((r) => r.id === fieldId)) {
+    setReflectionAnswers((prev) => ({ ...prev, [fieldId]: text }));
+  }
+}
+
 export default function NightReviewCard({ className, ...props }: NightReviewCardProps) {
   const [open, setOpen] = useState(false); // Was isOpen, changed to open to match Dialog usage typical patterns if needed, but keeping isOpen internal variable name consistent. Wait, previous code used isOpen. Dialog expects 'open'.
   // Let's stick to 'open' state variable name if passed to Dialog open={open}
@@ -489,16 +508,7 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
       ? `${textBeforeSpeakingRef.current} ${transcript}`
       : transcript;
 
-    if (activeSpeechField === "gratitude") {
-      setGratitude(newText);
-    } else if (activeSpeechField === "surrender") {
-      setSurrender(newText);
-    } else if (REFLECTIONS.some((r) => r.id === activeSpeechField)) {
-      setReflectionAnswers((prev) => ({
-        ...prev,
-        [activeSpeechField]: newText,
-      }));
-    }
+    updateSpeechField(activeSpeechField, newText, setGratitude, setSurrender, setReflectionAnswers);
   }, [transcript, activeSpeechField]);
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 4));
