@@ -173,6 +173,15 @@ function readAndAssignIds() {
       continue;
     }
 
+    // Skip non-object JSONL records (null, arrays, primitives) (Review #288 R6)
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      parseErrors.push({
+        line: i + 1,
+        message: `Invalid item type (expected JSON object): ${String(item).substring(0, 80)}`,
+      });
+      continue;
+    }
+
     const assignResult = assignStableId(item, idMap, usedIds, nextId);
     item.id = assignResult.id;
     usedIds.add(item.id);

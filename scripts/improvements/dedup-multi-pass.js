@@ -173,10 +173,16 @@ function mergeItems(primary, secondary) {
     .filter((e) => typeof e === "string")
     .map((e) => e.trim())
     .filter(Boolean);
-  merged.evidence = [
+  // Only set evidence if non-empty; delete if empty to avoid noise (Review #288 R6)
+  const combinedEvidence = [
     ...normMergedEvidence,
     ...normSecondaryEvidence.filter((e) => !normMergedEvidence.includes(e)),
   ];
+  if (combinedEvidence.length > 0) {
+    merged.evidence = combinedEvidence;
+  } else {
+    delete merged.evidence;
+  }
 
   return merged;
 }
@@ -473,34 +479,37 @@ function runPass2NearMatch(pass1Items, dedupLog, reviewNeeded) {
   );
 }
 
-// Pass 3: Semantic match
+// Pass 3: Semantic match — flag-only, do NOT merge uncertain matches (Review #288 R6)
 function runPass3SemanticMatch(pass2Items, dedupLog, reviewNeeded) {
-  return runPairwiseMergePass(
-    pass2Items,
-    3,
-    "Semantic match (file + title >90%)",
-    (a, b) => {
-      if (!isSemanticMatch(a, b)) return null;
-      return {
-        flagForReview: {
-          reason: "semantic_match",
-          item_a: a,
-          item_b: b,
-          similarity: stringSimilarity(normalizeText(a.title), normalizeText(b.title)).toFixed(2),
-        },
-        logEntry: {
-          pass: 3,
-          type: "semantic_match",
-          kept: a.source_id,
-          removed: b.source_id,
-          reason: "same file, title similarity >90%",
-          flagged_for_review: true,
-        },
-      };
-    },
-    dedupLog,
-    reviewNeeded
-  );
+  console.log("  Pass 3: Semantic match (file + title >90%)...");
+
+  for (let i = 0; i < pass2Items.length; i++) {
+    for (let j = i + 1; j < pass2Items.length; j++) {
+      const a = pass2Items[i];
+      const b = pass2Items[j];
+      if (!isSemanticMatch(a, b)) continue;
+
+      const sim = stringSimilarity(normalizeText(a.title), normalizeText(b.title));
+      reviewNeeded.push({
+        reason: "semantic_match",
+        item_a: a,
+        item_b: b,
+        similarity: sim.toFixed(2),
+      });
+
+      dedupLog.push({
+        pass: 3,
+        type: "semantic_match_flag",
+        a: a.source_id,
+        b: b.source_id,
+        reason: "same file, title similarity >90% (flagged, not merged)",
+        similarity: sim.toFixed(2),
+      });
+    }
+  }
+
+  console.log(`    Reduced ${pass2Items.length} -> ${pass2Items.length} (0 merged)`);
+  return { outputItems: pass2Items, removedCount: 0 };
 }
 
 // Normalize file path for cross-source comparison

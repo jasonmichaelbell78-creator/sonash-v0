@@ -116,6 +116,10 @@ function normalizeFilePath(filePath) {
       normalized = normalized.substring(colonIndex + 1);
     }
   }
+
+  // Strip trailing ":<line>" suffix for consistent hashing (Review #288 R6)
+  normalized = normalized.replace(/:(\d+)$/, "");
+
   return normalized;
 }
 
@@ -450,8 +454,9 @@ function logIntake(activity) {
       fs.mkdirSync(LOG_DIR, { recursive: true });
     }
     const logEntry = {
-      timestamp: new Date().toISOString(),
       ...activity,
+      // Timestamp AFTER spread so activity cannot overwrite it (Review #288 R6)
+      timestamp: new Date().toISOString(),
     };
     fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n", "utf8");
   } catch (err) {
@@ -822,21 +827,22 @@ async function main() {
   }
 
   // Log intake activity (including format statistics, confidence values, and cross-refs)
-  // Include user context for audit trail reconstruction
-  let operatorContext;
+  // Hash operator identity and use basename for input_file to avoid PII in logs (Review #288 R6)
+  let operatorHash;
   try {
-    operatorContext =
-      os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
+    const rawUser = os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
+    operatorHash = crypto.createHash("sha256").update(rawUser).digest("hex").substring(0, 12);
   } catch {
-    operatorContext = process.env.USER || process.env.USERNAME || "unknown";
+    const rawUser = process.env.USER || process.env.USERNAME || "unknown";
+    operatorHash = crypto.createHash("sha256").update(rawUser).digest("hex").substring(0, 12);
   }
 
   logIntake({
     action: "intake-audit",
-    // Explicit outcome field for audit trail completeness (Review #287 R5 compliance)
-    outcome: errors.length === 0 ? "success" : "partial_failure",
-    operator: operatorContext,
-    input_file: inputFile,
+    // Ingestion-only outcome; downstream pipeline results logged separately (Review #288 R6)
+    outcome: errors.length === 0 ? "ingested" : "ingested_with_errors",
+    operator_hash: operatorHash,
+    input_file: path.basename(inputFile),
     items_processed: inputLines.length,
     items_added: newItems.length,
     duplicates_skipped: duplicates.length,

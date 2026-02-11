@@ -92,11 +92,15 @@ function validateItem(item, lineNum) {
     }
   }
 
-  // Validate ID format
-  if (item.id && !ID_PATTERN.test(item.id)) {
-    errors.push(
-      `Line ${lineNum}: Invalid ID format: "${item.id}" (expected pattern: ${schema.idPattern})`
-    );
+  // Validate ID format — guard against stateful regex flags (Review #288 R6)
+  if (item.id) {
+    const idRegex =
+      ID_PATTERN.global || ID_PATTERN.sticky ? new RegExp(ID_PATTERN.source) : ID_PATTERN;
+    if (!idRegex.test(item.id)) {
+      errors.push(
+        `Line ${lineNum}: Invalid ID format: "${item.id}" (expected pattern: ${schema.idPattern})`
+      );
+    }
   }
 
   // Validate category

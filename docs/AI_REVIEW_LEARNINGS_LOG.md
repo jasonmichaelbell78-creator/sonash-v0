@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 15.9 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
+**Document Version:** 16.0 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.0    | 2026-02-11 | Review #288: PR #360 R6 — Pass 3 semantic match changed to flag-only (no destructive merge), PII removal (hash operator, basename input_file), timestamp integrity (spread order), stateful regex guard, normalizeFilePath line-suffix stripping, non-object JSONL validation, accurate ingestion outcome, empty evidence cleanup. Consolidation counter 6→7 (consolidation due). Active reviews #266-288.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 15.9    | 2026-02-11 | Review #287: PR #360 R5 — impactSort falsy bug (                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | → ??), ID drift from @line: suffix, missing title guard, always-sanitize evidence, BOM in intake JSONL, logIntake outcome field + try/catch. Consolidation counter 5→6. Active reviews #266-287.                                                                  |
 | 15.8    | 2026-02-11 | Review #286: PR #360 R4 — Prototype pollution (safeCloneObject after parse), TOCTOU (use realPath), evidence sanitization, BOM handling, absolute script paths, logging try/catch, stderr for errors. ENH-0003 (Markdown injection) routed to IMS. Consolidation counter 4→5. Active reviews #266-286.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 15.7    | 2026-02-10 | Review #282: PR #358 R2 — SSR guards, regex simplification, key stability (24 items - 0 CRITICAL, 1 MAJOR SonarCloud, 21 MINOR, 2 REJECTED). **MAJOR**: Replace SENSITIVE_KEY_PATTERN regex (complexity 21) with Set-based SENSITIVE_KEYS lookup. **MINOR**: 8× typeof→direct undefined comparison (SonarCloud), SSR guards (keydown/confirm/location/navigator/matchMedia), unmount guard for async copy, select value validation, composite React keys (2 files), Firestore limit(7), window ref for event listeners (2 files), try/catch String(input), deploy-firebase TODO removal, robust reload. **REJECTED**: auth-error-banner toast dedup (works correctly), NightReviewCard React namespace type (too minor). Consolidation counter 11→12 (consolidation due). Active reviews #266-282.                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -770,6 +771,50 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #288: PR #360 R6 — Semantic Merge Logic, PII in Logs, Timestamp Integrity, Path Normalization (2026-02-11)
+
+**Source:** Qodo Compliance R6 + Qodo Code Suggestions R6 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 10 total (Major: 2, Minor:
+6, Deferred: 2)
+
+**Patterns Identified:**
+
+1. **Flag-only vs destructive merge**: Pass 3 semantic matches were flagged for
+   review AND merged simultaneously — defeating the purpose of the review flag.
+   Changed to flag-only (no merge) so human review is meaningful.
+2. **PII in audit logs**: Raw operator username and full input_file paths
+   constitute PII. Hash the operator (SHA-256 truncated to 12 chars) and log
+   only `path.basename(inputFile)`.
+3. **Timestamp integrity**: `{ timestamp, ...activity }` lets the activity
+   object overwrite the timestamp. Reversed spread order:
+   `{ ...activity, timestamp }`.
+4. **Stateful regex in loops**: `RegExp.test()` with global/sticky flags has
+   stateful `lastIndex`, causing intermittent failures in loops.
+
+**Resolution:**
+
+- Fixed: 8 items
+- Skipped: 0
+- Deferred: 2 (streaming JSONL — arch change; dedup audit coverage — scope
+  expansion)
+
+**Key Learnings:**
+
+- Semantic match Pass 3 should flag-only, not merge — uncertain items need human
+  review
+- PII compliance: hash usernames, log only basenames of file paths
+- Spread order matters: `{ ...obj, timestamp }` protects system-generated fields
+- Guard `RegExp.test()` in loops against stateful g/y flags
+- `normalizeFilePath` should strip trailing `:line` suffixes for hash
+  consistency
+- Non-object JSON (null, arrays, primitives) can pass `JSON.parse()` — validate
+  type
+- Audit outcome should reflect scope: "ingested" vs "success" when downstream
+  steps remain
+- Empty evidence arrays should be deleted, not set to `[]`
 
 ---
 
