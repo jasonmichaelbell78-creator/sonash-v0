@@ -108,6 +108,10 @@ function assertNotSymlink(filePath) {
   } catch (err) {
     if (err instanceof Error) {
       if (err.code === "ENOENT") return; // File doesn't exist yet — safe
+      // Fail closed on permission errors — cannot verify symlink status (Review #291 R9)
+      if (err.code === "EACCES" || err.code === "EPERM") {
+        throw new Error(`Refusing to write when symlink check is blocked: ${filePath}`);
+      }
       if (err.message.includes("symlink")) throw err;
     }
     // Non-Error or other lstat errors — let the actual write handle them
@@ -217,13 +221,14 @@ function mapEnhancementAuditToIms(item) {
       metadata.mappings_applied.push("suggested_fix->recommendation");
     }
 
-    // Map acceptance_tests -> append to evidence with [Acceptance] prefix
+    // Map acceptance_tests -> append to evidence with [Acceptance] prefix (Review #291 R9: sanitize)
     if (Array.isArray(item.acceptance_tests) && item.acceptance_tests.length > 0) {
       const existingEvidence = Array.isArray(item.evidence) ? item.evidence : [];
-      mapped.evidence = [
-        ...existingEvidence,
-        ...item.acceptance_tests.map((t) => `[Acceptance] ${t}`),
-      ];
+      const acceptanceEvidence = item.acceptance_tests
+        .map((t) => (typeof t === "string" ? t.trim() : String(t).trim()))
+        .filter(Boolean)
+        .map((t) => `[Acceptance] ${t.substring(0, 500)}`);
+      mapped.evidence = [...existingEvidence, ...acceptanceEvidence];
       metadata.mappings_applied.push("acceptance_tests->evidence");
     }
 

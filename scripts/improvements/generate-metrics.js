@@ -29,6 +29,23 @@ const METRICS_LOG = path.join(LOG_DIR, "metrics-log.jsonl");
 
 const verbose = process.argv.includes("--verbose");
 
+// Symlink guard: refuse to write through symlinks (Review #291 R9)
+function assertNotSymlink(filePath) {
+  try {
+    if (fs.lstatSync(filePath).isSymbolicLink()) {
+      throw new Error(`Refusing to write to symlink: ${filePath}`);
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.code === "ENOENT") return;
+      if (err.code === "EACCES" || err.code === "EPERM") {
+        throw new Error(`Refusing to write when symlink check is blocked: ${filePath}`);
+      }
+      if (err.message.includes("symlink")) throw err;
+    }
+  }
+}
+
 // Format date for display
 function formatDate(date) {
   return date.toISOString().split("T")[0];
@@ -346,6 +363,7 @@ function logMetricsGeneration(metrics) {
     };
 
     // Explicit utf8 encoding for consistent output
+    assertNotSymlink(METRICS_LOG);
     fs.appendFileSync(METRICS_LOG, JSON.stringify(logEntry) + "\n", "utf8");
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
@@ -370,10 +388,12 @@ function main() {
     fs.mkdirSync(BASE_DIR, { recursive: true });
 
     // Write metrics.json
+    assertNotSymlink(METRICS_JSON);
     fs.writeFileSync(METRICS_JSON, JSON.stringify(metrics, null, 2) + "\n");
     console.log(`  Written: ${METRICS_JSON}`);
 
     // Write METRICS.md
+    assertNotSymlink(METRICS_MD);
     const metricsMd = generateMetricsMd(metrics);
     fs.writeFileSync(METRICS_MD, metricsMd);
     console.log(`  Written: ${METRICS_MD}`);

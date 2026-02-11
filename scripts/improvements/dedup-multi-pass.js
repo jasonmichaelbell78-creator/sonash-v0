@@ -208,6 +208,21 @@ function readInputItems() {
   const items = [];
   const parseErrors = [];
 
+  // Strip dangerous prototype pollution keys from parsed JSONL objects (Review #291 R9)
+  const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+  function safeCloneObject(obj, depth = 0) {
+    if (obj === null || typeof obj !== "object") return obj;
+    if (depth > 200) return Array.isArray(obj) ? [] : Object.create(null);
+    if (Array.isArray(obj)) return obj.map((v) => safeCloneObject(v, depth + 1));
+    const result = Object.create(null);
+    for (const key of Object.keys(obj)) {
+      if (!DANGEROUS_KEYS.has(key)) {
+        result[key] = safeCloneObject(obj[key], depth + 1);
+      }
+    }
+    return result;
+  }
+
   for (let i = 0; i < lines.length; i++) {
     try {
       const parsed = JSON.parse(lines[i]);
@@ -219,7 +234,7 @@ function readInputItems() {
         });
         continue;
       }
-      items.push(parsed);
+      items.push(safeCloneObject(parsed));
     } catch (err) {
       parseErrors.push({ line: i + 1, message: err instanceof Error ? err.message : String(err) });
     }
@@ -518,8 +533,9 @@ function runPass3SemanticMatch(pass2Items, dedupLog, reviewNeeded) {
     if (comparisons > MAX_COMPARISONS_PER_FILE) {
       reviewNeeded.push({
         reason: "semantic_match_skipped_large_file",
-        item_a: { file, count: n },
+        item_a: fileItems[0] || null,
         item_b: null,
+        meta: { file, count: n, comparisons, cap: MAX_COMPARISONS_PER_FILE },
         note: `Skipped semantic pairwise checks (${comparisons} comparisons > ${MAX_COMPARISONS_PER_FILE}).`,
       });
       dedupLog.push({
@@ -736,6 +752,10 @@ function assertNotSymlink(filePath) {
   } catch (err) {
     if (err instanceof Error) {
       if (err.code === "ENOENT") return; // File doesn't exist yet — safe
+      // Fail closed on permission errors — cannot verify symlink status (Review #291 R9)
+      if (err.code === "EACCES" || err.code === "EPERM") {
+        throw new Error(`Refusing to write when symlink check is blocked: ${filePath}`);
+      }
       if (err.message.includes("symlink")) throw err;
     }
     // Non-Error or other lstat errors — let the actual write handle them

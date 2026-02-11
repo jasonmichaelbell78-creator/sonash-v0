@@ -96,13 +96,15 @@ function loadMasterImprovements() {
   const badLines = [];
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    const lineNum = i + 1;
+    let line = lines[i].trimEnd(); // Handle CRLF line endings (Review #291 R9)
+    if (lineNum === 1) line = line.replace(/^\uFEFF/, ""); // Strip UTF-8 BOM
     if (!line.trim()) continue;
     try {
       items.push(JSON.parse(line));
     } catch (err) {
       badLines.push({
-        line: i + 1,
+        line: lineNum,
         message: err instanceof Error ? err.message : String(err),
       });
     }
@@ -121,6 +123,23 @@ function loadMasterImprovements() {
   return items;
 }
 
+// Symlink guard: refuse to write through symlinks (Review #291 R9)
+function assertNotSymlink(filePath) {
+  try {
+    if (fs.lstatSync(filePath).isSymbolicLink()) {
+      throw new Error(`Refusing to write to symlink: ${filePath}`);
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.code === "ENOENT") return;
+      if (err.code === "EACCES" || err.code === "EPERM") {
+        throw new Error(`Refusing to write when symlink check is blocked: ${filePath}`);
+      }
+      if (err.message.includes("symlink")) throw err;
+    }
+  }
+}
+
 // Save items to MASTER_IMPROVEMENTS.jsonl with atomic write
 function saveMasterImprovements(items) {
   const lines = items.map((item) => JSON.stringify(item));
@@ -130,8 +149,11 @@ function saveMasterImprovements(items) {
   const dir = path.dirname(MASTER_FILE);
   const tmpFile = path.join(dir, `.MASTER_IMPROVEMENTS.jsonl.tmp.${process.pid}`);
 
+  assertNotSymlink(MASTER_FILE);
+  assertNotSymlink(tmpFile);
+
   try {
-    fs.writeFileSync(tmpFile, content);
+    fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
     fs.renameSync(tmpFile, MASTER_FILE);
   } catch (err) {
     // Clean up temp file on error
@@ -147,9 +169,11 @@ function saveMasterImprovements(items) {
 // Log resolution activity (wrapped in try/catch so logging failure doesn't crash main flow - Review #286 R4)
 function logResolution(activity) {
   try {
+    assertNotSymlink(LOG_DIR);
     if (!fs.existsSync(LOG_DIR)) {
       fs.mkdirSync(LOG_DIR, { recursive: true });
     }
+    assertNotSymlink(RESOLUTION_LOG);
     const logEntry = {
       ...activity,
       // Timestamp AFTER spread so activity cannot overwrite it (Review #289 R7)

@@ -34,6 +34,10 @@ function assertNotSymlink(filePath) {
   } catch (err) {
     if (err instanceof Error) {
       if (err.code === "ENOENT") return; // File doesn't exist yet — safe
+      // Fail closed on permission errors (Review #291 R9)
+      if (err.code === "EACCES" || err.code === "EPERM") {
+        throw new Error(`Refusing to write when symlink check is blocked: ${filePath}`);
+      }
       if (err.message.includes("symlink")) throw err;
     }
     // Non-Error or other lstat errors — let the actual write handle them
@@ -150,6 +154,21 @@ function loadExistingItems() {
   return { idMap, itemMap, maxId };
 }
 
+// Strip dangerous prototype pollution keys from parsed JSONL objects (Review #291 R9)
+const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+function safeCloneObject(obj, depth = 0) {
+  if (obj === null || typeof obj !== "object") return obj;
+  if (depth > 200) return Array.isArray(obj) ? [] : Object.create(null);
+  if (Array.isArray(obj)) return obj.map((v) => safeCloneObject(v, depth + 1));
+  const result = Object.create(null);
+  for (const key of Object.keys(obj)) {
+    if (!DANGEROUS_KEYS.has(key)) {
+      result[key] = safeCloneObject(obj[key], depth + 1);
+    }
+  }
+  return result;
+}
+
 // Read and parse deduped items, assigning stable ENH-XXXX IDs
 function readAndAssignIds() {
   if (!fs.existsSync(INPUT_FILE)) {
@@ -182,7 +201,8 @@ function readAndAssignIds() {
   for (let i = 0; i < lines.length; i++) {
     let item;
     try {
-      item = JSON.parse(lines[i]);
+      const raw = JSON.parse(lines[i]);
+      item = safeCloneObject(raw);
     } catch (err) {
       parseErrors.push({ line: i + 1, message: err instanceof Error ? err.message : String(err) });
       continue;
@@ -290,7 +310,21 @@ function writeMasterFile(items) {
     return aNum - bNum;
   });
   assertNotSymlink(MASTER_FILE);
-  fs.writeFileSync(MASTER_FILE, idSorted.map((item) => JSON.stringify(item)).join("\n") + "\n");
+
+  const tmpMaster = MASTER_FILE + `.tmp.${process.pid}`;
+  try {
+    fs.writeFileSync(tmpMaster, idSorted.map((item) => JSON.stringify(item)).join("\n") + "\n");
+    fs.renameSync(tmpMaster, MASTER_FILE);
+  } finally {
+    if (fs.existsSync(tmpMaster)) {
+      try {
+        fs.unlinkSync(tmpMaster);
+      } catch {
+        /* ignore cleanup errors */
+      }
+    }
+  }
+
   console.log(`  Written: ${MASTER_FILE}`);
 }
 

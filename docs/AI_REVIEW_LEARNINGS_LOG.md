@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.2 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
+**Document Version:** 16.3 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.3    | 2026-02-11 | Review #291: PR #360 R9 — Prototype pollution guard (safeCloneObject in dedup-multi-pass.js + generate-views.js), assertNotSymlink EACCES/EPERM fail-closed (all 5 files), atomic write for generate-views.js MASTER_FILE, schema-stable reviewNeeded entries, symlink guards on generate-metrics.js (3 write paths) + resolve-item.js (saveMasterImprovements + logResolution), acceptance evidence sanitization, BOM strip in resolve-item.js. Active reviews #266-291.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 16.2    | 2026-02-11 | Review #290: PR #360 R8 — CI fix (assertNotSymlink instanceof Error), Pass 0 no-file guard, symlink guards on generate-views.js + logIntake(), enhancement-audit format precision, \_\_dirname child script, fingerprint type guard, Pass 3 comparison cap (50k), isStringArray for-loop + Number.isFinite. Consolidation counter 8→9 (consolidation due). Active reviews #266-290.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 16.1    | 2026-02-11 | Review #289: PR #360 R7 — Symlink guards (intake-audit + dedup), Pass 3 grouped by file (O(n²) → O(n²/k)), regex flag preservation, non-fatal operator hash, honesty guard (counter_argument), non-object JSONL rejection in dedup, whitespace-only required field validation, timestamp spread in resolve-item, hardened schema config (isStringArray + confidence range). Consolidation counter 7→8 (consolidation due). Active reviews #266-289.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 16.0    | 2026-02-11 | Review #288: PR #360 R6 — Pass 3 semantic match changed to flag-only (no destructive merge), PII removal (hash operator, basename input_file), timestamp integrity (spread order), stateful regex guard, normalizeFilePath line-suffix stripping, non-object JSONL validation, accurate ingestion outcome, empty evidence cleanup. Consolidation counter 6→7 (consolidation due). Active reviews #266-288.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -773,6 +774,48 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #291: PR #360 R9 — Prototype Pollution Guard, Fail-Closed Symlink, Atomic Writes (2026-02-11)
+
+**Source:** Qodo Compliance R9 + Qodo Code Suggestions R9 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 12 total (High: 5, Medium:
+3, Low: 3, Deferred: 1)
+
+**Patterns Identified:**
+
+1. **Prototype pollution**: JSONL records parsed from disk need `__proto__`,
+   `constructor`, `prototype` keys stripped before spread/merge —
+   `safeCloneObject`.
+2. **Fail-closed symlink guard**: EACCES/EPERM during lstat means we can't
+   verify symlink status — must refuse write, not silently proceed.
+3. **Atomic write for canonical output**: MASTER_IMPROVEMENTS.jsonl needs atomic
+   write-to-tmp-then-rename in generate-views.js (already done in
+   resolve-item.js).
+4. **Schema-stable reviewNeeded entries**: `item_a` should always be a full item
+   (or null), metadata goes in a separate `meta` field.
+5. **Symlink guard coverage**: generate-metrics.js (3 write paths) and
+   resolve-item.js (saveMasterImprovements + logResolution) were unguarded.
+
+**Resolution:**
+
+- Fixed: 10 items across 5 files
+- Deferred: 1 (evidence dedup data fix — pipeline handles)
+
+**Key Learnings:**
+
+- `safeCloneObject` with `Object.create(null)` prevents prototype pollution from
+  JSONL
+- Fail-closed: if lstat throws EACCES/EPERM, throw rather than silently continue
+- Atomic write pattern: writeFileSync to `.tmp.${pid}` + renameSync + finally
+  cleanup
+- reviewNeeded entries: consistent shape (`item_a`, `item_b`, `meta`) aids
+  downstream
+- Acceptance evidence: sanitize with type coercion, trim, filter, and length cap
+  (500)
+- BOM strip on first line + CRLF trimEnd prevents parse failures on
+  Windows-edited files
 
 ---
 
