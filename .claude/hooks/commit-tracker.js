@@ -101,12 +101,22 @@ function saveLastHead(head) {
       tmpPath,
       JSON.stringify({ lastHead: head, updatedAt: new Date().toISOString() })
     );
+    try {
+      fs.rmSync(TRACKER_STATE, { force: true });
+    } catch {
+      // best-effort; destination may not exist
+    }
     fs.renameSync(tmpPath, TRACKER_STATE);
   } catch (err) {
     // Non-critical — worst case we re-log the same commit next time
     console.warn(
       `commit-tracker: failed to save HEAD state: ${err instanceof Error ? err.message : String(err)}`
     );
+    try {
+      fs.rmSync(`${TRACKER_STATE}.tmp`, { force: true });
+    } catch {
+      // cleanup failure is non-critical
+    }
   }
 }
 

@@ -74,17 +74,29 @@ function loadJson(filePath) {
  * Save JSON file safely
  */
 function saveJson(filePath, data) {
+  const tmpPath = `${filePath}.tmp`;
   try {
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
+    try {
+      fs.rmSync(filePath, { force: true });
+    } catch {
+      // best-effort; destination may not exist
+    }
+    fs.renameSync(tmpPath, filePath);
     return true;
   } catch (err) {
     console.warn(
       `auto-save-context: failed to save ${path.basename(filePath)}: ${err instanceof Error ? err.message : String(err)}`
     );
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      // cleanup failure is non-critical
+    }
     return false;
   }
 }

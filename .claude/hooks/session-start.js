@@ -89,6 +89,11 @@ function writeSessionState(state) {
   try {
     fs.mkdirSync(path.dirname(SESSION_STATE_FILE), { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+    try {
+      fs.rmSync(SESSION_STATE_FILE, { force: true });
+    } catch {
+      // best-effort; destination may not exist
+    }
     fs.renameSync(tmpPath, SESSION_STATE_FILE);
   } catch (err) {
     console.error(

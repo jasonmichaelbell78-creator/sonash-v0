@@ -324,7 +324,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
 **Status:** ✅ UP TO DATE **Last consolidation:** 2026-02-10 (Consolidation #18,
 Reviews #266-284)
 
@@ -674,6 +674,36 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #285: PR #359 R3 — Windows Atomic Writes, Null State Dir, Evidence Dedup (2026-02-11)
+
+**Source:** Qodo Code Suggestions **PR/Branch:** PR #359
+(claude/analyze-repo-install-ceMkn) **Suggestions:** 11 total (Critical: 0,
+Major: 0, Medium: 8, Low: 3)
+
+**Accepted (10):**
+
+1. **state-utils.js getStateDir null fallback**: Return `null` instead of
+   `projectDir` when state dir creation fails — prevents writing to wrong
+   location. Updated all 4 callers with null guards.
+2. **Windows-safe atomic writes (7 locations)**: Added
+   `fs.rmSync(dest, {force: true})` before `fs.renameSync()` across
+   session-start.js, large-context-warning.js (2x), agent-trigger-enforcer.js
+   (2x), commit-tracker.js, auto-save-context.js. Also added `.tmp` cleanup in
+   catch blocks where missing.
+3. **DEBT-2450 evidence dedup**: Removed duplicated `code_reference` and
+   `description` objects in MASTER_DEBT.jsonl and deduped.jsonl.
+
+**Deferred (1):**
+
+1. **merged_from unknown removal**: Removing `merged_from: ["unknown"]` could
+   break downstream scripts that expect the field to always exist.
+
+**Key Pattern:** Windows `fs.renameSync` fails if destination exists — always
+`rmSync` first. This is CODE_PATTERNS.md "Windows atomic rename" pattern
+(already documented).
 
 ---
 

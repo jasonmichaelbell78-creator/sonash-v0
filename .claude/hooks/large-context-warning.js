@@ -113,11 +113,21 @@ try {
   fs.mkdirSync(hooksDir, { recursive: true });
   const tmpPath = `${stateFilePath}.tmp`;
   fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+  try {
+    fs.rmSync(stateFilePath, { force: true });
+  } catch {
+    // best-effort; destination may not exist
+  }
   fs.renameSync(tmpPath, stateFilePath);
 } catch (err) {
   console.warn(
     `large-context-warning: failed to save state: ${err instanceof Error ? err.message : String(err)}`
   );
+  try {
+    fs.rmSync(`${stateFilePath}.tmp`, { force: true });
+  } catch {
+    // cleanup failure is non-critical
+  }
 }
 
 // Resolve full path for line counting
@@ -157,11 +167,21 @@ if (state.filesRead.length >= SESSION_FILE_LIMIT && !state.warningShown) {
   try {
     const tmpPath = `${stateFilePath}.tmp`;
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+    try {
+      fs.rmSync(stateFilePath, { force: true });
+    } catch {
+      // best-effort; destination may not exist
+    }
     fs.renameSync(tmpPath, stateFilePath);
   } catch (err) {
     console.warn(
       `large-context-warning: failed to update state: ${err instanceof Error ? err.message : String(err)}`
     );
+    try {
+      fs.rmSync(`${stateFilePath}.tmp`, { force: true });
+    } catch {
+      // cleanup failure is non-critical
+    }
   }
 }
 

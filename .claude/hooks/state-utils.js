@@ -46,7 +46,7 @@ function getStateDir(projectDir) {
       `state-utils: failed to create state dir: ${err instanceof Error ? err.message : String(err)}`
     );
   }
-  return fs.existsSync(dir) ? dir : projectDir;
+  return fs.existsSync(dir) ? dir : null;
 }
 
 /**
@@ -54,7 +54,9 @@ function getStateDir(projectDir) {
  */
 function readState(projectDir, filename) {
   if (!validateFilename(filename)) return null;
-  const filePath = path.join(getStateDir(projectDir), filename);
+  const dir = getStateDir(projectDir);
+  if (!dir) return null;
+  const filePath = path.join(dir, filename);
   try {
     return JSON.parse(fs.readFileSync(filePath, "utf8"));
   } catch {
@@ -69,19 +71,27 @@ function readState(projectDir, filename) {
 function writeState(projectDir, filename, data) {
   if (!validateFilename(filename)) return false;
   const dir = getStateDir(projectDir);
+  if (!dir) return false;
   const filePath = path.join(dir, filename);
   const tmpPath = `${filePath}.tmp`;
   try {
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
+    try {
+      fs.rmSync(filePath, { force: true });
+    } catch {
+      // best-effort; destination may not exist
+    }
     fs.renameSync(tmpPath, filePath);
     return true;
   } catch (err) {
     try {
       fs.rmSync(tmpPath, { force: true });
     } catch {
-      // ignore cleanup
+      // cleanup failure is non-critical
     }
-    console.error(`Warning: Could not write state ${filename}: ${err.message}`);
+    console.error(
+      `Warning: Could not write state ${filename}: ${err instanceof Error ? err.message : String(err)}`
+    );
     return false;
   }
 }
@@ -91,7 +101,9 @@ function writeState(projectDir, filename, data) {
  */
 function deleteState(projectDir, filename) {
   if (!validateFilename(filename)) return false;
-  const filePath = path.join(getStateDir(projectDir), filename);
+  const dir = getStateDir(projectDir);
+  if (!dir) return false;
+  const filePath = path.join(dir, filename);
   try {
     fs.rmSync(filePath, { force: true });
     return true;
@@ -105,6 +117,7 @@ function deleteState(projectDir, filename) {
  */
 function listStates(projectDir, prefix) {
   const dir = getStateDir(projectDir);
+  if (!dir) return [];
   try {
     const files = fs.readdirSync(dir);
     if (prefix) {
