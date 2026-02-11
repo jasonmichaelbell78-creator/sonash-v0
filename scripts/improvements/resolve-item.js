@@ -172,9 +172,23 @@ function saveMasterImprovements(items) {
   assertNotSymlink(tmpFile);
 
   try {
-    fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
-    // Windows-safe rename: unlink destination first (Review #293 R11)
+    try {
+      fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
+    } catch (wxErr) {
+      if (wxErr && typeof wxErr === "object" && wxErr.code === "EEXIST") {
+        try {
+          fs.unlinkSync(tmpFile);
+        } catch {
+          // Ignore cleanup errors
+        }
+        fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
+      } else {
+        throw wxErr;
+      }
+    }
+    // Windows-safe rename: unlink destination first (Review #293 R11, #294 R12: TOCTOU recheck)
     if (fs.existsSync(MASTER_FILE)) {
+      assertNotSymlink(MASTER_FILE);
       fs.unlinkSync(MASTER_FILE);
     }
     fs.renameSync(tmpFile, MASTER_FILE);
@@ -294,8 +308,9 @@ function restoreMasterBackup(masterBackup) {
       assertNotSymlink(MASTER_FILE);
       assertNotSymlink(tmpFile);
       fs.writeFileSync(tmpFile, masterBackup, { encoding: "utf8", flag: "wx" });
-      // Windows-safe rename: unlink destination first (Review #293 R11)
+      // Windows-safe rename: unlink destination first (Review #293 R11, #294 R12: TOCTOU recheck)
       if (fs.existsSync(MASTER_FILE)) {
+        assertNotSymlink(MASTER_FILE);
         fs.unlinkSync(MASTER_FILE);
       }
       fs.renameSync(tmpFile, MASTER_FILE);

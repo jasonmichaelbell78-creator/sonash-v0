@@ -331,14 +331,16 @@ function validateAndNormalize(item, sourceFile) {
     effort: ensureValid(mappedItem.effort, VALID_EFFORTS, "E1"),
     file: normalizeFilePath(mappedItem.file || ""),
     // Preserve numeric line info - parse strings, keep numbers, default to 0
-    // Robust line sanitization: ensure non-negative integer (Review #293 R11)
+    // Robust line sanitization: ensure non-negative integer, digits-only (Review #293 R11, #294 R12)
     line: (() => {
-      const raw =
-        typeof mappedItem.line === "number"
-          ? mappedItem.line
-          : Number.parseInt(String(mappedItem.line), 10);
-      if (!Number.isFinite(raw)) return 0;
-      const n = Math.floor(raw);
+      if (typeof mappedItem.line === "number") {
+        if (!Number.isFinite(mappedItem.line)) return 0;
+        const n = Math.floor(mappedItem.line);
+        return n > 0 ? n : 0;
+      }
+      const s = String(mappedItem.line ?? "").trim();
+      if (!/^\d+$/.test(s)) return 0;
+      const n = Number(s);
       return n > 0 ? n : 0;
     })(),
     title: (mappedItem.title || "Untitled").substring(0, 500),

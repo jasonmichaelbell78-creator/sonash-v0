@@ -414,6 +414,11 @@ function main() {
           throw wxErr;
         }
       }
+      // Windows-safe rename: unlink destination first (Review #294 R12)
+      if (fs.existsSync(METRICS_JSON)) {
+        assertNotSymlink(METRICS_JSON);
+        fs.unlinkSync(METRICS_JSON);
+      }
       fs.renameSync(tmpMetricsJson, METRICS_JSON);
       console.log(`  Written: ${METRICS_JSON}`);
     } finally {
@@ -445,6 +450,11 @@ function main() {
         } else {
           throw wxErr;
         }
+      }
+      // Windows-safe rename: unlink destination first (Review #294 R12)
+      if (fs.existsSync(METRICS_MD)) {
+        assertNotSymlink(METRICS_MD);
+        fs.unlinkSync(METRICS_MD);
       }
       fs.renameSync(tmpMetricsMd, METRICS_MD);
       console.log(`  Written: ${METRICS_MD}`);

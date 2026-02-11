@@ -284,10 +284,12 @@ function readMasterDebt() {
   return items;
 }
 
-// Helper to convert a value to a line number or null
+// Helper to convert a value to a positive line number or null (Review #294 R12: reject 0/negative)
 function toLineNumber(v) {
   const n = typeof v === "number" ? v : Number(v);
-  return Number.isFinite(n) ? n : null;
+  if (!Number.isFinite(n)) return null;
+  const i = Math.floor(n);
+  return i > 0 ? i : null;
 }
 
 // Flag high-impact parametric group items for review instead of merging
@@ -848,13 +850,18 @@ function writeOutputFiles(pass5Items, dedupLog, reviewNeeded) {
     log_entries: dedupLog.length,
     review_entries: reviewNeeded.length,
   };
-  // Write non-critical log/review files (Review #293 R11: don't crash on log write failure)
+  // Write non-critical log/review files (Review #293 R11, #294 R12: decoupled try/catch)
   try {
     fs.writeFileSync(
       LOG_FILE,
       [JSON.stringify(runMeta), ...dedupLog.map((entry) => JSON.stringify(entry))].join("\n") + "\n"
     );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`  Warning: Failed to write dedup log file: ${msg}`);
+  }
 
+  try {
     if (reviewNeeded.length > 0) {
       fs.writeFileSync(
         REVIEW_FILE,
@@ -865,7 +872,7 @@ function writeOutputFiles(pass5Items, dedupLog, reviewNeeded) {
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.warn(`  Warning: Failed to write dedup log/review files: ${msg}`);
+    console.warn(`  Warning: Failed to write review-needed file: ${msg}`);
   }
 }
 

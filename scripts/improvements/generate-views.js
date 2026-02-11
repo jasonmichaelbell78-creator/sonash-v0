@@ -62,13 +62,14 @@ function truncate(text, maxLen) {
   return text.substring(0, maxLen - 3) + "...";
 }
 
-// Escape markdown special chars in table cells (Review #293 R11: strip HTML to prevent injection)
+// Escape markdown special chars in table cells (Review #293 R11: strip HTML, #294 R12: String coercion + \r\n)
 function escapeMarkdown(text) {
-  if (!text) return "";
-  return text
+  if (text === undefined || text === null) return "";
+  const s = String(text);
+  return s
     .replace(/<[^>]*>/g, "") // Strip HTML tags
     .replace(/\|/g, "\\|")
-    .replace(/\n/g, " ");
+    .replace(/\r?\n/g, " ");
 }
 
 // Sort by impact (I0 first)
@@ -121,20 +122,25 @@ function loadExistingItems() {
       for (const line of lines) {
         try {
           const item = JSON.parse(line);
-          if (item.id) {
-            const match = item.id.match(/ENH-(\d+)/);
-            if (match) {
-              const num = Number.parseInt(match[1], 10);
-              if (num > maxId) maxId = num;
-            }
-            // Store full item for field preservation (only for valid ENH-XXXX IDs)
-            if (typeof item.id === "string" && /^ENH-\d+$/.test(item.id)) {
-              itemMap.set(item.id, item);
-            }
+          if (!item.id || typeof item.id !== "string") continue;
+
+          const isValidEnhId = /^ENH-\d+$/.test(item.id);
+
+          const match = item.id.match(/ENH-(\d+)/);
+          if (match) {
+            const num = Number.parseInt(match[1], 10);
+            if (num > maxId) maxId = num;
+          }
+
+          // Store full item for field preservation (only for valid ENH-XXXX IDs)
+          if (isValidEnhId) {
+            itemMap.set(item.id, item);
+
             // Map by content_hash, source_id, AND fingerprint for stable ID lookup
             if (item.content_hash) idMap.set(`hash:${item.content_hash}`, item.id);
             if (item.source_id) idMap.set(`source:${item.source_id}`, item.id);
             if (item.fingerprint) idMap.set(`fp:${item.fingerprint}`, item.id);
+
             // Also map merged source IDs so dedup merges preserve the original ID
             if (Array.isArray(item.merged_from)) {
               for (const srcId of item.merged_from) {

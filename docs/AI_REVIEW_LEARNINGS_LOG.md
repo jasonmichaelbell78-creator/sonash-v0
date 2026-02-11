@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.5 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
+**Document Version:** 16.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.6    | 2026-02-11 | Review #294: PR #360 R12 — CI fix: eslint-disable block for control-char regex, sanitizeLogSnippet extraction, BiDi control strip, escapeMarkdown String coercion + \r\n, valid-only ENH-ID idMap, TOCTOU symlink recheck before unlink, EEXIST recovery for resolve-item, strict digits-only line parsing, decoupled log/review writes, toLineNumber reject 0/negative, Windows-safe metrics rename. Active reviews #266-294.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.5    | 2026-02-11 | Review #293: PR #360 R11 — Markdown injection (HTML strip in escapeMarkdown), stale temp EEXIST recovery, safeCloneObject throw on deep nesting + module-scope in dedup, deduped.jsonl non-fatal write, non-critical log/review write guard, safeCloneObject for MASTER_DEBT.jsonl, terminal escape sanitization, robust line number sanitization, Windows-safe unlink-before-rename, schema config validation. Active reviews #266-293.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 16.4    | 2026-02-11 | Review #292: PR #360 R10 — assertNotSymlink fail-closed (rethrow unknown errors, all 5 files), safeCloneObject in resolve-item.js + validate-schema.js, temp-file symlink+wx flag (dedup-multi-pass.js + generate-views.js), atomic writes for metrics.json + METRICS.md, atomic rollback restore, existingEvidence sanitization, line number validation, Pass 2 DoS cap (5000 items), dedup run_metadata audit trail, pipeline write error handling. Active reviews #266-292.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.3    | 2026-02-11 | Review #291: PR #360 R9 — Prototype pollution guard (safeCloneObject in dedup-multi-pass.js + generate-views.js), assertNotSymlink EACCES/EPERM fail-closed (all 5 files), atomic write for generate-views.js MASTER_FILE, schema-stable reviewNeeded entries, symlink guards on generate-metrics.js (3 write paths) + resolve-item.js (saveMasterImprovements + logResolution), acceptance evidence sanitization, BOM strip in resolve-item.js. Active reviews #266-291.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -776,6 +777,54 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #294: PR #360 R12 — CI Fix, TOCTOU Recheck, BiDi Strip, ID Validation, Log Decoupling (2026-02-11)
+
+**Source:** CI Failure (ESLint no-control-regex) + Qodo Compliance R12 + Qodo
+Code Suggestions R12 **PR/Branch:** claude/new-session-NgVGX (PR #360)
+**Suggestions:** 12 code + 2 compliance (Security: 2, Medium: 7, Low: 3,
+Compliance: 2)
+
+**Patterns Identified:**
+
+1. **CI failure**: `eslint-disable-next-line` doesn't work when the regex is on
+   a subsequent line from `.replace(` — use block-level
+   `eslint-disable`/`enable` instead.
+2. **TOCTOU recheck**: assertNotSymlink must be called immediately before
+   unlinkSync, not just at function entry, to close the race window.
+3. **BiDi spoofing**: Unicode bidirectional control characters (\u202A-\u202E,
+   \u2066-\u2069) can spoof terminal/log output — strip them.
+4. **escapeMarkdown robustness**: Non-string inputs need String() coercion; \r\n
+   should be normalized, not just \n.
+5. **ID propagation**: Only valid ENH-XXXX IDs should populate idMap —
+   invalid/legacy IDs should not be mapped for stable lookup.
+6. **Log decoupling**: Separate try/catch for log vs review file writes prevents
+   one failure from blocking the other.
+7. **Line number strictness**: parseInt("12abc", 10) silently returns 12 — use
+   digits-only regex guard.
+
+**Resolution:**
+
+- Fixed: 12 items across 6 scripts + learnings log
+- Deferred: 0
+- CI: green (0 ESLint errors)
+
+**Key Learnings:**
+
+- `eslint-disable-next-line` applies to the NEXT LINE only; multi-line
+  `.replace()` calls put the regex on line+2, requiring block-level
+  disable/enable
+- Extracted `sanitizeLogSnippet()` with compiled regexes at module scope for
+  reuse
+- TOCTOU mitigation: re-assert symlink check immediately before destructive
+  operation
+- BiDi control chars: `/[\u202A-\u202E\u2066-\u2069]/g`
+- `String(text)` coercion handles numeric/boolean inputs in escapeMarkdown
+- `/^\d+$/.test(s)` guards parseInt from accepting malformed strings like
+  "12abc"
+- `toLineNumber()` should reject 0 and negative values for line numbers
 
 ---
 

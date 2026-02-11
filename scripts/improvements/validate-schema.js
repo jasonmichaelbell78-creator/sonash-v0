@@ -24,6 +24,23 @@ const { validateAndVerifyPath } = require("../lib/validate-paths");
 const IMPROVEMENTS_DIR = path.join(__dirname, "../../docs/improvements");
 const DEFAULT_FILE = path.join(IMPROVEMENTS_DIR, "MASTER_IMPROVEMENTS.jsonl");
 
+// Sanitize untrusted text for safe terminal/log output (Review #293 R11, #294 R12)
+// Uses eslint-disable block because regexes intentionally match control characters
+/* eslint-disable no-control-regex */
+const ANSI_ESCAPE_RE =
+  /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
+const CONTROL_CHAR_RE = /[\u0000-\u0019\u007f-\u009f]/g;
+/* eslint-enable no-control-regex */
+const BIDI_CONTROL_RE = /[\u202A-\u202E\u2066-\u2069]/g;
+
+function sanitizeLogSnippet(text, maxLen = 100) {
+  return text
+    .substring(0, maxLen)
+    .replace(ANSI_ESCAPE_RE, "")
+    .replace(CONTROL_CHAR_RE, "")
+    .replace(BIDI_CONTROL_RE, "");
+}
+
 // Valid schema values — single source of truth: scripts/config/improvement-schema.json
 let schema;
 try {
@@ -299,15 +316,7 @@ Exit codes:
       const item = safeCloneObject(JSON.parse(line));
 
       if (!item || typeof item !== "object" || Array.isArray(item)) {
-        const safeSnippet = line
-          .substring(0, 100)
-          // eslint-disable-next-line no-control-regex -- intentionally matching ANSI escape sequences
-          .replace(
-            /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-            ""
-          )
-          // eslint-disable-next-line no-control-regex -- intentionally stripping control characters
-          .replace(/[\u0000-\u0019\u007f-\u009f]/g, "");
+        const safeSnippet = sanitizeLogSnippet(line);
         allErrors.push(
           `Line ${lineNum}: Invalid item type (expected JSON object) — Content: ${safeSnippet}`
         );
@@ -344,9 +353,8 @@ Exit codes:
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      allErrors.push(
-        `Line ${lineNum}: JSON parse error: ${msg} — Content: ${line.substring(0, 100)}`
-      );
+      const safeSnippet = sanitizeLogSnippet(line);
+      allErrors.push(`Line ${lineNum}: JSON parse error: ${msg} — Content: ${safeSnippet}`);
     }
   }
 
