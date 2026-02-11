@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/components/providers/auth-provider";
@@ -9,10 +9,9 @@ interface AuthErrorBannerProps {
   className?: string;
 }
 
-const seenMessages = new Set<string>();
-
-export function AuthErrorBanner({ className }: AuthErrorBannerProps) {
+export function AuthErrorBanner({ className }: Readonly<AuthErrorBannerProps>) {
   const { profileError, todayLogError, profileNotFound } = useAuth();
+  const [seenMessages, setSeenMessages] = useState<Set<string>>(() => new Set());
 
   const messages = useMemo(() => {
     const list: string[] = [];
@@ -25,13 +24,16 @@ export function AuthErrorBanner({ className }: AuthErrorBannerProps) {
   }, [profileError, profileNotFound, todayLogError]);
 
   useEffect(() => {
-    messages.forEach((message) => {
-      if (!seenMessages.has(message)) {
-        toast.error(message);
-        seenMessages.add(message);
-      }
-    });
-  }, [messages]);
+    const unseen = messages.filter((msg) => !seenMessages.has(msg));
+    if (unseen.length > 0) {
+      unseen.forEach((message) => toast.error(message));
+      setSeenMessages((prev) => {
+        const next = new Set(prev);
+        unseen.forEach((msg) => next.add(msg));
+        return next;
+      });
+    }
+  }, [messages, seenMessages]);
 
   if (messages.length === 0) return null;
 

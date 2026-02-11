@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - main
-  pull_request_target:
-    branches:
-      - main
-    types: [opened, synchronize, reopened]
+  # Preview deploys disabled — GitHub repo variables not configured
+  # pull_request_target:
+  #   branches:
+  #     - main
+  #   types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 concurrency:

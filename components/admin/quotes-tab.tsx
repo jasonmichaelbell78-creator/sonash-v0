@@ -24,10 +24,10 @@ const SEED_QUOTES = newRecoveryQuotes.map((q) => ({
 function QuotesForm({
   formData,
   setFormData,
-}: {
+}: Readonly<{
   formData: Partial<Quote>;
   setFormData: (data: Partial<Quote>) => void;
-}) {
+}>) {
   return (
     <div className="space-y-4 py-4">
       <div className="space-y-2">

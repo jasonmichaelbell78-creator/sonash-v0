@@ -18,7 +18,7 @@ const filterMapping: Record<string, JournalEntryType[]> = {
   stepwork: ["step-1-worksheet"],
 };
 
-export function Timeline({ filter }: { filter?: string | null }) {
+export function Timeline({ filter }: Readonly<{ filter?: string | null }>) {
   const { entries, loading } = useJournal();
   const [selectedEntry, setSelectedEntry] = React.useState<JournalEntry | null>(null);
 

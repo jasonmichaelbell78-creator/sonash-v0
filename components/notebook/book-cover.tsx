@@ -172,13 +172,14 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (globalThis.window === undefined) return;
 
-    const updateDimensions = () => setViewportWidth(window.innerWidth);
+    const win = globalThis.window;
+    const updateDimensions = () => setViewportWidth(win.innerWidth);
     updateDimensions();
 
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
+    win.addEventListener("resize", updateDimensions);
+    return () => win.removeEventListener("resize", updateDimensions);
   }, []);
 
   const { width: bookWidth, height: bookHeight } = getBookDimensions(viewportWidth);

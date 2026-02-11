@@ -170,7 +170,7 @@ interface LogRowProps {
   onToggle: () => void;
 }
 
-function LogRow({ log, isExpanded, onToggle }: LogRowProps) {
+function LogRow({ log, isExpanded, onToggle }: Readonly<LogRowProps>) {
   return (
     <>
       <tr className="hover:bg-amber-50 transition-colors">
@@ -225,6 +225,70 @@ function LogRow({ log, isExpanded, onToggle }: LogRowProps) {
       )}
     </>
   );
+}
+
+const SENSITIVE_KEYS = new Set([
+  "api_key",
+  "api-key",
+  "apikey",
+  "secret",
+  "password",
+  "passwd",
+  "pwd",
+  "token",
+  "auth",
+  "authorization",
+  "cookie",
+  "credential",
+  "session_id",
+  "session-id",
+  "sessionid",
+  "connection_string",
+  "connection-string",
+  "connectionstring",
+  "private_key",
+  "private-key",
+  "privatekey",
+]);
+
+function redactPii(value: string): string {
+  return value
+    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "[REDACTED_EMAIL]")
+    .replace(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, "[REDACTED_PHONE]")
+    .replace(/\bBearer\s+[A-Za-z0-9._-]+\b/gi, "Bearer [REDACTED_TOKEN]")
+    .replace(/\b(eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)\b/g, "[REDACTED_JWT]");
+}
+
+function deepRedactValue(input: unknown, seen = new WeakSet<object>()): unknown {
+  if (input === null) return null;
+  if (typeof input === "string") return redactPii(input);
+  if (typeof input === "bigint") return input.toString();
+  if (typeof input === "function") return "[REDACTED_FUNCTION]";
+  if (typeof input === "symbol") return "[REDACTED_SYMBOL]";
+  if (Array.isArray(input)) return input.map((item) => deepRedactValue(item, seen));
+
+  if (typeof input === "object") {
+    if (seen.has(input)) return "[REDACTED_CIRCULAR]";
+    seen.add(input);
+
+    const proto = Object.getPrototypeOf(input);
+    if (proto !== Object.prototype && proto !== null) {
+      try {
+        return redactPii(String(input));
+      } catch {
+        return "[REDACTED_UNSERIALIZABLE_OBJECT]";
+      }
+    }
+
+    return Object.fromEntries(
+      Object.entries(input as Record<string, unknown>).map(([k, v]) => [
+        k,
+        SENSITIVE_KEYS.has(k.toLowerCase()) ? "[REDACTED_SENSITIVE]" : deepRedactValue(v, seen),
+      ])
+    );
+  }
+
+  return input;
 }
 
 // A22: Event type categories for filtering
@@ -310,45 +374,6 @@ export function LogsTab() {
     let url: string | null = null;
     let a: HTMLAnchorElement | null = null;
     try {
-      const redact = (value: string) =>
-        value
-          .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "[REDACTED_EMAIL]")
-          .replace(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, "[REDACTED_PHONE]")
-          .replace(/\bBearer\s+[A-Za-z0-9._-]+\b/gi, "Bearer [REDACTED_TOKEN]")
-          .replace(/\b(eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)\b/g, "[REDACTED_JWT]");
-
-      const deepRedact = (() => {
-        const seen = new WeakSet<object>();
-
-        const walk = (input: unknown): unknown => {
-          if (typeof input === "string") return redact(input);
-          if (typeof input === "bigint") return input.toString();
-          if (typeof input === "function") return "[REDACTED_FUNCTION]";
-          if (typeof input === "symbol") return "[REDACTED_SYMBOL]";
-          if (Array.isArray(input)) return input.map(walk);
-
-          if (input && typeof input === "object") {
-            // Avoid infinite recursion on circular structures
-            if (seen.has(input)) return "[REDACTED_CIRCULAR]";
-            seen.add(input);
-
-            // Only serialize enumerable props; treat exotic objects as strings
-            const proto = Object.getPrototypeOf(input);
-            if (proto !== Object.prototype && proto !== null) {
-              return redact(String(input));
-            }
-
-            return Object.fromEntries(
-              Object.entries(input as Record<string, unknown>).map(([k, v]) => [k, walk(v)])
-            );
-          }
-
-          return input;
-        };
-
-        return walk;
-      })();
-
       // Cap export size to prevent UI freezes with large datasets
       const MAX_EXPORT_ROWS = 2000;
       const logsToExport = filteredLogs.slice(0, MAX_EXPORT_ROWS);
@@ -363,7 +388,7 @@ export function LogsTab() {
         totalCount: filteredLogs.length,
         exportedCount: logsToExport.length,
         truncated: filteredLogs.length > MAX_EXPORT_ROWS,
-        logs: logsToExport.map((l) => deepRedact(l)),
+        logs: logsToExport.map((l) => deepRedactValue(l)),
       };
       const dataStr = JSON.stringify(exportData, null, 2);
       const blob = new Blob([dataStr], { type: "application/json" });
@@ -675,15 +700,17 @@ export function LogsTab() {
       </div>
 
       {/* Logs Table */}
-      {loading ? (
+      {loading && (
         <div className="rounded-lg border border-amber-100 bg-white p-6 text-amber-700">
           Loading logs...
         </div>
-      ) : filteredLogs.length === 0 ? (
+      )}
+      {!loading && filteredLogs.length === 0 && (
         <div className="rounded-lg border border-amber-100 bg-white p-6 text-amber-700">
           No logs found for the selected filter.
         </div>
-      ) : (
+      )}
+      {!loading && filteredLogs.length > 0 && (
         <div className="rounded-lg border border-amber-100 bg-white overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-amber-100 text-sm">

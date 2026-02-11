@@ -277,18 +277,19 @@ function JobRunHistoryPanel({
         </div>
       </div>
 
-      {loading ? (
+      {loading && (
         <div className="flex items-center justify-center py-8">
           <Loader2 className="w-5 h-5 animate-spin text-amber-600" />
           <span className="ml-2 text-amber-600">Loading history...</span>
         </div>
-      ) : error ? (
-        <div className="text-red-600 text-sm py-4">{error}</div>
-      ) : history.length === 0 ? (
+      )}
+      {!loading && error && <div className="text-red-600 text-sm py-4">{error}</div>}
+      {!loading && !error && history.length === 0 && (
         <div className="text-amber-600 text-sm py-4 text-center">
           No run history available for this job yet.
         </div>
-      ) : (
+      )}
+      {!loading && !error && history.length > 0 && (
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {history.map((run) => (
             <div

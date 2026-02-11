@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-10 **Active Documents:** 273 **Archived Documents:** 93
+**Generated:** 2026-02-11 **Active Documents:** 273 **Archived Documents:** 93
 
 ---
 
@@ -77,10 +77,10 @@ _Essential project-level documentation_
 | [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-10    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓12 ↑6     | 2026-02-09    |
 | [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓13 ↑9     | 2026-02-10    |
-| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-10    |
+| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑9      | 2026-02-11    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-10    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-05    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-10    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-11    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                 | ↓4 ↑6      | 2026-02-09    |
 
 ### Core Documentation (Tier 2)
@@ -100,7 +100,7 @@ _Main documentation directory_
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                                         | Each AI review is an opportunity to improve future work. Sys...   | ↓9 ↑2      | 2026-02-09    |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                         | -                                                                 | ↓3 ↑4      | 2026-02-09    |
 | [ADR-NNN: [Short Title]](docs/decisions/TEMPLATE.md)                                                                           | [Briefly describe the purpose of this ADR - what decision do...   | ↓1 ↑0      | 2026-01-17    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                     | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-10    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                     | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-11    |
 | [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                                                | This guide covers Firebase App Check configuration for the S...   | ↓2 ↑0      | 2026-02-09    |
 | [Architecture Decision Records (ADRs)](docs/decisions/README.md)                                                               | This directory contains Architecture Decision Records (ADRs)...   | ↓0 ↑1      | 2026-02-02    |
 | [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                                         | Track single-session and multi-AI audit completions for thre...   | ↓1 ↑2      | 2026-02-10    |
@@ -927,7 +927,7 @@ Documents with no inbound links (not referenced by any other document):
 | 181 | [docs/agent_docs/CONTEXT_PRESERVATION.md](docs/agent_docs/CONTEXT_PRESERVATION.md)                                                                               | Context Preservation &amp; Compaction Safety                       | 3    | ACTIVE                                                                          |
 | 182 | [docs/agent_docs/SECURITY_CHECKLIST.md](docs/agent_docs/SECURITY_CHECKLIST.md)                                                                                   | Security Checklist for Scripts                                     | 3    | Active                                                                          |
 | 183 | [docs/agent_docs/SKILL_AGENT_POLICY.md](docs/agent_docs/SKILL_AGENT_POLICY.md)                                                                                   | Skill and Agent Usage Policy                                       | 3    | Active **Last Updated:** 2026-01-15                                             |
-| 184 | [docs/AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                               | AI Review Learnings Log                                            | 2    | ✅ Current **Next consolidation due:** After 10 more reviews                    |
+| 184 | [docs/AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                               | AI Review Learnings Log                                            | 2    | ⚠️ CONSOLIDATION DUE **Next consolidation due:** Now                            |
 | 185 | [docs/AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)                                                                                                           | 🤖 AI Code Review Process                                          | 2    | Active                                                                          |
 | 186 | [docs/APPCHECK_SETUP.md](docs/APPCHECK_SETUP.md)                                                                                                                 | App Check Setup Guide                                              | 2    | Active **Last Updated:** 2026-01-03                                             |
 | 187 | [docs/AUDIT_TRACKER.md](docs/AUDIT_TRACKER.md)                                                                                                                   | Audit Tracker                                                      | 2    | -                                                                               |
@@ -1134,7 +1134,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-10 | Auto-generated from codebase scan |
+| Auto    | 2026-02-11 | Auto-generated from codebase scan |
 
 ---
 

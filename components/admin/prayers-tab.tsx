@@ -235,7 +235,7 @@ export default function PrayersTab() {
                   type="number"
                   value={formData.order}
                   onChange={(e) =>
-                    setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
+                    setFormData({ ...formData, order: Number.parseInt(e.target.value) || 0 })
                   }
                 />
               </div>
@@ -271,7 +271,7 @@ export default function PrayersTab() {
                   <div
                     key={prayer.id}
                     className={`p-4 bg-white border border-purple-100 rounded-lg ${
-                      !prayer.isActive ? "opacity-50" : ""
+                      prayer.isActive ? "" : "opacity-50"
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">

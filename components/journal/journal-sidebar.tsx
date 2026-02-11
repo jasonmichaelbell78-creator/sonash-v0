@@ -12,7 +12,11 @@ interface JournalSidebarProps {
   className?: string;
 }
 
-export function JournalSidebar({ activeFilter, onFilterChange, className }: JournalSidebarProps) {
+export function JournalSidebar({
+  activeFilter,
+  onFilterChange,
+  className,
+}: Readonly<JournalSidebarProps>) {
   const filters = [
     { id: "all", label: "All Entries", icon: LayoutGrid, color: "text-slate-500" },
     { id: "daily-log", label: "Daily Logs", icon: BookOpen, color: "text-blue-500" },

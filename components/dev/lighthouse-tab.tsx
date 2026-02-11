@@ -61,13 +61,27 @@ function getScoreBg(score: number): string {
 }
 
 // Score badge component
-function ScoreBadge({ score, label }: { score: number; label: string }) {
+function ScoreBadge({ score, label }: Readonly<{ score: number; label: string }>) {
   return (
     <div className={`text-center p-2 rounded ${getScoreBg(score)}`}>
       <div className={`text-2xl font-bold ${getScoreColor(score)}`}>{score}</div>
       <div className="text-xs text-gray-400">{label}</div>
     </div>
   );
+}
+
+/**
+ * Map Firestore error codes to user-friendly messages
+ */
+function classifyFirestoreError(errorCode: string | undefined): string {
+  const errorMessages: Record<string, string> = {
+    "permission-denied": "Access denied - admin privileges required",
+    unavailable: "Network error - please check your connection",
+    "network-request-failed": "Network error - please check your connection",
+    "failed-precondition":
+      "Firestore index required - check required indexes for Lighthouse history",
+  };
+  return errorMessages[errorCode ?? ""] ?? "Failed to load Lighthouse data";
 }
 
 export function LighthouseTab() {
@@ -112,29 +126,7 @@ export function LighthouseTab() {
           context: "lighthouse-tab",
         });
 
-        // Handle permission denied
-        if (errorCode === "permission-denied") {
-          setError("Access denied - admin privileges required");
-          setLatestRun(null);
-          return;
-        }
-
-        // Handle network errors distinctly
-        if (errorCode === "unavailable" || errorCode === "network-request-failed") {
-          setError("Network error - please check your connection");
-          setLatestRun(null);
-          return;
-        }
-
-        // Index missing / query requires precondition (often a Firestore index)
-        if (errorCode === "failed-precondition") {
-          setError("Firestore index required - check required indexes for Lighthouse history");
-          setLatestRun(null);
-          return;
-        }
-
-        // Other errors
-        setError("Failed to load Lighthouse data");
+        setError(classifyFirestoreError(errorCode));
         setLatestRun(null);
       } finally {
         if (!isCancelled) setLoading(false);

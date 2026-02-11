@@ -12,7 +12,7 @@ interface InventoryFormProps {
   onSuccess: () => void;
 }
 
-export function InventoryForm({ onClose, onSuccess }: InventoryFormProps) {
+export function InventoryForm({ onClose, onSuccess }: Readonly<InventoryFormProps>) {
   const { addEntry } = useJournal();
   const [formData, setFormData] = React.useState({
     resentments: "",
@@ -68,10 +68,14 @@ export function InventoryForm({ onClose, onSuccess }: InventoryFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6 overflow-y-auto pr-2">
           {/* Resentments */}
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+            <label
+              htmlFor="inventory-resentments"
+              className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider"
+            >
               Was I resentful, selfish, dishonest, or afraid?
             </label>
             <textarea
+              id="inventory-resentments"
               value={formData.resentments}
               onChange={(e) => handleChange("resentments", e.target.value)}
               placeholder="Write about any resentments..."
@@ -81,10 +85,14 @@ export function InventoryForm({ onClose, onSuccess }: InventoryFormProps) {
 
           {/* Dishonesty */}
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+            <label
+              htmlFor="inventory-dishonesty"
+              className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider"
+            >
               Have I kept something to myself that should be discussed?
             </label>
             <textarea
+              id="inventory-dishonesty"
               value={formData.dishonesty}
               onChange={(e) => handleChange("dishonesty", e.target.value)}
               placeholder="Admit any dishonesty here..."
@@ -94,10 +102,14 @@ export function InventoryForm({ onClose, onSuccess }: InventoryFormProps) {
 
           {/* Apologies */}
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+            <label
+              htmlFor="inventory-apologies"
+              className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider"
+            >
               Do I owe an apology?
             </label>
             <textarea
+              id="inventory-apologies"
               value={formData.apologies}
               onChange={(e) => handleChange("apologies", e.target.value)}
               placeholder="List amends needed..."
@@ -107,10 +119,14 @@ export function InventoryForm({ onClose, onSuccess }: InventoryFormProps) {
 
           {/* Successes */}
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+            <label
+              htmlFor="inventory-successes"
+              className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider"
+            >
               What did I do well today?
             </label>
             <textarea
+              id="inventory-successes"
               value={formData.successes}
               onChange={(e) => handleChange("successes", e.target.value)}
               placeholder="Celebrate your wins..."

@@ -8,6 +8,9 @@ export function OfflineIndicator() {
   const [showReconnected, setShowReconnected] = useState(false);
 
   useEffect(() => {
+    if (globalThis.window === undefined) return;
+    const win = globalThis.window;
+
     const handleOnline = () => {
       setIsOnline(true);
       setShowReconnected(true);
@@ -19,12 +22,12 @@ export function OfflineIndicator() {
       setShowReconnected(false);
     };
 
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    win.addEventListener("online", handleOnline);
+    win.addEventListener("offline", handleOffline);
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      win.removeEventListener("online", handleOnline);
+      win.removeEventListener("offline", handleOffline);
     };
   }, []);
 

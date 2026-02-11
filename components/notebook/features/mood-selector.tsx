@@ -46,7 +46,7 @@ export function MoodSelector({
   selectedMood,
   onMoodSelect,
   options = MOOD_OPTIONS,
-}: MoodSelectorProps) {
+}: Readonly<MoodSelectorProps>) {
   return (
     <div className="flex justify-between gap-2 mb-4" role="group" aria-label="Mood selection">
       {options.map((m) => (

@@ -61,7 +61,7 @@ function buildTimeParts(duration: Duration): TimePart[] {
  * @example
  * <CleanTimeDisplay cleanStart={profile.cleanStart} />
  */
-export function CleanTimeDisplay({ cleanStart }: CleanTimeDisplayProps) {
+export function CleanTimeDisplay({ cleanStart }: Readonly<CleanTimeDisplayProps>) {
   if (!cleanStart) {
     return (
       <div>
@@ -87,7 +87,7 @@ export function CleanTimeDisplay({ cleanStart }: CleanTimeDisplayProps) {
     <div>
       <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
         {parts.map((part, index) => (
-          <span key={index} className="text-center">
+          <span key={`${part.text}-${index}`} className="text-center">
             <span className={`font-heading-alt ${part.size} text-amber-900`}>{part.text}</span>
             {index < parts.length - 1 && <span className="text-amber-900/40 mx-1">•</span>}
           </span>

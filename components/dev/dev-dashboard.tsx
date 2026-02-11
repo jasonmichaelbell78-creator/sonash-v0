@@ -21,7 +21,7 @@ interface DevDashboardProps {
   onLogout: () => void;
 }
 
-export function DevDashboard({ user, onLogout }: DevDashboardProps) {
+export function DevDashboard({ user, onLogout }: Readonly<DevDashboardProps>) {
   const [activeTab, setActiveTab] = useState<DevTabId>("lighthouse");
 
   return (
@@ -62,7 +62,7 @@ export function DevDashboard({ user, onLogout }: DevDashboardProps) {
 }
 
 // Placeholder for tabs not yet implemented
-function PlaceholderTab({ title, icon }: { title: string; icon: string }) {
+function PlaceholderTab({ title, icon }: Readonly<{ title: string; icon: string }>) {
   return (
     <div className="bg-gray-800 rounded-lg p-12 text-center border border-gray-700">
       <div className="text-6xl mb-4">{icon}</div>

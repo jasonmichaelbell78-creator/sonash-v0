@@ -13,7 +13,7 @@ export function SuccessPulse({
   message = "Success!",
   icon = <CheckCircle2 className="w-16 h-16 md:w-24 md:h-24 text-white" />,
   color = "#10b981",
-}: SuccessPulseProps) {
+}: Readonly<SuccessPulseProps>) {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center pointer-events-none z-50">
       {/* Expanding ring background */}

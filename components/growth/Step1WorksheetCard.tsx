@@ -373,7 +373,7 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
         </label>
         {description && <p className="text-xs text-amber-900/60">{description}</p>}
         {examples.map((_, i) => (
-          <div key={i} className="grid grid-cols-2 gap-3">
+          <div key={`${id}_pair_${i}`} className="grid grid-cols-2 gap-3">
             <Textarea
               id={`${id}_example_${i}`}
               aria-labelledby={id}
@@ -694,9 +694,12 @@ export default function Step1WorksheetCard({
     const hasUnsavedChanges = JSON.stringify(data) !== JSON.stringify(lastSavedData);
 
     if (hasUnsavedChanges && hasContent) {
-      const confirmed = window.confirm(
-        "You have unsaved changes. Your work has been auto-saved as a draft, but it won't appear in your journal until you manually save. Exit anyway?"
-      );
+      const confirmed =
+        typeof globalThis.confirm === "function"
+          ? globalThis.confirm(
+              "You have unsaved changes. Your work has been auto-saved as a draft, but it won't appear in your journal until you manually save. Exit anyway?"
+            )
+          : false;
       if (!confirmed) return;
     }
 

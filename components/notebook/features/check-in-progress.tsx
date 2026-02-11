@@ -6,7 +6,11 @@ interface CheckInProgressProps {
   steps: Array<{ id: string; label: string; completed: boolean }>;
 }
 
-export function CheckInProgress({ currentStep, totalSteps, steps }: CheckInProgressProps) {
+export function CheckInProgress({
+  currentStep,
+  totalSteps,
+  steps,
+}: Readonly<CheckInProgressProps>) {
   return (
     <div className="mb-6 bg-amber-50/50 border border-amber-100 rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
@@ -29,13 +33,11 @@ export function CheckInProgress({ currentStep, totalSteps, steps }: CheckInProgr
         {steps.map((step, index) => (
           <div key={step.id} className="flex flex-col items-center flex-1">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                step.completed
-                  ? "bg-green-500 text-white scale-110"
-                  : index < currentStep
-                    ? "bg-amber-400 text-white"
-                    : "bg-amber-100 text-amber-400"
-              }`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${(() => {
+                if (step.completed) return "bg-green-500 text-white scale-110";
+                if (index < currentStep) return "bg-amber-400 text-white";
+                return "bg-amber-100 text-amber-400";
+              })()}`}
             >
               {step.completed ? "✓" : index + 1}
             </div>

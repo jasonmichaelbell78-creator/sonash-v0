@@ -39,14 +39,14 @@ export default function HomeClient() {
       {/* Notebook container - asymmetrical padding to account for tabs on right */}
       <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12 pl-4 pr-14 md:px-0">
         <AnimatePresence mode="wait">
-          {!isOpen ? (
-            <BookCover key="cover" onOpen={handleOpenBook} />
-          ) : (
+          {isOpen ? (
             <NotebookShell
               key="shell"
               onClose={handleCloseBook}
               nickname={profile?.nickname || "Friend"}
             />
+          ) : (
+            <BookCover key="cover" onOpen={handleOpenBook} />
           )}
         </AnimatePresence>
       </div>

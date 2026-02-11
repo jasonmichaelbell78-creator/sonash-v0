@@ -13,7 +13,7 @@ interface SmartPromptProps {
   onDismiss?: () => void;
 }
 
-export function SmartPrompt({ type, message, action, onDismiss }: SmartPromptProps) {
+export function SmartPrompt({ type, message, action, onDismiss }: Readonly<SmartPromptProps>) {
   const [isDismissed, setIsDismissed] = useState(false);
 
   if (isDismissed) return null;

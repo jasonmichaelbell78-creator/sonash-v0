@@ -134,7 +134,7 @@ function GratitudeDetail({ data }: Readonly<{ data: GratitudeEntry["data"] }>) {
       <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
       <ul className="list-disc pl-5">
         {data.items.map((item: string, i: number) => (
-          <li key={i}>{item}</li>
+          <li key={`gratitude-${i}-${item}`}>{item}</li>
         ))}
       </ul>
     </div>
@@ -255,7 +255,7 @@ function EntryDetailContent({ entry }: Readonly<{ entry: JournalEntry }>) {
   }
 }
 
-export function EntryFeed({ entries, filter }: EntryFeedProps) {
+export function EntryFeed({ entries, filter }: Readonly<EntryFeedProps>) {
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 

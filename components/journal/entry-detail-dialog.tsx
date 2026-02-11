@@ -264,7 +264,7 @@ function EntryDetailContent({ entry }: Readonly<{ entry: JournalEntry }>) {
   }
 }
 
-export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
+export function EntryDetailDialog({ entry, onClose }: Readonly<EntryDetailDialogProps>) {
   if (!entry) return null;
 
   return (
@@ -337,7 +337,7 @@ function renderWorksheetField(
         }
 
         return (
-          <div key={i} className="ml-2 mb-2 text-xs">
+          <div key={`example-result-${i}`} className="ml-2 mb-2 text-xs">
             {example?.trim() && (
               <p className="text-slate-600">
                 <span className="font-semibold">Example:</span> {example}

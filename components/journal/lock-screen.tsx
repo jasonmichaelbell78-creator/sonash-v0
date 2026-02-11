@@ -4,7 +4,7 @@ interface LockScreenProps {
   onUnlock?: () => void;
 }
 
-export function LockScreen({ onUnlock }: LockScreenProps) {
+export function LockScreen({ onUnlock }: Readonly<LockScreenProps>) {
   return (
     <div className="min-h-screen bg-[#f0eadd] flex items-center justify-center p-4 font-sans relative overflow-hidden">
       {/* Background Texture Overlay */}

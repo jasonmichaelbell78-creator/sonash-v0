@@ -36,7 +36,7 @@ const emptyStateContent = {
   },
 };
 
-export function EmptyState({ type, action }: EmptyStateProps) {
+export function EmptyState({ type, action }: Readonly<EmptyStateProps>) {
   const content = emptyStateContent[type];
   const Icon = content.icon;
 

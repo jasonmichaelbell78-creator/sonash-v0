@@ -9,7 +9,7 @@ interface SkeletonProps {
 /**
  * Base Skeleton component with subtle shimmer animation
  */
-export function Skeleton({ className }: SkeletonProps) {
+export function Skeleton({ className }: Readonly<SkeletonProps>) {
   return <div className={cn("animate-pulse rounded-md bg-amber-900/10", className)} />;
 }
 

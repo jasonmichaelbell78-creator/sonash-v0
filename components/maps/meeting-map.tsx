@@ -24,10 +24,10 @@ const fixLeafletIcon = () => {
 function MapController({
   center,
   meetings,
-}: {
+}: Readonly<{
   center: { lat: number; lng: number } | null;
   meetings: Meeting[];
-}) {
+}>) {
   const map = useMap();
 
   useEffect(() => {

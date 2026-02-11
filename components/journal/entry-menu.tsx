@@ -25,7 +25,7 @@ const MENU_ITEMS: { type: JournalEntryType; label: string; icon: LucideIcon; col
   { type: "spot-check", label: "Spot Check", icon: CheckCircle2, color: "text-blue-500" },
 ];
 
-export function EntryMenu({ isOpen, onSelect, onClose }: EntryMenuProps) {
+export function EntryMenu({ isOpen, onSelect, onClose }: Readonly<EntryMenuProps>) {
   return (
     <AnimatePresence>
       {isOpen && (

@@ -38,7 +38,7 @@ interface ProfileProviderProps {
   user: User | null;
 }
 
-export function ProfileProvider({ children, user }: ProfileProviderProps) {
+export function ProfileProvider({ children, user }: Readonly<ProfileProviderProps>) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [profileNotFound, setProfileNotFound] = useState(false);

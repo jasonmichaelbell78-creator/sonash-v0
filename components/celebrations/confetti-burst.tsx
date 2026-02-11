@@ -27,16 +27,16 @@ export function ConfettiBurst({
   intensity = 50,
   duration = 4,
   colors = Object.values(CELEBRATION_COLORS),
-}: ConfettiBurstProps) {
+}: Readonly<ConfettiBurstProps>) {
   // Use lazy initialization to avoid setState in effect
   const [pieces] = useState<ConfettiPiece[]>(() => {
-    if (typeof window === "undefined") return [];
+    if (globalThis.window === undefined) return [];
 
     return Array.from({ length: intensity }, (_, i) => {
       const shapes: ("circle" | "square" | "rectangle")[] = ["circle", "square", "rectangle"];
       return {
         id: i,
-        x: Math.random() * window.innerWidth,
+        x: Math.random() * globalThis.innerWidth,
         y: -20 - Math.random() * 100, // Stagger starting positions
         rotation: Math.random() * 360,
         color: colors[Math.floor(Math.random() * colors.length)],
@@ -49,7 +49,7 @@ export function ConfettiBurst({
     });
   });
 
-  if (typeof window === "undefined") return null;
+  if (globalThis.window === undefined) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
@@ -62,8 +62,11 @@ export function ConfettiBurst({
             backgroundColor: piece.color,
             width: piece.shape === "rectangle" ? piece.size * 1.5 : piece.size,
             height: piece.size,
-            borderRadius:
-              piece.shape === "circle" ? "50%" : piece.shape === "square" ? "2px" : "1px",
+            borderRadius: (() => {
+              if (piece.shape === "circle") return "50%";
+              if (piece.shape === "square") return "2px";
+              return "1px";
+            })(),
           }}
           initial={{
             y: piece.y,
@@ -71,7 +74,7 @@ export function ConfettiBurst({
             opacity: 1,
           }}
           animate={{
-            y: window.innerHeight + 100,
+            y: globalThis.innerHeight + 100,
             rotate: piece.finalRotation, // Use pre-calculated value
             opacity: [1, 1, 0.8, 0],
             x: piece.x + piece.velocityX,

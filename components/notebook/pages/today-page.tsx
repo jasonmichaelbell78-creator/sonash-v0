@@ -74,6 +74,32 @@ function calculateCleanTimeParts(start: Date): DurationPart[] | null {
   return parts.length > 0 ? parts : null;
 }
 
+/**
+ * Fetch weekly stats (days logged and current streak) for a user
+ */
+async function fetchWeeklyStats(userId: string): Promise<{ daysLogged: number; streak: number }> {
+  const { collection, query, where, getDocs, orderBy, limit } = await import("firebase/firestore");
+
+  const sevenDaysAgo = subDays(startOfDay(new Date()), 6);
+  const sevenDaysAgoId = format(sevenDaysAgo, "yyyy-MM-dd");
+
+  const logsRef = collection(db, `users/${userId}/daily_logs`);
+  const q = query(logsRef, where("date", ">=", sevenDaysAgoId), orderBy("date", "desc"), limit(7));
+  const snapshot = await getDocs(q);
+
+  const uniqueDays = new Set(snapshot.docs.map((doc) => doc.data().date as string));
+
+  // Calculate current streak (consecutive days from today backwards)
+  let streak = 0;
+  let checkDate = new Date();
+  while (uniqueDays.has(format(startOfDay(checkDate), "yyyy-MM-dd"))) {
+    streak++;
+    checkDate = subDays(checkDate, 1);
+  }
+
+  return { daysLogged: uniqueDays.size, streak };
+}
+
 // Toggle button component for cravings/used questions
 interface ToggleButtonProps {
   isSelected: boolean;
@@ -714,106 +740,19 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   useEffect(() => {
     if (!user) return;
 
-    async function calculateWeeklyStats() {
-      if (!user) return; // Guard against null user
-
+    async function loadWeeklyStats() {
       try {
-        const { collection, query, where, getDocs, orderBy } = await import("firebase/firestore");
-
-        // Get last 7 days of logs (rolling window)
-        const sevenDaysAgo = subDays(startOfDay(new Date()), 6); // 6 days ago + today = 7 days
-        const sevenDaysAgoId = format(sevenDaysAgo, "yyyy-MM-dd");
-
-        if (process.env.NODE_ENV === "development") {
-          console.log("📊 Weekly Stats Debug:", {
-            sevenDaysAgoId,
-            today: format(new Date(), "yyyy-MM-dd"),
-            userId: user.uid,
-          });
-        }
-
-        const logsRef = collection(db, `users/${user.uid}/daily_logs`);
-        const q = query(logsRef, where("date", ">=", sevenDaysAgoId), orderBy("date", "desc"));
-
-        const snapshot = await getDocs(q);
-
-        if (process.env.NODE_ENV === "development") {
-          console.log("📊 Query returned:", snapshot.size, "documents");
-
-          // DEBUG: Also fetch ALL logs to see what's in the database
-          const allLogsQuery = query(logsRef, orderBy("date", "desc"));
-          const allLogsSnapshot = await getDocs(allLogsQuery);
-          console.log("📊 ALL logs in database:", allLogsSnapshot.size, "total documents");
-          allLogsSnapshot.docs.slice(0, 10).forEach((doc) => {
-            const data = doc.data();
-            console.log("📊 ALL logs entry:", {
-              id: doc.id,
-              date: data.date,
-              hasContent: !!data.content,
-              mood: data.mood,
-              updatedAt: data.updatedAt,
-            });
-          });
-        }
-
-        const logs = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          if (process.env.NODE_ENV === "development") {
-            console.log("📊 Log entry (in range):", {
-              id: doc.id,
-              date: data.date,
-              hasContent: !!data.content,
-            });
-          }
-          return {
-            date: data.date,
-            ...data,
-          };
-        });
-
-        // Count unique days with logs in last 7 days
-        const uniqueDays = new Set(logs.map((log) => log.date));
-        const daysLogged = uniqueDays.size;
-
-        if (process.env.NODE_ENV === "development") {
-          console.log("📊 Weekly Stats Result:", {
-            uniqueDays: Array.from(uniqueDays),
-            daysLogged,
-            totalLogs: logs.length,
-          });
-        }
-
-        // Calculate current streak (consecutive days from today backwards)
-        let streak = 0;
-        let checkDate = new Date();
-
-        while (true) {
-          const dateId = format(startOfDay(checkDate), "yyyy-MM-dd");
-          if (uniqueDays.has(dateId)) {
-            streak++;
-            checkDate = subDays(checkDate, 1);
-          } else {
-            break;
-          }
-        }
-
-        if (process.env.NODE_ENV === "development") {
-          console.log("📊 Streak calculated:", streak);
-        }
-
-        setWeekStats({ daysLogged, streak });
+        const stats = await fetchWeeklyStats(user!.uid);
+        setWeekStats(stats);
       } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("❌ Weekly stats error:", error);
-        }
         logger.error("Failed to calculate weekly stats", {
-          userId: maskIdentifier(user.uid),
+          userId: maskIdentifier(user!.uid),
           error,
         });
       }
     }
 
-    calculateWeeklyStats();
+    loadWeeklyStats();
   }, [user]);
 
   // Check if already celebrated today (prevent spam)
@@ -927,7 +866,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               {cleanTimeDisplay ? (
                 <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
                   {cleanTimeDisplay.map((part, index) => (
-                    <span key={index} className="text-center">
+                    <span key={part.text} className="text-center">
                       <span className={`font-heading-alt ${part.size} text-amber-900`}>
                         {part.text}
                       </span>

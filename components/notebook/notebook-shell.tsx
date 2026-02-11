@@ -244,7 +244,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
           <div className="absolute inset-0 pointer-events-none">
             {[...Array(25)].map((_, i) => (
               <div
-                key={i}
+                key={`line-${i}`}
                 className="absolute left-0 right-0 h-px bg-sky-200/30"
                 style={{ top: `${(i + 1) * 22}px` }}
               />

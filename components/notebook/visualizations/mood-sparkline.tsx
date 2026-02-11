@@ -95,7 +95,7 @@ export default function MoodSparkline() {
             const y = height - (p.value / 4) * (height - 10) - 5;
             return (
               <motion.circle
-                key={i}
+                key={`${p.date}-${i}`}
                 cx={x}
                 cy={y}
                 r="3"

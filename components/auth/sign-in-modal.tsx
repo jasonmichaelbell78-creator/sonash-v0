@@ -55,12 +55,12 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
       logger.error("Email authentication failed", { error: err });
       const hasCode = err && typeof err === "object" && "code" in err;
       const code = hasCode ? (err as { code: string }).code : "";
-      const msg =
-        code === "auth/invalid-credential"
-          ? "Invalid email or password."
-          : code === "auth/email-already-in-use"
-            ? "Email already in use."
-            : "Something went wrong.";
+      let msg = "Something went wrong.";
+      if (code === "auth/invalid-credential") {
+        msg = "Invalid email or password.";
+      } else if (code === "auth/email-already-in-use") {
+        msg = "Email already in use.";
+      }
       setError(msg);
     } finally {
       setLoading(false);

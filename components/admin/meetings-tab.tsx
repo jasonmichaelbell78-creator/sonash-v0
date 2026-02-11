@@ -6,8 +6,7 @@
 
 import { AdminCrudTable } from "./admin-crud-table";
 import { AdminCrudConfig } from "./admin-crud-types";
-import { Meeting } from "@/lib/db/meetings";
-import { MeetingsService } from "@/lib/db/meetings";
+import { Meeting, MeetingsService } from "@/lib/db/meetings";
 
 const DAYS = [
   "Monday",
@@ -104,8 +103,11 @@ function LocationDetailsSection({
       <h3 className="text-sm font-medium text-gray-900">Location Details</h3>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+        <label htmlFor="meeting-address" className="block text-sm font-medium text-gray-700 mb-1">
+          Street Address
+        </label>
         <input
+          id="meeting-address"
           type="text"
           value={formData.address || ""}
           onChange={(e) => setFormData({ ...formData, address: e.target.value })}
@@ -116,8 +118,11 @@ function LocationDetailsSection({
 
       <div className="grid grid-cols-6 gap-3">
         <div className="col-span-3">
-          <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+          <label htmlFor="meeting-city" className="block text-sm font-medium text-gray-700 mb-1">
+            City
+          </label>
           <input
+            id="meeting-city"
             type="text"
             value={formData.city || ""}
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
@@ -125,8 +130,11 @@ function LocationDetailsSection({
           />
         </div>
         <div className="col-span-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+          <label htmlFor="meeting-state" className="block text-sm font-medium text-gray-700 mb-1">
+            State
+          </label>
           <input
+            id="meeting-state"
             type="text"
             value={formData.state || ""}
             onChange={(e) => setFormData({ ...formData, state: e.target.value })}
@@ -134,8 +142,11 @@ function LocationDetailsSection({
           />
         </div>
         <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Zip</label>
+          <label htmlFor="meeting-zip" className="block text-sm font-medium text-gray-700 mb-1">
+            Zip
+          </label>
           <input
+            id="meeting-zip"
             type="text"
             value={formData.zip || ""}
             onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
@@ -146,8 +157,14 @@ function LocationDetailsSection({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Neighborhood</label>
+        <label
+          htmlFor="meeting-neighborhood"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Neighborhood
+        </label>
         <input
+          id="meeting-neighborhood"
           type="text"
           value={formData.neighborhood || ""}
           onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
@@ -163,15 +180,18 @@ function LocationDetailsSection({
 function MeetingForm({
   formData,
   setFormData,
-}: {
+}: Readonly<{
   formData: Partial<Meeting>;
   setFormData: (data: Partial<Meeting>) => void;
-}) {
+}>) {
   return (
     <div className="space-y-4 py-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+        <label htmlFor="meeting-name" className="block text-sm font-medium text-gray-700 mb-1">
+          Name
+        </label>
         <input
+          id="meeting-name"
           type="text"
           value={formData.name || ""}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -182,8 +202,11 @@ function MeetingForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+          <label htmlFor="meeting-type" className="block text-sm font-medium text-gray-700 mb-1">
+            Type
+          </label>
           <select
+            id="meeting-type"
             value={formData.type || "AA"}
             onChange={(e) => setFormData({ ...formData, type: e.target.value as Meeting["type"] })}
             className="w-full border border-gray-300 rounded-lg px-3 py-2"
@@ -196,8 +219,11 @@ function MeetingForm({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Day</label>
+          <label htmlFor="meeting-day" className="block text-sm font-medium text-gray-700 mb-1">
+            Day
+          </label>
           <select
+            id="meeting-day"
             value={formData.day || "Monday"}
             onChange={(e) => setFormData({ ...formData, day: e.target.value as Meeting["day"] })}
             className="w-full border border-gray-300 rounded-lg px-3 py-2"
@@ -212,8 +238,11 @@ function MeetingForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Time (24h format)</label>
+        <label htmlFor="meeting-time" className="block text-sm font-medium text-gray-700 mb-1">
+          Time (24h format)
+        </label>
         <input
+          id="meeting-time"
           type="time"
           value={formData.time || "19:00"}
           onChange={(e) => setFormData({ ...formData, time: e.target.value })}
@@ -225,8 +254,11 @@ function MeetingForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+          <label htmlFor="meeting-lat" className="block text-sm font-medium text-gray-700 mb-1">
+            Latitude
+          </label>
           <input
+            id="meeting-lat"
             type="number"
             step="any"
             value={formData.coordinates?.lat ?? ""}
@@ -236,8 +268,11 @@ function MeetingForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+          <label htmlFor="meeting-lng" className="block text-sm font-medium text-gray-700 mb-1">
+            Longitude
+          </label>
           <input
+            id="meeting-lng"
             type="number"
             step="any"
             value={formData.coordinates?.lng ?? ""}
@@ -258,7 +293,7 @@ function MeetingForm({
 
 // Time slot helper
 function getTimeSlot(time: string): string {
-  const hour = parseInt(time.split(":")[0], 10);
+  const hour = Number.parseInt(time.split(":")[0], 10);
   if (hour < 12) return "morning";
   if (hour < 17) return "afternoon";
   return "evening";
@@ -283,21 +318,21 @@ const meetingsConfig: AdminCrudConfig<Meeting> = {
     {
       key: "type",
       label: "Type",
-      render: (meeting) => (
-        <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
-            meeting.type === "AA"
-              ? "bg-blue-100 text-blue-700"
-              : meeting.type === "NA"
-                ? "bg-green-100 text-green-700"
-                : meeting.type === "CA"
-                  ? "bg-purple-100 text-purple-700"
-                  : "bg-gray-100 text-gray-700"
-          }`}
-        >
-          {meeting.type}
-        </span>
-      ),
+      render: (meeting) => {
+        let colorClasses = "bg-gray-100 text-gray-700";
+        if (meeting.type === "AA") {
+          colorClasses = "bg-blue-100 text-blue-700";
+        } else if (meeting.type === "NA") {
+          colorClasses = "bg-green-100 text-green-700";
+        } else if (meeting.type === "CA") {
+          colorClasses = "bg-purple-100 text-purple-700";
+        }
+        return (
+          <span className={`px-2 py-1 rounded text-xs font-medium ${colorClasses}`}>
+            {meeting.type}
+          </span>
+        );
+      },
     },
     { key: "day", label: "Day" },
     { key: "time", label: "Time" },

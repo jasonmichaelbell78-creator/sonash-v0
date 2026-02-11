@@ -24,7 +24,7 @@ interface CelebrationContextType {
 
 const CelebrationContext = createContext<CelebrationContextType | null>(null);
 
-export function CelebrationProvider({ children }: { children: ReactNode }) {
+export function CelebrationProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [activeEvent, setActiveEvent] = useState<CelebrationEvent | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -54,8 +54,12 @@ export function CelebrationProvider({ children }: { children: ReactNode }) {
     setActiveEvent(event);
 
     // Auto-dismiss after animation completes (based on intensity)
-    const dismissDelay =
-      event.intensity === "high" ? 6000 : event.intensity === "medium" ? 4000 : 2500;
+    let dismissDelay = 2500;
+    if (event.intensity === "high") {
+      dismissDelay = 6000;
+    } else if (event.intensity === "medium") {
+      dismissDelay = 4000;
+    }
     timeoutRef.current = setTimeout(() => setActiveEvent(null), dismissDelay);
   }, []);
 

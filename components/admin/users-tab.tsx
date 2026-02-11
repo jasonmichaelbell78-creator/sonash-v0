@@ -24,8 +24,7 @@ import {
   Trash2,
   Undo2,
 } from "lucide-react";
-import { differenceInDays } from "date-fns";
-import { formatDistanceToNow } from "date-fns";
+import { differenceInDays, formatDistanceToNow } from "date-fns";
 
 interface UserSearchResult {
   uid: string;
@@ -336,8 +335,8 @@ function useEscapeKeyHandler(
       }
       setSelectedUser(null);
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    globalThis.addEventListener("keydown", handleKeyDown);
+    return () => globalThis.removeEventListener("keydown", handleKeyDown);
   }, [selectedUid, deleteDialogStep, closeDeleteDialog, setSelectedUser]);
 }
 
@@ -1163,17 +1162,19 @@ function AdminActionsSection({
           }`}
           title={profile.email ? undefined : "User has no email address"}
         >
-          {sendingPasswordReset ? (
+          {sendingPasswordReset && (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
               Sending...
             </>
-          ) : passwordResetSent ? (
+          )}
+          {!sendingPasswordReset && passwordResetSent && (
             <>
               <CheckCircle className="w-4 h-4" />
               Email Sent!
             </>
-          ) : (
+          )}
+          {!sendingPasswordReset && !passwordResetSent && (
             <>
               <KeyRound className="w-4 h-4" />
               Reset Password

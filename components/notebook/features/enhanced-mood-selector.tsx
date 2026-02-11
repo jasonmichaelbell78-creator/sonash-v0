@@ -51,7 +51,7 @@ export function EnhancedMoodSelector({
   value,
   onChange,
   showKeyboardShortcuts = true,
-}: EnhancedMoodSelectorProps) {
+}: Readonly<EnhancedMoodSelectorProps>) {
   const [hoveredMood, setHoveredMood] = useState<string | null>(null);
 
   // Keyboard shortcuts for desktop
@@ -73,8 +73,8 @@ export function EnhancedMoodSelector({
       }
     };
 
-    window.addEventListener("keypress", handleKeyPress);
-    return () => window.removeEventListener("keypress", handleKeyPress);
+    globalThis.addEventListener("keypress", handleKeyPress);
+    return () => globalThis.removeEventListener("keypress", handleKeyPress);
   }, [showKeyboardShortcuts, onChange]);
 
   return (
@@ -96,13 +96,11 @@ export function EnhancedMoodSelector({
               onMouseLeave={() => setHoveredMood(null)}
               aria-label={`Set mood to ${m.label}`}
               aria-pressed={isSelected}
-              className={`relative flex flex-col items-center p-3 rounded-lg transition-all duration-200 ${
-                isSelected
-                  ? `${m.bg} scale-110 shadow-lg ring-2 ${m.ring}`
-                  : isHovered
-                    ? `${m.bg} scale-105`
-                    : "hover:bg-amber-50/50"
-              }`}
+              className={`relative flex flex-col items-center p-3 rounded-lg transition-all duration-200 ${(() => {
+                if (isSelected) return `${m.bg} scale-110 shadow-lg ring-2 ${m.ring}`;
+                if (isHovered) return `${m.bg} scale-105`;
+                return "hover:bg-amber-50/50";
+              })()}`}
             >
               {/* Glow effect for selected mood */}
               {isSelected && (

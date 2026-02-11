@@ -79,7 +79,7 @@ interface AuthProviderProps {
   onUserChange?: (user: User | null) => void;
 }
 
-export function AuthProvider({ children, onUserChange }: AuthProviderProps) {
+export function AuthProvider({ children, onUserChange }: Readonly<AuthProviderProps>) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -91,10 +91,7 @@ export function AuthProvider({ children, onUserChange }: AuthProviderProps) {
       // Update Sentry user context (hashed ID, no PII)
       setSentryUser(currentUser?.uid ?? null);
 
-      if (!currentUser) {
-        setLoading(true);
-        await ensureAnonymousSession(auth, setLoading);
-      } else {
+      if (currentUser) {
         setLoading(false);
 
         // Update lastActive timestamp for non-anonymous users
@@ -108,6 +105,9 @@ export function AuthProvider({ children, onUserChange }: AuthProviderProps) {
             logger.warn("Failed to update lastActive timestamp", { error });
           }
         }
+      } else {
+        setLoading(true);
+        await ensureAnonymousSession(auth, setLoading);
       }
     });
 

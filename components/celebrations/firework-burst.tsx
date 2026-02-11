@@ -26,10 +26,10 @@ interface FireworkBurstProps {
 export function FireworkBurst({
   count = 5,
   colors = ["#10b981", "#3b82f6", "#f59e0b", "#ec4899", "#8b5cf6"],
-}: FireworkBurstProps) {
+}: Readonly<FireworkBurstProps>) {
   // Use lazy initialization to avoid calling Math.random during render
   const [fireworks] = useState<Firework[]>(() => {
-    if (typeof window === "undefined") return [];
+    if (globalThis.window === undefined) return [];
 
     const createFirework = (id: number): Firework => {
       const sparkCount = 24; // Number of sparks per firework
@@ -42,8 +42,8 @@ export function FireworkBurst({
 
       return {
         id,
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * (window.innerHeight * 0.6) + window.innerHeight * 0.2, // Middle 60% of screen
+        x: Math.random() * globalThis.innerWidth,
+        y: Math.random() * (globalThis.innerHeight * 0.6) + globalThis.innerHeight * 0.2, // Middle 60% of screen
         color: colors[Math.floor(Math.random() * colors.length)],
         sparks,
       };
@@ -52,7 +52,7 @@ export function FireworkBurst({
     return Array.from({ length: count }, (_, i) => createFirework(i));
   });
 
-  if (typeof window === "undefined") return null;
+  if (globalThis.window === undefined) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
