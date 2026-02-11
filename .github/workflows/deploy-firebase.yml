@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - main
-  pull_request_target:
-    branches:
-      - main
-    types: [opened, synchronize, reopened]
+  # Preview deploys disabled until GitHub repo variables are configured
+  # See SESSION_CONTEXT.md TODO for NEXT_PUBLIC_FIREBASE_* vars
+  # pull_request_target:
+  #   branches:
+  #     - main
+  #   types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 concurrency:
