@@ -41,7 +41,14 @@ const CONFIDENCE_THRESHOLD = schema.confidenceThreshold;
 const REQUIRED_FIELDS = schema.requiredFields;
 
 // Harden schema config: validate arrays contain only strings + confidence range (Review #289 R7)
-const isStringArray = (v) => Array.isArray(v) && v.every((x) => typeof x === "string");
+// Use for-loop to catch sparse array holes; Number.isFinite rejects NaN/Infinity (Review #290 R8)
+const isStringArray = (v) => {
+  if (!Array.isArray(v)) return false;
+  for (let i = 0; i < v.length; i++) {
+    if (typeof v[i] !== "string") return false;
+  }
+  return true;
+};
 
 if (
   !isStringArray(VALID_CATEGORIES) ||
@@ -49,7 +56,7 @@ if (
   !isStringArray(VALID_EFFORTS) ||
   !isStringArray(VALID_STATUSES) ||
   !isStringArray(REQUIRED_FIELDS) ||
-  typeof CONFIDENCE_THRESHOLD !== "number" ||
+  !Number.isFinite(CONFIDENCE_THRESHOLD) ||
   CONFIDENCE_THRESHOLD < 0 ||
   CONFIDENCE_THRESHOLD > 100 ||
   typeof schema.idPattern !== "string"
@@ -294,16 +301,20 @@ Exit codes:
         seenIds.add(item.id);
       }
 
-      // Check for duplicate fingerprints
-      if (item.fingerprint) {
-        if (seenFingerprints.has(item.fingerprint)) {
-          duplicateFingerprints.push({
-            fingerprint: item.fingerprint.substring(0, 8),
-            line: lineNum,
-            id: item.id,
-          });
+      // Check for duplicate fingerprints (Review #290 R8: guard fingerprint type)
+      if (item.fingerprint !== undefined && item.fingerprint !== null) {
+        if (typeof item.fingerprint !== "string") {
+          allErrors.push(`Line ${lineNum}: Invalid fingerprint type (expected string)`);
+        } else {
+          if (seenFingerprints.has(item.fingerprint)) {
+            duplicateFingerprints.push({
+              fingerprint: item.fingerprint.substring(0, 8),
+              line: lineNum,
+              id: item.id,
+            });
+          }
+          seenFingerprints.add(item.fingerprint);
         }
-        seenFingerprints.add(item.fingerprint);
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

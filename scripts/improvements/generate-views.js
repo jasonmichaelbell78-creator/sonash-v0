@@ -25,6 +25,21 @@ const MASTER_FILE = path.join(BASE_DIR, "MASTER_IMPROVEMENTS.jsonl");
 const INDEX_FILE = path.join(BASE_DIR, "INDEX.md");
 const VIEWS_DIR = path.join(BASE_DIR, "views");
 
+// Symlink guard: refuse to write through symlinks (Review #290 R8)
+function assertNotSymlink(filePath) {
+  try {
+    if (fs.lstatSync(filePath).isSymbolicLink()) {
+      throw new Error(`Refusing to write to symlink: ${filePath}`);
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.code === "ENOENT") return; // File doesn't exist yet — safe
+      if (err.message.includes("symlink")) throw err;
+    }
+    // Non-Error or other lstat errors — let the actual write handle them
+  }
+}
+
 // Format date
 function formatDate(date) {
   return date.toISOString().split("T")[0];
@@ -274,6 +289,7 @@ function writeMasterFile(items) {
     const bNum = Number.parseInt((b.id || "").replaceAll("ENH-", ""), 10) || 0;
     return aNum - bNum;
   });
+  assertNotSymlink(MASTER_FILE);
   fs.writeFileSync(MASTER_FILE, idSorted.map((item) => JSON.stringify(item)).join("\n") + "\n");
   console.log(`  Written: ${MASTER_FILE}`);
 }
@@ -379,6 +395,7 @@ ${
 **Canonical Source:** \`MASTER_IMPROVEMENTS.jsonl\`
 `;
 
+  assertNotSymlink(INDEX_FILE);
   fs.writeFileSync(INDEX_FILE, indexMd);
   console.log(`  Written: ${INDEX_FILE}`);
 }
@@ -405,6 +422,7 @@ function generateImpactView(byImpact, today) {
     }
   }
 
+  assertNotSymlink(path.join(VIEWS_DIR, "by-impact.md"));
   fs.writeFileSync(path.join(VIEWS_DIR, "by-impact.md"), impactMd);
   console.log(`  Written: ${path.join(VIEWS_DIR, "by-impact.md")}`);
 }
@@ -423,6 +441,7 @@ function generateCategoryView(byCategory, today) {
     categoryMd += "\n";
   }
 
+  assertNotSymlink(path.join(VIEWS_DIR, "by-category.md"));
   fs.writeFileSync(path.join(VIEWS_DIR, "by-category.md"), categoryMd);
   console.log(`  Written: ${path.join(VIEWS_DIR, "by-category.md")}`);
 }
@@ -446,6 +465,7 @@ function generateStatusView(byStatus, today) {
     }
   }
 
+  assertNotSymlink(path.join(VIEWS_DIR, "by-status.md"));
   fs.writeFileSync(path.join(VIEWS_DIR, "by-status.md"), statusMd);
   console.log(`  Written: ${path.join(VIEWS_DIR, "by-status.md")}`);
 }
@@ -473,6 +493,7 @@ Review each item and update its status to ACCEPTED, DECLINED, or DEFERRED.
     }
   }
 
+  assertNotSymlink(path.join(VIEWS_DIR, "review-queue.md"));
   fs.writeFileSync(path.join(VIEWS_DIR, "review-queue.md"), reviewMd);
   console.log(`  Written: ${path.join(VIEWS_DIR, "review-queue.md")}`);
 }

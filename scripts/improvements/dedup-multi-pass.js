@@ -330,8 +330,16 @@ function runPass0Parametric(items, dedupLog, reviewNeeded) {
   const parametricGroups = new Map();
 
   for (const item of items) {
+    // Items without a valid file path should not be grouped — avoids unrelated merges (Review #290 R8)
+    const file = typeof item.file === "string" ? item.file.trim() : "";
+    if (!file) {
+      const key = `__no_file__::${crypto.randomUUID()}`;
+      parametricGroups.set(key, [item]);
+      continue;
+    }
+
     const paramTitle = normalizeParametric(item.title || "");
-    const key = `${item.file || ""}::${paramTitle}`;
+    const key = `${file}::${paramTitle}`;
     if (!parametricGroups.has(key)) {
       parametricGroups.set(key, []);
     }
@@ -501,7 +509,29 @@ function runPass3SemanticMatch(pass2Items, dedupLog, reviewNeeded) {
     byFile.get(file).push(item);
   }
 
-  for (const [, fileItems] of byFile) {
+  // Safety cap: skip pairwise comparison for files with too many items (Review #290 R8)
+  const MAX_COMPARISONS_PER_FILE = 50_000;
+
+  for (const [file, fileItems] of byFile) {
+    const n = fileItems.length;
+    const comparisons = (n * (n - 1)) / 2;
+    if (comparisons > MAX_COMPARISONS_PER_FILE) {
+      reviewNeeded.push({
+        reason: "semantic_match_skipped_large_file",
+        item_a: { file, count: n },
+        item_b: null,
+        note: `Skipped semantic pairwise checks (${comparisons} comparisons > ${MAX_COMPARISONS_PER_FILE}).`,
+      });
+      dedupLog.push({
+        pass: 3,
+        type: "semantic_match_skipped_large_file",
+        file,
+        count: n,
+        reason: "semantic match skipped due to comparison cap",
+      });
+      continue;
+    }
+
     for (let i = 0; i < fileItems.length; i++) {
       for (let j = i + 1; j < fileItems.length; j++) {
         const a = fileItems[i];
@@ -697,16 +727,18 @@ function runPass5SystemicPatterns(pass4Items, dedupLog) {
   return { pass5Items, pass5Clustered };
 }
 
-// Symlink guard: refuse to write through symlinks (Review #289 R7)
+// Symlink guard: refuse to write through symlinks (Review #289 R7, #290 R8)
 function assertNotSymlink(filePath) {
   try {
     if (fs.lstatSync(filePath).isSymbolicLink()) {
       throw new Error(`Refusing to write to symlink: ${filePath}`);
     }
   } catch (err) {
-    if (err.code === "ENOENT") return; // File doesn't exist yet — safe
-    if (err.message && err.message.includes("symlink")) throw err;
-    // Other lstat errors — let the actual write handle them
+    if (err instanceof Error) {
+      if (err.code === "ENOENT") return; // File doesn't exist yet — safe
+      if (err.message.includes("symlink")) throw err;
+    }
+    // Non-Error or other lstat errors — let the actual write handle them
   }
 }
 

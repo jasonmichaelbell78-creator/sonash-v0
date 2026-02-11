@@ -294,7 +294,7 @@ function applyResolution(items, item, parsed, now, masterBackup) {
 function regenerateViews() {
   console.log("\n  Regenerating views...");
   try {
-    execFileSync(process.execPath, ["scripts/improvements/generate-views.js"], {
+    execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
       stdio: "inherit",
     });
   } catch {

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.1 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
+**Document Version:** 16.2 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.2    | 2026-02-11 | Review #290: PR #360 R8 — CI fix (assertNotSymlink instanceof Error), Pass 0 no-file guard, symlink guards on generate-views.js + logIntake(), enhancement-audit format precision, \_\_dirname child script, fingerprint type guard, Pass 3 comparison cap (50k), isStringArray for-loop + Number.isFinite. Consolidation counter 8→9 (consolidation due). Active reviews #266-290.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 16.1    | 2026-02-11 | Review #289: PR #360 R7 — Symlink guards (intake-audit + dedup), Pass 3 grouped by file (O(n²) → O(n²/k)), regex flag preservation, non-fatal operator hash, honesty guard (counter_argument), non-object JSONL rejection in dedup, whitespace-only required field validation, timestamp spread in resolve-item, hardened schema config (isStringArray + confidence range). Consolidation counter 7→8 (consolidation due). Active reviews #266-289.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 16.0    | 2026-02-11 | Review #288: PR #360 R6 — Pass 3 semantic match changed to flag-only (no destructive merge), PII removal (hash operator, basename input_file), timestamp integrity (spread order), stateful regex guard, normalizeFilePath line-suffix stripping, non-object JSONL validation, accurate ingestion outcome, empty evidence cleanup. Consolidation counter 6→7 (consolidation due). Active reviews #266-288.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 15.9    | 2026-02-11 | Review #287: PR #360 R5 — impactSort falsy bug (                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | → ??), ID drift from @line: suffix, missing title guard, always-sanitize evidence, BOM in intake JSONL, logIntake outcome field + try/catch. Consolidation counter 5→6. Active reviews #266-287.                                                                  |
@@ -328,9 +329,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 4 **Consolidation threshold:** 10 reviews
-**Status:** ✅ UP TO DATE **Last consolidation:** 2026-02-10 (Consolidation #18,
-Reviews #266-284)
+**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #299 Reviews
+#266-284)
 
 ### When to Consolidate
 
@@ -352,8 +353,8 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-02-07 (Session #140)
-- **Reviews consolidated:** #254-#265 (12 reviews)
+- **Date:** 2026-02-11 (Session #114+)
+- **Reviews consolidated:** #268-#289 (11 reviews)
 - **Patterns added to CODE_PATTERNS.md v2.6:**
   - **Security (4 patterns):**
     - PII in audit reports (hashed identifiers)
@@ -772,6 +773,44 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #290: PR #360 R8 — CI Fix, Pass 0 No-File Guard, Symlink Guards Expansion, Format Precision (2026-02-11)
+
+**Source:** Qodo Compliance R8 + Qodo Code Suggestions R8 + CI Failure
+**PR/Branch:** claude/new-session-NgVGX (PR #360) **Suggestions:** 12 total
+(Blocker: 2, High: 1, Minor: 8, Deferred: 1)
+
+**Patterns Identified:**
+
+1. **CI blocker**: Pattern checker flagged `err.message` in assertNotSymlink
+   catch blocks — needed `instanceof Error` guard to satisfy automated checker.
+2. **Pass 0 no-file guard**: Items without file paths were grouped together by
+   empty string key, causing unrelated items to merge. Use `randomUUID()` keys.
+3. **Symlink guard expansion**: logIntake() and all generate-views.js write
+   paths needed assertNotSymlink() before writes.
+4. **Enhancement-audit format precision**: Truthy checks on fields like `[]` or
+   `""` could false-positive; need type-precise checks.
+5. **Pass 3 safety cap**: 50,000 comparison cap per file group prevents hang on
+   pathological inputs.
+
+**Resolution:**
+
+- Fixed: 11 items (2 CI blockers + 9 improvements)
+- Deferred: 1 (evidence dedup data fix — pipeline handles)
+
+**Key Learnings:**
+
+- Pattern checker requires `instanceof Error` before `.message` — use canonical
+  form
+- Pass 0 parametric dedup: items without `file` must not share group keys
+- `crypto.randomUUID()` creates unique keys for ungroupable items
+- Enhancement-audit detection: check `typeof === "string" && trim()` and
+  `Array.isArray && length > 0`
+- `__dirname` for child script paths ensures CWD independence
+- Fingerprint field needs type guard (`typeof !== "string"` → error, not crash)
+- Number.isFinite rejects NaN/Infinity; for-loop catches sparse array holes
 
 ---
 

@@ -99,16 +99,18 @@ function generateContentHash(item) {
   return crypto.createHash("sha256").update(hashInput).digest("hex");
 }
 
-// Symlink guard: refuse to write through symlinks (Review #289 R7)
+// Symlink guard: refuse to write through symlinks (Review #289 R7, #290 R8)
 function assertNotSymlink(filePath) {
   try {
     if (fs.lstatSync(filePath).isSymbolicLink()) {
       throw new Error(`Refusing to write to symlink: ${filePath}`);
     }
   } catch (err) {
-    if (err.code === "ENOENT") return; // File doesn't exist yet — safe
-    if (err.message && err.message.includes("symlink")) throw err;
-    // Other lstat errors — let the actual write handle them
+    if (err instanceof Error) {
+      if (err.code === "ENOENT") return; // File doesn't exist yet — safe
+      if (err.message.includes("symlink")) throw err;
+    }
+    // Non-Error or other lstat errors — let the actual write handle them
   }
 }
 
@@ -159,13 +161,13 @@ function mapEnhancementAuditToIms(item) {
   const mapped = safeCloneObject(item);
   const metadata = { format_detected: "ims", mappings_applied: [] };
 
-  // Detect enhancement audit format by presence of audit-specific fields
+  // Detect enhancement audit format by presence of audit-specific fields (Review #290 R8: type-precise)
   const hasEnhancementFields =
-    item.fingerprint ||
-    item.files ||
-    item.why_it_matters ||
-    item.suggested_fix ||
-    item.acceptance_tests;
+    (typeof item.fingerprint === "string" && item.fingerprint.trim()) ||
+    (Array.isArray(item.files) && item.files.length > 0) ||
+    (typeof item.why_it_matters === "string" && item.why_it_matters.trim()) ||
+    (typeof item.suggested_fix === "string" && item.suggested_fix.trim()) ||
+    (Array.isArray(item.acceptance_tests) && item.acceptance_tests.length > 0);
 
   if (hasEnhancementFields) {
     metadata.format_detected = "enhancement-audit";
@@ -474,6 +476,8 @@ function logIntake(activity) {
     if (!fs.existsSync(LOG_DIR)) {
       fs.mkdirSync(LOG_DIR, { recursive: true });
     }
+    // Symlink guard on log file (Review #290 R8)
+    assertNotSymlink(LOG_FILE);
     const logEntry = {
       ...activity,
       // Timestamp AFTER spread so activity cannot overwrite it (Review #288 R6)
