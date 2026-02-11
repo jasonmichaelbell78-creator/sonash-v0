@@ -82,7 +82,9 @@ function saveJson(filePath, data) {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
     return true;
   } catch (err) {
-    console.warn(`auto-save-context: failed to save ${path.basename(filePath)}: ${err.message}`);
+    console.warn(
+      `auto-save-context: failed to save ${filePath}: ${err instanceof Error ? err.message : String(err)}`
+    );
     return false;
   }
 }

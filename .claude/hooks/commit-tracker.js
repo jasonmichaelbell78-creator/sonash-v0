@@ -104,7 +104,9 @@ function saveLastHead(head) {
     fs.renameSync(tmpPath, TRACKER_STATE);
   } catch (err) {
     // Non-critical — worst case we re-log the same commit next time
-    console.warn(`commit-tracker: failed to save HEAD state: ${err.message}`);
+    console.warn(
+      `commit-tracker: failed to save HEAD state: ${err instanceof Error ? err.message : String(err)}`
+    );
   }
 }
 

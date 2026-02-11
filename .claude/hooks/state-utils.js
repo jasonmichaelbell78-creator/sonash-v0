@@ -42,7 +42,9 @@ function getStateDir(projectDir) {
     fs.mkdirSync(dir, { recursive: true });
   } catch (err) {
     // mkdirSync with recursive:true only throws on real errors (not EEXIST)
-    console.warn(`state-utils: failed to create state dir: ${err.message}`);
+    console.warn(
+      `state-utils: failed to create state dir: ${err instanceof Error ? err.message : String(err)}`
+    );
   }
   return dir;
 }

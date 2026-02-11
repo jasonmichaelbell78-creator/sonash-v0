@@ -115,7 +115,9 @@ try {
   }
   fs.writeFileSync(stateFilePath, JSON.stringify(state, null, 2));
 } catch (err) {
-  console.warn(`large-context-warning: failed to save state: ${err.message}`);
+  console.warn(
+    `large-context-warning: failed to save state: ${err instanceof Error ? err.message : String(err)}`
+  );
 }
 
 // Resolve full path for line counting
@@ -155,7 +157,9 @@ if (state.filesRead.length >= SESSION_FILE_LIMIT && !state.warningShown) {
   try {
     fs.writeFileSync(stateFilePath, JSON.stringify(state, null, 2));
   } catch (err) {
-    console.warn(`large-context-warning: failed to update state: ${err.message}`);
+    console.warn(
+      `large-context-warning: failed to update state: ${err instanceof Error ? err.message : String(err)}`
+    );
   }
 }
 

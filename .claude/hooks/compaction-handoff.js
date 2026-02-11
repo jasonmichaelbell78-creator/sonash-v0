@@ -80,11 +80,15 @@ function saveJson(filePath, data) {
     fs.renameSync(tmpPath, filePath);
     return true;
   } catch (err) {
-    console.warn(`compaction-handoff: failed to save ${path.basename(filePath)}: ${err.message}`);
+    console.warn(
+      `compaction-handoff: failed to save ${filePath}: ${err instanceof Error ? err.message : String(err)}`
+    );
     try {
       fs.rmSync(tmpPath, { force: true });
-    } catch {
-      // cleanup failure is non-critical
+    } catch (cleanupErr) {
+      console.warn(
+        `compaction-handoff: cleanup failed for ${tmpPath}: ${cleanupErr instanceof Error ? cleanupErr.message : String(cleanupErr)}`
+      );
     }
     return false;
   }

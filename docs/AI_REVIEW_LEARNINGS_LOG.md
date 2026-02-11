@@ -324,7 +324,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 12 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 13 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** Now
 
 ### When to Consolidate
@@ -673,6 +673,38 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #283: PR #359 — Unsafe err.message, Silent Catches, Full Filepath Logging (2026-02-10)
+
+**Source:** SonarCloud + Qodo + CI Pattern Compliance **PR/Branch:** PR #359
+(claude/analyze-repo-install-ceMkn) **Suggestions:** 15 total (Critical: 9,
+Major: 0, Minor: 4, Trivial: 0)
+
+**Patterns Identified:**
+
+1. **Unsafe err.message access (recurring)**: Wave 2 agents added `console.warn`
+   with `err.message` but didn't use safe pattern
+   - Root cause: Agent prompt didn't specify the safe pattern explicitly
+   - Prevention: Pattern checker catches this in CI; always use
+     `err instanceof Error ? err.message : String(err)`
+2. **Silent catch blocks**: Empty catches swallow errors, hindering debugging
+   - Root cause: Defensive "don't break hooks" approach went too far
+   - Prevention: Always log at minimum `console.warn` with context
+
+**Resolution:**
+
+- Fixed: 13 items (9 unsafe err.message, 2 silent catches, 2 filepath logging)
+- Deferred: 2 items (atomic writes for state files — architectural change)
+- Rejected: 1 item (SonarCloud L396 false positive — checklist text contains
+  "Error" word)
+
+**Key Learnings:**
+
+- Agent-generated code must be validated against project pattern rules
+- The `err instanceof Error ? err.message : String(err)` pattern is enforced by
+  CI — new code MUST use it
 
 ---
 
