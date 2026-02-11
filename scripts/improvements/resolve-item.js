@@ -81,7 +81,9 @@ function parseArgs(args) {
 const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 function safeCloneObject(obj, depth = 0) {
   if (obj === null || typeof obj !== "object") return obj;
-  if (depth > 200) return Array.isArray(obj) ? [] : Object.create(null);
+  if (depth > 200) {
+    throw new Error("Item nesting too deep (possible malicious input)");
+  }
   if (Array.isArray(obj)) return obj.map((v) => safeCloneObject(v, depth + 1));
   const result = Object.create(null);
   for (const key of Object.keys(obj)) {
@@ -171,6 +173,10 @@ function saveMasterImprovements(items) {
 
   try {
     fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
+    // Windows-safe rename: unlink destination first (Review #293 R11)
+    if (fs.existsSync(MASTER_FILE)) {
+      fs.unlinkSync(MASTER_FILE);
+    }
     fs.renameSync(tmpFile, MASTER_FILE);
   } catch (err) {
     // Clean up temp file on error
@@ -288,6 +294,10 @@ function restoreMasterBackup(masterBackup) {
       assertNotSymlink(MASTER_FILE);
       assertNotSymlink(tmpFile);
       fs.writeFileSync(tmpFile, masterBackup, { encoding: "utf8", flag: "wx" });
+      // Windows-safe rename: unlink destination first (Review #293 R11)
+      if (fs.existsSync(MASTER_FILE)) {
+        fs.unlinkSync(MASTER_FILE);
+      }
       fs.renameSync(tmpFile, MASTER_FILE);
     } catch {
       try {

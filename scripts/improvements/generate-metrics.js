@@ -389,15 +389,31 @@ function main() {
   try {
     fs.mkdirSync(BASE_DIR, { recursive: true });
 
-    // Atomic write metrics.json (Review #292 R10)
+    // Atomic write metrics.json (Review #292 R10, #293 R11: EEXIST recovery)
     assertNotSymlink(METRICS_JSON);
     const tmpMetricsJson = METRICS_JSON + `.tmp.${process.pid}`;
     try {
       assertNotSymlink(tmpMetricsJson);
-      fs.writeFileSync(tmpMetricsJson, JSON.stringify(metrics, null, 2) + "\n", {
-        encoding: "utf8",
-        flag: "wx",
-      });
+      try {
+        fs.writeFileSync(tmpMetricsJson, JSON.stringify(metrics, null, 2) + "\n", {
+          encoding: "utf8",
+          flag: "wx",
+        });
+      } catch (wxErr) {
+        if (wxErr && typeof wxErr === "object" && wxErr.code === "EEXIST") {
+          try {
+            fs.unlinkSync(tmpMetricsJson);
+          } catch {
+            /* ignore cleanup errors */
+          }
+          fs.writeFileSync(tmpMetricsJson, JSON.stringify(metrics, null, 2) + "\n", {
+            encoding: "utf8",
+            flag: "wx",
+          });
+        } else {
+          throw wxErr;
+        }
+      }
       fs.renameSync(tmpMetricsJson, METRICS_JSON);
       console.log(`  Written: ${METRICS_JSON}`);
     } finally {
@@ -410,13 +426,26 @@ function main() {
       }
     }
 
-    // Atomic write METRICS.md (Review #292 R10)
+    // Atomic write METRICS.md (Review #292 R10, #293 R11: EEXIST recovery)
     assertNotSymlink(METRICS_MD);
     const tmpMetricsMd = METRICS_MD + `.tmp.${process.pid}`;
     try {
       assertNotSymlink(tmpMetricsMd);
       const metricsMd = generateMetricsMd(metrics);
-      fs.writeFileSync(tmpMetricsMd, metricsMd, { encoding: "utf8", flag: "wx" });
+      try {
+        fs.writeFileSync(tmpMetricsMd, metricsMd, { encoding: "utf8", flag: "wx" });
+      } catch (wxErr) {
+        if (wxErr && typeof wxErr === "object" && wxErr.code === "EEXIST") {
+          try {
+            fs.unlinkSync(tmpMetricsMd);
+          } catch {
+            /* ignore cleanup errors */
+          }
+          fs.writeFileSync(tmpMetricsMd, metricsMd, { encoding: "utf8", flag: "wx" });
+        } else {
+          throw wxErr;
+        }
+      }
       fs.renameSync(tmpMetricsMd, METRICS_MD);
       console.log(`  Written: ${METRICS_MD}`);
     } finally {

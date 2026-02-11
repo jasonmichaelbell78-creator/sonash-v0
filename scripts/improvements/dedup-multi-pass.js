@@ -32,6 +32,23 @@ const LOG_FILE = path.join(__dirname, "../../docs/improvements/logs/dedup-log.js
 const REVIEW_FILE = path.join(__dirname, "../../docs/improvements/raw/review-needed.jsonl");
 const MASTER_DEBT_FILE = path.join(__dirname, "../../docs/technical-debt/MASTER_DEBT.jsonl");
 
+// Strip dangerous prototype pollution keys from parsed JSONL objects (Review #291 R9, #293 R11: module-scope)
+const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+function safeCloneObject(obj, depth = 0) {
+  if (obj === null || typeof obj !== "object") return obj;
+  if (depth > 200) {
+    throw new Error("Item nesting too deep (possible malicious input)");
+  }
+  if (Array.isArray(obj)) return obj.map((v) => safeCloneObject(v, depth + 1));
+  const result = Object.create(null);
+  for (const key of Object.keys(obj)) {
+    if (!DANGEROUS_KEYS.has(key)) {
+      result[key] = safeCloneObject(obj[key], depth + 1);
+    }
+  }
+  return result;
+}
+
 // Levenshtein distance for string similarity
 function levenshtein(a, b) {
   if (a.length === 0) return b.length;
@@ -209,21 +226,6 @@ function readInputItems() {
   const items = [];
   const parseErrors = [];
 
-  // Strip dangerous prototype pollution keys from parsed JSONL objects (Review #291 R9)
-  const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
-  function safeCloneObject(obj, depth = 0) {
-    if (obj === null || typeof obj !== "object") return obj;
-    if (depth > 200) return Array.isArray(obj) ? [] : Object.create(null);
-    if (Array.isArray(obj)) return obj.map((v) => safeCloneObject(v, depth + 1));
-    const result = Object.create(null);
-    for (const key of Object.keys(obj)) {
-      if (!DANGEROUS_KEYS.has(key)) {
-        result[key] = safeCloneObject(obj[key], depth + 1);
-      }
-    }
-    return result;
-  }
-
   for (let i = 0; i < lines.length; i++) {
     try {
       const parsed = JSON.parse(lines[i]);
@@ -272,7 +274,9 @@ function readMasterDebt() {
   const items = [];
   for (const line of lines) {
     try {
-      items.push(JSON.parse(line));
+      const parsed = JSON.parse(line);
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) continue;
+      items.push(safeCloneObject(parsed));
     } catch {
       // Skip invalid lines in debt master
     }
@@ -844,18 +848,24 @@ function writeOutputFiles(pass5Items, dedupLog, reviewNeeded) {
     log_entries: dedupLog.length,
     review_entries: reviewNeeded.length,
   };
-  fs.writeFileSync(
-    LOG_FILE,
-    [JSON.stringify(runMeta), ...dedupLog.map((entry) => JSON.stringify(entry))].join("\n") + "\n"
-  );
-
-  if (reviewNeeded.length > 0) {
+  // Write non-critical log/review files (Review #293 R11: don't crash on log write failure)
+  try {
     fs.writeFileSync(
-      REVIEW_FILE,
-      reviewNeeded.map((entry) => JSON.stringify(entry)).join("\n") + "\n"
+      LOG_FILE,
+      [JSON.stringify(runMeta), ...dedupLog.map((entry) => JSON.stringify(entry))].join("\n") + "\n"
     );
-  } else if (fs.existsSync(REVIEW_FILE)) {
-    fs.unlinkSync(REVIEW_FILE);
+
+    if (reviewNeeded.length > 0) {
+      fs.writeFileSync(
+        REVIEW_FILE,
+        reviewNeeded.map((entry) => JSON.stringify(entry)).join("\n") + "\n"
+      );
+    } else if (fs.existsSync(REVIEW_FILE)) {
+      fs.unlinkSync(REVIEW_FILE);
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`  Warning: Failed to write dedup log/review files: ${msg}`);
   }
 }
 

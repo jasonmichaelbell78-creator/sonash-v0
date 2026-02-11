@@ -62,10 +62,13 @@ function truncate(text, maxLen) {
   return text.substring(0, maxLen - 3) + "...";
 }
 
-// Escape markdown special chars in table cells
+// Escape markdown special chars in table cells (Review #293 R11: strip HTML to prevent injection)
 function escapeMarkdown(text) {
   if (!text) return "";
-  return text.replace(/\|/g, "\\|").replace(/\n/g, " ");
+  return text
+    .replace(/<[^>]*>/g, "") // Strip HTML tags
+    .replace(/\|/g, "\\|")
+    .replace(/\n/g, " ");
 }
 
 // Sort by impact (I0 first)

@@ -275,7 +275,9 @@ Exit codes:
   const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
   function safeCloneObject(obj, depth = 0) {
     if (obj === null || typeof obj !== "object") return obj;
-    if (depth > 200) return Array.isArray(obj) ? [] : Object.create(null);
+    if (depth > 200) {
+      throw new Error("Item nesting too deep (possible malicious input)");
+    }
     if (Array.isArray(obj)) return obj.map((v) => safeCloneObject(v, depth + 1));
     const result = Object.create(null);
     for (const key of Object.keys(obj)) {
@@ -297,8 +299,17 @@ Exit codes:
       const item = safeCloneObject(JSON.parse(line));
 
       if (!item || typeof item !== "object" || Array.isArray(item)) {
+        const safeSnippet = line
+          .substring(0, 100)
+          // eslint-disable-next-line no-control-regex -- intentionally matching ANSI escape sequences
+          .replace(
+            /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+            ""
+          )
+          // eslint-disable-next-line no-control-regex -- intentionally stripping control characters
+          .replace(/[\u0000-\u0019\u007f-\u009f]/g, "");
         allErrors.push(
-          `Line ${lineNum}: Invalid item type (expected JSON object) — Content: ${line.substring(0, 100)}`
+          `Line ${lineNum}: Invalid item type (expected JSON object) — Content: ${safeSnippet}`
         );
         continue;
       }

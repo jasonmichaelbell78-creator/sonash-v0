@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.4 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
+**Document Version:** 16.5 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.5    | 2026-02-11 | Review #293: PR #360 R11 — Markdown injection (HTML strip in escapeMarkdown), stale temp EEXIST recovery, safeCloneObject throw on deep nesting + module-scope in dedup, deduped.jsonl non-fatal write, non-critical log/review write guard, safeCloneObject for MASTER_DEBT.jsonl, terminal escape sanitization, robust line number sanitization, Windows-safe unlink-before-rename, schema config validation. Active reviews #266-293.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 16.4    | 2026-02-11 | Review #292: PR #360 R10 — assertNotSymlink fail-closed (rethrow unknown errors, all 5 files), safeCloneObject in resolve-item.js + validate-schema.js, temp-file symlink+wx flag (dedup-multi-pass.js + generate-views.js), atomic writes for metrics.json + METRICS.md, atomic rollback restore, existingEvidence sanitization, line number validation, Pass 2 DoS cap (5000 items), dedup run_metadata audit trail, pipeline write error handling. Active reviews #266-292.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.3    | 2026-02-11 | Review #291: PR #360 R9 — Prototype pollution guard (safeCloneObject in dedup-multi-pass.js + generate-views.js), assertNotSymlink EACCES/EPERM fail-closed (all 5 files), atomic write for generate-views.js MASTER_FILE, schema-stable reviewNeeded entries, symlink guards on generate-metrics.js (3 write paths) + resolve-item.js (saveMasterImprovements + logResolution), acceptance evidence sanitization, BOM strip in resolve-item.js. Active reviews #266-291.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 16.2    | 2026-02-11 | Review #290: PR #360 R8 — CI fix (assertNotSymlink instanceof Error), Pass 0 no-file guard, symlink guards on generate-views.js + logIntake(), enhancement-audit format precision, \_\_dirname child script, fingerprint type guard, Pass 3 comparison cap (50k), isStringArray for-loop + Number.isFinite. Consolidation counter 8→9 (consolidation due). Active reviews #266-290.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
@@ -775,6 +776,47 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #293: PR #360 R11 — Markdown Injection, EEXIST Recovery, Windows Compat, Schema Validation (2026-02-11)
+
+**Source:** Qodo Compliance R11 + Qodo Code Suggestions R11 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 11 code + 2 compliance
+(Security: 2, Medium: 7, Low: 2, Compliance: 2)
+
+**Patterns Identified:**
+
+1. **Markdown injection**: escapeMarkdown only handled pipe/newline — need HTML
+   tag stripping to prevent `<script>` injection in rendered Markdown views.
+2. **Stale temp files**: `wx` flag fails on EEXIST if a previous run crashed —
+   need cleanup-and-retry fallback.
+3. **Deep nesting**: safeCloneObject silently truncated at depth 200 — should
+   throw to surface malicious/malformed input explicitly.
+4. **Non-fatal fallback writes**: deduped.jsonl is regenerated by dedup
+   pipeline, so write failure should warn rather than exit(2).
+5. **Cross-source pollution**: MASTER_DEBT.jsonl parser lacked safeCloneObject
+   protection (moved safeCloneObject to module scope).
+6. **Terminal escape injection**: Untrusted content in error messages could
+   inject ANSI escape sequences into terminal output.
+7. **Windows compat**: fs.renameSync fails on Windows when destination exists —
+   need unlink-before-rename pattern.
+
+**Resolution:**
+
+- Fixed: 11 items across 7 files (6 scripts + learnings log)
+- Deferred: 0
+
+**Key Learnings:**
+
+- `<[^>]*>` regex strips HTML tags from Markdown output to prevent injection
+- EEXIST recovery: unlink stale tmp + retry with wx flag
+- safeCloneObject should throw on depth > 200, not silently truncate
+- Fallback/regenerable files should use console.warn, not process.exit
+- Terminal escape strip regex:
+  `/[\u001b\u009b][[()#;?]*...[0-9A-ORZcf-nqry=><]/g`
+- Windows rename compat: `if (existsSync) unlinkSync` before `renameSync`
+- Schema config arrays should be validated immediately after load
 
 ---
 

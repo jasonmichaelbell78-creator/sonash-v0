@@ -87,6 +87,19 @@ const VALID_IMPACTS = schema.validImpacts;
 const VALID_EFFORTS = schema.validEfforts;
 const VALID_STATUSES = schema.validStatuses;
 
+// Validate schema arrays exist (Review #293 R11)
+if (
+  !Array.isArray(VALID_CATEGORIES) ||
+  !Array.isArray(VALID_IMPACTS) ||
+  !Array.isArray(VALID_EFFORTS) ||
+  !Array.isArray(VALID_STATUSES)
+) {
+  console.error(
+    "Error: improvement-schema is invalid (expected arrays: validCategories, validImpacts, validEfforts, validStatuses)"
+  );
+  process.exit(2);
+}
+
 // Generate content hash for deduplication
 function generateContentHash(item) {
   const normalizedFile = normalizeFilePath(item.file || "").toLowerCase();
@@ -318,10 +331,16 @@ function validateAndNormalize(item, sourceFile) {
     effort: ensureValid(mappedItem.effort, VALID_EFFORTS, "E1"),
     file: normalizeFilePath(mappedItem.file || ""),
     // Preserve numeric line info - parse strings, keep numbers, default to 0
-    line:
-      typeof mappedItem.line === "number"
-        ? mappedItem.line
-        : Number.parseInt(String(mappedItem.line), 10) || 0,
+    // Robust line sanitization: ensure non-negative integer (Review #293 R11)
+    line: (() => {
+      const raw =
+        typeof mappedItem.line === "number"
+          ? mappedItem.line
+          : Number.parseInt(String(mappedItem.line), 10);
+      if (!Number.isFinite(raw)) return 0;
+      const n = Math.floor(raw);
+      return n > 0 ? n : 0;
+    })(),
     title: (mappedItem.title || "Untitled").substring(0, 500),
     description: mappedItem.description || "",
     recommendation: mappedItem.recommendation || "",
@@ -858,8 +877,9 @@ async function main() {
     fs.appendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
-    console.error(`Failed to write ${path.basename(DEDUPED_FILE)}: ${errMsg}`);
-    process.exit(2);
+    console.warn(
+      `Warning: Failed to write ${path.basename(DEDUPED_FILE)}: ${errMsg}. Continuing (dedup will regenerate it).`
+    );
   }
 
   // Cross-reference with MASTER_DEBT.jsonl (read-only, just note matches)
