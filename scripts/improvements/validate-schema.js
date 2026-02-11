@@ -271,6 +271,21 @@ Exit codes:
   const duplicateIds = [];
   const duplicateFingerprints = [];
 
+  // Strip dangerous prototype pollution keys from parsed JSONL objects (Review #292 R10)
+  const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+  function safeCloneObject(obj, depth = 0) {
+    if (obj === null || typeof obj !== "object") return obj;
+    if (depth > 200) return Array.isArray(obj) ? [] : Object.create(null);
+    if (Array.isArray(obj)) return obj.map((v) => safeCloneObject(v, depth + 1));
+    const result = Object.create(null);
+    for (const key of Object.keys(obj)) {
+      if (!DANGEROUS_KEYS.has(key)) {
+        result[key] = safeCloneObject(obj[key], depth + 1);
+      }
+    }
+    return result;
+  }
+
   for (let i = 0; i < lines.length; i++) {
     const lineNum = i + 1;
     let line = lines[i].trimEnd(); // Handle CRLF line endings
@@ -279,7 +294,7 @@ Exit codes:
     if (!line.trim()) continue;
 
     try {
-      const item = JSON.parse(line);
+      const item = safeCloneObject(JSON.parse(line));
 
       if (!item || typeof item !== "object" || Array.isArray(item)) {
         allErrors.push(

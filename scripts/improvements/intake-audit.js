@@ -112,9 +112,10 @@ function assertNotSymlink(filePath) {
       if (err.code === "EACCES" || err.code === "EPERM") {
         throw new Error(`Refusing to write when symlink check is blocked: ${filePath}`);
       }
-      if (err.message.includes("symlink")) throw err;
+      if (err.message.includes("Refusing to write")) throw err;
     }
-    // Non-Error or other lstat errors — let the actual write handle them
+    // Fail closed: rethrow any unexpected errors (Review #292 R10)
+    throw err;
   }
 }
 
@@ -196,8 +197,14 @@ function mapEnhancementAuditToIms(item) {
         const lineMatch = firstFile.match(/^(.+):(\d+)$/);
         if (lineMatch) {
           mapped.file = lineMatch[1];
-          if (!item.line) {
-            mapped.line = Number.parseInt(lineMatch[2], 10);
+          const parsedLine = Number.parseInt(lineMatch[2], 10);
+          const hasUsableLine =
+            typeof item.line === "number"
+              ? Number.isFinite(item.line) && item.line > 0
+              : Number.isFinite(Number.parseInt(String(item.line), 10)) &&
+                Number.parseInt(String(item.line), 10) > 0;
+          if (!hasUsableLine && Number.isFinite(parsedLine) && parsedLine > 0) {
+            mapped.line = parsedLine;
             metadata.mappings_applied.push("files[0]->file+line");
           } else {
             metadata.mappings_applied.push("files[0]->file");
@@ -221,9 +228,13 @@ function mapEnhancementAuditToIms(item) {
       metadata.mappings_applied.push("suggested_fix->recommendation");
     }
 
-    // Map acceptance_tests -> append to evidence with [Acceptance] prefix (Review #291 R9: sanitize)
+    // Map acceptance_tests -> append to evidence with [Acceptance] prefix (Review #291 R9, #292 R10: sanitize both)
     if (Array.isArray(item.acceptance_tests) && item.acceptance_tests.length > 0) {
-      const existingEvidence = Array.isArray(item.evidence) ? item.evidence : [];
+      const existingEvidenceRaw = Array.isArray(item.evidence) ? item.evidence : [];
+      const existingEvidence = existingEvidenceRaw
+        .map((e) => (typeof e === "string" ? e.trim() : String(e).trim()))
+        .filter(Boolean)
+        .map((e) => e.substring(0, 500));
       const acceptanceEvidence = item.acceptance_tests
         .map((t) => (typeof t === "string" ? t.trim() : String(t).trim()))
         .filter(Boolean)
@@ -819,7 +830,7 @@ async function main() {
     process.exit(0);
   }
 
-  // Append new items to raw pipeline files so full dedup can process them
+  // Append new items to raw pipeline files so full dedup can process them (Review #292 R10: error handling)
   console.log("\nWriting new items to pipeline...");
   if (!fs.existsSync(IMPROVEMENTS_DIR)) {
     fs.mkdirSync(IMPROVEMENTS_DIR, { recursive: true });
@@ -828,16 +839,28 @@ async function main() {
 
   // Append to raw/normalized-all.jsonl (input for dedup-multi-pass)
   const NORMALIZED_FILE = path.join(RAW_DIR, "normalized-all.jsonl");
-  fs.mkdirSync(path.dirname(NORMALIZED_FILE), { recursive: true });
-  // Symlink guard: refuse to write through symlinks (Review #289 R7)
-  assertNotSymlink(NORMALIZED_FILE);
-  fs.appendFileSync(NORMALIZED_FILE, newLines.join("\n") + "\n");
+  try {
+    fs.mkdirSync(path.dirname(NORMALIZED_FILE), { recursive: true });
+    // Symlink guard: refuse to write through symlinks (Review #289 R7)
+    assertNotSymlink(NORMALIZED_FILE);
+    fs.appendFileSync(NORMALIZED_FILE, newLines.join("\n") + "\n");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to write ${path.basename(NORMALIZED_FILE)}: ${errMsg}`);
+    process.exit(2);
+  }
 
   // Also append to raw/deduped.jsonl as fallback
   const DEDUPED_FILE = path.join(RAW_DIR, "deduped.jsonl");
-  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
-  assertNotSymlink(DEDUPED_FILE);
-  fs.appendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
+  try {
+    fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
+    assertNotSymlink(DEDUPED_FILE);
+    fs.appendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to write ${path.basename(DEDUPED_FILE)}: ${errMsg}`);
+    process.exit(2);
+  }
 
   // Cross-reference with MASTER_DEBT.jsonl (read-only, just note matches)
   console.log("Checking TDMS cross-references...");

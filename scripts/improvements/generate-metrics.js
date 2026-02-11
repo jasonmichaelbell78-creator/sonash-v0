@@ -41,8 +41,10 @@ function assertNotSymlink(filePath) {
       if (err.code === "EACCES" || err.code === "EPERM") {
         throw new Error(`Refusing to write when symlink check is blocked: ${filePath}`);
       }
-      if (err.message.includes("symlink")) throw err;
+      if (err.message.includes("Refusing to write")) throw err;
     }
+    // Fail closed: rethrow any unexpected errors (Review #292 R10)
+    throw err;
   }
 }
 
@@ -387,16 +389,45 @@ function main() {
   try {
     fs.mkdirSync(BASE_DIR, { recursive: true });
 
-    // Write metrics.json
+    // Atomic write metrics.json (Review #292 R10)
     assertNotSymlink(METRICS_JSON);
-    fs.writeFileSync(METRICS_JSON, JSON.stringify(metrics, null, 2) + "\n");
-    console.log(`  Written: ${METRICS_JSON}`);
+    const tmpMetricsJson = METRICS_JSON + `.tmp.${process.pid}`;
+    try {
+      assertNotSymlink(tmpMetricsJson);
+      fs.writeFileSync(tmpMetricsJson, JSON.stringify(metrics, null, 2) + "\n", {
+        encoding: "utf8",
+        flag: "wx",
+      });
+      fs.renameSync(tmpMetricsJson, METRICS_JSON);
+      console.log(`  Written: ${METRICS_JSON}`);
+    } finally {
+      if (fs.existsSync(tmpMetricsJson)) {
+        try {
+          fs.unlinkSync(tmpMetricsJson);
+        } catch {
+          /* ignore cleanup errors */
+        }
+      }
+    }
 
-    // Write METRICS.md
+    // Atomic write METRICS.md (Review #292 R10)
     assertNotSymlink(METRICS_MD);
-    const metricsMd = generateMetricsMd(metrics);
-    fs.writeFileSync(METRICS_MD, metricsMd);
-    console.log(`  Written: ${METRICS_MD}`);
+    const tmpMetricsMd = METRICS_MD + `.tmp.${process.pid}`;
+    try {
+      assertNotSymlink(tmpMetricsMd);
+      const metricsMd = generateMetricsMd(metrics);
+      fs.writeFileSync(tmpMetricsMd, metricsMd, { encoding: "utf8", flag: "wx" });
+      fs.renameSync(tmpMetricsMd, METRICS_MD);
+      console.log(`  Written: ${METRICS_MD}`);
+    } finally {
+      if (fs.existsSync(tmpMetricsMd)) {
+        try {
+          fs.unlinkSync(tmpMetricsMd);
+        } catch {
+          /* ignore cleanup errors */
+        }
+      }
+    }
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     console.error(`Failed to write metrics files: ${errMsg}`);

@@ -77,6 +77,21 @@ function parseArgs(args) {
   return parsed;
 }
 
+// Strip dangerous prototype pollution keys from parsed JSONL objects (Review #292 R10)
+const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+function safeCloneObject(obj, depth = 0) {
+  if (obj === null || typeof obj !== "object") return obj;
+  if (depth > 200) return Array.isArray(obj) ? [] : Object.create(null);
+  if (Array.isArray(obj)) return obj.map((v) => safeCloneObject(v, depth + 1));
+  const result = Object.create(null);
+  for (const key of Object.keys(obj)) {
+    if (!DANGEROUS_KEYS.has(key)) {
+      result[key] = safeCloneObject(obj[key], depth + 1);
+    }
+  }
+  return result;
+}
+
 // Load items from MASTER_IMPROVEMENTS.jsonl
 function loadMasterImprovements() {
   if (!fs.existsSync(MASTER_FILE)) {
@@ -101,7 +116,7 @@ function loadMasterImprovements() {
     if (lineNum === 1) line = line.replace(/^\uFEFF/, ""); // Strip UTF-8 BOM
     if (!line.trim()) continue;
     try {
-      items.push(JSON.parse(line));
+      items.push(safeCloneObject(JSON.parse(line)));
     } catch (err) {
       badLines.push({
         line: lineNum,
@@ -135,8 +150,10 @@ function assertNotSymlink(filePath) {
       if (err.code === "EACCES" || err.code === "EPERM") {
         throw new Error(`Refusing to write when symlink check is blocked: ${filePath}`);
       }
-      if (err.message.includes("symlink")) throw err;
+      if (err.message.includes("Refusing to write")) throw err;
     }
+    // Fail closed: rethrow any unexpected errors (Review #292 R10)
+    throw err;
   }
 }
 
@@ -262,12 +279,22 @@ function displayItemInfo(item, parsed) {
   }
 }
 
-// Attempt to restore master file from backup
+// Attempt to restore master file from backup (Review #292 R10: atomic + symlink guard)
 function restoreMasterBackup(masterBackup) {
   if (masterBackup !== null) {
+    const dir = path.dirname(MASTER_FILE);
+    const tmpFile = path.join(dir, `.MASTER_IMPROVEMENTS.jsonl.restore.tmp.${process.pid}`);
     try {
-      fs.writeFileSync(MASTER_FILE, masterBackup);
+      assertNotSymlink(MASTER_FILE);
+      assertNotSymlink(tmpFile);
+      fs.writeFileSync(tmpFile, masterBackup, { encoding: "utf8", flag: "wx" });
+      fs.renameSync(tmpFile, MASTER_FILE);
     } catch {
+      try {
+        fs.unlinkSync(tmpFile);
+      } catch {
+        // Ignore cleanup errors
+      }
       // Ignore restore errors; user will need to recover from VCS
     }
   }

@@ -38,9 +38,10 @@ function assertNotSymlink(filePath) {
       if (err.code === "EACCES" || err.code === "EPERM") {
         throw new Error(`Refusing to write when symlink check is blocked: ${filePath}`);
       }
-      if (err.message.includes("symlink")) throw err;
+      if (err.message.includes("Refusing to write")) throw err;
     }
-    // Non-Error or other lstat errors — let the actual write handle them
+    // Fail closed: rethrow any unexpected errors (Review #292 R10)
+    throw err;
   }
 }
 
@@ -312,8 +313,12 @@ function writeMasterFile(items) {
   assertNotSymlink(MASTER_FILE);
 
   const tmpMaster = MASTER_FILE + `.tmp.${process.pid}`;
+  assertNotSymlink(tmpMaster);
   try {
-    fs.writeFileSync(tmpMaster, idSorted.map((item) => JSON.stringify(item)).join("\n") + "\n");
+    fs.writeFileSync(tmpMaster, idSorted.map((item) => JSON.stringify(item)).join("\n") + "\n", {
+      encoding: "utf8",
+      flag: "wx",
+    });
     fs.renameSync(tmpMaster, MASTER_FILE);
   } finally {
     if (fs.existsSync(tmpMaster)) {

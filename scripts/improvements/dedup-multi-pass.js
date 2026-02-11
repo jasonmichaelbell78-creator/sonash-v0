@@ -24,6 +24,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const os = require("node:os");
 
 const INPUT_FILE = path.join(__dirname, "../../docs/improvements/raw/normalized-all.jsonl");
 const OUTPUT_FILE = path.join(__dirname, "../../docs/improvements/raw/deduped.jsonl");
@@ -444,9 +445,35 @@ function runPass1ExactHash(pass0Items, dedupLog, reviewNeeded) {
   return pass1Items;
 }
 
+// Safety cap for pairwise passes to prevent O(n^2) DoS (Review #292 R10)
+const MAX_PAIRWISE_ITEMS = 5000;
+
 // Generic pairwise merge pass using a match function
 function runPairwiseMergePass(inputItems, passNum, passName, matchFn, dedupLog, reviewNeeded) {
   console.log(`  Pass ${passNum}: ${passName}...`);
+
+  // Guard against algorithmic DoS: skip pairwise if item count exceeds cap
+  if (inputItems.length > MAX_PAIRWISE_ITEMS) {
+    const comparisons = (inputItems.length * (inputItems.length - 1)) / 2;
+    console.warn(
+      `    WARNING: Skipping ${passName} — ${inputItems.length} items would require ${comparisons} comparisons (cap: ${MAX_PAIRWISE_ITEMS} items)`
+    );
+    reviewNeeded.push({
+      reason: `${passName.toLowerCase().replace(/\s+/g, "_")}_skipped_too_many_items`,
+      item_a: inputItems[0] || null,
+      item_b: null,
+      meta: { count: inputItems.length, comparisons, cap: MAX_PAIRWISE_ITEMS },
+      note: `Skipped ${passName} (${inputItems.length} items > ${MAX_PAIRWISE_ITEMS} cap).`,
+    });
+    dedupLog.push({
+      pass: passNum,
+      type: `${passName.toLowerCase().replace(/\s+/g, "_")}_skipped`,
+      count: inputItems.length,
+      reason: `pairwise pass skipped due to item count cap (${MAX_PAIRWISE_ITEMS})`,
+    });
+    return { outputItems: inputItems, removedCount: 0 };
+  }
+
   const outputItems = [];
   const removed = new Set();
 
@@ -756,9 +783,10 @@ function assertNotSymlink(filePath) {
       if (err.code === "EACCES" || err.code === "EPERM") {
         throw new Error(`Refusing to write when symlink check is blocked: ${filePath}`);
       }
-      if (err.message.includes("symlink")) throw err;
+      if (err.message.includes("Refusing to write")) throw err;
     }
-    // Non-Error or other lstat errors — let the actual write handle them
+    // Fail closed: rethrow any unexpected errors (Review #292 R10)
+    throw err;
   }
 }
 
@@ -778,10 +806,14 @@ function writeOutputFiles(pass5Items, dedupLog, reviewNeeded) {
   assertNotSymlink(LOG_FILE);
   assertNotSymlink(REVIEW_FILE);
 
-  // Atomic write for main output
+  // Atomic write for main output (Review #292 R10: symlink check + wx flag on tmp)
   const tmpOutput = OUTPUT_FILE + `.tmp.${process.pid}`;
+  assertNotSymlink(tmpOutput);
   try {
-    fs.writeFileSync(tmpOutput, pass5Items.map((item) => JSON.stringify(item)).join("\n") + "\n");
+    fs.writeFileSync(tmpOutput, pass5Items.map((item) => JSON.stringify(item)).join("\n") + "\n", {
+      encoding: "utf8",
+      flag: "wx",
+    });
     fs.renameSync(tmpOutput, OUTPUT_FILE);
   } catch (err) {
     try {
@@ -792,7 +824,30 @@ function writeOutputFiles(pass5Items, dedupLog, reviewNeeded) {
     throw err;
   }
 
-  fs.writeFileSync(LOG_FILE, dedupLog.map((entry) => JSON.stringify(entry)).join("\n") + "\n");
+  // Audit trail: prepend run metadata so standalone executions are traceable (Review #292 R10)
+  let operatorHash = "unknown";
+  try {
+    const rawUser = String(
+      os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown"
+    );
+    operatorHash = crypto.createHash("sha256").update(rawUser).digest("hex").substring(0, 12);
+  } catch {
+    operatorHash = "unknown";
+  }
+  const runMeta = {
+    type: "run_metadata",
+    timestamp: new Date().toISOString(),
+    operator_hash: operatorHash,
+    input_file: path.basename(INPUT_FILE),
+    items_in: pass5Items.length + dedupLog.filter((e) => e.removed).length,
+    items_out: pass5Items.length,
+    log_entries: dedupLog.length,
+    review_entries: reviewNeeded.length,
+  };
+  fs.writeFileSync(
+    LOG_FILE,
+    [JSON.stringify(runMeta), ...dedupLog.map((entry) => JSON.stringify(entry))].join("\n") + "\n"
+  );
 
   if (reviewNeeded.length > 0) {
     fs.writeFileSync(

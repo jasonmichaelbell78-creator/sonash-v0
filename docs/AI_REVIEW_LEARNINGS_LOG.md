@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.3 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
+**Document Version:** 16.4 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.4    | 2026-02-11 | Review #292: PR #360 R10 — assertNotSymlink fail-closed (rethrow unknown errors, all 5 files), safeCloneObject in resolve-item.js + validate-schema.js, temp-file symlink+wx flag (dedup-multi-pass.js + generate-views.js), atomic writes for metrics.json + METRICS.md, atomic rollback restore, existingEvidence sanitization, line number validation, Pass 2 DoS cap (5000 items), dedup run_metadata audit trail, pipeline write error handling. Active reviews #266-292.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.3    | 2026-02-11 | Review #291: PR #360 R9 — Prototype pollution guard (safeCloneObject in dedup-multi-pass.js + generate-views.js), assertNotSymlink EACCES/EPERM fail-closed (all 5 files), atomic write for generate-views.js MASTER_FILE, schema-stable reviewNeeded entries, symlink guards on generate-metrics.js (3 write paths) + resolve-item.js (saveMasterImprovements + logResolution), acceptance evidence sanitization, BOM strip in resolve-item.js. Active reviews #266-291.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 16.2    | 2026-02-11 | Review #290: PR #360 R8 — CI fix (assertNotSymlink instanceof Error), Pass 0 no-file guard, symlink guards on generate-views.js + logIntake(), enhancement-audit format precision, \_\_dirname child script, fingerprint type guard, Pass 3 comparison cap (50k), isStringArray for-loop + Number.isFinite. Consolidation counter 8→9 (consolidation due). Active reviews #266-290.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 16.1    | 2026-02-11 | Review #289: PR #360 R7 — Symlink guards (intake-audit + dedup), Pass 3 grouped by file (O(n²) → O(n²/k)), regex flag preservation, non-fatal operator hash, honesty guard (counter_argument), non-object JSONL rejection in dedup, whitespace-only required field validation, timestamp spread in resolve-item, hardened schema config (isStringArray + confidence range). Consolidation counter 7→8 (consolidation due). Active reviews #266-289.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
@@ -774,6 +775,46 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #292: PR #360 R10 — Fail-Closed Guards, safeClone Coverage, DoS Cap, Audit Trail (2026-02-11)
+
+**Source:** Qodo Compliance R10 + Qodo Code Suggestions R10 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 11 code + 4 compliance
+(High: 5, Medium: 4, Low: 2, Compliance: 4)
+
+**Patterns Identified:**
+
+1. **assertNotSymlink fail-closed**: Previous impl swallowed unknown errors —
+   must rethrow to prevent silent bypass of symlink protection.
+2. **safeCloneObject coverage gap**: resolve-item.js and validate-schema.js
+   parsed JSONL without prototype pollution protection (dedup + generate-views
+   already had it).
+3. **Temp file hardening**: Atomic write tmp files need their own symlink
+   check + `wx` flag to prevent TOCTOU race conditions.
+4. **Algorithmic DoS**: Pass 2 (near-match) was unbounded O(n^2) — added
+   5000-item cap.
+5. **Audit trail**: dedup-log.jsonl lacked operator/timestamp metadata for
+   traceability.
+6. **Pipeline write resilience**: Append writes to
+   normalized-all.jsonl/deduped.jsonl were unwrapped, risking partial state on
+   I/O failure.
+
+**Resolution:**
+
+- Fixed: 11 items across 7 files (5 scripts + validate-schema + learnings log)
+- Deferred: 1 (evidence data dedup — pipeline handles)
+
+**Key Learnings:**
+
+- assertNotSymlink must rethrow at end of catch to fail closed on unexpected
+  errors
+- `{ flag: "wx" }` prevents overwriting existing tmp files (TOCTOU defense)
+- Pairwise pass cap (MAX_PAIRWISE_ITEMS=5000) prevents quadratic blowup
+- run_metadata entry in dedup log enables standalone execution reconstruction
+- Pipeline append writes need try/catch + process.exit(2) for controlled failure
+- Sanitize BOTH existing evidence and new acceptance evidence for consistency
 
 ---
 
