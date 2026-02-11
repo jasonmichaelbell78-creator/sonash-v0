@@ -74,12 +74,12 @@ export function GratitudeForm({ onClose, onSuccess }: GratitudeFormProps) {
 
         <form onSubmit={handleSubmit} className="space-y-6 overflow-y-auto pr-2">
           <div className="space-y-3">
-            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider text-center">
+            <span className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider text-center">
               I am grateful for...
-            </label>
+            </span>
 
             {items.map((item, index) => (
-              <div key={index} className="flex gap-2 items-center">
+              <div key={`gratitude-input-${index}`} className="flex gap-2 items-center">
                 <span className="font-handlee text-[var(--journal-text)]/50 w-6 text-right">
                   {index + 1}.
                 </span>

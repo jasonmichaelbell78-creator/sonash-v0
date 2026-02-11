@@ -112,7 +112,7 @@ export default function SupportPage() {
                 <p className="font-body text-amber-900/70 italic">Ask about step work.</p>
                 <p className="font-body text-amber-900/70 italic">Share how this week went.</p>
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-6 border-b border-amber-200/50" />
+                  <div key={`blank-line-${i}`} className="h-6 border-b border-amber-200/50" />
                 ))}
               </div>
             </div>

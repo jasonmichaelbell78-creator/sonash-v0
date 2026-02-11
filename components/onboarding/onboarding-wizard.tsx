@@ -511,7 +511,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                 <div className="flex justify-center gap-2">
                   {tourSlides.map((_, i) => (
                     <button
-                      key={i}
+                      key={tourSlides[i].title}
                       onClick={() => setTourSlide(i)}
                       className={`w-2 h-2 rounded-full transition-colors ${
                         tourSlide === i ? "bg-stone-800" : "bg-stone-300"

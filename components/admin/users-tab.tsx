@@ -24,8 +24,7 @@ import {
   Trash2,
   Undo2,
 } from "lucide-react";
-import { differenceInDays } from "date-fns";
-import { formatDistanceToNow } from "date-fns";
+import { differenceInDays, formatDistanceToNow } from "date-fns";
 
 interface UserSearchResult {
   uid: string;

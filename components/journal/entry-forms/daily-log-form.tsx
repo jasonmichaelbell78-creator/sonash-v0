@@ -72,9 +72,9 @@ export function DailyLogForm({ onClose, onSuccess }: DailyLogFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6 overflow-y-auto pr-2">
           {/* Mood Selection */}
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+            <span className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
               Mood (optional)
-            </label>
+            </span>
             <div className="flex flex-wrap gap-3 justify-center">
               {MOOD_OPTIONS.map((option) => (
                 <button
@@ -100,9 +100,9 @@ export function DailyLogForm({ onClose, onSuccess }: DailyLogFormProps) {
           {/* Cravings / Used */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+              <span className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
                 Cravings?
-              </label>
+              </span>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -125,9 +125,9 @@ export function DailyLogForm({ onClose, onSuccess }: DailyLogFormProps) {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+              <span className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
                 Used?
-              </label>
+              </span>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -152,10 +152,14 @@ export function DailyLogForm({ onClose, onSuccess }: DailyLogFormProps) {
 
           {/* Note */}
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+            <label
+              htmlFor="daily-log-note"
+              className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider"
+            >
               Quick Note (optional)
             </label>
             <textarea
+              id="daily-log-note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Jot a few words about today..."

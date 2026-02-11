@@ -187,7 +187,7 @@ function GratitudeContent({ data }: Readonly<{ data: GratitudeEntry["data"] }>) 
       <h4 className="font-heading text-lg mb-2 text-[var(--journal-text)]">Gratitude</h4>
       <ul className="list-disc pl-4 text-sm font-handlee text-[var(--journal-text)]">
         {data.items.slice(0, 3).map((item: string, i: number) => (
-          <li key={i}>{item}</li>
+          <li key={`gratitude-${i}-${item}`}>{item}</li>
         ))}
       </ul>
     </div>

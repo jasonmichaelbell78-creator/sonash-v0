@@ -240,8 +240,8 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
                 <div>
                   <h4 className="text-sm font-semibold text-amber-900 mb-2">Possible causes</h4>
                   <ul className="list-disc list-inside space-y-1">
-                    {knowledge.possibleCauses.map((cause, idx) => (
-                      <li key={idx} className="text-sm text-amber-700">
+                    {knowledge.possibleCauses.map((cause) => (
+                      <li key={cause} className="text-sm text-amber-700">
                         {cause}
                       </li>
                     ))}
@@ -257,8 +257,8 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
                     Suggested remediations
                   </h4>
                   <ol className="list-decimal list-inside space-y-1">
-                    {knowledge.remediations.map((step, idx) => (
-                      <li key={idx} className="text-sm text-amber-700">
+                    {knowledge.remediations.map((step) => (
+                      <li key={step} className="text-sm text-amber-700">
                         {step}
                       </li>
                     ))}
@@ -776,8 +776,14 @@ function ExportDropdown({ issues, loading }: ExportDropdownProps) {
           />
           <div className="absolute right-0 mt-2 w-64 rounded-md border border-amber-200 bg-white shadow-lg z-20">
             <div className="p-3 border-b border-amber-100">
-              <label className="block text-xs font-medium text-amber-700 mb-1.5">Timeframe</label>
+              <label
+                htmlFor="errors-export-timeframe"
+                className="block text-xs font-medium text-amber-700 mb-1.5"
+              >
+                Timeframe
+              </label>
               <select
+                id="errors-export-timeframe"
                 value={exportTimeframe}
                 onChange={(e) => setExportTimeframe(e.target.value as TimeframePreset)}
                 className="w-full rounded-md border border-amber-200 px-2 py-1.5 text-sm text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"

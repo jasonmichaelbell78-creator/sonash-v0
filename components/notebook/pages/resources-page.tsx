@@ -1,6 +1,15 @@
 import dynamic from "next/dynamic";
 
-import { MapPin, Home, Map, Calendar, Loader2, Locate } from "lucide-react";
+import {
+  MapPin,
+  Home,
+  Map,
+  Calendar,
+  Loader2,
+  Locate,
+  ExternalLink,
+  Navigation,
+} from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { MeetingsService, type Meeting } from "@/lib/db/meetings";
 import type { QueryDocumentSnapshot } from "firebase/firestore";
@@ -17,7 +26,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Navigation } from "lucide-react";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { calculateDistance, formatDistance, sortByDistance } from "@/lib/utils/distance";
 
@@ -48,8 +56,8 @@ function parseTime(timeStr: string): number {
 function parse12HourTime(timeStr: string): number {
   const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
   if (!match) return -1;
-  let h = parseInt(match[1]);
-  const m = parseInt(match[2]);
+  let h = Number.parseInt(match[1]);
+  const m = Number.parseInt(match[2]);
   const p = match[3].toUpperCase();
   if (p === "PM" && h !== 12) h += 12;
   if (p === "AM" && h === 12) h = 0;
@@ -366,7 +374,7 @@ function ResourceCardsGrid({ resources, onClick }: Readonly<ResourceCardProps>) 
     <div className="space-y-3">
       {resources.map((resource, index) => (
         <button
-          key={index}
+          key={resource.id}
           onClick={() => onClick(resource.title, resource.id)}
           className="w-full text-left p-4 border border-amber-200/50 rounded-lg hover:bg-amber-50 transition-colors group shadow-sm"
         >

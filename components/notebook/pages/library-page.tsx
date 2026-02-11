@@ -167,7 +167,7 @@ function GlossarySection() {
       {/* List */}
       <div className="flex-1 overflow-y-auto space-y-2 pr-2">
         {filtered.map((item, i) => (
-          <div key={i} className="bg-white/60 border border-amber-100 rounded-lg p-3">
+          <div key={item.term} className="bg-white/60 border border-amber-100 rounded-lg p-3">
             <div className="flex items-start justify-between">
               <h4 className="font-heading-alt text-amber-900">{item.term}</h4>
               <span className="text-xs bg-amber-100 text-amber-600 px-2 py-0.5 rounded capitalize">

@@ -128,7 +128,7 @@ export function EntryWizard({ type, onClose }: EntryWizardProps) {
                 "Gratitude unlocks the fullness of life."
               </p>
               {gratitudeItems.map((item, i) => (
-                <div key={i} className="flex gap-3 items-center">
+                <div key={`gratitude-${i}`} className="flex gap-3 items-center">
                   <span className="font-bold text-rose-300 font-handlee text-xl">{i + 1}.</span>
                   <input
                     value={item}
@@ -149,38 +149,56 @@ export function EntryWizard({ type, onClose }: EntryWizardProps) {
           {type === "inventory" && (
             <div className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-400 uppercase">
+                <label
+                  htmlFor="wizard-inventory-resentments"
+                  className="text-xs font-bold text-slate-400 uppercase"
+                >
                   Resentments / Anger
                 </label>
                 <textarea
+                  id="wizard-inventory-resentments"
                   value={inventory.resentments}
                   onChange={(e) => setInventory({ ...inventory, resentments: e.target.value })}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none h-24"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-400 uppercase">
+                <label
+                  htmlFor="wizard-inventory-dishonesty"
+                  className="text-xs font-bold text-slate-400 uppercase"
+                >
                   Fear / Dishonesty
                 </label>
                 <textarea
+                  id="wizard-inventory-dishonesty"
                   value={inventory.dishonesty}
                   onChange={(e) => setInventory({ ...inventory, dishonesty: e.target.value })}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none h-24"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-400 uppercase">Apologies Owed</label>
+                <label
+                  htmlFor="wizard-inventory-apologies"
+                  className="text-xs font-bold text-slate-400 uppercase"
+                >
+                  Apologies Owed
+                </label>
                 <textarea
+                  id="wizard-inventory-apologies"
                   value={inventory.apologies}
                   onChange={(e) => setInventory({ ...inventory, apologies: e.target.value })}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none h-24"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-400 uppercase">
+                <label
+                  htmlFor="wizard-inventory-successes"
+                  className="text-xs font-bold text-slate-400 uppercase"
+                >
                   Successes / Wins
                 </label>
                 <textarea
+                  id="wizard-inventory-successes"
                   value={inventory.successes}
                   onChange={(e) => setInventory({ ...inventory, successes: e.target.value })}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none h-24"

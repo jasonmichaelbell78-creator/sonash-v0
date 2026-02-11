@@ -68,9 +68,9 @@ export function MoodForm({ onClose, onSuccess }: MoodFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6 overflow-y-auto pr-2">
           {/* Mood Selection */}
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+            <span className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
               How are you feeling?
-            </label>
+            </span>
             <div className="flex flex-wrap gap-3 justify-center">
               {MOOD_OPTIONS.map((option) => (
                 <button
@@ -95,11 +95,15 @@ export function MoodForm({ onClose, onSuccess }: MoodFormProps) {
 
           {/* Intensity Slider */}
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider flex justify-between">
+            <label
+              htmlFor="mood-intensity"
+              className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider flex justify-between"
+            >
               <span>Intensity</span>
               <span>{intensity}/10</span>
             </label>
             <input
+              id="mood-intensity"
               type="range"
               min="1"
               max="10"
@@ -115,10 +119,14 @@ export function MoodForm({ onClose, onSuccess }: MoodFormProps) {
 
           {/* Note */}
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+            <label
+              htmlFor="mood-note"
+              className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider"
+            >
               Note (Optional)
             </label>
             <textarea
+              id="mood-note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Why do you feel this way?"

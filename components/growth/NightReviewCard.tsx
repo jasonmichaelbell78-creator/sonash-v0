@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, type HTMLMotionProps } from "framer-motion";
-import { Moon, Save, ChevronRight, ChevronLeft, Check } from "lucide-react";
+import { Moon, Save, ChevronRight, ChevronLeft, Check, Mic, MicOff } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,6 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { FirestoreService } from "@/lib/firestore-service";
 import { logger, maskIdentifier } from "@/lib/logger";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
-import { Mic, MicOff } from "lucide-react";
 import { toast } from "sonner";
 
 type NightReviewCardProps = HTMLMotionProps<"button">;
@@ -294,7 +293,12 @@ function Step3Reflections({
         {REFLECTIONS.map((item) => (
           <div key={item.id} className="space-y-2">
             <div className="flex justify-between items-center">
-              <label className="text-sm font-medium text-indigo-200">{item.label}</label>
+              <label
+                htmlFor={`reflection-${item.id}`}
+                className="text-sm font-medium text-indigo-200"
+              >
+                {item.label}
+              </label>
               {hasSupport && (
                 <button
                   onClick={() => toggleSpeech(item.id, reflectionAnswers[item.id] || "")}
@@ -313,6 +317,7 @@ function Step3Reflections({
               )}
             </div>
             <textarea
+              id={`reflection-${item.id}`}
               value={reflectionAnswers[item.id] || ""}
               onChange={(e) =>
                 setReflectionAnswers((prev) => ({ ...prev, [item.id]: e.target.value }))
@@ -364,7 +369,10 @@ function Step4Closing({
 
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-emerald-200">
+            <label
+              htmlFor="night-review-gratitude"
+              className="text-sm font-medium text-emerald-200"
+            >
               Today I am grateful for...
             </label>
             {hasSupport && (
@@ -385,6 +393,7 @@ function Step4Closing({
             )}
           </div>
           <textarea
+            id="night-review-gratitude"
             value={gratitude}
             onChange={(e) => setGratitude(e.target.value)}
             rows={3}
@@ -394,7 +403,7 @@ function Step4Closing({
 
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-indigo-200">
+            <label htmlFor="night-review-surrender" className="text-sm font-medium text-indigo-200">
               Today I accept/surrender...
             </label>
             {hasSupport && (
@@ -415,6 +424,7 @@ function Step4Closing({
             )}
           </div>
           <textarea
+            id="night-review-surrender"
             value={surrender}
             onChange={(e) => setSurrender(e.target.value)}
             rows={3}

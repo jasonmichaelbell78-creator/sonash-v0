@@ -866,7 +866,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               {cleanTimeDisplay ? (
                 <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
                   {cleanTimeDisplay.map((part, index) => (
-                    <span key={index} className="text-center">
+                    <span key={part.text} className="text-center">
                       <span className={`font-heading-alt ${part.size} text-amber-900`}>
                         {part.text}
                       </span>

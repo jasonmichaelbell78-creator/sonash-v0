@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
-import { Zap, ChevronRight, Check } from "lucide-react";
+import { Zap, ChevronRight, Check, Mic, MicOff } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +17,6 @@ import { FirestoreService } from "@/lib/firestore-service";
 import { logger, maskIdentifier } from "@/lib/logger";
 import { toast } from "sonner";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
-import { Mic, MicOff } from "lucide-react";
 
 type SpotCheckCardProps = HTMLMotionProps<"button">;
 

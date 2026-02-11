@@ -373,7 +373,7 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
         </label>
         {description && <p className="text-xs text-amber-900/60">{description}</p>}
         {examples.map((_, i) => (
-          <div key={i} className="grid grid-cols-2 gap-3">
+          <div key={`${id}_pair_${i}`} className="grid grid-cols-2 gap-3">
             <Textarea
               id={`${id}_example_${i}`}
               aria-labelledby={id}

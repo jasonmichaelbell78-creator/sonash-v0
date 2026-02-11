@@ -300,10 +300,14 @@ export function PrivilegesTab() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* ID Field */}
             <div>
-              <label className="block text-sm font-medium text-amber-900 mb-1">
+              <label
+                htmlFor="privilege-id"
+                className="block text-sm font-medium text-amber-900 mb-1"
+              >
                 ID <span className="text-red-500">*</span>
               </label>
               <input
+                id="privilege-id"
                 type="text"
                 value={formId}
                 onChange={(e) => {
@@ -321,10 +325,14 @@ export function PrivilegesTab() {
 
             {/* Name Field */}
             <div>
-              <label className="block text-sm font-medium text-amber-900 mb-1">
+              <label
+                htmlFor="privilege-name"
+                className="block text-sm font-medium text-amber-900 mb-1"
+              >
                 Display Name <span className="text-red-500">*</span>
               </label>
               <input
+                id="privilege-name"
                 type="text"
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
@@ -336,8 +344,14 @@ export function PrivilegesTab() {
 
           {/* Description Field */}
           <div>
-            <label className="block text-sm font-medium text-amber-900 mb-1">Description</label>
+            <label
+              htmlFor="privilege-description"
+              className="block text-sm font-medium text-amber-900 mb-1"
+            >
+              Description
+            </label>
             <textarea
+              id="privilege-description"
               value={formDescription}
               onChange={(e) => setFormDescription(e.target.value)}
               placeholder="Describe what this privilege level provides..."
@@ -374,10 +388,10 @@ export function PrivilegesTab() {
 
           {/* Features Section */}
           <div>
-            <label className="block text-sm font-medium text-amber-900 mb-2 flex items-center gap-2">
+            <span className="block text-sm font-medium text-amber-900 mb-2 flex items-center gap-2">
               <Tag className="w-4 h-4" />
               Feature Permissions
-            </label>
+            </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {AVAILABLE_FEATURES.map((feature) => (
                 <button

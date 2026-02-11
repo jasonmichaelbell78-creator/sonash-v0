@@ -133,9 +133,12 @@ export default function GratitudeCard({ className, ...props }: GratitudeCardProp
         <div className="flex-1 overflow-y-auto pl-6 pr-8 py-4 space-y-6">
           {/* Add New Item Section */}
           <div className="space-y-3 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-            <label className="text-sm font-bold text-emerald-700">I am grateful for...</label>
+            <label htmlFor="gratitude-card-input" className="text-sm font-bold text-emerald-700">
+              I am grateful for...
+            </label>
             <div className="flex gap-2">
               <Input
+                id="gratitude-card-input"
                 value={currentText}
                 onChange={(e) => setCurrentText(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !showWhy && handleAddItem()}
