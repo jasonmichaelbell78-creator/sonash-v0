@@ -83,6 +83,17 @@ security review for auth, input validation, secrets management **Example:**
 compliance check **Note:** S0/S1 findings require `verification_steps` (Session
 #98)
 
+### `/audit-enhancements`
+
+**Description:** Run a comprehensive enhancement audit across the entire project
+— code, product, UX, content, workflows, infrastructure, external services, and
+meta-tooling **When to use:** When looking for improvement opportunities beyond
+bug fixes and tech debt **Example:** `/audit-enhancements` **Parameters:** None
+**Output:** Enhancement findings ingested into `MASTER_IMPROVEMENTS.jsonl` (IMS)
+with ENH-XXXX IDs **Note:** Uses 4-phase adaptive architecture with 8 parallel
+agents; findings scored on I0-I3 impact scale; honesty guardrails require
+counter-arguments and 70% confidence threshold
+
 ### `/doc-optimizer`
 
 **Description:** Scan all docs, auto-fix formatting/headers/links, report issues

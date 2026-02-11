@@ -1,0 +1,38 @@
+{
+  "generated": "2026-02-11T14:11:31.131Z",
+  "generated_date": "2026-02-11",
+  "summary": {
+    "total": 0,
+    "open": 0,
+    "implemented": 0,
+    "declined": 0,
+    "resolution_rate_pct": 0
+  },
+  "by_status": {
+    "PROPOSED": 0,
+    "ACCEPTED": 0,
+    "DECLINED": 0,
+    "DEFERRED": 0,
+    "IMPLEMENTED": 0,
+    "STALE": 0
+  },
+  "by_impact": {
+    "I0": 0,
+    "I1": 0,
+    "I2": 0,
+    "I3": 0
+  },
+  "by_category": {},
+  "alerts": {
+    "i0_count": 0,
+    "i1_count": 0,
+    "i0_items": [],
+    "i1_items": []
+  },
+  "health": {
+    "review_queue_size": 0,
+    "avg_age_days": 0,
+    "oldest_age_days": 0,
+    "oldest_item_id": null
+  }
+}
