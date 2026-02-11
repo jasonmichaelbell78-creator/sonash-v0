@@ -443,15 +443,21 @@ function checkTdmsCrossRefs(newItems, debtItems) {
 }
 
 // Log intake activity
+// Log intake activity (wrapped in try/catch so logging failure doesn't crash pipeline - Review #287 R5)
 function logIntake(activity) {
-  if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(LOG_DIR)) {
+      fs.mkdirSync(LOG_DIR, { recursive: true });
+    }
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      ...activity,
+    };
+    fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n", "utf8");
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`Warning: Failed to write intake log: ${msg}`);
   }
-  const logEntry = {
-    timestamp: new Date().toISOString(),
-    ...activity,
-  };
-  fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
 // Print processing results (new items, duplicates, errors, format stats)
@@ -691,7 +697,9 @@ async function main() {
   };
 
   for (let i = 0; i < inputLines.length; i++) {
-    const line = inputLines[i].trimEnd(); // Handle CRLF line endings (Review #286 R4)
+    const rawLine = inputLines[i];
+    // Strip BOM from first line + handle CRLF (Review #287 R5 + Review #286 R4)
+    const line = (i === 0 ? rawLine.replace(/^\uFEFF/, "") : rawLine).trimEnd();
     try {
       const inputItem = JSON.parse(line);
 
@@ -825,6 +833,8 @@ async function main() {
 
   logIntake({
     action: "intake-audit",
+    // Explicit outcome field for audit trail completeness (Review #287 R5 compliance)
+    outcome: errors.length === 0 ? "success" : "partial_failure",
     operator: operatorContext,
     input_file: inputFile,
     items_processed: inputLines.length,

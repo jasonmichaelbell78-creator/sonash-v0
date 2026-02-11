@@ -162,23 +162,21 @@ function mergeItems(primary, secondary) {
     }
   }
 
-  // Merge evidence arrays (defensive against malformed input - Review #286 R4: sanitize strings)
+  // Merge evidence arrays — always sanitize both sides (Review #287 R5: removed guard)
   const mergedEvidence = Array.isArray(merged.evidence) ? merged.evidence : [];
   const secondaryEvidence = Array.isArray(secondary.evidence) ? secondary.evidence : [];
-  if (secondaryEvidence.length > 0) {
-    const normMergedEvidence = mergedEvidence
-      .filter((e) => typeof e === "string")
-      .map((e) => e.trim())
-      .filter(Boolean);
-    const normSecondaryEvidence = secondaryEvidence
-      .filter((e) => typeof e === "string")
-      .map((e) => e.trim())
-      .filter(Boolean);
-    merged.evidence = [
-      ...normMergedEvidence,
-      ...normSecondaryEvidence.filter((e) => !normMergedEvidence.includes(e)),
-    ];
-  }
+  const normMergedEvidence = mergedEvidence
+    .filter((e) => typeof e === "string")
+    .map((e) => e.trim())
+    .filter(Boolean);
+  const normSecondaryEvidence = secondaryEvidence
+    .filter((e) => typeof e === "string")
+    .map((e) => e.trim())
+    .filter(Boolean);
+  merged.evidence = [
+    ...normMergedEvidence,
+    ...normSecondaryEvidence.filter((e) => !normMergedEvidence.includes(e)),
+  ];
 
   return merged;
 }

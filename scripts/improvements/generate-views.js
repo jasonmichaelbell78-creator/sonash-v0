@@ -51,7 +51,8 @@ function escapeMarkdown(text) {
 // Sort by impact (I0 first)
 function impactSort(a, b) {
   const order = { I0: 0, I1: 1, I2: 2, I3: 3 };
-  return (order[a.impact] || 4) - (order[b.impact] || 4);
+  // Use ?? instead of || so I0 (value 0) sorts correctly (Review #287 R5)
+  return (order[a.impact] ?? 4) - (order[b.impact] ?? 4);
 }
 
 // Impact level display names
@@ -114,7 +115,11 @@ function loadExistingItems() {
             // Also map merged source IDs so dedup merges preserve the original ID
             if (Array.isArray(item.merged_from)) {
               for (const srcId of item.merged_from) {
+                if (typeof srcId !== "string") continue;
                 idMap.set(`source:${srcId}`, item.id);
+                // Strip @line: suffix to prevent ID drift after merges (Review #287 R5)
+                const baseSrcId = srcId.replace(/@line:\d+$/, "");
+                idMap.set(`source:${baseSrcId}`, item.id);
               }
             }
           }

@@ -217,8 +217,10 @@ function validateTransition(item, targetStatus) {
 // Display item info and planned action
 function displayItemInfo(item, parsed) {
   const targetStatus = ACTION_TO_STATUS[parsed.action];
+  // Guard against missing/non-string title to prevent crash (Review #287 R5)
+  const title = typeof item.title === "string" ? item.title : "Untitled";
   console.log(`  Item: ${item.id}`);
-  console.log(`  Title: ${item.title.substring(0, 60)}${item.title.length > 60 ? "..." : ""}`);
+  console.log(`  Title: ${title.substring(0, 60)}${title.length > 60 ? "..." : ""}`);
   if (item.file) {
     console.log(`  File: ${item.file}${item.line ? `:${item.line}` : ""}`);
   }

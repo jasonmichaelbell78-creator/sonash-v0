@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 15.8 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
+**Document Version:** 15.9 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15.9    | 2026-02-11 | Review #287: PR #360 R5 — impactSort falsy bug (                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | → ??), ID drift from @line: suffix, missing title guard, always-sanitize evidence, BOM in intake JSONL, logIntake outcome field + try/catch. Consolidation counter 5→6. Active reviews #266-287.                                                                  |
 | 15.8    | 2026-02-11 | Review #286: PR #360 R4 — Prototype pollution (safeCloneObject after parse), TOCTOU (use realPath), evidence sanitization, BOM handling, absolute script paths, logging try/catch, stderr for errors. ENH-0003 (Markdown injection) routed to IMS. Consolidation counter 4→5. Active reviews #266-286.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 15.7    | 2026-02-10 | Review #282: PR #358 R2 — SSR guards, regex simplification, key stability (24 items - 0 CRITICAL, 1 MAJOR SonarCloud, 21 MINOR, 2 REJECTED). **MAJOR**: Replace SENSITIVE_KEY_PATTERN regex (complexity 21) with Set-based SENSITIVE_KEYS lookup. **MINOR**: 8× typeof→direct undefined comparison (SonarCloud), SSR guards (keydown/confirm/location/navigator/matchMedia), unmount guard for async copy, select value validation, composite React keys (2 files), Firestore limit(7), window ref for event listeners (2 files), try/catch String(input), deploy-firebase TODO removal, robust reload. **REJECTED**: auth-error-banner toast dedup (works correctly), NightReviewCard React namespace type (too minor). Consolidation counter 11→12 (consolidation due). Active reviews #266-282.                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 15.6    | 2026-02-10 | Review #281: PR #358 Sprint 2 — Shared State, Redaction, Key Stability (9 items - 1 MAJOR, 7 MINOR, 1 TRIVIAL, 0 REJECTED). **MAJOR**: Module-level Set shared state bug in auth-error-banner.tsx → useState. **MINOR**: Key-name-based PII redaction (SENSITIVE_KEY_PATTERN), deepRedactValue null check, composite React keys (3 files), guard clause for optional params, SSR-safe reload. **TRIVIAL**: Removed redundant onKeyDown on backdrop div. Consolidation counter 10→11 (consolidation due). Active reviews #266-281.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
@@ -769,6 +770,44 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #287: PR #360 R5 — impactSort Falsy Bug, ID Drift, Audit Outcome, Evidence Sanitization (2026-02-11)
+
+**Source:** Qodo Compliance R5 + Qodo Code Suggestions R5 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 8 total (Major: 2, Minor: 5,
+Deferred: 1)
+
+**Patterns Identified:**
+
+1. **Falsy 0 in lookup tables**: `order[a.impact] || 4` treats I0 (value 0) as
+   falsy, making I0 items sort last instead of first. Use `??` (nullish
+   coalescing) for numeric lookup tables.
+2. **ID drift from @line: suffixes in merged_from**: Source IDs with `@line:N`
+   suffixes don't match their base form during ID lookup, causing duplicate ENH
+   IDs across regeneration cycles.
+3. **Always sanitize, not just on merge**: Evidence arrays should be sanitized
+   unconditionally, not only when secondary has items — otherwise malformed data
+   in primary persists.
+4. **Audit log outcome field**: Without an explicit success/failure outcome,
+   downstream consumers must infer result from error counts.
+
+**Resolution:**
+
+- Fixed: 7 items
+- Skipped: 0
+- Deferred: 1 (resource exhaustion — already DEBT-2747 S2 scope)
+
+**Key Learnings:**
+
+- `||` vs `??` for numeric lookup: 0 is falsy, null/undefined are nullish
+- merged_from IDs with @line: suffixes need base-form normalization for stable
+  lookups
+- Evidence sanitization must run unconditionally (no guard on secondary length)
+- Audit logs need explicit outcome field (success/partial_failure/failure)
+- logIntake needs same try/catch pattern as logResolution (Review #286 R4)
+- BOM stripping needed in intake-audit.js too, not just validate-schema.js
 
 ---
 
