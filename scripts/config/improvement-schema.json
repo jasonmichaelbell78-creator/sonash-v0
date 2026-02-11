@@ -1,0 +1,34 @@
+{
+  "validCategories": [
+    "app-architecture",
+    "product-ux",
+    "content",
+    "devx-automation",
+    "infrastructure",
+    "testing-strategy",
+    "documentation-strategy",
+    "workflow-lifecycle",
+    "external-services",
+    "meta-tooling"
+  ],
+  "validImpacts": ["I0", "I1", "I2", "I3"],
+  "validEfforts": ["E0", "E1", "E2", "E3"],
+  "validStatuses": ["PROPOSED", "ACCEPTED", "DECLINED", "DEFERRED", "IMPLEMENTED", "STALE"],
+  "confidenceThreshold": 70,
+  "idPrefix": "ENH",
+  "idPattern": "^ENH-\\d{4,}$",
+  "requiredFields": [
+    "id",
+    "category",
+    "title",
+    "fingerprint",
+    "impact",
+    "effort",
+    "confidence",
+    "status",
+    "current_approach",
+    "proposed_outcome",
+    "counter_argument",
+    "why_it_matters"
+  ]
+}

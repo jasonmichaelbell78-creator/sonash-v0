@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to regenerate.
 
 **Generated:** 2026-02-11
-**Active Documents:** 269
+**Active Documents:** 271
 **Archived Documents:** 93
 
 ---
@@ -34,9 +34,9 @@ orphaned documents.
 
 | Tier | Count | Description |
 |------|-------|-------------|
-| Tier 1 | 9 | Essential |
+| Tier 1 | 10 | Essential |
 | Tier 2 | 75 | Core |
-| Tier 3 | 119 | Specialized |
+| Tier 3 | 120 | Specialized |
 | Tier 4 | 66 | Reference |
 | Tier 5 | 0 | Archive |
 
@@ -49,9 +49,9 @@ orphaned documents.
 | .claude > agents | 24 |
 | analysis | 15 |
 | .claude > agents > global | 11 |
-| Root Documents | 9 |
+| Root Documents | 10 |
+| Templates | 8 |
 | .claude | 7 |
-| Templates | 7 |
 | Agent Documentation | 5 |
 | .claude > plans | 3 |
 | .github | 3 |
@@ -74,6 +74,7 @@ orphaned documents.
 | [AI Workflow Guide](AI_WORKFLOW.md) | **Every phase, section, or milestone completion MUST include... | ↓12 ↑16 | 2026-02-11 |
 | [Architecture Documentation](ARCHITECTURE.md) | - | ↓12 ↑6 | 2026-02-11 |
 | [Development Guide](DEVELOPMENT.md) | Unified dev dashboard for monitoring session activity, error | ↓13 ↑9 | 2026-02-11 |
+| [Implementation Plan: audit-enhancements Skill + Improvement Management System (IMS)](plan.md) | Create a new `audit-enhancements` skill that performs a comp... | ↓0 ↑0 | 2026-02-11 |
 | [Session Context](SESSION_CONTEXT.md) | - | ↓6 ↑8 | 2026-02-11 |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | _A privacy-first digital recovery journal for the recovery c... | ↓0 ↑15 | 2026-02-11 |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md) | Detailed specifications for future milestones (M2-M10). For | ↓1 ↑4 | 2026-02-11 |
@@ -307,7 +308,8 @@ orphaned documents.
 | [[Workflow/Reference Name]](docs/templates/REFERENCE_DOC_TEMPLATE.md) | - | ↓0 ↑0 | 2026-02-11 |
 | [CANON Quick Reference Card](docs/templates/CANON_QUICK_REFERENCE.md) | One-page quick reference for Multi-AI audits. Distilled from... | ↓1 ↑0 | 2026-02-11 |
 | [How to [Accomplish Task]](docs/templates/GUIDE_DOC_TEMPLATE.md) | - | ↓0 ↑2 | 2026-02-11 |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | Standardized JSONL output schema for all multi-AI review tem... | ↓12 ↑8 | 2026-02-11 |
+| [Improvement JSONL Schema Standard](docs/templates/IMPROVEMENT_JSONL_SCHEMA.md) | - | ↓0 ↑1 | 2026-02-11 |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | Standardized JSONL output schema for all multi-AI review tem... | ↓13 ↑8 | 2026-02-11 |
 
 ### .agent > workflows (Tier 4)
 
@@ -451,11 +453,11 @@ Documents that are linked to most frequently:
 | [SoNash Product Roadmap](ROADMAP.md) | 19 | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +16 more |
 | [Development Guide](DEVELOPMENT.md) | 13 | HOOKS, AI_WORKFLOW, ARCHITECTURE +10 more |
 | [Security &amp; Privacy Guide](docs/SECURITY.md) | 13 | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +10 more |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | 13 | SKILL, DOCUMENTATION_STANDARDS, README +10 more |
 | [AI Workflow Guide](AI_WORKFLOW.md) | 12 | HOOKS, README, SESSION_CONTEXT +9 more |
 | [Architecture Documentation](ARCHITECTURE.md) | 12 | AI_WORKFLOW, DEVELOPMENT, README +9 more |
 | [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md) | 12 | AI_WORKFLOW, README, FIREBASE_CHANGE_POLICY +9 more |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | 12 | SKILL, SKILL, DOCUMENTATION_STANDARDS +9 more |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | 12 | SKILL, DOCUMENTATION_STANDARDS, README +9 more |
 | [Multi-AI Review Coordinator](docs/multi-ai-audit/COORDINATOR.md) | 11 | AI_WORKFLOW, README, CODE_REVIEW_PLAN +8 more |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md) | 9 | AI_WORKFLOW, README, SESSION_CONTEXT +6 more |
 | [Multi-AI Audit Shared Template Base](docs/multi-ai-audit/templates/SHARED_TEMPLATE_BASE.md) | 9 | README, CODE_REVIEW_PLAN, DOCUMENTATION_AUDIT +6 more |
@@ -502,7 +504,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**191 orphaned documents:**
+**193 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [Find Skills](.agents/skills/find-skills/SKILL.md)
@@ -692,8 +694,10 @@ Documents with no inbound links (not referenced by any other document):
 - [\[Document Title\]](docs/templates/CANONICAL_DOC_TEMPLATE.md)
 - [\[Document Title\]](docs/templates/FOUNDATION_DOC_TEMPLATE.md)
 - [How to \[Accomplish Task\]](docs/templates/GUIDE_DOC_TEMPLATE.md)
+- [Improvement JSONL Schema Standard](docs/templates/IMPROVEMENT_JSONL_SCHEMA.md)
 - [\[Feature/Initiative Name\] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md)
 - [\[Workflow/Reference Name\]](docs/templates/REFERENCE_DOC_TEMPLATE.md)
+- [Implementation Plan: audit-enhancements Skill + Improvement Management System \(IMS\)](plan.md)
 - [Scripts Reference](scripts/README.md)
 
 ---
@@ -963,17 +967,19 @@ Documents with no inbound links (not referenced by any other document):
 | 256 | [docs/templates/CANONICAL_DOC_TEMPLATE.md](docs/templates/CANONICAL_DOC_TEMPLATE.md) | \[Document Title\] | 3 | - |
 | 257 | [docs/templates/FOUNDATION_DOC_TEMPLATE.md](docs/templates/FOUNDATION_DOC_TEMPLATE.md) | \[Document Title\] | 3 | - |
 | 258 | [docs/templates/GUIDE_DOC_TEMPLATE.md](docs/templates/GUIDE_DOC_TEMPLATE.md) | How to \[Accomplish Task\] | 3 | - |
-| 259 | [docs/templates/JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) | Multi-AI Review JSONL Schema Standard | 3 | - |
-| 260 | [docs/templates/PLANNING_DOC_TEMPLATE.md](docs/templates/PLANNING_DOC_TEMPLATE.md) | \[Feature/Initiative Name\] Plan | 3 | - |
-| 261 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md) | \[Workflow/Reference Name\] | 3 | - |
-| 262 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md) | Testing Plan | 2 | Active **Last Updated:** 2026-01-20 |
-| 263 | [docs/TRIGGERS.md](docs/TRIGGERS.md) | TRIGGERS.md - Automation &amp; Enforcement Reference | 2 | DRAFT \| ACTIVE \| DEPRECATED |
-| 264 | [README.md](README.md) | SoNash - Sober Nashville Recovery Notebook | 1 | ACTIVE **Last Updated:** 2026-01-03 |
-| 265 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md) | SoNash Future Roadmap | 1 | ACTIVE |
-| 266 | [ROADMAP_LOG.md](ROADMAP_LOG.md) | SoNash Roadmap Log | 1 | ACTIVE \(append-only archive\) **Last |
-| 267 | [ROADMAP.md](ROADMAP.md) | SoNash Product Roadmap | 1 | ACTIVE |
-| 268 | [scripts/README.md](scripts/README.md) | Scripts Reference | 4 | - |
-| 269 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md) | Session Context | 1 | - |
+| 259 | [docs/templates/IMPROVEMENT_JSONL_SCHEMA.md](docs/templates/IMPROVEMENT_JSONL_SCHEMA.md) | Improvement JSONL Schema Standard | 3 | DRAFT |
+| 260 | [docs/templates/JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) | Multi-AI Review JSONL Schema Standard | 3 | - |
+| 261 | [docs/templates/PLANNING_DOC_TEMPLATE.md](docs/templates/PLANNING_DOC_TEMPLATE.md) | \[Feature/Initiative Name\] Plan | 3 | - |
+| 262 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md) | \[Workflow/Reference Name\] | 3 | - |
+| 263 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md) | Testing Plan | 2 | Active **Last Updated:** 2026-01-20 |
+| 264 | [docs/TRIGGERS.md](docs/TRIGGERS.md) | TRIGGERS.md - Automation &amp; Enforcement Reference | 2 | DRAFT \| ACTIVE \| DEPRECATED |
+| 265 | [plan.md](plan.md) | Implementation Plan: audit-enhancements Skill + Improvement Management System \(IMS\) | 1 | DRAFT |
+| 266 | [README.md](README.md) | SoNash - Sober Nashville Recovery Notebook | 1 | ACTIVE **Last Updated:** 2026-01-03 |
+| 267 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md) | SoNash Future Roadmap | 1 | ACTIVE |
+| 268 | [ROADMAP_LOG.md](ROADMAP_LOG.md) | SoNash Roadmap Log | 1 | ACTIVE \(append-only archive\) **Last |
+| 269 | [ROADMAP.md](ROADMAP.md) | SoNash Product Roadmap | 1 | ACTIVE |
+| 270 | [scripts/README.md](scripts/README.md) | Scripts Reference | 4 | - |
+| 271 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md) | Session Context | 1 | - |
 
 </details>
 
