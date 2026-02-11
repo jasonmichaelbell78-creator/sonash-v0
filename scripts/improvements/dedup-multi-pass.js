@@ -162,11 +162,13 @@ function mergeItems(primary, secondary) {
     }
   }
 
-  // Merge evidence arrays
-  if (secondary.evidence) {
+  // Merge evidence arrays (defensive against malformed input)
+  const mergedEvidence = Array.isArray(merged.evidence) ? merged.evidence : [];
+  const secondaryEvidence = Array.isArray(secondary.evidence) ? secondary.evidence : [];
+  if (secondaryEvidence.length > 0) {
     merged.evidence = [
-      ...(merged.evidence || []),
-      ...secondary.evidence.filter((e) => !(merged.evidence || []).includes(e)),
+      ...mergedEvidence,
+      ...secondaryEvidence.filter((e) => !mergedEvidence.includes(e)),
     ];
   }
 

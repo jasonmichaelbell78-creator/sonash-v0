@@ -193,15 +193,13 @@ Exit codes:
 
   const parsed = parseArgs(args);
   const projectDir = path.resolve(__dirname, "../..");
-  let filePath = parsed.file ? path.resolve(projectDir, parsed.file) : DEFAULT_FILE;
+  const filePath = parsed.file ? path.resolve(projectDir, parsed.file) : DEFAULT_FILE;
 
-  // Security: validate path when user provides custom file
-  if (parsed.file) {
-    const validation = validateAndVerifyPath(filePath, projectDir);
-    if (!validation.valid) {
-      console.error(`Error: ${validation.error}`);
-      process.exit(2);
-    }
+  // Security: always validate resolved path (default may be a symlink)
+  const validation = validateAndVerifyPath(filePath, projectDir);
+  if (!validation.valid) {
+    console.error(`Error: ${validation.error}`);
+    process.exit(2);
   }
 
   if (!parsed.quiet) {
@@ -247,7 +245,7 @@ Exit codes:
 
   for (let i = 0; i < lines.length; i++) {
     const lineNum = i + 1;
-    const line = lines[i];
+    const line = lines[i].trimEnd(); // Handle CRLF line endings
     if (!line.trim()) continue;
 
     try {

@@ -48,11 +48,12 @@ const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 function safeCloneObject(obj, depth = 0) {
   if (obj === null || typeof obj !== "object") return obj;
   // Prevent stack overflows from deeply-nested untrusted input
-  if (depth > 200) return null;
+  // Return empty container (not null) to avoid downstream crashes on property access
+  if (depth > 200) return Array.isArray(obj) ? [] : Object.create(null);
   if (Array.isArray(obj)) {
     return obj.map((v) => safeCloneObject(v, depth + 1));
   }
-  const result = {};
+  const result = Object.create(null);
   for (const key of Object.keys(obj)) {
     if (!DANGEROUS_KEYS.has(key)) {
       result[key] = safeCloneObject(obj[key], depth + 1);
@@ -693,6 +694,17 @@ async function main() {
     const line = inputLines[i];
     try {
       const inputItem = JSON.parse(line);
+
+      if (!inputItem || typeof inputItem !== "object" || Array.isArray(inputItem)) {
+        errors.push({
+          line: i + 1,
+          errors: [
+            `Invalid item type (expected JSON object): ${String(inputItem).substring(0, 80)}`,
+          ],
+        });
+        continue;
+      }
+
       const result = validateAndNormalize(inputItem, inputFile);
 
       if (!result.valid) {

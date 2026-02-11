@@ -217,8 +217,8 @@ function displayItemInfo(item, parsed) {
   if (item.file) {
     console.log(`  File: ${item.file}${item.line ? `:${item.line}` : ""}`);
   }
-  if (item.severity) {
-    console.log(`  Impact: ${item.severity}`);
+  if (item.impact) {
+    console.log(`  Impact: ${item.impact}`);
   }
   console.log(`  Current Status: ${item.status || "PROPOSED"}`);
   console.log(`\n  Action: ${parsed.action} -> ${targetStatus}`);

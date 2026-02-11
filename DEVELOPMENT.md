@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.6 **Last Updated:** 2026-02-08 **Status:** Active
+**Document Version:** 2.7 **Last Updated:** 2026-02-11 **Status:** Active
 
 ---
 
@@ -605,13 +605,23 @@ The pre-commit hook (`.husky/pre-commit`) runs multiple validation steps:
 | CANON validation   | `npm run validate:canon`          | NO - warning only                 |
 | Skill validation   | `npm run skills:validate`         | NO - warning only                 |
 | Cross-doc deps     | `npm run crossdoc:check`          | YES - blocks commit               |
+| Doc index update   | `npm run docs:index` + Prettier   | AUTO-FIX - regenerates & formats  |
+| Doc header check   | `check-doc-headers.js`            | YES - blocks new .md files        |
 | Learning reminder  | (checks staged files)             | NO - reminder only                |
 | Audit S0/S1        | `validate-audit.js --strict-s0s1` | YES - blocks commit (Session #98) |
+| Agent compliance   | `check-agent-compliance.js`       | NO - warning only                 |
+| Debt schema        | `debt/validate-schema.js`         | YES - blocks commit               |
+| Debt location      | (canonical path check)            | NO - warning only                 |
 
 #### Hook Stages Explained
 
 **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
 staged. Validates schema compliance for audit output files.
+
+**Doc Index Auto-Update**: When `.md` files are staged, automatically
+regenerates `DOCUMENTATION_INDEX.md` via `npm run docs:index`, runs Prettier to
+format it, and re-stages the result. This eliminates the race condition where
+lint-staged's stash/restore cycle would drop the regenerated file from staging.
 
 **Learning Entry Reminder**: If 5+ files are staged or template/hook changes are
 detected, the hook reminds you to update `docs/AI_REVIEW_LEARNINGS_LOG.md` when
@@ -1267,6 +1277,7 @@ summary command; full dashboard is larger scope.
 
 | Version | Date       | Changes                                                                                                     |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
+| 2.7     | 2026-02-11 | Updated pre-commit hook table: doc index auto-fix with Prettier, doc headers, agent/debt checks (#150)      |
 | 2.6     | 2026-02-08 | Added Agile Process and Process & Tooling Improvements sections (moved from ROADMAP.md v3.22, Session #142) |
 | 2.5     | 2026-02-02 | Added Claude Code settings sync commands and cross-platform setup reference                                 |
 | 2.4     | 2026-01-24 | Previous version                                                                                            |

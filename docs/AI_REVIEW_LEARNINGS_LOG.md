@@ -324,7 +324,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 4 **Consolidation threshold:** 10 reviews
 **Status:** ✅ UP TO DATE **Last consolidation:** 2026-02-10 (Consolidation #18,
 Reviews #266-284)
 
@@ -768,6 +768,42 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #285: PR #360 R3 — Pre-commit Hook Fix, Final severity Sweep, Defensive Parsing (2026-02-11)
+
+**Source:** Qodo Code Suggestions R3 + CI Failure **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 7 total (Critical: 1, Major:
+2, Minor: 4)
+
+**Patterns Identified:**
+
+1. **DOCUMENTATION_INDEX.md Prettier CI failure (3rd occurrence!)**: Root cause
+   identified — pre-commit hook regenerates the file AFTER lint-staged runs
+   Prettier, so the regenerated file is unformatted. Fixed by adding
+   `npx prettier --write` after `npm run docs:index` in the hook.
+2. **severity→impact in resolve-item.js:220**: Yet another missed occurrence. R1
+   fixed mergeItems, R2 fixed hasHighImpact/clustering/counts, R3 fixed display
+   output. Lesson: field renames need `grep -rn` across the ENTIRE
+   scripts/improvements/ directory, not just individual files.
+3. **Object.create(null) for prototype-less clones**: Using `{}` still has
+   Object.prototype, while `Object.create(null)` is truly safe for untrusted
+   data.
+
+**Resolution:**
+
+- Fixed: 7 items
+- Skipped: 0
+- Deferred: 0
+
+**Key Learnings:**
+
+- Pre-commit hooks that regenerate files MUST re-run formatters before staging
+- Field renames across a codebase need `grep -rn` on the ENTIRE directory
+- Three rounds to fully sweep severity→impact proves grep-first approach is
+  essential
+- Object.create(null) is safer than {} for untrusted data cloning
 
 ---
 
