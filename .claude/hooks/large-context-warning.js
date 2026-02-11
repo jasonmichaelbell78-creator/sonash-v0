@@ -110,10 +110,10 @@ if (!state.filesRead.includes(filePath)) {
 // Save state
 try {
   const hooksDir = path.dirname(stateFilePath);
-  if (!fs.existsSync(hooksDir)) {
-    fs.mkdirSync(hooksDir, { recursive: true });
-  }
-  fs.writeFileSync(stateFilePath, JSON.stringify(state, null, 2));
+  fs.mkdirSync(hooksDir, { recursive: true });
+  const tmpPath = `${stateFilePath}.tmp`;
+  fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+  fs.renameSync(tmpPath, stateFilePath);
 } catch (err) {
   console.warn(
     `large-context-warning: failed to save state: ${err instanceof Error ? err.message : String(err)}`
@@ -155,7 +155,9 @@ if (state.filesRead.length >= SESSION_FILE_LIMIT && !state.warningShown) {
 
   // Update state with warning shown flag
   try {
-    fs.writeFileSync(stateFilePath, JSON.stringify(state, null, 2));
+    const tmpPath = `${stateFilePath}.tmp`;
+    fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+    fs.renameSync(tmpPath, stateFilePath);
   } catch (err) {
     console.warn(
       `large-context-warning: failed to update state: ${err instanceof Error ? err.message : String(err)}`

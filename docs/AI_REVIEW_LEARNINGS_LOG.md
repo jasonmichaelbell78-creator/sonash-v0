@@ -324,7 +324,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 13 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 14 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** Now
 
 ### When to Consolidate
@@ -673,6 +673,38 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #284: PR #359 R2 — Path Redaction, Atomic Writes, State Dir Fallback (2026-02-10)
+
+**Source:** Qodo Compliance + Code Suggestions **PR/Branch:** PR #359
+(claude/analyze-repo-install-ceMkn) **Suggestions:** 7 total (Critical: 0,
+Major: 2, Minor: 5, Trivial: 0)
+
+**Patterns Identified:**
+
+1. **Path info leakage (conflicting reviews)**: Review #283 Qodo asked for full
+   paths; Review #284 Qodo flagged full paths as security risk. Resolution: use
+   `path.basename()` — security wins over debuggability
+   - Root cause: Reviewers optimize for different concerns
+   - Prevention: Default to `path.basename()` in hook logs
+2. **Non-atomic file writes**: `writeFileSync` without tmp+rename risks
+   corruption on interruption
+   - Root cause: Original code used simple writeFileSync
+   - Prevention: Always use tmp+rename pattern for state files
+
+**Resolution:**
+
+- Fixed: 7 items (2 path redaction, 4 atomic writes, 1 state dir fallback)
+- Deferred: 0
+- Rejected: 0
+
+**Key Learnings:**
+
+- When reviewers conflict, security concerns take priority
+- Atomic write pattern: `writeFileSync(tmp) → renameSync(tmp, target)`
+- State dir creation should fall back to projectDir on failure
 
 ---
 

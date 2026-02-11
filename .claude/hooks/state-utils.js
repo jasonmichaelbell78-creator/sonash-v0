@@ -46,7 +46,7 @@ function getStateDir(projectDir) {
       `state-utils: failed to create state dir: ${err instanceof Error ? err.message : String(err)}`
     );
   }
-  return dir;
+  return fs.existsSync(dir) ? dir : projectDir;
 }
 
 /**

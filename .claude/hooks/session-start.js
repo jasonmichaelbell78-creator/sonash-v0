@@ -85,12 +85,20 @@ function readSessionState() {
  * Write session state to file
  */
 function writeSessionState(state) {
+  const tmpPath = `${SESSION_STATE_FILE}.tmp`;
   try {
-    fs.writeFileSync(SESSION_STATE_FILE, JSON.stringify(state, null, 2));
+    fs.mkdirSync(path.dirname(SESSION_STATE_FILE), { recursive: true });
+    fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+    fs.renameSync(tmpPath, SESSION_STATE_FILE);
   } catch (err) {
     console.error(
       `session-start: failed to write session state: ${err instanceof Error ? err.message : String(err)}`
     );
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      // cleanup failure is non-critical
+    }
   }
 }
 

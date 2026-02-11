@@ -115,12 +115,20 @@ function readState() {
  */
 function writeState(state) {
   const statePath = path.join(projectDir, STATE_FILE);
+  const tmpPath = `${statePath}.tmp`;
   try {
-    fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+    fs.mkdirSync(path.dirname(statePath), { recursive: true });
+    fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+    fs.renameSync(tmpPath, statePath);
   } catch (err) {
     console.warn(
       `agent-trigger-enforcer: failed to write state: ${err instanceof Error ? err.message : String(err)}`
     );
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      // cleanup failure is non-critical
+    }
   }
 }
 

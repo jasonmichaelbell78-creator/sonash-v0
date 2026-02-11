@@ -83,7 +83,7 @@ function saveJson(filePath, data) {
     return true;
   } catch (err) {
     console.warn(
-      `auto-save-context: failed to save ${filePath}: ${err instanceof Error ? err.message : String(err)}`
+      `auto-save-context: failed to save ${path.basename(filePath)}: ${err instanceof Error ? err.message : String(err)}`
     );
     return false;
   }

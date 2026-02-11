@@ -81,13 +81,13 @@ function saveJson(filePath, data) {
     return true;
   } catch (err) {
     console.warn(
-      `compaction-handoff: failed to save ${filePath}: ${err instanceof Error ? err.message : String(err)}`
+      `compaction-handoff: failed to save ${path.basename(filePath)}: ${err instanceof Error ? err.message : String(err)}`
     );
     try {
       fs.rmSync(tmpPath, { force: true });
     } catch (cleanupErr) {
       console.warn(
-        `compaction-handoff: cleanup failed for ${tmpPath}: ${cleanupErr instanceof Error ? cleanupErr.message : String(cleanupErr)}`
+        `compaction-handoff: cleanup failed for ${path.basename(tmpPath)}: ${cleanupErr instanceof Error ? cleanupErr.message : String(cleanupErr)}`
       );
     }
     return false;
