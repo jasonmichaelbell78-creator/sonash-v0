@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.0 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
+**Document Version:** 16.1 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.1    | 2026-02-11 | Review #289: PR #360 R7 — Symlink guards (intake-audit + dedup), Pass 3 grouped by file (O(n²) → O(n²/k)), regex flag preservation, non-fatal operator hash, honesty guard (counter_argument), non-object JSONL rejection in dedup, whitespace-only required field validation, timestamp spread in resolve-item, hardened schema config (isStringArray + confidence range). Consolidation counter 7→8 (consolidation due). Active reviews #266-289.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 16.0    | 2026-02-11 | Review #288: PR #360 R6 — Pass 3 semantic match changed to flag-only (no destructive merge), PII removal (hash operator, basename input_file), timestamp integrity (spread order), stateful regex guard, normalizeFilePath line-suffix stripping, non-object JSONL validation, accurate ingestion outcome, empty evidence cleanup. Consolidation counter 6→7 (consolidation due). Active reviews #266-288.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 15.9    | 2026-02-11 | Review #287: PR #360 R5 — impactSort falsy bug (                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | → ??), ID drift from @line: suffix, missing title guard, always-sanitize evidence, BOM in intake JSONL, logIntake outcome field + try/catch. Consolidation counter 5→6. Active reviews #266-287.                                                                  |
 | 15.8    | 2026-02-11 | Review #286: PR #360 R4 — Prototype pollution (safeCloneObject after parse), TOCTOU (use realPath), evidence sanitization, BOM handling, absolute script paths, logging try/catch, stderr for errors. ENH-0003 (Markdown injection) routed to IMS. Consolidation counter 4→5. Active reviews #266-286.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -771,6 +772,50 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #289: PR #360 R7 — Symlink Guards, Pass 3 File Grouping, Schema Hardening, Honesty Guard (2026-02-11)
+
+**Source:** Qodo Compliance R7 + Qodo Code Suggestions R7 **PR/Branch:**
+claude/new-session-NgVGX (PR #360) **Suggestions:** 12 total (Major: 1, Minor:
+9, Deferred: 2)
+
+**Patterns Identified:**
+
+1. **Symlink file overwrite**: Writing to fixed JSONL paths without checking for
+   symlinks enables local arbitrary file write. Added `assertNotSymlink()` guard
+   using `fs.lstatSync()` before all file writes.
+2. **Pass 3 file grouping**: Grouping items by file path before pairwise
+   comparison reduces semantic match cost from O(n²) to O(n²/k) where k is the
+   number of unique files. Partially addresses DEBT-2747.
+3. **Honesty guard**: Enhancement-audit format items should require
+   `counter_argument` to maintain data integrity.
+4. **Schema config hardening**: Array validation should check element types, not
+   just `Array.isArray()`. Confidence threshold needs range bounds (0-100).
+
+**Resolution:**
+
+- Fixed: 10 items
+- Skipped: 0
+- Deferred: 2 (evidence dedup data fix, placeholder provenance data fix —
+  pipeline handles)
+
+**Key Learnings:**
+
+- Symlink guard pattern: `fs.lstatSync().isSymbolicLink()` before writes, ENOENT
+  is safe
+- File grouping for pairwise passes reduces complexity proportionally to file
+  distribution
+- `new RegExp(source)` drops flags — use
+  `new RegExp(source, flags.replace(/g|y/g, ""))` + `lastIndex=0`
+- Non-fatal operator hashing: initialize with fallback, single try/catch,
+  String() coercion
+- Honesty guard: `counter_argument` required for enhancement-audit format inputs
+- Whitespace-only strings should be treated as missing for required fields
+- Schema arrays should validate element types (isStringArray), not just
+  Array.isArray
+- Confidence threshold needs range validation (0-100) in schema config
 
 ---
 

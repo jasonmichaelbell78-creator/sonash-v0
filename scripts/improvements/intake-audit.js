@@ -99,6 +99,19 @@ function generateContentHash(item) {
   return crypto.createHash("sha256").update(hashInput).digest("hex");
 }
 
+// Symlink guard: refuse to write through symlinks (Review #289 R7)
+function assertNotSymlink(filePath) {
+  try {
+    if (fs.lstatSync(filePath).isSymbolicLink()) {
+      throw new Error(`Refusing to write to symlink: ${filePath}`);
+    }
+  } catch (err) {
+    if (err.code === "ENOENT") return; // File doesn't exist yet — safe
+    if (err.message && err.message.includes("symlink")) throw err;
+    // Other lstat errors — let the actual write handle them
+  }
+}
+
 // Normalize file path
 function normalizeFilePath(filePath) {
   if (!filePath) return "";
@@ -265,6 +278,14 @@ function validateAndNormalize(item, sourceFile) {
   if (!mappedItem.title) errors.push("Missing required field: title");
   if (!mappedItem.impact) errors.push("Missing required field: impact");
   if (!mappedItem.category) errors.push("Missing required field: category");
+
+  // Honesty guard: require counter_argument for enhancement-audit inputs (Review #289 R7)
+  if (
+    mappingMetadata?.format_detected === "enhancement-audit" &&
+    (!mappedItem.counter_argument || String(mappedItem.counter_argument).trim() === "")
+  ) {
+    errors.push("Missing required field: counter_argument");
+  }
 
   if (errors.length > 0) {
     return { valid: false, errors };
@@ -799,11 +820,14 @@ async function main() {
   // Append to raw/normalized-all.jsonl (input for dedup-multi-pass)
   const NORMALIZED_FILE = path.join(RAW_DIR, "normalized-all.jsonl");
   fs.mkdirSync(path.dirname(NORMALIZED_FILE), { recursive: true });
+  // Symlink guard: refuse to write through symlinks (Review #289 R7)
+  assertNotSymlink(NORMALIZED_FILE);
   fs.appendFileSync(NORMALIZED_FILE, newLines.join("\n") + "\n");
 
   // Also append to raw/deduped.jsonl as fallback
   const DEDUPED_FILE = path.join(RAW_DIR, "deduped.jsonl");
   fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
+  assertNotSymlink(DEDUPED_FILE);
   fs.appendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
 
   // Cross-reference with MASTER_DEBT.jsonl (read-only, just note matches)
@@ -828,13 +852,15 @@ async function main() {
 
   // Log intake activity (including format statistics, confidence values, and cross-refs)
   // Hash operator identity and use basename for input_file to avoid PII in logs (Review #288 R6)
-  let operatorHash;
+  // Non-fatal operator hashing — fallback to "unknown" if all else fails (Review #289 R7)
+  let operatorHash = "unknown";
   try {
-    const rawUser = os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
+    const rawUser = String(
+      os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown"
+    );
     operatorHash = crypto.createHash("sha256").update(rawUser).digest("hex").substring(0, 12);
   } catch {
-    const rawUser = process.env.USER || process.env.USERNAME || "unknown";
-    operatorHash = crypto.createHash("sha256").update(rawUser).digest("hex").substring(0, 12);
+    operatorHash = "unknown";
   }
 
   logIntake({

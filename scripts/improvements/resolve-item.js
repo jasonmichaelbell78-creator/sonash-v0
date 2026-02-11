@@ -151,8 +151,9 @@ function logResolution(activity) {
       fs.mkdirSync(LOG_DIR, { recursive: true });
     }
     const logEntry = {
-      timestamp: new Date().toISOString(),
       ...activity,
+      // Timestamp AFTER spread so activity cannot overwrite it (Review #289 R7)
+      timestamp: new Date().toISOString(),
     };
     fs.appendFileSync(RESOLUTION_LOG, JSON.stringify(logEntry) + "\n", "utf8");
   } catch (err) {

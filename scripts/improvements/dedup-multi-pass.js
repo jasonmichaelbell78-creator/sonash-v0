@@ -210,7 +210,16 @@ function readInputItems() {
 
   for (let i = 0; i < lines.length; i++) {
     try {
-      items.push(JSON.parse(lines[i]));
+      const parsed = JSON.parse(lines[i]);
+      // Skip non-object JSONL records (null, arrays, primitives) (Review #289 R7)
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        parseErrors.push({
+          line: i + 1,
+          message: `Invalid item type (expected JSON object): ${String(parsed).substring(0, 80)}`,
+        });
+        continue;
+      }
+      items.push(parsed);
     } catch (err) {
       parseErrors.push({ line: i + 1, message: err instanceof Error ? err.message : String(err) });
     }
@@ -479,32 +488,45 @@ function runPass2NearMatch(pass1Items, dedupLog, reviewNeeded) {
   );
 }
 
-// Pass 3: Semantic match — flag-only, do NOT merge uncertain matches (Review #288 R6)
+// Pass 3: Semantic match — flag-only, grouped by file to reduce O(n²) (Review #289 R7)
 function runPass3SemanticMatch(pass2Items, dedupLog, reviewNeeded) {
   console.log("  Pass 3: Semantic match (file + title >90%)...");
 
-  for (let i = 0; i < pass2Items.length; i++) {
-    for (let j = i + 1; j < pass2Items.length; j++) {
-      const a = pass2Items[i];
-      const b = pass2Items[j];
-      if (!isSemanticMatch(a, b)) continue;
+  // Group items by file path to avoid full pairwise comparison (Review #289 R7)
+  const byFile = new Map();
+  for (const item of pass2Items) {
+    const file = typeof item.file === "string" ? item.file : "";
+    if (!file) continue;
+    if (!byFile.has(file)) byFile.set(file, []);
+    byFile.get(file).push(item);
+  }
 
-      const sim = stringSimilarity(normalizeText(a.title), normalizeText(b.title));
-      reviewNeeded.push({
-        reason: "semantic_match",
-        item_a: a,
-        item_b: b,
-        similarity: sim.toFixed(2),
-      });
+  for (const [, fileItems] of byFile) {
+    for (let i = 0; i < fileItems.length; i++) {
+      for (let j = i + 1; j < fileItems.length; j++) {
+        const a = fileItems[i];
+        const b = fileItems[j];
+        if (!isSemanticMatch(a, b)) continue;
 
-      dedupLog.push({
-        pass: 3,
-        type: "semantic_match_flag",
-        a: a.source_id,
-        b: b.source_id,
-        reason: "same file, title similarity >90% (flagged, not merged)",
-        similarity: sim.toFixed(2),
-      });
+        const sim = stringSimilarity(normalizeText(a.title), normalizeText(b.title));
+        const simFixed = sim.toFixed(2);
+
+        reviewNeeded.push({
+          reason: "semantic_match",
+          item_a: a,
+          item_b: b,
+          similarity: simFixed,
+        });
+
+        dedupLog.push({
+          pass: 3,
+          type: "semantic_match_flag",
+          a: a.source_id,
+          b: b.source_id,
+          reason: "same file, title similarity >90% (flagged, not merged)",
+          similarity: simFixed,
+        });
+      }
     }
   }
 
@@ -675,6 +697,19 @@ function runPass5SystemicPatterns(pass4Items, dedupLog) {
   return { pass5Items, pass5Clustered };
 }
 
+// Symlink guard: refuse to write through symlinks (Review #289 R7)
+function assertNotSymlink(filePath) {
+  try {
+    if (fs.lstatSync(filePath).isSymbolicLink()) {
+      throw new Error(`Refusing to write to symlink: ${filePath}`);
+    }
+  } catch (err) {
+    if (err.code === "ENOENT") return; // File doesn't exist yet — safe
+    if (err.message && err.message.includes("symlink")) throw err;
+    // Other lstat errors — let the actual write handle them
+  }
+}
+
 // Write all output files with atomic write for main output
 function writeOutputFiles(pass5Items, dedupLog, reviewNeeded) {
   const outputDir = path.dirname(OUTPUT_FILE);
@@ -685,6 +720,11 @@ function writeOutputFiles(pass5Items, dedupLog, reviewNeeded) {
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir, { recursive: true });
   }
+
+  // Symlink guards on all output paths (Review #289 R7)
+  assertNotSymlink(OUTPUT_FILE);
+  assertNotSymlink(LOG_FILE);
+  assertNotSymlink(REVIEW_FILE);
 
   // Atomic write for main output
   const tmpOutput = OUTPUT_FILE + `.tmp.${process.pid}`;

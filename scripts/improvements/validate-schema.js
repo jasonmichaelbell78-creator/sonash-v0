@@ -40,13 +40,18 @@ const VALID_STATUSES = schema.validStatuses;
 const CONFIDENCE_THRESHOLD = schema.confidenceThreshold;
 const REQUIRED_FIELDS = schema.requiredFields;
 
+// Harden schema config: validate arrays contain only strings + confidence range (Review #289 R7)
+const isStringArray = (v) => Array.isArray(v) && v.every((x) => typeof x === "string");
+
 if (
-  !Array.isArray(VALID_CATEGORIES) ||
-  !Array.isArray(VALID_IMPACTS) ||
-  !Array.isArray(VALID_EFFORTS) ||
-  !Array.isArray(VALID_STATUSES) ||
-  !Array.isArray(REQUIRED_FIELDS) ||
+  !isStringArray(VALID_CATEGORIES) ||
+  !isStringArray(VALID_IMPACTS) ||
+  !isStringArray(VALID_EFFORTS) ||
+  !isStringArray(VALID_STATUSES) ||
+  !isStringArray(REQUIRED_FIELDS) ||
   typeof CONFIDENCE_THRESHOLD !== "number" ||
+  CONFIDENCE_THRESHOLD < 0 ||
+  CONFIDENCE_THRESHOLD > 100 ||
   typeof schema.idPattern !== "string"
 ) {
   console.error("Error: invalid improvement-schema config (unexpected shape/types).");
@@ -86,16 +91,26 @@ function validateItem(item, lineNum) {
   const warnings = [];
 
   // Check required fields
+  // Treat whitespace-only strings as missing for required fields (Review #289 R7)
   for (const field of REQUIRED_FIELDS) {
-    if (item[field] === undefined || item[field] === null || item[field] === "") {
+    const value = item[field];
+    const isMissing =
+      value === undefined ||
+      value === null ||
+      value === "" ||
+      (typeof value === "string" && value.trim().length === 0);
+    if (isMissing) {
       errors.push(`Line ${lineNum}: Missing required field: ${field}`);
     }
   }
 
-  // Validate ID format — guard against stateful regex flags (Review #288 R6)
+  // Validate ID format — guard against stateful regex flags, preserve non-stateful flags (Review #289 R7)
   if (item.id) {
-    const idRegex =
-      ID_PATTERN.global || ID_PATTERN.sticky ? new RegExp(ID_PATTERN.source) : ID_PATTERN;
+    const needsClone = ID_PATTERN.global || ID_PATTERN.sticky;
+    const idRegex = needsClone
+      ? new RegExp(ID_PATTERN.source, ID_PATTERN.flags.replace(/g|y/g, ""))
+      : ID_PATTERN;
+    idRegex.lastIndex = 0;
     if (!idRegex.test(item.id)) {
       errors.push(
         `Line ${lineNum}: Invalid ID format: "${item.id}" (expected pattern: ${schema.idPattern})`
