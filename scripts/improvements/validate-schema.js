@@ -192,12 +192,12 @@ Exit codes:
   }
 
   const parsed = parseArgs(args);
-  const filePath = parsed.file || DEFAULT_FILE;
+  const projectDir = path.resolve(__dirname, "../..");
+  let filePath = parsed.file ? path.resolve(projectDir, parsed.file) : DEFAULT_FILE;
 
   // Security: validate path when user provides custom file
   if (parsed.file) {
-    const projectDir = path.resolve(__dirname, "../..");
-    const validation = validateAndVerifyPath(parsed.file, projectDir);
+    const validation = validateAndVerifyPath(filePath, projectDir);
     if (!validation.valid) {
       console.error(`Error: ${validation.error}`);
       process.exit(2);
@@ -252,6 +252,14 @@ Exit codes:
 
     try {
       const item = JSON.parse(line);
+
+      if (!item || typeof item !== "object" || Array.isArray(item)) {
+        allErrors.push(
+          `Line ${lineNum}: Invalid item type (expected JSON object) — Content: ${line.substring(0, 100)}`
+        );
+        continue;
+      }
+
       const { errors, warnings } = validateItem(item, lineNum);
 
       allErrors.push(...errors);

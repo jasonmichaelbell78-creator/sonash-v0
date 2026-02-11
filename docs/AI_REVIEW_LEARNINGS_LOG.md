@@ -324,7 +324,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 3 **Consolidation threshold:** 10 reviews
 **Status:** ✅ UP TO DATE **Last consolidation:** 2026-02-10 (Consolidation #18,
 Reviews #266-284)
 
@@ -768,6 +768,42 @@ Major: 0, Minor: 4, Trivial: 0)
 - Agent-generated code must be validated against project pattern rules
 - The `err instanceof Error ? err.message : String(err)` pattern is enforced by
   CI — new code MUST use it
+
+---
+
+#### Review #284: PR #360 R2 — Remaining severity/impact + Security Depth (2026-02-11)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions R2 + CI Failure
+**PR/Branch:** claude/new-session-NgVGX (PR #360) **Suggestions:** 12 total
+(Critical: 1, Major: 3, Minor: 4, Skipped: 2, Deferred: 2)
+
+**Patterns Identified:**
+
+1. **Incomplete severity→impact sweep**: R1 only fixed mergeItems but missed
+   hasHighImpact check, clustering primary selection, and final impact counts —
+   3 more occurrences of `.severity` that should be `.impact`
+   - Root cause: Searching for pattern in one function, not globally
+   - Prevention: Always `grep -n .severity` across entire file after field
+     rename
+2. **Recursive clone without depth limit**: Deep clone can stack overflow on
+   deeply-nested untrusted JSONL — need depth cap
+3. **IMS routing established**: Design decisions now route to IMS (ENH-XXXX),
+   technical debt routes to TDMS (DEBT-XXXX). Routing rule added to
+   AI_REVIEW_PROCESS.md
+
+**Resolution:**
+
+- Fixed: 8 items (including 3 additional severity→impact bugs found by R2)
+- Skipped: 2 items (regex lastIndex non-issue, counter_argument already tracked)
+- Deferred to IMS: 2 items (ENH-0001, ENH-0002)
+
+**Key Learnings:**
+
+- When fixing a field rename (severity→impact), ALWAYS grep the entire file for
+  ALL occurrences — not just the first function found
+- Deep clone of untrusted data needs recursion depth limits
+- Deferred PR items must be routed to the correct system (IMS vs TDMS) at time
+  of deferral, not left as notes
 
 ---
 

@@ -45,15 +45,17 @@ const { execFileSync } = require("node:child_process");
 
 // Prototype pollution protection - filter dangerous keys from untrusted objects
 const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
-function safeCloneObject(obj) {
+function safeCloneObject(obj, depth = 0) {
   if (obj === null || typeof obj !== "object") return obj;
+  // Prevent stack overflows from deeply-nested untrusted input
+  if (depth > 200) return null;
   if (Array.isArray(obj)) {
-    return obj.map(safeCloneObject);
+    return obj.map((v) => safeCloneObject(v, depth + 1));
   }
   const result = {};
   for (const key of Object.keys(obj)) {
     if (!DANGEROUS_KEYS.has(key)) {
-      result[key] = safeCloneObject(obj[key]);
+      result[key] = safeCloneObject(obj[key], depth + 1);
     }
   }
   return result;

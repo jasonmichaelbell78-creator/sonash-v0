@@ -331,7 +331,7 @@ function runPass0Parametric(items, dedupLog, reviewNeeded) {
       continue;
     }
 
-    const hasHighImpact = group.some((g) => g.severity === "I0" || g.severity === "I1");
+    const hasHighImpact = group.some((g) => g.impact === "I0" || g.impact === "I1");
     if (hasHighImpact) {
       pass0Items.push(...group);
       flagHighImpactGroup(group, reviewNeeded, dedupLog);
@@ -498,7 +498,19 @@ function runPass3SemanticMatch(pass2Items, dedupLog, reviewNeeded) {
 // Normalize file path for cross-source comparison
 function normalizeFilePathForComparison(filePath) {
   if (!filePath) return "";
-  return filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "").toLowerCase();
+  let normalized = filePath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "");
+
+  // Strip org/repo prefix (e.g., "org_repo:path/to/file"), preserve Windows drive letters
+  const colonIndex = normalized.indexOf(":");
+  if (colonIndex > 0) {
+    const beforeColon = normalized.substring(0, colonIndex);
+    const isWindowsDrive = beforeColon.length === 1 && /^[A-Za-z]$/.test(beforeColon);
+    if (!isWindowsDrive) {
+      normalized = normalized.substring(colonIndex + 1);
+    }
+  }
+
+  return normalized.toLowerCase();
 }
 
 // Pass 4: Cross-source match (IMS <-> TDMS overlap detection)
@@ -608,10 +620,10 @@ function runPass5SystemicPatterns(pass4Items, dedupLog) {
     const clusterCount = indices.length;
 
     let primaryIdx = indices[0];
-    let primaryRank = impactRankForCluster[pass5Items[primaryIdx].severity] ?? 99;
+    let primaryRank = impactRankForCluster[pass5Items[primaryIdx].impact] ?? 99;
 
     for (const idx of indices) {
-      const rank = impactRankForCluster[pass5Items[idx].severity] ?? 99;
+      const rank = impactRankForCluster[pass5Items[idx].impact] ?? 99;
       if (rank < primaryRank) {
         primaryRank = rank;
         primaryIdx = idx;
@@ -718,7 +730,7 @@ function printDedupSummary(originalCount, pass5Items, passStats, dedupLog, revie
 
   const byImpact = {};
   for (const item of pass5Items) {
-    byImpact[item.severity] = (byImpact[item.severity] || 0) + 1;
+    byImpact[item.impact] = (byImpact[item.impact] || 0) + 1;
   }
   console.log("\nFinal counts by impact:");
   for (const impact of ["I0", "I1", "I2", "I3"]) {
