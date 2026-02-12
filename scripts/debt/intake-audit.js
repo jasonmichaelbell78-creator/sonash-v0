@@ -125,7 +125,7 @@ function mapFirstFileToFile(firstFile, item, mapped, metadata) {
   const lineMatch = firstFile.match(/^(.+):(\d+)$/);
   if (lineMatch) {
     mapped.file = lineMatch[1];
-    if (item.line) {
+    if (item.line !== undefined) {
       metadata.mappings_applied.push("files[0]→file");
     } else {
       mapped.line = Number.parseInt(lineMatch[2], 10);
@@ -274,19 +274,21 @@ function getNextDebtId(existingItems) {
 // Validate that a file path looks like a real file reference
 function isValidFilePath(filePath) {
   if (!filePath) return false;
+  const f = String(filePath).trim();
+  if (!f) return false;
   // Reject numeric-only values (e.g., "1", "10-12", "1-80")
-  if (/^\d[\d-]*$/.test(filePath)) return false;
+  if (/^\d[\d-]*$/.test(f)) return false;
   // Reject generic placeholders
   const placeholders = ["multiple", "various", "several", "unknown", "n/a", "tbd"];
-  if (placeholders.includes(filePath.toLowerCase())) return false;
-  // Must contain a dot (file extension) or a slash (directory separator)
-  if (!filePath.includes(".") && !filePath.includes("/")) return false;
+  if (placeholders.includes(f.toLowerCase())) return false;
+  // Must contain a dot (file extension) or a path separator
+  if (!f.includes(".") && !f.includes("/") && !f.includes("\\")) return false;
   return true;
 }
 
 // Preserve enhancement-specific fields on normalized item
 function preserveEnhancementFields(normalized, mappedItem) {
-  const truthyFields = [
+  const fields = [
     "subcategory",
     "impact",
     "counter_argument",
@@ -296,12 +298,11 @@ function preserveEnhancementFields(normalized, mappedItem) {
     "concrete_alternatives",
     "risk_assessment",
     "fingerprint",
+    "confidence",
   ];
-  for (const field of truthyFields) {
-    if (mappedItem[field]) normalized[field] = mappedItem[field];
+  for (const field of fields) {
+    if (mappedItem[field] !== undefined) normalized[field] = mappedItem[field];
   }
-  // confidence uses !== undefined (0 is valid)
-  if (mappedItem.confidence !== undefined) normalized.confidence = mappedItem.confidence;
 }
 
 // Validate and normalize an input item
