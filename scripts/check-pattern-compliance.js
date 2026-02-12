@@ -61,11 +61,30 @@ function loadWarnedFiles() {
     return JSON.parse(raw);
   } catch (err) {
     const code = err && typeof err === "object" && "code" in err ? err.code : null;
-    if (code !== "ENOENT") {
-      console.warn(`Warning: could not load pattern warning state: ${sanitizeError(err)}`);
-    }
+    if (code === "ENOENT") return {};
+    // Non-ENOENT error (corrupt file, permission issue) — return null
+    // so caller preserves existing state instead of wiping it
+    console.warn(`Warning: could not load pattern warning state: ${sanitizeError(err)}`);
+    return null;
   }
-  return {};
+}
+
+/**
+ * Best-effort file removal (swallows errors).
+ */
+function tryUnlink(filePath) {
+  try {
+    if (existsSync(filePath)) unlinkSync(filePath);
+  } catch (_err) {
+    // Best-effort — ignore failures
+  }
+}
+
+/**
+ * Check if a path is a symlink (returns false if path doesn't exist).
+ */
+function isSymlink(filePath) {
+  return existsSync(filePath) && lstatSync(filePath).isSymbolicLink();
 }
 
 function saveWarnedFiles(warned) {
@@ -76,44 +95,32 @@ function saveWarnedFiles(warned) {
   try {
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
-    // Verify target is not a symlink (prevent symlink-clobber attacks)
-    if (existsSync(WARNED_FILES_PATH) && lstatSync(WARNED_FILES_PATH).isSymbolicLink()) {
-      console.warn("Warning: warned-files.json is a symlink — refusing to write");
+    // Verify target and tmp are not symlinks (prevent symlink-clobber attacks)
+    if (isSymlink(WARNED_FILES_PATH) || isSymlink(tmpPath)) {
+      console.warn("Warning: state file or tmp is a symlink — refusing to write");
       return;
     }
 
     writeFileSync(tmpPath, JSON.stringify(warned, null, 2), "utf-8");
 
-    // Backup-and-replace: rename existing file to .bak before replacing
+    // Backup-and-replace: rename existing to .bak, then swap in new file
     try {
       if (existsSync(WARNED_FILES_PATH)) renameSync(WARNED_FILES_PATH, bakPath);
-    } catch (_bakErr) {
-      // If backup fails, proceed; renameSync may still work on this platform
+    } catch (_err) {
+      // If backup fails, proceed; renameSync may still work
     }
 
     renameSync(tmpPath, WARNED_FILES_PATH);
-
-    // Cleanup backup after successful replace
-    try {
-      if (existsSync(bakPath)) unlinkSync(bakPath);
-    } catch (_cleanErr) {
-      // Best-effort cleanup
-    }
+    tryUnlink(bakPath);
   } catch (err) {
-    // Cleanup tmp on failure
-    try {
-      if (existsSync(tmpPath)) unlinkSync(tmpPath);
-    } catch (_cleanErr) {
-      // Best-effort cleanup
-    }
-    // Restore backup if we made one and destination is gone
+    tryUnlink(tmpPath);
+    // Restore backup if destination is gone
     try {
       if (existsSync(bakPath) && !existsSync(WARNED_FILES_PATH))
         renameSync(bakPath, WARNED_FILES_PATH);
-    } catch (_restoreErr) {
+    } catch (_err) {
       // Best-effort restore
     }
-
     console.warn(`Warning: could not save pattern warning state: ${sanitizeError(err)}`);
   }
 }
@@ -750,7 +757,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|\/)(?:scripts|\.claude)\//,
     // Exclude files already using options object with encoding
-    exclude: /encoding/,
+    pathExclude: /encoding/,
   },
 ];
 
@@ -1024,8 +1031,9 @@ function printViolation(v) {
   console.log(`   📚 See: Review ${v.review} in AI_REVIEW_LEARNINGS_LOG.md`);
   if (VERBOSE) {
     // Truncate match to avoid leaking full source snippets (may contain secrets/PII)
-    const match = String(v.match).slice(0, 120);
-    console.log(`   Match: ${match}${v.match.length > 120 ? "..." : ""}`);
+    const matchStr = String(v.match ?? "");
+    const match = matchStr.slice(0, 120);
+    console.log(`   Match: ${match}${matchStr.length > 120 ? "..." : ""}`);
   }
   console.log("");
 }
@@ -1089,7 +1097,7 @@ function formatTextOutput(violations, filesChecked, warnCount = 0, blockCount = 
  * Returns { warnings: [], blocks: [] } with violations split by severity
  */
 function applyGraduation(violations) {
-  const warned = loadWarnedFiles();
+  const warned = loadWarnedFiles() ?? {};
   const warnings = [];
   const blocks = [];
   const now = Date.now();

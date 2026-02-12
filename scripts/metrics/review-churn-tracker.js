@@ -218,13 +218,17 @@ function appendMetrics(entries) {
 
   // Verify target is not a symlink (prevent symlink-clobber attacks)
   try {
-    if (existsSync(METRICS_FILE) && lstatSync(METRICS_FILE).isSymbolicLink()) {
+    if (lstatSync(METRICS_FILE).isSymbolicLink()) {
       console.error("Error: review-metrics.jsonl is a symlink — refusing to write");
       return;
     }
   } catch (err) {
-    console.error(`Failed to check metrics file: ${sanitizeError(err)}`);
-    return;
+    const code = err && typeof err === "object" && "code" in err ? err.code : null;
+    if (code !== "ENOENT") {
+      console.error(`Failed to check metrics file: ${sanitizeError(err)}`);
+      return;
+    }
+    // ENOENT is fine — file doesn't exist yet
   }
 
   const lines = entries.map((e) => JSON.stringify(e)).join("\n") + "\n";

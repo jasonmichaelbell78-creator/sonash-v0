@@ -124,10 +124,13 @@ function checkStatCall(node, lstatCallsByScope, context) {
           if (!target) return null;
 
           const indent = target.loc ? " ".repeat(target.loc.start.column) : "";
-          const varName = target.loc
-            ? `_lstat_${target.loc.start.line}`
-            : `_lstat_${node.range ? node.range[0] : "check"}`;
-          const check = `const ${varName} = ${lstatCall};\n${indent}if (${varName}.isSymbolicLink()) { throw new Error('Symlink detected: ' + ${pathArg}); }\n${indent}`;
+          let varName;
+          if (target.loc) {
+            varName = `_lstat_${target.loc.start.line}`;
+          } else {
+            varName = `_lstat_${node.range ? node.range[0] : "check"}`;
+          }
+          const check = `const ${varName} = ${lstatCall};\n${indent}if (${varName}.isSymbolicLink()) {\n${indent}  // TODO: Symlink detected — handle securely (refuse, log, or resolve realpath)\n${indent}  return;\n${indent}}\n${indent}`;
 
           return fixer.insertTextBefore(target, check);
         },

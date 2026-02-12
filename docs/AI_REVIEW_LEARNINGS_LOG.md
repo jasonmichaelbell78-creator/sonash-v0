@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.7 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
+**Document Version:** 16.8 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.8    | 2026-02-12 | Review #303: PR #361 R4 — TOCTOU symlink fix (lstatSync direct), corrupt state guard (null return), cognitive complexity extraction (tryUnlink/isSymlink helpers), `exclude`→`pathExclude` bug fix, non-destructive ESLint suggestion, verbose crash prevention. Consolidation counter 13→14. Active reviews #266-303.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 16.7    | 2026-02-12 | Review #302: PR #361 R3 — Symlink clobber guards, backup-and-replace writes, BOM stripping, ESLint loc fallback, O(n) TOCTOU index, verbose match truncation. Skill update: #TBD deferred numbering to prevent review number collisions. Consolidation counter 12→13. Active reviews #266-302.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.6    | 2026-02-11 | Review #294: PR #360 R12 — CI fix: eslint-disable block for control-char regex, sanitizeLogSnippet extraction, BiDi control strip, escapeMarkdown String coercion + \r\n, valid-only ENH-ID idMap, TOCTOU symlink recheck before unlink, EEXIST recovery for resolve-item, strict digits-only line parsing, decoupled log/review writes, toLineNumber reject 0/negative, Windows-safe metrics rename. Active reviews #266-294.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.5    | 2026-02-11 | Review #293: PR #360 R11 — Markdown injection (HTML strip in escapeMarkdown), stale temp EEXIST recovery, safeCloneObject throw on deep nesting + module-scope in dedup, deduped.jsonl non-fatal write, non-critical log/review write guard, safeCloneObject for MASTER_DEBT.jsonl, terminal escape sanitization, robust line number sanitization, Windows-safe unlink-before-rename, schema config validation. Active reviews #266-293.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -334,7 +335,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 13 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 14 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** NOW (Reviews
 #290-#301, 12 reviews since consolidation #17)
 
@@ -531,7 +532,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 13    | <10    | ⚠️     |
+| Reviews since last consolidation | 14    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -684,6 +685,39 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #303: PR #361 R4 — TOCTOU Symlink, Corrupt State Guard, Cognitive Complexity, Bug Fix (2026-02-12)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + SonarCloud **PR/Branch:**
+PR #361 (claude/analyze-repo-install-ceMkn) **Suggestions:** 20 total (Critical:
+1, Major: 2, Minor: 7, Trivial: 5, Rejected: 5)
+
+**Patterns Identified:**
+
+1. TOCTOU in symlink check: existsSync before lstatSync is racy
+   - Root cause: check-then-use pattern on filesystem
+   - Prevention: Call lstatSync directly, handle ENOENT in catch
+2. Corrupt state wipes graduation history: loadWarnedFiles returned {} on parse
+   error
+   - Root cause: Same fallback for "no file" and "corrupt file"
+   - Prevention: Return null for corruption, {} for ENOENT, caller uses ??
+3. `exclude` vs `pathExclude` property name bug in writefile-missing-encoding
+   - Root cause: Copy-paste from different pattern format
+   - Prevention: Schema validation for pattern definitions
+
+**Resolution:**
+
+- Fixed: 10 items
+- Rejected: 5 items (String.raw x2, regex 38, i assignment x2 — repeats from
+  R2/R3)
+
+**Key Learnings:**
+
+- existsSync+lstatSync is itself a TOCTOU; call lstatSync directly
+- Extract helpers (tryUnlink, isSymlink) to reduce cognitive complexity
+- Property name typos in config objects are silent bugs
 
 ---
 
