@@ -320,17 +320,12 @@ reliability, and solo developer automations.
 sprint uses parallel agents + wave-based execution + per-wave commits.
 Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 
-**Enhancement Audit Items (Session #151):**
+**Enhancement Audit Items (Session #151, migrated to TDMS):**
 
-- [ ] **ENH-0027:** Triage 96 stale TODO/TBD markers across 34 files — resolve,
-      remove, or convert to TDMS items (E1)
-
-### Enhancement Audit Items (Session #151)
-
-> **Source:** Enhancement Audit (`/audit-enhancements`) — Session #151
-
-- [ ] **ENH-0029:** Documentation effectiveness metrics — track which docs are
-      useful, with actionable plan to prune/improve (E2)
+- [ ] **DEBT-2809:** Triage 96 stale TODO/TBD markers across 34 files — resolve,
+      remove, or convert to TDMS items (S2, E1)
+- [ ] **DEBT-2811:** Documentation effectiveness metrics — track which docs are
+      useful, with actionable plan to prune/improve (S2, E2) [M2.1]
 
 ### Track B - Dev Dashboard (Expanded)
 
@@ -434,6 +429,12 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 - [ ] DEBT-2786: CI non-blocking checks should block (S2, ci.yml)
 - [ ] DEBT-2803: Consolidate regex pattern linter into ESLint plugin (S2,
       check-pattern-compliance.js)
+
+**Enhancement Items (Session #151, migrated to TDMS):**
+
+- [ ] DEBT-2812: Add engines field to root package.json for CI/CD consistency
+      (S2, E0)
+- [ ] DEBT-2814: Pre-push duplicates pre-commit pattern checks (S2, E0)
 
 #### Phase 1 - Quick Wins
 
@@ -735,7 +736,12 @@ MASTER_DEBT.jsonl.
 - [ ] DEBT-2779: Add composite index for userId + timestamp on security_logs
       (S2, firestore.indexes.json)
 
-**Track S Total:** 59 items | ~30 hours estimated
+**Enhancement Items (Session #151, migrated to TDMS):**
+
+- [ ] DEBT-2810: Security guidance consolidation — merge overlapping security
+      docs into clear hierarchy (S2, E2)
+
+**Track S Total:** 60 items | ~30 hours estimated
 
 ### Track T - Testing Infrastructure (NEW - Session #103)
 
@@ -933,6 +939,15 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 - [ ] DEBT-0957: Archive docs never checked for link rot (S2,
       docs-lint.yml:77-80) ROADMAP.md, ROADMAP_FUTURE.md, AUDIT_TRACKER.md,
       SKILL_AGENT_POLICY.md)
+
+**Enhancement Items (Session #151, migrated to TDMS):**
+
+- [ ] DEBT-2806: Inconsistent loading states — spinners vs text vs skeletons
+      across components (S2, E2)
+- [ ] DEBT-2807: Generic button labels — Submit instead of action-specific text
+      (S2, E0)
+- [ ] DEBT-2808: Date formats inconsistent across the app (S2, E1)
+- [ ] DEBT-2813: Missing ARIA labels on critical navigation tabs (S2, E0)
 
 **Completed in Session #99:**
 
@@ -1448,13 +1463,6 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 (Infrastructure)
 
 ---
-
-### Enhancement Audit Items (Session #151)
-
-> **Source:** Enhancement Audit (`/audit-enhancements`) — Session #151
-
-- [ ] **ENH-0028:** Security guidance consolidation — merge overlapping security
-      docs into clear hierarchy (E2)
 
 ### 9.1 📦 M2.1 - Code Quality & Tooling (~25 items)
 
