@@ -81,7 +81,7 @@ _Essential project-level documentation_
 | [Session Context](SESSION_CONTEXT.md)                            | -                                                                 | ↓6 ↑8      | 2026-02-12    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md)          | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-11    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)                       | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-05    |
-| [SoNash Product Roadmap](ROADMAP.md)                             | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-11    |
+| [SoNash Product Roadmap](ROADMAP.md)                             | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-12    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                             | -                                                                 | ↓4 ↑6      | 2026-02-09    |
 
 ### Core Documentation (Tier 2)
@@ -116,11 +116,11 @@ _Main documentation directory_
 | [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                                                       | This document defines the mandatory security review process ...   | ↓2 ↑6      | 2026-02-05    |
 | [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                                                 | This document defines **mandatory security standards** that ...   | ↓12 ↑0     | 2026-01-17    |
 | [Hookify Strategy & Implementation Plan](docs/HOOKIFY_STRATEGY.md)                                                             | -                                                                 | ↓0 ↑0      | 2026-02-05    |
-| [Improvement Metrics](docs/improvements/METRICS.md)                                                                            | This document provides a real-time dashboard of improvement ...   | ↓0 ↑0      | 2026-02-11    |
-| [Improvements by Category](docs/improvements/views/by-category.md)                                                             | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-11    |
-| [Improvements by Impact](docs/improvements/views/by-impact.md)                                                                 | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-11    |
-| [Improvements by Status](docs/improvements/views/by-status.md)                                                                 | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-11    |
-| [Improvements Index](docs/improvements/INDEX.md)                                                                               | <!-- prettier-ignore-start -->                                    | ↓2 ↑4      | 2026-02-11    |
+| [Improvement Metrics](docs/improvements/METRICS.md)                                                                            | This document provides a real-time dashboard of improvement ...   | ↓0 ↑0      | 2026-02-12    |
+| [Improvements by Category](docs/improvements/views/by-category.md)                                                             | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-12    |
+| [Improvements by Impact](docs/improvements/views/by-impact.md)                                                                 | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-12    |
+| [Improvements by Status](docs/improvements/views/by-status.md)                                                                 | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-12    |
+| [Improvements Index](docs/improvements/INDEX.md)                                                                               | <!-- prettier-ignore-start -->                                    | ↓2 ↑4      | 2026-02-12    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                                         | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-09    |
 | [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                                                     | This document tracks Claude's learning effectiveness - wheth...   | ↓0 ↑0      | 2026-02-11    |
 | [Lighthouse Integration Plan](docs/LIGHTHOUSE_INTEGRATION_PLAN.md)                                                             | -                                                                 | ↓2 ↑2      | 2026-01-17    |
@@ -138,7 +138,7 @@ _Main documentation directory_
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                                             | Central directory for all review policy                           | ↓0 ↑9      | 2026-02-05    |
 | [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md)                                                               | This is a **one-page quick reference** for the SoNash review...   | ↓2 ↑4      | 2026-01-17    |
 | [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                                                               | This document provides **visual diagrams and flowcharts** fo...   | ↓1 ↑3      | 2026-01-17    |
-| [Review Queue](docs/improvements/views/review-queue.md)                                                                        | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-11    |
+| [Review Queue](docs/improvements/views/review-queue.md)                                                                        | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-12    |
 | [Roadmap Reference Assignment Report](docs/technical-debt/roadmap-assignment-report.md)                                        | -                                                                 | ↓0 ↑0      | 2026-02-06    |
 | [Security & Privacy Guide](docs/SECURITY.md)                                                                                   | -                                                                 | ↓13 ↑4     | 2026-01-17    |
 | [Sentry Integration Guide for SoNash Admin Panel](docs/SENTRY_INTEGRATION_GUIDE.md)                                            | Step-by-step guide to integrate Sentry error tracking into t...   | ↓1 ↑0      | 2026-01-17    |

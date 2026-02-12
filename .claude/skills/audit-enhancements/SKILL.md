@@ -97,6 +97,10 @@ wc -l docs/technical-debt/MASTER_DEBT.jsonl
 
 ## Phase 1: Broad Scan — 8 Parallel Agents
 
+**CRITICAL: Agent Type Selection** — Use `subagent_type: "general-purpose"` (NOT
+`Explore`). Explore agents are READ-ONLY and cannot write the required JSONL
+output files. All Phase 1 agents must write findings to disk.
+
 Invoke all 8 agents in a SINGLE Task message. Each agent writes findings to
 `${AUDIT_DIR}/stage-1-{domain}.jsonl`.
 

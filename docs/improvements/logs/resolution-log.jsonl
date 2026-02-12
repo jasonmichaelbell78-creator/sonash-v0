@@ -1,0 +1,62 @@
+{"action":"decline","item_id":"ENH-0010","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not transformative - stylistic preference with minimal functional impact","pr":null,"timestamp":"2026-02-12T01:40:49.379Z"}
+{"action":"decline","item_id":"ENH-0037","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not transformative - Node 20 LTS until Oct 2026, no compelling reason to upgrade","pr":null,"timestamp":"2026-02-12T01:40:50.570Z"}
+{"action":"decline","item_id":"ENH-0004","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T01:49:26.373Z"}
+{"action":"decline","item_id":"ENH-0005","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T01:49:26.481Z"}
+{"action":"decline","item_id":"ENH-0006","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T01:49:26.591Z"}
+{"action":"decline","item_id":"ENH-0008","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T01:49:26.697Z"}
+{"action":"decline","item_id":"ENH-0014","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Developer error info is sufficient, user-facing error guidance not needed","pr":null,"timestamp":"2026-02-12T01:54:29.557Z"}
+{"action":"decline","item_id":"ENH-0021","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T01:54:29.659Z"}
+{"action":"accept","item_id":"ENH-0028","previous_status":"PROPOSED","new_status":"ACCEPTED","decision_notes":"Consolidate security docs as long as each use case remains easy to serve","pr":null,"timestamp":"2026-02-12T01:54:29.780Z"}
+{"action":"decline","item_id":"ENH-0022","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"All non-blocking checks have valid reasons to remain non-blocking","pr":null,"timestamp":"2026-02-12T01:55:47.641Z"}
+{"action":"accept","item_id":"ENH-0033","previous_status":"PROPOSED","new_status":"ACCEPTED","decision_notes":"Simple, high-confidence improvement","pr":null,"timestamp":"2026-02-12T01:58:49.456Z"}
+{"action":"decline","item_id":"ENH-0031","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T01:58:49.577Z"}
+{"action":"decline","item_id":"ENH-0032","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed, existing headers sufficient","pr":null,"timestamp":"2026-02-12T01:58:49.692Z"}
+{"action":"decline","item_id":"ENH-0035","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T01:58:49.806Z"}
+{"action":"decline","item_id":"ENH-0036","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T01:58:49.923Z"}
+{"action":"decline","item_id":"ENH-0038","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed, Firestore will prompt when query needs it","pr":null,"timestamp":"2026-02-12T01:58:50.048Z"}
+{"action":"decline","item_id":"ENH-0041","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:00:22.324Z"}
+{"action":"decline","item_id":"ENH-0043","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:00:22.441Z"}
+{"action":"decline","item_id":"ENH-0045","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:00:22.558Z"}
+{"action":"decline","item_id":"ENH-0046","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:00:22.682Z"}
+{"action":"accept","item_id":"ENH-0047","previous_status":"PROPOSED","new_status":"ACCEPTED","decision_notes":"Accessibility improvement, low effort","pr":null,"timestamp":"2026-02-12T02:03:17.495Z"}
+{"action":"accept","item_id":"ENH-0063","previous_status":"PROPOSED","new_status":"ACCEPTED","decision_notes":"Remove duplicate check, prevents graduation self-escalation","pr":null,"timestamp":"2026-02-12T02:03:17.611Z"}
+{"action":"decline","item_id":"ENH-0048","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:03:17.730Z"}
+{"action":"decline","item_id":"ENH-0049","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:03:17.861Z"}
+{"action":"decline","item_id":"ENH-0056","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:03:17.980Z"}
+{"action":"decline","item_id":"ENH-0058","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:03:18.094Z"}
+{"action":"decline","item_id":"ENH-0060","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:03:18.203Z"}
+{"action":"accept","item_id":"ENH-0011","previous_status":"PROPOSED","new_status":"ACCEPTED","decision_notes":"Standardize loading states","pr":null,"timestamp":"2026-02-12T02:06:29.202Z"}
+{"action":"accept","item_id":"ENH-0013","previous_status":"PROPOSED","new_status":"ACCEPTED","decision_notes":"Action-specific button labels","pr":null,"timestamp":"2026-02-12T02:06:29.309Z"}
+{"action":"accept","item_id":"ENH-0019","previous_status":"PROPOSED","new_status":"ACCEPTED","decision_notes":"Consistent date formatting","pr":null,"timestamp":"2026-02-12T02:06:29.423Z"}
+{"action":"decline","item_id":"ENH-0007","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:06:29.523Z"}
+{"action":"decline","item_id":"ENH-0009","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:06:29.624Z"}
+{"action":"decline","item_id":"ENH-0015","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:06:29.726Z"}
+{"action":"decline","item_id":"ENH-0016","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:06:29.837Z"}
+{"action":"decline","item_id":"ENH-0017","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:06:29.947Z"}
+{"action":"accept","item_id":"ENH-0024","previous_status":"PROPOSED","new_status":"ACCEPTED","decision_notes":"Remove duplicate pattern check from pre-push","pr":null,"timestamp":"2026-02-12T02:09:52.896Z"}
+{"action":"accept","item_id":"ENH-0027","previous_status":"PROPOSED","new_status":"ACCEPTED","decision_notes":"Triage stale TODO/TBD markers","pr":null,"timestamp":"2026-02-12T02:09:53.010Z"}
+{"action":"accept","item_id":"ENH-0029","previous_status":"PROPOSED","new_status":"ACCEPTED","decision_notes":"Only if tracking includes actionable plan to prune/improve docs based on metrics","pr":null,"timestamp":"2026-02-12T02:09:53.128Z"}
+{"action":"decline","item_id":"ENH-0023","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:09:53.234Z"}
+{"action":"decline","item_id":"ENH-0025","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:09:53.334Z"}
+{"action":"decline","item_id":"ENH-0026","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:09:53.443Z"}
+{"action":"decline","item_id":"ENH-0034","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:09:53.548Z"}
+{"action":"decline","item_id":"ENH-0039","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:11:21.412Z"}
+{"action":"decline","item_id":"ENH-0040","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:11:21.522Z"}
+{"action":"decline","item_id":"ENH-0042","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:11:21.637Z"}
+{"action":"decline","item_id":"ENH-0044","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:11:21.750Z"}
+{"action":"decline","item_id":"ENH-0050","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:13:36.646Z"}
+{"action":"decline","item_id":"ENH-0051","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:13:36.765Z"}
+{"action":"decline","item_id":"ENH-0052","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:13:36.881Z"}
+{"action":"decline","item_id":"ENH-0054","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:13:36.993Z"}
+{"action":"decline","item_id":"ENH-0055","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:13:37.110Z"}
+{"action":"decline","item_id":"ENH-0057","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:13:37.224Z"}
+{"action":"decline","item_id":"ENH-0059","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:13:37.341Z"}
+{"action":"decline","item_id":"ENH-0061","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:13:37.480Z"}
+{"action":"decline","item_id":"ENH-0062","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:13:37.585Z"}
+{"action":"decline","item_id":"ENH-0064","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:13:37.696Z"}
+{"action":"decline","item_id":"ENH-0012","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:14:53.619Z"}
+{"action":"decline","item_id":"ENH-0018","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:14:53.738Z"}
+{"action":"decline","item_id":"ENH-0020","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:14:53.862Z"}
+{"action":"decline","item_id":"ENH-0030","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:14:53.981Z"}
+{"action":"decline","item_id":"ENH-0053","previous_status":"PROPOSED","new_status":"DECLINED","decision_notes":"Not needed","pr":null,"timestamp":"2026-02-12T02:14:54.094Z"}
+{"action":"implement","item_id":"ENH-0024","previous_status":"ACCEPTED","new_status":"IMPLEMENTED","decision_notes":"Merged into ENH-0063 (duplicate finding)","pr":null,"timestamp":"2026-02-12T02:16:38.884Z"}
