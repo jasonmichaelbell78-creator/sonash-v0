@@ -328,50 +328,71 @@ class LearningEffectivenessAnalyzer {
     }
 
     const lines = content.split("\n");
-    let currentPattern = null;
-    let currentPriority = null;
+    let currentCategory = null;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
-      // Match priority sections
-      if (line.match(/^##\s+[🔴🟡⚪]/u)) {
-        currentPriority = line.includes("🔴")
-          ? "Critical"
-          : line.includes("🟡")
-            ? "Important"
-            : "Edge case";
+      // Track current category (## Category Name)
+      if (line.match(/^## /)) {
+        currentCategory = line.replace(/^##\s+/, "").trim();
       }
 
-      // Match pattern headers (### 1. Pattern Name)
+      // Parse ### header patterns (Critical quick reference section)
       if (line.startsWith("### ")) {
-        if (currentPattern) {
-          this.documentedPatterns.push(currentPattern);
+        const name = line.replace(/^###\s+\d+\.\s*/, "").trim();
+        if (name && !name.match(/^(When to|Key Metrics|Top Recommended|Pattern Learning)/)) {
+          const sourceReviews = [];
+          // Scan next few lines for review references
+          for (let j = i + 1; j < Math.min(i + 20, lines.length); j++) {
+            if (lines[j].startsWith("### ") || lines[j].startsWith("## ")) break;
+            const reviewMatches = lines[j].match(/Review #(\d+)/g);
+            if (reviewMatches) {
+              reviewMatches.forEach((match) => {
+                const num = Number.parseInt(match.replace("Review #", ""), 10);
+                if (!sourceReviews.includes(num)) sourceReviews.push(num);
+              });
+            }
+          }
+          this.documentedPatterns.push({
+            name,
+            priority: "Critical",
+            category: currentCategory,
+            sourceReviews,
+            keywords: this.extractKeywords(name),
+          });
+        }
+      }
+
+      // Parse table-row patterns (main format: | Priority | Pattern | Rule | Why |)
+      const tableMatch = line.match(
+        /^\|\s*([🔴🟡⚪])\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+)/u
+      );
+      if (tableMatch) {
+        const [, emoji, patternName, ,] = tableMatch;
+        const name = patternName.trim();
+        if (!name || name === "Pattern" || name === "---") continue; // Skip header rows
+
+        const priority = emoji === "🔴" ? "Critical" : emoji === "🟡" ? "Important" : "Edge case";
+
+        // Extract review references from the row
+        const sourceReviews = [];
+        const reviewMatches = line.match(/Review #(\d+)/g);
+        if (reviewMatches) {
+          reviewMatches.forEach((match) => {
+            const num = Number.parseInt(match.replace("Review #", ""), 10);
+            if (!sourceReviews.includes(num)) sourceReviews.push(num);
+          });
         }
 
-        const name = line.replace(/^###\s+\d+\.\s*/, "").trim();
-        currentPattern = {
+        this.documentedPatterns.push({
           name,
-          priority: currentPriority,
-          sourceReviews: [],
+          priority,
+          category: currentCategory,
+          sourceReviews,
           keywords: this.extractKeywords(name),
-        };
-      }
-
-      // Extract source reviews (Review #123)
-      const reviewMatches = line.match(/Review #(\d+)/g);
-      if (reviewMatches && currentPattern) {
-        reviewMatches.forEach((match) => {
-          const num = Number.parseInt(match.replaceAll("Review #", ""));
-          if (!currentPattern.sourceReviews.includes(num)) {
-            currentPattern.sourceReviews.push(num);
-          }
         });
       }
-    }
-
-    if (currentPattern) {
-      this.documentedPatterns.push(currentPattern);
     }
 
     console.log(
@@ -407,14 +428,16 @@ class LearningEffectivenessAnalyzer {
       return;
     }
 
-    // Extract ANTI_PATTERNS array
-    const match = content.match(/const ANTI_PATTERNS = \[([\s\S]*?)\];/);
-    if (!match) {
-      console.warn("⚠️  Could not parse ANTI_PATTERNS from checker");
+    // Extract ANTI_PATTERNS entries by finding all { id: "..." } blocks
+    // after the ANTI_PATTERNS declaration
+    const startIdx = content.indexOf("const ANTI_PATTERNS = [");
+    if (startIdx === -1) {
+      console.warn("⚠️  Could not find ANTI_PATTERNS in checker");
       return;
     }
 
-    const patternsText = match[1];
+    // Extract from ANTI_PATTERNS start to the next top-level function/const
+    const patternsText = content.slice(startIdx);
     const patternBlocks = patternsText.split(/\{\s*id:/g).slice(1);
 
     for (const block of patternBlocks) {
