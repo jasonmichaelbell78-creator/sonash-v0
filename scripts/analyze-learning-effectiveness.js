@@ -107,7 +107,17 @@ function findArrayEnd(content, startIdx) {
   if (openIdx === -1) return content.length;
   const rest = content.slice(openIdx);
   const closeMatch = /\n\];\s*$/m.exec(rest);
-  return closeMatch ? openIdx + closeMatch.index + closeMatch[0].length : content.length;
+  if (closeMatch) return openIdx + closeMatch.index + closeMatch[0].length;
+  // Fallback: bracket-depth counting for edge cases where regex misses
+  let depth = 0;
+  for (let i = 0; i < rest.length; i++) {
+    if (rest[i] === "[") depth++;
+    else if (rest[i] === "]") {
+      depth--;
+      if (depth === 0) return openIdx + i + 1;
+    }
+  }
+  return content.length;
 }
 
 /**
@@ -115,10 +125,10 @@ function findArrayEnd(content, startIdx) {
  * Review #309: Extracted from loadAutomatedPatterns to reduce cognitive complexity.
  */
 function parsePatternBlock(block) {
-  const idMatch = block.match(/["']([^"']+)["']/);
+  const idMatch = block.match(/["'`]([^"'`]+)["'`]/);
   if (!idMatch) return null;
-  const messageMatch = block.match(/message:\s*["']([^"']+)["']/);
-  const reviewMatch = block.match(/review:\s*["']([^"']+)["']/);
+  const messageMatch = block.match(/message:\s*["'`]([^"'`]+)["'`]/);
+  const reviewMatch = block.match(/review:\s*["'`]([^"'`]+)["'`]/);
   return {
     id: idMatch[1],
     message: messageMatch ? messageMatch[1] : "",

@@ -434,7 +434,12 @@ function categorizePatterns(patterns) {
 function generateReport(reviews, patterns, categories) {
   const recurringPatterns = Array.from(patterns.values())
     .filter((p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern)
-    .sort((a, b) => b.count - a.count);
+    .sort(
+      (a, b) =>
+        b.count - a.count ||
+        (b.reviews?.length || 0) - (a.reviews?.length || 0) ||
+        a.pattern.localeCompare(b.pattern)
+    );
 
   let report = "";
   report += `\n${colors.bold}📊 Consolidation Analysis Report${colors.reset}\n`;
@@ -450,7 +455,8 @@ function generateReport(reviews, patterns, categories) {
   } else {
     for (const p of recurringPatterns) {
       const marker = p.isExplicitPattern ? "📌" : "🔄";
-      report += `  ${marker} ${p.pattern} (${p.count}x in Reviews ${p.reviews.join(", ")})\n`;
+      const revList = Array.isArray(p.reviews) ? p.reviews.join(", ") : "";
+      report += `  ${marker} ${p.pattern} (${p.count}x in Reviews ${revList})\n`;
       if (verbose && p.examples.length > 0) {
         report += `     Example: "${p.examples[0]}"\n`;
       }
@@ -542,7 +548,8 @@ function generatePatternSuggestions(recurringPatterns, categories) {
 
     for (const p of significant) {
       // Example available at p.examples[0] for future use
-      suggestions += `| ${p.pattern} | (add rule) | Reviews #${p.reviews.join(", ")} |\n`;
+      const revList = Array.isArray(p.reviews) ? p.reviews.join(", ") : "";
+      suggestions += `| ${p.pattern} | (add rule) | Reviews #${revList} |\n`;
     }
   }
 
@@ -670,7 +677,8 @@ function generateRuleSuggestions(recurringPatterns, consolidatedRange) {
         .slice(0, 40);
 
       content += `## ${p.pattern}\n\n`;
-      content += `- **Mentions:** ${p.count} (Reviews: #${p.reviews.join(", #")})\n`;
+      const revRefs = Array.isArray(p.reviews) ? p.reviews.join(", #") : "";
+      content += `- **Mentions:** ${p.count} (Reviews: #${revRefs})\n`;
       content += `- **Suggested ID:** \`${id || "unnamed-pattern"}\`\n`;
       content += `- **Enforceability:** [REGEX] / [AST] / [SEMANTIC] ← classify manually\n`;
       content += `- **Template:**\n\n`;
@@ -680,7 +688,8 @@ function generateRuleSuggestions(recurringPatterns, consolidatedRange) {
       content += `  pattern: /TODO_REGEX/g,\n`;
       content += `  message: ${JSON.stringify(p.pattern || "")},\n`;
       content += `  fix: "TODO: describe the correct pattern",\n`;
-      content += `  review: "#${p.reviews.join(", #")}",\n`;
+      const reviewStr = Array.isArray(p.reviews) ? p.reviews.join(", #") : "";
+      content += `  review: "#${reviewStr}",\n`;
       content += `  fileTypes: [".js", ".ts"],\n`;
       content += `}\n`;
       content += "```\n\n";
