@@ -292,7 +292,7 @@ _Claude Code skills_
 | [UX Researcher & Designer](.claude/skills/ux-researcher-designer/SKILL.md)                                                          | Comprehensive toolkit for user-centered research and experie...   | ↓0 ↑0      | 2026-02-11    |
 | [Validate Claude Folder](.claude/skills/validate-claude-folder/SKILL.md)                                                            | Check the `.claude` folder for configuration consistency, do...   | ↓0 ↑2      | 2026-02-11    |
 | [Validation Checks Reference](.claude/skills/audit-validation-wrapper/references/validation-checks.md)                              | This document provides a comprehensive reference for all val...   | ↓0 ↑0      | 2026-02-11    |
-| [Verify Technical Debt](.claude/skills/verify-technical-debt/SKILL.md)                                                              | -                                                                 | ↓0 ↑0      | 2026-02-11    |
+| [Verify & Triage Technical Debt](.claude/skills/verify-technical-debt/SKILL.md)                                                     | -                                                                 | ↓0 ↑0      | 2026-02-12    |
 | [Visual Generation Guide for Market Research Reports](.claude/skills/market-research-reports/references/visual_generation_guide.md) | Foundation visual showing historical and projected market si...   | ↓0 ↑0      | 2026-02-11    |
 | [Web Application Testing](.claude/skills/webapp-testing/SKILL.md)                                                                   | To test local web applications, write native Python Playwrig...   | ↓0 ↑0      | 2026-02-11    |
 
@@ -657,7 +657,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Using Skills](.claude/skills/using-superpowers/SKILL.md)
 - [UX Researcher &amp; Designer](.claude/skills/ux-researcher-designer/SKILL.md)
 - [Validate Claude Folder](.claude/skills/validate-claude-folder/SKILL.md)
-- [Verify Technical Debt](.claude/skills/verify-technical-debt/SKILL.md)
+- [Verify &amp; Triage Technical Debt](.claude/skills/verify-technical-debt/SKILL.md)
 - [Web Application Testing](.claude/skills/webapp-testing/SKILL.md)
 - [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)
 - [Copilot Instructions - SoNash Recovery Notebook](.github/copilot-instructions.md)
@@ -873,7 +873,7 @@ Documents with no inbound links (not referenced by any other document):
 | 152 | [.claude/skills/using-superpowers/SKILL.md](.claude/skills/using-superpowers/SKILL.md)                                                                           | Using Skills                                                       | 3    | -                                                                               |
 | 153 | [.claude/skills/ux-researcher-designer/SKILL.md](.claude/skills/ux-researcher-designer/SKILL.md)                                                                 | UX Researcher &amp; Designer                                       | 3    | -                                                                               |
 | 154 | [.claude/skills/validate-claude-folder/SKILL.md](.claude/skills/validate-claude-folder/SKILL.md)                                                                 | Validate Claude Folder                                             | 3    | -                                                                               |
-| 155 | [.claude/skills/verify-technical-debt/SKILL.md](.claude/skills/verify-technical-debt/SKILL.md)                                                                   | Verify Technical Debt                                              | 3    | -                                                                               |
+| 155 | [.claude/skills/verify-technical-debt/SKILL.md](.claude/skills/verify-technical-debt/SKILL.md)                                                                   | Verify &amp; Triage Technical Debt                                 | 3    | -                                                                               |
 | 156 | [.claude/skills/webapp-testing/SKILL.md](.claude/skills/webapp-testing/SKILL.md)                                                                                 | Web Application Testing                                            | 3    | -                                                                               |
 | 157 | [.github/copilot-instructions.md](.github/copilot-instructions.md)                                                                                               | Copilot Instructions - SoNash Recovery Notebook                    | 4    | -                                                                               |
 | 158 | [.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)                                                                     | ISSUE TEMPLATE APP CHECK REENABLE                                  | 4    | -                                                                               |
