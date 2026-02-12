@@ -35,7 +35,7 @@ import {
   lstatSync,
   realpathSync,
 } from "node:fs";
-import { join, dirname, basename, relative } from "node:path";
+import { join, dirname, basename, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 import { sanitizeError } from "./lib/sanitize-error.js";
@@ -508,11 +508,8 @@ Examples:
  * @returns {boolean} True if path is unsafe
  */
 function isUnsafePathPattern(fileArg) {
-  const isAbsoluteUnix = fileArg.startsWith("/");
-  const isAbsoluteWindows = /^[A-Za-z]:/.test(fileArg);
-  const isWindowsRooted = fileArg.startsWith("\\") && !fileArg.startsWith("\\\\");
   const isUNCPath = fileArg.startsWith("\\\\") || fileArg.startsWith("//");
-  return isAbsoluteUnix || isAbsoluteWindows || isWindowsRooted || isUNCPath;
+  return isAbsolute(fileArg) || isUNCPath;
 }
 
 /**

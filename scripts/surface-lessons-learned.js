@@ -107,13 +107,13 @@ function detectTopicsFromGitChanges() {
     // Get recently modified files - try HEAD~5 first, fall back to HEAD
     let changedFilesOutput = "";
     try {
-      changedFilesOutput = execSync("git diff --name-only HEAD~5", {
+      changedFilesOutput = execSync("git diff --name-only --diff-filter=ACM HEAD~5", {
         encoding: "utf-8",
         stdio: ["ignore", "pipe", "ignore"],
       });
     } catch {
       // Fall back to diff against HEAD (no commits to compare)
-      changedFilesOutput = execSync("git diff --name-only", {
+      changedFilesOutput = execSync("git diff --name-only --diff-filter=ACM", {
         encoding: "utf-8",
         stdio: ["ignore", "pipe", "ignore"],
       });
