@@ -770,6 +770,94 @@ const ANTI_PATTERNS = [
     // Exclude files already using options object with encoding
     pathExclude: /encoding/,
   },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // Phase 7: New enforcement rules for previously unenforced categories
+  // Added: Session learning-log-accuracy-review
+  // ═══════════════════════════════════════════════════════════════════
+
+  // --- React/Frontend ---
+
+  // Unstable list keys: key={index} causes unnecessary re-renders
+  {
+    id: "unstable-list-key",
+    pattern: /key=\{[^}]*\bindex\b[^}]*\}/g,
+    message: "Using array index as React key - causes unnecessary re-renders and bugs on reorder",
+    fix: "Use a stable unique identifier: key={item.id} or key={item.canonId}",
+    review: "CODE_PATTERNS.md React/Frontend - Key stability",
+    fileTypes: [".jsx", ".tsx"],
+  },
+
+  // Clickable div without ARIA role
+  {
+    id: "div-onclick-no-role",
+    pattern: /<div[^>]*\bonClick\b(?![^>]*\brole\s*=)/g,
+    message: "Clickable <div> without role attribute - inaccessible to screen readers",
+    fix: 'Add role="button" or use <button> element instead: <button onClick={...}>',
+    review: "CODE_PATTERNS.md React/Frontend - Accessible toggle switches",
+    fileTypes: [".jsx", ".tsx"],
+  },
+
+  // --- JS/TS ---
+
+  // parseInt without radix
+  {
+    id: "parseint-no-radix",
+    pattern: /parseInt\s*\([^,)]+\)(?!\s*,)/g,
+    message: "parseInt() without radix parameter - may parse as octal in legacy engines",
+    fix: "Always specify radix: parseInt(str, 10) or use Number.parseInt(str, 10)",
+    review: "CODE_PATTERNS.md JS/TS - Number.parseInt radix",
+    fileTypes: [".js", ".ts", ".jsx", ".tsx"],
+    exclude: /Number\.parseInt/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // Math.max with spread on potentially empty array
+  {
+    id: "math-max-spread-no-guard",
+    pattern: /Math\.max\(\.\.\.\w+/g,
+    message: "Math.max(...arr) returns -Infinity on empty array - add length guard",
+    fix: "Guard empty: arr.length > 0 ? Math.max(...arr) : defaultValue",
+    review: "CODE_PATTERNS.md JS/TS - Math.max empty array, Review #216",
+    fileTypes: [".js", ".ts"],
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // startsWith('/') instead of path.isAbsolute
+  {
+    id: "startswith-slash-check",
+    pattern: /\.startsWith\s*\(\s*['"]\/['"]\s*\)/g,
+    message: "startsWith('/') misses Windows absolute paths (C:\\) - use path.isAbsolute()",
+    fix: "Use path.isAbsolute(p) for cross-platform absolute path detection",
+    review: "CODE_PATTERNS.md JS/TS - Cross-platform isAbsolute, v1.9",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+  },
+
+  // --- CI/Automation ---
+
+  // git diff --name without --diff-filter
+  {
+    id: "git-diff-no-filter",
+    pattern: /git\s+diff[^|]*--name-only(?![^|]*--diff-filter)/g,
+    message: "git diff --name-only without --diff-filter includes deleted files",
+    fix: "Add --diff-filter=ACM to exclude deleted files: git diff --name-only --diff-filter=ACM",
+    review: "CODE_PATTERNS.md Documentation - Pre-commit ADM filter, v2.5",
+    fileTypes: [".sh", ".js", ".ts"],
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // --- Shell ---
+
+  // xargs without -r or --no-run-if-empty (hangs on empty input)
+  {
+    id: "xargs-without-guard",
+    pattern: /\|\s*xargs\b(?![^\n]*(?:-r\b|--no-run-if-empty))/g,
+    message: "xargs without -r flag may hang or run with empty input on some platforms",
+    fix: "Use xargs -r (--no-run-if-empty) or pipe through 'grep .' first",
+    review: "CODE_PATTERNS.md Documentation - xargs hang prevention, v2.0",
+    fileTypes: [".sh"],
+  },
 ];
 
 /**

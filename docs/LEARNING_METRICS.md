@@ -27,40 +27,40 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #213 - #307 (78 reviews) **Analysis Date:** 2026-02-12
+**Review Range:** #285 - #307 (23 reviews) **Analysis Date:** 2026-02-12
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 80.6% |
-| Patterns Learned          | 235   |
+| Learning Effectiveness    | 87.9% |
+| Patterns Learned          | 258   |
 | Patterns Automated        | 19    |
-| Patterns Failing          | 39    |
-| Critical Pattern Success  | 87.5% |
-| Automation Coverage       | 14.9% |
+| Patterns Failing          | 13    |
+| Critical Pattern Success  | 93.8% |
+| Automation Coverage       | 17.1% |
 | Total Documented Patterns | 315   |
-| Total Automated Patterns  | 47    |
+| Total Automated Patterns  | 54    |
 
 ### Top Recommended Actions
 
-1. **[Automation]** Automate "Signal error code semantics"
-   - Recurred 30 times after documentation \(Reviews: 290, 293, 295, 303, 305\)
+1. **[Automation]** Automate "Regex anchoring for enums"
+   - Recurred 8 times after documentation \(Reviews: 299, 300, 302, 303, 304\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "Regex anchoring for enums"
-   - Recurred 29 times after documentation \(Reviews: 299, 300, 302, 303, 304\)
+2. **[Automation]** Automate "Signal error code semantics"
+   - Recurred 7 times after documentation \(Reviews: 290, 293, 295, 303, 305\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-3. **[Automation]** Automate "User context in audit logs"
-   - Recurred 22 times after documentation \(Reviews: 270, 273, 274, 287, 288\)
+3. **[Automation]** Automate "Windows atomic rename"
+   - Recurred 7 times after documentation \(Reviews: 296, 297, 298, 299, 302\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-4. **[Documentation]** Improve documentation for "git add \-A prohibition"
+4. **[Documentation]** Improve documentation for "Unicode line separators"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Symlink parent traversal"
+5. **[Documentation]** Improve documentation for "Range clamping"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 235   | Pattern never recurred after documentation   |
+| ✅ LEARNED   | 258   | Pattern never recurred after documentation   |
 | 🔧 AUTOMATED | 19    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 22    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 39    | Pattern recurred 3+ times - needs automation |
+| 🟡 WEAK      | 25    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 13    | Pattern recurred 3+ times - needs automation |
 
 ---
 
