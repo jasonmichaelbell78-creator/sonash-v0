@@ -158,20 +158,20 @@ _Main documentation directory_
 | [Stage 1 - Scripts 1B Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1b-scripts.md)                      | _Generated: 2026-02-09 by automation audit Stage 1_               | ↓0 ↑0      | 2026-02-10    |
 | [Stage 1C: Claude Skills and Commands Inventory](docs/audits/single-session/process/audit-2026-02-09/stage-1c-skills.md)       | -                                                                 | ↓0 ↑0      | 2026-02-10    |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                                                           | <!-- prettier-ignore-start -->                                    | ↓1 ↑3      | 2026-02-05    |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)                                                         | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-11    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)                                                         | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-11    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)                                                             | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-11    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                                                           | <!-- prettier-ignore-start -->                                    | ↓4 ↑4      | 2026-02-11    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)                                                         | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-12    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)                                                         | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-12    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)                                                             | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-12    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                                                           | <!-- prettier-ignore-start -->                                    | ↓4 ↑4      | 2026-02-12    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                                         | This document provides step-by-step procedures for managing ...   | ↓13 ↑2     | 2026-02-10    |
 | [Technical Debt Management System (TDMS) - Implementation Plan](docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)           | This plan establishes a unified Technical Debt Management Sy...   | ↓4 ↑1      | 2026-02-09    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                                                                       | This document provides a real-time dashboard of technical de...   | ↓1 ↑0      | 2026-02-11    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                                                                       | This document provides a real-time dashboard of technical de...   | ↓1 ↑0      | 2026-02-12    |
 | [Testing Infrastructure Plan](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)                                                       | This document outlines a comprehensive testing infrastructur...   | ↓1 ↑2      | 2026-02-02    |
 | [Testing Plan](docs/TESTING_PLAN.md)                                                                                           | Comprehensive testing guidance for the SoNash application, i...   | ↓5 ↑1      | 2026-02-09    |
 | [Track A Admin Panel Testing Plan](docs/plans/TRACK_A_TESTING_PLAN.md)                                                         | Comprehensive testing plan for Track A Admin Panel features ...   | ↓1 ↑0      | 2026-02-05    |
 | [Track A Manual Testing Checklist](docs/plans/TRACK_A_MANUAL_TEST_CHECKLIST.md)                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-05    |
 | [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)                                                           | -                                                                 | ↓2 ↑1      | 2026-02-12    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md)                                                   | <!-- prettier-ignore-start -->                                    | ↓0 ↑2      | 2026-02-02    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)                                                          | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-11    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)                                                          | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-12    |
 
 ### Agent Documentation (Tier 3)
 
@@ -468,7 +468,7 @@ _Uncategorized_
 
 | Document                                                           | Description | References | Last Modified |
 | ------------------------------------------------------------------ | ----------- | ---------- | ------------- |
-| [Generated TypeScript README](src/dataconnect-generated/README.md) | -           | ↓1 ↑1      | 2026-02-11    |
+| [Generated TypeScript README](src/dataconnect-generated/README.md) | -           | ↓1 ↑1      | 2026-02-12    |
 
 ### src > dataconnect-generated > .guides (Tier 4)
 
@@ -476,8 +476,8 @@ _Uncategorized_
 
 | Document                                                  | Description                                                     | References | Last Modified |
 | --------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Basic Usage](src/dataconnect-generated/.guides/usage.md) | Always prioritize using a supported framework over using the... | ↓0 ↑0      | 2026-02-11    |
-| [Setup](src/dataconnect-generated/.guides/setup.md)       | If the user hasn't already installed the SDK, always run the... | ↓0 ↑0      | 2026-02-11    |
+| [Basic Usage](src/dataconnect-generated/.guides/usage.md) | Always prioritize using a supported framework over using the... | ↓0 ↑0      | 2026-02-12    |
+| [Setup](src/dataconnect-generated/.guides/setup.md)       | If the user hasn't already installed the SDK, always run the... | ↓0 ↑0      | 2026-02-12    |
 
 ### src > dataconnect-generated > react (Tier 4)
 
@@ -485,7 +485,7 @@ _Uncategorized_
 
 | Document                                                            | Description | References | Last Modified |
 | ------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Generated React README](src/dataconnect-generated/react/README.md) | -           | ↓1 ↑1      | 2026-02-11    |
+| [Generated React README](src/dataconnect-generated/react/README.md) | -           | ↓1 ↑1      | 2026-02-12    |
 
 ---
 
