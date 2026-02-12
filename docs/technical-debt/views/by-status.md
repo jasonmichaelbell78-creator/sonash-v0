@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (55)
+## NEW (57)
 
 | ID        | Title                                                        | Severity | Category     |
 | --------- | ------------------------------------------------------------ | -------- | ------------ |
@@ -68,6 +68,8 @@
 | DEBT-2800 | Collocate related quote components - 3 variants scattered... | S2       | code-quality |
 | DEBT-2801 | Standardize export style - 38 default vs 69 named exports... | S2       | code-quality |
 | DEBT-2803 | Consolidate regex pattern linter into ESLint plugin          | S2       | process      |
+| DEBT-2804 | writeFileSync without atomic write pattern and missing en... | S2       | code-quality |
+| DEBT-2805 | writeFileSync without atomic write pattern                   | S2       | code-quality |
 
 ## VERIFIED (1727)
 

@@ -1578,6 +1578,8 @@
   "audit:hash-U3RhbmRhcmRp": "DEBT-2801",
   "audit:hash-dXNlRGFpbHlR": "DEBT-2802",
   "pr-review:286-deferred-1": "DEBT-2803",
+  "manual:3886bac6-4178-4468-8a9c-d272216e0189": "DEBT-2804",
+  "manual:1c0bfa2c-19b8-4a70-b616-e0505bd349ca": "DEBT-2805",
   "sonarcloud:AZuzlaE2WljwcmJtvbMJ": "DEBT-0554",
   "sonarcloud:AZuzlaCiWljwcmJtvbL9": "DEBT-0555",
   "sonarcloud:AZuzlaV2WljwcmJtvbNu": "DEBT-0572",
