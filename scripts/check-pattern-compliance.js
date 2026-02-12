@@ -1033,23 +1033,30 @@ function applyGraduation(violations) {
   const warned = loadWarnedFiles();
   const warnings = [];
   const blocks = [];
-  const newWarnings = {}; // Track new warnings to add AFTER classification
+  const now = Date.now();
+  // Only graduate to block if warning is older than 4 hours
+  // Prevents self-escalation across hooks (pre-commit → pre-push) in same session
+  const GRACE_PERIOD_MS = 4 * 60 * 60 * 1000;
 
   for (const v of violations) {
     const key = `${v.file}::${v.id}`;
     if (warned[key]) {
-      // Previously warned on a PRIOR run - this is now a block
-      v.graduated = true;
-      blocks.push(v);
+      const warnedAt = new Date(warned[key]).getTime();
+      if (now - warnedAt > GRACE_PERIOD_MS) {
+        // Warning is old enough - graduate to block
+        v.graduated = true;
+        blocks.push(v);
+      } else {
+        // Still within grace period - keep as warning
+        warnings.push(v);
+      }
     } else {
       // First time seeing this file+pattern combo - warn only
-      newWarnings[key] = new Date().toISOString();
+      warned[key] = new Date().toISOString();
       warnings.push(v);
     }
   }
 
-  // Save new warnings so NEXT run will block them
-  Object.assign(warned, newWarnings);
   saveWarnedFiles(warned);
   return { warnings, blocks };
 }
