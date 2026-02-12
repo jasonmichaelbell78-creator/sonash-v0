@@ -10,7 +10,15 @@
     "enhancements"
   ],
   "validSeverities": ["S0", "S1", "S2", "S3"],
-  "validTypes": ["bug", "code-smell", "vulnerability", "hotspot", "tech-debt", "process-gap"],
+  "validTypes": [
+    "bug",
+    "code-smell",
+    "vulnerability",
+    "hotspot",
+    "tech-debt",
+    "process-gap",
+    "enhancement"
+  ],
   "validStatuses": ["NEW", "VERIFIED", "FALSE_POSITIVE", "IN_PROGRESS", "RESOLVED"],
   "validEfforts": ["E0", "E1", "E2", "E3"],
   "requiredFields": ["id", "source_id", "title", "severity", "category", "status"]

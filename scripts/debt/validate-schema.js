@@ -139,6 +139,30 @@ function validateItem(item, lineNum) {
     );
   }
 
+  // Enhancement-type optional field validation
+  if (item.type === "enhancement") {
+    if (item.counter_argument !== undefined && !item.counter_argument) {
+      warnings.push(`Line ${lineNum}: Enhancement has empty counter_argument (honesty guard)`);
+    }
+    if (item.confidence !== undefined) {
+      if (typeof item.confidence !== "number" || item.confidence < 0 || item.confidence > 100) {
+        warnings.push(
+          `Line ${lineNum}: Enhancement confidence must be 0-100, got: ${item.confidence}`
+        );
+      } else if (item.confidence < 70) {
+        warnings.push(
+          `Line ${lineNum}: Enhancement confidence below threshold (${item.confidence} < 70)`
+        );
+      }
+    }
+    if (item.subcategory !== undefined && typeof item.subcategory !== "string") {
+      warnings.push(`Line ${lineNum}: Enhancement subcategory must be a string`);
+    }
+    if (item.impact !== undefined && !/^I[0-3]$/.test(item.impact)) {
+      warnings.push(`Line ${lineNum}: Enhancement impact must be I0-I3, got: "${item.impact}"`);
+    }
+  }
+
   // Check for duplicate detection fields
   if (!item.content_hash) {
     warnings.push(`Line ${lineNum}: Missing content_hash (needed for deduplication)`);
