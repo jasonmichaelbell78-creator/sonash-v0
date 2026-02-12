@@ -1,37 +1,39 @@
 {
-  "generated": "2026-02-12T02:32:15.192Z",
+  "generated": "2026-02-12T21:11:11.885Z",
   "generated_date": "2026-02-12",
   "summary": {
-    "total": 2178,
-    "open": 1783,
-    "resolved": 159,
-    "false_positives": 236,
+    "total": 2190,
+    "open": 1786,
+    "resolved": 162,
+    "false_positives": 242,
     "resolution_rate_pct": 7
   },
   "by_status": {
-    "NEW": 56,
-    "VERIFIED": 1727,
+    "NEW": 0,
+    "VERIFIED": 1786,
     "IN_PROGRESS": 0,
-    "RESOLVED": 159,
-    "FALSE_POSITIVE": 236
+    "RESOLVED": 162,
+    "FALSE_POSITIVE": 242
   },
   "by_severity": {
     "S0": 27,
     "S1": 388,
-    "S2": 956,
+    "S2": 968,
     "S3": 807
   },
   "by_category": {
-    "code-quality": 1230,
+    "code-quality": 1232,
     "security": 81,
     "performance": 50,
     "documentation": 464,
     "refactoring": 21,
-    "process": 329,
-    "engineering-productivity": 3
+    "process": 330,
+    "engineering-productivity": 3,
+    "enhancements": 9
   },
   "by_source": {
-    "unknown": 2178
+    "unknown": 2189,
+    "pr-review-286": 1
   },
   "alerts": {
     "s0_count": 9,
@@ -159,6 +161,6 @@
     "avg_age_days": 0,
     "oldest_age_days": 0,
     "oldest_item_id": null,
-    "verification_queue_size": 56
+    "verification_queue_size": 0
   }
 }

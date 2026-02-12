@@ -2,7 +2,7 @@
 
 **Document Version**: 4.0 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-12 (Session #152)
+2026-02-12 (Session #153)
 
 ## AI Instructions
 
@@ -69,7 +69,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 152 (since Jan 1, 2026)
+**Current Session Count**: 153 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -78,6 +78,20 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 ---
 
 ## Recent Session Summaries
+
+**Session #153 Summary** (PR REVIEW SKILL IMPROVEMENTS):
+
+- Strengthened `/pr-review` skill with fix-or-track mandate:
+  - Added Principle 7: Fix-or-Track (no silent dismissals)
+  - Step 2: Mandatory Origin classification (This-PR / Pre-existing fixable /
+    Pre-existing complex / Architectural)
+  - Step 5.3: Pre-existing fixable items get fixed alongside PR items
+  - Step 6: Strict deferral templates requiring DEBT IDs; Architectural items
+    flagged to user
+  - Rule 10 + 2 new anti-patterns for dismissing issues
+- Created new `/pr-retro` skill — user-invoked retrospective for PR review
+  cycles (churn analysis, automation candidates, actionable recommendations)
+- Updated COMMAND_REFERENCE.md v4.2
 
 **Session #151 Summary** (ENHANCEMENT AUDIT + PR CHURN REDUCTION + SKILL
 IMPROVEMENTS):
@@ -104,17 +118,6 @@ IMPROVEMENTS):
 - PR #362 Review #305: Fixed 9 SonarCloud+Qodo items (cognitive complexity
   reduction via shared helpers, replaceAll, warnings-on-error, log consistency)
 
-**Session #150 Summary** (SKILL CREATION + SESSION CLEANUP + PR REVIEW):
-
-- Created `deep-plan` skill for thorough multi-phase planning
-- Added deep-plan trigger row to claude.md Section 6
-- Session-end cleanup and archival
-- PR #360 Review #283: Fixed 15 IMS pipeline issues (severity/impact bug, deep
-  clone security, path traversal, line number accuracy, JSONL resilience)
-- Deferred 3 items to TDMS: IMS/TDMS unification (S1), O(n^2) dedup (S2),
-  counter_argument schema (S3) — **IMS/TDMS unification resolved in Session
-  #152**
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
@@ -133,7 +136,7 @@ IMPROVEMENTS):
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/analyze-repo-install-ceMkn`
+**Current Branch**: `claude/new-session-uaNwX`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 

@@ -30,10 +30,10 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 2178  |
-| Open Items      | 1783  |
-| Resolved        | 159   |
-| False Positives | 236   |
+| Total Items     | 2190  |
+| Open Items      | 1786  |
+| Resolved        | 162   |
+| False Positives | 242   |
 | Resolution Rate | 7%    |
 
 ---
@@ -42,11 +42,11 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 56    |
-| VERIFIED       | 1727  |
+| NEW            | 0     |
+| VERIFIED       | 1786  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 159   |
-| FALSE_POSITIVE | 236   |
+| RESOLVED       | 162   |
+| FALSE_POSITIVE | 242   |
 
 ---
 
@@ -56,7 +56,7 @@ distribution.
 | ------------- | ----- | ---------- |
 | S0 (Critical) | 27    | 1%         |
 | S1 (High)     | 388   | 18%        |
-| S2 (Medium)   | 956   | 44%        |
+| S2 (Medium)   | 968   | 44%        |
 | S3 (Low)      | 807   | 37%        |
 
 ---
@@ -65,12 +65,13 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1230  |
+| code-quality             | 1232  |
 | documentation            | 464   |
-| process                  | 329   |
+| process                  | 330   |
 | security                 | 81    |
 | performance              | 50    |
 | refactoring              | 21    |
+| enhancements             | 9     |
 | engineering-productivity | 3     |
 
 ---
@@ -127,20 +128,21 @@ _...and 353 more S1 items_
 
 ## Health Metrics
 
-| Metric               | Value    |
-| -------------------- | -------- |
-| Verification Queue   | 56 items |
-| Avg Age (Open Items) | 0 days   |
-| Oldest Item Age      | 0 days   |
-| Oldest Item          | N/A      |
+| Metric               | Value   |
+| -------------------- | ------- |
+| Verification Queue   | 0 items |
+| Avg Age (Open Items) | 0 days  |
+| Oldest Item Age      | 0 days  |
+| Oldest Item          | N/A     |
 
 ---
 
 ## Data Sources
 
-| Source  | Count |
-| ------- | ----- |
-| unknown | 2178  |
+| Source        | Count |
+| ------------- | ----- |
+| unknown       | 2189  |
+| pr-review-286 | 1     |
 
 ---
 
