@@ -9,7 +9,7 @@
 
 ---
 
-## code-quality (1230)
+## code-quality (1232)
 
 | ID        | Title                                                          | Severity | File                                                                         | Line |
 | --------- | -------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------- | ---- |
@@ -1001,6 +1001,8 @@
 | DEBT-2800 | Collocate related quote components - 3 variants scattered...   | S2       | 1                                                                            | 0    |
 | DEBT-2801 | Standardize export style - 38 default vs 69 named exports...   | S2       | multiple                                                                     | 0    |
 | DEBT-2802 | useDailyQuote hook has smart module-level caching prevent...   | S2       | 1                                                                            | 0    |
+| DEBT-2804 | writeFileSync without atomic write pattern and missing en...   | S2       | scripts/suggest-pattern-automation.js                                        | 397  |
+| DEBT-2805 | writeFileSync without atomic write pattern                     | S2       | scripts/archive-doc.js                                                       | 182  |
 | DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | components/admin/errors-tab.tsx                                              | 37   |
 | DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | S3       | components/admin/users-tab.tsx                                               | 563  |
 | DEBT-0572 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | scripts/seed-meetings.ts                                                     | 79   |

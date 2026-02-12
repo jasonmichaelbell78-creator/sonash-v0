@@ -87,11 +87,9 @@ ROADMAP.md
     │    ├── PHASE_*_AUDIT.md (Audit reports for all 17 phases)
     │    └── views/ (by-severity, by-category, by-status, verification-queue)
     │
-    └──► docs/improvements/ (IMS - Canonical location - ACTIVE)
-         ├── MASTER_IMPROVEMENTS.jsonl (ENH-XXXX IDs, single source of truth)
-         ├── INDEX.md (Human-readable summary)
-         ├── METRICS.md / metrics.json (Dashboard integration)
-         └── views/ (by-impact, by-category, by-status, review-queue)
+    └──► docs/technical-debt/ also tracks enhancements
+         └── Items with type: "enhancement" and category: "enhancements"
+         └── (IMS merged into TDMS, Session #152)
 ```
 
 > **Note:** `docs/aggregation/` and `docs/audits/canonical/` have been archived
@@ -205,25 +203,25 @@ docs/archive/
 | **TDMS Plan changes**         | **Audit skills, pr-review skill, SESSION_CONTEXT**     |
 | **New technical debt found**  | **MASTER_DEBT.jsonl → ROADMAP.md (via DEBT-XXXX)**     |
 | **Debt item resolved**        | **MASTER_DEBT.jsonl status, ROADMAP.md checkbox**      |
-| **New enhancement found**     | **MASTER_IMPROVEMENTS.jsonl → views (via ENH-XXXX)**   |
-| **Enhancement implemented**   | **MASTER_IMPROVEMENTS.jsonl status, ROADMAP.md ref**   |
+| **New enhancement found**     | **MASTER_DEBT.jsonl (type: enhancement) → ROADMAP.md** |
+| **Enhancement implemented**   | **MASTER_DEBT.jsonl status, ROADMAP.md checkbox**      |
 
 ---
 
 ## Quick Navigation
 
-| I Need To...              | Go To                                                   |
-| ------------------------- | ------------------------------------------------------- |
-| See current priorities    | ROADMAP.md                                              |
-| Understand current sprint | SESSION_CONTEXT.md → OPERATIONAL_VISIBILITY_SPRINT.md   |
-| Find testing guidance     | docs/plans/TESTING_USER_MANUAL.md                       |
-| Check AI rules/patterns   | CLAUDE.md → docs/agent_docs/CODE_PATTERNS.md            |
-| Review completed work     | docs/archive/completed-plans/                           |
-| **Manage technical debt** | **docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md** |
-| Find technical debt       | docs/technical-debt/MASTER_DEBT.jsonl (canonical)       |
-| View debt metrics         | docs/technical-debt/METRICS.md or metrics.json          |
-| **Find enhancements**     | **docs/improvements/MASTER_IMPROVEMENTS.jsonl (IMS)**   |
-| View enhancement metrics  | docs/improvements/METRICS.md or metrics.json            |
+| I Need To...                  | Go To                                                         |
+| ----------------------------- | ------------------------------------------------------------- |
+| See current priorities        | ROADMAP.md                                                    |
+| Understand current sprint     | SESSION_CONTEXT.md → OPERATIONAL_VISIBILITY_SPRINT.md         |
+| Find testing guidance         | docs/plans/TESTING_USER_MANUAL.md                             |
+| Check AI rules/patterns       | CLAUDE.md → docs/agent_docs/CODE_PATTERNS.md                  |
+| Review completed work         | docs/archive/completed-plans/                                 |
+| **Manage technical debt**     | **docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md**       |
+| Find technical debt           | docs/technical-debt/MASTER_DEBT.jsonl (canonical)             |
+| View debt metrics             | docs/technical-debt/METRICS.md or metrics.json                |
+| **Find enhancements**         | **docs/technical-debt/MASTER_DEBT.jsonl (type: enhancement)** |
+| View debt/enhancement metrics | docs/technical-debt/METRICS.md or metrics.json                |
 
 ---
 
@@ -231,6 +229,7 @@ docs/archive/
 
 | Version | Date       | Description                                                                    |
 | ------- | ---------- | ------------------------------------------------------------------------------ |
+| 2.1     | 2026-02-12 | IMS merged into TDMS — removed docs/improvements/ hierarchy, updated refs      |
 | 2.0     | 2026-02-11 | Added IMS (docs/improvements/) hierarchy, enhancement sync triggers, quick nav |
 | 1.9     | 2026-02-07 | Added test-suite sync triggers, TESTING_USER_MANUAL.md links                   |
 | 1.7     | 2026-02-01 | TDMS ALL 17 PHASES COMPLETE - System fully operational                         |

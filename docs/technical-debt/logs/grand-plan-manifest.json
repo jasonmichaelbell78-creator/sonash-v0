@@ -605,7 +605,9 @@
         "DEBT-2734",
         "DEBT-2736",
         "DEBT-2737",
-        "DEBT-2742"
+        "DEBT-2742",
+        "DEBT-2804",
+        "DEBT-2805"
       ],
       "fileGroups": {
         "scripts/check-review-triggers.sh": ["DEBT-0005", "DEBT-0655"],
@@ -744,7 +746,8 @@
           "DEBT-0281",
           "DEBT-0573",
           "DEBT-0577",
-          "DEBT-0631"
+          "DEBT-0631",
+          "DEBT-2804"
         ],
         "scripts/check-docs-light.js": [
           "DEBT-0029",
@@ -775,7 +778,8 @@
           "DEBT-2622",
           "DEBT-2625",
           "DEBT-2626",
-          "DEBT-2685"
+          "DEBT-2685",
+          "DEBT-2805"
         ],
         "scripts/enrich-addresses.ts": [
           "DEBT-0031",
@@ -1249,11 +1253,11 @@
       },
       "severity": {
         "S1": 140,
-        "S2": 372,
+        "S2": 374,
         "S3": 89
       },
       "name": "scripts/",
-      "totalItems": 601,
+      "totalItems": 603,
       "totalFiles": 106
     },
     "sprint-2": {

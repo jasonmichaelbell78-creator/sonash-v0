@@ -17,3 +17,5 @@
 {"timestamp":"2026-02-11T16:18:28.496Z","action":"intake-pr-deferred","pr_number":360,"item_id":"DEBT-2747","file":"scripts/improvements/dedup-multi-pass.js","severity":"S1"}
 {"timestamp":"2026-02-11T16:18:40.056Z","action":"intake-pr-deferred","pr_number":360,"item_id":"DEBT-2747","file":"scripts/improvements/dedup-multi-pass.js","severity":"S2"}
 {"timestamp":"2026-02-11T16:18:51.481Z","action":"intake-pr-deferred","pr_number":360,"item_id":"DEBT-2747","file":"scripts/improvements/validate-schema.js","severity":"S3"}
+{"timestamp":"2026-02-12T12:02:28.595Z","action":"intake-manual","pr_number":null,"item_id":"DEBT-2804","file":"scripts/suggest-pattern-automation.js","severity":"S2","category":"code-quality"}
+{"timestamp":"2026-02-12T12:02:32.513Z","action":"intake-manual","pr_number":null,"item_id":"DEBT-2805","file":"scripts/archive-doc.js","severity":"S2","category":"code-quality"}

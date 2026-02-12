@@ -114,6 +114,19 @@ function validateItem(item, lineNum) {
     warnings.push(`Line ${lineNum}: Invalid content_hash format (expected 64 hex chars)`);
   }
 
+  // Validate file path is a real path (not a placeholder like "multiple" or "1")
+  if (item.file) {
+    const f = String(item.file).trim();
+    const isNumericOnly = /^\d[\d-]*$/.test(f);
+    const isPlaceholder = ["multiple", "various", "several", "unknown", "n/a", "tbd"].includes(
+      f.toLowerCase()
+    );
+    const hasPathChars = f.includes(".") || f.includes("/") || f.includes("\\");
+    if (isNumericOnly || isPlaceholder || !hasPathChars) {
+      warnings.push(`Line ${lineNum}: Invalid file path: "${f}" (TDMS requires a real file path)`);
+    }
+  }
+
   // Validate line number is non-negative
   if (item.line !== undefined && (typeof item.line !== "number" || item.line < 0)) {
     warnings.push(`Line ${lineNum}: Invalid line number: ${item.line}`);
@@ -124,6 +137,30 @@ function validateItem(item, lineNum) {
     warnings.push(
       `Line ${lineNum}: Invalid created date format: "${item.created}" (expected YYYY-MM-DD)`
     );
+  }
+
+  // Enhancement-type optional field validation
+  if (item.type === "enhancement") {
+    if (item.counter_argument !== undefined && !item.counter_argument) {
+      warnings.push(`Line ${lineNum}: Enhancement has empty counter_argument (honesty guard)`);
+    }
+    if (item.confidence !== undefined) {
+      if (typeof item.confidence !== "number" || item.confidence < 0 || item.confidence > 100) {
+        warnings.push(
+          `Line ${lineNum}: Enhancement confidence must be 0-100, got: ${item.confidence}`
+        );
+      } else if (item.confidence < 70) {
+        warnings.push(
+          `Line ${lineNum}: Enhancement confidence below threshold (${item.confidence} < 70)`
+        );
+      }
+    }
+    if (item.subcategory !== undefined && typeof item.subcategory !== "string") {
+      warnings.push(`Line ${lineNum}: Enhancement subcategory must be a string`);
+    }
+    if (item.impact !== undefined && !/^I[0-3]$/.test(item.impact)) {
+      warnings.push(`Line ${lineNum}: Enhancement impact must be I0-I3, got: "${item.impact}"`);
+    }
   }
 
   // Check for duplicate detection fields

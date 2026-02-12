@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.9 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
+**Document Version:** 17.2 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
 
 ## Purpose
 
@@ -28,6 +28,8 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.1    | 2026-02-12 | Review #306: PR #362 R2 — Edge case fixes (line 0, falsy field preservation, Windows paths, validate-schema consistency). Consolidation counter 16→17.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| 17.0    | 2026-02-12 | Review #305: PR #362 R1 — Cognitive complexity reduction (3 functions), shared helper extraction (mapFirstFileToFile, mapCommonAuditFields, preserveEnhancementFields, printFormatStats, printFilePathWarnings), replaceAll(), negated condition fix, warnings-on-error, normalized path storage, non-string coercion skip, intake-log schema consistency. Consolidation counter 15→16. Active reviews #266-305.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 16.9    | 2026-02-12 | Review #304: PR #361 R5 — State wipe prevention (null-aware save), dir symlink guards (both files), isSymlink try/catch, ESLint fixer return removal, null title guard. Consolidation counter 14→15. Active reviews #266-304.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 16.8    | 2026-02-12 | Review #303: PR #361 R4 — TOCTOU symlink fix (lstatSync direct), corrupt state guard (null return), cognitive complexity extraction (tryUnlink/isSymlink helpers), `exclude`→`pathExclude` bug fix, non-destructive ESLint suggestion, verbose crash prevention. Consolidation counter 13→14. Active reviews #266-303.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 16.7    | 2026-02-12 | Review #302: PR #361 R3 — Symlink clobber guards, backup-and-replace writes, BOM stripping, ESLint loc fallback, O(n) TOCTOU index, verbose match truncation. Skill update: #TBD deferred numbering to prevent review number collisions. Consolidation counter 12→13. Active reviews #266-302.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -336,9 +338,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 15 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** NOW (Reviews
-#290-#301, 12 reviews since consolidation #17)
+**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #316 #290-#306,
+17 reviews since consolidation #17)
 
 ### When to Consolidate
 
@@ -360,8 +362,8 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-02-11 (Session #150)
-- **Reviews consolidated:** #268-#289 (22 reviews)
+- **Date:** 2026-02-12 (Session #114+)
+- **Reviews consolidated:** #290-#306 (10 reviews)
 - **Patterns added to CODE_PATTERNS.md v2.6:**
   - **Security (4 patterns):**
     - PII in audit reports (hashed identifiers)
@@ -686,6 +688,105 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #307: PR #362 R3 — SonarCloud Negated Condition + File Path Warning Guard (2026-02-12)
+
+**Source:** Qodo Compliance (3) + Qodo Suggestions (5) + SonarCloud (1)
+**PR/Branch:** PR #362 (claude/new-session-uaNwX) **Suggestions:** 9 total (Fix:
+2, Dismiss: 7)
+
+**Patterns Identified:**
+
+1. Negated conditions reduce readability: `if (x !== undefined)` puts the
+   exceptional case first
+   - Prevention: Put positive/meaningful case first with `=== undefined`
+2. Missing guard on file path warning: items with no `file` field get false
+   "invalid path" warnings
+   - Prevention: Guard with `normalizedFile &&` before validation
+
+**Resolution:**
+
+- Fixed: SC-1 (flip negated condition L128), QS-5 (guard file path warning)
+- Dismissed: CMP-1 (operator field already present since R1), CMP-2 (historical
+  JSONL data, not code), CMP-3 (warnings-not-errors by design), QS-1 (regex
+  guarantees digits), QS-2 (validate-schema already guards), QS-3 (.test()
+  converts to string), QS-4 (ensureValid covers types)
+
+**Key Learnings:**
+
+- SonarCloud "unexpected negated condition" catches real readability issues
+- File validation should skip items without file fields entirely, not warn
+
+---
+
+#### Review #306: PR #362 R2 — Edge Cases: Line 0, Falsy Fields, Windows Paths (2026-02-12)
+
+**Source:** Qodo Compliance (5) + Qodo Suggestions (6) **PR/Branch:** PR #362
+(claude/new-session-uaNwX) **Suggestions:** 11 total (Fix: 4, Dismiss: 7)
+
+**Patterns Identified:**
+
+1. Line 0 is falsy in JS: `if (item.line)` fails for `line: 0`
+   - Prevention: Use `!== undefined` for numeric fields that can be 0
+2. Empty string is falsy: truthy check drops valid empty `counter_argument`
+   - Prevention: Use `!== undefined` for string fields that can be empty
+3. Windows path separator not checked in `isValidFilePath`
+   - Prevention: Check for `.`, `/`, AND `\\` in path validation
+
+**Resolution:**
+
+- Fixed: QS-1 (line 0 edge case), QS-4 (preserveEnhancementFields !==
+  undefined), QS-5 (isValidFilePath trim + backslash), QS-6 (validate-schema.js
+  consistency)
+- Dismissed: SEC-1 (terminal escape - CLI tool), CMP-1/CMP-2 (pre-existing
+  code), CMP-3 (repeat), CMP-4 (trusted input), QS-2 (contradicts R1), QS-3
+  (schema guarantees)
+
+**Key Learnings:**
+
+- `!== undefined` is safer than truthy check for any field that accepts 0 or ""
+- File path validation should handle Windows backslash separators
+- Qodo R2 sometimes contradicts R1 suggestions (pr_number null vs omit)
+
+---
+
+#### Review #305: PR #362 R1 — IMS→TDMS Merge Cognitive Complexity + Code Quality (2026-02-12)
+
+**Source:** SonarCloud (5 issues) + Qodo Compliance (1) + Qodo Suggestions (8)
+**PR/Branch:** PR #362 (claude/new-session-uaNwX) **Suggestions:** 14 total
+(Fix: 9, Defer: 3, Dismiss: 1, False Positive: 1)
+
+**Patterns Identified:**
+
+1. Shared helper extraction for duplicated format-mapping logic
+   - Root cause: mapDocStandardsToTdms and mapEnhancementAuditToTdms had 60+
+     duplicated lines
+   - Prevention: Extract mapFirstFileToFile + mapCommonAuditFields shared
+     helpers
+2. Enhancement field preservation loop replaces 10 individual if-statements
+   - Root cause: Each field checked individually → high cognitive complexity
+   - Prevention: preserveEnhancementFields iterates field array
+3. Format stats/warnings printing extracted from main results function
+   - Root cause: printProcessingResults had 3 nested print sections
+   - Prevention: printFormatStats + printFilePathWarnings helpers
+
+**Resolution:**
+
+- Fixed: SC-1 (complexity 47→~12), SC-2 (replaceAll), SC-3 (negated condition),
+  SC-4 (complexity 33→~18), SC-5 (complexity 26→~8), QS-3 (warnings on error),
+  QS-5 (store normalized path), QS-6 (skip non-string coercion), QS-8 (log
+  schema)
+- Deferred: QS-1 (pluggable architecture), QS-2 (shared isValidFilePath export),
+  QS-7 (dotless filenames)
+- False Positive: QC-1 (operator already added at L867-873)
+
+**Key Learnings:**
+
+- Shared helpers reduce complexity across multiple callers simultaneously
+- replaceAll() preferred over replace(/pattern/g) (SonarCloud es2021 rule)
+- Return warnings alongside errors for complete validation feedback
 
 ---
 

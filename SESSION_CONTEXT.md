@@ -2,7 +2,7 @@
 
 **Document Version**: 4.0 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-12 (Session #151)
+2026-02-12 (Session #152)
 
 ## AI Instructions
 
@@ -69,7 +69,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 151 (since Jan 1, 2026)
+**Current Session Count**: 152 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -92,6 +92,18 @@ IMPROVEMENTS):
   placement, dedup, impact calibration, Phase 2 opt-in, pre-commit
   compatibility)
 
+**Session #152 Summary** (IMS→TDMS MERGE):
+
+- **Merged IMS into TDMS** — eliminated parallel tracking system
+- Extended TDMS schema: `type: "enhancement"`, `category: "enhancements"`
+- Migrated 9 ACCEPTED ENH items → DEBT-2806 through DEBT-2814
+- Updated intake pipeline to auto-detect enhancement format
+- Rewired audit-enhancements skill to output TDMS format
+- Deleted IMS infrastructure (scripts/improvements/, docs/improvements/)
+- Updated 8+ doc files to remove IMS references
+- PR #362 Review #305: Fixed 9 SonarCloud+Qodo items (cognitive complexity
+  reduction via shared helpers, replaceAll, warnings-on-error, log consistency)
+
 **Session #150 Summary** (SKILL CREATION + SESSION CLEANUP + PR REVIEW):
 
 - Created `deep-plan` skill for thorough multi-phase planning
@@ -100,13 +112,8 @@ IMPROVEMENTS):
 - PR #360 Review #283: Fixed 15 IMS pipeline issues (severity/impact bug, deep
   clone security, path traversal, line number accuracy, JSONL resilience)
 - Deferred 3 items to TDMS: IMS/TDMS unification (S1), O(n^2) dedup (S2),
-  counter_argument schema (S3)
-
-**Session #149 Summary** (SESSION INFRASTRUCTURE + AUTOMATION AUDIT):
-
-- Session infrastructure improvements (archival, hooks, automation audit)
-- IMS (Improvement Management System) scaffolding + audit-enhancements skill
-- Auto-regenerate doc index timing race fix in pre-commit hook
+  counter_argument schema (S3) — **IMS/TDMS unification resolved in Session
+  #152**
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 

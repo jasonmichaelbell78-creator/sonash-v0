@@ -1,6 +1,6 @@
 # Multi-AI Review JSONL Schema Standard
 
-**Document Version:** 1.3 **Created:** 2026-01-03 **Last Updated:** 2026-02-07
+**Document Version:** 1.4 **Created:** 2026-01-03 **Last Updated:** 2026-02-12
 **Purpose:** Standardized JSONL output schema for all multi-AI review templates
 
 ---
@@ -226,6 +226,32 @@ and `acceptance_tests` (verification) MUST still be populated.
 }
 ```
 
+### Enhancement Type Extensions (for `type: "enhancement"` items)
+
+Enhancement items (formerly tracked in the IMS) use `category: "enhancements"`
+and `type: "enhancement"` in TDMS. These optional fields preserve
+enhancement-specific context:
+
+```json
+{
+  "type": "enhancement",
+  "category": "enhancements",
+  "subcategory": "string (domain: app-architecture|product-ux|content|devx-automation|infrastructure|testing-strategy|documentation-strategy|workflow-lifecycle|external-services|meta-tooling)",
+  "impact": "I0|I1|I2|I3 (original impact rating, mapped to severity for TDMS)",
+  "confidence": "number (0-100, minimum 70 for acceptance)",
+  "counter_argument": "string (why NOT to do this - honesty guard)",
+  "current_approach": "string (what exists today)",
+  "proposed_outcome": "string (what would be better)",
+  "why_it_matters": "string (the benefit)",
+  "concrete_alternatives": ["array of named solutions"],
+  "risk_assessment": "string (what could go wrong)",
+  "migrated_from": "string (original ENH-XXXX ID, for items migrated from IMS)"
+}
+```
+
+**Impact → Severity mapping:** I0→S1, I1→S2, I2→S2, I3→S3. Enhancements never
+use S0 (critical/production-breaking).
+
 ### Engineering Productivity Audit Extensions (OPTIONAL supplements)
 
 ```json
@@ -330,6 +356,7 @@ When aggregating:
 
 | Version | Date       | Changes                                                                       | Author |
 | ------- | ---------- | ----------------------------------------------------------------------------- | ------ |
+| 1.4     | 2026-02-12 | Added Enhancement Type extensions (IMS merged into TDMS)                      | Claude |
 | 1.3     | 2026-02-07 | Domain-level category requirement, fingerprint convention, flatten extensions | Claude |
 | 1.2     | 2026-02-02 | Added TDMS Field Mapping section for intake integration                       | Claude |
 | 1.1     | 2026-01-24 | Added S0/S1 verification_steps extension (Session #98)                        | Claude |
