@@ -2,7 +2,11 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import security from "eslint-plugin-security";
+import { createRequire } from "node:module";
 import globals from "globals";
+
+const require = createRequire(import.meta.url);
+const sonash = require("./eslint-plugin-sonash/index.js");
 
 export default [
   js.configs.recommended,
@@ -26,6 +30,7 @@ export default [
       ".claude/hooks/backup/**",
       ".claude/state/**",
       "docs/archive/**",
+      "eslint-plugin-sonash/**",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },
@@ -59,6 +64,25 @@ export default [
     rules: {
       // Allow require() for dynamic imports (e.g., path.sep detection)
       "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  // SoNash security rules - applied only to high-risk script/hook directories
+  {
+    files: [
+      "scripts/**/*.js",
+      "scripts/**/*.ts",
+      ".claude/hooks/**/*.js",
+      ".claude/hooks/**/*.ts",
+      ".husky/**/*.js",
+      ".husky/**/*.ts",
+    ],
+    plugins: {
+      sonash,
+    },
+    rules: {
+      "sonash/no-unguarded-file-read": "warn",
+      "sonash/no-stat-without-lstat": "warn",
+      "sonash/no-toctou-file-ops": "warn",
     },
   },
 ];

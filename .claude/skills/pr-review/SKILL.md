@@ -115,7 +115,8 @@ Before processing, load context using the tiered model:
    pointers
 
 **Tier 2 (Quick Lookup):** 2. **Read** `docs/AI_REVIEW_LEARNINGS_LOG.md` (first
-200 lines) - Quick Index + consolidation status
+200 lines) - Quick Index + consolidation status 2b. **Read**
+`docs/agent_docs/FIX_TEMPLATES.md` - Copy-paste fixes for top 20 Qodo findings
 
 **Tier 3 (When Investigating):** 3. **Read** specific review entries only when
 checking similar past issues 4. **Read** `docs/AI_REVIEW_PROCESS.md` only if
@@ -412,9 +413,12 @@ Agent 3: technical-writer
 
 ### 5.2 For Each Fix
 
+- **Check FIX_TEMPLATES first** - Read `docs/agent_docs/FIX_TEMPLATES.md` for
+  copy-paste fixes for the top 20 Qodo findings. This prevents cascade fixes
+  (fixing one issue in a way that creates another)
 - **Read** the file first (never edit without reading)
 - **Understand** the context around the issue
-- **Apply** the fix
+- **Apply** the fix (use template if available)
 - **Verify** the fix doesn't introduce new issues
 - **Mark** todo as completed
 

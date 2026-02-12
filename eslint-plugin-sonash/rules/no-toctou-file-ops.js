@@ -1,0 +1,205 @@
+/**
+ * @fileoverview Detects TOCTOU (Time-of-Check to Time-of-Use) patterns in file operations.
+ * The existsSync() + readFileSync() pattern is racy: the file can be deleted or modified
+ * between the check and the read. Use try/catch with readFileSync() directly instead.
+ */
+
+"use strict";
+
+/**
+ * Check if a CallExpression is an existsSync call (bare or member).
+ */
+function isExistsSyncCall(node) {
+  const callee = node.callee;
+  if (callee.type === "Identifier" && callee.name === "existsSync") {
+    return true;
+  }
+  if (
+    callee.type === "MemberExpression" &&
+    callee.property.type === "Identifier" &&
+    callee.property.name === "existsSync"
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Check if a CallExpression is a readFileSync call (bare or member).
+ */
+function isReadFileSyncCall(node) {
+  const callee = node.callee;
+  if (callee.type === "Identifier" && callee.name === "readFileSync") {
+    return true;
+  }
+  if (
+    callee.type === "MemberExpression" &&
+    callee.property.type === "Identifier" &&
+    callee.property.name === "readFileSync"
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Extract a stable string key for the first argument of a call.
+ * Supports Identifiers and simple MemberExpressions.
+ */
+function getArgKey(node) {
+  if (!node.arguments || node.arguments.length === 0) {
+    return null;
+  }
+
+  const arg = node.arguments[0];
+
+  if (arg.type === "Identifier") {
+    return arg.name;
+  }
+
+  // Handle template literals with a single expression like `${dir}/file.txt`
+  // or string concatenation - only match if identically constructed.
+  // For safety, only match simple identifiers to avoid false positives.
+  return null;
+}
+
+/**
+ * Find the closest function or program scope ancestor.
+ */
+function getEnclosingScope(node) {
+  let current = node.parent;
+  while (current) {
+    if (
+      current.type === "FunctionDeclaration" ||
+      current.type === "FunctionExpression" ||
+      current.type === "ArrowFunctionExpression" ||
+      current.type === "Program"
+    ) {
+      return current;
+    }
+    current = current.parent;
+  }
+  return null;
+}
+
+/**
+ * Check if node A comes before node B in source order.
+ */
+function isBefore(a, b) {
+  return a.range ? a.range[0] < b.range[0] : a.start < b.start;
+}
+
+/**
+ * Check if the existsSync call is a condition that guards the readFileSync.
+ * Looks for patterns like: if (existsSync(f)) { ... readFileSync(f) ... }
+ */
+function isGuardingCondition(existsNode, readNode) {
+  // Walk up from existsSync to find an IfStatement where it's the test
+  let current = existsNode.parent;
+  while (current) {
+    if (current.type === "IfStatement" && containsNode(current.test, existsNode)) {
+      // Check if readFileSync is in the consequent (then branch)
+      return containsNode(current.consequent, readNode);
+    }
+    // Also check for ternary/conditional expressions
+    if (current.type === "ConditionalExpression" && containsNode(current.test, existsNode)) {
+      return (
+        containsNode(current.consequent, readNode) || containsNode(current.alternate, readNode)
+      );
+    }
+    current = current.parent;
+  }
+  return false;
+}
+
+/**
+ * Check if ancestor contains descendant node.
+ */
+function containsNode(ancestor, descendant) {
+  if (!ancestor || !descendant) return false;
+  if (ancestor === descendant) return true;
+
+  const aStart = ancestor.range ? ancestor.range[0] : ancestor.start;
+  const aEnd = ancestor.range ? ancestor.range[1] : ancestor.end;
+  const dStart = descendant.range ? descendant.range[0] : descendant.start;
+  const dEnd = descendant.range ? descendant.range[1] : descendant.end;
+
+  return aStart <= dStart && dEnd <= aEnd;
+}
+
+/** @type {import('eslint').Rule.RuleModule} */
+module.exports = {
+  meta: {
+    type: "problem",
+    docs: {
+      description: "Disallow TOCTOU patterns with existsSync() followed by readFileSync()",
+      recommended: true,
+    },
+    schema: [],
+    messages: {
+      toctouFileOp: "existsSync() + readFileSync() pattern is vulnerable to TOCTOU race conditions",
+    },
+    hasSuggestions: true,
+  },
+
+  create(context) {
+    // Collect existsSync calls per scope, keyed by argument
+    const existsCalls = [];
+    const readCalls = [];
+
+    return {
+      CallExpression(node) {
+        if (isExistsSyncCall(node)) {
+          const argKey = getArgKey(node);
+          if (argKey) {
+            existsCalls.push({
+              node,
+              argKey,
+              scope: getEnclosingScope(node),
+            });
+          }
+        }
+
+        if (isReadFileSyncCall(node)) {
+          const argKey = getArgKey(node);
+          if (argKey) {
+            readCalls.push({
+              node,
+              argKey,
+              scope: getEnclosingScope(node),
+            });
+          }
+        }
+      },
+
+      "Program:exit"() {
+        // Match existsSync + readFileSync pairs in the same scope on the same arg
+        for (const read of readCalls) {
+          for (const exists of existsCalls) {
+            if (
+              exists.argKey === read.argKey &&
+              exists.scope === read.scope &&
+              isBefore(exists.node, read.node) &&
+              isGuardingCondition(exists.node, read.node)
+            ) {
+              context.report({
+                node: read.node,
+                messageId: "toctouFileOp",
+                suggest: [
+                  {
+                    desc: "Use try/catch with readFileSync() directly instead of check-then-read",
+                    fix() {
+                      // Auto-fix for TOCTOU is complex (requires restructuring control flow).
+                      // Return null to indicate manual fix is needed.
+                      return null;
+                    },
+                  },
+                ],
+              });
+            }
+          }
+        }
+      },
+    };
+  },
+};

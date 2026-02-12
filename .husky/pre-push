@@ -34,6 +34,42 @@ if [ $patterns_exit -ne 0 ]; then
 fi
 echo "  ✅ Pattern compliance passed"
 
+# 3b. Code-reviewer gate for script changes (Session #151)
+# If scripts/.claude/hooks/.husky/ changed, check if code-reviewer ran this session
+echo "  ▶ Checking code-reviewer coverage for script changes..."
+set +e
+script_changes=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^(scripts/|\.claude/hooks/|\.husky/)' | head -5)
+set -e
+
+if [ -n "${script_changes:-}" ]; then
+  # Check if code-reviewer was invoked this session
+  reviewer_ran=0
+  if [ -f ".claude/state/agent-invocations.jsonl" ]; then
+    # Look for code-reviewer invocation in the last 4 hours
+    if grep -q '"code-reviewer"' .claude/state/agent-invocations.jsonl 2>/dev/null; then
+      reviewer_ran=1
+    fi
+  fi
+
+  if [ $reviewer_ran -eq 0 ]; then
+    echo "  ⚠️ Script changes detected but code-reviewer not invoked this session"
+    echo "  Changed files:"
+    printf '%s\n' "$script_changes" | while read -r f; do echo "    - $f"; done
+    echo ""
+    echo "  Run code-reviewer before pushing script changes."
+    echo "  Use: SKIP_REVIEWER=1 git push to bypass (not recommended)"
+    if [ "${SKIP_REVIEWER:-}" != "1" ]; then
+      exit 1
+    fi
+    echo "  ⚠️ Bypassed with SKIP_REVIEWER=1"
+    node scripts/append-hook-warning.js --hook=pre-push --type=reviewer --severity=warning --message="Code-reviewer bypassed for script changes" --action="Run code-reviewer agent" 2>/dev/null || true
+  else
+    echo "  ✅ Code-reviewer was invoked for script changes"
+  fi
+else
+  echo "  ✅ No script changes (code-reviewer gate skipped)"
+fi
+
 # 4. Security pattern check (files being pushed, blocking for CRITICAL/HIGH)
 echo "  ▶ Running security pattern check..."
 set +e

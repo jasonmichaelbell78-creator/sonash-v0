@@ -2,7 +2,7 @@
 
 **Document Version**: 4.0 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-11 (Session #149)
+2026-02-11 (Session #151)
 
 ## AI Instructions
 
@@ -69,7 +69,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 150 (since Jan 1, 2026)
+**Current Session Count**: 151 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -105,12 +105,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - PR #359 created, 2 rounds of review feedback fixed (Reviews #283, #284)
 - Consolidation #18: Reviews #266-284 -> 7 new patterns in CODE_PATTERNS.md v2.7
 - GRAND PLAN progress: ~68% (1,176/1,727 items across Sprints 1-3)
-
-**TODO (tomorrow):**
-
-- Set up GitHub repository variables (Settings -> Secrets and variables ->
-  Variables) for `NEXT_PUBLIC_FIREBASE_*` values. The preview deploy workflow
-  now uses `vars.*` instead of `secrets.*` for these public config values.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -166,6 +160,14 @@ Choose from:
 5. Implement and commit with review summary
 
 **Last Processed**: 2026-02-11 (Reviews #283-284: PR #359 feedback)
+
+---
+
+## Pending Manual Actions
+
+- Set up GitHub repository variables (Settings -> Secrets and variables ->
+  Variables) for `NEXT_PUBLIC_FIREBASE_*` values. The preview deploy workflow
+  now uses `vars.*` instead of `secrets.*` for these public config values.
 
 ---
 
