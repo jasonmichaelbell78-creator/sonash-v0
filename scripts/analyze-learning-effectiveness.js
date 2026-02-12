@@ -97,6 +97,35 @@ function refuseSymlink(filePath) {
   }
 }
 
+/**
+ * Find the end index of a JS array declaration in source text.
+ * Review #309: Extracted from loadAutomatedPatterns to reduce cognitive complexity.
+ * Uses regex to find closing ]; instead of bracket-depth loop.
+ */
+function findArrayEnd(content, startIdx) {
+  const openIdx = content.indexOf("[", startIdx);
+  if (openIdx === -1) return content.length;
+  const rest = content.slice(openIdx);
+  const closeMatch = /\n\];\s*$/m.exec(rest);
+  return closeMatch ? openIdx + closeMatch.index + closeMatch[0].length : content.length;
+}
+
+/**
+ * Parse a single pattern block from the ANTI_PATTERNS array source text.
+ * Review #309: Extracted from loadAutomatedPatterns to reduce cognitive complexity.
+ */
+function parsePatternBlock(block) {
+  const idMatch = block.match(/["']([^"']+)["']/);
+  if (!idMatch) return null;
+  const messageMatch = block.match(/message:\s*["']([^"']+)["']/);
+  const reviewMatch = block.match(/review:\s*["']([^"']+)["']/);
+  return {
+    id: idMatch[1],
+    message: messageMatch ? messageMatch[1] : "",
+    reviewRefs: reviewMatch ? reviewMatch[1] : "",
+  };
+}
+
 class LearningEffectivenessAnalyzer {
   constructor(options = {}) {
     this.options = {
@@ -365,8 +394,8 @@ class LearningEffectivenessAnalyzer {
       }
 
       // Parse table-row patterns (main format: | Priority | Pattern | Rule | Why |)
-      // Review #308: Fixed ReDoS (S5852) - replaced [^|]+? with [^|]* to avoid backtracking
-      const tableMatch = line.match(/^\|\s*([🔴🟡⚪])\s*\|\s*([^|]*)\|\s*([^|]*)\|\s*([^|]*)/u);
+      // Review #309: Fixed ReDoS (S5852) - removed \s* before [^|]* to eliminate overlapping quantifiers
+      const tableMatch = line.match(/^\|\s*([🔴🟡⚪])\s*\|([^|]*)\|([^|]*)\|([^|]*)/u);
       if (tableMatch) {
         const [, emoji, patternName, ,] = tableMatch;
         const name = patternName.trim();
@@ -414,6 +443,7 @@ class LearningEffectivenessAnalyzer {
 
   /**
    * Load automated patterns from check-pattern-compliance.js
+   * Review #309: Extracted helpers to reduce cognitive complexity from 22 to <15
    */
   async loadAutomatedPatterns() {
     if (!existsSync(PATTERN_CHECKER)) {
@@ -429,42 +459,23 @@ class LearningEffectivenessAnalyzer {
       return;
     }
 
-    // Extract ANTI_PATTERNS entries by finding all { id: "..." } blocks
-    // after the ANTI_PATTERNS declaration
     const startIdx = content.indexOf("const ANTI_PATTERNS = [");
     if (startIdx === -1) {
       console.warn("⚠️  Could not find ANTI_PATTERNS in checker");
       return;
     }
 
-    // Review #308: Limit scope to ANTI_PATTERNS array using bracket depth
-    const openIdx = content.indexOf("[", startIdx);
-    let depth = 0;
-    let endIdx = content.length;
-    for (let i = openIdx; i < content.length; i++) {
-      if (content[i] === "[") depth++;
-      else if (content[i] === "]") {
-        depth--;
-        if (depth === 0) {
-          endIdx = i + 1;
-          break;
-        }
-      }
-    }
+    // Review #309: Use regex to find array end instead of bracket-depth loop
+    const endIdx = findArrayEnd(content, startIdx);
     const patternsText = content.slice(startIdx, endIdx);
     const patternBlocks = patternsText.split(/\{\s*id:/g).slice(1);
 
     for (const block of patternBlocks) {
-      const idMatch = block.match(/["']([^"']+)["']/);
-      const messageMatch = block.match(/message:\s*["']([^"']+)["']/);
-      const reviewMatch = block.match(/review:\s*["']([^"']+)["']/);
-
-      if (idMatch) {
+      const parsed = parsePatternBlock(block);
+      if (parsed) {
         this.automatedPatterns.push({
-          id: idMatch[1],
-          message: messageMatch ? messageMatch[1] : "",
-          reviewRefs: reviewMatch ? reviewMatch[1] : "",
-          keywords: this.extractKeywords(idMatch[1] + " " + (messageMatch ? messageMatch[1] : "")),
+          ...parsed,
+          keywords: this.extractKeywords(parsed.id + " " + parsed.message),
         });
       }
     }

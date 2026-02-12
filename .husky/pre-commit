@@ -33,9 +33,7 @@ fi
 # 3. Run pattern compliance check on staged files (catches issues before PR review tools)
 # Review #308: Capture output once instead of running command twice
 echo "  ▶ Running pattern compliance..."
-patterns_output=$(node scripts/check-pattern-compliance.js --staged 2>&1)
-patterns_exit=$?
-if [ $patterns_exit -ne 0 ]; then
+if ! patterns_output="$(node scripts/check-pattern-compliance.js --staged 2>&1)"; then
   echo "  ❌ Pattern compliance failed"
   printf '%s\n' "$patterns_output" | tail -15
   echo ""

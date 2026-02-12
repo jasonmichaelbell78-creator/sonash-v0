@@ -676,9 +676,9 @@ function generateRuleSuggestions(recurringPatterns, consolidatedRange) {
       content += `- **Template:**\n\n`;
       content += "```javascript\n";
       content += `{\n`;
-      content += `  id: "${id || "unnamed-pattern"}",\n`;
+      content += `  id: ${JSON.stringify(id || "unnamed-pattern")},\n`;
       content += `  pattern: /TODO_REGEX/g,\n`;
-      content += `  message: "${(p.pattern || "").replaceAll('"', String.raw`\"`)}",\n`;
+      content += `  message: ${JSON.stringify(p.pattern || "")},\n`;
       content += `  fix: "TODO: describe the correct pattern",\n`;
       content += `  review: "#${p.reviews.join(", #")}",\n`;
       content += `  fileTypes: [".js", ".ts"],\n`;

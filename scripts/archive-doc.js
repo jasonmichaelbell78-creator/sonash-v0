@@ -187,14 +187,14 @@ function safeWriteFile(filePath, content, description) {
       // Backup-swap: preserve original until new file is in place
       if (existsSync(filePath)) renameSync(filePath, bakPath);
       renameSync(tmpPath, filePath);
-    } catch (swapErr) {
+    } catch (error_) {
       // Restore from backup if swap failed
       try {
         if (existsSync(bakPath) && !existsSync(filePath)) renameSync(bakPath, filePath);
       } catch {
         /* best effort restore */
       }
-      throw swapErr;
+      throw error_;
     } finally {
       // Clean up temp/backup files
       try {

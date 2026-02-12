@@ -338,9 +338,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 (Reviews #308-#308) **Consolidation
+**Reviews since last consolidation:** 1 (Reviews #309-#309) **Consolidation
 threshold:** 10 reviews **Status:** ✅ Current **Next consolidation due:** After
-Review #317 (Consolidation #19)
+Review #318 (Consolidation #19)
 
 ### When to Consolidate
 
@@ -364,7 +364,7 @@ Consolidation is needed when:
 
 - **Date:** 2026-02-12 (Session #114+)
 - **Consolidation #:** 18
-- **Reviews consolidated:** #285-#307 (23 reviews)
+- **Reviews consolidated:** #285-#308 (24 reviews)
 - **Patterns added to CODE_PATTERNS.md v2.7:**
   - **CI/Automation (6 patterns):**
     - Module-scope config try/catch
@@ -704,6 +704,32 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #309: PR #362 R5 — ReDoS Overlapping Quantifiers, Complexity Extraction, Multiline Regex (2026-02-12)
+
+**Source:** SonarCloud (2 S5852 + 3 code smells) + Qodo Suggestions (8)
+**PR/Branch:** PR #362 (claude/new-session-uaNwX) **Suggestions:** 13 total
+(Fix: 9, Dismiss: 8)
+
+**Key Patterns:**
+
+1. **ReDoS from overlapping quantifiers: `\s*` before `[^|]*`** — Even safe
+   character classes become vulnerable when preceded by `\s*` that matches the
+   same whitespace. Remove redundant `\s*` when captures are `.trim()`'d anyway.
+2. **Cognitive complexity reduction via standalone function extraction** —
+   Extract loops and parsing logic into standalone functions (not just class
+   methods) to maximize complexity reduction per extraction.
+3. **`JSON.stringify()` over manual string escaping in templates** — Eliminates
+   nested template literals AND handles all special characters. Safer than
+   `.replaceAll('"', ...)`.
+4. **Scope regex character classes to single lines with `[^\n...]`** — Generic
+   negated classes like `[^|]*` or `[^,)]+` can match across newlines. Add `\n`
+   to negation for line-scoped patterns.
+5. **Shell `if ! var="$(cmd)"` for `set -e` safety** — Combining assignment and
+   test in one statement prevents `set -e` from aborting on non-zero exit before
+   the variable is set.
 
 ---
 

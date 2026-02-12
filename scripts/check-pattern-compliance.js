@@ -808,7 +808,7 @@ const ANTI_PATTERNS = [
   // parseInt without radix
   {
     id: "parseint-no-radix",
-    pattern: /parseInt\s*\([^,)]+\)(?!\s*,)/g,
+    pattern: /parseInt\s*\([^\n,)]+\)(?!\s*,)/g,
     message: "parseInt() without radix parameter - may parse as octal in legacy engines",
     fix: "Always specify radix: parseInt(str, 10) or use Number.parseInt(str, 10)",
     review: "CODE_PATTERNS.md JS/TS - Number.parseInt radix",
@@ -820,7 +820,7 @@ const ANTI_PATTERNS = [
   // Math.max with spread on potentially empty array
   {
     id: "math-max-spread-no-guard",
-    pattern: /Math\.max\(\s*\.\.\.[^)]+\s*\)/g,
+    pattern: /Math\.max\(\s*\.\.\.[^)]+\)/g,
     message: "Math.max(...arr) returns -Infinity on empty array - add length guard",
     fix: "Guard empty: arr.length > 0 ? Math.max(...arr) : defaultValue",
     review: "CODE_PATTERNS.md JS/TS - Math.max empty array, Review #216",
@@ -844,7 +844,7 @@ const ANTI_PATTERNS = [
   // git diff --name without --diff-filter
   {
     id: "git-diff-no-filter",
-    pattern: /git\s+diff[^|]*--name-only(?![^|]*--diff-filter)/g,
+    pattern: /git\s+diff[^\n]*--name-only(?![^\n]*--diff-filter)/g,
     message: "git diff --name-only without --diff-filter includes deleted files",
     fix: "Add --diff-filter=ACM to exclude deleted files: git diff --name-only --diff-filter=ACM",
     review: "CODE_PATTERNS.md Documentation - Pre-commit ADM filter, v2.5",
