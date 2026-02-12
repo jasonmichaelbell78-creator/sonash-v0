@@ -669,6 +669,7 @@ const ANTI_PATTERNS = [
     review: "#13, #14, Session #151 analysis",
     fileTypes: [".js", ".ts"],
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["exec-without-global"] || [],
   },
 
   // Git commands without -- separator (6x in reviews)

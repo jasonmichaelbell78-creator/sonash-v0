@@ -88,5 +88,6 @@
     "resolve-item.js",
     "sync-roadmap-refs.js",
     "migrate-existing-findings.js"
-  ]
+  ],
+  "exec-without-global": ["validate-phase-completion.js"]
 }

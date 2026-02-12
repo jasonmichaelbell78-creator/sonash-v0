@@ -25,6 +25,7 @@
  */
 
 import {
+  renameSync,
   readFileSync,
   writeFileSync,
   existsSync,
@@ -179,7 +180,9 @@ function safeWriteFile(filePath, content, description) {
   verbose(`Writing ${content.length} characters to ${description}`);
 
   try {
-    writeFileSync(filePath, content, "utf-8");
+    const tmpPath = filePath + ".tmp";
+    writeFileSync(tmpPath, content, "utf-8");
+    renameSync(tmpPath, filePath);
     return { success: true };
   } catch (error) {
     return {

@@ -338,9 +338,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #316 #290-#306,
-17 reviews since consolidation #17)
+**Reviews since last consolidation:** 23 (Reviews #285-#307) **Consolidation
+threshold:** 10 reviews **Status:** ⚠️ OVERDUE **Next consolidation due:** NOW
+(Consolidation #19)
 
 ### When to Consolidate
 
@@ -362,8 +362,26 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-02-12 (Session #114+)
-- **Reviews consolidated:** #290-#306 (10 reviews)
+- **Date:** 2026-02-10
+- **Consolidation #:** 18
+- **Reviews consolidated:** #266-#284 (19 reviews)
+- **Patterns added to CODE_PATTERNS.md v2.7:**
+  - **CI/Automation (6 patterns):**
+    - Module-scope config try/catch
+    - Path info redaction
+    - Silent catch prevention
+    - Number.isFinite guards
+    - Fail-closed validation
+    - Atomic write cleanup
+  - **React/Frontend (1 pattern):**
+    - Key stability
+
+<details>
+<summary>Previous Consolidation (#17)</summary>
+
+- **Date:** 2026-02-07
+- **Consolidation #:** 17
+- **Reviews consolidated:** #254-#265 (12 reviews)
 - **Patterns added to CODE_PATTERNS.md v2.6:**
   - **Security (4 patterns):**
     - PII in audit reports (hashed identifiers)
@@ -394,11 +412,14 @@ Consolidation is needed when:
   - **Bash/Shell (1 pattern):**
     - Here-string interpolation
 
+</details>
+
 <details>
 <summary>Previous Consolidation (#16)</summary>
 
-- **Date:** 2026-02-07 (Session #114+)
-- **Reviews consolidated:** #225-#250 (19 reviews)
+- **Date:** 2026-02-02
+- **Consolidation #:** 16
+- **Reviews consolidated:** #213-#224 (12 reviews)
 - **Archive created:** #7 (Reviews #202-#212) →
   `docs/archive/REVIEWS_202-212.md`
 - **Patterns added to CODE_PATTERNS.md v2.5:**
@@ -426,11 +447,6 @@ Consolidation is needed when:
     - Unicode property escapes for emoji
     - Markdown parentheses encoding
     - Pre-commit ADM filter
-    - Nullable utility types
-    - Firebase defineString (not process.env)
-    - Prettier-linter conflict resolution
-    - Force token refresh (getIdTokenResult)
-    - Dev data client-only Firestore rules
 
 </details>
 
@@ -3874,13 +3890,7 @@ Major: 12, Minor: 8, Trivial: 2, Rejected: 2)
 - Pattern compliance gate catches readFileSync without try/catch
 - Sibling scripts should share validation patterns consistently
 
-<!--
-Next review entry will go here. Use format:
-
-#### Review #NNN: PR #XXX Title - Review Source (DATE)
-
-
--->
+<!-- Next review entry goes below this line -->
 
 #### Review #301: PR #342 Multi-AI Audit Data Quality - Doc Lint + Qodo (2026-02-06)
 

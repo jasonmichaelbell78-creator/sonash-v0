@@ -30,11 +30,11 @@ else
   echo "  ⏭️ Skipping lint-staged (devDependency missing from node_modules)"
 fi
 
-# 3. Run pattern compliance check (catches issues before PR review tools)
+# 3. Run pattern compliance check on staged files (catches issues before PR review tools)
 echo "  ▶ Running pattern compliance..."
-if ! npm run patterns:check > /dev/null 2>&1; then
+if ! node scripts/check-pattern-compliance.js --staged > /dev/null 2>&1; then
   echo "  ❌ Pattern compliance failed"
-  npm run patterns:check 2>&1 | tail -15
+  node scripts/check-pattern-compliance.js --staged 2>&1 | tail -15
   echo ""
   echo "  Fix pattern issues before committing. Run: npm run patterns:check"
   exit 1
