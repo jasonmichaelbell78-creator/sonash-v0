@@ -1,6 +1,6 @@
 # Suggested Compliance Checker Rules
 
-**Generated:** 2026-02-12 **Source:** Consolidation #285-#308 **Status:**
+**Generated:** 2026-02-12 **Source:** Consolidation #285-#309 **Status:**
 Pending review - add to check-pattern-compliance.js as appropriate
 
 ---

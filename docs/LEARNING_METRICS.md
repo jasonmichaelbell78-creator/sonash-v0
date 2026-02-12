@@ -27,17 +27,17 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #285 - #308 (24 reviews) **Analysis Date:** 2026-02-12
+**Review Range:** #285 - #309 (25 reviews) **Analysis Date:** 2026-02-12
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 87.4% |
-| Patterns Learned          | 259   |
+| Learning Effectiveness    | 87.1% |
+| Patterns Learned          | 258   |
 | Patterns Automated        | 19    |
-| Patterns Failing          | 14    |
-| Critical Pattern Success  | 93.8% |
+| Patterns Failing          | 15    |
+| Critical Pattern Success  | 92.3% |
 | Automation Coverage       | 17.0% |
 | Total Documented Patterns | 318   |
 | Total Automated Patterns  | 54    |
@@ -45,15 +45,15 @@ This is a **Tier 2 metrics document** - reference during:
 ### Top Recommended Actions
 
 1. **[Automation]** Automate "Regex anchoring for enums"
-   - Recurred 9 times after documentation \(Reviews: 300, 302, 303, 304, 308\)
+   - Recurred 10 times after documentation \(Reviews: 302, 303, 304, 308, 309\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "Windows atomic rename"
+2. **[Automation]** Automate "Safe percentage"
+   - Recurred 8 times after documentation \(Reviews: 297, 298, 299, 308, 309\)
+   - Action: Add pattern to check\-pattern\-compliance.js
+
+3. **[Automation]** Automate "Windows atomic rename"
    - Recurred 8 times after documentation \(Reviews: 297, 298, 299, 302, 308\)
-   - Action: Add pattern to check\-pattern\-compliance.js
-
-3. **[Automation]** Automate "Signal error code semantics"
-   - Recurred 7 times after documentation \(Reviews: 290, 293, 295, 303, 305\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
 4. **[Documentation]** Improve documentation for "Unicode line separators"
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 259   | Pattern never recurred after documentation   |
+| ✅ LEARNED   | 258   | Pattern never recurred after documentation   |
 | 🔧 AUTOMATED | 19    | Pattern recurred but now enforced by tooling |
 | 🟡 WEAK      | 26    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 14    | Pattern recurred 3+ times - needs automation |
+| 🔴 FAILED    | 15    | Pattern recurred 3+ times - needs automation |
 
 ---
 
