@@ -158,9 +158,11 @@ consolidation (6-pass dedup), and session summary
 
 **Description:** View system health alerts and pending issues **When to use:**
 Check system health, review warnings, see pending actions **Example:** `/alerts`
-or `/alerts --full` **Parameters:** `--full` for complete health check
-**Output:** Categorized alerts (Code Health, Security, Session Context,
-Documentation, Roadmap) **Added:** Session #113
+or `/alerts --full` **Parameters:** `--full` for comprehensive check (18
+categories) **Output:** Interactive triage across 8 categories (limited) or 18
+categories (full) — Code Health, Security, Session Context, Debt Health,
+Learning Health, Agent Compliance, Hook Warnings, Test Results, plus 10 more in
+full mode **Added:** Session #113, expanded Session #154
 
 ### `/save-context`
 
