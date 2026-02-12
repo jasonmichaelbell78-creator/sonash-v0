@@ -17,7 +17,7 @@
  *   2 = Error
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,24 +25,56 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const LOG_FILE = join(__dirname, "..", "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+const CODE_PATTERNS_FILE = join(__dirname, "..", "docs", "agent_docs", "CODE_PATTERNS.md");
 const applyChanges = process.argv.includes("--apply");
 
 /**
- * Parse version history to find review numbers > lastConsolidated
+ * Count actual review entries (#### Review #N) where N > lastConsolidated
  */
 function getComputedCount(content, lastConsolidated) {
-  // Match "Review #NNN:" or "Review #NNN-NNN:" (range format, captures both numbers)
-  const versionRegex =
-    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4})(?:-(\d{1,4}))?[-:]/g;
+  const reviewHeaderRegex = /^#### Review #(\d+)/gm;
+  const uniqueNums = new Set();
 
-  const allNums = [];
-  for (const m of content.matchAll(versionRegex)) {
-    allNums.push(Number.parseInt(m[1], 10));
-    if (m[2]) allNums.push(Number.parseInt(m[2], 10));
+  for (const m of content.matchAll(reviewHeaderRegex)) {
+    const num = Number.parseInt(m[1], 10);
+    if (Number.isFinite(num) && num > lastConsolidated) {
+      uniqueNums.add(num);
+    }
   }
-  const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
   return uniqueNums.size;
+}
+
+/**
+ * Cross-validate against CODE_PATTERNS.md version history
+ * Returns the last consolidated review number from version history, or null
+ */
+function getLastConsolidatedFromCodePatterns() {
+  if (!existsSync(CODE_PATTERNS_FILE)) return null;
+
+  let content;
+  try {
+    content = readFileSync(CODE_PATTERNS_FILE, "utf8").replace(/\r\n/g, "\n");
+  } catch {
+    return null;
+  }
+
+  // Parse version history table for the most recent consolidation
+  // Format: | 2.7 | 2026-02-10 | **CONSOLIDATION #18: Reviews #266-284** ...
+  const consolidationRegex = /CONSOLIDATION #(\d+):\s*Reviews #(\d+)-(\d+)/g;
+  let maxNum = 0;
+  let maxConsolidation = 0;
+
+  for (const m of content.matchAll(consolidationRegex)) {
+    const consolidationNum = Number.parseInt(m[1], 10);
+    const endReview = Number.parseInt(m[3], 10);
+    if (consolidationNum > maxConsolidation) {
+      maxConsolidation = consolidationNum;
+      maxNum = endReview;
+    }
+  }
+
+  return maxNum > 0 ? { consolidationNum: maxConsolidation, lastReview: maxNum } : null;
 }
 
 /**
@@ -97,9 +129,23 @@ function main() {
     const computedCount = getComputedCount(content, lastConsolidated);
     const manualCount = getManualCount(content);
 
+    // Cross-validate against CODE_PATTERNS.md version history
+    const codePatternsInfo = getLastConsolidatedFromCodePatterns();
+
     console.log("🔄 Consolidation Counter Sync");
     console.log("═".repeat(40));
-    console.log(`   Last consolidated: #${lastConsolidated}`);
+    console.log(`   Last consolidated (log): #${lastConsolidated}`);
+    if (codePatternsInfo) {
+      console.log(
+        `   Last consolidated (CODE_PATTERNS.md): #${codePatternsInfo.lastReview} (Consolidation #${codePatternsInfo.consolidationNum})`
+      );
+      if (codePatternsInfo.lastReview !== lastConsolidated) {
+        console.log(
+          `   ⚠️  MISMATCH: Log says #${lastConsolidated}, CODE_PATTERNS.md says #${codePatternsInfo.lastReview}`
+        );
+        console.log(`   → Using CODE_PATTERNS.md as source of truth`);
+      }
+    }
     console.log(`   Manual counter: ${manualCount}`);
     console.log(`   Computed count: ${computedCount}`);
     console.log("");

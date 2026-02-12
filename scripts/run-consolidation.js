@@ -151,18 +151,45 @@ function getLastConsolidatedReview(content) {
  * Scoped to "Consolidation Trigger" section for robustness (Review #160)
  */
 function getConsolidationStatus(content) {
-  // COMPUTED: count actual review entries > last consolidated (gap-safe)
-  // Review #215: Use Set counting instead of subtraction to handle gaps
+  // COMPUTED: count actual #### Review #N entries > last consolidated (gap-safe)
+  // Fixed: was using version-table regex which doesn't match review headers
   const lastConsolidated = getLastConsolidatedReview(content);
-  const versionRegex =
-    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):/g;
+  const reviewHeaderRegex = /^#### Review #(\d+)/gm;
 
-  const allNums = Array.from(content.matchAll(versionRegex), (m) => Number.parseInt(m[1], 10));
+  const allNums = Array.from(content.matchAll(reviewHeaderRegex), (m) => Number.parseInt(m[1], 10));
   const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
   // Review #216: Use reduce to avoid -Infinity and stack overflow on large arrays
   const highestReview = allNums.reduce((max, n) => (Number.isFinite(n) && n > max ? n : max), 0);
   const computedCount = uniqueNums.size;
+
+  // Cross-validate against CODE_PATTERNS.md version history
+  const codePatternsPath = join(__dirname, "..", "docs", "agent_docs", "CODE_PATTERNS.md");
+  if (existsSync(codePatternsPath)) {
+    try {
+      const cpContent = readFileSync(codePatternsPath, "utf8");
+      const consolidationRegex = /CONSOLIDATION #(\d+):\s*Reviews #(\d+)-(\d+)/g;
+      let cpMaxConsolidation = 0;
+      let cpLastReview = 0;
+      for (const m of cpContent.matchAll(consolidationRegex)) {
+        const cNum = Number.parseInt(m[1], 10);
+        const endReview = Number.parseInt(m[3], 10);
+        if (cNum > cpMaxConsolidation) {
+          cpMaxConsolidation = cNum;
+          cpLastReview = endReview;
+        }
+      }
+      if (cpLastReview > 0 && cpLastReview !== lastConsolidated && !quiet) {
+        console.log(
+          `${colors.yellow}⚠️  CROSS-VALIDATION: Log says last consolidated=#${lastConsolidated}, ` +
+            `CODE_PATTERNS.md says #${cpLastReview} (Consolidation #${cpMaxConsolidation})${colors.reset}`
+        );
+        console.log(`   → CODE_PATTERNS.md is the source of truth\n`);
+      }
+    } catch {
+      // Non-fatal: skip cross-validation if CODE_PATTERNS.md unreadable
+    }
+  }
 
   // Scope parsing to Consolidation Trigger section only (Review #160)
   const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");
@@ -207,14 +234,12 @@ function getConsolidationStatus(content) {
 function extractRecentReviews(content, lastReviewNum) {
   const reviews = [];
 
-  // Match review entries in version history
-  // Format: | X.X | YYYY-MM-DD | Review #NNN: Description |
-  // Use bounded quantifiers to prevent ReDoS (Review #157)
-  const versionRegex =
-    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):\s{0,5}([^|]{1,500})/g;
+  // Match review entries as #### Review #NNN: Description (actual format in learnings log)
+  // Fixed: was using version-table regex which doesn't exist in the learnings log
+  const reviewRegex = /^#### Review #(\d{1,4}):\s*(.{1,500})/gm;
   let match;
 
-  while ((match = versionRegex.exec(content)) !== null) {
+  while ((match = reviewRegex.exec(content)) !== null) {
     const reviewNum = Number.parseInt(match[1], 10);
     const description = match[2].trim();
 
