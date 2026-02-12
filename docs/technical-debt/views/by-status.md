@@ -13,7 +13,7 @@
 
 _No items_
 
-## VERIFIED (1776)
+## VERIFIED (1783)
 
 | ID        | Title                                                          | Severity | Category                 |
 | --------- | -------------------------------------------------------------- | -------- | ------------------------ |
@@ -1189,12 +1189,12 @@ _No items_
 | DEBT-2739 | Duplicated: ALLOWED_PATHS pattern matching across hooks        | S2       | process                  |
 | DEBT-2741 | Duplicated: Pattern check implementation between hook and...   | S2       | process                  |
 | DEBT-2742 | Duplicated: Validation between validate-audit.js and vali...   | S2       | process                  |
-| DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
 | DEBT-2749 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
 | DEBT-2751 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
 | DEBT-2752 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
 | DEBT-2753 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
 | DEBT-2754 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
+| DEBT-2813 | Missing ARIA labels on critical navigation tabs                | S2       | code-quality             |
 | DEBT-2758 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
 | DEBT-2759 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
 | DEBT-2760 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
@@ -1210,13 +1210,13 @@ _No items_
 | DEBT-2770 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
 | DEBT-2771 | msw installed but unused for API mocking                       | S2       | code-quality             |
 | DEBT-2772 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
-| DEBT-2774 | Add engines field to root package.json for CI/CD consistency   | S2       | code-quality             |
+| DEBT-2812 | Add engines field to root package.json for CI/CD consistency   | S2       | code-quality             |
 | DEBT-2777 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
 | DEBT-2779 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
 | DEBT-2780 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
-| DEBT-2781 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | S2       | code-quality             |
+| DEBT-2809 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | S2       | code-quality             |
 | DEBT-2782 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
-| DEBT-2783 | Documentation effectiveness metrics - no tracking of whic...   | S2       | code-quality             |
+| DEBT-2811 | Documentation effectiveness metrics - no tracking of whic...   | S2       | code-quality             |
 | DEBT-2784 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
 | DEBT-2785 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
 | DEBT-2786 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
@@ -1226,7 +1226,7 @@ _No items_
 | DEBT-2790 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
 | DEBT-2791 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
 | DEBT-2792 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
-| DEBT-2793 | Date formats inconsistent across the app                       | S2       | code-quality             |
+| DEBT-2808 | Date formats inconsistent across the app                       | S2       | code-quality             |
 | DEBT-2794 | Success feedback messages too brief                            | S2       | code-quality             |
 | DEBT-2795 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
 | DEBT-2796 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
@@ -1236,8 +1236,15 @@ _No items_
 | DEBT-2800 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
 | DEBT-2801 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
 | DEBT-2803 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
-| DEBT-2804 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
-| DEBT-2805 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
+| DEBT-2806 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
+| DEBT-2807 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
+| DEBT-2815 | Date formats inconsistent across the app                       | S2       | enhancements             |
+| DEBT-2816 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | S2       | enhancements             |
+| DEBT-2810 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
+| DEBT-2817 | Documentation effectiveness metrics - no tracking of whic...   | S2       | enhancements             |
+| DEBT-2818 | Add engines field to root package.json for CI/CD consistency   | S2       | enhancements             |
+| DEBT-2819 | Missing ARIA labels on critical navigation tabs                | S2       | enhancements             |
+| DEBT-2814 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
 | DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | S3       | code-quality             |
 | DEBT-0572 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
@@ -1798,7 +1805,7 @@ _No items_
 
 _No items_
 
-## RESOLVED (162)
+## RESOLVED (165)
 
 | ID        | Title                                                          | Severity | Category      |
 | --------- | -------------------------------------------------------------- | -------- | ------------- |
@@ -1911,8 +1918,11 @@ _No items_
 | DEBT-2545 | Skill issue: audit-process has complex 7-stage orchestrat...   | S2       | process       |
 | DEBT-2554 | Performance: 10 Claude hooks run on every Write/Edit oper...   | S2       | process       |
 | DEBT-2747 | Session-start timeout risks in low-bandwidth environments      | S2       | code-quality  |
+| DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality  |
 | DEBT-2778 | Upgrade Firebase Functions to Node.js 24 runtime               | S2       | code-quality  |
 | DEBT-2802 | useDailyQuote hook has smart module-level caching prevent...   | S2       | code-quality  |
+| DEBT-2804 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality  |
+| DEBT-2805 | writeFileSync without atomic write pattern                     | S2       | code-quality  |
 | DEBT-0787 | Template docs located outside docs/templates/ directory        | S3       | code-quality  |
 | DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes...   | S3       | code-quality  |
 | DEBT-1995 | No UI indicator for online/offline state                       | S3       | code-quality  |
@@ -1965,7 +1975,7 @@ _No items_
 | DEBT-0867 | Fix useJournal memory leak                                     | S0       | code-quality  |
 | DEBT-1296 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality  |
 
-## FALSE_POSITIVE (243)
+## FALSE_POSITIVE (242)
 
 | ID        | Title                                                          | Severity | Category      |
 | --------- | -------------------------------------------------------------- | -------- | ------------- |
@@ -1979,7 +1989,6 @@ _No items_
 | DEBT-2050 | Inconsistent terminology: 'Cloud Functions' capitalization     | S2       | documentation |
 | DEBT-2750 | CI runs full build twice - once for lint, once for test        | S2       | code-quality  |
 | DEBT-2755 | Untitled finding                                               | S2       | code-quality  |
-| DEBT-2756 | Missing ARIA labels on critical navigation tabs                | S2       | code-quality  |
 | DEBT-2757 | Small touch targets on mobile - tabs only 8-10px padding       | S2       | code-quality  |
 | DEBT-2773 | Add Content-Security-Policy header to Firebase hosting co...   | S2       | code-quality  |
 | DEBT-2775 | Firestore security rules file not found in repository          | S2       | code-quality  |

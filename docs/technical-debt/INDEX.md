@@ -9,7 +9,7 @@
 
 ---
 
-**Total Items:** 2181
+**Total Items:** 2190
 
 ## Quick Stats
 
@@ -17,7 +17,7 @@
 | ------------- | ----- |
 | S0 (Critical) | 27    |
 | S1 (High)     | 388   |
-| S2 (Medium)   | 959   |
+| S2 (Medium)   | 968   |
 | S3 (Low)      | 807   |
 
 | Category                 | Count |
@@ -28,13 +28,14 @@
 | security                 | 81    |
 | performance              | 50    |
 | refactoring              | 21    |
+| enhancements             | 9     |
 | engineering-productivity | 3     |
 
 | Status         | Count |
 | -------------- | ----- |
-| VERIFIED       | 1776  |
-| RESOLVED       | 162   |
-| FALSE_POSITIVE | 243   |
+| VERIFIED       | 1783  |
+| RESOLVED       | 165   |
+| FALSE_POSITIVE | 242   |
 
 ## Views
 
