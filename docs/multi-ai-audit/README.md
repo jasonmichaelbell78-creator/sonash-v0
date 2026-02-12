@@ -71,10 +71,10 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 2. Verify: `npm run tdms:views`
 3. Update coordinator with audit results
 
-**For enhancement findings (IMS):**
+**For enhancement findings (TDMS):**
 
-1. Run: `node scripts/improvements/intake-audit.js <deduped-file>.jsonl`
-2. Verify: `npm run ims:views`
+1. Run: `node scripts/debt/intake-audit.js <deduped-file>.jsonl`
+2. Verify: `npm run tdms:views`
 3. Update coordinator with audit results
 
 ---
@@ -112,10 +112,6 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 | `npm run tdms:views`                   | Regenerate TDMS dashboard views          |
 | `node scripts/debt/intake-audit.js`    | Ingest audit findings into TDMS          |
 | `node scripts/debt/validate-schema.js` | Validate JSONL files against TDMS schema |
-| `npm run ims:intake`                   | Ingest enhancement findings into IMS     |
-| `npm run ims:views`                    | Regenerate IMS dashboard views           |
-| `npm run ims:validate`                 | Validate JSONL files against IMS schema  |
-| `npm run ims:metrics`                  | Generate IMS metrics dashboard           |
 
 ---
 
@@ -145,11 +141,8 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
   coordinator)
 - [docs/technical-debt/PROCEDURE.md](../technical-debt/PROCEDURE.md) - TDMS
   procedures
-- [docs/improvements/INDEX.md](../improvements/INDEX.md) - IMS improvement index
 - [docs/templates/JSONL_SCHEMA_STANDARD.md](../templates/JSONL_SCHEMA_STANDARD.md) -
-  TDMS canonical schema
-- [docs/templates/IMPROVEMENT_JSONL_SCHEMA.md](../templates/IMPROVEMENT_JSONL_SCHEMA.md) -
-  IMS canonical schema
+  TDMS canonical schema (includes enhancement type extensions)
 
 ---
 
@@ -157,6 +150,7 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 
 | Version | Date       | Changes                                                             | Author |
 | ------- | ---------- | ------------------------------------------------------------------- | ------ |
+| 1.2     | 2026-02-12 | IMS merged into TDMS; removed IMS scripts/schema references         | Claude |
 | 1.1     | 2026-02-11 | Added Enhancement Audit type (IMS), IMS scripts & schema references | Claude |
 | 1.0     | 2026-02-04 | Initial creation during multi-ai-audit consolidation                | Claude |
 

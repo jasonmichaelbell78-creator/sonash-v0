@@ -19,7 +19,8 @@ description:
 Performs a comprehensive, multi-pass enhancement audit of the **entire** project
 — not just code, but also product/UX, content, workflows, infrastructure,
 external services, and the audit system itself. Produces findings in the
-Improvement Management System (IMS) with mandatory honesty guardrails.
+Technical Debt Management System (TDMS) with `category: "enhancements"` and
+`type: "enhancement"`, including mandatory honesty guardrails.
 
 **Key differentiator from other audits**: This audit looks for things that could
 be **better**, not things that are **wrong**. Every finding includes a mandatory
@@ -47,7 +48,7 @@ Phase 3: Cross-Cutting Synthesis (1-2 sequential agents)
 Phase 4: Interactive Review (conversational, spans sessions if needed)
   → One-by-one walkthrough of findings
   → User decides: ACCEPTED / DECLINED / DEFERRED
-  → Output: Updated MASTER_IMPROVEMENTS.jsonl with decisions
+  → Output: Updated MASTER_DEBT.jsonl with decisions (category: enhancements)
 ```
 
 ---
@@ -329,10 +330,11 @@ Sequential process (1-2 agents):
 
 1. **Merge**: Combine all stage-1 and stage-2 JSONL files
 2. **Ingest**: Run
-   `node scripts/improvements/intake-audit.js ${AUDIT_DIR}/merged-all.jsonl --source "audit-enhancements-YYYY-MM-DD"`
-   - This automatically runs dedup and generates views
-3. **Cross-reference**: Load MASTER_DEBT.jsonl, note overlaps in `tdms_crossref`
-   field
+   `node scripts/debt/intake-audit.js ${AUDIT_DIR}/merged-all.jsonl --source "audit-enhancements-YYYY-MM-DD"`
+   - This automatically detects enhancement format, maps fields, runs dedup and
+     generates views
+   - Items ingested as `category: "enhancements"`, `type: "enhancement"` in TDMS
+3. **Cross-reference**: Intake script automatically handles TDMS dedup
 4. **Confidence filter**: Findings below 70% → "Inconclusive" section
 5. **Honesty check**: Verify all findings have non-empty `counter_argument`
 6. **Strengths compilation**: Gather all `type: "strength"` entries from Phase 1
@@ -396,7 +398,7 @@ shows full detail for every item:
 ```markdown
 ## I1 Batch 1: [Category Group] (N items)
 
-### ENH-XXXX: [Title]
+### DEBT-XXXX: [Title]
 
 **Impact:** I1 | **Effort:** E2 | **Confidence:** 85% **Category:**
 app-architecture
@@ -407,7 +409,7 @@ NOT to do this]
 
 ---
 
-### ENH-YYYY: [Title]
+### DEBT-YYYY: [Title]
 
 [... same format ...]
 
@@ -425,7 +427,7 @@ next.
 After each batch of decisions:
 
 - Run `resolve-item.js` for each item:
-  `node scripts/improvements/resolve-item.js ENH-XXXX --action {accept|decline|defer} --reason "{user's reason}"`
+  `node scripts/debt/resolve-item.js DEBT-XXXX --action {accept|decline|defer} --reason "{user's reason}"`
 - If DECLINED: record reason
 - If DEFERRED: mark for re-evaluation
 - Save state to MCP memory after each batch
@@ -535,10 +537,9 @@ mcp__memory__create_entities({
 
 ## Post-Audit
 
-1. Verify all findings ingested via
-   `node scripts/improvements/validate-schema.js`
-2. Generate metrics: `node scripts/improvements/generate-metrics.js`
-3. Generate views: `node scripts/improvements/generate-views.js`
+1. Verify all findings ingested via `node scripts/debt/validate-schema.js`
+2. Generate metrics: `node scripts/debt/generate-metrics.js`
+3. Generate views: `node scripts/debt/generate-views.js`
 4. Save final state to MCP memory
 5. Display summary to user with link to ENHANCEMENT_AUDIT_REPORT.md
 
@@ -555,35 +556,36 @@ SKIP_AUDIT_VALIDATION=1 git commit -m "audit(enhancements): ..."
 ```
 
 This is expected and safe — enhancement findings are ingested into
-MASTER_IMPROVEMENTS.jsonl (which has its own schema validation), not
-MASTER_DEBT.jsonl.
+MASTER_DEBT.jsonl as `type: "enhancement"` items with
+`category: "enhancements"`.
 
 ---
 
-## IMS Integration
+## TDMS Integration
 
-**Canonical store**: `docs/improvements/MASTER_IMPROVEMENTS.jsonl` **Schema**:
-`scripts/config/improvement-schema.json` **Schema docs**:
-`docs/templates/IMPROVEMENT_JSONL_SCHEMA.md`
+**Canonical store**: `docs/technical-debt/MASTER_DEBT.jsonl` (with
+`category: "enhancements"` and `type: "enhancement"`) **Schema**:
+`scripts/config/audit-schema.json` **Schema docs**:
+`docs/templates/JSONL_SCHEMA_STANDARD.md` (Enhancement Type Extensions section)
 
 **Scripts**:
 
 ```bash
-node scripts/improvements/intake-audit.js <findings.jsonl> --source "audit-enhancements-YYYY-MM-DD"
-node scripts/improvements/validate-schema.js
-node scripts/improvements/generate-views.js
-node scripts/improvements/generate-metrics.js
-node scripts/improvements/resolve-item.js ENH-XXXX --action accept --reason "..."
-node scripts/improvements/dedup-multi-pass.js
+node scripts/debt/intake-audit.js <findings.jsonl> --source "audit-enhancements-YYYY-MM-DD"
+node scripts/debt/validate-schema.js
+node scripts/debt/generate-views.js
+node scripts/debt/generate-metrics.js
+node scripts/debt/resolve-item.js DEBT-XXXX --action accept --reason "..."
+node scripts/debt/dedup-multi-pass.js
 ```
 
 **npm shortcuts**:
 
 ```bash
-npm run ims:intake -- <findings.jsonl>
-npm run ims:validate
-npm run ims:views
-npm run ims:metrics
+npm run tdms:intake -- <findings.jsonl>
+npm run tdms:validate
+npm run tdms:views
+npm run tdms:metrics
 ```
 
 ---

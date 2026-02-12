@@ -263,17 +263,17 @@ Use these standard reasons when rejecting AI review suggestions:
 When deferring PR review items, route them to the **correct tracking system**
 based on item type:
 
-| Item Type                      | System      | Tool/Skill                                | ID Format |
-| ------------------------------ | ----------- | ----------------------------------------- | --------- |
-| Bug / broken code              | Fix in PR   | N/A (fix immediately)                     | N/A       |
-| Technical debt / code quality  | TDMS        | `/add-deferred-debt`                      | DEBT-XXXX |
-| Architectural refactoring      | TDMS (S1)   | `/add-deferred-debt`                      | DEBT-XXXX |
-| Design decisions / enhancement | IMS         | `intake-audit.js`                         | ENH-XXXX  |
-| Performance improvements       | TDMS or IMS | Based on whether it's debt or enhancement | Either    |
+| Item Type                      | System              | Tool/Skill            | ID Format |
+| ------------------------------ | ------------------- | --------------------- | --------- |
+| Bug / broken code              | Fix in PR           | N/A (fix immediately) | N/A       |
+| Technical debt / code quality  | TDMS                | `/add-deferred-debt`  | DEBT-XXXX |
+| Architectural refactoring      | TDMS (S1)           | `/add-deferred-debt`  | DEBT-XXXX |
+| Design decisions / enhancement | TDMS (enhancements) | `intake-audit.js`     | DEBT-XXXX |
+| Performance improvements       | TDMS                | `/add-deferred-debt`  | DEBT-XXXX |
 
-**Decision rule:** If the item describes something that _should have been done
-differently_ (debt), route to TDMS. If it describes something that _could be
-done better going forward_ (improvement), route to IMS.
+**Decision rule:** All deferred items route to TDMS. Enhancements use
+`category: "enhancements"` and `type: "enhancement"` to distinguish them from
+debt items within the same system.
 
 ### For Rejected Suggestions:
 

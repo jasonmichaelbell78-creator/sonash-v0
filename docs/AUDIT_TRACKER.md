@@ -5,10 +5,8 @@
 management
 
 > **Related:** [TECHNICAL_DEBT_MASTER.md](./technical-debt/INDEX.md) ← Single
-> source of truth for all technical debt items (Session #98)
->
-> **Related:** [MASTER_IMPROVEMENTS.jsonl](./improvements/INDEX.md) ← Single
-> source of truth for all enhancement items (IMS, Session #149)
+> source of truth for all technical debt AND enhancement items (Enhancements use
+> `type: "enhancement"`, merged from IMS in Session #152)
 
 ---
 
@@ -243,6 +241,7 @@ deduplication/aggregation (e.g., 28 raw findings from 5 models).
 
 | Version | Date       | Changes                                                                                                                                                                   |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.7     | 2026-02-12 | IMS merged into TDMS (Session #152); enhancements now tracked in MASTER_DEBT.jsonl with type: enhancement                                                                 |
 | 2.6     | 2026-02-11 | Added Enhancements category (IMS); linked MASTER_IMPROVEMENTS.jsonl as parallel source of truth; enhancement audit threshold added                                        |
 | 2.5     | 2026-02-03 | **COMPREHENSIVE AUDIT (7 domains):** Added Engineering-Productivity category; 132 raw → 30 unique findings; TDMS intake DEBT-0870-0899; all thresholds reset              |
 | 2.4     | 2026-01-31 | **FIX:** Updated last audit dates from 2026-01-24 to 2026-01-30 (Session #116 comprehensive audit wasn't tracked)                                                         |
