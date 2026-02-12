@@ -101,6 +101,8 @@ IMPROVEMENTS):
 - Rewired audit-enhancements skill to output TDMS format
 - Deleted IMS infrastructure (scripts/improvements/, docs/improvements/)
 - Updated 8+ doc files to remove IMS references
+- PR #362 Review #305: Fixed 9 SonarCloud+Qodo items (cognitive complexity
+  reduction via shared helpers, replaceAll, warnings-on-error, log consistency)
 
 **Session #150 Summary** (SKILL CREATION + SESSION CLEANUP + PR REVIEW):
 

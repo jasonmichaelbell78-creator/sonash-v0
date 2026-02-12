@@ -115,26 +115,69 @@ function normalizeFilePath(filePath) {
   return normalized;
 }
 
+// Map first file entry from files[] array to file field (shared by both format mappers)
+function mapFirstFileToFile(firstFile, item, mapped, metadata) {
+  if (typeof firstFile !== "string") {
+    // Skip non-string: avoid creating invalid paths like "[object Object]"
+    metadata.mappings_applied.push("files[0]→file(skipped_non_string)");
+    return;
+  }
+  const lineMatch = firstFile.match(/^(.+):(\d+)$/);
+  if (lineMatch) {
+    mapped.file = lineMatch[1];
+    if (item.line) {
+      metadata.mappings_applied.push("files[0]→file");
+    } else {
+      mapped.line = Number.parseInt(lineMatch[2], 10);
+      metadata.mappings_applied.push("files[0]→file+line");
+    }
+  } else {
+    mapped.file = firstFile;
+    metadata.mappings_applied.push("files[0]→file");
+  }
+}
+
+// Map common audit fields shared between Doc Standards and Enhancement formats
+function mapCommonAuditFields(item, mapped, metadata) {
+  if (item.fingerprint && !item.source_id) {
+    mapped.source_id = `audit:${item.fingerprint.replaceAll("::", "-")}`;
+    metadata.mappings_applied.push("fingerprint→source_id");
+  }
+  if (Array.isArray(item.files) && item.files.length > 0 && !item.file) {
+    mapFirstFileToFile(item.files[0], item, mapped, metadata);
+  }
+  if (item.why_it_matters && !item.description) {
+    mapped.description = item.why_it_matters;
+    metadata.mappings_applied.push("why_it_matters→description");
+  }
+  if (item.suggested_fix && !item.recommendation) {
+    mapped.recommendation = item.suggested_fix;
+    metadata.mappings_applied.push("suggested_fix→recommendation");
+  }
+  if (Array.isArray(item.acceptance_tests) && item.acceptance_tests.length > 0) {
+    const existingEvidence = Array.isArray(item.evidence) ? item.evidence : [];
+    mapped.evidence = [
+      ...existingEvidence,
+      ...item.acceptance_tests.map((t) => `[Acceptance] ${typeof t === "string" ? t : String(t)}`),
+    ];
+    metadata.mappings_applied.push("acceptance_tests→evidence");
+  }
+  if (item.confidence !== undefined) {
+    metadata.confidence = item.confidence;
+    metadata.mappings_applied.push("confidence→logged");
+  }
+}
+
 /**
  * Map Documentation Standards JSONL format to TDMS format
- *
- * Doc Standards fields → TDMS fields:
- *   fingerprint    → source_id (converted)
- *   files[0]       → file (first file path extracted)
- *   why_it_matters → description
- *   suggested_fix  → recommendation
- *   acceptance_tests → evidence (appended)
- *   confidence     → (logged only, not stored)
  *
  * @param {Object} item - Raw input item (may be Doc Standards or TDMS format)
  * @returns {Object} - Item normalized to TDMS format with metadata
  */
 function mapDocStandardsToTdms(item) {
-  // Use safe clone to prevent prototype pollution from untrusted JSONL input
   const mapped = safeCloneObject(item);
   const metadata = { format_detected: "tdms", mappings_applied: [] };
 
-  // Detect Doc Standards format by presence of Doc Standards-specific fields
   const hasDocStandardsFields =
     item.fingerprint ||
     item.files ||
@@ -144,67 +187,7 @@ function mapDocStandardsToTdms(item) {
 
   if (hasDocStandardsFields) {
     metadata.format_detected = "doc-standards";
-
-    // Map fingerprint → source_id
-    if (item.fingerprint && !item.source_id) {
-      // fingerprint format: "category::file::id" → convert to audit:UUID format
-      mapped.source_id = `audit:${item.fingerprint.replace(/::/g, "-")}`;
-      metadata.mappings_applied.push("fingerprint→source_id");
-    }
-
-    // Map files[0] → file (with optional line extraction)
-    if (Array.isArray(item.files) && item.files.length > 0 && !item.file) {
-      const firstFile = item.files[0];
-      // Type guard: ensure firstFile is a string before calling .match()
-      if (typeof firstFile !== "string") {
-        // Non-string file entry - convert to string or skip
-        mapped.file = String(firstFile);
-        metadata.mappings_applied.push("files[0]→file(coerced)");
-      } else {
-        // Check for file:line format
-        const lineMatch = firstFile.match(/^(.+):(\d+)$/);
-        if (lineMatch) {
-          mapped.file = lineMatch[1];
-          if (!item.line) {
-            mapped.line = Number.parseInt(lineMatch[2], 10);
-            metadata.mappings_applied.push("files[0]→file+line");
-          } else {
-            metadata.mappings_applied.push("files[0]→file");
-          }
-        } else {
-          mapped.file = firstFile;
-          metadata.mappings_applied.push("files[0]→file");
-        }
-      }
-    }
-
-    // Map why_it_matters → description
-    if (item.why_it_matters && !item.description) {
-      mapped.description = item.why_it_matters;
-      metadata.mappings_applied.push("why_it_matters→description");
-    }
-
-    // Map suggested_fix → recommendation
-    if (item.suggested_fix && !item.recommendation) {
-      mapped.recommendation = item.suggested_fix;
-      metadata.mappings_applied.push("suggested_fix→recommendation");
-    }
-
-    // Map acceptance_tests → append to evidence
-    if (Array.isArray(item.acceptance_tests) && item.acceptance_tests.length > 0) {
-      const existingEvidence = Array.isArray(item.evidence) ? item.evidence : [];
-      mapped.evidence = [
-        ...existingEvidence,
-        ...item.acceptance_tests.map((t) => `[Acceptance] ${t}`),
-      ];
-      metadata.mappings_applied.push("acceptance_tests→evidence");
-    }
-
-    // Extract confidence for logging (not stored in MASTER_DEBT)
-    if (item.confidence !== undefined) {
-      metadata.confidence = item.confidence;
-      metadata.mappings_applied.push("confidence→logged");
-    }
+    mapCommonAuditFields(item, mapped, metadata);
 
     // Clean up Doc Standards-specific fields that shouldn't be in TDMS
     delete mapped.fingerprint;
@@ -224,10 +207,6 @@ const IMPACT_TO_SEVERITY = { I0: "S1", I1: "S2", I2: "S2", I3: "S3" };
 /**
  * Map enhancement audit JSONL format to TDMS format
  *
- * Detects enhancement-audit input by presence of IMS-specific fields
- * (counter_argument, current_approach, proposed_outcome) and converts
- * to TDMS format with category="enhancements" and type="enhancement".
- *
  * @param {Object} item - Raw input item
  * @returns {Object} - Item normalized to TDMS format with metadata
  */
@@ -235,7 +214,6 @@ function mapEnhancementAuditToTdms(item) {
   const mapped = safeCloneObject(item);
   const metadata = { format_detected: "tdms", mappings_applied: [] };
 
-  // Detect enhancement audit format by IMS-specific fields
   const hasEnhancementFields =
     (typeof item.counter_argument === "string" && item.counter_argument.trim()) ||
     (typeof item.current_approach === "string" && item.current_approach.trim()) ||
@@ -244,92 +222,29 @@ function mapEnhancementAuditToTdms(item) {
   if (hasEnhancementFields) {
     metadata.format_detected = "enhancement-audit";
 
-    // Set TDMS category and type for enhancement items
     mapped.category = "enhancements";
     mapped.type = "enhancement";
     metadata.mappings_applied.push("category→enhancements", "type→enhancement");
 
-    // Preserve original IMS category as subcategory
     if (item.category && item.category !== "enhancements") {
       mapped.subcategory = item.category;
       metadata.mappings_applied.push("category→subcategory");
     }
 
-    // Map impact → severity
     if (item.impact && !item.severity) {
       mapped.severity = IMPACT_TO_SEVERITY[item.impact] || "S2";
       metadata.mappings_applied.push("impact→severity");
     }
-    // Preserve impact as metadata
     if (item.impact) {
       mapped.impact = item.impact;
     }
 
-    // Map fingerprint → source_id
-    if (item.fingerprint && !item.source_id) {
-      mapped.source_id = `audit:${item.fingerprint.replace(/::/g, "-")}`;
-      metadata.mappings_applied.push("fingerprint→source_id");
-    }
+    mapCommonAuditFields(item, mapped, metadata);
 
-    // Map files[0] → file (same logic as Doc Standards)
-    if (Array.isArray(item.files) && item.files.length > 0 && !item.file) {
-      const firstFile = item.files[0];
-      if (typeof firstFile === "string") {
-        const lineMatch = firstFile.match(/^(.+):(\d+)$/);
-        if (lineMatch) {
-          mapped.file = lineMatch[1];
-          if (!item.line) {
-            mapped.line = Number.parseInt(lineMatch[2], 10);
-            metadata.mappings_applied.push("files[0]→file+line");
-          } else {
-            metadata.mappings_applied.push("files[0]→file");
-          }
-        } else {
-          mapped.file = firstFile;
-          metadata.mappings_applied.push("files[0]→file");
-        }
-      } else {
-        mapped.file = String(firstFile);
-        metadata.mappings_applied.push("files[0]→file(coerced)");
-      }
-    }
-
-    // Map why_it_matters → description
-    if (item.why_it_matters && !item.description) {
-      mapped.description = item.why_it_matters;
-      metadata.mappings_applied.push("why_it_matters→description");
-    }
-
-    // Map suggested_fix → recommendation
-    if (item.suggested_fix && !item.recommendation) {
-      mapped.recommendation = item.suggested_fix;
-      metadata.mappings_applied.push("suggested_fix→recommendation");
-    }
-
-    // Map acceptance_tests → evidence
-    if (Array.isArray(item.acceptance_tests) && item.acceptance_tests.length > 0) {
-      const existingEvidence = Array.isArray(item.evidence) ? item.evidence : [];
-      mapped.evidence = [
-        ...existingEvidence,
-        ...item.acceptance_tests.map(
-          (t) => `[Acceptance] ${typeof t === "string" ? t : String(t)}`
-        ),
-      ];
-      metadata.mappings_applied.push("acceptance_tests→evidence");
-    }
-
-    // Log confidence
-    if (item.confidence !== undefined) {
-      metadata.confidence = item.confidence;
-      metadata.mappings_applied.push("confidence→logged");
-    }
-
-    // Clean up fields that were mapped
+    // Clean up fields that were mapped (keep enhancement-specific metadata)
     delete mapped.files;
     delete mapped.suggested_fix;
     delete mapped.acceptance_tests;
-    // Keep: counter_argument, confidence, current_approach, proposed_outcome,
-    // why_it_matters, concrete_alternatives, risk_assessment, fingerprint, impact
   }
 
   return { item: mapped, metadata };
@@ -369,6 +284,26 @@ function isValidFilePath(filePath) {
   return true;
 }
 
+// Preserve enhancement-specific fields on normalized item
+function preserveEnhancementFields(normalized, mappedItem) {
+  const truthyFields = [
+    "subcategory",
+    "impact",
+    "counter_argument",
+    "current_approach",
+    "proposed_outcome",
+    "why_it_matters",
+    "concrete_alternatives",
+    "risk_assessment",
+    "fingerprint",
+  ];
+  for (const field of truthyFields) {
+    if (mappedItem[field]) normalized[field] = mappedItem[field];
+  }
+  // confidence uses !== undefined (0 is valid)
+  if (mappedItem.confidence !== undefined) normalized.confidence = mappedItem.confidence;
+}
+
 // Validate and normalize an input item
 function validateAndNormalize(item, sourceFile) {
   const errors = [];
@@ -394,6 +329,7 @@ function validateAndNormalize(item, sourceFile) {
 
   // File path validation - warn on invalid paths (TDMS compliance)
   const normalizedFile = normalizeFilePath(mappedItem.file || "");
+  if (normalizedFile) mappedItem.file = normalizedFile;
   if (!isValidFilePath(normalizedFile)) {
     warnings.push(
       `Invalid file path: "${mappedItem.file || "(empty)"}". TDMS requires a real file path.`
@@ -401,7 +337,7 @@ function validateAndNormalize(item, sourceFile) {
   }
 
   if (errors.length > 0) {
-    return { valid: false, errors };
+    return { valid: false, errors, warnings };
   }
 
   // Normalize the item
@@ -438,17 +374,7 @@ function validateAndNormalize(item, sourceFile) {
 
   // Preserve enhancement-specific fields for type="enhancement" items
   if (mappingMetadata.format_detected === "enhancement-audit") {
-    if (mappedItem.subcategory) normalized.subcategory = mappedItem.subcategory;
-    if (mappedItem.impact) normalized.impact = mappedItem.impact;
-    if (mappedItem.confidence !== undefined) normalized.confidence = mappedItem.confidence;
-    if (mappedItem.counter_argument) normalized.counter_argument = mappedItem.counter_argument;
-    if (mappedItem.current_approach) normalized.current_approach = mappedItem.current_approach;
-    if (mappedItem.proposed_outcome) normalized.proposed_outcome = mappedItem.proposed_outcome;
-    if (mappedItem.why_it_matters) normalized.why_it_matters = mappedItem.why_it_matters;
-    if (mappedItem.concrete_alternatives)
-      normalized.concrete_alternatives = mappedItem.concrete_alternatives;
-    if (mappedItem.risk_assessment) normalized.risk_assessment = mappedItem.risk_assessment;
-    if (mappedItem.fingerprint) normalized.fingerprint = mappedItem.fingerprint;
+    preserveEnhancementFields(normalized, mappedItem);
   }
 
   return { valid: true, item: normalized, mappingMetadata, warnings };
@@ -519,6 +445,49 @@ function logIntake(activity) {
   fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
+// Print format detection statistics
+function printFormatStats(formatStats) {
+  if (formatStats["doc-standards"] <= 0 && formatStats["enhancement-audit"] <= 0) return;
+
+  console.log(`\n  📋 Format Detection:`);
+  console.log(`    - TDMS format: ${formatStats.tdms} items`);
+  if (formatStats["doc-standards"] > 0) {
+    console.log(
+      `    - Doc Standards format: ${formatStats["doc-standards"]} items (mapped to TDMS)`
+    );
+  }
+  if (formatStats["enhancement-audit"] > 0) {
+    console.log(
+      `    - Enhancement audit format: ${formatStats["enhancement-audit"]} items (mapped to TDMS)`
+    );
+  }
+  if (Object.keys(formatStats.mappings).length > 0) {
+    console.log(`    - Field mappings applied:`);
+    for (const [mapping, count] of Object.entries(formatStats.mappings)) {
+      console.log(`        ${mapping}: ${count}`);
+    }
+  }
+  if (formatStats.confidenceLogs.length > 0) {
+    console.log(`    - Confidence values logged: ${formatStats.confidenceLogs.length} items`);
+  }
+}
+
+// Print file path warnings
+function printFilePathWarnings(filePathWarnings) {
+  if (!filePathWarnings || filePathWarnings.length === 0) return;
+
+  console.log(
+    `\n  ⚠️  File path warnings: ${filePathWarnings.length} items have invalid file refs`
+  );
+  for (const w of filePathWarnings.slice(0, 10)) {
+    console.log(`    Line ${w.line}: "${w.title}" - ${w.warnings.join(", ")}`);
+  }
+  if (filePathWarnings.length > 10) {
+    console.log(`    ... and ${filePathWarnings.length - 10} more`);
+  }
+  console.log(`    ⚠️  TDMS requires real file paths. Fix before committing.`);
+}
+
 // Print processing results (new items, duplicates, errors, format stats, warnings)
 function printProcessingResults(newItems, duplicates, errors, formatStats, filePathWarnings) {
   console.log("📊 Processing Results:\n");
@@ -526,29 +495,7 @@ function printProcessingResults(newItems, duplicates, errors, formatStats, fileP
   console.log(`  ⏭️  Duplicates skipped: ${duplicates.length}`);
   console.log(`  ❌ Validation errors: ${errors.length}`);
 
-  if (formatStats["doc-standards"] > 0 || formatStats["enhancement-audit"] > 0) {
-    console.log(`\n  📋 Format Detection:`);
-    console.log(`    - TDMS format: ${formatStats.tdms} items`);
-    if (formatStats["doc-standards"] > 0) {
-      console.log(
-        `    - Doc Standards format: ${formatStats["doc-standards"]} items (mapped to TDMS)`
-      );
-    }
-    if (formatStats["enhancement-audit"] > 0) {
-      console.log(
-        `    - Enhancement audit format: ${formatStats["enhancement-audit"]} items (mapped to TDMS)`
-      );
-    }
-    if (Object.keys(formatStats.mappings).length > 0) {
-      console.log(`    - Field mappings applied:`);
-      for (const [mapping, count] of Object.entries(formatStats.mappings)) {
-        console.log(`        ${mapping}: ${count}`);
-      }
-    }
-    if (formatStats.confidenceLogs.length > 0) {
-      console.log(`    - Confidence values logged: ${formatStats.confidenceLogs.length} items`);
-    }
-  }
+  printFormatStats(formatStats);
 
   if (duplicates.length > 0 && duplicates.length <= 10) {
     console.log("\n  Skipped duplicates:");
@@ -564,18 +511,7 @@ function printProcessingResults(newItems, duplicates, errors, formatStats, fileP
     }
   }
 
-  if (filePathWarnings && filePathWarnings.length > 0) {
-    console.log(
-      `\n  ⚠️  File path warnings: ${filePathWarnings.length} items have invalid file refs`
-    );
-    for (const w of filePathWarnings.slice(0, 10)) {
-      console.log(`    Line ${w.line}: "${w.title}" - ${w.warnings.join(", ")}`);
-    }
-    if (filePathWarnings.length > 10) {
-      console.log(`    ... and ${filePathWarnings.length - 10} more`);
-    }
-    console.log(`    ⚠️  TDMS requires real file paths. Fix before committing.`);
-  }
+  printFilePathWarnings(filePathWarnings);
 }
 
 // Read dedup log and compute per-pass breakdown, review count, and cluster count
