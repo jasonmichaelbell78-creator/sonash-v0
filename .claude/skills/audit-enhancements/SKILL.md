@@ -1,19 +1,16 @@
+---
+name: audit-enhancements
+description:
+  Run a comprehensive enhancement audit across the entire project - code,
+  product, UX, content, workflows, infrastructure, external services, and
+  meta-tooling.
+---
+
 <!-- prettier-ignore-start -->
 **Document Version:** 1.0
 **Last Updated:** 2026-02-11
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
-
----
-
-name: audit-enhancements description: Run a comprehensive enhancement audit
-across the entire project - code, product, UX, content, workflows,
-infrastructure, external services, and meta-tooling supports_parallel: true
-fallback_available: true estimated_time_parallel: 30-60 min (Phases 1-3),
-variable (Phase 4 interactive) estimated_time_sequential: 2-4 hours trigger:
-manual session_scope: multi-session
-
----
 
 # Enhancement Audit
 
