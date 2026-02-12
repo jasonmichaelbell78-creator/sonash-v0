@@ -14,7 +14,7 @@
  * npm script: npm run metrics:review-churn
  */
 
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync, lstatSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -213,6 +213,17 @@ function appendMetrics(entries) {
     }
   } catch (err) {
     console.error(`Failed to create state directory: ${sanitizeError(err)}`);
+    return;
+  }
+
+  // Verify target is not a symlink (prevent symlink-clobber attacks)
+  try {
+    if (existsSync(METRICS_FILE) && lstatSync(METRICS_FILE).isSymbolicLink()) {
+      console.error("Error: review-metrics.jsonl is a symlink — refusing to write");
+      return;
+    }
+  } catch (err) {
+    console.error(`Failed to check metrics file: ${sanitizeError(err)}`);
     return;
   }
 

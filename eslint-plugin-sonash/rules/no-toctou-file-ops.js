@@ -195,15 +195,21 @@ module.exports = {
       },
 
       "Program:exit"() {
-        // Match existsSync + readFileSync pairs in the same scope on the same arg
+        // Index existsSync calls by (scope, argKey) for O(n) lookup
+        const existsByScopeAndArg = new Map();
+        for (const ex of existsCalls) {
+          const scopeMap = existsByScopeAndArg.get(ex.scope) ?? new Map();
+          const arr = scopeMap.get(ex.argKey) ?? [];
+          arr.push(ex);
+          scopeMap.set(ex.argKey, arr);
+          existsByScopeAndArg.set(ex.scope, scopeMap);
+        }
+
         for (const read of readCalls) {
-          for (const exists of existsCalls) {
-            if (
-              exists.argKey === read.argKey &&
-              exists.scope === read.scope &&
-              isBefore(exists.node, read.node) &&
-              isGuardingCondition(exists.node, read.node)
-            ) {
+          const scopeMap = existsByScopeAndArg.get(read.scope);
+          const candidates = scopeMap?.get(read.argKey) ?? [];
+          for (const exists of candidates) {
+            if (isBefore(exists.node, read.node) && isGuardingCondition(exists.node, read.node)) {
               context.report({
                 node: read.node,
                 messageId: "toctouFileOp",

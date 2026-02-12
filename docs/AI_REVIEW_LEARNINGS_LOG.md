@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
+**Document Version:** 16.7 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.7    | 2026-02-12 | Review #302: PR #361 R3 — Symlink clobber guards, backup-and-replace writes, BOM stripping, ESLint loc fallback, O(n) TOCTOU index, verbose match truncation. Skill update: #TBD deferred numbering to prevent review number collisions. Consolidation counter 12→13. Active reviews #266-302.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.6    | 2026-02-11 | Review #294: PR #360 R12 — CI fix: eslint-disable block for control-char regex, sanitizeLogSnippet extraction, BiDi control strip, escapeMarkdown String coercion + \r\n, valid-only ENH-ID idMap, TOCTOU symlink recheck before unlink, EEXIST recovery for resolve-item, strict digits-only line parsing, decoupled log/review writes, toLineNumber reject 0/negative, Windows-safe metrics rename. Active reviews #266-294.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.5    | 2026-02-11 | Review #293: PR #360 R11 — Markdown injection (HTML strip in escapeMarkdown), stale temp EEXIST recovery, safeCloneObject throw on deep nesting + module-scope in dedup, deduped.jsonl non-fatal write, non-critical log/review write guard, safeCloneObject for MASTER_DEBT.jsonl, terminal escape sanitization, robust line number sanitization, Windows-safe unlink-before-rename, schema config validation. Active reviews #266-293.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 16.4    | 2026-02-11 | Review #292: PR #360 R10 — assertNotSymlink fail-closed (rethrow unknown errors, all 5 files), safeCloneObject in resolve-item.js + validate-schema.js, temp-file symlink+wx flag (dedup-multi-pass.js + generate-views.js), atomic writes for metrics.json + METRICS.md, atomic rollback restore, existingEvidence sanitization, line number validation, Pass 2 DoS cap (5000 items), dedup run_metadata audit trail, pipeline write error handling. Active reviews #266-292.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -333,7 +334,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 12 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 13 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** NOW (Reviews
 #290-#301, 12 reviews since consolidation #17)
 
@@ -530,7 +531,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 12    | <10    | ⚠️     |
+| Reviews since last consolidation | 13    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -683,6 +684,42 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #302: PR #361 R3 — Symlink Clobber, Backup-and-Replace, ESLint Loc Fallback, O(n) Index (2026-02-12)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + SonarCloud **PR/Branch:**
+PR #361 (claude/analyze-repo-install-ceMkn) **Suggestions:** 14 total (Critical:
+0, Major: 3, Minor: 6, Trivial: 1, Rejected: 4)
+
+**Patterns Identified:**
+
+1. Symlink clobber on state writes: `saveWarnedFiles` and `appendMetrics` wrote
+   to fixed paths without verifying they're not symlinks
+   - Root cause: mkdirSync + writeFileSync pattern doesn't check symlinks
+   - Prevention: Always lstatSync before writing to verify not a symlink
+2. State loss on failed rename: delete-then-rename loses data if rename fails
+   - Root cause: unlinkSync before renameSync is not atomic
+   - Prevention: backup-and-replace pattern (rename old to .bak, rename new,
+     delete .bak)
+3. ESLint fixer crash without loc: `target.loc.start.column` crashes if loc
+   missing
+   - Root cause: Some parsers don't populate loc
+   - Prevention: Always guard with `target.loc ? ... : fallback`
+
+**Resolution:**
+
+- Fixed: 10 items (3 MAJOR, 6 MINOR, 1 TRIVIAL)
+- Rejected: 4 items (String.raw x2 = regex false positives, regex complexity 38
+  = kept for detection accuracy, i assignment x2 = intentional skip behavior)
+
+**Key Learnings:**
+
+- Our own BOM-handling pattern checker missed our own new code (ironic)
+- Backup-and-replace is safer than delete-then-rename for atomic writes on
+  Windows
+- O(n^2) nested loop in TOCTOU rule indexed to O(n) with Map
 
 ---
 

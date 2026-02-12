@@ -94,7 +94,7 @@ module.exports = {
                   }
 
                   const text = sourceCode.getText(target);
-                  const indent = " ".repeat(target.loc.start.column);
+                  const indent = target.loc ? " ".repeat(target.loc.start.column) : "";
                   const inner = indent + "  ";
 
                   return fixer.replaceText(

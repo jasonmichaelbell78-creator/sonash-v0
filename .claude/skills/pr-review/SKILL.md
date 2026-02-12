@@ -294,9 +294,9 @@ Use **TodoWrite** to create trackable items:
 
 ```
 todos:
-- content: "Add Review #N stub to AI_REVIEW_LEARNINGS_LOG.md"
+- content: "Add Review #TBD stub to AI_REVIEW_LEARNINGS_LOG.md"
   status: "in_progress"
-  activeForm: "Adding Review #N stub to learnings log"
+  activeForm: "Adding Review #TBD stub to learnings log"
 - content: "Fix CRITICAL: [issue description]"
   status: "pending"
   activeForm: "Fixing CRITICAL: [issue]"
@@ -306,7 +306,8 @@ todos:
 ... (include ALL items, including TRIVIAL)
 ```
 
-**CRITICAL RULE**: The learning log entry is ALWAYS the FIRST todo item.
+**CRITICAL RULE**: The learning log entry is ALWAYS the FIRST todo item. Use
+`#TBD` as the review number — it will be finalized in Step 7.
 
 ---
 
@@ -514,7 +515,13 @@ node scripts/debt/resolve-item.js DEBT-XXXX --pr 123
 
 ## STEP 7: LEARNING CAPTURE (MANDATORY)
 
-### 7.1 Determine Next Review Number
+### 7.1 Finalize Review Number
+
+**Why deferred numbering**: Review numbers were previously assigned in Step 3
+(at plan time), which caused numbering collisions when multiple PRs were
+processed in parallel or across overlapping sessions. Now, the placeholder
+`#TBD` is used until this step, where the final number is assigned at commit
+time.
 
 ```bash
 # Count reviews in both active log and archive (robust edge case handling)
@@ -538,11 +545,13 @@ fi
 echo "Total reviews: $((active + archived))"
 ```
 
-Add 1 to the total to get the next review number.
+Add 1 to the total to get the next review number. Then **replace all `#TBD`
+occurrences** in the learning entry with the final number.
 
 ### 7.2 Create Learning Entry
 
-Add to `AI_REVIEW_LEARNINGS_LOG.md`:
+Complete the `#TBD` stub created in Step 3. Replace `#TBD` with the final review
+number and fill in all fields:
 
 ```markdown
 #### Review #N: <Brief Description> (YYYY-MM-DD)

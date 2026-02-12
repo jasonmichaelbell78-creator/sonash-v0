@@ -57,7 +57,8 @@ const WARNED_FILES_PATH = join(ROOT, ".claude", "state", "warned-files.json");
 
 function loadWarnedFiles() {
   try {
-    return JSON.parse(readFileSync(WARNED_FILES_PATH, "utf-8"));
+    const raw = readFileSync(WARNED_FILES_PATH, "utf-8").replace(/^\uFEFF/, "");
+    return JSON.parse(raw);
   } catch (err) {
     const code = err && typeof err === "object" && "code" in err ? err.code : null;
     if (code !== "ENOENT") {
@@ -68,19 +69,51 @@ function loadWarnedFiles() {
 }
 
 function saveWarnedFiles(warned) {
+  const dir = dirname(WARNED_FILES_PATH);
+  const tmpPath = WARNED_FILES_PATH + `.tmp.${process.pid}`;
+  const bakPath = WARNED_FILES_PATH + `.bak.${process.pid}`;
+
   try {
-    const dir = dirname(WARNED_FILES_PATH);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-    const tmpPath = WARNED_FILES_PATH + `.tmp.${process.pid}`;
-    writeFileSync(tmpPath, JSON.stringify(warned, null, 2), "utf-8");
-    // On Windows, renameSync fails if destination exists — remove first
-    try {
-      if (existsSync(WARNED_FILES_PATH)) unlinkSync(WARNED_FILES_PATH);
-    } catch (_e) {
-      // Best-effort: if removal fails, renameSync will error below
+
+    // Verify target is not a symlink (prevent symlink-clobber attacks)
+    if (existsSync(WARNED_FILES_PATH) && lstatSync(WARNED_FILES_PATH).isSymbolicLink()) {
+      console.warn("Warning: warned-files.json is a symlink — refusing to write");
+      return;
     }
+
+    writeFileSync(tmpPath, JSON.stringify(warned, null, 2), "utf-8");
+
+    // Backup-and-replace: rename existing file to .bak before replacing
+    try {
+      if (existsSync(WARNED_FILES_PATH)) renameSync(WARNED_FILES_PATH, bakPath);
+    } catch (_bakErr) {
+      // If backup fails, proceed; renameSync may still work on this platform
+    }
+
     renameSync(tmpPath, WARNED_FILES_PATH);
+
+    // Cleanup backup after successful replace
+    try {
+      if (existsSync(bakPath)) unlinkSync(bakPath);
+    } catch (_cleanErr) {
+      // Best-effort cleanup
+    }
   } catch (err) {
+    // Cleanup tmp on failure
+    try {
+      if (existsSync(tmpPath)) unlinkSync(tmpPath);
+    } catch (_cleanErr) {
+      // Best-effort cleanup
+    }
+    // Restore backup if we made one and destination is gone
+    try {
+      if (existsSync(bakPath) && !existsSync(WARNED_FILES_PATH))
+        renameSync(bakPath, WARNED_FILES_PATH);
+    } catch (_restoreErr) {
+      // Best-effort restore
+    }
+
     console.warn(`Warning: could not save pattern warning state: ${sanitizeError(err)}`);
   }
 }
@@ -990,7 +1023,9 @@ function printViolation(v) {
   console.log(`   ✓ Fix: ${v.fix}`);
   console.log(`   📚 See: Review ${v.review} in AI_REVIEW_LEARNINGS_LOG.md`);
   if (VERBOSE) {
-    console.log(`   Match: ${v.match}`);
+    // Truncate match to avoid leaking full source snippets (may contain secrets/PII)
+    const match = String(v.match).slice(0, 120);
+    console.log(`   Match: ${match}${v.match.length > 120 ? "..." : ""}`);
   }
   console.log("");
 }
