@@ -429,6 +429,35 @@ function categorizePatterns(patterns) {
 }
 
 /**
+ * Format a single recurring pattern line for the report.
+ */
+function formatPatternLine(p) {
+  const marker = p.isExplicitPattern ? "📌" : "🔄";
+  const revList = Array.isArray(p.reviews) && p.reviews.length > 0 ? p.reviews.join(", ") : "";
+  let line = `  ${marker} ${p.pattern} (${p.count}x in Reviews ${revList})\n`;
+  if (verbose && p.examples.length > 0) {
+    line += `     Example: "${p.examples[0]}"\n`;
+  }
+  return line;
+}
+
+/**
+ * Format category summary lines for the report.
+ */
+function formatCategorySummary(categories) {
+  let summary = "";
+  for (const [category, items] of Object.entries(categories)) {
+    const significant = items.filter(
+      (p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern
+    );
+    if (significant.length > 0) {
+      summary += `  ${category}: ${significant.length} pattern(s)\n`;
+    }
+  }
+  return summary;
+}
+
+/**
  * Generate consolidation report
  */
 function generateReport(reviews, patterns, categories) {
@@ -438,7 +467,7 @@ function generateReport(reviews, patterns, categories) {
       (a, b) =>
         b.count - a.count ||
         (b.reviews?.length || 0) - (a.reviews?.length || 0) ||
-        a.pattern.localeCompare(b.pattern)
+        String(a.pattern || "").localeCompare(String(b.pattern || ""))
     );
 
   let report = "";
@@ -454,24 +483,12 @@ function generateReport(reviews, patterns, categories) {
     report += "  No recurring patterns found.\n";
   } else {
     for (const p of recurringPatterns) {
-      const marker = p.isExplicitPattern ? "📌" : "🔄";
-      const revList = Array.isArray(p.reviews) ? p.reviews.join(", ") : "";
-      report += `  ${marker} ${p.pattern} (${p.count}x in Reviews ${revList})\n`;
-      if (verbose && p.examples.length > 0) {
-        report += `     Example: "${p.examples[0]}"\n`;
-      }
+      report += formatPatternLine(p);
     }
   }
 
   report += `\n${colors.bold}Patterns by category:${colors.reset}\n`;
-  for (const [category, items] of Object.entries(categories)) {
-    const significant = items.filter(
-      (p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern
-    );
-    if (significant.length > 0) {
-      report += `  ${category}: ${significant.length} pattern(s)\n`;
-    }
-  }
+  report += formatCategorySummary(categories);
 
   return { report, recurringPatterns };
 }
@@ -548,8 +565,9 @@ function generatePatternSuggestions(recurringPatterns, categories) {
 
     for (const p of significant) {
       // Example available at p.examples[0] for future use
-      const revList = Array.isArray(p.reviews) ? p.reviews.join(", ") : "";
-      suggestions += `| ${p.pattern} | (add rule) | Reviews #${revList} |\n`;
+      const revList =
+        Array.isArray(p.reviews) && p.reviews.length > 0 ? `#${p.reviews.join(", ")}` : "";
+      suggestions += `| ${p.pattern} | (add rule) | Reviews ${revList || "(unknown)"} |\n`;
     }
   }
 
@@ -677,8 +695,9 @@ function generateRuleSuggestions(recurringPatterns, consolidatedRange) {
         .slice(0, 40);
 
       content += `## ${p.pattern}\n\n`;
-      const revRefs = Array.isArray(p.reviews) ? p.reviews.join(", #") : "";
-      content += `- **Mentions:** ${p.count} (Reviews: #${revRefs})\n`;
+      const revRefs =
+        Array.isArray(p.reviews) && p.reviews.length > 0 ? `#${p.reviews.join(", #")}` : "";
+      content += `- **Mentions:** ${p.count} (Reviews: ${revRefs || "(unknown)"})\n`;
       content += `- **Suggested ID:** \`${id || "unnamed-pattern"}\`\n`;
       content += `- **Enforceability:** [REGEX] / [AST] / [SEMANTIC] ← classify manually\n`;
       content += `- **Template:**\n\n`;
@@ -688,8 +707,9 @@ function generateRuleSuggestions(recurringPatterns, consolidatedRange) {
       content += `  pattern: /TODO_REGEX/g,\n`;
       content += `  message: ${JSON.stringify(p.pattern || "")},\n`;
       content += `  fix: "TODO: describe the correct pattern",\n`;
-      const reviewStr = Array.isArray(p.reviews) ? p.reviews.join(", #") : "";
-      content += `  review: "#${reviewStr}",\n`;
+      const reviewStr =
+        Array.isArray(p.reviews) && p.reviews.length > 0 ? `#${p.reviews.join(", #")}` : "";
+      content += `  review: ${JSON.stringify(reviewStr)},\n`;
       content += `  fileTypes: [".js", ".ts"],\n`;
       content += `}\n`;
       content += "```\n\n";
@@ -737,8 +757,13 @@ function checkArchiveHealth() {
       );
       log(`   Run: npm run docs:archive`);
     }
-  } catch {
-    // Non-fatal: skip if file unreadable
+  } catch (err) {
+    // Non-fatal: log and skip if file unreadable
+    if (verbose) {
+      console.warn(
+        `  ⚠️  Archive health check skipped: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
   }
 }
 

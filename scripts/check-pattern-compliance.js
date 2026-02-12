@@ -796,7 +796,7 @@ const ANTI_PATTERNS = [
   // Clickable div without ARIA role
   {
     id: "div-onclick-no-role",
-    pattern: /<div[^>]*\bonClick\b(?![^>]*\brole\s*=)/g,
+    pattern: /<div(?![^>]*\brole\s*=)[^>]*\bonClick\b[^>]*>/g,
     message: "Clickable <div> without role attribute - inaccessible to screen readers",
     fix: 'Add role="button" or use <button> element instead: <button onClick={...}>',
     review: "CODE_PATTERNS.md React/Frontend - Accessible toggle switches",

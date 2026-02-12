@@ -100,21 +100,17 @@ function refuseSymlink(filePath) {
 /**
  * Find the end index of a JS array declaration in source text.
  * Review #309: Extracted from loadAutomatedPatterns to reduce cognitive complexity.
- * Uses regex to find closing ]; instead of bracket-depth loop.
+ * Review #311: Use bracket-depth counting only (regex can false-match inner `];`).
  */
 function findArrayEnd(content, startIdx) {
   const openIdx = content.indexOf("[", startIdx);
   if (openIdx === -1) return content.length;
-  const rest = content.slice(openIdx);
-  const closeMatch = /\n\];\s*$/m.exec(rest);
-  if (closeMatch) return openIdx + closeMatch.index + closeMatch[0].length;
-  // Fallback: bracket-depth counting for edge cases where regex misses
   let depth = 0;
-  for (let i = 0; i < rest.length; i++) {
-    if (rest[i] === "[") depth++;
-    else if (rest[i] === "]") {
+  for (let i = openIdx; i < content.length; i++) {
+    if (content[i] === "[") depth++;
+    else if (content[i] === "]") {
       depth--;
-      if (depth === 0) return openIdx + i + 1;
+      if (depth === 0) return i + 1;
     }
   }
   return content.length;
