@@ -627,6 +627,28 @@ function outputDryRunMessage() {
 }
 
 /**
+ * Check archive health: warn if active reviews exceed threshold
+ */
+function checkArchiveHealth() {
+  try {
+    const logContent = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
+    const reviewHeaders = logContent.match(/^#### Review #\d+/gm) || [];
+    const activeCount = reviewHeaders.length;
+    const lineCount = logContent.split("\n").length;
+
+    if (activeCount > 20 || lineCount > 1500) {
+      log("");
+      log(
+        `${colors.yellow}📦 ARCHIVE RECOMMENDED: ${activeCount} active reviews (threshold: 20), ${lineCount} lines (threshold: 1500)${colors.reset}`
+      );
+      log(`   Run: npm run docs:archive`);
+    }
+  } catch {
+    // Non-fatal: skip if file unreadable
+  }
+}
+
+/**
  * Read and validate log file
  */
 function readLogFile() {
@@ -746,6 +768,9 @@ function main() {
           }
         }
 
+        // Post-consolidation: check if archiving is needed
+        checkArchiveHealth();
+
         process.exitCode = 0;
         return;
       }
@@ -754,6 +779,10 @@ function main() {
       return;
     } else {
       outputDryRunMessage();
+
+      // Also check archive health in dry-run mode (informational)
+      checkArchiveHealth();
+
       process.exitCode = 1;
     }
   } catch (err) {
