@@ -16,9 +16,10 @@
  * 8. Assigns roadmap references (category + file path mapping)
  * 9. Logs intake activity (including confidence values from Doc Standards)
  *
- * Supports two input formats:
+ * Supports three input formats:
  * - TDMS format (native): Uses fields like source_id, file, description, recommendation
  * - Doc Standards format: Uses fields like fingerprint, files[], why_it_matters, suggested_fix
+ * - Enhancement audit format: Uses IMS fields like counter_argument, confidence, current_approach
  *
  * Doc Standards → TDMS field mapping (automatic):
  *   fingerprint      → source_id (converted: category::file::id → audit:category-file-id)
@@ -27,6 +28,16 @@
  *   suggested_fix    → recommendation
  *   acceptance_tests → evidence (appended with [Acceptance] prefix)
  *   confidence       → logged to intake-log.jsonl (not stored in MASTER_DEBT)
+ *
+ * Enhancement audit → TDMS field mapping (automatic):
+ *   impact           → severity (I0→S1, I1→S2, I2→S2, I3→S3)
+ *   IMS category     → subcategory (preserved as metadata)
+ *   counter_argument → preserved (honesty guard)
+ *   confidence       → preserved + logged
+ *   current_approach → preserved
+ *   proposed_outcome → preserved
+ *   why_it_matters   → description (if not present)
+ *   Sets: category="enhancements", type="enhancement"
  *
  * See: docs/templates/JSONL_SCHEMA_STANDARD.md for field mapping documentation
  */
@@ -207,6 +218,123 @@ function mapDocStandardsToTdms(item) {
   return { item: mapped, metadata };
 }
 
+// Impact → Severity mapping for enhancement items (conservative: never S0)
+const IMPACT_TO_SEVERITY = { I0: "S1", I1: "S2", I2: "S2", I3: "S3" };
+
+/**
+ * Map enhancement audit JSONL format to TDMS format
+ *
+ * Detects enhancement-audit input by presence of IMS-specific fields
+ * (counter_argument, current_approach, proposed_outcome) and converts
+ * to TDMS format with category="enhancements" and type="enhancement".
+ *
+ * @param {Object} item - Raw input item
+ * @returns {Object} - Item normalized to TDMS format with metadata
+ */
+function mapEnhancementAuditToTdms(item) {
+  const mapped = safeCloneObject(item);
+  const metadata = { format_detected: "tdms", mappings_applied: [] };
+
+  // Detect enhancement audit format by IMS-specific fields
+  const hasEnhancementFields =
+    (typeof item.counter_argument === "string" && item.counter_argument.trim()) ||
+    (typeof item.current_approach === "string" && item.current_approach.trim()) ||
+    (typeof item.proposed_outcome === "string" && item.proposed_outcome.trim());
+
+  if (hasEnhancementFields) {
+    metadata.format_detected = "enhancement-audit";
+
+    // Set TDMS category and type for enhancement items
+    mapped.category = "enhancements";
+    mapped.type = "enhancement";
+    metadata.mappings_applied.push("category→enhancements", "type→enhancement");
+
+    // Preserve original IMS category as subcategory
+    if (item.category && item.category !== "enhancements") {
+      mapped.subcategory = item.category;
+      metadata.mappings_applied.push("category→subcategory");
+    }
+
+    // Map impact → severity
+    if (item.impact && !item.severity) {
+      mapped.severity = IMPACT_TO_SEVERITY[item.impact] || "S2";
+      metadata.mappings_applied.push("impact→severity");
+    }
+    // Preserve impact as metadata
+    if (item.impact) {
+      mapped.impact = item.impact;
+    }
+
+    // Map fingerprint → source_id
+    if (item.fingerprint && !item.source_id) {
+      mapped.source_id = `audit:${item.fingerprint.replace(/::/g, "-")}`;
+      metadata.mappings_applied.push("fingerprint→source_id");
+    }
+
+    // Map files[0] → file (same logic as Doc Standards)
+    if (Array.isArray(item.files) && item.files.length > 0 && !item.file) {
+      const firstFile = item.files[0];
+      if (typeof firstFile === "string") {
+        const lineMatch = firstFile.match(/^(.+):(\d+)$/);
+        if (lineMatch) {
+          mapped.file = lineMatch[1];
+          if (!item.line) {
+            mapped.line = Number.parseInt(lineMatch[2], 10);
+            metadata.mappings_applied.push("files[0]→file+line");
+          } else {
+            metadata.mappings_applied.push("files[0]→file");
+          }
+        } else {
+          mapped.file = firstFile;
+          metadata.mappings_applied.push("files[0]→file");
+        }
+      } else {
+        mapped.file = String(firstFile);
+        metadata.mappings_applied.push("files[0]→file(coerced)");
+      }
+    }
+
+    // Map why_it_matters → description
+    if (item.why_it_matters && !item.description) {
+      mapped.description = item.why_it_matters;
+      metadata.mappings_applied.push("why_it_matters→description");
+    }
+
+    // Map suggested_fix → recommendation
+    if (item.suggested_fix && !item.recommendation) {
+      mapped.recommendation = item.suggested_fix;
+      metadata.mappings_applied.push("suggested_fix→recommendation");
+    }
+
+    // Map acceptance_tests → evidence
+    if (Array.isArray(item.acceptance_tests) && item.acceptance_tests.length > 0) {
+      const existingEvidence = Array.isArray(item.evidence) ? item.evidence : [];
+      mapped.evidence = [
+        ...existingEvidence,
+        ...item.acceptance_tests.map(
+          (t) => `[Acceptance] ${typeof t === "string" ? t : String(t)}`
+        ),
+      ];
+      metadata.mappings_applied.push("acceptance_tests→evidence");
+    }
+
+    // Log confidence
+    if (item.confidence !== undefined) {
+      metadata.confidence = item.confidence;
+      metadata.mappings_applied.push("confidence→logged");
+    }
+
+    // Clean up fields that were mapped
+    delete mapped.files;
+    delete mapped.suggested_fix;
+    delete mapped.acceptance_tests;
+    // Keep: counter_argument, confidence, current_approach, proposed_outcome,
+    // why_it_matters, concrete_alternatives, risk_assessment, fingerprint, impact
+  }
+
+  return { item: mapped, metadata };
+}
+
 // Ensure value is in valid set
 function ensureValid(value, validSet, defaultValue) {
   if (validSet.includes(value)) return value;
@@ -246,8 +374,18 @@ function validateAndNormalize(item, sourceFile) {
   const errors = [];
   const warnings = [];
 
-  // First, apply Doc Standards → TDMS field mapping
-  const { item: mappedItem, metadata: mappingMetadata } = mapDocStandardsToTdms(item);
+  // Try enhancement audit → TDMS mapping first (enhancement items share
+  // fields with Doc Standards like fingerprint/why_it_matters, so check first)
+  let { item: mappedItem, metadata: mappingMetadata } = mapEnhancementAuditToTdms(item);
+
+  // If not enhancement audit, try Doc Standards → TDMS mapping
+  if (mappingMetadata.format_detected === "tdms") {
+    const docResult = mapDocStandardsToTdms(item);
+    if (docResult.metadata.format_detected === "doc-standards") {
+      mappedItem = docResult.item;
+      mappingMetadata = docResult.metadata;
+    }
+  }
 
   // Required fields check (after mapping)
   if (!mappedItem.title) errors.push("Missing required field: title");
@@ -297,6 +435,21 @@ function validateAndNormalize(item, sourceFile) {
   if (mappedItem.rule) normalized.rule = mappedItem.rule;
   if (mappedItem.evidence && mappedItem.evidence.length > 0)
     normalized.evidence = mappedItem.evidence;
+
+  // Preserve enhancement-specific fields for type="enhancement" items
+  if (mappingMetadata.format_detected === "enhancement-audit") {
+    if (mappedItem.subcategory) normalized.subcategory = mappedItem.subcategory;
+    if (mappedItem.impact) normalized.impact = mappedItem.impact;
+    if (mappedItem.confidence !== undefined) normalized.confidence = mappedItem.confidence;
+    if (mappedItem.counter_argument) normalized.counter_argument = mappedItem.counter_argument;
+    if (mappedItem.current_approach) normalized.current_approach = mappedItem.current_approach;
+    if (mappedItem.proposed_outcome) normalized.proposed_outcome = mappedItem.proposed_outcome;
+    if (mappedItem.why_it_matters) normalized.why_it_matters = mappedItem.why_it_matters;
+    if (mappedItem.concrete_alternatives)
+      normalized.concrete_alternatives = mappedItem.concrete_alternatives;
+    if (mappedItem.risk_assessment) normalized.risk_assessment = mappedItem.risk_assessment;
+    if (mappedItem.fingerprint) normalized.fingerprint = mappedItem.fingerprint;
+  }
 
   return { valid: true, item: normalized, mappingMetadata, warnings };
 }
@@ -373,12 +526,19 @@ function printProcessingResults(newItems, duplicates, errors, formatStats, fileP
   console.log(`  ⏭️  Duplicates skipped: ${duplicates.length}`);
   console.log(`  ❌ Validation errors: ${errors.length}`);
 
-  if (formatStats["doc-standards"] > 0) {
+  if (formatStats["doc-standards"] > 0 || formatStats["enhancement-audit"] > 0) {
     console.log(`\n  📋 Format Detection:`);
     console.log(`    - TDMS format: ${formatStats.tdms} items`);
-    console.log(
-      `    - Doc Standards format: ${formatStats["doc-standards"]} items (mapped to TDMS)`
-    );
+    if (formatStats["doc-standards"] > 0) {
+      console.log(
+        `    - Doc Standards format: ${formatStats["doc-standards"]} items (mapped to TDMS)`
+      );
+    }
+    if (formatStats["enhancement-audit"] > 0) {
+      console.log(
+        `    - Enhancement audit format: ${formatStats["enhancement-audit"]} items (mapped to TDMS)`
+      );
+    }
     if (Object.keys(formatStats.mappings).length > 0) {
       console.log(`    - Field mappings applied:`);
       for (const [mapping, count] of Object.entries(formatStats.mappings)) {
@@ -594,10 +754,11 @@ async function main() {
   const filePathWarnings = [];
   let nextId = getNextDebtId(existingItems);
 
-  // Track Doc Standards format statistics
+  // Track format statistics (Doc Standards + enhancement audit)
   const formatStats = {
     tdms: 0,
     "doc-standards": 0,
+    "enhancement-audit": 0,
     mappings: {},
     confidenceLogs: [],
   };
@@ -724,6 +885,7 @@ async function main() {
     format_stats: {
       tdms_format: formatStats.tdms,
       doc_standards_format: formatStats["doc-standards"],
+      enhancement_audit_format: formatStats["enhancement-audit"],
       mappings_applied: formatStats.mappings,
     },
     // Log confidence values for analysis (per JSONL_SCHEMA_STANDARD.md)
