@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.1 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
+**Document Version:** 17.2 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
 
 ## Purpose
 
@@ -338,9 +338,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 17 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** NOW (Reviews
-#290-#306, 17 reviews since consolidation #17)
+**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #316 #290-#306,
+17 reviews since consolidation #17)
 
 ### When to Consolidate
 
@@ -362,8 +362,8 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-02-11 (Session #150)
-- **Reviews consolidated:** #268-#289 (22 reviews)
+- **Date:** 2026-02-12 (Session #114+)
+- **Reviews consolidated:** #290-#306 (10 reviews)
 - **Patterns added to CODE_PATTERNS.md v2.6:**
   - **Security (4 patterns):**
     - PII in audit reports (hashed identifiers)
@@ -688,6 +688,36 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #307: PR #362 R3 — SonarCloud Negated Condition + File Path Warning Guard (2026-02-12)
+
+**Source:** Qodo Compliance (3) + Qodo Suggestions (5) + SonarCloud (1)
+**PR/Branch:** PR #362 (claude/new-session-uaNwX) **Suggestions:** 9 total (Fix:
+2, Dismiss: 7)
+
+**Patterns Identified:**
+
+1. Negated conditions reduce readability: `if (x !== undefined)` puts the
+   exceptional case first
+   - Prevention: Put positive/meaningful case first with `=== undefined`
+2. Missing guard on file path warning: items with no `file` field get false
+   "invalid path" warnings
+   - Prevention: Guard with `normalizedFile &&` before validation
+
+**Resolution:**
+
+- Fixed: SC-1 (flip negated condition L128), QS-5 (guard file path warning)
+- Dismissed: CMP-1 (operator field already present since R1), CMP-2 (historical
+  JSONL data, not code), CMP-3 (warnings-not-errors by design), QS-1 (regex
+  guarantees digits), QS-2 (validate-schema already guards), QS-3 (.test()
+  converts to string), QS-4 (ensureValid covers types)
+
+**Key Learnings:**
+
+- SonarCloud "unexpected negated condition" catches real readability issues
+- File validation should skip items without file fields entirely, not warn
 
 ---
 

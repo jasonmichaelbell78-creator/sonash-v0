@@ -125,11 +125,11 @@ function mapFirstFileToFile(firstFile, item, mapped, metadata) {
   const lineMatch = firstFile.match(/^(.+):(\d+)$/);
   if (lineMatch) {
     mapped.file = lineMatch[1];
-    if (item.line !== undefined) {
-      metadata.mappings_applied.push("files[0]→file");
-    } else {
+    if (item.line === undefined) {
       mapped.line = Number.parseInt(lineMatch[2], 10);
       metadata.mappings_applied.push("files[0]→file+line");
+    } else {
+      metadata.mappings_applied.push("files[0]→file");
     }
   } else {
     mapped.file = firstFile;
@@ -331,7 +331,7 @@ function validateAndNormalize(item, sourceFile) {
   // File path validation - warn on invalid paths (TDMS compliance)
   const normalizedFile = normalizeFilePath(mappedItem.file || "");
   if (normalizedFile) mappedItem.file = normalizedFile;
-  if (!isValidFilePath(normalizedFile)) {
+  if (normalizedFile && !isValidFilePath(normalizedFile)) {
     warnings.push(
       `Invalid file path: "${mappedItem.file || "(empty)"}". TDMS requires a real file path.`
     );
