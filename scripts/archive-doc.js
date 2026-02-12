@@ -181,8 +181,33 @@ function safeWriteFile(filePath, content, description) {
 
   try {
     const tmpPath = filePath + ".tmp";
+    const bakPath = filePath + ".bak";
     writeFileSync(tmpPath, content, "utf-8");
-    renameSync(tmpPath, filePath);
+    try {
+      // Backup-swap: preserve original until new file is in place
+      if (existsSync(filePath)) renameSync(filePath, bakPath);
+      renameSync(tmpPath, filePath);
+    } catch (swapErr) {
+      // Restore from backup if swap failed
+      try {
+        if (existsSync(bakPath) && !existsSync(filePath)) renameSync(bakPath, filePath);
+      } catch {
+        /* best effort restore */
+      }
+      throw swapErr;
+    } finally {
+      // Clean up temp/backup files
+      try {
+        if (existsSync(tmpPath)) unlinkSync(tmpPath);
+      } catch {
+        /* best effort */
+      }
+      try {
+        if (existsSync(bakPath)) unlinkSync(bakPath);
+      } catch {
+        /* best effort */
+      }
+    }
     return { success: true };
   } catch (error) {
     return {

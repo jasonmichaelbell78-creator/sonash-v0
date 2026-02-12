@@ -365,15 +365,16 @@ class LearningEffectivenessAnalyzer {
       }
 
       // Parse table-row patterns (main format: | Priority | Pattern | Rule | Why |)
-      const tableMatch = line.match(
-        /^\|\s*([🔴🟡⚪])\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+)/u
-      );
+      // Review #308: Fixed ReDoS (S5852) - replaced [^|]+? with [^|]* to avoid backtracking
+      const tableMatch = line.match(/^\|\s*([🔴🟡⚪])\s*\|\s*([^|]*)\|\s*([^|]*)\|\s*([^|]*)/u);
       if (tableMatch) {
         const [, emoji, patternName, ,] = tableMatch;
         const name = patternName.trim();
         if (!name || name === "Pattern" || name === "---") continue; // Skip header rows
 
-        const priority = emoji === "🔴" ? "Critical" : emoji === "🟡" ? "Important" : "Edge case";
+        // Review #308: Extract nested ternary into helper map
+        const priorityMap = { "🔴": "Critical", "🟡": "Important" };
+        const priority = priorityMap[emoji] || "Edge case";
 
         // Extract review references from the row
         const sourceReviews = [];
@@ -436,8 +437,21 @@ class LearningEffectivenessAnalyzer {
       return;
     }
 
-    // Extract from ANTI_PATTERNS start to the next top-level function/const
-    const patternsText = content.slice(startIdx);
+    // Review #308: Limit scope to ANTI_PATTERNS array using bracket depth
+    const openIdx = content.indexOf("[", startIdx);
+    let depth = 0;
+    let endIdx = content.length;
+    for (let i = openIdx; i < content.length; i++) {
+      if (content[i] === "[") depth++;
+      else if (content[i] === "]") {
+        depth--;
+        if (depth === 0) {
+          endIdx = i + 1;
+          break;
+        }
+      }
+    }
+    const patternsText = content.slice(startIdx, endIdx);
     const patternBlocks = patternsText.split(/\{\s*id:/g).slice(1);
 
     for (const block of patternBlocks) {

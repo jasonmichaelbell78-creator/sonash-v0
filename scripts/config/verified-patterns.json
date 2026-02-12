@@ -98,6 +98,6 @@
   "unescaped-regexp-input": ["suggest-pattern-automation.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
-  "non-atomic-write": ["suggest-pattern-automation.js"],
+  "non-atomic-write": ["suggest-pattern-automation.js", "archive-doc.js"],
   "writefile-missing-encoding": ["suggest-pattern-automation.js"]
 }

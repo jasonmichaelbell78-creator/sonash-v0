@@ -153,9 +153,12 @@ function getLastConsolidatedReview(content) {
 function getConsolidationStatus(content) {
   // COMPUTED: count actual #### Review #N entries > last consolidated (gap-safe)
   // Fixed: was using version-table regex which doesn't match review headers
-  const lastConsolidated = getLastConsolidatedReview(content);
-  const reviewHeaderRegex = /^#### Review #(\d+)/gm;
+  let lastConsolidated = getLastConsolidatedReview(content);
 
+  // Review #308: Extract cross-validation to reduce cognitive complexity
+  lastConsolidated = crossValidateLastConsolidated(lastConsolidated);
+
+  const reviewHeaderRegex = /^#### Review #(\d+)/gm;
   const allNums = Array.from(content.matchAll(reviewHeaderRegex), (m) => Number.parseInt(m[1], 10));
   const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
@@ -163,69 +166,87 @@ function getConsolidationStatus(content) {
   const highestReview = allNums.reduce((max, n) => (Number.isFinite(n) && n > max ? n : max), 0);
   const computedCount = uniqueNums.size;
 
-  // Cross-validate against CODE_PATTERNS.md version history
+  // Scope parsing to Consolidation Trigger section only (Review #160)
+  const triggerStatus = parseTriggerSection(content, computedCount);
+
+  return {
+    reviewCount: computedCount,
+    manualCount: triggerStatus.manualCount,
+    lastConsolidation: triggerStatus.lastConsolidation,
+    lastReviewNum: lastConsolidated,
+    highestReview,
+  };
+}
+
+/**
+ * Cross-validate lastConsolidated against CODE_PATTERNS.md version history
+ * Review #308: Extracted to reduce cognitive complexity and apply mismatch fix
+ */
+function crossValidateLastConsolidated(lastConsolidated) {
   const codePatternsPath = join(__dirname, "..", "docs", "agent_docs", "CODE_PATTERNS.md");
-  if (existsSync(codePatternsPath)) {
-    try {
-      const cpContent = readFileSync(codePatternsPath, "utf8");
-      const consolidationRegex = /CONSOLIDATION #(\d+):\s*Reviews #(\d+)-(\d+)/g;
-      let cpMaxConsolidation = 0;
-      let cpLastReview = 0;
-      for (const m of cpContent.matchAll(consolidationRegex)) {
-        const cNum = Number.parseInt(m[1], 10);
-        const endReview = Number.parseInt(m[3], 10);
-        if (cNum > cpMaxConsolidation) {
-          cpMaxConsolidation = cNum;
-          cpLastReview = endReview;
-        }
+  if (!existsSync(codePatternsPath)) return lastConsolidated;
+
+  try {
+    const cpContent = readFileSync(codePatternsPath, "utf8");
+    const consolidationRegex = /CONSOLIDATION #(\d+):\s*Reviews #(\d+)-(\d+)/g;
+    let cpMaxConsolidation = 0;
+    let cpLastReview = 0;
+    for (const m of cpContent.matchAll(consolidationRegex)) {
+      const cNum = Number.parseInt(m[1], 10);
+      const endReview = Number.parseInt(m[3], 10);
+      if (cNum > cpMaxConsolidation) {
+        cpMaxConsolidation = cNum;
+        cpLastReview = endReview;
       }
-      if (cpLastReview > 0 && cpLastReview !== lastConsolidated && !quiet) {
+    }
+    if (cpLastReview > 0 && cpLastReview !== lastConsolidated) {
+      if (!quiet) {
         console.log(
           `${colors.yellow}⚠️  CROSS-VALIDATION: Log says last consolidated=#${lastConsolidated}, ` +
             `CODE_PATTERNS.md says #${cpLastReview} (Consolidation #${cpMaxConsolidation})${colors.reset}`
         );
         console.log(`   → CODE_PATTERNS.md is the source of truth\n`);
       }
-    } catch {
-      // Non-fatal: skip cross-validation if CODE_PATTERNS.md unreadable
+      return cpLastReview;
+    }
+  } catch (err) {
+    if (verbose) {
+      console.warn(
+        `  ⚠️  Cross-validation skipped: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
+  return lastConsolidated;
+}
 
-  // Scope parsing to Consolidation Trigger section only (Review #160)
+/**
+ * Parse the Consolidation Trigger section for manual count and date
+ * Review #308: Extracted to reduce cognitive complexity of getConsolidationStatus
+ */
+function parseTriggerSection(content, computedCount) {
   const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");
-  const sectionEnd = content.indexOf("\n## ", sectionStart + 1);
-
   if (sectionStart === -1) {
     throw new Error("Could not locate 'Consolidation Trigger' section in log file.");
   }
 
+  const sectionEnd = content.indexOf("\n## ", sectionStart + 1);
   const endIndex = sectionEnd === -1 ? content.length : sectionEnd;
   const section = content.slice(sectionStart, endIndex);
 
-  // MANUAL: Extract consolidation counter for cross-validation
   const counterMatch = section.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
   const manualCount = counterMatch ? Number.parseInt(counterMatch[1], 10) || 0 : 0;
 
-  // Cross-validation: warn if manual counter drifted from computed
   if (manualCount !== computedCount && !quiet) {
     console.log(
       `${colors.yellow}⚠️  COUNTER DRIFT: Manual=${manualCount}, Computed=${computedCount}${colors.reset}`
     );
-    console.log(`   Using COMPUTED value for threshold check.`);
-    console.log("");
+    console.log(`   Using COMPUTED value for threshold check.\n`);
   }
 
   const lastConsolidationMatch = section.match(/\*\*Date:\*\*\s+([^\n]+)/);
   const lastConsolidation = lastConsolidationMatch ? lastConsolidationMatch[1].trim() : "Unknown";
 
-  // Return computed count (authoritative) and parsed lastReviewNum for extractRecentReviews
-  return {
-    reviewCount: computedCount, // Use COMPUTED, not manual
-    manualCount, // Keep for reporting
-    lastConsolidation,
-    lastReviewNum: lastConsolidated, // Use parsed value
-    highestReview,
-  };
+  return { manualCount, lastConsolidation };
 }
 
 /**
@@ -641,10 +662,11 @@ function generateRuleSuggestions(recurringPatterns, consolidatedRange) {
     content += `---\n\n`;
 
     for (const p of recurringPatterns) {
+      // Review #308: Use replaceAll, group regex alternation for precedence
       const id = (p.pattern || "")
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "")
+        .replaceAll(/[^a-z0-9]+/g, "-")
+        .replaceAll(/(?:^-|-$)/g, "")
         .slice(0, 40);
 
       content += `## ${p.pattern}\n\n`;
@@ -656,7 +678,7 @@ function generateRuleSuggestions(recurringPatterns, consolidatedRange) {
       content += `{\n`;
       content += `  id: "${id || "unnamed-pattern"}",\n`;
       content += `  pattern: /TODO_REGEX/g,\n`;
-      content += `  message: "${(p.pattern || "").replace(/"/g, '\\"')}",\n`;
+      content += `  message: "${(p.pattern || "").replaceAll('"', String.raw`\"`)}",\n`;
       content += `  fix: "TODO: describe the correct pattern",\n`;
       content += `  review: "#${p.reviews.join(", #")}",\n`;
       content += `  fileTypes: [".js", ".ts"],\n`;
@@ -694,7 +716,7 @@ function outputDryRunMessage() {
  */
 function checkArchiveHealth() {
   try {
-    const logContent = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
+    const logContent = readFileSync(LOG_FILE, "utf8").replaceAll("\r\n", "\n");
     const reviewHeaders = logContent.match(/^#### Review #\d+/gm) || [];
     const activeCount = reviewHeaders.length;
     const lineCount = logContent.split("\n").length;

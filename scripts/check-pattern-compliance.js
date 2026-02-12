@@ -820,7 +820,7 @@ const ANTI_PATTERNS = [
   // Math.max with spread on potentially empty array
   {
     id: "math-max-spread-no-guard",
-    pattern: /Math\.max\(\.\.\.\w+/g,
+    pattern: /Math\.max\(\s*\.\.\.[^)]+\s*\)/g,
     message: "Math.max(...arr) returns -Infinity on empty array - add length guard",
     fix: "Guard empty: arr.length > 0 ? Math.max(...arr) : defaultValue",
     review: "CODE_PATTERNS.md JS/TS - Math.max empty array, Review #216",
@@ -832,7 +832,7 @@ const ANTI_PATTERNS = [
   {
     id: "startswith-slash-check",
     pattern: /\.startsWith\s*\(\s*['"]\/['"]\s*\)/g,
-    message: "startsWith('/') misses Windows absolute paths (C:\\) - use path.isAbsolute()",
+    message: String.raw`startsWith('/') misses Windows absolute paths (C:\) - use path.isAbsolute()`,
     fix: "Use path.isAbsolute(p) for cross-platform absolute path detection",
     review: "CODE_PATTERNS.md JS/TS - Cross-platform isAbsolute, v1.9",
     fileTypes: [".js", ".ts"],

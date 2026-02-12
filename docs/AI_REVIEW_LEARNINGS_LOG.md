@@ -338,7 +338,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0 (Reviews #285-#307) **Consolidation
+**Reviews since last consolidation:** 1 (Reviews #308-#308) **Consolidation
 threshold:** 10 reviews **Status:** ✅ Current **Next consolidation due:** After
 Review #317 (Consolidation #19)
 
@@ -704,6 +704,38 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #308: PR #362 R4 — ReDoS Fix, Cognitive Complexity, Cross-Validation, Atomic Writes (2026-02-12)
+
+**Source:** SonarCloud (1 CRITICAL) + Qodo Compliance (6) + Qodo Suggestions
+(11) **PR/Branch:** PR #362 (claude/new-session-uaNwX) **Suggestions:** 18 total
+(Fix: 12, Dismiss: 6)
+
+**Key Patterns:**
+
+1. **S5852 ReDoS: Replace lazy `[^|]+?` with greedy `[^|]*` in table-parsing
+   regex** (CRITICAL) — Lazy quantifiers on negated character classes create
+   catastrophic backtracking. Greedy `[^|]*` is inherently safe because the
+   character class can't match the delimiter.
+2. **Cross-validation must APPLY mismatch, not just warn** — Both
+   `run-consolidation.js` and `sync-consolidation-counter.js` detected
+   CODE_PATTERNS.md vs log mismatches but continued using the wrong value. Fix:
+   `lastConsolidated = codePatternsInfo.lastReview` before computing counts.
+3. **Cognitive complexity reduction via function extraction** — Extract
+   `crossValidateLastConsolidated()` and `parseTriggerSection()` to keep
+   `getConsolidationStatus()` under 15.
+4. **Backup-swap atomic write with try...finally cleanup** — Write to .tmp,
+   rename existing to .bak, rename .tmp to target, clean up .bak on success.
+   Restore from .bak if rename fails. Always clean up .tmp in finally block.
+5. **`replaceAll` over `replace` with `/g` flag** — ES2021 `replaceAll` is
+   clearer for global replacements. For literal strings, avoids regex entirely.
+6. **Regex operator precedence: `^-|-$` needs `(?:^-|-$)`** — Without grouping,
+   `^-|-$` is parsed as `(^-)` OR `(-$)`, not alternation of anchored patterns.
+7. **Capture output once in shell hooks** — Instead of running a command twice
+   (once suppressed, once to show output), capture with `$(cmd 2>&1)` and check
+   `$?`. Halves execution time.
 
 ---
 

@@ -54,7 +54,7 @@ function getLastConsolidatedFromCodePatterns() {
 
   let content;
   try {
-    content = readFileSync(CODE_PATTERNS_FILE, "utf8").replace(/\r\n/g, "\n");
+    content = readFileSync(CODE_PATTERNS_FILE, "utf8").replaceAll("\r\n", "\n");
   } catch {
     return null;
   }
@@ -108,7 +108,7 @@ function getManualCount(content) {
 function main() {
   let content;
   try {
-    content = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
+    content = readFileSync(LOG_FILE, "utf8").replaceAll("\r\n", "\n");
   } catch (error_) {
     const code =
       error_ && typeof error_ === "object" && "code" in error_ ? String(error_.code) : undefined;
@@ -125,11 +125,9 @@ function main() {
   }
 
   try {
-    const lastConsolidated = getLastConsolidatedReview(content);
-    const computedCount = getComputedCount(content, lastConsolidated);
-    const manualCount = getManualCount(content);
+    let lastConsolidated = getLastConsolidatedReview(content);
 
-    // Cross-validate against CODE_PATTERNS.md version history
+    // Cross-validate against CODE_PATTERNS.md version history BEFORE computing count
     const codePatternsInfo = getLastConsolidatedFromCodePatterns();
 
     console.log("🔄 Consolidation Counter Sync");
@@ -144,8 +142,12 @@ function main() {
           `   ⚠️  MISMATCH: Log says #${lastConsolidated}, CODE_PATTERNS.md says #${codePatternsInfo.lastReview}`
         );
         console.log(`   → Using CODE_PATTERNS.md as source of truth`);
+        lastConsolidated = codePatternsInfo.lastReview;
       }
     }
+
+    const computedCount = getComputedCount(content, lastConsolidated);
+    const manualCount = getManualCount(content);
     console.log(`   Manual counter: ${manualCount}`);
     console.log(`   Computed count: ${computedCount}`);
     console.log("");
