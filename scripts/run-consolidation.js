@@ -588,6 +588,9 @@ function applyConsolidationChanges(content, reviews, recurringPatterns) {
   );
   log(`  ✅ Next consolidation due after Review #${nextConsolidationReview}`, colors.green);
 
+  // Generate suggested compliance checker rules for recurring patterns
+  generateRuleSuggestions(recurringPatterns, consolidatedRange);
+
   // Output summary based on mode
   if (autoMode) {
     console.log(
@@ -612,6 +615,66 @@ function outputManualSteps() {
   log("  4. Run: npm run patterns:suggest (for automatable patterns)");
   log("  5. Commit with message: 'chore: consolidate Reviews #X-#Y patterns'");
   log("");
+}
+
+/**
+ * Generate suggested compliance checker rules for recurring patterns
+ * Writes to consolidation-output/suggested-rules.md for human/AI review
+ */
+function generateRuleSuggestions(recurringPatterns, consolidatedRange) {
+  if (recurringPatterns.length === 0) return;
+
+  const outputDir = join(__dirname, "..", "consolidation-output");
+  const outputFile = join(outputDir, "suggested-rules.md");
+
+  try {
+    if (!existsSync(outputDir)) {
+      const { mkdirSync } = require("node:fs");
+      mkdirSync(outputDir, { recursive: true });
+    }
+
+    const now = new Date().toISOString().split("T")[0];
+    let content = `# Suggested Compliance Checker Rules\n\n`;
+    content += `**Generated:** ${now}\n`;
+    content += `**Source:** Consolidation #${consolidatedRange.start}-#${consolidatedRange.end}\n`;
+    content += `**Status:** Pending review - add to check-pattern-compliance.js as appropriate\n\n`;
+    content += `---\n\n`;
+
+    for (const p of recurringPatterns) {
+      const id = (p.pattern || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 40);
+
+      content += `## ${p.pattern}\n\n`;
+      content += `- **Mentions:** ${p.count} (Reviews: #${p.reviews.join(", #")})\n`;
+      content += `- **Suggested ID:** \`${id || "unnamed-pattern"}\`\n`;
+      content += `- **Enforceability:** [REGEX] / [AST] / [SEMANTIC] ← classify manually\n`;
+      content += `- **Template:**\n\n`;
+      content += "```javascript\n";
+      content += `{\n`;
+      content += `  id: "${id || "unnamed-pattern"}",\n`;
+      content += `  pattern: /TODO_REGEX/g,\n`;
+      content += `  message: "${(p.pattern || "").replace(/"/g, '\\"')}",\n`;
+      content += `  fix: "TODO: describe the correct pattern",\n`;
+      content += `  review: "#${p.reviews.join(", #")}",\n`;
+      content += `  fileTypes: [".js", ".ts"],\n`;
+      content += `}\n`;
+      content += "```\n\n";
+    }
+
+    writeFileSync(outputFile, content, "utf8");
+    log(
+      `  ✅ Rule suggestions written to consolidation-output/suggested-rules.md (${recurringPatterns.length} patterns)`,
+      colors.green
+    );
+  } catch (error_) {
+    // Non-fatal: don't fail consolidation if rule suggestions can't be written
+    if (verbose) {
+      log(`  ⚠️  Failed to write rule suggestions: ${sanitizeError(error_)}`, colors.yellow);
+    }
+  }
 }
 
 /**
