@@ -585,6 +585,7 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|\/)(?:scripts|\.claude\/hooks|\.husky)\//,
     // Exclude files with verified error handling
     pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|load-config)\.js$/,
+    pathExcludeList: verifiedPatterns["unguarded-loadconfig"] || [],
   },
 
   // Silent catch blocks (11x in reviews)
@@ -634,6 +635,7 @@ const ANTI_PATTERNS = [
     review: "#53, Session #151 analysis",
     fileTypes: [".js", ".ts"],
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["unbounded-regex-quantifier"] || [],
   },
 
   // Missing Array.isArray checks (7x in reviews)
@@ -658,6 +660,7 @@ const ANTI_PATTERNS = [
     review: "Session #151 analysis",
     fileTypes: [".js", ".ts"],
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["unescaped-regexp-input"] || [],
   },
 
   // exec() loop without /g flag (6x in reviews)
@@ -682,6 +685,7 @@ const ANTI_PATTERNS = [
     review: "#31, #38, Session #151 analysis",
     fileTypes: [".js", ".ts", ".sh"],
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["git-without-separator"] || [],
   },
 
   // JSON.parse without try/catch (5x in reviews)
@@ -769,6 +773,7 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|\/)(?:scripts|\.claude)\//,
     // Exclude files already using options object with encoding
     pathExclude: /encoding/,
+    pathExcludeList: verifiedPatterns["writefile-missing-encoding"] || [],
   },
 
   // ═══════════════════════════════════════════════════════════════════

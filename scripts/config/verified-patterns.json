@@ -89,5 +89,15 @@
     "sync-roadmap-refs.js",
     "migrate-existing-findings.js"
   ],
-  "exec-without-global": ["validate-phase-completion.js"]
+  "exec-without-global": [
+    "validate-phase-completion.js",
+    "surface-lessons-learned.js",
+    "suggest-pattern-automation.js"
+  ],
+  "unguarded-loadconfig": ["surface-lessons-learned.js"],
+  "unescaped-regexp-input": ["suggest-pattern-automation.js"],
+  "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
+  "git-without-separator": ["surface-lessons-learned.js"],
+  "non-atomic-write": ["suggest-pattern-automation.js"],
+  "writefile-missing-encoding": ["suggest-pattern-automation.js"]
 }
