@@ -83,17 +83,13 @@ module.exports = {
                 desc: "Wrap in try/catch block",
                 fix(fixer) {
                   const sourceCode = context.sourceCode ?? context.getSourceCode();
-                  // Find the containing ExpressionStatement or VariableDeclaration
+                  // Only auto-fix ExpressionStatements — wrapping VariableDeclarations
+                  // would change variable scope and break bindings
                   let target = node.parent;
-                  if (
-                    target.type === "VariableDeclarator" &&
-                    target.parent.type === "VariableDeclaration"
-                  ) {
-                    target = target.parent;
-                  } else if (target.type === "ExpressionStatement") {
+                  if (target.type === "ExpressionStatement") {
                     // already at statement level
                   } else {
-                    // Cannot safely auto-fix complex expressions
+                    // Cannot safely auto-fix (scope change or complex expression)
                     return null;
                   }
 

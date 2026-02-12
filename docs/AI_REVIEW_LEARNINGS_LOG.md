@@ -333,7 +333,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After Review #299 Reviews
 #266-284)
 
@@ -530,7 +530,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 1     | <10    | ✅     |
+| Reviews since last consolidation | 2     | <10    | ✅     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -683,6 +683,59 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #290: PR #361 R2 — Cognitive Complexity, ESLint Fixer Safety, Cross-Platform Fixes (2026-02-12)
+
+**Source:** SonarCloud + Qodo Code Suggestions **PR/Branch:** PR #361
+(claude/analyze-repo-install-ceMkn) **Suggestions:** 23 total (Critical: 3,
+Major: 10, Minor: 10)
+
+**Patterns Identified:**
+
+1. Cognitive complexity extraction: SonarCloud flags functions at CC 16-17
+   (threshold 15)
+   - Root cause: Mixed concerns in single functions (formatting + logic + I/O)
+   - Prevention: Extract formatting helpers (formatResultRow, printViolation,
+     printSummaryFooter)
+2. ESLint auto-fixer scope safety: VariableDeclaration wrapping changes variable
+   scope
+   - Root cause: Auto-fix assumed all statements could be wrapped in try/catch
+   - Prevention: Only auto-fix ExpressionStatements, return null for others
+3. Cross-platform atomic rename: renameSync fails on Windows if destination
+   exists
+   - Root cause: POSIX rename is atomic, Windows rename requires destination
+     removal
+   - Prevention: unlinkSync destination before renameSync
+4. Path normalization for state tracking: backslash vs forward slash
+   inconsistency
+   - Root cause: Windows paths use backslash, state keys stored with mixed
+     separators
+   - Prevention: Normalize with replaceAll("\\", "/") before key creation
+5. Parser-agnostic AST node positioning: ESLint rules using deprecated
+   node.start/end
+   - Root cause: Different parsers provide range or loc but not both
+   - Prevention: Check range first, fall back to loc-based calculation
+6. String.raw SonarCloud findings: False positive on regex literal `[\\/]`
+   - Root cause: SonarCloud can't distinguish regex escapes from string escapes
+   - Resolution: Reviewed-safe (regex literals, not template strings)
+
+**Resolution:**
+
+- Fixed: 18 items
+- Reviewed-safe: 5 (3 regex complexity in detection patterns, 2 String.raw false
+  positives)
+
+**Key Learnings:**
+
+- Extract helper functions to reduce cognitive complexity below SonarCloud
+  threshold
+- ESLint auto-fixers must never change variable scope (wrap only
+  ExpressionStatements)
+- Windows needs unlinkSync before renameSync for atomic write pattern
+- Normalize path separators in state tracking keys for cross-platform
+  consistency
 
 ---
 

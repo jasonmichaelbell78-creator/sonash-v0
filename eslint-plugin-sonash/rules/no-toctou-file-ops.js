@@ -83,10 +83,19 @@ function getEnclosingScope(node) {
 }
 
 /**
+ * Get the start index of a node, using range or loc fallback.
+ */
+function getStartIndex(node) {
+  if (node.range) return node.range[0];
+  if (node.loc) return node.loc.start.line * 10000 + node.loc.start.column;
+  return -1;
+}
+
+/**
  * Check if node A comes before node B in source order.
  */
 function isBefore(a, b) {
-  return a.range ? a.range[0] < b.range[0] : a.start < b.start;
+  return getStartIndex(a) < getStartIndex(b);
 }
 
 /**
@@ -113,18 +122,31 @@ function isGuardingCondition(existsNode, readNode) {
 }
 
 /**
+ * Get start and end indices for a node, using range or loc fallback.
+ */
+function getNodeBounds(node) {
+  if (node.range) return { start: node.range[0], end: node.range[1] };
+  if (node.loc) {
+    return {
+      start: node.loc.start.line * 10000 + node.loc.start.column,
+      end: node.loc.end.line * 10000 + node.loc.end.column,
+    };
+  }
+  return null;
+}
+
+/**
  * Check if ancestor contains descendant node.
  */
 function containsNode(ancestor, descendant) {
   if (!ancestor || !descendant) return false;
   if (ancestor === descendant) return true;
 
-  const aStart = ancestor.range ? ancestor.range[0] : ancestor.start;
-  const aEnd = ancestor.range ? ancestor.range[1] : ancestor.end;
-  const dStart = descendant.range ? descendant.range[0] : descendant.start;
-  const dEnd = descendant.range ? descendant.range[1] : descendant.end;
+  const a = getNodeBounds(ancestor);
+  const d = getNodeBounds(descendant);
+  if (!a || !d) return false;
 
-  return aStart <= dStart && dEnd <= aEnd;
+  return a.start <= d.start && d.end <= a.end;
 }
 
 /** @type {import('eslint').Rule.RuleModule} */

@@ -53,6 +53,87 @@ function isLstatSyncCall(node) {
   return false;
 }
 
+/**
+ * Get a stable scope key for a node by finding its closest function/program ancestor.
+ */
+function getScopeKey(node) {
+  let current = node.parent;
+  while (current) {
+    if (
+      current.type === "FunctionDeclaration" ||
+      current.type === "FunctionExpression" ||
+      current.type === "ArrowFunctionExpression" ||
+      current.type === "Program"
+    ) {
+      return current;
+    }
+    current = current.parent;
+  }
+  return null;
+}
+
+/**
+ * Track an lstatSync call in the scope map.
+ */
+function trackLstatCall(node, lstatCallsByScope) {
+  const pathArg = getPathArgName(node);
+  if (!pathArg) return;
+  const scopeKey = getScopeKey(node);
+  if (!scopeKey) return;
+  if (!lstatCallsByScope.has(scopeKey)) {
+    lstatCallsByScope.set(scopeKey, new Set());
+  }
+  lstatCallsByScope.get(scopeKey).add(pathArg);
+}
+
+/**
+ * Check a statSync call and report if no preceding lstatSync exists in scope.
+ */
+function checkStatCall(node, lstatCallsByScope, context) {
+  const pathArg = getPathArgName(node);
+  if (!pathArg) return;
+
+  const scopeKey = getScopeKey(node);
+  if (!scopeKey) return;
+
+  const lstatPaths = lstatCallsByScope.get(scopeKey);
+  if (lstatPaths && lstatPaths.has(pathArg)) return;
+
+  context.report({
+    node,
+    messageId: "statWithoutLstat",
+    suggest: [
+      {
+        desc: "Add lstatSync() check before statSync() to detect symlinks",
+        fix(fixer) {
+          const sourceCode = context.sourceCode ?? context.getSourceCode();
+          const callee = node.callee;
+          const lstatCall =
+            callee.type === "MemberExpression"
+              ? `${sourceCode.getText(callee.object)}.lstatSync(${pathArg})`
+              : `lstatSync(${pathArg})`;
+
+          let target = node.parent;
+          while (
+            target &&
+            target.type !== "ExpressionStatement" &&
+            target.type !== "VariableDeclaration"
+          ) {
+            target = target.parent;
+          }
+          if (!target) return null;
+
+          const indent = " ".repeat(target.loc.start.column);
+          const varName = `_lstat_${target.loc.start.line}`;
+          const check = `const ${varName} = ${lstatCall};\n${indent}if (${varName}.isSymbolicLink()) { throw new Error('Symlink detected: ' + ${pathArg}); }\n${indent}`;
+
+          return fixer.insertTextBefore(target, check);
+        },
+      },
+    ],
+  });
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -70,100 +151,14 @@ module.exports = {
   },
 
   create(context) {
-    // Track lstatSync calls per scope, keyed by path argument name
     const lstatCallsByScope = new Map();
-
-    /**
-     * Get a stable scope key for a node by finding its closest function/program ancestor.
-     */
-    function getScopeKey(node) {
-      let current = node.parent;
-      while (current) {
-        if (
-          current.type === "FunctionDeclaration" ||
-          current.type === "FunctionExpression" ||
-          current.type === "ArrowFunctionExpression" ||
-          current.type === "Program"
-        ) {
-          return current;
-        }
-        current = current.parent;
-      }
-      return null;
-    }
 
     return {
       CallExpression(node) {
-        // Track lstatSync calls
         if (isLstatSyncCall(node)) {
-          const pathArg = getPathArgName(node);
-          if (pathArg) {
-            const scopeKey = getScopeKey(node);
-            if (scopeKey) {
-              if (!lstatCallsByScope.has(scopeKey)) {
-                lstatCallsByScope.set(scopeKey, new Set());
-              }
-              lstatCallsByScope.get(scopeKey).add(pathArg);
-            }
-          }
-          return;
-        }
-
-        // Check statSync calls
-        if (isStatSyncCall(node)) {
-          const pathArg = getPathArgName(node);
-          if (!pathArg) {
-            // Can't determine path variable - skip to avoid false positives
-            return;
-          }
-
-          const scopeKey = getScopeKey(node);
-          if (!scopeKey) {
-            return;
-          }
-
-          const lstatPaths = lstatCallsByScope.get(scopeKey);
-          if (!lstatPaths || !lstatPaths.has(pathArg)) {
-            context.report({
-              node,
-              messageId: "statWithoutLstat",
-              suggest: [
-                {
-                  desc: "Add lstatSync() check before statSync() to detect symlinks",
-                  fix(fixer) {
-                    const sourceCode = context.sourceCode ?? context.getSourceCode();
-                    // Build the lstatSync call matching the style (bare vs member)
-                    const callee = node.callee;
-                    let lstatCall;
-                    if (callee.type === "MemberExpression") {
-                      const obj = sourceCode.getText(callee.object);
-                      lstatCall = `${obj}.lstatSync(${pathArg})`;
-                    } else {
-                      lstatCall = `lstatSync(${pathArg})`;
-                    }
-
-                    // Find the statement containing this call
-                    let target = node.parent;
-                    while (
-                      target &&
-                      target.type !== "ExpressionStatement" &&
-                      target.type !== "VariableDeclaration"
-                    ) {
-                      target = target.parent;
-                    }
-                    if (!target) {
-                      return null;
-                    }
-
-                    const indent = " ".repeat(target.loc.start.column);
-                    const check = `const _lstat = ${lstatCall};\n${indent}if (_lstat.isSymbolicLink()) { throw new Error('Symlink detected: ' + ${pathArg}); }\n${indent}`;
-
-                    return fixer.insertTextBefore(target, check);
-                  },
-                },
-              ],
-            });
-          }
+          trackLstatCall(node, lstatCallsByScope);
+        } else if (isStatSyncCall(node)) {
+          checkStatCall(node, lstatCallsByScope, context);
         }
       },
     };

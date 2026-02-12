@@ -27,6 +27,7 @@ import {
   writeFileSync,
   mkdirSync,
   renameSync,
+  unlinkSync,
 } from "node:fs";
 import { join, dirname, extname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -58,7 +59,8 @@ function loadWarnedFiles() {
   try {
     return JSON.parse(readFileSync(WARNED_FILES_PATH, "utf-8"));
   } catch (err) {
-    if (err.code !== "ENOENT") {
+    const code = err && typeof err === "object" && "code" in err ? err.code : null;
+    if (code !== "ENOENT") {
       console.warn(`Warning: could not load pattern warning state: ${sanitizeError(err)}`);
     }
   }
@@ -71,6 +73,12 @@ function saveWarnedFiles(warned) {
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
     const tmpPath = WARNED_FILES_PATH + `.tmp.${process.pid}`;
     writeFileSync(tmpPath, JSON.stringify(warned, null, 2), "utf-8");
+    // On Windows, renameSync fails if destination exists — remove first
+    try {
+      if (existsSync(WARNED_FILES_PATH)) unlinkSync(WARNED_FILES_PATH);
+    } catch (_e) {
+      // Best-effort: if removal fails, renameSync will error below
+    }
     renameSync(tmpPath, WARNED_FILES_PATH);
   } catch (err) {
     console.warn(`Warning: could not save pattern warning state: ${sanitizeError(err)}`);
@@ -544,8 +552,7 @@ const ANTI_PATTERNS = [
   // writeFileSync without atomic write pattern (10x in reviews)
   {
     id: "non-atomic-write",
-    pattern:
-      /writeFileSync\s*\([^,]+,\s*[^,]+(?:,\s*\{[^}]*\})?\s*\)(?![\s\S]{0,80}(?:unlinkSync|renameSync|tmpdir|\.tmp))/g,
+    pattern: /writeFileSync\s*\([^)]+\)(?![\s\S]{0,80}(?:unlinkSync|renameSync|tmpdir|\.tmp))/g,
     message: "writeFileSync without atomic write pattern - partial writes on crash corrupt data",
     fix: "Write to tmp file first, then rename: writeFileSync(path + '.tmp', data); renameSync(path + '.tmp', path);",
     review: "#284, Session #151 analysis",
@@ -681,7 +688,7 @@ const ANTI_PATTERNS = [
   {
     id: "unbounded-file-read",
     pattern:
-      /readFileSync\s*\([^)]+\)[\s\S]{0,30}\.split\s*\(\s*['"`]\\n['"`]\s*\)(?![\s\S]{0,50}(?:slice|\.length\s*[<>]|MAX_LINES))/g,
+      /readFileSync\s*\([^)]+\)[\s\S]{0,30}\.split\s*\(\s*['"`]\\n['"`]\s*\)(?![\s\S]{0,50}(?:slice|MAX_LINES))/g,
     message: "Reading entire file then splitting - may OOM on large files",
     fix: "Use readline or stream for large files, or add size check: if (stat.size > MAX_SIZE) skip",
     review: "Session #151 analysis",
@@ -975,6 +982,36 @@ function checkFile(filePath) {
 }
 
 /**
+ * Print a single violation entry.
+ */
+function printViolation(v) {
+  const prefix = v.graduated ? "🚫 BLOCK" : "⚠️  WARN";
+  console.log(`   ${prefix} Line ${v.line}: ${v.message}`);
+  console.log(`   ✓ Fix: ${v.fix}`);
+  console.log(`   📚 See: Review ${v.review} in AI_REVIEW_LEARNINGS_LOG.md`);
+  if (VERBOSE) {
+    console.log(`   Match: ${v.match}`);
+  }
+  console.log("");
+}
+
+/**
+ * Print summary footer with block/warn guidance.
+ */
+function printSummaryFooter(blockCount, warnCount) {
+  console.log("---");
+  if (blockCount > 0) {
+    console.log("🚫 Blocking violations MUST be fixed before committing.");
+    console.log("   These patterns were warned on a previous check and are now enforced.");
+  }
+  if (warnCount > 0) {
+    console.log("⚠️  Warnings are informational on first occurrence.");
+    console.log("   Fix them now - they will BLOCK on the next check of the same file.");
+  }
+  console.log("Some may be false positives - use judgment based on context.");
+}
+
+/**
  * Format output as text
  */
 function formatTextOutput(violations, filesChecked, warnCount = 0, blockCount = 0) {
@@ -1004,27 +1041,11 @@ function formatTextOutput(violations, filesChecked, warnCount = 0, blockCount = 
   for (const [file, fileViolations] of Object.entries(byFile)) {
     console.log(`📄 ${file}`);
     for (const v of fileViolations) {
-      const prefix = v.graduated ? "🚫 BLOCK" : "⚠️  WARN";
-      console.log(`   ${prefix} Line ${v.line}: ${v.message}`);
-      console.log(`   ✓ Fix: ${v.fix}`);
-      console.log(`   📚 See: Review ${v.review} in AI_REVIEW_LEARNINGS_LOG.md`);
-      if (VERBOSE) {
-        console.log(`   Match: ${v.match}`);
-      }
-      console.log("");
+      printViolation(v);
     }
   }
 
-  console.log("---");
-  if (blockCount > 0) {
-    console.log("🚫 Blocking violations MUST be fixed before committing.");
-    console.log("   These patterns were warned on a previous check and are now enforced.");
-  }
-  if (warnCount > 0) {
-    console.log("⚠️  Warnings are informational on first occurrence.");
-    console.log("   Fix them now - they will BLOCK on the next check of the same file.");
-  }
-  console.log("Some may be false positives - use judgment based on context.");
+  printSummaryFooter(blockCount, warnCount);
 }
 
 /**
@@ -1042,7 +1063,8 @@ function applyGraduation(violations) {
   const GRACE_PERIOD_MS = 4 * 60 * 60 * 1000;
 
   for (const v of violations) {
-    const key = `${v.file}::${v.id}`;
+    const fileKey = String(v.file).replaceAll("\\", "/");
+    const key = `${fileKey}::${v.id}`;
     if (warned[key]) {
       const warnedAt = new Date(warned[key]).getTime();
       const ageMs = Number.isFinite(warnedAt) ? now - warnedAt : GRACE_PERIOD_MS + 1;

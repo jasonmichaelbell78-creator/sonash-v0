@@ -48,21 +48,21 @@ function parseArgs() {
   const args = process.argv.slice(2);
   const opts = { mode: "recent", value: 5 };
 
-  for (let i = 0; i < args.length; i++) {
+  for (let i = 0; i < args.length; i += 1) {
     if (args[i] === "--pr" && args[i + 1]) {
       opts.mode = "pr";
-      opts.value = parseInt(args[i + 1], 10);
-      i++;
+      opts.value = Number.parseInt(args[i + 1], 10);
+      i += 1;
     } else if (args[i] === "--recent" && args[i + 1]) {
       opts.mode = "recent";
-      opts.value = parseInt(args[i + 1], 10);
-      i++;
+      opts.value = Number.parseInt(args[i + 1], 10);
+      i += 1;
     } else if (args[i].startsWith("--pr=")) {
       opts.mode = "pr";
-      opts.value = parseInt(args[i].split("=")[1], 10);
+      opts.value = Number.parseInt(args[i].split("=")[1], 10);
     } else if (args[i].startsWith("--recent=")) {
       opts.mode = "recent";
-      opts.value = parseInt(args[i].split("=")[1], 10);
+      opts.value = Number.parseInt(args[i].split("=")[1], 10);
     }
   }
 
@@ -226,6 +226,27 @@ function appendMetrics(entries) {
 }
 
 /**
+ * Format a single result row for the summary table.
+ */
+function formatResultRow(r) {
+  const ratioOk = r.fix_ratio < TARGET_FIX_RATIO;
+  const roundsOk = r.review_rounds < TARGET_MAX_ROUNDS;
+  const pass = ratioOk && roundsOk;
+  const status = pass ? "PASS" : "FAIL";
+
+  const details = [];
+  if (!ratioOk) details.push(`ratio >= ${TARGET_FIX_RATIO}`);
+  if (!roundsOk) details.push(`rounds >= ${TARGET_MAX_ROUNDS}`);
+  const detailStr = details.length > 0 ? ` (${details.join(", ")})` : "";
+
+  const title = r.title.length > 38 ? r.title.slice(0, 35) + "..." : r.title;
+  const fixTotal = `${r.fix_commits}/${r.total_commits}`.padEnd(12);
+  const line = `#${String(r.pr).padEnd(7)} ${title.padEnd(40)} ${fixTotal} ${String(r.fix_ratio).padEnd(8)} ${String(r.review_rounds).padEnd(8)} ${status}${detailStr}`;
+
+  return { line, pass };
+}
+
+/**
  * Display summary with pass/fail indicators
  */
 function displaySummary(results) {
@@ -236,23 +257,10 @@ function displaySummary(results) {
   console.log("-".repeat(90));
 
   let allPass = true;
-
   for (const r of results) {
-    const ratioOk = r.fix_ratio < TARGET_FIX_RATIO;
-    const roundsOk = r.review_rounds < TARGET_MAX_ROUNDS;
-    const pass = ratioOk && roundsOk;
+    const { line, pass } = formatResultRow(r);
     if (!pass) allPass = false;
-
-    const status = pass ? "PASS" : "FAIL";
-    const details = [];
-    if (!ratioOk) details.push(`ratio >= ${TARGET_FIX_RATIO}`);
-    if (!roundsOk) details.push(`rounds >= ${TARGET_MAX_ROUNDS}`);
-    const detailStr = details.length > 0 ? ` (${details.join(", ")})` : "";
-
-    const title = r.title.length > 38 ? r.title.slice(0, 35) + "..." : r.title;
-    console.log(
-      `#${String(r.pr).padEnd(7)} ${title.padEnd(40)} ${`${r.fix_commits}/${r.total_commits}`.padEnd(12)} ${String(r.fix_ratio).padEnd(8)} ${String(r.review_rounds).padEnd(8)} ${status}${detailStr}`
-    );
+    console.log(line);
   }
 
   console.log("-".repeat(90));
