@@ -103,7 +103,7 @@ module.exports = {
 
                   return fixer.replaceText(
                     target,
-                    `try {\n${inner}${text}\n${indent}} catch (_err) {\n${inner}// Handle file read error\n${indent}}`
+                    `try {\n${inner}${text}\n${indent}} catch (_err) {\n${inner}// Handle file read error\n${inner}throw _err;\n${indent}}`
                   );
                 },
               },

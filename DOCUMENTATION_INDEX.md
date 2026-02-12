@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-12 **Active Documents:** 286 **Archived Documents:** 93
+**Generated:** 2026-02-12 **Active Documents:** 285 **Archived Documents:** 93
 
 ---
 
@@ -33,7 +33,7 @@ orphaned documents.
 
 | Tier   | Count | Description |
 | ------ | ----- | ----------- |
-| Tier 1 | 10    | Essential   |
+| Tier 1 | 9     | Essential   |
 | Tier 2 | 82    | Core        |
 | Tier 3 | 123   | Specialized |
 | Tier 4 | 71    | Reference   |
@@ -48,7 +48,7 @@ orphaned documents.
 | .claude > agents                      | 24    |
 | analysis                              | 15    |
 | .claude > agents > global             | 11    |
-| Root Documents                        | 10    |
+| Root Documents                        | 9     |
 | Templates                             | 8     |
 | .claude                               | 7     |
 | Agent Documentation                   | 6     |
@@ -71,18 +71,17 @@ orphaned documents.
 
 _Essential project-level documentation_
 
-| Document                                                         | Description                                                       | References | Last Modified |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](claude.md)                       | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑7      | 2026-02-11    |
-| [AI Workflow Guide](AI_WORKFLOW.md)                              | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-11    |
-| [Architecture Documentation](ARCHITECTURE.md)                    | -                                                                 | ↓12 ↑6     | 2026-02-11    |
-| [Development Guide](DEVELOPMENT.md)                              | Unified dev dashboard for monitoring session activity, error      | ↓13 ↑9     | 2026-02-12    |
-| [Implementation Plan: PR Review Churn Reduction System](plan.md) | -                                                                 | ↓0 ↑0      | 2026-02-12    |
-| [Session Context](SESSION_CONTEXT.md)                            | -                                                                 | ↓6 ↑8      | 2026-02-12    |
-| [SoNash - Sober Nashville Recovery Notebook](README.md)          | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-11    |
-| [SoNash Future Roadmap](ROADMAP_FUTURE.md)                       | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-05    |
-| [SoNash Product Roadmap](ROADMAP.md)                             | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-12    |
-| [SoNash Roadmap Log](ROADMAP_LOG.md)                             | -                                                                 | ↓4 ↑6      | 2026-02-09    |
+| Document                                                | Description                                                       | References | Last Modified |
+| ------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
+| [AI Context & Rules for SoNash](claude.md)              | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑7      | 2026-02-11    |
+| [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-11    |
+| [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓12 ↑6     | 2026-02-11    |
+| [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓13 ↑9     | 2026-02-12    |
+| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑8      | 2026-02-12    |
+| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-11    |
+| [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-05    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-12    |
+| [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                 | ↓4 ↑6      | 2026-02-09    |
 
 ### Core Documentation (Tier 2)
 
@@ -101,7 +100,7 @@ _Main documentation directory_
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                                         | Each AI review is an opportunity to improve future work. Sys...   | ↓9 ↑2      | 2026-02-11    |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                         | -                                                                 | ↓3 ↑4      | 2026-02-09    |
 | [ADR-NNN: [Short Title]](docs/decisions/TEMPLATE.md)                                                                           | [Briefly describe the purpose of this ADR - what decision do...   | ↓1 ↑0      | 2026-01-17    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                     | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-11    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                     | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-12    |
 | [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                                                | This guide covers Firebase App Check configuration for the S...   | ↓2 ↑0      | 2026-02-09    |
 | [Architecture Decision Records (ADRs)](docs/decisions/README.md)                                                               | This directory contains Architecture Decision Records (ADRs)...   | ↓0 ↑1      | 2026-02-02    |
 | [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                                         | Track single-session and multi-AI audit completions for thre...   | ↓1 ↑3      | 2026-02-11    |
@@ -551,7 +550,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**199 orphaned documents:**
+**198 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [Find Skills](.agents/skills/find-skills/SKILL.md)
@@ -748,7 +747,6 @@ Documents with no inbound links (not referenced by any other document):
 - [How to \[Accomplish Task\]](docs/templates/GUIDE_DOC_TEMPLATE.md)
 - [\[Feature/Initiative Name\] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md)
 - [\[Workflow/Reference Name\]](docs/templates/REFERENCE_DOC_TEMPLATE.md)
-- [Implementation Plan: PR Review Churn Reduction System](plan.md)
 - [Scripts Reference](scripts/README.md)
 - [Setup](src/dataconnect-generated/.guides/setup.md)
 - [Basic Usage](src/dataconnect-generated/.guides/usage.md)
@@ -1037,17 +1035,16 @@ Documents with no inbound links (not referenced by any other document):
 | 273 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md)                                                                             | \[Workflow/Reference Name\]                                        | 3    | -                                                                               |
 | 274 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md)                                                                                                                     | Testing Plan                                                       | 2    | Active **Last Updated:** 2026-01-20                                             |
 | 275 | [docs/TRIGGERS.md](docs/TRIGGERS.md)                                                                                                                             | TRIGGERS.md - Automation &amp; Enforcement Reference               | 2    | DRAFT \| ACTIVE \| DEPRECATED                                                   |
-| 276 | [plan.md](plan.md)                                                                                                                                               | Implementation Plan: PR Review Churn Reduction System              | 1    | -                                                                               |
-| 277 | [README.md](README.md)                                                                                                                                           | SoNash - Sober Nashville Recovery Notebook                         | 1    | ACTIVE **Last Updated:** 2026-01-03                                             |
-| 278 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md)                                                                                                                           | SoNash Future Roadmap                                              | 1    | ACTIVE                                                                          |
-| 279 | [ROADMAP_LOG.md](ROADMAP_LOG.md)                                                                                                                                 | SoNash Roadmap Log                                                 | 1    | ACTIVE \(append-only archive\) \*\*Last                                         |
-| 280 | [ROADMAP.md](ROADMAP.md)                                                                                                                                         | SoNash Product Roadmap                                             | 1    | ACTIVE                                                                          |
-| 281 | [scripts/README.md](scripts/README.md)                                                                                                                           | Scripts Reference                                                  | 4    | -                                                                               |
-| 282 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                         | Session Context                                                    | 1    | -                                                                               |
-| 283 | [src/dataconnect-generated/.guides/setup.md](src/dataconnect-generated/.guides/setup.md)                                                                         | Setup                                                              | 4    | -                                                                               |
-| 284 | [src/dataconnect-generated/.guides/usage.md](src/dataconnect-generated/.guides/usage.md)                                                                         | Basic Usage                                                        | 4    | -                                                                               |
-| 285 | [src/dataconnect-generated/react/README.md](src/dataconnect-generated/react/README.md)                                                                           | Generated React README                                             | 4    | -                                                                               |
-| 286 | [src/dataconnect-generated/README.md](src/dataconnect-generated/README.md)                                                                                       | Generated TypeScript README                                        | 4    | -                                                                               |
+| 276 | [README.md](README.md)                                                                                                                                           | SoNash - Sober Nashville Recovery Notebook                         | 1    | ACTIVE **Last Updated:** 2026-01-03                                             |
+| 277 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md)                                                                                                                           | SoNash Future Roadmap                                              | 1    | ACTIVE                                                                          |
+| 278 | [ROADMAP_LOG.md](ROADMAP_LOG.md)                                                                                                                                 | SoNash Roadmap Log                                                 | 1    | ACTIVE \(append-only archive\) \*\*Last                                         |
+| 279 | [ROADMAP.md](ROADMAP.md)                                                                                                                                         | SoNash Product Roadmap                                             | 1    | ACTIVE                                                                          |
+| 280 | [scripts/README.md](scripts/README.md)                                                                                                                           | Scripts Reference                                                  | 4    | -                                                                               |
+| 281 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                         | Session Context                                                    | 1    | -                                                                               |
+| 282 | [src/dataconnect-generated/.guides/setup.md](src/dataconnect-generated/.guides/setup.md)                                                                         | Setup                                                              | 4    | -                                                                               |
+| 283 | [src/dataconnect-generated/.guides/usage.md](src/dataconnect-generated/.guides/usage.md)                                                                         | Basic Usage                                                        | 4    | -                                                                               |
+| 284 | [src/dataconnect-generated/react/README.md](src/dataconnect-generated/react/README.md)                                                                           | Generated React README                                             | 4    | -                                                                               |
+| 285 | [src/dataconnect-generated/README.md](src/dataconnect-generated/README.md)                                                                                       | Generated TypeScript README                                        | 4    | -                                                                               |
 
 </details>
 

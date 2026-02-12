@@ -26,6 +26,7 @@ import {
   lstatSync,
   writeFileSync,
   mkdirSync,
+  renameSync,
 } from "node:fs";
 import { join, dirname, extname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -55,11 +56,11 @@ const WARNED_FILES_PATH = join(ROOT, ".claude", "state", "warned-files.json");
 
 function loadWarnedFiles() {
   try {
-    if (existsSync(WARNED_FILES_PATH)) {
-      return JSON.parse(readFileSync(WARNED_FILES_PATH, "utf-8"));
+    return JSON.parse(readFileSync(WARNED_FILES_PATH, "utf-8"));
+  } catch (err) {
+    if (err.code !== "ENOENT") {
+      console.warn(`Warning: could not load pattern warning state: ${sanitizeError(err)}`);
     }
-  } catch {
-    // Corrupt state = fresh start
   }
   return {};
 }
@@ -68,9 +69,11 @@ function saveWarnedFiles(warned) {
   try {
     const dir = dirname(WARNED_FILES_PATH);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-    writeFileSync(WARNED_FILES_PATH, JSON.stringify(warned, null, 2), "utf-8");
-  } catch {
-    // Best effort - don't block on state save failure
+    const tmpPath = WARNED_FILES_PATH + `.tmp.${process.pid}`;
+    writeFileSync(tmpPath, JSON.stringify(warned, null, 2), "utf-8");
+    renameSync(tmpPath, WARNED_FILES_PATH);
+  } catch (err) {
+    console.warn(`Warning: could not save pattern warning state: ${sanitizeError(err)}`);
   }
 }
 
@@ -1042,7 +1045,8 @@ function applyGraduation(violations) {
     const key = `${v.file}::${v.id}`;
     if (warned[key]) {
       const warnedAt = new Date(warned[key]).getTime();
-      if (now - warnedAt > GRACE_PERIOD_MS) {
+      const ageMs = Number.isFinite(warnedAt) ? now - warnedAt : GRACE_PERIOD_MS + 1;
+      if (ageMs > GRACE_PERIOD_MS) {
         // Warning is old enough - graduate to block
         v.graduated = true;
         blocks.push(v);

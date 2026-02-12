@@ -14,7 +14,7 @@
  * npm script: npm run metrics:review-churn
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -107,7 +107,11 @@ function getRepoInfo() {
  */
 function fetchPrData(prNumber) {
   const raw = ghExec(["pr", "view", String(prNumber), "--json", "commits,reviews,number,title"]);
-  return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    throw new Error(`Failed to parse PR data JSON for PR #${prNumber}: ${sanitizeError(err)}`);
+  }
 }
 
 /**
@@ -115,7 +119,11 @@ function fetchPrData(prNumber) {
  */
 function fetchPrCommits(owner, repo, prNumber) {
   const raw = ghExec(["api", `repos/${owner}/${repo}/pulls/${prNumber}/commits`, "--paginate"]);
-  return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    throw new Error(`Failed to parse commits JSON for PR #${prNumber}: ${sanitizeError(err)}`);
+  }
 }
 
 /**
@@ -124,8 +132,12 @@ function fetchPrCommits(owner, repo, prNumber) {
 function getRecentPRs(count) {
   const safeCount = String(Math.max(1, Math.min(count, 50)));
   const raw = ghExec(["pr", "list", "--state", "merged", "--limit", safeCount, "--json", "number"]);
-  const prs = JSON.parse(raw);
-  return prs.map((pr) => pr.number);
+  try {
+    const prs = JSON.parse(raw);
+    return prs.map((pr) => pr.number);
+  } catch (err) {
+    throw new Error(`Failed to parse PR list JSON: ${sanitizeError(err)}`);
+  }
 }
 
 /**
@@ -207,11 +219,7 @@ function appendMetrics(entries) {
   const lines = entries.map((e) => JSON.stringify(e)).join("\n") + "\n";
 
   try {
-    let existing = "";
-    if (existsSync(METRICS_FILE)) {
-      existing = readFileSync(METRICS_FILE, "utf8");
-    }
-    writeFileSync(METRICS_FILE, existing + lines, "utf8");
+    writeFileSync(METRICS_FILE, lines, { encoding: "utf8", flag: "a" });
   } catch (err) {
     console.error(`Failed to write metrics file: ${sanitizeError(err)}`);
   }
