@@ -9,11 +9,10 @@
 
 ---
 
-## NEW (56)
+## NEW (55)
 
 | ID        | Title                                                        | Severity | Category     |
 | --------- | ------------------------------------------------------------ | -------- | ------------ |
-| DEBT-2747 | Session-start timeout risks in low-bandwidth environments    | S2       | code-quality |
 | DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools     | S2       | code-quality |
 | DEBT-2749 | Firebase deployment lacks rollback on partial failure        | S2       | code-quality |
 | DEBT-2750 | CI runs full build twice - once for lint, once for test      | S2       | code-quality |
@@ -68,7 +67,7 @@
 | DEBT-2799 | Create barrel exports for component directories - only 1 ... | S2       | code-quality |
 | DEBT-2800 | Collocate related quote components - 3 variants scattered... | S2       | code-quality |
 | DEBT-2801 | Standardize export style - 38 default vs 69 named exports... | S2       | code-quality |
-| DEBT-2802 | useDailyQuote hook has smart module-level caching prevent... | S2       | code-quality |
+| DEBT-2803 | Consolidate regex pattern linter into ESLint plugin          | S2       | process      |
 
 ## VERIFIED (1727)
 
@@ -1806,7 +1805,7 @@
 
 _No items_
 
-## RESOLVED (159)
+## RESOLVED (161)
 
 | ID        | Title                                                          | Severity | Category      |
 | --------- | -------------------------------------------------------------- | -------- | ------------- |
@@ -1918,6 +1917,8 @@ _No items_
 | DEBT-2543 | Skill issue: systematic-debugging references non-existent...   | S2       | process       |
 | DEBT-2545 | Skill issue: audit-process has complex 7-stage orchestrat...   | S2       | process       |
 | DEBT-2554 | Performance: 10 Claude hooks run on every Write/Edit oper...   | S2       | process       |
+| DEBT-2747 | Session-start timeout risks in low-bandwidth environments      | S2       | code-quality  |
+| DEBT-2802 | useDailyQuote hook has smart module-level caching prevent...   | S2       | code-quality  |
 | DEBT-0787 | Template docs located outside docs/templates/ directory        | S3       | code-quality  |
 | DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes...   | S3       | code-quality  |
 | DEBT-1995 | No UI indicator for online/offline state                       | S3       | code-quality  |

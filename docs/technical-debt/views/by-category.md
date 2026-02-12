@@ -1776,7 +1776,7 @@
 | DEBT-0811 | Image optimization disabled (unoptimized: true)              | S3       | next.config.mjs                          | 14   |
 | DEBT-0858 | useJournal creates redundant auth listener + potential me... | S0       | hooks/use-journal.ts                     | 0    |
 
-## process (329)
+## process (330)
 
 | ID        | Title                                                         | Severity | File                                                | Line |
 | --------- | ------------------------------------------------------------- | -------- | --------------------------------------------------- | ---- |
@@ -1940,6 +1940,7 @@
 | DEBT-2739 | Duplicated: ALLOWED_PATHS pattern matching across hooks       | S2       | .claude/hooks/firestore-write-block.js              | 30   |
 | DEBT-2741 | Duplicated: Pattern check implementation between hook and...  | S2       | .claude/hooks/pattern-check.js                      | 1    |
 | DEBT-2742 | Duplicated: Validation between validate-audit.js and vali...  | S2       | scripts/validate-audit.js                           | 1    |
+| DEBT-2803 | Consolidate regex pattern linter into ESLint plugin           | S2       | scripts/check-pattern-compliance.js                 | 0    |
 | DEBT-0812 | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                     | 36   |
 | DEBT-0813 | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                   | 21   |
 | DEBT-0814 | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                      | 245  |

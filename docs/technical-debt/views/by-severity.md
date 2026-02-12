@@ -434,7 +434,7 @@
 | DEBT-2732 | Duplicated: Path validation logic across 16+ hooks            | .claude/hooks/check-edit-requirements.js                                     | 18   | process                  | E2     |
 | DEBT-2740 | Duplicated: check-edit-requirements and check-write-requi...  | .claude/hooks/check-edit-requirements.js                                     | 1    | process                  | E2     |
 
-## S2 - Medium (956)
+## S2 - Medium (957)
 
 | ID        | Title                                                          | File                                                                         | Line | Category      | Effort |
 | --------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---- | ------------- | ------ |
@@ -1394,6 +1394,7 @@
 | DEBT-2800 | Collocate related quote components - 3 variants scattered...   | 1                                                                            | 0    | code-quality  | E3     |
 | DEBT-2801 | Standardize export style - 38 default vs 69 named exports...   | multiple                                                                     | 0    | code-quality  | E1     |
 | DEBT-2802 | useDailyQuote hook has smart module-level caching prevent...   | 1                                                                            | 0    | code-quality  | E0     |
+| DEBT-2803 | Consolidate regex pattern linter into ESLint plugin            | scripts/check-pattern-compliance.js                                          | 0    | process       | E3     |
 
 ## S3 - Low (807)
 
