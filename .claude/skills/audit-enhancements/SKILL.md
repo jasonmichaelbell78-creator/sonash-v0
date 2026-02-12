@@ -1,19 +1,16 @@
+---
+name: audit-enhancements
+description:
+  Run a comprehensive enhancement audit across the entire project - code,
+  product, UX, content, workflows, infrastructure, external services, and
+  meta-tooling.
+---
+
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-11
+**Document Version:** 1.1
+**Last Updated:** 2026-02-12
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
-
----
-
-name: audit-enhancements description: Run a comprehensive enhancement audit
-across the entire project - code, product, UX, content, workflows,
-infrastructure, external services, and meta-tooling supports_parallel: true
-fallback_available: true estimated_time_parallel: 30-60 min (Phases 1-3),
-variable (Phase 4 interactive) estimated_time_sequential: 2-4 hours trigger:
-manual session_scope: multi-session
-
----
 
 # Enhancement Audit
 
@@ -37,7 +34,7 @@ Phase 1: Broad Scan (8 parallel agents, one per domain)
   → Each agent surveys its domain, produces preliminary findings
   → Output: stage-1-*.jsonl (preliminary findings per domain)
 
-Phase 2: Deep Dive (N targeted agents based on Phase 1 results)
+Phase 2: Deep Dive (OPT-IN — user decides after seeing Phase 1 results)
   → Agents spawned for top-opportunity areas identified in Phase 1
   → Includes competitor/peer benchmarking via web search
   → Output: stage-2-*.jsonl (deep findings with full schema)
@@ -99,6 +96,10 @@ wc -l docs/technical-debt/MASTER_DEBT.jsonl
 ---
 
 ## Phase 1: Broad Scan — 8 Parallel Agents
+
+**CRITICAL: Agent Type Selection** — Use `subagent_type: "general-purpose"` (NOT
+`Explore`). Explore agents are READ-ONLY and cannot write the required JSONL
+output files. All Phase 1 agents must write findings to disk.
 
 Invoke all 8 agents in a SINGLE Task message. Each agent writes findings to
 `${AUDIT_DIR}/stage-1-{domain}.jsonl`.
@@ -237,7 +238,7 @@ EVIDENCE REQUIREMENT: Every finding needs a concrete file path and specific indi
 
 OUTPUT FORMAT: Write findings to ${AUDIT_DIR}/stage-1-{domain}.jsonl
 One JSON object per line, with these fields:
-- category, title, fingerprint, impact (I0-I3), effort (E0-E3), confidence (0-100)
+- category, title, fingerprint, impact (I0-I3, see calibration below), effort (E0-E3), confidence (0-100)
 - files (array of file:line refs)
 - current_approach (what exists now and why)
 - proposed_outcome (what the improved version looks like)
@@ -250,6 +251,22 @@ ALSO OUTPUT: A "strengths" section at the end of your findings:
 
 WRITE ALL OUTPUT TO FILES. Never rely on conversation context.
 ```
+
+### Impact Scale Calibration
+
+Use these codebase-specific examples to calibrate impact ratings. Agents tend to
+over-rate impact — use these as anchors:
+
+| Impact | Definition                  | Example in This Codebase                                    |
+| ------ | --------------------------- | ----------------------------------------------------------- |
+| I0     | Transformative / structural | Migrate from Firebase to Supabase; rewrite auth system      |
+| I1     | Significant improvement     | Add ARIA labels to nav tabs; consolidate security docs      |
+| I2     | Moderate quality-of-life    | Standardize date formats; replace generic button labels     |
+| I3     | Minor polish                | Consistent loading text; keyboard shortcuts for power users |
+
+**Rule of thumb**: If the change affects a single file or a small utility, it's
+I2 or I3. I0 is reserved for changes that would require a new milestone or
+architectural rethink. Most findings should be I1 or I2.
 
 ### Phase 1 Verification
 
@@ -269,13 +286,18 @@ Re-run any failed agents before proceeding.
 
 ---
 
-## Phase 2: Deep Dive — Adaptive Agents
+## Phase 2: Deep Dive — Adaptive Agents (Opt-In)
 
-After Phase 1 completes:
+**This phase is opt-in.** After Phase 1 completes, present results to the user
+before spawning any deep-dive agents:
 
-1. **Rank findings**: Read all stage-1 JSONL files, rank by impact potential
+1. **Summarize Phase 1 results**: Show finding count by domain and impact tier
 2. **Identify clusters**: Group findings into 5-8 opportunity clusters
-3. **Spawn deep-dive agents**: One per cluster
+3. **Ask the user**: "Phase 1 found N findings across M domains. Would you like
+   to run Phase 2 deep-dive agents on the top clusters, or skip to Phase 3
+   synthesis and go straight to review?"
+4. **If user opts in**: Spawn deep-dive agents per cluster
+5. **If user skips**: Proceed directly to Phase 3 with Phase 1 findings only
 
 Deep-dive agents produce full-schema findings with:
 
@@ -359,56 +381,62 @@ Sequential process (1-2 agents):
 
 ## Phase 4: Interactive Review
 
-Present each finding one-by-one to the user:
+### Presentation Format
+
+Present findings in **batches of 3-5 items**, grouped by impact tier (I0 first,
+then I1, I2, I3). Within each tier, group by category for coherence. Each batch
+shows full detail for every item:
 
 ```markdown
-## Finding ENH-XXXX: [Title]
+## I1 Batch 1: [Category Group] (N items)
+
+### ENH-XXXX: [Title]
 
 **Impact:** I1 | **Effort:** E2 | **Confidence:** 85% **Category:**
 app-architecture
 
-### Current Approach
-
-[What exists now and why]
-
-### Proposed Improvement
-
-[What it would look like]
-
-### Why It Matters
-
-[The benefit]
-
-### Counter-Argument
-
-[Why NOT to do this]
-
-### Concrete Alternatives
-
-- [Alternative 1 with brief description]
-- [Alternative 2 with brief description]
-
-### Related TDMS Items
-
-- DEBT-0123: [Title]
-
-### Risk Assessment
-
-[What could go wrong]
+**Current Approach:** [What exists now and why] **Proposed Improvement:** [What
+it would look like] **Why It Matters:** [The benefit] **Counter-Argument:** [Why
+NOT to do this]
 
 ---
 
-**Decision:** ACCEPT / DECLINE / DEFER / DISCUSS
+### ENH-YYYY: [Title]
+
+[... same format ...]
+
+---
+
+**Decisions for this batch:** ACCEPT / DECLINE / DEFER each item
 ```
 
-After each decision:
+Do NOT present all items in a tier at once — batches of 3-5 keep decisions
+manageable. Wait for the user's decisions on each batch before presenting the
+next.
 
-- Run:
+### Processing Decisions
+
+After each batch of decisions:
+
+- Run `resolve-item.js` for each item:
   `node scripts/improvements/resolve-item.js ENH-XXXX --action {accept|decline|defer} --reason "{user's reason}"`
-- If ACCEPTED: ask about roadmap placement
 - If DECLINED: record reason
 - If DEFERRED: mark for re-evaluation
-- Save state to MCP memory after each batch of decisions
+- Save state to MCP memory after each batch
+
+### Post-Review: Roadmap Placement
+
+After ALL findings have been reviewed (not per-item), present accepted items as
+a batch for roadmap placement:
+
+1. List all ACCEPTED items with their impact/effort ratings
+2. Propose placement in ROADMAP.md sections based on effort and category:
+   - E0 items → current Quick Wins milestone
+   - E1 items → current or next milestone
+   - E2+ items → appropriate future milestone
+3. Get user confirmation on all placements at once
+4. Apply roadmap edits in a single pass
+5. Check for duplicate findings among accepted items and offer to merge
 
 ---
 
@@ -481,6 +509,12 @@ mcp__memory__create_entities({
    and under-consolidation ("keep everything separate") are evaluated on merit.
    No default direction.
 
+6. **Semantic dedup on proposed_outcome**: During Phase 3 synthesis, check for
+   findings with different `fingerprint` values but semantically similar
+   `proposed_outcome` text. Two findings that propose the same fix (e.g.,
+   "remove duplicate pattern check from pre-push") should be merged even if
+   discovered by different domain agents with different titles.
+
 ---
 
 ## Persistence Rules
@@ -501,6 +535,22 @@ mcp__memory__create_entities({
 3. Generate views: `node scripts/improvements/generate-views.js`
 4. Save final state to MCP memory
 5. Display summary to user with link to ENHANCEMENT_AUDIT_REPORT.md
+
+### Pre-Commit Compatibility
+
+Enhancement audit JSONL files (stage-1-\*.jsonl, merged-all.jsonl) use a
+different schema than strict audit JSONL files (MASTER_DEBT.jsonl). The S0/S1
+audit validation hook will flag these as missing required fields.
+
+**When committing audit artifacts**, use:
+
+```bash
+SKIP_AUDIT_VALIDATION=1 git commit -m "audit(enhancements): ..."
+```
+
+This is expected and safe — enhancement findings are ingested into
+MASTER_IMPROVEMENTS.jsonl (which has its own schema validation), not
+MASTER_DEBT.jsonl.
 
 ---
 

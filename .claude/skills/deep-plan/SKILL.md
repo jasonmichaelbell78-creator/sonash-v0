@@ -1,20 +1,16 @@
+---
+name: deep-plan
+description:
+  Structured discovery-first planning for complex tasks. Ask exhaustive
+  categorized questions, build a decision record, then produce a detailed
+  implementation plan for user approval before any code is written.
+---
+
 <!-- prettier-ignore-start -->
 **Document Version:** 1.0
 **Last Updated:** 2026-02-11
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
-
----
-
-name: deep-plan description: Structured discovery-first planning for complex
-tasks. Ask exhaustive categorized questions, build a decision record, then
-produce a detailed implementation plan for user approval before any code is
-written. This skill should be used when the user explicitly invokes /deep-plan,
-when they ask for thorough planning with lots of questions, or when a task is
-ambiguous enough that 2-3 questions would not be sufficient to produce a quality
-plan.
-
----
 
 # Deep Plan
 

@@ -631,13 +631,20 @@ addressing PR feedback.
 
 The pre-push hook (`.husky/pre-push`) performs final validation:
 
-| Step               | Command                        | Blocking?         |
-| ------------------ | ------------------------------ | ----------------- |
-| Tests              | `npm test`                     | YES - blocks push |
-| Circular deps      | `npm run deps:circular`        | YES - blocks push |
-| Pattern compliance | `npm run patterns:check`       | YES - blocks push |
-| Type check         | `npx tsc --noEmit`             | YES - blocks push |
-| Security audit     | `npm audit --audit-level=high` | NO - warning only |
+| Step               | Command                          | Blocking?         |
+| ------------------ | -------------------------------- | ----------------- |
+| Tests              | `npm test`                       | YES - blocks push |
+| Circular deps      | `npm run deps:circular`          | YES - blocks push |
+| Pattern compliance | `npm run patterns:check`         | YES - blocks push |
+| Code-reviewer gate | Checks `agent-invocations.jsonl` | YES - blocks push |
+| Security patterns  | `security-check.js --blocking`   | YES - blocks push |
+| Type check         | `npx tsc --noEmit`               | YES - blocks push |
+| Security audit     | `npm audit --audit-level=high`   | NO - warning only |
+| Event triggers     | `npm run triggers:check`         | Conditional       |
+
+**Code-reviewer gate** (Session #151): If scripts/hooks/husky files changed,
+blocks push unless code-reviewer agent was invoked this session. Bypass with
+`SKIP_REVIEWER=1 git push`.
 
 **Security Audit**: Checks for high/critical vulnerabilities in dependencies.
 Non-blocking warning - reports issues but doesn't prevent push.

@@ -2,7 +2,7 @@
 
 **Document Version**: 4.0 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-11 (Session #149)
+2026-02-12 (Session #151)
 
 ## AI Instructions
 
@@ -69,7 +69,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 150 (since Jan 1, 2026)
+**Current Session Count**: 151 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -78,6 +78,19 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 ---
 
 ## Recent Session Summaries
+
+**Session #151 Summary** (ENHANCEMENT AUDIT + PR CHURN REDUCTION + SKILL
+IMPROVEMENTS):
+
+- PR review churn reduction system (6-step implementation)
+- Graduation system 4-hour grace period for hook self-escalation
+- Enhancement audit: Phase 1-4 complete — 61 findings, 9 accepted, 51 declined
+- Placed 9 accepted items in ROADMAP.md (M1.5, M1.6, Operational Visibility,
+  GRAND PLAN, M2)
+- Merged duplicate findings ENH-0024/ENH-0063
+- audit-enhancements SKILL.md v1.1: 6 improvements (batch size, roadmap
+  placement, dedup, impact calibration, Phase 2 opt-in, pre-commit
+  compatibility)
 
 **Session #150 Summary** (SKILL CREATION + SESSION CLEANUP + PR REVIEW):
 
@@ -94,23 +107,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - Session infrastructure improvements (archival, hooks, automation audit)
 - IMS (Improvement Management System) scaffolding + audit-enhancements skill
 - Auto-regenerate doc index timing race fix in pre-commit hook
-
-**Session #148 Summary** (GRAND PLAN SPRINT 3 + PR REVIEWS + CONSOLIDATION):
-
-- Executed Sprint 3: 4 waves, ~241 items across ~25 files in .claude/ + docs/
-- Wave 1: Shell linting fixes (6 .sh files) - bracket syntax, exit 0
-- Wave 2: JS hook quality (18 files) - safe err.message, atomic writes
-- Wave 3: SKILL.md documentation (6 files) - broken links, templates
-- Wave 4: Root + docs/ markdown (5 files) - anchors, stale refs
-- PR #359 created, 2 rounds of review feedback fixed (Reviews #283, #284)
-- Consolidation #18: Reviews #266-284 -> 7 new patterns in CODE_PATTERNS.md v2.7
-- GRAND PLAN progress: ~68% (1,176/1,727 items across Sprints 1-3)
-
-**TODO (tomorrow):**
-
-- Set up GitHub repository variables (Settings -> Secrets and variables ->
-  Variables) for `NEXT_PUBLIC_FIREBASE_*` values. The preview deploy workflow
-  now uses `vars.*` instead of `secrets.*` for these public config values.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -130,7 +126,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/new-session-NgVGX`
+**Current Branch**: `claude/analyze-repo-install-ceMkn`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
@@ -166,6 +162,14 @@ Choose from:
 5. Implement and commit with review summary
 
 **Last Processed**: 2026-02-11 (Reviews #283-284: PR #359 feedback)
+
+---
+
+## Pending Manual Actions
+
+- Set up GitHub repository variables (Settings -> Secrets and variables ->
+  Variables) for `NEXT_PUBLIC_FIREBASE_*` values. The preview deploy workflow
+  now uses `vars.*` instead of `secrets.*` for these public config values.
 
 ---
 
@@ -222,9 +226,9 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------- | ------ |
+| 4.1     | 2026-02-12 | Session #151: Enhancement audit + skill improvements     | Claude |
 | 4.0     | 2026-02-11 | Session #149: Major refactor - archived history, trimmed | Claude |
 | 3.61    | 2026-02-11 | Session #149: Counter increment                          | Claude |
-| 3.60    | 2026-02-11 | Session #148: GRAND PLAN Sprint 3 + Consolidation #18    | Claude |
 
 > For older version history, see
 > [SESSION_HISTORY.md](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)

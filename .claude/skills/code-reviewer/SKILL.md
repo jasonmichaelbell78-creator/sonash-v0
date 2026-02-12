@@ -152,6 +152,23 @@ Technical reference guide in `references/common_antipatterns.md`:
 - Security considerations
 - Scalability guidelines
 
+### Script-Specific Checklist (SoNash)
+
+When reviewing scripts in `scripts/`, `.claude/hooks/`, or `.husky/`:
+
+1. **File I/O**: All `readFileSync`/`writeFileSync` wrapped in try/catch?
+2. **Error handling**: Using `sanitizeError()` not raw `err.message`?
+3. **Path safety**: Using `validatePathInDir()` or regex check, not
+   `startsWith("..")`?
+4. **Symlinks**: Using `lstatSync()` before `statSync()`?
+5. **Atomic writes**: Using tmp+rename pattern for critical state files?
+6. **Regex safety**: No `/g` with `.test()`? No unbounded `.*`?
+7. **Git commands**: Using `--` separator before file arguments?
+8. **Prototype pollution**: Using `safeCloneObject()` for parsed JSON?
+9. **Silent catches**: No empty `catch {}` blocks?
+10. **Fix templates**: Check `docs/agent_docs/FIX_TEMPLATES.md` for standard
+    fixes
+
 ## Tech Stack
 
 **Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin **Frontend:**

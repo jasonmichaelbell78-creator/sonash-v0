@@ -349,9 +349,12 @@ routing, or shadcn/ui components - not for simple single-file HTML/JSX artifacts
 
 **Description:** Comprehensive code review for TypeScript, JavaScript, Python,
 Swift, Kotlin, Go. Automated analysis, best practices, security scanning, review
-checklist generation **When to use:** Reviewing PRs, providing code feedback,
-identifying issues, ensuring quality standards **Example:** After completing
-feature implementation **Parameters:** None (invoked by AI when appropriate)
+checklist generation. Includes script-specific checklist (10-point) referencing
+FIX_TEMPLATES.md for standardized fixes. **When to use:** Reviewing PRs,
+providing code feedback, identifying issues, ensuring quality standards.
+Required by pre-push gate when scripts/hooks/husky files change. **Example:**
+After completing feature implementation **Parameters:** None (invoked by AI when
+appropriate)
 
 #### `frontend-design`
 

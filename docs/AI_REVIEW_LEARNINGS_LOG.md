@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-11
+**Document Version:** 16.9 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
 
 ## Purpose
 
@@ -28,6 +28,9 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.9    | 2026-02-12 | Review #304: PR #361 R5 — State wipe prevention (null-aware save), dir symlink guards (both files), isSymlink try/catch, ESLint fixer return removal, null title guard. Consolidation counter 14→15. Active reviews #266-304.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 16.8    | 2026-02-12 | Review #303: PR #361 R4 — TOCTOU symlink fix (lstatSync direct), corrupt state guard (null return), cognitive complexity extraction (tryUnlink/isSymlink helpers), `exclude`→`pathExclude` bug fix, non-destructive ESLint suggestion, verbose crash prevention. Consolidation counter 13→14. Active reviews #266-303.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| 16.7    | 2026-02-12 | Review #302: PR #361 R3 — Symlink clobber guards, backup-and-replace writes, BOM stripping, ESLint loc fallback, O(n) TOCTOU index, verbose match truncation. Skill update: #TBD deferred numbering to prevent review number collisions. Consolidation counter 12→13. Active reviews #266-302.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.6    | 2026-02-11 | Review #294: PR #360 R12 — CI fix: eslint-disable block for control-char regex, sanitizeLogSnippet extraction, BiDi control strip, escapeMarkdown String coercion + \r\n, valid-only ENH-ID idMap, TOCTOU symlink recheck before unlink, EEXIST recovery for resolve-item, strict digits-only line parsing, decoupled log/review writes, toLineNumber reject 0/negative, Windows-safe metrics rename. Active reviews #266-294.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.5    | 2026-02-11 | Review #293: PR #360 R11 — Markdown injection (HTML strip in escapeMarkdown), stale temp EEXIST recovery, safeCloneObject throw on deep nesting + module-scope in dedup, deduped.jsonl non-fatal write, non-critical log/review write guard, safeCloneObject for MASTER_DEBT.jsonl, terminal escape sanitization, robust line number sanitization, Windows-safe unlink-before-rename, schema config validation. Active reviews #266-293.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 16.4    | 2026-02-11 | Review #292: PR #360 R10 — assertNotSymlink fail-closed (rethrow unknown errors, all 5 files), safeCloneObject in resolve-item.js + validate-schema.js, temp-file symlink+wx flag (dedup-multi-pass.js + generate-views.js), atomic writes for metrics.json + METRICS.md, atomic rollback restore, existingEvidence sanitization, line number validation, Pass 2 DoS cap (5000 items), dedup run_metadata audit trail, pipeline write error handling. Active reviews #266-292.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -333,9 +336,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #299 Reviews
-#266-284)
+**Reviews since last consolidation:** 15 **Consolidation threshold:** 10 reviews
+**Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** NOW (Reviews
+#290-#301, 12 reviews since consolidation #17)
 
 ### When to Consolidate
 
@@ -357,8 +360,8 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-02-11 (Session #114+)
-- **Reviews consolidated:** #268-#289 (11 reviews)
+- **Date:** 2026-02-11 (Session #150)
+- **Reviews consolidated:** #268-#289 (22 reviews)
 - **Patterns added to CODE_PATTERNS.md v2.6:**
   - **Security (4 patterns):**
     - PII in audit reports (hashed identifiers)
@@ -530,7 +533,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 0     | <10    | ✅     |
+| Reviews since last consolidation | 15    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -686,7 +689,201 @@ _Reviews #137-179 have been archived to
 
 ---
 
-#### Review #285: PR #359 R3 — Windows Atomic Writes, Null State Dir, Evidence Dedup (2026-02-11)
+#### Review #304: PR #361 R5 — State Wipe Prevention, Dir Symlink Guard, Fixer Safety (2026-02-12)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + SonarCloud **PR/Branch:**
+PR #361 (claude/analyze-repo-install-ceMkn) **Suggestions:** ~22 total (6 new
+fixes, 5+ repeats rejected, rest compliance notes)
+
+**Patterns Identified:**
+
+1. Corrupt state wipe: loadWarnedFiles null + saveWarnedFiles overwrite = data
+   loss
+   - Root cause: applyGraduation saved even when load failed
+   - Prevention: Track null vs {} separately, skip save on null
+2. Directory-level symlink attacks: checking files but not parent dir
+   - Root cause: Only file-level symlink check, dir can also be a symlink
+   - Prevention: Check dir with isSymlink() before mkdirSync/writes
+
+**Resolution:**
+
+- Fixed: 6 items (state wipe prevention, dir symlink x2, isSymlink try/catch,
+  ESLint fixer return removal, null title guard)
+- Rejected: 16 items (repeats: String.raw, regex 38, i assignment, catch naming,
+  empty catch; compliance notes: acceptable risk for local dev tool)
+
+**Key Learnings:**
+
+- When loadWarnedFiles returns null (corruption), caller must NOT overwrite
+- Directory symlinks are as dangerous as file symlinks
+- ESLint auto-fix `return;` is invalid outside functions — use empty TODO block
+
+---
+
+#### Review #303: PR #361 R4 — TOCTOU Symlink, Corrupt State Guard, Cognitive Complexity, Bug Fix (2026-02-12)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + SonarCloud **PR/Branch:**
+PR #361 (claude/analyze-repo-install-ceMkn) **Suggestions:** 20 total (Critical:
+1, Major: 2, Minor: 7, Trivial: 5, Rejected: 5)
+
+**Patterns Identified:**
+
+1. TOCTOU in symlink check: existsSync before lstatSync is racy
+   - Root cause: check-then-use pattern on filesystem
+   - Prevention: Call lstatSync directly, handle ENOENT in catch
+2. Corrupt state wipes graduation history: loadWarnedFiles returned {} on parse
+   error
+   - Root cause: Same fallback for "no file" and "corrupt file"
+   - Prevention: Return null for corruption, {} for ENOENT, caller uses ??
+3. `exclude` vs `pathExclude` property name bug in writefile-missing-encoding
+   - Root cause: Copy-paste from different pattern format
+   - Prevention: Schema validation for pattern definitions
+
+**Resolution:**
+
+- Fixed: 10 items
+- Rejected: 5 items (String.raw x2, regex 38, i assignment x2 — repeats from
+  R2/R3)
+
+**Key Learnings:**
+
+- existsSync+lstatSync is itself a TOCTOU; call lstatSync directly
+- Extract helpers (tryUnlink, isSymlink) to reduce cognitive complexity
+- Property name typos in config objects are silent bugs
+
+---
+
+#### Review #302: PR #361 R3 — Symlink Clobber, Backup-and-Replace, ESLint Loc Fallback, O(n) Index (2026-02-12)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + SonarCloud **PR/Branch:**
+PR #361 (claude/analyze-repo-install-ceMkn) **Suggestions:** 14 total (Critical:
+0, Major: 3, Minor: 6, Trivial: 1, Rejected: 4)
+
+**Patterns Identified:**
+
+1. Symlink clobber on state writes: `saveWarnedFiles` and `appendMetrics` wrote
+   to fixed paths without verifying they're not symlinks
+   - Root cause: mkdirSync + writeFileSync pattern doesn't check symlinks
+   - Prevention: Always lstatSync before writing to verify not a symlink
+2. State loss on failed rename: delete-then-rename loses data if rename fails
+   - Root cause: unlinkSync before renameSync is not atomic
+   - Prevention: backup-and-replace pattern (rename old to .bak, rename new,
+     delete .bak)
+3. ESLint fixer crash without loc: `target.loc.start.column` crashes if loc
+   missing
+   - Root cause: Some parsers don't populate loc
+   - Prevention: Always guard with `target.loc ? ... : fallback`
+
+**Resolution:**
+
+- Fixed: 10 items (3 MAJOR, 6 MINOR, 1 TRIVIAL)
+- Rejected: 4 items (String.raw x2 = regex false positives, regex complexity 38
+  = kept for detection accuracy, i assignment x2 = intentional skip behavior)
+
+**Key Learnings:**
+
+- Our own BOM-handling pattern checker missed our own new code (ironic)
+- Backup-and-replace is safer than delete-then-rename for atomic writes on
+  Windows
+- O(n^2) nested loop in TOCTOU rule indexed to O(n) with Map
+
+---
+
+#### Review #299: PR #361 R2 — Cognitive Complexity, ESLint Fixer Safety, Cross-Platform Fixes (2026-02-12)
+
+**Source:** SonarCloud + Qodo Code Suggestions **PR/Branch:** PR #361
+(claude/analyze-repo-install-ceMkn) **Suggestions:** 23 total (Critical: 3,
+Major: 10, Minor: 10)
+
+**Patterns Identified:**
+
+1. Cognitive complexity extraction: SonarCloud flags functions at CC 16-17
+   (threshold 15)
+   - Root cause: Mixed concerns in single functions (formatting + logic + I/O)
+   - Prevention: Extract formatting helpers (formatResultRow, printViolation,
+     printSummaryFooter)
+2. ESLint auto-fixer scope safety: VariableDeclaration wrapping changes variable
+   scope
+   - Root cause: Auto-fix assumed all statements could be wrapped in try/catch
+   - Prevention: Only auto-fix ExpressionStatements, return null for others
+3. Cross-platform atomic rename: renameSync fails on Windows if destination
+   exists
+   - Root cause: POSIX rename is atomic, Windows rename requires destination
+     removal
+   - Prevention: unlinkSync destination before renameSync
+4. Path normalization for state tracking: backslash vs forward slash
+   inconsistency
+   - Root cause: Windows paths use backslash, state keys stored with mixed
+     separators
+   - Prevention: Normalize with replaceAll("\\", "/") before key creation
+5. Parser-agnostic AST node positioning: ESLint rules using deprecated
+   node.start/end
+   - Root cause: Different parsers provide range or loc but not both
+   - Prevention: Check range first, fall back to loc-based calculation
+6. String.raw SonarCloud findings: False positive on regex literal `[\\/]`
+   - Root cause: SonarCloud can't distinguish regex escapes from string escapes
+   - Resolution: Reviewed-safe (regex literals, not template strings)
+
+**Resolution:**
+
+- Fixed: 18 items
+- Reviewed-safe: 5 (3 regex complexity in detection patterns, 2 String.raw false
+  positives)
+
+**Key Learnings:**
+
+- Extract helper functions to reduce cognitive complexity below SonarCloud
+  threshold
+- ESLint auto-fixers must never change variable scope (wrap only
+  ExpressionStatements)
+- Windows needs unlinkSync before renameSync for atomic write pattern
+- Normalize path separators in state tracking keys for cross-platform
+  consistency
+
+---
+
+#### Review #298: PR #361 — Graduation State Safety, Append Flag, JSON Parse Guards (2026-02-12)
+
+**Source:** Qodo Compliance + SonarCloud + Qodo Code Suggestions + Doc Lint
+**PR/Branch:** PR #361 (claude/analyze-repo-install-ceMkn) **Suggestions:** 19
+total (Critical: 0, Major: 5, Minor: 8, Trivial: 4, Deferred: 1)
+
+**Patterns Identified:**
+
+1. TOCTOU in loadWarnedFiles: existsSync + readFileSync race condition
+   - Root cause: Copied common Node.js pattern without thinking about atomicity
+   - Prevention: Direct read in try/catch, check err.code for ENOENT
+2. Non-atomic saveWarnedFiles: writeFileSync without tmp+rename
+   - Root cause: "Best effort" state file didn't seem critical enough for atomic
+   - Prevention: All state files should use atomic write pattern
+3. Unbounded file growth via read+append pattern: readFileSync + writeFileSync
+   - Root cause: Didn't know about `{ flag: 'a' }` option
+   - Prevention: Use append flag for JSONL files
+4. Silent catch blocks in the very file that detects them (ironic)
+   - Root cause: Graduation state is "best effort" but still needs visibility
+   - Prevention: At minimum log with sanitizeError
+5. SonarCloud regex DoS (5 hotspots): Patterns in check-pattern-compliance.js
+   - Assessment: SAFE — inputs are bounded source files, not user input
+   - V8 has backtracking limits; pre-commit has timeout protections
+6. ESLint auto-fix generates swallowed catch blocks
+   - Root cause: Template aimed for minimal disruption, too minimal
+   - Prevention: Auto-fix should re-throw to preserve failure behavior
+
+**Resolution:**
+
+- Fixed: 17 items
+- Deferred: 1 item (consolidate regex linter into ESLint — architectural scope)
+- Reviewed-Safe: 5 SonarCloud regex hotspots (bounded input, not user-facing)
+
+**Key Learnings:**
+
+- State persistence code needs the same rigor as production code
+- Pattern checker should eat its own dog food (practice what it preaches)
+- JSONL append: use `{ flag: 'a' }` not read+concatenate+write
+
+---
+
+#### Review #297: PR #359 R3 — Windows Atomic Writes, Null State Dir, Evidence Dedup (2026-02-11)
 
 **Source:** Qodo Code Suggestions **PR/Branch:** PR #359
 (claude/analyze-repo-install-ceMkn) **Suggestions:** 11 total (Critical: 0,
@@ -716,7 +913,7 @@ Major: 0, Medium: 8, Low: 3)
 
 ---
 
-#### Review #284: PR #359 R2 — Path Redaction, Atomic Writes, State Dir Fallback (2026-02-10)
+#### Review #296: PR #359 R2 — Path Redaction, Atomic Writes, State Dir Fallback (2026-02-10)
 
 **Source:** Qodo Compliance + Code Suggestions **PR/Branch:** PR #359
 (claude/analyze-repo-install-ceMkn) **Suggestions:** 7 total (Critical: 0,
@@ -748,7 +945,7 @@ Major: 2, Minor: 5, Trivial: 0)
 
 ---
 
-#### Review #283: PR #359 — Unsafe err.message, Silent Catches, Full Filepath Logging (2026-02-10)
+#### Review #295: PR #359 — Unsafe err.message, Silent Catches, Full Filepath Logging (2026-02-10)
 
 **Source:** SonarCloud + Qodo + CI Pattern Compliance **PR/Branch:** PR #359
 (claude/analyze-repo-install-ceMkn) **Suggestions:** 15 total (Critical: 9,
@@ -1901,7 +2098,7 @@ claude/cherry-pick-commits-yLnZV (PR #347) **Suggestions:** 4 total (Critical:
 
 ---
 
-#### Review #266: PR #351 ROADMAP Cleanup - CI + Qodo + SonarCloud (2026-02-08)
+#### Review #300: PR #351 ROADMAP Cleanup - CI + Qodo + SonarCloud (2026-02-08)
 
 **Source:** Mixed (CI failures, Qodo PR Suggestions, SonarCloud S5852)
 **PR/Branch:** claude/cherry-pick-commits-yLnZV (PR #351) **Suggestions:** 10
@@ -3579,12 +3776,12 @@ Major: 12, Minor: 8, Trivial: 2, Rejected: 2)
 <!--
 Next review entry will go here. Use format:
 
-#### Review #260: PR #XXX Title - Review Source (DATE)
+#### Review #NNN: PR #XXX Title - Review Source (DATE)
 
 
 -->
 
-#### Review #255: PR #342 Multi-AI Audit Data Quality - Doc Lint + Qodo (2026-02-06)
+#### Review #301: PR #342 Multi-AI Audit Data Quality - Doc Lint + Qodo (2026-02-06)
 
 **Source:** Doc Lint + Qodo Code Suggestions **PR/Branch:**
 claude/cherry-pick-commits-yLnZV (PR #342) **Suggestions:** 18 total (Doc Lint:

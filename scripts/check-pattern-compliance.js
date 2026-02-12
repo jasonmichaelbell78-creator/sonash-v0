@@ -19,7 +19,16 @@
  * Exit codes: 0 = no violations, 1 = violations found, 2 = error
  */
 
-import { readFileSync, existsSync, readdirSync, lstatSync } from "node:fs";
+import {
+  readFileSync,
+  existsSync,
+  readdirSync,
+  lstatSync,
+  writeFileSync,
+  mkdirSync,
+  renameSync,
+  unlinkSync,
+} from "node:fs";
 import { join, dirname, extname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
@@ -40,6 +49,90 @@ try {
   const msg = err instanceof Error ? err.message : String(err);
   console.error(`Error: failed to load verified-patterns config: ${msg}`);
   process.exit(2);
+}
+
+// Graduation system: warn once per file, block on repeat
+// State file tracks which files have been warned for which patterns
+const WARNED_FILES_PATH = join(ROOT, ".claude", "state", "warned-files.json");
+
+function loadWarnedFiles() {
+  try {
+    const raw = readFileSync(WARNED_FILES_PATH, "utf-8").replace(/^\uFEFF/, "");
+    return JSON.parse(raw);
+  } catch (err) {
+    const code = err && typeof err === "object" && "code" in err ? err.code : null;
+    if (code === "ENOENT") return {};
+    // Non-ENOENT error (corrupt file, permission issue) — return null
+    // so caller preserves existing state instead of wiping it
+    console.warn(`Warning: could not load pattern warning state: ${sanitizeError(err)}`);
+    return null;
+  }
+}
+
+/**
+ * Best-effort file removal (swallows errors).
+ */
+function tryUnlink(filePath) {
+  try {
+    if (existsSync(filePath)) unlinkSync(filePath);
+  } catch (_err) {
+    // Best-effort — ignore failures
+  }
+}
+
+/**
+ * Check if a path is a symlink (returns false if path doesn't exist).
+ */
+function isSymlink(filePath) {
+  try {
+    return existsSync(filePath) && lstatSync(filePath).isSymbolicLink();
+  } catch (_err) {
+    return false;
+  }
+}
+
+function saveWarnedFiles(warned) {
+  const dir = dirname(WARNED_FILES_PATH);
+  const tmpPath = WARNED_FILES_PATH + `.tmp.${process.pid}`;
+  const bakPath = WARNED_FILES_PATH + `.bak.${process.pid}`;
+
+  try {
+    // Refuse if state directory is a symlink
+    if (isSymlink(dir)) {
+      console.warn("Warning: state directory is a symlink — refusing to write");
+      return;
+    }
+
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+
+    // Verify target and tmp are not symlinks (prevent symlink-clobber attacks)
+    if (isSymlink(WARNED_FILES_PATH) || isSymlink(tmpPath)) {
+      console.warn("Warning: state file or tmp is a symlink — refusing to write");
+      return;
+    }
+
+    writeFileSync(tmpPath, JSON.stringify(warned, null, 2), "utf-8");
+
+    // Backup-and-replace: rename existing to .bak, then swap in new file
+    try {
+      if (existsSync(WARNED_FILES_PATH)) renameSync(WARNED_FILES_PATH, bakPath);
+    } catch (_err) {
+      // If backup fails, proceed; renameSync may still work
+    }
+
+    renameSync(tmpPath, WARNED_FILES_PATH);
+    tryUnlink(bakPath);
+  } catch (err) {
+    tryUnlink(tmpPath);
+    // Restore backup if destination is gone
+    try {
+      if (existsSync(bakPath) && !existsSync(WARNED_FILES_PATH))
+        renameSync(bakPath, WARNED_FILES_PATH);
+    } catch (_err) {
+      // Best-effort restore
+    }
+    console.warn(`Warning: could not save pattern warning state: ${sanitizeError(err)}`);
+  }
 }
 
 // Parse command line arguments
@@ -476,6 +569,206 @@ const ANTI_PATTERNS = [
     review: "#185, #180-201 (recurring 6x)",
     fileTypes: [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx", ".test.js", ".test.jsx"],
   },
+
+  // --- New patterns from PR Review Churn Analysis (Session #151) ---
+  // These patterns were identified from top 20 Qodo findings across 259 reviews
+
+  // Unguarded loadConfig (15x in reviews)
+  {
+    id: "unguarded-loadconfig",
+    pattern: /\b(?:loadConfig|require)\s*\(\s*['"`][^'"`)]+['"`]\s*\)(?![\s\S]{0,30}catch)/g,
+    message: "loadConfig/require without try/catch - crashes on missing or malformed config",
+    fix: "Wrap in try/catch with graceful fallback or clear error message",
+    review: "#36, #37, Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    // Only check scripts and hooks (not app code where require is standard)
+    pathFilter: /(?:^|\/)(?:scripts|\.claude\/hooks|\.husky)\//,
+    // Exclude files with verified error handling
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|load-config)\.js$/,
+  },
+
+  // Silent catch blocks (11x in reviews)
+  {
+    id: "silent-catch-block",
+    pattern: /catch\s*\(\s*\w*\s*\)\s*\{\s*\}/g,
+    message: "Empty catch block silently swallows errors - hides bugs",
+    fix: "At minimum log the error: catch (err) { console.warn('Context:', sanitizeError(err)); }",
+    review: "#283, #284, Session #151 analysis",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    // Files verified to have intentional empty catches (cleanup code, best-effort ops)
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-helpers)\.js$/,
+  },
+
+  // writeFileSync without atomic write pattern (10x in reviews)
+  {
+    id: "non-atomic-write",
+    pattern: /writeFileSync\s*\([^)]+\)(?![\s\S]{0,80}(?:unlinkSync|renameSync|tmpdir|\.tmp))/g,
+    message: "writeFileSync without atomic write pattern - partial writes on crash corrupt data",
+    fix: "Write to tmp file first, then rename: writeFileSync(path + '.tmp', data); renameSync(path + '.tmp', path);",
+    review: "#284, Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    // Only flag in scripts that write critical state files
+    pathFilter: /(?:^|\/)(?:scripts|\.claude)\//,
+    // Exclude files verified to use atomic writes or where non-atomic is acceptable
+    pathExcludeList: verifiedPatterns["non-atomic-write"] || [],
+  },
+
+  // Prototype pollution via Object.assign on parsed JSON (9x in reviews)
+  {
+    id: "object-assign-parsed-json",
+    pattern:
+      /Object\.assign\s*\(\s*\{\s*\}\s*,\s*(?:JSON\.parse|parsed|item|entry|record|finding|doc)\b/g,
+    message: "Object.assign from parsed JSON can carry __proto__ (prototype pollution)",
+    fix: "Use structuredClone() or filter dangerous keys (__proto__, constructor, prototype)",
+    review: "#283, Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // Unbounded regex quantifiers (8x in reviews)
+  {
+    id: "unbounded-regex-quantifier",
+    pattern: /new\s+RegExp\s*\([^)]*['"`][^'"]*(?:\.\*(?!\?)|\.\+(?!\?))[^'"]*['"`]/g,
+    message: "Unbounded .* or .+ in dynamic RegExp - potential ReDoS or performance issue",
+    fix: "Use bounded quantifiers: [\\s\\S]{0,N}? or .{0,N}? with explicit limits",
+    review: "#53, Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // Missing Array.isArray checks (7x in reviews)
+  {
+    id: "missing-array-isarray",
+    pattern:
+      /(?:\.length\b|\.forEach\s*\(|\.map\s*\(|\.filter\s*\()[\s\S]{0,5}(?![\s\S]{0,100}Array\.isArray)/g,
+    message: "Array method used without Array.isArray guard - crashes on non-array values",
+    fix: "Guard with: if (Array.isArray(data)) { ... } or default: const arr = Array.isArray(x) ? x : [];",
+    review: "Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    // Too many false positives in app code - only check scripts processing external data
+    pathFilter: /(?:^|\/)scripts\/(?:debt|improvements|audits)\//,
+  },
+
+  // Unescaped user input in RegExp constructor (7x in reviews)
+  {
+    id: "unescaped-regexp-input",
+    pattern: /new\s+RegExp\s*\(\s*(?!['"`/])(?:\w+(?:\.\w+)*)\s*[,)]/g,
+    message: "Variable in RegExp constructor without escaping - special chars break regex",
+    fix: "Escape input: new RegExp(str.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&'))",
+    review: "Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // exec() loop without /g flag (6x in reviews)
+  {
+    id: "exec-without-global",
+    pattern: /while\s*\(\s*\(\s*\w+\s*=\s*(?:\w+)\.exec\s*\([^)]+\)\s*\)/g,
+    message: "exec() in while loop requires /g flag - without it, infinite loop",
+    fix: "Ensure regex has /g flag, or use String.prototype.matchAll() instead",
+    review: "#13, #14, Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // Git commands without -- separator (6x in reviews)
+  {
+    id: "git-without-separator",
+    pattern:
+      /exec(?:Sync|FileSync)?\s*\(\s*['"`]git\s+(?:add|rm|checkout|diff|log|show|blame)\b(?![\s\S]{0,100}['"`]\s*--\s*['"`]|['"`],\s*\[[\s\S]{0,200}['"`]--['"`])/g,
+    message: "Git command without -- separator - filenames starting with - are treated as options",
+    fix: "Always use -- before file arguments: git add -- file.txt",
+    review: "#31, #38, Session #151 analysis",
+    fileTypes: [".js", ".ts", ".sh"],
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // JSON.parse without try/catch (5x in reviews)
+  {
+    id: "json-parse-without-try",
+    pattern: /JSON\.parse\s*\(/g,
+    message: "JSON.parse without try/catch - crashes on malformed input",
+    fix: "Wrap in try/catch: try { JSON.parse(str); } catch { /* handle */ }",
+    review: "Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    // Only check scripts processing external/file data (too many false positives elsewhere)
+    pathFilter: /(?:^|\/)(?:scripts|\.claude\/hooks)\//,
+    // Exclude files with verified error handling
+    pathExcludeList: verifiedPatterns["json-parse-without-try"] || [],
+  },
+
+  // process.exit without cleanup (5x in reviews)
+  {
+    id: "process-exit-without-cleanup",
+    pattern: /process\.exit\s*\(\s*[12]\s*\)(?![\s\S]{0,50}finally)/g,
+    message: "process.exit() without cleanup - open handles, temp files may leak",
+    fix: "Use cleanup function before exit, or set process.exitCode and return",
+    review: "Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    // Only flag in scripts with resource management (too noisy otherwise)
+    pathFilter: /(?:^|\/)scripts\/(?:debt|improvements|metrics)\//,
+  },
+
+  // console.error with raw error object (not just .message)
+  {
+    id: "console-error-raw-object",
+    pattern: /console\.(?:error|warn)\s*\(\s*(?:['"`][^'"]*['"`]\s*,\s*)?(?:err|error|e)\s*\)/g,
+    message: "Logging raw error object may expose stack traces and sensitive paths",
+    fix: "Use: console.error('Context:', sanitizeError(err))",
+    review: "#283, #284, Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)(?:scripts|\.claude)\//,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|sanitize-error)\.js$/,
+  },
+
+  // Missing BOM handling for file reads
+  {
+    id: "missing-bom-handling",
+    pattern:
+      /readFileSync\s*\([^)]+,\s*['"`]utf-?8['"`]\s*\)(?![\s\S]{0,50}\.replace\s*\(\s*\/\\uFEFF)/g,
+    message: "UTF-8 file read without BOM stripping - BOM can break JSON.parse and regex",
+    fix: "Add: .replace(/\\uFEFF/g, '') after reading UTF-8 files",
+    review: "Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    // Only flag in scripts reading external/user files
+    pathFilter: /(?:^|\/)scripts\/(?:debt|improvements|audits)\//,
+  },
+
+  // Unbounded file reads (reading entire file into memory)
+  {
+    id: "unbounded-file-read",
+    pattern:
+      /readFileSync\s*\([^)]+\)[\s\S]{0,30}\.split\s*\(\s*['"`]\\n['"`]\s*\)(?![\s\S]{0,50}(?:slice|MAX_LINES))/g,
+    message: "Reading entire file then splitting - may OOM on large files",
+    fix: "Use readline or stream for large files, or add size check: if (stat.size > MAX_SIZE) skip",
+    review: "Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+  },
+
+  // Shell command injection via string concatenation
+  {
+    id: "shell-command-injection",
+    pattern: /exec(?:Sync)?\s*\(\s*(?:`[^`]*\$\{|['"`][^'"]*['"`]\s*\+\s*(?!['"`]))/g,
+    message: "Shell command built with string interpolation - command injection risk",
+    fix: "Use execFileSync with array args: execFileSync('cmd', ['arg1', userInput])",
+    review: "#31, #38, Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // Missing encoding in writeFileSync
+  {
+    id: "writefile-missing-encoding",
+    pattern: /writeFileSync\s*\(\s*[^,]+,\s*[^,]+\s*\)(?!\s*;?\s*\/\/\s*binary)/g,
+    message: "writeFileSync without explicit encoding - defaults to UTF-8 but intent unclear",
+    fix: "Add encoding: writeFileSync(path, data, 'utf-8') or { encoding: 'utf-8' }",
+    review: "Session #151 analysis",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)(?:scripts|\.claude)\//,
+    // Exclude files already using options object with encoding
+    pathExclude: /encoding/,
+  },
 ];
 
 /**
@@ -739,9 +1032,42 @@ function checkFile(filePath) {
 }
 
 /**
+ * Print a single violation entry.
+ */
+function printViolation(v) {
+  const prefix = v.graduated ? "🚫 BLOCK" : "⚠️  WARN";
+  console.log(`   ${prefix} Line ${v.line}: ${v.message}`);
+  console.log(`   ✓ Fix: ${v.fix}`);
+  console.log(`   📚 See: Review ${v.review} in AI_REVIEW_LEARNINGS_LOG.md`);
+  if (VERBOSE) {
+    // Truncate match to avoid leaking full source snippets (may contain secrets/PII)
+    const matchStr = String(v.match ?? "");
+    const match = matchStr.slice(0, 120);
+    console.log(`   Match: ${match}${matchStr.length > 120 ? "..." : ""}`);
+  }
+  console.log("");
+}
+
+/**
+ * Print summary footer with block/warn guidance.
+ */
+function printSummaryFooter(blockCount, warnCount) {
+  console.log("---");
+  if (blockCount > 0) {
+    console.log("🚫 Blocking violations MUST be fixed before committing.");
+    console.log("   These patterns were warned on a previous check and are now enforced.");
+  }
+  if (warnCount > 0) {
+    console.log("⚠️  Warnings are informational on first occurrence.");
+    console.log("   Fix them now - they will BLOCK on the next check of the same file.");
+  }
+  console.log("Some may be false positives - use judgment based on context.");
+}
+
+/**
  * Format output as text
  */
-function formatTextOutput(violations, filesChecked) {
+function formatTextOutput(violations, filesChecked, warnCount = 0, blockCount = 0) {
   if (violations.length === 0) {
     console.log("✅ No pattern violations found");
     console.log(
@@ -750,7 +1076,13 @@ function formatTextOutput(violations, filesChecked) {
     return;
   }
 
-  console.log(`⚠️  Found ${violations.length} potential pattern violation(s)\n`);
+  if (blockCount > 0) {
+    console.log(`🚫 ${blockCount} BLOCKING violation(s) (previously warned, now enforced)`);
+  }
+  if (warnCount > 0) {
+    console.log(`⚠️  ${warnCount} new warning(s) (first occurrence - fix before next check)`);
+  }
+  console.log("");
 
   // Group by file
   const byFile = {};
@@ -762,19 +1094,59 @@ function formatTextOutput(violations, filesChecked) {
   for (const [file, fileViolations] of Object.entries(byFile)) {
     console.log(`📄 ${file}`);
     for (const v of fileViolations) {
-      console.log(`   Line ${v.line}: ${v.message}`);
-      console.log(`   ✓ Fix: ${v.fix}`);
-      console.log(`   📚 See: Review ${v.review} in AI_REVIEW_LEARNINGS_LOG.md`);
-      if (VERBOSE) {
-        console.log(`   Match: ${v.match}`);
-      }
-      console.log("");
+      printViolation(v);
     }
   }
 
-  console.log("---");
-  console.log("These patterns have caused issues before. Review and fix if applicable.");
-  console.log("Some may be false positives - use judgment based on context.");
+  printSummaryFooter(blockCount, warnCount);
+}
+
+/**
+ * Apply graduation logic: warn once per file+pattern, block on next check
+ * Key is file+patternId (not per-line - any occurrence in a warned file blocks)
+ * Returns { warnings: [], blocks: [] } with violations split by severity
+ */
+function applyGraduation(violations) {
+  const warnedState = loadWarnedFiles();
+  const warned = warnedState ?? {};
+  const warnings = [];
+  const blocks = [];
+  const now = Date.now();
+  // Only graduate to block if warning is older than 4 hours
+  // Prevents self-escalation across hooks (pre-commit → pre-push) in same session
+  const GRACE_PERIOD_MS = 4 * 60 * 60 * 1000;
+
+  for (const v of violations) {
+    const fileKey = String(v.file).replaceAll("\\", "/");
+    const key = `${fileKey}::${v.id}`;
+
+    // If state couldn't be loaded (corrupt), don't graduate — warn only
+    if (warnedState === null) {
+      warnings.push(v);
+      continue;
+    }
+
+    if (warned[key]) {
+      const warnedAt = new Date(warned[key]).getTime();
+      const ageMs = Number.isFinite(warnedAt) ? now - warnedAt : GRACE_PERIOD_MS + 1;
+      if (ageMs > GRACE_PERIOD_MS) {
+        // Warning is old enough - graduate to block
+        v.graduated = true;
+        blocks.push(v);
+      } else {
+        // Still within grace period - keep as warning
+        warnings.push(v);
+      }
+    } else {
+      // First time seeing this file+pattern combo - warn only
+      warned[key] = new Date().toISOString();
+      warnings.push(v);
+    }
+  }
+
+  // Don't overwrite state file if we couldn't read it (prevents wiping history)
+  if (warnedState !== null) saveWarnedFiles(warned);
+  return { warnings, blocks };
 }
 
 /**
@@ -801,12 +1173,17 @@ function main() {
     allViolations.push(...violations);
   }
 
+  // Apply graduation: warn once, block on repeat
+  const { warnings, blocks } = applyGraduation(allViolations);
+
   if (JSON_OUTPUT) {
     console.log(
       JSON.stringify(
         {
           filesChecked: files.length,
           patternsChecked: ANTI_PATTERNS.length,
+          warnings,
+          blocks,
           violations: allViolations,
         },
         null,
@@ -814,10 +1191,12 @@ function main() {
       )
     );
   } else {
-    formatTextOutput(allViolations, files.length);
+    formatTextOutput(allViolations, files.length, warnings.length, blocks.length);
   }
 
-  process.exit(allViolations.length > 0 ? 1 : 0);
+  // Exit 1 only if there are blocks (graduated violations)
+  // Warnings alone don't block (first occurrence = informational)
+  process.exit(blocks.length > 0 ? 1 : 0);
 }
 
 try {

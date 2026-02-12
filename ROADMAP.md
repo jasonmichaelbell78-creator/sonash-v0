@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.24
-**Last Updated:** Session #147
+**Document Version:** 3.25
+**Last Updated:** Session #151
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
@@ -319,6 +319,18 @@ reliability, and solo developer automations.
 **Approach:** File-based (not category-based) to avoid revisiting files. Each
 sprint uses parallel agents + wave-based execution + per-wave commits.
 Lightweight verification per sprint; comprehensive audit only after Sprint 7.
+
+**Enhancement Audit Items (Session #151):**
+
+- [ ] **ENH-0027:** Triage 96 stale TODO/TBD markers across 34 files — resolve,
+      remove, or convert to TDMS items (E1)
+
+### Enhancement Audit Items (Session #151)
+
+> **Source:** Enhancement Audit (`/audit-enhancements`) — Session #151
+
+- [ ] **ENH-0029:** Documentation effectiveness metrics — track which docs are
+      useful, with actionable plan to prune/improve (E2)
 
 ### Track B - Dev Dashboard (Expanded)
 
@@ -928,6 +940,17 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 **Effort:** E1 (research) + E2 (implementation)
 
+### Enhancement Audit Items (Session #151)
+
+> **Source:** Enhancement Audit (`/audit-enhancements`) — Session #151
+
+- [ ] **ENH-0033:** Add `engines` field to root `package.json` (E0, 5 min)
+- [ ] **ENH-0047:** Add ARIA labels on critical navigation tabs (E0)
+- [ ] **ENH-0013:** Replace generic button labels with action-specific text (E0)
+- [ ] **ENH-0063:** Remove duplicate pattern check from pre-push hook (E0)
+- [ ] **ENH-0019:** Create shared `formatDate` utility for consistent date
+      formatting (E1)
+
 ### In Progress
 
 - 🔄 Settings page UI
@@ -1077,6 +1100,12 @@ experience for Today page
 > **Completed Phases:** For details on completed Phases 1-3 and Today Page
 > Enhancement, see
 > [ROADMAP_LOG.md](./ROADMAP_LOG.md#️-m16---admin-panel--today-page-enhancement)
+
+### Enhancement Audit Items (Session #151)
+
+> **Source:** Enhancement Audit (`/audit-enhancements`) — Session #151
+
+- [ ] **ENH-0011:** Standardize loading states across components (E2)
 
 ### Phase 4: Error Tracking - Sentry Integration (✅ Complete via Track A)
 
@@ -1335,6 +1364,13 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 (Infrastructure)
 
 ---
+
+### Enhancement Audit Items (Session #151)
+
+> **Source:** Enhancement Audit (`/audit-enhancements`) — Session #151
+
+- [ ] **ENH-0028:** Security guidance consolidation — merge overlapping security
+      docs into clear hierarchy (E2)
 
 ### 9.1 📦 M2.1 - Code Quality & Tooling (~25 items)
 

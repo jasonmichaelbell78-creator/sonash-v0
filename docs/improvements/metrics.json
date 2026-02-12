@@ -1,15 +1,15 @@
 {
-  "generated": "2026-02-11T14:11:31.131Z",
-  "generated_date": "2026-02-11",
+  "generated": "2026-02-12T01:38:31.653Z",
+  "generated_date": "2026-02-12",
   "summary": {
-    "total": 0,
-    "open": 0,
+    "total": 61,
+    "open": 61,
     "implemented": 0,
     "declined": 0,
     "resolution_rate_pct": 0
   },
   "by_status": {
-    "PROPOSED": 0,
+    "PROPOSED": 61,
     "ACCEPTED": 0,
     "DECLINED": 0,
     "DEFERRED": 0,
@@ -17,20 +17,104 @@
     "STALE": 0
   },
   "by_impact": {
-    "I0": 0,
-    "I1": 0,
-    "I2": 0,
-    "I3": 0
+    "I0": 2,
+    "I1": 25,
+    "I2": 29,
+    "I3": 5
   },
-  "by_category": {},
+  "by_category": {
+    "app-architecture": 9,
+    "content": 8,
+    "devx-automation": 5,
+    "documentation-strategy": 5,
+    "infrastructure": 8,
+    "testing-strategy": 8,
+    "product-ux": 8,
+    "workflow-lifecycle": 7,
+    "external-services": 3
+  },
   "alerts": {
-    "i0_count": 0,
-    "i1_count": 0,
-    "i0_items": [],
-    "i1_items": []
+    "i0_count": 2,
+    "i1_count": 25,
+    "i0_items": [
+      {
+        "id": "ENH-0010",
+        "title": "Standardize export style - 38 default vs 69 named exports wi",
+        "file": "multiple",
+        "line": null
+      },
+      {
+        "id": "ENH-0037",
+        "title": "Upgrade Firebase Functions to Node.js 24 runtime",
+        "file": "firebase.json",
+        "line": 68
+      }
+    ],
+    "i1_items": [
+      {
+        "id": "ENH-0004",
+        "title": "Consolidate duplicate mood selector components - 3 implement",
+        "file": "components/mood-selector.tsx",
+        "line": 1
+      },
+      {
+        "id": "ENH-0005",
+        "title": "Extract meeting time parsing logic - ~80 lines duplicated be",
+        "file": "components/meetings/meeting-form.tsx",
+        "line": 1
+      },
+      {
+        "id": "ENH-0006",
+        "title": "Migrate useAuth consumers to focused hooks - 16 components s",
+        "file": "hooks/useAuth.ts",
+        "line": 1
+      },
+      {
+        "id": "ENH-0008",
+        "title": "Create barrel exports for component directories - only 1 exi",
+        "file": "components/features/index.ts",
+        "line": 1
+      },
+      {
+        "id": "ENH-0014",
+        "title": "Error messages don't guide user to fix the problem",
+        "file": "multiple",
+        "line": null
+      },
+      {
+        "id": "ENH-0021",
+        "title": "Pre-commit hook parallelization - sequential checks could ru",
+        "file": ".husky/pre-commit",
+        "line": 1
+      },
+      {
+        "id": "ENH-0022",
+        "title": "CI non-blocking checks should block - 5 checks use continue-",
+        "file": ".github/workflows/ci.yml",
+        "line": 1
+      },
+      {
+        "id": "ENH-0028",
+        "title": "Security guidance consolidation - multiple overlapping secur",
+        "file": "docs/SECURITY.md",
+        "line": 1
+      },
+      {
+        "id": "ENH-0031",
+        "title": "Enable Next.js experimental optimizations and bundle analysi",
+        "file": "12-19",
+        "line": null
+      },
+      {
+        "id": "ENH-0032",
+        "title": "Add Content-Security-Policy header to Firebase hosting confi",
+        "file": "6-57",
+        "line": null
+      }
+    ]
   },
   "health": {
-    "review_queue_size": 0,
+    "review_queue_size": 61,
     "avg_age_days": 0,
     "oldest_age_days": 0,
     "oldest_item_id": null

@@ -1222,6 +1222,8 @@ check to CI workflow
 - Added team policy in DEVELOPMENT.md prohibiting `--no-verify`
 - CI catches any issues that slip through (defense in depth) **Commit**: feat:
   Add pre-push hook and git hooks policy (Gap 3 fix)
+- Session #151: Added code-reviewer gate (blocks push if scripts changed but
+  code-reviewer not invoked), security pattern check, event triggers check
 
 ### Gap 4: Security Directives Not Automated - RESOLVED
 
