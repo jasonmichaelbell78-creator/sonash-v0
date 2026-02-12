@@ -19,6 +19,9 @@ documented.
 5. **Agent Augmentation** - Invoke domain specialists (security, docs, code
    quality)
 6. **Full Documentation** - Every decision tracked
+7. **Fix-or-Track** - Every issue is either fixed or logged to TDMS with a DEBT
+   ID. No silent dismissals. "Pre-existing" and "out of scope" are not valid
+   reasons to skip — classify the origin and either fix it or track it.
 
 ## Protocol Overview
 
@@ -261,6 +264,8 @@ Auto-enrichment ensures you see the EXACT code before fixing.
 
 Categorize EVERY suggestion using this matrix:
 
+**Severity:**
+
 | Category     | Criteria                                                                     | Action Required                        |
 | ------------ | ---------------------------------------------------------------------------- | -------------------------------------- |
 | **CRITICAL** | Security vulnerabilities, data loss, breaking changes, blocking issues       | Fix IMMEDIATELY, separate commit       |
@@ -268,22 +273,35 @@ Categorize EVERY suggestion using this matrix:
 | **MINOR**    | Code style, naming, missing tests, doc improvements, library recommendations | Fix (don't defer unless truly complex) |
 | **TRIVIAL**  | Typos, whitespace, comment clarity, formatting                               | **FIX THESE TOO** - no skipping        |
 
+**Origin (MANDATORY — classify every item):**
+
+| Origin                    | Criteria                                                | Action                                                         |
+| ------------------------- | ------------------------------------------------------- | -------------------------------------------------------------- |
+| **This-PR**               | Introduced by current PR's changes                      | Must fix — this is your code                                   |
+| **Pre-existing, fixable** | Not from this PR, but small enough to fix now (< 5 min) | Fix it now — don't leave broken windows                        |
+| **Pre-existing, complex** | Not from this PR, would take > 5 min or unfamiliar code | Track via `/add-deferred-debt` with DEBT-XXXX ID (mandatory)   |
+| **Architectural**         | Requires design discussion or large-scale refactoring   | Flag to user — do NOT silently dismiss or defer without asking |
+
+> **"Pre-existing" and "out of scope" are never valid reasons to skip an
+> issue.** Every item must be either fixed, tracked with a DEBT ID, or
+> explicitly raised to the user for architectural discussion.
+
 ### Output Format:
 
 ```
 ## Categorization Results
 
 ### CRITICAL (X items) - IMMEDIATE ACTION
-- [1] <issue> - File: <path>
+- [1] <issue> - File: <path> - Origin: This-PR
 
 ### MAJOR (X items) - MUST FIX
-- [3] <issue> - File: <path>
+- [3] <issue> - File: <path> - Origin: Pre-existing, fixable
 
 ### MINOR (X items) - WILL FIX
-- [5] <issue> - File: <path>
+- [5] <issue> - File: <path> - Origin: This-PR
 
 ### TRIVIAL (X items) - WILL FIX (not skipping)
-- [8] <issue> - File: <path>
+- [8] <issue> - File: <path> - Origin: Pre-existing, fixable
 ```
 
 ---
@@ -423,7 +441,16 @@ Agent 3: technical-writer
 - **Verify** the fix doesn't introduce new issues
 - **Mark** todo as completed
 
-### 5.3 Verification Passes
+### 5.3 Pre-existing Items
+
+Pre-existing fixable items (Origin: "Pre-existing, fixable") get fixed alongside
+PR items in the normal priority flow. They do not need separate commits — batch
+them with related fixes by file or concern area.
+
+**Do not skip these because they "aren't from this PR."** The review surfaced
+them, so they get fixed now while the context is fresh.
+
+### 5.4 Verification Passes
 
 After all fixes:
 
@@ -436,16 +463,36 @@ After all fixes:
 
 ## STEP 6: DOCUMENT DECISIONS
 
-For any items NOT directly fixed in code, document:
+For any items NOT directly fixed in code, document using the strict templates
+below. **Every non-fixed item MUST have a DEBT ID or explicit user sign-off.**
 
 ### Deferred Items (if any)
+
+Every deferred item requires a DEBT-XXXX tracking ID. "Out of scope" and
+"pre-existing" are NOT valid deferral reasons on their own — you must explain
+specifically what makes this too complex to fix now.
 
 ```
 ### Deferred (X items)
 - [N] <issue>
-  - **Reason**: <why deferred>
-  - **Follow-up**: <where tracked>
-  - **Timeline**: <when to address>
+  - **Origin**: Pre-existing, complex / Architectural
+  - **DEBT ID**: DEBT-XXXX (MANDATORY — created via /add-deferred-debt)
+  - **Why not now**: <specific reason — e.g., "requires refactoring 8 files
+    that share this pattern" or "needs design discussion on caching strategy">
+  - **Estimated effort**: <rough size — e.g., "~2 hours", "half-day">
+```
+
+### Architectural Items (flagged to user)
+
+Items classified as "Architectural" origin must be explicitly raised to the
+user. Do NOT silently defer these — present them and ask for direction.
+
+```
+### Architectural (X items — NEEDS USER INPUT)
+- [N] <issue>
+  - **What**: <description of the architectural concern>
+  - **Options**: <2-3 possible approaches>
+  - **Impact if deferred**: <what gets worse if we don't address this>
 ```
 
 ### Rejected Items (if any - should be rare)
@@ -453,12 +500,12 @@ For any items NOT directly fixed in code, document:
 ```
 ### Rejected (X items)
 - [N] <issue>
-  - **Reason**: <specific justification>
+  - **Reason**: <specific justification — must be concrete, not "out of scope">
   - **Reference**: <user requirement or design decision>
 ```
 
 **NOTE**: For this protocol, lean heavily toward FIXING over deferring. Even
-trivial items should be fixed.
+trivial items should be fixed. Nothing gets silently dismissed.
 
 ---
 
@@ -683,6 +730,9 @@ Create commit(s) following project conventions:
    simultaneously
 8. **NEVER silently ignore** - Document all decisions
 9. **MONITOR document health** - Archive when all criteria in Step 7.5 are met
+10. **NEVER dismiss issues as "pre-existing" or "out of scope"** - Classify the
+    origin, then fix it or track it with a DEBT ID. Architectural items get
+    flagged to the user.
 
 ## Anti-Patterns to Avoid
 
@@ -696,6 +746,9 @@ Create commit(s) following project conventions:
 - ❌ Single-pass parsing of large reviews (200+ lines)
 - ❌ Trusting AI claims about "missing data" without git verification
 - ❌ Running more than 4 parallel agents (context overload)
+- ❌ Dismissing issues as "pre-existing" or "out of scope" without fixing or
+  tracking them
+- ❌ Deferring items without a DEBT-XXXX tracking ID
 
 ---
 

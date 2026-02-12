@@ -129,6 +129,14 @@ copy/paste **Example:** `/pr-review` then paste feedback **Parameters:** None -
 paste feedback directly **Output:** Categorized feedback with action items,
 auto-enriches SonarCloud issues via API
 
+### `/pr-retro`
+
+**Description:** Analyze a PR's review cycle and produce actionable
+recommendations **When to use:** When you're done with a PR's review rounds and
+want to understand what caused churn and what to automate **Example:**
+`/pr-retro 362` **Parameters:** PR number **Output:** Churn analysis, recurring
+pattern automation candidates with effort estimates, skill/template updates
+
 ### `/session-begin`
 
 **Description:** Complete verification steps before starting work session **When
@@ -2363,6 +2371,7 @@ hooks, and settings.
 
 | Version | Session | Changes                                                                                                                                                                 |
 | ------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.2     | #143    | Added `/pr-retro` skill; strengthened `/pr-review` with fix-or-track mandate (Origin classification, strict deferral templates, architectural item escalation)          |
 | 4.1     | #142    | Added `find-skills` skill (vercel-labs/skills ecosystem discovery)                                                                                                      |
 | 4.0     | #140    | Major overhaul: added Git Hooks, GitHub Actions, Plugin Skills, Environment Variables sections; fixed MCP servers; added missing agents/hooks; expanded system commands |
 | 3.3     | #134    | Updated `/sonarcloud` (interactive placement phase) and `/multi-ai-audit` (Phase 7 rewritten as interactive placement)                                                  |
