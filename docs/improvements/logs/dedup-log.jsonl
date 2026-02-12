@@ -1,3 +1,0 @@
-{"type":"run_metadata","timestamp":"2026-02-12T01:38:25.082Z","operator_hash":"06b9a6eacd7a","input_file":"normalized-all.jsonl","items_in":61,"items_out":61,"log_entries":2,"review_entries":2}
-{"pass":4,"type":"cross_source_flag","enh_id":"ENH-0016","debt_id":"DEBT-2160","file":"multiple","title_similarity":"0.71","reason":"IMS <-> TDMS overlap detected (same file + similar title), flagged for review"}
-{"pass":4,"type":"cross_source_flag","enh_id":"ENH-0024","debt_id":"DEBT-2549","file":".husky/pre-commit","title_similarity":"0.88","reason":"IMS <-> TDMS overlap detected (same file + similar title), flagged for review"}
