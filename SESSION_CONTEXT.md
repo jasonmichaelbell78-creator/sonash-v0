@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 4.0 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 4.2 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-12 (Session #153)
+2026-02-12 (Session #154)
 
 ## AI Instructions
 
@@ -69,7 +69,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 153 (since Jan 1, 2026)
+**Current Session Count**: 154 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -79,18 +79,23 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
+**Session #154 Summary** (ALERTS SKILL ENHANCEMENT PLAN):
+
+- Audited all dead data producers — found 8 scripts generating data nothing
+  consumes (metrics.json, review-metrics, session-activity, LEARNING_METRICS,
+  suggested-rules, agent-trigger-state, velocity-log, agent-invocations)
+- Fixed 5 blocking pattern violations (diff-filter, path.isAbsolute)
+- Created plan to wire all dead data into `/alerts` skill (Hybrid Option C):
+  - 7 new reader functions in run-alerts.js
+  - Limited mode: debt-metrics, learning, agent-compliance (actionable)
+  - Full mode: review-quality, consolidation, velocity, session-activity
+  - New Actionable vs Informational output split
+- Plan saved at `/root/.claude/plans/dapper-herding-crescent.md`
+
 **Session #153 Summary** (PR REVIEW SKILL IMPROVEMENTS):
 
-- Strengthened `/pr-review` skill with fix-or-track mandate:
-  - Added Principle 7: Fix-or-Track (no silent dismissals)
-  - Step 2: Mandatory Origin classification (This-PR / Pre-existing fixable /
-    Pre-existing complex / Architectural)
-  - Step 5.3: Pre-existing fixable items get fixed alongside PR items
-  - Step 6: Strict deferral templates requiring DEBT IDs; Architectural items
-    flagged to user
-  - Rule 10 + 2 new anti-patterns for dismissing issues
-- Created new `/pr-retro` skill — user-invoked retrospective for PR review
-  cycles (churn analysis, automation candidates, actionable recommendations)
+- Strengthened `/pr-review` skill with fix-or-track mandate
+- Created new `/pr-retro` skill — user-invoked retrospective
 - Updated COMMAND_REFERENCE.md v4.2
 
 **Session #151 Summary** (ENHANCEMENT AUDIT + PR CHURN REDUCTION + SKILL
@@ -146,7 +151,20 @@ IMPROVEMENTS):
 
 ### Immediate Priority (Next Session)
 
-**Feature Development Ready!** The Integrated Improvement Plan is complete.
+**Implement Alerts Skill Enhancement** — Wire dead data producers into `/alerts`
+skill. Plan is approved and ready to execute:
+
+1. **Extend `run-alerts.js`** — Add 7 new reader functions (checkDebtMetrics,
+   checkLearningEffectiveness, checkAgentCompliance, checkReviewQuality,
+   checkConsolidation, checkVelocity, checkSessionActivity)
+2. **Update `SKILL.md`** — Add new categories to Limited/Full modes + Actionable
+   vs Informational output format
+3. **Verify** — Run alerts in both modes, confirm actionable suggestions
+
+**Plan file**: `/root/.claude/plans/dapper-herding-crescent.md`
+
+### After Alerts Enhancement
+
 Choose from:
 
 1. **GRAND PLAN Sprint 4** (`lib/` + `hooks/` + `app/`) - Continue debt
@@ -236,6 +254,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------- | ------ |
+| 4.2     | 2026-02-12 | Session #154: Alerts enhancement plan + dead data audit  | Claude |
 | 4.1     | 2026-02-12 | Session #151: Enhancement audit + skill improvements     | Claude |
 | 4.0     | 2026-02-11 | Session #149: Major refactor - archived history, trimmed | Claude |
 | 3.61    | 2026-02-11 | Session #149: Counter increment                          | Claude |
