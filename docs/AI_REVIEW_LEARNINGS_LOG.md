@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 16.8 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
+**Document Version:** 16.9 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16.9    | 2026-02-12 | Review #304: PR #361 R5 — State wipe prevention (null-aware save), dir symlink guards (both files), isSymlink try/catch, ESLint fixer return removal, null title guard. Consolidation counter 14→15. Active reviews #266-304.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 16.8    | 2026-02-12 | Review #303: PR #361 R4 — TOCTOU symlink fix (lstatSync direct), corrupt state guard (null return), cognitive complexity extraction (tryUnlink/isSymlink helpers), `exclude`→`pathExclude` bug fix, non-destructive ESLint suggestion, verbose crash prevention. Consolidation counter 13→14. Active reviews #266-303.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 16.7    | 2026-02-12 | Review #302: PR #361 R3 — Symlink clobber guards, backup-and-replace writes, BOM stripping, ESLint loc fallback, O(n) TOCTOU index, verbose match truncation. Skill update: #TBD deferred numbering to prevent review number collisions. Consolidation counter 12→13. Active reviews #266-302.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 16.6    | 2026-02-11 | Review #294: PR #360 R12 — CI fix: eslint-disable block for control-char regex, sanitizeLogSnippet extraction, BiDi control strip, escapeMarkdown String coercion + \r\n, valid-only ENH-ID idMap, TOCTOU symlink recheck before unlink, EEXIST recovery for resolve-item, strict digits-only line parsing, decoupled log/review writes, toLineNumber reject 0/negative, Windows-safe metrics rename. Active reviews #266-294.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -335,7 +336,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 14 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 15 **Consolidation threshold:** 10 reviews
 **Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** NOW (Reviews
 #290-#301, 12 reviews since consolidation #17)
 
@@ -532,7 +533,7 @@ reviews or 2 weeks
 | Critical files (14) violations   | 0     | 0      | ✅     |
 | Full repo violations             | 63    | <50    | ⚠️     |
 | Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 14    | <10    | ⚠️     |
+| Reviews since last consolidation | 15    | <10    | ⚠️     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -685,6 +686,37 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #304: PR #361 R5 — State Wipe Prevention, Dir Symlink Guard, Fixer Safety (2026-02-12)
+
+**Source:** Qodo Compliance + Qodo Code Suggestions + SonarCloud **PR/Branch:**
+PR #361 (claude/analyze-repo-install-ceMkn) **Suggestions:** ~22 total (6 new
+fixes, 5+ repeats rejected, rest compliance notes)
+
+**Patterns Identified:**
+
+1. Corrupt state wipe: loadWarnedFiles null + saveWarnedFiles overwrite = data
+   loss
+   - Root cause: applyGraduation saved even when load failed
+   - Prevention: Track null vs {} separately, skip save on null
+2. Directory-level symlink attacks: checking files but not parent dir
+   - Root cause: Only file-level symlink check, dir can also be a symlink
+   - Prevention: Check dir with isSymlink() before mkdirSync/writes
+
+**Resolution:**
+
+- Fixed: 6 items (state wipe prevention, dir symlink x2, isSymlink try/catch,
+  ESLint fixer return removal, null title guard)
+- Rejected: 16 items (repeats: String.raw, regex 38, i assignment, catch naming,
+  empty catch; compliance notes: acceptable risk for local dev tool)
+
+**Key Learnings:**
+
+- When loadWarnedFiles returns null (corruption), caller must NOT overwrite
+- Directory symlinks are as dangerous as file symlinks
+- ESLint auto-fix `return;` is invalid outside functions — use empty TODO block
 
 ---
 

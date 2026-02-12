@@ -84,7 +84,11 @@ function tryUnlink(filePath) {
  * Check if a path is a symlink (returns false if path doesn't exist).
  */
 function isSymlink(filePath) {
-  return existsSync(filePath) && lstatSync(filePath).isSymbolicLink();
+  try {
+    return existsSync(filePath) && lstatSync(filePath).isSymbolicLink();
+  } catch (_err) {
+    return false;
+  }
 }
 
 function saveWarnedFiles(warned) {
@@ -93,6 +97,12 @@ function saveWarnedFiles(warned) {
   const bakPath = WARNED_FILES_PATH + `.bak.${process.pid}`;
 
   try {
+    // Refuse if state directory is a symlink
+    if (isSymlink(dir)) {
+      console.warn("Warning: state directory is a symlink — refusing to write");
+      return;
+    }
+
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
     // Verify target and tmp are not symlinks (prevent symlink-clobber attacks)
@@ -1097,7 +1107,8 @@ function formatTextOutput(violations, filesChecked, warnCount = 0, blockCount = 
  * Returns { warnings: [], blocks: [] } with violations split by severity
  */
 function applyGraduation(violations) {
-  const warned = loadWarnedFiles() ?? {};
+  const warnedState = loadWarnedFiles();
+  const warned = warnedState ?? {};
   const warnings = [];
   const blocks = [];
   const now = Date.now();
@@ -1108,6 +1119,13 @@ function applyGraduation(violations) {
   for (const v of violations) {
     const fileKey = String(v.file).replaceAll("\\", "/");
     const key = `${fileKey}::${v.id}`;
+
+    // If state couldn't be loaded (corrupt), don't graduate — warn only
+    if (warnedState === null) {
+      warnings.push(v);
+      continue;
+    }
+
     if (warned[key]) {
       const warnedAt = new Date(warned[key]).getTime();
       const ageMs = Number.isFinite(warnedAt) ? now - warnedAt : GRACE_PERIOD_MS + 1;
@@ -1126,7 +1144,8 @@ function applyGraduation(violations) {
     }
   }
 
-  saveWarnedFiles(warned);
+  // Don't overwrite state file if we couldn't read it (prevents wiping history)
+  if (warnedState !== null) saveWarnedFiles(warned);
   return { warnings, blocks };
 }
 

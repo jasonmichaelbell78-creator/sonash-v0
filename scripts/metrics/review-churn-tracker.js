@@ -207,6 +207,12 @@ function analyzePr(prNumber, owner, repo) {
  * Append metrics to JSONL file
  */
 function appendMetrics(entries) {
+  // Refuse if state directory is a symlink
+  if (existsSync(STATE_DIR) && lstatSync(STATE_DIR).isSymbolicLink()) {
+    console.error("Error: state directory is a symlink — refusing to write");
+    return;
+  }
+
   try {
     if (!existsSync(STATE_DIR)) {
       mkdirSync(STATE_DIR, { recursive: true });
@@ -254,7 +260,8 @@ function formatResultRow(r) {
   if (!roundsOk) details.push(`rounds >= ${TARGET_MAX_ROUNDS}`);
   const detailStr = details.length > 0 ? ` (${details.join(", ")})` : "";
 
-  const title = r.title.length > 38 ? r.title.slice(0, 35) + "..." : r.title;
+  const rawTitle = typeof r.title === "string" ? r.title : "";
+  const title = rawTitle.length > 38 ? rawTitle.slice(0, 35) + "..." : rawTitle;
   const fixTotal = `${r.fix_commits}/${r.total_commits}`.padEnd(12);
   const line = `#${String(r.pr).padEnd(7)} ${title.padEnd(40)} ${fixTotal} ${String(r.fix_ratio).padEnd(8)} ${String(r.review_rounds).padEnd(8)} ${status}${detailStr}`;
 
