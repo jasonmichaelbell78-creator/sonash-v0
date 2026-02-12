@@ -236,10 +236,16 @@ Below 70%, add to inconclusive section instead.
 
 EVIDENCE REQUIREMENT: Every finding needs a concrete file path and specific indicator.
 
+FILE PATH REQUIREMENT: The "files" array MUST contain real file paths from the codebase
+(e.g., "components/ui/dialog.tsx:45"). NEVER use placeholders like "multiple", "various",
+"1", or numeric values. If a finding affects multiple files, list ALL affected files
+explicitly (up to 5). If there are more than 5, list the top 5 most relevant.
+The TDMS intake pipeline will REJECT items with invalid file paths.
+
 OUTPUT FORMAT: Write findings to ${AUDIT_DIR}/stage-1-{domain}.jsonl
 One JSON object per line, with these fields:
 - category, title, fingerprint, impact (I0-I3, see calibration below), effort (E0-E3), confidence (0-100)
-- files (array of file:line refs)
+- files (array of actual file:line refs — NO placeholders, NO numbers-only, NO "multiple")
 - current_approach (what exists now and why)
 - proposed_outcome (what the improved version looks like)
 - counter_argument (REQUIRED: why NOT to do this)

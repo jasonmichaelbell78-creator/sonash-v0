@@ -26,36 +26,36 @@ config**: `scripts/config/improvement-schema.json`
 
 Every improvement item MUST include these fields:
 
-| Field                   | Type   | Required | Description                                 |
-| ----------------------- | ------ | -------- | ------------------------------------------- |
-| `id`                    | string | Yes      | Unique ID: `ENH-XXXX` format                |
-| `category`              | string | Yes      | One of 10 valid categories                  |
-| `title`                 | string | Yes      | Short, specific description                 |
-| `fingerprint`           | string | Yes      | `category::file_or_scope::improvement-slug` |
-| `impact`                | string | Yes      | `I0` \| `I1` \| `I2` \| `I3`                |
-| `effort`                | string | Yes      | `E0` \| `E1` \| `E2` \| `E3`                |
-| `confidence`            | number | Yes      | 0-100 (threshold: 70+)                      |
-| `status`                | string | Yes      | Lifecycle status                            |
-| `files`                 | array  | Yes      | Affected files with line refs               |
-| `current_approach`      | string | Yes      | What exists now and why                     |
-| `proposed_outcome`      | string | Yes      | What the improved version looks like        |
-| `counter_argument`      | string | Yes      | Why NOT to make this change                 |
-| `why_it_matters`        | string | Yes      | The benefit if implemented                  |
-| `suggested_fix`         | string | No       | Concrete implementation direction           |
-| `concrete_alternatives` | array  | No       | Named libraries, patterns, approaches       |
-| `implementation_notes`  | string | No       | Guidance for Claude Code                    |
-| `affected_workflows`    | array  | No       | Dev lifecycle or user-facing flows          |
-| `dependencies`          | array  | No       | `ENH-XXXX`, `DEBT-XXXX`, other              |
-| `risk_assessment`       | string | No       | What could go wrong                         |
-| `tdms_crossref`         | array  | No       | Related `DEBT-XXXX` items                   |
-| `acceptance_tests`      | array  | No       | Verification steps                          |
-| `evidence`              | array  | No       | Grep output, benchmarks, snippets           |
-| `benchmarks`            | object | No       | Competitor/peer comparisons                 |
-| `content_hash`          | string | No       | SHA-256 for dedup                           |
-| `source_audit`          | string | No       | Source audit identifier                     |
-| `created`               | string | No       | ISO date created                            |
-| `decided_date`          | string | No       | ISO date decision made                      |
-| `decision_notes`        | string | No       | Reason for accept/decline/defer             |
+| Field                   | Type   | Required | Description                                                 |
+| ----------------------- | ------ | -------- | ----------------------------------------------------------- |
+| `id`                    | string | Yes      | Unique ID: `ENH-XXXX` format                                |
+| `category`              | string | Yes      | One of 10 valid categories                                  |
+| `title`                 | string | Yes      | Short, specific description                                 |
+| `fingerprint`           | string | Yes      | `category::file_or_scope::improvement-slug`                 |
+| `impact`                | string | Yes      | `I0` \| `I1` \| `I2` \| `I3`                                |
+| `effort`                | string | Yes      | `E0` \| `E1` \| `E2` \| `E3`                                |
+| `confidence`            | number | Yes      | 0-100 (threshold: 70+)                                      |
+| `status`                | string | Yes      | Lifecycle status                                            |
+| `files`                 | array  | Yes      | Affected files with line refs (real paths, no placeholders) |
+| `current_approach`      | string | Yes      | What exists now and why                                     |
+| `proposed_outcome`      | string | Yes      | What the improved version looks like                        |
+| `counter_argument`      | string | Yes      | Why NOT to make this change                                 |
+| `why_it_matters`        | string | Yes      | The benefit if implemented                                  |
+| `suggested_fix`         | string | No       | Concrete implementation direction                           |
+| `concrete_alternatives` | array  | No       | Named libraries, patterns, approaches                       |
+| `implementation_notes`  | string | No       | Guidance for Claude Code                                    |
+| `affected_workflows`    | array  | No       | Dev lifecycle or user-facing flows                          |
+| `dependencies`          | array  | No       | `ENH-XXXX`, `DEBT-XXXX`, other                              |
+| `risk_assessment`       | string | No       | What could go wrong                                         |
+| `tdms_crossref`         | array  | No       | Related `DEBT-XXXX` items                                   |
+| `acceptance_tests`      | array  | No       | Verification steps                                          |
+| `evidence`              | array  | No       | Grep output, benchmarks, snippets                           |
+| `benchmarks`            | object | No       | Competitor/peer comparisons                                 |
+| `content_hash`          | string | No       | SHA-256 for dedup                                           |
+| `source_audit`          | string | No       | Source audit identifier                                     |
+| `created`               | string | No       | ISO date created                                            |
+| `decided_date`          | string | No       | ISO date decision made                                      |
+| `decision_notes`        | string | No       | Reason for accept/decline/defer                             |
 
 ---
 
@@ -148,6 +148,24 @@ the "Inconclusive" section of audit reports.
 
 ---
 
+## File Path Requirements
+
+The `files` array MUST contain real file paths from the codebase. The intake
+pipeline validates and warns on invalid paths.
+
+**Valid**: `"components/ui/dialog.tsx:45"`, `"lib/utils/date-utils.ts"`,
+`".github/workflows/ci.yml"`
+
+**Invalid** (will trigger warnings):
+
+- `"multiple"`, `"various"`, `"several"` — list actual files instead (up to 5)
+- `"1"`, `"10-12"`, `"1-80"` — numeric values are not file paths
+- `"unknown"`, `"n/a"`, `"tbd"` — find the actual file or don't create the item
+
+This matches the TDMS file path requirement for consistency between systems.
+
+---
+
 ## Honesty Guardrails
 
 1. **Mandatory counter-argument**: Every finding MUST have a non-empty
@@ -155,7 +173,8 @@ the "Inconclusive" section of audit reports.
    finding is suspect.
 2. **Confidence threshold**: Below 70% → Inconclusive section
 3. **Evidence requirement**: Concrete file path + specific indicator required
-4. **No-change validation**: Auditors must list areas evaluated and found
+4. **File path requirement**: Real paths only, no placeholders (see above)
+5. **No-change validation**: Auditors must list areas evaluated and found
    adequate
 
 ---

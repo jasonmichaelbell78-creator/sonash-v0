@@ -228,9 +228,23 @@ function getNextDebtId(existingItems) {
   return maxId + 1;
 }
 
+// Validate that a file path looks like a real file reference
+function isValidFilePath(filePath) {
+  if (!filePath) return false;
+  // Reject numeric-only values (e.g., "1", "10-12", "1-80")
+  if (/^\d[\d-]*$/.test(filePath)) return false;
+  // Reject generic placeholders
+  const placeholders = ["multiple", "various", "several", "unknown", "n/a", "tbd"];
+  if (placeholders.includes(filePath.toLowerCase())) return false;
+  // Must contain a dot (file extension) or a slash (directory separator)
+  if (!filePath.includes(".") && !filePath.includes("/")) return false;
+  return true;
+}
+
 // Validate and normalize an input item
 function validateAndNormalize(item, sourceFile) {
   const errors = [];
+  const warnings = [];
 
   // First, apply Doc Standards → TDMS field mapping
   const { item: mappedItem, metadata: mappingMetadata } = mapDocStandardsToTdms(item);
@@ -239,6 +253,14 @@ function validateAndNormalize(item, sourceFile) {
   if (!mappedItem.title) errors.push("Missing required field: title");
   if (!mappedItem.severity) errors.push("Missing required field: severity");
   if (!mappedItem.category) errors.push("Missing required field: category");
+
+  // File path validation - warn on invalid paths (TDMS compliance)
+  const normalizedFile = normalizeFilePath(mappedItem.file || "");
+  if (!isValidFilePath(normalizedFile)) {
+    warnings.push(
+      `Invalid file path: "${mappedItem.file || "(empty)"}". TDMS requires a real file path.`
+    );
+  }
 
   if (errors.length > 0) {
     return { valid: false, errors };
@@ -276,7 +298,7 @@ function validateAndNormalize(item, sourceFile) {
   if (mappedItem.evidence && mappedItem.evidence.length > 0)
     normalized.evidence = mappedItem.evidence;
 
-  return { valid: true, item: normalized, mappingMetadata };
+  return { valid: true, item: normalized, mappingMetadata, warnings };
 }
 
 // Load existing items from MASTER_DEBT.jsonl with safe JSON parsing
@@ -344,8 +366,8 @@ function logIntake(activity) {
   fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + "\n");
 }
 
-// Print processing results (new items, duplicates, errors, format stats)
-function printProcessingResults(newItems, duplicates, errors, formatStats) {
+// Print processing results (new items, duplicates, errors, format stats, warnings)
+function printProcessingResults(newItems, duplicates, errors, formatStats, filePathWarnings) {
   console.log("📊 Processing Results:\n");
   console.log(`  ✅ New items to add: ${newItems.length}`);
   console.log(`  ⏭️  Duplicates skipped: ${duplicates.length}`);
@@ -380,6 +402,19 @@ function printProcessingResults(newItems, duplicates, errors, formatStats) {
     for (const err of errors) {
       console.log(`    Line ${err.line}: ${err.errors.join(", ")}`);
     }
+  }
+
+  if (filePathWarnings && filePathWarnings.length > 0) {
+    console.log(
+      `\n  ⚠️  File path warnings: ${filePathWarnings.length} items have invalid file refs`
+    );
+    for (const w of filePathWarnings.slice(0, 10)) {
+      console.log(`    Line ${w.line}: "${w.title}" - ${w.warnings.join(", ")}`);
+    }
+    if (filePathWarnings.length > 10) {
+      console.log(`    ... and ${filePathWarnings.length - 10} more`);
+    }
+    console.log(`    ⚠️  TDMS requires real file paths. Fix before committing.`);
   }
 }
 
@@ -556,6 +591,7 @@ async function main() {
   const newItems = [];
   const duplicates = [];
   const errors = [];
+  const filePathWarnings = [];
   let nextId = getNextDebtId(existingItems);
 
   // Track Doc Standards format statistics
@@ -604,6 +640,15 @@ async function main() {
         continue;
       }
 
+      // Track file path warnings
+      if (result.warnings && result.warnings.length > 0) {
+        filePathWarnings.push({
+          line: i + 1,
+          title: normalizedItem.title.substring(0, 60),
+          warnings: result.warnings,
+        });
+      }
+
       // Assign DEBT ID
       normalizedItem.id = `DEBT-${String(nextId).padStart(4, "0")}`;
       nextId++;
@@ -620,7 +665,7 @@ async function main() {
   }
 
   // Report results
-  printProcessingResults(newItems, duplicates, errors, formatStats);
+  printProcessingResults(newItems, duplicates, errors, formatStats, filePathWarnings);
 
   // Write new items
   if (newItems.length === 0) {

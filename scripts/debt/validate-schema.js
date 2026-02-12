@@ -114,6 +114,19 @@ function validateItem(item, lineNum) {
     warnings.push(`Line ${lineNum}: Invalid content_hash format (expected 64 hex chars)`);
   }
 
+  // Validate file path is a real path (not a placeholder like "multiple" or "1")
+  if (item.file) {
+    const f = item.file;
+    const isNumericOnly = /^\d[\d-]*$/.test(f);
+    const isPlaceholder = ["multiple", "various", "several", "unknown", "n/a", "tbd"].includes(
+      f.toLowerCase()
+    );
+    const hasPathChars = f.includes(".") || f.includes("/");
+    if (isNumericOnly || isPlaceholder || !hasPathChars) {
+      warnings.push(`Line ${lineNum}: Invalid file path: "${f}" (TDMS requires a real file path)`);
+    }
+  }
+
   // Validate line number is non-negative
   if (item.line !== undefined && (typeof item.line !== "number" || item.line < 0)) {
     warnings.push(`Line ${lineNum}: Invalid line number: ${item.line}`);

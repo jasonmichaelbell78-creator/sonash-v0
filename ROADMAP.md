@@ -419,6 +419,22 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 - [ ] DEBT-0959: Pre-commit total time 15-30s developer friction (S2,
       pre-commit)
 
+**NEW from Session #152 Triage:**
+
+- [ ] DEBT-2748: Duplicate hook validation for Write+Edit+MultiEdit tools (S2,
+      check-edit-requirements.sh)
+- [ ] DEBT-2749: Firebase deployment lacks rollback on partial failure (S2,
+      deploy-firebase.yml)
+- [ ] DEBT-2751: SonarCloud not enforced in CI gates (S2, ci.yml)
+- [ ] DEBT-2752: Sentry disabled in dev mode by default (S2, sentry.client.ts)
+- [ ] DEBT-2753: Hook performance not tracked - no metrics (S2,
+      pattern-check.sh)
+- [ ] DEBT-2754: Pre-push duplicates pre-commit pattern checks (S2, pre-push)
+- [ ] DEBT-2785: Pre-commit hook parallelization - 40% faster (S2, pre-commit)
+- [ ] DEBT-2786: CI non-blocking checks should block (S2, ci.yml)
+- [ ] DEBT-2803: Consolidate regex pattern linter into ESLint plugin (S2,
+      check-pattern-compliance.js)
+
 #### Phase 1 - Quick Wins
 
 - [ ] **D1:** Pin Firebase CLI version (30min) [CANON-0112]
@@ -502,6 +518,20 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 - [x] **E19:** JSONL-based velocity tracking (2hr) -
       `scripts/velocity/track-session.js` + `generate-report.js` ✅ PR #356
 
+**NEW from Session #152 Triage:**
+
+- [ ] DEBT-2780: AI_WORKFLOW.md size optimization - 872 lines (S2,
+      AI_WORKFLOW.md)
+- [ ] DEBT-2781: Stale documentation markers - 96 TODO/TBD across 34 files (S2,
+      by-status.md)
+- [ ] DEBT-2782: Security guidance consolidation - overlapping docs (S2,
+      SECURITY.md)
+- [ ] DEBT-2783: Documentation effectiveness metrics (S2, docs/README.md)
+- [ ] DEBT-2784: Cross-reference navigation overhead (S2,
+      DOCUMENT_DEPENDENCIES.md)
+- [ ] DEBT-2787: Script consolidation - 30+ scripts with inconsistent CLI (S2,
+      scripts/README.md)
+
 ### Track O - Owner Actions (Jason - Manual Setup)
 
 > **PRIORITY:** Do these FIRST - they take only ~10 minutes total and provide
@@ -563,6 +593,15 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 - [ ] DEBT-0955: Large ResourcesPage not code-split (960 lines, ~50KB) (S2,
       resources-page.tsx:1)
 - [ ] DEBT-0960: Pre-push redundant checks (15-40s) (S2, pre-push)
+
+**NEW from Session #152 Triage:**
+
+- [ ] DEBT-2768: No performance benchmarks for pagination and data loading (S2,
+      resources-page.tsx)
+- [ ] DEBT-2772: Enable Next.js experimental optimizations + bundle analysis
+      (S2, next.config.mjs)
+- [ ] DEBT-2777: Lazy load Leaflet and Recharts with dynamic imports (S2,
+      meeting-map.tsx)
 
 #### P1: Image Optimization (4hr) - **CRITICAL**
 
@@ -691,7 +730,12 @@ category="security". Review and address as part of ongoing security hardening.
 Security-related code improvements, documentation needs tracked in
 MASTER_DEBT.jsonl.
 
-**Track S Total:** 58 items | ~30 hours estimated
+**NEW from Session #152 Triage:**
+
+- [ ] DEBT-2779: Add composite index for userId + timestamp on security_logs
+      (S2, firestore.indexes.json)
+
+**Track S Total:** 59 items | ~30 hours estimated
 
 ### Track T - Testing Infrastructure (NEW - Session #103)
 
@@ -765,6 +809,20 @@ MASTER_DEBT.jsonl.
 
 - [ ] DEBT-0942: Multiple 'any' types in test mock setup (10+ instances) (S1,
       firestore-service.test.ts:18)
+
+**NEW from Session #152 Triage:**
+
+- [ ] DEBT-2764: Missing Cloud Functions integration tests (S2, admin.ts)
+- [ ] DEBT-2765: No visual regression testing despite Playwright (S2,
+      package.json)
+- [ ] DEBT-2766: Coverage thresholds not enforced despite c8 (S2, package.json)
+- [ ] DEBT-2767: Limited script testing - 5 test files for 60+ scripts (S2,
+      callable-errors.test.ts)
+- [ ] DEBT-2769: Error boundary and Sentry integration not tested (S2,
+      error-boundary.tsx)
+- [ ] DEBT-2770: Flaky timing in rate limiter tests using real setTimeout (S2,
+      rate-limiter.test.ts)
+- [ ] DEBT-2771: msw installed but unused for API mocking (S2, package.json)
 
 #### Phase 7: Cloud Functions Testing (22hr) **NEW - Refactoring Audit**
 
@@ -950,6 +1008,32 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 - [ ] **ENH-0063:** Remove duplicate pattern check from pre-push hook (E0)
 - [ ] **ENH-0019:** Create shared `formatDate` utility for consistent date
       formatting (E1)
+
+**NEW from Session #152 Triage (UX/Copy):**
+
+- [ ] DEBT-2758: No focus trap management in modals and dialogs (S2, dialog.tsx)
+- [ ] DEBT-2759: Missing error state illustrations - plain text only (S2,
+      error-boundary.tsx)
+- [ ] DEBT-2760: Missing loading skeletons on data-heavy pages (S2,
+      today-page-skeleton.tsx)
+- [ ] DEBT-2761: No optimistic updates for form submissions (S2,
+      entry-wizard.tsx)
+- [ ] DEBT-2762: Missing keyboard shortcuts for power users (S2,
+      enhanced-mood-selector.tsx)
+- [ ] DEBT-2763: Form validation shows errors only on submit (S2, mood-form.tsx)
+- [ ] DEBT-2774: Add engines field to root package.json (S2, package.json)
+- [ ] DEBT-2788: Generic button labels - "Submit" instead of action-specific
+      (S2, admin-crud-table.tsx)
+- [ ] DEBT-2789: Error messages don't guide user to fix the problem (S2,
+      errors.ts)
+- [ ] DEBT-2790: Inconsistent terminology - meeting vs session (S2,
+      meeting-details-dialog.tsx)
+- [ ] DEBT-2791: Confirmation dialogs lack specific consequences (S2,
+      admin-crud-table.tsx)
+- [ ] DEBT-2792: Loading text inconsistency (S2, dashboard-tab.tsx)
+- [ ] DEBT-2793: Date formats inconsistent across the app (S2, date-utils.ts)
+- [ ] DEBT-2794: Success feedback messages too brief (S2, dashboard-tab.tsx)
+- [ ] DEBT-2800: Collocate related quote components (S2, daily-quote-card.tsx)
 
 ### In Progress
 
@@ -1402,6 +1486,24 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
       today-page.tsx:1)
 - [ ] DEBT-0941: Explicit 'any' type in production callback (S1,
       today-page.tsx:507)
+
+**NEW from Session #152 Triage (Refactoring):**
+
+- [ ] DEBT-2795: Consolidate duplicate mood selector components - 3
+      implementations (S2, mood-selector.tsx)
+- [ ] DEBT-2796: Extract meeting time parsing logic - ~80 lines duplicated (S2,
+      meetings.ts)
+- [ ] DEBT-2797: Migrate useAuth consumers to focused hooks - 16 components (S2,
+      use-journal.ts)
+- [ ] DEBT-2798: Extract common form state logic - ~150 lines duplicate (S2,
+      meetings-tab.tsx)
+- [ ] DEBT-2799: Create barrel exports for component directories (S2,
+      features/index.ts)
+- [ ] DEBT-2801: Standardize export style - 38 default vs 69 named (S2,
+      features/index.ts)
+- [ ] DEBT-2804: writeFileSync without atomic write pattern (S2,
+      suggest-pattern-automation.js)
+- [ ] DEBT-2805: writeFileSync without atomic write pattern (S2, archive-doc.js)
 
 ### Deferred Foundation Work
 
