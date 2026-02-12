@@ -25,6 +25,7 @@
  */
 
 import {
+  renameSync,
   readFileSync,
   writeFileSync,
   existsSync,
@@ -179,7 +180,34 @@ function safeWriteFile(filePath, content, description) {
   verbose(`Writing ${content.length} characters to ${description}`);
 
   try {
-    writeFileSync(filePath, content, "utf-8");
+    const tmpPath = filePath + ".tmp";
+    const bakPath = filePath + ".bak";
+    writeFileSync(tmpPath, content, "utf-8");
+    try {
+      // Backup-swap: preserve original until new file is in place
+      if (existsSync(filePath)) renameSync(filePath, bakPath);
+      renameSync(tmpPath, filePath);
+    } catch (error_) {
+      // Restore from backup if swap failed
+      try {
+        if (existsSync(bakPath) && !existsSync(filePath)) renameSync(bakPath, filePath);
+      } catch {
+        /* best effort restore */
+      }
+      throw error_;
+    } finally {
+      // Clean up temp/backup files
+      try {
+        if (existsSync(tmpPath)) unlinkSync(tmpPath);
+      } catch {
+        /* best effort */
+      }
+      try {
+        if (existsSync(bakPath)) unlinkSync(bakPath);
+      } catch {
+        /* best effort */
+      }
+    }
     return { success: true };
   } catch (error) {
     return {

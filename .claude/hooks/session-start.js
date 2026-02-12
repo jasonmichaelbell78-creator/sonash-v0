@@ -409,6 +409,24 @@ try {
   }
 }
 
+// Archive health check: warn if main log has too many active reviews
+try {
+  const logPath = path.join(projectDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+  if (fs.existsSync(logPath)) {
+    const logContent = fs.readFileSync(logPath, "utf8");
+    const reviewCount = (logContent.match(/^#### Review #\d+/gm) || []).length;
+    if (reviewCount > 25) {
+      console.log(
+        `   ⚠️ Archive overdue: ${reviewCount} active reviews in learnings log (threshold: 25)`
+      );
+      console.log("   Run: npm run docs:archive");
+      warnings++;
+    }
+  }
+} catch {
+  // Non-fatal
+}
+
 console.log("");
 
 // Technical Debt health check (TDMS)

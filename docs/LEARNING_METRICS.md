@@ -27,22 +27,42 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #213 - #306 (77 reviews) **Analysis Date:** 2026-02-12
+**Review Range:** #285 - #309 (25 reviews) **Analysis Date:** 2026-02-12
 
 ### Key Metrics
 
-| Metric                    | Value  |
-| ------------------------- | ------ |
-| Learning Effectiveness    | 100.0% |
-| Patterns Learned          | 5      |
-| Patterns Automated        | 0      |
-| Patterns Failing          | 0      |
-| Critical Pattern Success  | 100.0% |
-| Automation Coverage       | 740.0% |
-| Total Documented Patterns | 5      |
-| Total Automated Patterns  | 37     |
+| Metric                    | Value |
+| ------------------------- | ----- |
+| Learning Effectiveness    | 87.1% |
+| Patterns Learned          | 258   |
+| Patterns Automated        | 19    |
+| Patterns Failing          | 15    |
+| Critical Pattern Success  | 92.3% |
+| Automation Coverage       | 17.0% |
+| Total Documented Patterns | 318   |
+| Total Automated Patterns  | 54    |
 
 ### Top Recommended Actions
+
+1. **[Automation]** Automate "Regex anchoring for enums"
+   - Recurred 10 times after documentation \(Reviews: 302, 303, 304, 308, 309\)
+   - Action: Add pattern to check\-pattern\-compliance.js
+
+2. **[Automation]** Automate "Safe percentage"
+   - Recurred 8 times after documentation \(Reviews: 297, 298, 299, 308, 309\)
+   - Action: Add pattern to check\-pattern\-compliance.js
+
+3. **[Automation]** Automate "Windows atomic rename"
+   - Recurred 8 times after documentation \(Reviews: 297, 298, 299, 302, 308\)
+   - Action: Add pattern to check\-pattern\-compliance.js
+
+4. **[Documentation]** Improve documentation for "Unicode line separators"
+   - Recurred 2 times \- documentation may be unclear
+   - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
+
+5. **[Documentation]** Improve documentation for "Range clamping"
+   - Recurred 2 times \- documentation may be unclear
+   - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
 ---
 
@@ -50,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 5     | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 0     | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 0     | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 0     | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 258   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 19    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 26    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 15    | Pattern recurred 3+ times - needs automation |
 
 ---
 

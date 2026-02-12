@@ -30,13 +30,14 @@ else
   echo "  ⏭️ Skipping lint-staged (devDependency missing from node_modules)"
 fi
 
-# 3. Run pattern compliance check (catches issues before PR review tools)
+# 3. Run pattern compliance check on staged files (catches issues before PR review tools)
+# Review #308: Capture output once instead of running command twice
 echo "  ▶ Running pattern compliance..."
-if ! npm run patterns:check > /dev/null 2>&1; then
+if ! patterns_output="$(node scripts/check-pattern-compliance.js --staged 2>&1)"; then
   echo "  ❌ Pattern compliance failed"
-  npm run patterns:check 2>&1 | tail -15
+  printf '%s\n' "$patterns_output" | tail -15
   echo ""
-  echo "  Fix pattern issues before committing. Run: npm run patterns:check"
+  echo "  Fix pattern issues before committing. Run: node scripts/check-pattern-compliance.js --staged"
   exit 1
 fi
 echo "  ✅ Pattern compliance passed"

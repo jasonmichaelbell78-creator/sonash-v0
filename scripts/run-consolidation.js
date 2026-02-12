@@ -151,13 +151,15 @@ function getLastConsolidatedReview(content) {
  * Scoped to "Consolidation Trigger" section for robustness (Review #160)
  */
 function getConsolidationStatus(content) {
-  // COMPUTED: count actual review entries > last consolidated (gap-safe)
-  // Review #215: Use Set counting instead of subtraction to handle gaps
-  const lastConsolidated = getLastConsolidatedReview(content);
-  const versionRegex =
-    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):/g;
+  // COMPUTED: count actual #### Review #N entries > last consolidated (gap-safe)
+  // Fixed: was using version-table regex which doesn't match review headers
+  let lastConsolidated = getLastConsolidatedReview(content);
 
-  const allNums = Array.from(content.matchAll(versionRegex), (m) => Number.parseInt(m[1], 10));
+  // Review #308: Extract cross-validation to reduce cognitive complexity
+  lastConsolidated = crossValidateLastConsolidated(lastConsolidated);
+
+  const reviewHeaderRegex = /^#### Review #(\d+)/gm;
+  const allNums = Array.from(content.matchAll(reviewHeaderRegex), (m) => Number.parseInt(m[1], 10));
   const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
 
   // Review #216: Use reduce to avoid -Infinity and stack overflow on large arrays
@@ -165,40 +167,86 @@ function getConsolidationStatus(content) {
   const computedCount = uniqueNums.size;
 
   // Scope parsing to Consolidation Trigger section only (Review #160)
-  const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");
-  const sectionEnd = content.indexOf("\n## ", sectionStart + 1);
+  const triggerStatus = parseTriggerSection(content, computedCount);
 
+  return {
+    reviewCount: computedCount,
+    manualCount: triggerStatus.manualCount,
+    lastConsolidation: triggerStatus.lastConsolidation,
+    lastReviewNum: lastConsolidated,
+    highestReview,
+  };
+}
+
+/**
+ * Cross-validate lastConsolidated against CODE_PATTERNS.md version history
+ * Review #308: Extracted to reduce cognitive complexity and apply mismatch fix
+ */
+function crossValidateLastConsolidated(lastConsolidated) {
+  const codePatternsPath = join(__dirname, "..", "docs", "agent_docs", "CODE_PATTERNS.md");
+  if (!existsSync(codePatternsPath)) return lastConsolidated;
+
+  try {
+    const cpContent = readFileSync(codePatternsPath, "utf8");
+    const consolidationRegex = /CONSOLIDATION #(\d+):\s*Reviews #(\d+)-(\d+)/g;
+    let cpMaxConsolidation = 0;
+    let cpLastReview = 0;
+    for (const m of cpContent.matchAll(consolidationRegex)) {
+      const cNum = Number.parseInt(m[1], 10);
+      const endReview = Number.parseInt(m[3], 10);
+      if (cNum > cpMaxConsolidation) {
+        cpMaxConsolidation = cNum;
+        cpLastReview = endReview;
+      }
+    }
+    if (cpLastReview > 0 && cpLastReview !== lastConsolidated) {
+      if (!quiet) {
+        console.log(
+          `${colors.yellow}⚠️  CROSS-VALIDATION: Log says last consolidated=#${lastConsolidated}, ` +
+            `CODE_PATTERNS.md says #${cpLastReview} (Consolidation #${cpMaxConsolidation})${colors.reset}`
+        );
+        console.log(`   → CODE_PATTERNS.md is the source of truth\n`);
+      }
+      return cpLastReview;
+    }
+  } catch (err) {
+    if (verbose) {
+      console.warn(
+        `  ⚠️  Cross-validation skipped: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
+  }
+  return lastConsolidated;
+}
+
+/**
+ * Parse the Consolidation Trigger section for manual count and date
+ * Review #308: Extracted to reduce cognitive complexity of getConsolidationStatus
+ */
+function parseTriggerSection(content, computedCount) {
+  const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");
   if (sectionStart === -1) {
     throw new Error("Could not locate 'Consolidation Trigger' section in log file.");
   }
 
+  const sectionEnd = content.indexOf("\n## ", sectionStart + 1);
   const endIndex = sectionEnd === -1 ? content.length : sectionEnd;
   const section = content.slice(sectionStart, endIndex);
 
-  // MANUAL: Extract consolidation counter for cross-validation
   const counterMatch = section.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
   const manualCount = counterMatch ? Number.parseInt(counterMatch[1], 10) || 0 : 0;
 
-  // Cross-validation: warn if manual counter drifted from computed
   if (manualCount !== computedCount && !quiet) {
     console.log(
       `${colors.yellow}⚠️  COUNTER DRIFT: Manual=${manualCount}, Computed=${computedCount}${colors.reset}`
     );
-    console.log(`   Using COMPUTED value for threshold check.`);
-    console.log("");
+    console.log(`   Using COMPUTED value for threshold check.\n`);
   }
 
   const lastConsolidationMatch = section.match(/\*\*Date:\*\*\s+([^\n]+)/);
   const lastConsolidation = lastConsolidationMatch ? lastConsolidationMatch[1].trim() : "Unknown";
 
-  // Return computed count (authoritative) and parsed lastReviewNum for extractRecentReviews
-  return {
-    reviewCount: computedCount, // Use COMPUTED, not manual
-    manualCount, // Keep for reporting
-    lastConsolidation,
-    lastReviewNum: lastConsolidated, // Use parsed value
-    highestReview,
-  };
+  return { manualCount, lastConsolidation };
 }
 
 /**
@@ -207,14 +255,12 @@ function getConsolidationStatus(content) {
 function extractRecentReviews(content, lastReviewNum) {
   const reviews = [];
 
-  // Match review entries in version history
-  // Format: | X.X | YYYY-MM-DD | Review #NNN: Description |
-  // Use bounded quantifiers to prevent ReDoS (Review #157)
-  const versionRegex =
-    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):\s{0,5}([^|]{1,500})/g;
+  // Match review entries as #### Review #NNN: Description (actual format in learnings log)
+  // Fixed: was using version-table regex which doesn't exist in the learnings log
+  const reviewRegex = /^#### Review #(\d{1,4}):\s*(.{1,500})/gm;
   let match;
 
-  while ((match = versionRegex.exec(content)) !== null) {
+  while ((match = reviewRegex.exec(content)) !== null) {
     const reviewNum = Number.parseInt(match[1], 10);
     const description = match[2].trim();
 
@@ -383,12 +429,46 @@ function categorizePatterns(patterns) {
 }
 
 /**
+ * Format a single recurring pattern line for the report.
+ */
+function formatPatternLine(p) {
+  const marker = p.isExplicitPattern ? "📌" : "🔄";
+  const revList = Array.isArray(p.reviews) && p.reviews.length > 0 ? p.reviews.join(", ") : "";
+  let line = `  ${marker} ${p.pattern} (${p.count}x in Reviews ${revList})\n`;
+  if (verbose && p.examples.length > 0) {
+    line += `     Example: "${p.examples[0]}"\n`;
+  }
+  return line;
+}
+
+/**
+ * Format category summary lines for the report.
+ */
+function formatCategorySummary(categories) {
+  let summary = "";
+  for (const [category, items] of Object.entries(categories)) {
+    const significant = items.filter(
+      (p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern
+    );
+    if (significant.length > 0) {
+      summary += `  ${category}: ${significant.length} pattern(s)\n`;
+    }
+  }
+  return summary;
+}
+
+/**
  * Generate consolidation report
  */
 function generateReport(reviews, patterns, categories) {
   const recurringPatterns = Array.from(patterns.values())
     .filter((p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern)
-    .sort((a, b) => b.count - a.count);
+    .sort(
+      (a, b) =>
+        b.count - a.count ||
+        (b.reviews?.length || 0) - (a.reviews?.length || 0) ||
+        String(a.pattern || "").localeCompare(String(b.pattern || ""))
+    );
 
   let report = "";
   report += `\n${colors.bold}📊 Consolidation Analysis Report${colors.reset}\n`;
@@ -403,23 +483,12 @@ function generateReport(reviews, patterns, categories) {
     report += "  No recurring patterns found.\n";
   } else {
     for (const p of recurringPatterns) {
-      const marker = p.isExplicitPattern ? "📌" : "🔄";
-      report += `  ${marker} ${p.pattern} (${p.count}x in Reviews ${p.reviews.join(", ")})\n`;
-      if (verbose && p.examples.length > 0) {
-        report += `     Example: "${p.examples[0]}"\n`;
-      }
+      report += formatPatternLine(p);
     }
   }
 
   report += `\n${colors.bold}Patterns by category:${colors.reset}\n`;
-  for (const [category, items] of Object.entries(categories)) {
-    const significant = items.filter(
-      (p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern
-    );
-    if (significant.length > 0) {
-      report += `  ${category}: ${significant.length} pattern(s)\n`;
-    }
-  }
+  report += formatCategorySummary(categories);
 
   return { report, recurringPatterns };
 }
@@ -496,7 +565,9 @@ function generatePatternSuggestions(recurringPatterns, categories) {
 
     for (const p of significant) {
       // Example available at p.examples[0] for future use
-      suggestions += `| ${p.pattern} | (add rule) | Reviews #${p.reviews.join(", ")} |\n`;
+      const revList =
+        Array.isArray(p.reviews) && p.reviews.length > 0 ? `#${p.reviews.join(", ")}` : "";
+      suggestions += `| ${p.pattern} | (add rule) | Reviews ${revList || "(unknown)"} |\n`;
     }
   }
 
@@ -563,6 +634,9 @@ function applyConsolidationChanges(content, reviews, recurringPatterns) {
   );
   log(`  ✅ Next consolidation due after Review #${nextConsolidationReview}`, colors.green);
 
+  // Generate suggested compliance checker rules for recurring patterns
+  generateRuleSuggestions(recurringPatterns, consolidatedRange);
+
   // Output summary based on mode
   if (autoMode) {
     console.log(
@@ -590,6 +664,71 @@ function outputManualSteps() {
 }
 
 /**
+ * Generate suggested compliance checker rules for recurring patterns
+ * Writes to consolidation-output/suggested-rules.md for human/AI review
+ */
+function generateRuleSuggestions(recurringPatterns, consolidatedRange) {
+  if (recurringPatterns.length === 0) return;
+
+  const outputDir = join(__dirname, "..", "consolidation-output");
+  const outputFile = join(outputDir, "suggested-rules.md");
+
+  try {
+    if (!existsSync(outputDir)) {
+      const { mkdirSync } = require("node:fs");
+      mkdirSync(outputDir, { recursive: true });
+    }
+
+    const now = new Date().toISOString().split("T")[0];
+    let content = `# Suggested Compliance Checker Rules\n\n`;
+    content += `**Generated:** ${now}\n`;
+    content += `**Source:** Consolidation #${consolidatedRange.start}-#${consolidatedRange.end}\n`;
+    content += `**Status:** Pending review - add to check-pattern-compliance.js as appropriate\n\n`;
+    content += `---\n\n`;
+
+    for (const p of recurringPatterns) {
+      // Review #308: Use replaceAll, group regex alternation for precedence
+      const id = (p.pattern || "")
+        .toLowerCase()
+        .replaceAll(/[^a-z0-9]+/g, "-")
+        .replaceAll(/(?:^-|-$)/g, "")
+        .slice(0, 40);
+
+      content += `## ${p.pattern}\n\n`;
+      const revRefs =
+        Array.isArray(p.reviews) && p.reviews.length > 0 ? `#${p.reviews.join(", #")}` : "";
+      content += `- **Mentions:** ${p.count} (Reviews: ${revRefs || "(unknown)"})\n`;
+      content += `- **Suggested ID:** \`${id || "unnamed-pattern"}\`\n`;
+      content += `- **Enforceability:** [REGEX] / [AST] / [SEMANTIC] ← classify manually\n`;
+      content += `- **Template:**\n\n`;
+      content += "```javascript\n";
+      content += `{\n`;
+      content += `  id: ${JSON.stringify(id || "unnamed-pattern")},\n`;
+      content += `  pattern: /TODO_REGEX/g,\n`;
+      content += `  message: ${JSON.stringify(p.pattern || "")},\n`;
+      content += `  fix: "TODO: describe the correct pattern",\n`;
+      const reviewStr =
+        Array.isArray(p.reviews) && p.reviews.length > 0 ? `#${p.reviews.join(", #")}` : "";
+      content += `  review: ${JSON.stringify(reviewStr)},\n`;
+      content += `  fileTypes: [".js", ".ts"],\n`;
+      content += `}\n`;
+      content += "```\n\n";
+    }
+
+    writeFileSync(outputFile, content, "utf8");
+    log(
+      `  ✅ Rule suggestions written to consolidation-output/suggested-rules.md (${recurringPatterns.length} patterns)`,
+      colors.green
+    );
+  } catch (error_) {
+    // Non-fatal: don't fail consolidation if rule suggestions can't be written
+    if (verbose) {
+      log(`  ⚠️  Failed to write rule suggestions: ${sanitizeError(error_)}`, colors.yellow);
+    }
+  }
+}
+
+/**
  * Output dry run message
  */
 function outputDryRunMessage() {
@@ -599,6 +738,33 @@ function outputDryRunMessage() {
   );
   log(`  npm run consolidation:run -- --apply`);
   log("");
+}
+
+/**
+ * Check archive health: warn if active reviews exceed threshold
+ */
+function checkArchiveHealth() {
+  try {
+    const logContent = readFileSync(LOG_FILE, "utf8").replaceAll("\r\n", "\n");
+    const reviewHeaders = logContent.match(/^#### Review #\d+/gm) || [];
+    const activeCount = reviewHeaders.length;
+    const lineCount = logContent.split("\n").length;
+
+    if (activeCount > 20 || lineCount > 1500) {
+      log("");
+      log(
+        `${colors.yellow}📦 ARCHIVE RECOMMENDED: ${activeCount} active reviews (threshold: 20), ${lineCount} lines (threshold: 1500)${colors.reset}`
+      );
+      log(`   Run: npm run docs:archive`);
+    }
+  } catch (err) {
+    // Non-fatal: log and skip if file unreadable
+    if (verbose) {
+      console.warn(
+        `  ⚠️  Archive health check skipped: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
+  }
 }
 
 /**
@@ -721,6 +887,9 @@ function main() {
           }
         }
 
+        // Post-consolidation: check if archiving is needed
+        checkArchiveHealth();
+
         process.exitCode = 0;
         return;
       }
@@ -729,6 +898,10 @@ function main() {
       return;
     } else {
       outputDryRunMessage();
+
+      // Also check archive health in dry-run mode (informational)
+      checkArchiveHealth();
+
       process.exitCode = 1;
     }
   } catch (err) {

@@ -97,6 +97,41 @@ function refuseSymlink(filePath) {
   }
 }
 
+/**
+ * Find the end index of a JS array declaration in source text.
+ * Review #309: Extracted from loadAutomatedPatterns to reduce cognitive complexity.
+ * Review #311: Use bracket-depth counting only (regex can false-match inner `];`).
+ */
+function findArrayEnd(content, startIdx) {
+  const openIdx = content.indexOf("[", startIdx);
+  if (openIdx === -1) return content.length;
+  let depth = 0;
+  for (let i = openIdx; i < content.length; i++) {
+    if (content[i] === "[") depth++;
+    else if (content[i] === "]") {
+      depth--;
+      if (depth === 0) return i + 1;
+    }
+  }
+  return content.length;
+}
+
+/**
+ * Parse a single pattern block from the ANTI_PATTERNS array source text.
+ * Review #309: Extracted from loadAutomatedPatterns to reduce cognitive complexity.
+ */
+function parsePatternBlock(block) {
+  const idMatch = block.match(/["'`]([^"'`]+)["'`]/);
+  if (!idMatch) return null;
+  const messageMatch = block.match(/message:\s*["'`]([^"'`]+)["'`]/);
+  const reviewMatch = block.match(/review:\s*["'`]([^"'`]+)["'`]/);
+  return {
+    id: idMatch[1],
+    message: messageMatch ? messageMatch[1] : "",
+    reviewRefs: reviewMatch ? reviewMatch[1] : "",
+  };
+}
+
 class LearningEffectivenessAnalyzer {
   constructor(options = {}) {
     this.options = {
@@ -328,50 +363,72 @@ class LearningEffectivenessAnalyzer {
     }
 
     const lines = content.split("\n");
-    let currentPattern = null;
-    let currentPriority = null;
+    let currentCategory = null;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
-      // Match priority sections
-      if (line.match(/^##\s+[🔴🟡⚪]/u)) {
-        currentPriority = line.includes("🔴")
-          ? "Critical"
-          : line.includes("🟡")
-            ? "Important"
-            : "Edge case";
+      // Track current category (## Category Name)
+      if (line.match(/^## /)) {
+        currentCategory = line.replace(/^##\s+/, "").trim();
       }
 
-      // Match pattern headers (### 1. Pattern Name)
+      // Parse ### header patterns (Critical quick reference section)
       if (line.startsWith("### ")) {
-        if (currentPattern) {
-          this.documentedPatterns.push(currentPattern);
+        const name = line.replace(/^###\s+\d+\.\s*/, "").trim();
+        if (name && !name.match(/^(When to|Key Metrics|Top Recommended|Pattern Learning)/)) {
+          const sourceReviews = [];
+          // Scan next few lines for review references
+          for (let j = i + 1; j < Math.min(i + 20, lines.length); j++) {
+            if (lines[j].startsWith("### ") || lines[j].startsWith("## ")) break;
+            const reviewMatches = lines[j].match(/Review #(\d+)/g);
+            if (reviewMatches) {
+              reviewMatches.forEach((match) => {
+                const num = Number.parseInt(match.replace("Review #", ""), 10);
+                if (!sourceReviews.includes(num)) sourceReviews.push(num);
+              });
+            }
+          }
+          this.documentedPatterns.push({
+            name,
+            priority: "Critical",
+            category: currentCategory,
+            sourceReviews,
+            keywords: this.extractKeywords(name),
+          });
+        }
+      }
+
+      // Parse table-row patterns (main format: | Priority | Pattern | Rule | Why |)
+      // Review #309: Fixed ReDoS (S5852) - removed \s* before [^|]* to eliminate overlapping quantifiers
+      const tableMatch = line.match(/^\|\s*([🔴🟡⚪])\s*\|([^|]*)\|([^|]*)\|([^|]*)/u);
+      if (tableMatch) {
+        const [, emoji, patternName, ,] = tableMatch;
+        const name = patternName.trim();
+        if (!name || name === "Pattern" || name === "---") continue; // Skip header rows
+
+        // Review #308: Extract nested ternary into helper map
+        const priorityMap = { "🔴": "Critical", "🟡": "Important" };
+        const priority = priorityMap[emoji] || "Edge case";
+
+        // Extract review references from the row
+        const sourceReviews = [];
+        const reviewMatches = line.match(/Review #(\d+)/g);
+        if (reviewMatches) {
+          reviewMatches.forEach((match) => {
+            const num = Number.parseInt(match.replace("Review #", ""), 10);
+            if (!sourceReviews.includes(num)) sourceReviews.push(num);
+          });
         }
 
-        const name = line.replace(/^###\s+\d+\.\s*/, "").trim();
-        currentPattern = {
+        this.documentedPatterns.push({
           name,
-          priority: currentPriority,
-          sourceReviews: [],
+          priority,
+          category: currentCategory,
+          sourceReviews,
           keywords: this.extractKeywords(name),
-        };
-      }
-
-      // Extract source reviews (Review #123)
-      const reviewMatches = line.match(/Review #(\d+)/g);
-      if (reviewMatches && currentPattern) {
-        reviewMatches.forEach((match) => {
-          const num = Number.parseInt(match.replaceAll("Review #", ""));
-          if (!currentPattern.sourceReviews.includes(num)) {
-            currentPattern.sourceReviews.push(num);
-          }
         });
       }
-    }
-
-    if (currentPattern) {
-      this.documentedPatterns.push(currentPattern);
     }
 
     console.log(
@@ -392,6 +449,7 @@ class LearningEffectivenessAnalyzer {
 
   /**
    * Load automated patterns from check-pattern-compliance.js
+   * Review #309: Extracted helpers to reduce cognitive complexity from 22 to <15
    */
   async loadAutomatedPatterns() {
     if (!existsSync(PATTERN_CHECKER)) {
@@ -407,27 +465,23 @@ class LearningEffectivenessAnalyzer {
       return;
     }
 
-    // Extract ANTI_PATTERNS array
-    const match = content.match(/const ANTI_PATTERNS = \[([\s\S]*?)\];/);
-    if (!match) {
-      console.warn("⚠️  Could not parse ANTI_PATTERNS from checker");
+    const startIdx = content.indexOf("const ANTI_PATTERNS = [");
+    if (startIdx === -1) {
+      console.warn("⚠️  Could not find ANTI_PATTERNS in checker");
       return;
     }
 
-    const patternsText = match[1];
+    // Review #309: Use regex to find array end instead of bracket-depth loop
+    const endIdx = findArrayEnd(content, startIdx);
+    const patternsText = content.slice(startIdx, endIdx);
     const patternBlocks = patternsText.split(/\{\s*id:/g).slice(1);
 
     for (const block of patternBlocks) {
-      const idMatch = block.match(/["']([^"']+)["']/);
-      const messageMatch = block.match(/message:\s*["']([^"']+)["']/);
-      const reviewMatch = block.match(/review:\s*["']([^"']+)["']/);
-
-      if (idMatch) {
+      const parsed = parsePatternBlock(block);
+      if (parsed) {
         this.automatedPatterns.push({
-          id: idMatch[1],
-          message: messageMatch ? messageMatch[1] : "",
-          reviewRefs: reviewMatch ? reviewMatch[1] : "",
-          keywords: this.extractKeywords(idMatch[1] + " " + (messageMatch ? messageMatch[1] : "")),
+          ...parsed,
+          keywords: this.extractKeywords(parsed.id + " " + parsed.message),
         });
       }
     }
