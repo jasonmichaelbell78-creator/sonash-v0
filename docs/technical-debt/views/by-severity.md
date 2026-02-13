@@ -1347,7 +1347,7 @@
 | DEBT-2753 | Hook performance not tracked - no metrics on execution time    | multiple                                                                     | 0    | code-quality  | E2     |
 | DEBT-2754 | Pre-push duplicates pre-commit pattern checks                  | 1                                                                            | 0    | code-quality  | E0     |
 | DEBT-2755 | Untitled finding                                               | N/A                                                                          | 0    | code-quality  | E1     |
-| DEBT-2826 | Missing ARIA labels on critical navigation tabs                | multiple                                                                     | 0    | code-quality  | E0     |
+| DEBT-2832 | Missing ARIA labels on critical navigation tabs                | multiple                                                                     | 0    | code-quality  | E0     |
 | DEBT-2757 | Small touch targets on mobile - tabs only 8-10px padding       | multiple                                                                     | 0    | code-quality  | E1     |
 | DEBT-2758 | No focus trap management in modals and dialogs                 | multiple                                                                     | 0    | code-quality  | E2     |
 | DEBT-2759 | Missing error state illustrations - plain text errors only     | multiple                                                                     | 0    | code-quality  | E2     |
@@ -1365,16 +1365,16 @@
 | DEBT-2771 | msw installed but unused for API mocking                       | 1                                                                            | 0    | code-quality  | E2     |
 | DEBT-2772 | Enable Next.js experimental optimizations and bundle anal...   | 12-19                                                                        | 0    | code-quality  | E0     |
 | DEBT-2773 | Add Content-Security-Policy header to Firebase hosting co...   | 6-57                                                                         | 0    | code-quality  | E1     |
-| DEBT-2825 | Add engines field to root package.json for CI/CD consistency   | 1-165                                                                        | 0    | code-quality  | E0     |
+| DEBT-2831 | Add engines field to root package.json for CI/CD consistency   | 1-165                                                                        | 0    | code-quality  | E0     |
 | DEBT-2775 | Firestore security rules file not found in repository          | 72-74                                                                        | 0    | code-quality  | E0     |
 | DEBT-2776 | Configure Next.js build cache and dependency caching for ...   | 12                                                                           | 0    | code-quality  | E1     |
 | DEBT-2777 | Lazy load Leaflet and Recharts with dynamic imports and S...   | 1-80                                                                         | 0    | code-quality  | E2     |
 | DEBT-2778 | Upgrade Firebase Functions to Node.js 24 runtime               | 68                                                                           | 0    | code-quality  | E1     |
 | DEBT-2779 | Add composite index for userId + timestamp on security_lo...   | 18-80                                                                        | 0    | code-quality  | E0     |
 | DEBT-2780 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | 1                                                                            | 0    | code-quality  | E2     |
-| DEBT-2823 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | multiple                                                                     | 0    | code-quality  | E1     |
+| DEBT-2829 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | multiple                                                                     | 0    | code-quality  | E1     |
 | DEBT-2782 | Security guidance consolidation - multiple overlapping se...   | 1                                                                            | 0    | code-quality  | E2     |
-| DEBT-2824 | Documentation effectiveness metrics - no tracking of whic...   | multiple                                                                     | 0    | code-quality  | E2     |
+| DEBT-2830 | Documentation effectiveness metrics - no tracking of whic...   | multiple                                                                     | 0    | code-quality  | E2     |
 | DEBT-2784 | Cross-reference navigation overhead in documentation           | 1                                                                            | 0    | code-quality  | E1     |
 | DEBT-2785 | Pre-commit hook parallelization - sequential checks could...   | 1                                                                            | 0    | code-quality  | E2     |
 | DEBT-2786 | CI non-blocking checks should block - 5 checks use contin...   | 1                                                                            | 0    | code-quality  | E1     |
@@ -1384,7 +1384,7 @@
 | DEBT-2790 | Inconsistent terminology - meeting vs session vs appointment   | multiple                                                                     | 0    | code-quality  | E1     |
 | DEBT-2791 | Confirmation dialogs lack specific consequences                | multiple                                                                     | 0    | code-quality  | E0     |
 | DEBT-2792 | Loading text inconsistency - Loading... vs Fetching vs sp...   | multiple                                                                     | 0    | code-quality  | E0     |
-| DEBT-2822 | Date formats inconsistent across the app                       | multiple                                                                     | 0    | code-quality  | E1     |
+| DEBT-2828 | Date formats inconsistent across the app                       | multiple                                                                     | 0    | code-quality  | E1     |
 | DEBT-2794 | Success feedback messages too brief                            | multiple                                                                     | 0    | code-quality  | E0     |
 | DEBT-2795 | Consolidate duplicate mood selector components - 3 implem...   | 1                                                                            | 0    | code-quality  | E1     |
 | DEBT-2796 | Extract meeting time parsing logic - ~80 lines duplicated...   | 1                                                                            | 0    | code-quality  | E1     |
@@ -1399,12 +1399,12 @@
 | DEBT-2805 | writeFileSync without atomic write pattern                     | scripts/archive-doc.js                                                       | 182  | code-quality  | E0     |
 | DEBT-2806 | Inconsistent loading states - spinners vs text vs skeleto...   | multiple                                                                     | 0    | enhancements  | E2     |
 | DEBT-2807 | Generic button labels - Submit used instead of action-spe...   | components/journal/journal-entry-form.tsx                                    | 1    | enhancements  | E0     |
-| DEBT-2828 | Date formats inconsistent across the app                       | multiple                                                                     | 0    | enhancements  | E1     |
-| DEBT-2829 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | multiple                                                                     | 0    | enhancements  | E1     |
+| DEBT-2833 | Date formats inconsistent across the app                       | multiple                                                                     | 0    | enhancements  | E1     |
+| DEBT-2834 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | multiple                                                                     | 0    | enhancements  | E1     |
 | DEBT-2810 | Security guidance consolidation - multiple overlapping se...   | docs/SECURITY.md                                                             | 1    | enhancements  | E2     |
-| DEBT-2830 | Documentation effectiveness metrics - no tracking of whic...   | multiple                                                                     | 0    | enhancements  | E2     |
-| DEBT-2831 | Add engines field to root package.json for CI/CD consistency   | 1-165                                                                        | 0    | enhancements  | E0     |
-| DEBT-2832 | Missing ARIA labels on critical navigation tabs                | multiple                                                                     | 0    | enhancements  | E0     |
+| DEBT-2835 | Documentation effectiveness metrics - no tracking of whic...   | multiple                                                                     | 0    | enhancements  | E2     |
+| DEBT-2836 | Add engines field to root package.json for CI/CD consistency   | 1-165                                                                        | 0    | enhancements  | E0     |
+| DEBT-2837 | Missing ARIA labels on critical navigation tabs                | multiple                                                                     | 0    | enhancements  | E0     |
 | DEBT-2814 | Pre-push duplicates pre-commit pattern checks                  | .husky/pre-push                                                              | 1    | enhancements  | E0     |
 
 ## S3 - Low (807)
