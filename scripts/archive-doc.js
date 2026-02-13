@@ -26,6 +26,7 @@
 
 import {
   renameSync,
+  rmSync,
   readFileSync,
   writeFileSync,
   existsSync,
@@ -185,12 +186,17 @@ function safeWriteFile(filePath, content, description) {
     writeFileSync(tmpPath, content, "utf-8");
     try {
       // Backup-swap: preserve original until new file is in place
+      if (existsSync(bakPath)) rmSync(bakPath, { force: true });
       if (existsSync(filePath)) renameSync(filePath, bakPath);
+      if (existsSync(filePath)) rmSync(filePath, { force: true });
       renameSync(tmpPath, filePath);
     } catch (error_) {
       // Restore from backup if swap failed
       try {
-        if (existsSync(bakPath) && !existsSync(filePath)) renameSync(bakPath, filePath);
+        if (existsSync(bakPath) && !existsSync(filePath)) {
+          if (existsSync(filePath)) rmSync(filePath, { force: true });
+          renameSync(bakPath, filePath);
+        }
       } catch {
         /* best effort restore */
       }
