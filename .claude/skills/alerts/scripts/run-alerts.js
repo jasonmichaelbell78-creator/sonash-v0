@@ -214,7 +214,8 @@ function loadMasterDebt() {
         }
       })
       .filter(Boolean);
-  } catch {
+  } catch (err) {
+    console.error(`  [warn] Failed to load MASTER_DEBT.jsonl: ${err.message}`);
     return [];
   }
 }
@@ -262,7 +263,8 @@ function computeTrend(logPath, valueField, windowSize = 5) {
     }
 
     return { direction, values, delta, deltaPercent };
-  } catch {
+  } catch (err) {
+    console.error(`  [warn] Failed to compute trend from ${logPath}: ${err.message}`);
     return null;
   }
 }
@@ -329,8 +331,10 @@ function loadBaseline() {
     if (baselineDate === today) {
       return baseline;
     }
-  } catch {
-    // No baseline or can't read
+  } catch (err) {
+    if (err.code !== "ENOENT") {
+      console.error(`  [warn] Failed to load baseline: ${err.message}`);
+    }
   }
   return null;
 }
@@ -365,8 +369,8 @@ function saveBaseline() {
       fs.mkdirSync(stateDir, { recursive: true });
     }
     fs.writeFileSync(BASELINE_PATH, JSON.stringify(baseline, null, 2));
-  } catch {
-    // Can't save — not critical
+  } catch (err) {
+    console.error(`  [warn] Failed to save baseline: ${err.message}`);
   }
 }
 
@@ -377,12 +381,16 @@ function computeDelta() {
   const baseline = loadBaseline();
   if (!baseline || !baseline.healthScore) return null;
 
+  // Validate baseline shape: score must be a number, grade a string
+  const bs = baseline.healthScore;
+  if (typeof bs.score !== "number" || typeof bs.grade !== "string") return null;
+
   const delta = {
-    scoreBefore: baseline.healthScore.score,
-    gradeBefore: baseline.healthScore.grade,
+    scoreBefore: bs.score,
+    gradeBefore: bs.grade,
     scoreAfter: results.healthScore.score,
     gradeAfter: results.healthScore.grade,
-    scoreDelta: results.healthScore.score - baseline.healthScore.score,
+    scoreDelta: results.healthScore.score - bs.score,
     summaryBefore: baseline.summary,
     summaryAfter: results.summary,
     categoryChanges: {},
@@ -1287,12 +1295,13 @@ function checkHookWarnings() {
     );
   }
 
-  // Age check
-  const oldest = deduped.reduce((min, w) => {
-    const d = new Date(w.timestamp);
-    return d < min ? d : min;
-  }, new Date());
-  const ageDays = Math.floor((Date.now() - oldest.getTime()) / (1000 * 60 * 60 * 24));
+  // Age check — filter out entries with invalid/missing timestamps
+  const validDates = deduped.map((w) => new Date(w.timestamp)).filter((d) => !isNaN(d.getTime()));
+  const oldest =
+    validDates.length > 0
+      ? validDates.reduce((min, d) => (d < min ? d : min), validDates[0])
+      : null;
+  const ageDays = oldest ? Math.floor((Date.now() - oldest.getTime()) / (1000 * 60 * 60 * 24)) : 0;
   if (ageDays > 3) {
     addAlert(
       "hook-warnings",
@@ -1368,10 +1377,14 @@ function checkTestResults() {
   const total = resultsParsed.length;
   const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
 
-  const latestTimestamp = resultsParsed.reduce((max, r) => {
-    const t = new Date(r.timestamp);
-    return t > max ? t : max;
-  }, new Date(0));
+  // Filter out entries with invalid/missing timestamps before computing age
+  const validTestDates = resultsParsed
+    .map((r) => new Date(r.timestamp))
+    .filter((d) => !isNaN(d.getTime()));
+  const latestTimestamp =
+    validTestDates.length > 0
+      ? validTestDates.reduce((max, d) => (d > max ? d : max), validTestDates[0])
+      : new Date(0);
   const ageDays = Math.floor((Date.now() - latestTimestamp.getTime()) / (1000 * 60 * 60 * 24));
 
   if (failed > 0) {
