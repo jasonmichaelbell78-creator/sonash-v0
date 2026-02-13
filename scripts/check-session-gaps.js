@@ -202,9 +202,25 @@ function main() {
   let source = "commit-log.jsonl";
 
   if (commits.length === 0) {
-    // No commit log yet — fall back to git log for initial analysis
-    commits = getRecentCommitsFromGit(50);
-    source = "git log (commit-log.jsonl not yet populated)";
+    // No commit log yet — auto-seed from git history so future runs use the file
+    console.log("commit-log.jsonl missing — auto-seeding from git history...");
+    try {
+      execFileSync("node", [path.join(projectDir, "scripts", "seed-commit-log.js"), "50"], {
+        cwd: projectDir,
+        encoding: "utf8",
+        timeout: 15000,
+        stdio: "inherit",
+      });
+      // Re-read after seeding
+      commits = readCommitLog();
+      source = "commit-log.jsonl (auto-seeded)";
+    } catch {
+      // Seed failed — fall back to git log for this run
+    }
+    if (commits.length === 0) {
+      commits = getRecentCommitsFromGit(50);
+      source = "git log (auto-seed failed, using fallback)";
+    }
   }
 
   if (commits.length === 0) {

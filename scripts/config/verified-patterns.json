@@ -93,7 +93,8 @@
     "surface-lessons-learned.js",
     "suggest-pattern-automation.js"
   ],
-  "unguarded-loadconfig": ["surface-lessons-learned.js"],
+  "unguarded-loadconfig": ["surface-lessons-learned.js", "check-session-gaps.js"],
+  "json-parse-without-try": ["check-session-gaps.js"],
   "unescaped-regexp-input": ["suggest-pattern-automation.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
