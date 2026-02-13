@@ -183,7 +183,7 @@ function addContext(category, contextData) {
  */
 function ensureCategory(category, label) {
   if (!results.categories[category]) {
-    addAlert(category, "info", `${label}: No data available`, null, null);
+    results.categories[category] = { alerts: [], context: { no_data: true, label } };
   }
 }
 
@@ -558,28 +558,42 @@ function checkSecurity() {
   // npm audit
   const auditResult = runCommand("npm audit --json", { timeout: 60000 });
   try {
-    const rawJson = auditResult.output || auditResult.stderr || "{}";
+    const out = (auditResult.output || "").trim();
+    const err = (auditResult.stderr || "").trim();
+    const rawJson = out.startsWith("{") ? out : err.startsWith("{") ? err : "{}";
     const audit = JSON.parse(rawJson);
-    highCount = audit.metadata?.vulnerabilities?.high || 0;
-    criticalCount = audit.metadata?.vulnerabilities?.critical || 0;
 
-    if (criticalCount > 0) {
+    const hasVulnMetadata = !!audit?.metadata?.vulnerabilities;
+    if (!auditResult.success && !hasVulnMetadata) {
       addAlert(
         "security",
         "error",
-        `${criticalCount} critical vulnerabilit${criticalCount === 1 ? "y" : "ies"}`,
-        null,
+        "npm audit failed to run",
+        (auditResult.output || auditResult.stderr || "").split("\n").slice(0, 10),
         "Run: npm audit"
       );
-    }
-    if (highCount > 0) {
-      addAlert(
-        "security",
-        "warning",
-        `${highCount} high-severity vulnerabilit${highCount === 1 ? "y" : "ies"}`,
-        null,
-        "Run: npm audit"
-      );
+    } else {
+      highCount = audit.metadata?.vulnerabilities?.high || 0;
+      criticalCount = audit.metadata?.vulnerabilities?.critical || 0;
+
+      if (criticalCount > 0) {
+        addAlert(
+          "security",
+          "error",
+          `${criticalCount} critical vulnerabilit${criticalCount === 1 ? "y" : "ies"}`,
+          null,
+          "Run: npm audit"
+        );
+      }
+      if (highCount > 0) {
+        addAlert(
+          "security",
+          "warning",
+          `${highCount} high-severity vulnerabilit${highCount === 1 ? "y" : "ies"}`,
+          null,
+          "Run: npm audit"
+        );
+      }
     }
   } catch {
     addAlert(
@@ -882,23 +896,25 @@ function checkDebtMetrics() {
   // Load master debt for rich grouping
   const allDebt = loadMasterDebt();
   const openDebt = allDebt.filter((d) => d.status !== "resolved" && d.status !== "closed");
-  const rawS0Items = metrics.alerts?.s0_items || [];
+  const rawS0Items = Array.isArray(metrics.alerts?.s0_items) ? metrics.alerts.s0_items : [];
 
   // Enrich S0 items from MASTER_DEBT.jsonl (metrics.json only has id/title/file/line)
-  const debtById = new Map(allDebt.filter((d) => d.id).map((d) => [d.id, d]));
-  const s0Items = rawS0Items.map((item) => {
-    const full = debtById.get(item.id);
-    return {
-      id: item.id,
-      title: full?.title || item.title || "",
-      file: full?.file || item.file || "",
-      line: full?.line || item.line || 0,
-      effort: full?.effort || "",
-      category: full?.category || "",
-      description: full?.description || "",
-      severity: "S0",
-    };
-  });
+  const debtById = new Map(allDebt.filter((d) => d && d.id).map((d) => [d.id, d]));
+  const s0Items = rawS0Items
+    .filter((item) => item && typeof item === "object" && item.id)
+    .map((item) => {
+      const full = debtById.get(item.id);
+      return {
+        id: item.id,
+        title: full?.title || item.title || "",
+        file: full?.file || item.file || "",
+        line: full?.line || item.line || 0,
+        effort: full?.effort || item.effort || "",
+        category: full?.category || item.category || "",
+        description: full?.description || item.description || "",
+        severity: "S0",
+      };
+    });
 
   if (s0 > 0) {
     // Group S0 by category for richer message
@@ -1820,10 +1836,11 @@ function checkCommitActivity() {
   }
 
   const lastCommit = entries[entries.length - 1];
+  let hoursSinceCommit = null;
   const lastCommitTime = new Date(lastCommit.timestamp).getTime();
   if (!isNaN(lastCommitTime)) {
     const lastCommitAge = Date.now() - lastCommitTime;
-    const hoursSinceCommit = Math.floor(lastCommitAge / (1000 * 60 * 60));
+    hoursSinceCommit = Math.floor(lastCommitAge / (1000 * 60 * 60));
     if (hoursSinceCommit > 4) {
       addAlert(
         "commit-activity",
@@ -1835,7 +1852,10 @@ function checkCommitActivity() {
     }
   }
 
-  const hoursRating = rateLowerBetter(hoursSinceCommit, BENCHMARKS.commits.hours_since_last);
+  const hoursRating =
+    hoursSinceCommit !== null
+      ? rateLowerBetter(hoursSinceCommit, BENCHMARKS.commits.hours_since_last)
+      : null;
 
   addContext("commit-activity", {
     benchmarks: { hours_since_last: BENCHMARKS.commits.hours_since_last },
