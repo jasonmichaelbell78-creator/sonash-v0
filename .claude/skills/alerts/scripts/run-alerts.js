@@ -552,8 +552,9 @@ function checkCodeHealth() {
 function checkSecurity() {
   console.error("  Checking security...");
 
-  let criticalCount = 0;
-  let highCount = 0;
+  let criticalCount = null;
+  let highCount = null;
+  let auditCountsKnown = false;
 
   // npm audit
   const auditResult = runCommand("npm audit --json", { timeout: 60000 });
@@ -572,9 +573,10 @@ function checkSecurity() {
         (auditResult.output || auditResult.stderr || "").split("\n").slice(0, 10),
         "Run: npm audit"
       );
-    } else {
-      highCount = audit.metadata?.vulnerabilities?.high || 0;
-      criticalCount = audit.metadata?.vulnerabilities?.critical || 0;
+    } else if (hasVulnMetadata) {
+      highCount = audit.metadata?.vulnerabilities?.high ?? 0;
+      criticalCount = audit.metadata?.vulnerabilities?.critical ?? 0;
+      auditCountsKnown = true;
 
       if (criticalCount > 0) {
         addAlert(
@@ -645,8 +647,14 @@ function checkSecurity() {
   }
 
   // Context
-  const criticalRating = rateLowerBetter(criticalCount, BENCHMARKS.security.critical_vulns);
-  const highRating = rateLowerBetter(highCount, BENCHMARKS.security.high_vulns);
+  const criticalRating =
+    auditCountsKnown && criticalCount !== null
+      ? rateLowerBetter(criticalCount, BENCHMARKS.security.critical_vulns)
+      : "unknown";
+  const highRating =
+    auditCountsKnown && highCount !== null
+      ? rateLowerBetter(highCount, BENCHMARKS.security.high_vulns)
+      : "unknown";
 
   addContext("security", {
     benchmarks: {
@@ -680,7 +688,7 @@ function checkSessionContext() {
     if (state.lastBegin && !state.lastEnd) {
       const beginTime = new Date(state.lastBegin).getTime();
       if (!Number.isNaN(beginTime)) {
-        gapHours = Math.floor((Date.now() - beginTime) / (1000 * 60 * 60));
+        gapHours = Math.max(0, Math.floor((Date.now() - beginTime) / (1000 * 60 * 60)));
         addAlert(
           "session",
           "warning",
@@ -906,12 +914,12 @@ function checkDebtMetrics() {
       const full = debtById.get(item.id);
       return {
         id: item.id,
-        title: full?.title || item.title || "",
-        file: full?.file || item.file || "",
-        line: full?.line || item.line || 0,
-        effort: full?.effort || item.effort || "",
-        category: full?.category || item.category || "",
-        description: full?.description || item.description || "",
+        title: full?.title ?? item.title ?? "",
+        file: full?.file ?? item.file ?? "",
+        line: full?.line ?? item.line ?? 0,
+        effort: full?.effort ?? item.effort ?? "",
+        category: full?.category ?? item.category ?? "",
+        description: full?.description ?? item.description ?? "",
         severity: "S0",
       };
     });
@@ -1835,17 +1843,23 @@ function checkCommitActivity() {
     );
   }
 
-  const lastCommit = entries[entries.length - 1];
+  const commitsWithTime = entries
+    .map((e) => ({ e, t: new Date(e.timestamp).getTime() }))
+    .filter((x) => !isNaN(x.t));
+
+  const latest = commitsWithTime.length
+    ? commitsWithTime.reduce((max, x) => (x.t > max.t ? x : max), commitsWithTime[0]).e
+    : null;
+
   let hoursSinceCommit = null;
-  const lastCommitTime = new Date(lastCommit.timestamp).getTime();
-  if (!isNaN(lastCommitTime)) {
-    const lastCommitAge = Date.now() - lastCommitTime;
+  if (latest) {
+    const lastCommitAge = Date.now() - new Date(latest.timestamp).getTime();
     hoursSinceCommit = Math.floor(lastCommitAge / (1000 * 60 * 60));
     if (hoursSinceCommit > 4) {
       addAlert(
         "commit-activity",
         "info",
-        `Last commit was ${hoursSinceCommit}h ago (${lastCommit.shortHash}: ${(lastCommit.message || "").substring(0, 60)})`,
+        `Last commit was ${hoursSinceCommit}h ago (${latest.shortHash}: ${(latest.message || "").substring(0, 60)})`,
         null,
         null
       );
