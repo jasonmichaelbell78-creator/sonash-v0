@@ -210,6 +210,14 @@ function validateS0S1Findings(findings) {
  */
 function main() {
   const arg = process.argv[2] || "";
+
+  // FAST PATH (OPT-H008): Skip JSON parsing entirely if arg doesn't contain
+  // audit path markers. Saves ~10-15ms on ~99% of Write operations.
+  if (!arg.includes("docs/audits") || !arg.includes(".jsonl")) {
+    console.log("ok");
+    process.exit(0);
+  }
+
   const filePath = parseFilePath(arg);
 
   // Only validate audit JSONL files

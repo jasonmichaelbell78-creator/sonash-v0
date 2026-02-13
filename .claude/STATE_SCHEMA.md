@@ -1,0 +1,199 @@
+# Hook & Session State Files Schema
+
+<!-- prettier-ignore-start -->
+**Document Version:** 1.0
+**Last Updated:** 2026-02-13
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
+
+**Source:** OPT-H006 (AI Optimization Audit)
+
+---
+
+## Overview
+
+Hooks and skills create state files in two locations:
+
+| Location           | Purpose                             | Survives Compaction | Git-tracked              |
+| ------------------ | ----------------------------------- | ------------------- | ------------------------ |
+| `.claude/hooks/.*` | Ephemeral session state (dot-files) | No                  | No (gitignored)          |
+| `.claude/state/*`  | Persistent session-surviving data   | Yes                 | Partial (see .gitignore) |
+
+---
+
+## Ephemeral State (`.claude/hooks/`)
+
+These files track in-session state and are reset each session.
+
+### `.session-state.json`
+
+**Writers:** `session-start.js` **Readers:** `auto-save-context.js`,
+`compaction-handoff.js`, `pre-compaction-save.js`, `track-agent-invocation.js`,
+`alerts/run-alerts.js`
+
+```json
+{
+  "sessionId": "string (ISO timestamp of session start)",
+  "startedAt": "string (ISO timestamp)"
+}
+```
+
+### `.context-tracking-state.json`
+
+**Writers:** `large-context-warning.js` **Readers:** `auto-save-context.js`,
+`compaction-handoff.js`, `pre-compaction-save.js`, `alerts-reminder.js`
+
+```json
+{
+  "filesRead": ["string (file paths read this session)"],
+  "totalReads": "number",
+  "lastRead": "string (ISO timestamp)",
+  "startedAt": "string (ISO timestamp for staleness check)"
+}
+```
+
+**Retention:** Reset if >30 min stale (by `large-context-warning.js`).
+
+### `.auto-save-state.json`
+
+**Writers:** `auto-save-context.js` **Readers:** `auto-save-context.js` (self)
+
+```json
+{
+  "lastSave": "string (ISO timestamp)",
+  "saveCount": "number"
+}
+```
+
+### `.commit-tracker-state.json`
+
+**Writers:** `commit-tracker.js` **Readers:** `commit-tracker.js` (self)
+
+```json
+{
+  "lastHead": "string (git SHA)",
+  "updatedAt": "string (ISO timestamp)"
+}
+```
+
+### `.handoff-state.json`
+
+**Writers:** `compaction-handoff.js` **Readers:** `compaction-handoff.js` (self)
+
+```json
+{
+  "lastHandoff": "string (ISO timestamp)",
+  "handoffCount": "number"
+}
+```
+
+### `.agent-trigger-state.json`
+
+**Writers:** `agent-trigger-enforcer.js` **Readers:**
+`agent-trigger-enforcer.js` (self)
+
+```json
+{
+  "recommendations": {
+    "<file_path>": {
+      "agent": "string (agent name)",
+      "timestamp": "string (ISO timestamp)",
+      "tool": "string (write|edit)"
+    }
+  }
+}
+```
+
+---
+
+## Persistent State (`.claude/state/`)
+
+These files survive compaction and span sessions.
+
+### `handoff.json` (gitignored)
+
+**Writers:** `pre-compaction-save.js`, `compaction-handoff.js` **Readers:**
+`compact-restore.js`, `state-utils.js`
+
+```json
+{
+  "version": 2,
+  "timestamp": "string (ISO timestamp)",
+  "session": "number (session counter)",
+  "git": { "branch": "string", "head": "string" },
+  "tasks": ["string (active todo items)"],
+  "filesRead": ["string (files read before compaction)"],
+  "recentCommits": [{ "hash": "string", "message": "string" }],
+  "context": "string (summary of work in progress)"
+}
+```
+
+### `commit-log.jsonl` (gitignored)
+
+**Writers:** `commit-tracker.js` **Readers:** `pre-compaction-save.js`,
+`session-begin` skill, `alerts/run-alerts.js`
+
+```jsonl
+{"timestamp":"ISO","hash":"SHA","shortHash":"7-char","message":"string","author":"string","authorDate":"ISO","branch":"string","filesChanged":0,"filesList":["string"],"session":null|number}
+```
+
+**Retention:** Append-only. No automatic cleanup.
+
+### `pending-reviews.json` (gitignored)
+
+**Writers:** `agent-trigger-enforcer.js` **Readers:** `pre-compaction-save.js`,
+`session-end` skill
+
+```json
+{
+  "reviews": [
+    {
+      "file": "string",
+      "agent": "string",
+      "recommended": "string (ISO timestamp)",
+      "status": "pending|completed"
+    }
+  ]
+}
+```
+
+### `agent-invocations.jsonl`
+
+**Writers:** `track-agent-invocation.js` **Readers:** `alerts/run-alerts.js`
+
+```jsonl
+{"timestamp":"ISO","agent":"string","prompt":"string (first 100 chars)","session":null|number}
+```
+
+### `alerts-baseline.json`
+
+**Writers:** `alerts/run-alerts.js` **Readers:** `alerts/run-alerts.js` (self)
+
+Stores previous alert run results for delta computation.
+
+### `consolidation.json`
+
+**Writers:** `alerts/run-alerts.js` **Readers:** `alerts/run-alerts.js` (self)
+
+Tracks consolidation status (archive thresholds).
+
+### `reviews.jsonl`
+
+**Writers:** Various review/audit scripts **Readers:** `session-start.js`,
+`alerts/run-alerts.js`
+
+Append-only log of PR reviews. Archive recommended at >50 entries.
+
+### `warned-files.json`
+
+**Writers:** `scripts/check-pattern-compliance.js` **Readers:**
+`scripts/check-pattern-compliance.js` (self)
+
+Graduation state for pattern compliance: tracks which file+pattern combos have
+been warned so they can be promoted to blocking on repeat.
+
+```json
+{
+  "<file_path>::<pattern_id>": "string (ISO timestamp of first warning)"
+}
+```

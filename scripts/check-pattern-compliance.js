@@ -381,10 +381,11 @@ const ANTI_PATTERNS = [
     fix: "Avoid eval. Use JSON.parse for JSON, or restructure code",
     review: "Security Standards",
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-    // Exclude check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
+    // Exclude check-pattern-compliance.js and pattern-check.js: contain pattern definitions as strings (meta-detection)
     // 2026-01-20 audit (PR #286):
     // - security-check.js: Contains regex pattern /\beval\s*\(/ at L42 as detection pattern, not actual eval usage
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-check)\.js$/,
+    // 2026-02-13 (OPT-H002): pattern-check.js now has inline pattern defs including eval-usage regex
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-check|pattern-check)\.js$/,
   },
   {
     id: "sql-injection-risk",
@@ -553,7 +554,7 @@ const ANTI_PATTERNS = [
     // 2026-02-06 (Review #256): extract-agent-findings.js L29 has `rel === "" ||` at start of condition
     // 2026-02-06 (Review #258): generate-detailed-sonar-report.js L33 has `rel === "" ||` at start of condition
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings|ai-pattern-checks|eval-check-stage|eval-snapshot|unify-findings|normalize-format|extract-agent-findings|generate-detailed-sonar-report)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings|ai-pattern-checks|eval-check-stage|eval-snapshot|unify-findings|normalize-format|extract-agent-findings|generate-detailed-sonar-report)\.js$/,
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)

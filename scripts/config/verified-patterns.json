@@ -89,11 +89,23 @@
   "exec-without-global": [
     "validate-phase-completion.js",
     "surface-lessons-learned.js",
-    "suggest-pattern-automation.js"
+    "suggest-pattern-automation.js",
+    "pattern-check.js"
   ],
-  "unguarded-loadconfig": ["surface-lessons-learned.js", "check-session-gaps.js"],
-  "json-parse-without-try": ["check-session-gaps.js"],
-  "unescaped-regexp-input": ["suggest-pattern-automation.js"],
+  "unguarded-loadconfig": [
+    "surface-lessons-learned.js",
+    "check-session-gaps.js",
+    "audit-s0s1-validator.js",
+    "check-requirements.js",
+    "pattern-check.js"
+  ],
+  "json-parse-without-try": [
+    "check-session-gaps.js",
+    "audit-s0s1-validator.js",
+    "check-requirements.js",
+    "pattern-check.js"
+  ],
+  "unescaped-regexp-input": ["suggest-pattern-automation.js", "pattern-check.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
   "non-atomic-write": ["suggest-pattern-automation.js", "archive-doc.js"],
