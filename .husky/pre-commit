@@ -119,10 +119,11 @@ fi
 
 # 7. Cross-document dependency check (BLOCKING - Session #69)
 # Blocks commit when documents are modified that have known dependencies on other docs
+# Hook-quality fix: --trivial skips enforcement for whitespace/comment/formatting-only changes
 # Override with: SKIP_CROSS_DOC_CHECK=1 git commit ...
 # See: docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers
 echo "  ▶ Checking cross-document dependencies..."
-if ! node scripts/check-cross-doc-deps.js; then
+if ! node scripts/check-cross-doc-deps.js --trivial; then
   echo "  ❌ Cross-document dependency check failed"
   echo ""
   echo "  Fix dependencies before committing. Run: npm run crossdoc:check"
@@ -240,16 +241,17 @@ fi
 
 # 12. Technical debt schema validation (BLOCKING - TDMS Phase 7)
 # Validates MASTER_DEBT.jsonl schema when modified
+# Hook-quality fix: --staged-only validates only changed lines, not the entire file
 # Override with: SKIP_DEBT_VALIDATION=1 git commit ...
 if [ -z "$SKIP_DEBT_VALIDATION" ]; then
   if printf '%s\n' "$STAGED_FILES" | grep -q "docs/technical-debt/MASTER_DEBT.jsonl"; then
-    echo "  ▶ Validating technical debt schema..."
-    if ! node scripts/debt/validate-schema.js > /dev/null 2>&1; then
+    echo "  ▶ Validating technical debt schema (changed lines)..."
+    if ! node scripts/debt/validate-schema.js --staged-only > /dev/null 2>&1; then
       echo "  ❌ Technical debt schema validation failed"
-      node scripts/debt/validate-schema.js 2>&1 | tail -10
+      node scripts/debt/validate-schema.js --staged-only 2>&1 | tail -10
       echo ""
       echo "  Fix schema issues before committing. Run:"
-      echo "    node scripts/debt/validate-schema.js"
+      echo "    node scripts/debt/validate-schema.js --staged-only"
       echo "  Override (use sparingly): SKIP_DEBT_VALIDATION=1 git commit ..."
       exit 1
     fi

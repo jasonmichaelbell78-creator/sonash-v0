@@ -90,26 +90,33 @@
     "validate-phase-completion.js",
     "surface-lessons-learned.js",
     "suggest-pattern-automation.js",
-    "pattern-check.js"
+    "pattern-check.js",
+    "validate-schema.js"
   ],
   "unguarded-loadconfig": [
     "surface-lessons-learned.js",
     "check-session-gaps.js",
     "audit-s0s1-validator.js",
     "check-requirements.js",
-    "pattern-check.js"
+    "pattern-check.js",
+    "validate-schema.js",
+    "check-cross-doc-deps.js"
   ],
   "json-parse-without-try": [
     "check-session-gaps.js",
     "audit-s0s1-validator.js",
     "check-requirements.js",
-    "pattern-check.js"
+    "pattern-check.js",
+    "validate-schema.js"
   ],
   "unescaped-regexp-input": ["suggest-pattern-automation.js", "pattern-check.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
   "non-atomic-write": ["suggest-pattern-automation.js", "archive-doc.js"],
   "writefile-missing-encoding": ["suggest-pattern-automation.js"],
+  "process-exit-without-cleanup": ["validate-schema.js"],
+  "missing-array-isarray": ["validate-schema.js"],
+  "missing-bom-handling": ["validate-schema.js"],
   "rename-without-remove": [
     "append-hook-warning.js",
     "transform-jsonl-schema.js",

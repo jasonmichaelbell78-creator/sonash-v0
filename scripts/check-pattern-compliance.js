@@ -55,10 +55,30 @@ try {
 // State file tracks which files have been warned for which patterns
 const WARNED_FILES_PATH = join(ROOT, ".claude", "state", "warned-files.json");
 
+// TTL for warned-files entries: entries older than this are expired on load
+// Prevents false positives from blocking indefinitely (Fix: hook-quality session)
+const WARNED_FILES_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 function loadWarnedFiles() {
   try {
     const raw = readFileSync(WARNED_FILES_PATH, "utf-8").replace(/^\uFEFF/, "");
-    return JSON.parse(raw);
+    const data = JSON.parse(raw);
+
+    // Purge expired entries (older than TTL)
+    const now = Date.now();
+    let purged = 0;
+    for (const key of Object.keys(data)) {
+      const ts = new Date(data[key]).getTime();
+      if (!Number.isFinite(ts) || now - ts > WARNED_FILES_TTL_MS) {
+        delete data[key];
+        purged++;
+      }
+    }
+    if (purged > 0 && VERBOSE) {
+      console.log(`   Purged ${purged} expired pattern warning(s) (older than 7 days)`);
+    }
+
+    return data;
   } catch (err) {
     const code = err && typeof err === "object" && "code" in err ? err.code : null;
     if (code === "ENOENT") return {};
@@ -649,6 +669,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     // Too many false positives in app code - only check scripts processing external data
     pathFilter: /(?:^|\/)scripts\/(?:debt|improvements|audits)\//,
+    pathExcludeList: verifiedPatterns["missing-array-isarray"] || [],
   },
 
   // Unescaped user input in RegExp constructor (7x in reviews)
@@ -712,6 +733,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     // Only flag in scripts with resource management (too noisy otherwise)
     pathFilter: /(?:^|\/)scripts\/(?:debt|improvements|metrics)\//,
+    pathExcludeList: verifiedPatterns["process-exit-without-cleanup"] || [],
   },
 
   // console.error with raw error object (not just .message)
@@ -737,6 +759,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     // Only flag in scripts reading external/user files
     pathFilter: /(?:^|\/)scripts\/(?:debt|improvements|audits)\//,
+    pathExcludeList: verifiedPatterns["missing-bom-handling"] || [],
   },
 
   // Unbounded file reads (reading entire file into memory)

@@ -28,6 +28,7 @@ const { loadConfigWithRegex } = require("./config/load-config");
 const args = process.argv.slice(2);
 const verbose = args.includes("--verbose");
 const dryRun = args.includes("--dry-run");
+const trivialMode = args.includes("--trivial");
 
 // TTY-aware colors (Review #157 - avoid raw escape codes in non-TTY output)
 const useColors = process.stdout.isTTY;
@@ -119,6 +120,43 @@ function checkDiffPattern(file, pattern) {
 }
 
 /**
+ * Check if staged changes to a file are "trivial" (whitespace, comments, formatting only).
+ * Used with --trivial flag to skip cross-doc enforcement for non-substantive changes.
+ * Hook-quality fix: reduces false positives from typo fixes and formatting commits.
+ */
+function isTrivialChange(file) {
+  try {
+    // Get only the changed lines (added/removed), excluding context
+    const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", file], {
+      encoding: "utf-8",
+    });
+
+    // Extract only actual change lines (+ and - prefixed, not headers)
+    const changeLines = diff
+      .split("\n")
+      .filter((line) => /^[+-]/.test(line) && !/^[+-]{3}/.test(line))
+      .map((line) => line.slice(1)); // strip the +/- prefix
+
+    if (changeLines.length === 0) return true;
+
+    // A change is trivial if ALL changed lines are:
+    // - empty or whitespace-only
+    // - comments (JS/TS: //, #, *, or markdown: <!-- -->)
+    // - only differ in whitespace/formatting
+    // - status badge updates (e.g., **Status:** ACTIVE)
+    // - date updates (e.g., **Last Updated:** 2026-02-13)
+    // - version bumps (e.g., **Document Version:** 1.1)
+    const trivialPattern =
+      /^\s*$|^\s*(?:\/\/|#|\*|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
+
+    return changeLines.every((line) => trivialPattern.test(line));
+  } catch {
+    // If we can't determine, assume non-trivial (safer)
+    return false;
+  }
+}
+
+/**
  * Check if any staged file matches a trigger pattern
  * Improved path matching to prevent false positives (Review #158)
  * Normalized for cross-platform reliability (Review #160)
@@ -201,6 +239,23 @@ function checkDependencies() {
       );
       if (triggerFile && !checkDiffPattern(triggerFile, rule.diffPattern)) {
         logVerbose(`Rule skipped (diff pattern not found): ${rule.trigger}`);
+        continue;
+      }
+    }
+
+    // Hook-quality fix: In --trivial mode, skip enforcement if the trigger file
+    // only has trivial changes (whitespace, comments, formatting, date bumps).
+    // This prevents blocking commits for typo fixes and minor doc formatting.
+    if (trivialMode) {
+      const triggerFiles = stagedFiles.filter(
+        (f) =>
+          f === rule.trigger ||
+          f.endsWith(`/${rule.trigger}`) ||
+          (rule.trigger.endsWith("/") && f.startsWith(rule.trigger))
+      );
+      const allTrivial = triggerFiles.length > 0 && triggerFiles.every(isTrivialChange);
+      if (allTrivial) {
+        logVerbose(`Rule skipped (trivial changes only): ${rule.trigger}`);
         continue;
       }
     }
