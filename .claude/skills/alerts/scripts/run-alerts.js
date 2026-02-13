@@ -381,7 +381,9 @@ function saveBaseline() {
     if (!fs.existsSync(stateDir)) {
       fs.mkdirSync(stateDir, { recursive: true });
     }
-    fs.writeFileSync(BASELINE_PATH, JSON.stringify(baseline, null, 2));
+    const tmpPath = `${BASELINE_PATH}.tmp`;
+    fs.writeFileSync(tmpPath, JSON.stringify(baseline, null, 2));
+    fs.renameSync(tmpPath, BASELINE_PATH);
   } catch (err) {
     console.error(`  [warn] Failed to save baseline: ${safeErrorMsg(err)}`);
   }
@@ -2014,7 +2016,7 @@ function computeHealthScore() {
   for (const [cat, weight] of Object.entries(weights)) {
     const catData = results.categories[cat];
 
-    if (!catData) {
+    if (!catData || catData.context?.no_data) {
       breakdown[cat] = { score: null, weight, measured: false };
       continue;
     }

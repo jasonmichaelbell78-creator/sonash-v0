@@ -508,6 +508,7 @@ Examples:
  * @returns {boolean} True if path is unsafe
  */
 function isUnsafePathPattern(fileArg) {
+  if (typeof fileArg !== "string" || fileArg.trim() === "") return true;
   const isUNCPath = fileArg.startsWith("\\\\") || fileArg.startsWith("//");
   // path.isAbsolute() is platform-dependent — explicitly catch Windows-rooted paths on POSIX
   const isWindowsRooted = fileArg.startsWith("\\") && !fileArg.startsWith("\\\\");
