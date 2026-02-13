@@ -111,6 +111,7 @@
     "log-session-activity.js",
     "extract-agent-findings.js",
     "decrypt-secrets.js",
-    "encrypt-secrets.js"
+    "encrypt-secrets.js",
+    "archive-doc.js"
   ]
 }
