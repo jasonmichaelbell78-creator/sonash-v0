@@ -838,6 +838,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts", ".jsx", ".tsx"],
     exclude: /Number\.parseInt/,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["parseint-no-radix"] || [],
   },
 
   // Math.max with spread on potentially empty array
@@ -873,6 +874,7 @@ const ANTI_PATTERNS = [
     review: "CODE_PATTERNS.md Documentation - Pre-commit ADM filter, v2.5",
     fileTypes: [".sh", ".js", ".ts"],
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["git-diff-no-filter"] || [],
   },
 
   // --- Shell ---

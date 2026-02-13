@@ -175,19 +175,21 @@ function parseBacklogItems(content) {
       continue;
     }
 
-    // Extract severity
-    const severityMatch = section.match(/\*\*Severity\*\*:\s*(S[0-3])/i);
+    // Extract severity (P003 fix: optional bold markers, flexible colon/spacing)
+    const severityMatch = section.match(/\*{0,2}Severity\*{0,2}\s*:?\s*(S[0-3])/i);
     const severity = severityMatch ? severityMatch[1].toUpperCase() : "UNKNOWN";
 
     // Skip items with template severity (S1/S2/S3)
     if (section.includes("S1/S2/S3")) continue;
 
-    // Extract status
-    const statusMatch = section.match(/\*\*Status\*\*:\s*(PENDING|IN_PROGRESS|DONE|DEFERRED)/i);
+    // Extract status (P003 fix: optional bold markers, flexible colon/spacing)
+    const statusMatch = section.match(
+      /\*{0,2}Status\*{0,2}\s*:?\s*(PENDING|IN_PROGRESS|DONE|DEFERRED)/i
+    );
     const status = statusMatch ? statusMatch[1].toUpperCase() : "UNKNOWN";
 
-    // Extract CANON-ID
-    const canonMatch = section.match(/\*\*CANON-ID\*\*:\s*([A-Z]+-\d+)/i);
+    // Extract CANON-ID (P003 fix: optional bold markers, flexible separator/spacing)
+    const canonMatch = section.match(/\*{0,2}CANON[- ]?ID\*{0,2}\s*:?\s*([A-Z]+-\d+)/i);
     const canonId = canonMatch ? canonMatch[1] : "UNKNOWN";
 
     // Skip items with template CANON-ID

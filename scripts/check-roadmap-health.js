@@ -52,14 +52,14 @@ function readFile(filePath) {
  * Scoped to Version History section to avoid false matches (Review #211)
  */
 function checkVersionConsistency(content, fileName) {
-  // Extract version from header
-  const headerVersionMatch = content.match(/\*\*Document Version:\*\*\s*(\d+\.\d+)/);
+  // Extract version from header (P008 fix: optional bold, flexible colon placement)
+  const headerVersionMatch = content.match(/\*{0,2}Document Version:?\*{0,2}\s*(\d+\.\d+)/i);
   const headerVersion = headerVersionMatch ? headerVersionMatch[1] : null;
 
   // Extract latest version from Version History section only (Review #211)
-  // Use \r?\n for CRLF compatibility
+  // P008 fix: emoji-independent, case-insensitive section detection, CRLF compatible
   const versionHistorySectionMatch = content.match(
-    /##\s*🗓️?\s*Version History[\s\S]*?(?=\r?\n##\s|\r?\n---\s*$|$)/
+    /##\s*(?:🗓️?\s*)?Version History[\s\S]*?(?=\r?\n##\s|\r?\n---\s*$|$)/i
   );
 
   let historyVersion = null;
@@ -85,7 +85,10 @@ function checkVersionConsistency(content, fileName) {
  * Check 2: Duplicate progress percentages
  */
 function checkProgressPercentages(content, fileName) {
-  const progressMatches = content.match(/\*\*Overall (Completion|Progress):\*\*\s*~?\d+%/g);
+  // P008 fix: optional bold, flexible colon placement
+  const progressMatches = content.match(
+    /\*{0,2}Overall\s+(?:Completion|Progress):?\*{0,2}\s*~?\d+%/gi
+  );
 
   if (progressMatches && progressMatches.length > 1) {
     errors.push(
@@ -102,9 +105,9 @@ function checkProgressPercentages(content, fileName) {
  */
 function checkMilestoneItemCounts(content, fileName) {
   // Extract claimed item counts from overview table
-  // Use \r?\n for cross-platform CRLF compatibility (Review #211)
+  // P008 fix: emoji-independent section detection, CRLF compatible (Review #211)
   const overviewTableMatch = content.match(
-    /## 📊 Milestones Overview[\s\S]{0,10000}?\|[\s\S]{0,10000}?(?=\r?\n\r?\n|\r?\n##|\r?\n---)/
+    /##\s*(?:📊\s*)?Milestones Overview[\s\S]{0,10000}?\|[\s\S]{0,10000}?(?=\r?\n\r?\n|\r?\n##|\r?\n---)/i
   );
 
   if (!overviewTableMatch) {

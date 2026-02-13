@@ -42,7 +42,8 @@ function scanDeferredItems() {
   const deferredItems = [];
 
   // Pattern 1: Standalone deferred items like "**DEFERRED (Review #51)**"
-  const standalonePattern = /\*\*DEFERRED \(Review #(\d+)\)\*\*[:\s]*([^\n]+)/g;
+  // P007 fix: optional bold markers, flexible spacing around parens
+  const standalonePattern = /\*{0,2}DEFERRED\s*\(Review\s*#(\d+)\)\*{0,2}[:\s]*([^\n]+)/g;
   let match;
   while ((match = standalonePattern.exec(content)) !== null) {
     deferredItems.push({
@@ -63,9 +64,9 @@ function scanDeferredItems() {
     const reviewNum = reviewMatch[1];
 
     // Find DEFERRED section within this review
-    // Note: format is **DEFERRED (N):** with colon INSIDE the asterisks
+    // P007 fix: flexible bold, spacing, colon placement (inside or outside bold)
     const deferredSectionMatch = section.match(
-      /\*\*DEFERRED \((\d+)\):\*\*([\s\S]*?)(?=\*\*NEW PATTERNS|\*\*REJECTED|#{3,4} Review|## |$)/
+      /\*{0,2}DEFERRED\s*\((\d+)\)\s*:?\s*\*{0,2}([\s\S]*?)(?=\*{0,2}NEW PATTERNS|\*{0,2}REJECTED|#{3,4}\s*Review|##\s|$)/
     );
 
     if (deferredSectionMatch) {

@@ -56,7 +56,8 @@ function readCommitLog() {
 function getDocumentedSessions() {
   try {
     const content = fs.readFileSync(SESSION_CONTEXT, "utf8");
-    const matches = content.match(/\*\*Session #(\d+) Summary\*\*/g) || [];
+    // Resilient: optional bold markers, flexible spacing (P005 fix)
+    const matches = content.match(/\*{0,2}Session\s*#(\d+)\s+Summary\*{0,2}/gi) || [];
     return matches
       .map((m) => {
         const num = m.match(/#(\d+)/);
@@ -74,7 +75,8 @@ function getDocumentedSessions() {
 function getCurrentSessionCounter() {
   try {
     const content = fs.readFileSync(SESSION_CONTEXT, "utf8");
-    const match = content.match(/\*\*Current Session Count\*\*:\s*(\d+)/);
+    // Resilient: optional bold markers, flexible spacing, "Count"/"Counter" (P001 fix)
+    const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}\s*:?\s*(\d+)/i);
     return match ? Number.parseInt(match[1], 10) : null;
   } catch {
     return null;

@@ -91,7 +91,9 @@
     "surface-lessons-learned.js",
     "suggest-pattern-automation.js",
     "pattern-check.js",
-    "validate-schema.js"
+    "validate-schema.js",
+    "generate-pending-alerts.js",
+    "verify-sonar-phase.js"
   ],
   "unguarded-loadconfig": [
     "surface-lessons-learned.js",
@@ -100,20 +102,43 @@
     "check-requirements.js",
     "pattern-check.js",
     "validate-schema.js",
-    "check-cross-doc-deps.js"
+    "check-cross-doc-deps.js",
+    "auto-save-context.js",
+    "check-remote-session-context.js",
+    "commit-tracker.js",
+    "compaction-handoff.js",
+    "pre-compaction-save.js",
+    "check-roadmap-health.js",
+    "generate-pending-alerts.js"
   ],
   "json-parse-without-try": [
     "check-session-gaps.js",
     "audit-s0s1-validator.js",
     "check-requirements.js",
     "pattern-check.js",
-    "validate-schema.js"
+    "validate-schema.js",
+    "auto-save-context.js",
+    "commit-tracker.js",
+    "compaction-handoff.js",
+    "pre-compaction-save.js",
+    "generate-pending-alerts.js",
+    "normalize-format.js"
   ],
   "unescaped-regexp-input": ["suggest-pattern-automation.js", "pattern-check.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
-  "non-atomic-write": ["suggest-pattern-automation.js", "archive-doc.js"],
-  "writefile-missing-encoding": ["suggest-pattern-automation.js"],
+  "git-diff-no-filter": ["compaction-handoff.js"],
+  "parseint-no-radix": ["verify-sonar-phase.js"],
+  "non-atomic-write": [
+    "suggest-pattern-automation.js",
+    "archive-doc.js",
+    "auto-save-context.js",
+    "commit-tracker.js",
+    "pre-compaction-save.js",
+    "generate-pending-alerts.js",
+    "normalize-format.js"
+  ],
+  "writefile-missing-encoding": ["suggest-pattern-automation.js", "normalize-format.js"],
   "process-exit-without-cleanup": ["validate-schema.js"],
   "missing-array-isarray": ["validate-schema.js"],
   "missing-bom-handling": ["validate-schema.js"],

@@ -107,7 +107,8 @@ session counter extraction fails silently, breaking compaction tracking.
   ensure extracted value is numeric.
 - **Impact:** accuracy|tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (resilient regex: optional bold, flexible
+spacing, case-insensitive)
 
 ---
 
@@ -131,7 +132,8 @@ compaction.
   guard against empty date/title fields.
 - **Impact:** accuracy|tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (flexible dash variants, spacing in decision
+block regex)
 
 ---
 
@@ -552,7 +554,8 @@ critical S0 items, creating blocker detection failures.
   processing item.
 - **Impact:** accuracy|speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (resilient severity/status/CANON-ID regex,
+optional bold)
 
 ---
 
@@ -578,7 +581,7 @@ changes.
   parsing library instead of regex.
 - **Impact:** accuracy|tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — E2 effort, needs markdown AST parser (DEBT-2835)
 
 ---
 
@@ -601,7 +604,8 @@ and potentially allowing orphaned commits.
   case-insensitive matching. Add logging for parsing failures.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (flexible session summary regex,
+case-insensitive)
 
 ---
 
@@ -627,7 +631,7 @@ format, heading changes—parsing silently skips items or extracts wrong data.
   per item type.
 - **Impact:** accuracy|tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — E2 effort, needs markdown AST parser (DEBT-2836)
 
 ---
 
@@ -651,7 +655,8 @@ alerts to be missed entirely—losing visibility of deferred work.
   and colon-outside variants. Add logging for detected vs missed items.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (flexible bold, spacing, colon placement in
+DEFERRED regex)
 
 ---
 
@@ -1380,7 +1385,8 @@ version validation silently passes or fails incorrectly.
   X.Y.Z, vX.Y. Validate at least one version entry exists in history section.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (emoji-independent, case-insensitive
+section/version detection)
 
 ---
 
@@ -1406,7 +1412,8 @@ audit input format; parsing failures cascade to all downstream processing.
   unescaped pipes only. Test with real audit markdown examples.
 - **Impact:** accuracy|tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (flexible trailing pipe, CRLF-tolerant table
+detection)
 
 ---
 
@@ -1431,7 +1438,8 @@ miscategorized issues to slip through.
   Fall back to text search without emoji. Log parse warnings.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (regex-based emoji-independent section
+detection)
 
 ---
 

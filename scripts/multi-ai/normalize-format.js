@@ -190,8 +190,9 @@ export function detectFormat(input) {
   }
 
   // Check for markdown table (has | and header separator ---)
+  // P009 fix: tolerate trailing whitespace after closing pipe
   if (trimmed.includes("|")) {
-    const tableMatch = trimmed.match(/\|[^\n]+\|\s*\n\|[-:\s|]+\|\s*\n/);
+    const tableMatch = trimmed.match(/\|[^\n]+\|\s*\r?\n\|[-:\s|]+\|\s*\r?\n/);
     if (tableMatch) {
       return FORMAT_TYPES.MARKDOWN_TABLE;
     }
@@ -475,10 +476,11 @@ function parseMarkdownTable(input, category) {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (line.startsWith("|") && line.endsWith("|")) {
+    // P009 fix: tolerate rows without trailing pipe (some generators omit it)
+    if (line.startsWith("|") && (line.endsWith("|") || line.includes("|"))) {
       // Check if next line is separator
       const nextLine = lines[i + 1]?.trim() || "";
-      if (/^\|[-:\s|]+\|$/.test(nextLine)) {
+      if (/^\|[-:\s|]+\|?\s*$/.test(nextLine)) {
         headerIndex = i;
         // Parse headers
         headers = line

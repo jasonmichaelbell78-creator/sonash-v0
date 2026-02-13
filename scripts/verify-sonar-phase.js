@@ -159,9 +159,10 @@ function extractRuleFromLines(lines, startIndex) {
  * Detect section transitions and update parsing state
  * Returns the new inSecuritySection state, or null if not a section header
  */
+// P010 fix: emoji-independent, case-insensitive section detection via regex
 function detectSectionTransition(line) {
-  if (line.startsWith("## 🔒 Security Hotspots")) return true;
-  if (line.startsWith("## 📂 All Issues by File")) return false;
+  if (/^##\s+(?:🔒\s*)?Security\s+Hotspots/i.test(line)) return true;
+  if (/^##\s+(?:📂\s*)?All\s+Issues\s+by\s+File/i.test(line)) return false;
   return null;
 }
 
