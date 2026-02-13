@@ -1607,24 +1607,33 @@ function checkConsolidation() {
 
   let reviewsPending = 0;
 
-  const logPath = path.join(ROOT_DIR, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+  // Read from JSONL state files (single source of truth — Session #156)
+  const statePath = path.join(ROOT_DIR, ".claude", "state", "consolidation.json");
+  const reviewsPath = path.join(ROOT_DIR, ".claude", "state", "reviews.jsonl");
   try {
-    const content = fs.readFileSync(logPath, "utf8");
-    const counterMatch = content.match(/Reviews since last consolidation:\*?\*?\s*(\d+)/i);
-    if (counterMatch) {
-      reviewsPending = parseInt(counterMatch[1], 10);
-      if (reviewsPending >= 10) {
-        addAlert(
-          "consolidation",
-          "warning",
-          `${reviewsPending} reviews since last consolidation (threshold: 10)`,
-          null,
-          "Consolidation will auto-run at next session-start"
-        );
+    const state = JSON.parse(fs.readFileSync(statePath, "utf8"));
+    const lastConsolidated =
+      typeof state.lastConsolidatedReview === "number" ? state.lastConsolidatedReview : 0;
+    const lines = fs.readFileSync(reviewsPath, "utf8").trim().split("\n").filter(Boolean);
+    reviewsPending = lines.reduce((count, line) => {
+      try {
+        const r = JSON.parse(line);
+        return typeof r.id === "number" && r.id > lastConsolidated ? count + 1 : count;
+      } catch {
+        return count;
       }
+    }, 0);
+    if (reviewsPending >= 10) {
+      addAlert(
+        "consolidation",
+        "warning",
+        `${reviewsPending} reviews since last consolidation (threshold: 10)`,
+        null,
+        "Consolidation will auto-run at next session-start"
+      );
     }
   } catch {
-    // File missing
+    // State files missing — first run or not yet initialized
   }
 
   // Check suggested rules

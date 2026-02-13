@@ -338,120 +338,18 @@ Log findings from ALL AI code review sources:
 
 ---
 
-## 🔔 Consolidation Trigger
+## 🔔 Consolidation
 
-**Reviews since last consolidation:** 26 (Reviews #285-#310) **Consolidation
-threshold:** 10 reviews **Status:** ⚠️ Overdue — 26 reviews pending
-(threshold: 10) **Next consolidation due:** After Review #294 (Consolidation
-#19)
+Consolidation state is managed automatically via JSONL files (Session #156):
 
-### When to Consolidate
+- **State:** `.claude/state/consolidation.json`
+- **Reviews:** `.claude/state/reviews.jsonl`
+- **Auto-trigger:** `node scripts/run-consolidation.js --auto` (runs at
+  session-start)
+- **Manual run:** `npm run consolidation:run -- --apply`
 
-Consolidation is needed when:
-
-- Reviews since last consolidation reaches 10+
-- Multiple reviews mention similar patterns
-- New security or critical patterns are identified
-
-### Consolidation Process
-
-1. Review all entries since last consolidation
-2. Identify recurring patterns (3+ mentions)
-3. Add patterns to [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md); critical 5
-   only to claude.md
-4. Update pattern compliance checker if automatable
-5. Reset "Reviews since last consolidation" counter
-6. Note consolidation in version history
-
-### Last Consolidation
-
-- **Date:** 2026-02-10
-- **Consolidation #:** 18
-- **Reviews consolidated:** #266-#284 (19 reviews)
-- **Patterns added to CODE_PATTERNS.md v2.7:**
-  - **CI/Automation (6 patterns):**
-    - Module-scope config try/catch
-    - Path info redaction
-    - Silent catch prevention
-    - Number.isFinite guards
-    - Fail-closed validation
-    - Atomic write cleanup
-  - **React/Frontend (1 pattern):**
-    - Key stability
-
-<details>
-<summary>Previous Consolidation (#17)</summary>
-
-- **Date:** 2026-02-07
-- **Consolidation #:** 17
-- **Reviews consolidated:** #254-#265 (12 reviews)
-- **Patterns added to CODE_PATTERNS.md v2.6:**
-  - **Security (4 patterns):**
-    - PII in audit reports (hashed identifiers)
-    - Operator identity hashing
-    - Backup-swap atomic write (CRITICAL)
-    - Token exposure prevention in hooks
-  - **JavaScript/TypeScript (7 patterns):**
-    - Section-scoped regex parsing
-    - Empty entries guard before write
-    - Multi-word capitalization
-    - Safe JSON parse helper
-    - Brace depth tracking for nested objects
-    - Multi-line JSON reassembly
-    - Table-column date parsing
-  - **CI/Automation (8 patterns):**
-    - Delimiter consistency (\x1f over |)
-    - pathExcludeList stale entry cleanup
-    - Fence block handling in markdown parsing
-    - Rename fallback guard for Windows
-    - Trailing newline for JSONL files
-    - Content normalization before diff
-    - Silent parse prevention (log warnings)
-    - Stale review detection (commit comparison)
-  - **Process Management (3 patterns):**
-    - Trigger validation coverage (both paths)
-    - Operator tracking design (privacy-first)
-    - Design decision docs (rejected alternatives)
-  - **Bash/Shell (1 pattern):**
-    - Here-string interpolation
-
-</details>
-
-<details>
-<summary>Previous Consolidation (#16)</summary>
-
-- **Date:** 2026-02-02
-- **Consolidation #:** 16
-- **Reviews consolidated:** #213-#224 (12 reviews)
-- **Archive created:** #7 (Reviews #202-#212) →
-  `docs/archive/REVIEWS_202-212.md`
-- **Patterns added to CODE_PATTERNS.md v2.5:**
-  - **GitHub Actions (2 patterns, CRITICAL):**
-    - Script injection prevention via env vars
-    - User input passed through environment variables
-  - **JavaScript/TypeScript (9 patterns):**
-    - Math.max empty array returns -Infinity
-    - Spread operator stack limits (~65k)
-    - Nullish coalescing ?? vs ||
-    - Gap-safe counting with Set
-    - statSync race condition handling
-    - Range clamping before operations
-    - Platform root detection
-    - Regex anchoring for enums
-  - **CI/Automation (8 patterns):**
-    - JSONL line-by-line parsing with line numbers
-    - Atomic file writes (temp + rename)
-    - Stable ID preservation
-    - API pagination
-    - Multi-file write rollback
-    - Glob self-inclusion prevention
-    - Windows atomic rename
-  - **Documentation (3 patterns):**
-    - Unicode property escapes for emoji
-    - Markdown parentheses encoding
-    - Pre-commit ADM filter
-
-</details>
+No manual counter updates needed. The system auto-consolidates when 10+ reviews
+accumulate.
 
 <details>
 <summary>Previous Consolidation (#11)</summary>

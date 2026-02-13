@@ -158,7 +158,6 @@ const GLOBAL_EXCLUDE = [
   // Development/build utility scripts (pre-existing debt - Review #136)
   /^scripts\/ai-review\.js$/,
   /^scripts\/assign-review-tier\.js$/,
-  /^scripts\/check-consolidation-status\.js$/,
   /^scripts\/check-docs-light\.js$/,
   /^scripts\/check-document-sync\.js$/,
   /^scripts\/check-review-needed\.js$/,

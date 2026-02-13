@@ -1,66 +1,54 @@
 #!/usr/bin/env node
 /* global __dirname */
 /**
- * run-consolidation.js
+ * run-consolidation.js (v2 — JSONL-based)
  *
- * Performs pattern consolidation from AI_REVIEW_LEARNINGS_LOG.md to CODE_PATTERNS.md.
- * This script:
- *   1. Reads review entries since last consolidation
- *   2. Extracts patterns mentioned across reviews
- *   3. Identifies recurring patterns (3+ mentions)
- *   4. Generates suggested updates for CODE_PATTERNS.md
- *   5. Resets the consolidation counter when --apply is used
+ * Performs pattern consolidation from reviews.jsonl to CODE_PATTERNS.md.
+ *
+ * State lives in TWO files (single source of truth each):
+ *   - .claude/state/consolidation.json  → last consolidated review, number, date
+ *   - .claude/state/reviews.jsonl       → one JSON line per review entry
+ *
+ * NO markdown parsing for state. NO manual counter. NO cross-validation needed.
  *
  * Usage:
- *   npm run consolidation:run              # Preview consolidation (dry run)
- *   npm run consolidation:run -- --apply   # Apply consolidation (update files)
+ *   npm run consolidation:run              # Preview (dry run)
+ *   npm run consolidation:run -- --apply   # Apply consolidation
  *   npm run consolidation:run -- --auto    # Auto-apply if needed (quiet, for hooks)
- *   npm run consolidation:run -- --verbose # Show detailed analysis
+ *   npm run consolidation:run -- --verbose # Detailed analysis
  *
  * Exit codes:
  *   0 = Success (or no consolidation needed)
- *   1 = Consolidation needed but not applied
+ *   1 = Consolidation needed but not applied (dry run)
  *   2 = Error
- *
- * Created: Session #69 (2026-01-16)
  */
 
-// Use CommonJS for consistency with other scripts in scripts/ (Review #158)
-const { existsSync, readFileSync, writeFileSync } = require("node:fs");
+const { existsSync, readFileSync, writeFileSync, mkdirSync } = require("node:fs");
 const { join } = require("node:path");
-const { execSync, execFileSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 
-/**
- * Simple error sanitizer (Review #200 - prevent internal detail leakage)
- */
-function sanitizeError(error) {
-  const message = error instanceof Error ? error.message : String(error);
-  return message
-    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
-}
+// --- Paths ---
+const ROOT_DIR = join(__dirname, "..");
+const STATE_DIR = join(ROOT_DIR, ".claude", "state");
+const CONSOLIDATION_FILE = join(STATE_DIR, "consolidation.json");
+const REVIEWS_FILE = join(STATE_DIR, "reviews.jsonl");
+const OUTPUT_DIR = join(ROOT_DIR, "consolidation-output");
+const OUTPUT_FILE = join(OUTPUT_DIR, "suggested-rules.md");
 
-// File paths
-const LOG_FILE = join(__dirname, "..", "docs", "AI_REVIEW_LEARNINGS_LOG.md");
-// Reserved for future automatic updates (currently manual)
-const _PATTERNS_FILE = join(__dirname, "..", "docs", "agent_docs", "CODE_PATTERNS.md");
-const _CLAUDE_MD = join(__dirname, "..", "claude.md");
-
-// Configuration
-const CONSOLIDATION_THRESHOLD = 10;
+// --- Config ---
+const THRESHOLD = 10;
 const MIN_PATTERN_OCCURRENCES = 3;
 
-// Parse arguments
+// --- Args ---
 const args = process.argv.slice(2);
 const autoMode = args.includes("--auto");
 const applyChanges = args.includes("--apply") || autoMode;
 const verbose = args.includes("--verbose");
 const quiet = args.includes("--quiet") || autoMode;
 
-// Colors for terminal output (TTY-aware - Review #159)
+// --- Colors (TTY-aware) ---
 const useColors = process.stdout.isTTY;
-const colors = {
+const c = {
   red: useColors ? "\x1b[31m" : "",
   green: useColors ? "\x1b[32m" : "",
   yellow: useColors ? "\x1b[33m" : "",
@@ -70,321 +58,136 @@ const colors = {
   bold: useColors ? "\x1b[1m" : "",
 };
 
-function log(message, color = "") {
+function log(msg, color = "") {
   if (quiet) return;
-  console.log(color ? `${color}${message}${colors.reset}` : message);
+  console.log(color ? `${color}${msg}${c.reset}` : msg);
 }
 
-function logVerbose(message) {
-  if (verbose) {
-    log(`  [verbose] ${message}`, colors.cyan);
+function sanitizeError(err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  return msg
+    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
+    .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
+}
+
+// =============================================================================
+// STATE: Read from JSON (single source of truth)
+// =============================================================================
+
+function loadState() {
+  if (!existsSync(CONSOLIDATION_FILE)) {
+    // First run: create default state
+    const defaultState = {
+      lastConsolidatedReview: 0,
+      consolidationNumber: 0,
+      lastDate: null,
+      threshold: THRESHOLD,
+    };
+    ensureDir(STATE_DIR);
+    writeState(defaultState);
+    return defaultState;
   }
-}
-
-/**
- * Escape special regex characters in a string (Review #158)
- * Prevents ReDoS and unexpected behavior when building dynamic RegExp
- */
-function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-/**
- * Parse version history to find the highest review number
- * Session #114: Compute-based tracking instead of trusting manual counter
- */
-function getHighestReviewNumber(content) {
-  const versionRegex =
-    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):/g;
-  let match;
-  let highest = 0;
-
-  while ((match = versionRegex.exec(content)) !== null) {
-    const reviewNum = Number.parseInt(match[1], 10);
-    if (reviewNum > highest) {
-      highest = reviewNum;
-    }
-  }
-
-  return highest;
-}
-
-/**
- * Parse "Last Consolidation" section to find last consolidated review number
- * Session #114: Look for "Reviews consolidated: #X-#Y" pattern
- */
-function getLastConsolidatedReview(content) {
-  // Preferred: "Last Consolidation" section
-  const sectionMatch = content.match(
-    /### Last Consolidation[\s\S]{0,500}?\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i
-  );
-  if (sectionMatch) {
-    return Number.parseInt(sectionMatch[1], 10);
-  }
-
-  // Fallback: "Consolidation Trigger" section (this is where the script updates the range)
-  // Review #215: Align read location with write location
-  const triggerStart = content.indexOf("## 🔔 Consolidation Trigger");
-  if (triggerStart !== -1) {
-    const triggerEnd = content.indexOf("\n## ", triggerStart + 1);
-    const endIndex = triggerEnd === -1 ? content.length : triggerEnd;
-    const triggerSection = content.slice(triggerStart, endIndex);
-
-    const triggerMatch = triggerSection.match(/\*\*Reviews consolidated:\*\*\s*#?\d+-#?(\d+)/i);
-    if (triggerMatch) {
-      return Number.parseInt(triggerMatch[1], 10);
-    }
-  }
-
-  // Fallback: "Active reviews now #X-Y" indicates reviews up to X-1 were consolidated
-  const activeMatch = content.match(/Active reviews(?:\s+now)?\s+#(\d+)-/i);
-  if (activeMatch) {
-    return Number.parseInt(activeMatch[1], 10) - 1;
-  }
-
-  return 0;
-}
-
-/**
- * Extract consolidation status from the log
- * Session #114: Now COMPUTES actual count and cross-validates against manual counter
- * Scoped to "Consolidation Trigger" section for robustness (Review #160)
- */
-function getConsolidationStatus(content) {
-  // COMPUTED: count actual #### Review #N entries > last consolidated (gap-safe)
-  // Fixed: was using version-table regex which doesn't match review headers
-  let lastConsolidated = getLastConsolidatedReview(content);
-
-  // Review #308: Extract cross-validation to reduce cognitive complexity
-  lastConsolidated = crossValidateLastConsolidated(lastConsolidated);
-
-  const reviewHeaderRegex = /^#### Review #(\d+)/gm;
-  const allNums = Array.from(content.matchAll(reviewHeaderRegex), (m) => Number.parseInt(m[1], 10));
-  const uniqueNums = new Set(allNums.filter((n) => Number.isFinite(n) && n > lastConsolidated));
-
-  // Review #216: Use reduce to avoid -Infinity and stack overflow on large arrays
-  const highestReview = allNums.reduce((max, n) => (Number.isFinite(n) && n > max ? n : max), 0);
-  const computedCount = uniqueNums.size;
-
-  // Scope parsing to Consolidation Trigger section only (Review #160)
-  const triggerStatus = parseTriggerSection(content, computedCount);
-
-  return {
-    reviewCount: computedCount,
-    manualCount: triggerStatus.manualCount,
-    lastConsolidation: triggerStatus.lastConsolidation,
-    lastReviewNum: lastConsolidated,
-    highestReview,
-  };
-}
-
-/**
- * Cross-validate lastConsolidated against CODE_PATTERNS.md version history
- * Review #308: Extracted to reduce cognitive complexity and apply mismatch fix
- */
-function crossValidateLastConsolidated(lastConsolidated) {
-  const codePatternsPath = join(__dirname, "..", "docs", "agent_docs", "CODE_PATTERNS.md");
-  if (!existsSync(codePatternsPath)) return lastConsolidated;
-
   try {
-    const cpContent = readFileSync(codePatternsPath, "utf8");
-    const consolidationRegex = /CONSOLIDATION #(\d+):\s*Reviews #(\d+)-(\d+)/g;
-    let cpMaxConsolidation = 0;
-    let cpLastReview = 0;
-    for (const m of cpContent.matchAll(consolidationRegex)) {
-      const cNum = Number.parseInt(m[1], 10);
-      const endReview = Number.parseInt(m[3], 10);
-      if (cNum > cpMaxConsolidation) {
-        cpMaxConsolidation = cNum;
-        cpLastReview = endReview;
-      }
-    }
-    if (cpLastReview > 0 && cpLastReview !== lastConsolidated) {
-      if (!quiet) {
-        console.log(
-          `${colors.yellow}⚠️  CROSS-VALIDATION: Log says last consolidated=#${lastConsolidated}, ` +
-            `CODE_PATTERNS.md says #${cpLastReview} (Consolidation #${cpMaxConsolidation})${colors.reset}`
-        );
-        console.log(`   → CODE_PATTERNS.md is the source of truth\n`);
-      }
-      return cpLastReview;
-    }
+    return JSON.parse(readFileSync(CONSOLIDATION_FILE, "utf8"));
   } catch (err) {
-    if (verbose) {
-      console.warn(
-        `  ⚠️  Cross-validation skipped: ${err instanceof Error ? err.message : String(err)}`
-      );
-    }
+    log(`❌ Failed to read consolidation.json: ${sanitizeError(err)}`, c.red);
+    return null;
   }
-  return lastConsolidated;
 }
 
-/**
- * Parse the Consolidation Trigger section for manual count and date
- * Review #308: Extracted to reduce cognitive complexity of getConsolidationStatus
- */
-function parseTriggerSection(content, computedCount) {
-  const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");
-  if (sectionStart === -1) {
-    throw new Error("Could not locate 'Consolidation Trigger' section in log file.");
-  }
-
-  const sectionEnd = content.indexOf("\n## ", sectionStart + 1);
-  const endIndex = sectionEnd === -1 ? content.length : sectionEnd;
-  const section = content.slice(sectionStart, endIndex);
-
-  const counterMatch = section.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
-  const manualCount = counterMatch ? Number.parseInt(counterMatch[1], 10) || 0 : 0;
-
-  if (manualCount !== computedCount && !quiet) {
-    console.log(
-      `${colors.yellow}⚠️  COUNTER DRIFT: Manual=${manualCount}, Computed=${computedCount}${colors.reset}`
-    );
-    console.log(`   Using COMPUTED value for threshold check.\n`);
-  }
-
-  const lastConsolidationMatch = section.match(/\*\*Date:\*\*\s+([^\n]+)/);
-  const lastConsolidation = lastConsolidationMatch ? lastConsolidationMatch[1].trim() : "Unknown";
-
-  return { manualCount, lastConsolidation };
+function writeState(state) {
+  ensureDir(STATE_DIR);
+  const tmpPath = `${CONSOLIDATION_FILE}.tmp`;
+  writeFileSync(tmpPath, JSON.stringify(state, null, 2) + "\n", "utf8");
+  // Windows-safe rename
+  const fs = require("node:fs");
+  if (fs.existsSync(CONSOLIDATION_FILE)) fs.rmSync(CONSOLIDATION_FILE, { force: true });
+  fs.renameSync(tmpPath, CONSOLIDATION_FILE);
 }
 
-/**
- * Extract review entries since last consolidation
- */
-function extractRecentReviews(content, lastReviewNum) {
-  const reviews = [];
-
-  // Match review entries as #### Review #NNN: Description (actual format in learnings log)
-  // Fixed: was using version-table regex which doesn't exist in the learnings log
-  const reviewRegex = /^#### Review #(\d{1,4}):\s*(.{1,500})/gm;
-  let match;
-
-  while ((match = reviewRegex.exec(content)) !== null) {
-    const reviewNum = Number.parseInt(match[1], 10);
-    const description = match[2].trim();
-
-    if (reviewNum > lastReviewNum) {
-      reviews.push({
-        number: reviewNum,
-        description,
-      });
-    }
-  }
-
-  return reviews.sort((a, b) => a.number - b.number);
+function ensureDir(dir) {
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 }
 
-/**
- * Extract patterns from review descriptions
- */
+// =============================================================================
+// REVIEWS: Read from JSONL (one JSON object per line)
+// =============================================================================
+
+function loadReviews() {
+  if (!existsSync(REVIEWS_FILE)) return [];
+  try {
+    return readFileSync(REVIEWS_FILE, "utf8")
+      .trim()
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => {
+        try {
+          return JSON.parse(line);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+  } catch (err) {
+    log(`❌ Failed to read reviews.jsonl: ${sanitizeError(err)}`, c.red);
+    return [];
+  }
+}
+
+function getPendingReviews(allReviews, lastConsolidated) {
+  return allReviews
+    .filter((r) => typeof r.id === "number" && r.id > lastConsolidated)
+    .sort((a, b) => a.id - b.id);
+}
+
+// =============================================================================
+// PATTERN EXTRACTION: From JSONL review data (structured, not regex-on-markdown)
+// =============================================================================
+
 function extractPatterns(reviews) {
   const patterns = new Map();
 
-  // Common pattern keywords to look for
-  const patternKeywords = [
-    // Security
-    /command injection/gi,
-    /path traversal/gi,
-    /ReDoS/gi,
-    /prototype pollution/gi,
-    /SSRF/gi,
-    /XSS/gi,
-    /injection/gi,
-    /sanitiz/gi,
-    /validation/gi,
-    /escape/gi,
-    /security/gi,
-
-    // Code quality
-    /cognitive complexity/gi,
-    /dead code/gi,
-    /unused/gi,
-    /duplicate/gi,
-    /refactor/gi,
-    /performance/gi,
-
-    // Error handling
-    /error handling/gi,
-    /try[/-]catch/gi,
-    /fail-closed/gi,
-    /fail-fast/gi,
-
-    // TypeScript/JavaScript
-    /type inference/gi,
-    /nullable/gi,
-    /TypeScript/gi,
-    /ESLint/gi,
-
-    // Shell/Bash
-    /shell/gi,
-    /bash/gi,
-    /portability/gi,
-    /cross-platform/gi,
-
-    // CI/Automation
-    /CI/gi,
-    /GitHub Actions/gi,
-    /pre-commit/gi,
-    /pre-push/gi,
-
-    // Documentation
-    /documentation/gi,
-    /broken link/gi,
-    /markdown/gi,
-  ];
-
   for (const review of reviews) {
-    const desc = review.description.toLowerCase();
+    // Use structured patterns array from JSONL
+    const reviewPatterns = Array.isArray(review.patterns) ? review.patterns : [];
+    for (const p of reviewPatterns) {
+      const key = String(p).toLowerCase().trim();
+      if (!key) continue;
+      if (!patterns.has(key)) {
+        patterns.set(key, { pattern: key, count: 0, reviews: [], learnings: [] });
+      }
+      const entry = patterns.get(key);
+      entry.count++;
+      if (!entry.reviews.includes(review.id)) entry.reviews.push(review.id);
+    }
 
-    for (const keyword of patternKeywords) {
-      const matches = desc.match(keyword);
-      if (matches) {
-        for (const match of matches) {
-          const normalizedPattern = match.toLowerCase().trim();
-          if (!patterns.has(normalizedPattern)) {
-            patterns.set(normalizedPattern, {
-              pattern: normalizedPattern,
-              count: 0,
-              reviews: [],
-              examples: [],
-            });
-          }
-          const entry = patterns.get(normalizedPattern);
+    // Also extract from title keywords for broader pattern detection
+    const title = (review.title || "").toLowerCase();
+    for (const keyword of PATTERN_KEYWORDS) {
+      if (keyword.test(title)) {
+        const match = title.match(keyword)?.[0]?.toLowerCase()?.trim();
+        if (!match) continue;
+        if (!patterns.has(match)) {
+          patterns.set(match, { pattern: match, count: 0, reviews: [], learnings: [] });
+        }
+        const entry = patterns.get(match);
+        if (!entry.reviews.includes(review.id)) {
           entry.count++;
-          if (!entry.reviews.includes(review.number)) {
-            entry.reviews.push(review.number);
-          }
-          // Extract context around pattern mention
-          // Escape special characters in match to prevent regex errors (Review #158)
-          const escapedMatch = escapeRegex(match);
-          const contextMatch = review.description.match(
-            new RegExp(`.{0,50}${escapedMatch}.{0,50}`, "i")
-          );
-          if (contextMatch && !entry.examples.includes(contextMatch[0])) {
-            entry.examples.push(contextMatch[0].trim());
-          }
+          entry.reviews.push(review.id);
         }
       }
     }
 
-    // Also extract "New pattern:" mentions
-    const newPatternMatch = review.description.match(/New pattern[s]?:\s*([^.]+)/i);
-    if (newPatternMatch) {
-      const patternDesc = newPatternMatch[1].trim().toLowerCase();
-      if (!patterns.has(patternDesc)) {
-        patterns.set(patternDesc, {
-          pattern: patternDesc,
-          count: 0,
-          reviews: [],
-          examples: [],
-          isExplicitPattern: true,
-        });
-      }
-      const entry = patterns.get(patternDesc);
-      entry.count++;
-      if (!entry.reviews.includes(review.number)) {
-        entry.reviews.push(review.number);
+    // Collect learnings for pattern context
+    const learnings = Array.isArray(review.learnings) ? review.learnings : [];
+    for (const learning of learnings) {
+      for (const [, entry] of patterns) {
+        if (entry.reviews.includes(review.id)) {
+          if (!entry.learnings.includes(learning) && entry.learnings.length < 5) {
+            entry.learnings.push(learning);
+          }
+        }
       }
     }
   }
@@ -392,9 +195,37 @@ function extractPatterns(reviews) {
   return patterns;
 }
 
-/**
- * Categorize patterns for CODE_PATTERNS.md
- */
+const PATTERN_KEYWORDS = [
+  /command injection/gi,
+  /path traversal/gi,
+  /redos/gi,
+  /prototype pollution/gi,
+  /ssrf/gi,
+  /xss/gi,
+  /injection/gi,
+  /sanitiz/gi,
+  /validation/gi,
+  /security/gi,
+  /cognitive complexity/gi,
+  /dead code/gi,
+  /refactor/gi,
+  /performance/gi,
+  /error handling/gi,
+  /try[/-]catch/gi,
+  /fail-closed/gi,
+  /typescript/gi,
+  /eslint/gi,
+  /nullable/gi,
+  /shell/gi,
+  /bash/gi,
+  /cross-platform/gi,
+  /github actions/gi,
+  /pre-commit/gi,
+  /pre-push/gi,
+  /documentation/gi,
+  /markdown/gi,
+];
+
 function categorizePatterns(patterns) {
   const categories = {
     Security: [],
@@ -404,510 +235,239 @@ function categorizePatterns(patterns) {
     Documentation: [],
     General: [],
   };
-
   for (const [, data] of patterns) {
-    const pattern = data.pattern.toLowerCase();
-
-    if (
-      /security|injection|ssrf|xss|traversal|redos|sanitiz|escape|prototype pollution/.test(pattern)
-    ) {
+    const p = data.pattern;
+    if (/security|injection|ssrf|xss|traversal|redos|sanitiz|escape|prototype/.test(p)) {
       categories["Security"].push(data);
-    } else if (/typescript|eslint|type|nullable/.test(pattern)) {
+    } else if (/typescript|eslint|type|nullable/.test(p)) {
       categories["JavaScript/TypeScript"].push(data);
-    } else if (/shell|bash|portability|cross-platform/.test(pattern)) {
+    } else if (/shell|bash|cross-platform/.test(p)) {
       categories["Bash/Shell"].push(data);
-    } else if (/ci|github actions|pre-commit|pre-push|automation/.test(pattern)) {
+    } else if (/ci|github actions|pre-commit|pre-push|automation/.test(p)) {
       categories["CI/Automation"].push(data);
-    } else if (/documentation|markdown|link/.test(pattern)) {
+    } else if (/documentation|markdown|link/.test(p)) {
       categories["Documentation"].push(data);
     } else {
       categories["General"].push(data);
     }
   }
-
   return categories;
 }
 
-/**
- * Format a single recurring pattern line for the report.
- */
-function formatPatternLine(p) {
-  const marker = p.isExplicitPattern ? "📌" : "🔄";
-  const revList = Array.isArray(p.reviews) && p.reviews.length > 0 ? p.reviews.join(", ") : "";
-  let line = `  ${marker} ${p.pattern} (${p.count}x in Reviews ${revList})\n`;
-  if (verbose && p.examples.length > 0) {
-    line += `     Example: "${p.examples[0]}"\n`;
-  }
-  return line;
-}
+// =============================================================================
+// REPORTING
+// =============================================================================
 
-/**
- * Format category summary lines for the report.
- */
-function formatCategorySummary(categories) {
-  let summary = "";
-  for (const [category, items] of Object.entries(categories)) {
-    const significant = items.filter(
-      (p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern
-    );
-    if (significant.length > 0) {
-      summary += `  ${category}: ${significant.length} pattern(s)\n`;
-    }
-  }
-  return summary;
-}
-
-/**
- * Generate consolidation report
- */
 function generateReport(reviews, patterns, categories) {
-  const recurringPatterns = Array.from(patterns.values())
-    .filter((p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern)
-    .sort(
-      (a, b) =>
-        b.count - a.count ||
-        (b.reviews?.length || 0) - (a.reviews?.length || 0) ||
-        String(a.pattern || "").localeCompare(String(b.pattern || ""))
-    );
+  const recurring = Array.from(patterns.values())
+    .filter((p) => p.count >= MIN_PATTERN_OCCURRENCES)
+    .sort((a, b) => b.count - a.count || a.pattern.localeCompare(b.pattern));
 
-  let report = "";
-  report += `\n${colors.bold}📊 Consolidation Analysis Report${colors.reset}\n`;
+  let report = `\n${c.bold}📊 Consolidation Analysis Report${c.reset}\n`;
   report += "═".repeat(50) + "\n\n";
+  report += `${c.bold}Reviews analyzed:${c.reset} ${reviews.length}\n`;
+  report += `Reviews: #${reviews[0]?.id || "?"} - #${reviews[reviews.length - 1]?.id || "?"}\n\n`;
+  report += `${c.bold}Recurring patterns (${MIN_PATTERN_OCCURRENCES}+ mentions):${c.reset}\n`;
 
-  report += `${colors.bold}Reviews analyzed:${colors.reset} ${reviews.length}\n`;
-  report += `Reviews: #${reviews[0]?.number || "?"} - #${reviews[reviews.length - 1]?.number || "?"}\n\n`;
-
-  report += `${colors.bold}Recurring patterns (${MIN_PATTERN_OCCURRENCES}+ mentions):${colors.reset}\n`;
-
-  if (recurringPatterns.length === 0) {
+  if (recurring.length === 0) {
     report += "  No recurring patterns found.\n";
   } else {
-    for (const p of recurringPatterns) {
-      report += formatPatternLine(p);
+    for (const p of recurring) {
+      report += `  🔄 ${p.pattern} (${p.count}x in Reviews ${p.reviews.join(", ")})\n`;
     }
   }
 
-  report += `\n${colors.bold}Patterns by category:${colors.reset}\n`;
-  report += formatCategorySummary(categories);
-
-  return { report, recurringPatterns };
-}
-
-/**
- * Update the consolidation counter in the log file
- * Session #114: Also updates "Last Consolidation" section with review range
- */
-function updateConsolidationCounter(content, newCount, nextReview, consolidatedRange) {
-  // Scope replacements to "Consolidation Trigger" section only (Review #158)
-  // This prevents accidental modifications to other parts of the document
-  const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");
-  const sectionEnd = content.indexOf("\n## ", sectionStart + 1);
-
-  if (sectionStart === -1) {
-    throw new Error("Could not locate 'Consolidation Trigger' section in log file.");
+  report += `\n${c.bold}Patterns by category:${c.reset}\n`;
+  for (const [cat, items] of Object.entries(categories)) {
+    const sig = items.filter((p) => p.count >= MIN_PATTERN_OCCURRENCES);
+    if (sig.length > 0) report += `  ${cat}: ${sig.length} pattern(s)\n`;
   }
 
-  // Extract the section (or rest of file if no next section)
-  const endIndex = sectionEnd === -1 ? content.length : sectionEnd;
-  let section = content.slice(sectionStart, endIndex);
+  return { report, recurringPatterns: recurring };
+}
 
-  // Update "Reviews since last consolidation" counter
-  section = section.replace(
-    /\*\*Reviews since last consolidation:\*\*\s+\d+/,
-    `**Reviews since last consolidation:** ${newCount}`
-  );
+function generateRuleSuggestions(recurringPatterns, range) {
+  if (recurringPatterns.length === 0) return;
 
-  // Update status (must happen BEFORE "Next consolidation due" to avoid cascade corruption)
-  // Bug fix: Previously inserted "Next consolidation due" into Status field, creating
-  // duplicate matches that grew on each run (PR #364 retro finding)
-  section = section.replace(/\*\*Status:\*\*\s+[^\n]+/, `**Status:** ✅ Current`);
+  ensureDir(OUTPUT_DIR);
+  const now = new Date().toISOString().split("T")[0];
+  let content = `# Suggested Compliance Checker Rules\n\n`;
+  content += `**Generated:** ${now}\n`;
+  content += `**Source:** Consolidation Reviews #${range.start}-#${range.end}\n`;
+  content += `**Status:** Pending review - add to check-pattern-compliance.js as appropriate\n\n---\n\n`;
 
-  // Update "Next consolidation due" text — match liberally to clean up prior corruption
-  section = section.replace(
-    /\*\*Next consolidation due:\*\*\s+[^\n]+/,
-    `**Next consolidation due:** After Review #${nextReview} (Consolidation #${consolidatedRange?.consolidationNumber || "next"})`
-  );
+  for (const p of recurringPatterns) {
+    const id = (p.pattern || "")
+      .toLowerCase()
+      .replaceAll(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 40);
+    content += `## ${p.pattern}\n\n`;
+    content += `- **Mentions:** ${p.count} (Reviews: #${p.reviews.join(", #")})\n`;
+    content += `- **Suggested ID:** \`${id || "unnamed"}\`\n`;
+    content += `- **Template:**\n\n\`\`\`javascript\n`;
+    content += `{\n  id: ${JSON.stringify(id)},\n  pattern: /TODO_REGEX/g,\n`;
+    content += `  message: ${JSON.stringify(p.pattern)},\n`;
+    content += `  fix: "TODO: describe the correct pattern",\n`;
+    content += `  review: "#${p.reviews.join(", #")}",\n  fileTypes: [".js", ".ts"],\n}\n`;
+    content += `\`\`\`\n\n`;
+  }
 
-  // Update last consolidation date and session
-  const today = new Date().toISOString().split("T")[0];
-  section = section.replace(/\*\*Date:\*\*\s+[^\n]+/, `**Date:** ${today} (Session #114+)`);
-
-  // Update "Reviews consolidated" with actual range
-  if (consolidatedRange) {
-    section = section.replace(
-      /\*\*Reviews consolidated:\*\*\s+#?\d+-#?\d+[^\n]*/,
-      `**Reviews consolidated:** #${consolidatedRange.start}-#${consolidatedRange.end} (${consolidatedRange.count} reviews)`
+  try {
+    writeFileSync(OUTPUT_FILE, content, "utf8");
+    log(
+      `  ✅ Rule suggestions → consolidation-output/suggested-rules.md (${recurringPatterns.length} patterns)`,
+      c.green
     );
-  }
-
-  // Reconstruct the full content
-  return content.slice(0, sectionStart) + section + content.slice(endIndex);
-}
-
-/**
- * Generate suggested CODE_PATTERNS.md additions
- */
-function generatePatternSuggestions(recurringPatterns, categories) {
-  let suggestions = "";
-  suggestions += `\n${colors.bold}📝 Suggested CODE_PATTERNS.md additions:${colors.reset}\n`;
-  suggestions += "─".repeat(50) + "\n";
-
-  for (const [category, items] of Object.entries(categories)) {
-    const significant = items.filter(
-      (p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern
-    );
-    if (significant.length === 0) continue;
-
-    suggestions += `\n## ${category}\n\n`;
-    suggestions += "| Pattern | Rule | Why |\n";
-    suggestions += "| ------- | ---- | --- |\n";
-
-    for (const p of significant) {
-      // Example available at p.examples[0] for future use
-      const revList =
-        Array.isArray(p.reviews) && p.reviews.length > 0 ? `#${p.reviews.join(", ")}` : "";
-      suggestions += `| ${p.pattern} | (add rule) | Reviews ${revList || "(unknown)"} |\n`;
-    }
-  }
-
-  return suggestions;
-}
-
-/**
- * Output consolidation analysis results
- */
-function outputAnalysisResults(report, recurringPatterns, categories) {
-  if (!quiet || verbose) {
-    console.log(report);
-  }
-
-  if (recurringPatterns.length > 0 && (!quiet || verbose)) {
-    console.log(generatePatternSuggestions(recurringPatterns, categories));
+  } catch (err) {
+    if (verbose) log(`  ⚠️ Failed to write suggestions: ${sanitizeError(err)}`, c.yellow);
   }
 }
 
-/**
- * Apply consolidation changes to files
- * Review #192: Return boolean success status instead of throwing on empty input
- * @returns {boolean} True if consolidation was applied, false if rejected
- */
-function applyConsolidationChanges(content, reviews, recurringPatterns) {
-  log(`\n${colors.bold}Applying consolidation...${colors.reset}`, colors.green);
+// =============================================================================
+// APPLY: Update state atomically (JSON write, no markdown regex)
+// =============================================================================
 
-  // Guard against empty reviews array to prevent -Infinity from Math.max
-  // Review #192: Use controlled error path instead of throwing
+function applyConsolidation(state, reviews, recurringPatterns) {
   if (reviews.length === 0) {
-    log("❌ No reviews found to consolidate; refusing to reset consolidation counter.", colors.red);
+    log("❌ No reviews to consolidate.", c.red);
     process.exitCode = 2;
     return false;
   }
 
-  // Calculate next review number and range
-  // Review #216: Use reduce to avoid stack overflow on large review batches
-  const { minReviewNum, maxReviewNum } = reviews.reduce(
-    (acc, r) => ({
-      minReviewNum: Math.min(r.number, acc.minReviewNum),
-      maxReviewNum: Math.max(r.number, acc.maxReviewNum),
-    }),
-    { minReviewNum: Infinity, maxReviewNum: 0 }
-  );
-  const nextConsolidationReview = maxReviewNum + CONSOLIDATION_THRESHOLD;
-  const consolidatedRange = {
-    start: minReviewNum,
-    end: maxReviewNum,
-    count: reviews.length,
+  const minId = reviews[0].id;
+  const maxId = reviews[reviews.length - 1].id;
+  const newNumber = state.consolidationNumber + 1;
+  const today = new Date().toISOString().split("T")[0];
+
+  // Atomically update state
+  const newState = {
+    lastConsolidatedReview: maxId,
+    consolidationNumber: newNumber,
+    lastDate: today,
+    threshold: THRESHOLD,
   };
+  writeState(newState);
 
-  // Update log file
-  const updatedContent = updateConsolidationCounter(
-    content,
-    0,
-    nextConsolidationReview,
-    consolidatedRange
-  );
-  writeFileSync(LOG_FILE, updatedContent, "utf8");
-  log(`  ✅ Reset consolidation counter in AI_REVIEW_LEARNINGS_LOG.md`, colors.green);
+  log(`\n${c.bold}Applying consolidation...${c.reset}`, c.green);
   log(
-    `  ✅ Consolidated reviews #${minReviewNum}-#${maxReviewNum} (${reviews.length} reviews)`,
-    colors.green
+    `  ✅ Consolidation #${newNumber}: Reviews #${minId}-#${maxId} (${reviews.length} reviews)`,
+    c.green
   );
-  log(`  ✅ Next consolidation due after Review #${nextConsolidationReview}`, colors.green);
+  log(`  ✅ State updated in consolidation.json`, c.green);
+  log(`  ✅ Next consolidation due after ${THRESHOLD} more reviews`, c.green);
 
-  // Generate suggested compliance checker rules for recurring patterns
-  generateRuleSuggestions(recurringPatterns, consolidatedRange);
+  // Generate rule suggestions
+  generateRuleSuggestions(recurringPatterns, { start: minId, end: maxId });
 
-  // Output summary based on mode
   if (autoMode) {
     console.log(
-      `   ✓ Auto-consolidated ${reviews.length} reviews (patterns: ${recurringPatterns.length})`
+      `✓ Auto-consolidated ${reviews.length} reviews (patterns: ${recurringPatterns.length})`
     );
   } else {
-    outputManualSteps();
+    log("");
+    log(`${c.bold}📋 Next steps:${c.reset}`);
+    log("  1. Review consolidation-output/suggested-rules.md");
+    log("  2. Add recurring patterns to docs/agent_docs/CODE_PATTERNS.md");
+    log("  3. Add automatable patterns to check-pattern-compliance.js");
+    log(`  4. Commit: 'chore: consolidation #${newNumber} — Reviews #${minId}-#${maxId}'`);
+    log("");
   }
 
   return true;
 }
 
-/**
- * Output manual steps for non-auto mode
- */
-function outputManualSteps() {
-  log("");
-  log(`${colors.bold}📋 Manual steps required:${colors.reset}`);
-  log("  1. Review the suggested patterns above");
-  log("  2. Add relevant patterns to docs/agent_docs/CODE_PATTERNS.md");
-  log("  3. Add critical patterns (top 5) to claude.md Section 4");
-  log("  4. Run: npm run patterns:suggest (for automatable patterns)");
-  log("  5. Commit with message: 'chore: consolidate Reviews #X-#Y patterns'");
-  log("");
-}
+// =============================================================================
+// MAIN
+// =============================================================================
 
-/**
- * Generate suggested compliance checker rules for recurring patterns
- * Writes to consolidation-output/suggested-rules.md for human/AI review
- */
-function generateRuleSuggestions(recurringPatterns, consolidatedRange) {
-  if (recurringPatterns.length === 0) return;
-
-  const outputDir = join(__dirname, "..", "consolidation-output");
-  const outputFile = join(outputDir, "suggested-rules.md");
-
-  try {
-    if (!existsSync(outputDir)) {
-      const { mkdirSync } = require("node:fs");
-      mkdirSync(outputDir, { recursive: true });
-    }
-
-    const now = new Date().toISOString().split("T")[0];
-    let content = `# Suggested Compliance Checker Rules\n\n`;
-    content += `**Generated:** ${now}\n`;
-    content += `**Source:** Consolidation #${consolidatedRange.start}-#${consolidatedRange.end}\n`;
-    content += `**Status:** Pending review - add to check-pattern-compliance.js as appropriate\n\n`;
-    content += `---\n\n`;
-
-    for (const p of recurringPatterns) {
-      // Review #308: Use replaceAll, group regex alternation for precedence
-      const id = (p.pattern || "")
-        .toLowerCase()
-        .replaceAll(/[^a-z0-9]+/g, "-")
-        .replaceAll(/(?:^-|-$)/g, "")
-        .slice(0, 40);
-
-      content += `## ${p.pattern}\n\n`;
-      const revRefs =
-        Array.isArray(p.reviews) && p.reviews.length > 0 ? `#${p.reviews.join(", #")}` : "";
-      content += `- **Mentions:** ${p.count} (Reviews: ${revRefs || "(unknown)"})\n`;
-      content += `- **Suggested ID:** \`${id || "unnamed-pattern"}\`\n`;
-      content += `- **Enforceability:** [REGEX] / [AST] / [SEMANTIC] ← classify manually\n`;
-      content += `- **Template:**\n\n`;
-      content += "```javascript\n";
-      content += `{\n`;
-      content += `  id: ${JSON.stringify(id || "unnamed-pattern")},\n`;
-      content += `  pattern: /TODO_REGEX/g,\n`;
-      content += `  message: ${JSON.stringify(p.pattern || "")},\n`;
-      content += `  fix: "TODO: describe the correct pattern",\n`;
-      const reviewStr =
-        Array.isArray(p.reviews) && p.reviews.length > 0 ? `#${p.reviews.join(", #")}` : "";
-      content += `  review: ${JSON.stringify(reviewStr)},\n`;
-      content += `  fileTypes: [".js", ".ts"],\n`;
-      content += `}\n`;
-      content += "```\n\n";
-    }
-
-    writeFileSync(outputFile, content, "utf8");
-    log(
-      `  ✅ Rule suggestions written to consolidation-output/suggested-rules.md (${recurringPatterns.length} patterns)`,
-      colors.green
-    );
-  } catch (error_) {
-    // Non-fatal: don't fail consolidation if rule suggestions can't be written
-    if (verbose) {
-      log(`  ⚠️  Failed to write rule suggestions: ${sanitizeError(error_)}`, colors.yellow);
-    }
-  }
-}
-
-/**
- * Output dry run message
- */
-function outputDryRunMessage() {
-  log("");
-  log(
-    `${colors.yellow}Dry run complete. Use --apply to reset counter and begin consolidation.${colors.reset}`
-  );
-  log(`  npm run consolidation:run -- --apply`);
-  log("");
-}
-
-/**
- * Check archive health: warn if active reviews exceed threshold
- */
-function checkArchiveHealth() {
-  try {
-    const logContent = readFileSync(LOG_FILE, "utf8").replaceAll("\r\n", "\n");
-    const reviewHeaders = logContent.match(/^#### Review #\d+/gm) || [];
-    const activeCount = reviewHeaders.length;
-    const lineCount = logContent.split("\n").length;
-
-    if (activeCount > 20 || lineCount > 1500) {
-      log("");
-      log(
-        `${colors.yellow}📦 ARCHIVE RECOMMENDED: ${activeCount} active reviews (threshold: 20), ${lineCount} lines (threshold: 1500)${colors.reset}`
-      );
-      log(`   Run: npm run docs:archive`);
-    }
-  } catch (err) {
-    // Non-fatal: log and skip if file unreadable
-    if (verbose) {
-      console.warn(
-        `  ⚠️  Archive health check skipped: ${err instanceof Error ? err.message : String(err)}`
-      );
-    }
-  }
-}
-
-/**
- * Read and validate log file
- */
-function readLogFile() {
-  if (!existsSync(LOG_FILE)) {
-    log("❌ AI_REVIEW_LEARNINGS_LOG.md not found", colors.red);
-    return null;
-  }
-
-  try {
-    return readFileSync(LOG_FILE, "utf8").replaceAll("\r\n", "\n"); // S7781: Use string literal
-  } catch (readError) {
-    const message = readError instanceof Error ? readError.message : String(readError);
-    log(`❌ Failed to read AI_REVIEW_LEARNINGS_LOG.md: ${message}`, colors.red);
-    return null;
-  }
-}
-
-/**
- * Output current consolidation status
- * Session #114: Show both computed and manual counts
- */
-function outputConsolidationStatus(status) {
-  log(`Current status:`);
-  log(`  Highest review: #${status.highestReview}`);
-  log(`  Last consolidated: #${status.lastReviewNum}`);
-  log(`  Reviews pending (computed): ${status.reviewCount}`);
-  if (status.manualCount !== status.reviewCount) {
-    log(`  Reviews pending (manual): ${status.manualCount} ← OUT OF SYNC`);
-  }
-  log(`  Threshold: ${CONSOLIDATION_THRESHOLD}`);
-  log(`  Last consolidation: ${status.lastConsolidation}`);
-  log("");
-}
-
-/**
- * Check if consolidation is needed
- * Returns true if consolidation should proceed
- */
-function checkConsolidationNeeded(status) {
-  if (status.reviewCount < CONSOLIDATION_THRESHOLD) {
-    if (!autoMode) {
-      log(
-        `✅ No consolidation needed (${CONSOLIDATION_THRESHOLD - status.reviewCount} reviews until next)`,
-        colors.green
-      );
-    }
-    return false;
-  }
-
-  log(`⚠️  Consolidation triggered: ${status.reviewCount} reviews pending`, colors.yellow);
-  log("");
-  return true;
-}
-
-/**
- * Main consolidation function
- */
 function main() {
   try {
-    log(`\n${colors.bold}🔄 Pattern Consolidation Tool${colors.reset}\n`);
+    log(`\n${c.bold}🔄 Pattern Consolidation Tool (v2 — JSONL)${c.reset}\n`);
 
-    // Read log file
-    const content = readLogFile();
-    if (!content) {
+    // 1. Load state
+    const state = loadState();
+    if (!state) {
       process.exitCode = 2;
       return;
     }
 
-    // Get and output status
-    const status = getConsolidationStatus(content);
-    outputConsolidationStatus(status);
+    // 2. Load reviews and find pending
+    const allReviews = loadReviews();
+    const pending = getPendingReviews(allReviews, state.lastConsolidatedReview);
 
-    // Check if consolidation is needed
-    if (!checkConsolidationNeeded(status)) {
+    // 3. Output status
+    log(`Current status:`);
+    log(
+      `  Last consolidated: #${state.lastConsolidatedReview} (Consolidation #${state.consolidationNumber})`
+    );
+    log(`  Reviews pending: ${pending.length}`);
+    log(`  Threshold: ${THRESHOLD}`);
+    if (state.lastDate) log(`  Last consolidation date: ${state.lastDate}`);
+    log("");
+
+    // 4. Check threshold
+    if (pending.length < THRESHOLD) {
+      if (!autoMode) {
+        log(
+          `✅ No consolidation needed (${THRESHOLD - pending.length} reviews until next)`,
+          c.green
+        );
+      }
       process.exitCode = 0;
       return;
     }
 
-    // Extract reviews since last consolidation
-    const reviews = extractRecentReviews(content, status.lastReviewNum);
-    logVerbose(`Found ${reviews.length} reviews to analyze`);
+    log(`⚠️  Consolidation triggered: ${pending.length} reviews pending`, c.yellow);
+    log("");
 
-    if (reviews.length === 0) {
-      log("❌ No reviews found to consolidate. Check log format.", colors.red);
-      process.exitCode = 2;
-      return;
-    }
-
-    // Extract and analyze patterns
-    const patterns = extractPatterns(reviews);
+    // 5. Extract and analyze patterns
+    const patterns = extractPatterns(pending);
     const categories = categorizePatterns(patterns);
-    const { report, recurringPatterns } = generateReport(reviews, patterns, categories);
+    const { report, recurringPatterns } = generateReport(pending, patterns, categories);
 
-    // Output analysis results
-    outputAnalysisResults(report, recurringPatterns, categories);
+    if (!quiet || verbose) console.log(report);
 
-    // Apply changes if requested, otherwise show dry run message
+    // 6. Apply or dry-run
     if (applyChanges) {
-      // Review #193: Preserve failure exit code set by applyConsolidationChanges
-      // Review #194: Make failure path explicit with return
-      const applied = applyConsolidationChanges(content, reviews, recurringPatterns);
+      const applied = applyConsolidation(state, pending, recurringPatterns);
       if (applied) {
-        // Run learning effectiveness analysis after consolidation
-        log("\n📊 Running learning effectiveness analysis...", colors.blue);
+        // Post-consolidation: learning effectiveness analysis
+        log("\n📊 Running learning effectiveness analysis...", c.blue);
         try {
-          // Review #200: Use execFileSync instead of execSync to avoid shell invocation
           execFileSync("node", ["scripts/analyze-learning-effectiveness.js", "--auto"], {
             stdio: "inherit",
-            cwd: join(__dirname, ".."),
+            cwd: ROOT_DIR,
           });
-        } catch (error_) {
-          // Non-blocking: Don't fail consolidation if analysis fails
-          log("⚠️  Learning analysis failed (non-blocking)", colors.yellow);
-          if (verbose) {
-            // Review #200: Sanitize error message to prevent internal detail leakage
-            log(`   ${sanitizeError(error_)}`, colors.yellow);
-          }
+        } catch {
+          log("⚠️ Learning analysis failed (non-blocking)", c.yellow);
         }
 
-        // Post-consolidation: check if archiving is needed
-        checkArchiveHealth();
+        // Archive health check
+        try {
+          const reviewCount = allReviews.length;
+          if (reviewCount > 50) {
+            log(
+              `\n${c.yellow}📦 ARCHIVE RECOMMENDED: ${reviewCount} reviews in reviews.jsonl (threshold: 50)${c.reset}`
+            );
+            log(`   Consider archiving older entries`);
+          }
+        } catch {
+          /* non-fatal */
+        }
 
         process.exitCode = 0;
-        return;
+      } else {
+        process.exitCode ??= 2;
       }
-      // Review #195: Preserve exitCode set by applyConsolidationChanges (default to 2 if unset)
-      process.exitCode ??= 2;
-      return;
     } else {
-      outputDryRunMessage();
-
-      // Also check archive health in dry-run mode (informational)
-      checkArchiveHealth();
-
+      log(`\n${c.yellow}Dry run complete. Use --apply to consolidate.${c.reset}`);
+      log(`  npm run consolidation:run -- --apply\n`);
       process.exitCode = 1;
     }
   } catch (err) {
-    log(`❌ Error: ${err instanceof Error ? err.message : String(err)}`, colors.red);
-    if (verbose && err instanceof Error) {
-      console.error(err.stack);
-    }
+    log(`❌ Error: ${sanitizeError(err)}`, c.red);
+    if (verbose && err instanceof Error) console.error(err.stack);
     process.exitCode = 2;
   }
 }

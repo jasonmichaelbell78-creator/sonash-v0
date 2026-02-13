@@ -51,7 +51,6 @@
     "ai-pattern-checks.js",
     "validate-audit-integration.js",
     "transform-jsonl-schema.js",
-    "sync-consolidation-counter.js",
     "unify-findings.js",
     "normalize-format.js",
     "aggregate-category.js",
