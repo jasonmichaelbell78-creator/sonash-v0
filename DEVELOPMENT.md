@@ -1078,6 +1078,10 @@ Closes #123
 - [Product Roadmap](./ROADMAP.md)
 - [Security Guide](./docs/SECURITY.md)
 - [Incident Response](./docs/INCIDENT_RESPONSE.md)
+- [Architecture Decision Records](./docs/decisions/README.md) — ADR framework
+  for documenting significant technical decisions
+- [Skill & Agent Policy](./docs/agent_docs/SKILL_AGENT_POLICY.md) — Policies for
+  creating and using Claude skills and agents
 
 ### External Resources
 

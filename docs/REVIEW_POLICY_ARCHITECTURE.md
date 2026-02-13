@@ -1267,7 +1267,16 @@ If survey scores drop below 4/5 for 2 consecutive months:
 
 ## 7. Related Documents
 
-### 7.1 Existing Process Documents
+### 7.1 Companion Documents
+
+- **[REVIEW_POLICY_INDEX.md](./REVIEW_POLICY_INDEX.md)** - Central directory for
+  all review policies
+- **[REVIEW_POLICY_QUICK_REF.md](./REVIEW_POLICY_QUICK_REF.md)** - One-page
+  quick reference
+- **[REVIEW_POLICY_VISUAL_GUIDE.md](./REVIEW_POLICY_VISUAL_GUIDE.md)** - Visual
+  diagrams and flowcharts
+
+### 7.2 Existing Process Documents
 
 - **AI_REVIEW_PROCESS.md** - AI code review workflow (CodeRabbit, Qodo)
 - **AI_REVIEW_LEARNINGS_LOG.md** - Historical review learnings
@@ -1276,7 +1285,7 @@ If survey scores drop below 4/5 for 2 consecutive months:
 - **TRIGGERS.md** - Automation and enforcement reference (68+ triggers)
 - **PR_WORKFLOW_CHECKLIST.md** - Pre-PR checklist
 
-### 7.2 Integration Points
+### 7.3 Integration Points
 
 This policy integrates with:
 

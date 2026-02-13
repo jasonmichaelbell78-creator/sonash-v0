@@ -570,6 +570,10 @@ These patterns are automatically enforced by:
 When a violation is flagged, reference this document (🔴 = critical patterns)
 for the pattern details and fix guidance.
 
+**See also:** [FIX_TEMPLATES.md](./FIX_TEMPLATES.md) — Copy-paste fix templates
+for the top 20 most common Qodo PR review findings, using project-specific
+helpers.
+
 ---
 
 ## Version History

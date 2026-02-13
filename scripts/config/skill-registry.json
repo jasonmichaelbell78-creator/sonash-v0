@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-02-09T13:07:05.343Z",
-  "skillCount": 56,
+  "generatedAt": "2026-02-13T18:28:48.577Z",
+  "skillCount": 60,
   "skills": [
     {
       "name": "add-deferred-debt",
@@ -17,14 +17,14 @@
     {
       "name": "alerts",
       "source": ".claude/skills",
-      "description": "|",
-      "displayName": "alerts"
+      "displayName": "alerts",
+      "description": "description: |"
     },
     {
       "name": "artifacts-builder",
       "source": ".claude/skills",
       "displayName": "artifacts-builder",
-      "description": "description:"
+      "description": "Suite of tools for creating elaborate, multi-component claude.ai HTML"
     },
     {
       "name": "audit-aggregator",
@@ -48,13 +48,19 @@
       "name": "audit-documentation",
       "source": ".claude/skills",
       "displayName": "audit-documentation",
-      "description": "description:"
+      "description": "Run a multi-stage parallel documentation audit with 18 specialized agents"
     },
     {
       "name": "audit-engineering-productivity",
       "source": ".claude/skills",
       "description": "Run a single-session engineering productivity audit on the codebase",
       "displayName": "audit-engineering-productivity"
+    },
+    {
+      "name": "audit-enhancements",
+      "source": ".claude/skills",
+      "displayName": "audit-enhancements",
+      "description": "Run a comprehensive enhancement audit across the entire project - code,"
     },
     {
       "name": "audit-performance",
@@ -66,7 +72,7 @@
       "name": "audit-process",
       "source": ".claude/skills",
       "displayName": "audit-process",
-      "description": "description:"
+      "description": "Run a comprehensive multi-stage automation audit with parallel agents"
     },
     {
       "name": "audit-refactoring",
@@ -84,7 +90,7 @@
       "name": "audit-validation-wrapper",
       "source": ".claude/skills",
       "displayName": "audit-validation-wrapper",
-      "description": "description:"
+      "description": "Validation wrapper that tests TDMS and Documentation Standards integration"
     },
     {
       "name": "checkpoint",
@@ -96,13 +102,13 @@
       "name": "code-reviewer",
       "source": ".claude/skills",
       "displayName": "code-reviewer",
-      "description": "description:"
+      "description": "Comprehensive code review skill for TypeScript, JavaScript, Python, Swift,"
     },
     {
       "name": "content-research-writer",
       "source": ".claude/skills",
       "displayName": "content-research-writer",
-      "description": "description:"
+      "description": "Assists in writing high-quality content by conducting research, adding"
     },
     {
       "name": "decrypt-secrets",
@@ -111,16 +117,22 @@
       "displayName": "decrypt-secrets"
     },
     {
+      "name": "deep-plan",
+      "source": ".claude/skills",
+      "displayName": "deep-plan",
+      "description": "Structured discovery-first planning for complex tasks. Ask exhaustive"
+    },
+    {
       "name": "developer-growth-analysis",
       "source": ".claude/skills",
       "displayName": "developer-growth-analysis",
-      "description": "description:"
+      "description": "Analyzes your recent Claude Code chat history to identify coding patterns,"
     },
     {
       "name": "doc-optimizer",
       "source": ".claude/skills",
       "displayName": "doc-optimizer",
-      "description": "description:"
+      "description": "Scan all docs, auto-fix formatting/headers/links, report issues as JSONL, and"
     },
     {
       "name": "docs-sync",
@@ -131,61 +143,68 @@
     {
       "name": "docs-update",
       "source": ".claude/skills",
-      "description": "docs-update Skill"
+      "displayName": "docs-update",
+      "description": "Automatically update documentation artifacts when markdown files change"
     },
     {
       "name": "excel-analysis",
       "source": ".claude/skills",
       "displayName": "Excel Analysis",
-      "description": "description:"
+      "description": "Analyze Excel spreadsheets, create pivot tables, generate charts, and perform"
     },
     {
       "name": "expansion-evaluation",
       "source": ".claude/skills",
-      "description": ">-",
-      "displayName": "expansion-evaluation"
+      "displayName": "expansion-evaluation",
+      "description": "description: >-"
     },
     {
       "name": "find-skills",
       "source": ".claude/skills",
       "displayName": "find-skills",
-      "description": "description:"
+      "description": "Helps users discover and install agent skills when they ask questions like"
     },
     {
       "name": "frontend-design",
       "source": ".claude/skills",
       "displayName": "frontend-design",
-      "description": "description:"
+      "description": "Create distinctive, production-grade frontend interfaces with high design"
     },
     {
       "name": "gh-fix-ci",
       "source": ".claude/skills",
       "displayName": "gh-fix-ci",
-      "description": "description:"
+      "description": "Inspect GitHub PR checks with gh, pull failing GitHub Actions logs, summarize"
     },
     {
       "name": "market-research-reports",
       "source": ".claude/skills",
       "displayName": "market-research-reports",
-      "description": "description:"
+      "description": "\"Generate comprehensive market research reports (50+ pages) in the style of"
     },
     {
       "name": "markitdown",
       "source": ".claude/skills",
       "displayName": "markitdown",
-      "description": "description:"
+      "description": "\"Convert files and office documents to Markdown. Supports PDF, DOCX, PPTX,"
     },
     {
       "name": "mcp-builder",
       "source": ".claude/skills",
       "displayName": "mcp-builder",
-      "description": "description:"
+      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that"
     },
     {
       "name": "multi-ai-audit",
       "source": ".claude/skills",
       "displayName": "multi-ai-audit",
-      "description": "description:"
+      "description": "Interactive orchestrator for multi-AI consensus audits with any-format input"
+    },
+    {
+      "name": "pr-retro",
+      "source": ".claude/skills",
+      "displayName": "pr-retro",
+      "description": "PR Review Retrospective — actionable analysis of a PR's review cycle"
     },
     {
       "name": "pr-review",
@@ -196,61 +215,62 @@
     {
       "name": "pre-commit-fixer",
       "source": ".claude/skills",
-      "description": "|",
-      "displayName": "pre-commit-fixer"
+      "displayName": "pre-commit-fixer",
+      "description": "description: |"
     },
     {
       "name": "quick-fix",
       "source": ".claude/skills",
-      "description": "quick-fix Skill"
+      "displayName": "quick-fix",
+      "description": "Auto-suggest fixes for common pre-commit and pattern compliance issues"
     },
     {
       "name": "requesting-code-review",
       "source": ".claude/skills",
       "displayName": "requesting-code-review",
-      "description": "description:"
+      "description": "Use when completing tasks, implementing major features, or before merging to"
     },
     {
       "name": "save-context",
       "source": ".claude/skills",
-      "description": "|",
-      "displayName": "save-context"
+      "displayName": "save-context",
+      "description": "description: |"
     },
     {
       "name": "senior-architect",
       "source": ".claude/skills",
       "displayName": "senior-architect",
-      "description": "description:"
+      "description": "Comprehensive software architecture skill for designing scalable, maintainable"
     },
     {
       "name": "senior-backend",
       "source": ".claude/skills",
       "displayName": "senior-backend",
-      "description": "description:"
+      "description": "Comprehensive backend development skill for building scalable backend systems"
     },
     {
       "name": "senior-devops",
       "source": ".claude/skills",
       "displayName": "senior-devops",
-      "description": "description:"
+      "description": "Comprehensive DevOps skill for CI/CD, infrastructure automation,"
     },
     {
       "name": "senior-frontend",
       "source": ".claude/skills",
       "displayName": "senior-frontend",
-      "description": "description:"
+      "description": "Comprehensive frontend development skill for building modern, performant web"
     },
     {
       "name": "senior-fullstack",
       "source": ".claude/skills",
       "displayName": "senior-fullstack",
-      "description": "description:"
+      "description": "Comprehensive fullstack development skill for building complete web"
     },
     {
       "name": "senior-qa",
       "source": ".claude/skills",
       "displayName": "senior-qa",
-      "description": "description:"
+      "description": "Comprehensive QA and testing skill for quality assurance, test automation, and"
     },
     {
       "name": "session-begin",
@@ -268,54 +288,61 @@
       "name": "skill-creator",
       "source": ".claude/skills",
       "displayName": "skill-creator",
-      "description": "description:"
+      "description": "Guide for creating effective skills. This skill should be used when users want"
     },
     {
       "name": "sonarcloud",
       "source": ".claude/skills",
-      "description": "|",
-      "displayName": "sonarcloud"
+      "displayName": "sonarcloud",
+      "description": "description: |"
     },
     {
       "name": "sonarcloud-sprint",
       "source": ".claude/skills",
       "displayName": "sonarcloud-sprint",
-      "description": "description:"
+      "description": "Run a SonarCloud cleanup sprint. Fetches fresh issues via public API,"
     },
     {
       "name": "sync-sonarcloud-debt",
       "source": ".claude/skills",
-      "description": "|",
-      "displayName": "sync-sonarcloud-debt"
+      "displayName": "sync-sonarcloud-debt",
+      "description": "description: |"
     },
     {
       "name": "systematic-debugging",
       "source": ".claude/skills",
       "displayName": "systematic-debugging",
-      "description": "description:"
+      "description": "Use when encountering any bug, test failure, or unexpected behavior, before"
+    },
+    {
+      "name": "task-next",
+      "source": ".claude/skills",
+      "description": "Show dependency-resolved next tasks from ROADMAP.md active sprint",
+      "displayName": "task-next"
     },
     {
       "name": "test-suite",
       "source": ".claude/skills",
-      "description": "/test-suite — Unified Testing Suite"
+      "displayName": "test-suite",
+      "description": "Multi-phase UI testing orchestration for SoNash using Playwright MCP or Chrome"
     },
     {
       "name": "ui-design-system",
       "source": ".claude/skills",
       "displayName": "ui-design-system",
-      "description": "description:"
+      "description": "UI design system toolkit for Senior UI Designer including design token"
     },
     {
       "name": "using-superpowers",
       "source": ".claude/skills",
       "displayName": "using-superpowers",
-      "description": "description:"
+      "description": "Use when starting any conversation - establishes how to find and use skills,"
     },
     {
       "name": "ux-researcher-designer",
       "source": ".claude/skills",
       "displayName": "ux-researcher-designer",
-      "description": "description:"
+      "description": "UX research and design toolkit for Senior UX Designer/Researcher including"
     },
     {
       "name": "validate-claude-folder",
@@ -326,14 +353,14 @@
     {
       "name": "verify-technical-debt",
       "source": ".claude/skills",
-      "description": "Verify technical debt items in the verification queue",
-      "displayName": "verify-technical-debt"
+      "displayName": "verify-technical-debt",
+      "description": "Verify and triage technical debt items - classify, then place into ROADMAP"
     },
     {
       "name": "webapp-testing",
       "source": ".claude/skills",
       "displayName": "webapp-testing",
-      "description": "description:"
+      "description": "Toolkit for interacting with and testing local web applications using"
     }
   ]
 }
