@@ -22,6 +22,30 @@ actionable.
 
 ## 2026-02 Sessions
 
+### Session #152 (2026-02-11)
+
+**Focus**: IMS→TDMS MERGE
+
+- Merged IMS into TDMS — eliminated parallel tracking system
+- Extended TDMS schema: `type: "enhancement"`, `category: "enhancements"`
+- Migrated 9 ACCEPTED ENH items → DEBT-2806 through DEBT-2814
+- Updated intake pipeline to auto-detect enhancement format
+- Rewired audit-enhancements skill to output TDMS format
+- Deleted IMS infrastructure (scripts/improvements/, docs/improvements/)
+- Updated 8+ doc files to remove IMS references
+- PR #362 Review #305: Fixed 9 SonarCloud+Qodo items
+
+### Session #151 (2026-02-11)
+
+**Focus**: ENHANCEMENT AUDIT + PR CHURN REDUCTION + SKILL IMPROVEMENTS
+
+- PR review churn reduction system (6-step implementation)
+- Graduation system 4-hour grace period for hook self-escalation
+- Enhancement audit: Phase 1-4 complete — 61 findings, 9 accepted, 51 declined
+- Placed 9 accepted items in ROADMAP.md (M1.5, M1.6, Operational Visibility,
+  GRAND PLAN, M2)
+- audit-enhancements SKILL.md v1.1: 6 improvements
+
 ### Session #150 (2026-02-11)
 
 **Focus**: SKILL CREATION + SESSION CLEANUP + PR REVIEW

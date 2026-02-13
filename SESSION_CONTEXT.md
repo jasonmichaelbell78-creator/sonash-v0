@@ -2,7 +2,7 @@
 
 **Document Version**: 4.2 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-12 (Session #154)
+2026-02-13 (Session #155)
 
 ## AI Instructions
 
@@ -69,7 +69,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 154 (since Jan 1, 2026)
+**Current Session Count**: 155 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -79,49 +79,35 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
+**Session #155 Summary** (ALERTS SKILL v3 — INTELLIGENT HEALTH DASHBOARD):
+
+- Major rewrite of `/alerts` skill — transformed from data dump to intelligent
+  health dashboard
+- **run-alerts.js v2**: BENCHMARKS constant (14 domains), health score
+  computation (weighted A-F grading), session plan builder, delta tracking
+  (daily baseline), sparkline generation, trend analysis, rating helpers
+- **SKILL.md v3**: Rich visual dashboard template with Unicode box-drawing,
+  progress bars, sparklines, emoji badges, category scorecards, drill-down
+  cards, benchmark reference tables
+- Enriched all 18 check functions with `addContext()` — benchmarks, ratings,
+  totals, trends, groups
+- S0 items now cross-referenced with MASTER_DEBT.jsonl for full details
+  (category, effort, file, line)
+- v2 JSON schema:
+  `{version:2, healthScore, categories:{alerts,context}, sessionPlan, delta}`
+
 **Session #154 Summary** (ALERTS SKILL ENHANCEMENT PLAN):
 
 - Audited all dead data producers — found 8 scripts generating data nothing
-  consumes (metrics.json, review-metrics, session-activity, LEARNING_METRICS,
-  suggested-rules, agent-trigger-state, velocity-log, agent-invocations)
+  consumes
 - Fixed 5 blocking pattern violations (diff-filter, path.isAbsolute)
-- Created plan to wire all dead data into `/alerts` skill (Hybrid Option C):
-  - 7 new reader functions in run-alerts.js
-  - Limited mode: debt-metrics, learning, agent-compliance (actionable)
-  - Full mode: review-quality, consolidation, velocity, session-activity
-  - New Actionable vs Informational output split
-- Plan saved at `/root/.claude/plans/dapper-herding-crescent.md`
+- Created plan to wire all dead data into `/alerts` skill (Hybrid Option C)
 
 **Session #153 Summary** (PR REVIEW SKILL IMPROVEMENTS):
 
 - Strengthened `/pr-review` skill with fix-or-track mandate
 - Created new `/pr-retro` skill — user-invoked retrospective
 - Updated COMMAND_REFERENCE.md v4.2
-
-**Session #151 Summary** (ENHANCEMENT AUDIT + PR CHURN REDUCTION + SKILL
-IMPROVEMENTS):
-
-- PR review churn reduction system (6-step implementation)
-- Graduation system 4-hour grace period for hook self-escalation
-- Enhancement audit: Phase 1-4 complete — 61 findings, 9 accepted, 51 declined
-- Placed 9 accepted items in ROADMAP.md (M1.5, M1.6, Operational Visibility,
-  GRAND PLAN, M2)
-- Merged duplicate findings ENH-0024/ENH-0063
-- audit-enhancements SKILL.md v1.1: 6 improvements (batch size, roadmap
-  placement, dedup, impact calibration, Phase 2 opt-in, pre-commit
-  compatibility)
-
-**Session #152 Summary** (IMS→TDMS MERGE):
-
-- **Merged IMS into TDMS** — eliminated parallel tracking system
-- Extended TDMS schema: `type: "enhancement"`, `category: "enhancements"`
-- Migrated 9 ACCEPTED ENH items → DEBT-2806 through DEBT-2814
-- Updated intake pipeline to auto-detect enhancement format
-- Rewired audit-enhancements skill to output TDMS format
-- Deleted IMS infrastructure (scripts/improvements/, docs/improvements/)
-- Updated 8+ doc files to remove IMS references
-- PR #362 Review #305: Fixed 9 SonarCloud+Qodo items (cognitive complexity
-  reduction via shared helpers, replaceAll, warnings-on-error, log consistency)
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -151,19 +137,15 @@ IMPROVEMENTS):
 
 ### Immediate Priority (Next Session)
 
-**Implement Alerts Skill Enhancement** — Wire dead data producers into `/alerts`
-skill. Plan is approved and ready to execute:
+**Alerts v3 is complete.** Choose from:
 
-1. **Extend `run-alerts.js`** — Add 7 new reader functions (checkDebtMetrics,
-   checkLearningEffectiveness, checkAgentCompliance, checkReviewQuality,
-   checkConsolidation, checkVelocity, checkSessionActivity)
-2. **Update `SKILL.md`** — Add new categories to Limited/Full modes + Actionable
-   vs Informational output format
-3. **Verify** — Run alerts in both modes, confirm actionable suggestions
+1. **Fix S0 critical items** (9 items, 6 are E0 Cognitive Complexity) — highest
+   impact on health score
+2. **Automate top 3 failing patterns** — Regex anchoring, Safe percentage,
+   Windows atomic rename (add to check-pattern-compliance.js)
+3. **Re-run smoke tests** — Results are 5+ days stale
 
-**Plan file**: `/root/.claude/plans/dapper-herding-crescent.md`
-
-### After Alerts Enhancement
+### After Quick Wins
 
 Choose from:
 

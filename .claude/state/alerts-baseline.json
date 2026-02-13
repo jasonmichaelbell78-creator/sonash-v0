@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-02-13T02:27:22.286Z",
+  "healthScore": {
+    "grade": "A",
+    "score": 90,
+    "breakdown": {
+      "code": {
+        "score": 100,
+        "weight": 0.2
+      },
+      "security": {
+        "score": 100,
+        "weight": 0.2
+      },
+      "debt-metrics": {
+        "score": 60,
+        "weight": 0.15
+      },
+      "test-results": {
+        "score": 90,
+        "weight": 0.15
+      },
+      "learning": {
+        "score": 90,
+        "weight": 0.1
+      },
+      "agent-compliance": {
+        "score": 100,
+        "weight": 0.05
+      }
+    }
+  },
+  "summary": {
+    "errors": 1,
+    "warnings": 6,
+    "info": 4
+  },
+  "categoryScores": {
+    "code": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "security": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "session": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "debt-metrics": {
+      "errors": 1,
+      "warnings": 1,
+      "info": 1
+    },
+    "learning": {
+      "errors": 0,
+      "warnings": 1,
+      "info": 1
+    },
+    "agent-compliance": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "hook-warnings": {
+      "errors": 0,
+      "warnings": 3,
+      "info": 1
+    },
+    "test-results": {
+      "errors": 0,
+      "warnings": 1,
+      "info": 1
+    }
+  }
+}

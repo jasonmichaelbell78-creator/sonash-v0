@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-12 **Active Documents:** 281 **Archived Documents:** 94
+**Generated:** 2026-02-13 **Active Documents:** 281 **Archived Documents:** 94
 
 ---
 
@@ -78,7 +78,7 @@ _Essential project-level documentation_
 | [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-12    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓12 ↑6     | 2026-02-12    |
 | [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓13 ↑9     | 2026-02-12    |
-| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑8      | 2026-02-12    |
+| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑8      | 2026-02-13    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-12    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-05    |
 | [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                    | ↓19 ↑17    | 2026-02-12    |
@@ -101,7 +101,7 @@ _Main documentation directory_
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                                         | Each AI review is an opportunity to improve future work. Sys...   | ↓9 ↑2      | 2026-02-12    |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                         | -                                                                 | ↓3 ↑4      | 2026-02-09    |
 | [ADR-NNN: [Short Title]](docs/decisions/TEMPLATE.md)                                                                           | [Briefly describe the purpose of this ADR - what decision do...   | ↓1 ↑0      | 2026-01-17    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                     | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-12    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                     | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-13    |
 | [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                                                | This guide covers Firebase App Check configuration for the S...   | ↓2 ↑0      | 2026-02-09    |
 | [Architecture Decision Records (ADRs)](docs/decisions/README.md)                                                               | This directory contains Architecture Decision Records (ADRs)...   | ↓0 ↑1      | 2026-02-02    |
 | [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                                         | Track single-session and multi-AI audit completions for thre...   | ↓1 ↑2      | 2026-02-12    |
@@ -117,7 +117,7 @@ _Main documentation directory_
 | [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                                                 | This document defines **mandatory security standards** that ...   | ↓12 ↑0     | 2026-01-17    |
 | [Hookify Strategy & Implementation Plan](docs/HOOKIFY_STRATEGY.md)                                                             | -                                                                 | ↓0 ↑0      | 2026-02-05    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                                         | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-09    |
-| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                                                     | This document tracks Claude's learning effectiveness - wheth...   | ↓0 ↑0      | 2026-02-12    |
+| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                                                     | This document tracks Claude's learning effectiveness - wheth...   | ↓0 ↑0      | 2026-02-13    |
 | [Lighthouse Integration Plan](docs/LIGHTHOUSE_INTEGRATION_PLAN.md)                                                             | -                                                                 | ↓2 ↑2      | 2026-01-17    |
 | [MCP Server Setup Guide](docs/MCP_SETUP.md)                                                                                    | This guide explains how to configure MCP (Model Context Prot...   | ↓0 ↑0      | 2026-02-09    |
 | [MCP Server Usage Audit](docs/MCP_SERVER_AUDIT.md)                                                                             | Identify MCP servers consuming context without providing val...   | ↓0 ↑0      | 2026-02-02    |
@@ -139,7 +139,7 @@ _Main documentation directory_
 | [Sentry Integration Guide for SoNash Admin Panel](docs/SENTRY_INTEGRATION_GUIDE.md)                                            | Step-by-step guide to integrate Sentry error tracking into t...   | ↓1 ↑0      | 2026-01-17    |
 | [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                                                      | Verify requests come from your legitimate app, not bots or s...   | ↓5 ↑2      | 2026-01-17    |
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                                                              | This document captures important decisions, options presente...   | ↓1 ↑0      | 2026-02-02    |
-| [Session History Log](docs/SESSION_HISTORY.md)                                                                                 | -                                                                 | ↓1 ↑1      | 2026-02-12    |
+| [Session History Log](docs/SESSION_HISTORY.md)                                                                                 | -                                                                 | ↓1 ↑1      | 2026-02-13    |
 | [SESSION_CONTEXT.md Reduction Plan](docs/plans/SESSION_CONTEXT_REDUCTION_PLAN.md)                                              | -                                                                 | ↓0 ↑0      | 2026-02-02    |
 | [Slash Commands Reference](docs/SLASH_COMMANDS_REFERENCE.md)                                                                   | -                                                                 | ↓1 ↑2      | 2026-02-04    |
 | [SonarCloud Cleanup Sprint Runbook](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                                                        | This runbook provides a repeatable process for SonarCloud an...   | ↓1 ↑0      | 2026-02-02    |
@@ -159,7 +159,7 @@ _Main documentation directory_
 | [Technical Debt Index](docs/technical-debt/INDEX.md)                                                                           | <!-- prettier-ignore-start -->                                    | ↓4 ↑4      | 2026-02-12    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                                         | This document provides step-by-step procedures for managing ...   | ↓13 ↑2     | 2026-02-10    |
 | [Technical Debt Management System (TDMS) - Implementation Plan](docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)           | This plan establishes a unified Technical Debt Management Sy...   | ↓4 ↑1      | 2026-02-09    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                                                                       | This document provides a real-time dashboard of technical de...   | ↓1 ↑0      | 2026-02-12    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                                                                       | This document provides a real-time dashboard of technical de...   | ↓1 ↑0      | 2026-02-13    |
 | [Testing Infrastructure Plan](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)                                                       | This document outlines a comprehensive testing infrastructur...   | ↓1 ↑2      | 2026-02-02    |
 | [Testing Plan](docs/TESTING_PLAN.md)                                                                                           | Comprehensive testing guidance for the SoNash application, i...   | ↓5 ↑1      | 2026-02-09    |
 | [Track A Admin Panel Testing Plan](docs/plans/TRACK_A_TESTING_PLAN.md)                                                         | Comprehensive testing plan for Track A Admin Panel features ...   | ↓1 ↑0      | 2026-02-05    |
@@ -191,7 +191,7 @@ _Claude Code skills_
 | [Academic Test: Systematic Debugging Skill](.claude/skills/systematic-debugging/test-academic.md)                                   | You have access to the systematic debugging skill at              | ↓0 ↑0      | 2026-01-17    |
 | [Add Deferred PR Debt](.claude/skills/add-deferred-debt/SKILL.md)                                                                   | -                                                                 | ↓0 ↑0      | 2026-02-02    |
 | [Add Manual Technical Debt](.claude/skills/add-manual-debt/SKILL.md)                                                                | -                                                                 | ↓0 ↑0      | 2026-02-02    |
-| [Alerts](.claude/skills/alerts/SKILL.md)                                                                                            | This skill provides comprehensive system health reporting by...   | ↓0 ↑0      | 2026-02-12    |
+| [Alerts — Intelligent Health Dashboard](.claude/skills/alerts/SKILL.md)                                                             | This skill provides an intelligent health dashboard that goe...   | ↓0 ↑0      | 2026-02-13    |
 | [Api Design Patterns](.claude/skills/senior-backend/references/api_design_patterns.md)                                              | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Architecture Patterns](.claude/skills/senior-architect/references/architecture_patterns.md)                                        | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Architecture Patterns](.claude/skills/senior-fullstack/references/architecture_patterns.md)                                        | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
@@ -344,7 +344,7 @@ _Uncategorized_
 | [AI Review Output Examples](.claude/review-examples.md)                  | Real-world examples of what each review type produces. Use t... | ↓0 ↑0      | 2026-01-17    |
 | [AI Review Prompts - Quick Reference](.claude/review-quick-reference.md) | Quick lookup for specialized review prompts. See full detail... | ↓0 ↑0      | 2026-01-17    |
 | [AI Review Prompts for Non-Code Artifacts](.claude/review-prompts.md)    | Specialized review prompts optimized for Claude Code integra... | ↓0 ↑0      | 2026-01-17    |
-| [Claude Code Command Reference](.claude/COMMAND_REFERENCE.md)            | Comprehensive                                                   | ↓3 ↑0      | 2026-02-12    |
+| [Claude Code Command Reference](.claude/COMMAND_REFERENCE.md)            | Comprehensive                                                   | ↓3 ↑0      | 2026-02-13    |
 | [Claude Hooks Documentation](.claude/HOOKS.md)                           | Prepare development environment for new session                 | ↓2 ↑5      | 2026-02-02    |
 | [Cross-Platform Claude Code Setup](.claude/CROSS_PLATFORM_SETUP.md)      | This guide explains how to set up Claude Code consistently a... | ↓3 ↑0      | 2026-02-02    |
 | [Required Plugins for Claude Code](.claude/REQUIRED_PLUGINS.md)          | This document lists all plugins required for full functional... | ↓2 ↑0      | 2026-02-02    |
@@ -455,7 +455,7 @@ _Uncategorized_
 
 | Document                                                                      | Description | References | Last Modified |
 | ----------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md) | -           | ↓0 ↑0      | 2026-02-12    |
+| [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md) | -           | ↓0 ↑0      | 2026-02-13    |
 
 ### scripts (Tier 4)
 
@@ -603,7 +603,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Skill Index](.claude/skills/SKILL_INDEX.md)
 - [Add Deferred PR Debt](.claude/skills/add-deferred-debt/SKILL.md)
 - [Add Manual Technical Debt](.claude/skills/add-manual-debt/SKILL.md)
-- [Alerts](.claude/skills/alerts/SKILL.md)
+- [Alerts — Intelligent Health Dashboard](.claude/skills/alerts/SKILL.md)
 - [Artifacts Builder](.claude/skills/artifacts-builder/SKILL.md)
 - [Audit Aggregator Agent](.claude/skills/audit-aggregator/SKILL.md)
 - [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)
@@ -816,7 +816,7 @@ Documents with no inbound links (not referenced by any other document):
 | 48  | [.claude/review-quick-reference.md](.claude/review-quick-reference.md)                                                                                           | AI Review Prompts - Quick Reference                                | 4    | -                                                                               |
 | 49  | [.claude/skills/add-deferred-debt/SKILL.md](.claude/skills/add-deferred-debt/SKILL.md)                                                                           | Add Deferred PR Debt                                               | 3    | -                                                                               |
 | 50  | [.claude/skills/add-manual-debt/SKILL.md](.claude/skills/add-manual-debt/SKILL.md)                                                                               | Add Manual Technical Debt                                          | 3    | -                                                                               |
-| 51  | [.claude/skills/alerts/SKILL.md](.claude/skills/alerts/SKILL.md)                                                                                                 | Alerts                                                             | 3    | -                                                                               |
+| 51  | [.claude/skills/alerts/SKILL.md](.claude/skills/alerts/SKILL.md)                                                                                                 | Alerts — Intelligent Health Dashboard                              | 3    | -                                                                               |
 | 52  | [.claude/skills/artifacts-builder/SKILL.md](.claude/skills/artifacts-builder/SKILL.md)                                                                           | Artifacts Builder                                                  | 3    | -                                                                               |
 | 53  | [.claude/skills/audit-aggregator/SKILL.md](.claude/skills/audit-aggregator/SKILL.md)                                                                             | Audit Aggregator Agent                                             | 3    | -                                                                               |
 | 54  | [.claude/skills/audit-code/SKILL.md](.claude/skills/audit-code/SKILL.md)                                                                                         | Single-Session Code Review Audit                                   | 3    | -                                                                               |
@@ -1165,7 +1165,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-12 | Auto-generated from codebase scan |
+| Auto    | 2026-02-13 | Auto-generated from codebase scan |
 
 ---
 

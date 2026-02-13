@@ -156,13 +156,13 @@ consolidation (6-pass dedup), and session summary
 
 ### `/alerts`
 
-**Description:** View system health alerts and pending issues **When to use:**
-Check system health, review warnings, see pending actions **Example:** `/alerts`
-or `/alerts --full` **Parameters:** `--full` for comprehensive check (18
-categories) **Output:** Interactive triage across 8 categories (limited) or 18
-categories (full) — Code Health, Security, Session Context, Debt Health,
-Learning Health, Agent Compliance, Hook Warnings, Test Results, plus 10 more in
-full mode **Added:** Session #113, expanded Session #154
+**Description:** Intelligent health dashboard with scoring, benchmarks, trends,
+and session planning **When to use:** Check system health, review warnings, see
+pending actions **Example:** `/alerts` or `/alerts --full` **Parameters:**
+`--full` for comprehensive check (18 categories) **Output:** v3 visual dashboard
+with health grade (A-F), category scorecards, sparkline trends, benchmark
+ratings, session plan, and delta tracking. 8 categories (limited) or 18 (full)
+**Added:** Session #113, expanded #154, v3 dashboard #155
 
 ### `/save-context`
 
