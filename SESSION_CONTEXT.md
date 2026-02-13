@@ -103,10 +103,17 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - Fixed 5 blocking pattern violations (diff-filter, path.isAbsolute)
 - Created plan to wire all dead data into `/alerts` skill (Hybrid Option C)
 
-**Session #153 Summary** (PR REVIEW SKILL IMPROVEMENTS):
+**Session #156 Summary** (AI OPTIMIZATION AUDIT — FRAGILE PARSING):
 
-- Strengthened `/pr-review` skill with fix-or-track mandate
-- Created new `/pr-retro` skill — user-invoked retrospective
+- Implemented 8 fragile parsing fixes across 11 files (OPT-P001–P010)
+- P001: Session counter regex in 5 hooks — optional bold, flexible spacing
+- P002/P003/P005/P007: Decision block, backlog health, session gaps, DEFERRED
+  extraction — resilient regex
+- P008/P009/P010: Roadmap health, table detection, sonar phase —
+  emoji-independent detection
+- Deferred P004/P006 as DEBT-2835/DEBT-2836 (E2, need AST parser)
+- Updated SUMMARY.md with decisions for all 10 Fragile Parsing findings
+- 3 domains remaining: Format (MD→JSONL), Skill Overlap, AI Instruction Bloat
 - Updated COMMAND_REFERENCE.md v4.2
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)

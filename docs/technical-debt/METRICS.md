@@ -30,11 +30,11 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 2190  |
-| Open Items      | 1786  |
-| Resolved        | 162   |
+| Total Items     | 2194  |
+| Open Items      | 1787  |
+| Resolved        | 165   |
 | False Positives | 242   |
-| Resolution Rate | 7%    |
+| Resolution Rate | 8%    |
 
 ---
 
@@ -42,10 +42,10 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 0     |
-| VERIFIED       | 1786  |
+| NEW            | 2     |
+| VERIFIED       | 1783  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 162   |
+| RESOLVED       | 165   |
 | FALSE_POSITIVE | 242   |
 
 ---
@@ -56,7 +56,7 @@ distribution.
 | ------------- | ----- | ---------- |
 | S0 (Critical) | 27    | 1%         |
 | S1 (High)     | 388   | 18%        |
-| S2 (Medium)   | 968   | 44%        |
+| S2 (Medium)   | 972   | 44%        |
 | S3 (Low)      | 807   | 37%        |
 
 ---
@@ -65,14 +65,15 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1232  |
-| documentation            | 464   |
+| code-quality             | 1234  |
+| documentation            | 465   |
 | process                  | 330   |
 | security                 | 81    |
 | performance              | 50    |
 | refactoring              | 21    |
 | enhancements             | 9     |
 | engineering-productivity | 3     |
+| hook-efficiency          | 1     |
 
 ---
 
@@ -130,7 +131,7 @@ _...and 353 more S1 items_
 
 | Metric               | Value   |
 | -------------------- | ------- |
-| Verification Queue   | 0 items |
+| Verification Queue   | 2 items |
 | Avg Age (Open Items) | 0 days  |
 | Oldest Item Age      | 0 days  |
 | Oldest Item          | N/A     |
@@ -141,7 +142,7 @@ _...and 353 more S1 items_
 
 | Source        | Count |
 | ------------- | ----- |
-| unknown       | 2189  |
+| unknown       | 2193  |
 | pr-review-286 | 1     |
 
 ---

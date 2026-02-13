@@ -22,6 +22,13 @@ actionable.
 
 ## 2026-02 Sessions
 
+### Session #153 (2026-02-12)
+
+**Focus**: PR REVIEW SKILL IMPROVEMENTS
+
+- Strengthened `/pr-review` skill with fix-or-track mandate
+- Created new `/pr-retro` skill — user-invoked retrospective
+
 ### Session #152 (2026-02-11)
 
 **Focus**: IMS→TDMS MERGE
