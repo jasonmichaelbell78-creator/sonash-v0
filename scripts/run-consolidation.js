@@ -517,16 +517,15 @@ function updateConsolidationCounter(content, newCount, nextReview, consolidatedR
     `**Reviews since last consolidation:** ${newCount}`
   );
 
-  // Update "Next consolidation due" text
-  section = section.replace(
-    /\*\*Next consolidation due:\*\*\s+After Review #\d+/,
-    `**Next consolidation due:** After Review #${nextReview}`
-  );
+  // Update status (must happen BEFORE "Next consolidation due" to avoid cascade corruption)
+  // Bug fix: Previously inserted "Next consolidation due" into Status field, creating
+  // duplicate matches that grew on each run (PR #364 retro finding)
+  section = section.replace(/\*\*Status:\*\*\s+[^\n]+/, `**Status:** ✅ Current`);
 
-  // Update status
+  // Update "Next consolidation due" text — match liberally to clean up prior corruption
   section = section.replace(
-    /\*\*Status:\*\*\s+[^\n]+/,
-    `**Status:** ✅ Current **Next consolidation due:** After Review #${nextReview}`
+    /\*\*Next consolidation due:\*\*\s+[^\n]+/,
+    `**Next consolidation due:** After Review #${nextReview} (Consolidation #${consolidatedRange?.consolidationNumber || "next"})`
   );
 
   // Update last consolidation date and session

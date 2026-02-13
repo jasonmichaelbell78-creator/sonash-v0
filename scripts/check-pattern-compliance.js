@@ -863,6 +863,49 @@ const ANTI_PATTERNS = [
     review: "CODE_PATTERNS.md Documentation - xargs hang prevention, v2.0",
     fileTypes: [".sh"],
   },
+
+  // --- New patterns from PR #364 Retro / Learning Effectiveness (Session #157) ---
+  // Top 3 automation candidates: 10x, 8x, 8x recurrence after documentation
+
+  // Unanchored regex for enum/severity validation (10x recurrence)
+  {
+    id: "unanchored-enum-regex",
+    pattern: /(?:test|match)\s*\(\s*\/(?!\^)[EeSs]\[\d+[^/]*\]\//g,
+    message: "Unanchored regex for enum validation - matches partial strings (e.g. E12 matches E1)",
+    fix: "Anchor with ^ and $: /^E[0-3]$/ or /^S[0-4]$/ instead of /E[0-3]/",
+    review: "CODE_PATTERNS.md JS/TS - Regex anchoring for enums, Review #219 (10x recurrence)",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // Division without zero guard (8x recurrence)
+  // Matches `/ total` etc. only when NOT preceded by `> 0 ?` guard on same line
+  {
+    id: "unsafe-division",
+    pattern: /^(?!.*>\s*0\s*\?).*[^/*]\s\/\s*(?:total|count|length|size|denominator)\b/gm,
+    message: "Division by variable that could be 0 - returns Infinity/NaN",
+    fix: "Use safePercent(n, total) helper or guard: total > 0 ? (n / total) * 100 : 0",
+    review: "CODE_PATTERNS.md JS/TS - Safe percentage, Review #226 (8x recurrence)",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    exclude: /safePercent|\/\/|\/\*|\* /,
+  },
+
+  // renameSync without prior rmSync on Windows (8x recurrence)
+  {
+    id: "rename-without-remove",
+    pattern: /\brenameSync\s*\(/g,
+    message: "renameSync without prior rmSync - fails on Windows if destination exists",
+    fix: "Remove destination first: if (fs.existsSync(dest)) fs.rmSync(dest, { force: true }); fs.renameSync(tmp, dest);",
+    review: "CODE_PATTERNS.md JS/TS - Windows atomic rename, Review #224 (8x recurrence)",
+    fileTypes: [".js", ".ts"],
+    // Only check cross-platform scripts (not POSIX-only hooks)
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["rename-without-remove"] || [],
+  },
 ];
 
 /**

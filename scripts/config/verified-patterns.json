@@ -99,5 +99,19 @@
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
   "non-atomic-write": ["suggest-pattern-automation.js", "archive-doc.js"],
-  "writefile-missing-encoding": ["suggest-pattern-automation.js"]
+  "writefile-missing-encoding": ["suggest-pattern-automation.js"],
+  "rename-without-remove": [
+    "append-hook-warning.js",
+    "transform-jsonl-schema.js",
+    "assign-roadmap-refs.js",
+    "resolve-bulk.js",
+    "resolve-item.js",
+    "sync-sonarcloud.js",
+    "generate-pending-alerts.js",
+    "log-override.js",
+    "log-session-activity.js",
+    "extract-agent-findings.js",
+    "decrypt-secrets.js",
+    "encrypt-secrets.js"
+  ]
 }
