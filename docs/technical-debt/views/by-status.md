@@ -13,7 +13,7 @@
 
 _No items_
 
-## VERIFIED (1786)
+## VERIFIED (1783)
 
 | ID        | Title                                                          | Severity | Category                 |
 | --------- | -------------------------------------------------------------- | -------- | ------------------------ |
@@ -1189,7 +1189,6 @@ _No items_
 | DEBT-2739 | Duplicated: ALLOWED_PATHS pattern matching across hooks        | S2       | process                  |
 | DEBT-2741 | Duplicated: Pattern check implementation between hook and...   | S2       | process                  |
 | DEBT-2742 | Duplicated: Validation between validate-audit.js and vali...   | S2       | process                  |
-| DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
 | DEBT-2749 | Firebase deployment lacks rollback on partial failure          | S2       | code-quality             |
 | DEBT-2751 | SonarCloud not enforced in CI gates                            | S2       | code-quality             |
 | DEBT-2752 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
@@ -1237,8 +1236,6 @@ _No items_
 | DEBT-2800 | Collocate related quote components - 3 variants scattered...   | S2       | code-quality             |
 | DEBT-2801 | Standardize export style - 38 default vs 69 named exports...   | S2       | code-quality             |
 | DEBT-2803 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
-| DEBT-2804 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
-| DEBT-2805 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
 | DEBT-2806 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
 | DEBT-2807 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
 | DEBT-2815 | Date formats inconsistent across the app                       | S2       | enhancements             |
@@ -1808,7 +1805,7 @@ _No items_
 
 _No items_
 
-## RESOLVED (162)
+## RESOLVED (165)
 
 | ID        | Title                                                          | Severity | Category      |
 | --------- | -------------------------------------------------------------- | -------- | ------------- |
@@ -1921,8 +1918,11 @@ _No items_
 | DEBT-2545 | Skill issue: audit-process has complex 7-stage orchestrat...   | S2       | process       |
 | DEBT-2554 | Performance: 10 Claude hooks run on every Write/Edit oper...   | S2       | process       |
 | DEBT-2747 | Session-start timeout risks in low-bandwidth environments      | S2       | code-quality  |
+| DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality  |
 | DEBT-2778 | Upgrade Firebase Functions to Node.js 24 runtime               | S2       | code-quality  |
 | DEBT-2802 | useDailyQuote hook has smart module-level caching prevent...   | S2       | code-quality  |
+| DEBT-2804 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality  |
+| DEBT-2805 | writeFileSync without atomic write pattern                     | S2       | code-quality  |
 | DEBT-0787 | Template docs located outside docs/templates/ directory        | S3       | code-quality  |
 | DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes...   | S3       | code-quality  |
 | DEBT-1995 | No UI indicator for online/offline state                       | S3       | code-quality  |

@@ -33,8 +33,8 @@
 
 | Status         | Count |
 | -------------- | ----- |
-| VERIFIED       | 1786  |
-| RESOLVED       | 162   |
+| VERIFIED       | 1783  |
+| RESOLVED       | 165   |
 | FALSE_POSITIVE | 242   |
 
 ## Views
