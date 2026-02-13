@@ -629,17 +629,14 @@ Minor: X, Trivial: X)
 
 If a new pattern category emerges, add it to the Quick Pattern Index section.
 
-### 7.4 Update Consolidation Counter (MANDATORY)
+### 7.4 Consolidation (Automated)
 
-**After adding a review entry, ALWAYS increment the counter:**
+Consolidation is fully automated via JSONL state files. No manual counter
+updates are needed. The system auto-triggers when 10+ reviews accumulate:
 
-1. Find `**Reviews since last consolidation:** N` in AI_REVIEW_LEARNINGS_LOG.md
-2. Increment N by 1 (e.g., 6 → 7)
-3. If the new value reaches 10+, consolidation is due
-
-**Why this matters:** The counter drifts if not incremented (Session #129 fix).
-The compute-based check catches drift but the manual counter should stay in
-sync.
+- **State:** `.claude/state/consolidation.json`
+- **Reviews:** `.claude/state/reviews.jsonl`
+- **Auto-trigger:** Runs at session-start via `run-consolidation.js --auto`
 
 ### 7.5 Health Check (Every 10 Reviews)
 
@@ -770,7 +767,7 @@ npm run patterns:check
 
 1. All files mentioned in review (fixes)
 2. `docs/AI_REVIEW_LEARNINGS_LOG.md` (learning entry - MANDATORY)
-3. **INCREMENT** consolidation counter by 1 (ALWAYS)
+3. Consolidation auto-tracks via `.claude/state/reviews.jsonl`
 
 ### Agents Available
 

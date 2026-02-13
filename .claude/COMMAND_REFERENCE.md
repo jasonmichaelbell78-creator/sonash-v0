@@ -2381,7 +2381,7 @@ hooks, and settings.
 | 3.1     | #133    | Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff                                   |
 | 3.0     | #133    | Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills                                                |
 | 2.9     | #130    | Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits                                                                                     |
-| 2.8     | #129    | pr-review skill now MANDATES incrementing consolidation counter; added `npm run consolidation:sync`                                                                     |
+| 2.8     | #129    | pr-review skill consolidation tracking (counter replaced by JSONL state in Session #156)                                                                                |
 | 2.7     | #125    | Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture                                                       |
 | 2.6     | #124    | Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents)                                                                                |
 | 2.5     | #123    | Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt)                                                             |

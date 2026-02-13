@@ -73,7 +73,7 @@ _Essential project-level documentation_
 | [AI Context & Rules for SoNash](claude.md)              | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑7      | 2026-02-12    |
 | [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-12    |
 | [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓12 ↑6     | 2026-02-12    |
-| [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓13 ↑9     | 2026-02-12    |
+| [Development Guide](DEVELOPMENT.md)                     | Unified dev dashboard for monitoring session activity, error      | ↓13 ↑9     | 2026-02-13    |
 | [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓6 ↑8      | 2026-02-13    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-02-12    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For       | ↓1 ↑4      | 2026-02-12    |
@@ -263,7 +263,7 @@ _Claude Code skills_
 | [Senior Frontend](.claude/skills/senior-frontend/SKILL.md)                                                                          | Complete toolkit for senior frontend with modern tools and b...   | ↓0 ↑0      | 2026-02-12    |
 | [Senior Fullstack](.claude/skills/senior-fullstack/SKILL.md)                                                                        | Complete toolkit for senior fullstack with modern tools and ...   | ↓0 ↑0      | 2026-02-12    |
 | [Senior Qa](.claude/skills/senior-qa/SKILL.md)                                                                                      | Complete toolkit for senior qa with modern tools and best pr...   | ↓0 ↑0      | 2026-02-12    |
-| [Session Begin Checklist](.claude/skills/session-begin/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-12    |
+| [Session Begin Checklist](.claude/skills/session-begin/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-13    |
 | [Session Checkpoint](.claude/skills/checkpoint/SKILL.md)                                                                            | -                                                                 | ↓0 ↑0      | 2026-02-12    |
 | [Session End Checklist](.claude/skills/session-end/SKILL.md)                                                                        | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-02-12    |
 | [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)                                                              | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-12    |

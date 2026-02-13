@@ -501,7 +501,6 @@ npm audit fix
 | `npm run test:coverage`                         | Test with coverage         | Uses c8                                               |
 | `npm run validate:canon`                        | Validate CANON files       | Checks audit output schema                            |
 | `npm run crossdoc:check`                        | Cross-doc deps             | Blocks if deps missing                                |
-| `npm run consolidation:check`                   | Check consolidation status | Warns if 10+ reviews pending                          |
 | `npm run consolidation:run`                     | Run consolidation          | Extract patterns to CODE_PATTERNS.md                  |
 | `npm run consolidation:run -- --auto`           | Auto-consolidation         | Runs silently, used by SessionStart hook              |
 | `npm run patterns:check`                        | Pattern compliance         | Check for anti-patterns in staged files               |

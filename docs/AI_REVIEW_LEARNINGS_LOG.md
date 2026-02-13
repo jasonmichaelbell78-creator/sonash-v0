@@ -447,12 +447,12 @@ accumulate.
 **Last Audit:** 2026-01-04 (Session #23) **Next Audit Due:** After 10 new
 reviews or 2 weeks
 
-| Metric                           | Value | Target | Status |
-| -------------------------------- | ----- | ------ | ------ |
-| Critical files (14) violations   | 0     | 0      | ✅     |
-| Full repo violations             | 63    | <50    | ⚠️     |
-| Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 15    | <10    | ⚠️     |
+| Metric                         | Value | Target | Status |
+| ------------------------------ | ----- | ------ | ------ |
+| Critical files (14) violations | 0     | 0      | ✅     |
+| Full repo violations           | 63    | <50    | ⚠️     |
+| Patterns in claude.md          | 60+   | -      | ✅     |
+| Consolidation (auto-managed)   | auto  | auto   | ✅     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -683,10 +683,10 @@ claude/read-session-commits-ZpJLX **Suggestions:** 4 total (Critical: 0, Major:
    regex** (CRITICAL) — Lazy quantifiers on negated character classes create
    catastrophic backtracking. Greedy `[^|]*` is inherently safe because the
    character class can't match the delimiter.
-2. **Cross-validation must APPLY mismatch, not just warn** — Both
-   `run-consolidation.js` and `sync-consolidation-counter.js` detected
-   CODE_PATTERNS.md vs log mismatches but continued using the wrong value. Fix:
-   `lastConsolidated = codePatternsInfo.lastReview` before computing counts.
+2. **Cross-validation must APPLY mismatch, not just warn** — The old
+   markdown-based scripts detected mismatches but continued using wrong values.
+   Session #156 fix: replaced with `.claude/state/consolidation.json` as single
+   source of truth (no cross-validation needed).
 3. **Cognitive complexity reduction via function extraction** — Extract
    `crossValidateLastConsolidated()` and `parseTriggerSection()` to keep
    `getConsolidationStatus()` under 15.
