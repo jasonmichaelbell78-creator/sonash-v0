@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 4.0 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 4.2 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-12 (Session #152)
+2026-02-13 (Session #156)
 
 ## AI Instructions
 
@@ -69,7 +69,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 152 (since Jan 1, 2026)
+**Current Session Count**: 156 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -79,41 +79,35 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #151 Summary** (ENHANCEMENT AUDIT + PR CHURN REDUCTION + SKILL
-IMPROVEMENTS):
+**Session #155 Summary** (ALERTS SKILL v3 — INTELLIGENT HEALTH DASHBOARD):
 
-- PR review churn reduction system (6-step implementation)
-- Graduation system 4-hour grace period for hook self-escalation
-- Enhancement audit: Phase 1-4 complete — 61 findings, 9 accepted, 51 declined
-- Placed 9 accepted items in ROADMAP.md (M1.5, M1.6, Operational Visibility,
-  GRAND PLAN, M2)
-- Merged duplicate findings ENH-0024/ENH-0063
-- audit-enhancements SKILL.md v1.1: 6 improvements (batch size, roadmap
-  placement, dedup, impact calibration, Phase 2 opt-in, pre-commit
-  compatibility)
+- Major rewrite of `/alerts` skill — transformed from data dump to intelligent
+  health dashboard
+- **run-alerts.js v2**: BENCHMARKS constant (14 domains), health score
+  computation (weighted A-F grading), session plan builder, delta tracking
+  (daily baseline), sparkline generation, trend analysis, rating helpers
+- **SKILL.md v3**: Rich visual dashboard template with Unicode box-drawing,
+  progress bars, sparklines, emoji badges, category scorecards, drill-down
+  cards, benchmark reference tables
+- Enriched all 18 check functions with `addContext()` — benchmarks, ratings,
+  totals, trends, groups
+- S0 items now cross-referenced with MASTER_DEBT.jsonl for full details
+  (category, effort, file, line)
+- v2 JSON schema:
+  `{version:2, healthScore, categories:{alerts,context}, sessionPlan, delta}`
 
-**Session #152 Summary** (IMS→TDMS MERGE):
+**Session #154 Summary** (ALERTS SKILL ENHANCEMENT PLAN):
 
-- **Merged IMS into TDMS** — eliminated parallel tracking system
-- Extended TDMS schema: `type: "enhancement"`, `category: "enhancements"`
-- Migrated 9 ACCEPTED ENH items → DEBT-2806 through DEBT-2814
-- Updated intake pipeline to auto-detect enhancement format
-- Rewired audit-enhancements skill to output TDMS format
-- Deleted IMS infrastructure (scripts/improvements/, docs/improvements/)
-- Updated 8+ doc files to remove IMS references
-- PR #362 Review #305: Fixed 9 SonarCloud+Qodo items (cognitive complexity
-  reduction via shared helpers, replaceAll, warnings-on-error, log consistency)
+- Audited all dead data producers — found 8 scripts generating data nothing
+  consumes
+- Fixed 5 blocking pattern violations (diff-filter, path.isAbsolute)
+- Created plan to wire all dead data into `/alerts` skill (Hybrid Option C)
 
-**Session #150 Summary** (SKILL CREATION + SESSION CLEANUP + PR REVIEW):
+**Session #153 Summary** (PR REVIEW SKILL IMPROVEMENTS):
 
-- Created `deep-plan` skill for thorough multi-phase planning
-- Added deep-plan trigger row to claude.md Section 6
-- Session-end cleanup and archival
-- PR #360 Review #283: Fixed 15 IMS pipeline issues (severity/impact bug, deep
-  clone security, path traversal, line number accuracy, JSONL resilience)
-- Deferred 3 items to TDMS: IMS/TDMS unification (S1), O(n^2) dedup (S2),
-  counter_argument schema (S3) — **IMS/TDMS unification resolved in Session
-  #152**
+- Strengthened `/pr-review` skill with fix-or-track mandate
+- Created new `/pr-retro` skill — user-invoked retrospective
+- Updated COMMAND_REFERENCE.md v4.2
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -133,7 +127,7 @@ IMPROVEMENTS):
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/analyze-repo-install-ceMkn`
+**Current Branch**: `claude/new-session-uaNwX`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
@@ -143,7 +137,16 @@ IMPROVEMENTS):
 
 ### Immediate Priority (Next Session)
 
-**Feature Development Ready!** The Integrated Improvement Plan is complete.
+**Alerts v3 is complete.** Choose from:
+
+1. **Fix S0 critical items** (9 items, 6 are E0 Cognitive Complexity) — highest
+   impact on health score
+2. **Automate top 3 failing patterns** — Regex anchoring, Safe percentage,
+   Windows atomic rename (add to check-pattern-compliance.js)
+3. **Re-run smoke tests** — Results are 5+ days stale
+
+### After Quick Wins
+
 Choose from:
 
 1. **GRAND PLAN Sprint 4** (`lib/` + `hooks/` + `app/`) - Continue debt
@@ -233,6 +236,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------- | ------ |
+| 4.2     | 2026-02-12 | Session #154: Alerts enhancement plan + dead data audit  | Claude |
 | 4.1     | 2026-02-12 | Session #151: Enhancement audit + skill improvements     | Claude |
 | 4.0     | 2026-02-11 | Session #149: Major refactor - archived history, trimmed | Claude |
 | 3.61    | 2026-02-11 | Session #149: Counter increment                          | Claude |

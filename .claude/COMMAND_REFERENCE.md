@@ -129,6 +129,14 @@ copy/paste **Example:** `/pr-review` then paste feedback **Parameters:** None -
 paste feedback directly **Output:** Categorized feedback with action items,
 auto-enriches SonarCloud issues via API
 
+### `/pr-retro`
+
+**Description:** Analyze a PR's review cycle and produce actionable
+recommendations **When to use:** When you're done with a PR's review rounds and
+want to understand what caused churn and what to automate **Example:**
+`/pr-retro 362` **Parameters:** PR number **Output:** Churn analysis, recurring
+pattern automation candidates with effort estimates, skill/template updates
+
 ### `/session-begin`
 
 **Description:** Complete verification steps before starting work session **When
@@ -148,11 +156,13 @@ consolidation (6-pass dedup), and session summary
 
 ### `/alerts`
 
-**Description:** View system health alerts and pending issues **When to use:**
-Check system health, review warnings, see pending actions **Example:** `/alerts`
-or `/alerts --full` **Parameters:** `--full` for complete health check
-**Output:** Categorized alerts (Code Health, Security, Session Context,
-Documentation, Roadmap) **Added:** Session #113
+**Description:** Intelligent health dashboard with scoring, benchmarks, trends,
+and session planning **When to use:** Check system health, review warnings, see
+pending actions **Example:** `/alerts` or `/alerts --full` **Parameters:**
+`--full` for comprehensive check (18 categories) **Output:** v3 visual dashboard
+with health grade (A-F), category scorecards, sparkline trends, benchmark
+ratings, session plan, and delta tracking. 8 categories (limited) or 18 (full)
+**Added:** Session #113, expanded #154, v3 dashboard #155
 
 ### `/save-context`
 
@@ -2363,6 +2373,7 @@ hooks, and settings.
 
 | Version | Session | Changes                                                                                                                                                                 |
 | ------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.2     | #143    | Added `/pr-retro` skill; strengthened `/pr-review` with fix-or-track mandate (Origin classification, strict deferral templates, architectural item escalation)          |
 | 4.1     | #142    | Added `find-skills` skill (vercel-labs/skills ecosystem discovery)                                                                                                      |
 | 4.0     | #140    | Major overhaul: added Git Hooks, GitHub Actions, Plugin Skills, Environment Variables sections; fixed MCP servers; added missing agents/hooks; expanded system commands |
 | 3.3     | #134    | Updated `/sonarcloud` (interactive placement phase) and `/multi-ai-audit` (Phase 7 rewritten as interactive placement)                                                  |

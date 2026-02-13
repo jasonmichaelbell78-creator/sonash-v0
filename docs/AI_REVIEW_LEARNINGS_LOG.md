@@ -338,9 +338,11 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0 (Reviews #309-#309) **Consolidation
+**Reviews since last consolidation:** 0 (Reviews #309-#310) **Consolidation
 threshold:** 10 reviews **Status:** ✅ Current **Next consolidation due:** After
-Review #319 Review #319 Review #318 (Consolidation #19)
+Review #320 Review #320 Review #320 Review #320 Review #320 Review #319 Review
+#319 Review #319 Review #319 Review #319 Review #319 Review #319 Review #319
+Review #318 (Consolidation #19)
 
 ### When to Consolidate
 
@@ -362,9 +364,9 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-02-12 (Session #114+)
+- **Date:** 2026-02-13 (Session #114+)
 - **Consolidation #:** 18
-- **Reviews consolidated:** #285-#309 (25 reviews)
+- **Reviews consolidated:** #285-#310 (26 reviews)
 - **Patterns added to CODE_PATTERNS.md v2.7:**
   - **CI/Automation (6 patterns):**
     - Module-scope config try/catch
@@ -704,6 +706,43 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #310: Qodo PR Suggestions — Alerts v3 Health Score, Edge Cases, Path Normalization (2026-02-13)
+
+**Source:** Qodo PR Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX **Suggestions:** 4 total (Critical: 0, Major:
+1, Minor: 2, Architectural: 1)
+
+**Patterns Identified:**
+
+1. Health score inflation: Normalizing by available weight instead of total
+   weight inflates scores when categories are missing.
+   - Root cause: `continue` on missing categories + dynamic `totalWeight`
+   - Prevention: Always normalize against fixed total possible weight
+2. Initial commit edge case: `git diff HEAD~1 HEAD` fails on first commit.
+   - Root cause: No parent commit to diff against
+   - Prevention: Fallback to empty tree hash
+     (`4b825dc642cb6eb9a060e54bf8d69288fbee4904`)
+3. Backslash path separators: Windows-style `\\` in JSONL source_file fields.
+   - Root cause: Audit tool outputs Windows paths
+   - Prevention: Normalize at ingest time
+
+**Resolution:**
+
+- Fixed: 3 items (health score normalization, git diff fallback, path separators
+  in 740 lines across 3 JSONL files)
+- Deferred: 1 item (architectural — decompose monolithic run-alerts.js, flagged
+  to user)
+
+**Key Learnings:**
+
+- Health score functions should normalize against fixed total weight, not
+  dynamic available weight
+- Git operations should handle initial-commit edge cases with empty tree hash
+- JSONL data files should normalize path separators at ingest time for
+  cross-platform consistency
 
 ---
 

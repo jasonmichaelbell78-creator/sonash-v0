@@ -2,13 +2,16 @@
 /* eslint-disable @typescript-eslint/no-require-imports, no-undef */
 
 /**
- * Alerts Skill - System Health Reporter
+ * Alerts Skill v3 - Intelligent Health Dashboard
  *
- * Aggregates alerts from multiple sources and outputs JSON results.
+ * Aggregates alerts from multiple sources, computes health scores,
+ * provides benchmarks/trends/grouping, and builds session plans.
  *
  * Usage:
  *   node run-alerts.js --limited  # Quick health check (default)
  *   node run-alerts.js --full     # Comprehensive reporting
+ *
+ * Output: v2 JSON schema to stdout, progress to stderr.
  */
 
 const { execSync } = require("node:child_process");
@@ -19,14 +22,14 @@ const path = require("node:path");
 // Review #214: Use platform-agnostic root detection
 function findProjectRoot() {
   let dir = __dirname;
-  const fsRoot = path.parse(dir).root; // Platform-agnostic (handles Windows drives)
+  const fsRoot = path.parse(dir).root;
 
   while (dir && dir !== fsRoot) {
     if (fs.existsSync(path.join(dir, "package.json"))) {
       return dir;
     }
     const next = path.dirname(dir);
-    if (next === dir) break; // Prevent infinite loop
+    if (next === dir) break;
     dir = next;
   }
 
@@ -37,13 +40,93 @@ const ROOT_DIR = findProjectRoot();
 const args = process.argv.slice(2);
 const isFullMode = args.includes("--full");
 
-// Results collector
+// ============================================================================
+// BENCHMARKS
+// ============================================================================
+
+const BENCHMARKS = {
+  debt: {
+    s0_target: 0,
+    s1_threshold: 10,
+    resolution_rate: { good: 50, average: 30, poor: 10 },
+    avg_age_days: { good: 30, average: 90, poor: 180 },
+  },
+  learning: {
+    effectiveness: { good: 85, average: 75, poor: 60 },
+    automation_coverage: { good: 40, average: 25, poor: 10 },
+    failing_patterns: { good: 0, average: 5, poor: 10 },
+  },
+  velocity: {
+    items_per_session: { good: 5, average: 2, poor: 0 },
+    acceleration_threshold: 0.15,
+  },
+  review: {
+    fix_ratio: { good: 0.15, average: 0.25, poor: 0.35 },
+    max_rounds: { good: 2, average: 3, poor: 5 },
+  },
+  code: {
+    ts_errors: { good: 0, average: 5, poor: 20 },
+    eslint_warnings: { good: 0, average: 10, poor: 50 },
+  },
+  tests: {
+    pass_rate: { good: 98, average: 90, poor: 80 },
+    staleness_days: { good: 1, average: 3, poor: 7 },
+  },
+  security: {
+    critical_vulns: { good: 0, average: 0, poor: 1 },
+    high_vulns: { good: 0, average: 2, poor: 5 },
+  },
+  session: {
+    gap_hours: { good: 0, average: 4, poor: 24 },
+  },
+  agent: {
+    compliance_pct: { good: 100, average: 80, poor: 50 },
+  },
+  hooks: {
+    warning_age_days: { good: 0, average: 3, poor: 7 },
+  },
+  docs: {
+    staleness_days: { good: 3, average: 7, poor: 14 },
+  },
+  consolidation: {
+    reviews_pending: { good: 0, average: 5, poor: 10 },
+  },
+  roadmap: {
+    blocked_items: { good: 0, average: 2, poor: 5 },
+  },
+  commits: {
+    hours_since_last: { good: 2, average: 8, poor: 24 },
+  },
+};
+
+// ============================================================================
+// v2 RESULTS OBJECT
+// ============================================================================
+
 const results = {
+  version: 2,
   mode: isFullMode ? "full" : "limited",
   timestamp: new Date().toISOString(),
+  healthScore: null,
   categories: {},
   summary: { errors: 0, warnings: 0, info: 0 },
+  sessionPlan: [],
 };
+
+// ============================================================================
+// CORE HELPERS
+// ============================================================================
+
+/**
+ * Safely extract an error message without risking a secondary throw
+ */
+function safeErrorMsg(err) {
+  try {
+    return (err && err.message) || String(err);
+  } catch {
+    return "[unknown error]";
+  }
+}
 
 /**
  * Run a command and capture output
@@ -69,21 +152,285 @@ function runCommand(cmd, options = {}) {
 }
 
 /**
- * Add an alert to results
+ * Add an alert to results (v2 schema: categories have {alerts:[], context:{}})
  */
 function addAlert(category, severity, message, details = null, action = null) {
   if (!results.categories[category]) {
-    results.categories[category] = [];
+    results.categories[category] = { alerts: [], context: {} };
   }
-  results.categories[category].push({
+  results.categories[category].alerts.push({
     severity,
     message,
     details,
     action,
   });
-  // Map severity to summary key
   const key = severity === "error" ? "errors" : severity === "warning" ? "warnings" : "info";
   results.summary[key]++;
+}
+
+/**
+ * Add context data to a category
+ */
+function addContext(category, contextData) {
+  if (!results.categories[category]) {
+    results.categories[category] = { alerts: [], context: {} };
+  }
+  Object.assign(results.categories[category].context, contextData);
+}
+
+/**
+ * Ensure a category always appears in output
+ */
+function ensureCategory(category, label) {
+  if (!results.categories[category]) {
+    results.categories[category] = { alerts: [], context: { no_data: true, label } };
+  }
+}
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+/**
+ * Rate a value where higher is better (e.g., pass rate, effectiveness)
+ */
+function rateHigherBetter(value, benchmark) {
+  if (value >= benchmark.good) return "good";
+  if (value >= benchmark.average) return "average";
+  return "poor";
+}
+
+/**
+ * Rate a value where lower is better (e.g., error count, staleness)
+ */
+function rateLowerBetter(value, benchmark) {
+  if (value <= benchmark.good) return "good";
+  if (value <= benchmark.average) return "average";
+  return "poor";
+}
+
+/**
+ * Load MASTER_DEBT.jsonl and return parsed items
+ */
+function loadMasterDebt() {
+  const debtPath = path.join(ROOT_DIR, "docs", "technical-debt", "MASTER_DEBT.jsonl");
+  try {
+    const lines = fs.readFileSync(debtPath, "utf8").trim().split("\n").filter(Boolean);
+    return lines
+      .map((l) => {
+        try {
+          return JSON.parse(l);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+  } catch (err) {
+    console.error(`  [warn] Failed to load MASTER_DEBT.jsonl: ${safeErrorMsg(err)}`);
+    return [];
+  }
+}
+
+/**
+ * Compute trend from a JSONL log file
+ * @param {string} logPath - Path to JSONL file
+ * @param {string} valueField - Field name to extract values from
+ * @param {number} windowSize - Number of recent entries to consider
+ * @returns {{ direction: string, values: number[], delta: number, deltaPercent: number } | null}
+ */
+function computeTrend(logPath, valueField, windowSize = 5) {
+  try {
+    const lines = fs.readFileSync(logPath, "utf8").trim().split("\n").filter(Boolean);
+    const entries = lines
+      .map((l) => {
+        try {
+          return JSON.parse(l);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+
+    const recent = entries.slice(-windowSize);
+    if (recent.length < 2) return null;
+
+    const values = recent
+      .map((e) => valueField.split(".").reduce((obj, key) => obj?.[key], e))
+      .filter((v) => typeof v === "number" && !isNaN(v));
+
+    if (values.length < 2) return null;
+
+    const first = values[0];
+    const last = values[values.length - 1];
+    const delta = last - first;
+    const deltaPercent =
+      first !== 0 ? Math.round((delta / first) * 100) : delta !== 0 ? (delta > 0 ? 100 : -100) : 0;
+
+    let direction;
+    if (Math.abs(deltaPercent) < 5) {
+      direction = "stable";
+    } else if (delta > 0) {
+      direction = "increasing";
+    } else {
+      direction = "decreasing";
+    }
+
+    return { direction, values, delta, deltaPercent };
+  } catch (err) {
+    console.error(`  [warn] Failed to compute trend from ${logPath}: ${safeErrorMsg(err)}`);
+    return null;
+  }
+}
+
+/**
+ * Group items by a field and return sorted groups with top 3 examples
+ * @param {Array} items - Array of objects
+ * @param {string} field - Field name to group by
+ * @returns {Array<{name: string, count: number, items: Array}>}
+ */
+function groupByField(items, field) {
+  const groups = new Map();
+  for (const item of items) {
+    const key = item[field] || "unknown";
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key).push(item);
+  }
+
+  return [...groups.entries()]
+    .map(([name, groupItems]) => ({
+      name,
+      count: groupItems.length,
+      items: groupItems.slice(0, 3).map((i) => ({
+        id: i.id || i.canonical_id || "",
+        title: i.title || i.description || i.message || "",
+        file: i.file || i.location || "",
+        effort: i.effort || "",
+        severity: i.severity || "",
+      })),
+    }))
+    .sort((a, b) => b.count - a.count);
+}
+
+/**
+ * Generate sparkline string from values array
+ */
+function sparkline(values) {
+  if (!values || values.length === 0) return "";
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const chars = "\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588";
+  return values.map((v) => chars[Math.min(7, Math.floor(((v - min) / range) * 7))]).join("");
+}
+
+// ============================================================================
+// DELTA TRACKING
+// ============================================================================
+
+const BASELINE_PATH = path.join(ROOT_DIR, ".claude", "state", "alerts-baseline.json");
+
+/**
+ * Load baseline from first run in this session
+ */
+function loadBaseline() {
+  try {
+    const content = fs.readFileSync(BASELINE_PATH, "utf8");
+    const baseline = JSON.parse(content);
+    // Only use if from today (same session day)
+    const baselineDate = new Date(baseline.timestamp).toDateString();
+    const today = new Date().toDateString();
+    if (baselineDate === today) {
+      return baseline;
+    }
+  } catch (err) {
+    if (err.code !== "ENOENT") {
+      console.error(`  [warn] Failed to load baseline: ${safeErrorMsg(err)}`);
+    }
+  }
+  return null;
+}
+
+/**
+ * Save current results as baseline (only if no baseline exists for today)
+ */
+function saveBaseline() {
+  const existing = loadBaseline();
+  if (existing) return; // Don't overwrite — keep first run as baseline
+
+  const baseline = {
+    timestamp: results.timestamp,
+    healthScore: results.healthScore,
+    summary: { ...results.summary },
+    categoryScores: {},
+  };
+
+  // Save per-category alert counts
+  for (const [cat, data] of Object.entries(results.categories)) {
+    const alerts = data.alerts || [];
+    baseline.categoryScores[cat] = {
+      errors: alerts.filter((a) => a.severity === "error").length,
+      warnings: alerts.filter((a) => a.severity === "warning").length,
+      info: alerts.filter((a) => a.severity === "info").length,
+    };
+  }
+
+  try {
+    const stateDir = path.dirname(BASELINE_PATH);
+    if (!fs.existsSync(stateDir)) {
+      fs.mkdirSync(stateDir, { recursive: true });
+    }
+    const tmpPath = `${BASELINE_PATH}.tmp`;
+    fs.writeFileSync(tmpPath, JSON.stringify(baseline, null, 2));
+    if (fs.existsSync(BASELINE_PATH)) fs.rmSync(BASELINE_PATH, { force: true });
+    fs.renameSync(tmpPath, BASELINE_PATH);
+  } catch (err) {
+    console.error(`  [warn] Failed to save baseline: ${safeErrorMsg(err)}`);
+  }
+}
+
+/**
+ * Compute delta from baseline
+ */
+function computeDelta() {
+  const baseline = loadBaseline();
+  if (!baseline || !baseline.healthScore) return null;
+  if (!results.healthScore) return null;
+
+  // Validate baseline shape: score must be a number, grade a string
+  const bs = baseline.healthScore;
+  if (typeof bs.score !== "number" || typeof bs.grade !== "string") return null;
+
+  const delta = {
+    scoreBefore: bs.score,
+    gradeBefore: bs.grade,
+    scoreAfter: results.healthScore.score,
+    gradeAfter: results.healthScore.grade,
+    scoreDelta: results.healthScore.score - bs.score,
+    summaryBefore: baseline.summary,
+    summaryAfter: results.summary,
+    categoryChanges: {},
+  };
+
+  // Per-category changes
+  for (const [cat, data] of Object.entries(results.categories)) {
+    const alerts = data.alerts || [];
+    const nowErrors = alerts.filter((a) => a.severity === "error").length;
+    const nowWarnings = alerts.filter((a) => a.severity === "warning").length;
+    const before = baseline.categoryScores?.[cat] || { errors: 0, warnings: 0, info: 0 };
+
+    if (nowErrors !== before.errors || nowWarnings !== before.warnings) {
+      delta.categoryChanges[cat] = {
+        errorsBefore: before.errors,
+        errorsAfter: nowErrors,
+        warningsBefore: before.warnings,
+        warningsAfter: nowWarnings,
+      };
+    }
+  }
+
+  return Object.keys(delta.categoryChanges).length > 0 ? delta : null;
 }
 
 // ============================================================================
@@ -93,26 +440,26 @@ function addAlert(category, severity, message, details = null, action = null) {
 function checkCodeHealth() {
   console.error("  Checking code health...");
 
-  // TypeScript errors (try tsc directly if no npm script)
-  // Review #322 Round 3: Remove 2>&1 - use combined output for checks
-  let tsResult = runCommand("npm run type-check", { timeout: 120000 });
+  let tsErrorCount = 0;
+  let eslintWarnCount = 0;
+  let eslintErrCount = 0;
 
-  // If script doesn't exist, try tsc directly
+  // TypeScript errors
+  let tsResult = runCommand("npm run type-check", { timeout: 120000 });
   const tsCombinedOutput = `${tsResult.output || ""}\n${tsResult.stderr || ""}`;
   if (tsCombinedOutput.includes("Missing script")) {
     tsResult = runCommand("npx tsc --noEmit", { timeout: 120000 });
   }
 
-  // Review #214: Always report type-check failures, even if count can't be parsed
   const tsFullOutput = `${tsResult.output || ""}\n${tsResult.stderr || ""}`;
   if (!tsResult.success && !tsFullOutput.includes("Missing script")) {
     const errorMatch = tsFullOutput.match(/Found (\d+) error/i);
-    const errorCount = errorMatch ? parseInt(errorMatch[1], 10) : null;
+    tsErrorCount = errorMatch ? parseInt(errorMatch[1], 10) : 1;
 
     addAlert(
       "code",
       "error",
-      errorCount ? `${errorCount} TypeScript error(s)` : "TypeScript type-check failed",
+      tsErrorCount > 0 ? `${tsErrorCount} TypeScript error(s)` : "TypeScript type-check failed",
       tsFullOutput.split("\n").slice(0, 10),
       "Run: npx tsc --noEmit"
     );
@@ -124,14 +471,20 @@ function checkCodeHealth() {
   if (!lintResult.success) {
     const warnMatch = lintFullOutput.match(/(\d+) warning/);
     const errMatch = lintFullOutput.match(/(\d+) error/);
-    const warnCount = warnMatch ? parseInt(warnMatch[1], 10) : 0;
-    const errCount = errMatch ? parseInt(errMatch[1], 10) : 0;
+    eslintWarnCount = warnMatch ? parseInt(warnMatch[1], 10) : 0;
+    eslintErrCount = errMatch ? parseInt(errMatch[1], 10) : 0;
 
-    if (errCount > 0) {
-      addAlert("code", "error", `${errCount} ESLint error(s)`, null, "Run: npm run lint");
+    if (eslintErrCount > 0) {
+      addAlert("code", "error", `${eslintErrCount} ESLint error(s)`, null, "Run: npm run lint");
     }
-    if (warnCount > 0) {
-      addAlert("code", "warning", `${warnCount} ESLint warning(s)`, null, "Run: npm run lint");
+    if (eslintWarnCount > 0) {
+      addAlert(
+        "code",
+        "warning",
+        `${eslintWarnCount} ESLint warning(s)`,
+        null,
+        "Run: npm run lint"
+      );
     }
   }
 
@@ -143,15 +496,11 @@ function checkCodeHealth() {
   }
 
   // Circular dependencies
-  // Session #128: Fixed script name (deps:circular, not check:circular)
-  // Session #128: Success is determined by exit code 0, not output text
-  // (madge outputs "No circular dependency found!" to TTY, not captured stdout)
   const circularResult = runCommand("npm run deps:circular", { timeout: 60000 });
   const circularFullOutput = `${circularResult.output || ""}\n${circularResult.stderr || ""}`;
   const missingScript = /Missing script/i.test(circularFullOutput);
 
   if (missingScript) {
-    // Script doesn't exist - alert to prompt setup (PR #332 Review #235)
     addAlert(
       "code",
       "info",
@@ -160,8 +509,6 @@ function checkCodeHealth() {
       "Add deps:circular script to package.json for dependency analysis"
     );
   } else if (!circularResult.success) {
-    // Non-zero exit code means circular deps were found (or script error)
-    // Check if it processed files successfully (script ran but found issues)
     const hasResults = /Processed \d+ files/i.test(circularFullOutput);
     if (hasResults) {
       addAlert(
@@ -172,7 +519,6 @@ function checkCodeHealth() {
         "Run: npm run deps:circular"
       );
     } else {
-      // Script failed to run
       addAlert(
         "code",
         "warning",
@@ -182,7 +528,26 @@ function checkCodeHealth() {
       );
     }
   }
-  // If circularResult.success is true (exit code 0), no circular deps - no alert needed
+
+  // Add context with benchmarks and ratings
+  const tsRating = rateLowerBetter(tsErrorCount, BENCHMARKS.code.ts_errors);
+  const eslintRating = rateLowerBetter(eslintWarnCount, BENCHMARKS.code.eslint_warnings);
+
+  addContext("code", {
+    benchmarks: {
+      ts_errors: BENCHMARKS.code.ts_errors,
+      eslint_warnings: BENCHMARKS.code.eslint_warnings,
+    },
+    ratings: {
+      ts_errors: tsRating,
+      eslint_warnings: eslintRating,
+    },
+    totals: {
+      ts_errors: tsErrorCount,
+      eslint_errors: eslintErrCount,
+      eslint_warnings: eslintWarnCount,
+    },
+  });
 }
 
 // ============================================================================
@@ -192,35 +557,52 @@ function checkCodeHealth() {
 function checkSecurity() {
   console.error("  Checking security...");
 
+  let criticalCount = null;
+  let highCount = null;
+  let auditCountsKnown = false;
+
   // npm audit
-  // Review #322 Round 3: Remove 2>&1 to prevent stderr corrupting JSON output
   const auditResult = runCommand("npm audit --json", { timeout: 60000 });
   try {
-    const audit = JSON.parse(auditResult.output);
-    const high = audit.metadata?.vulnerabilities?.high || 0;
-    const critical = audit.metadata?.vulnerabilities?.critical || 0;
+    const out = (auditResult.output || "").trim();
+    const err = (auditResult.stderr || "").trim();
+    const rawJson = out.startsWith("{") ? out : err.startsWith("{") ? err : "{}";
+    const audit = JSON.parse(rawJson);
 
-    if (critical > 0) {
+    const hasVulnMetadata = !!audit?.metadata?.vulnerabilities;
+    if (!auditResult.success && !hasVulnMetadata) {
       addAlert(
         "security",
         "error",
-        `${critical} critical vulnerabilit${critical === 1 ? "y" : "ies"}`,
-        null,
+        "npm audit failed to run",
+        (auditResult.output || auditResult.stderr || "").split("\n").slice(0, 10),
         "Run: npm audit"
       );
-    }
-    if (high > 0) {
-      addAlert(
-        "security",
-        "warning",
-        `${high} high-severity vulnerabilit${high === 1 ? "y" : "ies"}`,
-        null,
-        "Run: npm audit"
-      );
+    } else if (hasVulnMetadata) {
+      highCount = audit.metadata?.vulnerabilities?.high ?? 0;
+      criticalCount = audit.metadata?.vulnerabilities?.critical ?? 0;
+      auditCountsKnown = true;
+
+      if (criticalCount > 0) {
+        addAlert(
+          "security",
+          "error",
+          `${criticalCount} critical vulnerabilit${criticalCount === 1 ? "y" : "ies"}`,
+          null,
+          "Run: npm audit"
+        );
+      }
+      if (highCount > 0) {
+        addAlert(
+          "security",
+          "warning",
+          `${highCount} high-severity vulnerabilit${highCount === 1 ? "y" : "ies"}`,
+          null,
+          "Run: npm audit"
+        );
+      }
     }
   } catch {
-    // Review #322: Surface audit execution failures instead of silently skipping
-    // Review #322 Round 3: Upgrade to error when audit fails to run
     addAlert(
       "security",
       auditResult.success ? "warning" : "error",
@@ -231,21 +613,18 @@ function checkSecurity() {
   }
 
   // Encrypted secrets check
-  // Review #214: Pattern #70 - use try/catch, improved regex validation
   const encryptedPath = path.join(ROOT_DIR, ".env.local.encrypted");
   const envLocalPath = path.join(ROOT_DIR, ".env.local");
 
   if (fs.existsSync(encryptedPath)) {
     let hasValidTokens = false;
-
     try {
       const envContent = fs.readFileSync(envLocalPath, "utf8");
-      // Check for actual token values (not placeholders)
       hasValidTokens =
         /SONARCLOUD_TOKEN=(?!your-|placeholder|xxx)[^\s]+/.test(envContent) ||
         /GITHUB_TOKEN=(?!your-|placeholder|xxx)[^\s]+/.test(envContent);
     } catch {
-      // File doesn't exist or can't be read - treat as not decrypted
+      // Not decrypted
     }
 
     if (!hasValidTokens) {
@@ -271,6 +650,31 @@ function checkSecurity() {
       "Run: npm run security:check"
     );
   }
+
+  // Context
+  const criticalRating =
+    auditCountsKnown && criticalCount !== null
+      ? rateLowerBetter(criticalCount, BENCHMARKS.security.critical_vulns)
+      : "unknown";
+  const highRating =
+    auditCountsKnown && highCount !== null
+      ? rateLowerBetter(highCount, BENCHMARKS.security.high_vulns)
+      : "unknown";
+
+  addContext("security", {
+    benchmarks: {
+      critical_vulns: BENCHMARKS.security.critical_vulns,
+      high_vulns: BENCHMARKS.security.high_vulns,
+    },
+    ratings: {
+      critical_vulns: criticalRating,
+      high_vulns: highRating,
+    },
+    totals: {
+      critical: criticalCount,
+      high: highCount,
+    },
+  });
 }
 
 // ============================================================================
@@ -280,29 +684,36 @@ function checkSecurity() {
 function checkSessionContext() {
   console.error("  Checking session context...");
 
-  // Cross-session warning
-  // Review #214: Fixed path to match session-start.js location
   const sessionStatePath = path.join(ROOT_DIR, ".claude", "hooks", ".session-state.json");
-  // Pattern #70: Skip existsSync, use try/catch alone
+  let gapHours = 0;
+
   try {
     const content = fs.readFileSync(sessionStatePath, "utf8");
     const state = JSON.parse(content);
     if (state.lastBegin && !state.lastEnd) {
-      addAlert(
-        "session",
-        "warning",
-        "Previous session did not run /session-end",
-        null,
-        "Run: /session-end at end of sessions"
-      );
+      const beginTime = new Date(state.lastBegin).getTime();
+      if (!Number.isNaN(beginTime)) {
+        gapHours = Math.max(0, Math.floor((Date.now() - beginTime) / (1000 * 60 * 60)));
+        addAlert(
+          "session",
+          "warning",
+          "Previous session did not run /session-end",
+          null,
+          "Run: /session-end at end of sessions"
+        );
+      }
     }
   } catch {
-    // File doesn't exist or can't be read - skip
+    // File doesn't exist or can't be read
   }
 
-  // Session #128: Removed MCP memory check
-  // Episodic Memory (automatic) handles conversation archival
-  // Serena Memory (explicit) can be used via mcp__serena__write_memory/read_memory if needed
+  const gapRating = rateLowerBetter(gapHours, BENCHMARKS.session.gap_hours);
+
+  addContext("session", {
+    benchmarks: { gap_hours: BENCHMARKS.session.gap_hours },
+    ratings: { gap_hours: gapRating },
+    totals: { gap_hours: gapHours },
+  });
 }
 
 // ============================================================================
@@ -312,8 +723,6 @@ function checkSessionContext() {
 function checkCurrentAlerts() {
   console.error("  Checking current alerts...");
 
-  // Read pending-alerts.json if it exists
-  // Pattern #70: Skip existsSync, use try/catch alone
   const alertsPath = path.join(ROOT_DIR, ".claude", "pending-alerts.json");
   let alertsData = null;
 
@@ -325,25 +734,30 @@ function checkCurrentAlerts() {
   }
 
   if (!alertsData) {
-    // Generate alerts
     const genResult = runCommand("node scripts/generate-pending-alerts.js");
     if (genResult.success) {
       try {
         const content = fs.readFileSync(alertsPath, "utf8");
         alertsData = JSON.parse(content);
       } catch {
-        // Still can't read - skip
+        // Still can't read
       }
     }
   }
 
+  let alertCount = 0;
   if (alertsData) {
     for (const alert of alertsData.alerts || []) {
       const severity =
         alert.severity === "error" ? "error" : alert.severity === "warning" ? "warning" : "info";
       addAlert("alerts", severity, alert.message, alert.details, alert.action);
+      alertCount++;
     }
   }
+
+  addContext("alerts", {
+    totals: { count: alertCount },
+  });
 }
 
 // ============================================================================
@@ -382,23 +796,31 @@ function checkDocumentationHealth() {
   }
 
   // Check for stale SESSION_CONTEXT.md
-  // Review #214: Fixed path to docs/ directory
   const sessionContextPath = path.join(ROOT_DIR, "docs", "SESSION_CONTEXT.md");
+  let stalenessDays = 0;
   try {
     const stats = fs.statSync(sessionContextPath);
-    const daysSinceUpdate = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60 * 24);
-    if (daysSinceUpdate > 7) {
+    stalenessDays = Math.floor((Date.now() - stats.mtimeMs) / (1000 * 60 * 60 * 24));
+    if (stalenessDays > 7) {
       addAlert(
         "docs",
         "warning",
-        `SESSION_CONTEXT.md is ${Math.floor(daysSinceUpdate)} days old`,
+        `SESSION_CONTEXT.md is ${stalenessDays} days old`,
         null,
         "Update docs/SESSION_CONTEXT.md with current status"
       );
     }
   } catch {
-    // File doesn't exist or can't be accessed - skip
+    // File doesn't exist
   }
+
+  const stalenessRating = rateLowerBetter(stalenessDays, BENCHMARKS.docs.staleness_days);
+
+  addContext("docs", {
+    benchmarks: { staleness_days: BENCHMARKS.docs.staleness_days },
+    ratings: { staleness_days: stalenessRating },
+    totals: { staleness_days: stalenessDays },
+  });
 }
 
 // ============================================================================
@@ -408,25 +830,24 @@ function checkDocumentationHealth() {
 function checkRoadmapPlanning() {
   console.error("  Checking roadmap/planning...");
 
-  // Check ROADMAP.md for blocked items
-  // Pattern #70: Skip existsSync, use try/catch alone
   const roadmapPath = path.join(ROOT_DIR, "ROADMAP.md");
+  let blockedCount = 0;
+
   try {
     const content = fs.readFileSync(roadmapPath, "utf8");
 
-    // Look for blocked markers
     const blockedMatches = content.match(/\[BLOCKED\]/gi);
     if (blockedMatches && blockedMatches.length > 0) {
+      blockedCount = blockedMatches.length;
       addAlert(
         "roadmap",
         "warning",
-        `${blockedMatches.length} blocked item(s) in ROADMAP.md`,
+        `${blockedCount} blocked item(s) in ROADMAP.md`,
         null,
         "Review ROADMAP.md for blocked items"
       );
     }
 
-    // Look for overdue items (dates in the past)
     const datePattern = /\b(202[4-9])-([01]\d)-([0-3]\d)\b/g;
     const today = new Date();
     let match;
@@ -449,8 +870,1213 @@ function checkRoadmapPlanning() {
       );
     }
   } catch {
-    // File doesn't exist or can't be read - skip
+    // File doesn't exist
   }
+
+  const blockedRating = rateLowerBetter(blockedCount, BENCHMARKS.roadmap.blocked_items);
+
+  addContext("roadmap", {
+    benchmarks: { blocked_items: BENCHMARKS.roadmap.blocked_items },
+    ratings: { blocked_items: blockedRating },
+    totals: { blocked: blockedCount },
+  });
+}
+
+// ============================================================================
+// DEBT METRICS (Limited mode, Actionable)
+// ============================================================================
+
+function checkDebtMetrics() {
+  console.error("  Checking debt metrics...");
+
+  const metricsPath = path.join(ROOT_DIR, "docs", "technical-debt", "metrics.json");
+  let metrics;
+  try {
+    metrics = JSON.parse(fs.readFileSync(metricsPath, "utf8"));
+  } catch {
+    return;
+  }
+
+  const s0 = metrics.alerts?.s0_count || 0;
+  const s1 = metrics.alerts?.s1_count || 0;
+  const s2 = metrics.summary?.by_severity?.S2 || 0;
+  const s3 = metrics.summary?.by_severity?.S3 || 0;
+  const total = metrics.summary?.total || 0;
+  const open = metrics.summary?.open || 0;
+  const resolved = metrics.summary?.resolved || 0;
+  const resRate = metrics.summary?.resolution_rate_pct || 0;
+
+  // Load master debt for rich grouping
+  const allDebt = loadMasterDebt();
+  const openDebt = allDebt.filter((d) => d.status !== "resolved" && d.status !== "closed");
+  const rawS0Items = Array.isArray(metrics.alerts?.s0_items) ? metrics.alerts.s0_items : [];
+
+  // Enrich S0 items from MASTER_DEBT.jsonl (metrics.json only has id/title/file/line)
+  const debtById = new Map(allDebt.filter((d) => d && d.id).map((d) => [d.id, d]));
+  const s0Items = rawS0Items
+    .filter((item) => item && typeof item === "object" && item.id)
+    .map((item) => {
+      const full = debtById.get(item.id);
+      return {
+        id: item.id,
+        title: full?.title ?? item.title ?? "",
+        file: full?.file ?? item.file ?? "",
+        line: full?.line ?? item.line ?? 0,
+        effort: full?.effort ?? item.effort ?? "",
+        category: full?.category ?? item.category ?? "",
+        description: full?.description ?? item.description ?? "",
+        severity: "S0",
+      };
+    });
+
+  if (s0 > 0) {
+    // Group S0 by category for richer message
+    const s0Groups = groupByField(s0Items, "category");
+    const groupSummary = s0Groups.map((g) => `${g.name} (${g.count})`).join(" \u00b7 ");
+
+    // Build per-item listing for details
+    const itemListing = s0Items
+      .map(
+        (i) =>
+          `${i.id}: ${i.title.substring(0, 60)} [${i.file}${i.line ? ":" + i.line : ""}] (${i.effort || "?"})`
+      )
+      .join("\n");
+
+    addAlert(
+      "debt-metrics",
+      "error",
+      `${s0} S0 critical debt item(s) need attention`,
+      `${groupSummary}\n${itemListing}`,
+      "Run /task-next or fix the S0 items directly"
+    );
+  }
+
+  const S1_THRESHOLD = BENCHMARKS.debt.s1_threshold;
+  if (s1 > S1_THRESHOLD) {
+    addAlert(
+      "debt-metrics",
+      "warning",
+      `${s1} S1 high-priority items (threshold: ${S1_THRESHOLD})`,
+      null,
+      "Review MASTER_DEBT.jsonl for S1 items"
+    );
+  }
+
+  // Trend from metrics-log.jsonl
+  const logPath = path.join(ROOT_DIR, "docs", "technical-debt", "logs", "metrics-log.jsonl");
+  const openTrend = computeTrend(logPath, "open");
+  const s0Trend = computeTrend(logPath, "s0_count");
+
+  if (openTrend && openTrend.direction === "increasing") {
+    const first = openTrend.values[0];
+    const last = openTrend.values[openTrend.values.length - 1];
+    addAlert(
+      "debt-metrics",
+      "warning",
+      `Debt growing: ${first} \u2192 ${last} open items (+${openTrend.deltaPercent}%)`,
+      null,
+      "Resolve more items than you create"
+    );
+  }
+
+  addAlert(
+    "debt-metrics",
+    "info",
+    `Debt summary: ${total} total, ${open} open, ${resRate}% resolved`,
+    null,
+    null
+  );
+
+  // Rate against benchmarks
+  const resRateRating = rateHigherBetter(resRate, BENCHMARKS.debt.resolution_rate);
+
+  // Group debt by category and effort
+  const byCategory = groupByField(openDebt, "category");
+  const byEffort = groupByField(openDebt, "effort");
+
+  // S0 items by category
+  const s0ByCategory = groupByField(s0Items, "category");
+
+  addContext("debt-metrics", {
+    benchmarks: {
+      s0_target: BENCHMARKS.debt.s0_target,
+      s1_threshold: BENCHMARKS.debt.s1_threshold,
+      resolution_rate: BENCHMARKS.debt.resolution_rate,
+    },
+    ratings: {
+      resolution_rate: resRateRating,
+    },
+    trend: {
+      open: openTrend,
+      s0: s0Trend,
+    },
+    sparklines: {
+      open: openTrend ? sparkline(openTrend.values) : "",
+      s0: s0Trend ? sparkline(s0Trend.values) : "",
+    },
+    groups: {
+      by_category: byCategory,
+      by_effort: byEffort,
+      s0_by_category: s0ByCategory,
+    },
+    topItems: {
+      s0: s0Items.slice(0, 5).map((i) => ({
+        id: i.id || "",
+        title: i.title || i.description || "",
+        file: i.file || i.location || "",
+        effort: i.effort || "",
+      })),
+    },
+    totals: {
+      total,
+      open,
+      resolved,
+      s0,
+      s1,
+      resRate,
+    },
+    by_severity: {
+      S0: s0,
+      S1: s1,
+      S2: s2,
+      S3: s3,
+    },
+  });
+}
+
+// ============================================================================
+// LEARNING EFFECTIVENESS (Limited mode, Actionable)
+// ============================================================================
+
+function checkLearningEffectiveness() {
+  console.error("  Checking learning effectiveness...");
+
+  const metricsPath = path.join(ROOT_DIR, "docs", "LEARNING_METRICS.md");
+  let content;
+  try {
+    content = fs.readFileSync(metricsPath, "utf8");
+  } catch {
+    return;
+  }
+
+  const effectivenessMatch = content.match(/Learning Effectiveness\s*\|\s*([\d.]+)%/);
+  const failingMatch = content.match(/Patterns Failing\s*\|\s*(\d+)/);
+  const automationMatch = content.match(/Automation Coverage\s*\|\s*([\d.]+)%/);
+  const learnedMatch = content.match(/Patterns Learned\s*\|\s*(\d+)/);
+  const automatedMatch = content.match(/Patterns Automated\s*\|\s*(\d+)/);
+  const criticalMatch = content.match(/Critical Pattern Success\s*\|\s*([\d.]+)%/);
+
+  const effectiveness = effectivenessMatch ? parseFloat(effectivenessMatch[1]) : null;
+  const failing = failingMatch ? parseInt(failingMatch[1], 10) : 0;
+  const automationCoverage = automationMatch ? parseFloat(automationMatch[1]) : null;
+  const learned = learnedMatch ? parseInt(learnedMatch[1], 10) : 0;
+  const automated = automatedMatch ? parseInt(automatedMatch[1], 10) : 0;
+  const criticalSuccess = criticalMatch ? parseFloat(criticalMatch[1]) : null;
+
+  // Rate against benchmarks
+  const effectivenessRating =
+    effectiveness !== null
+      ? rateHigherBetter(effectiveness, BENCHMARKS.learning.effectiveness)
+      : null;
+  const failingRating = rateLowerBetter(failing, BENCHMARKS.learning.failing_patterns);
+  const automationRating =
+    automationCoverage !== null
+      ? rateHigherBetter(automationCoverage, BENCHMARKS.learning.automation_coverage)
+      : null;
+
+  if (failing > 0) {
+    const actionLines = [];
+    const actionRegex = /\*\*\[Automation\]\*\*\s+Automate\s+"([^"]+)"/g;
+    let m;
+    while ((m = actionRegex.exec(content)) !== null && actionLines.length < 3) {
+      actionLines.push(m[1]);
+    }
+    const topNames = actionLines.length > 0 ? actionLines.join(", ") : "see LEARNING_METRICS.md";
+
+    const ratingLabel = failingRating ? ` (${failingRating})` : "";
+    addAlert(
+      "learning",
+      "warning",
+      `${failing} patterns failing to be learned${ratingLabel}`,
+      null,
+      `Automate top patterns: ${topNames}. Add to check-pattern-compliance.js`
+    );
+  }
+
+  if (effectiveness !== null && effectiveness < BENCHMARKS.learning.effectiveness.average) {
+    addAlert(
+      "learning",
+      "warning",
+      `Learning effectiveness at ${effectiveness}% — ${effectivenessRating} (target: ${BENCHMARKS.learning.effectiveness.good}%+)`,
+      null,
+      "Review documentation clarity in CODE_PATTERNS.md"
+    );
+  }
+
+  if (
+    automationCoverage !== null &&
+    automationCoverage < BENCHMARKS.learning.automation_coverage.average
+  ) {
+    addAlert(
+      "learning",
+      "info",
+      `Only ${automationCoverage}% of patterns automated (${automationRating})`,
+      null,
+      "Run consolidation to generate automation suggestions"
+    );
+  }
+
+  addContext("learning", {
+    benchmarks: {
+      effectiveness: BENCHMARKS.learning.effectiveness,
+      automation_coverage: BENCHMARKS.learning.automation_coverage,
+      failing_patterns: BENCHMARKS.learning.failing_patterns,
+    },
+    ratings: {
+      effectiveness: effectivenessRating,
+      automation_coverage: automationRating,
+      failing_patterns: failingRating,
+    },
+    totals: {
+      effectiveness,
+      failing,
+      automation_coverage: automationCoverage,
+      learned,
+      automated,
+      critical_success: criticalSuccess,
+    },
+  });
+}
+
+// ============================================================================
+// AGENT COMPLIANCE (Limited mode, Actionable)
+// ============================================================================
+
+function checkAgentCompliance() {
+  console.error("  Checking agent compliance...");
+
+  let invoked = [];
+  const invocationsPath = path.join(ROOT_DIR, ".claude", "state", "agent-invocations.jsonl");
+  const sessionAgentsPath = path.join(ROOT_DIR, ".claude", "hooks", ".session-agents.json");
+
+  try {
+    const lines = fs.readFileSync(invocationsPath, "utf8").trim().split("\n").filter(Boolean);
+    invoked = lines
+      .map((l) => {
+        try {
+          const e = JSON.parse(l);
+          return e.agent || e.name || "";
+        } catch {
+          return "";
+        }
+      })
+      .filter(Boolean);
+  } catch {
+    try {
+      const agents = JSON.parse(fs.readFileSync(sessionAgentsPath, "utf8"));
+      invoked = Array.isArray(agents) ? agents.map((a) => a.name || a) : Object.keys(agents);
+    } catch {
+      // Neither file exists
+    }
+  }
+
+  if (invoked.length === 0) {
+    addAlert("agent-compliance", "info", "No agent invocation data yet", null, null);
+  }
+
+  let changedFiles = [];
+  const lastCommitResult = runCommand("git diff --name-only HEAD~1 HEAD", { timeout: 10000 });
+  if (lastCommitResult.success) {
+    changedFiles = lastCommitResult.output
+      .split("\n")
+      .map((f) => f.trim())
+      .filter(Boolean);
+  } else {
+    // Fallback for initial commit: diff against empty tree
+    const initialResult = runCommand(
+      "git diff --name-only 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD",
+      { timeout: 10000 }
+    );
+    if (initialResult.success) {
+      changedFiles = initialResult.output
+        .split("\n")
+        .map((f) => f.trim())
+        .filter(Boolean);
+    } else {
+      addContext("agent-compliance", {
+        benchmarks: { compliance_pct: BENCHMARKS.agent.compliance_pct },
+        ratings: { compliance: "unknown" },
+        totals: { invocations: invoked.length },
+      });
+      return;
+    }
+  }
+  const codeFiles = changedFiles.filter(
+    (f) =>
+      /\.(tsx?|jsx?|mjs|cjs)$/.test(f) && !f.startsWith("scripts/") && !f.startsWith(".claude/")
+  );
+  const securityFiles = changedFiles.filter((f) =>
+    /security|auth|\.env|firebase\.json|firestore\.rules/i.test(f)
+  );
+
+  const hasCodeReviewer = invoked.some((n) => /code.?review/i.test(n));
+  const hasSecurityAuditor = invoked.some((n) => /security.?audit/i.test(n));
+
+  let required = 0;
+  let met = 0;
+
+  if (codeFiles.length > 0) {
+    required++;
+    if (hasCodeReviewer) {
+      met++;
+    } else {
+      addAlert(
+        "agent-compliance",
+        "warning",
+        `${codeFiles.length} code file(s) changed without code-reviewer`,
+        codeFiles.slice(0, 5).join(", "),
+        "Run /code-reviewer before merging"
+      );
+    }
+  }
+
+  if (securityFiles.length > 0) {
+    required++;
+    if (hasSecurityAuditor) {
+      met++;
+    } else {
+      addAlert(
+        "agent-compliance",
+        "warning",
+        `${securityFiles.length} security-related file(s) changed without security-auditor`,
+        securityFiles.slice(0, 5).join(", "),
+        "Run security-auditor agent"
+      );
+    }
+  }
+
+  const compliancePct = required > 0 ? Math.round((met / required) * 100) : 100;
+  const complianceRating = rateHigherBetter(compliancePct, BENCHMARKS.agent.compliance_pct);
+
+  addContext("agent-compliance", {
+    benchmarks: { compliance_pct: BENCHMARKS.agent.compliance_pct },
+    ratings: { compliance: complianceRating },
+    totals: {
+      invocations: invoked.length,
+      required,
+      met,
+      compliance_pct: compliancePct,
+    },
+  });
+}
+
+// ============================================================================
+// HOOK WARNINGS (Limited mode, Actionable)
+// ============================================================================
+
+function checkHookWarnings() {
+  console.error("  Checking hook warnings...");
+
+  const warningsPath = path.join(ROOT_DIR, ".claude", "hook-warnings.json");
+  let data;
+  try {
+    data = JSON.parse(fs.readFileSync(warningsPath, "utf8"));
+  } catch {
+    addContext("hook-warnings", {
+      benchmarks: { warning_age_days: BENCHMARKS.hooks.warning_age_days },
+      ratings: { age: "good" },
+      totals: { count: 0, age_days: 0 },
+    });
+    return;
+  }
+
+  const warnings = data.warnings || [];
+  if (warnings.length === 0) {
+    addContext("hook-warnings", {
+      benchmarks: { warning_age_days: BENCHMARKS.hooks.warning_age_days },
+      ratings: { age: "good" },
+      totals: { count: 0, age_days: 0 },
+    });
+    return;
+  }
+
+  // Deduplicate by message
+  const byMessage = new Map();
+  for (const w of warnings) {
+    const key = `${w.hook}:${w.type}:${w.message}`;
+    const existing = byMessage.get(key);
+    if (!existing || new Date(w.timestamp) > new Date(existing.timestamp)) {
+      byMessage.set(key, w);
+    }
+  }
+
+  const deduped = [...byMessage.values()];
+  const errors = deduped.filter((w) => w.severity === "error");
+  const warns = deduped.filter((w) => w.severity === "warning");
+
+  for (const w of errors) {
+    addAlert(
+      "hook-warnings",
+      "error",
+      `[${w.hook}] ${w.message}`,
+      null,
+      w.action || "Check pre-commit/pre-push output"
+    );
+  }
+
+  for (const w of warns) {
+    addAlert(
+      "hook-warnings",
+      "warning",
+      `[${w.hook}] ${w.message}`,
+      null,
+      w.action || "Check pre-commit/pre-push output"
+    );
+  }
+
+  const infos = deduped.filter((w) => w.severity === "info" || !w.severity);
+  if (infos.length > 0) {
+    addAlert(
+      "hook-warnings",
+      "info",
+      `${infos.length} informational hook notification(s)`,
+      null,
+      null
+    );
+  }
+
+  // Age check — filter out entries with invalid/missing timestamps
+  const validDates = deduped.map((w) => new Date(w.timestamp)).filter((d) => !isNaN(d.getTime()));
+  const oldest =
+    validDates.length > 0
+      ? validDates.reduce((min, d) => (d < min ? d : min), validDates[0])
+      : null;
+  const ageDays = oldest ? Math.floor((Date.now() - oldest.getTime()) / (1000 * 60 * 60 * 24)) : 0;
+  if (ageDays > 3) {
+    addAlert(
+      "hook-warnings",
+      "warning",
+      `Oldest hook warning is ${ageDays} days old \u2014 may need attention`,
+      null,
+      "Review .claude/hook-warnings.json and resolve or clear stale entries"
+    );
+  }
+
+  const ageRating = rateLowerBetter(ageDays, BENCHMARKS.hooks.warning_age_days);
+
+  addContext("hook-warnings", {
+    benchmarks: { warning_age_days: BENCHMARKS.hooks.warning_age_days },
+    ratings: { age: ageRating },
+    totals: {
+      count: deduped.length,
+      errors: errors.length,
+      warnings: warns.length,
+      age_days: ageDays,
+    },
+  });
+}
+
+// ============================================================================
+// TEST RESULTS (Limited mode, Actionable)
+// ============================================================================
+
+function checkTestResults() {
+  console.error("  Checking test results...");
+
+  const resultsDir = path.join(ROOT_DIR, ".claude", "test-results");
+  let files;
+  try {
+    files = fs
+      .readdirSync(resultsDir)
+      .filter((f) => f.endsWith(".jsonl"))
+      .sort()
+      .reverse();
+  } catch {
+    return;
+  }
+
+  if (files.length === 0) return;
+
+  const latestFile = files[0];
+  let lines;
+  try {
+    lines = fs
+      .readFileSync(path.join(resultsDir, latestFile), "utf8")
+      .trim()
+      .split("\n")
+      .filter(Boolean);
+  } catch {
+    return;
+  }
+
+  const resultsParsed = lines
+    .map((l) => {
+      try {
+        return JSON.parse(l);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+
+  if (resultsParsed.length === 0) return;
+
+  const passed = resultsParsed.filter((r) => r.status === "pass").length;
+  const failed = resultsParsed.filter((r) => r.status === "fail").length;
+  const errored = resultsParsed.filter((r) => r.status === "error").length;
+  const total = resultsParsed.length;
+  const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+
+  // Filter out entries with invalid/missing timestamps before computing age
+  const validTestDates = resultsParsed
+    .map((r) => new Date(r.timestamp))
+    .filter((d) => !isNaN(d.getTime()));
+  const latestTimestamp =
+    validTestDates.length > 0
+      ? validTestDates.reduce((max, d) => (d > max ? d : max), validTestDates[0])
+      : null;
+  const ageDays = latestTimestamp
+    ? Math.floor((Date.now() - latestTimestamp.getTime()) / (1000 * 60 * 60 * 24))
+    : null;
+
+  if (failed > 0) {
+    const failNames = resultsParsed
+      .filter((r) => r.status === "fail")
+      .map((r) => r.test_id || r.name)
+      .slice(0, 5)
+      .join(", ");
+    addAlert(
+      "test-results",
+      "error",
+      `${failed} test(s) failing in latest run (${latestFile})`,
+      failNames,
+      "Run /test-suite to re-run and fix failures"
+    );
+  }
+
+  if (errored > 0) {
+    const errNames = resultsParsed
+      .filter((r) => r.status === "error")
+      .map((r) => r.test_id || r.name)
+      .slice(0, 5)
+      .join(", ");
+    addAlert(
+      "test-results",
+      "warning",
+      `${errored} test(s) errored in latest run (${latestFile})`,
+      errNames,
+      "Run /test-suite \u2014 errors may indicate environment issues"
+    );
+  }
+
+  if (ageDays !== null && ageDays > 7) {
+    addAlert(
+      "test-results",
+      "warning",
+      `Latest test run is ${ageDays} days old (${latestFile})`,
+      null,
+      "Run /test-suite --smoke to get fresh results"
+    );
+  }
+
+  addAlert(
+    "test-results",
+    "info",
+    `Last test run: ${passed}/${total} passed (${latestFile}, ${ageDays !== null ? ageDays + "d ago" : "age unknown"})`,
+    null,
+    null
+  );
+
+  // Rate against benchmarks
+  const passRateRating = rateHigherBetter(passRate, BENCHMARKS.tests.pass_rate);
+  const stalenessRating =
+    ageDays !== null ? rateLowerBetter(ageDays, BENCHMARKS.tests.staleness_days) : null;
+
+  addContext("test-results", {
+    benchmarks: {
+      pass_rate: BENCHMARKS.tests.pass_rate,
+      staleness_days: BENCHMARKS.tests.staleness_days,
+    },
+    ratings: {
+      pass_rate: passRateRating,
+      staleness: stalenessRating,
+    },
+    totals: {
+      passed,
+      failed,
+      errored,
+      total,
+      pass_rate: passRate,
+      age_days: ageDays,
+      file: latestFile,
+    },
+  });
+}
+
+// ============================================================================
+// REVIEW QUALITY (Full mode, Actionable)
+// ============================================================================
+
+function checkReviewQuality() {
+  console.error("  Checking review quality...");
+
+  const metricsPath = path.join(ROOT_DIR, ".claude", "state", "review-metrics.jsonl");
+  let lines;
+  try {
+    lines = fs.readFileSync(metricsPath, "utf8").trim().split("\n").filter(Boolean);
+  } catch {
+    addAlert("review-quality", "info", "No review metrics data yet", null, null);
+    return;
+  }
+
+  const recent = lines
+    .slice(-5)
+    .map((l) => {
+      try {
+        return JSON.parse(l);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+
+  if (recent.length === 0) return;
+
+  // Check for high-churn PRs
+  for (const entry of recent) {
+    const rounds = entry.review_rounds || entry.rounds || 0;
+    const pr = entry.pr || entry.pr_number || "?";
+    if (rounds >= 5) {
+      addAlert(
+        "review-quality",
+        "warning",
+        `PR #${pr} took ${rounds} review rounds`,
+        null,
+        `Run /pr-retro ${pr} to analyze churn`
+      );
+    }
+  }
+
+  // Average fix ratio
+  const ratios = recent.map((e) => e.fix_ratio).filter((r) => typeof r === "number");
+  let avgFixRatio = 0;
+  if (ratios.length > 0) {
+    avgFixRatio = ratios.reduce((a, b) => a + b, 0) / ratios.length;
+    if (avgFixRatio > 0.3) {
+      addAlert(
+        "review-quality",
+        "warning",
+        `Average fix ratio ${(avgFixRatio * 100).toFixed(0)}% (target: <25%)`,
+        null,
+        "Check if review scope is consistent between rounds"
+      );
+    }
+  }
+
+  // Average rounds
+  const roundsList = recent.map((e) => e.review_rounds || e.rounds || 0).filter((r) => r > 0);
+  const avgRounds =
+    roundsList.length > 0 ? roundsList.reduce((a, b) => a + b, 0) / roundsList.length : 0;
+
+  const fixRatioRating = rateLowerBetter(avgFixRatio, BENCHMARKS.review.fix_ratio);
+  const roundsRating = rateLowerBetter(avgRounds, BENCHMARKS.review.max_rounds);
+
+  addContext("review-quality", {
+    benchmarks: {
+      fix_ratio: BENCHMARKS.review.fix_ratio,
+      max_rounds: BENCHMARKS.review.max_rounds,
+    },
+    ratings: {
+      fix_ratio: fixRatioRating,
+      rounds: roundsRating,
+    },
+    totals: {
+      avg_fix_ratio: Math.round(avgFixRatio * 100),
+      avg_rounds: Math.round(avgRounds * 10) / 10,
+      recent_count: recent.length,
+    },
+  });
+}
+
+// ============================================================================
+// CONSOLIDATION STATUS (Full mode, Actionable)
+// ============================================================================
+
+function checkConsolidation() {
+  console.error("  Checking consolidation status...");
+
+  let reviewsPending = 0;
+
+  const logPath = path.join(ROOT_DIR, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+  try {
+    const content = fs.readFileSync(logPath, "utf8");
+    const counterMatch = content.match(/Reviews since last consolidation:\*?\*?\s*(\d+)/i);
+    if (counterMatch) {
+      reviewsPending = parseInt(counterMatch[1], 10);
+      if (reviewsPending >= 10) {
+        addAlert(
+          "consolidation",
+          "warning",
+          `${reviewsPending} reviews since last consolidation (threshold: 10)`,
+          null,
+          "Consolidation will auto-run at next session-start"
+        );
+      }
+    }
+  } catch {
+    // File missing
+  }
+
+  // Check suggested rules
+  let suggestedCount = 0;
+  const suggestedPath = path.join(ROOT_DIR, "consolidation-output", "suggested-rules.md");
+  try {
+    const content = fs.readFileSync(suggestedPath, "utf8");
+    const headers = content.match(/^## /gm);
+    suggestedCount = headers ? headers.length : 0;
+    if (suggestedCount > 0) {
+      addAlert(
+        "consolidation",
+        "info",
+        `${suggestedCount} suggested automation rule(s) pending review`,
+        null,
+        "Review consolidation-output/suggested-rules.md and add to check-pattern-compliance.js"
+      );
+    }
+  } catch {
+    // File missing
+  }
+
+  const pendingRating = rateLowerBetter(reviewsPending, BENCHMARKS.consolidation.reviews_pending);
+
+  addContext("consolidation", {
+    benchmarks: { reviews_pending: BENCHMARKS.consolidation.reviews_pending },
+    ratings: { pending: pendingRating },
+    totals: { reviews_pending: reviewsPending, suggested_rules: suggestedCount },
+  });
+}
+
+// ============================================================================
+// VELOCITY (Full mode, Informational)
+// ============================================================================
+
+function checkVelocity() {
+  console.error("  Checking velocity...");
+
+  const logPath = path.join(ROOT_DIR, ".claude", "state", "velocity-log.jsonl");
+  let lines;
+  try {
+    lines = fs.readFileSync(logPath, "utf8").trim().split("\n").filter(Boolean);
+  } catch {
+    return;
+  }
+
+  const recent = lines
+    .slice(-5)
+    .map((l) => {
+      try {
+        return JSON.parse(l);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+
+  if (recent.length === 0) return;
+
+  const completed = recent.map((e) => e.items_completed || 0);
+  const avg = completed.reduce((a, b) => a + b, 0) / completed.length;
+
+  addAlert(
+    "velocity",
+    "info",
+    `Velocity: avg ${avg.toFixed(1)} items/session over last ${recent.length} sessions`,
+    null,
+    null
+  );
+
+  // Check for zero-velocity streak
+  const lastThree = completed.slice(-3);
+  if (lastThree.length >= 3 && lastThree.every((c) => c === 0)) {
+    addAlert("velocity", "info", "No debt items resolved in last 3 sessions", null, null);
+  }
+
+  // Trend
+  const velocityTrend = computeTrend(logPath, "items_completed");
+
+  // Detect acceleration/deceleration
+  let acceleration = null;
+  if (completed.length >= 3) {
+    const firstHalf = completed.slice(0, Math.floor(completed.length / 2));
+    const secondHalf = completed.slice(Math.floor(completed.length / 2));
+    const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+    const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+    if (firstAvg > 0) {
+      const change = (secondAvg - firstAvg) / firstAvg;
+      if (Math.abs(change) > BENCHMARKS.velocity.acceleration_threshold) {
+        acceleration = change > 0 ? "accelerating" : "decelerating";
+      }
+    }
+  }
+
+  const avgRating = rateHigherBetter(avg, BENCHMARKS.velocity.items_per_session);
+
+  addContext("velocity", {
+    benchmarks: { items_per_session: BENCHMARKS.velocity.items_per_session },
+    ratings: { items_per_session: avgRating },
+    trend: velocityTrend,
+    sparkline: velocityTrend ? sparkline(velocityTrend.values) : "",
+    acceleration,
+    totals: {
+      avg_items_per_session: Math.round(avg * 10) / 10,
+      recent_sessions: recent.length,
+    },
+  });
+}
+
+// ============================================================================
+// SESSION ACTIVITY (Full mode, Informational)
+// ============================================================================
+
+function checkSessionActivity() {
+  console.error("  Checking session activity...");
+
+  const activityPath = path.join(ROOT_DIR, ".claude", "session-activity.jsonl");
+  let lines;
+  try {
+    lines = fs.readFileSync(activityPath, "utf8").trim().split("\n").filter(Boolean);
+  } catch {
+    return;
+  }
+
+  let lastStartIdx = -1;
+  const entries = [];
+  for (let i = 0; i < lines.length; i++) {
+    try {
+      const entry = JSON.parse(lines[i]);
+      entries.push(entry);
+      if (entry.type === "session_start" || entry.event === "session_start") {
+        lastStartIdx = i;
+      }
+    } catch {
+      // skip
+    }
+  }
+
+  if (lastStartIdx >= 0) {
+    const sessionEvents = entries.slice(lastStartIdx);
+    const filesModified = sessionEvents.filter(
+      (e) => e.type === "file_modified" || e.event === "file_modified"
+    ).length;
+    const commitCount = sessionEvents.filter(
+      (e) => e.type === "commit" || e.event === "commit"
+    ).length;
+    const skillCount = sessionEvents.filter(
+      (e) => e.type === "skill_invoked" || e.event === "skill_invoked"
+    ).length;
+
+    addAlert(
+      "session-activity",
+      "info",
+      `Last session: ${filesModified} files modified, ${commitCount} commits, ${skillCount} skills invoked`,
+      null,
+      null
+    );
+
+    const hasEnd = sessionEvents.some((e) => e.type === "session_end" || e.event === "session_end");
+    if (!hasEnd && entries.length > 1) {
+      addAlert("session-activity", "info", "Previous session did not run /session-end", null, null);
+    }
+
+    addContext("session-activity", {
+      totals: {
+        files_modified: filesModified,
+        commits: commitCount,
+        skills_invoked: skillCount,
+        has_session_end: hasEnd,
+      },
+    });
+  }
+}
+
+// ============================================================================
+// COMMIT ACTIVITY (Full mode, Informational)
+// ============================================================================
+
+function checkCommitActivity() {
+  console.error("  Checking commit activity...");
+
+  const logPath = path.join(ROOT_DIR, ".claude", "state", "commit-log.jsonl");
+  let lines;
+  try {
+    lines = fs.readFileSync(logPath, "utf8").trim().split("\n").filter(Boolean);
+  } catch {
+    return;
+  }
+
+  const entries = lines
+    .map((l) => {
+      try {
+        return JSON.parse(l);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+
+  if (entries.length === 0) return;
+
+  const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const recentCommits = entries.filter((e) => new Date(e.timestamp).getTime() > oneDayAgo);
+  const unattributed = entries.filter((e) => !e.session && !e.seeded);
+
+  addAlert(
+    "commit-activity",
+    "info",
+    `${recentCommits.length} commit(s) in last 24h, ${entries.length} total in log`,
+    null,
+    null
+  );
+
+  if (unattributed.length > 0) {
+    addAlert(
+      "commit-activity",
+      "info",
+      `${unattributed.length} commit(s) without session attribution`,
+      null,
+      "Run /session-end to attribute commits to sessions"
+    );
+  }
+
+  const commitsWithTime = entries
+    .map((e) => ({ e, t: new Date(e.timestamp).getTime() }))
+    .filter((x) => !isNaN(x.t));
+
+  const latest = commitsWithTime.length
+    ? commitsWithTime.reduce((max, x) => (x.t > max.t ? x : max), commitsWithTime[0]).e
+    : null;
+
+  let hoursSinceCommit = null;
+  if (latest) {
+    const lastCommitAge = Date.now() - new Date(latest.timestamp).getTime();
+    hoursSinceCommit = Math.floor(lastCommitAge / (1000 * 60 * 60));
+    if (hoursSinceCommit > 4) {
+      addAlert(
+        "commit-activity",
+        "info",
+        `Last commit was ${hoursSinceCommit}h ago (${latest.shortHash ?? "unknown"}: ${(latest.message || "").substring(0, 60)})`,
+        null,
+        null
+      );
+    }
+  }
+
+  const hoursRating =
+    hoursSinceCommit !== null
+      ? rateLowerBetter(hoursSinceCommit, BENCHMARKS.commits.hours_since_last)
+      : null;
+
+  addContext("commit-activity", {
+    benchmarks: { hours_since_last: BENCHMARKS.commits.hours_since_last },
+    ratings: { hours_since_last: hoursRating },
+    totals: {
+      recent_24h: recentCommits.length,
+      total: entries.length,
+      unattributed: unattributed.length,
+      hours_since_last: hoursSinceCommit,
+    },
+  });
+}
+
+// ============================================================================
+// ROADMAP VALIDATION (Full mode, Actionable)
+// ============================================================================
+
+function checkRoadmapValidation() {
+  console.error("  Checking roadmap validation...");
+
+  const result = runCommand("npm run roadmap:validate", { timeout: 30000 });
+  const output = `${result.output || ""}\n${result.stderr || ""}`;
+
+  const warningMatch = output.match(/(\d+)\s+Warning/i);
+  const errorMatch = output.match(/(\d+)\s+Error/i);
+
+  const warningCount = warningMatch ? parseInt(warningMatch[1], 10) : 0;
+  const errorCount = errorMatch ? parseInt(errorMatch[1], 10) : 0;
+
+  if (errorCount > 0) {
+    const bulletLines = output.match(/^\s+[•·]\s+.+$/gm) || [];
+    const details = bulletLines
+      .slice(0, 5)
+      .map((l) => l.trim())
+      .join("; ");
+    addAlert(
+      "roadmap-health",
+      "error",
+      `${errorCount} roadmap validation error(s)`,
+      details || null,
+      "Run: npm run roadmap:validate"
+    );
+  }
+
+  if (warningCount > 0) {
+    const bulletLines = output.match(/^\s+[•·]\s+.+$/gm) || [];
+    const details = bulletLines
+      .slice(0, 5)
+      .map((l) => l.trim())
+      .join("; ");
+    addAlert(
+      "roadmap-health",
+      "warning",
+      `${warningCount} roadmap validation warning(s)`,
+      details || null,
+      "Run: npm run roadmap:validate"
+    );
+  }
+
+  addContext("roadmap-health", {
+    totals: { errors: errorCount, warnings: warningCount },
+  });
+}
+
+// ============================================================================
+// HOOK HEALTH (Full mode, Informational)
+// ============================================================================
+
+function checkHookHealth() {
+  console.error("  Checking hook health...");
+
+  const result = runCommand("npm run hooks:health", { timeout: 30000 });
+  const output = `${result.output || ""}\n${result.stderr || ""}`;
+
+  const hookCountMatch = output.match(/All (\d+) hooks valid/i);
+  const hookCount = hookCountMatch ? parseInt(hookCountMatch[1], 10) : null;
+
+  const sessionsStarted = output.match(/Total sessions started:\s*(\d+)/i);
+  const sessionsCompleted = output.match(/Sessions completed:\s*(\d+)/i);
+  const started = sessionsStarted ? parseInt(sessionsStarted[1], 10) : 0;
+  const completed = sessionsCompleted ? parseInt(sessionsCompleted[1], 10) : 0;
+
+  if (hookCount) {
+    addAlert("hook-health", "info", `${hookCount} hooks registered and valid`, null, null);
+  }
+
+  let completionRate = 0;
+  if (started > 0) {
+    completionRate = completed > 0 ? Math.round((completed / started) * 100) : 0;
+    addAlert(
+      "hook-health",
+      "info",
+      `Session completion rate: ${completionRate}% (${completed}/${started} sessions completed)`,
+      null,
+      completionRate < 50 ? "Run /session-end consistently to improve completion rate" : null
+    );
+  }
+
+  if (output.includes("invalid") || output.includes("ERROR")) {
+    addAlert(
+      "hook-health",
+      "warning",
+      "Hook health check found issues",
+      null,
+      "Run: npm run hooks:health"
+    );
+  }
+
+  addContext("hook-health", {
+    totals: {
+      hook_count: hookCount,
+      sessions_started: started,
+      sessions_completed: completed,
+      completion_rate: completionRate,
+    },
+  });
+}
+
+// ============================================================================
+// HEALTH SCORE COMPUTATION
+// ============================================================================
+
+function computeHealthScore() {
+  const weights = {
+    code: 0.2,
+    security: 0.2,
+    "debt-metrics": 0.15,
+    "test-results": 0.15,
+    learning: 0.1,
+    velocity: 0.05,
+    "review-quality": 0.05,
+    "agent-compliance": 0.05,
+    docs: 0.05,
+  };
+
+  const breakdown = {};
+  let totalScore = 0;
+  let measuredWeight = 0;
+
+  for (const [cat, weight] of Object.entries(weights)) {
+    const catData = results.categories[cat];
+
+    if (!catData || catData.context?.no_data || !Array.isArray(catData?.alerts)) {
+      breakdown[cat] = { score: null, weight, measured: false };
+      continue;
+    }
+
+    const alerts = catData.alerts;
+    const errorCount = alerts.filter((a) => a.severity === "error").length;
+    const warningCount = alerts.filter((a) => a.severity === "warning").length;
+    const score = Math.max(0, Math.min(100, 100 - errorCount * 30 - warningCount * 10));
+
+    breakdown[cat] = { score, weight, measured: true };
+    totalScore += score * weight;
+    measuredWeight += weight;
+  }
+
+  const finalScore = measuredWeight > 0 ? Math.round(totalScore / measuredWeight) : 50;
+  const grade =
+    finalScore >= 90
+      ? "A"
+      : finalScore >= 80
+        ? "B"
+        : finalScore >= 70
+          ? "C"
+          : finalScore >= 60
+            ? "D"
+            : "F";
+
+  results.healthScore = { grade, score: finalScore, breakdown };
+}
+
+// ============================================================================
+// SESSION PLAN BUILDER
+// ============================================================================
+
+function buildSessionPlan() {
+  const plan = [];
+
+  for (const [cat, catData] of Object.entries(results.categories)) {
+    for (const alert of catData.alerts || []) {
+      if (alert.action && alert.severity !== "info") {
+        plan.push({
+          priority: alert.severity === "error" ? 1 : 2,
+          category: cat,
+          action: alert.action,
+          message: alert.message,
+          impact: alert.severity === "error" ? "high" : "medium",
+        });
+      }
+    }
+  }
+
+  // Sort: errors first, then warnings
+  plan.sort((a, b) => a.priority - b.priority);
+
+  // Dynamic sizing: all errors + top warnings to fill ~5 total
+  const errors = plan.filter((p) => p.priority === 1);
+  const warnings = plan.filter((p) => p.priority === 2);
+  const remaining = Math.max(0, 5 - errors.length);
+
+  results.sessionPlan = [...errors, ...warnings.slice(0, remaining)];
 }
 
 // ============================================================================
@@ -458,28 +2084,83 @@ function checkRoadmapPlanning() {
 // ============================================================================
 
 function main() {
-  console.error(`\n🔍 Running ${isFullMode ? "FULL" : "LIMITED"} alerts check...\n`);
+  console.error(`\n\u{1F50D} Running ${isFullMode ? "FULL" : "LIMITED"} alerts check...\n`);
 
   // Always run (Limited mode)
   checkCodeHealth();
   checkSecurity();
   checkSessionContext();
+  checkDebtMetrics();
+  checkLearningEffectiveness();
+  checkAgentCompliance();
+  checkHookWarnings();
+  checkTestResults();
 
   // Full mode only
   if (isFullMode) {
     checkCurrentAlerts();
     checkDocumentationHealth();
     checkRoadmapPlanning();
+    checkReviewQuality();
+    checkConsolidation();
+    checkVelocity();
+    checkSessionActivity();
+    checkCommitActivity();
+    checkRoadmapValidation();
+    checkHookHealth();
   }
+
+  // Ensure every category appears
+  ensureCategory("code", "Code Health");
+  ensureCategory("security", "Security");
+  ensureCategory("session", "Session Context");
+  ensureCategory("debt-metrics", "Debt Health");
+  ensureCategory("learning", "Learning Health");
+  ensureCategory("agent-compliance", "Agent Compliance");
+  ensureCategory("hook-warnings", "Hook Warnings");
+  ensureCategory("test-results", "Test Results");
+
+  if (isFullMode) {
+    ensureCategory("alerts", "Current Alerts");
+    ensureCategory("docs", "Documentation Health");
+    ensureCategory("roadmap", "Roadmap/Planning");
+    ensureCategory("review-quality", "Review Quality");
+    ensureCategory("consolidation", "Consolidation Status");
+    ensureCategory("velocity", "Velocity");
+    ensureCategory("session-activity", "Session Activity");
+    ensureCategory("commit-activity", "Commit Activity");
+    ensureCategory("roadmap-health", "Roadmap Validation");
+    ensureCategory("hook-health", "Hook Health");
+  }
+
+  // Compute health score and session plan
+  computeHealthScore();
+  buildSessionPlan();
+
+  // Compute delta from baseline
+  const delta = computeDelta();
+  if (delta) {
+    results.delta = delta;
+  }
+
+  // Save baseline (first run only)
+  saveBaseline();
 
   // Output JSON to stdout
   console.log(JSON.stringify(results, null, 2));
 
   // Summary to stderr
-  console.error(`\n✅ Check complete:`);
-  console.error(`   Errors:   ${results.summary.errors}`);
-  console.error(`   Warnings: ${results.summary.warnings}`);
-  console.error(`   Info:     ${results.summary.info}\n`);
+  console.error(`\n\u2705 Health: ${results.healthScore.grade} (${results.healthScore.score}/100)`);
+  console.error(
+    `   Errors: ${results.summary.errors}  Warnings: ${results.summary.warnings}  Info: ${results.summary.info}`
+  );
+  if (delta) {
+    const arrow = delta.scoreDelta > 0 ? "\u2191" : delta.scoreDelta < 0 ? "\u2193" : "\u2192";
+    console.error(
+      `   Delta: ${delta.gradeBefore} (${delta.scoreBefore}) ${arrow} ${delta.gradeAfter} (${delta.scoreAfter}) [${delta.scoreDelta > 0 ? "+" : ""}${delta.scoreDelta}]`
+    );
+  }
+  console.error("");
 
   // Exit code based on errors
   process.exit(results.summary.errors > 0 ? 1 : 0);
