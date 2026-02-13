@@ -1132,17 +1132,27 @@ function checkAgentCompliance() {
     addAlert("agent-compliance", "info", "No agent invocation data yet", null, null);
   }
 
+  let changedFiles = [];
   const lastCommitResult = runCommand("git diff --name-only HEAD~1 HEAD", { timeout: 10000 });
-  if (!lastCommitResult.success) {
-    addContext("agent-compliance", {
-      benchmarks: { compliance_pct: BENCHMARKS.agent.compliance_pct },
-      ratings: { compliance: "unknown" },
-      totals: { invocations: invoked.length },
-    });
-    return;
+  if (lastCommitResult.success) {
+    changedFiles = lastCommitResult.output.split("\n").filter(Boolean);
+  } else {
+    // Fallback for initial commit: diff against empty tree
+    const initialResult = runCommand(
+      "git diff --name-only 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD",
+      { timeout: 10000 }
+    );
+    if (initialResult.success) {
+      changedFiles = initialResult.output.split("\n").filter(Boolean);
+    } else {
+      addContext("agent-compliance", {
+        benchmarks: { compliance_pct: BENCHMARKS.agent.compliance_pct },
+        ratings: { compliance: "unknown" },
+        totals: { invocations: invoked.length },
+      });
+      return;
+    }
   }
-
-  const changedFiles = lastCommitResult.output.split("\n").filter(Boolean);
   const codeFiles = changedFiles.filter(
     (f) =>
       /\.(tsx?|jsx?|mjs|cjs)$/.test(f) && !f.startsWith("scripts/") && !f.startsWith(".claude/")
@@ -1923,24 +1933,24 @@ function computeHealthScore() {
 
   const breakdown = {};
   let totalScore = 0;
-  let totalWeight = 0;
+  const totalPossibleWeight = Object.values(weights).reduce((sum, w) => sum + w, 0);
 
   for (const [cat, weight] of Object.entries(weights)) {
     const catData = results.categories[cat];
-    if (!catData) continue;
+    let score = 100;
 
-    const alerts = catData.alerts || [];
-    const errorCount = alerts.filter((a) => a.severity === "error").length;
-    const warningCount = alerts.filter((a) => a.severity === "warning").length;
+    if (catData) {
+      const alerts = catData.alerts || [];
+      const errorCount = alerts.filter((a) => a.severity === "error").length;
+      const warningCount = alerts.filter((a) => a.severity === "warning").length;
+      score = Math.max(0, Math.min(100, 100 - errorCount * 30 - warningCount * 10));
+    }
 
-    const score = Math.max(0, Math.min(100, 100 - errorCount * 30 - warningCount * 10));
-
-    breakdown[cat] = { score, weight };
+    breakdown[cat] = { score, weight, measured: !!catData };
     totalScore += score * weight;
-    totalWeight += weight;
   }
 
-  const finalScore = totalWeight > 0 ? Math.round(totalScore / totalWeight) : 50;
+  const finalScore = totalPossibleWeight > 0 ? Math.round(totalScore / totalPossibleWeight) : 50;
   const grade =
     finalScore >= 90
       ? "A"
