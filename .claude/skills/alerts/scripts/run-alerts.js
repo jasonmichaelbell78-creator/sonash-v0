@@ -254,15 +254,17 @@ function computeTrend(logPath, valueField, windowSize = 5) {
     const recent = entries.slice(-windowSize);
     if (recent.length < 2) return null;
 
-    const values = recent.map((e) => {
-      const val = valueField.split(".").reduce((obj, key) => obj?.[key], e);
-      return typeof val === "number" ? val : 0;
-    });
+    const values = recent
+      .map((e) => valueField.split(".").reduce((obj, key) => obj?.[key], e))
+      .filter((v) => typeof v === "number" && !isNaN(v));
+
+    if (values.length < 2) return null;
 
     const first = values[0];
     const last = values[values.length - 1];
     const delta = last - first;
-    const deltaPercent = first !== 0 ? Math.round((delta / first) * 100) : 0;
+    const deltaPercent =
+      first !== 0 ? Math.round((delta / first) * 100) : delta !== 0 ? (delta > 0 ? 100 : -100) : 0;
 
     let direction;
     if (Math.abs(deltaPercent) < 5) {
@@ -1859,7 +1861,7 @@ function checkCommitActivity() {
       addAlert(
         "commit-activity",
         "info",
-        `Last commit was ${hoursSinceCommit}h ago (${latest.shortHash}: ${(latest.message || "").substring(0, 60)})`,
+        `Last commit was ${hoursSinceCommit}h ago (${latest.shortHash ?? "unknown"}: ${(latest.message || "").substring(0, 60)})`,
         null,
         null
       );

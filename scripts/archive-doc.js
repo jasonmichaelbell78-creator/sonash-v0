@@ -511,8 +511,8 @@ function isUnsafePathPattern(fileArg) {
   const isUNCPath = fileArg.startsWith("\\\\") || fileArg.startsWith("//");
   // path.isAbsolute() is platform-dependent — explicitly catch Windows-rooted paths on POSIX
   const isWindowsRooted = fileArg.startsWith("\\") && !fileArg.startsWith("\\\\");
-  const isWindowsDriveAbsolute = /^[A-Za-z]:[/\\]/.test(fileArg);
-  return isAbsolute(fileArg) || isWindowsDriveAbsolute || isWindowsRooted || isUNCPath;
+  const isWindowsDrivePath = /^[A-Za-z]:/.test(fileArg);
+  return isAbsolute(fileArg) || isWindowsDrivePath || isWindowsRooted || isUNCPath;
 }
 
 /**
