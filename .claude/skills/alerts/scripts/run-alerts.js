@@ -383,6 +383,7 @@ function saveBaseline() {
     }
     const tmpPath = `${BASELINE_PATH}.tmp`;
     fs.writeFileSync(tmpPath, JSON.stringify(baseline, null, 2));
+    if (fs.existsSync(BASELINE_PATH)) fs.rmSync(BASELINE_PATH, { force: true });
     fs.renameSync(tmpPath, BASELINE_PATH);
   } catch (err) {
     console.error(`  [warn] Failed to save baseline: ${safeErrorMsg(err)}`);
@@ -2016,12 +2017,12 @@ function computeHealthScore() {
   for (const [cat, weight] of Object.entries(weights)) {
     const catData = results.categories[cat];
 
-    if (!catData || catData.context?.no_data) {
+    if (!catData || catData.context?.no_data || !Array.isArray(catData?.alerts)) {
       breakdown[cat] = { score: null, weight, measured: false };
       continue;
     }
 
-    const alerts = catData.alerts || [];
+    const alerts = catData.alerts;
     const errorCount = alerts.filter((a) => a.severity === "error").length;
     const warningCount = alerts.filter((a) => a.severity === "warning").length;
     const score = Math.max(0, Math.min(100, 100 - errorCount * 30 - warningCount * 10));

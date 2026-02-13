@@ -508,12 +508,14 @@ Examples:
  * @returns {boolean} True if path is unsafe
  */
 function isUnsafePathPattern(fileArg) {
-  if (typeof fileArg !== "string" || fileArg.trim() === "") return true;
-  const isUNCPath = fileArg.startsWith("\\\\") || fileArg.startsWith("//");
+  if (typeof fileArg !== "string") return true;
+  const normalized = fileArg.trim();
+  if (normalized === "") return true;
+  const isUNCPath = normalized.startsWith("\\\\") || normalized.startsWith("//");
   // path.isAbsolute() is platform-dependent — explicitly catch Windows-rooted paths on POSIX
-  const isWindowsRooted = fileArg.startsWith("\\") && !fileArg.startsWith("\\\\");
-  const isWindowsDrivePath = /^[A-Za-z]:/.test(fileArg);
-  return isAbsolute(fileArg) || isWindowsDrivePath || isWindowsRooted || isUNCPath;
+  const isWindowsRooted = normalized.startsWith("\\") && !normalized.startsWith("\\\\");
+  const isWindowsDrivePath = /^[A-Za-z]:/.test(normalized);
+  return isAbsolute(normalized) || isWindowsDrivePath || isWindowsRooted || isUNCPath;
 }
 
 /**
