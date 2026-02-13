@@ -118,6 +118,17 @@ const results = {
 // ============================================================================
 
 /**
+ * Safely extract an error message without risking a secondary throw
+ */
+function safeErrorMsg(err) {
+  try {
+    return (err && err.message) || String(err);
+  } catch {
+    return "[unknown error]";
+  }
+}
+
+/**
  * Run a command and capture output
  */
 function runCommand(cmd, options = {}) {
@@ -172,7 +183,7 @@ function addContext(category, contextData) {
  */
 function ensureCategory(category, label) {
   if (!results.categories[category]) {
-    addAlert(category, "info", `${label}: No issues found`, null, null);
+    addAlert(category, "info", `${label}: No data available`, null, null);
   }
 }
 
@@ -215,7 +226,7 @@ function loadMasterDebt() {
       })
       .filter(Boolean);
   } catch (err) {
-    console.error(`  [warn] Failed to load MASTER_DEBT.jsonl: ${err.message}`);
+    console.error(`  [warn] Failed to load MASTER_DEBT.jsonl: ${safeErrorMsg(err)}`);
     return [];
   }
 }
@@ -264,7 +275,7 @@ function computeTrend(logPath, valueField, windowSize = 5) {
 
     return { direction, values, delta, deltaPercent };
   } catch (err) {
-    console.error(`  [warn] Failed to compute trend from ${logPath}: ${err.message}`);
+    console.error(`  [warn] Failed to compute trend from ${logPath}: ${safeErrorMsg(err)}`);
     return null;
   }
 }
@@ -333,7 +344,7 @@ function loadBaseline() {
     }
   } catch (err) {
     if (err.code !== "ENOENT") {
-      console.error(`  [warn] Failed to load baseline: ${err.message}`);
+      console.error(`  [warn] Failed to load baseline: ${safeErrorMsg(err)}`);
     }
   }
   return null;
@@ -370,7 +381,7 @@ function saveBaseline() {
     }
     fs.writeFileSync(BASELINE_PATH, JSON.stringify(baseline, null, 2));
   } catch (err) {
-    console.error(`  [warn] Failed to save baseline: ${err.message}`);
+    console.error(`  [warn] Failed to save baseline: ${safeErrorMsg(err)}`);
   }
 }
 
@@ -380,6 +391,7 @@ function saveBaseline() {
 function computeDelta() {
   const baseline = loadBaseline();
   if (!baseline || !baseline.healthScore) return null;
+  if (!results.healthScore) return null;
 
   // Validate baseline shape: score must be a number, grade a string
   const bs = baseline.healthScore;
@@ -546,7 +558,8 @@ function checkSecurity() {
   // npm audit
   const auditResult = runCommand("npm audit --json", { timeout: 60000 });
   try {
-    const audit = JSON.parse(auditResult.output);
+    const rawJson = auditResult.output || auditResult.stderr || "{}";
+    const audit = JSON.parse(rawJson);
     highCount = audit.metadata?.vulnerabilities?.high || 0;
     criticalCount = audit.metadata?.vulnerabilities?.critical || 0;
 
@@ -872,7 +885,7 @@ function checkDebtMetrics() {
   const rawS0Items = metrics.alerts?.s0_items || [];
 
   // Enrich S0 items from MASTER_DEBT.jsonl (metrics.json only has id/title/file/line)
-  const debtById = new Map(allDebt.map((d) => [d.id, d]));
+  const debtById = new Map(allDebt.filter((d) => d.id).map((d) => [d.id, d]));
   const s0Items = rawS0Items.map((item) => {
     const full = debtById.get(item.id);
     return {
@@ -1392,8 +1405,10 @@ function checkTestResults() {
   const latestTimestamp =
     validTestDates.length > 0
       ? validTestDates.reduce((max, d) => (d > max ? d : max), validTestDates[0])
-      : new Date(0);
-  const ageDays = Math.floor((Date.now() - latestTimestamp.getTime()) / (1000 * 60 * 60 * 24));
+      : null;
+  const ageDays = latestTimestamp
+    ? Math.floor((Date.now() - latestTimestamp.getTime()) / (1000 * 60 * 60 * 24))
+    : null;
 
   if (failed > 0) {
     const failNames = resultsParsed
@@ -1425,7 +1440,7 @@ function checkTestResults() {
     );
   }
 
-  if (ageDays > 7) {
+  if (ageDays !== null && ageDays > 7) {
     addAlert(
       "test-results",
       "warning",
@@ -1438,14 +1453,15 @@ function checkTestResults() {
   addAlert(
     "test-results",
     "info",
-    `Last test run: ${passed}/${total} passed (${latestFile}, ${ageDays}d ago)`,
+    `Last test run: ${passed}/${total} passed (${latestFile}, ${ageDays !== null ? ageDays + "d ago" : "age unknown"})`,
     null,
     null
   );
 
   // Rate against benchmarks
   const passRateRating = rateHigherBetter(passRate, BENCHMARKS.tests.pass_rate);
-  const stalenessRating = rateLowerBetter(ageDays, BENCHMARKS.tests.staleness_days);
+  const stalenessRating =
+    ageDays !== null ? rateLowerBetter(ageDays, BENCHMARKS.tests.staleness_days) : null;
 
   addContext("test-results", {
     benchmarks: {
@@ -1804,16 +1820,19 @@ function checkCommitActivity() {
   }
 
   const lastCommit = entries[entries.length - 1];
-  const lastCommitAge = Date.now() - new Date(lastCommit.timestamp).getTime();
-  const hoursSinceCommit = Math.floor(lastCommitAge / (1000 * 60 * 60));
-  if (hoursSinceCommit > 4) {
-    addAlert(
-      "commit-activity",
-      "info",
-      `Last commit was ${hoursSinceCommit}h ago (${lastCommit.shortHash}: ${(lastCommit.message || "").substring(0, 60)})`,
-      null,
-      null
-    );
+  const lastCommitTime = new Date(lastCommit.timestamp).getTime();
+  if (!isNaN(lastCommitTime)) {
+    const lastCommitAge = Date.now() - lastCommitTime;
+    const hoursSinceCommit = Math.floor(lastCommitAge / (1000 * 60 * 60));
+    if (hoursSinceCommit > 4) {
+      addAlert(
+        "commit-activity",
+        "info",
+        `Last commit was ${hoursSinceCommit}h ago (${lastCommit.shortHash}: ${(lastCommit.message || "").substring(0, 60)})`,
+        null,
+        null
+      );
+    }
   }
 
   const hoursRating = rateLowerBetter(hoursSinceCommit, BENCHMARKS.commits.hours_since_last);
