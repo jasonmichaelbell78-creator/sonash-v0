@@ -50,7 +50,7 @@ expensive. Non-blocking warning only.
   async hook if possible.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit f228219, inlined patterns)
 
 ---
 
@@ -154,7 +154,7 @@ Listed as orphaned in DOCUMENTATION_INDEX.md.
   roadmaps or archived as historical reference.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit bf075e5)
 
 ---
 
@@ -267,7 +267,7 @@ manually.
   package.json scripts.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — manual utility, not dead
 
 ---
 
@@ -292,7 +292,7 @@ file write operation.
   instead of re-reading.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — requires settings.json restructure
 
 ---
 
@@ -315,7 +315,7 @@ identical path validation and file classification but in different order. Adds
   tool-specific behavior rather than duplicate files.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit f228219, unified requirements)
 
 ---
 
@@ -337,7 +337,7 @@ write operation. Does JSON parsing of file argument and path matching checks
   check at top of hook before any other processing.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit f228219, fast-path audit)
 
 ---
 
@@ -363,7 +363,7 @@ data another hook just wrote.
   dependency order.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — needs hook orchestration
 
 ---
 
@@ -672,7 +672,7 @@ scripts, or hooks themselves.
   completed.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit bf075e5, archived)
 
 ---
 
@@ -691,7 +691,7 @@ PR review skills, or documentation.
   they're discoverable from agent workflows that need them.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit bf075e5, linked)
 
 ---
 
@@ -713,7 +713,7 @@ dashboards or alerting systems.
   generated-only.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — TDMS views still generated
 
 ---
 
@@ -859,7 +859,7 @@ archive references exist in REVIEWS_42-60.md.
   future AI-driven reviews, add to DEVELOPMENT.md with clear invocation pattern.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit 79fddc2, f472ba1)
 
 ---
 
@@ -880,7 +880,7 @@ ROADMAP_INTEGRATION logic. 340 lines with clear purpose but never executed.
   aggregate-audit-findings.js output.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit 79fddc2)
 
 ---
 
@@ -922,7 +922,7 @@ codebase.
   accidental re-runs.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit 79fddc2)
 
 ---
 
@@ -942,7 +942,7 @@ Related to Session #116 canonicalization but never invoked in workflows.
   auto-updated, add regenerate-findings-index to post-intake hooks.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit 79fddc2)
 
 ---
 
@@ -962,7 +962,7 @@ locations. Session #116 artifact, 100+ lines.
   updated, consolidate logic into update script.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit 79fddc2)
 
 ---
 
@@ -986,7 +986,7 @@ AGENT_TRIGGERS patterns, but runs unconditionally then does pattern matching.
   instead of separate writeJson call.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — needs settings.json matcher support
 
 ---
 
@@ -1011,7 +1011,7 @@ potential race conditions. State resets if >30 minutes old
   logic for all three hooks.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — race condition low-probability
 
 ---
 
@@ -1041,7 +1041,7 @@ documentation.
   all state files, their consumers, and retention policy.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit f228219, fast-path audit)
 
 ---
 
@@ -1067,7 +1067,7 @@ hooks.
   results.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — marginal I/O savings
 
 ---
 
@@ -1090,7 +1090,7 @@ hangs. SessionStart is synchronous hook context.
   Consider if builds should happen at all during hook vs on-demand.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — SessionStart is not latency-sensitive
 
 ---
 
@@ -1113,7 +1113,7 @@ interval), but reads every time.
   (file-change-based).
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — auto-save reads are fast
 
 ---
 
@@ -1136,7 +1136,7 @@ consolidation check could run in parallel.
   could cut session startup time by 40-50%.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — sequential is simpler
 
 ---
 
@@ -1452,7 +1452,7 @@ references and is primarily a reference/procedural doc.
   completed.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — reference doc still needed
 
 ---
 
@@ -1472,7 +1472,7 @@ README, DOCUMENTATION_INDEX, or navigation docs.
   ensure it's discoverable from main navigation (README, DOCUMENTATION_INDEX).
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit bf075e5, linked)
 
 ---
 
@@ -1492,7 +1492,7 @@ relationships but is completely orphaned with zero inbound references.
   DOCUMENTATION_INDEX.md.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit bf075e5, linked)
 
 ---
 
@@ -1510,7 +1510,7 @@ context but never referenced by any documentation or audit processes.
   Consider if this aligns with actual audit workflows.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit bf075e5, archived)
 
 ---
 
@@ -1530,7 +1530,7 @@ despite having 3 upward references.
   discoverable before agents are created.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit bf075e5, linked)
 
 ---
 
@@ -1552,7 +1552,7 @@ aggregation processes.
   docs.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit bf075e5, deleted)
 
 ---
 
@@ -1574,7 +1574,7 @@ roadmap-assignment-report) all marked orphaned in DOCUMENTATION_INDEX.
   checklists).
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit bf075e5, deleted)
 
 ---
 
@@ -1677,7 +1677,7 @@ output targets.
   script. Consolidate shell logic into Node.js for consistency.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit 79fddc2)
 
 ---
 
@@ -1698,7 +1698,7 @@ create-canonical-findings.js.
   workflow.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit 79fddc2)
 
 ---
 
@@ -1717,7 +1717,7 @@ configuration. Hardcoded to 'sonash-app' Firebase project. 20 lines.
   scripts, or document as manual troubleshooting tool with clear prerequisites.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit f472ba1)
 
 ---
 
@@ -1737,7 +1737,7 @@ semantics. Part of Session #138 state persistence setup.
   leave but consider archiving.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — utility still needed for seeding
 
 ---
 
@@ -1758,7 +1758,7 @@ since bail-out is very fast.
   out. Would eliminate overhead entirely.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — 1ms overhead acceptable
 
 ---
 
@@ -1782,7 +1782,7 @@ hook that accepts tool name parameter and applies correct priority matrix.
   reduces maintenance burden.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit f228219, unified requirements)
 
 ---
 
@@ -1803,7 +1803,7 @@ full file read even for pre-filtered file types.
   recently-checked files so repeated edits don't re-scan.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — small file skip is fine
 
 ---
 
@@ -1946,7 +1946,7 @@ unused - no references from setup docs, deployment guides, or DEVELOPMENT.md.
   docs reference it. Otherwise archive as legacy.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — setup guide still needed
 
 ---
 
@@ -1966,7 +1966,7 @@ by scripts/analyze-learning-effectiveness.js.
   documentation. Consider if metrics should feed into decision-making workflows.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — DONE (commit bf075e5, deleted)
 
 ---
 
@@ -1987,7 +1987,7 @@ docs/audits/ subdirectory.
   docs/audits/. Consider if root-level report should be generated or archived.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — recent audit, keep for reference
 
 ---
 
@@ -2007,7 +2007,7 @@ unused.
   SESSION_DECISIONS.md format. Clean up if not part of current workflow.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — keep ADR framework
 
 ---
 
