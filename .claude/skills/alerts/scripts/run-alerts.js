@@ -652,14 +652,16 @@ function checkSessionContext() {
     const state = JSON.parse(content);
     if (state.lastBegin && !state.lastEnd) {
       const beginTime = new Date(state.lastBegin).getTime();
-      gapHours = Math.floor((Date.now() - beginTime) / (1000 * 60 * 60));
-      addAlert(
-        "session",
-        "warning",
-        "Previous session did not run /session-end",
-        null,
-        "Run: /session-end at end of sessions"
-      );
+      if (!Number.isNaN(beginTime)) {
+        gapHours = Math.floor((Date.now() - beginTime) / (1000 * 60 * 60));
+        addAlert(
+          "session",
+          "warning",
+          "Previous session did not run /session-end",
+          null,
+          "Run: /session-end at end of sessions"
+        );
+      }
     }
   } catch {
     // File doesn't exist or can't be read
@@ -776,7 +778,7 @@ function checkDocumentationHealth() {
 
   addContext("docs", {
     benchmarks: { staleness_days: BENCHMARKS.docs.staleness_days },
-    ratings: { staleness: stalenessRating },
+    ratings: { staleness_days: stalenessRating },
     totals: { staleness_days: stalenessDays },
   });
 }
@@ -1143,7 +1145,10 @@ function checkAgentCompliance() {
   let changedFiles = [];
   const lastCommitResult = runCommand("git diff --name-only HEAD~1 HEAD", { timeout: 10000 });
   if (lastCommitResult.success) {
-    changedFiles = lastCommitResult.output.split("\n").filter(Boolean);
+    changedFiles = lastCommitResult.output
+      .split("\n")
+      .map((f) => f.trim())
+      .filter(Boolean);
   } else {
     // Fallback for initial commit: diff against empty tree
     const initialResult = runCommand(
@@ -1151,7 +1156,10 @@ function checkAgentCompliance() {
       { timeout: 10000 }
     );
     if (initialResult.success) {
-      changedFiles = initialResult.output.split("\n").filter(Boolean);
+      changedFiles = initialResult.output
+        .split("\n")
+        .map((f) => f.trim())
+        .filter(Boolean);
     } else {
       addContext("agent-compliance", {
         benchmarks: { compliance_pct: BENCHMARKS.agent.compliance_pct },
@@ -1946,24 +1954,27 @@ function computeHealthScore() {
 
   const breakdown = {};
   let totalScore = 0;
-  const totalPossibleWeight = Object.values(weights).reduce((sum, w) => sum + w, 0);
+  let measuredWeight = 0;
 
   for (const [cat, weight] of Object.entries(weights)) {
     const catData = results.categories[cat];
-    let score = 100;
 
-    if (catData) {
-      const alerts = catData.alerts || [];
-      const errorCount = alerts.filter((a) => a.severity === "error").length;
-      const warningCount = alerts.filter((a) => a.severity === "warning").length;
-      score = Math.max(0, Math.min(100, 100 - errorCount * 30 - warningCount * 10));
+    if (!catData) {
+      breakdown[cat] = { score: null, weight, measured: false };
+      continue;
     }
 
-    breakdown[cat] = { score, weight, measured: !!catData };
+    const alerts = catData.alerts || [];
+    const errorCount = alerts.filter((a) => a.severity === "error").length;
+    const warningCount = alerts.filter((a) => a.severity === "warning").length;
+    const score = Math.max(0, Math.min(100, 100 - errorCount * 30 - warningCount * 10));
+
+    breakdown[cat] = { score, weight, measured: true };
     totalScore += score * weight;
+    measuredWeight += weight;
   }
 
-  const finalScore = totalPossibleWeight > 0 ? Math.round(totalScore / totalPossibleWeight) : 50;
+  const finalScore = measuredWeight > 0 ? Math.round(totalScore / measuredWeight) : 50;
   const grade =
     finalScore >= 90
       ? "A"

@@ -509,7 +509,9 @@ Examples:
  */
 function isUnsafePathPattern(fileArg) {
   const isUNCPath = fileArg.startsWith("\\\\") || fileArg.startsWith("//");
-  return isAbsolute(fileArg) || isUNCPath;
+  // path.isAbsolute() is platform-dependent — explicitly catch Windows-rooted paths on POSIX
+  const isWindowsRooted = fileArg.startsWith("\\") && !fileArg.startsWith("\\\\");
+  return isAbsolute(fileArg) || isWindowsRooted || isUNCPath;
 }
 
 /**
