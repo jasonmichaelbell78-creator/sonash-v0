@@ -179,14 +179,39 @@ function checkSecurityTrigger(files) {
   return { triggered: false, name: "security_audit" };
 }
 
+/**
+ * Resolve git root directory, falling back to cwd
+ */
+function resolveGitRoot() {
+  const gitRoot = spawnSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" });
+  return gitRoot.status === 0 && gitRoot.stdout
+    ? gitRoot.stdout.trim()
+    : path.resolve(process.cwd());
+}
+
+/**
+ * Count pending reviews from JSONL file since last consolidation
+ */
+function countPendingReviews(reviewsPath, lastConsolidated) {
+  const lines = fs.readFileSync(reviewsPath, "utf8").trim().split("\n").filter(Boolean);
+  let count = 0;
+  for (const line of lines) {
+    try {
+      const r = JSON.parse(line);
+      if (typeof r.id === "number" && r.id > lastConsolidated) count++;
+    } catch {
+      /* skip malformed lines */
+    }
+  }
+  return count;
+}
+
 // Check consolidation trigger (reads JSONL state files directly — Session #156)
 function checkConsolidationTrigger() {
   const trigger = TRIGGERS.consolidation;
 
   try {
-    const gitRoot = spawnSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" });
-    const rootDir =
-      gitRoot.status === 0 && gitRoot.stdout ? gitRoot.stdout.trim() : path.resolve(process.cwd());
+    const rootDir = resolveGitRoot();
     const statePath = path.join(rootDir, ".claude", "state", "consolidation.json");
     const reviewsPath = path.join(rootDir, ".claude", "state", "reviews.jsonl");
 
@@ -198,16 +223,7 @@ function checkConsolidationTrigger() {
     const lastConsolidated =
       typeof state.lastConsolidatedReview === "number" ? state.lastConsolidatedReview : 0;
     const consolidationThreshold = typeof state.threshold === "number" ? state.threshold : 10;
-    const lines = fs.readFileSync(reviewsPath, "utf8").trim().split("\n").filter(Boolean);
-    let pendingCount = 0;
-    for (const line of lines) {
-      try {
-        const r = JSON.parse(line);
-        if (typeof r.id === "number" && r.id > lastConsolidated) pendingCount++;
-      } catch {
-        /* skip malformed lines */
-      }
-    }
+    const pendingCount = countPendingReviews(reviewsPath, lastConsolidated);
 
     const remaining = consolidationThreshold - pendingCount;
     if (remaining <= trigger.threshold) {
