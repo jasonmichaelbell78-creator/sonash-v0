@@ -15,6 +15,10 @@ by verifying that requests originate from legitimate app instances.
 Check verification. **The app will not function without proper App Check
 configuration.**
 
+**Related:** [RECAPTCHA_REMOVAL_GUIDE.md](./RECAPTCHA_REMOVAL_GUIDE.md) —
+Complete removal and fresh re-implementation guide. Use when App Check is
+blocking legitimate users or when starting from a clean slate.
+
 ---
 
 ## Quick Start

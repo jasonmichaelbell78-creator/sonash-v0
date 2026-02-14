@@ -22,6 +22,22 @@ actionable.
 
 ## 2026-02 Sessions
 
+### Session #154 (2026-02-12)
+
+**Focus**: ALERTS SKILL ENHANCEMENT PLAN
+
+- Audited all dead data producers — found 8 scripts generating data nothing
+  consumes
+- Fixed 5 blocking pattern violations (diff-filter, path.isAbsolute)
+- Created plan to wire all dead data into `/alerts` skill (Hybrid Option C)
+
+### Session #153 (2026-02-12)
+
+**Focus**: PR REVIEW SKILL IMPROVEMENTS
+
+- Strengthened `/pr-review` skill with fix-or-track mandate
+- Created new `/pr-retro` skill — user-invoked retrospective
+
 ### Session #152 (2026-02-11)
 
 **Focus**: IMS→TDMS MERGE
@@ -34,6 +50,10 @@ actionable.
 - Deleted IMS infrastructure (scripts/improvements/, docs/improvements/)
 - Updated 8+ doc files to remove IMS references
 - PR #362 Review #305: Fixed 9 SonarCloud+Qodo items
+
+> **Note:** IMS was deprecated and merged into TDMS (Technical Debt Management
+> System) in Session #152. Historical references to IMS, `docs/improvements/`,
+> and `MASTER_IMPROVEMENTS.jsonl` are outdated.
 
 ### Session #151 (2026-02-11)
 

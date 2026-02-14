@@ -56,7 +56,8 @@ function readCommitLog() {
 function getDocumentedSessions() {
   try {
     const content = fs.readFileSync(SESSION_CONTEXT, "utf8");
-    const matches = content.match(/\*\*Session #(\d+) Summary\*\*/g) || [];
+    // Resilient: optional bold markers, flexible spacing (P005 fix)
+    const matches = content.match(/\*{0,2}Session\s*#(\d+)\s+Summary\*{0,2}/gi) || [];
     return matches
       .map((m) => {
         const num = m.match(/#(\d+)/);
@@ -74,7 +75,10 @@ function getDocumentedSessions() {
 function getCurrentSessionCounter() {
   try {
     const content = fs.readFileSync(SESSION_CONTEXT, "utf8");
-    const match = content.match(/\*\*Current Session Count\*\*:\s*(\d+)/);
+    // Resilient: optional bold markers, flexible spacing, "Count"/"Counter" (P001 fix)
+    const match = content.match(
+      /\*{0,2}Current Session Count(?:er)?\*{0,2}\s{0,10}:?\s{0,10}(\d+)/i
+    );
     return match ? Number.parseInt(match[1], 10) : null;
   } catch {
     return null;
@@ -202,9 +206,25 @@ function main() {
   let source = "commit-log.jsonl";
 
   if (commits.length === 0) {
-    // No commit log yet — fall back to git log for initial analysis
-    commits = getRecentCommitsFromGit(50);
-    source = "git log (commit-log.jsonl not yet populated)";
+    // No commit log yet — auto-seed from git history so future runs use the file
+    console.log("commit-log.jsonl missing — auto-seeding from git history...");
+    try {
+      execFileSync("node", [path.join(projectDir, "scripts", "seed-commit-log.js"), "50"], {
+        cwd: projectDir,
+        encoding: "utf8",
+        timeout: 15000,
+        stdio: "inherit",
+      });
+      // Re-read after seeding
+      commits = readCommitLog();
+      source = "commit-log.jsonl (auto-seeded)";
+    } catch {
+      // Seed failed — fall back to git log for this run
+    }
+    if (commits.length === 0) {
+      commits = getRecentCommitsFromGit(50);
+      source = "git log (auto-seed failed, using fallback)";
+    }
   }
 
   if (commits.length === 0) {

@@ -60,7 +60,8 @@ function getCurrentBranch() {
  * Get session counter from SESSION_CONTEXT.md content
  */
 function getSessionCounter(content) {
-  const match = content.match(/\*\*Current Session Count\*\*:\s*(\d+)/);
+  // Resilient: optional bold markers, flexible spacing, "Count"/"Counter" (P001 fix)
+  const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}\s*:?\s*(\d+)/i);
   return match ? parseInt(match[1], 10) : 0;
 }
 

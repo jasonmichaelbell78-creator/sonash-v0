@@ -2,53 +2,22 @@
 
 **Document Version**: 4.2 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-13 (Session #156)
+2026-02-14 (Session #159)
 
 ## AI Instructions
 
 **This document is your session starting point:**
 
-1. **Read this FIRST** every session (2 min)
+1. **Read this FIRST** every session
 2. **Increment session counter** - track session frequency
 3. **Check "Next Session Goals"** - understand priority
 4. **Review "Current Blockers"** - know what's blocked
 5. **Note "Pending PR Reviews"** - process if any
 6. **Update at end of session** - keep current for next session
 
-**When updating**:
-
-- Keep session summaries to **last 3 sessions only**
-- Older sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
-  `/session-end`
-- Keep this document focused and brief (<300 lines target)
-- Detailed context goes in planning docs or ARCHITECTURE.md
-
-**Update Triggers** - Update this document when:
-
-- Session goals change
-- New blockers discovered
-- Significant work completed
-- PR reviews processed
-- Sprint focus shifts
-- New session starts (increment counter)
-
-**After each session:**
-
-1. Move current session summary to "Recent Session Summaries"
-2. Archive oldest session summary to
-   [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
-3. Update "Next Session Goals"
-4. Update blocker status if changed
-5. Update "Last Updated" date
-6. Commit changes
-
-**Navigation**:
-
-- Need to understand docs? -> [AI_WORKFLOW.md](./AI_WORKFLOW.md)
-- Need review process? -> [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
-- Need to check priorities? -> [ROADMAP.md](./ROADMAP.md)
-- Need architecture details? -> [ARCHITECTURE.md](./ARCHITECTURE.md)
-- Need session history? -> [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
+**When updating**: Keep session summaries to **last 3 sessions only**. Older
+sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
+`/session-end`. Keep this document focused and brief (<300 lines target).
 
 ---
 
@@ -69,7 +38,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 156 (since Jan 1, 2026)
+**Current Session Count**: 159 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -79,35 +48,30 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #155 Summary** (ALERTS SKILL v3 — INTELLIGENT HEALTH DASHBOARD):
+**Session #157 Summary** (AI OPTIMIZATION AUDIT — SKILL OVERLAP):
 
-- Major rewrite of `/alerts` skill — transformed from data dump to intelligent
-  health dashboard
-- **run-alerts.js v2**: BENCHMARKS constant (14 domains), health score
-  computation (weighted A-F grading), session plan builder, delta tracking
-  (daily baseline), sparkline generation, trend analysis, rating helpers
-- **SKILL.md v3**: Rich visual dashboard template with Unicode box-drawing,
-  progress bars, sparklines, emoji badges, category scorecards, drill-down
-  cards, benchmark reference tables
-- Enriched all 18 check functions with `addContext()` — benchmarks, ratings,
-  totals, trends, groups
-- S0 items now cross-referenced with MASTER_DEBT.jsonl for full details
-  (category, effort, file, line)
-- v2 JSON schema:
-  `{version:2, healthScore, categories:{alerts,context}, sessionPlan, delta}`
+- Resolved all 15 Skill Overlap findings (OPT-K001–K015)
+- K005: Merged `add-deferred-debt` + `add-manual-debt` → unified `/add-debt`
+  skill; deleted deprecated `sync-sonarcloud-debt`
+- K006: Merged `requesting-code-review` into `code-reviewer`; added scope
+  clarification to both `code-reviewer` and `pr-review`
+- K007: Deleted `audit-validation-wrapper` (one-time use)
+- Skill count: 60 → 56 (5 deleted, 1 created), net -1,000 lines
 
-**Session #154 Summary** (ALERTS SKILL ENHANCEMENT PLAN):
+**Session #158 Summary** (AI OPTIMIZATION AUDIT — ALERTS FIX + FORMAT + BLOAT):
 
-- Audited all dead data producers — found 8 scripts generating data nothing
-  consumes
-- Fixed 5 blocking pattern violations (diff-filter, path.isAbsolute)
-- Created plan to wire all dead data into `/alerts` skill (Hybrid Option C)
+- Fixed 35 blocking pattern violations in `run-alerts.js`
+- Completed AI optimization audit SUMMARY.md — marked all Act Now items DONE
+- Implemented AI optimization audit across Format + AI Instruction domains
 
-**Session #153 Summary** (PR REVIEW SKILL IMPROVEMENTS):
+**Session #159 Summary** (AUDIT ECOSYSTEM CODIFICATION — PLANNING):
 
-- Strengthened `/pr-review` skill with fix-or-track mandate
-- Created new `/pr-retro` skill — user-invoked retrospective
-- Updated COMMAND_REFERENCE.md v4.2
+- Planned full audit ecosystem codification (10-step plan, 5 waves)
+- 20 design decisions across 5 Q&A batches
+- Plan saved to `docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md`
+- Scope: 5 new files, 12+ modified files
+- Key deliverables: AUDIT_STANDARDS.md, audit-ai-optimization skill,
+  AI_OPTIMIZATION_AUDIT template, create-audit wizard, ecosystem hub
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -127,7 +91,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/new-session-uaNwX`
+**Current Branch**: `claude/read-session-commits-ZpJLX`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
@@ -137,22 +101,31 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-**Alerts v3 is complete.** Choose from:
+**Execute Audit Ecosystem Codification plan** —
+[docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md](docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md)
+
+10-step implementation in 5 waves:
+
+1. **Wave 1** (parallel): AUDIT_STANDARDS.md + README hub + FALSE_POSITIVES path
+   fixes (8 skills) + output path standardization
+2. **Wave 2** (parallel): audit-ai-optimization skill + AI_OPTIMIZATION_AUDIT
+   template + create-audit wizard
+3. **Wave 3** (sequential): Update audit-comprehensive (Stage 2.5) +
+   audit-aggregator (9 domains)
+4. **Wave 4**: Update supporting files (AUDIT_TRACKER, SKILL_INDEX,
+   multi-ai-audit README)
+5. **Wave 5**: Full cross-reference audit + verification checklist (12 checks)
+
+Use team-based parallelization for Waves 1 and 2.
+
+### After Audit Codification
 
 1. **Fix S0 critical items** (9 items, 6 are E0 Cognitive Complexity) — highest
    impact on health score
-2. **Automate top 3 failing patterns** — Regex anchoring, Safe percentage,
-   Windows atomic rename (add to check-pattern-compliance.js)
-3. **Re-run smoke tests** — Results are 5+ days stale
-
-### After Quick Wins
-
-Choose from:
-
-1. **GRAND PLAN Sprint 4** (`lib/` + `hooks/` + `app/`) - Continue debt
+2. **Fix dedup-multi-pass.js bug** — `secondary.evidence.filter` crashes when
+   evidence is not an array
+3. **GRAND PLAN Sprint 4** (`lib/` + `hooks/` + `app/`) - Continue debt
    elimination
-2. **M1.5 - Quick Wins** (~50% complete) - P0 Priority
-3. **M1.6 - Admin Panel + UX** (~75% complete) - P1 Priority
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 

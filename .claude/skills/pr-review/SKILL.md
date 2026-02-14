@@ -9,6 +9,15 @@ You are about to process AI code review feedback. This is a **standardized,
 thorough review protocol** that ensures every issue is caught, addressed, and
 documented.
 
+## Scope — When to Use
+
+- **Formal PR gate reviews** with standardized 8-step protocol
+- Processing external review feedback (CodeRabbit, Qodo, SonarCloud)
+- Ensuring every issue is fixed or tracked to TDMS before merge
+
+> **Not for ad-hoc development reviews.** Use `code-reviewer` for post-task
+> quality checks, quick reviews during development, or pre-merge self-review.
+
 ## Core Principles
 
 1. **Fix Everything** - Including trivial items
@@ -279,7 +288,7 @@ Categorize EVERY suggestion using this matrix:
 | ------------------------- | ------------------------------------------------------- | -------------------------------------------------------------- |
 | **This-PR**               | Introduced by current PR's changes                      | Must fix — this is your code                                   |
 | **Pre-existing, fixable** | Not from this PR, but small enough to fix now (< 5 min) | Fix it now — don't leave broken windows                        |
-| **Pre-existing, complex** | Not from this PR, would take > 5 min or unfamiliar code | Track via `/add-deferred-debt` with DEBT-XXXX ID (mandatory)   |
+| **Pre-existing, complex** | Not from this PR, would take > 5 min or unfamiliar code | Track via `/add-debt` with DEBT-XXXX ID (mandatory)            |
 | **Architectural**         | Requires design discussion or large-scale refactoring   | Flag to user — do NOT silently dismiss or defer without asking |
 
 > **"Pre-existing" and "out of scope" are never valid reasons to skip an
@@ -476,7 +485,7 @@ specifically what makes this too complex to fix now.
 ### Deferred (X items)
 - [N] <issue>
   - **Origin**: Pre-existing, complex / Architectural
-  - **DEBT ID**: DEBT-XXXX (MANDATORY — created via /add-deferred-debt)
+  - **DEBT ID**: DEBT-XXXX (MANDATORY — created via /add-debt)
   - **Why not now**: <specific reason — e.g., "requires refactoring 8 files
     that share this pattern" or "needs design discussion on caching strategy">
   - **Estimated effort**: <rough size — e.g., "~2 hours", "half-day">
@@ -516,10 +525,10 @@ Technical Debt Management System (TDMS) for tracking.
 
 ### 6.5.1 For Each Deferred Item
 
-Use the `/add-deferred-debt` skill to create TDMS entries:
+Use the `/add-debt` skill to create TDMS entries:
 
 ```
-/add-deferred-debt
+/add-debt
 ```
 
 The skill will prompt for required fields:
@@ -629,17 +638,14 @@ Minor: X, Trivial: X)
 
 If a new pattern category emerges, add it to the Quick Pattern Index section.
 
-### 7.4 Update Consolidation Counter (MANDATORY)
+### 7.4 Consolidation (Automated)
 
-**After adding a review entry, ALWAYS increment the counter:**
+Consolidation is fully automated via JSONL state files. No manual counter
+updates are needed. The system auto-triggers when 10+ reviews accumulate:
 
-1. Find `**Reviews since last consolidation:** N` in AI_REVIEW_LEARNINGS_LOG.md
-2. Increment N by 1 (e.g., 6 → 7)
-3. If the new value reaches 10+, consolidation is due
-
-**Why this matters:** The counter drifts if not incremented (Session #129 fix).
-The compute-based check catches drift but the manual counter should stay in
-sync.
+- **State:** `.claude/state/consolidation.json`
+- **Reviews:** `.claude/state/reviews.jsonl`
+- **Auto-trigger:** Runs at session-start via `run-consolidation.js --auto`
 
 ### 7.5 Health Check (Every 10 Reviews)
 
@@ -770,7 +776,7 @@ npm run patterns:check
 
 1. All files mentioned in review (fixes)
 2. `docs/AI_REVIEW_LEARNINGS_LOG.md` (learning entry - MANDATORY)
-3. **INCREMENT** consolidation counter by 1 (ALWAYS)
+3. Consolidation auto-tracks via `.claude/state/reviews.jsonl`
 
 ### Agents Available
 

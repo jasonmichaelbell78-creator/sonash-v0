@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.2 **Created:** 2026-01-02 **Last Updated:** 2026-02-12
+**Document Version:** 17.4 **Created:** 2026-01-02 **Last Updated:** 2026-02-14
 
 ## Purpose
 
@@ -28,6 +28,8 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.3    | 2026-02-13 | Fix: Consolidation counter corruption — manual counter showed 0 but 26 reviews pending (#285-#310). Root cause: `updateConsolidationCounter` injected "Next consolidation due" into Status field, creating duplicates that grew on each run. Fixed run-consolidation.js Status/Next replacement order, corrected counter to 26, cleaned corrupted "Review #320 Review #320..." text.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 17.2    | 2026-02-13 | Review #310: PR #364 Qodo Suggestions — Alerts v3 health score normalization, git edge cases, path separators. 10 review rounds addressed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 17.1    | 2026-02-12 | Review #306: PR #362 R2 — Edge case fixes (line 0, falsy field preservation, Windows paths, validate-schema consistency). Consolidation counter 16→17.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.0    | 2026-02-12 | Review #305: PR #362 R1 — Cognitive complexity reduction (3 functions), shared helper extraction (mapFirstFileToFile, mapCommonAuditFields, preserveEnhancementFields, printFormatStats, printFilePathWarnings), replaceAll(), negated condition fix, warnings-on-error, normalized path storage, non-string coercion skip, intake-log schema consistency. Consolidation counter 15→16. Active reviews #266-305.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 16.9    | 2026-02-12 | Review #304: PR #361 R5 — State wipe prevention (null-aware save), dir symlink guards (both files), isSymlink try/catch, ESLint fixer return removal, null title guard. Consolidation counter 14→15. Active reviews #266-304.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -336,121 +338,18 @@ Log findings from ALL AI code review sources:
 
 ---
 
-## 🔔 Consolidation Trigger
+## 🔔 Consolidation
 
-**Reviews since last consolidation:** 0 (Reviews #309-#310) **Consolidation
-threshold:** 10 reviews **Status:** ✅ Current **Next consolidation due:** After
-Review #320 Review #320 Review #320 Review #320 Review #320 Review #319 Review
-#319 Review #319 Review #319 Review #319 Review #319 Review #319 Review #319
-Review #318 (Consolidation #19)
+Consolidation state is managed automatically via JSONL files (Session #156):
 
-### When to Consolidate
+- **State:** `.claude/state/consolidation.json`
+- **Reviews:** `.claude/state/reviews.jsonl`
+- **Auto-trigger:** `node scripts/run-consolidation.js --auto` (runs at
+  session-start)
+- **Manual run:** `npm run consolidation:run -- --apply`
 
-Consolidation is needed when:
-
-- Reviews since last consolidation reaches 10+
-- Multiple reviews mention similar patterns
-- New security or critical patterns are identified
-
-### Consolidation Process
-
-1. Review all entries since last consolidation
-2. Identify recurring patterns (3+ mentions)
-3. Add patterns to [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md); critical 5
-   only to claude.md
-4. Update pattern compliance checker if automatable
-5. Reset "Reviews since last consolidation" counter
-6. Note consolidation in version history
-
-### Last Consolidation
-
-- **Date:** 2026-02-13 (Session #114+)
-- **Consolidation #:** 18
-- **Reviews consolidated:** #285-#310 (26 reviews)
-- **Patterns added to CODE_PATTERNS.md v2.7:**
-  - **CI/Automation (6 patterns):**
-    - Module-scope config try/catch
-    - Path info redaction
-    - Silent catch prevention
-    - Number.isFinite guards
-    - Fail-closed validation
-    - Atomic write cleanup
-  - **React/Frontend (1 pattern):**
-    - Key stability
-
-<details>
-<summary>Previous Consolidation (#17)</summary>
-
-- **Date:** 2026-02-07
-- **Consolidation #:** 17
-- **Reviews consolidated:** #254-#265 (12 reviews)
-- **Patterns added to CODE_PATTERNS.md v2.6:**
-  - **Security (4 patterns):**
-    - PII in audit reports (hashed identifiers)
-    - Operator identity hashing
-    - Backup-swap atomic write (CRITICAL)
-    - Token exposure prevention in hooks
-  - **JavaScript/TypeScript (7 patterns):**
-    - Section-scoped regex parsing
-    - Empty entries guard before write
-    - Multi-word capitalization
-    - Safe JSON parse helper
-    - Brace depth tracking for nested objects
-    - Multi-line JSON reassembly
-    - Table-column date parsing
-  - **CI/Automation (8 patterns):**
-    - Delimiter consistency (\x1f over |)
-    - pathExcludeList stale entry cleanup
-    - Fence block handling in markdown parsing
-    - Rename fallback guard for Windows
-    - Trailing newline for JSONL files
-    - Content normalization before diff
-    - Silent parse prevention (log warnings)
-    - Stale review detection (commit comparison)
-  - **Process Management (3 patterns):**
-    - Trigger validation coverage (both paths)
-    - Operator tracking design (privacy-first)
-    - Design decision docs (rejected alternatives)
-  - **Bash/Shell (1 pattern):**
-    - Here-string interpolation
-
-</details>
-
-<details>
-<summary>Previous Consolidation (#16)</summary>
-
-- **Date:** 2026-02-02
-- **Consolidation #:** 16
-- **Reviews consolidated:** #213-#224 (12 reviews)
-- **Archive created:** #7 (Reviews #202-#212) →
-  `docs/archive/REVIEWS_202-212.md`
-- **Patterns added to CODE_PATTERNS.md v2.5:**
-  - **GitHub Actions (2 patterns, CRITICAL):**
-    - Script injection prevention via env vars
-    - User input passed through environment variables
-  - **JavaScript/TypeScript (9 patterns):**
-    - Math.max empty array returns -Infinity
-    - Spread operator stack limits (~65k)
-    - Nullish coalescing ?? vs ||
-    - Gap-safe counting with Set
-    - statSync race condition handling
-    - Range clamping before operations
-    - Platform root detection
-    - Regex anchoring for enums
-  - **CI/Automation (8 patterns):**
-    - JSONL line-by-line parsing with line numbers
-    - Atomic file writes (temp + rename)
-    - Stable ID preservation
-    - API pagination
-    - Multi-file write rollback
-    - Glob self-inclusion prevention
-    - Windows atomic rename
-  - **Documentation (3 patterns):**
-    - Unicode property escapes for emoji
-    - Markdown parentheses encoding
-    - Pre-commit ADM filter
-
-</details>
+No manual counter updates needed. The system auto-consolidates when 10+ reviews
+accumulate.
 
 <details>
 <summary>Previous Consolidation (#11)</summary>
@@ -548,12 +447,12 @@ Consolidation is needed when:
 **Last Audit:** 2026-01-04 (Session #23) **Next Audit Due:** After 10 new
 reviews or 2 weeks
 
-| Metric                           | Value | Target | Status |
-| -------------------------------- | ----- | ------ | ------ |
-| Critical files (14) violations   | 0     | 0      | ✅     |
-| Full repo violations             | 63    | <50    | ⚠️     |
-| Patterns in claude.md            | 60+   | -      | ✅     |
-| Reviews since last consolidation | 15    | <10    | ⚠️     |
+| Metric                         | Value | Target | Status |
+| ------------------------------ | ----- | ------ | ------ |
+| Critical files (14) violations | 0     | 0      | ✅     |
+| Full repo violations           | 63    | <50    | ⚠️     |
+| Patterns in claude.md          | 60+   | -      | ✅     |
+| Consolidation (auto-managed)   | auto  | auto   | ✅     |
 
 **ESLint Security Warnings Audit (2026-01-04):** | Rule | Count | Verdict |
 |------|-------|---------| | `detect-object-injection` | 91 | Audited as false
@@ -709,6 +608,206 @@ _Reviews #137-179 have been archived to
 
 ---
 
+#### Review #315: SonarCloud + Qodo R5 — Residual Regex, Stack Traces, Windows Compat (2026-02-14)
+
+**Source:** SonarCloud Security Hotspots (S5852) + Qodo PR Suggestions + Qodo
+Compliance **PR/Branch:** claude/read-session-commits-ZpJLX (PR #365)
+**Suggestions:** 13 total (Critical: 0, Major: 4, Minor: 7, Trivial: 2)
+
+**Patterns Identified:**
+
+1. Stack trace leakage via rethrown errors: Sanitizing the message but then
+   `throw err` still exposes full stack to user
+   - Root cause: Incomplete sanitization — caught + logged but then rethrown
+   - Prevention: Use `process.exit(1)` instead of `throw` when error is fatal
+2. Complex regex where string parsing suffices: Version History section
+   extraction used regex with `[\s\S]{0,20000}?` when line-by-line scan works
+   - Root cause: Regex was the initial tool; never reconsidered as complexity
+     grew
+   - Prevention: For section extraction, prefer split-and-scan over regex
+3. Windows `renameSync` fails when destination exists: Unlike POSIX, Windows
+   `rename()` does not atomically overwrite — must remove target first
+   - Root cause: Pattern added in Review #255 without Windows testing
+   - Prevention: Always `unlinkSync(dest)` before `renameSync(src, dest)`
+4. File-size budgets for regex scanning: Inline pattern checker had no upper
+   bound on input size, allowing ReDoS on crafted large files
+   - Root cause: Only lower bound (8KB skip) was added, not upper bound
+   - Prevention: Add both floor AND ceiling guards on file-size-gated operations
+
+**Resolution:**
+
+- Fixed: 13 items across 8 files
+- Deferred: 0
+- Rejected: 0
+
+**Key Learnings:**
+
+- `path.basename()` for log output prevents leaking user home directory paths
+- `git rev-parse --show-toplevel` is more reliable than `process.cwd()` for repo
+  root
+- Block comment interior lines (`* ...`) should be treated as trivial in diff
+  analysis
+- Memoizing `isTrivialChange` with a Map avoids redundant git diff calls per
+  file
+
+---
+
+#### Review #314: SonarCloud Regex Hotspots + Qodo Robustness R4 — PR #365 (2026-02-14)
+
+**Source:** SonarCloud Security Hotspots (S5852) + Qodo PR Suggestions + Qodo
+Compliance **PR/Branch:** claude/read-session-commits-ZpJLX (PR #365)
+**Suggestions:** 13 total (Critical: 0, Major: 5, Minor: 6, Compliance: 2)
+
+**Patterns Identified:**
+
+1. Dead code harboring regex complexity: `checkMilestoneItemCounts` had a
+   complex regex for a check disabled since Review #213 — SonarCloud still
+   flagged it
+   - Root cause: Function kept as stub but regex not removed
+   - Prevention: When disabling a check, remove the regex too
+2. Incremental line counting bug: `lastIdx` must advance past the full match,
+   not just to `match.index`, to avoid double-counting newlines
+   - Root cause: Off-by-one in O(n) optimization from Review #255
+   - Prevention: Always set `lastIdx = match.index + match[0].length`
+3. Regex lookahead factoring: `(?=\r?\n##\s|\r?\n---\s*$|$)` has redundant
+   `\r?\n` prefix in each alternative — factor to `(?=\r?\n(?:##\s|---\s*$)|$)`
+   - Root cause: Alternatives added incrementally without refactoring
+   - Prevention: Factor common prefixes in regex alternations
+4. Non-global regex guard: `exec()` loops require `/g` flag — missing flag
+   causes infinite loop
+   - Root cause: Pattern definitions could theoretically omit `/g`
+   - Prevention: Defensive `flags.includes("g")` check before exec loop
+
+**Resolution:**
+
+- Fixed: 13 items across 6 files
+- Rejected: 0
+- Deferred: 0
+
+**Key Learnings:**
+
+- Remove regex from disabled checks — dead code still triggers SonarCloud
+- `\s*` → `\s+` is a simple backtracking reduction when at least one space is
+  always present
+- File size guards before `readFileSync` prevent local DoS on state files
+- Repo-relative paths (`path.relative(cwd, abs)`) are more reliable than raw
+  string normalization for git diff
+
+---
+
+#### Review #313: CI Feedback + Qodo R3 — Orphaned DEBT + Bounded Regex (2026-02-14)
+
+**Source:** CI Failures + Qodo PR Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #365) **Suggestions:** 11 total (Critical:
+0, Major: 3, Minor: 6, Compliance: 2)
+
+**Patterns Identified:**
+
+1. Dedup removing referenced DEBT entries: consolidate-all.js dedup removed 9
+   entries still referenced by ROADMAP.md
+   - Root cause: Dedup heuristic too aggressive on similar entries
+   - Prevention: Cross-check ROADMAP.md references before dedup
+2. Prototype pollution in config objects: `FILE_OVERRIDES` from JSON config
+   could contain `__proto__` keys
+   - Root cause: Direct object spread from parsed config
+   - Prevention: Use `Object.create(null)` + skip dangerous keys
+3. Emoji-tolerant section matching: Section headers may have emoji prefixes that
+   break `##\s+Name` patterns
+   - Root cause: Regex assumes `##` directly followed by whitespace+text
+   - Prevention: Use `##\s*(?:[^\w\r\n]+\s*)?Name` for emoji tolerance
+
+**Resolution:**
+
+- Fixed: 11 items (restored 9 DEBT entries from git history, 5 code fixes)
+- Rejected: 0
+- Deferred: 0
+
+**Key Learnings:**
+
+- MEMORY.md critical bug: changes to MASTER_DEBT.jsonl MUST sync to
+  raw/deduped.jsonl
+- Atomic writes (`write .tmp` + `rename`) prevent corruption on crash
+- Context-aware trivial detection: `#` is a comment in .sh/.yml but a heading in
+  .md
+
+---
+
+#### Review #312: CI Regex Complexity + Qodo R2 — PR #365 (2026-02-14)
+
+**Source:** SonarCloud Code Smell + Qodo PR Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #365) **Suggestions:** 8 total (Critical:
+0, Major: 1 CI-blocking, Minor: 7)
+
+**Patterns Identified:**
+
+1. SonarCloud regex complexity 21 > 20: Milestones Overview lookahead had too
+   many alternatives
+   - Root cause: `(?=\r?\n\r?\n|\r?\n##|\r?\n---)` — 3 alternatives with shared
+     prefix
+   - Fix: `(?=\r?\n(?:\r?\n|##|---))` — factor out common `\r?\n`
+2. Document Version regex anchoring: Matching version in full content could
+   match Version History table entries
+   - Root cause: Regex not constrained to header area
+   - Prevention: Slice content to header area (first 4000 chars) before matching
+
+**Resolution:**
+
+- Fixed: 8 items across 5 files
+- Rejected: 0
+- Deferred: 0
+
+**Key Learnings:**
+
+- `spawnSync` without timeout can hang in pre-push hooks — always add
+  `timeout: 3000`
+- `maxBuffer` on `execFileSync` prevents crash on large diffs — add
+  `maxBuffer: 5 * 1024 * 1024`
+- `isTrivialChange()` needs file-type awareness: `#` lines in .sh are comments
+  (trivial) but headings in .md (non-trivial)
+
+---
+
+#### Review #311: SonarCloud + Qodo — PR #365 Audit Ecosystem Branch (2026-02-14)
+
+**Source:** SonarCloud Issues/Hotspots + Qodo PR Suggestions + Qodo Compliance
+**PR/Branch:** claude/read-session-commits-ZpJLX (PR #365) **Suggestions:** 34
+total (Critical: 1, Major: 5, Minor: 21, Security Hotspots: 7)
+
+**Patterns Identified:**
+
+1. Global regex lastIndex bug: Using `/g` regex with `.test()` in loops causes
+   skipped matches due to persistent `lastIndex` state
+   - Root cause: PATTERN_KEYWORDS array uses `/gi` flags
+   - Prevention: Always reset `lastIndex = 0` or use `exec()` pattern
+2. Windows cross-platform gaps: Path sanitization rejecting colons, backslash
+   normalization missing in fast-path hooks
+   - Root cause: Unix-first development, untested Windows paths
+   - Prevention: Always normalize with `replaceAll("\\", "/")` in hooks
+3. Regex complexity accumulation: pathExclude lists grow unbounded as new files
+   are added, exceeding SonarCloud's complexity limit of 20
+   - Root cause: Using single regex alternation for file exclusion lists
+   - Prevention: Use `pathExcludeList` (string array) instead of regex
+4. Unbounded `\s*` in markdown parsing regex: SonarCloud flags backtracking risk
+   - Root cause: `\s*` matches unlimited whitespace including newlines
+   - Prevention: Use bounded `\s{0,10}` or `[ ]*` (space-only) where newlines
+     aren't expected
+
+**Resolution:**
+
+- Fixed: 33 items across 13 files
+- Rejected: 1 item (streaming for reviews.jsonl — file is always <1KB)
+- Deferred: 0
+
+**Key Learnings:**
+
+- `pathExcludeList` is the preferred mechanism for file exclusions (avoids regex
+  complexity limits)
+- Persist state cleanup (warned-files.json TTL purge was in-memory only)
+- `spawnSync("git", ["rev-parse", "--show-toplevel"])` is the reliable way to
+  find repo root
+
+---
+
 #### Review #310: Qodo PR Suggestions — Alerts v3 Health Score, Edge Cases, Path Normalization (2026-02-13)
 
 **Source:** Qodo PR Code Suggestions **PR/Branch:**
@@ -784,10 +883,10 @@ claude/read-session-commits-ZpJLX **Suggestions:** 4 total (Critical: 0, Major:
    regex** (CRITICAL) — Lazy quantifiers on negated character classes create
    catastrophic backtracking. Greedy `[^|]*` is inherently safe because the
    character class can't match the delimiter.
-2. **Cross-validation must APPLY mismatch, not just warn** — Both
-   `run-consolidation.js` and `sync-consolidation-counter.js` detected
-   CODE_PATTERNS.md vs log mismatches but continued using the wrong value. Fix:
-   `lastConsolidated = codePatternsInfo.lastReview` before computing counts.
+2. **Cross-validation must APPLY mismatch, not just warn** — The old
+   markdown-based scripts detected mismatches but continued using wrong values.
+   Session #156 fix: replaced with `.claude/state/consolidation.json` as single
+   source of truth (no cross-validation needed).
 3. **Cognitive complexity reduction via function extraction** — Extract
    `crossValidateLastConsolidated()` and `parseTriggerSection()` to keep
    `getConsolidationStatus()` under 15.

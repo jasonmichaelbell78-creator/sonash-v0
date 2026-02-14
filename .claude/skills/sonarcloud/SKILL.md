@@ -357,8 +357,7 @@ Full cleanup workflow: sync + report + create cleanup branch + track fixes.
 ## Related
 
 - `verify-technical-debt` - Verify items in verification queue
-- `add-manual-debt` - Add items manually to TDMS
-- `add-deferred-debt` - Add deferred items from PR reviews
+- `add-debt` - Add items to TDMS (manual or PR-deferred)
 - [SONARCLOUD_CLEANUP_RUNBOOK.md](../../../docs/SONARCLOUD_CLEANUP_RUNBOOK.md) -
   Operational runbook
 - [PROCEDURE.md](../../../docs/technical-debt/PROCEDURE.md) - TDMS operating

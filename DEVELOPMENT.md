@@ -501,7 +501,6 @@ npm audit fix
 | `npm run test:coverage`                         | Test with coverage         | Uses c8                                               |
 | `npm run validate:canon`                        | Validate CANON files       | Checks audit output schema                            |
 | `npm run crossdoc:check`                        | Cross-doc deps             | Blocks if deps missing                                |
-| `npm run consolidation:check`                   | Check consolidation status | Warns if 10+ reviews pending                          |
 | `npm run consolidation:run`                     | Run consolidation          | Extract patterns to CODE_PATTERNS.md                  |
 | `npm run consolidation:run -- --auto`           | Auto-consolidation         | Runs silently, used by SessionStart hook              |
 | `npm run patterns:check`                        | Pattern compliance         | Check for anti-patterns in staged files               |
@@ -1079,6 +1078,10 @@ Closes #123
 - [Product Roadmap](./ROADMAP.md)
 - [Security Guide](./docs/SECURITY.md)
 - [Incident Response](./docs/INCIDENT_RESPONSE.md)
+- [Architecture Decision Records](./docs/decisions/README.md) — ADR framework
+  for documenting significant technical decisions
+- [Skill & Agent Policy](./docs/agent_docs/SKILL_AGENT_POLICY.md) — Policies for
+  creating and using Claude skills and agents
 
 ### External Resources
 

@@ -121,7 +121,9 @@ function getRecentDecisions(limit = 3) {
     const content = fs.readFileSync(SESSION_DECISIONS_FILE, "utf8");
     // Match decision blocks (### [DATE] - [TITLE])
     // Pattern needs explicit newline after header for proper content capture
-    const decisionPattern = /^### \[(\d{4}-\d{2}-\d{2})\] - (.+?)\n([\s\S]*?)(?=^### \[|^## |$)/gm;
+    // Resilient: flexible spacing, dash variants (en-dash, em-dash), section terminators (P002 fix)
+    const decisionPattern =
+      /^###\s+\[(\d{4}-\d{2}-\d{2})\]\s*[-–—]\s*(.+?)\n([\s\S]*?)(?=^###\s+\[|^##\s|$)/gm;
 
     // Collect ALL decisions first
     const allDecisions = Array.from(content.matchAll(decisionPattern)).map((m) => ({

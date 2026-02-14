@@ -360,11 +360,12 @@ routing, or shadcn/ui components - not for simple single-file HTML/JSX artifacts
 **Description:** Comprehensive code review for TypeScript, JavaScript, Python,
 Swift, Kotlin, Go. Automated analysis, best practices, security scanning, review
 checklist generation. Includes script-specific checklist (10-point) referencing
-FIX_TEMPLATES.md for standardized fixes. **When to use:** Reviewing PRs,
-providing code feedback, identifying issues, ensuring quality standards.
-Required by pre-push gate when scripts/hooks/husky files change. **Example:**
-After completing feature implementation **Parameters:** None (invoked by AI when
-appropriate)
+FIX_TEMPLATES.md for standardized fixes. **Scope:** Ad-hoc code reviews during
+development, post-task quality checks, pre-merge self-review. (For formal PR
+gate reviews, use `pr-review`.) **When to use:** After completing tasks, before
+merging, when stuck, or before refactoring. Required by pre-push gate when
+scripts/hooks/husky files change. **Example:** After completing feature
+implementation **Parameters:** None (invoked by AI when appropriate)
 
 #### `frontend-design`
 
@@ -514,12 +515,10 @@ Building MCP servers to integrate external APIs or services, whether in Python
 (FastMCP) or Node/TypeScript (MCP SDK) **Example:** Creating custom MCP server
 for API integration **Parameters:** None
 
-#### `requesting-code-review`
+#### ~~`requesting-code-review`~~ (Removed)
 
-**Description:** Use when completing tasks, implementing major features, or
-before merging to verify work meets requirements **When to use:** Before merging
-significant changes **Example:** Feature complete, ready for final review
-**Parameters:** None
+**Merged into `code-reviewer`.** Use `code-reviewer` for post-task quality
+checks and pre-merge reviews. Use `pr-review` for formal PR gate reviews.
 
 #### `sonarcloud`
 
@@ -546,18 +545,6 @@ update existing ones that extend Claude's capabilities with specialized
 knowledge, workflows, or tool integrations **When to use:** Creating or updating
 a skill **Example:** Need custom workflow for specific task **Parameters:**
 Skill requirements
-
-#### `expansion-evaluation`
-
-**Description:** Manage the SoNash expansion evaluation process for reviewing
-~280 feature and technical ideas across 21 modules. Includes ROADMAP placement
-discussion for all accepted/deferred items during evaluation. Supports commands:
-begin, evaluate, status, decide, questions, push-to-roadmap, end. **When to
-use:** Evaluating expansion ideas, tracking progress, making decisions, or
-resuming evaluation session **Example:** `/expansion-evaluation begin` or
-`/expansion-evaluation evaluate F1 5` **Parameters:** Subcommand (begin,
-evaluate, status, decide, questions, push-to-roadmap, end) + optional
-module/idea ID
 
 #### `using-superpowers`
 
@@ -856,28 +843,28 @@ None - processes items from verification queue **Output:** Updates
 MASTER_DEBT.jsonl with VERIFIED, FALSE_POSITIVE, DUPLICATE, or RESOLVED status
 **Added:** TDMS Phase 9
 
-#### `sync-sonarcloud-debt` _(deprecated)_
+#### `sync-sonarcloud-debt` _(removed)_
 
-**Description:** Sync technical debt items from SonarCloud API into
-MASTER_DEBT.jsonl. **Deprecated:** Use `/sonarcloud` instead. **When to use:**
-Use `/sonarcloud --mode sync` instead **Example:** `/sonarcloud` **Parameters:**
-None **Added:** TDMS Phase 6
+**Removed:** Merged into `/sonarcloud`. Use `/sonarcloud` instead.
 
-#### `add-manual-debt`
+#### `add-manual-debt` _(removed)_
 
-**Description:** Manually add a technical debt item to MASTER_DEBT.jsonl **When
-to use:** Adding ad-hoc technical debt discovered during development
-**Example:** `/add-manual-debt` **Parameters:** Prompts for file, line, title,
-severity, category **Output:** New DEBT-XXXX entry in MASTER_DEBT.jsonl
-**Added:** TDMS Phase 6
+**Removed:** Merged into `/add-debt`. Use `/add-debt` instead.
 
-#### `add-deferred-debt`
+#### `add-deferred-debt` _(removed)_
 
-**Description:** Add deferred technical debt items identified during PR review
-**When to use:** During PR review when items are deferred for later **Example:**
-`/add-deferred-debt` **Parameters:** Prompts for PR number, file, line,
-description, severity **Output:** New DEBT-XXXX entry with `source_id: PR-N-X`
-**Added:** TDMS Phase 6
+**Removed:** Merged into `/add-debt`. Use `/add-debt` instead.
+
+#### `add-debt`
+
+**Description:** Add technical debt items to MASTER_DEBT.jsonl. Supports two
+workflows: PR-context deferred debt (with PR number) and manual ad-hoc debt.
+Automatically detects which workflow based on whether a PR number is provided.
+**When to use:** Adding tech debt during PR review (deferred) or ad-hoc
+discovery **Example:** `/add-debt` **Parameters:** Prompts for file, line,
+title, severity, category; optionally PR number and reason for deferred items
+**Output:** New DEBT-XXXX entry in MASTER_DEBT.jsonl (+ raw/deduped.jsonl)
+**Added:** Consolidation of `add-manual-debt` + `add-deferred-debt`
 
 ### Session Management
 
@@ -2381,7 +2368,7 @@ hooks, and settings.
 | 3.1     | #133    | Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff                                   |
 | 3.0     | #133    | Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills                                                |
 | 2.9     | #130    | Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits                                                                                     |
-| 2.8     | #129    | pr-review skill now MANDATES incrementing consolidation counter; added `npm run consolidation:sync`                                                                     |
+| 2.8     | #129    | pr-review skill consolidation tracking (counter replaced by JSONL state in Session #156)                                                                                |
 | 2.7     | #125    | Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture                                                       |
 | 2.6     | #124    | Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents)                                                                                |
 | 2.5     | #123    | Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt)                                                             |

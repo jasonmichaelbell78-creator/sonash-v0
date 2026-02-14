@@ -98,10 +98,9 @@ Quick reference for all available Claude Code skills organized by category.
 
 | Skill                        | Description                |
 | ---------------------------- | -------------------------- |
-| `/expansion-evaluation`      | Evaluate expansion ideas   |
 | `/sonarcloud-sprint`         | SonarCloud cleanup sprint  |
 | `/pr-review`                 | Process PR review feedback |
-| `/requesting-code-review`    | Request code review        |
+| `/code-reviewer`             | Ad-hoc & post-task review  |
 | `/developer-growth-analysis` | Analyze developer growth   |
 | `/using-superpowers`         | Claude superpowers guide   |
 

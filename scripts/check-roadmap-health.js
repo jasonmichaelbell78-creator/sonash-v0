@@ -52,22 +52,35 @@ function readFile(filePath) {
  * Scoped to Version History section to avoid false matches (Review #211)
  */
 function checkVersionConsistency(content, fileName) {
-  // Extract version from header
-  const headerVersionMatch = content.match(/\*\*Document Version:\*\*\s*(\d+\.\d+)/);
+  // Extract version from header — search first 4000 chars only (Review #315)
+  // Handles: **Document Version:** 1.0, Document Version: 1.0, **Document Version** 1.0
+  const headerSlice = content.slice(0, 4000);
+  const headerVersionMatch = headerSlice.match(/Document Version\b[*:\s]{1,8}(\d+\.\d+)/im);
   const headerVersion = headerVersionMatch ? headerVersionMatch[1] : null;
 
-  // Extract latest version from Version History section only (Review #211)
-  // Use \r?\n for CRLF compatibility
-  const versionHistorySectionMatch = content.match(
-    /##\s*🗓️?\s*Version History[\s\S]*?(?=\r?\n##\s|\r?\n---\s*$|$)/
-  );
-
+  // Extract Version History section using string search to avoid complex regex (Review #315)
+  // Find "## ... Version History" line, then extract until next ## or --- or EOF
   let historyVersion = null;
-  if (versionHistorySectionMatch) {
-    const section = versionHistorySectionMatch[0];
-    // First version row after the table header is treated as "latest"
-    const rows = Array.from(section.matchAll(/^\|\s*(\d+\.\d+)\s*\|\s*\d{4}-\d{2}-\d{2}\s*\|/gm));
-    historyVersion = rows.length > 0 ? rows[0][1] : null;
+  const lines = content.split(/\r?\n/);
+  let sectionStart = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^##\s/.test(lines[i]) && /version history/i.test(lines[i])) {
+      sectionStart = i;
+      break;
+    }
+  }
+
+  if (sectionStart >= 0) {
+    // Scan section lines for first version table row
+    for (let i = sectionStart + 1; i < lines.length; i++) {
+      // Stop at next section header or horizontal rule
+      if (/^##\s/.test(lines[i]) || /^---\s*$/.test(lines[i])) break;
+      const rowMatch = lines[i].match(/^\|\s*(\d+\.\d+)\s*\|\s*\d{4}-\d{2}-\d{2}\s*\|/);
+      if (rowMatch) {
+        historyVersion = rowMatch[1];
+        break;
+      }
+    }
   } else {
     warnings.push(`${fileName}: Could not find Version History section`);
   }
@@ -85,7 +98,10 @@ function checkVersionConsistency(content, fileName) {
  * Check 2: Duplicate progress percentages
  */
 function checkProgressPercentages(content, fileName) {
-  const progressMatches = content.match(/\*\*Overall (Completion|Progress):\*\*\s*~?\d+%/g);
+  // P008 fix: optional bold, flexible colon placement
+  const progressMatches = content.match(
+    /\*{0,2}Overall\s+(?:Completion|Progress):?\*{0,2}\s*~?\d+%/gi
+  );
 
   if (progressMatches && progressMatches.length > 1) {
     errors.push(
@@ -100,22 +116,11 @@ function checkProgressPercentages(content, fileName) {
 /**
  * Check 3: Milestone item counts
  */
-function checkMilestoneItemCounts(content, fileName) {
-  // Extract claimed item counts from overview table
-  // Use \r?\n for cross-platform CRLF compatibility (Review #211)
-  const overviewTableMatch = content.match(
-    /## 📊 Milestones Overview[\s\S]{0,10000}?\|[\s\S]{0,10000}?(?=\r?\n\r?\n|\r?\n##|\r?\n---)/
-  );
-
-  if (!overviewTableMatch) {
-    warnings.push(`${fileName}: Could not find Milestones Overview table`);
-    // Review #215: Removed redundant return - function ends after comments anyway
-  }
-
-  // NOTE: The Overview table's last column is estimated HOURS, not item count.
-  // Comparing hours to checkbox count is not meaningful.
-  // This check has been disabled - checkbox counts vary by task granularity.
-  // Review #213: Removed misleading hours-vs-items comparison.
+function checkMilestoneItemCounts(_content, _fileName) {
+  // NOTE: This check is disabled — the Overview table's last column is estimated HOURS,
+  // not item count. Comparing hours to checkbox count is not meaningful.
+  // Checkbox counts vary by task granularity (Review #213).
+  // Kept as no-op stub so callers don't need updating.
 }
 
 /**

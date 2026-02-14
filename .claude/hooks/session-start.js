@@ -409,17 +409,20 @@ try {
   }
 }
 
-// Archive health check: warn if main log has too many active reviews
+// Archive health check: warn if reviews.jsonl has too many entries (Session #156)
 try {
-  const logPath = path.join(projectDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
-  if (fs.existsSync(logPath)) {
-    const logContent = fs.readFileSync(logPath, "utf8");
-    const reviewCount = (logContent.match(/^#### Review #\d+/gm) || []).length;
-    if (reviewCount > 25) {
+  const reviewsPath = path.join(projectDir, ".claude", "state", "reviews.jsonl");
+  if (fs.existsSync(reviewsPath)) {
+    const reviewCount = fs
+      .readFileSync(reviewsPath, "utf8")
+      .trim()
+      .split("\n")
+      .filter(Boolean).length;
+    if (reviewCount > 50) {
       console.log(
-        `   ⚠️ Archive overdue: ${reviewCount} active reviews in learnings log (threshold: 25)`
+        `   ⚠️ Archive recommended: ${reviewCount} reviews in reviews.jsonl (threshold: 50)`
       );
-      console.log("   Run: npm run docs:archive");
+      console.log("   Consider archiving older entries");
       warnings++;
     }
   }
@@ -470,65 +473,9 @@ if (warnings === 0) {
 }
 
 // =============================================================================
-// Generate and Display Pending Alerts (BLOCKING if warnings exist)
+// Pending Alerts (legacy generate-pending-alerts.js removed in Session #158)
+// Alerts are now handled by /alerts skill (run-alerts.js)
 // =============================================================================
-console.log("");
-console.log("🔍 Generating pending alerts...");
-try {
-  execSync("node scripts/generate-pending-alerts.js", {
-    encoding: "utf8",
-    timeout: 10000,
-  });
-  console.log("   ✓ Alerts generated");
-
-  // Read and display alerts
-  // Review #322: Wrap in try/catch to prevent crash on corrupted file
-  // Review #322 Round 3: Validate alerts array to prevent crashes on malformed JSON
-  const alertsFile = path.join(process.cwd(), ".claude", "pending-alerts.json");
-  try {
-    const alertsData = JSON.parse(fs.readFileSync(alertsFile, "utf8"));
-    const alertsList = Array.isArray(alertsData.alerts) ? alertsData.alerts : [];
-    const alertCount =
-      typeof alertsData.alertCount === "number" ? alertsData.alertCount : alertsList.length;
-
-    // Display alerts if any exist (MCP reminder removed in Session #113)
-    if (alertCount > 0 && alertsList.length > 0) {
-      console.log("");
-      console.log("━".repeat(66));
-      console.log("🚨 PENDING ALERTS REQUIRING ATTENTION");
-      console.log("━".repeat(66));
-
-      for (const alert of alertsList) {
-        const icon = alert.severity === "error" ? "❌" : alert.severity === "warning" ? "⚠️" : "ℹ️";
-        console.log(`\n${icon} ${alert.message}`);
-        if (alert.details) {
-          for (const detail of alert.details) {
-            console.log(`   • ${detail}`);
-          }
-        }
-        if (alert.action) {
-          console.log(`   → Action: ${alert.action}`);
-        }
-      }
-
-      console.log("");
-      console.log("━".repeat(66));
-      console.log("");
-      console.log("📌 Claude will discuss these alerts at the start of the conversation.");
-      // Note: Blocking prompts don't work in Claude Code's hook environment (no TTY)
-      // The alerts are saved to pending-alerts.json for Claude to read and surface
-    }
-  } catch (parseErr) {
-    console.warn(
-      `session-start: alerts file unreadable: ${parseErr instanceof Error ? parseErr.message : String(parseErr)}`
-    );
-  }
-} catch (err) {
-  console.warn(
-    `session-start: alerts generation skipped: ${err instanceof Error ? err.message : String(err)}`
-  );
-  warnings++;
-}
 
 console.log("");
 console.log("━".repeat(66));

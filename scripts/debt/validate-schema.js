@@ -41,13 +41,15 @@ const REQUIRED_FIELDS = schema.requiredFields;
 
 // Parse command line arguments
 function parseArgs(args) {
-  const parsed = { strict: false, quiet: false };
+  const parsed = { strict: false, quiet: false, stagedOnly: false };
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === "--strict") {
       parsed.strict = true;
     } else if (arg === "--quiet") {
       parsed.quiet = true;
+    } else if (arg === "--staged-only") {
+      parsed.stagedOnly = true;
     } else if (arg === "--file" && args[i + 1]) {
       parsed.file = args[++i];
     } else if (!arg.startsWith("--")) {
@@ -171,6 +173,49 @@ function validateItem(item, lineNum) {
   return { errors, warnings };
 }
 
+/**
+ * Get line numbers that were added/modified in the staged version of a file.
+ * Hook-quality fix: allows validating only changed lines instead of the entire file.
+ * Returns a Set of 1-based line numbers, or null if we can't determine (validate all).
+ */
+function getStagedChangedLines(filePath) {
+  const { execFileSync } = require("node:child_process");
+  const { resolve, relative } = require("node:path");
+  try {
+    // Convert to repo-relative path using git root for reliable git diff (Review #315)
+    const abs = resolve(String(filePath));
+    const gitRoot = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf-8",
+      timeout: 3000,
+    }).trim();
+    const relToRoot = relative(gitRoot, abs);
+    if (!relToRoot || relToRoot === "." || /^\.\.(?:[\\/]|$)/.test(relToRoot)) return null;
+
+    const gitPath = relToRoot.replaceAll("\\", "/");
+    // Get unified diff with 0 context lines to identify exact changed lines
+    const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", gitPath], {
+      encoding: "utf-8",
+      timeout: 10_000,
+      maxBuffer: 5 * 1024 * 1024,
+    });
+
+    const changedLines = new Set();
+    // Parse @@ hunk headers: @@ -old,count +new,count @@
+    const hunkRegex = /^@@\s+-\d+(?:,\d+)?\s+\+(\d+)(?:,(\d+))?\s+@@/gm;
+    let match;
+    while ((match = hunkRegex.exec(diff)) !== null) {
+      const start = Number.parseInt(match[1], 10);
+      const count = match[2] === undefined ? 1 : Number.parseInt(match[2], 10);
+      for (let i = start; i < start + count; i++) {
+        changedLines.add(i);
+      }
+    }
+    return changedLines.size > 0 ? changedLines : null;
+  } catch {
+    return null; // Fall back to validating all lines
+  }
+}
+
 // Main function
 async function main() {
   const args = process.argv.slice(2);
@@ -227,37 +272,56 @@ Exit codes:
   const duplicateIds = [];
   const duplicateHashes = [];
 
+  // Hook-quality fix: In --staged-only mode, only validate lines that were changed.
+  // This prevents pre-existing schema errors in untouched lines from blocking commits.
+  let changedLines = null;
+  if (parsed.stagedOnly) {
+    changedLines = getStagedChangedLines(filePath);
+    if (changedLines && !parsed.quiet) {
+      console.log(`  Validating ${changedLines.size} changed line(s) (staged-only mode)\n`);
+    }
+  }
+
   for (let i = 0; i < lines.length; i++) {
     const lineNum = i + 1;
     const line = lines[i];
 
     try {
       const item = JSON.parse(line);
-      const { errors, warnings } = validateItem(item, lineNum);
 
-      allErrors.push(...errors);
-      allWarnings.push(...warnings);
-
-      // Check for duplicate IDs
+      // Always track IDs and hashes for duplicate detection (even in staged-only mode)
       if (item.id) {
         if (seenIds.has(item.id)) {
-          duplicateIds.push({ id: item.id, line: lineNum });
+          // Only report duplicate if the current line was changed
+          if (!changedLines || changedLines.has(lineNum)) {
+            duplicateIds.push({ id: item.id, line: lineNum });
+          }
         }
         seenIds.add(item.id);
       }
 
-      // Check for duplicate content hashes
       if (item.content_hash) {
         if (seenHashes.has(item.content_hash)) {
-          duplicateHashes.push({
-            hash: item.content_hash.substring(0, 8),
-            line: lineNum,
-            id: item.id,
-          });
+          if (!changedLines || changedLines.has(lineNum)) {
+            duplicateHashes.push({
+              hash: item.content_hash.substring(0, 8),
+              line: lineNum,
+              id: item.id,
+            });
+          }
         }
         seenHashes.add(item.content_hash);
       }
+
+      // Skip validation for unchanged lines in staged-only mode
+      if (changedLines && !changedLines.has(lineNum)) continue;
+
+      const { errors, warnings } = validateItem(item, lineNum);
+      allErrors.push(...errors);
+      allWarnings.push(...warnings);
     } catch (err) {
+      // Skip parse errors for unchanged lines in staged-only mode
+      if (changedLines && !changedLines.has(lineNum)) continue;
       allErrors.push(`Line ${lineNum}: JSON parse error: ${err.message}`);
     }
   }

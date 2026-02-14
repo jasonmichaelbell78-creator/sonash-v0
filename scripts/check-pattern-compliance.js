@@ -55,10 +55,46 @@ try {
 // State file tracks which files have been warned for which patterns
 const WARNED_FILES_PATH = join(ROOT, ".claude", "state", "warned-files.json");
 
+// TTL for warned-files entries: entries older than this are expired on load
+// Prevents false positives from blocking indefinitely (Fix: hook-quality session)
+const WARNED_FILES_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 function loadWarnedFiles() {
   try {
     const raw = readFileSync(WARNED_FILES_PATH, "utf-8").replace(/^\uFEFF/, "");
-    return JSON.parse(raw);
+    const data = JSON.parse(raw);
+
+    // Validate parsed data is a plain object (not array, null, etc.)
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
+      console.warn("Warning: warned-files.json is not a plain object — resetting");
+      return {};
+    }
+
+    // Purge expired entries (older than TTL)
+    const now = Date.now();
+    let purged = 0;
+    for (const key of Object.keys(data)) {
+      const ts = new Date(data[key]).getTime();
+      if (!Number.isFinite(ts) || now - ts > WARNED_FILES_TTL_MS) {
+        delete data[key];
+        purged++;
+      }
+    }
+    if (purged > 0 && VERBOSE) {
+      console.log(`   Purged ${purged} expired pattern warning(s) (older than 7 days)`);
+    }
+    if (purged > 0) {
+      try {
+        const tmpPath = `${WARNED_FILES_PATH}.tmp`;
+        writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", "utf-8");
+        if (existsSync(WARNED_FILES_PATH)) unlinkSync(WARNED_FILES_PATH);
+        renameSync(tmpPath, WARNED_FILES_PATH);
+      } catch {
+        /* best effort */
+      }
+    }
+
+    return data;
   } catch (err) {
     const code = err && typeof err === "object" && "code" in err ? err.code : null;
     if (code === "ENOENT") return {};
@@ -158,7 +194,6 @@ const GLOBAL_EXCLUDE = [
   // Development/build utility scripts (pre-existing debt - Review #136)
   /^scripts\/ai-review\.js$/,
   /^scripts\/assign-review-tier\.js$/,
-  /^scripts\/check-consolidation-status\.js$/,
   /^scripts\/check-docs-light\.js$/,
   /^scripts\/check-document-sync\.js$/,
   /^scripts\/check-review-needed\.js$/,
@@ -382,10 +417,11 @@ const ANTI_PATTERNS = [
     fix: "Avoid eval. Use JSON.parse for JSON, or restructure code",
     review: "Security Standards",
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
-    // Exclude check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
+    // Exclude check-pattern-compliance.js and pattern-check.js: contain pattern definitions as strings (meta-detection)
     // 2026-01-20 audit (PR #286):
     // - security-check.js: Contains regex pattern /\beval\s*\(/ at L42 as detection pattern, not actual eval usage
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-check)\.js$/,
+    // 2026-02-13 (OPT-H002): pattern-check.js now has inline pattern defs including eval-usage regex
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-check|pattern-check)\.js$/,
   },
   {
     id: "sql-injection-risk",
@@ -553,8 +589,32 @@ const ANTI_PATTERNS = [
     //   all have `rel === "" ||` in validateSessionPath
     // 2026-02-06 (Review #256): extract-agent-findings.js L29 has `rel === "" ||` at start of condition
     // 2026-02-06 (Review #258): generate-detailed-sonar-report.js L33 has `rel === "" ||` at start of condition
-    pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings|ai-pattern-checks|eval-check-stage|eval-snapshot|unify-findings|normalize-format|extract-agent-findings|generate-detailed-sonar-report)\.js$/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: [
+      "phase-complete-check.js",
+      "check-edit-requirements.js",
+      "check-write-requirements.js",
+      "check-requirements.js",
+      "check-mcp-servers.js",
+      "pattern-check.js",
+      "session-start.js",
+      "validate-paths.js",
+      "analyze-learning-effectiveness.js",
+      "security-helpers.js",
+      "check-remote-session-context.js",
+      "track-agent-invocation.js",
+      "check-roadmap-health.js",
+      "check-doc-headers.js",
+      "statusline.js",
+      "sync-claude-settings.js",
+      "ai-pattern-checks.js",
+      "eval-check-stage.js",
+      "eval-snapshot.js",
+      "unify-findings.js",
+      "normalize-format.js",
+      "extract-agent-findings.js",
+      "generate-detailed-sonar-report.js",
+    ],
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)
@@ -649,6 +709,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     // Too many false positives in app code - only check scripts processing external data
     pathFilter: /(?:^|\/)scripts\/(?:debt|improvements|audits)\//,
+    pathExcludeList: verifiedPatterns["missing-array-isarray"] || [],
   },
 
   // Unescaped user input in RegExp constructor (7x in reviews)
@@ -712,6 +773,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     // Only flag in scripts with resource management (too noisy otherwise)
     pathFilter: /(?:^|\/)scripts\/(?:debt|improvements|metrics)\//,
+    pathExcludeList: verifiedPatterns["process-exit-without-cleanup"] || [],
   },
 
   // console.error with raw error object (not just .message)
@@ -737,6 +799,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     // Only flag in scripts reading external/user files
     pathFilter: /(?:^|\/)scripts\/(?:debt|improvements|audits)\//,
+    pathExcludeList: verifiedPatterns["missing-bom-handling"] || [],
   },
 
   // Unbounded file reads (reading entire file into memory)
@@ -815,6 +878,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts", ".jsx", ".tsx"],
     exclude: /Number\.parseInt/,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["parseint-no-radix"] || [],
   },
 
   // Math.max with spread on potentially empty array
@@ -850,6 +914,7 @@ const ANTI_PATTERNS = [
     review: "CODE_PATTERNS.md Documentation - Pre-commit ADM filter, v2.5",
     fileTypes: [".sh", ".js", ".ts"],
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["git-diff-no-filter"] || [],
   },
 
   // --- Shell ---
@@ -862,6 +927,49 @@ const ANTI_PATTERNS = [
     fix: "Use xargs -r (--no-run-if-empty) or pipe through 'grep .' first",
     review: "CODE_PATTERNS.md Documentation - xargs hang prevention, v2.0",
     fileTypes: [".sh"],
+  },
+
+  // --- New patterns from PR #364 Retro / Learning Effectiveness (Session #157) ---
+  // Top 3 automation candidates: 10x, 8x, 8x recurrence after documentation
+
+  // Unanchored regex for enum/severity validation (10x recurrence)
+  {
+    id: "unanchored-enum-regex",
+    pattern: /(?:test|match)\s*\(\s*\/(?!\^)[EeSs]\[\d+[^/]{0,20}\]\//g,
+    message: "Unanchored regex for enum validation - matches partial strings (e.g. E12 matches E1)",
+    fix: "Anchor with ^ and $: /^E[0-3]$/ or /^S[0-4]$/ instead of /E[0-3]/",
+    review: "CODE_PATTERNS.md JS/TS - Regex anchoring for enums, Review #219 (10x recurrence)",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // Division without zero guard (8x recurrence)
+  // Matches `/ total` etc. only when NOT preceded by `> 0 ?` guard on same line
+  {
+    id: "unsafe-division",
+    pattern: /^(?!.*>\s*0\s*\?).*[^/*]\s\/\s*(?:total|count|length|size|denominator)\b/gm,
+    message: "Division by variable that could be 0 - returns Infinity/NaN",
+    fix: "Use safePercent(n, total) helper or guard: total > 0 ? (n / total) * 100 : 0",
+    review: "CODE_PATTERNS.md JS/TS - Safe percentage, Review #226 (8x recurrence)",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    exclude: /safePercent|\/\/|\/\*|\* /,
+  },
+
+  // renameSync without prior rmSync on Windows (8x recurrence)
+  {
+    id: "rename-without-remove",
+    pattern: /\brenameSync\s*\(/g,
+    message: "renameSync without prior rmSync - fails on Windows if destination exists",
+    fix: "Remove destination first: if (fs.existsSync(dest)) fs.rmSync(dest, { force: true }); fs.renameSync(tmp, dest);",
+    review: "CODE_PATTERNS.md JS/TS - Windows atomic rename, Review #224 (8x recurrence)",
+    fileTypes: [".js", ".ts"],
+    // Only check cross-platform scripts (not POSIX-only hooks)
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["rename-without-remove"] || [],
   },
 ];
 

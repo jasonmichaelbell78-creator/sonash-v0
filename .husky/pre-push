@@ -18,21 +18,12 @@ if ! npm run deps:circular > /dev/null 2>&1; then
 fi
 echo "  ✅ No circular dependencies"
 
-# 3. Run pattern compliance check (BLOCKING - 14 critical files)
-# Fixed 2026-01-04: Legacy violations resolved (Session #23)
-# Note: Uses default file list (critical files). Full repo check (--all) may have violations in migration scripts.
-# Fixed in Review #51: Capture output once instead of running command multiple times
-echo "  ▶ Running pattern compliance check..."
-patterns_output=$(npm run patterns:check 2>&1)
-patterns_exit=$?
-if [ $patterns_exit -ne 0 ]; then
-  echo "  ❌ Pattern compliance violations found"
-  printf '%s\n' "$patterns_output" | grep -E "^📄|Found [0-9]+ potential" || printf '%s\n' "$patterns_output" | tail -15
-  echo ""
-  echo "  Fix pattern violations before pushing. Run: npm run patterns:check"
-  exit 1
-fi
-echo "  ✅ Pattern compliance passed"
+# 3. Pattern compliance: REMOVED from pre-push (hook-quality fix)
+# Pattern compliance already runs in pre-commit on staged files.
+# Running it again here on 14 hardcoded files caused graduation double-jeopardy:
+# a warning in pre-commit would escalate to a BLOCK in pre-push hours later,
+# even if the file wasn't part of the push. Keeping pre-commit only.
+echo "  ⏭️ Pattern compliance (covered by pre-commit)"
 
 # 3b. Code-reviewer gate for script changes (Session #151)
 # If scripts/.claude/hooks/.husky/ changed, check if code-reviewer ran this session
@@ -70,47 +61,41 @@ else
   echo "  ✅ No script changes (code-reviewer gate skipped)"
 fi
 
-# 4. Security pattern check (files being pushed, blocking for CRITICAL/HIGH)
-echo "  ▶ Running security pattern check..."
+# 4. Security pattern check (diff-only mode: only flag violations in ADDED lines)
+# Hook-quality fix: Previously scanned entire files, catching pre-existing violations
+# that weren't introduced by the current commits. Now uses --diff-only to only check
+# lines that were actually added in the push.
+echo "  ▶ Running security pattern check (diff-only)..."
 set +e
-changed_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(js|ts|tsx|json)$')
+security_diff=$(git diff --diff-filter=ACMR @{u}...HEAD -U0 2>/dev/null | grep -E '^\+[^+]' | grep -v '^+++')
 diff_exit=$?
 set -e
 
-if [ $diff_exit -ne 0 ] || [ -z "${changed_files:-}" ]; then
-  echo "  ⚠️ No upstream or no JS/TS/JSON changes detected; skipping targeted security scan"
+if [ $diff_exit -ne 0 ] || [ -z "${security_diff:-}" ]; then
+  echo "  ⚠️ No upstream or no added lines detected; skipping security scan"
 else
-  security_exit=0
-  security_output=""
+  # Write added lines to temp file for scanning
+  # Use .js extension so security-check.js applies JS/TS patterns to the content
+  SEC_TMPFILE=$(mktemp --suffix=.js)
+  trap 'rm -f "$SEC_TMPFILE"' EXIT
+  printf '%s\n' "$security_diff" > "$SEC_TMPFILE"
 
-  while IFS= read -r file; do
-    [ -z "$file" ] && continue
-    [ -f "$file" ] || continue
+  set +e
+  out=$(node scripts/security-check.js --file "$SEC_TMPFILE" --blocking 2>&1)
+  code=$?
+  set -e
 
-    set +e
-    out=$(node scripts/security-check.js --file "$file" --blocking 2>&1)
-    code=$?
-    set -e
-
-    security_output="${security_output}"$'\n'"${out}"
-    if [ $code -ne 0 ]; then
-      security_exit=$code
-    fi
-  done <<EOF
-$changed_files
-EOF
-
-  if [ $security_exit -ne 0 ]; then
-    echo "  ❌ Security pattern violations found"
-    printf '%s\n' "$security_output" | grep -E "CRITICAL|HIGH|🛑|file:" | head -15
+  if [ $code -ne 0 ]; then
+    echo "  ❌ Security violations found in NEW code"
+    printf '%s\n' "$out" | grep -E "CRITICAL|HIGH|🛑|file:" | head -15
     echo ""
-    echo "  Fix security issues before pushing. Run: npm run security:check"
+    echo "  Fix security issues in your new code before pushing."
     exit 1
-  elif echo "$security_output" | grep -q "MEDIUM\|LOW"; then
-    echo "  ⚠️ Security warnings (not blocking) - run: npm run security:check"
+  elif echo "$out" | grep -q "MEDIUM\|LOW"; then
+    echo "  ⚠️ Security warnings in new code (not blocking) - review recommended"
     node scripts/append-hook-warning.js --hook=pre-push --type=security --severity=warning --message="Security warnings (MEDIUM/LOW) found in pushed code" --action="npm run security:check" 2>/dev/null || true
   else
-    echo "  ✅ Security check passed"
+    echo "  ✅ Security check passed (new code only)"
   fi
 fi
 

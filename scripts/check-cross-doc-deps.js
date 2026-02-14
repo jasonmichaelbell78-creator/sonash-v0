@@ -28,6 +28,7 @@ const { loadConfigWithRegex } = require("./config/load-config");
 const args = process.argv.slice(2);
 const verbose = args.includes("--verbose");
 const dryRun = args.includes("--dry-run");
+const trivialMode = args.includes("--trivial");
 
 // TTY-aware colors (Review #157 - avoid raw escape codes in non-TTY output)
 const useColors = process.stdout.isTTY;
@@ -119,6 +120,71 @@ function checkDiffPattern(file, pattern) {
 }
 
 /**
+ * Check if staged changes to a file are "trivial" (whitespace, comments, formatting only).
+ * Used with --trivial flag to skip cross-doc enforcement for non-substantive changes.
+ * Hook-quality fix: reduces false positives from typo fixes and formatting commits.
+ */
+// Cache trivial-change results to avoid redundant git diff calls (Review #315)
+const trivialChangeCache = new Map();
+
+function isTrivialChange(file) {
+  const gitPath = file.replaceAll("\\", "/");
+  if (trivialChangeCache.has(gitPath)) return trivialChangeCache.get(gitPath);
+
+  let result = false;
+  try {
+    // Quick check: if whitespace-insensitive diff has no changes, it's formatting-only
+    const wsDiff = execFileSync("git", ["diff", "--cached", "-w", "--unified=0", "--", gitPath], {
+      encoding: "utf-8",
+      timeout: 15000,
+      maxBuffer: 1024 * 1024,
+    });
+    const wsChangeLines = wsDiff
+      .split("\n")
+      .filter((line) => /^[+-]/.test(line) && !/^[+-]{3}/.test(line));
+    if (wsChangeLines.length === 0) {
+      result = true;
+    } else {
+      // Get only the changed lines (added/removed), excluding context
+      const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", gitPath], {
+        encoding: "utf-8",
+        timeout: 15000,
+        maxBuffer: 1024 * 1024,
+      });
+
+      // Extract only actual change lines (+ and - prefixed, not headers)
+      const changeLines = diff
+        .split("\n")
+        .filter((line) => /^[+-]/.test(line) && !/^[+-]{3}/.test(line))
+        .map((line) => line.slice(1)); // strip the +/- prefix
+
+      if (changeLines.length === 0) {
+        result = true;
+      } else {
+        // A change is trivial if ALL changed lines are:
+        // - empty or whitespace-only
+        // - comments (JS/TS: //, shell/yaml: #, or block comment interior *)
+        // - status badge updates, date updates, version bumps
+        // Note: # means "comment" in .sh/.yml/.py but "heading" in .md
+        const ext = gitPath.split(".").pop()?.toLowerCase();
+        const hashIsComment =
+          ext && ["sh", "bash", "zsh", "py", "rb", "yml", "yaml", "toml"].includes(ext);
+        // Include \* for block comment interior lines (Review #315)
+        const trivialPattern = hashIsComment
+          ? /^\s*$|^\s*(?:\/\/|#|\/\*|\*\/|\*|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/
+          : /^\s*$|^\s*(?:\/\/|\/\*|\*\/|\*|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
+        result = changeLines.every((line) => trivialPattern.test(line));
+      }
+    }
+  } catch {
+    // If we can't determine, assume non-trivial (safer)
+    result = false;
+  }
+  trivialChangeCache.set(gitPath, result);
+  return result;
+}
+
+/**
  * Check if any staged file matches a trigger pattern
  * Improved path matching to prevent false positives (Review #158)
  * Normalized for cross-platform reliability (Review #160)
@@ -201,6 +267,26 @@ function checkDependencies() {
       );
       if (triggerFile && !checkDiffPattern(triggerFile, rule.diffPattern)) {
         logVerbose(`Rule skipped (diff pattern not found): ${rule.trigger}`);
+        continue;
+      }
+    }
+
+    // Hook-quality fix: In --trivial mode, skip enforcement if the trigger file
+    // only has trivial changes (whitespace, comments, formatting, date bumps).
+    // This prevents blocking commits for typo fixes and minor doc formatting.
+    if (trivialMode) {
+      const trigger = rule.trigger.replaceAll("\\", "/");
+      const triggerFiles = stagedFiles
+        .map((f) => f.replaceAll("\\", "/"))
+        .filter(
+          (f) =>
+            f === trigger ||
+            f.endsWith(`/${trigger}`) ||
+            (trigger.endsWith("/") && f.startsWith(trigger))
+        );
+      const allTrivial = triggerFiles.length > 0 && triggerFiles.every(isTrivialChange);
+      if (allTrivial) {
+        logVerbose(`Rule skipped (trivial changes only): ${rule.trigger}`);
         continue;
       }
     }

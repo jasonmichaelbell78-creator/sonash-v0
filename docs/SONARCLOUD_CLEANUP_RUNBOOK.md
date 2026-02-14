@@ -20,6 +20,8 @@ When running SonarCloud cleanup:
 - **Document dismissals**: Add justifications to
   `docs/audits/sonarcloud-dismissals.md`
 - **Extract learnings**: Run `--extract-learnings` after completing each phase
+- **Test changes**: Use `/test-suite` skill (recommended) or `npm test` for
+  local verification before committing
 
 ---
 

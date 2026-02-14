@@ -60,7 +60,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/check-write-requirements.js $ARGUMENTS",
+            "command": "CLAUDE_TOOL=write node .claude/hooks/check-requirements.js $ARGUMENTS",
             "statusMessage": "Checking agent requirements..."
           },
           {
@@ -115,7 +115,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/check-edit-requirements.js $ARGUMENTS",
+            "command": "CLAUDE_TOOL=edit node .claude/hooks/check-requirements.js $ARGUMENTS",
             "statusMessage": "Checking agent requirements..."
           },
           {
@@ -165,7 +165,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/check-edit-requirements.js $ARGUMENTS",
+            "command": "CLAUDE_TOOL=multiedit node .claude/hooks/check-requirements.js $ARGUMENTS",
             "statusMessage": "Checking agent requirements..."
           },
           {

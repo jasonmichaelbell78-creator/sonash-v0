@@ -136,8 +136,8 @@ All templates now in `docs/multi-ai-audit/templates/`:
 | **FIREBASE_CHANGE_POLICY.md**                | Firebase security review requirements             | `docs/FIREBASE_CHANGE_POLICY.md`                              |
 | **INCIDENT_RESPONSE.md**                     | Security incident response procedures             | `docs/INCIDENT_RESPONSE.md`                                   |
 | **TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md** | Unified technical debt consolidation & management | `docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md`         |
-| **CI_GATES_BLOCKING_PLAN.md**                | Plan to convert CI gates to blocking              | `docs/plans/CI_GATES_BLOCKING_PLAN.md`                        |
 | **TESTING_USER_MANUAL.md**                   | Complete UI testing reference with /test-suite    | `docs/plans/TESTING_USER_MANUAL.md`                           |
+| **AUDIT_ECOSYSTEM_CODIFICATION.md**          | Audit ecosystem codification plan (10 steps)      | `docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md`                  |
 | **INTEGRATED_IMPROVEMENT_PLAN.md**           | Phased improvement plan (COMPLETE - archived)     | `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md` |
 | **AI_REVIEW_LEARNINGS_LOG.md**               | Historical log of AI review findings and patterns | `docs/AI_REVIEW_LEARNINGS_LOG.md`                             |
 

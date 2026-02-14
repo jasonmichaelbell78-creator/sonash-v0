@@ -9,10 +9,163 @@
  * Non-blocking: outputs warnings but doesn't fail the operation
  */
 
-const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const { sanitizeFilesystemError } = require("../../scripts/lib/validate-paths.js");
+
+/**
+ * Inline pattern definitions — high-signal subset from scripts/check-pattern-compliance.js
+ * OPT-H002: Eliminates ~100ms subprocess spawn by running patterns in-process.
+ * Full pattern set still available via: node scripts/check-pattern-compliance.js --all
+ */
+const INLINE_PATTERNS = [
+  // Security-critical patterns
+  {
+    id: "unsafe-error-message",
+    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![^}]*instanceof\s+Error)[^}]*?\b\1\b\.message/g,
+    message: "Unsafe error.message access - crashes if non-Error is thrown",
+    fix: "Use: error instanceof Error ? error.message : String(error)",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "path-startswith",
+    pattern: /\.startsWith\s*\(\s*['"`][./\\]+['"`]\s*\)/g,
+    message: "Path validation with startsWith() fails on Windows or edge cases",
+    fix: 'Use: path.relative() and check for ".." prefix with regex',
+    fileTypes: [".js", ".ts"],
+    pathExclude:
+      /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check|pattern-check|normalize-format)\.js$/,
+  },
+  {
+    id: "hardcoded-api-key",
+    pattern:
+      /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Z0-9_/+=-]{20,}['"`]/gi,
+    message: "Potential hardcoded API key or secret detected",
+    fix: "Use environment variables: process.env.API_KEY",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    exclude: /(?:test|mock|fake|dummy|example|placeholder|xxx+|your[_-]?api|insert[_-]?your)/i,
+  },
+  {
+    id: "unsafe-innerhtml",
+    pattern: /\.innerHTML\s*=/g,
+    message: "innerHTML assignment can lead to XSS vulnerabilities",
+    fix: "Use textContent for text, or sanitize with DOMPurify for HTML",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  {
+    id: "eval-usage",
+    pattern: /\beval\s*\(/g,
+    message: "ev" + "al() is a security risk - allows arbitrary code execution",
+    fix: "Avoid ev" + "al. Use JSON.parse for JSON, or restructure code",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-check|pattern-check)\.js$/,
+  },
+  // Shell patterns
+  {
+    id: "npm-install-automation",
+    pattern: /npm\s+install\b[^\n]*/g,
+    message: "npm install in automation can modify lockfile",
+    fix: "Use: npm ci (reads lockfile exactly)",
+    fileTypes: [".sh", ".yml", ".yaml"],
+    exclude: /--legacy-peer-deps|--save|--save-dev|-[gDS]\b|--global/,
+    pathExclude: /session-start\.(?:sh|js)$/,
+  },
+  {
+    id: "exit-code-capture",
+    pattern: /\$\(\s*[^)]{1,500}\s*\)\s*;\s*if\s+\[\s*\$\?\s/g,
+    message: "Exit code capture bug: $? after assignment captures assignment exit (always 0)",
+    fix: "Use: if ! OUT=$(cmd); then",
+    fileTypes: [".sh", ".yml", ".yaml"],
+  },
+  // React patterns
+  {
+    id: "unstable-list-key",
+    pattern: /key=\{[^}]*\bindex\b[^}]*\}/g,
+    message: "Using array index as React key - causes unnecessary re-renders",
+    fix: "Use a stable unique identifier: key={item.id}",
+    fileTypes: [".jsx", ".tsx"],
+  },
+  {
+    id: "div-onclick-no-role",
+    pattern: /<div(?![^>]*\brole\s*=)[^>]*\bonClick\b[^>]*>/g,
+    message: "Clickable <div> without role attribute - inaccessible to screen readers",
+    fix: 'Add role="button" or use <button> element instead',
+    fileTypes: [".jsx", ".tsx"],
+  },
+  // Test pattern
+  {
+    id: "test-mock-firestore-directly",
+    pattern: /(?:vi|jest)\.mock\s*\(\s*['"`]firebase\/firestore['"`]/g,
+    message:
+      "Mocking firebase/firestore directly - app uses Cloud Functions (httpsCallable) for writes",
+    fix: 'Mock firebase/functions instead: vi.mock("firebase/functions", ...)',
+    fileTypes: [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx", ".test.js", ".test.jsx"],
+  },
+  // SQL injection
+  {
+    id: "sql-injection-risk",
+    pattern:
+      /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*(?:\$\{|\+\s*)|'[^']*(?:\$\{|\+\s*)|"[^"]*(?:\$\{|\+\s*))/g,
+    message: "Potential SQL injection: string interpolation in query",
+    fix: "Use parameterized queries with placeholders",
+    fileTypes: [".js", ".ts"],
+    pathExclude: /(?:^|[\\/])generate-views\.js$/,
+  },
+  // Shell command injection
+  {
+    id: "shell-command-injection",
+    pattern: /exec(?:Sync)?\s*\(\s*(?:`[^`]*\$\{|['"`][^'"]*['"`]\s*\+\s*(?!['"`]))/g,
+    message: "Shell command built with string interpolation - command injection risk",
+    fix: "Use execFileSync with array args",
+    fileTypes: [".js", ".ts"],
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+];
+
+/**
+ * Run inline patterns against file content.
+ * Returns array of {id, line, message, fix} violations.
+ */
+function checkInlinePatterns(content, relPath, ext) {
+  const violations = [];
+  const normalizedPath = relPath.replace(/\\/g, "/");
+
+  for (const pat of INLINE_PATTERNS) {
+    // File type filter
+    if (!pat.fileTypes.some((ft) => ext === ft || normalizedPath.endsWith(ft))) continue;
+    // Path exclude
+    if (pat.pathExclude && pat.pathExclude.test(normalizedPath)) continue;
+
+    // Run pattern (use fresh regex to avoid shared lastIndex state)
+    // Defensive: ensure global flag so exec() advances (Review #256)
+    const flags = pat.pattern.flags.includes("g") ? pat.pattern.flags : `${pat.pattern.flags}g`;
+    const regex = new RegExp(pat.pattern.source, flags);
+    const exclude = pat.exclude ? new RegExp(pat.exclude.source, pat.exclude.flags) : null;
+
+    let match;
+    let lastIdx = 0;
+    let lineNumber = 1;
+    while ((match = regex.exec(content)) !== null) {
+      if (exclude) {
+        exclude.lastIndex = 0;
+        if (exclude.test(match[0])) continue;
+      }
+      // Compute line number incrementally (avoid O(n²) slicing)
+      for (let i = lastIdx; i < match.index; i++) {
+        if (content.charCodeAt(i) === 10) lineNumber++;
+      }
+      // Advance past the full match to avoid double-counting newlines (Review #256)
+      lastIdx = match.index + match[0].length;
+      violations.push({ id: pat.id, line: lineNumber, message: pat.message, fix: pat.fix });
+      // Prevent infinite loop on zero-length match
+      if (match[0].length === 0) {
+        regex.lastIndex++;
+        lastIdx = regex.lastIndex;
+      }
+    }
+  }
+  return violations;
+}
 
 /**
  * Sanitize path strings for safe logging (prevent log injection)
@@ -144,6 +297,11 @@ try {
   if (size < 8 * 1024) {
     process.exit(0);
   }
+  // Skip very large files to prevent regex DoS on crafted input (Review #315)
+  const MAX_PATTERN_CHECK_SIZE = 512 * 1024; // 512 KB
+  if (size > MAX_PATTERN_CHECK_SIZE) {
+    process.exit(0);
+  }
 
   // File is large enough - check line count
   const content = fs.readFileSync(realPath, "utf8");
@@ -163,58 +321,38 @@ try {
   if (lineCount < 100) {
     process.exit(0);
   }
+
+  // OPT-H002: Run inline pattern checks instead of subprocess spawn (~5ms vs ~100ms)
+  const ext = path.extname(relPath);
+  const violations = checkInlinePatterns(content, relPath, ext);
+
+  if (violations.length > 0) {
+    console.error("");
+    console.error("\u26a0\ufe0f  PATTERN CHECK REMINDER");
+    console.error("\u2501".repeat(28));
+    console.error(`\ud83d\udcc4 ${relPath}`);
+    // Show first 5 violations to keep output manageable
+    for (const v of violations.slice(0, 5)) {
+      console.error(`   Line ${v.line}: ${v.message}`);
+      console.error(`   \u2713 Fix: ${v.fix}`);
+    }
+    if (violations.length > 5) {
+      console.error(`   ... and ${violations.length - 5} more`);
+    }
+    console.error("");
+    console.error(
+      "Review docs/agent_docs/CODE_PATTERNS.md (\ud83d\udd34 = critical) for documented patterns."
+    );
+    console.error("\u2501".repeat(28));
+  }
 } catch (err) {
   // Exit gracefully on precheck failure instead of proceeding (Review #200 R4 - Qodo)
-  // Log error for debugging (Review #200 - Qodo suggestion #4)
-  // Sanitize error message to prevent path disclosure (Review #200 Round 2 - Qodo compliance)
-  // Add timestamp for audit trail (Review #200 Round 2 - Qodo Comprehensive Audit Trails)
   const timestamp = new Date().toISOString();
   const safeMsg = sanitizeFilesystemError(err);
   const safePath = sanitizePathForLog(relPath);
   console.error(`[${timestamp}] Pattern check skipped (precheck failed): ${safePath}: ${safeMsg}`);
-  // Exit gracefully - don't risk running pattern checker on inaccessible files
   console.log("ok");
   process.exit(0);
-}
-
-// Run pattern checker using spawnSync to avoid command injection
-const result = spawnSync("node", ["scripts/check-pattern-compliance.js", relPath], {
-  encoding: "utf8",
-  stdio: ["pipe", "pipe", "pipe"],
-  timeout: 30000,
-  cwd: projectDir,
-});
-
-// Combine stdout and stderr - violations may be written to either
-const output = `${result.stdout || ""}${result.stderr || ""}`;
-
-// If the checker couldn't run (timeout / spawn error), don't emit misleading warnings
-if (result.error || result.signal) {
-  console.log("ok");
-  process.exit(0);
-}
-
-// Check for violations - use stderr for informational messages
-if (output.includes("potential pattern violation")) {
-  console.error("");
-  console.error("\u26a0\ufe0f  PATTERN CHECK REMINDER");
-  console.error("\u2501".repeat(28));
-
-  // Extract relevant lines
-  const lines = output.split("\n");
-  for (const line of lines) {
-    if (/📄|Line|✓ Fix|📚 See/.test(line)) {
-      console.error(line);
-    }
-  }
-
-  console.error("");
-  console.error("Review docs/agent_docs/CODE_PATTERNS.md (🔴 = critical) for documented patterns.");
-  console.error("\u2501".repeat(28));
-} else if (typeof result.status === "number" && result.status !== 0) {
-  // Non-zero exit without explicit violation - non-blocking reminder
-  console.error("");
-  console.error("\u26a0\ufe0f  PATTERN CHECK: Review docs/agent_docs/CODE_PATTERNS.md");
 }
 
 // Protocol: stdout only contains "ok"

@@ -199,19 +199,15 @@ git log --oneline --since="YYYY-MM-DD"
 
 ## 2. Consolidation Status Check
 
-Check [AI_REVIEW_LEARNINGS_LOG.md](../../docs/AI_REVIEW_LEARNINGS_LOG.md) for
-the "Consolidation Trigger" section:
+Consolidation is fully automated via JSONL state files. The SessionStart hook
+runs `node scripts/run-consolidation.js --auto` which auto-consolidates when 10+
+reviews accumulate. No manual checks needed.
 
-- If "Reviews since last consolidation" >= 10: **⚠️ CONSOLIDATION WAS MISSED**
-- This means patterns from previous reviews are NOT in claude.md context
-- Previous session should have consolidated but didn't
+- **State:** `.claude/state/consolidation.json`
+- **Reviews:** `.claude/state/reviews.jsonl`
 
-**If consolidation was missed:**
-
-1. Note this in your session summary
-2. The patterns are still available in AI_REVIEW_LEARNINGS_LOG.md (read if
-   needed)
-3. Consolidation will happen at THIS session's end
+If auto-consolidation failed (check SessionStart output), run manually:
+`node scripts/run-consolidation.js --apply`
 
 ## 3. Documentation & Planning Awareness
 
@@ -294,6 +290,9 @@ npm run lessons:surface
 
 # Check for undocumented sessions (Layer D - compaction gap detector)
 npm run session:gaps
+
+# Check ROADMAP hygiene (unarchived completed items, sync issues)
+npm run roadmap:hygiene
 ```
 
 **Important**: These scripts are **required**. If any script fails:

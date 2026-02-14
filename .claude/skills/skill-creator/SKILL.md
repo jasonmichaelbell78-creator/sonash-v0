@@ -117,6 +117,10 @@ Skills use a three-level loading system to manage context efficiently:
 
 ## Skill Creation Process
 
+**Before creating skills**, review the project's
+[Skill & Agent Policy](../../../docs/agent_docs/SKILL_AGENT_POLICY.md) for
+naming conventions, scope rules, and usage policies.
+
 To create a skill, follow the "Skill Creation Process" in order, skipping steps
 only if there is a clear reason why they are not applicable.
 

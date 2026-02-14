@@ -498,7 +498,8 @@ invoked using the **Skill tool**.
 
 - `systematic-debugging` → Use FIRST for ANY bug, error, or unexpected behavior
 - `code-reviewer` → Use AFTER writing or modifying code
-- `requesting-code-review` → Use when completing features before merge
+- `code-reviewer` → Also use when completing features before merge (post-task
+  quality check)
 - `frontend-design` → Use for UI/UX implementation work
 - `senior-frontend` / `senior-backend` / `senior-fullstack` → Use for
   implementation guidance

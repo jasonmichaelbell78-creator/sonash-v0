@@ -305,7 +305,6 @@ Mark as RESOLVED when:
 
 ## Related
 
-- `sync-sonarcloud-debt` / `sonarcloud` - Import from SonarCloud
-- `add-manual-debt` - Add items manually
-- `add-deferred-debt` - Add from PR reviews
+- `sonarcloud` - Import from SonarCloud
+- `add-debt` - Add items manually or from PR reviews
 - `task-next` - Show next prioritized tasks from ROADMAP.md

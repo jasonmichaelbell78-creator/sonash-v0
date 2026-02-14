@@ -20,6 +20,8 @@
  */
 
 const { spawnSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Configuration
 const TRIGGERS = {
@@ -47,7 +49,7 @@ const TRIGGERS = {
     severity: "warning",
     description: "Review consolidation may be needed",
     threshold: 2, // Warn when 2 or fewer reviews remaining until 10 threshold
-    action: "Check: npm run consolidation:check",
+    action: "Consolidation will auto-run at next session-start",
   },
   skill_validation: {
     severity: "warning",
@@ -177,49 +179,97 @@ function checkSecurityTrigger(files) {
   return { triggered: false, name: "security_audit" };
 }
 
-// Check consolidation trigger
+/**
+ * Resolve git root directory, falling back to cwd
+ */
+function resolveGitRoot() {
+  const gitRoot = spawnSync("git", ["rev-parse", "--show-toplevel"], {
+    encoding: "utf8",
+    timeout: 3000,
+  });
+  return gitRoot.status === 0 && gitRoot.stdout
+    ? gitRoot.stdout.trim()
+    : path.resolve(process.cwd());
+}
+
+/**
+ * Count pending reviews from JSONL file since last consolidation
+ */
+function countPendingReviews(reviewsPath, lastConsolidated) {
+  // Size guard: skip oversized state files to prevent local DoS (Review #256)
+  const MAX_REVIEWS_SIZE = 512 * 1024; // 512 KB
+  let stat;
+  try {
+    stat = fs.statSync(reviewsPath);
+  } catch {
+    return 0; // File disappeared between existsSync and statSync
+  }
+  if (stat.size > MAX_REVIEWS_SIZE) {
+    console.error(`   ⚠️  reviews.jsonl exceeds ${MAX_REVIEWS_SIZE} bytes, skipping`);
+    return 0;
+  }
+
+  // Handle CRLF line endings + coerce string IDs (Review #256)
+  let content;
+  try {
+    content = fs.readFileSync(reviewsPath, "utf8").replaceAll("\r\n", "\n").trim();
+  } catch {
+    return 0; // File became unreadable
+  }
+  if (!content) return 0;
+
+  const lines = content.split("\n").filter(Boolean);
+  let count = 0;
+  for (const line of lines) {
+    try {
+      const r = JSON.parse(line);
+      const id =
+        typeof r.id === "number"
+          ? r.id
+          : typeof r.id === "string"
+            ? Number.parseInt(r.id, 10)
+            : NaN;
+      if (Number.isFinite(id) && id > lastConsolidated) count++;
+    } catch {
+      /* skip malformed lines */
+    }
+  }
+  return count;
+}
+
+// Check consolidation trigger (reads JSONL state files directly — Session #156)
 function checkConsolidationTrigger() {
   const trigger = TRIGGERS.consolidation;
 
   try {
-    // Run consolidation check and parse output
-    // Use spawnSync to avoid shell injection, combine stdout/stderr programmatically
-    const result = spawnSync("npm", ["run", "consolidation:check"], {
-      encoding: "utf-8",
-      timeout: 30000,
-      maxBuffer: 1024 * 1024,
-    });
+    const rootDir = resolveGitRoot();
+    const statePath = path.join(rootDir, ".claude", "state", "consolidation.json");
+    const reviewsPath = path.join(rootDir, ".claude", "state", "reviews.jsonl");
 
-    // Handle spawnSync failure states
-    if (result.error || result.signal || result.status !== 0) {
-      const errMsg =
-        result.error?.message ||
-        "exit=" + result.status + (result.signal ? ` signal=${result.signal}` : "");
-      console.error(`   ⚠️  Consolidation check failed: ${errMsg}`);
+    if (!fs.existsSync(statePath) || !fs.existsSync(reviewsPath)) {
       return { triggered: false, name: "consolidation" };
     }
 
-    const output = `${result.stdout || ""}\n${result.stderr || ""}`;
+    const state = JSON.parse(fs.readFileSync(statePath, "utf8"));
+    const lastConsolidated =
+      typeof state.lastConsolidatedReview === "number" ? state.lastConsolidatedReview : 0;
+    const consolidationThreshold = typeof state.threshold === "number" ? state.threshold : 10;
+    const pendingCount = countPendingReviews(reviewsPath, lastConsolidated);
 
-    // Look for "X reviews until next consolidation"
-    const match = output.match(/(\d{1,10}) reviews? until next consolidation/);
-    if (match) {
-      const remaining = Number.parseInt(match[1], 10);
-      if (remaining <= trigger.threshold) {
-        return {
-          triggered: true,
-          name: "consolidation",
-          severity: trigger.severity,
-          description: trigger.description,
-          action: trigger.action,
-          details: `  - ${remaining} reviews until consolidation threshold`,
-        };
-      }
+    const remaining = consolidationThreshold - pendingCount;
+    if (remaining <= trigger.threshold) {
+      return {
+        triggered: true,
+        name: "consolidation",
+        severity: trigger.severity,
+        description: trigger.description,
+        action: trigger.action,
+        details: `  - ${remaining <= 0 ? "0" : remaining} reviews until consolidation threshold (${pendingCount} pending)`,
+      };
     }
 
     return { triggered: false, name: "consolidation" };
   } catch (err) {
-    // Log error for debugging but don't block push
     const errMsg = err instanceof Error ? err.message : String(err);
     console.error(`   ⚠️  Consolidation check failed: ${errMsg}`);
     return { triggered: false, name: "consolidation" };

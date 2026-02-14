@@ -26,9 +26,8 @@ canonical format stored in `MASTER_DEBT.jsonl`.
 | View all technical debt    | Read `docs/technical-debt/INDEX.md`                    |
 | View critical items (S0)   | Read `docs/technical-debt/views/by-severity.md`        |
 | Add debt from audit        | Run `node scripts/debt/intake-audit.js <file>`         |
-| Add debt manually          | Use `add-manual-debt` skill                            |
-| Add deferred PR item       | Use `add-deferred-debt` skill                          |
-| Sync with SonarCloud       | Use `sync-sonarcloud-debt` skill                       |
+| Add debt (manual or PR)    | Use `add-debt` skill                                   |
+| Sync with SonarCloud       | Use `sonarcloud` skill                                 |
 | Verify items in queue      | Use `verify-technical-debt` skill                      |
 | Mark item as resolved      | Run `node scripts/debt/resolve-item.js DEBT-XXXX`      |
 | Check verification backlog | Read `docs/technical-debt/views/verification-queue.md` |
@@ -123,7 +122,7 @@ When a PR review identifies items to defer:
 2. **Use the skill:**
 
 ```
-Use the add-deferred-debt skill with:
+Use the add-debt skill with:
 - File: path/to/file.ts
 - Line: 42
 - Severity: S2
@@ -138,7 +137,7 @@ Use the add-deferred-debt skill with:
 To sync current SonarCloud issues:
 
 ```
-Use the sync-sonarcloud-debt skill
+Use the sonarcloud skill
 ```
 
 The skill will:
@@ -153,7 +152,7 @@ The skill will:
 For ad-hoc technical debt discovery:
 
 ```
-Use the add-manual-debt skill with:
+Use the add-debt skill with:
 - File: path/to/file.ts
 - Line: 42
 - Title: Issue description
@@ -389,12 +388,11 @@ All scripts are located in `scripts/debt/`.
 
 ## 6. Available Skills
 
-| Skill                   | Purpose                  | When to Use               |
-| ----------------------- | ------------------------ | ------------------------- |
-| `sync-sonarcloud-debt`  | Sync with SonarCloud API | On-demand                 |
-| `add-manual-debt`       | Add ad-hoc debt item     | When discovering new debt |
-| `add-deferred-debt`     | Add PR deferred item     | During PR review          |
-| `verify-technical-debt` | Verify items in queue    | When backlog builds up    |
+| Skill                   | Purpose                          | When to Use               |
+| ----------------------- | -------------------------------- | ------------------------- |
+| `sonarcloud`            | Sync with SonarCloud API         | On-demand                 |
+| `add-debt`              | Add debt (manual or PR-deferred) | When discovering new debt |
+| `verify-technical-debt` | Verify items in queue            | When backlog builds up    |
 
 ---
 
