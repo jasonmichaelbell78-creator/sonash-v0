@@ -109,7 +109,8 @@
     "compaction-handoff.js",
     "pre-compaction-save.js",
     "check-roadmap-health.js",
-    "generate-pending-alerts.js"
+    "generate-pending-alerts.js",
+    "run-alerts.js"
   ],
   "json-parse-without-try": [
     "check-session-gaps.js",
@@ -122,7 +123,8 @@
     "compaction-handoff.js",
     "pre-compaction-save.js",
     "generate-pending-alerts.js",
-    "normalize-format.js"
+    "normalize-format.js",
+    "run-alerts.js"
   ],
   "unescaped-regexp-input": ["suggest-pattern-automation.js", "pattern-check.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
@@ -155,6 +157,7 @@
     "extract-agent-findings.js",
     "decrypt-secrets.js",
     "encrypt-secrets.js",
-    "archive-doc.js"
+    "archive-doc.js",
+    "run-alerts.js"
   ]
 }

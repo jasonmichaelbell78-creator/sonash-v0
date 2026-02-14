@@ -14,9 +14,19 @@
  * Output: v2 JSON schema to stdout, progress to stderr.
  */
 
-const { execSync } = require("node:child_process");
-const fs = require("node:fs");
-const path = require("node:path");
+let execSync, fs, path;
+try {
+  ({ execSync } = require("node:child_process"));
+  fs = require("node:fs");
+  path = require("node:path");
+} catch (err) {
+  console.error(
+    "Fatal: failed to load core Node.js modules:",
+    err instanceof Error ? err.message : String(err)
+  );
+  process.exitCode = 1;
+  throw err;
+}
 
 // Find project root (where package.json is)
 // Review #214: Use platform-agnostic root detection
@@ -128,6 +138,41 @@ function safeErrorMsg(err) {
   }
 }
 
+/** Max file size for readFileSync+split operations (10MB) */
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+/**
+ * Safe JSON.parse wrapper - returns fallback on malformed input
+ */
+function safeParse(str, fallback = null) {
+  try {
+    return JSON.parse(str);
+  } catch {
+    return fallback;
+  }
+}
+
+/**
+ * Safely read a file and split into lines with size guard.
+ * Returns empty array if file missing, too large, or unreadable.
+ */
+function safeReadLines(filePath) {
+  try {
+    const stat = fs.statSync(filePath);
+    if (stat.size > MAX_FILE_SIZE) {
+      console.error(`  [warn] File too large (${stat.size} bytes), skipping: ${filePath}`);
+      return [];
+    }
+  } catch {
+    return [];
+  }
+  try {
+    return fs.readFileSync(filePath, "utf8").trim().split("\n").filter(Boolean); // MAX_LINES guarded by statSync above
+  } catch {
+    return [];
+  }
+}
+
 /**
  * Run a command and capture output
  */
@@ -214,21 +259,9 @@ function rateLowerBetter(value, benchmark) {
  */
 function loadMasterDebt() {
   const debtPath = path.join(ROOT_DIR, "docs", "technical-debt", "MASTER_DEBT.jsonl");
-  try {
-    const lines = fs.readFileSync(debtPath, "utf8").trim().split("\n").filter(Boolean);
-    return lines
-      .map((l) => {
-        try {
-          return JSON.parse(l);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
-  } catch (err) {
-    console.error(`  [warn] Failed to load MASTER_DEBT.jsonl: ${safeErrorMsg(err)}`);
-    return [];
-  }
+  const lines = safeReadLines(debtPath);
+  if (lines.length === 0) return [];
+  return lines.map((l) => safeParse(l)).filter(Boolean);
 }
 
 /**
@@ -240,16 +273,8 @@ function loadMasterDebt() {
  */
 function computeTrend(logPath, valueField, windowSize = 5) {
   try {
-    const lines = fs.readFileSync(logPath, "utf8").trim().split("\n").filter(Boolean);
-    const entries = lines
-      .map((l) => {
-        try {
-          return JSON.parse(l);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    const lines = safeReadLines(logPath);
+    const entries = lines.map((l) => safeParse(l)).filter(Boolean);
 
     const recent = entries.slice(-windowSize);
     if (recent.length < 2) return null;
@@ -318,8 +343,8 @@ function groupByField(items, field) {
  */
 function sparkline(values) {
   if (!values || values.length === 0) return "";
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  const min = values.reduce((a, b) => (b < a ? b : a), values[0] ?? 0);
+  const max = values.reduce((a, b) => (b > a ? b : a), values[0] ?? 0);
   const range = max - min || 1;
   const chars = "\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588";
   return values.map((v) => chars[Math.min(7, Math.floor(((v - min) / range) * 7))]).join("");
@@ -337,7 +362,8 @@ const BASELINE_PATH = path.join(ROOT_DIR, ".claude", "state", "alerts-baseline.j
 function loadBaseline() {
   try {
     const content = fs.readFileSync(BASELINE_PATH, "utf8");
-    const baseline = JSON.parse(content);
+    const baseline = safeParse(content);
+    if (!baseline) return null;
     // Only use if from today (same session day)
     const baselineDate = new Date(baseline.timestamp).toDateString();
     const today = new Date().toDateString();
@@ -382,7 +408,8 @@ function saveBaseline() {
       fs.mkdirSync(stateDir, { recursive: true });
     }
     const tmpPath = `${BASELINE_PATH}.tmp`;
-    fs.writeFileSync(tmpPath, JSON.stringify(baseline, null, 2));
+    const data = JSON.stringify(baseline, null, 2);
+    fs.writeFileSync(tmpPath, data, "utf-8"); // atomic: write .tmp then renameSync below
     if (fs.existsSync(BASELINE_PATH)) fs.rmSync(BASELINE_PATH, { force: true });
     fs.renameSync(tmpPath, BASELINE_PATH);
   } catch (err) {
@@ -567,7 +594,7 @@ function checkSecurity() {
     const out = (auditResult.output || "").trim();
     const err = (auditResult.stderr || "").trim();
     const rawJson = out.startsWith("{") ? out : err.startsWith("{") ? err : "{}";
-    const audit = JSON.parse(rawJson);
+    const audit = safeParse(rawJson, {});
 
     const hasVulnMetadata = !!audit?.metadata?.vulnerabilities;
     if (!auditResult.success && !hasVulnMetadata) {
@@ -689,8 +716,8 @@ function checkSessionContext() {
 
   try {
     const content = fs.readFileSync(sessionStatePath, "utf8");
-    const state = JSON.parse(content);
-    if (state.lastBegin && !state.lastEnd) {
+    const state = safeParse(content);
+    if (state && state.lastBegin && !state.lastEnd) {
       const beginTime = new Date(state.lastBegin).getTime();
       if (!Number.isNaN(beginTime)) {
         gapHours = Math.max(0, Math.floor((Date.now() - beginTime) / (1000 * 60 * 60)));
@@ -728,22 +755,13 @@ function checkCurrentAlerts() {
 
   try {
     const content = fs.readFileSync(alertsPath, "utf8");
-    alertsData = JSON.parse(content);
+    alertsData = safeParse(content);
   } catch {
     // File doesn't exist - try to generate
   }
 
-  if (!alertsData) {
-    const genResult = runCommand("node scripts/generate-pending-alerts.js");
-    if (genResult.success) {
-      try {
-        const content = fs.readFileSync(alertsPath, "utf8");
-        alertsData = JSON.parse(content);
-      } catch {
-        // Still can't read
-      }
-    }
-  }
+  // Legacy generate-pending-alerts.js removed in Session #158
+  // Alerts are now fully handled by this script (run-alerts.js)
 
   let alertCount = 0;
   if (alertsData) {
@@ -850,10 +868,9 @@ function checkRoadmapPlanning() {
 
     const datePattern = /\b(202[4-9])-([01]\d)-([0-3]\d)\b/g;
     const today = new Date();
-    let match;
     let overdueCount = 0;
 
-    while ((match = datePattern.exec(content)) !== null) {
+    for (const match of content.matchAll(datePattern)) {
       const itemDate = new Date(`${match[1]}-${match[2]}-${match[3]}`);
       if (itemDate < today) {
         overdueCount++;
@@ -892,7 +909,8 @@ function checkDebtMetrics() {
   const metricsPath = path.join(ROOT_DIR, "docs", "technical-debt", "metrics.json");
   let metrics;
   try {
-    metrics = JSON.parse(fs.readFileSync(metricsPath, "utf8"));
+    metrics = safeParse(fs.readFileSync(metricsPath, "utf8"));
+    if (!metrics) return;
   } catch {
     return;
   }
@@ -1087,8 +1105,8 @@ function checkLearningEffectiveness() {
   if (failing > 0) {
     const actionLines = [];
     const actionRegex = /\*\*\[Automation\]\*\*\s+Automate\s+"([^"]+)"/g;
-    let m;
-    while ((m = actionRegex.exec(content)) !== null && actionLines.length < 3) {
+    for (const m of content.matchAll(actionRegex)) {
+      if (actionLines.length >= 3) break;
       actionLines.push(m[1]);
     }
     const topNames = actionLines.length > 0 ? actionLines.join(", ") : "see LEARNING_METRICS.md";
@@ -1159,22 +1177,20 @@ function checkAgentCompliance() {
   const invocationsPath = path.join(ROOT_DIR, ".claude", "state", "agent-invocations.jsonl");
   const sessionAgentsPath = path.join(ROOT_DIR, ".claude", "hooks", ".session-agents.json");
 
-  try {
-    const lines = fs.readFileSync(invocationsPath, "utf8").trim().split("\n").filter(Boolean);
-    invoked = lines
+  const invocationLines = safeReadLines(invocationsPath);
+  if (invocationLines.length > 0) {
+    invoked = invocationLines
       .map((l) => {
-        try {
-          const e = JSON.parse(l);
-          return e.agent || e.name || "";
-        } catch {
-          return "";
-        }
+        const e = safeParse(l);
+        return e ? e.agent || e.name || "" : "";
       })
       .filter(Boolean);
-  } catch {
+  } else {
     try {
-      const agents = JSON.parse(fs.readFileSync(sessionAgentsPath, "utf8"));
-      invoked = Array.isArray(agents) ? agents.map((a) => a.name || a) : Object.keys(agents);
+      const agents = safeParse(fs.readFileSync(sessionAgentsPath, "utf8"));
+      if (agents) {
+        invoked = Array.isArray(agents) ? agents.map((a) => a.name || a) : Object.keys(agents);
+      }
     } catch {
       // Neither file exists
     }
@@ -1185,7 +1201,9 @@ function checkAgentCompliance() {
   }
 
   let changedFiles = [];
-  const lastCommitResult = runCommand("git diff --name-only HEAD~1 HEAD", { timeout: 10000 });
+  const lastCommitResult = runCommand("git diff --name-only --diff-filter=ACM HEAD~1 HEAD", {
+    timeout: 10000,
+  });
   if (lastCommitResult.success) {
     changedFiles = lastCommitResult.output
       .split("\n")
@@ -1194,7 +1212,7 @@ function checkAgentCompliance() {
   } else {
     // Fallback for initial commit: diff against empty tree
     const initialResult = runCommand(
-      "git diff --name-only 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD",
+      "git diff --name-only --diff-filter=ACM 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD",
       { timeout: 10000 }
     );
     if (initialResult.success) {
@@ -1280,7 +1298,7 @@ function checkHookWarnings() {
   const warningsPath = path.join(ROOT_DIR, ".claude", "hook-warnings.json");
   let data;
   try {
-    data = JSON.parse(fs.readFileSync(warningsPath, "utf8"));
+    data = safeParse(fs.readFileSync(warningsPath, "utf8"));
   } catch {
     addContext("hook-warnings", {
       benchmarks: { warning_age_days: BENCHMARKS.hooks.warning_age_days },
@@ -1398,26 +1416,10 @@ function checkTestResults() {
   if (files.length === 0) return;
 
   const latestFile = files[0];
-  let lines;
-  try {
-    lines = fs
-      .readFileSync(path.join(resultsDir, latestFile), "utf8")
-      .trim()
-      .split("\n")
-      .filter(Boolean);
-  } catch {
-    return;
-  }
+  const lines = safeReadLines(path.join(resultsDir, latestFile));
+  if (lines.length === 0) return;
 
-  const resultsParsed = lines
-    .map((l) => {
-      try {
-        return JSON.parse(l);
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
+  const resultsParsed = lines.map((l) => safeParse(l)).filter(Boolean);
 
   if (resultsParsed.length === 0) return;
 
@@ -1521,23 +1523,15 @@ function checkReviewQuality() {
   console.error("  Checking review quality...");
 
   const metricsPath = path.join(ROOT_DIR, ".claude", "state", "review-metrics.jsonl");
-  let lines;
-  try {
-    lines = fs.readFileSync(metricsPath, "utf8").trim().split("\n").filter(Boolean);
-  } catch {
+  const lines = safeReadLines(metricsPath);
+  if (lines.length === 0) {
     addAlert("review-quality", "info", "No review metrics data yet", null, null);
     return;
   }
 
   const recent = lines
     .slice(-5)
-    .map((l) => {
-      try {
-        return JSON.parse(l);
-      } catch {
-        return null;
-      }
-    })
+    .map((l) => safeParse(l))
     .filter(Boolean);
 
   if (recent.length === 0) return;
@@ -1611,17 +1605,14 @@ function checkConsolidation() {
   const statePath = path.join(ROOT_DIR, ".claude", "state", "consolidation.json");
   const reviewsPath = path.join(ROOT_DIR, ".claude", "state", "reviews.jsonl");
   try {
-    const state = JSON.parse(fs.readFileSync(statePath, "utf8"));
+    const state = safeParse(fs.readFileSync(statePath, "utf8"));
+    if (!state) throw new Error("Invalid consolidation state");
     const lastConsolidated =
       typeof state.lastConsolidatedReview === "number" ? state.lastConsolidatedReview : 0;
-    const lines = fs.readFileSync(reviewsPath, "utf8").trim().split("\n").filter(Boolean);
+    const lines = safeReadLines(reviewsPath);
     reviewsPending = lines.reduce((count, line) => {
-      try {
-        const r = JSON.parse(line);
-        return typeof r.id === "number" && r.id > lastConsolidated ? count + 1 : count;
-      } catch {
-        return count;
-      }
+      const r = safeParse(line);
+      return r && typeof r.id === "number" && r.id > lastConsolidated ? count + 1 : count;
     }, 0);
     if (reviewsPending >= 10) {
       addAlert(
@@ -1673,22 +1664,12 @@ function checkVelocity() {
   console.error("  Checking velocity...");
 
   const logPath = path.join(ROOT_DIR, ".claude", "state", "velocity-log.jsonl");
-  let lines;
-  try {
-    lines = fs.readFileSync(logPath, "utf8").trim().split("\n").filter(Boolean);
-  } catch {
-    return;
-  }
+  const lines = safeReadLines(logPath);
+  if (lines.length === 0) return;
 
   const recent = lines
     .slice(-5)
-    .map((l) => {
-      try {
-        return JSON.parse(l);
-      } catch {
-        return null;
-      }
-    })
+    .map((l) => safeParse(l))
     .filter(Boolean);
 
   if (recent.length === 0) return;
@@ -1751,24 +1732,17 @@ function checkSessionActivity() {
   console.error("  Checking session activity...");
 
   const activityPath = path.join(ROOT_DIR, ".claude", "session-activity.jsonl");
-  let lines;
-  try {
-    lines = fs.readFileSync(activityPath, "utf8").trim().split("\n").filter(Boolean);
-  } catch {
-    return;
-  }
+  const lines = safeReadLines(activityPath);
+  if (lines.length === 0) return;
 
   let lastStartIdx = -1;
   const entries = [];
   for (let i = 0; i < lines.length; i++) {
-    try {
-      const entry = JSON.parse(lines[i]);
-      entries.push(entry);
-      if (entry.type === "session_start" || entry.event === "session_start") {
-        lastStartIdx = i;
-      }
-    } catch {
-      // skip
+    const entry = safeParse(lines[i]);
+    if (!entry) continue;
+    entries.push(entry);
+    if (entry.type === "session_start" || entry.event === "session_start") {
+      lastStartIdx = i;
     }
   }
 
@@ -1816,22 +1790,10 @@ function checkCommitActivity() {
   console.error("  Checking commit activity...");
 
   const logPath = path.join(ROOT_DIR, ".claude", "state", "commit-log.jsonl");
-  let lines;
-  try {
-    lines = fs.readFileSync(logPath, "utf8").trim().split("\n").filter(Boolean);
-  } catch {
-    return;
-  }
+  const lines = safeReadLines(logPath);
+  if (lines.length === 0) return;
 
-  const entries = lines
-    .map((l) => {
-      try {
-        return JSON.parse(l);
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
+  const entries = lines.map((l) => safeParse(l)).filter(Boolean);
 
   if (entries.length === 0) return;
 
