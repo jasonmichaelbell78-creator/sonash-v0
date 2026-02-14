@@ -1881,28 +1881,6 @@ Automatically after context compaction (matcher: `compact`) **What it does:**
 
 These hooks fire after Write, Edit, or MultiEdit tool usage on code files.
 
-#### `check-write-requirements.js`
-
-**Description:** Agent requirement validator for Write tool **When triggered:**
-After Write tool is used **What it does:**
-
-- Checks if required agents were invoked
-- Validates file write requirements
-- Ensures proper review process **Location:**
-  `.claude/hooks/check-write-requirements.js` **Status Message:** "Checking
-  agent requirements..."
-
-#### `check-edit-requirements.js`
-
-**Description:** Agent requirement validator for Edit/MultiEdit tools **When
-triggered:** After Edit or MultiEdit tool is used **What it does:**
-
-- Validates edit requirements
-- Ensures proper code review
-- Checks agent invocation **Location:**
-  `.claude/hooks/check-edit-requirements.js` **Status Message:** "Checking agent
-  requirements..."
-
 #### `pattern-check.js`
 
 **Description:** Anti-pattern compliance checker **When triggered:** After

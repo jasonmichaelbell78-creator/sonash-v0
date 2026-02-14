@@ -177,12 +177,7 @@ function main() {
 
   // NEW COMMIT DETECTED — capture metadata
   // Use Unit Separator (\x1f) instead of | to avoid corruption from | in commit messages
-  const commitLine = gitExec([
-    "log",
-    "--format=%H\x1f%h\x1f%s\x1f%an\x1f%ad",
-    "--date=iso-strict",
-    "-1",
-  ]);
+  const commitLine = gitExec(["log", "--format=%H\x1f%h\x1f%s", "-1"]);
   const parts = commitLine.split("\x1f");
 
   const branch = gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
@@ -196,8 +191,6 @@ function main() {
     hash: parts[0] || currentHead,
     shortHash: parts[1] || currentHead.slice(0, 7),
     message: parts[2] || "",
-    author: parts[3] || "",
-    authorDate: parts[4] || "",
     branch: branch,
     filesChanged: filesChanged.length,
     filesList: filesChanged.slice(0, 30), // Cap at 30 files

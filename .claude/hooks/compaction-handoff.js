@@ -23,7 +23,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 
 // Thresholds - trigger handoff preparation when ANY threshold hit
 const FILE_READ_THRESHOLD = 25; // Files read in session
@@ -97,9 +97,9 @@ function saveJson(filePath, data) {
 /**
  * Execute git command safely
  */
-function gitExec(cmd) {
+function gitExec(args) {
   try {
-    return execSync(cmd, { cwd: projectDir, encoding: "utf8", timeout: 5000 }).trim();
+    return execFileSync("git", args, { cwd: projectDir, encoding: "utf8", timeout: 5000 }).trim();
   } catch {
     return "";
   }
@@ -110,16 +110,16 @@ function gitExec(cmd) {
  */
 function gatherGitContext() {
   return {
-    branch: gitExec("git rev-parse --abbrev-ref HEAD"),
-    lastCommit: gitExec("git log --oneline -1"),
-    uncommittedFiles: gitExec("git diff --name-only")
+    branch: gitExec(["rev-parse", "--abbrev-ref", "HEAD"]),
+    lastCommit: gitExec(["log", "--oneline", "-1"]),
+    uncommittedFiles: gitExec(["diff", "--name-only"])
       .split("\n")
       .filter((f) => f.length > 0),
-    untrackedFiles: gitExec("git ls-files --others --exclude-standard")
+    untrackedFiles: gitExec(["ls-files", "--others", "--exclude-standard"])
       .split("\n")
       .filter((f) => f.length > 0)
       .slice(0, 20), // Cap at 20
-    stagedFiles: gitExec("git diff --cached --name-only")
+    stagedFiles: gitExec(["diff", "--cached", "--name-only"])
       .split("\n")
       .filter((f) => f.length > 0),
   };
@@ -193,7 +193,7 @@ function buildHandoff() {
 
   // Layer B enhancements: task states + recent commits + session counter
   const taskStates = gatherTaskStates();
-  const recentCommits = gitExec("git log --oneline -10")
+  const recentCommits = gitExec(["log", "--oneline", "-10"])
     .split("\n")
     .filter((l) => l.length > 0);
   const sessionCounter = getSessionCounter();

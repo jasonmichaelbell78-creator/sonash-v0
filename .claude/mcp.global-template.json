@@ -7,10 +7,10 @@
       "command": "bunx",
       "args": ["@ccusage/mcp@latest"]
     },
-    "puppeteer": {
+    "playwright": {
       "_comment": "Browser automation for testing and screenshots",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+      "args": ["-y", "@playwright/mcp@latest"]
     }
   }
 }

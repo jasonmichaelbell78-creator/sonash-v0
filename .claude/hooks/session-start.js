@@ -60,6 +60,15 @@ try {
 console.log("");
 
 // =============================================================================
+// Ephemeral File Cleanup
+// =============================================================================
+try {
+  fs.unlinkSync(path.join(projectDir, ".claude", "tmp-alerts.json"));
+} catch {
+  /* file may not exist */
+}
+
+// =============================================================================
 // Cross-Session Validation (check if previous session ended properly)
 // =============================================================================
 
@@ -276,7 +285,7 @@ function saveRootHash() {
   if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(LOCKFILE_HASH_FILE, hash);
+  fs.writeFileSync(LOCKFILE_HASH_FILE, hash, "utf-8");
 }
 
 function saveFunctionsHash() {
@@ -284,7 +293,7 @@ function saveFunctionsHash() {
   if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(FUNCTIONS_LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, hash);
+  fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, hash, "utf-8");
 }
 
 function runCommand(description, command, timeoutMs = 120000) {

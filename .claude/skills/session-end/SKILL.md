@@ -90,6 +90,10 @@ npm run hooks:health -- --end
 Remove ephemeral session state that should not persist.
 
 ```bash
+# Remove ephemeral session tracking files
+rm -f .claude/hooks/.session-agents.json
+rm -f .claude/hooks/.agent-trigger-state.json
+
 # Always remove the pending reviews queue for the session
 rm -f .claude/state/pending-reviews.json
 
