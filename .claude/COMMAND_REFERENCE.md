@@ -94,6 +94,36 @@ DEBT-XXXX IDs **Note:** Uses 4-phase adaptive architecture with 8 parallel
 agents; findings scored on I0-I3 impact scale; honesty guardrails require
 counter-arguments and 70% confidence threshold
 
+### `/audit-engineering-productivity`
+
+**Description:** Run a single-session engineering productivity and DX audit on
+the codebase **When to use:** When developer experience friction is suspected,
+debugging workflows feel slow, or offline development gaps exist **Example:**
+`/audit-engineering-productivity` **Parameters:** None **Output:** Engineering
+productivity findings in JSONL format for TDMS intake **Note:** Covers DX
+friction, debugging workflows, offline gaps, and tooling improvements
+
+### `/audit-ai-optimization`
+
+**Description:** Run a single-session AI optimization audit on the codebase
+**When to use:** When AI infrastructure has grown significantly, token costs are
+increasing, skill overlap or dead automation suspected, or hook latency
+impacting DX **Example:** `/audit-ai-optimization` **Parameters:** None
+**Output:** AI optimization findings in JSONL format for TDMS intake **Note:**
+Covers 12 domains: dead docs, dead scripts, fragile parsing, format waste, AI
+instruction bloat, hook latency, subprocess overhead, skill overlap, agent
+prompt quality, MCP config efficiency, context optimization, memory/state
+management
+
+### `/create-audit`
+
+**Description:** Interactive wizard to scaffold a new audit type with skill,
+template, and documentation **When to use:** When adding a new audit category to
+the ecosystem **Example:** `/create-audit` **Parameters:** None (interactive)
+**Output:** New SKILL.md, multi-AI template, AUDIT_STANDARDS.md entry, and
+AUDIT_TRACKER.md threshold row **Note:** Generates all required files following
+the audit ecosystem standards documented in `docs/audits/AUDIT_STANDARDS.md`
+
 ### `/deep-plan`
 
 **Description:** Structured discovery-first planning for complex tasks **When to
@@ -762,13 +792,13 @@ Patterns
 
 #### `audit-comprehensive`
 
-**Description:** Run all 7 audit types in staged waves (4+2+1 agents) with
-checkpoints, S0/S1 escalation, and aggregated results. Stage 1: code, security,
-performance, refactoring (4 parallel). Stage 2: documentation, process,
-engineering-productivity (3 parallel). Stage 3: aggregation. **When to use:**
-Full codebase health assessment **Example:** Before major release or quarterly
-review **Parameters:** None **Updated:** Session #127 - v2.0 staged execution
-with CLAUDE.md compliance
+**Description:** Run all 9 audit domains in staged waves with checkpoints, S0/S1
+escalation, and aggregated results. Stage 1: code, security, performance,
+refactoring (4 parallel). Stage 2: documentation, process,
+engineering-productivity (3 parallel). Stage 2.5: enhancements, ai-optimization
+(2 parallel). Stage 3: aggregation. **When to use:** Full codebase health
+assessment **Example:** Before major release or quarterly review **Parameters:**
+None **Updated:** Session #160 - v3.0 with 9 domains in 4 stages
 
 #### `audit-documentation`
 
@@ -810,6 +840,38 @@ use:** Security review, AI-codebase security assessment **Example:**
 Pre-production security check or AI Health Score calculation **Parameters:**
 None **Updated:** Session #125 - parallel architecture + AI Security Patterns
 
+#### `audit-engineering-productivity`
+
+**Description:** Run single-session engineering productivity and DX audit **When
+to use:** DX friction assessment, debugging workflow review, offline gap
+analysis **Example:** `/audit-engineering-productivity` **Parameters:** None
+**Added:** Session #160
+
+#### `audit-ai-optimization`
+
+**Description:** Run single-session AI optimization audit covering 12 domains
+(dead docs/scripts, fragile parsing, format waste, AI instruction bloat, hook
+latency, subprocess overhead, skill overlap, agent prompt quality, MCP config
+efficiency, context optimization, memory/state management) **When to use:** AI
+infrastructure health check, token cost reduction, hook latency investigation
+**Example:** `/audit-ai-optimization` **Parameters:** None **Added:** Session
+#160
+
+#### `audit-enhancements`
+
+**Description:** Run comprehensive enhancement audit across 8 domains (code,
+product, UX, content, workflows, infrastructure, external services,
+meta-tooling) with 4-phase adaptive architecture and 8 parallel agents **When to
+use:** Improvement discovery beyond bug fixes and tech debt **Example:**
+`/audit-enhancements` **Parameters:** None **Added:** Session #153
+
+#### `create-audit`
+
+**Description:** Interactive wizard to scaffold new audit types with skill,
+multi-AI template, standards entry, and tracker threshold **When to use:**
+Adding a new audit category to the ecosystem **Example:** `/create-audit`
+**Parameters:** None (interactive) **Added:** Session #160
+
 #### `multi-ai-audit`
 
 **Description:** Interactive orchestrator for multi-AI consensus audits with
@@ -821,12 +883,12 @@ and consensus scoring, cross-category unification with cross-cutting file
 detection, automated TDMS intake (MASTER_DEBT.jsonl integration with DEBT-XXXX
 ID assignment), automated roadmap track assignment and validation, and context
 compaction survival via file-based state. **When to use:** Multi-AI consensus
-audits across 7 categories (code, security, performance, refactoring,
-documentation, process, engineering-productivity) **Example:** `/multi-ai-audit`
-then follow interactive prompts **Parameters:** None - interactive workflow
-**Commands:** `add <source>` (add findings from an AI), `done` (aggregate
-category), `skip` (skip category), `finish` (unify all), `status` (show
-progress) **Output:** Unified findings in
+audits across 9 categories (code, security, performance, refactoring,
+documentation, process, engineering-productivity, enhancements, ai-optimization)
+**Example:** `/multi-ai-audit` then follow interactive prompts **Parameters:**
+None - interactive workflow **Commands:** `add <source>` (add findings from an
+AI), `done` (aggregate category), `skip` (skip category), `finish` (unify all),
+`status` (show progress) **Output:** Unified findings in
 `docs/audits/multi-ai/<session>/final/`, DEBT items in MASTER_DEBT.jsonl,
 roadmap track assignments, metrics update **Added:** Session #130 **Updated:**
 Session #134 (v1.2 - Phase 7 rewritten as interactive placement with
@@ -2358,26 +2420,27 @@ hooks, and settings.
 
 ## Version History
 
-| Version | Session | Changes                                                                                                                                                                 |
-| ------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 4.2     | #143    | Added `/pr-retro` skill; strengthened `/pr-review` with fix-or-track mandate (Origin classification, strict deferral templates, architectural item escalation)          |
-| 4.1     | #142    | Added `find-skills` skill (vercel-labs/skills ecosystem discovery)                                                                                                      |
-| 4.0     | #140    | Major overhaul: added Git Hooks, GitHub Actions, Plugin Skills, Environment Variables sections; fixed MCP servers; added missing agents/hooks; expanded system commands |
-| 3.3     | #134    | Updated `/sonarcloud` (interactive placement phase) and `/multi-ai-audit` (Phase 7 rewritten as interactive placement)                                                  |
-| 3.2     | #134    | Review #250: Removed duplicate `/sonarcloud` entry; fixed deprecated command examples                                                                                   |
-| 3.1     | #133    | Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff                                   |
-| 3.0     | #133    | Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills                                                |
-| 2.9     | #130    | Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits                                                                                     |
-| 2.8     | #129    | pr-review skill consolidation tracking (counter replaced by JSONL state in Session #156)                                                                                |
-| 2.7     | #125    | Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture                                                       |
-| 2.6     | #124    | Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents)                                                                                |
-| 2.5     | #123    | Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt)                                                             |
-| 2.3     | #115    | Added auto-commit mechanism to session-end skill                                                                                                                        |
-| 2.2     | #114    | Added 3 missing skills, documented 14 undocumented hooks, clarified commands→skills migration                                                                           |
-| 2.1     | #112    | Updated session-end checklist to include DOCUMENTATION_INDEX.md                                                                                                         |
-| 2.0     | #110    | Fix expansion-evaluation template per PR review (Review #195)                                                                                                           |
-| 1.5     | #108    | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook                                                                                                         |
-| 1.0     | #100    | Initial comprehensive command reference created                                                                                                                         |
+| Version | Session | Changes                                                                                                                                                                     |
+| ------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.3     | #160    | Added `/audit-ai-optimization`, `/audit-engineering-productivity`, `/create-audit`; updated audit-comprehensive to 9 domains (v3.0); updated multi-ai-audit to 9 categories |
+| 4.2     | #143    | Added `/pr-retro` skill; strengthened `/pr-review` with fix-or-track mandate (Origin classification, strict deferral templates, architectural item escalation)              |
+| 4.1     | #142    | Added `find-skills` skill (vercel-labs/skills ecosystem discovery)                                                                                                          |
+| 4.0     | #140    | Major overhaul: added Git Hooks, GitHub Actions, Plugin Skills, Environment Variables sections; fixed MCP servers; added missing agents/hooks; expanded system commands     |
+| 3.3     | #134    | Updated `/sonarcloud` (interactive placement phase) and `/multi-ai-audit` (Phase 7 rewritten as interactive placement)                                                      |
+| 3.2     | #134    | Review #250: Removed duplicate `/sonarcloud` entry; fixed deprecated command examples                                                                                       |
+| 3.1     | #133    | Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff                                       |
+| 3.0     | #133    | Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills                                                    |
+| 2.9     | #130    | Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits                                                                                         |
+| 2.8     | #129    | pr-review skill consolidation tracking (counter replaced by JSONL state in Session #156)                                                                                    |
+| 2.7     | #125    | Updated audit-security (4 agents), audit-code (3 agents), audit-performance (2 agents) with parallel architecture                                                           |
+| 2.6     | #124    | Updated audit-documentation to v2.0 with 6-stage parallel audit architecture (18 agents)                                                                                    |
+| 2.5     | #123    | Added TDMS skills section (verify-technical-debt, sync-sonarcloud-debt, add-manual-debt, add-deferred-debt)                                                                 |
+| 2.3     | #115    | Added auto-commit mechanism to session-end skill                                                                                                                            |
+| 2.2     | #114    | Added 3 missing skills, documented 14 undocumented hooks, clarified commands→skills migration                                                                               |
+| 2.1     | #112    | Updated session-end checklist to include DOCUMENTATION_INDEX.md                                                                                                             |
+| 2.0     | #110    | Fix expansion-evaluation template per PR review (Review #195)                                                                                                               |
+| 1.5     | #108    | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook                                                                                                             |
+| 1.0     | #100    | Initial comprehensive command reference created                                                                                                                             |
 
 ---
 

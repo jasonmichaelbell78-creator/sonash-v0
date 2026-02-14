@@ -183,7 +183,7 @@ This provides real-time issue data to cross-reference with audit findings.
 
 **Step 3: Load False Positives Database**
 
-Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:
+Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and filter findings matching:
 
 - Category: `code`
 - Expired entries (skip if `expires` date passed)

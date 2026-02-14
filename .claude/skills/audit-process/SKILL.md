@@ -168,7 +168,7 @@ folder.
 
 ### Step 3: Load False Positives
 
-Read `docs/audits/FALSE_POSITIVES.jsonl` and note patterns to exclude.
+Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and note patterns to exclude.
 
 ---
 

@@ -54,6 +54,7 @@ When tracking audits:
 | Process                  | 2026-02-09 (Single)        | 0             | 0           | Any CI/hook file changed OR 30 commits    |
 | Engineering-Productivity | 2026-02-07 (Comprehensive) | 0             | 0           | 30 commits OR DX-impacting changes        |
 | **Enhancements**         | _Never_                    | —             | —           | 40 commits OR major feature complete      |
+| **AI Optimization**      | _Never_                    | —             | —           | 50 commits OR relevant file changes       |
 
 ### Multi-AI Audit Thresholds (Cross-Category)
 
@@ -143,6 +144,18 @@ triggers.
 | Date       | Session       | Commits Covered | Files Covered | Findings                                                                                                                  | Reset Threshold |
 | ---------- | ------------- | --------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------- | --------------- |
 | 2026-02-03 | Comprehensive | Full codebase   | All           | 12 findings - [audit-engineering-productivity-report.md](./audits/comprehensive/audit-engineering-productivity-report.md) | ✅ (all)        |
+
+### Enhancements Audits (`/audit-enhancements`)
+
+| Date | Session | Commits Covered | Files Covered | Findings | Reset Threshold |
+| ---- | ------- | --------------- | ------------- | -------- | --------------- |
+| —    | —       | —               | —             | —        | —               |
+
+### AI Optimization Audits (`/audit-ai-optimization`)
+
+| Date | Session | Commits Covered | Files Covered | Findings | Reset Threshold |
+| ---- | ------- | --------------- | ------------- | -------- | --------------- |
+| —    | —       | —               | —             | —        | —               |
 
 ---
 
@@ -242,6 +255,7 @@ deduplication/aggregation (e.g., 28 raw findings from 5 models).
 
 | Version | Date       | Changes                                                                                                                                                                   |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.8     | 2026-02-14 | Added AI Optimization category + threshold; added Enhancements/AI Optimization audit log sections; 9 total categories                                                     |
 | 2.7     | 2026-02-12 | IMS merged into TDMS (Session #152); enhancements now tracked in MASTER_DEBT.jsonl with type: enhancement                                                                 |
 | 2.6     | 2026-02-11 | Added Enhancements category (IMS); linked MASTER_IMPROVEMENTS.jsonl as parallel source of truth; enhancement audit threshold added                                        |
 | 2.5     | 2026-02-03 | **COMPREHENSIVE AUDIT (7 domains):** Added Engineering-Productivity category; 132 raw → 30 unique findings; TDMS intake DEBT-0870-0899; all thresholds reset              |

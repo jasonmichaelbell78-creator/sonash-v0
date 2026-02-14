@@ -227,7 +227,7 @@ This provides real-time security issue data from static analysis.
 
 **Step 3: Load False Positives Database**
 
-Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:
+Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and filter findings matching:
 
 - Category: `security`
 - Expired entries (skip if `expires` date passed)

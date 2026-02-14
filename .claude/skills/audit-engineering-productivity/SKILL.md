@@ -164,7 +164,7 @@ offline-support-auditor agent - audit persistence, service workers
 
 ### Report File
 
-Create `docs/audits/comprehensive/audit-engineering-productivity-report.md`:
+Create `docs/audits/single-session/engineering-productivity/audit-report.md`:
 
 ```markdown
 # Engineering Productivity Audit - {DATE}
@@ -227,7 +227,7 @@ Create `docs/audits/comprehensive/audit-engineering-productivity-report.md`:
 ### JSONL File
 
 Create
-`docs/audits/comprehensive/audit-engineering-productivity-findings.jsonl`:
+`docs/audits/single-session/engineering-productivity/audit-findings.jsonl`:
 
 **CRITICAL - Use this exact schema:**
 
@@ -293,7 +293,7 @@ After audit completion, findings should be ingested into MASTER_DEBT.jsonl:
 
 ```bash
 node scripts/debt/intake-audit.js \
-  docs/audits/comprehensive/audit-engineering-productivity-findings.jsonl \
+  docs/audits/single-session/engineering-productivity/audit-findings.jsonl \
   --source "audit-engineering-productivity-$(date +%Y-%m-%d)"
 ```
 

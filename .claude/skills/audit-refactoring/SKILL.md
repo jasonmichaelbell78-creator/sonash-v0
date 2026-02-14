@@ -87,7 +87,7 @@ This provides real-time cognitive complexity data for targeted refactoring.
 
 **Step 3: Load False Positives Database**
 
-Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:
+Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and filter findings matching:
 
 - Category: `refactoring`
 - Expired entries (skip if `expires` date passed)

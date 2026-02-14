@@ -166,7 +166,7 @@ grep -rn "next/image" --include="*.tsx" 2>/dev/null | wc -l
 
 **Step 3: Load False Positives Database**
 
-Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:
+Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and filter findings matching:
 
 - Category: `performance`
 - Expired entries (skip if `expires` date passed)

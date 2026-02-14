@@ -65,8 +65,8 @@ echo "Audit output: $AUDIT_DIR"
 
 **Step 2: Load False Positives Database**
 
-Read `docs/audits/FALSE_POSITIVES.jsonl` and note patterns to exclude from
-findings (filter by category: `documentation`).
+Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and note patterns to exclude
+from findings (filter by category: `documentation`).
 
 **Step 3: Check Thresholds**
 
@@ -510,7 +510,7 @@ Keep the finding with:
 `${AUDIT_DIR}/all-findings.jsonl` (final file for TDMS intake)
 
 ```
-Filter out findings matching patterns in docs/audits/FALSE_POSITIVES.jsonl:
+Filter out findings matching patterns in docs/technical-debt/FALSE_POSITIVES.jsonl:
 - Match by file pattern
 - Match by title pattern
 - Check expiration dates

@@ -1,6 +1,6 @@
 # Skill Index
 
-**Version**: 1.5 **Last Updated**: 2026-02-11 **Total Skills**: 52
+**Version**: 1.6 **Last Updated**: 2026-02-14 **Total Skills**: 55
 
 Quick reference for all available Claude Code skills organized by category.
 
@@ -16,21 +16,24 @@ Quick reference for all available Claude Code skills organized by category.
 
 ## Categories
 
-### Audit & Code Quality (11 skills)
+### Audit & Code Quality (14 skills)
 
-| Skill                  | Description                                       |
-| ---------------------- | ------------------------------------------------- |
-| `/audit-comprehensive` | Run all 7 audit domains in parallel               |
-| `/audit-code`          | Code quality audit (complexity, patterns)         |
-| `/audit-documentation` | Documentation coverage and quality                |
-| `/audit-enhancements`  | Enhancement audit across all domains (IMS)        |
-| `/audit-performance`   | Performance bottlenecks and optimization          |
-| `/audit-process`       | Multi-stage automation audit (16 types, 7 stages) |
-| `/audit-refactoring`   | Refactoring opportunities                         |
-| `/audit-security`      | Security vulnerability audit                      |
-| `/audit-aggregator`    | Aggregate multiple audit results                  |
-| `/code-reviewer`       | Run code review on recent changes                 |
-| `/quick-fix`           | Auto-suggest fixes for common issues              |
+| Skill                             | Description                                       |
+| --------------------------------- | ------------------------------------------------- |
+| `/audit-comprehensive`            | Run all 9 audit domains in staged waves           |
+| `/audit-code`                     | Code quality audit (complexity, patterns)         |
+| `/audit-documentation`            | Documentation coverage and quality                |
+| `/audit-enhancements`             | Enhancement audit across all domains              |
+| `/audit-engineering-productivity` | Engineering productivity and DX audit             |
+| `/audit-ai-optimization`          | AI infrastructure optimization audit              |
+| `/audit-performance`              | Performance bottlenecks and optimization          |
+| `/audit-process`                  | Multi-stage automation audit (16 types, 7 stages) |
+| `/audit-refactoring`              | Refactoring opportunities                         |
+| `/audit-security`                 | Security vulnerability audit                      |
+| `/audit-aggregator`               | Aggregate multiple audit results                  |
+| `/create-audit`                   | Interactive wizard to scaffold new audit types    |
+| `/code-reviewer`                  | Run code review on recent changes                 |
+| `/quick-fix`                      | Auto-suggest fixes for common issues              |
 
 ### Planning (1 skill)
 
@@ -123,6 +126,8 @@ Quick reference for all available Claude Code skills organized by category.
 | Bug investigation      | `/systematic-debugging`                       |
 | Code review            | `/code-reviewer`                              |
 | Enhancement discovery  | `/audit-enhancements`                         |
+| AI infrastructure      | `/audit-ai-optimization`                      |
+| Scaffold new audit     | `/create-audit`                               |
 | Security concerns      | `/audit-security`                             |
 | Performance issues     | `/audit-performance`                          |
 | Complex task planning  | `/deep-plan`                                  |

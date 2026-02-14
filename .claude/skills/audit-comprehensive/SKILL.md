@@ -1,15 +1,15 @@
 ---
 name: audit-comprehensive
-description: Run all 7 domain audits in staged waves and aggregate results
+description: Run all 9 domain audits in staged waves and aggregate results
 ---
 
 # Comprehensive Multi-Domain Audit Orchestrator
 
-**Version:** 2.1 (7-Domain Coverage with S0/S1 Escalation) **Time Savings:** 70%
-faster than sequential (175min → 50min) **Stages:** 3 stages with 4+3+1 agent
+**Version:** 3.0 (9-Domain Coverage with Stage 2.5) **Time Savings:** 65% faster
+than sequential (250min → 65min) **Stages:** 4 stages with 4+3+2+1 agent
 configuration
 
-**What This Does:** Spawns 7 specialized audit agents in staged waves
+**What This Does:** Spawns 9 specialized audit agents in staged waves
 (respecting max 4 concurrent limit), with verification checkpoints and S0/S1
 escalation, then aggregates findings into a comprehensive report.
 
@@ -17,7 +17,7 @@ escalation, then aggregates findings into a comprehensive report.
 
 ## Overview
 
-This skill orchestrates a complete codebase audit across all 7 domains:
+This skill orchestrates a complete codebase audit across all 9 domains:
 
 1. **Code Quality** (`audit-code`) - Code hygiene, types, framework patterns
 2. **Security** (`audit-security`) - Auth, input validation, OWASP compliance
@@ -27,6 +27,9 @@ This skill orchestrates a complete codebase audit across all 7 domains:
 6. **Process/Automation** (`audit-process`) - CI/CD, testing, workflows
 7. **Engineering Productivity** (`audit-engineering-productivity`) - DX,
    debugging, offline support
+8. **Enhancements** (`audit-enhancements`) - Feature gaps, UX improvements
+9. **AI Optimization** (`audit-ai-optimization`) - Token waste, skill overlap,
+   hook latency
 
 **Output:** Single unified report in
 `docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md`
@@ -49,6 +52,7 @@ subagent waves:
 - **Teammate Group A:** code + refactoring specialists
 - **Teammate Group B:** security + performance specialists
 - **Teammate Group C:** documentation + process + engineering-productivity
+- **Teammate Group D:** enhancements + ai-optimization specialists
 
 **Team advantages over subagent waves:**
 
@@ -57,12 +61,12 @@ subagent waves:
   causes N+1 queries)
 - S0/S1 escalation becomes a team message instead of a stage gate
 - Lead handles aggregation directly instead of spawning a separate agent
-- No artificial stage boundaries — all 7 audits can start immediately
+- No artificial stage boundaries — all 9 audits can start immediately
 
 **Team execution flow:**
 
-1. Lead creates shared task list with all 7 audit tasks
-2. Spawn 3-4 teammates (grouped by related domains)
+1. Lead creates shared task list with all 9 audit tasks
+2. Spawn 4 teammates (grouped by related domains)
 3. Teammates claim and execute audit tasks, messaging lead on S0/S1 findings
 4. Teammates message peers when they find cross-cutting issues
 5. Lead monitors progress, collects results as teammates complete
@@ -88,7 +92,7 @@ subagents.
 ```
 ┌─────────────────────────────────────────────────────┐
 │ Pre-Flight Validation                               │
-│   - Verify all 7 audit skills exist                 │
+│   - Verify all 9 audit skills exist                 │
 │   - Create output directory                         │
 │   - Gather baselines (tests, lint, patterns)        │
 │   - Load false positives database                   │
@@ -117,6 +121,16 @@ subagents.
 │                                                     │
 │ Checkpoint:                                         │
 │   ✓ Verify 3 report files exist and non-empty      │
+└─────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────┐
+│ Stage 2.5: Meta & Enhancement (2 agents parallel)   │
+│   - audit-enhancements                              │
+│   - audit-ai-optimization                           │
+│                                                     │
+│ Checkpoint:                                         │
+│   ✓ Verify 2 report files exist and non-empty      │
 └─────────────────────────────────────────────────────┘
                           │
                           ▼
@@ -180,11 +194,11 @@ mcp__plugin_episodic -
 
 **Step 1: Verify Skills Exist**
 
-Check that all 7 audit skills are available:
+Check that all 9 audit skills are available:
 
 ```bash
 ls -1 .claude/skills/audit-*/SKILL.md | wc -l
-# Should return 7
+# Should return 9 (excludes audit-comprehensive and audit-aggregator)
 ```
 
 If not all present, notify user which audits are missing and ask whether to
@@ -233,7 +247,7 @@ Store results in `docs/audits/comprehensive/baseline.txt` for reference.
 
 **Step 4: Load False Positives**
 
-Read `docs/audits/FALSE_POSITIVES.jsonl` to pass to aggregator (prevents
+Read `docs/technical-debt/FALSE_POSITIVES.jsonl` to pass to aggregator (prevents
 duplicate flagging of known false positives).
 
 ---
@@ -272,11 +286,15 @@ Stage 2: Supporting (waiting)
   ⏸️ Process/Automation
   ⏸️ Engineering Productivity
 
+Stage 2.5: Meta & Enhancement (waiting)
+  ⏸️ Enhancements
+  ⏸️ AI Optimization
+
 Stage 3: Aggregation (waiting)
   ⏸️ Aggregator
 
-Estimated time: 45-50 minutes
-(vs 175 minutes if run sequentially - 70% faster!)
+Estimated time: 55-65 minutes
+(vs 250 minutes if run sequentially - 65% faster!)
 ```
 
 ### Stage 1 Checkpoint (MANDATORY)
@@ -351,7 +369,7 @@ Proceeding to Stage 2...
 
 - Supporting audits that can use Stage 1 context
 - Lower priority than technical core
-- Completes the full 7-domain coverage
+- Supporting audits that complement technical core
 
 ### Stage 2 Checkpoint (MANDATORY)
 
@@ -377,7 +395,51 @@ done
   ✅ Process/Auto          (X findings)
   ✅ Engineering Productivity (X findings)
 
-All 7 audits complete. Proceeding to aggregation...
+Proceeding to Stage 2.5...
+```
+
+---
+
+## Stage 2.5: Meta & Enhancement Audits (2 Parallel)
+
+**Launch 2 agents IN PARALLEL using Task tool with `run_in_background: true`:**
+
+| Agent | Skill                 | Output File                       |
+| ----- | --------------------- | --------------------------------- |
+| 2.5A  | audit-enhancements    | `audit-enhancements-report.md`    |
+| 2.5B  | audit-ai-optimization | `audit-ai-optimization-report.md` |
+
+**Why these in Stage 2.5:**
+
+- Meta-level audits that benefit from seeing patterns in prior stages
+- Enhancements audit looks at feature gaps across the full app
+- AI optimization audits the audit infrastructure itself (skills, hooks, MCP)
+- Only 2 agents — well within concurrent limit
+
+### Stage 2.5 Checkpoint (MANDATORY)
+
+**1. Verify output files exist:**
+
+```bash
+for f in audit-enhancements-report.md audit-ai-optimization-report.md; do
+  if [ ! -s "docs/audits/comprehensive/$f" ]; then
+    echo "❌ MISSING: $f - re-run agent"
+  else
+    echo "✅ $f exists"
+  fi
+done
+```
+
+**2. Display Stage 2.5 Summary:**
+
+```
+✅ Stage 2.5 Complete (Meta & Enhancement)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✅ Enhancements         (X findings)
+  ✅ AI Optimization      (X findings)
+
+All 9 audits complete. Proceeding to aggregation...
 ```
 
 ---
@@ -393,7 +455,7 @@ Task({
   subagent_type: "audit-aggregator",
   description: "Aggregate and deduplicate audit results",
   prompt: `
-Read all 7 audit reports from docs/audits/comprehensive/
+Read all 9 audit reports from docs/audits/comprehensive/
 
 Perform:
 1. Deduplicate findings (same file:line across multiple audits → merge)
@@ -475,7 +537,7 @@ reports.
 
 ### 1. Update AUDIT_TRACKER.md
 
-Add an entry to **each of the 6 category tables** in `docs/AUDIT_TRACKER.md`:
+Add an entry to **each of the 9 category tables** in `docs/AUDIT_TRACKER.md`:
 
 | Date    | Session       | Commits Covered | Files Covered | Findings                     | Reset Threshold |
 | ------- | ------------- | --------------- | ------------- | ---------------------------- | --------------- |
@@ -661,13 +723,15 @@ ls -la docs/audits/comprehensive/*.md 2>/dev/null | wc -l
 
 ### Recovery Matrix
 
-| Files Found                 | State              | Resume Action                 |
-| --------------------------- | ------------------ | ----------------------------- |
-| 0-3 reports                 | Stage 1 incomplete | Re-run missing Stage 1 audits |
-| 4 reports                   | Stage 1 complete   | Start Stage 2                 |
-| 5 reports                   | Stage 2 incomplete | Re-run missing Stage 2 audit  |
-| 6 reports, no COMPREHENSIVE | Stage 2 complete   | Run Stage 3 (aggregator)      |
-| COMPREHENSIVE exists        | Complete           | Run post-audit only           |
+| Files Found                 | State                | Resume Action                  |
+| --------------------------- | -------------------- | ------------------------------ |
+| 0-3 reports                 | Stage 1 incomplete   | Re-run missing Stage 1 audits  |
+| 4 reports                   | Stage 1 complete     | Start Stage 2                  |
+| 5-6 reports                 | Stage 2 incomplete   | Re-run missing Stage 2 audit   |
+| 7 reports                   | Stage 2 complete     | Start Stage 2.5                |
+| 8 reports                   | Stage 2.5 incomplete | Re-run missing Stage 2.5 audit |
+| 9 reports, no COMPREHENSIVE | Stage 2.5 complete   | Run Stage 3 (aggregator)       |
+| COMPREHENSIVE exists        | Complete             | Run post-audit only            |
 
 ### Resume Commands
 
@@ -682,7 +746,9 @@ done
 
 **Stage 2 incomplete:** Run documentation and/or process audits as needed.
 
-**Stage 3:** Run aggregator on existing 6 reports.
+**Stage 2.5 incomplete:** Run enhancements and/or ai-optimization as needed.
+
+**Stage 3:** Run aggregator on existing 9 reports.
 
 ---
 
@@ -719,9 +785,9 @@ Use individual skills instead:
 
 ## Notes
 
-- **Staged Execution:** 3 stages (4+2+1 agents) respects CLAUDE.md max 4
+- **Staged Execution:** 4 stages (4+3+2+1 agents) respects CLAUDE.md max 4
   concurrent limit
-- **Time Estimate:** ~45 minutes (vs 150min sequential = 70% savings)
+- **Time Estimate:** ~65 minutes (vs 250min sequential = 65% savings)
 - **S0/S1 Escalation:** Security findings checked after Stage 1 before
   proceeding
 - **Checkpoints:** Each stage verifies outputs exist and are non-empty
@@ -750,7 +816,10 @@ Use individual skills instead:
 - `/audit-documentation` - Individual documentation audit
 - `/audit-refactoring` - Individual refactoring audit
 - `/audit-process` - Individual process/automation audit
+- `/audit-enhancements` - Individual enhancements audit
+- `/audit-ai-optimization` - Individual AI optimization audit
 - `/audit-aggregator` - Standalone aggregation (if you have existing reports)
+- `/create-audit` - Wizard to scaffold new audit types
 
 ---
 
@@ -778,6 +847,7 @@ Before running this audit, review:
 
 | Version | Date       | Description                                                               |
 | ------- | ---------- | ------------------------------------------------------------------------- |
+| 3.0     | 2026-02-14 | 9-domain coverage: add enhancements + ai-optimization as Stage 2.5        |
 | 2.1     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula  |
 | 2.0     | 2026-02-02 | Staged execution (4+2+1), S0/S1 escalation, checkpoints, context recovery |
 | 1.0     | 2026-01-28 | Initial version - flat parallel execution of all 6 audits                 |
