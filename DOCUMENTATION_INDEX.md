@@ -34,10 +34,10 @@ orphaned documents.
 | Tier   | Count | Description       |
 | ------ | ----- | ----------------- |
 | Tier 1 | 4     | Canonical Living  |
-| Tier 2 | 7     | Foundation        |
+| Tier 2 | 12    | Foundation        |
 | Tier 3 | 145   | Planning & Active |
 | Tier 4 | 96    | Reference         |
-| Tier 5 | 5     | Guides            |
+| Tier 5 | 0     | Guides            |
 
 ### By Category
 
@@ -92,13 +92,18 @@ _Essential project-level documentation_
 
 _Foundation technical reference_
 
-| Document                                                                  | Description                                                     | References | Last Modified |
-| ------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                  | This document defines the mandatory security review process ... | ↓2 ↑6      | 2026-02-05    |
-| [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)            | This document defines **mandatory security standards** that ... | ↓12 ↑0     | 2026-01-17    |
-| [Security & Privacy Guide](docs/SECURITY.md)                              | -                                                               | ↓13 ↑4     | 2026-01-17    |
-| [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md) | Verify requests come from your legitimate app, not bots or s... | ↓5 ↑2      | 2026-01-17    |
-| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)         | -                                                               | ↓7 ↑4      | 2026-02-12    |
+| Document                                                                                          | Description                                                     | References | Last Modified |
+| ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                   | This guide covers Firebase App Check configuration for the S... | ↓2 ↑1      | 2026-02-14    |
+| [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                          | This document defines the mandatory security review process ... | ↓2 ↑6      | 2026-02-05    |
+| [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                    | This document defines **mandatory security standards** that ... | ↓12 ↑0     | 2026-01-17    |
+| [MCP Server Setup Guide](docs/MCP_SETUP.md)                                                       | This guide explains how to configure MCP (Model Context Prot... | ↓0 ↑0      | 2026-02-09    |
+| [reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide](docs/RECAPTCHA_REMOVAL_GUIDE.md) | Complete removal and fresh implementation guide for Firebase... | ↓1 ↑2      | 2026-02-14    |
+| [Security & Privacy Guide](docs/SECURITY.md)                                                      | -                                                               | ↓13 ↑4     | 2026-01-17    |
+| [Sentry Integration Guide for SoNash Admin Panel](docs/SENTRY_INTEGRATION_GUIDE.md)               | Step-by-step guide to integrate Sentry error tracking into t... | ↓1 ↑0      | 2026-01-17    |
+| [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                         | Verify requests come from your legitimate app, not bots or s... | ↓5 ↑2      | 2026-01-17    |
+| [SonarCloud Cleanup Sprint Runbook](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                           | This runbook provides a repeatable process for SonarCloud an... | ↓1 ↑0      | 2026-02-14    |
+| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                 | -                                                               | ↓7 ↑4      | 2026-02-12    |
 
 ### Root Documents (Tier 2)
 
@@ -561,18 +566,6 @@ _Auto-generated debt dashboards_
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md) | <!-- prettier-ignore-start --> | ↓0 ↑2      | 2026-02-02    |
 | [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-02-14    |
 
-### Core Documentation (Tier 5)
-
-_Guides_
-
-| Document                                                                                          | Description                                                     | References | Last Modified |
-| ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                   | This guide covers Firebase App Check configuration for the S... | ↓2 ↑1      | 2026-02-14    |
-| [MCP Server Setup Guide](docs/MCP_SETUP.md)                                                       | This guide explains how to configure MCP (Model Context Prot... | ↓0 ↑0      | 2026-02-09    |
-| [reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide](docs/RECAPTCHA_REMOVAL_GUIDE.md) | Complete removal and fresh implementation guide for Firebase... | ↓1 ↑2      | 2026-02-14    |
-| [Sentry Integration Guide for SoNash Admin Panel](docs/SENTRY_INTEGRATION_GUIDE.md)               | Step-by-step guide to integrate Sentry error tracking into t... | ↓1 ↑0      | 2026-01-17    |
-| [SonarCloud Cleanup Sprint Runbook](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                           | This runbook provides a repeatable process for SonarCloud an... | ↓1 ↑0      | 2026-02-14    |
-
 ---
 
 ## Reference Graph
@@ -1003,7 +996,7 @@ Documents with no inbound links (not referenced by any other document):
 | 180 | [docs/AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                               | AI Review Learnings Log                                            | 4    | Fully consolidated into claude.md v2.7                                          |
 | 181 | [docs/AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)                                                                                                           | 🤖 AI Code Review Process                                          | 4    | Active                                                                          |
 | 182 | [docs/ai-optimization-audit/SUMMARY.md](docs/ai-optimization-audit/SUMMARY.md)                                                                                   | AI Optimization Audit — Summary Report                             | 3    | DRAFT                                                                           |
-| 183 | [docs/APPCHECK_SETUP.md](docs/APPCHECK_SETUP.md)                                                                                                                 | App Check Setup Guide                                              | 5    | Active **Last Updated:** 2026-01-03                                             |
+| 183 | [docs/APPCHECK_SETUP.md](docs/APPCHECK_SETUP.md)                                                                                                                 | App Check Setup Guide                                              | 2    | Active **Last Updated:** 2026-01-03                                             |
 | 184 | [docs/AUDIT_TRACKER.md](docs/AUDIT_TRACKER.md)                                                                                                                   | Audit Tracker                                                      | 3    | -                                                                               |
 | 185 | [docs/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md](docs/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md) | Automation Audit Report — 2026-02-09                               | 3    | ACTIVE                                                                          |
 | 186 | [docs/decisions/README.md](docs/decisions/README.md)                                                                                                             | Architecture Decision Records \(ADRs\)                             | 4    | -                                                                               |
@@ -1015,7 +1008,7 @@ Documents with no inbound links (not referenced by any other document):
 | 192 | [docs/INCIDENT_RESPONSE.md](docs/INCIDENT_RESPONSE.md)                                                                                                           | Incident Response Runbook                                          | 4    | Active **Last Updated:** 2026-01-03                                             |
 | 193 | [docs/LEARNING_METRICS.md](docs/LEARNING_METRICS.md)                                                                                                             | Learning Effectiveness Metrics                                     | 3    | -                                                                               |
 | 194 | [docs/LIGHTHOUSE_INTEGRATION_PLAN.md](docs/LIGHTHOUSE_INTEGRATION_PLAN.md)                                                                                       | Lighthouse Integration Plan                                        | 3    | ACTIVE \(Part of Operational Visibility Sprint\) **Priority:** P0               |
-| 195 | [docs/MCP_SETUP.md](docs/MCP_SETUP.md)                                                                                                                           | MCP Server Setup Guide                                             | 5    | Active                                                                          |
+| 195 | [docs/MCP_SETUP.md](docs/MCP_SETUP.md)                                                                                                                           | MCP Server Setup Guide                                             | 2    | Active                                                                          |
 | 196 | [docs/MONETIZATION_RESEARCH.md](docs/MONETIZATION_RESEARCH.md)                                                                                                   | Monetization Strategy Research Initiative                          | 3    | -                                                                               |
 | 197 | [docs/multi-ai-audit/COORDINATOR.md](docs/multi-ai-audit/COORDINATOR.md)                                                                                         | Multi-AI Review Coordinator                                        | 3    | -                                                                               |
 | 198 | [docs/multi-ai-audit/README.md](docs/multi-ai-audit/README.md)                                                                                                   | Multi-AI Audit System                                              | 3    | -                                                                               |
@@ -1038,18 +1031,18 @@ Documents with no inbound links (not referenced by any other document):
 | 215 | [docs/plans/TRACK_A_TESTING_PLAN.md](docs/plans/TRACK_A_TESTING_PLAN.md)                                                                                         | Track A Admin Panel Testing Plan                                   | 3    | Active                                                                          |
 | 216 | [docs/PR_WORKFLOW_CHECKLIST.md](docs/PR_WORKFLOW_CHECKLIST.md)                                                                                                   | PR Workflow Checklist - MANDATORY FOR ALL PHASES                   | 4    | -                                                                               |
 | 217 | [docs/README.md](docs/README.md)                                                                                                                                 | Documentation Inventory                                            | 4    | ACTIVE                                                                          |
-| 218 | [docs/RECAPTCHA_REMOVAL_GUIDE.md](docs/RECAPTCHA_REMOVAL_GUIDE.md)                                                                                               | reCAPTCHA &amp; App Check - Complete Removal and Fresh Setup Guide | 5    | Deferred - App Check blocking critical functionality **Target:** Future         |
+| 218 | [docs/RECAPTCHA_REMOVAL_GUIDE.md](docs/RECAPTCHA_REMOVAL_GUIDE.md)                                                                                               | reCAPTCHA &amp; App Check - Complete Removal and Fresh Setup Guide | 2    | Deferred - App Check blocking critical functionality **Target:** Future         |
 | 219 | [docs/REVIEW_POLICY_ARCHITECTURE.md](docs/REVIEW_POLICY_ARCHITECTURE.md)                                                                                         | Review Policy Architecture                                         | 4    | UNDER IMPLEMENTATION \(Phase 1 in progress\) **Authority:** MANDATORY           |
 | 220 | [docs/REVIEW_POLICY_INDEX.md](docs/REVIEW_POLICY_INDEX.md)                                                                                                       | Review Policy Index                                                | 4    | Active **Purpose:** Central directory for all review policy                     |
 | 221 | [docs/REVIEW_POLICY_QUICK_REF.md](docs/REVIEW_POLICY_QUICK_REF.md)                                                                                               | Review Policy Quick Reference                                      | 4    | -                                                                               |
 | 222 | [docs/REVIEW_POLICY_VISUAL_GUIDE.md](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                                                                                         | Review Policy Visual Guide                                         | 4    | -                                                                               |
 | 223 | [docs/SECURITY.md](docs/SECURITY.md)                                                                                                                             | Security &amp; Privacy Guide                                       | 2    | ACTIVE **Last Updated:** 2026-01-05                                             |
-| 224 | [docs/SENTRY_INTEGRATION_GUIDE.md](docs/SENTRY_INTEGRATION_GUIDE.md)                                                                                             | Sentry Integration Guide for SoNash Admin Panel                    | 5    | Active **Last Updated:**                                                        |
+| 224 | [docs/SENTRY_INTEGRATION_GUIDE.md](docs/SENTRY_INTEGRATION_GUIDE.md)                                                                                             | Sentry Integration Guide for SoNash Admin Panel                    | 2    | Active **Last Updated:**                                                        |
 | 225 | [docs/SERVER_SIDE_SECURITY.md](docs/SERVER_SIDE_SECURITY.md)                                                                                                     | Server-Side Security Implementation Guide                          | 2    | 🟡 RECOMMENDED BEFORE PUBLIC                                                    |
 | 226 | [docs/SESSION_DECISIONS.md](docs/SESSION_DECISIONS.md)                                                                                                           | Session Decision Log                                               | 4    | -                                                                               |
 | 227 | [docs/SESSION_HISTORY.md](docs/SESSION_HISTORY.md)                                                                                                               | Session History Log                                                | 4    | -                                                                               |
 | 228 | [docs/SLASH_COMMANDS_REFERENCE.md](docs/SLASH_COMMANDS_REFERENCE.md)                                                                                             | Slash Commands Reference                                           | 4    | ACTIVE                                                                          |
-| 229 | [docs/SONARCLOUD_CLEANUP_RUNBOOK.md](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                                                                                         | SonarCloud Cleanup Sprint Runbook                                  | 5    | -                                                                               |
+| 229 | [docs/SONARCLOUD_CLEANUP_RUNBOOK.md](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                                                                                         | SonarCloud Cleanup Sprint Runbook                                  | 2    | -                                                                               |
 | 230 | [docs/technical-debt/FINAL_SYSTEM_AUDIT.md](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                                                                           | TDMS Final System Audit                                            | 3    | ACTIVE                                                                          |
 | 231 | [docs/technical-debt/INDEX.md](docs/technical-debt/INDEX.md)                                                                                                     | Technical Debt Index                                               | 3    | ACTIVE                                                                          |
 | 232 | [docs/technical-debt/METRICS.md](docs/technical-debt/METRICS.md)                                                                                                 | Technical Debt Metrics                                             | 3    | ACTIVE                                                                          |

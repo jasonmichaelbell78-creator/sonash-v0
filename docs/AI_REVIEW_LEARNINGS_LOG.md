@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.3 **Created:** 2026-01-02 **Last Updated:** 2026-02-13
+**Document Version:** 17.4 **Created:** 2026-01-02 **Last Updated:** 2026-02-14
 
 ## Purpose
 
@@ -605,6 +605,121 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #314: SonarCloud Regex Hotspots + Qodo Robustness R4 — PR #365 (2026-02-14)
+
+**Source:** SonarCloud Security Hotspots (S5852) + Qodo PR Suggestions + Qodo
+Compliance **PR/Branch:** claude/read-session-commits-ZpJLX (PR #365)
+**Suggestions:** 13 total (Critical: 0, Major: 5, Minor: 6, Compliance: 2)
+
+**Patterns Identified:**
+
+1. Dead code harboring regex complexity: `checkMilestoneItemCounts` had a
+   complex regex for a check disabled since Review #213 — SonarCloud still
+   flagged it
+   - Root cause: Function kept as stub but regex not removed
+   - Prevention: When disabling a check, remove the regex too
+2. Incremental line counting bug: `lastIdx` must advance past the full match,
+   not just to `match.index`, to avoid double-counting newlines
+   - Root cause: Off-by-one in O(n) optimization from Review #255
+   - Prevention: Always set `lastIdx = match.index + match[0].length`
+3. Regex lookahead factoring: `(?=\r?\n##\s|\r?\n---\s*$|$)` has redundant
+   `\r?\n` prefix in each alternative — factor to `(?=\r?\n(?:##\s|---\s*$)|$)`
+   - Root cause: Alternatives added incrementally without refactoring
+   - Prevention: Factor common prefixes in regex alternations
+4. Non-global regex guard: `exec()` loops require `/g` flag — missing flag
+   causes infinite loop
+   - Root cause: Pattern definitions could theoretically omit `/g`
+   - Prevention: Defensive `flags.includes("g")` check before exec loop
+
+**Resolution:**
+
+- Fixed: 13 items across 6 files
+- Rejected: 0
+- Deferred: 0
+
+**Key Learnings:**
+
+- Remove regex from disabled checks — dead code still triggers SonarCloud
+- `\s*` → `\s+` is a simple backtracking reduction when at least one space is
+  always present
+- File size guards before `readFileSync` prevent local DoS on state files
+- Repo-relative paths (`path.relative(cwd, abs)`) are more reliable than raw
+  string normalization for git diff
+
+---
+
+#### Review #313: CI Feedback + Qodo R3 — Orphaned DEBT + Bounded Regex (2026-02-14)
+
+**Source:** CI Failures + Qodo PR Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #365) **Suggestions:** 11 total (Critical:
+0, Major: 3, Minor: 6, Compliance: 2)
+
+**Patterns Identified:**
+
+1. Dedup removing referenced DEBT entries: consolidate-all.js dedup removed 9
+   entries still referenced by ROADMAP.md
+   - Root cause: Dedup heuristic too aggressive on similar entries
+   - Prevention: Cross-check ROADMAP.md references before dedup
+2. Prototype pollution in config objects: `FILE_OVERRIDES` from JSON config
+   could contain `__proto__` keys
+   - Root cause: Direct object spread from parsed config
+   - Prevention: Use `Object.create(null)` + skip dangerous keys
+3. Emoji-tolerant section matching: Section headers may have emoji prefixes that
+   break `##\s+Name` patterns
+   - Root cause: Regex assumes `##` directly followed by whitespace+text
+   - Prevention: Use `##\s*(?:[^\w\r\n]+\s*)?Name` for emoji tolerance
+
+**Resolution:**
+
+- Fixed: 11 items (restored 9 DEBT entries from git history, 5 code fixes)
+- Rejected: 0
+- Deferred: 0
+
+**Key Learnings:**
+
+- MEMORY.md critical bug: changes to MASTER_DEBT.jsonl MUST sync to
+  raw/deduped.jsonl
+- Atomic writes (`write .tmp` + `rename`) prevent corruption on crash
+- Context-aware trivial detection: `#` is a comment in .sh/.yml but a heading in
+  .md
+
+---
+
+#### Review #312: CI Regex Complexity + Qodo R2 — PR #365 (2026-02-14)
+
+**Source:** SonarCloud Code Smell + Qodo PR Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #365) **Suggestions:** 8 total (Critical:
+0, Major: 1 CI-blocking, Minor: 7)
+
+**Patterns Identified:**
+
+1. SonarCloud regex complexity 21 > 20: Milestones Overview lookahead had too
+   many alternatives
+   - Root cause: `(?=\r?\n\r?\n|\r?\n##|\r?\n---)` — 3 alternatives with shared
+     prefix
+   - Fix: `(?=\r?\n(?:\r?\n|##|---))` — factor out common `\r?\n`
+2. Document Version regex anchoring: Matching version in full content could
+   match Version History table entries
+   - Root cause: Regex not constrained to header area
+   - Prevention: Slice content to header area (first 4000 chars) before matching
+
+**Resolution:**
+
+- Fixed: 8 items across 5 files
+- Rejected: 0
+- Deferred: 0
+
+**Key Learnings:**
+
+- `spawnSync` without timeout can hang in pre-push hooks — always add
+  `timeout: 3000`
+- `maxBuffer` on `execFileSync` prevents crash on large diffs — add
+  `maxBuffer: 5 * 1024 * 1024`
+- `isTrivialChange()` needs file-type awareness: `#` lines in .sh are comments
+  (trivial) but headings in .md (non-trivial)
 
 ---
 
