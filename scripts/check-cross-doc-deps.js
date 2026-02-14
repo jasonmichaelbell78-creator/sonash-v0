@@ -156,13 +156,18 @@ function isTrivialChange(file) {
 
     // A change is trivial if ALL changed lines are:
     // - empty or whitespace-only
-    // - comments (JS/TS: //, #, *, or markdown: <!-- -->)
+    // - comments (JS/TS: //, shell/yaml: #, or markdown: <!-- -->)
     // - status badge updates (e.g., **Status:** ACTIVE)
     // - date updates (e.g., **Last Updated:** 2026-02-13)
     // - version bumps (e.g., **Document Version:** 1.1)
-    // Note: bare * excluded from comment detection to avoid matching markdown bullets
-    const trivialPattern =
-      /^\s*$|^\s*(?:(?:\/\/)|#|\/\*|\*\/|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
+    // Note: # means "comment" in .sh/.yml/.py but "heading" in .md — only
+    // treat # as trivial-comment for script/config file types.
+    const ext = gitPath.split(".").pop()?.toLowerCase();
+    const hashIsComment =
+      ext && ["sh", "bash", "zsh", "py", "rb", "yml", "yaml", "toml"].includes(ext);
+    const trivialPattern = hashIsComment
+      ? /^\s*$|^\s*(?:\/\/|#|\/\*|\*\/|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/
+      : /^\s*$|^\s*(?:\/\/|\/\*|\*\/|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
 
     return changeLines.every((line) => trivialPattern.test(line));
   } catch {

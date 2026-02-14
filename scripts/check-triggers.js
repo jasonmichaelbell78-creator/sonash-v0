@@ -183,7 +183,10 @@ function checkSecurityTrigger(files) {
  * Resolve git root directory, falling back to cwd
  */
 function resolveGitRoot() {
-  const gitRoot = spawnSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" });
+  const gitRoot = spawnSync("git", ["rev-parse", "--show-toplevel"], {
+    encoding: "utf8",
+    timeout: 3000,
+  });
   return gitRoot.status === 0 && gitRoot.stdout
     ? gitRoot.stdout.trim()
     : path.resolve(process.cwd());

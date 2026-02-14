@@ -185,6 +185,8 @@ function getStagedChangedLines(filePath) {
     // Get unified diff with 0 context lines to identify exact changed lines
     const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", gitPath], {
       encoding: "utf-8",
+      timeout: 10_000,
+      maxBuffer: 5 * 1024 * 1024,
     });
 
     const changedLines = new Set();

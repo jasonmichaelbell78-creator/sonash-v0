@@ -53,7 +53,11 @@ function readFile(filePath) {
  */
 function checkVersionConsistency(content, fileName) {
   // Extract version from header (P008 fix: optional bold, flexible colon placement)
-  const headerVersionMatch = content.match(/\*{0,2}Document Version:?\*{0,2}\s*(\d+\.\d+)/i);
+  // Slice to near header to avoid matching Version History table entries
+  const headerSlice = content.slice(0, 4000);
+  const headerVersionMatch = headerSlice.match(
+    /^\s*\*{0,2}Document Version:?\*{0,2}\s*(\d+\.\d+)\s*$/im
+  );
   const headerVersion = headerVersionMatch ? headerVersionMatch[1] : null;
 
   // Extract latest version from Version History section only (Review #211)
@@ -107,7 +111,7 @@ function checkMilestoneItemCounts(content, fileName) {
   // Extract claimed item counts from overview table
   // P008 fix: emoji-independent section detection, CRLF compatible (Review #211)
   const overviewTableMatch = content.match(
-    /##\s*Milestones Overview[\s\S]*?\|[\s\S]*?(?=\r?\n\r?\n|\r?\n##|\r?\n---)/i
+    /##\s*Milestones Overview[\s\S]*?\|[\s\S]*?(?=\r?\n(?:\r?\n|##|---))/i
   );
 
   if (!overviewTableMatch) {
