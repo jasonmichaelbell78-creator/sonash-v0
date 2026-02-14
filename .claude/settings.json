@@ -215,18 +215,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/large-context-warning.js $ARGUMENTS",
-            "statusMessage": "Tracking context size..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/auto-save-context.js $ARGUMENTS",
-            "statusMessage": "Checking context preservation..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/compaction-handoff.js $ARGUMENTS",
-            "statusMessage": "Checking compaction handoff..."
+            "command": "node .claude/hooks/post-read-handler.js $ARGUMENTS",
+            "statusMessage": "Processing read operation..."
           }
         ]
       },
@@ -267,23 +257,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/alerts-reminder.js $ARGUMENTS",
-            "statusMessage": "Checking pending alerts..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/analyze-user-request.js $ARGUMENTS",
-            "statusMessage": "Checking PRE-TASK triggers..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/session-end-reminder.js $ARGUMENTS",
-            "statusMessage": "Checking session status..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/plan-mode-suggestion.js $ARGUMENTS",
-            "statusMessage": "Checking task complexity..."
+            "command": "node .claude/hooks/user-prompt-handler.js $ARGUMENTS",
+            "statusMessage": "Processing user prompt..."
           }
         ]
       }

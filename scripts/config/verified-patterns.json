@@ -85,7 +85,9 @@
     "resolve-bulk.js",
     "resolve-item.js",
     "sync-roadmap-refs.js",
-    "rotate-state.js"
+    "rotate-state.js",
+    "user-prompt-handler.js",
+    "post-read-handler.js"
   ],
   "exec-without-global": [
     "validate-phase-completion.js",
@@ -114,7 +116,9 @@
     "run-alerts.js",
     "session-start.js",
     "log-override.js",
-    "rotate-state.js"
+    "rotate-state.js",
+    "user-prompt-handler.js",
+    "post-read-handler.js"
   ],
   "json-parse-without-try": [
     "check-session-gaps.js",
@@ -131,12 +135,14 @@
     "run-alerts.js",
     "session-start.js",
     "log-override.js",
-    "rotate-state.js"
+    "rotate-state.js",
+    "user-prompt-handler.js",
+    "post-read-handler.js"
   ],
   "unescaped-regexp-input": ["suggest-pattern-automation.js", "pattern-check.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
   "git-without-separator": ["surface-lessons-learned.js"],
-  "git-diff-no-filter": ["compaction-handoff.js"],
+  "git-diff-no-filter": ["compaction-handoff.js", "post-read-handler.js"],
   "parseint-no-radix": ["verify-sonar-phase.js"],
   "non-atomic-write": [
     "suggest-pattern-automation.js",
@@ -147,7 +153,9 @@
     "generate-pending-alerts.js",
     "normalize-format.js",
     "session-start.js",
-    "rotate-state.js"
+    "rotate-state.js",
+    "user-prompt-handler.js",
+    "post-read-handler.js"
   ],
   "writefile-missing-encoding": ["suggest-pattern-automation.js", "normalize-format.js"],
   "process-exit-without-cleanup": ["validate-schema.js"],
@@ -167,6 +175,7 @@
     "decrypt-secrets.js",
     "encrypt-secrets.js",
     "archive-doc.js",
-    "run-alerts.js"
+    "run-alerts.js",
+    "post-read-handler.js"
   ]
 }
