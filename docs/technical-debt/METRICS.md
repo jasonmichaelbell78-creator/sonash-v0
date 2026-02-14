@@ -30,9 +30,9 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 2194  |
+| Total Items     | 2198  |
 | Open Items      | 1787  |
-| Resolved        | 165   |
+| Resolved        | 169   |
 | False Positives | 242   |
 | Resolution Rate | 8%    |
 
@@ -45,7 +45,7 @@ distribution.
 | NEW            | 2     |
 | VERIFIED       | 1783  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 165   |
+| RESOLVED       | 169   |
 | FALSE_POSITIVE | 242   |
 
 ---
@@ -56,8 +56,8 @@ distribution.
 | ------------- | ----- | ---------- |
 | S0 (Critical) | 27    | 1%         |
 | S1 (High)     | 388   | 18%        |
-| S2 (Medium)   | 972   | 44%        |
-| S3 (Low)      | 807   | 37%        |
+| S2 (Medium)   | 974   | 44%        |
+| S3 (Low)      | 809   | 37%        |
 
 ---
 
@@ -67,7 +67,7 @@ distribution.
 | ------------------------ | ----- |
 | code-quality             | 1234  |
 | documentation            | 465   |
-| process                  | 330   |
+| process                  | 334   |
 | security                 | 81    |
 | performance              | 50    |
 | refactoring              | 21    |
@@ -142,7 +142,7 @@ _...and 353 more S1 items_
 
 | Source        | Count |
 | ------------- | ----- |
-| unknown       | 2193  |
+| unknown       | 2197  |
 | pr-review-286 | 1     |
 
 ---

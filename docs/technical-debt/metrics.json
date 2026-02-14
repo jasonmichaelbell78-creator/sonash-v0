@@ -1,10 +1,10 @@
 {
-  "generated": "2026-02-14T04:26:52.141Z",
+  "generated": "2026-02-14T14:12:10.653Z",
   "generated_date": "2026-02-14",
   "summary": {
-    "total": 2194,
+    "total": 2198,
     "open": 1787,
-    "resolved": 165,
+    "resolved": 169,
     "false_positives": 242,
     "resolution_rate_pct": 8
   },
@@ -12,15 +12,15 @@
     "NEW": 2,
     "VERIFIED": 1783,
     "IN_PROGRESS": 0,
-    "RESOLVED": 165,
+    "RESOLVED": 169,
     "FALSE_POSITIVE": 242,
     "OPEN": 2
   },
   "by_severity": {
     "S0": 27,
     "S1": 388,
-    "S2": 972,
-    "S3": 807
+    "S2": 974,
+    "S3": 809
   },
   "by_category": {
     "code-quality": 1234,
@@ -28,13 +28,13 @@
     "performance": 50,
     "documentation": 465,
     "refactoring": 21,
-    "process": 330,
+    "process": 334,
     "engineering-productivity": 3,
     "enhancements": 9,
     "hook-efficiency": 1
   },
   "by_source": {
-    "unknown": 2193,
+    "unknown": 2197,
     "pr-review-286": 1
   },
   "alerts": {
