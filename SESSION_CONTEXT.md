@@ -2,7 +2,7 @@
 
 **Document Version**: 4.2 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-14 (Session #158)
+2026-02-14 (Session #159)
 
 ## AI Instructions
 
@@ -38,7 +38,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 158 (since Jan 1, 2026)
+**Current Session Count**: 159 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,36 +48,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #155 Summary** (ALERTS SKILL v3 — INTELLIGENT HEALTH DASHBOARD):
-
-- Major rewrite of `/alerts` skill — transformed from data dump to intelligent
-  health dashboard
-- **run-alerts.js v2**: BENCHMARKS constant (14 domains), health score
-  computation (weighted A-F grading), session plan builder, delta tracking
-  (daily baseline), sparkline generation, trend analysis, rating helpers
-- **SKILL.md v3**: Rich visual dashboard template with Unicode box-drawing,
-  progress bars, sparklines, emoji badges, category scorecards, drill-down
-  cards, benchmark reference tables
-- Enriched all 18 check functions with `addContext()` — benchmarks, ratings,
-  totals, trends, groups
-- S0 items now cross-referenced with MASTER_DEBT.jsonl for full details
-  (category, effort, file, line)
-- v2 JSON schema:
-  `{version:2, healthScore, categories:{alerts,context}, sessionPlan, delta}`
-
-**Session #156 Summary** (AI OPTIMIZATION AUDIT — FRAGILE PARSING):
-
-- Implemented 8 fragile parsing fixes across 11 files (OPT-P001–P010)
-- P001: Session counter regex in 5 hooks — optional bold, flexible spacing
-- P002/P003/P005/P007: Decision block, backlog health, session gaps, DEFERRED
-  extraction — resilient regex
-- P008/P009/P010: Roadmap health, table detection, sonar phase —
-  emoji-independent detection
-- Deferred P004/P006 as DEBT-2835/DEBT-2836 (E2, need AST parser)
-- Updated SUMMARY.md with decisions for all 10 Fragile Parsing findings
-- 3 domains remaining: Format (MD→JSONL), Skill Overlap, AI Instruction Bloat
-- Updated COMMAND_REFERENCE.md v4.2
-
 **Session #157 Summary** (AI OPTIMIZATION AUDIT — SKILL OVERLAP):
 
 - Resolved all 15 Skill Overlap findings (OPT-K001–K015)
@@ -86,10 +56,22 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - K006: Merged `requesting-code-review` into `code-reviewer`; added scope
   clarification to both `code-reviewer` and `pr-review`
 - K007: Deleted `audit-validation-wrapper` (one-time use)
-- K004+K014: All skills already had descriptions (no changes needed)
-- 11 findings rejected as appropriately specialized (no real overlap)
 - Skill count: 60 → 56 (5 deleted, 1 created), net -1,000 lines
-- 2 domains remaining: Format (MD→JSONL), AI Instruction Bloat
+
+**Session #158 Summary** (AI OPTIMIZATION AUDIT — ALERTS FIX + FORMAT + BLOAT):
+
+- Fixed 35 blocking pattern violations in `run-alerts.js`
+- Completed AI optimization audit SUMMARY.md — marked all Act Now items DONE
+- Implemented AI optimization audit across Format + AI Instruction domains
+
+**Session #159 Summary** (AUDIT ECOSYSTEM CODIFICATION — PLANNING):
+
+- Planned full audit ecosystem codification (10-step plan, 5 waves)
+- 20 design decisions across 5 Q&A batches
+- Plan saved to `docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md`
+- Scope: 5 new files, 12+ modified files
+- Key deliverables: AUDIT_STANDARDS.md, audit-ai-optimization skill,
+  AI_OPTIMIZATION_AUDIT template, create-audit wizard, ecosystem hub
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -119,25 +101,31 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-**Skill Overlap domain complete.** Choose from:
+**Execute Audit Ecosystem Codification plan** —
+[docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md](docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md)
 
-1. **Continue AI optimization audit** — 2 domains remaining: Format (MD→JSONL,
-   14 findings), AI Instruction Bloat (8 findings)
-2. **Fix S0 critical items** (9 items, 6 are E0 Cognitive Complexity) — highest
+10-step implementation in 5 waves:
+
+1. **Wave 1** (parallel): AUDIT_STANDARDS.md + README hub + FALSE_POSITIVES path
+   fixes (8 skills) + output path standardization
+2. **Wave 2** (parallel): audit-ai-optimization skill + AI_OPTIMIZATION_AUDIT
+   template + create-audit wizard
+3. **Wave 3** (sequential): Update audit-comprehensive (Stage 2.5) +
+   audit-aggregator (9 domains)
+4. **Wave 4**: Update supporting files (AUDIT_TRACKER, SKILL_INDEX,
+   multi-ai-audit README)
+5. **Wave 5**: Full cross-reference audit + verification checklist (12 checks)
+
+Use team-based parallelization for Waves 1 and 2.
+
+### After Audit Codification
+
+1. **Fix S0 critical items** (9 items, 6 are E0 Cognitive Complexity) — highest
    impact on health score
-3. **Automate top 3 failing patterns** — Regex anchoring, Safe percentage,
-   Windows atomic rename (add to check-pattern-compliance.js)
-4. **Fix dedup-multi-pass.js bug** — `secondary.evidence.filter` crashes when
-   evidence is not an array (pre-existing)
-
-### After Quick Wins
-
-Choose from:
-
-1. **GRAND PLAN Sprint 4** (`lib/` + `hooks/` + `app/`) - Continue debt
+2. **Fix dedup-multi-pass.js bug** — `secondary.evidence.filter` crashes when
+   evidence is not an array
+3. **GRAND PLAN Sprint 4** (`lib/` + `hooks/` + `app/`) - Continue debt
    elimination
-2. **M1.5 - Quick Wins** (~50% complete) - P0 Priority
-3. **M1.6 - Admin Panel + UX** (~75% complete) - P1 Priority
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
