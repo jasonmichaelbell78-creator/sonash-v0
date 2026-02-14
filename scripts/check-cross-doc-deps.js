@@ -126,8 +126,21 @@ function checkDiffPattern(file, pattern) {
  */
 function isTrivialChange(file) {
   try {
+    const gitPath = file.replaceAll("\\", "/");
+
+    // Quick check: if whitespace-insensitive diff has no changes, it's formatting-only
+    const wsDiff = execFileSync("git", ["diff", "--cached", "-w", "--unified=0", "--", gitPath], {
+      encoding: "utf-8",
+      timeout: 15000,
+      maxBuffer: 1024 * 1024,
+    });
+    const wsChangeLines = wsDiff
+      .split("\n")
+      .filter((line) => /^[+-]/.test(line) && !/^[+-]{3}/.test(line));
+    if (wsChangeLines.length === 0) return true;
+
     // Get only the changed lines (added/removed), excluding context
-    const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", file], {
+    const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", gitPath], {
       encoding: "utf-8",
       timeout: 15000,
       maxBuffer: 1024 * 1024,
@@ -144,12 +157,12 @@ function isTrivialChange(file) {
     // A change is trivial if ALL changed lines are:
     // - empty or whitespace-only
     // - comments (JS/TS: //, #, *, or markdown: <!-- -->)
-    // - only differ in whitespace/formatting
     // - status badge updates (e.g., **Status:** ACTIVE)
     // - date updates (e.g., **Last Updated:** 2026-02-13)
     // - version bumps (e.g., **Document Version:** 1.1)
+    // Note: bare * excluded from comment detection to avoid matching markdown bullets
     const trivialPattern =
-      /^\s*$|^\s*(?:\/\/|#|\*|\/\*|\*\/|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
+      /^\s*$|^\s*(?:(?:\/\/)|#|\/\*|\*\/|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
 
     return changeLines.every((line) => trivialPattern.test(line));
   } catch {
@@ -249,12 +262,15 @@ function checkDependencies() {
     // only has trivial changes (whitespace, comments, formatting, date bumps).
     // This prevents blocking commits for typo fixes and minor doc formatting.
     if (trivialMode) {
-      const triggerFiles = stagedFiles.filter(
-        (f) =>
-          f === rule.trigger ||
-          f.endsWith(`/${rule.trigger}`) ||
-          (rule.trigger.endsWith("/") && f.startsWith(rule.trigger))
-      );
+      const trigger = rule.trigger.replaceAll("\\", "/");
+      const triggerFiles = stagedFiles
+        .map((f) => f.replaceAll("\\", "/"))
+        .filter(
+          (f) =>
+            f === trigger ||
+            f.endsWith(`/${trigger}`) ||
+            (trigger.endsWith("/") && f.startsWith(trigger))
+        );
       const allTrivial = triggerFiles.length > 0 && triggerFiles.every(isTrivialChange);
       if (allTrivial) {
         logVerbose(`Rule skipped (trivial changes only): ${rule.trigger}`);

@@ -106,9 +106,12 @@ function loadState() {
 function writeState(state) {
   ensureDir(STATE_DIR);
   const tmpPath = `${CONSOLIDATION_FILE}.tmp`;
+  const bakPath = `${CONSOLIDATION_FILE}.bak`;
   writeFileSync(tmpPath, JSON.stringify(state, null, 2) + "\n", "utf8");
-  if (existsSync(CONSOLIDATION_FILE)) rmSync(CONSOLIDATION_FILE, { force: true });
+  if (existsSync(bakPath)) rmSync(bakPath, { force: true });
+  if (existsSync(CONSOLIDATION_FILE)) renameSync(CONSOLIDATION_FILE, bakPath);
   renameSync(tmpPath, CONSOLIDATION_FILE);
+  if (existsSync(bakPath)) rmSync(bakPath, { force: true });
 }
 
 function ensureDir(dir) {
@@ -304,14 +307,15 @@ function generateRuleSuggestions(recurringPatterns, range) {
   content += `**Status:** Pending review - add to check-pattern-compliance.js as appropriate\n\n---\n\n`;
 
   for (const p of recurringPatterns) {
-    const id = (p.pattern || "")
+    const rawId = (p.pattern || "")
       .toLowerCase()
       .replaceAll(/[^a-z0-9]+/g, "-")
       .replaceAll(/(?:^-)|(?:-$)/g, "")
       .slice(0, 40);
+    const id = rawId || "unnamed";
     content += `## ${p.pattern}\n\n`;
     content += `- **Mentions:** ${p.count} (Reviews: #${p.reviews.join(", #")})\n`;
-    content += `- **Suggested ID:** \`${id || "unnamed"}\`\n`;
+    content += `- **Suggested ID:** \`${id}\`\n`;
     content += `- **Template:**\n\n\`\`\`javascript\n`;
     content += `{\n  id: ${JSON.stringify(id)},\n  pattern: /TODO_REGEX/g,\n`;
     content += `  message: ${JSON.stringify(p.pattern)},\n`;

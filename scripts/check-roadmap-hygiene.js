@@ -95,8 +95,11 @@ function findOpenItems(roadmapContent) {
 function checkArchived(completedItems, logContent) {
   const unarchived = [];
   for (const item of completedItems) {
-    const escapedId = item.id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const idRegex = new RegExp(`(^|[\\s\\[\\]():,./-])${escapedId}([\\s\\]():,./-]|$)`);
+    const escapedId = item.id.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+    const idRegex = new RegExp(
+      String.raw`(^|[\s\[\]():,./-])` + escapedId + String.raw`([\s\]():,./-]|$)`,
+      "i"
+    );
     if (!idRegex.test(logContent)) {
       unarchived.push(item);
     }

@@ -477,7 +477,8 @@ function parseMarkdownTable(input, category) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     // P009 fix: tolerate rows without trailing pipe (some generators omit it)
-    if (line.startsWith("|") && (line.endsWith("|") || line.includes("|"))) {
+    const pipeCount = (line.match(/\|/g) || []).length;
+    if (line.startsWith("|") && pipeCount >= 2) {
       // Check if next line is separator
       const nextLine = lines[i + 1]?.trim() || "";
       if (/^\|[-: |]+\|?\s*$/.test(nextLine)) {

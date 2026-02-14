@@ -64,6 +64,12 @@ function loadWarnedFiles() {
     const raw = readFileSync(WARNED_FILES_PATH, "utf-8").replace(/^\uFEFF/, "");
     const data = JSON.parse(raw);
 
+    // Validate parsed data is a plain object (not array, null, etc.)
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
+      console.warn("Warning: warned-files.json is not a plain object — resetting");
+      return {};
+    }
+
     // Purge expired entries (older than TTL)
     const now = Date.now();
     let purged = 0;

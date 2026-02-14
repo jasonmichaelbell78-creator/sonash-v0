@@ -161,8 +161,8 @@ function extractRuleFromLines(lines, startIndex) {
  */
 // P010 fix: emoji-independent, case-insensitive section detection via regex
 function detectSectionTransition(line) {
-  if (/^##\s+(?:🔒\s*)?Security\s+Hotspots/i.test(line)) return true;
-  if (/^##\s+(?:📂\s*)?All\s+Issues\s+by\s+File/i.test(line)) return false;
+  if (/^\s*##\s+(?:🔒\s*)?Security\s+Hotspots/i.test(line)) return true;
+  if (/^\s*##\s+(?:📂\s*)?All\s+Issues\s+by\s+File/i.test(line)) return false;
   return null;
 }
 

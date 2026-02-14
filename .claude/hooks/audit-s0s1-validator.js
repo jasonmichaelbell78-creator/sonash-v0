@@ -214,7 +214,9 @@ function main() {
 
   // FAST PATH (OPT-H008): Skip JSON parsing entirely if arg doesn't contain
   // audit path markers. Saves ~10-15ms on ~99% of Write operations.
-  if (!argNorm.includes("docs/audits") || !argNorm.includes(".jsonl")) {
+  // Only apply for direct path args (not JSON payloads that need full parsing)
+  const looksLikeDirectPath = !argNorm.trimStart().startsWith("{");
+  if (looksLikeDirectPath && (!argNorm.includes("docs/audits") || !argNorm.includes(".jsonl"))) {
     console.log("ok");
     process.exit(0);
   }

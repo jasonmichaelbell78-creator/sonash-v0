@@ -181,8 +181,9 @@ function validateItem(item, lineNum) {
 function getStagedChangedLines(filePath) {
   const { execFileSync } = require("node:child_process");
   try {
+    const gitPath = String(filePath).replaceAll("\\", "/");
     // Get unified diff with 0 context lines to identify exact changed lines
-    const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", filePath], {
+    const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", gitPath], {
       encoding: "utf-8",
     });
 

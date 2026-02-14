@@ -446,7 +446,8 @@ function extractLinks(content, currentFile) {
  * Checks per-file tier overrides first, then falls back to directory-based categories.
  */
 function getCategory(filePath) {
-  const dir = dirname(filePath);
+  const normalizedFilePath = filePath.replaceAll("\\", "/").replace(/^\.\//, "");
+  const dir = dirname(normalizedFilePath).replaceAll("\\", "/");
 
   // Resolve directory-based category first
   let category;
@@ -483,9 +484,8 @@ function getCategory(filePath) {
   }
 
   // Apply per-file tier override (keeps directory category name/description)
-  const normalizedPath = filePath.replaceAll("\\", "/");
-  const override = FILE_OVERRIDES[normalizedPath];
-  if (override && typeof override.tier === "number") {
+  const override = FILE_OVERRIDES[normalizedFilePath];
+  if (override && Number.isInteger(override.tier) && override.tier >= 1 && override.tier <= 4) {
     category = { ...category, tier: override.tier };
   }
 

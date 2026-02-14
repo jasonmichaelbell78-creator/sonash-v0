@@ -59,7 +59,7 @@ function checkVersionConsistency(content, fileName) {
   // Extract latest version from Version History section only (Review #211)
   // P008 fix: emoji-independent, case-insensitive section detection, CRLF compatible
   const versionHistorySectionMatch = content.match(
-    /##\s*Version History[\s\S]*?(?=\n##\s|\n---\s*$|$)/i
+    /##\s*Version History[\s\S]*?(?=\r?\n##\s|\r?\n---\s*$|$)/i
   );
 
   let historyVersion = null;
@@ -107,7 +107,7 @@ function checkMilestoneItemCounts(content, fileName) {
   // Extract claimed item counts from overview table
   // P008 fix: emoji-independent section detection, CRLF compatible (Review #211)
   const overviewTableMatch = content.match(
-    /##\s*Milestones Overview[\s\S]*?\|[\s\S]*?(?=\n\n|\n##|\n---)/i
+    /##\s*Milestones Overview[\s\S]*?\|[\s\S]*?(?=\r?\n\r?\n|\r?\n##|\r?\n---)/i
   );
 
   if (!overviewTableMatch) {
