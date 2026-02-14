@@ -30,6 +30,13 @@ actionable recommendations for improvement.
 
 **When to use:** Task tool available, sufficient context budget
 
+### Step 0: Load False Positives
+
+```bash
+# Read false positives to avoid re-flagging known issues
+cat docs/technical-debt/FALSE_POSITIVES.jsonl 2>/dev/null
+```
+
 ### Agent 1: dx-golden-path-auditor
 
 **Focus Areas:**

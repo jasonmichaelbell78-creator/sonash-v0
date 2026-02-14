@@ -10,8 +10,8 @@ description: |
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-05
+**Document Version:** 1.1
+**Last Updated:** 2026-02-14
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -130,6 +130,37 @@ still fails after 3 attempts, report the remaining errors to the user.
 - **Do NOT** add files to pathExcludeList in check-pattern-compliance.js unless
   they are verified false positives
 - **Do NOT** commit partial fixes — fix ALL reported errors before re-committing
+
+## Input/Output Format
+
+**Input:** The full stderr/stdout from a failed `git commit` command.
+
+**Output:** After all fixes are applied and committed, report a structured
+summary:
+
+```
+PRE-COMMIT FIX RESULT:
+  Status: SUCCESS | PARTIAL | FAILED
+  Attempt: N/3
+  Failures fixed:
+    - [category]: [description] ([file])
+  Remaining (if any):
+    - [category]: [description]
+  Commit: [hash] (if successful)
+```
+
+### Expected Behavior Per Failure Type
+
+| Failure Type           | Fix Strategy                                                          | Auto-fixable? |
+| ---------------------- | --------------------------------------------------------------------- | ------------- |
+| ESLint errors          | Read error list, fix each in source, re-stage                         | Subagent      |
+| Pattern compliance     | Read violation, apply pattern from CODE_PATTERNS.md                   | Subagent      |
+| Cross-doc dependencies | `git add` the unstaged dependency file                                | Inline        |
+| Doc index stale        | `npm run docs:index && git add DOCUMENTATION_INDEX.md`                | Inline        |
+| Doc headers missing    | Add standard header block (template in Step 4)                        | Inline        |
+| Skill validation       | Read error, fix SKILL.md frontmatter or structure                     | Subagent      |
+| S0/S1 audit failure    | Check if real or false positive; fix or set `SKIP_AUDIT_VALIDATION=1` | Subagent      |
+| Schema validation      | Fix JSONL schema issues in the flagged file                           | Subagent      |
 
 ## Context Efficiency
 

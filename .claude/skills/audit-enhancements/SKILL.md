@@ -87,7 +87,14 @@ npm run patterns:check 2>&1
 grep -E '"(next|react|typescript)"' package.json | head -5
 ```
 
-**Step 3: Load TDMS Cross-Reference Data**
+**Step 3: Load False Positives**
+
+```bash
+# Read false positives to avoid re-flagging known issues
+cat docs/technical-debt/FALSE_POSITIVES.jsonl 2>/dev/null
+```
+
+**Step 4: Load TDMS Cross-Reference Data**
 
 ```bash
 # Load existing debt items for cross-referencing
@@ -257,6 +264,11 @@ ALSO OUTPUT: A "strengths" section at the end of your findings:
 {"type": "strength", "domain": "{DOMAIN}", "description": "What's working well", "evidence": ["..."]}
 
 WRITE ALL OUTPUT TO FILES. Never rely on conversation context.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: [agent-id] wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Impact Scale Calibration

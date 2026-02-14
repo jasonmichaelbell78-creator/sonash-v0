@@ -199,6 +199,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -223,6 +228,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -246,6 +256,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -271,6 +286,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1D wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -297,6 +317,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1E wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -321,6 +346,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1F wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -402,6 +432,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 2A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -436,6 +471,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 2B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -470,6 +510,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 2C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -543,6 +588,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -569,6 +619,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -593,6 +648,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -614,6 +674,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3D wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -696,6 +761,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 4A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -718,6 +788,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 4B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -742,6 +817,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 4C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -815,6 +895,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 5A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -839,6 +924,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 5B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -861,6 +951,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 5C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -943,6 +1038,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 6A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -977,6 +1077,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 6B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -999,6 +1104,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 6C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
