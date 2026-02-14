@@ -33,10 +33,10 @@ orphaned documents.
 
 | Tier   | Count | Description       |
 | ------ | ----- | ----------------- |
-| Tier 1 | 4     | Canonical Living  |
+| Tier 1 | 5     | Canonical Living  |
 | Tier 2 | 12    | Foundation        |
 | Tier 3 | 145   | Planning & Active |
-| Tier 4 | 96    | Reference         |
+| Tier 4 | 95    | Reference         |
 | Tier 5 | 0     | Guides            |
 
 ### By Category
@@ -83,9 +83,10 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
-| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑15     | 2026-02-12    |
+| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓1 ↑7      | 2026-02-14    |
+| [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑14     | 2026-02-12    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-05    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓19 ↑17    | 2026-02-12    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓19 ↑18    | 2026-02-12    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                | ↓4 ↑6      | 2026-02-09    |
 
 ### Core Documentation (Tier 2)
@@ -121,9 +122,9 @@ _AI agent reference docs_
 | Document                                                                            | Description                                                     | References | Last Modified |
 | ----------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Agent Orchestration Reference](docs/agent_docs/AGENT_ORCHESTRATION.md)             | Detailed guidance for parallelizing agents, forming teams, a... | ↓1 ↑0      | 2026-02-10    |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                  | This document contains detailed code patterns and anti-patte... | ↓6 ↑2      | 2026-02-14    |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                  | This document contains detailed code patterns and anti-patte... | ↓6 ↑1      | 2026-02-14    |
 | [Context Preservation & Compaction Safety](docs/agent_docs/CONTEXT_PRESERVATION.md) | Detailed guidance for preventing loss of important decisions... | ↓1 ↑0      | 2026-02-10    |
-| [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)       | Copy-paste fix templates for the top 20 most common Qodo PR ... | ↓1 ↑0      | 2026-02-12    |
+| [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)       | Copy-paste fix templates for the top 20 most common Qodo PR ... | ↓1 ↑0      | 2026-02-14    |
 | [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)             | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-02-14    |
 | [Skill and Agent Usage Policy](docs/agent_docs/SKILL_AGENT_POLICY.md)               | This document defines the policy for creating, using, and ov... | ↓2 ↑3      | 2026-02-14    |
 
@@ -277,7 +278,7 @@ _Claude Code skills_
 | [Senior Qa](.claude/skills/senior-qa/SKILL.md)                                                                                      | Complete toolkit for senior qa with modern tools and best pr...   | ↓0 ↑0      | 2026-01-17    |
 | [Session Begin Checklist](.claude/skills/session-begin/SKILL.md)                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-14    |
 | [Session Checkpoint](.claude/skills/checkpoint/SKILL.md)                                                                            | -                                                                 | ↓0 ↑0      | 2026-02-05    |
-| [Session End Checklist](.claude/skills/session-end/SKILL.md)                                                                        | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-02-12    |
+| [Session End Checklist](.claude/skills/session-end/SKILL.md)                                                                        | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-02-14    |
 | [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)                                                              | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-09    |
 | [Single-Session Engineering Productivity Audit](.claude/skills/audit-engineering-productivity/SKILL.md)                             | Evaluates developer experience (DX), debugging capabilities,...   | ↓0 ↑0      | 2026-02-09    |
 | [Single-Session Performance Audit](.claude/skills/audit-performance/SKILL.md)                                                       | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-09    |
@@ -480,7 +481,7 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓9 ↑2      | 2026-02-14    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓4 ↑3      | 2026-02-14    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓4 ↑2      | 2026-02-14    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓2 ↑1      | 2026-02-09    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑12     | 2026-02-14    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-09    |
@@ -491,7 +492,7 @@ _Reference_
 | [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                  | This document provides **visual diagrams and flowcharts** fo...   | ↓2 ↑3      | 2026-01-17    |
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                 | This document captures important decisions, options presente...   | ↓1 ↑0      | 2026-02-02    |
 | [Session History Log](docs/SESSION_HISTORY.md)                                    | -                                                                 | ↓1 ↑1      | 2026-02-14    |
-| [Slash Commands Reference](docs/SLASH_COMMANDS_REFERENCE.md)                      | -                                                                 | ↓1 ↑2      | 2026-02-04    |
+| [Slash Commands Reference](docs/SLASH_COMMANDS_REFERENCE.md)                      | -                                                                 | ↓1 ↑1      | 2026-02-04    |
 | [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-02-12    |
 
 ### Decisions (Tier 4)
@@ -515,11 +516,10 @@ _Documented design patterns_
 
 _Reference_
 
-| Document                                   | Description                                                       | References | Last Modified |
-| ------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑7      | 2026-02-12    |
-| [AI Workflow Guide](AI_WORKFLOW.md)        | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-14    |
-| [Session Context](SESSION_CONTEXT.md)      | -                                                                 | ↓6 ↑9      | 2026-02-14    |
+| Document                              | Description                                                       | References | Last Modified |
+| ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
+| [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-14    |
+| [Session Context](SESSION_CONTEXT.md) | -                                                                 | ↓6 ↑9      | 2026-02-14    |
 
 ### scripts (Tier 4)
 
@@ -576,12 +576,12 @@ Documents that are linked to most frequently:
 
 | Document                                                                                                    | Inbound Links | Referenced By                                         |
 | ----------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------- |
-| [SoNash Product Roadmap](ROADMAP.md)                                                                        | 19            | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +16 more       |
+| [SoNash Product Roadmap](ROADMAP.md)                                                                        | 19            | AI_WORKFLOW, ARCHITECTURE, CLAUDE +16 more            |
 | [Development Guide](DEVELOPMENT.md)                                                                         | 13            | HOOKS, AI_WORKFLOW, ARCHITECTURE +10 more             |
 | [Security &amp; Privacy Guide](docs/SECURITY.md)                                                            | 13            | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +10 more       |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                      | 13            | SKILL, SKILL, DOCUMENTATION_STANDARDS +10 more        |
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                            | 13            | SKILL, DOCUMENTATION_STANDARDS, README +10 more       |
-| [AI Workflow Guide](AI_WORKFLOW.md)                                                                         | 12            | HOOKS, README, SESSION_CONTEXT +9 more                |
+| [AI Workflow Guide](AI_WORKFLOW.md)                                                                         | 12            | HOOKS, CLAUDE, README +9 more                         |
 | [Architecture Documentation](ARCHITECTURE.md)                                                               | 12            | AI_WORKFLOW, DEVELOPMENT, README +9 more              |
 | [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                              | 12            | AI_WORKFLOW, README, FIREBASE_CHANGE_POLICY +9 more   |
 | [Multi-AI Review Coordinator](docs/multi-ai-audit/COORDINATOR.md)                                           | 12            | AI_WORKFLOW, README, CODE_REVIEW_PLAN +9 more         |
@@ -591,8 +591,8 @@ Documents that are linked to most frequently:
 | [\[Project Name\] Multi-AI Security Audit Plan](docs/multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md)       | 8             | FIREBASE_CHANGE_POLICY, COORDINATOR, README +5 more   |
 | [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                           | 7             | AI_WORKFLOW, DOCUMENT_DEPENDENCIES, README +4 more    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                      | 7             | ARCHITECTURE, DEVELOPMENT, README +4 more             |
-| [Session Context](SESSION_CONTEXT.md)                                                                       | 6             | AI_WORKFLOW, ROADMAP, claude +3 more                  |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                          | 6             | README, claude, AI_REVIEW_LEARNINGS_LOG +3 more       |
+| [Session Context](SESSION_CONTEXT.md)                                                                       | 6             | AI_WORKFLOW, CLAUDE, ROADMAP +3 more                  |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                          | 6             | CLAUDE, README, AI_REVIEW_LEARNINGS_LOG +3 more       |
 | [\[Project Name\] Multi-AI Performance Audit Plan](docs/multi-ai-audit/templates/PERFORMANCE_AUDIT_PLAN.md) | 6             | COORDINATOR, README, CODE_REVIEW_PLAN +3 more         |
 | [\[Project Name\] Multi-AI Refactoring Audit](docs/multi-ai-audit/templates/REFACTORING_AUDIT.md)           | 6             | COORDINATOR, README, CODE_REVIEW_PLAN +3 more         |
 | [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                                   | 5             | README, ROADMAP, ROADMAP_LOG +2 more                  |
@@ -603,10 +603,10 @@ Documents that link to other documents most frequently:
 
 | Document                                                                                                        | Outbound Links |
 | --------------------------------------------------------------------------------------------------------------- | -------------- |
-| [SoNash Product Roadmap](ROADMAP.md)                                                                            | 17             |
+| [SoNash Product Roadmap](ROADMAP.md)                                                                            | 18             |
 | [AI Workflow Guide](AI_WORKFLOW.md)                                                                             | 16             |
 | [Multi-AI Review Coordinator](docs/multi-ai-audit/COORDINATOR.md)                                               | 16             |
-| [SoNash - Sober Nashville Recovery Notebook](README.md)                                                         | 15             |
+| [SoNash - Sober Nashville Recovery Notebook](README.md)                                                         | 14             |
 | [Multi-AI Audit System](docs/multi-ai-audit/README.md)                                                          | 14             |
 | [Documentation Inventory](docs/README.md)                                                                       | 12             |
 | [Enhancement Audit Template \(Multi-AI Injectable\)](docs/multi-ai-audit/templates/ENHANCEMENT_AUDIT.md)        | 12             |
@@ -616,7 +616,7 @@ Documents that link to other documents most frequently:
 | [\[Project Name\] Multi-AI Code Review Plan](docs/multi-ai-audit/templates/CODE_REVIEW_PLAN.md)                 | 8              |
 | [\[Project Name\] Multi-AI Refactoring Audit](docs/multi-ai-audit/templates/REFACTORING_AUDIT.md)               | 8              |
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                                | 8              |
-| [AI Context &amp; Rules for SoNash](claude.md)                                                                  | 7              |
+| [AI Context &amp; Rules for SoNash](CLAUDE.md)                                                                  | 7              |
 | [\[Project Name\] Multi-AI Process &amp; Automation Audit Plan](docs/multi-ai-audit/templates/PROCESS_AUDIT.md) | 7              |
 | [\[Project Name\] Multi-AI Security Audit Plan](docs/multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md)           | 7              |
 | [Multi-AI Audit Shared Template Base](docs/multi-ai-audit/templates/SHARED_TEMPLATE_BASE.md)                    | 7              |
@@ -983,7 +983,7 @@ Documents with no inbound links (not referenced by any other document):
 | 167 | [analysis/pass5_effort.md](analysis/pass5_effort.md)                                                                                                             | Pass 5: Effort Estimation Alignment                                | 4    | COMPLETE \| **Last Updated:** 2026-01-27                                        |
 | 168 | [analysis/README.md](analysis/README.md)                                                                                                                         | ROADMAP Analysis                                                   | 4    | -                                                                               |
 | 169 | [ARCHITECTURE.md](ARCHITECTURE.md)                                                                                                                               | Architecture Documentation                                         | 2    | ACTIVE **Last Updated:** 2026-01-02                                             |
-| 170 | [claude.md](claude.md)                                                                                                                                           | AI Context &amp; Rules for SoNash                                  | 4    | ACTIVE                                                                          |
+| 170 | [CLAUDE.md](CLAUDE.md)                                                                                                                                           | AI Context &amp; Rules for SoNash                                  | 1    | ACTIVE                                                                          |
 | 171 | [consolidation-output/suggested-rules.md](consolidation-output/suggested-rules.md)                                                                               | Suggested Compliance Checker Rules                                 | 4    | Pending review - add to check-pattern-compliance.js as appropriate              |
 | 172 | [DEVELOPMENT.md](DEVELOPMENT.md)                                                                                                                                 | Development Guide                                                  | 2    | Active                                                                          |
 | 173 | [docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                                                     | Admin Panel Security &amp; Monitoring Requirements                 | 3    | -                                                                               |

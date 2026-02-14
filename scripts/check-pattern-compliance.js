@@ -971,6 +971,18 @@ const ANTI_PATTERNS = [
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
     pathExcludeList: verifiedPatterns["rename-without-remove"] || [],
   },
+
+  // throw after console.error re-exposes sanitized error (PR #365)
+  {
+    id: "throw-after-sanitize",
+    pattern: /console\.error\([^)]{1,200}\)\s*;\s*\n\s*throw\s+\w+/g,
+    message: "Stack trace leakage: throw after console.error re-exposes sanitized error",
+    fix: "Use process.exit(1) instead of throw when error is fatal and already logged",
+    review: "#315",
+    fileTypes: [".js", ".mjs", ".cjs"],
+    pathFilter: /(?:^|\/)scripts\//,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
 ];
 
 /**

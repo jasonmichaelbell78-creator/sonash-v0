@@ -105,6 +105,11 @@ const BENCHMARKS = {
   commits: {
     hours_since_last: { good: 2, average: 8, poor: 24 },
   },
+  skip_abuse: {
+    overrides_24h: { good: 0, average: 1, poor: 3 },
+    overrides_7d: { good: 0, average: 3, poor: 6 },
+    no_reason_pct: { good: 0, average: 10, poor: 25 },
+  },
 };
 
 // ============================================================================
@@ -1395,6 +1400,105 @@ function checkHookWarnings() {
 }
 
 // ============================================================================
+// SKIP ABUSE (Limited mode — audit trail for SKIP_ overrides)
+// ============================================================================
+
+function checkSkipAbuse() {
+  console.error("  Checking skip abuse...");
+
+  const logPath = path.join(ROOT_DIR, ".claude", "override-log.jsonl");
+  const lines = safeReadLines(logPath);
+
+  if (lines.length === 0) {
+    addContext("skip-abuse", {
+      benchmarks: BENCHMARKS.skip_abuse,
+      ratings: { overrides_24h: "good", overrides_7d: "good", no_reason: "good" },
+      totals: { count_24h: 0, count_7d: 0, no_reason_count: 0, no_reason_pct: 0 },
+    });
+    return;
+  }
+
+  const now = Date.now();
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const entries = [];
+
+  for (const line of lines) {
+    const entry = safeParse(line);
+    if (!entry || !entry.timestamp) continue;
+    entries.push(entry);
+  }
+
+  const cutoff24h = now - DAY_MS;
+  const cutoff7d = now - 7 * DAY_MS;
+
+  const last24h = entries.filter((e) => new Date(e.timestamp).getTime() > cutoff24h);
+  const last7d = entries.filter((e) => new Date(e.timestamp).getTime() > cutoff7d);
+
+  const noReasonEntries = last7d.filter(
+    (e) => !e.reason || e.reason === "No reason" || e.reason === "No reason provided"
+  );
+  const noReasonPct =
+    last7d.length > 0 ? Math.round((noReasonEntries.length / last7d.length) * 100) : 0;
+
+  // Group by check type for details
+  const byType = {};
+  for (const e of last7d) {
+    const key = e.check || "unknown";
+    byType[key] = (byType[key] || 0) + 1;
+  }
+
+  // Rate against benchmarks
+  const rate24h = rateLowerBetter(last24h.length, BENCHMARKS.skip_abuse.overrides_24h);
+  const rate7d = rateLowerBetter(last7d.length, BENCHMARKS.skip_abuse.overrides_7d);
+  const rateNoReason = rateLowerBetter(noReasonPct, BENCHMARKS.skip_abuse.no_reason_pct);
+
+  // Generate alerts
+  if (last24h.length >= BENCHMARKS.skip_abuse.overrides_24h.poor) {
+    const typeStr = Object.entries(byType)
+      .filter(([, v]) => v > 0)
+      .map(([k, v]) => `${k} (${v}x)`)
+      .join(", ");
+    addAlert(
+      "skip-abuse",
+      "error",
+      `${last24h.length} checks overridden in last 24h (threshold: ${BENCHMARKS.skip_abuse.overrides_24h.average})`,
+      `By type: ${typeStr}. Without reason: ${noReasonEntries.length} of ${last7d.length} (${noReasonPct}%)`,
+      "Run: node scripts/log-override.js --list"
+    );
+  } else if (last24h.length >= BENCHMARKS.skip_abuse.overrides_24h.average) {
+    addAlert(
+      "skip-abuse",
+      "warning",
+      `${last24h.length} check override(s) in last 24h`,
+      null,
+      "Run: node scripts/log-override.js --list"
+    );
+  }
+
+  if (noReasonPct >= BENCHMARKS.skip_abuse.no_reason_pct.poor) {
+    addAlert(
+      "skip-abuse",
+      "warning",
+      `${noReasonPct}% of overrides in last 7d have no reason (${noReasonEntries.length}/${last7d.length})`,
+      null,
+      "Always provide SKIP_REASON when overriding checks"
+    );
+  }
+
+  addContext("skip-abuse", {
+    benchmarks: BENCHMARKS.skip_abuse,
+    ratings: { overrides_24h: rate24h, overrides_7d: rate7d, no_reason: rateNoReason },
+    totals: {
+      count_24h: last24h.length,
+      count_7d: last7d.length,
+      no_reason_count: noReasonEntries.length,
+      no_reason_pct: noReasonPct,
+      by_type: byType,
+    },
+  });
+}
+
+// ============================================================================
 // TEST RESULTS (Limited mode, Actionable)
 // ============================================================================
 
@@ -2065,6 +2169,7 @@ function main() {
   checkLearningEffectiveness();
   checkAgentCompliance();
   checkHookWarnings();
+  checkSkipAbuse();
   checkTestResults();
 
   // Full mode only
@@ -2089,6 +2194,7 @@ function main() {
   ensureCategory("learning", "Learning Health");
   ensureCategory("agent-compliance", "Agent Compliance");
   ensureCategory("hook-warnings", "Hook Warnings");
+  ensureCategory("skip-abuse", "Skip Abuse");
   ensureCategory("test-results", "Test Results");
 
   if (isFullMode) {

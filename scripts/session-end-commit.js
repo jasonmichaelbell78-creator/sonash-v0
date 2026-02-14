@@ -165,6 +165,32 @@ function main() {
   try {
     runGit(["add", "SESSION_CONTEXT.md"]);
 
+    // Log the hard-coded skips for audit trail
+    try {
+      execFileSync(
+        "node",
+        [
+          "scripts/log-override.js",
+          "--quick",
+          "--check=doc-index",
+          "--reason=Automated session-end commit",
+        ],
+        { timeout: 3000, stdio: "pipe" }
+      );
+      execFileSync(
+        "node",
+        [
+          "scripts/log-override.js",
+          "--quick",
+          "--check=doc-header",
+          "--reason=Automated session-end commit",
+        ],
+        { timeout: 3000, stdio: "pipe" }
+      );
+    } catch {
+      /* non-blocking */
+    }
+
     // Review #217 R2/R3/R4: Commit ONLY SESSION_CONTEXT.md to prevent accidental commits of other staged files
     // --only flag ensures only specified file is committed, even if other files are staged
     // Use SKIP flags via env to avoid blocking on doc index/header checks

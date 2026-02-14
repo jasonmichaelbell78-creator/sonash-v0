@@ -62,6 +62,23 @@ cat .claude/state/pending-reviews.json 2>/dev/null
 If `pending-reviews.json` shows `queued: true` but no code-reviewer was invoked,
 flag this as a compliance gap and suggest the user run a review before merging.
 
+## 4b. Override Audit Review
+
+Check if any blocking checks were skipped during this session:
+
+```bash
+node scripts/log-override.js --list
+```
+
+If overrides were used:
+
+1. Were they justified? (Check reason field)
+2. Did the skipped check actually pass later? (Rerun the check now)
+3. Should this check be made non-blocking instead of requiring SKIP\_?
+4. Log unjustified skips as process improvement items
+
+Flag any overrides without reasons as process violations.
+
 ## 5. Update Session State
 
 ```bash

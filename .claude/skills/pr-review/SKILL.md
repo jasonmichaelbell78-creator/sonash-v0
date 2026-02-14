@@ -77,6 +77,23 @@ and context.
 
 ---
 
+## STEP 0.5: PRE-PUSH REVIEWER GATE (New Files)
+
+**Before the first push to CI**, check if the PR includes any new files >500
+lines. If so, run a code-reviewer agent on those files FIRST:
+
+- New files >500 lines get 10+ Qodo issues per round
+- A single code-reviewer pass catches 70-80% of issues pre-CI
+- This prevents multi-round ping-pong with Qodo
+
+If new large files exist:
+
+1. Run `code-reviewer` agent on each file
+2. Fix issues found
+3. THEN push to CI
+
+---
+
 ## STEP 0: CONTEXT LOADING (Tiered Access)
 
 ### 0.1 Episodic Memory Search (Session #128)
@@ -449,6 +466,9 @@ Agent 3: technical-writer
 - **Apply** the fix (use template if available)
 - **Verify** the fix doesn't introduce new issues
 - **Mark** todo as completed
+- **Two-strikes regex rule** - If SonarCloud flags the same regex twice, replace
+  it with string parsing. Do NOT try to shrink the regex further. See
+  FIX_TEMPLATES.md Template 21.
 
 ### 5.3 Pre-existing Items
 
@@ -467,6 +487,14 @@ After all fixes:
 - **Pass 2**: Run linter if available (`npm run lint`)
 - **Pass 3**: Run tests if available (`npm run test`)
 - **Pass 4**: Cross-reference original suggestions - confirm each is addressed
+
+### 5.5 Batch Rule for Repetitive Files
+
+If the same file appears in 3+ consecutive review rounds:
+
+1. **Stop fixing incrementally** — read ALL remaining suggestions holistically
+2. Fix everything in one batch, then push once
+3. This prevents the "fix one, break another" ping-pong pattern
 
 ---
 

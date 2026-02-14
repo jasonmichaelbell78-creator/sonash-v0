@@ -49,13 +49,14 @@ Section 7).
 
 **Top 5 (enforced by `npm run patterns:check`):**
 
-| Pattern            | Rule                                                              |
-| ------------------ | ----------------------------------------------------------------- |
-| Error sanitization | Use `scripts/lib/sanitize-error.js` - never log raw error.message |
-| Path traversal     | Use `/^\.\.(?:[\\/]&#124;$)/.test(rel)` NOT `startsWith('..')`    |
-| Test mocking       | Mock `httpsCallable`, NOT direct Firestore writes                 |
-| File reads         | Wrap ALL in try/catch (existsSync race condition)                 |
-| exec() loops       | `/g` flag REQUIRED (no /g = infinite loop)                        |
+| Pattern            | Rule                                                                         |
+| ------------------ | ---------------------------------------------------------------------------- |
+| Error sanitization | Use `scripts/lib/sanitize-error.js` - never log raw error.message            |
+| Path traversal     | Use `/^\.\.(?:[\\/]&#124;$)/.test(rel)` NOT `startsWith('..')`               |
+| Test mocking       | Mock `httpsCallable`, NOT direct Firestore writes                            |
+| File reads         | Wrap ALL in try/catch (existsSync race condition)                            |
+| exec() loops       | `/g` flag REQUIRED (no /g = infinite loop)                                   |
+| Regex two-strikes  | If SonarCloud flags a regex twice, replace with string parsing — don't patch |
 
 **Full Reference**:
 [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (230+

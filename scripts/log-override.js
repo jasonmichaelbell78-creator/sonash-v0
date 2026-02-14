@@ -96,6 +96,7 @@ function parseArgs() {
     reason: null,
     list: false,
     clear: false,
+    quick: false,
   };
 
   for (const arg of process.argv.slice(2)) {
@@ -103,6 +104,8 @@ function parseArgs() {
       args.list = true;
     } else if (arg === "--clear") {
       args.clear = true;
+    } else if (arg === "--quick") {
+      args.quick = true;
     } else if (arg.startsWith("--check=")) {
       // Use slice(1).join("=") to handle values containing "="
       args.check = arg.split("=").slice(1).join("=");
@@ -254,7 +257,22 @@ function clearLog() {
   console.log("Override log cleared.");
 }
 
-// Main execution
+/**
+ * Exported helper for Node scripts to log skips programmatically.
+ * @param {string} check - The check type (e.g., "tests", "cross-doc")
+ * @param {string} [reason] - Reason for skipping
+ * @returns {object|null} The logged entry, or null on failure
+ */
+function logSkip(check, reason) {
+  return logOverride(check, reason);
+}
+
+// Export for use as a module
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { logSkip, logOverride };
+}
+
+// Main execution (only when run directly, not when required)
 function main() {
   const args = parseArgs();
 
@@ -268,17 +286,30 @@ function main() {
     return;
   }
 
+  // --quick mode: log and exit silently (for shell hooks)
+  if (args.quick) {
+    if (!args.check) {
+      console.error("--quick requires --check=<type>");
+      process.exit(1);
+    }
+    logOverride(args.check, args.reason);
+    return;
+  }
+
   if (!args.check) {
     console.log('Usage: node log-override.js --check=<type> --reason="<reason>"');
     console.log("");
-    console.log("Check types: triggers, patterns, tests, lint");
+    console.log(
+      "Check types: triggers, patterns, tests, lint, cross-doc, doc-index, doc-header, audit-s0s1, debt-schema"
+    );
     console.log("");
     console.log("Or use environment variable:");
     console.log('  SKIP_REASON="reason" SKIP_TRIGGERS=1 git push');
     console.log("");
     console.log("Other commands:");
-    console.log("  --list   Show recent overrides");
-    console.log("  --clear  Archive and clear override log");
+    console.log("  --list    Show recent overrides");
+    console.log("  --clear   Archive and clear override log");
+    console.log("  --quick   Silent mode for shell hooks (log and exit)");
     process.exit(1);
   }
 
@@ -293,4 +324,7 @@ function main() {
   }
 }
 
-main();
+// Only run main() when executed directly (not when required as a module)
+if (require.main === module) {
+  main();
+}
