@@ -1194,7 +1194,7 @@ _No items_
 | DEBT-2752 | Sentry disabled in dev mode by default                         | S2       | code-quality             |
 | DEBT-2753 | Hook performance not tracked - no metrics on execution time    | S2       | code-quality             |
 | DEBT-2754 | Pre-push duplicates pre-commit pattern checks                  | S2       | code-quality             |
-| DEBT-2826 | Missing ARIA labels on critical navigation tabs                | S2       | code-quality             |
+| DEBT-2832 | Missing ARIA labels on critical navigation tabs                | S2       | code-quality             |
 | DEBT-2758 | No focus trap management in modals and dialogs                 | S2       | code-quality             |
 | DEBT-2759 | Missing error state illustrations - plain text errors only     | S2       | code-quality             |
 | DEBT-2760 | Missing loading skeletons on data-heavy pages                  | S2       | code-quality             |
@@ -1210,13 +1210,13 @@ _No items_
 | DEBT-2770 | Flaky timing in rate limiter tests using real setTimeout       | S2       | code-quality             |
 | DEBT-2771 | msw installed but unused for API mocking                       | S2       | code-quality             |
 | DEBT-2772 | Enable Next.js experimental optimizations and bundle anal...   | S2       | code-quality             |
-| DEBT-2825 | Add engines field to root package.json for CI/CD consistency   | S2       | code-quality             |
+| DEBT-2831 | Add engines field to root package.json for CI/CD consistency   | S2       | code-quality             |
 | DEBT-2777 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | code-quality             |
 | DEBT-2779 | Add composite index for userId + timestamp on security_lo...   | S2       | code-quality             |
 | DEBT-2780 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | code-quality             |
-| DEBT-2823 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | S2       | code-quality             |
+| DEBT-2829 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | S2       | code-quality             |
 | DEBT-2782 | Security guidance consolidation - multiple overlapping se...   | S2       | code-quality             |
-| DEBT-2824 | Documentation effectiveness metrics - no tracking of whic...   | S2       | code-quality             |
+| DEBT-2830 | Documentation effectiveness metrics - no tracking of whic...   | S2       | code-quality             |
 | DEBT-2784 | Cross-reference navigation overhead in documentation           | S2       | code-quality             |
 | DEBT-2785 | Pre-commit hook parallelization - sequential checks could...   | S2       | code-quality             |
 | DEBT-2786 | CI non-blocking checks should block - 5 checks use contin...   | S2       | code-quality             |
@@ -1226,7 +1226,7 @@ _No items_
 | DEBT-2790 | Inconsistent terminology - meeting vs session vs appointment   | S2       | code-quality             |
 | DEBT-2791 | Confirmation dialogs lack specific consequences                | S2       | code-quality             |
 | DEBT-2792 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | code-quality             |
-| DEBT-2822 | Date formats inconsistent across the app                       | S2       | code-quality             |
+| DEBT-2828 | Date formats inconsistent across the app                       | S2       | code-quality             |
 | DEBT-2794 | Success feedback messages too brief                            | S2       | code-quality             |
 | DEBT-2795 | Consolidate duplicate mood selector components - 3 implem...   | S2       | code-quality             |
 | DEBT-2796 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | code-quality             |
@@ -1238,12 +1238,12 @@ _No items_
 | DEBT-2803 | Consolidate regex pattern linter into ESLint plugin            | S2       | process                  |
 | DEBT-2806 | Inconsistent loading states - spinners vs text vs skeleto...   | S2       | enhancements             |
 | DEBT-2807 | Generic button labels - Submit used instead of action-spe...   | S2       | enhancements             |
-| DEBT-2828 | Date formats inconsistent across the app                       | S2       | enhancements             |
-| DEBT-2829 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | S2       | enhancements             |
+| DEBT-2833 | Date formats inconsistent across the app                       | S2       | enhancements             |
+| DEBT-2834 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | S2       | enhancements             |
 | DEBT-2810 | Security guidance consolidation - multiple overlapping se...   | S2       | enhancements             |
-| DEBT-2830 | Documentation effectiveness metrics - no tracking of whic...   | S2       | enhancements             |
-| DEBT-2831 | Add engines field to root package.json for CI/CD consistency   | S2       | enhancements             |
-| DEBT-2832 | Missing ARIA labels on critical navigation tabs                | S2       | enhancements             |
+| DEBT-2835 | Documentation effectiveness metrics - no tracking of whic...   | S2       | enhancements             |
+| DEBT-2836 | Add engines field to root package.json for CI/CD consistency   | S2       | enhancements             |
+| DEBT-2837 | Missing ARIA labels on critical navigation tabs                | S2       | enhancements             |
 | DEBT-2814 | Pre-push duplicates pre-commit pattern checks                  | S2       | enhancements             |
 | DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | code-quality             |
 | DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | S3       | code-quality             |
