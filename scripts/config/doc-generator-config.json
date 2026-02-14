@@ -7,11 +7,11 @@
     "maxDescriptionLength": 200
   },
   "tierDescriptions": {
-    "1": "Essential",
-    "2": "Core",
-    "3": "Specialized",
+    "1": "Canonical Living",
+    "2": "Foundation",
+    "3": "Planning & Active",
     "4": "Reference",
-    "5": "Archive"
+    "5": "Guides"
   },
   "externalSchemes": ["http://", "https://", "mailto:", "tel:", "data:"],
   "imageExtensions": [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"],
@@ -24,7 +24,7 @@
     "docs": {
       "name": "Core Documentation",
       "tier": 2,
-      "description": "Main documentation directory"
+      "description": "Foundation technical reference"
     },
     "docs/templates": {
       "name": "Templates",
@@ -66,12 +66,99 @@
       "tier": 4,
       "description": "Draft and planning documents"
     },
-    "docs/analysis": { "name": "Analysis", "tier": 4, "description": "Code analysis and metrics" },
+    "docs/analysis": {
+      "name": "Analysis",
+      "tier": 4,
+      "description": "Code analysis and metrics"
+    },
+    "docs/multi-ai-audit": {
+      "name": "Multi-AI Audit System",
+      "tier": 3,
+      "description": "Multi-AI audit orchestration and coordination"
+    },
+    "docs/multi-ai-audit/templates": {
+      "name": "Audit Templates",
+      "tier": 3,
+      "description": "Multi-AI audit execution templates"
+    },
+    "docs/technical-debt": {
+      "name": "Technical Debt System",
+      "tier": 3,
+      "description": "TDMS tracking and management"
+    },
+    "docs/technical-debt/views": {
+      "name": "Technical Debt Views",
+      "tier": 4,
+      "description": "Auto-generated debt dashboards"
+    },
+    "docs/plans": {
+      "name": "Plans",
+      "tier": 3,
+      "description": "Active implementation plans"
+    },
+    "docs/decisions": {
+      "name": "Decisions",
+      "tier": 4,
+      "description": "Architecture decision records"
+    },
+    "docs/patterns": {
+      "name": "Patterns",
+      "tier": 4,
+      "description": "Documented design patterns"
+    },
+    "docs/ai-optimization-audit": {
+      "name": "AI Optimization Audit",
+      "tier": 3,
+      "description": "AI token and workflow optimization"
+    },
+    "docs/audits": {
+      "name": "Audit Reports",
+      "tier": 3,
+      "description": "Single-session and multi-AI audit outputs"
+    },
     ".claude/commands": {
       "name": "Slash Commands",
       "tier": 3,
       "description": "Claude Code custom commands"
     },
-    ".claude/skills": { "name": "Skills", "tier": 3, "description": "Claude Code skills" }
+    ".claude/skills": {
+      "name": "Skills",
+      "tier": 3,
+      "description": "Claude Code skills"
+    }
+  },
+  "fileOverrides": {
+    "_comment": "Per-file tier overrides. Key = file path relative to project root (forward slashes). Overrides the directory-based tier only.",
+    "ARCHITECTURE.md": { "tier": 2 },
+    "DEVELOPMENT.md": { "tier": 2 },
+    "AI_WORKFLOW.md": { "tier": 4 },
+    "SESSION_CONTEXT.md": { "tier": 4 },
+    "claude.md": { "tier": 4 },
+    "docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md": { "tier": 3 },
+    "docs/MONETIZATION_RESEARCH.md": { "tier": 3 },
+    "docs/LIGHTHOUSE_INTEGRATION_PLAN.md": { "tier": 3 },
+    "docs/OPERATIONAL_VISIBILITY_SPRINT.md": { "tier": 3 },
+    "docs/AUDIT_TRACKER.md": { "tier": 3 },
+    "docs/TESTING_PLAN.md": { "tier": 3 },
+    "docs/LEARNING_METRICS.md": { "tier": 3 },
+    "docs/AI_REVIEW_PROCESS.md": { "tier": 4 },
+    "docs/AI_REVIEW_LEARNINGS_LOG.md": { "tier": 4 },
+    "docs/PR_WORKFLOW_CHECKLIST.md": { "tier": 4 },
+    "docs/REVIEW_POLICY_ARCHITECTURE.md": { "tier": 4 },
+    "docs/REVIEW_POLICY_INDEX.md": { "tier": 4 },
+    "docs/REVIEW_POLICY_QUICK_REF.md": { "tier": 4 },
+    "docs/REVIEW_POLICY_VISUAL_GUIDE.md": { "tier": 4 },
+    "docs/DOCUMENT_DEPENDENCIES.md": { "tier": 4 },
+    "docs/TRIGGERS.md": { "tier": 4 },
+    "docs/SLASH_COMMANDS_REFERENCE.md": { "tier": 4 },
+    "docs/SESSION_DECISIONS.md": { "tier": 4 },
+    "docs/SESSION_HISTORY.md": { "tier": 4 },
+    "docs/INCIDENT_RESPONSE.md": { "tier": 4 },
+    "docs/README.md": { "tier": 4 },
+    "docs/APPCHECK_SETUP.md": { "tier": 5 },
+    "docs/MCP_SETUP.md": { "tier": 5 },
+    "docs/RECAPTCHA_REMOVAL_GUIDE.md": { "tier": 5 },
+    "docs/SENTRY_INTEGRATION_GUIDE.md": { "tier": 5 },
+    "docs/SONARCLOUD_CLEANUP_RUNBOOK.md": { "tier": 5 }
   }
 }

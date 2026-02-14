@@ -34,18 +34,6 @@ automatically updated when new patterns are discovered during PR reviews.
 
 ---
 
-## AI Instructions
-
-**When to use:** Before writing new scripts or modifying existing ones that
-touch file/git/input/shell operations.
-
-**How to use:**
-
-1. Check all applicable sections below
-2. Use helpers from `scripts/lib/security-helpers.js` where available
-3. If you discover a new pattern, add it here AND to CODE_PATTERNS.md
-4. Run `npm run patterns:sync` to verify consistency
-
 ---
 
 ## Quick Reference

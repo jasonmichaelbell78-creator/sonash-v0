@@ -69,6 +69,7 @@ function encodeMarkdownPath(path) {
 
 // Category definitions — from doc-generator-config.json
 const CATEGORIES = genConfig.categories;
+const FILE_OVERRIDES = genConfig.fileOverrides || {};
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -441,38 +442,54 @@ function extractLinks(content, currentFile) {
 }
 
 /**
- * Determine category for a file based on its path
+ * Determine category for a file based on its path.
+ * Checks per-file tier overrides first, then falls back to directory-based categories.
  */
 function getCategory(filePath) {
   const dir = dirname(filePath);
 
-  // Check for exact match first
-  if (CATEGORIES[dir]) {
-    return { path: dir, ...CATEGORIES[dir] };
-  }
+  // Resolve directory-based category first
+  let category;
 
-  // Check for parent directory match
-  const parts = dir.split("/");
-  while (parts.length > 0) {
-    const checkPath = parts.join("/");
-    if (CATEGORIES[checkPath]) {
-      return { path: checkPath, ...CATEGORIES[checkPath] };
+  // Check for exact directory match
+  if (CATEGORIES[dir]) {
+    category = { path: dir, ...CATEGORIES[dir] };
+  } else {
+    // Check for parent directory match
+    const parts = dir.split("/");
+    while (parts.length > 0) {
+      const checkPath = parts.join("/");
+      if (CATEGORIES[checkPath]) {
+        category = { path: checkPath, ...CATEGORIES[checkPath] };
+        break;
+      }
+      parts.pop();
     }
-    parts.pop();
   }
 
   // Root level files
-  if (dir === ".") {
-    return { path: "root", ...CATEGORIES["root"] };
+  if (!category && dir === ".") {
+    category = { path: "root", ...CATEGORIES["root"] };
   }
 
   // Default category
-  return {
-    path: dir,
-    name: dir.replace(/\//g, " > "),
-    tier: 4,
-    description: "Uncategorized",
-  };
+  if (!category) {
+    category = {
+      path: dir,
+      name: dir.replace(/\//g, " > "),
+      tier: 4,
+      description: "Uncategorized",
+    };
+  }
+
+  // Apply per-file tier override (keeps directory category name/description)
+  const normalizedPath = filePath.replace(/\\/g, "/");
+  const override = FILE_OVERRIDES[normalizedPath];
+  if (override && typeof override.tier === "number") {
+    category = { ...category, tier: override.tier };
+  }
+
+  return category;
 }
 
 /**
@@ -579,14 +596,15 @@ function generateSummaryStats(docs) {
 }
 
 /**
- * Group documents by category
+ * Group documents by category and tier.
+ * Files with tier overrides form separate groups from their directory peers.
  * @param {Array} docs - Processed documents
- * @returns {Map} Map of category path to {category, docs[]}
+ * @returns {Map} Map of "path:tier" to {category, docs[]}
  */
 function groupDocsByCategory(docs) {
   const byCategory = new Map();
   for (const doc of docs) {
-    const catKey = doc.category.path;
+    const catKey = `${doc.category.path}:${doc.category.tier}`;
     if (!byCategory.has(catKey)) {
       byCategory.set(catKey, { category: doc.category, docs: [] });
     }
@@ -648,10 +666,16 @@ function generateDocsByCategorySection(docs, referenceGraph) {
 
   for (const catKey of sortedCategoryKeys) {
     const { category, docs: catDocs } = byCategory.get(catKey);
+    // Use tier-appropriate description when tier was overridden from directory default
+    const dirCategory = CATEGORIES[category.path];
+    const tierDesc =
+      dirCategory && dirCategory.tier !== category.tier
+        ? TIER_DESCRIPTIONS[category.tier] || category.description
+        : category.description;
     lines.push(
       `### ${category.name} (Tier ${category.tier})`,
       "",
-      `*${category.description}*`,
+      `*${tierDesc}*`,
       "",
       "| Document | Description | References | Last Modified |",
       "|----------|-------------|------------|---------------|"

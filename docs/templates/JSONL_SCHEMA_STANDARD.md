@@ -332,24 +332,6 @@ encountered 5. **DEDUPED_FINDINGS_JSONL** - Canonical findings with IDs 6.
 
 ---
 
-## AI Instructions
-
-When outputting JSONL:
-
-1. **Always include base schema fields** - Never omit required fields
-2. **Use domain extensions** - Add relevant extensions for review type
-3. **Validate JSON** - Ensure each line parses independently
-4. **Follow fingerprint format** - Enables proper deduplication
-5. **Be conservative with confidence** - Err on side of lower confidence
-
-When aggregating:
-
-1. **Normalize categories** - Map to standard category names
-2. **Merge by fingerprint first** - Primary deduplication key
-3. **Check evidence overlap** - Secondary merge criteria
-4. **Calculate consensus score** - Use standard formula
-5. **Preserve domain extensions** - Don't drop type-specific fields
-
 ---
 
 ## Version History

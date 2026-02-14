@@ -2,53 +2,22 @@
 
 **Document Version**: 4.2 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-13 (Session #157)
+2026-02-14 (Session #158)
 
 ## AI Instructions
 
 **This document is your session starting point:**
 
-1. **Read this FIRST** every session (2 min)
+1. **Read this FIRST** every session
 2. **Increment session counter** - track session frequency
 3. **Check "Next Session Goals"** - understand priority
 4. **Review "Current Blockers"** - know what's blocked
 5. **Note "Pending PR Reviews"** - process if any
 6. **Update at end of session** - keep current for next session
 
-**When updating**:
-
-- Keep session summaries to **last 3 sessions only**
-- Older sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
-  `/session-end`
-- Keep this document focused and brief (<300 lines target)
-- Detailed context goes in planning docs or ARCHITECTURE.md
-
-**Update Triggers** - Update this document when:
-
-- Session goals change
-- New blockers discovered
-- Significant work completed
-- PR reviews processed
-- Sprint focus shifts
-- New session starts (increment counter)
-
-**After each session:**
-
-1. Move current session summary to "Recent Session Summaries"
-2. Archive oldest session summary to
-   [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
-3. Update "Next Session Goals"
-4. Update blocker status if changed
-5. Update "Last Updated" date
-6. Commit changes
-
-**Navigation**:
-
-- Need to understand docs? -> [AI_WORKFLOW.md](./AI_WORKFLOW.md)
-- Need review process? -> [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
-- Need to check priorities? -> [ROADMAP.md](./ROADMAP.md)
-- Need architecture details? -> [ARCHITECTURE.md](./ARCHITECTURE.md)
-- Need session history? -> [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
+**When updating**: Keep session summaries to **last 3 sessions only**. Older
+sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
+`/session-end`. Keep this document focused and brief (<300 lines target).
 
 ---
 
@@ -69,7 +38,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 157 (since Jan 1, 2026)
+**Current Session Count**: 158 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused

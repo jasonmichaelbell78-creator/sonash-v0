@@ -546,18 +546,6 @@ knowledge, workflows, or tool integrations **When to use:** Creating or updating
 a skill **Example:** Need custom workflow for specific task **Parameters:**
 Skill requirements
 
-#### `expansion-evaluation`
-
-**Description:** Manage the SoNash expansion evaluation process for reviewing
-~280 feature and technical ideas across 21 modules. Includes ROADMAP placement
-discussion for all accepted/deferred items during evaluation. Supports commands:
-begin, evaluate, status, decide, questions, push-to-roadmap, end. **When to
-use:** Evaluating expansion ideas, tracking progress, making decisions, or
-resuming evaluation session **Example:** `/expansion-evaluation begin` or
-`/expansion-evaluation evaluate F1 5` **Parameters:** Subcommand (begin,
-evaluate, status, decide, questions, push-to-roadmap, end) + optional
-module/idea ID
-
 #### `using-superpowers`
 
 **Description:** Establishes how to find and use skills, requiring Skill tool

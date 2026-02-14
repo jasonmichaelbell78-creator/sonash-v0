@@ -98,7 +98,6 @@ Quick reference for all available Claude Code skills organized by category.
 
 | Skill                        | Description                |
 | ---------------------------- | -------------------------- |
-| `/expansion-evaluation`      | Evaluate expansion ideas   |
 | `/sonarcloud-sprint`         | SonarCloud cleanup sprint  |
 | `/pr-review`                 | Process PR review feedback |
 | `/code-reviewer`             | Ad-hoc & post-task review  |

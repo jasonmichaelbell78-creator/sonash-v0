@@ -21,14 +21,6 @@ critical patterns that apply to every session.
 2. Reference this doc when investigating pattern violations
 3. See claude.md Section 4 for quick summary
 
-## AI Instructions
-
-When working with code patterns:
-
-- Run patterns:check before committing
-- Add new patterns here when identified in reviews
-- Keep claude.md Section 4 in sync
-
 ---
 
 ## Priority Tiers

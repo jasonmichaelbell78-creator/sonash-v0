@@ -1055,7 +1055,8 @@ For questions about this testing plan:
 
 When helping with testing:
 
-1. First run `npm test` to check automated test status
+1. Use `/test-suite` skill (recommended) or `npm test` for local verification to
+   check automated test status
 2. For specific issues, check the relevant phase section (1-4)
 3. Rate limiter issues: Check Phase 2
 4. Security issues: Check Phase 1 and Security Audit section

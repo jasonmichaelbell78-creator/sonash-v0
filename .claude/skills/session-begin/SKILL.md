@@ -290,6 +290,9 @@ npm run lessons:surface
 
 # Check for undocumented sessions (Layer D - compaction gap detector)
 npm run session:gaps
+
+# Check ROADMAP hygiene (unarchived completed items, sync issues)
+npm run roadmap:hygiene
 ```
 
 **Important**: These scripts are **required**. If any script fails:

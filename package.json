@@ -17,6 +17,7 @@
     "docs:sync-check": "node scripts/check-document-sync.js",
     "docs:index": "node scripts/generate-documentation-index.js",
     "roadmap:validate": "node scripts/check-roadmap-health.js",
+    "roadmap:hygiene": "node scripts/check-roadmap-hygiene.js",
     "review:check": "node scripts/check-review-needed.js",
     "review:churn": "node scripts/metrics/review-churn-tracker.js",
     "audit:reset": "node scripts/reset-audit-triggers.js",

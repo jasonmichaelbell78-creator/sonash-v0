@@ -83,7 +83,9 @@ session on average). This violates the project's own principle (claude.md line
   savings: ~4,000 tokens per session (90% reduction in AI Instructions bloat).
 - **Impact:** tokens|all
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now (modified) — Keep AI Instructions in Tier 1-2 docs
+(~15-20 files). Remove from Tier 3-4 docs (~35-37 files), replace with one-line
+pointer to claude.md.
 
 ---
 
@@ -179,7 +181,8 @@ sprint work.
   ROADMAP.md from milestones.jsonl.
 - **Impact:** tokens|speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — ROADMAP.md works as markdown. Gaps exist in completion
+detection and archival automation; track separately as debt.
 
 ---
 
@@ -201,7 +204,8 @@ after each audit cycle (Session #143 shows 258 findings).
   date for faster querying.
 - **Impact:** tokens|speed|accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — as debt item. Current format works; automation is
+stable.
 
 ---
 
@@ -224,7 +228,9 @@ relationships. Complex multi-session tracking document.
   decisions.jsonl directly.
 - **Impact:** tokens|speed|accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject JSONL conversion — Archive doc instead. 100% complete
+(280/280 ideas decided, 76 pushed to ROADMAP v3.9). Archive doc + remove
+/expansion-evaluation skill.
 
 ---
 
@@ -245,7 +251,8 @@ frequently.
   history is append-only log.
 - **Impact:** speed|tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — Current format works, automation stable. Migrate if
+check-triggers.js breaks.
 
 ---
 
@@ -507,7 +514,8 @@ estimated token waste: ~4,500+ tokens per session load.
   claude.md Section X.Y' instead of duplicating.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — Pair with A009 as one sweep. Classify instructions
+as generic (remove) vs doc-specific (keep).
 
 ---
 
@@ -532,7 +540,8 @@ making instructions invisible to most LLM attention spans.
   violation. (3) Move misplaced instructions to line 20-30 (post-metadata).
 - **Impact:** tokens|accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — Do after A009/A001 sweep; fewer sections to reposition
+once duplicates removed.
 
 ---
 
@@ -747,7 +756,7 @@ detection patterns).
   Enables automated validation with clear history.
 - **Impact:** tokens|speed|accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — as debt item. Low frequency, working automation.
 
 ---
 
@@ -768,7 +777,8 @@ frequently at session start/end.
   status atomically.
 - **Impact:** speed|tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — 8-row table is ~50 tokens. Human-readability
+outweighs cost. No script needs structured access.
 
 ---
 
@@ -788,7 +798,9 @@ documents. Used to coordinate cross-document sync but stored as markdown table.
   'Manual' enforcement in 35/48 rows).
 - **Impact:** speed|accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject JSONL conversion — Instead: (1) generate markdown table
+FROM doc-dependencies.json, (2) run full repo dependency audit to find missing
+entries in both files. Added as debt for this session.
 
 ---
 
@@ -810,7 +822,8 @@ hardcoded inline with dependency references.
   referencing milestones.jsonl data via embedded tables regenerated from data.
 - **Impact:** tokens|speed|accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — Duplicate of F001 scope. ROADMAP works as combined
+narrative+data.
 
 ---
 
@@ -829,7 +842,8 @@ changes. Append-only log stored as markdown.
   consolidates to single source. Enables automated change tracking per document.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — 3-row table (~30 tokens). Git provides real version
+history.
 
 ---
 
@@ -849,7 +863,8 @@ Static reference data embedded as markdown.
   documentation to single source; .claude/COMMAND_REFERENCE.md references it.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — Moot. Parent doc and /expansion-evaluation skill
+being archived per F003.
 
 ---
 
@@ -911,7 +926,8 @@ MASTER_DEBT.jsonl).
   AUDIT_FINDINGS_BACKLOG.md.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — Verify script is dead (no callers, references
+deleted files), then delete. /alerts skill replaces this.
 
 ---
 
@@ -1346,7 +1362,8 @@ Estimated 3-5 tokens wasted per session per doc.
   advisory to single pointer).
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — A009/A001 sweep will remove Tier 3 AI Instructions
+from these docs implicitly.
 
 ---
 
@@ -1375,7 +1392,8 @@ reading outdated session logs may attempt to reference deleted systems.
   'IMS merged to TDMS in Session #152 - historical refs may be outdated'.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — Add deprecation notes to historical entries, update
+AUDIT_TRACKER.md to reference TDMS only.
 
 ---
 
@@ -1619,7 +1637,8 @@ archive with manual rotation to SESSION_HISTORY.md every session.
   Centralize all session history.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — 3 summaries (~200 tokens) is fine as markdown.
+/session-end rotation works.
 
 ---
 
@@ -1637,7 +1656,8 @@ dates, descriptions, authors.
   consolidation). PLAN_MAP.md can remove version history table entirely.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — Same as F009. Version history tables are low-impact.
+Git tracks real history.
 
 ---
 
@@ -1659,7 +1679,8 @@ extraction.
   structured reviews.jsonl for automation.
 - **Impact:** tokens|speed|accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — .claude/state/reviews.jsonl already serves as
+structured source. Consider archiving old entries instead.
 
 ---
 
@@ -1679,7 +1700,8 @@ dates, completion summaries, version history.
   automated timeline generation.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — Archive doc, fine as markdown. 31KB is reasonable. No
+automation needs structured access.
 
 ---
 
@@ -1898,7 +1920,8 @@ per doc as LLMs must re-parse format variations.
 - Reference ROADMAP.md for sync triggers'.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Defer — Standardize remaining ~15-20 docs after A009/A001
+sweep completes.
 
 ---
 
@@ -1924,7 +1947,8 @@ obsolete but outdated (pre-skill era). Similar issue in 3-5 other docs.
   (['Updated Session #X'] to help AI understand freshness.
 - **Impact:** accuracy|speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now (modified) — Quick E1: update 3 docs to reference
+/test-suite as preferred. Skip claude.md "Preferred Automation" section.
 
 ---
 
@@ -1952,7 +1976,8 @@ costs tokens every session load and makes updates harder.
   in claude.md.
 - **Impact:** tokens
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — Trim SESSION_CONTEXT.md AI Instructions from 36 to
+~10 lines. Keep core flow, drop navigation links.
 
 ---
 

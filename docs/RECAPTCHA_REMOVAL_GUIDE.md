@@ -733,7 +733,9 @@ When helping with App Check/reCAPTCHA issues:
 2. For removal: Follow Part 1 exactly in order
 3. For fresh setup: Use Monitor mode first, never enforce immediately
 4. Always recommend 1-week monitoring period before enforcement
-5. If issues arise, emergency rollback plan is at end of doc
+5. Use `/test-suite` skill (recommended) or `npm test` for local verification
+   after any changes
+6. If issues arise, emergency rollback plan is at end of doc
 
 ---
 

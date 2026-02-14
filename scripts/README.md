@@ -8,14 +8,6 @@ This directory contains automation scripts for documentation, development, and
 migration tasks. These scripts enforce quality gates, automate repetitive tasks,
 and ensure consistent workflows across the project.
 
-## AI Instructions
-
-When working with scripts:
-
-- Check this README for available scripts
-- Follow script documentation conventions
-- Update README when adding new scripts
-
 ---
 
 ## Documentation Automation Scripts

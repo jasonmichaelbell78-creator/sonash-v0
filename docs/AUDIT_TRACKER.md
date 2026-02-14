@@ -5,8 +5,9 @@
 management
 
 > **Related:** [TECHNICAL_DEBT_MASTER.md](./technical-debt/INDEX.md) ← Single
-> source of truth for all technical debt AND enhancement items (Enhancements use
-> `type: "enhancement"`, merged from IMS in Session #152)
+> source of truth for all technical debt AND enhancement items. Enhancements use
+> `type: "enhancement"` in TDMS (IMS was deprecated and merged into TDMS in
+> Session #152)
 
 ---
 

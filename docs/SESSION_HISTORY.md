@@ -51,6 +51,10 @@ actionable.
 - Updated 8+ doc files to remove IMS references
 - PR #362 Review #305: Fixed 9 SonarCloud+Qodo items
 
+> **Note:** IMS was deprecated and merged into TDMS (Technical Debt Management
+> System) in Session #152. Historical references to IMS, `docs/improvements/`,
+> and `MASTER_IMPROVEMENTS.jsonl` are outdated.
+
 ### Session #151 (2026-02-11)
 
 **Focus**: ENHANCEMENT AUDIT + PR CHURN REDUCTION + SKILL IMPROVEMENTS
