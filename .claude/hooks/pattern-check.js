@@ -137,7 +137,9 @@ function checkInlinePatterns(content, relPath, ext) {
     if (pat.pathExclude && pat.pathExclude.test(normalizedPath)) continue;
 
     // Run pattern (use fresh regex to avoid shared lastIndex state)
-    const regex = new RegExp(pat.pattern.source, pat.pattern.flags);
+    // Defensive: ensure global flag so exec() advances (Review #256)
+    const flags = pat.pattern.flags.includes("g") ? pat.pattern.flags : `${pat.pattern.flags}g`;
+    const regex = new RegExp(pat.pattern.source, flags);
     const exclude = pat.exclude ? new RegExp(pat.exclude.source, pat.exclude.flags) : null;
 
     let match;
@@ -152,10 +154,14 @@ function checkInlinePatterns(content, relPath, ext) {
       for (let i = lastIdx; i < match.index; i++) {
         if (content.charCodeAt(i) === 10) lineNumber++;
       }
-      lastIdx = match.index;
+      // Advance past the full match to avoid double-counting newlines (Review #256)
+      lastIdx = match.index + match[0].length;
       violations.push({ id: pat.id, line: lineNumber, message: pat.message, fix: pat.fix });
       // Prevent infinite loop on zero-length match
-      if (match[0].length === 0) regex.lastIndex++;
+      if (match[0].length === 0) {
+        regex.lastIndex++;
+        lastIdx = regex.lastIndex;
+      }
     }
   }
   return violations;

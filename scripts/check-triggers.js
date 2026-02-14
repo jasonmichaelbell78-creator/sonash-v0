@@ -196,12 +196,30 @@ function resolveGitRoot() {
  * Count pending reviews from JSONL file since last consolidation
  */
 function countPendingReviews(reviewsPath, lastConsolidated) {
-  const lines = fs.readFileSync(reviewsPath, "utf8").trim().split("\n").filter(Boolean);
+  // Size guard: skip oversized state files to prevent local DoS (Review #256)
+  const MAX_REVIEWS_SIZE = 512 * 1024; // 512 KB
+  const stat = fs.statSync(reviewsPath);
+  if (stat.size > MAX_REVIEWS_SIZE) {
+    console.error(`   ⚠️  reviews.jsonl exceeds ${MAX_REVIEWS_SIZE} bytes, skipping`);
+    return 0;
+  }
+
+  // Handle CRLF line endings + coerce string IDs (Review #256)
+  const content = fs.readFileSync(reviewsPath, "utf8").replaceAll("\r\n", "\n").trim();
+  if (!content) return 0;
+
+  const lines = content.split("\n").filter(Boolean);
   let count = 0;
   for (const line of lines) {
     try {
       const r = JSON.parse(line);
-      if (typeof r.id === "number" && r.id > lastConsolidated) count++;
+      const id =
+        typeof r.id === "number"
+          ? r.id
+          : typeof r.id === "string"
+            ? Number.parseInt(r.id, 10)
+            : NaN;
+      if (Number.isFinite(id) && id > lastConsolidated) count++;
     } catch {
       /* skip malformed lines */
     }

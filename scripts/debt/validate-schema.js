@@ -180,8 +180,14 @@ function validateItem(item, lineNum) {
  */
 function getStagedChangedLines(filePath) {
   const { execFileSync } = require("node:child_process");
+  const { resolve, relative } = require("node:path");
   try {
-    const gitPath = String(filePath).replaceAll("\\", "/");
+    // Convert to repo-relative path for reliable git diff (Review #256)
+    const abs = resolve(String(filePath));
+    const relToCwd = relative(process.cwd(), abs);
+    if (!relToCwd || relToCwd === "." || /^\.\.(?:[\\/]|$)/.test(relToCwd)) return null;
+
+    const gitPath = relToCwd.replaceAll("\\", "/");
     // Get unified diff with 0 context lines to identify exact changed lines
     const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", gitPath], {
       encoding: "utf-8",

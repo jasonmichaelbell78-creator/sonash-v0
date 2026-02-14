@@ -20,10 +20,9 @@ try {
   fs = require("node:fs");
   path = require("node:path");
 } catch (err) {
-  console.error(
-    "Fatal: failed to load core Node.js modules:",
-    err instanceof Error ? err.message : String(err)
-  );
+  // Sanitize error: only expose error code, not full message (Review #256)
+  const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
+  console.error(`Fatal: failed to load core Node.js modules (${code})`);
   process.exitCode = 1;
   throw err;
 }

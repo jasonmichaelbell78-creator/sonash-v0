@@ -56,14 +56,15 @@ function checkVersionConsistency(content, fileName) {
   // Slice to near header to avoid matching Version History table entries
   const headerSlice = content.slice(0, 4000);
   const headerVersionMatch = headerSlice.match(
-    /^\s*\*{0,2}Document Version:?\*{0,2}\s*(\d+\.\d+)\s*$/im
+    /^\s*\*{0,2}Document Version:?\*{0,2}\s+(\d+\.\d+)\s*$/im
   );
   const headerVersion = headerVersionMatch ? headerVersionMatch[1] : null;
 
   // Extract latest version from Version History section only (Review #211)
   // P008 fix: emoji-independent, case-insensitive section detection, CRLF compatible
+  // Anchor to line start + word boundary to avoid false matches inside code blocks (Review #256)
   const versionHistorySectionMatch = content.match(
-    /##\s*(?:[^\w\r\n]+\s*)?Version History[\s\S]*?(?=\r?\n##\s|\r?\n---\s*$|$)/i
+    /^##\s*(?:[^\w\r\n]+\s*)?Version History\b[\s\S]{0,20000}?(?=\r?\n(?:##\s|---\s*$)|$)/im
   );
 
   let historyVersion = null;
@@ -107,22 +108,11 @@ function checkProgressPercentages(content, fileName) {
 /**
  * Check 3: Milestone item counts
  */
-function checkMilestoneItemCounts(content, fileName) {
-  // Extract claimed item counts from overview table
-  // P008 fix: emoji-independent section detection, CRLF compatible (Review #211)
-  const overviewTableMatch = content.match(
-    /##\s*(?:[^\w\r\n]+\s*)?Milestones Overview[\s\S]{0,20000}?\|[\s\S]{0,20000}?(?=\r?\n(?:\r?\n|##|---))/i
-  );
-
-  if (!overviewTableMatch) {
-    warnings.push(`${fileName}: Could not find Milestones Overview table`);
-    // Review #215: Removed redundant return - function ends after comments anyway
-  }
-
-  // NOTE: The Overview table's last column is estimated HOURS, not item count.
-  // Comparing hours to checkbox count is not meaningful.
-  // This check has been disabled - checkbox counts vary by task granularity.
-  // Review #213: Removed misleading hours-vs-items comparison.
+function checkMilestoneItemCounts(_content, _fileName) {
+  // NOTE: This check is disabled — the Overview table's last column is estimated HOURS,
+  // not item count. Comparing hours to checkbox count is not meaningful.
+  // Checkbox counts vary by task granularity (Review #213).
+  // Kept as no-op stub so callers don't need updating.
 }
 
 /**
