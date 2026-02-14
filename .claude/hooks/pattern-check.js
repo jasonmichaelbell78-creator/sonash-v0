@@ -141,14 +141,18 @@ function checkInlinePatterns(content, relPath, ext) {
     const exclude = pat.exclude ? new RegExp(pat.exclude.source, pat.exclude.flags) : null;
 
     let match;
+    let lastIdx = 0;
+    let lineNumber = 1;
     while ((match = regex.exec(content)) !== null) {
       if (exclude) {
         exclude.lastIndex = 0;
         if (exclude.test(match[0])) continue;
       }
-      // Compute line number
-      const before = content.slice(0, match.index);
-      const lineNumber = (before.match(/\n/g) || []).length + 1;
+      // Compute line number incrementally (avoid O(n²) slicing)
+      for (let i = lastIdx; i < match.index; i++) {
+        if (content.charCodeAt(i) === 10) lineNumber++;
+      }
+      lastIdx = match.index;
       violations.push({ id: pat.id, line: lineNumber, message: pat.message, fix: pat.fix });
       // Prevent infinite loop on zero-length match
       if (match[0].length === 0) regex.lastIndex++;

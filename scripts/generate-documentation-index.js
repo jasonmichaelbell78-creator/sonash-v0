@@ -70,11 +70,13 @@ function encodeMarkdownPath(path) {
 // Category definitions — from doc-generator-config.json
 const CATEGORIES = genConfig.categories;
 const FILE_OVERRIDES_RAW = genConfig.fileOverrides || {};
-const FILE_OVERRIDES = Object.fromEntries(
-  Object.entries(FILE_OVERRIDES_RAW)
-    .filter(([k]) => k !== "_comment")
-    .map(([k, v]) => [String(k).replaceAll("\\", "/").replace(/^\.\//, ""), v])
-);
+const FILE_OVERRIDES = Object.create(null);
+for (const [k, v] of Object.entries(FILE_OVERRIDES_RAW)) {
+  if (k === "_comment") continue;
+  const key = String(k).replaceAll("\\", "/").replace(/^\.\//, "");
+  if (key === "__proto__" || key === "constructor" || key === "prototype") continue;
+  FILE_OVERRIDES[key] = v;
+}
 
 // Parse command line arguments
 const args = process.argv.slice(2);

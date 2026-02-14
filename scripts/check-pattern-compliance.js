@@ -85,7 +85,9 @@ function loadWarnedFiles() {
     }
     if (purged > 0) {
       try {
-        writeFileSync(WARNED_FILES_PATH, JSON.stringify(data, null, 2), "utf-8");
+        const tmpPath = `${WARNED_FILES_PATH}.tmp`;
+        writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", "utf-8");
+        renameSync(tmpPath, WARNED_FILES_PATH);
       } catch {
         /* best effort */
       }
