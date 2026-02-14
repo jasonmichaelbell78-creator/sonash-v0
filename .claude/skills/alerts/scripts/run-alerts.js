@@ -23,8 +23,7 @@ try {
   // Sanitize error: only expose error code, not full message (Review #256)
   const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
   console.error(`Fatal: failed to load core Node.js modules (${code})`);
-  process.exitCode = 1;
-  throw err;
+  process.exit(1);
 }
 
 // Find project root (where package.json is)
@@ -159,7 +158,9 @@ function safeReadLines(filePath) {
   try {
     const stat = fs.statSync(filePath);
     if (stat.size > MAX_FILE_SIZE) {
-      console.error(`  [warn] File too large (${stat.size} bytes), skipping: ${filePath}`);
+      console.error(
+        `  [warn] File too large (${stat.size} bytes), skipping: ${path.basename(filePath)}`
+      );
       return [];
     }
   } catch {

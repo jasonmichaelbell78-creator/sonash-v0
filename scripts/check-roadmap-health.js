@@ -52,27 +52,35 @@ function readFile(filePath) {
  * Scoped to Version History section to avoid false matches (Review #211)
  */
 function checkVersionConsistency(content, fileName) {
-  // Extract version from header (P008 fix: optional bold, flexible colon placement)
-  // Slice to near header to avoid matching Version History table entries
+  // Extract version from header — search first 4000 chars only (Review #315)
+  // Handles: **Document Version:** 1.0, Document Version: 1.0, **Document Version** 1.0
   const headerSlice = content.slice(0, 4000);
-  const headerVersionMatch = headerSlice.match(
-    /^\s*\*{0,2}Document Version:?\*{0,2}\s+(\d+\.\d+)\s*$/im
-  );
+  const headerVersionMatch = headerSlice.match(/Document Version\b[*:\s]{1,8}(\d+\.\d+)/im);
   const headerVersion = headerVersionMatch ? headerVersionMatch[1] : null;
 
-  // Extract latest version from Version History section only (Review #211)
-  // P008 fix: emoji-independent, case-insensitive section detection, CRLF compatible
-  // Anchor to line start + word boundary to avoid false matches inside code blocks (Review #256)
-  const versionHistorySectionMatch = content.match(
-    /^##\s*(?:[^\w\r\n]+\s*)?Version History\b[\s\S]{0,20000}?(?=\r?\n(?:##\s|---\s*$)|$)/im
-  );
-
+  // Extract Version History section using string search to avoid complex regex (Review #315)
+  // Find "## ... Version History" line, then extract until next ## or --- or EOF
   let historyVersion = null;
-  if (versionHistorySectionMatch) {
-    const section = versionHistorySectionMatch[0];
-    // First version row after the table header is treated as "latest"
-    const rows = Array.from(section.matchAll(/^\|\s*(\d+\.\d+)\s*\|\s*\d{4}-\d{2}-\d{2}\s*\|/gm));
-    historyVersion = rows.length > 0 ? rows[0][1] : null;
+  const lines = content.split(/\r?\n/);
+  let sectionStart = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^##\s/.test(lines[i]) && /version history/i.test(lines[i])) {
+      sectionStart = i;
+      break;
+    }
+  }
+
+  if (sectionStart >= 0) {
+    // Scan section lines for first version table row
+    for (let i = sectionStart + 1; i < lines.length; i++) {
+      // Stop at next section header or horizontal rule
+      if (/^##\s/.test(lines[i]) || /^---\s*$/.test(lines[i])) break;
+      const rowMatch = lines[i].match(/^\|\s*(\d+\.\d+)\s*\|\s*\d{4}-\d{2}-\d{2}\s*\|/);
+      if (rowMatch) {
+        historyVersion = rowMatch[1];
+        break;
+      }
+    }
   } else {
     warnings.push(`${fileName}: Could not find Version History section`);
   }

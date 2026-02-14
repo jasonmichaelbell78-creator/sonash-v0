@@ -198,14 +198,24 @@ function resolveGitRoot() {
 function countPendingReviews(reviewsPath, lastConsolidated) {
   // Size guard: skip oversized state files to prevent local DoS (Review #256)
   const MAX_REVIEWS_SIZE = 512 * 1024; // 512 KB
-  const stat = fs.statSync(reviewsPath);
+  let stat;
+  try {
+    stat = fs.statSync(reviewsPath);
+  } catch {
+    return 0; // File disappeared between existsSync and statSync
+  }
   if (stat.size > MAX_REVIEWS_SIZE) {
     console.error(`   ⚠️  reviews.jsonl exceeds ${MAX_REVIEWS_SIZE} bytes, skipping`);
     return 0;
   }
 
   // Handle CRLF line endings + coerce string IDs (Review #256)
-  const content = fs.readFileSync(reviewsPath, "utf8").replaceAll("\r\n", "\n").trim();
+  let content;
+  try {
+    content = fs.readFileSync(reviewsPath, "utf8").replaceAll("\r\n", "\n").trim();
+  } catch {
+    return 0; // File became unreadable
+  }
   if (!content) return 0;
 
   const lines = content.split("\n").filter(Boolean);

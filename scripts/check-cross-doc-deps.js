@@ -124,10 +124,15 @@ function checkDiffPattern(file, pattern) {
  * Used with --trivial flag to skip cross-doc enforcement for non-substantive changes.
  * Hook-quality fix: reduces false positives from typo fixes and formatting commits.
  */
-function isTrivialChange(file) {
-  try {
-    const gitPath = file.replaceAll("\\", "/");
+// Cache trivial-change results to avoid redundant git diff calls (Review #315)
+const trivialChangeCache = new Map();
 
+function isTrivialChange(file) {
+  const gitPath = file.replaceAll("\\", "/");
+  if (trivialChangeCache.has(gitPath)) return trivialChangeCache.get(gitPath);
+
+  let result = false;
+  try {
     // Quick check: if whitespace-insensitive diff has no changes, it's formatting-only
     const wsDiff = execFileSync("git", ["diff", "--cached", "-w", "--unified=0", "--", gitPath], {
       encoding: "utf-8",
@@ -137,43 +142,46 @@ function isTrivialChange(file) {
     const wsChangeLines = wsDiff
       .split("\n")
       .filter((line) => /^[+-]/.test(line) && !/^[+-]{3}/.test(line));
-    if (wsChangeLines.length === 0) return true;
+    if (wsChangeLines.length === 0) {
+      result = true;
+    } else {
+      // Get only the changed lines (added/removed), excluding context
+      const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", gitPath], {
+        encoding: "utf-8",
+        timeout: 15000,
+        maxBuffer: 1024 * 1024,
+      });
 
-    // Get only the changed lines (added/removed), excluding context
-    const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", gitPath], {
-      encoding: "utf-8",
-      timeout: 15000,
-      maxBuffer: 1024 * 1024,
-    });
+      // Extract only actual change lines (+ and - prefixed, not headers)
+      const changeLines = diff
+        .split("\n")
+        .filter((line) => /^[+-]/.test(line) && !/^[+-]{3}/.test(line))
+        .map((line) => line.slice(1)); // strip the +/- prefix
 
-    // Extract only actual change lines (+ and - prefixed, not headers)
-    const changeLines = diff
-      .split("\n")
-      .filter((line) => /^[+-]/.test(line) && !/^[+-]{3}/.test(line))
-      .map((line) => line.slice(1)); // strip the +/- prefix
-
-    if (changeLines.length === 0) return true;
-
-    // A change is trivial if ALL changed lines are:
-    // - empty or whitespace-only
-    // - comments (JS/TS: //, shell/yaml: #, or markdown: <!-- -->)
-    // - status badge updates (e.g., **Status:** ACTIVE)
-    // - date updates (e.g., **Last Updated:** 2026-02-13)
-    // - version bumps (e.g., **Document Version:** 1.1)
-    // Note: # means "comment" in .sh/.yml/.py but "heading" in .md — only
-    // treat # as trivial-comment for script/config file types.
-    const ext = gitPath.split(".").pop()?.toLowerCase();
-    const hashIsComment =
-      ext && ["sh", "bash", "zsh", "py", "rb", "yml", "yaml", "toml"].includes(ext);
-    const trivialPattern = hashIsComment
-      ? /^\s*$|^\s*(?:\/\/|#|\/\*|\*\/|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/
-      : /^\s*$|^\s*(?:\/\/|\/\*|\*\/|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
-
-    return changeLines.every((line) => trivialPattern.test(line));
+      if (changeLines.length === 0) {
+        result = true;
+      } else {
+        // A change is trivial if ALL changed lines are:
+        // - empty or whitespace-only
+        // - comments (JS/TS: //, shell/yaml: #, or block comment interior *)
+        // - status badge updates, date updates, version bumps
+        // Note: # means "comment" in .sh/.yml/.py but "heading" in .md
+        const ext = gitPath.split(".").pop()?.toLowerCase();
+        const hashIsComment =
+          ext && ["sh", "bash", "zsh", "py", "rb", "yml", "yaml", "toml"].includes(ext);
+        // Include \* for block comment interior lines (Review #315)
+        const trivialPattern = hashIsComment
+          ? /^\s*$|^\s*(?:\/\/|#|\/\*|\*\/|\*|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/
+          : /^\s*$|^\s*(?:\/\/|\/\*|\*\/|\*|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
+        result = changeLines.every((line) => trivialPattern.test(line));
+      }
+    }
   } catch {
     // If we can't determine, assume non-trivial (safer)
-    return false;
+    result = false;
   }
+  trivialChangeCache.set(gitPath, result);
+  return result;
 }
 
 /**

@@ -182,12 +182,16 @@ function getStagedChangedLines(filePath) {
   const { execFileSync } = require("node:child_process");
   const { resolve, relative } = require("node:path");
   try {
-    // Convert to repo-relative path for reliable git diff (Review #256)
+    // Convert to repo-relative path using git root for reliable git diff (Review #315)
     const abs = resolve(String(filePath));
-    const relToCwd = relative(process.cwd(), abs);
-    if (!relToCwd || relToCwd === "." || /^\.\.(?:[\\/]|$)/.test(relToCwd)) return null;
+    const gitRoot = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf-8",
+      timeout: 3000,
+    }).trim();
+    const relToRoot = relative(gitRoot, abs);
+    if (!relToRoot || relToRoot === "." || /^\.\.(?:[\\/]|$)/.test(relToRoot)) return null;
 
-    const gitPath = relToCwd.replaceAll("\\", "/");
+    const gitPath = relToRoot.replaceAll("\\", "/");
     // Get unified diff with 0 context lines to identify exact changed lines
     const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", gitPath], {
       encoding: "utf-8",

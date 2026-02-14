@@ -87,6 +87,7 @@ function loadWarnedFiles() {
       try {
         const tmpPath = `${WARNED_FILES_PATH}.tmp`;
         writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", "utf-8");
+        if (existsSync(WARNED_FILES_PATH)) unlinkSync(WARNED_FILES_PATH);
         renameSync(tmpPath, WARNED_FILES_PATH);
       } catch {
         /* best effort */

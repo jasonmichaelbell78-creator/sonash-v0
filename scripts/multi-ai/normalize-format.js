@@ -192,7 +192,7 @@ export function detectFormat(input) {
   // Check for markdown table (has | and header separator ---)
   // P009 fix: tolerate trailing whitespace after closing pipe
   if (trimmed.includes("|")) {
-    const tableMatch = trimmed.match(/\|[^\n]{1,500}\|\s*\r?\n\|[-: |]{1,500}\|?\s*\r?\n/);
+    const tableMatch = trimmed.match(/\|[^\n]{1,500}\|?\s*\r?\n\|[-: |]{1,500}\|?\s*\r?\n/);
     if (tableMatch) {
       return FORMAT_TYPES.MARKDOWN_TABLE;
     }

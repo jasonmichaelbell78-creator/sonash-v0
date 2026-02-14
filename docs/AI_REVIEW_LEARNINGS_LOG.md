@@ -608,6 +608,50 @@ _Reviews #137-179 have been archived to
 
 ---
 
+#### Review #315: SonarCloud + Qodo R5 — Residual Regex, Stack Traces, Windows Compat (2026-02-14)
+
+**Source:** SonarCloud Security Hotspots (S5852) + Qodo PR Suggestions + Qodo
+Compliance **PR/Branch:** claude/read-session-commits-ZpJLX (PR #365)
+**Suggestions:** 13 total (Critical: 0, Major: 4, Minor: 7, Trivial: 2)
+
+**Patterns Identified:**
+
+1. Stack trace leakage via rethrown errors: Sanitizing the message but then
+   `throw err` still exposes full stack to user
+   - Root cause: Incomplete sanitization — caught + logged but then rethrown
+   - Prevention: Use `process.exit(1)` instead of `throw` when error is fatal
+2. Complex regex where string parsing suffices: Version History section
+   extraction used regex with `[\s\S]{0,20000}?` when line-by-line scan works
+   - Root cause: Regex was the initial tool; never reconsidered as complexity
+     grew
+   - Prevention: For section extraction, prefer split-and-scan over regex
+3. Windows `renameSync` fails when destination exists: Unlike POSIX, Windows
+   `rename()` does not atomically overwrite — must remove target first
+   - Root cause: Pattern added in Review #255 without Windows testing
+   - Prevention: Always `unlinkSync(dest)` before `renameSync(src, dest)`
+4. File-size budgets for regex scanning: Inline pattern checker had no upper
+   bound on input size, allowing ReDoS on crafted large files
+   - Root cause: Only lower bound (8KB skip) was added, not upper bound
+   - Prevention: Add both floor AND ceiling guards on file-size-gated operations
+
+**Resolution:**
+
+- Fixed: 13 items across 8 files
+- Deferred: 0
+- Rejected: 0
+
+**Key Learnings:**
+
+- `path.basename()` for log output prevents leaking user home directory paths
+- `git rev-parse --show-toplevel` is more reliable than `process.cwd()` for repo
+  root
+- Block comment interior lines (`* ...`) should be treated as trivial in diff
+  analysis
+- Memoizing `isTrivialChange` with a Map avoids redundant git diff calls per
+  file
+
+---
+
 #### Review #314: SonarCloud Regex Hotspots + Qodo Robustness R4 — PR #365 (2026-02-14)
 
 **Source:** SonarCloud Security Hotspots (S5852) + Qodo PR Suggestions + Qodo

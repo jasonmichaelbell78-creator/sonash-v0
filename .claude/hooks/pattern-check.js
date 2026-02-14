@@ -297,6 +297,11 @@ try {
   if (size < 8 * 1024) {
     process.exit(0);
   }
+  // Skip very large files to prevent regex DoS on crafted input (Review #315)
+  const MAX_PATTERN_CHECK_SIZE = 512 * 1024; // 512 KB
+  if (size > MAX_PATTERN_CHECK_SIZE) {
+    process.exit(0);
+  }
 
   // File is large enough - check line count
   const content = fs.readFileSync(realPath, "utf8");
