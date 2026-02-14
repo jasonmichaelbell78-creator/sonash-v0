@@ -1,18 +1,12 @@
 {
   "generatedAt": "2026-02-13T18:28:48.577Z",
-  "skillCount": 60,
+  "skillCount": 56,
   "skills": [
     {
-      "name": "add-deferred-debt",
+      "name": "add-debt",
       "source": ".claude/skills",
-      "description": "Add deferred technical debt items identified during PR review",
-      "displayName": "add-deferred-debt"
-    },
-    {
-      "name": "add-manual-debt",
-      "source": ".claude/skills",
-      "description": "Manually add a technical debt item to MASTER_DEBT.jsonl",
-      "displayName": "add-manual-debt"
+      "description": "Add technical debt items to MASTER_DEBT.jsonl (manual or PR-deferred)",
+      "displayName": "add-debt"
     },
     {
       "name": "alerts",
@@ -85,12 +79,6 @@
       "source": ".claude/skills",
       "description": "Run a single-session security audit on the codebase",
       "displayName": "audit-security"
-    },
-    {
-      "name": "audit-validation-wrapper",
-      "source": ".claude/skills",
-      "displayName": "audit-validation-wrapper",
-      "description": "Validation wrapper that tests TDMS and Documentation Standards integration"
     },
     {
       "name": "checkpoint",
@@ -225,12 +213,6 @@
       "description": "Auto-suggest fixes for common pre-commit and pattern compliance issues"
     },
     {
-      "name": "requesting-code-review",
-      "source": ".claude/skills",
-      "displayName": "requesting-code-review",
-      "description": "Use when completing tasks, implementing major features, or before merging to"
-    },
-    {
       "name": "save-context",
       "source": ".claude/skills",
       "displayName": "save-context",
@@ -301,12 +283,6 @@
       "source": ".claude/skills",
       "displayName": "sonarcloud-sprint",
       "description": "Run a SonarCloud cleanup sprint. Fetches fresh issues via public API,"
-    },
-    {
-      "name": "sync-sonarcloud-debt",
-      "source": ".claude/skills",
-      "displayName": "sync-sonarcloud-debt",
-      "description": "description: |"
     },
     {
       "name": "systematic-debugging",

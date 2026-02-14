@@ -266,10 +266,10 @@ based on item type:
 | Item Type                      | System              | Tool/Skill            | ID Format |
 | ------------------------------ | ------------------- | --------------------- | --------- |
 | Bug / broken code              | Fix in PR           | N/A (fix immediately) | N/A       |
-| Technical debt / code quality  | TDMS                | `/add-deferred-debt`  | DEBT-XXXX |
-| Architectural refactoring      | TDMS (S1)           | `/add-deferred-debt`  | DEBT-XXXX |
+| Technical debt / code quality  | TDMS                | `/add-debt`           | DEBT-XXXX |
+| Architectural refactoring      | TDMS (S1)           | `/add-debt`           | DEBT-XXXX |
 | Design decisions / enhancement | TDMS (enhancements) | `intake-audit.js`     | DEBT-XXXX |
-| Performance improvements       | TDMS                | `/add-deferred-debt`  | DEBT-XXXX |
+| Performance improvements       | TDMS                | `/add-debt`           | DEBT-XXXX |
 
 **Decision rule:** All deferred items route to TDMS. Enhancements use
 `category: "enhancements"` and `type: "enhancement"` to distinguish them from

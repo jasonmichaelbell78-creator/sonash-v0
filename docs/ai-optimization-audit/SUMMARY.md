@@ -388,7 +388,8 @@ functionality.
   about when to use which.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — intentional hierarchy, orchestrator + domain audits
+appropriately layered
 
 ---
 
@@ -409,7 +410,8 @@ audits.
   consolidating review logic into audits.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — different intent: seniors build things, audits find
+problems
 
 ---
 
@@ -430,7 +432,8 @@ be independent.
   Current doc creates ambiguity about which to invoke.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — delete skill entirely, was one-time use and no
+longer needed
 
 ---
 
@@ -452,7 +455,8 @@ audit-aggregator = 11 audit-related skills
   Current approach creates high cognitive load.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — current structure more maintainable than a monolith
+skill
 
 ---
 
@@ -475,7 +479,8 @@ servers), expansion-evaluation (evaluate expansions), systematic-debugging
   deprecated if not actively used.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — none are deprecated, all serve specific purposes;
+systematic-debugging is CLAUDE.md-required
 
 ---
 
@@ -1162,7 +1167,8 @@ genuine overlap or specialization.
   for quality, that's clear. If not, consolidate.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — appropriately specialized: validation → maintenance →
+enhancement layers
 
 ---
 
@@ -1181,7 +1187,8 @@ developer-growth-analysis, excel-analysis, find-skills, frontend-design, etc.
   with high clarity benefit.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — populate all empty description fields with 1-2
+sentence summaries
 
 ---
 
@@ -1201,7 +1208,8 @@ verifies. sync-sonarcloud-debt imports from SonarCloud.
   each has distinct trigger criteria. If overlapping, consolidate intake logic.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — merge add-deferred-debt + add-manual-debt into
+/add-debt, delete deprecated sync-sonarcloud-debt, update ~10 referencing files
 
 ---
 
@@ -1222,7 +1230,9 @@ code review tool. requesting-code-review initiates code review.
   used by pr-review? Map the relationships clearly.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — clarify separation: code-reviewer = ad-hoc dev
+reviews, pr-review = formal PR gate. Merge requesting-code-review into
+code-reviewer.
 
 ---
 
@@ -1242,7 +1252,8 @@ as files.
   management is becoming a bottleneck, consider refactoring.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — complementary ecosystem roles (create vs discover),
+not overlapping
 
 ---
 
@@ -1261,7 +1272,8 @@ part of audit-comprehensive.
   (code, security, enhancements are correct). Pick one pattern.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — naming is already consistent (all use audit-\*
+prefix)
 
 ---
 
@@ -1281,7 +1293,8 @@ technical codebase audit toolkit.
   moving to separate skill repository or marking as optional.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — legitimate project needs (SoNash is a web app with UX
+concerns), no overlap between them
 
 ---
 
@@ -1304,7 +1317,8 @@ via /find-skills or skill index searches.
   This is foundational metadata for a 57-skill portfolio.
 - **Impact:** accuracy
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Act now — merge with K004, populate all empty descriptions
+together
 
 ---
 
@@ -1832,7 +1846,8 @@ task. validate-claude-folder validates .claude folder.
   confusion with major skills.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — fine as lightweight utilities with clear distinct
+purposes
 
 ---
 
@@ -1851,7 +1866,8 @@ session-end ends sessions, checkpoint saves state. These are tightly coupled.
   clutter.
 - **Impact:** speed
 
-**Decision:** [ ] Act now [ ] Defer [ ] Reject [ ] Modify
+**Decision:** [x] Reject — appropriate separation by lifecycle event,
+consolidating would create a massive partially-irrelevant skill
 
 ---
 

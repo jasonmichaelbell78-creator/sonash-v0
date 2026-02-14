@@ -291,7 +291,7 @@ if (applicableAgents.some((a) => a.agent === "code-reviewer")) {
     console.error("    description: 'Review session changes',");
     console.error("    prompt: '<diff of changes>' })");
     console.error("");
-    console.error("  Or run /requesting-code-review before committing.");
+    console.error("  Or run /code-reviewer before committing.");
     console.error("  Review queue: .claude/state/pending-reviews.json");
     console.error("\u2501".repeat(30));
   }

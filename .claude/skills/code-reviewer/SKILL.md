@@ -10,7 +10,40 @@ description:
 
 # Code Reviewer
 
-Complete toolkit for code reviewer with modern tools and best practices.
+Complete toolkit for code review with modern tools and best practices.
+
+## Scope — When to Use
+
+- **Ad-hoc code reviews** during development (reviewing changes before moving
+  on)
+- **Post-task quality checks** — invoke after completing each task, major
+  feature, or complex bug fix to catch issues before they compound
+- **Before merge to main** — final quality gate on your own work
+- **When stuck** — a fresh review perspective can reveal root causes
+- **Before refactoring** — establish a quality baseline
+
+> **Not for formal PR gate reviews.** Use `pr-review` for the standardized
+> 8-step protocol applied to pull requests with external review feedback.
+
+## How to Request Review (Post-Task)
+
+After completing a task, get the git range and dispatch a code-reviewer
+subagent:
+
+```bash
+BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
+HEAD_SHA=$(git rev-parse HEAD)
+```
+
+Then use the Task tool with `superpowers:code-reviewer` type, providing:
+
+- `{WHAT_WAS_IMPLEMENTED}` — What you just built
+- `{PLAN_OR_REQUIREMENTS}` — What it should do
+- `{BASE_SHA}` / `{HEAD_SHA}` — Git range
+- `{DESCRIPTION}` — Brief summary
+
+Act on feedback: fix Critical immediately, fix Important before proceeding, note
+Minor for later. Push back with reasoning if reviewer is wrong.
 
 ## Pre-Review: Episodic Memory Search (Session #128)
 
