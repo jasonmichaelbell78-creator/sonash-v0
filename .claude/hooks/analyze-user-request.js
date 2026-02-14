@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-/* global process, console */
-/* eslint-disable security/detect-non-literal-regexp */
+/* global process, console, require, __dirname */
+/* eslint-disable security/detect-non-literal-regexp, @typescript-eslint/no-require-imports */
 /**
  * analyze-user-request.js - UserPromptSubmit hook for routing user requests
  * Cross-platform replacement for analyze-user-request.sh
@@ -22,6 +22,9 @@
  * 6. Exploration/Understanding
  * 7. Testing
  */
+
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Get user request from arguments (trim to handle whitespace)
 let userRequest = (process.argv[2] || "").trim();
@@ -48,6 +51,35 @@ if (userRequest.length > MAX_LENGTH) {
 }
 
 const requestLower = userRequest.toLowerCase();
+
+// Directive dedup state (15-min TTL)
+const DIRECTIVE_STATE = path.join(__dirname, ".directive-dedup.json");
+
+function wasRecentlyDirected(directive) {
+  try {
+    const data = JSON.parse(fs.readFileSync(DIRECTIVE_STATE, "utf8"));
+    const entry = data[directive];
+    if (entry && Date.now() - entry < 15 * 60 * 1000) return true;
+  } catch {
+    /* no state */
+  }
+  return false;
+}
+
+function recordDirective(directive) {
+  let data = {};
+  try {
+    data = JSON.parse(fs.readFileSync(DIRECTIVE_STATE, "utf8"));
+  } catch {
+    /* start fresh */
+  }
+  data[directive] = Date.now();
+  try {
+    fs.writeFileSync(DIRECTIVE_STATE, JSON.stringify(data), "utf-8");
+  } catch {
+    /* non-critical */
+  }
+}
 
 // Helper for word boundary matching (escapes regex special chars to prevent ReDoS)
 // Supports ".?" convention for optional separator (e.g., api.?key matches apikey, api-key, api_key)
@@ -78,6 +110,10 @@ function matchesPhrase(phrase) {
 
 // Output to stdout (context-consuming) for high-confidence matches
 function directiveStdout(msg) {
+  if (wasRecentlyDirected(msg)) {
+    process.exit(0); // Skip — already directed recently
+  }
+  recordDirective(msg);
   console.log(msg);
   process.exit(0);
 }

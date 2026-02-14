@@ -65,7 +65,20 @@ function checkPendingMcpSave() {
   return null;
 }
 
+const COOLDOWN_FILE = path.join(ROOT_DIR, ".claude", "hooks", ".alerts-cooldown.json");
+const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
+
 function main() {
+  // Fast-path: check cooldown before doing any file reads
+  try {
+    const data = JSON.parse(fs.readFileSync(COOLDOWN_FILE, "utf8"));
+    if (Date.now() - data.lastRun < COOLDOWN_MS) {
+      process.exit(0); // Still in cooldown
+    }
+  } catch {
+    /* no cooldown file or invalid */
+  }
+
   const messages = [];
 
   // Check for pending alerts
@@ -138,6 +151,13 @@ function main() {
   // Output all messages
   if (messages.length > 0) {
     messages.forEach((m) => console.log(m));
+  }
+
+  // Update cooldown after successful check
+  try {
+    fs.writeFileSync(COOLDOWN_FILE, JSON.stringify({ lastRun: Date.now() }), "utf-8");
+  } catch {
+    /* non-critical */
   }
 
   process.exit(0);

@@ -14,6 +14,28 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
+// Fetch TTL cache
+const FETCH_CACHE_FILE = path.join(projectDir, ".claude", "hooks", ".fetch-cache.json");
+const FETCH_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function shouldFetch() {
+  try {
+    const data = JSON.parse(fs.readFileSync(FETCH_CACHE_FILE, "utf8"));
+    if (Date.now() - data.lastFetch < FETCH_TTL_MS) return false;
+  } catch {
+    /* no cache or invalid */
+  }
+  return true;
+}
+
+function updateFetchCache() {
+  try {
+    fs.writeFileSync(FETCH_CACHE_FILE, JSON.stringify({ lastFetch: Date.now() }), "utf-8");
+  } catch {
+    /* non-critical */
+  }
+}
+
 // Configuration
 const CONTEXT_FILE = "SESSION_CONTEXT.md";
 const BRANCH_PREFIX = "claude/";
@@ -112,8 +134,11 @@ function getRecentClaudeBranches() {
 
 // Main logic
 function main() {
-  // Fetch latest from remote first
-  git(["fetch", "--quiet", "origin"]);
+  // Only fetch if cache is stale (5-min TTL)
+  if (shouldFetch()) {
+    git(["fetch", "--quiet", "origin"]);
+    updateFetchCache();
+  }
 
   const currentBranch = getCurrentBranch();
   const localContextPath = path.join(projectDir, CONTEXT_FILE);

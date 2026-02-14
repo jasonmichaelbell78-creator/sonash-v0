@@ -500,26 +500,6 @@ if (warnings === 0) {
 
 console.log("");
 console.log("━".repeat(66));
-console.log("📋 SESSION CHECKLIST (from AI_WORKFLOW.md):");
-console.log("");
-console.log("  1. ☐ Read SESSION_CONTEXT.md (current status, next goals)");
-console.log("  2. ☐ Increment session counter in SESSION_CONTEXT.md");
-console.log("  3. ☐ Check ROADMAP.md for priority changes");
-console.log("  4. ☐ Check available skills BEFORE starting:");
-console.log("");
-console.log("      SKILL DECISION TREE:");
-console.log("      ├─ Bug/Error? → Use 'systematic-debugging' skill FIRST");
-console.log("      ├─ Writing code? → Use 'code-reviewer' agent AFTER");
-console.log("      ├─ Security work? → Use 'security-auditor' agent");
-console.log("      ├─ UI/Frontend? → Use 'frontend-design' skill");
-console.log("      └─ Complex task? → Check ls .claude/skills/ for matches");
-console.log("");
-console.log("  5. ☐ Review active blockers before starting work");
-console.log("");
+console.log("📋 Next: Run /session-begin for full checklist, or start working.");
+console.log("   If MCP tokens missing: node scripts/secrets/decrypt-secrets.js");
 console.log("━".repeat(66));
-console.log("");
-console.log("💡 Tips:");
-console.log("   - Review claude.md + docs/agent_docs/CODE_PATTERNS.md for anti-patterns");
-console.log("   - Use TodoWrite for complex tasks (3+ steps)");
-console.log("   - Update SESSION_CONTEXT.md at end of session");
-console.log("   - If MCP tokens missing: node scripts/secrets/decrypt-secrets.js");

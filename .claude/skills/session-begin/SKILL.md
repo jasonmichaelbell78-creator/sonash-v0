@@ -70,27 +70,9 @@ can leak to shell history and process listings.
 
 ## 0b. Cross-Session Validation (AUTOMATIC)
 
-The SessionStart hook automatically checks if the previous session ended
-properly.
-
-**If you see a "Cross-Session Warning":**
-
-1. The previous session started but /session-end was not run
-2. Consider running the missed session-end checklist items:
-   - Update SESSION_CONTEXT.md with progress from the incomplete session
-   - Check for uncommitted changes
-   - Run `npm run hooks:health` to see session statistics
-
-**Quick remediation:**
-
-```bash
-# See session state
-npm run hooks:health
-
-# Check for uncommitted work from previous session
-git status
-git log --oneline -5
-```
+Handled by SessionStart hook. **If you see a "Cross-Session Warning":** check
+`git status`, `git log --oneline -5`, and run `npm run hooks:health`. Update
+SESSION_CONTEXT.md if prior session missed /session-end.
 
 ---
 
@@ -139,30 +121,16 @@ search({ query: ["component/module name", "patterns"] });
       active blockers, next goals
 - [ ] Increment session counter in
       [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md)
-- [ ] Check [ROADMAP.md](../../ROADMAP.md) for priority changes
+- [ ] Read [ROADMAP.md](../../ROADMAP.md) lines 1-100 (Active Sprint section
+      only — use offset/limit)
 
 ## 1b. Session Gap Detection (AUTOMATIC - Session #138)
 
-The `npm run session:gaps` script (run in Section 7) checks for undocumented
-sessions by comparing commit-log.jsonl against SESSION_CONTEXT.md.
+Automated via `npm run session:gaps` (run in Section 7). Compares
+commit-log.jsonl against SESSION_CONTEXT.md.
 
-**If gaps are detected:**
-
-1. Run `npm run session:gaps:fix` to generate suggested session summaries
-2. Review the suggestions and add them to SESSION_CONTEXT.md
-3. Update MEMORY.md if any stale entries need correction
-
-**How the system works (3 layers):**
-
-- **Layer A (commit-tracker.js):** PostToolUse: Bash hook auto-logs every commit
-  to `.claude/state/commit-log.jsonl` with session number, files, timestamp
-- **Layer B (compaction-handoff.js):** Enhanced handoff includes task states and
-  recent commits when context is getting large
-- **Layer D (check-session-gaps.js):** Session-begin detects gaps between commit
-  log and documented sessions
-
-This system prevents state drift caused by context compaction interrupting
-session-end updates.
+**If gaps are detected:** Run `npm run session:gaps:fix`, review suggestions,
+and add to SESSION_CONTEXT.md. See `scripts/check-session-gaps.js` for details.
 
 ## 1c. Stale Documentation Check (MANDATORY)
 
@@ -199,20 +167,14 @@ git log --oneline --since="YYYY-MM-DD"
 
 ## 2. Consolidation Status Check
 
-Consolidation is fully automated via JSONL state files. The SessionStart hook
-runs `node scripts/run-consolidation.js --auto` which auto-consolidates when 10+
-reviews accumulate. No manual checks needed.
-
-- **State:** `.claude/state/consolidation.json`
-- **Reviews:** `.claude/state/reviews.jsonl`
-
-If auto-consolidation failed (check SessionStart output), run manually:
+Fully automated by SessionStart hook (`run-consolidation.js --auto`). If it
+failed (check SessionStart output), run:
 `node scripts/run-consolidation.js --apply`
 
 ## 3. Documentation & Planning Awareness
 
-- [ ] Check [ROADMAP.md](../../ROADMAP.md) Active Sprint section for current
-      work
+- [ ] Read [ROADMAP.md](../../ROADMAP.md) Active Sprint section (first ~100
+      lines — use offset/limit) for current work
 - [ ] Note: Archive files in `docs/archive/` are excluded from linting
 - [ ] Completed plans are archived to `docs/archive/completed-plans/`
 - [ ] Reference: INTEGRATED_IMPROVEMENT_PLAN.md is ✅ COMPLETE (archived
@@ -246,8 +208,8 @@ When receiving code review feedback (CodeRabbit, Qodo, etc.):
 ## 6. Anti-Pattern Awareness
 
 **Before writing code**, scan claude.md Section 4 "Critical Anti-Patterns" and
-[CODE_PATTERNS.md](../../docs/agent_docs/CODE_PATTERNS.md) Quick Reference
-section (🔴 = critical patterns). Key patterns:
+read [CODE_PATTERNS.md](../../docs/agent_docs/CODE_PATTERNS.md) lines 1-60
+(Quick Reference section only — use offset/limit). Key patterns:
 
 - **Read before edit** - Always read files before attempting to edit
 - **Regex performance** - Avoid greedy `.*` in patterns; use bounded
