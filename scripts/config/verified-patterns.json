@@ -84,7 +84,8 @@
     "extract-reviews.js",
     "resolve-bulk.js",
     "resolve-item.js",
-    "sync-roadmap-refs.js"
+    "sync-roadmap-refs.js",
+    "rotate-state.js"
   ],
   "exec-without-global": [
     "validate-phase-completion.js",
@@ -111,7 +112,9 @@
     "check-roadmap-health.js",
     "generate-pending-alerts.js",
     "run-alerts.js",
-    "session-start.js"
+    "session-start.js",
+    "log-override.js",
+    "rotate-state.js"
   ],
   "json-parse-without-try": [
     "check-session-gaps.js",
@@ -126,7 +129,9 @@
     "generate-pending-alerts.js",
     "normalize-format.js",
     "run-alerts.js",
-    "session-start.js"
+    "session-start.js",
+    "log-override.js",
+    "rotate-state.js"
   ],
   "unescaped-regexp-input": ["suggest-pattern-automation.js", "pattern-check.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],
@@ -141,7 +146,8 @@
     "pre-compaction-save.js",
     "generate-pending-alerts.js",
     "normalize-format.js",
-    "session-start.js"
+    "session-start.js",
+    "rotate-state.js"
   ],
   "writefile-missing-encoding": ["suggest-pattern-automation.js", "normalize-format.js"],
   "process-exit-without-cleanup": ["validate-schema.js"],

@@ -200,6 +200,17 @@ function main() {
   if (appendCommitLog(entry)) {
     saveLastHead(currentHead);
     console.error(`  Commit tracked: ${entry.shortHash} ${entry.message.slice(0, 60)}`);
+
+    // Rotate commit log to prevent unbounded growth (OPT #72)
+    try {
+      const { rotateJsonl } = require("./lib/rotate-state.js");
+      const result = rotateJsonl(COMMIT_LOG, 500, 300);
+      if (result.rotated) {
+        console.error(`  Commit log rotated: ${result.before} → ${result.after} entries`);
+      }
+    } catch {
+      // Non-critical — rotation failure doesn't block commit tracking
+    }
   }
 
   console.log("ok");

@@ -25,6 +25,14 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 
+// Shared rotation helper (entry-count-based)
+let rotateJsonl;
+try {
+  rotateJsonl = require("../.claude/hooks/lib/rotate-state.js").rotateJsonl;
+} catch {
+  rotateJsonl = null;
+}
+
 // Get repository root for consistent log location
 function getRepoRoot() {
   const result = spawnSync("git", ["rev-parse", "--show-toplevel"], {
@@ -157,6 +165,16 @@ function logOverride(check, reason) {
     }
 
     fs.appendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
+
+    // Entry-count-based rotation (keep 60 of last 100)
+    try {
+      if (rotateJsonl) {
+        rotateJsonl(OVERRIDE_LOG, 100, 60);
+      }
+    } catch {
+      // Non-fatal: rotation failure should not block override logging
+    }
+
     return entry;
   } catch (err) {
     // Non-fatal: log write failure should not crash scripts/hooks

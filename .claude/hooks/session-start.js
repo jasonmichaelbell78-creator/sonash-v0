@@ -131,6 +131,10 @@ if (previousState && previousState.lastBegin) {
     console.log("   This helps track progress and update documentation");
     console.log("");
     warnings++;
+
+    // Auto-close the previous session to keep begin/end counts approximately aligned
+    previousState.lastEnd = previousState.lastBegin; // Mark as ended at the time it started
+    previousState.endCount = (previousState.endCount || 0) + 1;
   }
 }
 
@@ -418,7 +422,7 @@ try {
   }
 }
 
-// Archive health check: warn if reviews.jsonl has too many entries (Session #156)
+// Archive health check: rotate reviews.jsonl when it exceeds 50 entries (OPT #74)
 try {
   const reviewsPath = path.join(projectDir, ".claude", "state", "reviews.jsonl");
   if (fs.existsSync(reviewsPath)) {
@@ -428,11 +432,19 @@ try {
       .split("\n")
       .filter(Boolean).length;
     if (reviewCount > 50) {
-      console.log(
-        `   ⚠️ Archive recommended: ${reviewCount} reviews in reviews.jsonl (threshold: 50)`
-      );
-      console.log("   Consider archiving older entries");
-      warnings++;
+      try {
+        const { rotateJsonl } = require("./lib/rotate-state.js");
+        const result = rotateJsonl(reviewsPath, 50, 30);
+        if (result.rotated) {
+          console.log(`   🔄 reviews.jsonl rotated: ${result.before} → ${result.after} entries`);
+        }
+      } catch {
+        // Fallback: warn if rotation fails
+        console.log(
+          `   ⚠️ Archive recommended: ${reviewCount} reviews in reviews.jsonl (threshold: 50)`
+        );
+        warnings++;
+      }
     }
   }
 } catch {

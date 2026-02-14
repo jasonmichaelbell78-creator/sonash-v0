@@ -212,7 +212,7 @@ function buildHandoff() {
     },
     contextMetrics: {
       filesRead: contextTracking.filesRead?.length || 0,
-      filesList: (contextTracking.filesRead || []).slice(-30), // Last 30 files
+      filesList: (contextTracking.filesRead || []).slice(-15), // Last 15 files (OPT #73)
     },
     agentsUsed: agentSummary,
     taskStates: taskStates,
@@ -251,6 +251,14 @@ function main() {
   // Build and write handoff
   const handoff = buildHandoff();
   if (saveJson(HANDOFF_OUTPUT, handoff)) {
+    // Prune filesList to cap at 15 entries (OPT #73)
+    try {
+      const { pruneJsonKey } = require("./lib/rotate-state.js");
+      pruneJsonKey(HANDOFF_OUTPUT, "contextMetrics.filesList", 15);
+    } catch {
+      // Non-critical — pruning failure doesn't block handoff
+    }
+
     // Update cooldown state
     saveJson(HANDOFF_STATE, { lastWrite: Date.now(), filesAtWrite: filesRead });
 

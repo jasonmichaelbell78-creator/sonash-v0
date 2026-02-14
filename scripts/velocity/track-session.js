@@ -144,9 +144,9 @@ function getSprintName() {
   // Try to determine current sprint from ROADMAP.md
   try {
     const roadmap = fs.readFileSync(ROADMAP_PATH, "utf8");
-    const sprintMatch = roadmap.match(/##\s+(?:Active Sprint|Current Sprint)[:\s-]*(.+)/i);
+    const sprintMatch = roadmap.match(/##\s+(?:Active Sprint|Current Sprint)[:\s-]*([^|\n]+)/i);
     if (sprintMatch) {
-      return sprintMatch[1].trim();
+      return sprintMatch[1].trim().replace(/\*+$/, "");
     }
     // Fallback: look for milestone reference
     const milestoneMatch = roadmap.match(/M1[.\d]*\s*[-–]\s*(.+)/);
@@ -173,7 +173,7 @@ function run() {
     items_completed: items.length,
     item_ids: items,
     tracks,
-    sprint,
+    sprint: sprint.slice(0, 100),
   };
 
   // Ensure state directory exists and write entry

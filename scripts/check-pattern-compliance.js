@@ -1367,6 +1367,19 @@ function applyGraduation(violations) {
  * Main function
  */
 function main() {
+  // Expire stale warned-files entries older than 30 days (OPT #75)
+  try {
+    const { expireByAge } = require("../.claude/hooks/lib/rotate-state.js");
+    const result = expireByAge(WARNED_FILES_PATH, 30);
+    if (result.expired && VERBOSE && !JSON_OUTPUT) {
+      console.log(
+        `   Expired ${result.before - result.after} stale pattern warning(s) (older than 30 days)`
+      );
+    }
+  } catch {
+    // Non-critical — expiry failure doesn't block pattern checking
+  }
+
   const files = getFilesToCheck();
 
   if (files.length === 0) {
