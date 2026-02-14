@@ -83,9 +83,10 @@ session on average). This violates the project's own principle (claude.md line
   savings: ~4,000 tokens per session (90% reduction in AI Instructions bloat).
 - **Impact:** tokens|all
 
-**Decision:** [x] Act now (modified) — Keep AI Instructions in Tier 1-2 docs
-(~15-20 files). Remove from Tier 3-4 docs (~35-37 files), replace with one-line
-pointer to claude.md.
+**Decision:** [x] Act now (modified) — DONE (Session #158). Removed AI
+Instructions from 6 Tier 3-4 docs (CODE_PATTERNS, SECURITY_CHECKLIST,
+SKILL_AGENT_POLICY, CANON_QUICK_REFERENCE, JSONL_SCHEMA_STANDARD,
+scripts/README).
 
 ---
 
@@ -439,8 +440,8 @@ be independent.
   Current doc creates ambiguity about which to invoke.
 - **Impact:** accuracy
 
-**Decision:** [x] Act now — delete skill entirely, was one-time use and no
-longer needed
+**Decision:** [x] Act now — DONE (Session #158). Deleted expansion-evaluation
+skill + archived tracker to docs/archive/
 
 ---
 
@@ -514,8 +515,8 @@ estimated token waste: ~4,500+ tokens per session load.
   claude.md Section X.Y' instead of duplicating.
 - **Impact:** tokens
 
-**Decision:** [x] Act now — Pair with A009 as one sweep. Classify instructions
-as generic (remove) vs doc-specific (keep).
+**Decision:** [x] Act now — DONE (Session #158). Tier reclassification via
+per-file overrides in doc-generator-config.json. Tier 1: 9→4, Tier 2: 62→7.
 
 ---
 
@@ -926,8 +927,8 @@ MASTER_DEBT.jsonl).
   AUDIT_FINDINGS_BACKLOG.md.
 - **Impact:** tokens
 
-**Decision:** [x] Act now — Verify script is dead (no callers, references
-deleted files), then delete. /alerts skill replaces this.
+**Decision:** [x] Act now — DONE (Session #158). Verified dead (no callers),
+deleted generate-pending-alerts.js, removed references from hooks + run-alerts.
 
 ---
 
@@ -1203,8 +1204,8 @@ developer-growth-analysis, excel-analysis, find-skills, frontend-design, etc.
   with high clarity benefit.
 - **Impact:** accuracy
 
-**Decision:** [x] Act now — populate all empty description fields with 1-2
-sentence summaries
+**Decision:** [x] Act now — DONE (Session #157, commit 333d3e86). Populated all
+empty skill description fields.
 
 ---
 
@@ -1224,8 +1225,9 @@ verifies. sync-sonarcloud-debt imports from SonarCloud.
   each has distinct trigger criteria. If overlapping, consolidate intake logic.
 - **Impact:** accuracy
 
-**Decision:** [x] Act now — merge add-deferred-debt + add-manual-debt into
-/add-debt, delete deprecated sync-sonarcloud-debt, update ~10 referencing files
+**Decision:** [x] Act now — DONE (Session #157, commit 333d3e86). Merged
+add-deferred-debt + add-manual-debt into /add-debt, deleted
+sync-sonarcloud-debt.
 
 ---
 
@@ -1246,9 +1248,8 @@ code review tool. requesting-code-review initiates code review.
   used by pr-review? Map the relationships clearly.
 - **Impact:** accuracy
 
-**Decision:** [x] Act now — clarify separation: code-reviewer = ad-hoc dev
-reviews, pr-review = formal PR gate. Merge requesting-code-review into
-code-reviewer.
+**Decision:** [x] Act now — DONE (Session #157, commit 333d3e86). Clarified
+separation in descriptions; merged requesting-code-review into code-reviewer.
 
 ---
 
@@ -1333,8 +1334,8 @@ via /find-skills or skill index searches.
   This is foundational metadata for a 57-skill portfolio.
 - **Impact:** accuracy
 
-**Decision:** [x] Act now — merge with K004, populate all empty descriptions
-together
+**Decision:** [x] Act now — DONE (Session #157, merged with K004). All empty
+skill descriptions populated.
 
 ---
 
@@ -1392,8 +1393,8 @@ reading outdated session logs may attempt to reference deleted systems.
   'IMS merged to TDMS in Session #152 - historical refs may be outdated'.
 - **Impact:** accuracy
 
-**Decision:** [x] Act now — Add deprecation notes to historical entries, update
-AUDIT_TRACKER.md to reference TDMS only.
+**Decision:** [x] Act now — DONE (Session #158). Added IMS→TDMS deprecation
+notes to SESSION_HISTORY.md, updated AUDIT_TRACKER.md references.
 
 ---
 
@@ -1947,8 +1948,9 @@ obsolete but outdated (pre-skill era). Similar issue in 3-5 other docs.
   (['Updated Session #X'] to help AI understand freshness.
 - **Impact:** accuracy|speed
 
-**Decision:** [x] Act now (modified) — Quick E1: update 3 docs to reference
-/test-suite as preferred. Skip claude.md "Preferred Automation" section.
+**Decision:** [x] Act now (modified) — DONE (Session #158). Updated 3 docs
+(TESTING_PLAN, SONARCLOUD_CLEANUP_RUNBOOK, RECAPTCHA_REMOVAL_GUIDE) to reference
+/test-suite.
 
 ---
 
@@ -1976,8 +1978,8 @@ costs tokens every session load and makes updates harder.
   in claude.md.
 - **Impact:** tokens
 
-**Decision:** [x] Act now — Trim SESSION_CONTEXT.md AI Instructions from 36 to
-~10 lines. Keep core flow, drop navigation links.
+**Decision:** [x] Act now — DONE (Session #158). Trimmed SESSION_CONTEXT.md AI
+Instructions from 36 to ~10 lines.
 
 ---
 
