@@ -1152,6 +1152,52 @@ Create `${AUDIT_DIR}/AUTOMATION_AUDIT_REPORT.md`:
 
 ---
 
+## Interactive Review (MANDATORY — before TDMS intake)
+
+**Do NOT ingest findings into TDMS until the user has reviewed them.**
+
+### Presentation Format
+
+Present findings in **batches of 3-5 items**, grouped by severity (S0 first,
+then S1, S2, S3). Within each severity, group by theme for coherence. Each item
+shows:
+
+```
+### DEBT-XXXX: [Title]
+**Severity:** S_ | **Effort:** E_ | **Confidence:** _%
+**Current:** [What exists now]
+**Suggested Fix:** [Concrete remediation]
+**Acceptance Tests:** [How to verify]
+**Counter-argument:** [Why NOT to do this]
+**Recommendation:** ACCEPT/DECLINE/DEFER — [Reasoning]
+```
+
+Do NOT present all items at once — batches of 3-5 keep decisions manageable.
+Wait for user decisions on each batch before presenting the next.
+
+### Decision Tracking (Compaction-Safe)
+
+Create `${AUDIT_DIR}/REVIEW_DECISIONS.md` after the first batch to track all
+decisions. Update after each batch. This file survives context compaction.
+
+### Processing Decisions
+
+After each batch:
+
+- Record decisions in REVIEW_DECISIONS.md
+- If DECLINED: remove from findings before TDMS intake
+- If DEFERRED: keep in TDMS as NEW status for future planning
+- If ACCEPTED: proceed to TDMS intake
+
+### Post-Review Summary
+
+After ALL findings reviewed, summarize:
+
+- Total accepted / declined / deferred
+- Proceed to TDMS Intake with accepted + deferred items only
+
+---
+
 ## Post-Audit (MANDATORY)
 
 ### 1. Validate All Findings

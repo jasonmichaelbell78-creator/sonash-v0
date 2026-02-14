@@ -1,45 +1,43 @@
 {
-  "generated": "2026-02-14T14:12:10.653Z",
+  "generated": "2026-02-14T18:16:24.870Z",
   "generated_date": "2026-02-14",
   "summary": {
-    "total": 2198,
-    "open": 1787,
+    "total": 2290,
+    "open": 1879,
     "resolved": 169,
     "false_positives": 242,
-    "resolution_rate_pct": 8
+    "resolution_rate_pct": 7
   },
   "by_status": {
-    "NEW": 2,
-    "VERIFIED": 1783,
+    "NEW": 87,
+    "VERIFIED": 1792,
     "IN_PROGRESS": 0,
     "RESOLVED": 169,
-    "FALSE_POSITIVE": 242,
-    "OPEN": 2
+    "FALSE_POSITIVE": 242
   },
   "by_severity": {
     "S0": 27,
-    "S1": 388,
-    "S2": 974,
-    "S3": 809
+    "S1": 390,
+    "S2": 1021,
+    "S3": 852
   },
   "by_category": {
-    "code-quality": 1234,
+    "code-quality": 1326,
     "security": 81,
     "performance": 50,
     "documentation": 465,
     "refactoring": 21,
     "process": 334,
-    "engineering-productivity": 3,
-    "enhancements": 9,
-    "hook-efficiency": 1
+    "engineering-productivity": 4,
+    "enhancements": 9
   },
   "by_source": {
-    "unknown": 2197,
+    "unknown": 2289,
     "pr-review-286": 1
   },
   "alerts": {
     "s0_count": 9,
-    "s1_count": 363,
+    "s1_count": 365,
     "s0_items": [
       {
         "id": "DEBT-0012",
@@ -163,6 +161,6 @@
     "avg_age_days": 0,
     "oldest_age_days": 0,
     "oldest_item_id": null,
-    "verification_queue_size": 2
+    "verification_queue_size": 87
   }
 }
