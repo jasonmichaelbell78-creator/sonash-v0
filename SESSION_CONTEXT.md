@@ -96,13 +96,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - v2 JSON schema:
   `{version:2, healthScore, categories:{alerts,context}, sessionPlan, delta}`
 
-**Session #154 Summary** (ALERTS SKILL ENHANCEMENT PLAN):
-
-- Audited all dead data producers — found 8 scripts generating data nothing
-  consumes
-- Fixed 5 blocking pattern violations (diff-filter, path.isAbsolute)
-- Created plan to wire all dead data into `/alerts` skill (Hybrid Option C)
-
 **Session #156 Summary** (AI OPTIMIZATION AUDIT — FRAGILE PARSING):
 
 - Implemented 8 fragile parsing fixes across 11 files (OPT-P001–P010)
@@ -115,6 +108,19 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - Updated SUMMARY.md with decisions for all 10 Fragile Parsing findings
 - 3 domains remaining: Format (MD→JSONL), Skill Overlap, AI Instruction Bloat
 - Updated COMMAND_REFERENCE.md v4.2
+
+**Session #157 Summary** (AI OPTIMIZATION AUDIT — SKILL OVERLAP):
+
+- Resolved all 15 Skill Overlap findings (OPT-K001–K015)
+- K005: Merged `add-deferred-debt` + `add-manual-debt` → unified `/add-debt`
+  skill; deleted deprecated `sync-sonarcloud-debt`
+- K006: Merged `requesting-code-review` into `code-reviewer`; added scope
+  clarification to both `code-reviewer` and `pr-review`
+- K007: Deleted `audit-validation-wrapper` (one-time use)
+- K004+K014: All skills already had descriptions (no changes needed)
+- 11 findings rejected as appropriately specialized (no real overlap)
+- Skill count: 60 → 56 (5 deleted, 1 created), net -1,000 lines
+- 2 domains remaining: Format (MD→JSONL), AI Instruction Bloat
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -144,13 +150,16 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-**Alerts v3 is complete.** Choose from:
+**Skill Overlap domain complete.** Choose from:
 
-1. **Fix S0 critical items** (9 items, 6 are E0 Cognitive Complexity) — highest
+1. **Continue AI optimization audit** — 2 domains remaining: Format (MD→JSONL,
+   14 findings), AI Instruction Bloat (8 findings)
+2. **Fix S0 critical items** (9 items, 6 are E0 Cognitive Complexity) — highest
    impact on health score
-2. **Automate top 3 failing patterns** — Regex anchoring, Safe percentage,
+3. **Automate top 3 failing patterns** — Regex anchoring, Safe percentage,
    Windows atomic rename (add to check-pattern-compliance.js)
-3. **Re-run smoke tests** — Results are 5+ days stale
+4. **Fix dedup-multi-pass.js bug** — `secondary.evidence.filter` crashes when
+   evidence is not an array (pre-existing)
 
 ### After Quick Wins
 

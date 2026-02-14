@@ -22,6 +22,15 @@ actionable.
 
 ## 2026-02 Sessions
 
+### Session #154 (2026-02-12)
+
+**Focus**: ALERTS SKILL ENHANCEMENT PLAN
+
+- Audited all dead data producers — found 8 scripts generating data nothing
+  consumes
+- Fixed 5 blocking pattern violations (diff-filter, path.isAbsolute)
+- Created plan to wire all dead data into `/alerts` skill (Hybrid Option C)
+
 ### Session #153 (2026-02-12)
 
 **Focus**: PR REVIEW SKILL IMPROVEMENTS
