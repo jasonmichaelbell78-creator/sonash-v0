@@ -77,6 +77,13 @@ function loadWarnedFiles() {
     if (purged > 0 && VERBOSE) {
       console.log(`   Purged ${purged} expired pattern warning(s) (older than 7 days)`);
     }
+    if (purged > 0) {
+      try {
+        writeFileSync(WARNED_FILES_PATH, JSON.stringify(data, null, 2), "utf-8");
+      } catch {
+        /* best effort */
+      }
+    }
 
     return data;
   } catch (err) {
@@ -573,8 +580,32 @@ const ANTI_PATTERNS = [
     //   all have `rel === "" ||` in validateSessionPath
     // 2026-02-06 (Review #256): extract-agent-findings.js L29 has `rel === "" ||` at start of condition
     // 2026-02-06 (Review #258): generate-detailed-sonar-report.js L33 has `rel === "" ||` at start of condition
-    pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-requirements|check-mcp-servers|pattern-check|session-start|validate-paths|analyze-learning-effectiveness|security-helpers|check-remote-session-context|track-agent-invocation|check-roadmap-health|check-doc-headers|statusline|sync-claude-settings|ai-pattern-checks|eval-check-stage|eval-snapshot|unify-findings|normalize-format|extract-agent-findings|generate-detailed-sonar-report)\.js$/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: [
+      "phase-complete-check.js",
+      "check-edit-requirements.js",
+      "check-write-requirements.js",
+      "check-requirements.js",
+      "check-mcp-servers.js",
+      "pattern-check.js",
+      "session-start.js",
+      "validate-paths.js",
+      "analyze-learning-effectiveness.js",
+      "security-helpers.js",
+      "check-remote-session-context.js",
+      "track-agent-invocation.js",
+      "check-roadmap-health.js",
+      "check-doc-headers.js",
+      "statusline.js",
+      "sync-claude-settings.js",
+      "ai-pattern-checks.js",
+      "eval-check-stage.js",
+      "eval-snapshot.js",
+      "unify-findings.js",
+      "normalize-format.js",
+      "extract-agent-findings.js",
+      "generate-detailed-sonar-report.js",
+    ],
   },
 
   // Test patterns from Consolidation #14 (Reviews #180-201)
@@ -895,7 +926,7 @@ const ANTI_PATTERNS = [
   // Unanchored regex for enum/severity validation (10x recurrence)
   {
     id: "unanchored-enum-regex",
-    pattern: /(?:test|match)\s*\(\s*\/(?!\^)[EeSs]\[\d+[^/]*\]\//g,
+    pattern: /(?:test|match)\s*\(\s*\/(?!\^)[EeSs]\[\d+[^/]{0,20}\]\//g,
     message: "Unanchored regex for enum validation - matches partial strings (e.g. E12 matches E1)",
     fix: "Anchor with ^ and $: /^E[0-3]$/ or /^S[0-4]$/ instead of /E[0-3]/",
     review: "CODE_PATTERNS.md JS/TS - Regex anchoring for enums, Review #219 (10x recurrence)",

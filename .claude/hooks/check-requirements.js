@@ -60,7 +60,7 @@ if (rel === "" || rel.startsWith(".." + path.sep) || rel === ".." || path.isAbso
 }
 
 // Sanitize - only allow safe characters
-const sanitized = filePath.replace(/[^a-zA-Z0-9._/-]/g, "");
+const sanitized = filePath.replace(/[^a-zA-Z0-9._/:-]/g, "");
 if (sanitized !== filePath || sanitized.length === 0) {
   console.log("ok");
   process.exit(0);

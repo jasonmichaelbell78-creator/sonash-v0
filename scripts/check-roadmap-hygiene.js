@@ -14,14 +14,14 @@
  * Exit codes: 0 = clean, 1 = issues found, 2 = error
  */
 
-const { readFileSync } = require("fs");
-const { execFileSync } = require("child_process");
-const { resolve } = require("path");
+const { readFileSync } = require("node:fs");
+const { execFileSync } = require("node:child_process");
+const { resolve } = require("node:path");
 
 const ROOT = resolve(__dirname, "..");
-const args = process.argv.slice(2);
-const jsonOutput = args.includes("--json");
-const verbose = args.includes("--verbose");
+const args = new Set(process.argv.slice(2));
+const jsonOutput = args.has("--json");
+const verbose = args.has("--verbose");
 
 function readFile(relPath) {
   try {
@@ -95,8 +95,9 @@ function findOpenItems(roadmapContent) {
 function checkArchived(completedItems, logContent) {
   const unarchived = [];
   for (const item of completedItems) {
-    // Check if item ID appears in ROADMAP_LOG.md
-    if (!logContent.includes(item.id)) {
+    const escapedId = item.id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const idRegex = new RegExp(`(^|[\\s\\[\\]():,./-])${escapedId}([\\s\\]():,./-]|$)`);
+    if (!idRegex.test(logContent)) {
       unarchived.push(item);
     }
   }
@@ -159,7 +160,7 @@ function scanCommitsForCompletions(openItems) {
 
   for (const item of openItems) {
     // Check if any commit message references this item's ID
-    const id = item.id.replace(/[*:]/g, "");
+    const id = item.id.replaceAll(/[*:]/g, "");
     const idLower = id.toLowerCase();
     for (const commit of commits) {
       if (commit.toLowerCase().includes(idLower)) {
@@ -173,6 +174,56 @@ function scanCommitsForCompletions(openItems) {
     }
   }
   return candidates;
+}
+
+// ── Report helpers (extracted to reduce main() cognitive complexity) ─────────
+function reportUnarchived(results, completed, roadmapLog) {
+  if (roadmapLog) {
+    results.unarchivedCompleted = checkArchived(completed, roadmapLog);
+    if (results.unarchivedCompleted.length > 0) {
+      log(`⚠️  ${results.unarchivedCompleted.length} completed items NOT in ROADMAP_LOG.md:`);
+      for (const item of results.unarchivedCompleted) {
+        log(`  - ${item.id} (${item.track}, line ${item.line})`);
+        vlog(`    ${item.description}`);
+      }
+    } else {
+      log("✅ All completed items archived to ROADMAP_LOG.md");
+    }
+  } else {
+    log("⚠️  ROADMAP_LOG.md not found — cannot check archival status");
+  }
+  log("");
+}
+
+function reportSyncIssues(results, roadmap, sessionContext) {
+  if (sessionContext) {
+    results.syncIssues = checkSessionContextSync(roadmap, sessionContext);
+    if (results.syncIssues.length > 0) {
+      log("⚠️  SESSION_CONTEXT.md sync issues:");
+      for (const issue of results.syncIssues) {
+        log(`  - ${issue}`);
+      }
+    } else {
+      log("✅ SESSION_CONTEXT.md references active ROADMAP tracks");
+    }
+  } else {
+    log("⚠️  SESSION_CONTEXT.md not found");
+  }
+  log("");
+}
+
+function reportCompletionCandidates(results, open) {
+  results.completionCandidates = scanCommitsForCompletions(open);
+  if (results.completionCandidates.length > 0) {
+    log(
+      `📋 ${results.completionCandidates.length} open items may be complete (referenced in recent commits):`
+    );
+    for (const c of results.completionCandidates) {
+      log(`  - ${c.id}: "${c.commitMessage}"`);
+    }
+  } else {
+    log("✅ No open items detected as potentially complete");
+  }
 }
 
 // ── Main ────────────────────────────────────────────────────────────────────
@@ -194,7 +245,6 @@ function main() {
     totalOpen: 0,
   };
 
-  // Find completed and open items
   const completed = findCompletedItems(roadmap);
   const open = findOpenItems(roadmap);
   results.totalCompleted = completed.length;
@@ -206,57 +256,14 @@ function main() {
   log(`  Open items: ${open.length}`);
   log("");
 
-  // DEBT-2839: Check unarchived completed items
-  if (roadmapLog) {
-    results.unarchivedCompleted = checkArchived(completed, roadmapLog);
-    if (results.unarchivedCompleted.length > 0) {
-      log(`⚠️  ${results.unarchivedCompleted.length} completed items NOT in ROADMAP_LOG.md:`);
-      for (const item of results.unarchivedCompleted) {
-        log(`  - ${item.id} (${item.track}, line ${item.line})`);
-        vlog(`    ${item.description}`);
-      }
-    } else {
-      log("✅ All completed items archived to ROADMAP_LOG.md");
-    }
-  } else {
-    log("⚠️  ROADMAP_LOG.md not found — cannot check archival status");
-  }
-  log("");
-
-  // DEBT-2840: Check SESSION_CONTEXT sync
-  if (sessionContext) {
-    results.syncIssues = checkSessionContextSync(roadmap, sessionContext);
-    if (results.syncIssues.length > 0) {
-      log("⚠️  SESSION_CONTEXT.md sync issues:");
-      for (const issue of results.syncIssues) {
-        log(`  - ${issue}`);
-      }
-    } else {
-      log("✅ SESSION_CONTEXT.md references active ROADMAP tracks");
-    }
-  } else {
-    log("⚠️  SESSION_CONTEXT.md not found");
-  }
-  log("");
-
-  // DEBT-2837: Scan commits for potential completions
-  results.completionCandidates = scanCommitsForCompletions(open);
-  if (results.completionCandidates.length > 0) {
-    log(
-      `📋 ${results.completionCandidates.length} open items may be complete (referenced in recent commits):`
-    );
-    for (const c of results.completionCandidates) {
-      log(`  - ${c.id}: "${c.commitMessage}"`);
-    }
-  } else {
-    log("✅ No open items detected as potentially complete");
-  }
+  reportUnarchived(results, completed, roadmapLog);
+  reportSyncIssues(results, roadmap, sessionContext);
+  reportCompletionCandidates(results, open);
 
   if (jsonOutput) {
     console.log(JSON.stringify(results, null, 2));
   }
 
-  // Exit code: 1 if issues found
   const hasIssues =
     results.unarchivedCompleted.length > 0 ||
     results.syncIssues.length > 0 ||

@@ -129,6 +129,8 @@ function isTrivialChange(file) {
     // Get only the changed lines (added/removed), excluding context
     const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", file], {
       encoding: "utf-8",
+      timeout: 15000,
+      maxBuffer: 1024 * 1024,
     });
 
     // Extract only actual change lines (+ and - prefixed, not headers)
@@ -147,7 +149,7 @@ function isTrivialChange(file) {
     // - date updates (e.g., **Last Updated:** 2026-02-13)
     // - version bumps (e.g., **Document Version:** 1.1)
     const trivialPattern =
-      /^\s*$|^\s*(?:\/\/|#|\*|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
+      /^\s*$|^\s*(?:\/\/|#|\*|\/\*|\*\/|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
 
     return changeLines.every((line) => trivialPattern.test(line));
   } catch {

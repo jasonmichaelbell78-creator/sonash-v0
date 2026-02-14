@@ -23,7 +23,14 @@
  *   2 = Error
  */
 
-const { existsSync, readFileSync, writeFileSync, mkdirSync } = require("node:fs");
+const {
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  rmSync,
+  renameSync,
+} = require("node:fs");
 const { join } = require("node:path");
 const { execFileSync } = require("node:child_process");
 
@@ -100,10 +107,8 @@ function writeState(state) {
   ensureDir(STATE_DIR);
   const tmpPath = `${CONSOLIDATION_FILE}.tmp`;
   writeFileSync(tmpPath, JSON.stringify(state, null, 2) + "\n", "utf8");
-  // Windows-safe rename
-  const fs = require("node:fs");
-  if (fs.existsSync(CONSOLIDATION_FILE)) fs.rmSync(CONSOLIDATION_FILE, { force: true });
-  fs.renameSync(tmpPath, CONSOLIDATION_FILE);
+  if (existsSync(CONSOLIDATION_FILE)) rmSync(CONSOLIDATION_FILE, { force: true });
+  renameSync(tmpPath, CONSOLIDATION_FILE);
 }
 
 function ensureDir(dir) {
@@ -165,8 +170,10 @@ function extractPatterns(reviews) {
     // Also extract from title keywords for broader pattern detection
     const title = (review.title || "").toLowerCase();
     for (const keyword of PATTERN_KEYWORDS) {
-      if (keyword.test(title)) {
-        const match = title.match(keyword)?.[0]?.toLowerCase()?.trim();
+      keyword.lastIndex = 0;
+      const m = keyword.exec(title);
+      if (m) {
+        const match = m[0]?.toLowerCase()?.trim();
         if (!match) continue;
         if (!patterns.has(match)) {
           patterns.set(match, { pattern: match, count: 0, reviews: [], learnings: [] });
@@ -300,7 +307,7 @@ function generateRuleSuggestions(recurringPatterns, range) {
     const id = (p.pattern || "")
       .toLowerCase()
       .replaceAll(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
+      .replaceAll(/(?:^-)|(?:-$)/g, "")
       .slice(0, 40);
     content += `## ${p.pattern}\n\n`;
     content += `- **Mentions:** ${p.count} (Reviews: #${p.reviews.join(", #")})\n`;

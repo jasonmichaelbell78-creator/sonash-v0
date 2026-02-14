@@ -191,8 +191,8 @@ function getStagedChangedLines(filePath) {
     const hunkRegex = /^@@\s+-\d+(?:,\d+)?\s+\+(\d+)(?:,(\d+))?\s+@@/gm;
     let match;
     while ((match = hunkRegex.exec(diff)) !== null) {
-      const start = parseInt(match[1], 10);
-      const count = match[2] !== undefined ? parseInt(match[2], 10) : 1;
+      const start = Number.parseInt(match[1], 10);
+      const count = match[2] === undefined ? 1 : Number.parseInt(match[2], 10);
       for (let i = start; i < start + count; i++) {
         changedLines.add(i);
       }

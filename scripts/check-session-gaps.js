@@ -76,7 +76,9 @@ function getCurrentSessionCounter() {
   try {
     const content = fs.readFileSync(SESSION_CONTEXT, "utf8");
     // Resilient: optional bold markers, flexible spacing, "Count"/"Counter" (P001 fix)
-    const match = content.match(/\*{0,2}Current Session Count(?:er)?\*{0,2}\s*:?\s*(\d+)/i);
+    const match = content.match(
+      /\*{0,2}Current Session Count(?:er)?\*{0,2}\s{0,10}:?\s{0,10}(\d+)/i
+    );
     return match ? Number.parseInt(match[1], 10) : null;
   } catch {
     return null;

@@ -483,7 +483,7 @@ function getCategory(filePath) {
   }
 
   // Apply per-file tier override (keeps directory category name/description)
-  const normalizedPath = filePath.replace(/\\/g, "/");
+  const normalizedPath = filePath.replaceAll("\\", "/");
   const override = FILE_OVERRIDES[normalizedPath];
   if (override && typeof override.tier === "number") {
     category = { ...category, tier: override.tier };

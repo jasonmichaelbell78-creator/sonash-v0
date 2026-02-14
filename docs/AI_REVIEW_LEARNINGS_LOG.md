@@ -608,6 +608,47 @@ _Reviews #137-179 have been archived to
 
 ---
 
+#### Review #311: SonarCloud + Qodo — PR #365 Audit Ecosystem Branch (2026-02-14)
+
+**Source:** SonarCloud Issues/Hotspots + Qodo PR Suggestions + Qodo Compliance
+**PR/Branch:** claude/read-session-commits-ZpJLX (PR #365) **Suggestions:** 34
+total (Critical: 1, Major: 5, Minor: 21, Security Hotspots: 7)
+
+**Patterns Identified:**
+
+1. Global regex lastIndex bug: Using `/g` regex with `.test()` in loops causes
+   skipped matches due to persistent `lastIndex` state
+   - Root cause: PATTERN_KEYWORDS array uses `/gi` flags
+   - Prevention: Always reset `lastIndex = 0` or use `exec()` pattern
+2. Windows cross-platform gaps: Path sanitization rejecting colons, backslash
+   normalization missing in fast-path hooks
+   - Root cause: Unix-first development, untested Windows paths
+   - Prevention: Always normalize with `replaceAll("\\", "/")` in hooks
+3. Regex complexity accumulation: pathExclude lists grow unbounded as new files
+   are added, exceeding SonarCloud's complexity limit of 20
+   - Root cause: Using single regex alternation for file exclusion lists
+   - Prevention: Use `pathExcludeList` (string array) instead of regex
+4. Unbounded `\s*` in markdown parsing regex: SonarCloud flags backtracking risk
+   - Root cause: `\s*` matches unlimited whitespace including newlines
+   - Prevention: Use bounded `\s{0,10}` or `[ ]*` (space-only) where newlines
+     aren't expected
+
+**Resolution:**
+
+- Fixed: 33 items across 13 files
+- Rejected: 1 item (streaming for reviews.jsonl — file is always <1KB)
+- Deferred: 0
+
+**Key Learnings:**
+
+- `pathExcludeList` is the preferred mechanism for file exclusions (avoids regex
+  complexity limits)
+- Persist state cleanup (warned-files.json TTL purge was in-memory only)
+- `spawnSync("git", ["rev-parse", "--show-toplevel"])` is the reliable way to
+  find repo root
+
+---
+
 #### Review #310: Qodo PR Suggestions — Alerts v3 Health Score, Edge Cases, Path Normalization (2026-02-13)
 
 **Source:** Qodo PR Code Suggestions **PR/Branch:**

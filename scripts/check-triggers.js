@@ -184,7 +184,9 @@ function checkConsolidationTrigger() {
   const trigger = TRIGGERS.consolidation;
 
   try {
-    const rootDir = path.resolve(path.dirname(require.main?.filename || process.argv[1]), "..");
+    const gitRoot = spawnSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" });
+    const rootDir =
+      gitRoot.status === 0 && gitRoot.stdout ? gitRoot.stdout.trim() : path.resolve(process.cwd());
     const statePath = path.join(rootDir, ".claude", "state", "consolidation.json");
     const reviewsPath = path.join(rootDir, ".claude", "state", "reviews.jsonl");
 
