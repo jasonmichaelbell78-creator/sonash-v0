@@ -144,12 +144,15 @@ health maintenance, pre-release doc cleanup, after major doc changes
 **Example:** `/doc-optimizer` **Parameters:** None **Output:** 5-wave, 13-agent
 analysis with auto-fixes + JSONL findings + SUMMARY_REPORT.md
 
-### `/docs-sync`
+### `/docs-maintain`
 
-**Description:** Check document synchronization between templates and instances
-**When to use:** Verify template-instance consistency, detect placeholder
-content **Example:** `/docs-sync` **Parameters:** None **Output:** Sync status
-and drift detection
+**Description:** Check doc sync and auto-update doc artifacts (replaces
+`docs-sync` and `docs-update`) **When to use:** After creating/moving/deleting
+.md files; verify template-instance consistency; when pre-commit blocks due to
+DOCUMENTATION_INDEX.md **Example:** `/docs-maintain` or `/docs-maintain --check`
+or `/docs-maintain --update` **Parameters:** `--check` (sync check only),
+`--update` (update only), default runs both **Output:** Sync status, regenerated
+index, cross-doc dependency check
 
 ### `/pr-review`
 
@@ -194,20 +197,14 @@ with health grade (A-F), category scorecards, sparkline trends, benchmark
 ratings, session plan, and delta tracking. 8 categories (limited) or 18 (full)
 **Added:** Session #113, expanded #154, v3 dashboard #155
 
-### `/save-context`
+### `/checkpoint`
 
-**Description:** Save important session context to MCP memory **When to use:**
-Before compaction, after complex investigations, when prompted by context
-warnings **Example:** `/save-context` **Parameters:** None **Output:** Saved
-entity confirmation with observations **Added:** Session #113
-
-### `/docs-update`
-
-**Description:** Update documentation artifacts after markdown file changes
-**When to use:** After creating, moving, or deleting .md files; when pre-commit
-blocks due to DOCUMENTATION_INDEX.md **Example:** `/docs-update` **Parameters:**
-None **Output:** Regenerated index, cross-doc dependency check, suggested
-updates **Added:** Session #113
+**Description:** Save session state for recovery after compaction or failures
+**When to use:** Before large operations, when session is getting long, before
+risky changes **Example:** `/checkpoint` or `/checkpoint --mcp` **Parameters:**
+`--mcp` (also save to MCP memory for cross-session persistence) **Output:**
+Updated SESSION_CONTEXT.md quick recovery, handoff.json, optional MCP entities
+**Added:** Session #113, merged with save-context Session #159
 
 ### `/quick-fix`
 
@@ -561,12 +558,11 @@ gate status **Example:** `/sonarcloud` **Parameters:** Modes: sync (default),
 resolve, full, report, status, sprint **Added:** Session #133 **Updated:**
 Session #134 (added interactive placement phase with severity-weighted analysis)
 
-#### `sonarcloud-sprint` _(deprecated)_
+#### `sonarcloud-sprint` _(archived)_
 
-**Description:** Run a SonarCloud cleanup sprint. **Deprecated:** Use
-`/sonarcloud` instead, which consolidates sync, resolve, report, and sprint
-modes in a unified interface. **When to use:** Use `/sonarcloud --mode sprint`
-instead **Example:** `/sonarcloud` **Parameters:** None
+**Description:** Run a SonarCloud cleanup sprint. **Archived:** Fully superseded
+by `/sonarcloud --sprint`. Skill directory deleted. **When to use:** Use
+`/sonarcloud --sprint` instead
 
 #### `skill-creator`
 
@@ -932,12 +928,12 @@ title, severity, category; optionally PR number and reason for deferred items
 
 #### `checkpoint`
 
-**Description:** Create a checkpoint for the current session state. Saves
-progress markers and context for session recovery or handoff. Also writes task
-state to `.claude/state/task-*.state.json` for compaction recovery. **When to
-use:** Before complex operations, mid-session saves, or preparing for handoff
-**Example:** `/checkpoint` before major refactoring **Parameters:** None
-**Added:** Session #114 (enhanced Session #133)
+**Description:** Save session state for recovery after compaction or failures.
+Now includes MCP memory save via `--mcp` flag (merged from `save-context`).
+**When to use:** Before complex operations, mid-session saves, or preparing for
+handoff **Example:** `/checkpoint` or `/checkpoint --mcp` **Parameters:**
+`--mcp` (also save to MCP memory) **Added:** Session #114 (enhanced #133, merged
+with save-context #159)
 
 #### `pre-commit-fixer`
 
@@ -1986,7 +1982,7 @@ After Read tool is used **What it does:**
 
 - Tracks number of files read in the session
 - Warns at 25+ files read (approaching context limits)
-- Suggests `/save-context` when needed **Location:**
+- Suggests `/checkpoint --mcp` when needed **Location:**
   `.claude/hooks/large-context-warning.js` **Status Message:** "Tracking context
   size..." **Added:** Session #114
 
@@ -2406,7 +2402,7 @@ hooks, and settings.
 | 4.0     | #140    | Major overhaul: added Git Hooks, GitHub Actions, Plugin Skills, Environment Variables sections; fixed MCP servers; added missing agents/hooks; expanded system commands     |
 | 3.3     | #134    | Updated `/sonarcloud` (interactive placement phase) and `/multi-ai-audit` (Phase 7 rewritten as interactive placement)                                                      |
 | 3.2     | #134    | Review #250: Removed duplicate `/sonarcloud` entry; fixed deprecated command examples                                                                                       |
-| 3.1     | #133    | Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end`, `/save-context` for state persistence and compaction handoff                                       |
+| 3.1     | #133    | Added `/pre-commit-fixer` skill; enhanced `/checkpoint`, `/session-end` for state persistence and compaction handoff                                                        |
 | 3.0     | #133    | Added unified `/sonarcloud` skill consolidating sonarcloud-sprint and sync-sonarcloud-debt; deprecated individual skills                                                    |
 | 2.9     | #130    | Added multi-ai-audit skill - interactive orchestrator for multi-AI consensus audits                                                                                         |
 | 2.8     | #129    | pr-review skill consolidation tracking (counter replaced by JSONL state in Session #156)                                                                                    |
