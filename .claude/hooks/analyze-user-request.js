@@ -73,6 +73,7 @@ function recordDirective(directive) {
   } catch {
     /* start fresh */
   }
+  if (!data || typeof data !== "object" || Array.isArray(data)) data = {};
   data[directive] = Date.now();
 
   // Purge stale entries older than 24h (Review #289)
@@ -83,10 +84,22 @@ function recordDirective(directive) {
     if (!Number.isFinite(ts) || now - ts > DAY_MS) delete data[key];
   }
 
+  const tmpPath = `${DIRECTIVE_STATE}.tmp`;
   try {
-    fs.writeFileSync(DIRECTIVE_STATE, JSON.stringify(data), "utf-8");
+    fs.mkdirSync(path.dirname(DIRECTIVE_STATE), { recursive: true });
+    fs.writeFileSync(tmpPath, JSON.stringify(data), "utf-8");
+    try {
+      fs.rmSync(DIRECTIVE_STATE, { force: true });
+    } catch {
+      /* best-effort */
+    }
+    fs.renameSync(tmpPath, DIRECTIVE_STATE);
   } catch {
-    /* non-critical */
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      /* cleanup */
+    }
   }
 }
 

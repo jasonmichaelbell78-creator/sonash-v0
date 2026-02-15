@@ -92,16 +92,36 @@ function loadJson(filePath) {
 
 function saveJson(filePath, data) {
   const tmpPath = `${filePath}.tmp`;
+  const bakPath = `${filePath}.bak`;
   try {
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
+    // Preserve old file until new one is committed (safer on Windows)
     try {
-      fs.rmSync(filePath, { force: true });
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.rmSync(bakPath, { force: true });
+        } catch {
+          /* best-effort */
+        }
+        fs.renameSync(filePath, bakPath);
+      }
     } catch {
-      // best-effort; destination may not exist
+      // If backup fails, try direct rm+rename
+      try {
+        fs.rmSync(filePath, { force: true });
+      } catch {
+        /* best-effort */
+      }
     }
     fs.renameSync(tmpPath, filePath);
+    // Cleanup backup after successful commit
+    try {
+      fs.rmSync(bakPath, { force: true });
+    } catch {
+      /* best-effort */
+    }
     return true;
   } catch (err) {
     console.warn(
@@ -110,7 +130,15 @@ function saveJson(filePath, data) {
     try {
       fs.rmSync(tmpPath, { force: true });
     } catch {
-      // cleanup failure is non-critical
+      /* cleanup */
+    }
+    // Attempt to restore backup if we created one
+    try {
+      if (fs.existsSync(bakPath) && !fs.existsSync(filePath)) {
+        fs.renameSync(bakPath, filePath);
+      }
+    } catch {
+      /* non-critical */
     }
     return false;
   }
@@ -171,6 +199,14 @@ let contextState = { filesRead: [], lastReset: Date.now(), warningShown: false }
 try {
   const stateContent = fs.readFileSync(CONTEXT_TRACKING_FILE, "utf8");
   contextState = JSON.parse(stateContent);
+
+  // Normalize persisted state shape (defensive against corrupted/manual edits)
+  if (!contextState || typeof contextState !== "object") {
+    contextState = { filesRead: [], lastReset: Date.now(), warningShown: false };
+  }
+  if (!Array.isArray(contextState.filesRead)) contextState.filesRead = [];
+  if (typeof contextState.lastReset !== "number") contextState.lastReset = Date.now();
+  if (typeof contextState.warningShown !== "boolean") contextState.warningShown = false;
 
   // Reset state if older than 30 minutes (new session)
   const thirtyMinutes = 30 * 60 * 1000;

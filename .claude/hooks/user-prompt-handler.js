@@ -107,6 +107,7 @@ function runAlerts() {
   if (messages.length > 0) stdoutParts.push(...messages);
   const tmpCooldown = `${COOLDOWN_FILE}.tmp`;
   try {
+    fs.mkdirSync(path.dirname(COOLDOWN_FILE), { recursive: true });
     fs.writeFileSync(tmpCooldown, JSON.stringify({ lastRun: Date.now() }), "utf-8");
     try {
       fs.rmSync(COOLDOWN_FILE, { force: true });
@@ -147,10 +148,22 @@ function runAnalyze() {
       /* */
     }
     data[directive] = Date.now();
+    const tmpPath = `${DIRECTIVE_STATE}.tmp`;
     try {
-      fs.writeFileSync(DIRECTIVE_STATE, JSON.stringify(data), "utf-8");
+      fs.mkdirSync(path.dirname(DIRECTIVE_STATE), { recursive: true });
+      fs.writeFileSync(tmpPath, JSON.stringify(data), "utf-8");
+      try {
+        fs.rmSync(DIRECTIVE_STATE, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      fs.renameSync(tmpPath, DIRECTIVE_STATE);
     } catch {
-      /* */
+      try {
+        fs.rmSync(tmpPath, { force: true });
+      } catch {
+        /* cleanup */
+      }
     }
   }
 

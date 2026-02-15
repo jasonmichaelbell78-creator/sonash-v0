@@ -231,6 +231,7 @@ function gatherGitContext() {
 
   for (let i = 0; i < statusFields.length; i++) {
     const line = statusFields[i];
+    if (!line || line.length < 4 || line[2] !== " ") continue; // expect "XY filename"
     // Porcelain format: XY filename (X=index, Y=worktree)
     const indexStatus = line[0];
     const worktreeStatus = line[1];
@@ -242,6 +243,8 @@ function gatherGitContext() {
       if (newPath) filename = newPath;
       i++; // consume the extra path field
     }
+
+    if (!filename) continue;
 
     if (indexStatus === "?" && worktreeStatus === "?") {
       if (untrackedFiles.length < 20) untrackedFiles.push(filename);

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.5 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
+**Document Version:** 17.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.6    | 2026-02-15 | Review #318: PR #366 R3 — Atomic write hardening (backup-swap, mkdirSync), state shape normalization (3 files), numeric coercion guards, porcelain validation. 10 fixed, 1 deferred, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 17.5    | 2026-02-15 | Review #317: PR #366 R2 — SonarCloud two-strikes regex→string (2), rename/copy parse bug, atomic write consistency, state normalization, Number.isFinite guard. 11 fixed, 3 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 17.4    | 2026-02-14 | Review #316: PR #366 R1 — SonarCloud regex two-strikes (testFn), atomic writes (3 hooks), state pruning (2 files), CI blocker fixes (30+ links, 5 DEBT entries). 15 fixed, 6 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.3    | 2026-02-13 | Fix: Consolidation counter corruption — manual counter showed 0 but 26 reviews pending (#285-#310). Root cause: `updateConsolidationCounter` injected "Next consolidation due" into Status field, creating duplicates that grew on each run. Fixed run-consolidation.js Status/Next replacement order, corrected counter to 26, cleaned corrupted "Review #320 Review #320..." text.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -607,6 +608,46 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #318: PR #366 R3 — Atomic Write Hardening + State Normalization (2026-02-15)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #366) **Suggestions:** 15 total (Critical:
+0, Major: 0, Minor: 10, Deferred: 4, Rejected: 1)
+
+**Key Patterns:**
+
+1. **Backup-swap atomic writes**: post-read-handler.js saveJson upgraded from
+   rm+rename to backup-swap pattern (write tmp → rename original to .bak →
+   rename tmp to original → rm .bak) with rollback on failure.
+2. **mkdirSync before atomic write**: user-prompt-handler.js cooldown and
+   directive state writes now create parent directory first — prevents failure
+   on first run in clean environment.
+3. **State shape normalization**: Three files now validate JSON state shape
+   after parse — post-write-validator.js (numeric uses/phase),
+   post-read-handler.js (contextState fields), analyze-user-request.js (data
+   object check).
+4. **Git porcelain record validation**: pre-compaction-save.js now validates
+   line length and format before parsing XY fields, preventing crashes on
+   malformed git output.
+5. **Number.isFinite guards**: alerts-reminder.js cooldown timestamp and
+   post-write-validator.js state.uses/phase now validate numeric types before
+   arithmetic.
+
+**Fixed (10):** mkdirSync cooldown dir (1), atomic directive writes (1), numeric
+state normalization (1), data shape validation + atomic writes (2), porcelain
+validation (1), backup-swap atomic write (1), contextState normalization (1),
+Number.isFinite cooldown (1), Number.isFinite uses/phase (1)
+
+**Deferred (4):** DEBT-2960 (symlink overwrite in rotate-state.js —
+architectural), DEBT-2958 (audit trails — already tracked R2), DEBT-2959 (secure
+logging — already tracked R2), context export sensitivity (acceptable risk —
+sanitizeContextData already strips fields)
+
+**Rejected (1):** Chunk-based line counting for large-context-warning.js — byte
+estimation is sufficient for the warning threshold (overcount is acceptable)
 
 ---
 

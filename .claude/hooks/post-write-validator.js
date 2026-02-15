@@ -881,7 +881,10 @@ function agentTriggerEnforcer() {
     state.suggestedAgents = {};
   }
 
-  state.uses = (state.uses || 0) + 1;
+  state.uses = Number.isFinite(Number(state.uses)) ? Number(state.uses) + 1 : 1;
+  state.phase = Number.isFinite(Number(state.phase))
+    ? Math.min(3, Math.max(1, Math.trunc(Number(state.phase))))
+    : 1;
   if (!state.firstUse) state.firstUse = new Date().toISOString();
   state.lastUse = new Date().toISOString();
 
