@@ -1000,6 +1000,84 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|\/)scripts\//,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
+
+  // writeFileSync/renameSync without isSafeToWrite guard (PR #366, 5 rounds of ping-pong)
+  // SonarCloud S5852 safe: uses testFn string parsing instead of regex
+  {
+    id: "write-without-symlink-guard",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Check for writeFileSync or renameSync calls
+        if (!line.includes("writeFileSync") && !line.includes("renameSync")) continue;
+        // Skip comments and string literals containing the pattern
+        const trimmed = line.trim();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        // Look for isSafeToWrite in the preceding 5 lines
+        let hasGuard = false;
+        for (let j = Math.max(0, i - 5); j < i; j++) {
+          if (lines[j].includes("isSafeToWrite")) {
+            hasGuard = true;
+            break;
+          }
+        }
+        if (!hasGuard) {
+          matches.push({ line: i + 1, match: line.trim().slice(0, 120) });
+        }
+      }
+      return matches;
+    },
+    message: "writeFileSync/renameSync without isSafeToWrite() guard — symlink attack vector",
+    fix: "Add: if (!isSafeToWrite(filePath)) return; before write. Import from .claude/hooks/lib/symlink-guard.js",
+    review: "#316-#323 (PR #366 R1-R8, 5 rounds of symlink ping-pong)",
+    fileTypes: [".js"],
+    pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["write-without-symlink-guard"] || [],
+  },
+
+  // Atomic write missing tmpPath symlink guard (PR #366 R7-R8, most common miss)
+  {
+    id: "atomic-write-missing-tmp-guard",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Look for tmp file variable declarations in atomic write patterns
+        if (!line.includes(".tmp`") && !line.includes('.tmp"') && !line.includes(".tmp'")) continue;
+        const trimmed = line.trim();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        // This line declares a tmp path — check if isSafeToWrite is called on it within next 5 lines
+        const varMatch = line.match(/(?:const|let)\s+(\w+)\s*=/);
+        if (!varMatch) continue;
+        const varName = varMatch[1];
+        let hasGuard = false;
+        for (let j = i + 1; j < Math.min(lines.length, i + 6); j++) {
+          if (lines[j].includes("isSafeToWrite") && lines[j].includes(varName)) {
+            hasGuard = true;
+            break;
+          }
+        }
+        if (!hasGuard) {
+          matches.push({
+            line: i + 1,
+            match: `${trimmed.slice(0, 100)} — missing isSafeToWrite(${varName})`,
+          });
+        }
+      }
+      return matches;
+    },
+    message: "Atomic write declares tmp path without isSafeToWrite(tmpPath) guard",
+    fix: "Add: if (!isSafeToWrite(tmpPath)) return; after the target file guard. Both target AND tmp need guards.",
+    review: "#322-#323 (PR #366 R7-R8)",
+    fileTypes: [".js"],
+    pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["atomic-write-missing-tmp-guard"] || [],
+  },
 ];
 
 /**

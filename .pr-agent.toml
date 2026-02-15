@@ -1,0 +1,33 @@
+# Qodo PR-Agent Configuration
+# Suppress recurring compliance items that are already tracked in TDMS
+
+[pr_code_suggestions]
+# Suggestions we've evaluated and either implemented or intentionally declined
+persistent_comment = true
+# Don't re-suggest patterns we've already addressed architecturally
+extra_instructions = """
+Do NOT suggest the following patterns — they have been evaluated and either
+implemented or intentionally declined in this project:
+
+1. BIDIRECTIONAL CONTAINMENT REMOVAL: The cwdInsideProject check in hook
+   security validation is BY DESIGN for Claude Code's execution model where
+   cwd can be inside project dir. Do not suggest removing it.
+   (Tracked: DEBT-2957)
+
+2. EXCLUSIVE WRITE FLAG (wx): Do not suggest { flag: "wx" } on writeFileSync
+   for atomic write patterns. This project uses tmp+rm+rename atomic writes
+   where a stale .tmp from a crash must be overwritable. wx would cause
+   permanent failure after any crash.
+
+3. AUDIT TRAIL LOGGING: Generic "add audit trail" suggestions for hook scripts
+   are tracked as DEBT-2958. Do not re-suggest unless there's a specific
+   security-critical path that's missing.
+
+4. SECURE LOGGING / SECRET EXPOSURE: Generic "code snippets in logs could
+   expose secrets" is tracked as DEBT-2959. Hook stderr output is local
+   dev-only, not centrally collected.
+
+5. ENV PATH TRUST: CLAUDE_PROJECT_DIR is validated via bidirectional
+   containment. Do not suggest additional validation unless there's a
+   specific bypass scenario.
+"""

@@ -991,10 +991,73 @@ grep -rn "readFileSync" .claude/hooks/ scripts/ --include="*.js" \
 
 ---
 
+## Template 24: Atomic Write — tmpPath Symlink Guard
+
+**Triggered by**: "Guard temporary state-file writes" or "symlink guard on tmp
+path" **Severity**: MAJOR **Review frequency**: 5x (PR #366 R4-R8)
+
+Every atomic write (tmp + rm + rename) needs `isSafeToWrite()` on **both** the
+target file AND the `.tmp` file. Missing the tmp guard is the most common miss.
+
+### Pattern (Before — Missing tmp guard)
+
+```javascript
+const tmpPath = `${statePath}.tmp`;
+try {
+  if (!isSafeToWrite(statePath)) return; // Target guarded
+  // ❌ tmpPath NOT guarded — symlink attack vector
+  fs.writeFileSync(tmpPath, JSON.stringify(data));
+  fs.rmSync(statePath, { force: true });
+  fs.renameSync(tmpPath, statePath);
+```
+
+### Fix (After — Both guarded)
+
+```javascript
+const tmpPath = `${statePath}.tmp`;
+try {
+  if (!isSafeToWrite(statePath)) return;
+  if (!isSafeToWrite(tmpPath)) return; // ✅ BOTH paths guarded
+  fs.mkdirSync(path.dirname(statePath), { recursive: true });
+  fs.writeFileSync(tmpPath, JSON.stringify(data));
+  try {
+    fs.rmSync(statePath, { force: true });
+  } catch {
+    /* best-effort */
+  }
+  fs.renameSync(tmpPath, statePath);
+} catch {
+  try {
+    fs.rmSync(tmpPath, { force: true });
+  } catch {
+    /* cleanup */
+  }
+}
+```
+
+### Import
+
+```javascript
+const { isSafeToWrite } = require("./lib/symlink-guard");
+// or for scripts:
+const { isSafeToWrite } = require("../.claude/hooks/lib/symlink-guard");
+```
+
+### Propagation Check
+
+After applying this fix, search for ALL atomic write paths:
+
+```bash
+grep -rn '\.tmp[`"'"'"']' .claude/hooks/ scripts/ --include="*.js" | grep -v isSafeToWrite
+```
+
+---
+
 ## Version History
 
 | Version | Date       | Change                                               |
 | ------- | ---------- | ---------------------------------------------------- |
+| 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)              |
 | 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)       |
 | 1.1     | 2026-02-14 | Add Templates 21-22 (regex complexity, atomic write) |
 | 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis       |
