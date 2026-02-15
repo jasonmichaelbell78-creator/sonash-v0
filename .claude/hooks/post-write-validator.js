@@ -128,6 +128,10 @@ function getContent() {
   }
   const fullPath = path.resolve(projectDir, filePath);
   try {
+    if (fs.lstatSync(fullPath).isSymbolicLink()) {
+      _contentCache = "";
+      return _contentCache;
+    }
     _contentCache = fs.readFileSync(fullPath, "utf8");
   } catch {
     _contentCache = "";
@@ -929,6 +933,7 @@ function agentTriggerEnforcer() {
   // Write state (atomic: tmp + rename)
   const tmpPath = `${statePath}.tmp`;
   try {
+    if (fs.existsSync(statePath) && fs.lstatSync(statePath).isSymbolicLink()) return;
     fs.mkdirSync(path.dirname(statePath), { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
     try {
@@ -1021,6 +1026,7 @@ function agentTriggerEnforcer() {
     // Write review queue (atomic)
     const tmpReviewPath = `${reviewQueuePath}.tmp`;
     try {
+      if (fs.existsSync(reviewQueuePath) && fs.lstatSync(reviewQueuePath).isSymbolicLink()) return;
       fs.mkdirSync(path.dirname(reviewQueuePath), { recursive: true });
       fs.writeFileSync(tmpReviewPath, JSON.stringify(reviewQueue, null, 2));
       try {

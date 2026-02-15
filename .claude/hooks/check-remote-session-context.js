@@ -22,7 +22,9 @@ function shouldFetch() {
   if (!FETCH_CACHE_FILE) return true;
   try {
     const data = JSON.parse(fs.readFileSync(FETCH_CACHE_FILE, "utf8"));
-    if (Date.now() - data.lastFetch < FETCH_TTL_MS) return false;
+    const lastFetch = Number(data?.lastFetch);
+    const ageMs = Date.now() - lastFetch;
+    if (Number.isFinite(lastFetch) && ageMs >= 0 && ageMs < FETCH_TTL_MS) return false;
   } catch {
     /* no cache or invalid */
   }

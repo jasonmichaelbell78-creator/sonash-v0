@@ -166,10 +166,13 @@ function logOverride(check, reason) {
 
     fs.appendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
 
-    // Entry-count-based rotation (keep 60 of last 100)
+    // Entry-count-based rotation (keep 60 of last 100, only when file exceeds 64KB)
     try {
       if (rotateJsonl) {
-        rotateJsonl(OVERRIDE_LOG, 100, 60);
+        const { size } = fs.statSync(OVERRIDE_LOG);
+        if (size > 64 * 1024) {
+          rotateJsonl(OVERRIDE_LOG, 100, 60);
+        }
       }
     } catch {
       // Non-fatal: rotation failure should not block override logging

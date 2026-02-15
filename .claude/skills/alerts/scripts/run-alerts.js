@@ -1441,14 +1441,14 @@ function checkSkipAbuse() {
     last7d.length > 0 ? Math.round((noReasonEntries.length / last7d.length) * 100) : 0;
 
   // Group by check type for details (both windows for accurate reporting)
-  const byType7d = {};
+  const byType7d = Object.create(null);
   for (const e of last7d) {
-    const key = e.check || "unknown";
+    const key = String(e.check || "unknown");
     byType7d[key] = (byType7d[key] || 0) + 1;
   }
-  const byType24h = {};
+  const byType24h = Object.create(null);
   for (const e of last24h) {
-    const key = e.check || "unknown";
+    const key = String(e.check || "unknown");
     byType24h[key] = (byType24h[key] || 0) + 1;
   }
 

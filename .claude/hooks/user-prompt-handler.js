@@ -32,9 +32,10 @@ function runAlerts() {
   const COOLDOWN_FILE = path.join(HOOKS_DIR, ".alerts-cooldown.json");
   const COOLDOWN_MS = 10 * 60 * 1000;
   try {
+    if (fs.existsSync(COOLDOWN_FILE) && fs.lstatSync(COOLDOWN_FILE).isSymbolicLink()) return;
     const data = JSON.parse(fs.readFileSync(COOLDOWN_FILE, "utf8"));
     const lastRun = Number(data?.lastRun);
-    if (Number.isFinite(lastRun) && Date.now() - lastRun < COOLDOWN_MS) return;
+    if (Number.isFinite(lastRun) && lastRun > 0 && Date.now() - lastRun < COOLDOWN_MS) return;
   } catch {
     /* no cooldown */
   }

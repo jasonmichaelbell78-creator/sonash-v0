@@ -94,13 +94,19 @@ function saveJson(filePath, data) {
   const tmpPath = `${filePath}.tmp`;
   const bakPath = `${filePath}.bak`;
   try {
-    // Refuse writes to symlinks (symlink attack prevention)
+    // Refuse writes to symlinks or into symlinked directories
     if (fs.existsSync(filePath)) {
       try {
         if (fs.lstatSync(filePath).isSymbolicLink()) return false;
       } catch {
         return false;
       }
+    }
+    try {
+      const dirPath = path.dirname(filePath);
+      if (fs.existsSync(dirPath) && fs.lstatSync(dirPath).isSymbolicLink()) return false;
+    } catch {
+      return false;
     }
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });

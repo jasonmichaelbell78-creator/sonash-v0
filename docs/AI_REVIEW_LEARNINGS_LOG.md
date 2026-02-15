@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.7 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
+**Document Version:** 17.8 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.8    | 2026-02-15 | Review #320: PR #366 R5 — Parent dir symlink, clock skew defense, prototype pollution (Object.create(null)), getContent symlink read, size-based rotation. 8 fixed, 1 already-tracked.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.7    | 2026-02-15 | Review #319: PR #366 R4 — Symlink write guard, future timestamp defense, file list caps, skip-abuse 24h/7d bug fix, CRLF JSONL trim, Number.isFinite cooldown. 6 fixed, 3 already-tracked.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 17.6    | 2026-02-15 | Review #318: PR #366 R3 — Atomic write hardening (backup-swap, mkdirSync), state shape normalization (3 files), numeric coercion guards, porcelain validation. 10 fixed, 1 deferred, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 17.5    | 2026-02-15 | Review #317: PR #366 R2 — SonarCloud two-strikes regex→string (2), rename/copy parse bug, atomic write consistency, state normalization, Number.isFinite guard. 11 fixed, 3 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -609,6 +610,47 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #320: PR #366 R5 — Parent Dir Symlink + Clock Skew + Prototype Pollution (2026-02-15)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #366) **Suggestions:** 9 total (Critical:
+0, Major: 0, Minor: 8, Already-tracked: 1)
+
+**Batch rule applied:** Same files appearing 3+ consecutive rounds — holistic
+fix approach.
+
+**Patterns Identified:**
+
+1. **Parent directory symlink attack** — Checking file symlinks is insufficient;
+   parent directory can also be a symlink redirecting writes. Added
+   `path.dirname()` + `lstatSync()` check to saveJson in post-read-handler.js.
+2. **Clock skew defense** — Future timestamps (`ageMs < 0`) should trigger
+   cooldown, not bypass it. Applied to alerts-reminder.js (nested if with
+   `ageMs < 0 || ageMs < COOLDOWN_MS`).
+3. **Prototype pollution via counter objects** — `{}` as counter with external
+   keys allows `__proto__` injection. Use `Object.create(null)` + `String(key)`.
+   Applied to run-alerts.js skip-abuse counters.
+4. **Symlink check on reads** — getContent() in post-write-validator.js reads
+   files without symlink check, allowing arbitrary file content injection.
+5. **Size-based rotation guard** — Entry-count rotation on every append is
+   wasteful; gate behind `fs.statSync()` size threshold (64KB).
+
+**Resolution:** 8 fixed, 1 already-tracked (DEBT-2957/2958/2959)
+
+| #   | Issue                          | Severity | Action          | Origin              |
+| --- | ------------------------------ | -------- | --------------- | ------------------- |
+| 1   | Parent dir symlink in saveJson | Minor    | Fixed           | This-PR             |
+| 2   | Cooldown symlink check         | Minor    | Fixed           | This-PR             |
+| 3   | Object.create(null) counters   | Minor    | Fixed           | This-PR             |
+| 4   | Clock skew cooldown            | Minor    | Fixed           | This-PR             |
+| 5   | getContent symlink check       | Minor    | Fixed           | This-PR             |
+| 6   | statePath/reviewQueue symlink  | Minor    | Fixed           | This-PR             |
+| 7   | Fetch cache Number.isFinite    | Minor    | Fixed           | This-PR             |
+| 8   | Size-based rotation threshold  | Minor    | Fixed           | This-PR             |
+| 9   | Compliance: symlink writes     | —        | Already-tracked | DEBT-2957/2958/2959 |
 
 ---
 
