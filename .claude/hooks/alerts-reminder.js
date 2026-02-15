@@ -73,7 +73,8 @@ function main() {
   try {
     const data = JSON.parse(fs.readFileSync(COOLDOWN_FILE, "utf8"));
     const lastRun = Number(data?.lastRun);
-    if (Number.isFinite(lastRun) && Date.now() - lastRun < COOLDOWN_MS) {
+    const ageMs = Date.now() - lastRun;
+    if (Number.isFinite(lastRun) && ageMs >= 0 && ageMs < COOLDOWN_MS) {
       process.exit(0); // Still in cooldown
     }
   } catch {

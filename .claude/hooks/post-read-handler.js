@@ -94,6 +94,14 @@ function saveJson(filePath, data) {
   const tmpPath = `${filePath}.tmp`;
   const bakPath = `${filePath}.bak`;
   try {
+    // Refuse writes to symlinks (symlink attack prevention)
+    if (fs.existsSync(filePath)) {
+      try {
+        if (fs.lstatSync(filePath).isSymbolicLink()) return false;
+      } catch {
+        return false;
+      }
+    }
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));

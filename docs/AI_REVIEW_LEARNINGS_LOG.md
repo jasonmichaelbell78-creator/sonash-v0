@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.6 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
+**Document Version:** 17.7 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.7    | 2026-02-15 | Review #319: PR #366 R4 — Symlink write guard, future timestamp defense, file list caps, skip-abuse 24h/7d bug fix, CRLF JSONL trim, Number.isFinite cooldown. 6 fixed, 3 already-tracked.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 17.6    | 2026-02-15 | Review #318: PR #366 R3 — Atomic write hardening (backup-swap, mkdirSync), state shape normalization (3 files), numeric coercion guards, porcelain validation. 10 fixed, 1 deferred, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 17.5    | 2026-02-15 | Review #317: PR #366 R2 — SonarCloud two-strikes regex→string (2), rename/copy parse bug, atomic write consistency, state normalization, Number.isFinite guard. 11 fixed, 3 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 17.4    | 2026-02-14 | Review #316: PR #366 R1 — SonarCloud regex two-strikes (testFn), atomic writes (3 hooks), state pruning (2 files), CI blocker fixes (30+ links, 5 DEBT entries). 15 fixed, 6 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -608,6 +609,36 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #319: PR #366 R4 — Symlink Guard + Future Timestamp + Skip-Abuse Bug (2026-02-15)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #366) **Suggestions:** 9 total (Critical:
+0, Major: 1, Minor: 5, Already-tracked: 3)
+
+**Key Patterns:**
+
+1. **Symlink write guard in saveJson**: post-read-handler.js now checks
+   `lstatSync().isSymbolicLink()` before writing — prevents symlink-based file
+   redirect attacks on state files.
+2. **Future timestamp defense**: alerts-reminder.js cooldown now checks
+   `ageMs >= 0` — a future timestamp from clock skew would no longer permanently
+   disable the hook.
+3. **Skip-abuse alert 24h/7d data mismatch bug**: run-alerts.js "By type"
+   breakdown was using 7d data in a 24h alert message. Split into byType24h and
+   byType7d for accurate reporting.
+4. **CRLF JSONL parsing on Windows**: post-write-validator.js JSONL parser now
+   trims each line before JSON.parse to handle `\r\n` endings.
+5. **Consistent caps on file lists**: pre-compaction-save.js staged/uncommitted
+   arrays now capped at 50 (matching existing untracked cap of 20).
+
+**Fixed (6):** Symlink guard (1), future timestamp (1), skip-abuse bug (1), CRLF
+trim (1), file list caps (1), Number.isFinite cooldown (1)
+
+**Already tracked (3):** DEBT-2957 (env path trust), DEBT-2958 (audit trails),
+DEBT-2959 (secure logging)
 
 ---
 

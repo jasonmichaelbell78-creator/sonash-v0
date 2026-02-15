@@ -312,8 +312,9 @@ function auditS0S1() {
   const findings = [];
   const lines = content.split("\n").filter((l) => l.trim());
   for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
     try {
-      const f = JSON.parse(lines[i]);
+      const f = JSON.parse(line);
       findings.push({ ...f, _lineNumber: i + 1 });
     } catch {
       findings.push({ _parseError: true, _lineNumber: i + 1 });

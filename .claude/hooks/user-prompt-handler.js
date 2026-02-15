@@ -33,7 +33,8 @@ function runAlerts() {
   const COOLDOWN_MS = 10 * 60 * 1000;
   try {
     const data = JSON.parse(fs.readFileSync(COOLDOWN_FILE, "utf8"));
-    if (Date.now() - data.lastRun < COOLDOWN_MS) return;
+    const lastRun = Number(data?.lastRun);
+    if (Number.isFinite(lastRun) && Date.now() - lastRun < COOLDOWN_MS) return;
   } catch {
     /* no cooldown */
   }

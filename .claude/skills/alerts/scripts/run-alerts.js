@@ -1440,11 +1440,16 @@ function checkSkipAbuse() {
   const noReasonPct =
     last7d.length > 0 ? Math.round((noReasonEntries.length / last7d.length) * 100) : 0;
 
-  // Group by check type for details
-  const byType = {};
+  // Group by check type for details (both windows for accurate reporting)
+  const byType7d = {};
   for (const e of last7d) {
     const key = e.check || "unknown";
-    byType[key] = (byType[key] || 0) + 1;
+    byType7d[key] = (byType7d[key] || 0) + 1;
+  }
+  const byType24h = {};
+  for (const e of last24h) {
+    const key = e.check || "unknown";
+    byType24h[key] = (byType24h[key] || 0) + 1;
   }
 
   // Rate against benchmarks
@@ -1454,7 +1459,7 @@ function checkSkipAbuse() {
 
   // Generate alerts
   if (last24h.length >= BENCHMARKS.skip_abuse.overrides_24h.poor) {
-    const typeStr = Object.entries(byType)
+    const typeStr = Object.entries(byType24h)
       .filter(([, v]) => v > 0)
       .map(([k, v]) => `${k} (${v}x)`)
       .join(", ");
@@ -1462,7 +1467,7 @@ function checkSkipAbuse() {
       "skip-abuse",
       "error",
       `${last24h.length} checks overridden in last 24h (threshold: ${BENCHMARKS.skip_abuse.overrides_24h.average})`,
-      `By type: ${typeStr}. Without reason: ${noReasonEntries.length} of ${last7d.length} (${noReasonPct}%)`,
+      `By type (24h): ${typeStr}. Without reason (7d): ${noReasonEntries.length} of ${last7d.length} (${noReasonPct}%)`,
       "Run: node scripts/log-override.js --list"
     );
   } else if (last24h.length >= BENCHMARKS.skip_abuse.overrides_24h.average) {
@@ -1493,7 +1498,8 @@ function checkSkipAbuse() {
       count_7d: last7d.length,
       no_reason_count: noReasonEntries.length,
       no_reason_pct: noReasonPct,
-      by_type: byType,
+      by_type_24h: byType24h,
+      by_type_7d: byType7d,
     },
   });
 }

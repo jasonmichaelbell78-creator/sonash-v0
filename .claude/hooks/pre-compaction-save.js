@@ -251,8 +251,12 @@ function gatherGitContext() {
       continue;
     }
 
-    if (indexStatus !== " " && indexStatus !== "?") stagedFiles.push(filename);
-    if (worktreeStatus !== " " && worktreeStatus !== "?") uncommittedFiles.push(filename);
+    if (indexStatus !== " " && indexStatus !== "?") {
+      if (stagedFiles.length < 50) stagedFiles.push(filename);
+    }
+    if (worktreeStatus !== " " && worktreeStatus !== "?") {
+      if (uncommittedFiles.length < 50) uncommittedFiles.push(filename);
+    }
   }
 
   return {
