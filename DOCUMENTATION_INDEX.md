@@ -332,7 +332,7 @@ _TDMS tracking and management_
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-02-05    |
 | [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓4 ↑4      | 2026-02-14    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓13 ↑1     | 2026-02-14    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-02-14    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-02-15    |
 
 ### Templates (Tier 3)
 
@@ -502,7 +502,7 @@ _Reference_
 | [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md)                  | This is a **one-page quick reference** for the SoNash review...   | ↓3 ↑4      | 2026-01-17    |
 | [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                  | This document provides **visual diagrams and flowcharts** fo...   | ↓2 ↑3      | 2026-01-17    |
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                 | This document captures important decisions, options presente...   | ↓1 ↑0      | 2026-02-02    |
-| [Session History Log](docs/SESSION_HISTORY.md)                                    | -                                                                 | ↓1 ↑1      | 2026-02-14    |
+| [Session History Log](docs/SESSION_HISTORY.md)                                    | -                                                                 | ↓1 ↑1      | 2026-02-15    |
 | [Slash Commands Reference](docs/SLASH_COMMANDS_REFERENCE.md)                      | -                                                                 | ↓1 ↑1      | 2026-02-04    |
 | [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-02-12    |
 
@@ -530,7 +530,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓12 ↑16    | 2026-02-14    |
-| [Session Context](SESSION_CONTEXT.md) | -                                                                 | ↓6 ↑9      | 2026-02-14    |
+| [Session Context](SESSION_CONTEXT.md) | -                                                                 | ↓6 ↑9      | 2026-02-15    |
 
 ### scripts (Tier 4)
 

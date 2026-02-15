@@ -38,7 +38,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 160 (since Jan 1, 2026)
+**Current Session Count**: 161 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -47,16 +47,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 ---
 
 ## Recent Session Summaries
-
-**Session #157 Summary** (AI OPTIMIZATION AUDIT — SKILL OVERLAP):
-
-- Resolved all 15 Skill Overlap findings (OPT-K001–K015)
-- K005: Merged `add-deferred-debt` + `add-manual-debt` → unified `/add-debt`
-  skill; deleted deprecated `sync-sonarcloud-debt`
-- K006: Merged `requesting-code-review` into `code-reviewer`; added scope
-  clarification to both `code-reviewer` and `pr-review`
-- K007: Deleted `audit-validation-wrapper` (one-time use)
-- Skill count: 60 → 56 (5 deleted, 1 created), net -1,000 lines
 
 **Session #158 Summary** (AI OPTIMIZATION AUDIT — ALERTS FIX + FORMAT + BLOAT):
 
@@ -72,6 +62,18 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - Scope: 5 new files, 12+ modified files
 - Key deliverables: AUDIT_STANDARDS.md, audit-ai-optimization skill,
   AI_OPTIMIZATION_AUDIT template, create-audit wizard, ecosystem hub
+
+**Session #160 Summary** (AI OPTIMIZATION SPRINT — WAVES 7-8 COMPLETE):
+
+- Completed Wave 7: Large skill splits (pr-review 840→423 lines,
+  audit-comprehensive 854→425 lines, code-reviewer trimmed)
+- Completed Wave 8: PostToolUse hook consolidation — 28 process spawns → 3 (90%
+  reduction)
+  - Created `post-write-validator.js` consolidating 10 Write/Edit hooks into
+    single process
+  - Optimized `pre-compaction-save.js` git calls: 6 → 3
+  - Optimized `commit-tracker.js` git calls: 4 → 2
+- **All 8 waves of AI Optimization Sprint now complete (71 items resolved)**
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
