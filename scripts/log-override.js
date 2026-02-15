@@ -310,7 +310,8 @@ function main() {
       console.error("--quick requires --check=<type>");
       process.exit(1);
     }
-    logOverride(args.check, args.reason);
+    const entry = logOverride(args.check, args.reason);
+    if (!entry) process.exit(1);
     process.exit(0);
   }
 

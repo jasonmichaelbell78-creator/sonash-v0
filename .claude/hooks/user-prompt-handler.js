@@ -105,10 +105,21 @@ function runAlerts() {
   }
 
   if (messages.length > 0) stdoutParts.push(...messages);
+  const tmpCooldown = `${COOLDOWN_FILE}.tmp`;
   try {
-    fs.writeFileSync(COOLDOWN_FILE, JSON.stringify({ lastRun: Date.now() }), "utf-8");
+    fs.writeFileSync(tmpCooldown, JSON.stringify({ lastRun: Date.now() }), "utf-8");
+    try {
+      fs.rmSync(COOLDOWN_FILE, { force: true });
+    } catch {
+      /* best-effort */
+    }
+    fs.renameSync(tmpCooldown, COOLDOWN_FILE);
   } catch {
-    /* */
+    try {
+      fs.rmSync(tmpCooldown, { force: true });
+    } catch {
+      /* cleanup */
+    }
   }
 }
 

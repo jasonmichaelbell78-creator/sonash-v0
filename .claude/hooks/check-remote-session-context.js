@@ -19,6 +19,7 @@ let FETCH_CACHE_FILE;
 const FETCH_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 function shouldFetch() {
+  if (!FETCH_CACHE_FILE) return true;
   try {
     const data = JSON.parse(fs.readFileSync(FETCH_CACHE_FILE, "utf8"));
     if (Date.now() - data.lastFetch < FETCH_TTL_MS) return false;
@@ -29,9 +30,11 @@ function shouldFetch() {
 }
 
 function updateFetchCache() {
+  if (!FETCH_CACHE_FILE) return;
   // Atomic write (Review #289)
   const tmpPath = `${FETCH_CACHE_FILE}.tmp`;
   try {
+    fs.mkdirSync(path.dirname(FETCH_CACHE_FILE), { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify({ lastFetch: Date.now() }), "utf-8");
     try {
       fs.rmSync(FETCH_CACHE_FILE, { force: true });

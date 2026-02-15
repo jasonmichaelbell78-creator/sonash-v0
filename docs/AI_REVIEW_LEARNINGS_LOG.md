@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.4 **Created:** 2026-01-02 **Last Updated:** 2026-02-14
+**Document Version:** 17.5 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.5    | 2026-02-15 | Review #317: PR #366 R2 — SonarCloud two-strikes regex→string (2), rename/copy parse bug, atomic write consistency, state normalization, Number.isFinite guard. 11 fixed, 3 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 17.4    | 2026-02-14 | Review #316: PR #366 R1 — SonarCloud regex two-strikes (testFn), atomic writes (3 hooks), state pruning (2 files), CI blocker fixes (30+ links, 5 DEBT entries). 15 fixed, 6 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.3    | 2026-02-13 | Fix: Consolidation counter corruption — manual counter showed 0 but 26 reviews pending (#285-#310). Root cause: `updateConsolidationCounter` injected "Next consolidation due" into Status field, creating duplicates that grew on each run. Fixed run-consolidation.js Status/Next replacement order, corrected counter to 26, cleaned corrupted "Review #320 Review #320..." text.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 17.2    | 2026-02-13 | Review #310: PR #364 Qodo Suggestions — Alerts v3 health score normalization, git edge cases, path separators. 10 review rounds addressed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -606,6 +607,42 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #317: PR #366 R2 — SonarCloud Two-Strikes + Qodo Robustness (2026-02-15)
+
+**Source:** SonarCloud Security Hotspots (S5852) + Qodo PR Suggestions + Qodo
+Compliance **PR/Branch:** claude/read-session-commits-ZpJLX (PR #366)
+**Suggestions:** 14 total (Critical: 0, Major: 3, Minor: 8, Deferred: 3)
+
+**Key Patterns:**
+
+1. **SonarCloud S5852 two-strikes rule applied**: track-session.js flagged again
+   for remaining regexes in the R1 string-parsing replacement code. Replaced
+   both `/^(?:Active Sprint|Current Sprint)[:\s-]*/i` and
+   `/M1[.\d]*\s*[-–]\s*(.+)/` with pure string parsing (indexOf, startsWith,
+   character scanning).
+2. **Git status --porcelain -z rename/copy parse bug**: pre-compaction-save.js
+   `for...of` loop failed to consume the second NUL-separated path field for R/C
+   entries. Fixed with indexed loop + `i++` skip.
+3. **Defensive state shape normalization**: post-write-validator.js agent
+   trigger state could crash if JSON was corrupted (non-object, missing
+   suggestedAgents).
+4. **Atomic write consistency**: user-prompt-handler.js cooldown was non-atomic
+   — aligned with the write-tmp-rm-rename pattern used elsewhere.
+5. **Number.isFinite guard for timestamp purging**: analyze-user-request.js
+   directive dedup would never purge entries with corrupted non-numeric
+   timestamps.
+
+**Fixed (11):** Two-strikes regex→string (2), rename/copy parse (1), sprint type
+guard (1), atomic write (1), state normalization (1), logOverride fail-fast (1),
+cache null guard + mkdirSync (1), Number.isFinite guard (1), Array.isArray
+testFn guard (1), mkdirSync cooldown dir (1)
+
+**Deferred (3):** DEBT-2957 (project dir escape — architectural), DEBT-2958
+(audit trails — generic compliance), DEBT-2959 (secure logging — generic
+compliance)
 
 ---
 

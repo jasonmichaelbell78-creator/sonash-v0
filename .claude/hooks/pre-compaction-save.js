@@ -223,33 +223,33 @@ function gatherGitContext() {
 
   // Call 3: git status --porcelain -z (NUL-separated for filenames with spaces — Review #289)
   const statusOutput = gitExec(["status", "--porcelain", "-z"]);
-  const statusLines = statusOutput.split("\0").filter((l) => l.length > 0);
+  const statusFields = statusOutput.split("\0").filter((l) => l.length > 0);
 
   const uncommittedFiles = [];
   const stagedFiles = [];
   const untrackedFiles = [];
 
-  for (const line of statusLines) {
+  for (let i = 0; i < statusFields.length; i++) {
+    const line = statusFields[i];
     // Porcelain format: XY filename (X=index, Y=worktree)
     const indexStatus = line[0];
     const worktreeStatus = line[1];
-    const filename = line.slice(3); // skip "XY "
+    let filename = line.slice(3); // skip "XY "
+
+    // Renames/copies have an extra NUL-separated path: "R? old\0new" / "C? old\0new"
+    if ((indexStatus === "R" || indexStatus === "C") && i + 1 < statusFields.length) {
+      const newPath = statusFields[i + 1];
+      if (newPath) filename = newPath;
+      i++; // consume the extra path field
+    }
 
     if (indexStatus === "?" && worktreeStatus === "?") {
-      // Untracked file
-      if (untrackedFiles.length < 20) {
-        untrackedFiles.push(filename);
-      }
-    } else {
-      // Staged: X is not ' ' and not '?'
-      if (indexStatus !== " " && indexStatus !== "?") {
-        stagedFiles.push(filename);
-      }
-      // Uncommitted (worktree change): Y is not ' ' and not '?'
-      if (worktreeStatus !== " " && worktreeStatus !== "?") {
-        uncommittedFiles.push(filename);
-      }
+      if (untrackedFiles.length < 20) untrackedFiles.push(filename);
+      continue;
     }
+
+    if (indexStatus !== " " && indexStatus !== "?") stagedFiles.push(filename);
+    if (worktreeStatus !== " " && worktreeStatus !== "?") uncommittedFiles.push(filename);
   }
 
   return {

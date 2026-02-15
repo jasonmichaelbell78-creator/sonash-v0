@@ -178,7 +178,8 @@
     "post-write-validator.js",
     "suggest-pattern-automation.js",
     "normalize-format.js",
-    "rotate-state.js"
+    "rotate-state.js",
+    "user-prompt-handler.js"
   ],
   "process-exit-without-cleanup": ["validate-schema.js"],
   "missing-array-isarray": ["validate-schema.js"],

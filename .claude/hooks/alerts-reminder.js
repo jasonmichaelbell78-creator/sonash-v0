@@ -156,6 +156,7 @@ function main() {
   // Update cooldown after successful check (atomic write — Review #289)
   const tmpCooldown = `${COOLDOWN_FILE}.tmp`;
   try {
+    fs.mkdirSync(path.dirname(COOLDOWN_FILE), { recursive: true });
     fs.writeFileSync(tmpCooldown, JSON.stringify({ lastRun: Date.now() }), "utf-8");
     try {
       fs.rmSync(COOLDOWN_FILE, { force: true });

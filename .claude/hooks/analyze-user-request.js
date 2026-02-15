@@ -79,7 +79,8 @@ function recordDirective(directive) {
   const DAY_MS = 24 * 60 * 60 * 1000;
   const now = Date.now();
   for (const key of Object.keys(data)) {
-    if (now - data[key] > DAY_MS) delete data[key];
+    const ts = Number(data[key]);
+    if (!Number.isFinite(ts) || now - ts > DAY_MS) delete data[key];
   }
 
   try {

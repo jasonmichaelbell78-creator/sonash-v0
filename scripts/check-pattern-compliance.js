@@ -1183,7 +1183,9 @@ function findPatternMatches(antiPattern, content, filePath) {
   // Support testFn for patterns that use string parsing instead of regex (SonarCloud S5852 two-strikes)
   if (typeof antiPattern.testFn === "function") {
     const matches = antiPattern.testFn(content);
-    for (const m of matches) {
+    const safeMatches = Array.isArray(matches) ? matches : [];
+    for (const m of safeMatches) {
+      if (!m || typeof m.line !== "number") continue;
       violations.push({
         file: filePath,
         line: m.line,

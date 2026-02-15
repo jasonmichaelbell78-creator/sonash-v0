@@ -869,12 +869,24 @@ function agentTriggerEnforcer() {
     // Use default
   }
 
+  // Normalize persisted state shape (defensive against corrupted/manual edits)
+  if (!state || typeof state !== "object") {
+    state = { uses: 0, firstUse: null, lastUse: null, suggestedAgents: {}, phase: 1 };
+  }
+  if (
+    !state.suggestedAgents ||
+    typeof state.suggestedAgents !== "object" ||
+    Array.isArray(state.suggestedAgents)
+  ) {
+    state.suggestedAgents = {};
+  }
+
   state.uses = (state.uses || 0) + 1;
   if (!state.firstUse) state.firstUse = new Date().toISOString();
   state.lastUse = new Date().toISOString();
 
   const sessionKey = new Date().toISOString().split("T")[0];
-  if (!state.suggestedAgents[sessionKey]) state.suggestedAgents[sessionKey] = [];
+  if (!Array.isArray(state.suggestedAgents[sessionKey])) state.suggestedAgents[sessionKey] = [];
 
   // Prune suggestedAgents entries older than 30 days (Review #289)
   const PRUNE_DAYS = 30;
