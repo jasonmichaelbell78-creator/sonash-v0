@@ -57,6 +57,11 @@ const TRIGGERS = {
     paths: [".claude/skills/", ".claude/commands/"],
     action: "Validate skill structure and test invocation",
   },
+  review_sync: {
+    severity: "warning",
+    description: "Reviews in markdown not synced to JSONL",
+    action: "Run: npm run reviews:sync -- --apply",
+  },
 };
 
 /**
@@ -304,6 +309,72 @@ function checkSkillValidationTrigger(files) {
   return { triggered: false, name: "skill_validation" };
 }
 
+// Check if reviews in markdown are synced to JSONL (Session #162)
+function checkReviewSyncTrigger() {
+  const trigger = TRIGGERS.review_sync;
+
+  try {
+    const rootDir = resolveGitRoot();
+    const learningsLog = path.join(rootDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+    const reviewsJsonl = path.join(rootDir, ".claude", "state", "reviews.jsonl");
+
+    if (!fs.existsSync(learningsLog)) {
+      return { triggered: false, name: "review_sync" };
+    }
+
+    // Get max review ID from markdown
+    let mdMax = 0;
+    try {
+      const content = fs.readFileSync(learningsLog, "utf8");
+      const matches = content.matchAll(/^####\s+Review\s+#(\d+)/gm);
+      for (const m of matches) {
+        const id = parseInt(m[1], 10);
+        if (id > mdMax) mdMax = id;
+      }
+    } catch {
+      return { triggered: false, name: "review_sync" };
+    }
+
+    // Get max review ID from JSONL
+    let jsonlMax = 0;
+    if (fs.existsSync(reviewsJsonl)) {
+      try {
+        const lines = fs
+          .readFileSync(reviewsJsonl, "utf8")
+          .replace(/\r\n/g, "\n")
+          .trim()
+          .split("\n");
+        for (const line of lines) {
+          try {
+            const id = JSON.parse(line).id;
+            if (typeof id === "number" && id > jsonlMax) jsonlMax = id;
+          } catch {
+            /* skip */
+          }
+        }
+      } catch {
+        /* skip */
+      }
+    }
+
+    const drift = mdMax - jsonlMax;
+    if (drift > 0) {
+      return {
+        triggered: true,
+        name: "review_sync",
+        severity: trigger.severity,
+        description: trigger.description,
+        action: trigger.action,
+        details: `  - ${drift} reviews in markdown (#${jsonlMax + 1}-#${mdMax}) not synced to reviews.jsonl`,
+      };
+    }
+
+    return { triggered: false, name: "review_sync" };
+  } catch {
+    return { triggered: false, name: "review_sync" };
+  }
+}
+
 // Main execution
 function main() {
   const args = process.argv.slice(2);
@@ -354,7 +425,8 @@ function main() {
   results.push(
     checkSecurityTrigger(files),
     checkConsolidationTrigger(),
-    checkSkillValidationTrigger(files)
+    checkSkillValidationTrigger(files),
+    checkReviewSyncTrigger()
   );
 
   // Filter and display results

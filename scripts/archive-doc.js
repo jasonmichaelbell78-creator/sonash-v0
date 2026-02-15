@@ -37,11 +37,14 @@ import {
 } from "node:fs";
 import { join, dirname, basename, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import matter from "gray-matter";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const require_ = createRequire(import.meta.url);
+const { isSafeToWrite } = require_("../.claude/hooks/lib/symlink-guard");
 const ROOT = join(__dirname, "..");
 
 // Directories
@@ -179,16 +182,27 @@ function safeWriteFile(filePath, content, description) {
 
   verbose(`Writing ${content.length} characters to ${description}`);
 
+  // Symlink guard: check target and tmp paths before any write
+  if (!isSafeToWrite(filePath)) {
+    return { success: false, error: `Refusing to write: symlink detected at ${description}` };
+  }
+
   try {
     const tmpPath = filePath + ".tmp";
     const bakPath = filePath + ".bak";
+    if (!isSafeToWrite(tmpPath)) {
+      return {
+        success: false,
+        error: `Refusing to write: symlink detected at tmp path for ${description}`,
+      };
+    }
     writeFileSync(tmpPath, content, "utf-8");
     try {
-      // Backup-swap: preserve original until new file is in place
+      // Atomic swap — isSafeToWrite guards verified for filePath and tmpPath above
       if (existsSync(filePath)) renameSync(filePath, bakPath);
       renameSync(tmpPath, filePath);
     } catch (error_) {
-      // Restore from backup if swap failed
+      // Restore from backup — isSafeToWrite verified above, fail-safe only
       try {
         if (existsSync(bakPath) && !existsSync(filePath)) renameSync(bakPath, filePath);
       } catch {

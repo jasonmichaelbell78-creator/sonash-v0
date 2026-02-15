@@ -19,10 +19,13 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const require_ = createRequire(import.meta.url);
+const { isSafeToWrite } = require_("../.claude/hooks/lib/symlink-guard");
 const ROOT = join(__dirname, "..");
 
 const LEARNINGS_FILE = join(ROOT, "AI_REVIEW_LEARNINGS_LOG.md");
@@ -394,6 +397,10 @@ function main() {
 
     try {
       const outPath = join(__dirname, "suggested-patterns.json");
+      if (!isSafeToWrite(outPath)) {
+        console.error("❌ Refusing to write: symlink detected at", outPath);
+        process.exit(2);
+      }
       writeFileSync(
         outPath,
         JSON.stringify(

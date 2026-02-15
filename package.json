@@ -31,6 +31,8 @@
     "lessons:surface": "node scripts/surface-lessons-learned.js",
     "session:gaps": "node scripts/check-session-gaps.js",
     "session:gaps:fix": "node scripts/check-session-gaps.js --fix",
+    "reviews:sync": "node scripts/sync-reviews-to-jsonl.js",
+    "reviews:check-archive": "node scripts/check-review-archive.js",
     "consolidation:run": "node scripts/run-consolidation.js",
     "learning:analyze": "node scripts/analyze-learning-effectiveness.js",
     "learning:dashboard": "node scripts/analyze-learning-effectiveness.js --format dashboard",

@@ -190,7 +190,7 @@ priority ordering.
 
 ---
 
-### Review #44: Hook Refinements & Output Limiting
+#### Review #44: Hook Refinements & Output Limiting
 
 **Date:** 2026-01-04 **Source:** Qodo PR Compliance Guide **PR:** Session #19
 (continued) **Tools:** Qodo

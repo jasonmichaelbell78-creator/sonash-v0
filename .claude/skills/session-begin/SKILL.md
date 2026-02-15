@@ -255,6 +255,12 @@ npm run session:gaps
 
 # Check ROADMAP hygiene (unarchived completed items, sync issues)
 npm run roadmap:hygiene
+
+# Check review JSONL sync (drift detection — Session #162)
+npm run reviews:sync -- --check
+
+# Check review archive health (heading format, gaps, duplicates — Session #162)
+npm run reviews:check-archive
 ```
 
 **Important**: These scripts are **required**. If any script fails:

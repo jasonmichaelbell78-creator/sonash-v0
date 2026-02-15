@@ -1012,9 +1012,12 @@ const ANTI_PATTERNS = [
         const line = lines[i];
         // Check for writeFileSync or renameSync calls
         if (!line.includes("writeFileSync") && !line.includes("renameSync")) continue;
-        // Skip comments and string literals containing the pattern
+        // Skip comments, imports, and string literals containing the pattern
         const trimmed = line.trim();
         if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        if (trimmed.startsWith("import ") || trimmed.startsWith("import{")) continue;
+        // Skip destructured import members (e.g. "  renameSync," inside "import { ... }")
+        if (/^\w+,?$/.test(trimmed)) continue;
         // Look for isSafeToWrite in the preceding 5 lines
         let hasGuard = false;
         for (let j = Math.max(0, i - 5); j < i; j++) {
