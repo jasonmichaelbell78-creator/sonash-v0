@@ -13,6 +13,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 
 const ROOT_DIR = path.resolve(__dirname, "../..");
 const ALERTS_FILE = path.join(ROOT_DIR, ".claude", "pending-alerts.json");
@@ -75,8 +76,16 @@ function main() {
     const lastRun = Number(data?.lastRun);
     if (Number.isFinite(lastRun)) {
       const ageMs = Date.now() - lastRun;
-      if (ageMs < 0 || ageMs < COOLDOWN_MS) {
+      if (ageMs >= 0 && ageMs < COOLDOWN_MS) {
         process.exit(0); // Still in cooldown
+      }
+      if (ageMs < 0) {
+        // Self-healing: delete corrupt future-timestamp cooldown file
+        try {
+          fs.rmSync(COOLDOWN_FILE, { force: true });
+        } catch {
+          /* best-effort */
+        }
       }
     }
   } catch {
@@ -160,6 +169,9 @@ function main() {
   // Update cooldown after successful check (atomic write — Review #289)
   const tmpCooldown = `${COOLDOWN_FILE}.tmp`;
   try {
+    if (!isSafeToWrite(COOLDOWN_FILE)) {
+      process.exit(0);
+    }
     fs.mkdirSync(path.dirname(COOLDOWN_FILE), { recursive: true });
     fs.writeFileSync(tmpCooldown, JSON.stringify({ lastRun: Date.now() }), "utf-8");
     try {

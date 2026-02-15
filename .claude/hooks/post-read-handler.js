@@ -20,6 +20,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 
 let rotateHelpers;
 try {
@@ -94,20 +95,8 @@ function saveJson(filePath, data) {
   const tmpPath = `${filePath}.tmp`;
   const bakPath = `${filePath}.bak`;
   try {
-    // Refuse writes to symlinks or into symlinked directories
-    if (fs.existsSync(filePath)) {
-      try {
-        if (fs.lstatSync(filePath).isSymbolicLink()) return false;
-      } catch {
-        return false;
-      }
-    }
-    try {
-      const dirPath = path.dirname(filePath);
-      if (fs.existsSync(dirPath) && fs.lstatSync(dirPath).isSymbolicLink()) return false;
-    } catch {
-      return false;
-    }
+    // Refuse writes to symlinks or into symlinked directories (file + all ancestors)
+    if (!isSafeToWrite(filePath)) return false;
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));

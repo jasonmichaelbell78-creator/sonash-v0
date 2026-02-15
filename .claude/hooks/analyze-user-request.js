@@ -133,6 +133,7 @@ function matchesPhrase(phrase) {
 // Output to stdout (context-consuming) for high-confidence matches
 function directiveStdout(msg) {
   if (wasRecentlyDirected(msg)) {
+    console.log("ok");
     process.exit(0); // Skip — already directed recently
   }
   recordDirective(msg);

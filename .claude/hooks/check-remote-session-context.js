@@ -13,6 +13,7 @@
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 
 // Fetch TTL cache (path resolved after projectDir is defined below)
 let FETCH_CACHE_FILE;
@@ -36,6 +37,7 @@ function updateFetchCache() {
   // Atomic write (Review #289)
   const tmpPath = `${FETCH_CACHE_FILE}.tmp`;
   try {
+    if (!isSafeToWrite(FETCH_CACHE_FILE)) return;
     fs.mkdirSync(path.dirname(FETCH_CACHE_FILE), { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify({ lastFetch: Date.now() }), "utf-8");
     try {

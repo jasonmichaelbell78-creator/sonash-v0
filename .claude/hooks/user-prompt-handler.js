@@ -5,6 +5,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
+const { isSafeToWrite } = require("./lib/symlink-guard");
+
 const ROOT_DIR = path.resolve(__dirname, "../..");
 const CLAUDE_DIR = path.join(ROOT_DIR, ".claude");
 const HOOKS_DIR = path.join(CLAUDE_DIR, "hooks");
@@ -109,6 +111,7 @@ function runAlerts() {
   if (messages.length > 0) stdoutParts.push(...messages);
   const tmpCooldown = `${COOLDOWN_FILE}.tmp`;
   try {
+    if (!isSafeToWrite(COOLDOWN_FILE)) return;
     fs.mkdirSync(path.dirname(COOLDOWN_FILE), { recursive: true });
     fs.writeFileSync(tmpCooldown, JSON.stringify({ lastRun: Date.now() }), "utf-8");
     try {
@@ -152,6 +155,7 @@ function runAnalyze() {
     data[directive] = Date.now();
     const tmpPath = `${DIRECTIVE_STATE}.tmp`;
     try {
+      if (!isSafeToWrite(DIRECTIVE_STATE)) return;
       fs.mkdirSync(path.dirname(DIRECTIVE_STATE), { recursive: true });
       fs.writeFileSync(tmpPath, JSON.stringify(data), "utf-8");
       try {

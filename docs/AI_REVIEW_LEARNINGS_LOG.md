@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.8 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
+**Document Version:** 17.9 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.9    | 2026-02-15 | Review #321: PR #366 R6 — Shared symlink-guard.js helper (ancestor traversal), self-healing cooldown, TOCTOU try/catch, milestone string bug, NUL delimiter, directive "ok" output. 11 fixed, 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 17.8    | 2026-02-15 | Review #320: PR #366 R5 — Parent dir symlink, clock skew defense, prototype pollution (Object.create(null)), getContent symlink read, size-based rotation. 8 fixed, 1 already-tracked.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.7    | 2026-02-15 | Review #319: PR #366 R4 — Symlink write guard, future timestamp defense, file list caps, skip-abuse 24h/7d bug fix, CRLF JSONL trim, Number.isFinite cooldown. 6 fixed, 3 already-tracked.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 17.6    | 2026-02-15 | Review #318: PR #366 R3 — Atomic write hardening (backup-swap, mkdirSync), state shape normalization (3 files), numeric coercion guards, porcelain validation. 10 fixed, 1 deferred, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -610,6 +611,50 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #321: PR #366 R6 — Shared Symlink Guard + Self-Healing Cooldown + Bug Fixes (2026-02-15)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #366) **Suggestions:** 14 total (Critical:
+0, Major: 2, Minor: 9, Trivial: 1, Rejected: 2)
+
+**Architectural fix:** Created shared `.claude/hooks/lib/symlink-guard.js` with
+`isSafeToWrite()` that checks file + all ancestor directories. Applied to all
+hook write paths to stop symlink ping-pong across review rounds.
+
+**Patterns Identified:**
+
+1. **Shared symlink helper** — Each round found more write paths missing symlink
+   guards. Root cause fix: centralized `isSafeToWrite()` with ancestor
+   traversal.
+2. **Self-healing future timestamps** — `ageMs < 0` deletes corrupt cooldown
+   instead of permanently blocking the hook.
+3. **TOCTOU race** — `existsSync` + `lstatSync` wrapped in try/catch,
+   fail-closed.
+4. **Milestone string bug** — Off-by-one slice replaced with template literal.
+5. **Hook output protocol** — Must print "ok" even when suppressing directives.
+
+**Resolution:** 11 fixed, 2 rejected
+
+| #   | Issue                            | Severity | Action                | Origin       |
+| --- | -------------------------------- | -------- | --------------------- | ------------ |
+| 2   | recordDirective symlink guard    | Minor    | Fixed (shared helper) | This-PR      |
+| 3   | saveJson ancestor traversal      | Minor    | Fixed (shared helper) | This-PR      |
+| 4   | Self-healing future timestamp    | Major    | Fixed                 | This-PR      |
+| 5   | statePath TOCTOU try/catch       | Minor    | Fixed                 | This-PR      |
+| 6   | Milestone string bug             | Major    | Fixed                 | Pre-existing |
+| 7   | Directive "ok" output            | Minor    | Fixed                 | This-PR      |
+| 8   | updateFetchCache symlink guard   | Minor    | Fixed (shared helper) | This-PR      |
+| 9   | Cooldown write symlink (alerts)  | Minor    | Fixed (shared helper) | This-PR      |
+| 10  | lstatSync for file size          | Minor    | Fixed                 | This-PR      |
+| 11  | Cooldown write symlink (handler) | Minor    | Fixed (shared helper) | This-PR      |
+| 12  | reviewQueue TOCTOU try/catch     | Minor    | Fixed                 | This-PR      |
+| 13  | NUL delimiter for git log        | Trivial  | Fixed                 | Pre-existing |
+
+**Rejected:** [1] Bidirectional containment removal — breaks cwd-inside-project
+setups. [14] saveJson error leaking — dev-only CLI output, aids debugging.
 
 ---
 

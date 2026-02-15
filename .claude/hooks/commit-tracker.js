@@ -177,12 +177,12 @@ function main() {
 
   // NEW COMMIT DETECTED — capture metadata (2 git calls instead of 3)
   // Call 1: log with %D decoration to get hash, short hash, message, AND branch ref
-  // Use Unit Separator (\x1f) instead of | to avoid corruption from | in commit messages
-  const commitLine = gitExec(["log", "--format=%H\x1f%h\x1f%s\x1f%D", "-1"]);
-  const parts = commitLine.split("\x1f");
+  // Use NUL delimiter (%x00) to avoid corruption from special chars in commit messages
+  const commitLine = gitExec(["log", "--format=%H%x00%h%x00%s%x00%D", "-1"]);
+  const parts = commitLine.split("\0");
 
   // Parse branch from %D decoration (e.g. "HEAD -> branch-name, origin/branch-name")
-  const decoration = parts[3] || "";
+  const decoration = (parts.length >= 4 ? parts[3] : "") || "";
   const branchMatch = decoration.match(/HEAD -> ([^,]+)/);
   // Fall back to rev-parse only in detached HEAD (no "HEAD -> ..." in decoration)
   const branch = branchMatch

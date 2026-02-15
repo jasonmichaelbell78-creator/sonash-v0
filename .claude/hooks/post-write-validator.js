@@ -546,10 +546,12 @@ function patternCheck() {
 
   const fullPath = path.resolve(projectDir, filePath);
 
-  // Pre-check file size
+  // Pre-check file size (skip symlinks)
   let size;
   try {
-    ({ size } = fs.statSync(fullPath));
+    const st = fs.lstatSync(fullPath);
+    if (st.isSymbolicLink()) return;
+    size = st.size;
   } catch {
     return;
   }
@@ -933,7 +935,11 @@ function agentTriggerEnforcer() {
   // Write state (atomic: tmp + rename)
   const tmpPath = `${statePath}.tmp`;
   try {
-    if (fs.existsSync(statePath) && fs.lstatSync(statePath).isSymbolicLink()) return;
+    try {
+      if (fs.existsSync(statePath) && fs.lstatSync(statePath).isSymbolicLink()) return;
+    } catch {
+      return;
+    }
     fs.mkdirSync(path.dirname(statePath), { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
     try {
@@ -1026,7 +1032,12 @@ function agentTriggerEnforcer() {
     // Write review queue (atomic)
     const tmpReviewPath = `${reviewQueuePath}.tmp`;
     try {
-      if (fs.existsSync(reviewQueuePath) && fs.lstatSync(reviewQueuePath).isSymbolicLink()) return;
+      try {
+        if (fs.existsSync(reviewQueuePath) && fs.lstatSync(reviewQueuePath).isSymbolicLink())
+          return;
+      } catch {
+        return;
+      }
       fs.mkdirSync(path.dirname(reviewQueuePath), { recursive: true });
       fs.writeFileSync(tmpReviewPath, JSON.stringify(reviewQueue, null, 2));
       try {

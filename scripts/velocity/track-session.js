@@ -195,12 +195,9 @@ function getSprintName() {
         // Skip whitespace then check for dash/en-dash separator
         while (si < trimmed.length && trimmed[si] === " ") si++;
         if (si < trimmed.length && (trimmed[si] === "-" || trimmed[si] === "\u2013")) {
+          const left = trimmed.slice(0, si).trimEnd();
           const rest = trimmed.slice(si + 1).trim();
-          if (rest)
-            return trimmed
-              .slice(0, si + 1 + rest.length + 1)
-              .trim()
-              .slice(0, 100);
+          if (rest) return `${left} - ${rest}`.slice(0, 100);
         }
       }
     }
