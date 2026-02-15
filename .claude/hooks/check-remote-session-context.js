@@ -14,8 +14,8 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
-// Fetch TTL cache
-const FETCH_CACHE_FILE = path.join(projectDir, ".claude", "hooks", ".fetch-cache.json");
+// Fetch TTL cache (path resolved after projectDir is defined below)
+let FETCH_CACHE_FILE;
 const FETCH_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 function shouldFetch() {
@@ -29,10 +29,22 @@ function shouldFetch() {
 }
 
 function updateFetchCache() {
+  // Atomic write (Review #289)
+  const tmpPath = `${FETCH_CACHE_FILE}.tmp`;
   try {
-    fs.writeFileSync(FETCH_CACHE_FILE, JSON.stringify({ lastFetch: Date.now() }), "utf-8");
+    fs.writeFileSync(tmpPath, JSON.stringify({ lastFetch: Date.now() }), "utf-8");
+    try {
+      fs.rmSync(FETCH_CACHE_FILE, { force: true });
+    } catch {
+      /* best-effort */
+    }
+    fs.renameSync(tmpPath, FETCH_CACHE_FILE);
   } catch {
-    /* non-critical */
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      /* cleanup */
+    }
   }
 }
 
@@ -54,6 +66,9 @@ if (isOutsideBase) {
   console.log("ok");
   process.exit(0);
 }
+
+// Resolve cache path now that projectDir is defined
+FETCH_CACHE_FILE = path.join(projectDir, ".claude", "hooks", ".fetch-cache.json");
 
 /**
  * Run git command safely using execFileSync (no shell interpolation)

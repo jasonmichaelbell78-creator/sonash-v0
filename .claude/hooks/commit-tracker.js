@@ -183,7 +183,7 @@ function main() {
 
   // Parse branch from %D decoration (e.g. "HEAD -> branch-name, origin/branch-name")
   const decoration = parts[3] || "";
-  const branchMatch = decoration.match(/HEAD -> ([^,)]+)/);
+  const branchMatch = decoration.match(/HEAD -> ([^,]+)/);
   // Fall back to rev-parse only in detached HEAD (no "HEAD -> ..." in decoration)
   const branch = branchMatch
     ? branchMatch[1].trim()

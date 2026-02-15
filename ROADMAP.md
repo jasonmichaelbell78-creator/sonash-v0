@@ -523,11 +523,8 @@ Lightweight verification per sprint; comprehensive audit only after Sprint 7.
 
 - [ ] DEBT-2780: AI_WORKFLOW.md size optimization - 872 lines (S2,
       AI_WORKFLOW.md)
-- [ ] DEBT-2781: Stale documentation markers - 96 TODO/TBD across 34 files (S2,
-      by-status.md)
 - [ ] DEBT-2782: Security guidance consolidation - overlapping docs (S2,
       SECURITY.md)
-- [ ] DEBT-2783: Documentation effectiveness metrics (S2, docs/README.md)
 - [ ] DEBT-2784: Cross-reference navigation overhead (S2,
       DOCUMENT_DEPENDENCIES.md)
 - [ ] DEBT-2787: Script consolidation - 30+ scripts with inconsistent CLI (S2,
@@ -1036,7 +1033,6 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 - [ ] DEBT-2762: Missing keyboard shortcuts for power users (S2,
       enhanced-mood-selector.tsx)
 - [ ] DEBT-2763: Form validation shows errors only on submit (S2, mood-form.tsx)
-- [ ] DEBT-2774: Add engines field to root package.json (S2, package.json)
 - [ ] DEBT-2788: Generic button labels - "Submit" instead of action-specific
       (S2, admin-crud-table.tsx)
 - [ ] DEBT-2789: Error messages don't guide user to fix the problem (S2,
@@ -1046,7 +1042,6 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 - [ ] DEBT-2791: Confirmation dialogs lack specific consequences (S2,
       admin-crud-table.tsx)
 - [ ] DEBT-2792: Loading text inconsistency (S2, dashboard-tab.tsx)
-- [ ] DEBT-2793: Date formats inconsistent across the app (S2, date-utils.ts)
 - [ ] DEBT-2794: Success feedback messages too brief (S2, dashboard-tab.tsx)
 - [ ] DEBT-2800: Collocate related quote components (S2, daily-quote-card.tsx)
 

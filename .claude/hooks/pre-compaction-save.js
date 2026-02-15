@@ -221,9 +221,9 @@ function gatherGitContext() {
   const recentCommits = logOutput.split("\n").filter((l) => l.length > 0);
   const lastCommit = recentCommits[0] || "";
 
-  // Call 3: git status --porcelain (replaces diff --name-only, diff --cached, ls-files)
-  const statusOutput = gitExec(["status", "--porcelain"]);
-  const statusLines = statusOutput.split("\n").filter((l) => l.length > 0);
+  // Call 3: git status --porcelain -z (NUL-separated for filenames with spaces — Review #289)
+  const statusOutput = gitExec(["status", "--porcelain", "-z"]);
+  const statusLines = statusOutput.split("\0").filter((l) => l.length > 0);
 
   const uncommittedFiles = [];
   const stagedFiles = [];

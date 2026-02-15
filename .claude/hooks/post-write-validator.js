@@ -876,6 +876,15 @@ function agentTriggerEnforcer() {
   const sessionKey = new Date().toISOString().split("T")[0];
   if (!state.suggestedAgents[sessionKey]) state.suggestedAgents[sessionKey] = [];
 
+  // Prune suggestedAgents entries older than 30 days (Review #289)
+  const PRUNE_DAYS = 30;
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - PRUNE_DAYS);
+  const cutoffKey = cutoff.toISOString().split("T")[0];
+  for (const key of Object.keys(state.suggestedAgents)) {
+    if (key < cutoffKey) delete state.suggestedAgents[key];
+  }
+
   const newAgents = applicableAgents.filter(
     (agent) => !state.suggestedAgents[sessionKey].includes(agent.agent)
   );

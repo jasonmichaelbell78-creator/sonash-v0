@@ -144,9 +144,19 @@ function getSprintName() {
   // Try to determine current sprint from ROADMAP.md
   try {
     const roadmap = fs.readFileSync(ROADMAP_PATH, "utf8");
-    const sprintMatch = roadmap.match(/##\s+(?:Active Sprint|Current Sprint)[:\s-]*([^|\n]+)/i);
-    if (sprintMatch) {
-      return sprintMatch[1].trim().replace(/\*+$/, "");
+    // SonarCloud S5852: replaced regex with string parsing (two-strikes rule, Review #289)
+    const lines = roadmap.split("\n");
+    for (const line of lines) {
+      if (line.startsWith("## ")) {
+        const lower = line.toLowerCase();
+        if (lower.includes("active sprint") || lower.includes("current sprint")) {
+          // Extract text after the sprint heading marker
+          const afterHash = line.slice(3).trim();
+          // Remove leading separators (colon, dash, whitespace)
+          const cleaned = afterHash.replace(/^(?:Active Sprint|Current Sprint)[:\s-]*/i, "").trim();
+          if (cleaned) return cleaned.replace(/\*+$/, "").replace(/\|.*$/, "").trim();
+        }
+      }
     }
     // Fallback: look for milestone reference
     const milestoneMatch = roadmap.match(/M1[.\d]*\s*[-–]\s*(.+)/);

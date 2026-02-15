@@ -812,6 +812,7 @@ const ANTI_PATTERNS = [
     review: "Session #151 analysis",
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|\/)scripts\//,
+    pathExcludeList: verifiedPatterns["unbounded-file-read"] || [],
   },
 
   // Shell command injection via string concatenation
@@ -973,9 +974,25 @@ const ANTI_PATTERNS = [
   },
 
   // throw after console.error re-exposes sanitized error (PR #365)
+  // SonarCloud S5852: replaced regex with string-based check (two-strikes rule, Review #289)
   {
     id: "throw-after-sanitize",
-    pattern: /console\.error\([^)]{1,200}\)\s*;\s*\n\s*throw\s+\w+/g,
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length - 1; i++) {
+        const line = lines[i].trimEnd();
+        const nextLine = lines[i + 1].trim();
+        if (
+          line.includes("console.error(") &&
+          line.endsWith(";") &&
+          nextLine.startsWith("throw ")
+        ) {
+          matches.push({ line: i + 1, match: `${line}\n${lines[i + 1]}` });
+        }
+      }
+      return matches;
+    },
     message: "Stack trace leakage: throw after console.error re-exposes sanitized error",
     fix: "Use process.exit(1) instead of throw when error is fatal and already logged",
     review: "#315",
@@ -1162,6 +1179,24 @@ function shouldSkipPattern(antiPattern, ext, normalizedPath) {
  */
 function findPatternMatches(antiPattern, content, filePath) {
   const violations = [];
+
+  // Support testFn for patterns that use string parsing instead of regex (SonarCloud S5852 two-strikes)
+  if (typeof antiPattern.testFn === "function") {
+    const matches = antiPattern.testFn(content);
+    for (const m of matches) {
+      violations.push({
+        file: filePath,
+        line: m.line,
+        id: antiPattern.id,
+        message: antiPattern.message,
+        fix: antiPattern.fix,
+        review: antiPattern.review,
+        match: (m.match || "").slice(0, 50),
+      });
+    }
+    return violations;
+  }
+
   // Create new RegExp to avoid shared state mutation (S3776 fix + Qodo suggestion)
   const pattern = new RegExp(antiPattern.pattern.source, antiPattern.pattern.flags);
   // Review #188: Clone exclude regex to prevent state mutation from g/y flags

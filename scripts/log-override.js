@@ -311,7 +311,7 @@ function main() {
       process.exit(1);
     }
     logOverride(args.check, args.reason);
-    return;
+    process.exit(0);
   }
 
   if (!args.check) {

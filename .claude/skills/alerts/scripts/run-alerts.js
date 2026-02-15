@@ -1412,7 +1412,7 @@ function checkSkipAbuse() {
   if (lines.length === 0) {
     addContext("skip-abuse", {
       benchmarks: BENCHMARKS.skip_abuse,
-      ratings: { overrides_24h: "good", overrides_7d: "good", no_reason: "good" },
+      ratings: { overrides_24h: "good", overrides_7d: "good", no_reason_pct: "good" },
       totals: { count_24h: 0, count_7d: 0, no_reason_count: 0, no_reason_pct: 0 },
     });
     return;
@@ -1487,7 +1487,7 @@ function checkSkipAbuse() {
 
   addContext("skip-abuse", {
     benchmarks: BENCHMARKS.skip_abuse,
-    ratings: { overrides_24h: rate24h, overrides_7d: rate7d, no_reason: rateNoReason },
+    ratings: { overrides_24h: rate24h, overrides_7d: rate7d, no_reason_pct: rateNoReason },
     totals: {
       count_24h: last24h.length,
       count_7d: last7d.length,

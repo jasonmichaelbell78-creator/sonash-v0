@@ -74,6 +74,14 @@ function recordDirective(directive) {
     /* start fresh */
   }
   data[directive] = Date.now();
+
+  // Purge stale entries older than 24h (Review #289)
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  for (const key of Object.keys(data)) {
+    if (now - data[key] > DAY_MS) delete data[key];
+  }
+
   try {
     fs.writeFileSync(DIRECTIVE_STATE, JSON.stringify(data), "utf-8");
   } catch {

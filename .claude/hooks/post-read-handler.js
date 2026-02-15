@@ -188,13 +188,16 @@ try {
 function runContextTracking() {
   if (!filePath) return;
 
-  // Track this file read
+  // Track this file read (only save when modified — Review #289)
+  let stateModified = false;
   if (!contextState.filesRead.includes(filePath)) {
     contextState.filesRead.push(filePath);
+    stateModified = true;
   }
 
-  // Save state (will be saved once, used by both phase 1 and phase 2)
-  saveJson(CONTEXT_TRACKING_FILE, contextState);
+  if (stateModified) {
+    saveJson(CONTEXT_TRACKING_FILE, contextState);
+  }
 
   // Resolve full path for line counting
   const fullPath = path.resolve(projectDir, filePath);
@@ -228,8 +231,7 @@ function runContextTracking() {
       suggestion: "Consider using /save-context to preserve important context to MCP memory",
     });
     contextState.warningShown = true;
-
-    // Update state with warning shown flag
+    // Save state with warning flag
     saveJson(CONTEXT_TRACKING_FILE, contextState);
   }
 

@@ -86,7 +86,7 @@ _Essential project-level documentation_
 | [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓1 ↑7      | 2026-02-14    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑14     | 2026-02-12    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-05    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑18    | 2026-02-12    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑18    | 2026-02-15    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                | ↓4 ↑6      | 2026-02-09    |
 
 ### Core Documentation (Tier 2)
@@ -174,7 +174,7 @@ _Planning & Active_
 | Document                                                                                               | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | -                                                               | ↓3 ↑4      | 2026-02-09    |
-| [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                 | Track single-session and multi-AI audit completions for thre... | ↓2 ↑2      | 2026-02-14    |
+| [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                 | Track single-session and multi-AI audit completions for thre... | ↓2 ↑2      | 2026-02-15    |
 | [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-02-14    |
 | [Lighthouse Integration Plan](docs/LIGHTHOUSE_INTEGRATION_PLAN.md)                                     | -                                                               | ↓2 ↑2      | 2026-01-17    |
 | [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md)                             | -                                                               | ↓2 ↑1      | 2026-02-09    |
@@ -331,7 +331,7 @@ _TDMS tracking and management_
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-02-05    |
 | [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓4 ↑4      | 2026-02-14    |
-| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓13 ↑1     | 2026-02-14    |
+| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓13 ↑1     | 2026-02-15    |
 | [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-02-15    |
 
 ### Templates (Tier 3)
@@ -468,7 +468,7 @@ _Uncategorized_
 | [Pass 2 Deduplication - Executive Summary](analysis/pass2_summary.md)                             | This document provides an executive summary of the Pass 2 de... | ↓0 ↑0      | 2026-02-02    |
 | [Pass 4: Categorization & Feature Group Alignment](analysis/pass4_categorization.md)              | This document reconciles the 18 new feature groups from the ... | ↓0 ↑0      | 2026-02-02    |
 | [Pass 5: Effort Estimation Alignment](analysis/pass5_effort.md)                                   | This document provides effort estimates for all 85 staged ex... | ↓0 ↑0      | 2026-02-02    |
-| [ROADMAP Analysis](analysis/README.md)                                                            | This folder contains comprehensive analysis documents genera... | ↓0 ↑2      | 2026-02-02    |
+| [ROADMAP Analysis](analysis/README.md)                                                            | This folder contains comprehensive analysis documents genera... | ↓0 ↑2      | 2026-02-15    |
 | [ROADMAP Deep Analysis - Integration Summary](analysis/INTEGRATION_SUMMARY.md)                    | This document serves as the final integration summary of the... | ↓0 ↑0      | 2026-02-02    |
 | [ROADMAP Deep Analysis - Pass 2: Deduplication Analysis](analysis/pass2_deduplication.md)         | This document provides a comprehensive deduplication analysi... | ↓0 ↑0      | 2026-02-02    |
 | [ROADMAP Deep Analysis - Pass 3: Dependency Graph Reconciliation](analysis/pass3_dependencies.md) | This document validates the dependency graph structure after... | ↓0 ↑0      | 2026-02-02    |
@@ -481,9 +481,9 @@ _Uncategorized_
 
 _Uncategorized_
 
-| Document                                                                      | Description | References | Last Modified |
-| ----------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md) | -           | ↓0 ↑0      | 2026-02-14    |
+| Document                                                                      | Description                                                     | References | Last Modified |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md) | Candidate compliance checker rules extracted from consolidat... | ↓0 ↑0      | 2026-02-15    |
 
 ### Core Documentation (Tier 4)
 
@@ -492,9 +492,9 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓9 ↑2      | 2026-02-14    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓4 ↑2      | 2026-02-14    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓4 ↑2      | 2026-02-15    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓2 ↑1      | 2026-02-09    |
-| [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-14    |
+| [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-15    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-02-09    |
 | [PR Workflow Checklist - MANDATORY FOR ALL PHASES](docs/PR_WORKFLOW_CHECKLIST.md) | -                                                                 | ↓4 ↑3      | 2026-01-17    |
 | [Review Policy Architecture](docs/REVIEW_POLICY_ARCHITECTURE.md)                  | This document defines a \*\*lightweight, AI-first review polic... | ↓3 ↑3      | 2026-02-14    |
@@ -1004,7 +1004,7 @@ Documents with no inbound links (not referenced by any other document):
 | 174 | [analysis/README.md](analysis/README.md)                                                                                                                                                   | ROADMAP Analysis                                                   | 4    | -                                                                               |
 | 175 | [ARCHITECTURE.md](ARCHITECTURE.md)                                                                                                                                                         | Architecture Documentation                                         | 2    | ACTIVE **Last Updated:** 2026-01-02                                             |
 | 176 | [CLAUDE.md](CLAUDE.md)                                                                                                                                                                     | AI Context &amp; Rules for SoNash                                  | 1    | ACTIVE                                                                          |
-| 177 | [consolidation-output/suggested-rules.md](consolidation-output/suggested-rules.md)                                                                                                         | Suggested Compliance Checker Rules                                 | 4    | Pending review - add to check-pattern-compliance.js as appropriate              |
+| 177 | [consolidation-output/suggested-rules.md](consolidation-output/suggested-rules.md)                                                                                                         | Suggested Compliance Checker Rules                                 | 4    | Pending review - add to                                                         |
 | 178 | [DEVELOPMENT.md](DEVELOPMENT.md)                                                                                                                                                           | Development Guide                                                  | 2    | Active                                                                          |
 | 179 | [docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                                                                               | Admin Panel Security &amp; Monitoring Requirements                 | 3    | -                                                                               |
 | 180 | [docs/agent_docs/AGENT_ORCHESTRATION.md](docs/agent_docs/AGENT_ORCHESTRATION.md)                                                                                                           | Agent Orchestration Reference                                      | 3    | ACTIVE                                                                          |

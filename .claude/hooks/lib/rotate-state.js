@@ -23,7 +23,8 @@ const path = require("node:path");
  * @returns {{ rotated: boolean, before: number, after: number }}
  */
 function rotateJsonl(filePath, maxEntries, keepCount) {
-  const keep = keepCount || Math.floor(maxEntries * 0.6);
+  const keepRaw = keepCount || Math.floor(maxEntries * 0.6);
+  const keep = Math.max(1, keepRaw); // Prevent truncation to 0 (Review #289)
   try {
     const content = fs.readFileSync(filePath, "utf-8");
     const lines = content.split("\n").filter((l) => l.trim().length > 0);

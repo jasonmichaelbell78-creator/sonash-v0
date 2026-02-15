@@ -1,5 +1,6 @@
 {
   "readfilesync-without-try": [
+    "analyze-user-request.js",
     "check-pattern-compliance.js",
     "phase-complete-check.js",
     "surface-lessons-learned.js",
@@ -99,6 +100,11 @@
     "verify-sonar-phase.js"
   ],
   "unguarded-loadconfig": [
+    "alerts-reminder.js",
+    "analyze-user-request.js",
+    "check-remote-session-context.js",
+    "post-write-validator.js",
+    "track-session.js",
     "surface-lessons-learned.js",
     "check-session-gaps.js",
     "audit-s0s1-validator.js",
@@ -121,6 +127,11 @@
     "post-read-handler.js"
   ],
   "json-parse-without-try": [
+    "alerts-reminder.js",
+    "analyze-user-request.js",
+    "check-remote-session-context.js",
+    "post-write-validator.js",
+    "track-session.js",
     "check-session-gaps.js",
     "audit-s0s1-validator.js",
     "check-requirements.js",
@@ -145,6 +156,9 @@
   "git-diff-no-filter": ["compaction-handoff.js", "post-read-handler.js"],
   "parseint-no-radix": ["verify-sonar-phase.js"],
   "non-atomic-write": [
+    "alerts-reminder.js",
+    "analyze-user-request.js",
+    "check-remote-session-context.js",
     "suggest-pattern-automation.js",
     "archive-doc.js",
     "auto-save-context.js",
@@ -157,10 +171,19 @@
     "user-prompt-handler.js",
     "post-read-handler.js"
   ],
-  "writefile-missing-encoding": ["suggest-pattern-automation.js", "normalize-format.js"],
+  "writefile-missing-encoding": [
+    "alerts-reminder.js",
+    "analyze-user-request.js",
+    "check-remote-session-context.js",
+    "post-write-validator.js",
+    "suggest-pattern-automation.js",
+    "normalize-format.js",
+    "rotate-state.js"
+  ],
   "process-exit-without-cleanup": ["validate-schema.js"],
   "missing-array-isarray": ["validate-schema.js"],
   "missing-bom-handling": ["validate-schema.js"],
+  "unbounded-file-read": ["track-session.js"],
   "rename-without-remove": [
     "append-hook-warning.js",
     "transform-jsonl-schema.js",

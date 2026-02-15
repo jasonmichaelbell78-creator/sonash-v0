@@ -129,17 +129,17 @@ All templates now in `docs/multi-ai-audit/templates/`:
 
 ### Tier 3: Specialized Guides
 
-| Document                                     | Purpose                                           | Location                                                      |
-| -------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------- |
-| **SERVER_SIDE_SECURITY.md**                  | Cloud Functions security patterns                 | `docs/SERVER_SIDE_SECURITY.md`                                |
-| **GLOBAL_SECURITY_STANDARDS.md**             | Mandatory security standards for all code         | `docs/GLOBAL_SECURITY_STANDARDS.md`                           |
-| **FIREBASE_CHANGE_POLICY.md**                | Firebase security review requirements             | `docs/FIREBASE_CHANGE_POLICY.md`                              |
-| **INCIDENT_RESPONSE.md**                     | Security incident response procedures             | `docs/INCIDENT_RESPONSE.md`                                   |
-| **TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md** | Unified technical debt consolidation & management | `docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md`         |
-| **TESTING_USER_MANUAL.md**                   | Complete UI testing reference with /test-suite    | `docs/plans/TESTING_USER_MANUAL.md`                           |
-| **AUDIT_ECOSYSTEM_CODIFICATION.md**          | Audit ecosystem codification plan (10 steps)      | `docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md`                  |
-| **INTEGRATED_IMPROVEMENT_PLAN.md**           | Phased improvement plan (COMPLETE - archived)     | `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md` |
-| **AI_REVIEW_LEARNINGS_LOG.md**               | Historical log of AI review findings and patterns | `docs/AI_REVIEW_LEARNINGS_LOG.md`                             |
+| Document                                     | Purpose                                           | Location                                                                |
+| -------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------------------------- |
+| **SERVER_SIDE_SECURITY.md**                  | Cloud Functions security patterns                 | `docs/SERVER_SIDE_SECURITY.md`                                          |
+| **GLOBAL_SECURITY_STANDARDS.md**             | Mandatory security standards for all code         | `docs/GLOBAL_SECURITY_STANDARDS.md`                                     |
+| **FIREBASE_CHANGE_POLICY.md**                | Firebase security review requirements             | `docs/FIREBASE_CHANGE_POLICY.md`                                        |
+| **INCIDENT_RESPONSE.md**                     | Security incident response procedures             | `docs/INCIDENT_RESPONSE.md`                                             |
+| **TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md** | Unified technical debt consolidation & management | `docs/archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md` |
+| **TESTING_USER_MANUAL.md**                   | Complete UI testing reference with /test-suite    | `docs/plans/TESTING_USER_MANUAL.md`                                     |
+| **AUDIT_ECOSYSTEM_CODIFICATION.md**          | Audit ecosystem codification plan (10 steps)      | `docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md`                            |
+| **INTEGRATED_IMPROVEMENT_PLAN.md**           | Phased improvement plan (COMPLETE - archived)     | `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md`           |
+| **AI_REVIEW_LEARNINGS_LOG.md**               | Historical log of AI review findings and patterns | `docs/AI_REVIEW_LEARNINGS_LOG.md`                                       |
 
 ---
 
@@ -265,7 +265,7 @@ navigation.
 - **Understand current session** → [SESSION_CONTEXT.md](../SESSION_CONTEXT.md)
 - **See project roadmap** → [ROADMAP.md](../ROADMAP.md)
 - **Manage technical debt** →
-  [TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md](./plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)
+  [TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md](./archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)
 
 ### Contributing to Documentation
 

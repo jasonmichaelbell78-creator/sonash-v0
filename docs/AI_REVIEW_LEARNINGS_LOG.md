@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.4    | 2026-02-14 | Review #316: PR #366 R1 — SonarCloud regex two-strikes (testFn), atomic writes (3 hooks), state pruning (2 files), CI blocker fixes (30+ links, 5 DEBT entries). 15 fixed, 6 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.3    | 2026-02-13 | Fix: Consolidation counter corruption — manual counter showed 0 but 26 reviews pending (#285-#310). Root cause: `updateConsolidationCounter` injected "Next consolidation due" into Status field, creating duplicates that grew on each run. Fixed run-consolidation.js Status/Next replacement order, corrected counter to 26, cleaned corrupted "Review #320 Review #320..." text.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 17.2    | 2026-02-13 | Review #310: PR #364 Qodo Suggestions — Alerts v3 health score normalization, git edge cases, path separators. 10 review rounds addressed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 17.1    | 2026-02-12 | Review #306: PR #362 R2 — Edge case fixes (line 0, falsy field preservation, Windows paths, validate-schema consistency). Consolidation counter 16→17.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -605,6 +606,53 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #316: PR #366 R1 — SonarCloud Regex + Qodo Robustness + CI Blockers (2026-02-14)
+
+**Source:** SonarCloud Security Hotspots (S5852) + Qodo PR Suggestions + Qodo
+Compliance + CI Failures **PR/Branch:** claude/read-session-commits-ZpJLX (PR
+#366) **Suggestions:** 21 total (Critical: 0, Major: 4, Minor: 11, Deferred: 6)
+
+**Patterns Identified:**
+
+1. SonarCloud S5852 two-strikes rule: Both flagged regexes replaced with
+   string-based parsing (check-pattern-compliance.js `testFn`, track-session.js
+   line-by-line scan)
+   - New: `testFn` alternative to `pattern` field in pattern compliance checker
+2. Atomic file writes: 3 hooks (alerts-reminder, check-remote-session-context,
+   cooldown files) now use tmp+rmSync+rename pattern (Review #289 standard)
+3. Unbounded state growth: 2 state files now have pruning (directive-dedup.json
+   24h TTL, suggestedAgents 30-day expiry)
+4. CI broken links: ~30 links in AUDIT_TRACKER.md pointed to non-existent audit
+   reports. Replaced link markup with plain text + annotation.
+5. MASTER_DEBT.jsonl sync: 5 entries lost due to generate-views.js overwrite bug
+   (MEMORY.md documents this). Restored from deduped.jsonl.
+
+**Resolutions:**
+
+- [1] check-pattern-compliance.js: Added `testFn` support + replaced regex
+- [2] track-session.js: Line-by-line string parsing for sprint name
+- [9] analyze-user-request.js: 24h TTL pruning for directive dedup state
+- [10] post-read-handler.js: Skip save when context state unchanged
+- [12] log-override.js: process.exit(0) after quick mode
+- [13] run-alerts.js: Rating key `no_reason` → `no_reason_pct`
+- [14] commit-tracker.js: Branch regex simplified
+- [15] pre-compaction-save.js: NUL-separated git status (-z flag)
+- [16] alerts-reminder.js: Atomic cooldown write
+- [17] rotate-state.js: Math.max(1) prevents truncation to 0
+- [18] check-remote-session-context.js: Atomic cache write + init order fix
+- [19] post-write-validator.js: 30-day agent suggestion pruning
+- [20] AUDIT_TRACKER.md: ~30 broken doc links fixed (agent)
+- [21] ROADMAP.md + MASTER_DEBT.jsonl: Orphaned DEBT refs + missing entries
+  (agent)
+
+**Deferred (6 items):**
+
+- [3-7] Qodo compliance (symlink audit trails, integration tests, audit logging)
+  → DEBT-2951 through DEBT-2955
+- [8] HookRunner framework proposal → DEBT-2956
 
 ---
 
