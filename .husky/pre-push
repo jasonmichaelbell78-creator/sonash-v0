@@ -2,6 +2,16 @@
 # Pre-push hook - Additional gate before pushing to remote
 # This blocks pushes if checks fail
 
+# Shared guard: any SKIP_ override requires SKIP_REASON (Session #162)
+require_skip_reason() {
+  if [ -z "${SKIP_REASON:-}" ]; then
+    echo "  ❌ SKIP_REASON is required when overriding checks"
+    echo "  Usage: SKIP_REASON=\"your reason\" $1 git push ..."
+    echo "  The audit trail is useless without a reason."
+    exit 1
+  fi
+}
+
 echo "🚀 Running pre-push checks..."
 
 # 1. Tests already run in pre-commit (Quick Win - Session #113)
@@ -48,12 +58,13 @@ if [ -n "${script_changes:-}" ]; then
     printf '%s\n' "$script_changes" | while read -r f; do echo "    - $f"; done
     echo ""
     echo "  Run code-reviewer before pushing script changes."
-    echo "  Use: SKIP_REVIEWER=1 git push to bypass (not recommended)"
+    echo "  Use: SKIP_REASON=\"reason\" SKIP_REVIEWER=1 git push to bypass (not recommended)"
     if [ "${SKIP_REVIEWER:-}" != "1" ]; then
       exit 1
     fi
     echo "  ⚠️ Bypassed with SKIP_REVIEWER=1"
-    node scripts/log-override.js --quick --check=reviewer --reason="${SKIP_REASON:-No reason}" 2>/dev/null || true
+    require_skip_reason "SKIP_REVIEWER=1"
+    node scripts/log-override.js --quick --check=reviewer --reason="$SKIP_REASON" 2>/dev/null || true
     node scripts/append-hook-warning.js --hook=pre-push --type=reviewer --severity=warning --message="Code-reviewer bypassed for script changes" --action="Run code-reviewer agent" 2>/dev/null || true
   else
     echo "  ✅ Code-reviewer was invoked for script changes"
@@ -143,9 +154,10 @@ fi
 # Checks: security_audit (files with auth/token/etc.), consolidation, skill_validation
 echo "  ▶ Checking event-based triggers..."
 if [ "${SKIP_TRIGGERS:-}" = "1" ]; then
+  require_skip_reason "SKIP_TRIGGERS=1"
   echo "  ⚠️ Triggers skipped (SKIP_TRIGGERS=1)"
   # Log the override for audit trail with reason
-  node scripts/log-override.js --check=triggers --reason="${SKIP_REASON:-No reason provided}" 2>/dev/null || true
+  node scripts/log-override.js --check=triggers --reason="$SKIP_REASON" 2>/dev/null || true
 else
   triggers_output=$(npm run triggers:check 2>&1)
   triggers_exit=$?
@@ -153,7 +165,7 @@ else
     echo "  ❌ Blocking trigger(s) activated"
     printf '%s\n' "$triggers_output" | grep -E "^🚫|^❌|^   Action:|^   Files:" | head -20
     echo ""
-    echo "  Complete required actions or use: SKIP_TRIGGERS=1 git push"
+    echo "  Complete required actions or use: SKIP_REASON=\"reason\" SKIP_TRIGGERS=1 git push"
     exit 1
   elif [ $triggers_exit -eq 0 ]; then
     # Show warnings but don't block

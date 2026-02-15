@@ -108,7 +108,7 @@ const BENCHMARKS = {
   skip_abuse: {
     overrides_24h: { good: 0, average: 1, poor: 3 },
     overrides_7d: { good: 0, average: 3, poor: 6 },
-    no_reason_pct: { good: 0, average: 10, poor: 25 },
+    no_reason_pct: { good: 0, average: 1, poor: 5 },
   },
 };
 

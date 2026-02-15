@@ -98,6 +98,28 @@ function getStagedFiles() {
 }
 
 /**
+ * Get staged files filtered by git diff-filter (A=added, D=deleted, M=modified, etc.)
+ * Used by rules with gitFilter to only trigger on specific change types.
+ */
+function getStagedFilesFiltered(filter) {
+  try {
+    const output = execFileSync(
+      "git",
+      ["diff", "--cached", "--name-only", `--diff-filter=${filter}`],
+      {
+        encoding: "utf-8",
+      }
+    );
+    return output
+      .trim()
+      .split("\n")
+      .filter((f) => f.length > 0);
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Check if a diff pattern exists in staged changes for a file
  */
 function checkDiffPattern(file, pattern) {
@@ -260,6 +282,18 @@ function checkDependencies() {
 
     logVerbose(`Rule triggered: ${rule.trigger}`);
 
+    // If rule has gitFilter, only fire when matching files have the specified change type
+    // e.g., gitFilter: "AD" means only fire when files are Added or Deleted, not Modified
+    if (rule.gitFilter) {
+      const filteredFiles = getStagedFilesFiltered(rule.gitFilter);
+      if (!matchesTrigger(filteredFiles, rule.trigger)) {
+        logVerbose(
+          `Rule skipped (gitFilter "${rule.gitFilter}" — no matching changes): ${rule.trigger}`
+        );
+        continue;
+      }
+    }
+
     // If rule requires diff check, verify the pattern exists
     if (rule.checkDiff) {
       const triggerFile = stagedFiles.find(
@@ -364,6 +398,15 @@ function checkDependencies() {
 try {
   // Allow override via environment variable
   if (process.env.SKIP_CROSS_DOC_CHECK === "1") {
+    if (!process.env.SKIP_REASON) {
+      log("❌ SKIP_REASON is required when overriding checks", colors.red);
+      log(
+        '   Usage: SKIP_REASON="your reason" SKIP_CROSS_DOC_CHECK=1 git commit ...',
+        colors.yellow
+      );
+      log("   The audit trail is useless without a reason.", colors.red);
+      process.exit(1);
+    }
     try {
       execFileSync(
         "node",
@@ -371,7 +414,7 @@ try {
           "scripts/log-override.js",
           "--quick",
           "--check=cross-doc",
-          `--reason=${process.env.SKIP_REASON || "No reason"}`,
+          `--reason=${process.env.SKIP_REASON}`,
         ],
         { timeout: 3000, stdio: "pipe" }
       );
