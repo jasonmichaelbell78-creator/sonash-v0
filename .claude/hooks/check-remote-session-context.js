@@ -38,6 +38,7 @@ function updateFetchCache() {
   const tmpPath = `${FETCH_CACHE_FILE}.tmp`;
   try {
     if (!isSafeToWrite(FETCH_CACHE_FILE)) return;
+    if (!isSafeToWrite(tmpPath)) return;
     fs.mkdirSync(path.dirname(FETCH_CACHE_FILE), { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify({ lastFetch: Date.now() }), "utf-8");
     try {

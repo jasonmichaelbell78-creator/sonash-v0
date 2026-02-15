@@ -21,6 +21,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 
 // ─── Optional dependency: sanitizeFilesystemError ────────────────────────────
 let sanitizeFilesystemError;
@@ -935,11 +936,7 @@ function agentTriggerEnforcer() {
   // Write state (atomic: tmp + rename)
   const tmpPath = `${statePath}.tmp`;
   try {
-    try {
-      if (fs.existsSync(statePath) && fs.lstatSync(statePath).isSymbolicLink()) return;
-    } catch {
-      return;
-    }
+    if (!isSafeToWrite(statePath)) return;
     fs.mkdirSync(path.dirname(statePath), { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
     try {
@@ -1032,12 +1029,7 @@ function agentTriggerEnforcer() {
     // Write review queue (atomic)
     const tmpReviewPath = `${reviewQueuePath}.tmp`;
     try {
-      try {
-        if (fs.existsSync(reviewQueuePath) && fs.lstatSync(reviewQueuePath).isSymbolicLink())
-          return;
-      } catch {
-        return;
-      }
+      if (!isSafeToWrite(reviewQueuePath)) return;
       fs.mkdirSync(path.dirname(reviewQueuePath), { recursive: true });
       fs.writeFileSync(tmpReviewPath, JSON.stringify(reviewQueue, null, 2));
       try {

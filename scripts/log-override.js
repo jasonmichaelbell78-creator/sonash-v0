@@ -24,6 +24,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { isSafeToWrite } = require("../.claude/hooks/lib/symlink-guard");
 
 // Shared rotation helper (entry-count-based)
 let rotateJsonl;
@@ -164,12 +165,13 @@ function logOverride(check, reason) {
       }
     }
 
+    if (!isSafeToWrite(OVERRIDE_LOG)) return null;
     fs.appendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
 
     // Entry-count-based rotation (keep 60 of last 100, only when file exceeds 64KB)
     try {
       if (rotateJsonl) {
-        const { size } = fs.statSync(OVERRIDE_LOG);
+        const { size } = fs.lstatSync(OVERRIDE_LOG);
         if (size > 64 * 1024) {
           rotateJsonl(OVERRIDE_LOG, 100, 60);
         }

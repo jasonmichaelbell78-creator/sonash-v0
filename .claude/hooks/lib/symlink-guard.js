@@ -20,6 +20,9 @@ const path = require("node:path");
  */
 function isSafeToWrite(filePath) {
   try {
+    // Reject relative paths to prevent bypasses
+    if (!path.isAbsolute(filePath)) return false;
+
     // Check the file itself
     if (fs.existsSync(filePath) && fs.lstatSync(filePath).isSymbolicLink()) {
       return false;

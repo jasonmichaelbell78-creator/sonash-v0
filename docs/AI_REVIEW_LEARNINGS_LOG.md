@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.9 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
+**Document Version:** 17.10 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.10   | 2026-02-15 | Review #322: PR #366 R7 — Comprehensive symlink hardening: path.isAbsolute guard, tmp path guards (7 files), rotate-state.js (4 paths), inline→shared helper migration, commit-tracker author restore. 9 fixed, 3 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.9    | 2026-02-15 | Review #321: PR #366 R6 — Shared symlink-guard.js helper (ancestor traversal), self-healing cooldown, TOCTOU try/catch, milestone string bug, NUL delimiter, directive "ok" output. 11 fixed, 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 17.8    | 2026-02-15 | Review #320: PR #366 R5 — Parent dir symlink, clock skew defense, prototype pollution (Object.create(null)), getContent symlink read, size-based rotation. 8 fixed, 1 already-tracked.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.7    | 2026-02-15 | Review #319: PR #366 R4 — Symlink write guard, future timestamp defense, file list caps, skip-abuse 24h/7d bug fix, CRLF JSONL trim, Number.isFinite cooldown. 6 fixed, 3 already-tracked.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -611,6 +612,37 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #322: PR #366 R7 — Comprehensive Symlink Guard Hardening (2026-02-15)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #366) **Suggestions:** 12 total (Fixed: 9,
+Rejected: 3 compliance)
+
+**Key pattern:** Every atomic write needs `isSafeToWrite()` on BOTH the target
+file AND the `.tmp` file. R6 created the shared helper but missed tmp paths.
+
+**Fixes applied:**
+
+- `symlink-guard.js`: Added `path.isAbsolute()` check — reject relative paths
+- `post-write-validator.js`: Replaced 2 inline TOCTOU checks with shared
+  `isSafeToWrite` import
+- `analyze-user-request.js`: Added `isSafeToWrite` import + guard on directive
+  write (standalone file missed in R6)
+- `rotate-state.js`: Added `isSafeToWrite` guards on all 4 atomic write paths
+- `log-override.js`: Added symlink guard + `lstatSync` instead of `statSync`
+- `check-remote-session-context.js`, `post-read-handler.js`,
+  `user-prompt-handler.js`: Added `isSafeToWrite(tmpPath)` guards
+- `commit-tracker.js`: Restored `author`/`authorDate` fields in git log format
+
+**Rejected:** 3 compliance items (silent catch blocks are intentional fail-safe,
+sanitizeFilesystemError already sanitizes, log snippets are code not PII)
+
+**Lesson:** When introducing a shared security helper, audit ALL write paths in
+one pass — including tmp files, backup files, and standalone copies of
+consolidated functions.
 
 ---
 

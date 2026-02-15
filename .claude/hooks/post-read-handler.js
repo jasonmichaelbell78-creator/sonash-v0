@@ -97,6 +97,8 @@ function saveJson(filePath, data) {
   try {
     // Refuse writes to symlinks or into symlinked directories (file + all ancestors)
     if (!isSafeToWrite(filePath)) return false;
+    if (!isSafeToWrite(tmpPath)) return false;
+    if (!isSafeToWrite(bakPath)) return false;
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));

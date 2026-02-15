@@ -25,6 +25,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 
 // Get user request from arguments (trim to handle whitespace)
 let userRequest = (process.argv[2] || "").trim();
@@ -86,6 +87,7 @@ function recordDirective(directive) {
 
   const tmpPath = `${DIRECTIVE_STATE}.tmp`;
   try {
+    if (!isSafeToWrite(DIRECTIVE_STATE)) return;
     fs.mkdirSync(path.dirname(DIRECTIVE_STATE), { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(data), "utf-8");
     try {

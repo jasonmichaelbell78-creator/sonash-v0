@@ -12,6 +12,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./symlink-guard");
 
 /**
  * Rotate a JSONL file to keep only the newest N entries.
@@ -35,6 +36,8 @@ function rotateJsonl(filePath, maxEntries, keepCount) {
 
     const kept = lines.slice(-keep);
     const tmpPath = `${filePath}.tmp`;
+    if (!isSafeToWrite(filePath) || !isSafeToWrite(tmpPath))
+      return { rotated: false, before: lines.length, after: lines.length };
     fs.writeFileSync(tmpPath, kept.join("\n") + "\n", "utf-8");
     try {
       fs.rmSync(filePath, { force: true });
@@ -80,6 +83,8 @@ function pruneJsonKey(filePath, keyPath, maxEntries) {
     parent[lastKey] = arr.slice(-maxEntries);
 
     const tmpPath = `${filePath}.tmp`;
+    if (!isSafeToWrite(filePath) || !isSafeToWrite(tmpPath))
+      return { pruned: false, before, after: before };
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2), "utf-8");
     try {
       fs.rmSync(filePath, { force: true });
@@ -129,6 +134,8 @@ function expireByAge(filePath, maxDays) {
     if (after === before) return { expired: false, before, after };
 
     const tmpPath = `${filePath}.tmp`;
+    if (!isSafeToWrite(filePath) || !isSafeToWrite(tmpPath))
+      return { expired: false, before, after: before };
     fs.writeFileSync(tmpPath, JSON.stringify(kept, null, 2), "utf-8");
     try {
       fs.rmSync(filePath, { force: true });
@@ -173,6 +180,8 @@ function expireJsonlByAge(filePath, maxDays, timestampField) {
     if (after === before) return { expired: false, before, after };
 
     const tmpPath = `${filePath}.tmp`;
+    if (!isSafeToWrite(filePath) || !isSafeToWrite(tmpPath))
+      return { expired: false, before, after: before };
     fs.writeFileSync(tmpPath, kept.join("\n") + "\n", "utf-8");
     try {
       fs.rmSync(filePath, { force: true });

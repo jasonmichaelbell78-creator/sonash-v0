@@ -112,6 +112,7 @@ function runAlerts() {
   const tmpCooldown = `${COOLDOWN_FILE}.tmp`;
   try {
     if (!isSafeToWrite(COOLDOWN_FILE)) return;
+    if (!isSafeToWrite(tmpCooldown)) return;
     fs.mkdirSync(path.dirname(COOLDOWN_FILE), { recursive: true });
     fs.writeFileSync(tmpCooldown, JSON.stringify({ lastRun: Date.now() }), "utf-8");
     try {
