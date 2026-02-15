@@ -96,63 +96,19 @@ If new large files exist:
 
 ## STEP 0: CONTEXT LOADING (Tiered Access)
 
-### 0.1 Episodic Memory Search (Session #128)
+### 0.1 Episodic Memory Search
 
-**BEFORE loading tiered docs, search episodic memory for relevant past
-reviews:**
-
-```javascript
-// Search for past reviews on similar files/patterns
-mcp__plugin_episodic -
-  memory_episodic -
-  memory__search({
-    query: ["pr-review", "CodeRabbit", "pattern"],
-    limit: 5,
-  });
-
-// Or search for specific error patterns you're about to address
-mcp__plugin_episodic -
-  memory_episodic -
-  memory__search({
-    query: "key phrase from review feedback",
-    limit: 5,
-  });
-```
-
-**Why this matters:**
-
-- Same patterns may have been addressed in prior PRs
-- Past reviews contain root cause analysis and learnings
-- Prevents re-investigating issues that were resolved before
-- Reveals recurring patterns that need architectural attention
-
-**If memory shows prior occurrence:**
-
-1. Read the past conversation for context
-2. Check if the same pattern/fix applies
-3. Note if this is a recurring issue (should escalate)
-
-**If no memory found:** Proceed to tiered document loading.
+Search episodic memory for relevant past reviews before loading docs. Check if
+same patterns were addressed in prior PRs to avoid re-investigating.
 
 ### 0.2 Tiered Document Loading
 
-Before processing, load context using the tiered model:
-
-**Tier 1 (Always):**
-
-1. **Read** `claude.md` (root) - Critical anti-patterns + progressive disclosure
-   pointers
-
-**Tier 2 (Quick Lookup):** 2. **Read** `docs/AI_REVIEW_LEARNINGS_LOG.md` (first
-200 lines) - Quick Index + consolidation status 2b. **Read**
-`docs/agent_docs/FIX_TEMPLATES.md` - Copy-paste fixes for top 20 Qodo findings
-
-**Tier 3 (When Investigating):** 3. **Read** specific review entries only when
-checking similar past issues 4. **Read** `docs/AI_REVIEW_PROCESS.md` only if
-process clarification needed
-
-**Tier 4 (Historical - rarely needed):** 5. **Read**
-`docs/archive/REVIEWS_1-40.md` only for deep historical investigation
+| Tier | When          | Documents                                                                               |
+| ---- | ------------- | --------------------------------------------------------------------------------------- |
+| 1    | Always        | `claude.md` (root)                                                                      |
+| 2    | Quick Lookup  | `docs/AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines), `docs/agent_docs/FIX_TEMPLATES.md` |
+| 3    | Investigating | Specific review entries, `docs/AI_REVIEW_PROCESS.md`                                    |
+| 4    | Rarely        | `docs/archive/REVIEWS_1-40.md`                                                          |
 
 ---
 
@@ -194,95 +150,21 @@ categorization."
 
 ### 1.4 Validate Critical Claims (IMPORTANT)
 
-> ⚠️ **AI reviewers can generate false positives** by inferring problems from
-> current state without verifying historical context.
-
-**BEFORE accepting "data loss", "missing content", or "missing files" claims:**
-
-1. **Verify via git history** - Don't trust current state alone:
-
-   ```bash
-   N=41
-
-   # Check if file/review ever existed (search common variants)
-   git log --all --oneline --grep="Review #$N" --grep="Review $N" -- docs/
-
-   # Optional: case-insensitive search if naming varies
-   git log --all --oneline -i --grep="review #$N" --grep="review $N" -- docs/
-
-   # Follow renames/moves when inspecting file history
-   git log --all --follow -p -- path/to/file.ext | head -100
-   ```
-
-2. **Common false positives to watch for:**
-   - **Range gap misinterpretation**: "Archive #42-60, active #61-82" → AI
-     infers "#41 missing" without checking if #41 was ever created
-   - **Numbering skips**: Review numbers or IDs may have intentional/accidental
-     gaps
-   - **File moves**: AI sees "file missing from location X" without checking if
-     it moved to location Y
-
-3. **If claim is FALSE POSITIVE:**
-   - Mark as **REJECTED** in categorization
-   - Document the verification in the review entry
-   - Include pattern in learning entry (helps train future reviews)
-
-**Example from Review #83:**
-
-- Qodo flagged "Review #41 data loss" (Critical severity)
-- Investigation: `git log --grep "#41"` showed Review #41 was NEVER created
-- Reality: Numbering jumped #40→#42 (intentional/accidental skip)
-- Result: REJECTED as false positive, documented as new pattern
-
-**When in doubt**: Spend 2 minutes verifying via git history rather than wasting
-hours fixing non-existent problems.
+**BEFORE accepting "data loss" or "missing content" claims**, verify via
+`git log --all --grep` and `git log --follow`. Common false positives: range gap
+misinterpretation, intentional numbering skips, file moves. If FALSE POSITIVE:
+mark REJECTED and document verification.
 
 ---
 
 ## STEP 1.5: SONARCLOUD ENRICHMENT (Automatic)
 
-**When SonarCloud issues are detected in pasted feedback**, automatically fetch
-code snippets via the SonarCloud MCP to get specific code context.
+When SonarCloud issues are detected in pasted feedback, auto-fetch code snippets
+for specific context. Triggers on `javascript:S####` rule IDs, "Security
+Hotspot"/"Code Smell"/"Bug" labels, or SonarCloud file paths.
 
-### Detection Triggers
-
-Look for these patterns in pasted content:
-
-- `javascript:S####` or `typescript:S####` rule IDs
-- "Security Hotspot" / "Code Smell" / "Bug" labels
-- SonarCloud file paths like `owner_repo:path/to/file.js`
-- References to SonarCloud review priority (HIGH/MEDIUM/LOW)
-
-### Auto-Enrichment Steps
-
-When SonarCloud issues detected:
-
-```bash
-# Set project key from environment or use default
-SONAR_PROJECT_KEY=${SONAR_PROJECT_KEY:-"jasonmichaelbell78-creator_sonash-v0"}
-
-# 1. Fetch issue details with code snippets
-curl -fsSL "https://sonarcloud.io/api/issues/search?componentKeys=${SONAR_PROJECT_KEY}&rules=<rule_id>&ps=100" | jq '.issues[] | {file: .component, line: .line, message: .message, rule: .rule}'
-
-# 2. For security hotspots, fetch with status
-curl -fsSL "https://sonarcloud.io/api/hotspots/search?projectKey=${SONAR_PROJECT_KEY}&status=TO_REVIEW&ps=100" | jq '.hotspots[] | {file: .component, line: .line, message: .message, rule: .securityCategory}'
-```
-
-**Or use MCP tools:**
-
-```
-mcp__sonarcloud__<tool>
-```
-
-### Why This Matters
-
-Pasted SonarCloud feedback often lacks:
-
-- Actual code snippets showing the issue
-- Full context around the flagged line
-- Related issues in the same file
-
-Auto-enrichment ensures you see the EXACT code before fixing.
+> **Details:** See
+> [reference/SONARCLOUD_ENRICHMENT.md](reference/SONARCLOUD_ENRICHMENT.md)
 
 ---
 
@@ -299,14 +181,14 @@ Categorize EVERY suggestion using this matrix:
 | **MINOR**    | Code style, naming, missing tests, doc improvements, library recommendations | Fix (don't defer unless truly complex) |
 | **TRIVIAL**  | Typos, whitespace, comment clarity, formatting                               | **FIX THESE TOO** - no skipping        |
 
-**Origin (MANDATORY — classify every item):**
+**Origin (MANDATORY -- classify every item):**
 
-| Origin                    | Criteria                                                | Action                                                         |
-| ------------------------- | ------------------------------------------------------- | -------------------------------------------------------------- |
-| **This-PR**               | Introduced by current PR's changes                      | Must fix — this is your code                                   |
-| **Pre-existing, fixable** | Not from this PR, but small enough to fix now (< 5 min) | Fix it now — don't leave broken windows                        |
-| **Pre-existing, complex** | Not from this PR, would take > 5 min or unfamiliar code | Track via `/add-debt` with DEBT-XXXX ID (mandatory)            |
-| **Architectural**         | Requires design discussion or large-scale refactoring   | Flag to user — do NOT silently dismiss or defer without asking |
+| Origin                    | Criteria                                                | Action                                                          |
+| ------------------------- | ------------------------------------------------------- | --------------------------------------------------------------- |
+| **This-PR**               | Introduced by current PR's changes                      | Must fix -- this is your code                                   |
+| **Pre-existing, fixable** | Not from this PR, but small enough to fix now (< 5 min) | Fix it now -- don't leave broken windows                        |
+| **Pre-existing, complex** | Not from this PR, would take > 5 min or unfamiliar code | Track via `/add-debt` with DEBT-XXXX ID (mandatory)             |
+| **Architectural**         | Requires design discussion or large-scale refactoring   | Flag to user -- do NOT silently dismiss or defer without asking |
 
 > **"Pre-existing" and "out of scope" are never valid reasons to skip an
 > issue.** Every item must be either fixed, tracked with a DEBT ID, or
@@ -334,24 +216,10 @@ Categorize EVERY suggestion using this matrix:
 
 ## STEP 3: CREATE TODO LIST
 
-Use **TodoWrite** to create trackable items:
+Use **TodoWrite** to create trackable items for ALL issues (including TRIVIAL).
 
-```
-todos:
-- content: "Add Review #TBD stub to AI_REVIEW_LEARNINGS_LOG.md"
-  status: "in_progress"
-  activeForm: "Adding Review #TBD stub to learnings log"
-- content: "Fix CRITICAL: [issue description]"
-  status: "pending"
-  activeForm: "Fixing CRITICAL: [issue]"
-- content: "Fix MAJOR: [issue description]"
-  status: "pending"
-  activeForm: "Fixing MAJOR: [issue]"
-... (include ALL items, including TRIVIAL)
-```
-
-**CRITICAL RULE**: The learning log entry is ALWAYS the FIRST todo item. Use
-`#TBD` as the review number — it will be finalized in Step 7.
+**CRITICAL RULE**: The learning log entry (`#TBD` stub) is ALWAYS the FIRST todo
+item. Review number finalized in Step 7.
 
 ---
 
@@ -361,7 +229,7 @@ todos:
 
 **Use PARALLEL agents when:**
 
-- Total suggestions ≥ 20 items
+- Total suggestions >= 20 items
 - Multiple distinct files affected (3+ files)
 - Issues span multiple concern areas (security + code quality + docs)
 - User explicitly requests "multiple agents" or "parallel"
@@ -386,64 +254,13 @@ todos:
 | Architecture concerns    | `backend-architect` or `frontend-developer` agent |
 | General code quality     | `code-reviewer` agent                             |
 
-### 4.3 Parallel Agent Strategy (for 20+ items)
+### 4.3-4.5 Parallel Agent Strategy
 
-**Step 1: Group issues by concern area:**
+For 20+ items: group by concern area, batch into max 4 parallel agents, launch
+via Task tool, then collect and verify results.
 
-```
-Security Issues:      [1, 5, 12] → security-auditor agent
-Documentation Issues: [3, 8]     → technical-writer agent
-Script Files:         [2, 4, 6]  → code-reviewer agent (scripts)
-TypeScript Files:     [7, 9-11]  → code-reviewer agent (TS/React)
-```
-
-**Step 2: Create parallel batches:**
-
-- Batch by file type OR concern area (whichever produces fewer batches)
-- Maximum 4 parallel agents at once (avoid context overload)
-- Each agent gets specific file list + issue numbers
-
-**Step 3: Launch agents in parallel:**
-
-```
-Use Task tool with MULTIPLE invocations in SINGLE message:
-
-Agent 1: security-auditor
-- Prompt: "Fix security issues [1, 5, 12] in files: check-external-links.js
-  Issues: SSRF vulnerability, timeout validation, ..."
-
-Agent 2: code-reviewer
-- Prompt: "Fix code quality issues [2, 4, 6] in files: check-doc-placement.js
-  Issues: Regex precedence, .planning exclusion, ..."
-
-Agent 3: technical-writer
-- Prompt: "Fix documentation issues [3, 8] in file: SKILL.md
-  Issues: Shell redirection order, code fence syntax, ..."
-```
-
-**Step 4: Collect and verify results:**
-
-- All agents return to orchestrator when complete
-- Run verification: `npm run lint && npm run patterns:check`
-- Check for any merge conflicts in overlapping files
-
-### 4.4 Parallel Execution Benefits
-
-| Metric     | Sequential        | Parallel (4 agents) |
-| ---------- | ----------------- | ------------------- |
-| Speed      | N issues × T time | ~N/4 × T time       |
-| Accuracy   | Context fatigue   | Fresh context each  |
-| Expertise  | Generalist        | Domain specialists  |
-| Throughput | ~20 items/session | ~80+ items/session  |
-
-### 4.5 When NOT to Parallelize
-
-- ❌ Issues have dependencies (fix A before B)
-- ❌ All issues in single file (one agent is sufficient)
-- ❌ User requests sequential processing
-- ❌ Critical security issues (need focused attention)
-
-**Invoke using Task tool** with specific issues to address.
+> **Details:** See
+> [reference/PARALLEL_AGENT_STRATEGY.md](reference/PARALLEL_AGENT_STRATEGY.md)
 
 ---
 
@@ -473,7 +290,7 @@ Agent 3: technical-writer
 ### 5.3 Pre-existing Items
 
 Pre-existing fixable items (Origin: "Pre-existing, fixable") get fixed alongside
-PR items in the normal priority flow. They do not need separate commits — batch
+PR items in the normal priority flow. They do not need separate commits -- batch
 them with related fixes by file or concern area.
 
 **Do not skip these because they "aren't from this PR."** The review surfaced
@@ -492,7 +309,7 @@ After all fixes:
 
 If the same file appears in 3+ consecutive review rounds:
 
-1. **Stop fixing incrementally** — read ALL remaining suggestions holistically
+1. **Stop fixing incrementally** -- read ALL remaining suggestions holistically
 2. Fix everything in one batch, then push once
 3. This prevents the "fix one, break another" ping-pong pattern
 
@@ -506,239 +323,64 @@ below. **Every non-fixed item MUST have a DEBT ID or explicit user sign-off.**
 ### Deferred Items (if any)
 
 Every deferred item requires a DEBT-XXXX tracking ID. "Out of scope" and
-"pre-existing" are NOT valid deferral reasons on their own — you must explain
-specifically what makes this too complex to fix now.
+"pre-existing" are NOT valid deferral reasons on their own.
 
 ```
 ### Deferred (X items)
 - [N] <issue>
   - **Origin**: Pre-existing, complex / Architectural
-  - **DEBT ID**: DEBT-XXXX (MANDATORY — created via /add-debt)
-  - **Why not now**: <specific reason — e.g., "requires refactoring 8 files
-    that share this pattern" or "needs design discussion on caching strategy">
-  - **Estimated effort**: <rough size — e.g., "~2 hours", "half-day">
+  - **DEBT ID**: DEBT-XXXX (MANDATORY -- created via /add-debt)
+  - **Why not now**: <specific reason>
+  - **Estimated effort**: <rough size>
 ```
 
 ### Architectural Items (flagged to user)
 
 Items classified as "Architectural" origin must be explicitly raised to the
-user. Do NOT silently defer these — present them and ask for direction.
-
-```
-### Architectural (X items — NEEDS USER INPUT)
-- [N] <issue>
-  - **What**: <description of the architectural concern>
-  - **Options**: <2-3 possible approaches>
-  - **Impact if deferred**: <what gets worse if we don't address this>
-```
+user. Do NOT silently defer these -- present them and ask for direction.
 
 ### Rejected Items (if any - should be rare)
 
 ```
 ### Rejected (X items)
 - [N] <issue>
-  - **Reason**: <specific justification — must be concrete, not "out of scope">
+  - **Reason**: <specific justification -- must be concrete>
   - **Reference**: <user requirement or design decision>
 ```
 
-**NOTE**: For this protocol, lean heavily toward FIXING over deferring. Even
-trivial items should be fixed. Nothing gets silently dismissed.
+**NOTE**: Lean heavily toward FIXING over deferring. Even trivial items should
+be fixed. Nothing gets silently dismissed.
 
 ---
 
 ## STEP 6.5: TDMS INTEGRATION (Deferred Items)
 
-When items are deferred during PR review, they MUST be ingested into the
-Technical Debt Management System (TDMS) for tracking.
+When items are deferred, they MUST be ingested into TDMS. Use `/add-debt` to
+create entries with proper severity mapping (CRITICAL->S0, MAJOR->S1, MINOR->S2,
+TRIVIAL->S3).
 
-### 6.5.1 For Each Deferred Item
-
-Use the `/add-debt` skill to create TDMS entries:
-
-```
-/add-debt
-```
-
-The skill will prompt for required fields:
-
-- **ID**: Auto-generated DEBT-XXXX
-- **Title**: Brief description of the issue
-- **File/Line**: Location from the review
-- **Severity**: Map from review category:
-  - CRITICAL → S0 (Blocker)
-  - MAJOR → S1 (Critical)
-  - MINOR → S2 (Major)
-  - TRIVIAL → S3 (Minor)
-- **Source**: `pr-review-#N` (review number)
-- **Reason**: Why deferred
-
-### 6.5.2 Tracking Resolution
-
-When the deferred issue is later fixed:
-
-1. Include `DEBT-XXXX` in the PR body's "Technical Debt" section
-2. The `resolve-debt.yml` workflow auto-resolves it on merge
-3. Or use: `node scripts/debt/resolve-item.js DEBT-XXXX --pr <PR#>`
-
-### 6.5.3 Quick Reference
-
-```bash
-# Add deferred item manually
-node scripts/debt/intake-pr-deferred.js <JSONL_FILE>
-
-# View all PR-review sourced items
-grep '"source":"pr-review' docs/technical-debt/MASTER_DEBT.jsonl
-
-# Resolve when fixed
-node scripts/debt/resolve-item.js DEBT-XXXX --pr 123
-```
-
-**See**: `docs/technical-debt/PROCEDURE.md` for full TDMS workflow.
+> **Details:** See
+> [reference/TDMS_INTEGRATION.md](reference/TDMS_INTEGRATION.md)
 
 ---
 
 ## STEP 7: LEARNING CAPTURE (MANDATORY)
 
-### 7.1 Finalize Review Number
+Finalize the review number (deferred from Step 3 to avoid collisions), complete
+the learning entry with patterns, resolution stats, and key learnings. Update
+the Quick Index if new pattern categories emerge.
 
-**Why deferred numbering**: Review numbers were previously assigned in Step 3
-(at plan time), which caused numbering collisions when multiple PRs were
-processed in parallel or across overlapping sessions. Now, the placeholder
-`#TBD` is used until this step, where the final number is assigned at commit
-time.
-
-```bash
-# Count reviews in both active log and archive (robust edge case handling)
-active=0
-if [ -f docs/AI_REVIEW_LEARNINGS_LOG.md ]; then
-  active=$(grep -c "#### Review #" docs/AI_REVIEW_LEARNINGS_LOG.md || true)
-  active=${active:-0}
-fi
-
-archived=0
-# Use find to handle multiple archive files and cases where none exist
-if [ -d docs/archive ]; then
-  # The find command is robust against no-match errors
-  archived_files=$(find docs/archive -type f -name "REVIEWS_*.md" 2>/dev/null)
-  if [ -n "$archived_files" ]; then
-    archived=$(grep -ch "#### Review #" $archived_files 2>/dev/null | awk '{s+=$1} END {print s+0}')
-    archived=${archived:-0}
-  fi
-fi
-
-echo "Total reviews: $((active + archived))"
-```
-
-Add 1 to the total to get the next review number. Then **replace all `#TBD`
-occurrences** in the learning entry with the final number.
-
-### 7.2 Create Learning Entry
-
-Complete the `#TBD` stub created in Step 3. Replace `#TBD` with the final review
-number and fill in all fields:
-
-```markdown
-#### Review #N: <Brief Description> (YYYY-MM-DD)
-
-**Source:** CodeRabbit PR / Qodo Compliance / Mixed **PR/Branch:**
-<branch name or PR number> **Suggestions:** X total (Critical: X, Major: X,
-Minor: X, Trivial: X)
-
-**Patterns Identified:**
-
-1. [Pattern name]: [Description]
-   - Root cause: [Why this happened]
-   - Prevention: [What to add/change]
-
-**Resolution:**
-
-- Fixed: X items
-- Deferred: X items (with tracking)
-- Rejected: X items (with justification)
-
-**Key Learnings:**
-
-- <Learning 1>
-- <Learning 2>
-```
-
-### 7.3 Update Quick Index
-
-If a new pattern category emerges, add it to the Quick Pattern Index section.
-
-### 7.4 Consolidation (Automated)
-
-Consolidation is fully automated via JSONL state files. No manual counter
-updates are needed. The system auto-triggers when 10+ reviews accumulate:
-
-- **State:** `.claude/state/consolidation.json`
-- **Reviews:** `.claude/state/reviews.jsonl`
-- **Auto-trigger:** Runs at session-start via `run-consolidation.js --auto`
-
-### 7.5 Health Check (Every 10 Reviews)
-
-Check document health metrics:
-
-```bash
-wc -l docs/AI_REVIEW_LEARNINGS_LOG.md
-```
-
-**Archival Criteria** (ALL must be true before archiving reviews):
-
-1. Log exceeds 1500 lines
-2. Reviews have been consolidated into claude.md Section 4
-3. At least 10 reviews in the batch being archived
-4. Archive to `docs/archive/REVIEWS_X-Y.md`
-
-If criteria met, archive oldest consolidated batch and update Tiered Access
-table.
+> **Details:** See
+> [reference/LEARNING_CAPTURE.md](reference/LEARNING_CAPTURE.md)
 
 ---
 
 ## STEP 8: FINAL SUMMARY
 
-Provide structured output:
-
-```markdown
-## PR Review Processing Complete
-
-### Statistics
-
-- **Total Suggestions:** N
-- **Fixed:** N (X Critical, X Major, X Minor, X Trivial)
-- **Deferred:** N
-- **Rejected:** N
-
-### Files Modified
-
-- `path/to/file1.ts` - [issues fixed]
-- `path/to/file2.md` - [issues fixed]
-
-### Agents Invoked
-
-- `security-auditor` - for [issues]
-- `test-engineer` - for [issues]
-
-### Learning Entry
-
-- Added Review #N to AI_REVIEW_LEARNINGS_LOG.md
-
-### TDMS Items
-
-- Deferred: X items added as DEBT-XXXX (or "none")
-- See: `docs/technical-debt/MASTER_DEBT.jsonl`
-
-### Verification Status
-
-- [ ] All original suggestions cross-referenced
-- [ ] Linter passing (or N/A)
-- [ ] Tests passing (or N/A)
-- [ ] Learning entry created
-
-### Ready for Commit
-
-<commit message suggestion following project conventions>
-```
+Provide: Statistics (total/fixed/deferred/rejected by severity), files modified,
+agents invoked, learning entry number, TDMS items, verification checklist
+(suggestions cross-referenced, linter, tests, learning entry), and commit
+message suggestion.
 
 ---
 
@@ -768,60 +410,16 @@ Create commit(s) following project conventions:
     origin, then fix it or track it with a DEBT ID. Architectural items get
     flagged to the user.
 
-## Anti-Patterns to Avoid
-
-- ❌ Skipping trivial items ("not worth fixing")
-- ❌ Deferring minor items without strong justification
-- ❌ Editing files without reading first
-- ❌ Forgetting learning entry
-- ❌ Not using TodoWrite for tracking
-- ❌ Not invoking specialist agents when applicable
-- ❌ Sequential processing of 50+ items when parallel is feasible
-- ❌ Single-pass parsing of large reviews (200+ lines)
-- ❌ Trusting AI claims about "missing data" without git verification
-- ❌ Running more than 4 parallel agents (context overload)
-- ❌ Dismissing issues as "pre-existing" or "out of scope" without fixing or
-  tracking them
-- ❌ Deferring items without a DEBT-XXXX tracking ID
-
----
-
 ## Quick Reference
 
-### Commands to Run
+**Commands:** `npm run lint`, `npm run test`, `npm run patterns:check`
 
-```bash
-# Get next review number
-grep -c "#### Review #" docs/AI_REVIEW_LEARNINGS_LOG.md
-
-# After fixes
-npm run lint
-npm run test
-npm run patterns:check
-```
-
-### Files to Update
-
-1. All files mentioned in review (fixes)
-2. `docs/AI_REVIEW_LEARNINGS_LOG.md` (learning entry - MANDATORY)
-3. Consolidation auto-tracks via `.claude/state/reviews.jsonl`
-
-### Agents Available
-
-| Agent                  | Use For                          |
-| ---------------------- | -------------------------------- |
-| `security-auditor`     | Security vulnerabilities         |
-| `test-engineer`        | Test coverage gaps               |
-| `performance-engineer` | Performance issues               |
-| `technical-writer`     | Documentation issues             |
-| `debugger`             | Complex debugging                |
-| `backend-architect`    | Architecture concerns (backend)  |
-| `frontend-developer`   | Architecture concerns (frontend) |
-| `code-reviewer`        | General code quality             |
+**Files to Update:** All review files + `docs/AI_REVIEW_LEARNINGS_LOG.md`
+(MANDATORY)
 
 ---
 
-## ⚠️ Update Dependencies
+## Update Dependencies
 
 When updating this command (steps, rules, protocol), also update:
 
@@ -830,8 +428,6 @@ When updating this command (steps, rules, protocol), also update:
 | `docs/SLASH_COMMANDS_REFERENCE.md` | `/pr-review` section      | Documentation of this command |
 | `docs/AI_REVIEW_PROCESS.md`        | Related workflow sections | Process documentation         |
 
-**Why this matters:** This is the core PR review protocol.
-
 ---
 
 ## NOW: Ready to process PR review feedback
@@ -839,3 +435,13 @@ When updating this command (steps, rules, protocol), also update:
 Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 **Note:** Copy/paste provides more thorough feedback than automated fetching.
+
+---
+
+## Version History
+
+| Version | Date       | Description                                                |
+| ------- | ---------- | ---------------------------------------------------------- |
+| 2.1     | 2026-02-14 | Extract reference docs: SonarCloud, agents, TDMS, learning |
+| 2.0     | 2026-02-10 | Full protocol with parallel agents, TDMS integration       |
+| 1.0     | 2026-01-15 | Initial version                                            |
