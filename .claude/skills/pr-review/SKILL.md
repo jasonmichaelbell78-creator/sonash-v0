@@ -281,6 +281,10 @@ via Task tool, then collect and verify results.
 - **Read** the file first (never edit without reading)
 - **Understand** the context around the issue
 - **Apply** the fix (use template if available)
+- **PROPAGATION CHECK (MANDATORY)** - After fixing a pattern-based issue, grep
+  the entire codebase for the same pattern and fix ALL instances. See Section
+  5.6 below. This prevents multi-round ping-pong where Qodo finds the same issue
+  in a new file each round.
 - **Verify** the fix doesn't introduce new issues
 - **Mark** todo as completed
 - **Two-strikes regex rule** - If SonarCloud flags the same regex twice, replace
@@ -312,6 +316,50 @@ If the same file appears in 3+ consecutive review rounds:
 1. **Stop fixing incrementally** -- read ALL remaining suggestions holistically
 2. Fix everything in one batch, then push once
 3. This prevents the "fix one, break another" ping-pong pattern
+
+### 5.6 Propagation Check (MANDATORY for Pattern-Based Fixes)
+
+**Problem:** Fixing a pattern in one file while the same pattern exists in 10
+other files causes multi-round ping-pong (Qodo finds a new instance each round).
+
+**Rule:** When a review item describes a **pattern** (not a one-off bug), search
+the entire codebase for all instances BEFORE committing.
+
+**How to identify pattern-based issues:**
+
+- Issue mentions a general practice (e.g., "symlink check", "atomic write",
+  "try/catch around fs call")
+- Fix involves adding/using a shared helper or utility
+- The same code shape exists in multiple files
+- Issue title says "also apply to..." or "missing in other files"
+
+**Propagation workflow:**
+
+1. Fix the reported instance first
+2. Determine the **search pattern** — what does the unfixed version look like?
+3. `grep -rn "PATTERN" .claude/hooks/ scripts/ --include="*.js"` (adjust scope)
+4. Fix ALL matching instances in one pass
+5. If a shared helper was created, verify every write path imports and uses it
+
+**Examples from PR #366 (symlink guard ping-pong):**
+
+- R4: Qodo flagged missing symlink check on 1 write path → fixed 1 path
+- R5: Qodo found 3 more paths → fixed 3
+- R6: Created shared `isSafeToWrite()` but only applied to target files, not tmp
+  files
+- R7: Qodo found tmp paths, standalone files, rotate-state.js → fixed 9 more
+- **What should have happened:** R4 fix + grep for ALL `writeFileSync` +
+  `renameSync` patterns → fix all ~15 paths in one round
+
+**Search patterns for common issues:**
+
+| Issue Type        | Search Pattern                                            |
+| ----------------- | --------------------------------------------------------- |
+| Missing symlink   | `writeFileSync\|renameSync\|appendFileSync` without guard |
+| Missing try/catch | `readFileSync` without surrounding try                    |
+| Atomic write      | `writeFileSync.*tmp` without rm+rename                    |
+| statSync vs lstat | `statSync` (should be `lstatSync` for symlink safety)     |
+| Inline vs shared  | Old inline pattern that should use the new shared helper  |
 
 ---
 
