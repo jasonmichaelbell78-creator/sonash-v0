@@ -168,7 +168,7 @@ folder.
 
 ### Step 3: Load False Positives
 
-Read `docs/audits/FALSE_POSITIVES.jsonl` and note patterns to exclude.
+Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and note patterns to exclude.
 
 ---
 
@@ -199,6 +199,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -223,6 +228,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -246,6 +256,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -271,6 +286,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1D wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -297,6 +317,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1E wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -321,6 +346,11 @@ CRITICAL: You MUST write your findings directly to this file:
 
 Use the Write tool to create this file. Do NOT return findings as text.
 Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1F wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -402,6 +432,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 2A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -436,6 +471,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 2B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -470,6 +510,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 2C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -543,6 +588,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -569,6 +619,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -593,6 +648,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -614,6 +674,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3D wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -696,6 +761,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 4A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -718,6 +788,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 4B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -742,6 +817,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 4C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -815,6 +895,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 5A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -839,6 +924,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 5B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -861,6 +951,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 5C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -943,6 +1038,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 6A wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -977,6 +1077,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 6B wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -999,6 +1104,11 @@ CRITICAL: You MUST write findings directly to this file:
 
 Use the Write tool to create this file. Write one JSON object per line.
 Do NOT return findings as text. Verify the file exists after writing.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 6C wrote N findings to [path]`
+- Do NOT return findings content in your response
 """)
 ```
 
@@ -1149,6 +1259,52 @@ Create `${AUDIT_DIR}/AUTOMATION_AUDIT_REPORT.md`:
 
 [Visual or text representation]
 ```
+
+---
+
+## Interactive Review (MANDATORY — before TDMS intake)
+
+**Do NOT ingest findings into TDMS until the user has reviewed them.**
+
+### Presentation Format
+
+Present findings in **batches of 3-5 items**, grouped by severity (S0 first,
+then S1, S2, S3). Within each severity, group by theme for coherence. Each item
+shows:
+
+```
+### DEBT-XXXX: [Title]
+**Severity:** S_ | **Effort:** E_ | **Confidence:** _%
+**Current:** [What exists now]
+**Suggested Fix:** [Concrete remediation]
+**Acceptance Tests:** [How to verify]
+**Counter-argument:** [Why NOT to do this]
+**Recommendation:** ACCEPT/DECLINE/DEFER — [Reasoning]
+```
+
+Do NOT present all items at once — batches of 3-5 keep decisions manageable.
+Wait for user decisions on each batch before presenting the next.
+
+### Decision Tracking (Compaction-Safe)
+
+Create `${AUDIT_DIR}/REVIEW_DECISIONS.md` after the first batch to track all
+decisions. Update after each batch. This file survives context compaction.
+
+### Processing Decisions
+
+After each batch:
+
+- Record decisions in REVIEW_DECISIONS.md
+- If DECLINED: remove from findings before TDMS intake
+- If DEFERRED: keep in TDMS as NEW status for future planning
+- If ACCEPTED: proceed to TDMS intake
+
+### Post-Review Summary
+
+After ALL findings reviewed, summarize:
+
+- Total accepted / declined / deferred
+- Proceed to TDMS Intake with accepted + deferred items only
 
 ---
 

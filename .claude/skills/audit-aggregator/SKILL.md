@@ -5,7 +5,7 @@ description: Aggregate and deduplicate findings from multiple audit reports
 
 # Audit Aggregator Agent
 
-**Purpose:** Merge findings from 6+ domain-specific audit reports into a single
+**Purpose:** Merge findings from 9 domain-specific audit reports into a single
 comprehensive, priority-ranked report with cross-domain insights and
 deduplication.
 
@@ -25,6 +25,9 @@ cross-cutting analysis
 - `docs/audits/comprehensive/audit-documentation-report.md`
 - `docs/audits/comprehensive/audit-refactoring-report.md`
 - `docs/audits/comprehensive/audit-process-report.md`
+- `docs/audits/comprehensive/audit-engineering-productivity-report.md`
+- `docs/audits/comprehensive/audit-enhancements-report.md`
+- `docs/audits/comprehensive/audit-ai-optimization-report.md`
 
 **Required Format (in each report):**
 
@@ -46,7 +49,7 @@ Each individual audit report should contain findings in this structure:
 
 ### Step 1: Parse All Reports
 
-Read all 7 audit reports and extract findings into structured format:
+Read all 9 audit reports and extract findings into structured format:
 
 ```javascript
 {
@@ -233,7 +236,7 @@ Finding D: S1 High, 1 domain, Medium confidence, E2 day
 
 ### Audit Overview
 
-- **Raw Findings:** 142 (across 7 audits)
+- **Raw Findings:** 142 (across 9 audits)
 - **Unique Findings:** 97 (after deduplication)
 - **Merged Findings:** 45 (appeared in 2+ audits)
 - **Cross-Domain Findings:** 18 (3+ audits)
@@ -316,7 +319,8 @@ List 3-5 highest-impact insights:
 # Comprehensive Audit Report
 
 **Generated:** [Date] **Audits Included:** Code, Security, Performance,
-Documentation, Refactoring, Process **Total Findings:** 97 unique (142 raw)
+Documentation, Refactoring, Process, Engineering Productivity, Enhancements, AI
+Optimization **Total Findings:** 97 unique (142 raw)
 
 ---
 
@@ -396,6 +400,10 @@ Documentation, Refactoring, Process **Total Findings:** 97 unique (142 raw)
 - [Documentation Report](./audit-documentation-report.md) - 15 findings
 - [Refactoring Report](./audit-refactoring-report.md) - 41 findings
 - [Process/Automation Report](./audit-process-report.md) - 12 findings
+- [Engineering Productivity Report](./audit-engineering-productivity-report.md) -
+  X findings
+- [Enhancements Report](./audit-enhancements-report.md) - X findings
+- [AI Optimization Report](./audit-ai-optimization-report.md) - X findings
 
 ### Baseline Metrics
 
@@ -435,7 +443,7 @@ Documentation, Refactoring, Process **Total Findings:** 97 unique (142 raw)
 4. **Verify completeness:**
    - All raw findings accounted for (unique + duplicates = raw total)
    - All severity levels represented
-   - All 7 audit reports linked in appendix
+   - All 9 audit reports linked in appendix
 
 ---
 
@@ -471,13 +479,13 @@ Documentation, Refactoring, Process **Total Findings:** 97 unique (142 raw)
 
 **Integrated Usage (called by audit-comprehensive):**
 
-Automatically invoked after all 6 parallel audits complete.
+Automatically invoked after all 9 domain audits complete.
 
 ---
 
 ## Notes
 
-- **Deduplication Benefits:** Prevents same issue from appearing 6 times
+- **Deduplication Benefits:** Prevents same issue from appearing 9 times
 - **Cross-Domain Value:** Finds patterns individual audits miss
 - **Priority Ranking:** Helps focus on high-impact fixes first
 - **Effort Estimation:** Helps plan sprint capacity
@@ -512,18 +520,21 @@ Beyond S0-S3 severity, use this scoring:
 
 Items auto-assign based on category + file patterns:
 
-| Category      | File Pattern            | Track    |
-| ------------- | ----------------------- | -------- |
-| security      | \*                      | Track-S  |
-| performance   | \*                      | Track-P  |
-| process       | \*                      | Track-D  |
-| refactoring   | \*                      | M2.3-REF |
-| documentation | \*                      | M1.5     |
-| code-quality  | scripts/, .claude/      | Track-E  |
-| code-quality  | .github/                | Track-D  |
-| code-quality  | tests/                  | Track-T  |
-| code-quality  | functions/              | M2.2     |
-| code-quality  | components/, lib/, app/ | M2.1     |
+| Category                 | File Pattern            | Track    |
+| ------------------------ | ----------------------- | -------- |
+| security                 | \*                      | Track-S  |
+| performance              | \*                      | Track-P  |
+| process                  | \*                      | Track-D  |
+| refactoring              | \*                      | M2.3-REF |
+| documentation            | \*                      | M1.5     |
+| code-quality             | scripts/, .claude/      | Track-E  |
+| code-quality             | .github/                | Track-D  |
+| code-quality             | tests/                  | Track-T  |
+| code-quality             | functions/              | M2.2     |
+| code-quality             | components/, lib/, app/ | M2.1     |
+| enhancements             | \*                      | M2.1     |
+| ai-optimization          | \*                      | Track-E  |
+| engineering-productivity | \*                      | Track-E  |
 
 See `docs/technical-debt/views/unplaced-items.md` for full mapping.
 
@@ -566,7 +577,12 @@ node scripts/debt/sync-roadmap-refs.js --check-only
 ## Related Skills
 
 - `/audit-comprehensive` - Orchestrator that calls this aggregator
-- Individual audit skills - Generate the input reports this aggregator processes
+- `/audit-code`, `/audit-security`, `/audit-performance`, `/audit-refactoring` -
+  Stage 1 audits
+- `/audit-documentation`, `/audit-process`, `/audit-engineering-productivity` -
+  Stage 2 audits
+- `/audit-enhancements`, `/audit-ai-optimization` - Stage 2.5 audits
+- `/create-audit` - Wizard to scaffold new audit types
 
 ---
 
@@ -593,7 +609,8 @@ Before running this aggregator, review:
 
 ## Version History
 
-| Version | Date       | Description                                                              |
-| ------- | ---------- | ------------------------------------------------------------------------ |
-| 1.1     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula |
-| 1.0     | 2026-01-28 | Initial skill creation                                                   |
+| Version | Date       | Description                                                                    |
+| ------- | ---------- | ------------------------------------------------------------------------------ |
+| 1.2     | 2026-02-14 | 9-domain coverage: add engineering-productivity, enhancements, ai-optimization |
+| 1.1     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula       |
+| 1.0     | 2026-01-28 | Initial skill creation                                                         |

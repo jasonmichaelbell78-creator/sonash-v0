@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.4 **Created:** 2026-01-02 **Last Updated:** 2026-02-14
+**Document Version:** 17.11 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
 
 ## Purpose
 
@@ -28,6 +28,14 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.11   | 2026-02-15 | Review #323: PR #366 R8 — tmpPath symlink guards (5 files), Firestore regex hyphen bypass fix (\w+ → [A-Za-z0-9_-]+), log-override path.resolve safety. 7 fixed, 5 rejected (wx flag, bidirectional containment, env path trust, cooldown read symlink, streaming line count). Propagation check confirmed all atomic write paths now guarded.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 17.10   | 2026-02-15 | Review #322: PR #366 R7 — Comprehensive symlink hardening: path.isAbsolute guard, tmp path guards (7 files), rotate-state.js (4 paths), inline→shared helper migration, commit-tracker author restore. 9 fixed, 3 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 17.9    | 2026-02-15 | Review #321: PR #366 R6 — Shared symlink-guard.js helper (ancestor traversal), self-healing cooldown, TOCTOU try/catch, milestone string bug, NUL delimiter, directive "ok" output. 11 fixed, 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 17.8    | 2026-02-15 | Review #320: PR #366 R5 — Parent dir symlink, clock skew defense, prototype pollution (Object.create(null)), getContent symlink read, size-based rotation. 8 fixed, 1 already-tracked.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| 17.7    | 2026-02-15 | Review #319: PR #366 R4 — Symlink write guard, future timestamp defense, file list caps, skip-abuse 24h/7d bug fix, CRLF JSONL trim, Number.isFinite cooldown. 6 fixed, 3 already-tracked.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 17.6    | 2026-02-15 | Review #318: PR #366 R3 — Atomic write hardening (backup-swap, mkdirSync), state shape normalization (3 files), numeric coercion guards, porcelain validation. 10 fixed, 1 deferred, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 17.5    | 2026-02-15 | Review #317: PR #366 R2 — SonarCloud two-strikes regex→string (2), rename/copy parse bug, atomic write consistency, state normalization, Number.isFinite guard. 11 fixed, 3 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 17.4    | 2026-02-14 | Review #316: PR #366 R1 — SonarCloud regex two-strikes (testFn), atomic writes (3 hooks), state pruning (2 files), CI blocker fixes (30+ links, 5 DEBT entries). 15 fixed, 6 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.3    | 2026-02-13 | Fix: Consolidation counter corruption — manual counter showed 0 but 26 reviews pending (#285-#310). Root cause: `updateConsolidationCounter` injected "Next consolidation due" into Status field, creating duplicates that grew on each run. Fixed run-consolidation.js Status/Next replacement order, corrected counter to 26, cleaned corrupted "Review #320 Review #320..." text.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 17.2    | 2026-02-13 | Review #310: PR #364 Qodo Suggestions — Alerts v3 health score normalization, git edge cases, path separators. 10 review rounds addressed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 17.1    | 2026-02-12 | Review #306: PR #362 R2 — Edge case fixes (line 0, falsy field preservation, Windows paths, validate-schema consistency). Consolidation counter 16→17.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -605,6 +613,275 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #322: PR #366 R7 — Comprehensive Symlink Guard Hardening (2026-02-15)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #366) **Suggestions:** 12 total (Fixed: 9,
+Rejected: 3 compliance)
+
+**Key pattern:** Every atomic write needs `isSafeToWrite()` on BOTH the target
+file AND the `.tmp` file. R6 created the shared helper but missed tmp paths.
+
+**Fixes applied:**
+
+- `symlink-guard.js`: Added `path.isAbsolute()` check — reject relative paths
+- `post-write-validator.js`: Replaced 2 inline TOCTOU checks with shared
+  `isSafeToWrite` import
+- `analyze-user-request.js`: Added `isSafeToWrite` import + guard on directive
+  write (standalone file missed in R6)
+- `rotate-state.js`: Added `isSafeToWrite` guards on all 4 atomic write paths
+- `log-override.js`: Added symlink guard + `lstatSync` instead of `statSync`
+- `check-remote-session-context.js`, `post-read-handler.js`,
+  `user-prompt-handler.js`: Added `isSafeToWrite(tmpPath)` guards
+- `commit-tracker.js`: Restored `author`/`authorDate` fields in git log format
+
+**Rejected:** 3 compliance items (silent catch blocks are intentional fail-safe,
+sanitizeFilesystemError already sanitizes, log snippets are code not PII)
+
+**Lesson:** When introducing a shared security helper, audit ALL write paths in
+one pass — including tmp files, backup files, and standalone copies of
+consolidated functions.
+
+---
+
+#### Review #321: PR #366 R6 — Shared Symlink Guard + Self-Healing Cooldown + Bug Fixes (2026-02-15)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #366) **Suggestions:** 14 total (Critical:
+0, Major: 2, Minor: 9, Trivial: 1, Rejected: 2)
+
+**Architectural fix:** Created shared `.claude/hooks/lib/symlink-guard.js` with
+`isSafeToWrite()` that checks file + all ancestor directories. Applied to all
+hook write paths to stop symlink ping-pong across review rounds.
+
+**Patterns Identified:**
+
+1. **Shared symlink helper** — Each round found more write paths missing symlink
+   guards. Root cause fix: centralized `isSafeToWrite()` with ancestor
+   traversal.
+2. **Self-healing future timestamps** — `ageMs < 0` deletes corrupt cooldown
+   instead of permanently blocking the hook.
+3. **TOCTOU race** — `existsSync` + `lstatSync` wrapped in try/catch,
+   fail-closed.
+4. **Milestone string bug** — Off-by-one slice replaced with template literal.
+5. **Hook output protocol** — Must print "ok" even when suppressing directives.
+
+**Resolution:** 11 fixed, 2 rejected
+
+| #   | Issue                            | Severity | Action                | Origin       |
+| --- | -------------------------------- | -------- | --------------------- | ------------ |
+| 2   | recordDirective symlink guard    | Minor    | Fixed (shared helper) | This-PR      |
+| 3   | saveJson ancestor traversal      | Minor    | Fixed (shared helper) | This-PR      |
+| 4   | Self-healing future timestamp    | Major    | Fixed                 | This-PR      |
+| 5   | statePath TOCTOU try/catch       | Minor    | Fixed                 | This-PR      |
+| 6   | Milestone string bug             | Major    | Fixed                 | Pre-existing |
+| 7   | Directive "ok" output            | Minor    | Fixed                 | This-PR      |
+| 8   | updateFetchCache symlink guard   | Minor    | Fixed (shared helper) | This-PR      |
+| 9   | Cooldown write symlink (alerts)  | Minor    | Fixed (shared helper) | This-PR      |
+| 10  | lstatSync for file size          | Minor    | Fixed                 | This-PR      |
+| 11  | Cooldown write symlink (handler) | Minor    | Fixed (shared helper) | This-PR      |
+| 12  | reviewQueue TOCTOU try/catch     | Minor    | Fixed                 | This-PR      |
+| 13  | NUL delimiter for git log        | Trivial  | Fixed                 | Pre-existing |
+
+**Rejected:** [1] Bidirectional containment removal — breaks cwd-inside-project
+setups. [14] saveJson error leaking — dev-only CLI output, aids debugging.
+
+---
+
+#### Review #320: PR #366 R5 — Parent Dir Symlink + Clock Skew + Prototype Pollution (2026-02-15)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #366) **Suggestions:** 9 total (Critical:
+0, Major: 0, Minor: 8, Already-tracked: 1)
+
+**Batch rule applied:** Same files appearing 3+ consecutive rounds — holistic
+fix approach.
+
+**Patterns Identified:**
+
+1. **Parent directory symlink attack** — Checking file symlinks is insufficient;
+   parent directory can also be a symlink redirecting writes. Added
+   `path.dirname()` + `lstatSync()` check to saveJson in post-read-handler.js.
+2. **Clock skew defense** — Future timestamps (`ageMs < 0`) should trigger
+   cooldown, not bypass it. Applied to alerts-reminder.js (nested if with
+   `ageMs < 0 || ageMs < COOLDOWN_MS`).
+3. **Prototype pollution via counter objects** — `{}` as counter with external
+   keys allows `__proto__` injection. Use `Object.create(null)` + `String(key)`.
+   Applied to run-alerts.js skip-abuse counters.
+4. **Symlink check on reads** — getContent() in post-write-validator.js reads
+   files without symlink check, allowing arbitrary file content injection.
+5. **Size-based rotation guard** — Entry-count rotation on every append is
+   wasteful; gate behind `fs.statSync()` size threshold (64KB).
+
+**Resolution:** 8 fixed, 1 already-tracked (DEBT-2957/2958/2959)
+
+| #   | Issue                          | Severity | Action          | Origin              |
+| --- | ------------------------------ | -------- | --------------- | ------------------- |
+| 1   | Parent dir symlink in saveJson | Minor    | Fixed           | This-PR             |
+| 2   | Cooldown symlink check         | Minor    | Fixed           | This-PR             |
+| 3   | Object.create(null) counters   | Minor    | Fixed           | This-PR             |
+| 4   | Clock skew cooldown            | Minor    | Fixed           | This-PR             |
+| 5   | getContent symlink check       | Minor    | Fixed           | This-PR             |
+| 6   | statePath/reviewQueue symlink  | Minor    | Fixed           | This-PR             |
+| 7   | Fetch cache Number.isFinite    | Minor    | Fixed           | This-PR             |
+| 8   | Size-based rotation threshold  | Minor    | Fixed           | This-PR             |
+| 9   | Compliance: symlink writes     | —        | Already-tracked | DEBT-2957/2958/2959 |
+
+---
+
+#### Review #319: PR #366 R4 — Symlink Guard + Future Timestamp + Skip-Abuse Bug (2026-02-15)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #366) **Suggestions:** 9 total (Critical:
+0, Major: 1, Minor: 5, Already-tracked: 3)
+
+**Key Patterns:**
+
+1. **Symlink write guard in saveJson**: post-read-handler.js now checks
+   `lstatSync().isSymbolicLink()` before writing — prevents symlink-based file
+   redirect attacks on state files.
+2. **Future timestamp defense**: alerts-reminder.js cooldown now checks
+   `ageMs >= 0` — a future timestamp from clock skew would no longer permanently
+   disable the hook.
+3. **Skip-abuse alert 24h/7d data mismatch bug**: run-alerts.js "By type"
+   breakdown was using 7d data in a 24h alert message. Split into byType24h and
+   byType7d for accurate reporting.
+4. **CRLF JSONL parsing on Windows**: post-write-validator.js JSONL parser now
+   trims each line before JSON.parse to handle `\r\n` endings.
+5. **Consistent caps on file lists**: pre-compaction-save.js staged/uncommitted
+   arrays now capped at 50 (matching existing untracked cap of 20).
+
+**Fixed (6):** Symlink guard (1), future timestamp (1), skip-abuse bug (1), CRLF
+trim (1), file list caps (1), Number.isFinite cooldown (1)
+
+**Already tracked (3):** DEBT-2957 (env path trust), DEBT-2958 (audit trails),
+DEBT-2959 (secure logging)
+
+---
+
+#### Review #318: PR #366 R3 — Atomic Write Hardening + State Normalization (2026-02-15)
+
+**Source:** Qodo PR Compliance + Code Suggestions **PR/Branch:**
+claude/read-session-commits-ZpJLX (PR #366) **Suggestions:** 15 total (Critical:
+0, Major: 0, Minor: 10, Deferred: 4, Rejected: 1)
+
+**Key Patterns:**
+
+1. **Backup-swap atomic writes**: post-read-handler.js saveJson upgraded from
+   rm+rename to backup-swap pattern (write tmp → rename original to .bak →
+   rename tmp to original → rm .bak) with rollback on failure.
+2. **mkdirSync before atomic write**: user-prompt-handler.js cooldown and
+   directive state writes now create parent directory first — prevents failure
+   on first run in clean environment.
+3. **State shape normalization**: Three files now validate JSON state shape
+   after parse — post-write-validator.js (numeric uses/phase),
+   post-read-handler.js (contextState fields), analyze-user-request.js (data
+   object check).
+4. **Git porcelain record validation**: pre-compaction-save.js now validates
+   line length and format before parsing XY fields, preventing crashes on
+   malformed git output.
+5. **Number.isFinite guards**: alerts-reminder.js cooldown timestamp and
+   post-write-validator.js state.uses/phase now validate numeric types before
+   arithmetic.
+
+**Fixed (10):** mkdirSync cooldown dir (1), atomic directive writes (1), numeric
+state normalization (1), data shape validation + atomic writes (2), porcelain
+validation (1), backup-swap atomic write (1), contextState normalization (1),
+Number.isFinite cooldown (1), Number.isFinite uses/phase (1)
+
+**Deferred (4):** DEBT-2960 (symlink overwrite in rotate-state.js —
+architectural), DEBT-2958 (audit trails — already tracked R2), DEBT-2959 (secure
+logging — already tracked R2), context export sensitivity (acceptable risk —
+sanitizeContextData already strips fields)
+
+**Rejected (1):** Chunk-based line counting for large-context-warning.js — byte
+estimation is sufficient for the warning threshold (overcount is acceptable)
+
+---
+
+#### Review #317: PR #366 R2 — SonarCloud Two-Strikes + Qodo Robustness (2026-02-15)
+
+**Source:** SonarCloud Security Hotspots (S5852) + Qodo PR Suggestions + Qodo
+Compliance **PR/Branch:** claude/read-session-commits-ZpJLX (PR #366)
+**Suggestions:** 14 total (Critical: 0, Major: 3, Minor: 8, Deferred: 3)
+
+**Key Patterns:**
+
+1. **SonarCloud S5852 two-strikes rule applied**: track-session.js flagged again
+   for remaining regexes in the R1 string-parsing replacement code. Replaced
+   both `/^(?:Active Sprint|Current Sprint)[:\s-]*/i` and
+   `/M1[.\d]*\s*[-–]\s*(.+)/` with pure string parsing (indexOf, startsWith,
+   character scanning).
+2. **Git status --porcelain -z rename/copy parse bug**: pre-compaction-save.js
+   `for...of` loop failed to consume the second NUL-separated path field for R/C
+   entries. Fixed with indexed loop + `i++` skip.
+3. **Defensive state shape normalization**: post-write-validator.js agent
+   trigger state could crash if JSON was corrupted (non-object, missing
+   suggestedAgents).
+4. **Atomic write consistency**: user-prompt-handler.js cooldown was non-atomic
+   — aligned with the write-tmp-rm-rename pattern used elsewhere.
+5. **Number.isFinite guard for timestamp purging**: analyze-user-request.js
+   directive dedup would never purge entries with corrupted non-numeric
+   timestamps.
+
+**Fixed (11):** Two-strikes regex→string (2), rename/copy parse (1), sprint type
+guard (1), atomic write (1), state normalization (1), logOverride fail-fast (1),
+cache null guard + mkdirSync (1), Number.isFinite guard (1), Array.isArray
+testFn guard (1), mkdirSync cooldown dir (1)
+
+**Deferred (3):** DEBT-2957 (project dir escape — architectural), DEBT-2958
+(audit trails — generic compliance), DEBT-2959 (secure logging — generic
+compliance)
+
+---
+
+#### Review #316: PR #366 R1 — SonarCloud Regex + Qodo Robustness + CI Blockers (2026-02-14)
+
+**Source:** SonarCloud Security Hotspots (S5852) + Qodo PR Suggestions + Qodo
+Compliance + CI Failures **PR/Branch:** claude/read-session-commits-ZpJLX (PR
+#366) **Suggestions:** 21 total (Critical: 0, Major: 4, Minor: 11, Deferred: 6)
+
+**Patterns Identified:**
+
+1. SonarCloud S5852 two-strikes rule: Both flagged regexes replaced with
+   string-based parsing (check-pattern-compliance.js `testFn`, track-session.js
+   line-by-line scan)
+   - New: `testFn` alternative to `pattern` field in pattern compliance checker
+2. Atomic file writes: 3 hooks (alerts-reminder, check-remote-session-context,
+   cooldown files) now use tmp+rmSync+rename pattern (Review #289 standard)
+3. Unbounded state growth: 2 state files now have pruning (directive-dedup.json
+   24h TTL, suggestedAgents 30-day expiry)
+4. CI broken links: ~30 links in AUDIT_TRACKER.md pointed to non-existent audit
+   reports. Replaced link markup with plain text + annotation.
+5. MASTER_DEBT.jsonl sync: 5 entries lost due to generate-views.js overwrite bug
+   (MEMORY.md documents this). Restored from deduped.jsonl.
+
+**Resolutions:**
+
+- [1] check-pattern-compliance.js: Added `testFn` support + replaced regex
+- [2] track-session.js: Line-by-line string parsing for sprint name
+- [9] analyze-user-request.js: 24h TTL pruning for directive dedup state
+- [10] post-read-handler.js: Skip save when context state unchanged
+- [12] log-override.js: process.exit(0) after quick mode
+- [13] run-alerts.js: Rating key `no_reason` → `no_reason_pct`
+- [14] commit-tracker.js: Branch regex simplified
+- [15] pre-compaction-save.js: NUL-separated git status (-z flag)
+- [16] alerts-reminder.js: Atomic cooldown write
+- [17] rotate-state.js: Math.max(1) prevents truncation to 0
+- [18] check-remote-session-context.js: Atomic cache write + init order fix
+- [19] post-write-validator.js: 30-day agent suggestion pruning
+- [20] AUDIT_TRACKER.md: ~30 broken doc links fixed (agent)
+- [21] ROADMAP.md + MASTER_DEBT.jsonl: Orphaned DEBT refs + missing entries
+  (agent)
+
+**Deferred (6 items):**
+
+- [3-7] Qodo compliance (symlink audit trails, integration tests, audit logging)
+  → DEBT-2951 through DEBT-2955
+- [8] HookRunner framework proposal → DEBT-2956
 
 ---
 

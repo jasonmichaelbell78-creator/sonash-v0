@@ -167,6 +167,20 @@ function getStagedFiles(filter = "A") {
 function main() {
   // Review #217: Implement documented SKIP_DOC_HEADER_CHECK override
   if (process.env.SKIP_DOC_HEADER_CHECK === "1") {
+    try {
+      execFileSync(
+        "node",
+        [
+          "scripts/log-override.js",
+          "--quick",
+          "--check=doc-header",
+          `--reason=${process.env.SKIP_REASON || "No reason"}`,
+        ],
+        { timeout: 3000, stdio: "pipe" }
+      );
+    } catch {
+      /* non-blocking */
+    }
     log("⏭️  SKIP_DOC_HEADER_CHECK=1 set; skipping document header validation.", colors.yellow);
     process.exit(0);
   }

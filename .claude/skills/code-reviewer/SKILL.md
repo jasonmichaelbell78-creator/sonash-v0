@@ -1,16 +1,17 @@
 ---
 name: code-reviewer
+version: "2.0"
+updated: 2026-02-14
 description:
-  Comprehensive code review skill for TypeScript, JavaScript, Python, Swift,
-  Kotlin, Go. Includes automated code analysis, best practice checking, security
-  scanning, and review checklist generation. Use when reviewing pull requests,
-  providing code feedback, identifying issues, or ensuring code quality
-  standards.
+  Code review skill for SoNash (Next.js/TypeScript/Firebase). Includes automated
+  code analysis, best practice checking, security scanning, and review checklist
+  generation. Use when reviewing changes, providing code feedback, identifying
+  issues, or ensuring code quality standards.
 ---
 
 # Code Reviewer
 
-Complete toolkit for code review with modern tools and best practices.
+Code review toolkit tailored for the SoNash codebase.
 
 ## Scope — When to Use
 
@@ -45,7 +46,7 @@ Then use the Task tool with `superpowers:code-reviewer` type, providing:
 Act on feedback: fix Critical immediately, fix Important before proceeding, note
 Minor for later. Push back with reasoning if reviewer is wrong.
 
-## Pre-Review: Episodic Memory Search (Session #128)
+## Pre-Review: Episodic Memory Search
 
 **BEFORE starting any code review, search episodic memory for relevant
 context:**
@@ -83,111 +84,42 @@ mcp__plugin_episodic -
 
 ---
 
-## Quick Start
+## Review Checklist
 
-### Main Capabilities
+### TypeScript / JavaScript
 
-This skill provides three core capabilities through automated scripts:
+- Strict mode — no `any` types (use `unknown` + type guards)
+- Proper error typing in catch blocks
+- Zod schemas match TypeScript interfaces
+- No unused imports or dead code
+- Consistent use of `const` over `let`
 
-```bash
-# Script 1: Pr Analyzer
-python scripts/pr_analyzer.py [options]
+### React / Next.js
 
-# Script 2: Code Quality Checker
-python scripts/code_quality_checker.py [options]
+- Functional components with hooks only
+- No missing dependency arrays in `useEffect`/`useCallback`/`useMemo`
+- Proper cleanup in effects (return teardown function)
+- Server vs client component boundaries correct (`"use client"` directive)
+- No direct DOM manipulation — use refs
+- App Router conventions followed (layout, page, loading, error files)
 
-# Script 3: Review Report Generator
-python scripts/review_report_generator.py [options]
-```
+### Firebase / Firestore
 
-## Core Capabilities
+- **NO direct writes** to `journal`, `daily_logs`, `inventoryEntries` — use
+  Cloud Functions via `httpsCallable`
+- App Check tokens verified in all Cloud Functions
+- Rate limiting: handle `429` errors gracefully (use `sonner` toasts)
+- Repository pattern: queries in `lib/firestore-service.ts`, not inline
+- Types from `types/` or `functions/src/schemas.ts`
 
-### 1. Pr Analyzer
+### Tailwind CSS
 
-Automated tool for pr analyzer tasks.
+- Utility-first — no custom CSS unless absolutely necessary
+- Responsive design uses Tailwind breakpoints
+- No conflicting or redundant utility classes
+- Dark mode support where applicable
 
-**Features:**
-
-- Automated scaffolding
-- Best practices built-in
-- Configurable templates
-- Quality checks
-
-**Usage:**
-
-```bash
-python scripts/pr_analyzer.py <project-path> [options]
-```
-
-### 2. Code Quality Checker
-
-Comprehensive analysis and optimization tool.
-
-**Features:**
-
-- Deep analysis
-- Performance metrics
-- Recommendations
-- Automated fixes
-
-**Usage:**
-
-```bash
-python scripts/code_quality_checker.py <target-path> [--verbose]
-```
-
-### 3. Review Report Generator
-
-Advanced tooling for specialized tasks.
-
-**Features:**
-
-- Expert-level automation
-- Custom configurations
-- Integration ready
-- Production-grade output
-
-**Usage:**
-
-```bash
-python scripts/review_report_generator.py [arguments] [options]
-```
-
-## Reference Documentation
-
-### Code Review Checklist
-
-Comprehensive guide available in `references/code_review_checklist.md`:
-
-- Detailed patterns and practices
-- Code examples
-- Best practices
-- Anti-patterns to avoid
-- Real-world scenarios
-
-### Coding Standards
-
-Complete workflow documentation in `references/coding_standards.md`:
-
-- Step-by-step processes
-- Optimization strategies
-- Tool integrations
-- Performance tuning
-- Troubleshooting guide
-
-### Common Antipatterns
-
-Technical reference guide in `references/common_antipatterns.md`:
-
-- Technology stack details
-- Configuration examples
-- Integration patterns
-- Security considerations
-- Scalability guidelines
-
-### Script-Specific Checklist (SoNash)
-
-When reviewing scripts in `scripts/`, `.claude/hooks/`, or `.husky/`:
+### Script-Specific Checklist (scripts/, hooks/, .husky/)
 
 1. **File I/O**: All `readFileSync`/`writeFileSync` wrapped in try/catch?
 2. **Error handling**: Using `sanitizeError()` not raw `err.message`?
@@ -202,74 +134,28 @@ When reviewing scripts in `scripts/`, `.claude/hooks/`, or `.husky/`:
 10. **Fix templates**: Check `docs/agent_docs/FIX_TEMPLATES.md` for standard
     fixes
 
-## Tech Stack
+### Security
 
-**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin **Frontend:**
-React, Next.js, React Native, Flutter **Backend:** Node.js, Express, GraphQL,
-REST APIs **Database:** PostgreSQL, Prisma, NeonDB, Supabase **DevOps:** Docker,
-Kubernetes, Terraform, GitHub Actions, CircleCI **Cloud:** AWS, GCP, Azure
+- Validate all inputs (Zod on both client and server)
+- No secrets in client-side code
+- Firebase security rules cover new collections/fields
+- Authentication checks on protected routes and API endpoints
+- Dependencies up to date (no known vulnerabilities)
 
-## Development Workflow
+### Testing
 
-### 1. Setup and Configuration
-
-```bash
-# Install dependencies
-npm install
-# or
-pip install -r requirements.txt
-
-# Configure environment
-cp .env.example .env
-```
-
-### 2. Run Quality Checks
-
-```bash
-# Use the analyzer script
-python scripts/code_quality_checker.py .
-
-# Review recommendations
-# Apply fixes
-```
-
-### 3. Implement Best Practices
-
-Follow the patterns and practices documented in:
-
-- `references/code_review_checklist.md`
-- `references/coding_standards.md`
-- `references/common_antipatterns.md`
-
-## Best Practices Summary
+- New features have corresponding tests
+- Mock `httpsCallable`, NOT direct Firestore writes
+- Edge cases covered (empty state, error state, loading state)
+- No flaky tests (avoid timing-dependent assertions)
 
 ### Code Quality
 
-- Follow established patterns
-- Write comprehensive tests
-- Document decisions
-- Review regularly
-
-### Performance
-
-- Measure before optimizing
-- Use appropriate caching
-- Optimize critical paths
-- Monitor in production
-
-### Security
-
-- Validate all inputs
-- Use parameterized queries
-- Implement proper authentication
-- Keep dependencies updated
-
-### Maintainability
-
-- Write clear code
-- Use consistent naming
-- Add helpful comments
-- Keep it simple
+- Follow established patterns (DRY, SOLID principles)
+- Clear naming conventions
+- Helpful comments for non-obvious logic
+- No premature optimization — measure first
+- Error boundaries for component trees
 
 ## Common Commands
 
@@ -280,33 +166,15 @@ npm run build
 npm run test
 npm run lint
 
-# Analysis
-python scripts/code_quality_checker.py .
-python scripts/review_report_generator.py --analyze
-
-# Deployment
-docker build -t app:latest .
-docker-compose up -d
-kubectl apply -f k8s/
+# Pattern checks
+npm run patterns:check
 ```
 
-## Troubleshooting
+## Reference Documentation
 
-### Common Issues
-
-Check the comprehensive troubleshooting section in
-`references/common_antipatterns.md`.
-
-### Getting Help
-
-- Review reference documentation
-- Check script output messages
-- Consult tech stack documentation
-- Review error logs
-
-## Resources
-
-- Pattern Reference: `references/code_review_checklist.md`
-- Workflow Guide: `references/coding_standards.md`
-- Technical Guide: `references/common_antipatterns.md`
-- Tool Scripts: `scripts/` directory
+- `references/code_review_checklist.md` — Detailed patterns and practices
+- `references/coding_standards.md` — Workflow documentation
+- `references/common_antipatterns.md` — Anti-patterns to avoid
+- `docs/agent_docs/CODE_PATTERNS.md` — 230+ patterns from 259 reviews
+- `docs/agent_docs/SECURITY_CHECKLIST.md` — Pre-write security checklist
+- `docs/agent_docs/FIX_TEMPLATES.md` — Standard fix patterns

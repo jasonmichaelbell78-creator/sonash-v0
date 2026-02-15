@@ -87,7 +87,7 @@ ROADMAP reorganization (v3.0 → v3.9). The analysis was conducted in two phases
 ## Related Documents
 
 - [ROADMAP.md](../ROADMAP.md) - Canonical product roadmap (v3.9)
-- [EXPANSION_EVALUATION_TRACKER.md](../docs/EXPANSION_EVALUATION_TRACKER.md) -
+- [EXPANSION_EVALUATION_TRACKER.md](../docs/archive/EXPANSION_EVALUATION_TRACKER.md) -
   Expansion evaluation tracking
 - [SESSION_DECISIONS.md](../docs/SESSION_DECISIONS.md) - Decision log
 

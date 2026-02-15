@@ -60,6 +60,15 @@ try {
 console.log("");
 
 // =============================================================================
+// Ephemeral File Cleanup
+// =============================================================================
+try {
+  fs.unlinkSync(path.join(projectDir, ".claude", "tmp-alerts.json"));
+} catch {
+  /* file may not exist */
+}
+
+// =============================================================================
 // Cross-Session Validation (check if previous session ended properly)
 // =============================================================================
 
@@ -122,6 +131,10 @@ if (previousState && previousState.lastBegin) {
     console.log("   This helps track progress and update documentation");
     console.log("");
     warnings++;
+
+    // Auto-close the previous session to keep begin/end counts approximately aligned
+    previousState.lastEnd = previousState.lastBegin; // Mark as ended at the time it started
+    previousState.endCount = (previousState.endCount || 0) + 1;
   }
 }
 
@@ -276,7 +289,7 @@ function saveRootHash() {
   if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(LOCKFILE_HASH_FILE, hash);
+  fs.writeFileSync(LOCKFILE_HASH_FILE, hash, "utf-8");
 }
 
 function saveFunctionsHash() {
@@ -284,7 +297,7 @@ function saveFunctionsHash() {
   if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(FUNCTIONS_LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, hash);
+  fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, hash, "utf-8");
 }
 
 function runCommand(description, command, timeoutMs = 120000) {
@@ -409,7 +422,7 @@ try {
   }
 }
 
-// Archive health check: warn if reviews.jsonl has too many entries (Session #156)
+// Archive health check: rotate reviews.jsonl when it exceeds 50 entries (OPT #74)
 try {
   const reviewsPath = path.join(projectDir, ".claude", "state", "reviews.jsonl");
   if (fs.existsSync(reviewsPath)) {
@@ -419,11 +432,19 @@ try {
       .split("\n")
       .filter(Boolean).length;
     if (reviewCount > 50) {
-      console.log(
-        `   ⚠️ Archive recommended: ${reviewCount} reviews in reviews.jsonl (threshold: 50)`
-      );
-      console.log("   Consider archiving older entries");
-      warnings++;
+      try {
+        const { rotateJsonl } = require("./lib/rotate-state.js");
+        const result = rotateJsonl(reviewsPath, 50, 30);
+        if (result.rotated) {
+          console.log(`   🔄 reviews.jsonl rotated: ${result.before} → ${result.after} entries`);
+        }
+      } catch {
+        // Fallback: warn if rotation fails
+        console.log(
+          `   ⚠️ Archive recommended: ${reviewCount} reviews in reviews.jsonl (threshold: 50)`
+        );
+        warnings++;
+      }
     }
   }
 } catch {
@@ -479,26 +500,6 @@ if (warnings === 0) {
 
 console.log("");
 console.log("━".repeat(66));
-console.log("📋 SESSION CHECKLIST (from AI_WORKFLOW.md):");
-console.log("");
-console.log("  1. ☐ Read SESSION_CONTEXT.md (current status, next goals)");
-console.log("  2. ☐ Increment session counter in SESSION_CONTEXT.md");
-console.log("  3. ☐ Check ROADMAP.md for priority changes");
-console.log("  4. ☐ Check available skills BEFORE starting:");
-console.log("");
-console.log("      SKILL DECISION TREE:");
-console.log("      ├─ Bug/Error? → Use 'systematic-debugging' skill FIRST");
-console.log("      ├─ Writing code? → Use 'code-reviewer' agent AFTER");
-console.log("      ├─ Security work? → Use 'security-auditor' agent");
-console.log("      ├─ UI/Frontend? → Use 'frontend-design' skill");
-console.log("      └─ Complex task? → Check ls .claude/skills/ for matches");
-console.log("");
-console.log("  5. ☐ Review active blockers before starting work");
-console.log("");
+console.log("📋 Next: Run /session-begin for full checklist, or start working.");
+console.log("   If MCP tokens missing: node scripts/secrets/decrypt-secrets.js");
 console.log("━".repeat(66));
-console.log("");
-console.log("💡 Tips:");
-console.log("   - Review claude.md + docs/agent_docs/CODE_PATTERNS.md for anti-patterns");
-console.log("   - Use TodoWrite for complex tasks (3+ steps)");
-console.log("   - Update SESSION_CONTEXT.md at end of session");
-console.log("   - If MCP tokens missing: node scripts/secrets/decrypt-secrets.js");

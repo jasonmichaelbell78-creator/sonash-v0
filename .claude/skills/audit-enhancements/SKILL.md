@@ -69,10 +69,7 @@ mkdir -p "$AUDIT_DIR"
 Check for existing audit state:
 
 ```bash
-# Check MCP memory for prior state
-mcp__memory__search_nodes({ query: "audit-enhancements" })
-
-# Check file-based state
+# Check file-based state (source of truth)
 ls ${AUDIT_DIR}/audit-state.json 2>/dev/null
 ```
 
@@ -87,7 +84,14 @@ npm run patterns:check 2>&1
 grep -E '"(next|react|typescript)"' package.json | head -5
 ```
 
-**Step 3: Load TDMS Cross-Reference Data**
+**Step 3: Load False Positives**
+
+```bash
+# Read false positives to avoid re-flagging known issues
+cat docs/technical-debt/FALSE_POSITIVES.jsonl 2>/dev/null
+```
+
+**Step 4: Load TDMS Cross-Reference Data**
 
 ```bash
 # Load existing debt items for cross-referencing
@@ -257,6 +261,11 @@ ALSO OUTPUT: A "strengths" section at the end of your findings:
 {"type": "strength", "domain": "{DOMAIN}", "description": "What's working well", "evidence": ["..."]}
 
 WRITE ALL OUTPUT TO FILES. Never rely on conversation context.
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: [agent-id] wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Impact Scale Calibration
@@ -430,7 +439,7 @@ After each batch of decisions:
   `node scripts/debt/resolve-item.js DEBT-XXXX --action {accept|decline|defer} --reason "{user's reason}"`
 - If DECLINED: record reason
 - If DEFERRED: mark for re-evaluation
-- Save state to MCP memory after each batch
+- Save state to `${AUDIT_DIR}/audit-state.json` after each batch
 
 ### Post-Review: Roadmap Placement
 
@@ -475,24 +484,13 @@ a batch for roadmap placement:
 }
 ```
 
-### MCP Memory (Quick-Access Cache)
+### Episodic Memory (Quick-Access Cache)
 
-Save to memory after each phase:
+Save to episodic memory after each phase for cross-session recall:
 
-```javascript
-mcp__memory__create_entities({
-  entities: [
-    {
-      name: "audit-enhancements-YYYY-MM-DD",
-      entityType: "audit-session",
-      observations: [
-        "Phase X complete",
-        "Y findings so far",
-        "Review progress: X of Y",
-      ],
-    },
-  ],
-});
+```bash
+# Update audit-state.json (file-based state is the source of truth)
+# The audit-state.json file persists across sessions and compactions
 ```
 
 ---
@@ -540,7 +538,7 @@ mcp__memory__create_entities({
 1. Verify all findings ingested via `node scripts/debt/validate-schema.js`
 2. Generate metrics: `node scripts/debt/generate-metrics.js`
 3. Generate views: `node scripts/debt/generate-views.js`
-4. Save final state to MCP memory
+4. Save final state to `${AUDIT_DIR}/audit-state.json`
 5. Display summary to user with link to ENHANCEMENT_AUDIT_REPORT.md
 
 ### Pre-Commit Compatibility

@@ -4,7 +4,7 @@
 **Document Version:** 1.1
 **Last Updated:** 2026-02-01
 **Status:** ACTIVE
-**Parent Plan:** [TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md](../plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)
+**Parent Plan:** [TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md](../archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)
 <!-- prettier-ignore-end -->
 
 ---

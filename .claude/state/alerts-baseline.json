@@ -1,32 +1,53 @@
 {
-  "timestamp": "2026-02-13T02:27:22.286Z",
+  "timestamp": "2026-02-14T16:00:39.188Z",
   "healthScore": {
     "grade": "A",
     "score": 90,
     "breakdown": {
       "code": {
         "score": 100,
-        "weight": 0.2
+        "weight": 0.2,
+        "measured": true
       },
       "security": {
         "score": 100,
-        "weight": 0.2
+        "weight": 0.2,
+        "measured": true
       },
       "debt-metrics": {
         "score": 60,
-        "weight": 0.15
+        "weight": 0.15,
+        "measured": true
       },
       "test-results": {
         "score": 90,
-        "weight": 0.15
+        "weight": 0.15,
+        "measured": true
       },
       "learning": {
         "score": 90,
-        "weight": 0.1
+        "weight": 0.1,
+        "measured": true
+      },
+      "velocity": {
+        "score": null,
+        "weight": 0.05,
+        "measured": false
+      },
+      "review-quality": {
+        "score": null,
+        "weight": 0.05,
+        "measured": false
       },
       "agent-compliance": {
         "score": 100,
-        "weight": 0.05
+        "weight": 0.05,
+        "measured": true
+      },
+      "docs": {
+        "score": null,
+        "weight": 0.05,
+        "measured": false
       }
     }
   },
@@ -70,6 +91,11 @@
       "errors": 0,
       "warnings": 3,
       "info": 1
+    },
+    "skip-abuse": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
     },
     "test-results": {
       "errors": 0,

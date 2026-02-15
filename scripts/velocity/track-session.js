@@ -144,14 +144,62 @@ function getSprintName() {
   // Try to determine current sprint from ROADMAP.md
   try {
     const roadmap = fs.readFileSync(ROADMAP_PATH, "utf8");
-    const sprintMatch = roadmap.match(/##\s+(?:Active Sprint|Current Sprint)[:\s-]*(.+)/i);
-    if (sprintMatch) {
-      return sprintMatch[1].trim();
+    // SonarCloud S5852: replaced regex with string parsing (two-strikes rule, Review #289)
+    const lines = roadmap.split("\n");
+    for (const line of lines) {
+      if (line.startsWith("## ")) {
+        const lower = line.toLowerCase();
+        if (lower.includes("active sprint") || lower.includes("current sprint")) {
+          // Extract text after the sprint heading marker
+          const afterHash = line.slice(3).trim();
+          // Remove leading label + separators via string parsing (SonarCloud S5852 two-strikes)
+          let cleaned = afterHash;
+          const lowerAfter = cleaned.toLowerCase();
+          for (const prefix of ["active sprint", "current sprint"]) {
+            if (lowerAfter.startsWith(prefix)) {
+              cleaned = cleaned.slice(prefix.length);
+              break;
+            }
+          }
+          // Strip leading colons, dashes, whitespace
+          let ci = 0;
+          while (
+            ci < cleaned.length &&
+            (cleaned[ci] === ":" || cleaned[ci] === "-" || cleaned[ci] === " ")
+          )
+            ci++;
+          cleaned = cleaned.slice(ci).trim();
+          if (cleaned) {
+            // Strip trailing asterisks and pipe-separated content
+            let end = cleaned.length;
+            while (end > 0 && cleaned[end - 1] === "*") end--;
+            cleaned = cleaned.slice(0, end).trim();
+            const pipeIdx = cleaned.indexOf("|");
+            if (pipeIdx !== -1) cleaned = cleaned.slice(0, pipeIdx).trim();
+            return cleaned;
+          }
+        }
+      }
     }
-    // Fallback: look for milestone reference
-    const milestoneMatch = roadmap.match(/M1[.\d]*\s*[-–]\s*(.+)/);
-    if (milestoneMatch) {
-      return milestoneMatch[0].trim();
+    // Fallback: look for milestone reference via string parsing (SonarCloud S5852 two-strikes)
+    for (const line of lines) {
+      const trimmed = line.trimStart();
+      if (trimmed.startsWith("M1")) {
+        // Find separator dash/en-dash after version digits
+        let si = 2;
+        while (
+          si < trimmed.length &&
+          (trimmed[si] === "." || (trimmed[si] >= "0" && trimmed[si] <= "9"))
+        )
+          si++;
+        // Skip whitespace then check for dash/en-dash separator
+        while (si < trimmed.length && trimmed[si] === " ") si++;
+        if (si < trimmed.length && (trimmed[si] === "-" || trimmed[si] === "\u2013")) {
+          const left = trimmed.slice(0, si).trimEnd();
+          const rest = trimmed.slice(si + 1).trim();
+          if (rest) return `${left} - ${rest}`.slice(0, 100);
+        }
+      }
     }
   } catch (err) {
     process.stderr.write(
@@ -173,7 +221,7 @@ function run() {
     items_completed: items.length,
     item_ids: items,
     tracks,
-    sprint,
+    sprint: (typeof sprint === "string" ? sprint : "").slice(0, 100),
   };
 
   // Ensure state directory exists and write entry

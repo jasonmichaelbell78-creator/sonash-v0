@@ -11,7 +11,7 @@ estimated_time_sequential: 120 min
 
 # Documentation Optimizer
 
-**Version:** 1.2 **Last Updated:** 2026-02-07 **Status:** ACTIVE **Waves:** 5
+**Version:** 1.3 **Last Updated:** 2026-02-14 **Status:** ACTIVE **Waves:** 5
 waves with 13 agents **Output:** `.claude/state/doc-optimizer/`
 
 **What This Does:** Wave-based orchestrator that deploys 13 parallel agents
@@ -392,9 +392,7 @@ Each line must be valid JSON with these fields:
 
 IMPORTANT: Do NOT modify files outside docs/, .claude/skills/, or root .md files.
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 1A wrote N findings to .claude/state/doc-optimizer/wave1-format.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 1A, output: .claude/state/doc-optimizer/wave1-format.jsonl
 ````
 
 #### Agent 1C: External Link Validator (REPORT)
@@ -448,9 +446,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "issue"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 1C wrote N findings to .claude/state/doc-optimizer/wave1-external-links.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 1C, output: .claude/state/doc-optimizer/wave1-external-links.jsonl
 ```
 
 #### Agent 1D: Content Accuracy Checker (MIXED)
@@ -506,9 +502,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "issue"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 1D wrote N findings to .claude/state/doc-optimizer/wave1-accuracy.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 1D, output: .claude/state/doc-optimizer/wave1-accuracy.jsonl
 ```
 
 #### Wave 1 Checkpoint (after 1A + 1C + 1D complete)
@@ -589,9 +583,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "issue"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 1B wrote N findings to .claude/state/doc-optimizer/wave1-headers.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 1B, output: .claude/state/doc-optimizer/wave1-headers.jsonl
 ```
 
 #### Wave 1 Final Checkpoint
@@ -688,9 +680,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "issue|enhancement"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 2A wrote N findings to .claude/state/doc-optimizer/wave2-internal-links.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 2A, output: .claude/state/doc-optimizer/wave2-internal-links.jsonl
 ```
 
 #### Agent 2B: Orphan & Connectivity Analyzer (REPORT)
@@ -754,9 +744,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "issue"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 2B wrote N findings to .claude/state/doc-optimizer/wave2-orphans.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 2B, output: .claude/state/doc-optimizer/wave2-orphans.jsonl
 ```
 
 #### Agent 2C: Freshness & Lifecycle Analyzer (REPORT)
@@ -827,9 +815,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "issue"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 2C wrote N findings to .claude/state/doc-optimizer/wave2-lifecycle.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 2C, output: .claude/state/doc-optimizer/wave2-lifecycle.jsonl
 ```
 
 #### Agent 2D: Cross-Reference & Dependency Checker (REPORT)
@@ -888,9 +874,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "issue"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 2D wrote N findings to .claude/state/doc-optimizer/wave2-crossrefs.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 2D, output: .claude/state/doc-optimizer/wave2-crossrefs.jsonl
 ```
 
 #### Wave 2 Checkpoint
@@ -985,9 +969,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "issue"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 3A wrote N findings to .claude/state/doc-optimizer/wave3-coherence.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 3A, output: .claude/state/doc-optimizer/wave3-coherence.jsonl
 ```
 
 #### Agent 3B: Structure & Classification Reviewer (REPORT)
@@ -1054,9 +1036,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "issue"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 3B wrote N findings to .claude/state/doc-optimizer/wave3-structure.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 3B, output: .claude/state/doc-optimizer/wave3-structure.jsonl
 ```
 
 #### Wave 3 Checkpoint
@@ -1154,9 +1134,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "enhancement"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 4A wrote N findings to .claude/state/doc-optimizer/wave4-quality.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 4A, output: .claude/state/doc-optimizer/wave4-quality.jsonl
 ```
 
 #### Agent 4B: Content Gap & Consolidation Analyzer (REPORT)
@@ -1218,9 +1196,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "enhancement"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 4B wrote N findings to .claude/state/doc-optimizer/wave4-gaps.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 4B, output: .claude/state/doc-optimizer/wave4-gaps.jsonl
 ```
 
 #### Agent 4C: Visual & Navigation Enhancer (REPORT)
@@ -1285,9 +1261,7 @@ Each line must be valid JSON with these fields:
   "finding_type": "enhancement"
 }
 
-CRITICAL RETURN PROTOCOL: When you finish, return ONLY this single line:
-COMPLETE: 4C wrote N findings to .claude/state/doc-optimizer/wave4-navigation.jsonl
-Do NOT include finding details, file listings, summaries, or analysis in your return message.
+**Follow the CRITICAL RETURN PROTOCOL defined in "Agent Return Protocol" above.** Agent ID: 4C, output: .claude/state/doc-optimizer/wave4-navigation.jsonl
 ```
 
 #### Wave 4 Checkpoint
@@ -1755,6 +1729,7 @@ When modifying this skill, also update:
 
 | Version | Date       | Description                                                     |
 | ------- | ---------- | --------------------------------------------------------------- |
+| 1.3     | 2026-02-14 | Dedupe CRITICAL RETURN PROTOCOL (13x inline -> 1 shared ref)    |
 | 1.2     | 2026-02-07 | Step 10 expanded: temp file cleanup + obsolete artifact removal |
 | 1.1     | 2026-02-07 | Context safety: return protocol, wave chunking, budget checks   |
 | 1.0     | 2026-02-07 | Initial version: 5-wave, 13-agent doc optimizer                 |

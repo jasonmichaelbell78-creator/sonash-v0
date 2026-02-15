@@ -22,6 +22,18 @@ actionable.
 
 ## 2026-02 Sessions
 
+### Session #157 (2026-02-14)
+
+**Focus**: AI OPTIMIZATION AUDIT — SKILL OVERLAP
+
+- Resolved all 15 Skill Overlap findings (OPT-K001-K015)
+- K005: Merged `add-deferred-debt` + `add-manual-debt` into unified `/add-debt`
+  skill; deleted deprecated `sync-sonarcloud-debt`
+- K006: Merged `requesting-code-review` into `code-reviewer`; added scope
+  clarification to both `code-reviewer` and `pr-review`
+- K007: Deleted `audit-validation-wrapper` (one-time use)
+- Skill count: 60 -> 56 (5 deleted, 1 created), net -1,000 lines
+
 ### Session #154 (2026-02-12)
 
 **Focus**: ALERTS SKILL ENHANCEMENT PLAN

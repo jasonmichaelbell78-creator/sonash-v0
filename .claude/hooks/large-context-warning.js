@@ -133,13 +133,13 @@ try {
 // Resolve full path for line counting
 const fullPath = path.resolve(projectDir, filePath);
 
-// Check single file size (skip existsSync to avoid race condition)
+// Estimate line count from file size (avoids reading entire file into memory)
 let lineCount = 0;
 try {
-  const content = fs.readFileSync(fullPath, "utf8");
-  lineCount = content.split("\n").length;
+  const stat = fs.statSync(fullPath);
+  lineCount = Math.ceil(stat.size / 80); // Estimate ~80 bytes per line
 } catch {
-  // File doesn't exist or can't be read - lineCount stays 0
+  // File doesn't exist or can't be stat'd - lineCount stays 0
 }
 
 // Determine warnings

@@ -81,16 +81,17 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 
 ## Templates
 
-| Audit Type               | Template                                                                           | Focus Areas                                    |
-| ------------------------ | ---------------------------------------------------------------------------------- | ---------------------------------------------- |
-| Code Review              | [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)                             | Hygiene, types, patterns, testing, AI failures |
-| Security                 | [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)                       | Auth, validation, OWASP, secrets, AI security  |
-| Performance              | [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)                 | Bundle, rendering, caching, vitals, offline    |
-| Refactoring              | [REFACTORING_AUDIT.md](./templates/REFACTORING_AUDIT.md)                           | Tech debt, architecture, DRY, god objects      |
-| Documentation            | [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)                       | Links, coverage, staleness, tier compliance    |
-| Process/Automation       | [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)                                   | CI/CD, hooks, automation, golden path          |
-| Engineering Productivity | [ENGINEERING_PRODUCTIVITY_AUDIT.md](./templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | DX friction, debugging, offline gaps           |
-| **Enhancements**         | [ENHANCEMENT_AUDIT.md](./templates/ENHANCEMENT_AUDIT.md)                           | Improvements beyond debt: UX, architecture, DX |
+| Audit Type               | Template                                                                           | Focus Areas                                     |
+| ------------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Code Review              | [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)                             | Hygiene, types, patterns, testing, AI failures  |
+| Security                 | [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)                       | Auth, validation, OWASP, secrets, AI security   |
+| Performance              | [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)                 | Bundle, rendering, caching, vitals, offline     |
+| Refactoring              | [REFACTORING_AUDIT.md](./templates/REFACTORING_AUDIT.md)                           | Tech debt, architecture, DRY, god objects       |
+| Documentation            | [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)                       | Links, coverage, staleness, tier compliance     |
+| Process/Automation       | [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)                                   | CI/CD, hooks, automation, golden path           |
+| Engineering Productivity | [ENGINEERING_PRODUCTIVITY_AUDIT.md](./templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | DX friction, debugging, offline gaps            |
+| **Enhancements**         | [ENHANCEMENT_AUDIT.md](./templates/ENHANCEMENT_AUDIT.md)                           | Improvements beyond debt: UX, architecture, DX  |
+| **AI Optimization**      | [AI_OPTIMIZATION_AUDIT.md](./templates/AI_OPTIMIZATION_AUDIT.md)                   | Dead code, hook latency, skill overlap, context |
 
 ---
 
@@ -150,6 +151,7 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 
 | Version | Date       | Changes                                                             | Author |
 | ------- | ---------- | ------------------------------------------------------------------- | ------ |
+| 1.3     | 2026-02-14 | Added AI Optimization template (9 total); updated template count    | Claude |
 | 1.2     | 2026-02-12 | IMS merged into TDMS; removed IMS scripts/schema references         | Claude |
 | 1.1     | 2026-02-11 | Added Enhancement Audit type (IMS), IMS scripts & schema references | Claude |
 | 1.0     | 2026-02-04 | Initial creation during multi-ai-audit consolidation                | Claude |

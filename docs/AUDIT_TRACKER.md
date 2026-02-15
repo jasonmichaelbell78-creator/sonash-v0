@@ -54,6 +54,7 @@ When tracking audits:
 | Process                  | 2026-02-09 (Single)        | 0             | 0           | Any CI/hook file changed OR 30 commits    |
 | Engineering-Productivity | 2026-02-07 (Comprehensive) | 0             | 0           | 30 commits OR DX-impacting changes        |
 | **Enhancements**         | _Never_                    | —             | —           | 40 commits OR major feature complete      |
+| **AI Optimization**      | _Never_                    | —             | —           | 50 commits OR relevant file changes       |
 
 ### Multi-AI Audit Thresholds (Cross-Category)
 
@@ -78,96 +79,108 @@ triggers.
 
 ### Code Audits (`/audit-code`)
 
-| Date       | Session       | Commits Covered | Files Covered | Findings                                                                                          | Reset Threshold |
-| ---------- | ------------- | --------------- | ------------- | ------------------------------------------------------------------------------------------------- | --------------- |
-| 2026-02-03 | Comprehensive | Full codebase   | All           | 18 findings - [audit-code-report.md](./audits/comprehensive/audit-code-report.md)                 | ✅ (all)        |
-| 2026-01-30 | Comprehensive | Full codebase   | All           | Session #116 - [audit-code-report.md](./audits/comprehensive/audit-code-report.md)                | ✅ (all)        |
-| 2026-01-24 | Comprehensive | Full codebase   | 95 files      | 16 (0 S0, 2 S1, 8 S2, 6 S3) - [audit-code-report.md](./audits/comprehensive/audit-code-report.md) | ✅ (all)        |
-| 2026-01-17 | Single-Claude | 435             | 221           | 14 (2 S1, 5 S2, 7 S3) - [audit-2026-01-17.md](./audits/single-session/code/audit-2026-01-17.md)   | ⚠️ (single)     |
-| 2026-01-06 | Multi-AI      | Full codebase   | All TS/TSX    | See CANON-CODE.jsonl                                                                              | ✅              |
+| Date       | Session       | Commits Covered | Files Covered | Findings                                      | Reset Threshold |
+| ---------- | ------------- | --------------- | ------------- | --------------------------------------------- | --------------- |
+| 2026-02-03 | Comprehensive | Full codebase   | All           | 18 findings (report archived)                 | ✅ (all)        |
+| 2026-01-30 | Comprehensive | Full codebase   | All           | Session #116 (report archived)                | ✅ (all)        |
+| 2026-01-24 | Comprehensive | Full codebase   | 95 files      | 16 (0 S0, 2 S1, 8 S2, 6 S3) (report archived) | ✅ (all)        |
+| 2026-01-17 | Single-Claude | 435             | 221           | 14 (2 S1, 5 S2, 7 S3) (report archived)       | ⚠️ (single)     |
+| 2026-01-06 | Multi-AI      | Full codebase   | All TS/TSX    | See CANON-CODE.jsonl                          | ✅              |
 
 ### Security Audits (`/audit-security`)
 
-| Date       | Session       | Commits Covered | Files Covered | Findings                                                                                                                                    | Reset Threshold |
-| ---------- | ------------- | --------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| 2026-02-03 | Comprehensive | Full codebase   | All           | 6 findings - [audit-security-report.md](./audits/comprehensive/audit-security-report.md)                                                    | ✅ (all)        |
-| 2026-01-30 | Comprehensive | Full codebase   | All           | Session #116 - [audit-security-report.md](./audits/comprehensive/audit-security-report.md)                                                  | ✅ (all)        |
-| 2026-01-24 | Comprehensive | Full codebase   | All security  | 14 (2 S0, 3 S1, 5 S2, 4 S3) - [audit-security-report.md](./audits/comprehensive/audit-security-report.md) **CRITICAL: Credential exposure** | ✅ (all)        |
-| 2026-01-17 | Single-Claude | 172             | 16            | 11 (2 S1, 3 S2, 6 S3) - [audit-2026-01-17.md](./audits/single-session/security/audit-2026-01-17.md)                                         | ⚠️ (single)     |
-| 2026-01-13 | Single-Claude | Full codebase   | All TS/TSX    | 11 (2 HIGH, 4 MEDIUM, 2 LOW, 3 INFO) - [audit-2026-01-13.md](./audits/single-session/security/audit-2026-01-13.md)                          | ⚠️ (single)     |
-| 2026-01-07 | Multi-AI      | Full codebase   | All TS/TSX    | 10 (CANON-SECURITY.jsonl)                                                                                                                   | ✅              |
+| Date       | Session       | Commits Covered | Files Covered | Findings                                                                        | Reset Threshold |
+| ---------- | ------------- | --------------- | ------------- | ------------------------------------------------------------------------------- | --------------- |
+| 2026-02-03 | Comprehensive | Full codebase   | All           | 6 findings (report archived)                                                    | ✅ (all)        |
+| 2026-01-30 | Comprehensive | Full codebase   | All           | Session #116 (report archived)                                                  | ✅ (all)        |
+| 2026-01-24 | Comprehensive | Full codebase   | All security  | 14 (2 S0, 3 S1, 5 S2, 4 S3) **CRITICAL: Credential exposure** (report archived) | ✅ (all)        |
+| 2026-01-17 | Single-Claude | 172             | 16            | 11 (2 S1, 3 S2, 6 S3) (report archived)                                         | ⚠️ (single)     |
+| 2026-01-13 | Single-Claude | Full codebase   | All TS/TSX    | 11 (2 HIGH, 4 MEDIUM, 2 LOW, 3 INFO) (report archived)                          | ⚠️ (single)     |
+| 2026-01-07 | Multi-AI      | Full codebase   | All TS/TSX    | 10 (CANON-SECURITY.jsonl)                                                       | ✅              |
 
 ### Performance Audits (`/audit-performance`)
 
-| Date       | Session        | Commits Covered | Files Covered | Findings                                                                                                                                               | Reset Threshold |
-| ---------- | -------------- | --------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
-| 2026-02-03 | Comprehensive  | Full codebase   | All           | 15 findings - [audit-performance-report.md](./audits/comprehensive/audit-performance-report.md)                                                        | ✅ (all)        |
-| 2026-01-30 | Comprehensive  | Full codebase   | All           | Session #116 - [audit-performance-report.md](./audits/comprehensive/audit-performance-report.md)                                                       | ✅ (all)        |
-| 2026-01-24 | Comprehensive  | Full codebase   | All           | 25 (7 S0, 10 S1, 5 S2, 3 S3) - [audit-performance-report.md](./audits/comprehensive/audit-performance-report.md) **CRITICAL: 11MB images, no offline** | ✅ (all)        |
-| 2026-01-17 | Single-Claude  | 353             | 248           | 12 (2 S1, 7 S2, 3 S3) - [audit-2026-01-17.md](./audits/single-session/performance/audit-2026-01-17.md)                                                 | ⚠️ (single)     |
-| 2026-01-08 | Multi-AI (#37) | Full codebase   | All TS/TSX    | 20 (CANON-PERF.jsonl)                                                                                                                                  | ✅              |
+| Date       | Session        | Commits Covered | Files Covered | Findings                                                                             | Reset Threshold |
+| ---------- | -------------- | --------------- | ------------- | ------------------------------------------------------------------------------------ | --------------- |
+| 2026-02-03 | Comprehensive  | Full codebase   | All           | 15 findings (report archived)                                                        | ✅ (all)        |
+| 2026-01-30 | Comprehensive  | Full codebase   | All           | Session #116 (report archived)                                                       | ✅ (all)        |
+| 2026-01-24 | Comprehensive  | Full codebase   | All           | 25 (7 S0, 10 S1, 5 S2, 3 S3) **CRITICAL: 11MB images, no offline** (report archived) | ✅ (all)        |
+| 2026-01-17 | Single-Claude  | 353             | 248           | 12 (2 S1, 7 S2, 3 S3) (report archived)                                              | ⚠️ (single)     |
+| 2026-01-08 | Multi-AI (#37) | Full codebase   | All TS/TSX    | 20 (CANON-PERF.jsonl)                                                                | ✅              |
 
 ### Refactoring Audits (`/audit-refactoring`)
 
-| Date       | Session       | Commits Covered | Files Covered | Findings                                                                                                         | Reset Threshold |
-| ---------- | ------------- | --------------- | ------------- | ---------------------------------------------------------------------------------------------------------------- | --------------- |
-| 2026-02-03 | Comprehensive | Full codebase   | All           | 11 findings - [audit-refactoring-report.md](./audits/comprehensive/audit-refactoring-report.md)                  | ✅ (all)        |
-| 2026-01-30 | Comprehensive | Full codebase   | All           | Session #116 - [audit-refactoring-report.md](./audits/comprehensive/audit-refactoring-report.md)                 | ✅ (all)        |
-| 2026-01-24 | Comprehensive | Full codebase   | All           | 19 (0 S0, 4 S1, 10 S2, 5 S3) - [audit-refactoring-report.md](./audits/comprehensive/audit-refactoring-report.md) | ✅ (all)        |
-| 2026-01-17 | Single-Claude | 295             | 159           | 12 (4 S1, 5 S2, 3 S3) - [audit-2026-01-17.md](./audits/single-session/refactoring/audit-2026-01-17.md)           | ⚠️ (single)     |
-| 2026-01-10 | Multi-AI      | Full codebase   | All TS/TSX/JS | 27 (CANON-REFACTOR.jsonl)                                                                                        | ✅              |
+| Date       | Session       | Commits Covered | Files Covered | Findings                                       | Reset Threshold |
+| ---------- | ------------- | --------------- | ------------- | ---------------------------------------------- | --------------- |
+| 2026-02-03 | Comprehensive | Full codebase   | All           | 11 findings (report archived)                  | ✅ (all)        |
+| 2026-01-30 | Comprehensive | Full codebase   | All           | Session #116 (report archived)                 | ✅ (all)        |
+| 2026-01-24 | Comprehensive | Full codebase   | All           | 19 (0 S0, 4 S1, 10 S2, 5 S3) (report archived) | ✅ (all)        |
+| 2026-01-17 | Single-Claude | 295             | 159           | 12 (4 S1, 5 S2, 3 S3) (report archived)        | ⚠️ (single)     |
+| 2026-01-10 | Multi-AI      | Full codebase   | All TS/TSX/JS | 27 (CANON-REFACTOR.jsonl)                      | ✅              |
 
 ### Documentation Audits (`/audit-documentation`)
 
-| Date       | Session       | Commits Covered | Files Covered | Findings                                                                                                            | Reset Threshold |
-| ---------- | ------------- | --------------- | ------------- | ------------------------------------------------------------------------------------------------------------------- | --------------- |
-| 2026-02-03 | Comprehensive | Full codebase   | All           | 24 findings - [audit-documentation-report.md](./audits/comprehensive/audit-documentation-report.md)                 | ✅ (all)        |
-| 2026-01-30 | Comprehensive | Full codebase   | All           | Session #116 - [audit-documentation-report.md](./audits/comprehensive/audit-documentation-report.md)                | ✅ (all)        |
-| 2026-01-24 | Comprehensive | Full codebase   | 194 docs      | 14 (0 S0, 4 S1, 6 S2, 4 S3) - [audit-documentation-report.md](./audits/comprehensive/audit-documentation-report.md) | ✅ (all)        |
-| 2026-01-17 | Single-Claude | 295             | 157           | 10 (2 S1, 5 S2, 3 S3) - [audit-2026-01-17.md](./audits/single-session/documentation/audit-2026-01-17.md)            | ⚠️ (single)     |
-| 2026-01-10 | Multi-AI      | Full codebase   | All MD        | 14 (CANON-DOCS.jsonl)                                                                                               | ✅              |
+| Date       | Session       | Commits Covered | Files Covered | Findings                                      | Reset Threshold |
+| ---------- | ------------- | --------------- | ------------- | --------------------------------------------- | --------------- |
+| 2026-02-03 | Comprehensive | Full codebase   | All           | 24 findings (report archived)                 | ✅ (all)        |
+| 2026-01-30 | Comprehensive | Full codebase   | All           | Session #116 (report archived)                | ✅ (all)        |
+| 2026-01-24 | Comprehensive | Full codebase   | 194 docs      | 14 (0 S0, 4 S1, 6 S2, 4 S3) (report archived) | ✅ (all)        |
+| 2026-01-17 | Single-Claude | 295             | 157           | 10 (2 S1, 5 S2, 3 S3) (report archived)       | ⚠️ (single)     |
+| 2026-01-10 | Multi-AI      | Full codebase   | All MD        | 14 (CANON-DOCS.jsonl)                         | ✅              |
 
 ### Process Audits (`/audit-process`)
 
 | Date       | Session       | Commits Covered | Files Covered       | Findings                                                                                                                                     | Reset Threshold |
 | ---------- | ------------- | --------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
 | 2026-02-09 | Single #143   | 35 files        | 16 automation types | 258 (3 S0, 24 S1, 88 S2, 139 S3) - [AUTOMATION_AUDIT_REPORT.md](./audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md) | ⚠️ (single)     |
-| 2026-02-03 | Comprehensive | Full codebase   | All                 | 46 findings - [audit-process-report.md](./audits/comprehensive/audit-process-report.md)                                                      | ✅ (all)        |
-| 2026-01-30 | Comprehensive | Full codebase   | All                 | Session #116 - [audit-process-report.md](./audits/comprehensive/audit-process-report.md)                                                     | ✅ (all)        |
-| 2026-01-24 | Comprehensive | Full codebase   | 60+ workflows       | 27 (0 S0, 5 S1, 12 S2, 10 S3) - [audit-process-report.md](./audits/comprehensive/audit-process-report.md)                                    | ✅ (all)        |
-| 2026-01-17 | Single-Claude | N/A (first)     | 60+                 | 10 (0 S1, 4 S2, 6 S3) - [audit-2026-01-17.md](./audits/single-session/process/audit-2026-01-17.md)                                           | ⚠️ (single)     |
+| 2026-02-03 | Comprehensive | Full codebase   | All                 | 46 findings (report archived)                                                                                                                | ✅ (all)        |
+| 2026-01-30 | Comprehensive | Full codebase   | All                 | Session #116 (report archived)                                                                                                               | ✅ (all)        |
+| 2026-01-24 | Comprehensive | Full codebase   | 60+ workflows       | 27 (0 S0, 5 S1, 12 S2, 10 S3) (report archived)                                                                                              | ✅ (all)        |
+| 2026-01-17 | Single-Claude | N/A (first)     | 60+                 | 10 (0 S1, 4 S2, 6 S3) (report archived)                                                                                                      | ⚠️ (single)     |
 | 2026-01-10 | Multi-AI      | Full codebase   | CI/hooks/scripts    | 14 (CANON-PROCESS.jsonl)                                                                                                                     | ✅              |
 
 ### Engineering-Productivity Audits (`/audit-engineering-productivity`)
 
-| Date       | Session       | Commits Covered | Files Covered | Findings                                                                                                                  | Reset Threshold |
-| ---------- | ------------- | --------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| 2026-02-03 | Comprehensive | Full codebase   | All           | 12 findings - [audit-engineering-productivity-report.md](./audits/comprehensive/audit-engineering-productivity-report.md) | ✅ (all)        |
+| Date       | Session       | Commits Covered | Files Covered | Findings                      | Reset Threshold |
+| ---------- | ------------- | --------------- | ------------- | ----------------------------- | --------------- |
+| 2026-02-03 | Comprehensive | Full codebase   | All           | 12 findings (report archived) | ✅ (all)        |
+
+### Enhancements Audits (`/audit-enhancements`)
+
+| Date | Session | Commits Covered | Files Covered | Findings | Reset Threshold |
+| ---- | ------- | --------------- | ------------- | -------- | --------------- |
+| —    | —       | —               | —             | —        | —               |
+
+### AI Optimization Audits (`/audit-ai-optimization`)
+
+| Date | Session | Commits Covered | Files Covered | Findings | Reset Threshold |
+| ---- | ------- | --------------- | ------------- | -------- | --------------- |
+| —    | —       | —               | —             | —        | —               |
 
 ---
 
 ## Multi-AI Audit Log
 
-| Date       | Categories    | Models Used                                                          | Total Findings                                  | Aggregated To                                                                         |
-| ---------- | ------------- | -------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------- |
-| 2026-02-03 | **ALL 7**     | Claude Opus 4.5 (7 specialized agents)                               | 132 raw → 30 unique (0 S0, 13 S1, 12 S2, 5 S3)  | [aggregated-findings.jsonl](./audits/comprehensive/aggregated-findings.jsonl)         |
-| 2026-01-24 | **ALL 6**     | Claude Opus 4.5 (6 specialized agents)                               | 115 (9 S0, 28 S1, 46 S2, 32 S3)                 | [COMPREHENSIVE_AUDIT_REPORT.md](./audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md) |
-| 2026-01-10 | Process       | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 14 canonical                                    | [CANON-PROCESS.jsonl](./technical-debt/MASTER_DEBT.jsonl)                             |
-| 2026-01-10 | Documentation | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 14 canonical                                    | [CANON-DOCS.jsonl](./technical-debt/MASTER_DEBT.jsonl)                                |
-| 2026-01-10 | Refactoring   | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 27 canonical                                    | [CANON-REFACTOR.jsonl](./technical-debt/MASTER_DEBT.jsonl)                            |
-| 2026-01-08 | Performance   | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 28 raw → 20 canonical (1 S0, 7 S1, 17 S2, 3 S3) | [CANON-PERF.jsonl](./technical-debt/MASTER_DEBT.jsonl)                                |
-| 2026-01-07 | Security      | Claude Opus 4.5, ChatGPT 5.2                                         | 10 canonical                                    | [CANON-SECURITY.jsonl](./technical-debt/MASTER_DEBT.jsonl)                            |
-| 2026-01-06 | Code Review   | Claude Opus 4.5, ChatGPT 5.2                                         | 33 canonical                                    | [CANON-CODE.jsonl](./technical-debt/MASTER_DEBT.jsonl)                                |
+| Date       | Categories    | Models Used                                                          | Total Findings                                  | Aggregated To                                              |
+| ---------- | ------------- | -------------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------- |
+| 2026-02-03 | **ALL 7**     | Claude Opus 4.5 (7 specialized agents)                               | 132 raw → 30 unique (0 S0, 13 S1, 12 S2, 5 S3)  | aggregated-findings.jsonl (archived)                       |
+| 2026-01-24 | **ALL 6**     | Claude Opus 4.5 (6 specialized agents)                               | 115 (9 S0, 28 S1, 46 S2, 32 S3)                 | COMPREHENSIVE_AUDIT_REPORT.md (archived)                   |
+| 2026-01-10 | Process       | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 14 canonical                                    | [CANON-PROCESS.jsonl](./technical-debt/MASTER_DEBT.jsonl)  |
+| 2026-01-10 | Documentation | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 14 canonical                                    | [CANON-DOCS.jsonl](./technical-debt/MASTER_DEBT.jsonl)     |
+| 2026-01-10 | Refactoring   | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 27 canonical                                    | [CANON-REFACTOR.jsonl](./technical-debt/MASTER_DEBT.jsonl) |
+| 2026-01-08 | Performance   | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 28 raw → 20 canonical (1 S0, 7 S1, 17 S2, 3 S3) | [CANON-PERF.jsonl](./technical-debt/MASTER_DEBT.jsonl)     |
+| 2026-01-07 | Security      | Claude Opus 4.5, ChatGPT 5.2                                         | 10 canonical                                    | [CANON-SECURITY.jsonl](./technical-debt/MASTER_DEBT.jsonl) |
+| 2026-01-06 | Code Review   | Claude Opus 4.5, ChatGPT 5.2                                         | 33 canonical                                    | [CANON-CODE.jsonl](./technical-debt/MASTER_DEBT.jsonl)     |
 
 ---
 
 ## Master Issue Aggregation
 
-| Date       | Raw Findings | Unique Findings | Reduction | Output                                                                                                                         |
-| ---------- | ------------ | --------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| 2026-02-03 | 132          | 30              | 77%       | [aggregated-findings.jsonl](./audits/comprehensive/aggregated-findings.jsonl), TDMS intake: DEBT-0869 to DEBT-0898 (898 total) |
-| 2026-01-24 | 115          | 109             | 5%        | [COMPREHENSIVE_AUDIT_REPORT.md](./audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md)                                          |
-| 2026-01-17 | 292          | 283             | 3%        | [MASTER_ISSUE_LIST.md](./technical-debt/INDEX.md), [IMPLEMENTATION_PLAN.md](./technical-debt/INDEX.md)                         |
+| Date       | Raw Findings | Unique Findings | Reduction | Output                                                                                                 |
+| ---------- | ------------ | --------------- | --------- | ------------------------------------------------------------------------------------------------------ |
+| 2026-02-03 | 132          | 30              | 77%       | aggregated-findings.jsonl (archived), TDMS intake: DEBT-0869 to DEBT-0898 (898 total)                  |
+| 2026-01-24 | 115          | 109             | 5%        | COMPREHENSIVE_AUDIT_REPORT.md (archived)                                                               |
+| 2026-01-17 | 292          | 283             | 3%        | [MASTER_ISSUE_LIST.md](./technical-debt/INDEX.md), [IMPLEMENTATION_PLAN.md](./technical-debt/INDEX.md) |
 
 **Latest Aggregation Summary (2026-02-03 Comprehensive):**
 
@@ -242,6 +255,7 @@ deduplication/aggregation (e.g., 28 raw findings from 5 models).
 
 | Version | Date       | Changes                                                                                                                                                                   |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.8     | 2026-02-14 | Added AI Optimization category + threshold; added Enhancements/AI Optimization audit log sections; 9 total categories                                                     |
 | 2.7     | 2026-02-12 | IMS merged into TDMS (Session #152); enhancements now tracked in MASTER_DEBT.jsonl with type: enhancement                                                                 |
 | 2.6     | 2026-02-11 | Added Enhancements category (IMS); linked MASTER_IMPROVEMENTS.jsonl as parallel source of truth; enhancement audit threshold added                                        |
 | 2.5     | 2026-02-03 | **COMPREHENSIVE AUDIT (7 domains):** Added Engineering-Productivity category; 132 raw → 30 unique findings; TDMS intake DEBT-0870-0899; all thresholds reset              |

@@ -200,25 +200,72 @@ function readRecentCommits(count) {
 }
 
 /**
- * Gather complete git context
+ * Gather complete git context (3 git calls instead of 6)
+ *
+ * Call 1: git rev-parse --abbrev-ref HEAD  → branch name
+ * Call 2: git log --oneline -15            → recent commits (first line = lastCommit)
+ * Call 3: git status --porcelain           → staged + uncommitted + untracked in one call
+ *
+ * Porcelain format: XY filename
+ *   X = index status, Y = worktree status
+ *   '?' in both columns = untracked
+ *   Non-space X (and not '?') = staged change
+ *   Non-space Y (and not '?') = unstaged/uncommitted change
  */
 function gatherGitContext() {
+  // Call 1: branch name
+  const branch = gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
+
+  // Call 2: recent commits (first line doubles as lastCommit)
+  const logOutput = gitExec(["log", "--oneline", "-15"]);
+  const recentCommits = logOutput.split("\n").filter((l) => l.length > 0);
+  const lastCommit = recentCommits[0] || "";
+
+  // Call 3: git status --porcelain -z (NUL-separated for filenames with spaces — Review #289)
+  const statusOutput = gitExec(["status", "--porcelain", "-z"]);
+  const statusFields = statusOutput.split("\0").filter((l) => l.length > 0);
+
+  const uncommittedFiles = [];
+  const stagedFiles = [];
+  const untrackedFiles = [];
+
+  for (let i = 0; i < statusFields.length; i++) {
+    const line = statusFields[i];
+    if (!line || line.length < 4 || line[2] !== " ") continue; // expect "XY filename"
+    // Porcelain format: XY filename (X=index, Y=worktree)
+    const indexStatus = line[0];
+    const worktreeStatus = line[1];
+    let filename = line.slice(3); // skip "XY "
+
+    // Renames/copies have an extra NUL-separated path: "R? old\0new" / "C? old\0new"
+    if ((indexStatus === "R" || indexStatus === "C") && i + 1 < statusFields.length) {
+      const newPath = statusFields[i + 1];
+      if (newPath) filename = newPath;
+      i++; // consume the extra path field
+    }
+
+    if (!filename) continue;
+
+    if (indexStatus === "?" && worktreeStatus === "?") {
+      if (untrackedFiles.length < 20) untrackedFiles.push(filename);
+      continue;
+    }
+
+    if (indexStatus !== " " && indexStatus !== "?") {
+      if (stagedFiles.length < 50) stagedFiles.push(filename);
+    }
+    if (worktreeStatus !== " " && worktreeStatus !== "?") {
+      if (uncommittedFiles.length < 50) uncommittedFiles.push(filename);
+    }
+  }
+
   return {
-    branch: gitExec(["rev-parse", "--abbrev-ref", "HEAD"]),
-    lastCommit: gitExec(["log", "--oneline", "-1"]),
-    recentCommits: gitExec(["log", "--oneline", "-15"])
-      .split("\n")
-      .filter((l) => l.length > 0),
-    uncommittedFiles: gitExec(["diff", "--name-only"])
-      .split("\n")
-      .filter((f) => f.length > 0),
-    stagedFiles: gitExec(["diff", "--cached", "--name-only"])
-      .split("\n")
-      .filter((f) => f.length > 0),
-    untrackedFiles: gitExec(["ls-files", "--others", "--exclude-standard"])
-      .split("\n")
-      .filter((f) => f.length > 0)
-      .slice(0, 20),
+    branch,
+    lastCommit,
+    recentCommits,
+    uncommittedFiles,
+    stagedFiles,
+    untrackedFiles,
   };
 }
 

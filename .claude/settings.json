@@ -3,7 +3,7 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "enableAllProjectMcpServers": false,
-  "disabledMcpjsonServers": ["rube", "serena", "nextjs-devtools"],
+  "disabledMcpjsonServers": ["rube", "serena", "nextjs-devtools", "filesystem"],
   "hooks": {
     "SessionStart": [
       {
@@ -60,53 +60,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "CLAUDE_TOOL=write node .claude/hooks/check-requirements.js $ARGUMENTS",
-            "statusMessage": "Checking agent requirements..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/audit-s0s1-validator.js $ARGUMENTS",
-            "statusMessage": "Checking audit S0/S1 compliance..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/pattern-check.js $ARGUMENTS",
-            "statusMessage": "Checking pattern compliance..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/component-size-check.js $ARGUMENTS",
-            "statusMessage": "Checking component size..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/firestore-write-block.js $ARGUMENTS",
-            "statusMessage": "Checking Firestore security..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/test-mocking-validator.js $ARGUMENTS",
-            "statusMessage": "Checking test mocking patterns..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/app-check-validator.js $ARGUMENTS",
-            "statusMessage": "Checking App Check..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/typescript-strict-check.js $ARGUMENTS",
-            "statusMessage": "Checking TypeScript strictness..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/repository-pattern-check.js $ARGUMENTS",
-            "statusMessage": "Checking repository patterns..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/agent-trigger-enforcer.js $ARGUMENTS",
-            "statusMessage": "Checking agent recommendations..."
+            "command": "CLAUDE_TOOL=write node .claude/hooks/post-write-validator.js $ARGUMENTS",
+            "statusMessage": "Validating write operation..."
           }
         ]
       },
@@ -115,48 +70,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "CLAUDE_TOOL=edit node .claude/hooks/check-requirements.js $ARGUMENTS",
-            "statusMessage": "Checking agent requirements..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/pattern-check.js $ARGUMENTS",
-            "statusMessage": "Checking pattern compliance..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/component-size-check.js $ARGUMENTS",
-            "statusMessage": "Checking component size..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/firestore-write-block.js $ARGUMENTS",
-            "statusMessage": "Checking Firestore security..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/test-mocking-validator.js $ARGUMENTS",
-            "statusMessage": "Checking test mocking patterns..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/app-check-validator.js $ARGUMENTS",
-            "statusMessage": "Checking App Check..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/typescript-strict-check.js $ARGUMENTS",
-            "statusMessage": "Checking TypeScript strictness..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/repository-pattern-check.js $ARGUMENTS",
-            "statusMessage": "Checking repository patterns..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/agent-trigger-enforcer.js $ARGUMENTS",
-            "statusMessage": "Checking agent recommendations..."
+            "command": "CLAUDE_TOOL=edit node .claude/hooks/post-write-validator.js $ARGUMENTS",
+            "statusMessage": "Validating edit operation..."
           }
         ]
       },
@@ -165,48 +80,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "CLAUDE_TOOL=multiedit node .claude/hooks/check-requirements.js $ARGUMENTS",
-            "statusMessage": "Checking agent requirements..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/pattern-check.js $ARGUMENTS",
-            "statusMessage": "Checking pattern compliance..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/component-size-check.js $ARGUMENTS",
-            "statusMessage": "Checking component size..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/firestore-write-block.js $ARGUMENTS",
-            "statusMessage": "Checking Firestore security..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/test-mocking-validator.js $ARGUMENTS",
-            "statusMessage": "Checking test mocking patterns..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/app-check-validator.js $ARGUMENTS",
-            "statusMessage": "Checking App Check..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/typescript-strict-check.js $ARGUMENTS",
-            "statusMessage": "Checking TypeScript strictness..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/repository-pattern-check.js $ARGUMENTS",
-            "statusMessage": "Checking repository patterns..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/agent-trigger-enforcer.js $ARGUMENTS",
-            "statusMessage": "Checking agent recommendations..."
+            "command": "CLAUDE_TOOL=multiedit node .claude/hooks/post-write-validator.js $ARGUMENTS",
+            "statusMessage": "Validating multiedit operation..."
           }
         ]
       },
@@ -215,18 +90,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/large-context-warning.js $ARGUMENTS",
-            "statusMessage": "Tracking context size..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/auto-save-context.js $ARGUMENTS",
-            "statusMessage": "Checking context preservation..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/compaction-handoff.js $ARGUMENTS",
-            "statusMessage": "Checking compaction handoff..."
+            "command": "node .claude/hooks/post-read-handler.js $ARGUMENTS",
+            "statusMessage": "Processing read operation..."
           }
         ]
       },
@@ -267,23 +132,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/alerts-reminder.js $ARGUMENTS",
-            "statusMessage": "Checking pending alerts..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/analyze-user-request.js $ARGUMENTS",
-            "statusMessage": "Checking PRE-TASK triggers..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/session-end-reminder.js $ARGUMENTS",
-            "statusMessage": "Checking session status..."
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/plan-mode-suggestion.js $ARGUMENTS",
-            "statusMessage": "Checking task complexity..."
+            "command": "node .claude/hooks/user-prompt-handler.js $ARGUMENTS",
+            "statusMessage": "Processing user prompt..."
           }
         ]
       }

@@ -364,6 +364,20 @@ function checkDependencies() {
 try {
   // Allow override via environment variable
   if (process.env.SKIP_CROSS_DOC_CHECK === "1") {
+    try {
+      execFileSync(
+        "node",
+        [
+          "scripts/log-override.js",
+          "--quick",
+          "--check=cross-doc",
+          `--reason=${process.env.SKIP_REASON || "No reason"}`,
+        ],
+        { timeout: 3000, stdio: "pipe" }
+      );
+    } catch {
+      /* non-blocking */
+    }
     log("⚠️  Cross-document check skipped (SKIP_CROSS_DOC_CHECK=1)", colors.yellow);
     process.exit(0);
   }

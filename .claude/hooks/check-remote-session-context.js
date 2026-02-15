@@ -13,6 +13,48 @@
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
+
+// Fetch TTL cache (path resolved after projectDir is defined below)
+let FETCH_CACHE_FILE;
+const FETCH_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function shouldFetch() {
+  if (!FETCH_CACHE_FILE) return true;
+  try {
+    const data = JSON.parse(fs.readFileSync(FETCH_CACHE_FILE, "utf8"));
+    const lastFetch = Number(data?.lastFetch);
+    const ageMs = Date.now() - lastFetch;
+    if (Number.isFinite(lastFetch) && ageMs >= 0 && ageMs < FETCH_TTL_MS) return false;
+  } catch {
+    /* no cache or invalid */
+  }
+  return true;
+}
+
+function updateFetchCache() {
+  if (!FETCH_CACHE_FILE) return;
+  // Atomic write (Review #289)
+  const tmpPath = `${FETCH_CACHE_FILE}.tmp`;
+  try {
+    if (!isSafeToWrite(FETCH_CACHE_FILE)) return;
+    if (!isSafeToWrite(tmpPath)) return;
+    fs.mkdirSync(path.dirname(FETCH_CACHE_FILE), { recursive: true });
+    fs.writeFileSync(tmpPath, JSON.stringify({ lastFetch: Date.now() }), "utf-8");
+    try {
+      fs.rmSync(FETCH_CACHE_FILE, { force: true });
+    } catch {
+      /* best-effort */
+    }
+    fs.renameSync(tmpPath, FETCH_CACHE_FILE);
+  } catch {
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      /* cleanup */
+    }
+  }
+}
 
 // Configuration
 const CONTEXT_FILE = "SESSION_CONTEXT.md";
@@ -32,6 +74,9 @@ if (isOutsideBase) {
   console.log("ok");
   process.exit(0);
 }
+
+// Resolve cache path now that projectDir is defined
+FETCH_CACHE_FILE = path.join(projectDir, ".claude", "hooks", ".fetch-cache.json");
 
 /**
  * Run git command safely using execFileSync (no shell interpolation)
@@ -112,8 +157,11 @@ function getRecentClaudeBranches() {
 
 // Main logic
 function main() {
-  // Fetch latest from remote first
-  git(["fetch", "--quiet", "origin"]);
+  // Only fetch if cache is stale (5-min TTL)
+  if (shouldFetch()) {
+    git(["fetch", "--quiet", "origin"]);
+    updateFetchCache();
+  }
 
   const currentBranch = getCurrentBranch();
   const localContextPath = path.join(projectDir, CONTEXT_FILE);

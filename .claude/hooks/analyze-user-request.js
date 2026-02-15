@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-/* global process, console */
-/* eslint-disable security/detect-non-literal-regexp */
+/* global process, console, require, __dirname */
+/* eslint-disable security/detect-non-literal-regexp, @typescript-eslint/no-require-imports */
 /**
  * analyze-user-request.js - UserPromptSubmit hook for routing user requests
  * Cross-platform replacement for analyze-user-request.sh
@@ -22,6 +22,10 @@
  * 6. Exploration/Understanding
  * 7. Testing
  */
+
+const fs = require("node:fs");
+const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 
 // Get user request from arguments (trim to handle whitespace)
 let userRequest = (process.argv[2] || "").trim();
@@ -48,6 +52,59 @@ if (userRequest.length > MAX_LENGTH) {
 }
 
 const requestLower = userRequest.toLowerCase();
+
+// Directive dedup state (15-min TTL)
+const DIRECTIVE_STATE = path.join(__dirname, ".directive-dedup.json");
+
+function wasRecentlyDirected(directive) {
+  try {
+    const data = JSON.parse(fs.readFileSync(DIRECTIVE_STATE, "utf8"));
+    const entry = data[directive];
+    if (entry && Date.now() - entry < 15 * 60 * 1000) return true;
+  } catch {
+    /* no state */
+  }
+  return false;
+}
+
+function recordDirective(directive) {
+  let data = {};
+  try {
+    data = JSON.parse(fs.readFileSync(DIRECTIVE_STATE, "utf8"));
+  } catch {
+    /* start fresh */
+  }
+  if (!data || typeof data !== "object" || Array.isArray(data)) data = {};
+  data[directive] = Date.now();
+
+  // Purge stale entries older than 24h (Review #289)
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  for (const key of Object.keys(data)) {
+    const ts = Number(data[key]);
+    if (!Number.isFinite(ts) || now - ts > DAY_MS) delete data[key];
+  }
+
+  const tmpPath = `${DIRECTIVE_STATE}.tmp`;
+  try {
+    if (!isSafeToWrite(DIRECTIVE_STATE)) return;
+    if (!isSafeToWrite(tmpPath)) return;
+    fs.mkdirSync(path.dirname(DIRECTIVE_STATE), { recursive: true });
+    fs.writeFileSync(tmpPath, JSON.stringify(data), "utf-8");
+    try {
+      fs.rmSync(DIRECTIVE_STATE, { force: true });
+    } catch {
+      /* best-effort */
+    }
+    fs.renameSync(tmpPath, DIRECTIVE_STATE);
+  } catch {
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      /* cleanup */
+    }
+  }
+}
 
 // Helper for word boundary matching (escapes regex special chars to prevent ReDoS)
 // Supports ".?" convention for optional separator (e.g., api.?key matches apikey, api-key, api_key)
@@ -78,6 +135,11 @@ function matchesPhrase(phrase) {
 
 // Output to stdout (context-consuming) for high-confidence matches
 function directiveStdout(msg) {
+  if (wasRecentlyDirected(msg)) {
+    console.log("ok");
+    process.exit(0); // Skip — already directed recently
+  }
+  recordDirective(msg);
   console.log(msg);
   process.exit(0);
 }

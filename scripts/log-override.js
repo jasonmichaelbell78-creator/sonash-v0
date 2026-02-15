@@ -24,6 +24,15 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { isSafeToWrite } = require("../.claude/hooks/lib/symlink-guard");
+
+// Shared rotation helper (entry-count-based)
+let rotateJsonl;
+try {
+  rotateJsonl = require("../.claude/hooks/lib/rotate-state.js").rotateJsonl;
+} catch {
+  rotateJsonl = null;
+}
 
 // Get repository root for consistent log location
 function getRepoRoot() {
@@ -38,7 +47,7 @@ function getRepoRoot() {
 }
 
 // Configuration
-const OVERRIDE_LOG = path.join(getRepoRoot(), ".claude", "override-log.jsonl");
+const OVERRIDE_LOG = path.resolve(path.join(getRepoRoot(), ".claude", "override-log.jsonl"));
 const MAX_LOG_SIZE = 50 * 1024; // 50KB - rotate if larger
 
 // Ensure directory exists
@@ -96,6 +105,7 @@ function parseArgs() {
     reason: null,
     list: false,
     clear: false,
+    quick: false,
   };
 
   for (const arg of process.argv.slice(2)) {
@@ -103,6 +113,8 @@ function parseArgs() {
       args.list = true;
     } else if (arg === "--clear") {
       args.clear = true;
+    } else if (arg === "--quick") {
+      args.quick = true;
     } else if (arg.startsWith("--check=")) {
       // Use slice(1).join("=") to handle values containing "="
       args.check = arg.split("=").slice(1).join("=");
@@ -153,7 +165,21 @@ function logOverride(check, reason) {
       }
     }
 
+    if (!isSafeToWrite(OVERRIDE_LOG)) return null;
     fs.appendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
+
+    // Entry-count-based rotation (keep 60 of last 100, only when file exceeds 64KB)
+    try {
+      if (rotateJsonl) {
+        const { size } = fs.lstatSync(OVERRIDE_LOG);
+        if (size > 64 * 1024) {
+          rotateJsonl(OVERRIDE_LOG, 100, 60);
+        }
+      }
+    } catch {
+      // Non-fatal: rotation failure should not block override logging
+    }
+
     return entry;
   } catch (err) {
     // Non-fatal: log write failure should not crash scripts/hooks
@@ -254,7 +280,22 @@ function clearLog() {
   console.log("Override log cleared.");
 }
 
-// Main execution
+/**
+ * Exported helper for Node scripts to log skips programmatically.
+ * @param {string} check - The check type (e.g., "tests", "cross-doc")
+ * @param {string} [reason] - Reason for skipping
+ * @returns {object|null} The logged entry, or null on failure
+ */
+function logSkip(check, reason) {
+  return logOverride(check, reason);
+}
+
+// Export for use as a module
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { logSkip, logOverride };
+}
+
+// Main execution (only when run directly, not when required)
 function main() {
   const args = parseArgs();
 
@@ -268,17 +309,31 @@ function main() {
     return;
   }
 
+  // --quick mode: log and exit silently (for shell hooks)
+  if (args.quick) {
+    if (!args.check) {
+      console.error("--quick requires --check=<type>");
+      process.exit(1);
+    }
+    const entry = logOverride(args.check, args.reason);
+    if (!entry) process.exit(1);
+    process.exit(0);
+  }
+
   if (!args.check) {
     console.log('Usage: node log-override.js --check=<type> --reason="<reason>"');
     console.log("");
-    console.log("Check types: triggers, patterns, tests, lint");
+    console.log(
+      "Check types: triggers, patterns, tests, lint, cross-doc, doc-index, doc-header, audit-s0s1, debt-schema"
+    );
     console.log("");
     console.log("Or use environment variable:");
     console.log('  SKIP_REASON="reason" SKIP_TRIGGERS=1 git push');
     console.log("");
     console.log("Other commands:");
-    console.log("  --list   Show recent overrides");
-    console.log("  --clear  Archive and clear override log");
+    console.log("  --list    Show recent overrides");
+    console.log("  --clear   Archive and clear override log");
+    console.log("  --quick   Silent mode for shell hooks (log and exit)");
     process.exit(1);
   }
 
@@ -293,4 +348,7 @@ function main() {
   }
 }
 
-main();
+// Only run main() when executed directly (not when required as a module)
+if (require.main === module) {
+  main();
+}

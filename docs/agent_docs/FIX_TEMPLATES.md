@@ -1,14 +1,14 @@
 # Fix Templates for Qodo PR Review Findings
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-02-11
+**Document Version:** 1.2
+**Last Updated:** 2026-02-15
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 ## Purpose
 
-Copy-paste fix templates for the top 20 most common Qodo PR review findings in
+Copy-paste fix templates for the top 23 most common Qodo PR review findings in
 the SoNash codebase. Each template is self-contained: paste the "Good Code"
 block directly into the flagged location. Project-specific helpers are
 referenced where available.
@@ -864,8 +864,137 @@ execFileSync("git", ["diff", "--", filePath], { cwd: repoRoot });
 
 ---
 
+## Template 21: SonarCloud Regex Complexity (S5852)
+
+**Triggered by**: SonarCloud "Regular expression complexity" **Severity**: MAJOR
+(CI-blocking) **Review frequency**: 5 occurrences in PR #365
+
+### Strategy (Two-Strikes Rule)
+
+1. First flag: Factor common prefixes, use bounded quantifiers `{0,N}`
+2. Second flag on same regex: **REPLACE with string parsing** — do not patch
+
+### Bad Code (complex regex for section extraction)
+
+```javascript
+const match = content.match(
+  /## Version History[\s\S]{0,20000}?(?=\r?\n##|\r?\n---|$)/
+);
+```
+
+### Good Code (line-by-line string parsing)
+
+```javascript
+const lines = content.split(/\r?\n/);
+let sectionStart = -1;
+for (let i = 0; i < lines.length; i++) {
+  if (/^##\s/.test(lines[i]) && /version history/i.test(lines[i])) {
+    sectionStart = i;
+    break;
+  }
+}
+// Scan from sectionStart+1 until next ## or ---
+let sectionEnd = lines.length;
+for (let i = sectionStart + 1; i < lines.length; i++) {
+  if (/^##\s/.test(lines[i]) || /^---/.test(lines[i])) {
+    sectionEnd = i;
+    break;
+  }
+}
+const section = lines.slice(sectionStart, sectionEnd).join("\n");
+```
+
+---
+
+## Template 22: Windows-Safe Atomic Write
+
+**Triggered by**: Qodo "Atomic write" / "rename fails on Windows" **Severity**:
+MINOR **Review frequency**: 3 occurrences in PR #365
+
+### Bad Code
+
+```javascript
+writeFileSync(targetPath, data);
+// OR (fails on Windows when target exists):
+writeFileSync(tmpPath, data);
+renameSync(tmpPath, targetPath);
+```
+
+### Good Code
+
+```javascript
+const tmpPath = `${targetPath}.tmp`;
+writeFileSync(tmpPath, data, "utf-8");
+if (existsSync(targetPath)) unlinkSync(targetPath);
+renameSync(tmpPath, targetPath);
+```
+
+### Common Mistakes When Fixing
+
+- Not cleaning up the temp file on error (use try/finally)
+- Using `rmSync` instead of `unlinkSync` for single files
+- Forgetting that `renameSync` across different drives/volumes always fails on
+  Windows
+
+---
+
+## Template 23: Pattern Propagation (Codebase-Wide Fix)
+
+**Triggered by**: Qodo finds the same issue in a new file each review round
+**Severity**: PROCESS **Review frequency**: PR #366 R4-R7 symlink guard
+ping-pong (4 rounds, ~40 items for what should have been 1 round)
+
+This is NOT a code template — it's a **workflow template** for when a fix needs
+to be applied everywhere, not just where Qodo pointed.
+
+### When to Use
+
+- Qodo flags a missing guard/check/pattern in file A
+- The same unguarded pattern exists in files B, C, D, ..., N
+- Fixing only file A guarantees Qodo will flag file B next round
+
+### Workflow
+
+```bash
+# 1. Fix the reported instance first
+# 2. Determine what the UNFIXED pattern looks like
+# 3. Search the entire codebase for all instances:
+
+# Example: find all atomic writes missing symlink guard
+grep -rn "writeFileSync\|renameSync\|appendFileSync" \
+  .claude/hooks/ scripts/ --include="*.js" | grep -v "isSafeToWrite"
+
+# Example: find all readFileSync without try/catch
+grep -rn "readFileSync" .claude/hooks/ scripts/ --include="*.js" \
+  -B2 | grep -v "try"
+
+# 4. Fix ALL instances in one commit
+# 5. If you created a shared helper, verify every file imports it
+```
+
+### Common Search Patterns
+
+| Issue                 | Search for unfixed instances                       |
+| --------------------- | -------------------------------------------------- |
+| Missing symlink       | `writeFileSync` without nearby `isSafeToWrite`     |
+| Missing try/catch     | `readFileSync` without surrounding `try`           |
+| statSync vs lstatSync | `statSync` (should be `lstatSync`)                 |
+| Inline vs shared      | Old inline check that should use new shared helper |
+| Missing validation    | Function calls without preceding guard             |
+
+### Common Mistakes
+
+- Fixing only the reported file, not searching codebase-wide
+- Searching the target file but not the `.tmp` file path
+- Applying a shared helper to consolidated files but missing standalone copies
+- Not checking files in `scripts/` when the fix was in `.claude/hooks/`
+
+---
+
 ## Version History
 
-| Version | Date       | Change                                         |
-| ------- | ---------- | ---------------------------------------------- |
-| 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis |
+| Version | Date       | Change                                               |
+| ------- | ---------- | ---------------------------------------------------- |
+| 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)       |
+| 1.1     | 2026-02-14 | Add Templates 21-22 (regex complexity, atomic write) |
+| 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis       |

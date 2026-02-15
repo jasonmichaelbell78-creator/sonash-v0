@@ -151,24 +151,19 @@ rounds? What's the single highest-impact change to prevent this in future PRs?
 
 ---
 
-## STEP 4: SAVE TO MEMORY
+## STEP 4: SAVE TO LOG
 
-Store the retrospective summary in MCP memory for cross-PR pattern detection:
+Append the retrospective summary to the review learnings log for cross-PR
+pattern detection:
 
-```
-mcp__memory__create_entities([{
-  name: "PR-<N>-retro",
-  entityType: "pr-retrospective",
-  observations: [
-    "PR #<N>: <rounds> rounds, <items> items, <deferred> deferred",
-    "Recurring patterns: <list>",
-    "Key lesson: <one-liner>"
-  ]
-}])
+```bash
+# Append a summary entry to AI_REVIEW_LEARNINGS_LOG.md
+# Format: ### PR #<N> Retrospective (YYYY-MM-DD)
+# Include: rounds, items, recurring patterns, key lesson
 ```
 
 This enables future retrospectives to reference past PRs and detect systemic
-patterns (e.g., "symlink guards have been flagged across PRs #358, #360, #362 —
+patterns (e.g., "symlink guards have been flagged across PRs #358, #360, #362 --
 this needs an architectural solution, not per-file fixes").
 
 ---

@@ -191,6 +191,13 @@ if (projectDirInput !== safeBaseDir && path.isAbsolute(projectDirInput)) {
 
 const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
+// Cache realpathSync(projectDir) at module level (avoids redundant syscall per invocation)
+let _realProjectDir;
+function getRealProjectDir() {
+  if (!_realProjectDir) _realProjectDir = fs.realpathSync(projectDir);
+  return _realProjectDir;
+}
+
 // Security: Ensure projectDir is within baseDir using path.relative() (prevent path traversal)
 const baseRel = path.relative(safeBaseDir, projectDir);
 // Use segment-based check instead of startsWith (Review #200 R4 - Qodo)
@@ -267,7 +274,7 @@ let realPath = "";
 let realProject = "";
 try {
   realPath = fs.realpathSync(fullPath);
-  realProject = fs.realpathSync(projectDir);
+  realProject = getRealProjectDir();
 } catch (err) {
   // File doesn't exist or is inaccessible - skip pattern check (Review #200 - logging added)
   // Sanitize error message to prevent path disclosure (Review #200 Round 2 - Qodo compliance)

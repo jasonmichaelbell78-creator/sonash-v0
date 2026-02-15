@@ -13,6 +13,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { isSafeToWrite } = require("./lib/symlink-guard");
 
 const ROOT_DIR = path.resolve(__dirname, "../..");
 const ALERTS_FILE = path.join(ROOT_DIR, ".claude", "pending-alerts.json");
@@ -65,7 +66,32 @@ function checkPendingMcpSave() {
   return null;
 }
 
+const COOLDOWN_FILE = path.join(ROOT_DIR, ".claude", "hooks", ".alerts-cooldown.json");
+const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
+
 function main() {
+  // Fast-path: check cooldown before doing any file reads
+  try {
+    const data = JSON.parse(fs.readFileSync(COOLDOWN_FILE, "utf8"));
+    const lastRun = Number(data?.lastRun);
+    if (Number.isFinite(lastRun)) {
+      const ageMs = Date.now() - lastRun;
+      if (ageMs >= 0 && ageMs < COOLDOWN_MS) {
+        process.exit(0); // Still in cooldown
+      }
+      if (ageMs < 0) {
+        // Self-healing: delete corrupt future-timestamp cooldown file
+        try {
+          fs.rmSync(COOLDOWN_FILE, { force: true });
+        } catch {
+          /* best-effort */
+        }
+      }
+    }
+  } catch {
+    /* no cooldown file or invalid */
+  }
+
   const messages = [];
 
   // Check for pending alerts
@@ -138,6 +164,31 @@ function main() {
   // Output all messages
   if (messages.length > 0) {
     messages.forEach((m) => console.log(m));
+  }
+
+  // Update cooldown after successful check (atomic write — Review #289)
+  const tmpCooldown = `${COOLDOWN_FILE}.tmp`;
+  try {
+    if (!isSafeToWrite(COOLDOWN_FILE)) {
+      process.exit(0);
+    }
+    if (!isSafeToWrite(tmpCooldown)) {
+      process.exit(0);
+    }
+    fs.mkdirSync(path.dirname(COOLDOWN_FILE), { recursive: true });
+    fs.writeFileSync(tmpCooldown, JSON.stringify({ lastRun: Date.now() }), "utf-8");
+    try {
+      fs.rmSync(COOLDOWN_FILE, { force: true });
+    } catch {
+      /* best-effort */
+    }
+    fs.renameSync(tmpCooldown, COOLDOWN_FILE);
+  } catch {
+    try {
+      fs.rmSync(tmpCooldown, { force: true });
+    } catch {
+      /* cleanup */
+    }
   }
 
   process.exit(0);

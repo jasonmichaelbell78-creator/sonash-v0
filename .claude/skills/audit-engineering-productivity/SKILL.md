@@ -30,6 +30,13 @@ actionable recommendations for improvement.
 
 **When to use:** Task tool available, sufficient context budget
 
+### Step 0: Load False Positives
+
+```bash
+# Read false positives to avoid re-flagging known issues
+cat docs/technical-debt/FALSE_POSITIVES.jsonl 2>/dev/null
+```
+
 ### Agent 1: dx-golden-path-auditor
 
 **Focus Areas:**
@@ -164,7 +171,7 @@ offline-support-auditor agent - audit persistence, service workers
 
 ### Report File
 
-Create `docs/audits/comprehensive/audit-engineering-productivity-report.md`:
+Create `docs/audits/single-session/engineering-productivity/audit-report.md`:
 
 ```markdown
 # Engineering Productivity Audit - {DATE}
@@ -227,7 +234,7 @@ Create `docs/audits/comprehensive/audit-engineering-productivity-report.md`:
 ### JSONL File
 
 Create
-`docs/audits/comprehensive/audit-engineering-productivity-findings.jsonl`:
+`docs/audits/single-session/engineering-productivity/audit-findings.jsonl`:
 
 **CRITICAL - Use this exact schema:**
 
@@ -287,13 +294,59 @@ and track carryover issues.
 
 ---
 
+## Interactive Review (MANDATORY — before TDMS intake)
+
+**Do NOT ingest findings into TDMS until the user has reviewed them.**
+
+### Presentation Format
+
+Present findings in **batches of 3-5 items**, grouped by severity (S0 first,
+then S1, S2, S3). Within each severity, group by theme for coherence. Each item
+shows:
+
+```
+### DEBT-XXXX: [Title]
+**Severity:** S_ | **Effort:** E_ | **Confidence:** _%
+**Current:** [What exists now]
+**Suggested Fix:** [Concrete remediation]
+**Acceptance Tests:** [How to verify]
+**Counter-argument:** [Why NOT to do this]
+**Recommendation:** ACCEPT/DECLINE/DEFER — [Reasoning]
+```
+
+Do NOT present all items at once — batches of 3-5 keep decisions manageable.
+Wait for user decisions on each batch before presenting the next.
+
+### Decision Tracking (Compaction-Safe)
+
+Create `${AUDIT_DIR}/REVIEW_DECISIONS.md` after the first batch to track all
+decisions. Update after each batch. This file survives context compaction.
+
+### Processing Decisions
+
+After each batch:
+
+- Record decisions in REVIEW_DECISIONS.md
+- If DECLINED: remove from findings before TDMS intake
+- If DEFERRED: keep in TDMS as NEW status for future planning
+- If ACCEPTED: proceed to TDMS intake
+
+### Post-Review Summary
+
+After ALL findings reviewed, summarize:
+
+- Total accepted / declined / deferred
+- Proceed to TDMS Intake with accepted + deferred items only
+
+---
+
 ## TDMS Integration
 
 After audit completion, findings should be ingested into MASTER_DEBT.jsonl:
 
 ```bash
 node scripts/debt/intake-audit.js \
-  docs/audits/comprehensive/audit-engineering-productivity-findings.jsonl \
+  docs/audits/single-session/engineering-productivity/audit-findings.jsonl \
   --source "audit-engineering-productivity-$(date +%Y-%m-%d)"
 ```
 

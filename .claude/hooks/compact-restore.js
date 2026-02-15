@@ -116,7 +116,15 @@ function main() {
   }
 
   const ageMs = handoff.timestamp ? Date.now() - new Date(handoff.timestamp).getTime() : NaN;
-  const age = Number.isNaN(ageMs) ? "?" : Math.round(ageMs / 60000);
+
+  // Skip stale handoffs (>60 min old = likely from a previous session)
+  if (Number.isNaN(ageMs) || ageMs > 60 * 60 * 1000) {
+    console.error("  Handoff data is stale (>60 min). Skipping recovery injection.");
+    console.log("ok");
+    process.exit(0);
+  }
+
+  const age = Math.round(ageMs / 60000);
 
   // Output recovery context to stdout (Claude sees this)
   const recovery = [

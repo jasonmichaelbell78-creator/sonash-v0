@@ -175,17 +175,26 @@ function main() {
     process.exit(0);
   }
 
-  // NEW COMMIT DETECTED — capture metadata
-  // Use Unit Separator (\x1f) instead of | to avoid corruption from | in commit messages
+  // NEW COMMIT DETECTED — capture metadata (2 git calls instead of 3)
+  // Call 1: log with %D decoration to get hash, short hash, message, author, date, AND branch ref
+  // Use NUL delimiter (%x00) to avoid corruption from special chars in commit messages
   const commitLine = gitExec([
     "log",
-    "--format=%H\x1f%h\x1f%s\x1f%an\x1f%ad",
+    "--format=%H%x00%h%x00%s%x00%an%x00%ad%x00%D",
     "--date=iso-strict",
     "-1",
   ]);
-  const parts = commitLine.split("\x1f");
+  const parts = commitLine.split("\0");
 
-  const branch = gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
+  // Parse branch from %D decoration (e.g. "HEAD -> branch-name, origin/branch-name")
+  const decoration = (parts.length >= 6 ? parts[5] : "") || "";
+  const branchMatch = decoration.match(/HEAD -> ([^,]+)/);
+  // Fall back to rev-parse only in detached HEAD (no "HEAD -> ..." in decoration)
+  const branch = branchMatch
+    ? branchMatch[1].trim()
+    : gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
+
+  // Call 2: files changed in the commit
   const filesChanged = gitExec(["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"])
     .split("\n")
     .filter((f) => f.length > 0);
@@ -207,6 +216,17 @@ function main() {
   if (appendCommitLog(entry)) {
     saveLastHead(currentHead);
     console.error(`  Commit tracked: ${entry.shortHash} ${entry.message.slice(0, 60)}`);
+
+    // Rotate commit log to prevent unbounded growth (OPT #72)
+    try {
+      const { rotateJsonl } = require("./lib/rotate-state.js");
+      const result = rotateJsonl(COMMIT_LOG, 500, 300);
+      if (result.rotated) {
+        console.error(`  Commit log rotated: ${result.before} → ${result.after} entries`);
+      }
+    } catch {
+      // Non-critical — rotation failure doesn't block commit tracking
+    }
   }
 
   console.log("ok");

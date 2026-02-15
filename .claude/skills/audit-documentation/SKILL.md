@@ -65,8 +65,8 @@ echo "Audit output: $AUDIT_DIR"
 
 **Step 2: Load False Positives Database**
 
-Read `docs/audits/FALSE_POSITIVES.jsonl` and note patterns to exclude from
-findings (filter by category: `documentation`).
+Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and note patterns to exclude
+from findings (filter by category: `documentation`).
 
 **Step 3: Check Thresholds**
 
@@ -97,6 +97,11 @@ Extract metadata from each:
 
 Output: ${AUDIT_DIR}/stage-1-inventory.md
 Format: Markdown summary with counts and file list
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1A wrote inventory to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Agent 1B: Baseline Metrics
@@ -115,6 +120,12 @@ grep -c "orphan" docs/DOCUMENTATION_INDEX.md || echo "0"
 
 Output: `${AUDIT_DIR}/stage-1-baselines.md`
 
+**CRITICAL RETURN PROTOCOL:**
+
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1B wrote baselines to [path]`
+- Do NOT return findings content in your response
+
 ### Agent 1C: Link Extraction
 
 **Task:** Build link graph for later stages
@@ -132,6 +143,11 @@ Schema:
   "external": [{"source": "file.md", "line": 1, "url": "https://...", "text": "..."}],
   "anchors": [{"source": "file.md", "line": 1, "anchor": "#section", "text": "..."}]
 }
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 1C wrote N links to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Stage 1 Completion Audit
@@ -175,6 +191,11 @@ JSONL schema per finding (JSONL_SCHEMA_STANDARD.md format):
   "acceptance_tests": ["Link resolves correctly", "No 404 when clicking"],
   "evidence": ["target: path.md", "resolved: /full/path.md"]
 }
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 2A wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Agent 2B: External URL Checker
@@ -195,6 +216,15 @@ Or manually check each URL from stage-1-links.json with:
 
 Output: `${AUDIT_DIR}/stage-2-external-links.jsonl`
 
+JSONL schema per finding:
+`{"category":"documentation","title":"...","fingerprint":"documentation::source.md::broken-external-url","severity":"S1|S2","effort":"E0","confidence":0-100,"files":["source.md:123"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}`
+
+**CRITICAL RETURN PROTOCOL:**
+
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 2B wrote N findings to [path]`
+- Do NOT return findings content in your response
+
 ### Agent 2C: Cross-Reference Validator
 
 **Task:** Verify references to project artifacts
@@ -207,6 +237,14 @@ Check documentation references:
 4. Skill/hook path references - paths valid?
 
 Output: ${AUDIT_DIR}/stage-2-cross-refs.jsonl
+
+JSONL schema per finding:
+{"category":"documentation","title":"...","fingerprint":"documentation::source.md::broken-cross-ref","severity":"S1|S2","effort":"E0|E1","confidence":0-100,"files":["source.md:123"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 2C wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Agent 2D: Orphan & Connectivity
@@ -225,6 +263,14 @@ Exclude from orphan detection:
 - Archive docs
 
 Output: ${AUDIT_DIR}/stage-2-orphans.jsonl
+
+JSONL schema per finding:
+{"category":"documentation","title":"...","fingerprint":"documentation::file.md::orphaned-doc","severity":"S2|S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 2D wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Stage 2 Completion Audit
@@ -260,6 +306,15 @@ Checks:
 
 Output: `${AUDIT_DIR}/stage-3-accuracy.jsonl`
 
+JSONL schema per finding:
+`{"category":"documentation","title":"...","fingerprint":"documentation::file.md::accuracy-issue","severity":"S1|S2","effort":"E0|E1","confidence":0-100,"files":["file.md:123"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}`
+
+**CRITICAL RETURN PROTOCOL:**
+
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3A wrote N findings to [path]`
+- Do NOT return findings content in your response
+
 ### Agent 3B: Completeness Checker
 
 **Task:** Check for missing/incomplete content
@@ -275,6 +330,14 @@ For each document, check:
 4. No stub documents (< 100 words, excluding code blocks)
 
 Output: ${AUDIT_DIR}/stage-3-completeness.jsonl
+
+JSONL schema per finding:
+{"category":"documentation","title":"...","fingerprint":"documentation::file.md::completeness-issue","severity":"S2|S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3B wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Agent 3C: Coherence Checker
@@ -293,6 +356,14 @@ Analyze across all documents:
 3. Contradictory information (conflicting guidance for same task)
 
 Output: ${AUDIT_DIR}/stage-3-coherence.jsonl
+
+JSONL schema per finding:
+{"category":"documentation","title":"...","fingerprint":"documentation::file.md::coherence-issue","severity":"S2|S3","effort":"E1|E2","confidence":0-100,"files":["file.md:123"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3C wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Agent 3D: Freshness Checker
@@ -316,6 +387,15 @@ Additional checks:
 - Deprecated terminology still used
 
 Output: `${AUDIT_DIR}/stage-3-freshness.jsonl`
+
+JSONL schema per finding:
+`{"category":"documentation","title":"...","fingerprint":"documentation::file.md::stale-content","severity":"S2|S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}`
+
+**CRITICAL RETURN PROTOCOL:**
+
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 3D wrote N findings to [path]`
+- Do NOT return findings content in your response
 
 ### Stage 3 Completion Audit
 
@@ -346,6 +426,15 @@ npm run docs:lint > ${AUDIT_DIR}/markdownlint-raw.txt 2>&1
 
 Convert violations to JSONL format in `${AUDIT_DIR}/stage-4-markdownlint.jsonl`
 
+JSONL schema per finding:
+`{"category":"documentation","title":"...","fingerprint":"documentation::file.md::markdownlint-rule","severity":"S3","effort":"E0","confidence":0-100,"files":["file.md:123"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}`
+
+**CRITICAL RETURN PROTOCOL:**
+
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 4A wrote N findings to [path]`
+- Do NOT return findings content in your response
+
 ### Agent 4B: Prettier Compliance
 
 **Task:** Check Prettier formatting
@@ -357,6 +446,15 @@ npm run format:check -- docs/ > ${AUDIT_DIR}/prettier-raw.txt 2>&1
 ```
 
 Convert violations to JSONL format in `${AUDIT_DIR}/stage-4-prettier.jsonl`
+
+JSONL schema per finding:
+`{"category":"documentation","title":"...","fingerprint":"documentation::file.md::prettier-violation","severity":"S3","effort":"E0","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}`
+
+**CRITICAL RETURN PROTOCOL:**
+
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 4B wrote N findings to [path]`
+- Do NOT return findings content in your response
 
 ### Agent 4C: Structure Standards
 
@@ -372,6 +470,14 @@ For each document, verify:
 6. Heading uniqueness (no duplicate headings in same doc)
 
 Output: ${AUDIT_DIR}/stage-4-structure.jsonl
+
+JSONL schema per finding:
+{"category":"documentation","title":"...","fingerprint":"documentation::file.md::structure-issue","severity":"S2|S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 4C wrote N findings to [path]`
+- Do NOT return findings content in your response
 ````
 
 ### Stage 4 Completion Audit
@@ -402,6 +508,14 @@ Verify placement rules:
 - Tier 2 → docs/ or root
 
 Output: ${AUDIT_DIR}/stage-5-location.jsonl
+
+JSONL schema per finding:
+{"category":"documentation","title":"...","fingerprint":"documentation::file.md::wrong-location","severity":"S2|S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 5A wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Agent 5B: Archive Candidate Finder (Surface-Level)
@@ -416,6 +530,14 @@ Surface-level detection:
 4. Plans not referenced in current ROADMAP.md
 
 Output: ${AUDIT_DIR}/stage-5-archive-candidates-raw.jsonl
+
+JSONL schema per finding:
+{"category":"documentation","title":"...","fingerprint":"documentation::file.md::archive-candidate","severity":"S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 5B wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Agent 5C: Cleanup Candidate Finder
@@ -431,6 +553,14 @@ Identify:
 5. Merge candidates (fragmented docs on same topic)
 
 Output: ${AUDIT_DIR}/stage-5-cleanup-candidates.jsonl
+
+JSONL schema per finding:
+{"category":"documentation","title":"...","fingerprint":"documentation::file.md::cleanup-candidate","severity":"S3","effort":"E0|E1","confidence":0-100,"files":["file.md:1"],"why_it_matters":"...","suggested_fix":"...","acceptance_tests":["..."]}
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 5C wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Agent 5D: Deep Lifecycle Analysis (Runs After 5B)
@@ -461,6 +591,11 @@ Extended schema:
   "consumed_by": "Where content lives now (if applicable)",
   "recommendation": "ARCHIVE|DELETE|KEEP|MERGE_INTO:<target>"
 }
+
+**CRITICAL RETURN PROTOCOL:**
+- Write findings to the specified output file using Write tool or Bash
+- Return ONLY: `COMPLETE: 5D wrote N findings to [path]`
+- Do NOT return findings content in your response
 ```
 
 ### Stage 5 Completion Audit
@@ -510,7 +645,7 @@ Keep the finding with:
 `${AUDIT_DIR}/all-findings.jsonl` (final file for TDMS intake)
 
 ```
-Filter out findings matching patterns in docs/audits/FALSE_POSITIVES.jsonl:
+Filter out findings matching patterns in docs/technical-debt/FALSE_POSITIVES.jsonl:
 - Match by file pattern
 - Match by title pattern
 - Check expiration dates
@@ -626,6 +761,52 @@ node scripts/archive-doc.js "path/to/doc.md"
 
 1. ...
 2. ...
+
+---
+
+## Interactive Review (MANDATORY — before TDMS intake)
+
+**Do NOT ingest findings into TDMS until the user has reviewed them.**
+
+### Presentation Format
+
+Present findings in **batches of 3-5 items**, grouped by severity (S0 first,
+then S1, S2, S3). Within each severity, group by theme for coherence. Each item
+shows:
+
+```
+### DEBT-XXXX: [Title]
+**Severity:** S_ | **Effort:** E_ | **Confidence:** _%
+**Current:** [What exists now]
+**Suggested Fix:** [Concrete remediation]
+**Acceptance Tests:** [How to verify]
+**Counter-argument:** [Why NOT to do this]
+**Recommendation:** ACCEPT/DECLINE/DEFER — [Reasoning]
+```
+
+Do NOT present all items at once — batches of 3-5 keep decisions manageable.
+Wait for user decisions on each batch before presenting the next.
+
+### Decision Tracking (Compaction-Safe)
+
+Create `${AUDIT_DIR}/REVIEW_DECISIONS.md` after the first batch to track all
+decisions. Update after each batch. This file survives context compaction.
+
+### Processing Decisions
+
+After each batch:
+
+- Record decisions in REVIEW_DECISIONS.md
+- If DECLINED: remove from findings before TDMS intake
+- If DEFERRED: keep in TDMS as NEW status for future planning
+- If ACCEPTED: proceed to TDMS intake
+
+### Post-Review Summary
+
+After ALL findings reviewed, summarize:
+
+- Total accepted / declined / deferred
+- Proceed to TDMS Intake with accepted + deferred items only
 
 ---
 
