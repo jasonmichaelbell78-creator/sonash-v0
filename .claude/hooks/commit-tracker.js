@@ -175,12 +175,21 @@ function main() {
     process.exit(0);
   }
 
-  // NEW COMMIT DETECTED — capture metadata
+  // NEW COMMIT DETECTED — capture metadata (2 git calls instead of 3)
+  // Call 1: log with %D decoration to get hash, short hash, message, AND branch ref
   // Use Unit Separator (\x1f) instead of | to avoid corruption from | in commit messages
-  const commitLine = gitExec(["log", "--format=%H\x1f%h\x1f%s", "-1"]);
+  const commitLine = gitExec(["log", "--format=%H\x1f%h\x1f%s\x1f%D", "-1"]);
   const parts = commitLine.split("\x1f");
 
-  const branch = gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
+  // Parse branch from %D decoration (e.g. "HEAD -> branch-name, origin/branch-name")
+  const decoration = parts[3] || "";
+  const branchMatch = decoration.match(/HEAD -> ([^,)]+)/);
+  // Fall back to rev-parse only in detached HEAD (no "HEAD -> ..." in decoration)
+  const branch = branchMatch
+    ? branchMatch[1].trim()
+    : gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
+
+  // Call 2: files changed in the commit
   const filesChanged = gitExec(["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"])
     .split("\n")
     .filter((f) => f.length > 0);

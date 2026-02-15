@@ -200,25 +200,65 @@ function readRecentCommits(count) {
 }
 
 /**
- * Gather complete git context
+ * Gather complete git context (3 git calls instead of 6)
+ *
+ * Call 1: git rev-parse --abbrev-ref HEAD  → branch name
+ * Call 2: git log --oneline -15            → recent commits (first line = lastCommit)
+ * Call 3: git status --porcelain           → staged + uncommitted + untracked in one call
+ *
+ * Porcelain format: XY filename
+ *   X = index status, Y = worktree status
+ *   '?' in both columns = untracked
+ *   Non-space X (and not '?') = staged change
+ *   Non-space Y (and not '?') = unstaged/uncommitted change
  */
 function gatherGitContext() {
+  // Call 1: branch name
+  const branch = gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
+
+  // Call 2: recent commits (first line doubles as lastCommit)
+  const logOutput = gitExec(["log", "--oneline", "-15"]);
+  const recentCommits = logOutput.split("\n").filter((l) => l.length > 0);
+  const lastCommit = recentCommits[0] || "";
+
+  // Call 3: git status --porcelain (replaces diff --name-only, diff --cached, ls-files)
+  const statusOutput = gitExec(["status", "--porcelain"]);
+  const statusLines = statusOutput.split("\n").filter((l) => l.length > 0);
+
+  const uncommittedFiles = [];
+  const stagedFiles = [];
+  const untrackedFiles = [];
+
+  for (const line of statusLines) {
+    // Porcelain format: XY filename (X=index, Y=worktree)
+    const indexStatus = line[0];
+    const worktreeStatus = line[1];
+    const filename = line.slice(3); // skip "XY "
+
+    if (indexStatus === "?" && worktreeStatus === "?") {
+      // Untracked file
+      if (untrackedFiles.length < 20) {
+        untrackedFiles.push(filename);
+      }
+    } else {
+      // Staged: X is not ' ' and not '?'
+      if (indexStatus !== " " && indexStatus !== "?") {
+        stagedFiles.push(filename);
+      }
+      // Uncommitted (worktree change): Y is not ' ' and not '?'
+      if (worktreeStatus !== " " && worktreeStatus !== "?") {
+        uncommittedFiles.push(filename);
+      }
+    }
+  }
+
   return {
-    branch: gitExec(["rev-parse", "--abbrev-ref", "HEAD"]),
-    lastCommit: gitExec(["log", "--oneline", "-1"]),
-    recentCommits: gitExec(["log", "--oneline", "-15"])
-      .split("\n")
-      .filter((l) => l.length > 0),
-    uncommittedFiles: gitExec(["diff", "--name-only"])
-      .split("\n")
-      .filter((f) => f.length > 0),
-    stagedFiles: gitExec(["diff", "--cached", "--name-only"])
-      .split("\n")
-      .filter((f) => f.length > 0),
-    untrackedFiles: gitExec(["ls-files", "--others", "--exclude-standard"])
-      .split("\n")
-      .filter((f) => f.length > 0)
-      .slice(0, 20),
+    branch,
+    lastCommit,
+    recentCommits,
+    uncommittedFiles,
+    stagedFiles,
+    untrackedFiles,
   };
 }
 
