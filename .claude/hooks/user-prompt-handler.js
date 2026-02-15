@@ -157,6 +157,7 @@ function runAnalyze() {
     const tmpPath = `${DIRECTIVE_STATE}.tmp`;
     try {
       if (!isSafeToWrite(DIRECTIVE_STATE)) return;
+      if (!isSafeToWrite(tmpPath)) return;
       fs.mkdirSync(path.dirname(DIRECTIVE_STATE), { recursive: true });
       fs.writeFileSync(tmpPath, JSON.stringify(data), "utf-8");
       try {

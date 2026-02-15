@@ -172,6 +172,9 @@ function main() {
     if (!isSafeToWrite(COOLDOWN_FILE)) {
       process.exit(0);
     }
+    if (!isSafeToWrite(tmpCooldown)) {
+      process.exit(0);
+    }
     fs.mkdirSync(path.dirname(COOLDOWN_FILE), { recursive: true });
     fs.writeFileSync(tmpCooldown, JSON.stringify({ lastRun: Date.now() }), "utf-8");
     try {

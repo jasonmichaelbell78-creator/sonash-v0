@@ -187,11 +187,11 @@ function firestoreWriteBlock() {
   ];
 
   const FIRESTORE_WRITE_PATTERNS = [
-    /addDoc\s*\(\s*collection\s*\([^,]+,\s*["'`](\w+)["'`]\)/g,
-    /setDoc\s*\(\s*doc\s*\([^,]+,\s*["'`](\w+)["'`]/g,
-    /updateDoc\s*\(\s*doc\s*\([^,]+,\s*["'`](\w+)["'`]/g,
-    /deleteDoc\s*\(\s*doc\s*\([^,]+,\s*["'`](\w+)["'`]/g,
-    /\.collection\s*\(\s*["'`](\w+)["'`]\s*\)\s*\.\s*(?:add|set|update|delete)/g,
+    /addDoc\s*\(\s*collection\s*\([^,]+,\s*["'`]([A-Za-z0-9_-]+)["'`]\)/g,
+    /setDoc\s*\(\s*doc\s*\([^,]+,\s*["'`]([A-Za-z0-9_-]+)["'`]/g,
+    /updateDoc\s*\(\s*doc\s*\([^,]+,\s*["'`]([A-Za-z0-9_-]+)["'`]/g,
+    /deleteDoc\s*\(\s*doc\s*\([^,]+,\s*["'`]([A-Za-z0-9_-]+)["'`]/g,
+    /\.collection\s*\(\s*["'`]([A-Za-z0-9_-]+)["'`]\s*\)\s*\.\s*(?:add|set|update|delete)/g,
   ];
 
   const violations = [];
@@ -937,6 +937,7 @@ function agentTriggerEnforcer() {
   const tmpPath = `${statePath}.tmp`;
   try {
     if (!isSafeToWrite(statePath)) return;
+    if (!isSafeToWrite(tmpPath)) return;
     fs.mkdirSync(path.dirname(statePath), { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
     try {
@@ -1030,6 +1031,7 @@ function agentTriggerEnforcer() {
     const tmpReviewPath = `${reviewQueuePath}.tmp`;
     try {
       if (!isSafeToWrite(reviewQueuePath)) return;
+      if (!isSafeToWrite(tmpReviewPath)) return;
       fs.mkdirSync(path.dirname(reviewQueuePath), { recursive: true });
       fs.writeFileSync(tmpReviewPath, JSON.stringify(reviewQueue, null, 2));
       try {

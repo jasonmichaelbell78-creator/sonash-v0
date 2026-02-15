@@ -47,7 +47,7 @@ function getRepoRoot() {
 }
 
 // Configuration
-const OVERRIDE_LOG = path.join(getRepoRoot(), ".claude", "override-log.jsonl");
+const OVERRIDE_LOG = path.resolve(path.join(getRepoRoot(), ".claude", "override-log.jsonl"));
 const MAX_LOG_SIZE = 50 * 1024; // 50KB - rotate if larger
 
 // Ensure directory exists
