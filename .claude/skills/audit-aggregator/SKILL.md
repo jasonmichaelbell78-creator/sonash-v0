@@ -1,6 +1,10 @@
 ---
 name: audit-aggregator
 description: Aggregate and deduplicate findings from multiple audit reports
+supports_parallel: false
+fallback_available: false
+estimated_time_parallel: 10 min
+estimated_time_sequential: 10 min
 ---
 
 # Audit Aggregator Agent
@@ -11,7 +15,26 @@ deduplication.
 
 **Input:** Multiple audit report files (markdown format) **Output:**
 `COMPREHENSIVE_AUDIT_REPORT.md` with executive summary, priority rankings, and
-cross-cutting analysis
+cross-cutting analysis + `comprehensive-findings.jsonl` for TDMS intake
+
+---
+
+## Pre-Audit Validation
+
+Before running aggregation, verify:
+
+1. **Check input files exist** — At least 5 of 9 domain reports must be present
+   in `docs/audits/comprehensive/audit-YYYY-MM-DD/`
+2. **Read false positives** — Load `docs/technical-debt/FALSE_POSITIVES.jsonl`
+   and exclude matching fingerprints
+3. **Check prior aggregations** — Search episodic memory for previous
+   comprehensive audit results to compare against
+4. **Verify output directory** — Ensure
+   `docs/audits/comprehensive/audit-YYYY-MM-DD/` exists and is writable
+
+**If fewer than 5 reports exist:** Warn the user and list which reports are
+missing. Proceed with available reports but note the gap in the executive
+summary.
 
 ---
 
@@ -99,7 +122,7 @@ for (const group of groups) {
   if (group.length > 1) {
     // Multiple audits flagged same location
     merged = {
-      id: `COMP-${nextId++}`, // New composite ID
+      id: `cross-domain::${group[0].file}::${slugify(mergeTitles(group))}`, // Standard fingerprint
       domains: group.map((f) => f.domain), // ["code", "security"]
       severity: maxSeverity(group), // Take worst severity
       effort: maxEffort(group), // Take highest effort estimate
@@ -131,7 +154,7 @@ Before:
   SEC-012: Exception vulnerability (S0, E1) at auth.ts:45
 
 After:
-  COMP-001: Missing error handling + Exception vulnerability (S0, E1, Domains: 2)
+  cross-domain::auth.ts::error-handling-exception-vuln (S0, E1, Domains: 2)
     Category: Cross-Domain (Code + Security)
 ```
 
@@ -332,11 +355,11 @@ Optimization **Total Findings:** 97 unique (142 raw)
 
 ## Priority-Ranked Findings (Top 20)
 
-| Rank | ID       | Severity | Domains | File:Line           | Description                             | Effort | Score |
-| ---- | -------- | -------: | ------: | ------------------- | --------------------------------------- | -----: | ----: |
-| 1    | COMP-001 |       S0 |       3 | src/auth.ts:45      | Missing error handling + Exception vuln |     E1 |   100 |
-| 2    | SEC-012  |       S0 |       1 | firestore.rules:102 | Missing auth check on delete            |     E0 |    95 |
-| ...  | ...      |      ... |     ... | ...                 | ...                                     |    ... |   ... |
+| Rank | ID                                    | Severity | Domains | File:Line           | Description                             | Effort | Score |
+| ---- | ------------------------------------- | -------: | ------: | ------------------- | --------------------------------------- | -----: | ----: |
+| 1    | cross-domain::auth.ts::error-handling |       S0 |       3 | src/auth.ts:45      | Missing error handling + Exception vuln |     E1 |   100 |
+| 2    | SEC-012                               |       S0 |       1 | firestore.rules:102 | Missing auth check on delete            |     E0 |    95 |
+| ...  | ...                                   |      ... |     ... | ...                 | ...                                     |    ... |   ... |
 
 ---
 
@@ -372,7 +395,7 @@ Optimization **Total Findings:** 97 unique (142 raw)
 
 ### S0 Critical (3 findings)
 
-#### COMP-001: Missing error handling + Exception vulnerability
+#### cross-domain::auth.ts::error-handling: Missing error handling + Exception vulnerability
 
 **Domains:** Code (CODE-001), Security (SEC-012), Performance (PERF-005)
 **File:** `src/auth.ts:45` **Severity:** S0 (Critical) **Effort:** E1 (Hours)
@@ -418,6 +441,43 @@ Optimization **Total Findings:** 97 unique (142 raw)
 - **Reason:** Documented false positives in FALSE_POSITIVES.jsonl
 - **Categories:** code (3), security (2), performance (2), documentation (1)
 ```
+
+**Additionally, produce a machine-readable JSONL file:**
+
+**Output File:**
+`docs/audits/comprehensive/audit-YYYY-MM-DD/comprehensive-findings.jsonl`
+
+Each line must be a valid JSON object matching the TDMS schema:
+
+```jsonl
+{
+  "fingerprint": "cross-domain::auth.ts::error-handling",
+  "title": "Missing error handling + Exception vulnerability",
+  "category": "cross-domain",
+  "severity": "S0",
+  "effort": "E1",
+  "confidence": 95,
+  "domains": [
+    "code",
+    "security",
+    "performance"
+  ],
+  "files": [
+    "src/auth.ts:45"
+  ],
+  "description": "...",
+  "suggested_fix": "...",
+  "acceptance_tests": [
+    "..."
+  ],
+  "evidence": [
+    "..."
+  ]
+}
+```
+
+All deduplicated findings from the Markdown report must have a corresponding
+JSONL entry. The JSONL file is the primary input for TDMS intake.
 
 ---
 
@@ -489,6 +549,61 @@ Automatically invoked after all 9 domain audits complete.
 - **Cross-Domain Value:** Finds patterns individual audits miss
 - **Priority Ranking:** Helps focus on high-impact fixes first
 - **Effort Estimation:** Helps plan sprint capacity
+
+---
+
+## Post-Audit
+
+After generating both the Markdown report and JSONL file, complete this 5-step
+TDMS integration checklist:
+
+### Step 1: Validate JSONL Schema
+
+```bash
+node scripts/debt/validate-schema.js \
+  docs/audits/comprehensive/audit-YYYY-MM-DD/comprehensive-findings.jsonl
+```
+
+Verify all entries have required fields: fingerprint, title, category, severity,
+effort, confidence, files, description, suggested_fix.
+
+### Step 2: Run TDMS Intake
+
+```bash
+node scripts/debt/intake-audit.js \
+  docs/audits/comprehensive/audit-YYYY-MM-DD/comprehensive-findings.jsonl \
+  --source "audit-comprehensive-YYYY-MM-DD" \
+  --batch-id "comp-audit-YYYYMMDD"
+```
+
+### Step 3: Regenerate Views
+
+```bash
+node scripts/debt/generate-views.js
+```
+
+Verify `docs/technical-debt/views/` files are updated.
+
+### Step 4: Regenerate Metrics
+
+```bash
+node scripts/debt/generate-metrics.js
+```
+
+Check that debt counts, severity distribution, and category breakdown reflect
+new findings.
+
+### Step 5: Assign Roadmap References
+
+```bash
+node scripts/debt/sync-roadmap-refs.js
+```
+
+Map new DEBT-XXXX items to ROADMAP.md tracks using the Track Assignment Rules
+below.
+
+**Completion gate:** All 5 steps must pass before the aggregation is considered
+complete. If any step fails, investigate and resolve before proceeding.
 
 ---
 
@@ -609,8 +724,9 @@ Before running this aggregator, review:
 
 ## Version History
 
-| Version | Date       | Description                                                                    |
-| ------- | ---------- | ------------------------------------------------------------------------------ |
-| 1.2     | 2026-02-14 | 9-domain coverage: add engineering-productivity, enhancements, ai-optimization |
-| 1.1     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula       |
-| 1.0     | 2026-01-28 | Initial skill creation                                                         |
+| Version | Date       | Description                                                                                                            |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 1.3     | 2026-02-16 | AUDIT_STANDARDS compliance: Pre-Audit Validation, JSONL output, Post-Audit TDMS checklist, standard fingerprint format |
+| 1.2     | 2026-02-14 | 9-domain coverage: add engineering-productivity, enhancements, ai-optimization                                         |
+| 1.1     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula                                               |
+| 1.0     | 2026-01-28 | Initial skill creation                                                                                                 |

@@ -28,16 +28,16 @@ documentation quality audit on [Project Name]. Use this template when:
 - Quarterly documentation health check
 - Before major release or documentation publication
 
-**Audit Stages (6 Stages with Parallel Agents):**
+**Review Scope (6 Audit Stages):**
 
-| Stage | Name                  | Agents | Focus                                 |
-| ----- | --------------------- | ------ | ------------------------------------- |
-| 1     | Inventory & Baseline  | 3      | Document catalog, metrics, link graph |
-| 2     | Link Validation       | 4      | Internal, external, cross-ref, orphan |
-| 3     | Content Quality       | 4      | Accuracy, completeness, coherence     |
-| 4     | Format & Structure    | 3      | Lint, prettier, structure standards   |
-| 5     | Placement & Lifecycle | 4      | Location, archive, cleanup candidates |
-| 6     | Synthesis             | 1      | Merge, dedupe, prioritize, report     |
+| #   | Domain                | Location                             | Count |
+| --- | --------------------- | ------------------------------------ | ----- |
+| 1   | Inventory & Baseline  | `docs/`, `*.md` in root, link graph  | [X]   |
+| 2   | Link Validation       | Internal/external links, cross-refs  | [X]   |
+| 3   | Content Quality       | All markdown files, accuracy checks  | [X]   |
+| 4   | Format & Structure    | Lint, prettier, header standards     | [X]   |
+| 5   | Placement & Lifecycle | Location correctness, archive status | [X]   |
+| 6   | Synthesis             | Merge, dedupe, prioritize, report    | [X]   |
 
 **Expected Output:** JSONL findings with TDMS integration, prioritized
 remediation plan, and actionable fix commands.
@@ -766,10 +766,42 @@ documents to maintain consistency.
 
 ---
 
+## TDMS Integration
+
+### Automatic Intake
+
+After aggregation, ingest findings to TDMS:
+
+```bash
+node scripts/debt/intake-audit.js \
+  docs/audits/single-session/documentation/documentation-findings-YYYY-MM-DD.jsonl \
+  --source "documentation-audit-v2" \
+  --batch-id "docs-audit-YYYYMMDD"
+```
+
+### Required TDMS Fields
+
+Ensure all findings include:
+
+- `category`: Always `"documentation"`
+- `title`: Short description
+- `fingerprint`: `documentation::<file_or_scope>::<issue_slug>`
+- `severity`: S0|S1|S2|S3
+- `effort`: E0|E1|E2|E3
+- `confidence`: 0-100
+- `files`: Array of file paths (with optional `:line` suffix)
+- `why_it_matters`: Why this issue is important
+- `suggested_fix`: How to fix
+- `acceptance_tests`: Array of verification criteria
+- `evidence`: Array of supporting evidence
+
+---
+
 ## Version History
 
 | Version | Date       | Changes                                                                                                                           | Author |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2.2     | 2026-02-16 | AUDIT_STANDARDS compliance: Added Review Scope table, TDMS Integration section                                                    | Claude |
 | 2.1     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems                                                 | Claude |
 | 2.0     | 2026-02-02 | Complete rewrite: Aligned with 6-stage parallel audit architecture, added execution mode selection, TDMS integration, npm scripts | Claude |
 | 1.2     | 2026-01-09 | Added Category 6: Content Quality covering circular docs, bloat detection, contradiction checking                                 | Claude |

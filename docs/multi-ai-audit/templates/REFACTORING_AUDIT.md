@@ -41,10 +41,18 @@ large-scale refactoring audit on [Project Name]. Use this template when:
 **This is for LARGE-SCALE refactoring, not tactical bug fixes.** For smaller
 code quality issues, use CODE_REVIEW_PLAN.md.
 
-**Review Focus:** All findings use category `"refactoring"` at the domain level.
-Sub-categories (e.g., Hygiene/Duplication, Types/Correctness,
-Architecture/Boundaries, Security Hardening, Testing Infrastructure) are
-expressed in the fingerprint and title only.
+**Review Scope (5 Sub-Categories):**
+
+| #   | Domain                  | Location                          | Count |
+| --- | ----------------------- | --------------------------------- | ----- |
+| 1   | Hygiene/Duplication     | `app/`, `components/`, `lib/`     | [X]   |
+| 2   | Types/Correctness       | `types/`, `*.ts`, `*.tsx`         | [X]   |
+| 3   | Architecture/Boundaries | `app/`, `lib/`, module boundaries | [X]   |
+| 4   | Security Hardening      | `functions/`, `lib/`, auth flows  | [X]   |
+| 5   | Testing Infrastructure  | `tests/`, test utilities, mocks   | [X]   |
+
+All findings use category `"refactoring"` at the domain level. Sub-categories
+are expressed in the fingerprint and title only.
 
 **Expected Output:** Phased PR plan with canonical findings, similar to
 EIGHT_PHASE_REFACTOR_PLAN.md.
@@ -748,10 +756,42 @@ When using this template:
 
 ---
 
+## TDMS Integration
+
+### Automatic Intake
+
+After aggregation, ingest findings to TDMS:
+
+```bash
+node scripts/debt/intake-audit.js \
+  docs/audits/single-session/refactoring/refactoring-findings-YYYY-MM-DD.jsonl \
+  --source "refactoring-audit-v2" \
+  --batch-id "refactor-audit-YYYYMMDD"
+```
+
+### Required TDMS Fields
+
+Ensure all findings include:
+
+- `category`: Always `"refactoring"`
+- `title`: Short description
+- `fingerprint`: `refactoring::<file_or_scope>::<issue_slug>`
+- `severity`: S0|S1|S2|S3
+- `effort`: E0|E1|E2|E3
+- `confidence`: 0-100
+- `files`: Array of file paths (with optional `:line` suffix)
+- `why_it_matters`: Why this issue is important
+- `suggested_fix`: How to fix
+- `acceptance_tests`: Array of verification criteria
+- `evidence`: Array of supporting evidence
+
+---
+
 ## Version History
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                     | Author |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 2.1     | 2026-02-16 | AUDIT_STANDARDS compliance: Added Review Scope table, TDMS Integration section                                                                                                                                                                              | Claude |
 | 2.0     | 2026-02-07 | Merged REFACTOR_PLAN.md + REFACTOR_AUDIT_PROMPT.md; standardized to domain-level category; updated model names; replaced SonarQube with SonarCloud                                                                                                          | Claude |
 | 1.2     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems; Fixed YYYY-MM-DD placeholder in header                                                                                                                                   | Claude |
 | 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT with SonarQube CRITICAL focus; Added batch fix opportunities; Referenced archived EIGHT_PHASE_REFACTOR_PLAN.md; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added staleness warning for SonarQube metrics | Claude |
