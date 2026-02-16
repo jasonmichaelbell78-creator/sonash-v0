@@ -398,7 +398,7 @@ function main() {
     let logDestination = "none";
     try {
       const { execFileSync } = require("node:child_process");
-      execFileSync("node", ["scripts/log-override.js", "--check=triggers", `--reason=${reason}`], {
+      execFileSync("node", ["scripts/log-override.js", "--check=triggers", "--reason", reason], {
         encoding: "utf-8",
         stdio: "inherit",
       });
@@ -444,6 +444,10 @@ function main() {
           }
         })();
         const logDir = path.join(gitRoot, ".claude");
+        // Symlink guard: reject symlinked .claude directory before creating/writing
+        if (fs.existsSync(logDir) && fs.lstatSync(logDir).isSymbolicLink()) {
+          throw new Error("symlink detected on log directory");
+        }
         fs.mkdirSync(logDir, { recursive: true });
         const logPath = path.join(logDir, "override-log.jsonl");
         // Symlink guard: prevent writing through symlinks (SEC-001)
@@ -455,11 +459,14 @@ function main() {
         if (fs.existsSync(logPath) && fs.lstatSync(logPath).isSymbolicLink()) {
           throw new Error("symlink detected on log file");
         }
-        // Set restrictive permissions on new files to prevent leaks on shared systems
-        if (!fs.existsSync(logPath)) {
-          fs.closeSync(fs.openSync(logPath, "wx", 0o600));
+        // Atomic open+chmod+write via file descriptor to eliminate TOCTOU race
+        const fd = fs.openSync(logPath, "a", 0o600);
+        try {
+          fs.fchmodSync(fd, 0o600);
+          fs.writeFileSync(fd, JSON.stringify(auditEntry) + "\n", { encoding: "utf-8" });
+        } finally {
+          fs.closeSync(fd);
         }
-        fs.appendFileSync(logPath, JSON.stringify(auditEntry) + "\n");
         logDestination = "file";
       } catch (error_) {
         // Both paths failed — warn but don't block

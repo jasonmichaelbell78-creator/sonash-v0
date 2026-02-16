@@ -33,7 +33,7 @@ function validateSkipReason(rawReason, usageExample = "SKIP_CHECK=1") {
   if (reason.length > 500) {
     return {
       valid: false,
-      reason,
+      reason: "",
       error: "❌ SKIP_REASON is too long (max 500 chars)",
     };
   }

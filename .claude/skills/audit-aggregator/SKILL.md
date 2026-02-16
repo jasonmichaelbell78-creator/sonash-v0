@@ -33,8 +33,9 @@ Before running aggregation, verify:
    `docs/audits/comprehensive/audit-YYYY-MM-DD/` exists and is writable
 
 **If fewer than 5 reports exist:** Warn the user and list which reports are
-missing. Proceed with available reports but note the gap in the executive
-summary.
+missing. Proceed with available reports for the Markdown narrative, but **do
+not** generate `comprehensive-findings.jsonl` to avoid polluting TDMS
+intake/metrics with a partial dataset. Note the gap in the executive summary.
 
 ---
 
@@ -125,15 +126,16 @@ for (const group of groups) {
       `${a.file}::${a.line ?? 0}`.localeCompare(`${b.file}::${b.line ?? 0}`)
     );
     const titles = [...new Set(group.map((f) => f.title).filter(Boolean))].sort();
+    const domains = [...new Set(group.map((f) => f.domain).filter(Boolean))].sort();
     merged = {
       fingerprint: `cross-domain::${sorted[0].file}::${sorted[0].line ?? 0}::${slugify(titles.join(" + "))}`, // Canonical key for dedupe + TDMS
-      domains: group.map((f) => f.domain), // ["code", "security"]
+      domains, // Deduplicated + sorted for stable output
       severity: maxSeverity(group), // Take worst severity
       effort: maxEffort(group), // Take highest effort estimate
       confidence: maxConfidence(group), // Take highest confidence
       title: mergeTitles(group), // Combine titles
       description: mergeDescriptions(group), // Combine contexts
-      category: "cross-domain", // Flag as spanning multiple domains
+      category: mapPrimaryCategory(domains), // Canonical TDMS category from primary domain
       ...
     };
   }

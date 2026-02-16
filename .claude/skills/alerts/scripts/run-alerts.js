@@ -292,7 +292,8 @@ function runCommandSafe(bin, args = [], options = {}) {
     try {
       output = execFileSync(resolvedBin, args, safeOptions);
     } catch (e) {
-      if (isWin && isWinCmd && e?.code === "ENOENT") {
+      const errCode = e?.code ?? e?.cause?.code;
+      if (isWin && isWinCmd && errCode === "ENOENT") {
         output = execFileSync(bin, args, safeOptions);
       } else {
         throw e;

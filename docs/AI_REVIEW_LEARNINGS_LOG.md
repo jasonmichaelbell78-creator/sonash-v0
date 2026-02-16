@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.18 **Created:** 2026-01-02 **Last Updated:** 2026-02-16
+**Document Version:** 17.19 **Created:** 2026-01-02 **Last Updated:** 2026-02-16
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.19   | 2026-02-16 | Review #333: PR #368 R5 — TOCTOU fd-write, argument injection, symlink directory guard, domains dedupe, canonical category, partial data guard. 8 fixed, 4 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 17.18   | 2026-02-16 | Review #330: PR #367 R7 — codePointAt (3 files), suppressAll category guard, code fence parsing, POSIX EXIT trap helper, shell control char validation. 8 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | 17.17   | 2026-02-16 | Review #329: PR #367 R6 — Control char + length validation (3 JS scripts), POSIX-safe CR detection (2 hooks), suppressAll explicit flag, severity normalization. 5 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 17.16   | 2026-02-16 | Review #328: PR #367 R5 — Suppression type validation, POSIX-safe grep replacement, SKIP_REASON newline propagation to 3 JS scripts, ENOENT code preservation, toCount string coercion, triggers fail-closed. 9 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -647,6 +648,39 @@ unique | **Fixed:** 100 | **Deferred:** 6 CC (pre-existing) | **Rejected:** ~24
 **Verdict:** R1-R3 productive. R4-R7 were progressive hardening ping-pong.
 Highest-impact fix: shared SKIP_REASON validator + filterSuppressedAlerts tests
 would have saved 3 rounds.
+
+---
+
+#### Review #333: PR #368 R5 — TOCTOU fd-Write, Argument Injection, Symlink Directory Guard (2026-02-16)
+
+**Source:** Qodo Compliance (3) + Qodo Suggestions (9) + SonarCloud (1)
+**PR/Branch:** claude/cherry-pick-recent-commits-X1eKD (PR #368)
+**Suggestions:** 12 total (Fixed: 8, Rejected: 4)
+
+**Patterns Identified:**
+
+1. **TOCTOU in file creation + write** — Separate `existsSync` +
+   `openSync("wx")`
+   - `appendFileSync` has a race window. Using a single `openSync("a", 0o600)` +
+     `fchmodSync` + `writeFileSync(fd)` + `closeSync(fd)` eliminates the race
+     entirely.
+2. **Argument injection via concatenated flags** — `--reason=${reason}` lets a
+   reason starting with `-` be parsed as a flag. Passing `"--reason", reason` as
+   separate args prevents this.
+3. **Symlink directory pre-check** — Check `lstatSync(dir).isSymbolicLink()`
+   BEFORE `mkdirSync({ recursive: true })` to prevent `mkdirSync` from creating
+   directories through a symlinked path.
+4. **Don't propagate invalid input** — When validation rejects oversized input,
+   return empty string instead of echoing the full oversized value back.
+
+**Key Learnings:**
+
+- SonarCloud Security Hotspot matched the TOCTOU race already identified by Qodo
+  suggestion [1]. Cross-referencing tools prevents duplicate work.
+- Qodo compliance continues to flag SKIP_REASON stdout logging (R3, R4, R5) —
+  consistently rejecting as by-design prevents ping-pong.
+- The `e?.cause?.code` pattern for Node.js error chain traversal improves
+  robustness when ENOENT wrapping varies across Node versions.
 
 ---
 
