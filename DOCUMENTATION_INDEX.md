@@ -424,13 +424,13 @@ _Uncategorized_
 
 _Uncategorized_
 
-| Document                                                                                                     | Description                       | References | Last Modified |
-| ------------------------------------------------------------------------------------------------------------ | --------------------------------- | ---------- | ------------- |
-| [AI Optimization Audit Plan](.claude/plans/ai-optimization-audit.md)                                         | <!-- prettier-ignore-start -->    | ↓0 ↑0      | 2026-02-16    |
-| [Audit Template & Schema Full Overhaul Plan](.claude/plans/audit-template-schema-overhaul.md)                | -                                 | ↓0 ↑0      | 2026-02-16    |
-| [Implementation Plan: Audit Ecosystem Full Health Remediation](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md) | <!-- prettier-ignore-start -->    | ↓0 ↑0      | 2026-02-16    |
-| [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md)    | Create a comprehensive tool that: | ↓0 ↑0      | 2026-02-16    |
-| [Plan: Manifest JSON Refactors](.claude/plans/manifest-json-refactors.md)                                    | -                                 | ↓0 ↑0      | 2026-02-16    |
+| Document                                                                                                  | Description                       | References | Last Modified |
+| --------------------------------------------------------------------------------------------------------- | --------------------------------- | ---------- | ------------- |
+| [AI Optimization Audit Plan](.claude/plans/ai-optimization-audit.md)                                      | <!-- prettier-ignore-start -->    | ↓0 ↑0      | 2026-02-16    |
+| [Audit Ecosystem Full Health Remediation Plan](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)              | <!-- prettier-ignore-start -->    | ↓0 ↑0      | 2026-02-16    |
+| [Audit Template & Schema Full Overhaul Plan](.claude/plans/audit-template-schema-overhaul.md)             | -                                 | ↓0 ↑0      | 2026-02-16    |
+| [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md) | Create a comprehensive tool that: | ↓0 ↑0      | 2026-02-16    |
+| [Plan: Manifest JSON Refactors](.claude/plans/manifest-json-refactors.md)                                 | -                                 | ↓0 ↑0      | 2026-02-16    |
 
 ### .github (Tier 4)
 
@@ -645,7 +645,7 @@ Documents with no inbound links (not referenced by any other document):
 - [.github/workflows/test-automation.yml](.claude/agents/test-engineer.md)
 - [ui ux designer](.claude/agents/ui-ux-designer.md)
 - [Commands Folder - DEPRECATED](.claude/commands/README.md)
-- [Implementation Plan: Audit Ecosystem Full Health Remediation](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)
+- [Audit Ecosystem Full Health Remediation Plan](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)
 - [AI Optimization Audit Plan](.claude/plans/ai-optimization-audit.md)
 - [Audit Template &amp; Schema Full Overhaul Plan](.claude/plans/audit-template-schema-overhaul.md)
 - [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md)
@@ -831,7 +831,7 @@ Documents with no inbound links (not referenced by any other document):
 | 40  | [.claude/CROSS_PLATFORM_SETUP.md](.claude/CROSS_PLATFORM_SETUP.md)                                                                                                                         | Cross-Platform Claude Code Setup                                   | 4    | -                                                                               |
 | 41  | [.claude/HOOKS.md](.claude/HOOKS.md)                                                                                                                                                       | Claude Hooks Documentation                                         | 4    | -                                                                               |
 | 42  | [.claude/plans/ai-optimization-audit.md](.claude/plans/ai-optimization-audit.md)                                                                                                           | AI Optimization Audit Plan                                         | 4    | DRAFT                                                                           |
-| 43  | [.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)                                                                                               | Implementation Plan: Audit Ecosystem Full Health Remediation       | 4    | PLANNED                                                                         |
+| 43  | [.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)                                                                                               | Audit Ecosystem Full Health Remediation Plan                       | 4    | APPROVED                                                                        |
 | 44  | [.claude/plans/audit-template-schema-overhaul.md](.claude/plans/audit-template-schema-overhaul.md)                                                                                         | Audit Template &amp; Schema Full Overhaul Plan                     | 4    | SAVED — Ready for implementation **Created:** 2026-02-06                        |
 | 45  | [.claude/plans/learning-effectiveness-analyzer.md](.claude/plans/learning-effectiveness-analyzer.md)                                                                                       | Learning Effectiveness Analyzer - Implementation Plan              | 4    | Planned - Implement after next PR review                                        |
 | 46  | [.claude/plans/manifest-json-refactors.md](.claude/plans/manifest-json-refactors.md)                                                                                                       | Plan: Manifest JSON Refactors                                      | 4    | COMPLETE **Priority:** P3 \(improvement, not blocking\) **Scope:** 4            |
