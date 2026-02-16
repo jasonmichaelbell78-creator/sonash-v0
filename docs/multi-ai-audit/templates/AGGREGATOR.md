@@ -1,6 +1,6 @@
 # Multi-AI Audit Aggregator Template
 
-**Document Version:** 2.7 **Last Updated:** 2026-02-04 **Tier:** 3 (Planning)
+**Document Version:** 2.8 **Last Updated:** 2026-02-16 **Tier:** 3 (Planning)
 
 > **⚠️ Multi-Agent Capability Note:** This template assumes orchestration by
 > Claude Code which can spawn parallel agents via the Task tool. Other AI
@@ -77,7 +77,7 @@ This template supports TWO distinct aggregation modes:
 **Purpose:** Deduplicate and verify findings within ONE audit category before
 moving to next category.
 
-**Categories (7 total):**
+**Categories (9 total):**
 
 1. Code Review (Hygiene, Types, Boundaries, Security, Testing)
 2. Security Audit (Rate Limiting, Validation, Secrets, Auth, Firebase,
@@ -90,10 +90,14 @@ moving to next category.
    Documentation)
 7. Engineering Productivity (Golden Path, Debugging Ergonomics, Offline Support,
    CI/CD Efficiency, Test Infrastructure)
+8. Enhancements (Feature Gaps, UX Improvements, Content Quality, Workflow
+   Friction, Infrastructure Needs)
+9. AI Optimization (Token Waste, Skill Overlap, Hook Latency, MCP Config,
+   Context Window, Dead Docs/Scripts)
 
 ### Tier-2 Mode: Cross-Category Unification
 
-**Input:** 7 category-level CANON files (NOT raw AI outputs)
+**Input:** 9 category-level CANON files (NOT raw AI outputs)
 
 - CANON-CODE.jsonl
 - CANON-SECURITY.jsonl
@@ -102,13 +106,15 @@ moving to next category.
 - CANON-DOCS.jsonl
 - CANON-PROCESS.jsonl
 - CANON-ENG-PROD.jsonl
+- CANON-ENHANCE.jsonl
+- CANON-AI-OPT.jsonl
 
 **Output:** Final unified DEDUPED_FINDINGS_JSONL + PR_PLAN_JSON
 
 **Purpose:** Deduplicate across categories, identify cross-cutting issues,
 produce coordinated PR plan.
 
-**Important:** Tier-2 runs ONCE after ALL 7 categories complete Tier-1.
+**Important:** Tier-2 runs ONCE after ALL 9 categories complete Tier-1.
 
 ---
 
@@ -141,13 +147,14 @@ MODE: <TIER-1 | TIER-2>
 
 **If TIER-1:**
 
-- Category: <CODE | SECURITY | PERF | REFACTOR | DOCS | PROCESS>
+- Category: <CODE | SECURITY | PERF | REFACTOR | DOCS | PROCESS | ENG-PROD |
+  ENHANCE | AI-OPT>
 - Input sources: <List model names, e.g., "Claude Opus 4.6, GPT-5-Codex, Gemini
   3 Pro">
 
 **If TIER-2:**
 
-- Input: 6 CANON-\*.jsonl files (already category-aggregated)
+- Input: 9 CANON-\*.jsonl files (already category-aggregated)
 - Focus: Cross-category deduplication and PR coordination
 
 ### REPO CONTEXT
@@ -182,7 +189,7 @@ Before processing raw AI outputs, review project-specific baselines:
 - SUSPECTED_FINDINGS_JSONL (1 JSON object per line)
 - HUMAN_SUMMARY (optional, non-canonical)
 
-**TIER-2 Mode:** 6 CANON files (JSONL format). Each line is already a canonical
+**TIER-2 Mode:** 9 CANON files (JSONL format). Each line is already a canonical
 finding with:
 
 - canonical_id
@@ -244,6 +251,11 @@ logs.
 - Documentation: Cross-Reference | Staleness | Coverage Gaps | Tier Compliance |
   Frontmatter
 - Process: CI/CD | Hooks | Scripts | Pattern Checker | Triggers | Workflow Docs
+- Enhancements: Feature Gaps | UX Improvements | Content Quality | Workflow
+  Friction | Infrastructure Needs
+- AI Optimization: Dead Assets | Fragile Parsing | Token Waste | Hook Efficiency
+  | Skill Architecture | MCP Config | Context Optimization | Memory/State |
+  Automation Gaps
 
 **Severity:** S0–S3 **Effort:** E0–E3
 
@@ -493,7 +505,7 @@ Goal: small, reviewable PRs.
 
 4. HUMAN_SUMMARY.md
 
-- Overall audit summary across all 6 categories
+- Overall audit summary across all 9 categories
 - Top 10 quick wins (lowest effort, highest impact)
 - Top 5 high-risk/high-payoff refactors
 - Key duplication clusters to consolidate
@@ -608,18 +620,22 @@ priority = severity_score × cross_domain_mult × effort_inv × dep_mult × hots
 
 Items auto-assign based on category + file patterns:
 
-| Category      | File Pattern            | Track    |
-| ------------- | ----------------------- | -------- |
-| security      | \*                      | Track-S  |
-| performance   | \*                      | Track-P  |
-| process       | \*                      | Track-D  |
-| refactoring   | \*                      | M2.3-REF |
-| documentation | \*                      | M1.5     |
-| code-quality  | scripts/, .claude/      | Track-E  |
-| code-quality  | .github/                | Track-D  |
-| code-quality  | tests/                  | Track-T  |
-| code-quality  | functions/              | M2.2     |
-| code-quality  | components/, lib/, app/ | M2.1     |
+| Category        | File Pattern            | Track    |
+| --------------- | ----------------------- | -------- |
+| security        | \*                      | Track-S  |
+| performance     | \*                      | Track-P  |
+| process         | \*                      | Track-D  |
+| refactoring     | \*                      | M2.3-REF |
+| documentation   | \*                      | M1.5     |
+| code-quality    | scripts/, .claude/      | Track-E  |
+| code-quality    | .github/                | Track-D  |
+| code-quality    | tests/                  | Track-T  |
+| code-quality    | functions/              | M2.2     |
+| code-quality    | components/, lib/, app/ | M2.1     |
+| enhancements    | \*                      | M1.5     |
+| ai-optimization | .claude/                | Track-D  |
+| ai-optimization | scripts/                | Track-E  |
+| ai-optimization | \*                      | Track-D  |
 
 See `docs/technical-debt/views/unplaced-items.md` for current assignments.
 
@@ -662,6 +678,7 @@ Reports orphaned refs, unplaced items, and status mismatches.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                   | Author   |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 2.8     | 2026-02-16 | Added Enhancements + AI Optimization as 8th/9th categories (CANON-ENHANCE.jsonl, CANON-AI-OPT.jsonl); updated all count references 7→9; added normalization subcategories and track assignment rules for new categories                                                                                                                                                   | Claude   |
 | 2.7     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat; Added Engineering Productivity as 7th category (CANON-ENG-PROD.jsonl)                                                                                                                                                                                                                                         | Claude   |
 | 2.6     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula, track assignment rules, and review cadence                                                                                                                                                                                                                                                      | Claude   |
 | 2.5     | 2026-02-02 | Added AI_HEALTH_SCORE.json output with factor weights (hallucination rate, test validity, error handling, consistency, documentation drift). Added cross-reference AI findings section.                                                                                                                                                                                   | Claude   |

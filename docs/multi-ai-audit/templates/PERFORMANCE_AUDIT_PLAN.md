@@ -28,16 +28,17 @@ performance-focused audit on [Project Name]. Use this template when:
 - After adding significant new features
 - Quarterly performance review
 
-**Review Focus Areas (7 Categories):**
+**Review Scope (7 Categories):**
 
-1. Bundle Size & Loading
-2. Rendering Performance
-3. Data Fetching & Caching
-4. Memory Management
-5. Core Web Vitals
-6. Offline Support
-7. AI Performance Patterns (NEW - 2026-02-02) - naive data fetching, missing
-   pagination, redundant re-renders
+| #   | Domain                  | Location                                 | Count |
+| --- | ----------------------- | ---------------------------------------- | ----- |
+| 1   | Bundle Size & Loading   | `next.config.*`, `app/`, `components/`   | [X]   |
+| 2   | Rendering Performance   | `components/`, `hooks/`, `app/`          | [X]   |
+| 3   | Data Fetching & Caching | `lib/`, `hooks/`, `functions/`           | [X]   |
+| 4   | Memory Management       | `components/`, `hooks/`, event listeners | [X]   |
+| 5   | Core Web Vitals         | `app/layout.*`, `app/page.*`, images     | [X]   |
+| 6   | Offline Support         | `lib/offline/`, service workers          | [X]   |
+| 7   | AI Performance Patterns | All source files                         | [X]   |
 
 **Expected Output:** Performance findings with optimization plan, baseline
 metrics, and improvement targets.
@@ -770,10 +771,42 @@ When using this template:
 
 ---
 
+## TDMS Integration
+
+### Automatic Intake
+
+After aggregation, ingest findings to TDMS:
+
+```bash
+node scripts/debt/intake-audit.js \
+  docs/audits/single-session/performance/performance-findings-YYYY-MM-DD.jsonl \
+  --source "performance-audit-v2" \
+  --batch-id "perf-audit-YYYYMMDD"
+```
+
+### Required TDMS Fields
+
+Ensure all findings include:
+
+- `category`: Always `"performance"`
+- `title`: Short description
+- `fingerprint`: `performance::<file_or_scope>::<issue_slug>`
+- `severity`: S0|S1|S2|S3
+- `effort`: E0|E1|E2|E3
+- `confidence`: 0-100
+- `files`: Array of file paths (with optional `:line` suffix)
+- `why_it_matters`: Why this issue is important
+- `suggested_fix`: How to fix
+- `acceptance_tests`: Array of verification criteria
+- `evidence`: Array of supporting evidence
+
+---
+
 ## Version History
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                | Author   |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 1.5     | 2026-02-16 | AUDIT_STANDARDS compliance: Added Review Scope table, TDMS Integration section                                                                                                                                                                                         | Claude   |
 | 1.4     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems                                                                                                                                                                                      | Claude   |
 | 1.3     | 2026-02-02 | Added Category 7: AI Performance Patterns with naive data fetching, missing pagination, redundant re-renders, AI performance health indicators. Expanded from 6 to 7 focus areas.                                                                                      | Claude   |
 | 1.2     | 2026-01-13 | Added Category 6: Offline Support (offline state detection, sync queue, pending/synced/failed states, conflict resolution, failure modes). From Engineering Productivity audit recommendations.                                                                        | Claude   |

@@ -283,7 +283,22 @@ function runCommandSafe(bin, args = [], options = {}) {
       env: options.env,
       stdio: ["pipe", "pipe", "pipe"],
     };
-    const output = execFileSync(bin, args, safeOptions);
+    // Windows: npm/npx/gh are often .cmd batch files; prefer .cmd to avoid shell: true,
+    // but fall back to bare name if .cmd not found (e.g. different installation type).
+    const isWin = process.platform === "win32";
+    const isWinCmd = bin === "npm" || bin === "npx" || bin === "gh";
+    const resolvedBin = isWin && isWinCmd ? `${bin}.cmd` : bin;
+    let output;
+    try {
+      output = execFileSync(resolvedBin, args, safeOptions);
+    } catch (e) {
+      const errCode = e?.code ?? e?.cause?.code;
+      if (isWin && isWinCmd && errCode === "ENOENT") {
+        output = execFileSync(bin, args, safeOptions);
+      } else {
+        throw e;
+      }
+    }
     return { success: true, output: String(output ?? "").trim(), stderr: "", code: 0 };
   } catch (error) {
     const stdoutStr = error?.stdout == null ? "" : String(error.stdout);

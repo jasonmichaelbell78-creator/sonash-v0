@@ -27,6 +27,7 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const { loadConfigWithRegex } = require("./config/load-config");
+const { validateSkipReason } = require("./lib/validate-skip-reason");
 
 // Review #217 R4: Resolve from git repo root for path safety and subdirectory support
 let REPO_ROOT = "";
@@ -167,35 +168,12 @@ function getStagedFiles(filter = "A") {
 function main() {
   // Review #217: Implement documented SKIP_DOC_HEADER_CHECK override
   if (process.env.SKIP_DOC_HEADER_CHECK === "1") {
-    const rawReason = process.env.SKIP_REASON;
-    const reason = typeof rawReason === "string" ? rawReason.trim() : "";
-
-    if (!reason) {
-      log("❌ SKIP_REASON is required when overriding checks", colors.red);
-      log('   Usage: SKIP_REASON="reason" SKIP_DOC_HEADER_CHECK=1 git commit ...', colors.yellow);
-      log("   The audit trail is useless without a reason.", colors.red);
+    const skipResult = validateSkipReason(process.env.SKIP_REASON, "SKIP_DOC_HEADER_CHECK=1");
+    if (!skipResult.valid) {
+      log(skipResult.error, colors.red);
       process.exit(1);
     }
-
-    if (/[\r\n]/.test(reason)) {
-      log("❌ SKIP_REASON must be single-line (no CR/LF)", colors.red);
-      process.exit(1);
-    }
-
-    if (
-      [...reason].some((c) => {
-        const code = c.codePointAt(0);
-        return code < 0x20 || code === 0x7f;
-      })
-    ) {
-      log("❌ SKIP_REASON must not contain control characters", colors.red);
-      process.exit(1);
-    }
-
-    if (reason.length > 500) {
-      log("❌ SKIP_REASON is too long (max 500 chars)", colors.red);
-      process.exit(1);
-    }
+    const reason = skipResult.reason;
 
     try {
       execFileSync(

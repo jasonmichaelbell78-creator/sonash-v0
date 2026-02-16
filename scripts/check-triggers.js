@@ -22,6 +22,7 @@
 const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { validateSkipReason } = require("./lib/validate-skip-reason");
 
 // Configuration
 const TRIGGERS = {
@@ -382,50 +383,110 @@ function main() {
 
   // Check for SKIP_TRIGGERS override (documented in SKILL_AGENT_POLICY.md)
   if (process.env.SKIP_TRIGGERS === "1") {
-    const rawReason = process.env.SKIP_REASON;
-    const reason = typeof rawReason === "string" ? rawReason.trim() : "";
-
-    if (!reason) {
-      console.error("❌ SKIP_REASON is required when overriding checks");
-      console.error('   Usage: SKIP_REASON="your reason" SKIP_TRIGGERS=1 git push ...');
-      console.error("   The audit trail is useless without a reason.");
+    const skipResult = validateSkipReason(process.env.SKIP_REASON, "SKIP_TRIGGERS=1");
+    if (!skipResult.valid) {
+      console.error(skipResult.error);
       process.exit(1);
     }
-
-    if (/[\r\n]/.test(reason)) {
-      console.error("❌ SKIP_REASON must be single-line (no CR/LF)");
-      process.exit(1);
-    }
-
-    if (
-      [...reason].some((c) => {
-        const code = c.codePointAt(0);
-        return code < 0x20 || code === 0x7f;
-      })
-    ) {
-      console.error("❌ SKIP_REASON must not contain control characters");
-      process.exit(1);
-    }
-
-    if (reason.length > 500) {
-      console.error("❌ SKIP_REASON is too long (max 500 chars)");
-      process.exit(1);
-    }
+    const reason = skipResult.reason;
 
     console.log("⚠️  SKIP_TRIGGERS=1 detected - skipping trigger checks");
-    console.log("   (Override logged for audit trail)\n");
+    const displayReason = reason.length > 200 ? reason.slice(0, 200) + "..." : reason;
+    console.log(`   Reason: ${displayReason}`);
 
-    // Log the override for accountability
+    // Log the override for accountability — structured audit entry
     // Using execFileSync to prevent command injection from SKIP_REASON
+    let logDestination = "none";
     try {
       const { execFileSync } = require("node:child_process");
-      execFileSync("node", ["scripts/log-override.js", "--check=triggers", `--reason=${reason}`], {
+      execFileSync("node", ["scripts/log-override.js", "--check=triggers", "--reason", reason], {
         encoding: "utf-8",
         stdio: "inherit",
       });
-    } catch {
-      console.log("   (Note: Override logging failed, but continuing)\n");
+      logDestination = "script";
+    } catch (error_) {
+      // Inline fallback: write structured audit entry directly
+      // Log primary failure for debugging (stderr only, not persisted)
+      console.error(`   [debug] Primary logger failed: ${error_?.message ?? "unknown"}`);
+      try {
+        // Truncate reason to prevent accidental secret persistence (max 200 chars)
+        const safeReason = reason.length > 200 ? reason.slice(0, 200) + "..." : reason;
+        const auditEntry = {
+          timestamp: new Date().toISOString(),
+          check: "triggers",
+          reason: safeReason,
+          // Log operator identity without PII — use hashed username
+          user: (() => {
+            const raw = process.env.USER || process.env.USERNAME || "unknown";
+            if (raw === "unknown") return raw;
+            const { createHash } = require("node:crypto");
+            return `user-${createHash("sha256").update(raw).digest("hex").slice(0, 8)}`;
+          })(),
+          git_branch: (() => {
+            try {
+              const res = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+                encoding: "utf-8",
+                timeout: 3000,
+                stdio: ["ignore", "pipe", "ignore"],
+              });
+              if (res.error || res.status !== 0) return "unknown";
+              return res.stdout?.trim() || "unknown";
+            } catch {
+              return "unknown";
+            }
+          })(),
+          outcome: "skipped",
+        };
+        const gitRoot = (() => {
+          try {
+            return resolveGitRoot();
+          } catch {
+            return process.cwd();
+          }
+        })();
+        const logDir = path.join(gitRoot, ".claude");
+        // Symlink guard: reject symlinked .claude directory before creating/writing
+        if (fs.existsSync(logDir) && fs.lstatSync(logDir).isSymbolicLink()) {
+          throw new Error("symlink detected on log directory");
+        }
+        fs.mkdirSync(logDir, { recursive: true });
+        const logPath = path.join(logDir, "override-log.jsonl");
+        // Symlink guard: prevent writing through symlinks (SEC-001)
+        const realLogDir = fs.realpathSync(logDir);
+        const rel = path.relative(realLogDir, logPath);
+        if (rel.startsWith("..") || path.isAbsolute(rel)) {
+          throw new Error("symlink/path traversal detected on directory");
+        }
+        if (fs.existsSync(logPath) && fs.lstatSync(logPath).isSymbolicLink()) {
+          throw new Error("symlink detected on log file");
+        }
+        // Atomic open+chmod+write via file descriptor to eliminate TOCTOU race
+        const fd = fs.openSync(logPath, "a", 0o600);
+        try {
+          const st = fs.fstatSync(fd);
+          if (!st.isFile()) {
+            throw new Error("override log target is not a regular file");
+          }
+          fs.fchmodSync(fd, 0o600);
+          fs.writeSync(fd, JSON.stringify(auditEntry) + "\n", undefined, "utf-8");
+        } finally {
+          fs.closeSync(fd);
+        }
+        logDestination = "file";
+      } catch (error_) {
+        // Both paths failed — warn but don't block
+        console.error(`   [debug] Fallback logger failed: ${error_?.message ?? "unknown"}`);
+      }
     }
+    let logMessage;
+    if (logDestination === "script") {
+      logMessage = "   (Override logged for audit trail)\n";
+    } else if (logDestination === "file") {
+      logMessage = "   (Override persisted to .claude/override-log.jsonl via fallback)\n";
+    } else {
+      logMessage = "   ⚠️  WARNING: Override audit log write failed — entry not persisted\n";
+    }
+    console.log(logMessage);
 
     process.exit(0);
   }

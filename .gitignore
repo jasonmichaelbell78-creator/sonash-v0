@@ -79,6 +79,7 @@ serviceAccountKey.json
 .claude/hooks/.agent-trigger-state.json
 
 # Claude Code session runtime data (per-session, not tracked)
+.claude/tmp/
 .claude/session-activity*.jsonl
 .claude/override-log*.jsonl
 .claude/multi-ai-audit/

@@ -31,24 +31,23 @@ security-focused audit on [Project Name]. Use this template when:
 **This template enforces the mandatory standards from
 [GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md).**
 
-**Review Focus Areas (13 Mandatory Categories):**
+**Review Scope (13 Mandatory Categories):**
 
-1. Rate Limiting & Throttling
-2. Input Validation & Sanitization (including template injection, eval/Function,
-   unsafe deserialization)
-3. API Keys & Secrets Management
-4. Authentication & Authorization
-5. Firebase Security (Rules, App Check, Functions, replay protection)
-6. Dependency Security & Supply Chain (including unpinned versions, risky
-   postinstall)
-7. OWASP Top 10 Compliance
-8. Hosting & Headers Security (CSP, HSTS, X-Frame-Options, COOP, COEP)
-9. Framework-Specific Security (Next.js boundary leaks, API route auth)
-10. File Handling Security (uploads, path traversal, MIME validation)
-11. Crypto & Randomness (weak randomness, broken hashing, homegrown crypto)
-12. AI Agent Security (prompt injection in configs, agent manipulation surfaces)
-13. AI-Generated Code Security (NEW - hallucinated APIs, prompt injection
-    surfaces, session inconsistencies)
+| #   | Domain                         | Location                                                                | Count |
+| --- | ------------------------------ | ----------------------------------------------------------------------- | ----- |
+| 1   | Rate Limiting & Throttling     | `lib/`, `functions/`, `app/api/`                                        | [X]   |
+| 2   | Input Validation               | `app/`, `components/`, `functions/`                                     | [X]   |
+| 3   | API Keys & Secrets             | `.env*`, `functions/`, config files                                     | [X]   |
+| 4   | Authentication & Authorization | `lib/auth/`, `functions/`, `app/api/`                                   | [X]   |
+| 5   | Firebase Security              | `*.rules`, `functions/`, `firebase.*`                                   | [X]   |
+| 6   | Dependency & Supply Chain      | `package.json`, `package-lock.json`                                     | [X]   |
+| 7   | OWASP Top 10                   | All source files                                                        | [X]   |
+| 8   | Hosting & Headers              | `next.config.*`, `vercel.json`, headers                                 | [X]   |
+| 9   | Framework-Specific Security    | `app/`, `middleware.*`, API routes                                      | [X]   |
+| 10  | File Handling Security         | Upload handlers, `public/`                                              | [X]   |
+| 11  | Crypto & Randomness            | `lib/`, `functions/`, crypto usage                                      | [X]   |
+| 12  | AI Agent Security              | `.claude/`, MCP configs, skill files                                    | [X]   |
+| 13  | AI-Generated Code Security     | All source files (hallucinated APIs, surfaces, session inconsistencies) | [X]   |
 
 **Expected Output:** Security findings with remediation plan, compliance status
 for each mandatory standard, ingested to TDMS for tracking.
@@ -900,6 +899,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.8     | 2026-02-16 | AUDIT_STANDARDS compliance: Converted Review Focus Areas to Review Scope table with Location/Count columns                                                                                                                                                                                               | Claude |
 | 1.7     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems                                                                                                                                                                                                                        | Claude |
 | 1.6     | 2026-02-02 | Added Category 13: AI-Generated Code Security with hallucinated API detection, prompt injection surfaces, session boundary inconsistencies. Expanded from 12 to 13 mandatory categories.                                                                                                                 | Claude |
 | 1.5     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added Step 7 for TDMS intake, TDMS Integration section with intake commands, category mapping table, and completion checklist. Updated AI Instructions and Quality checks. Added PROCEDURE.md to Related Documents.                                                     | Claude |

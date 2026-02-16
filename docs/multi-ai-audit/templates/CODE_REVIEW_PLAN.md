@@ -27,17 +27,18 @@ quality review on [Project Name]. Use this template when:
 - After completing 3+ features in the same area
 - Progress-based triggers are reached (5,000+ lines, 50+ files modified)
 
-**Review Focus Areas:**
+**Review Scope (8 Focus Areas):**
 
-1. Hygiene/Duplication
-2. Types/Correctness
-3. Next/React Boundaries (or framework-specific patterns)
-4. Security
-5. Testing
-6. AI-Generated Code Failure Modes (vibe-coded app anti-patterns)
-7. Debugging Ergonomics
-8. AI Code Patterns (NEW - 2026-02-02) - hallucination detection, test validity,
-   session consistency, AI Health Score
+| #   | Domain                     | Location                         | Count |
+| --- | -------------------------- | -------------------------------- | ----- |
+| 1   | Hygiene/Duplication        | `app/`, `components/`, `lib/`    | [X]   |
+| 2   | Types/Correctness          | `types/`, `*.ts`, `*.tsx`        | [X]   |
+| 3   | Next/React Boundaries      | `app/`, `components/`, `hooks/`  | [X]   |
+| 4   | Security                   | `lib/`, `functions/`, `app/api/` | [X]   |
+| 5   | Testing                    | `tests/`, `__tests__/`           | [X]   |
+| 6   | AI-Generated Code Failures | All source files                 | [X]   |
+| 7   | Debugging Ergonomics       | `lib/`, `hooks/`, error handlers | [X]   |
+| 8   | AI Code Patterns           | All source files, `.claude/`     | [X]   |
 
 **Expected Output:** Ranked list of canonical findings with PR implementation
 plan, ingested to TDMS for tracking.
@@ -897,6 +898,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                     | Author |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.7     | 2026-02-16 | AUDIT_STANDARDS compliance: Converted Review Focus Areas to Review Scope table with Location/Count columns                                                                                                                                                                                  | Claude |
 | 1.6     | 2026-02-04 | Added Tier 3 designation and multi-agent capability caveat for non-Claude systems                                                                                                                                                                                                           | Claude |
 | 1.5     | 2026-02-02 | Added Category 8: AI Code Patterns with hallucination detection, test validity, session consistency, AI Health Score calculation. Expanded from 7 to 8 focus areas.                                                                                                                         | Claude |
 | 1.4     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added Step 7 for TDMS intake, TDMS Integration section with intake commands, category mapping table, and completion checklist. Updated AI Instructions and Quality checks. Added PROCEDURE.md to Related Documents.                                        | Claude |

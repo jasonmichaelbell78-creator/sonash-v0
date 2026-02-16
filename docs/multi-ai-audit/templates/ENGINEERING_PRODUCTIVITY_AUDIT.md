@@ -29,13 +29,15 @@ engineering productivity audit on [Project Name]. Use this template when:
 - Test infrastructure needs improvement
 - Quarterly engineering health check
 
-**Review Focus Areas (5 Categories):**
+**Review Scope (5 Categories):**
 
-1. Golden Path & Developer Onboarding
-2. Debugging Ergonomics & Observability
-3. Offline Support & Data Persistence
-4. Build Pipeline & CI/CD Efficiency
-5. Test Infrastructure & Coverage
+| #   | Domain                         | Location                               | Count |
+| --- | ------------------------------ | -------------------------------------- | ----- |
+| 1   | Golden Path & Onboarding       | `README.md`, `DEVELOPMENT.md`, scripts | [X]   |
+| 2   | Debugging & Observability      | `lib/logger.*`, error handlers, hooks  | [X]   |
+| 3   | Offline Support & Persistence  | `lib/offline/`, sync queue, storage    | [X]   |
+| 4   | Build Pipeline & CI/CD         | `.github/workflows/`, `package.json`   | [X]   |
+| 5   | Test Infrastructure & Coverage | `tests/`, `.husky/`, test configs      | [X]   |
 
 **Expected Output:** Engineering productivity findings with improvement plan,
 baseline metrics, and prioritized recommendations ingested to TDMS.
@@ -525,9 +527,10 @@ When using this template:
 
 ## Version History
 
-| Version | Date       | Changes                   | Author |
-| ------- | ---------- | ------------------------- | ------ |
-| 1.0     | 2026-02-04 | Initial template creation | Claude |
+| Version | Date       | Changes                                                                                                    | Author |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------- | ------ |
+| 1.1     | 2026-02-16 | AUDIT_STANDARDS compliance: Converted Review Focus Areas to Review Scope table with Location/Count columns | Claude |
+| 1.0     | 2026-02-04 | Initial template creation                                                                                  | Claude |
 
 ---
 

@@ -367,13 +367,49 @@ the entire codebase for all instances BEFORE committing.
 
 **Search patterns for common issues:**
 
-| Issue Type        | Search Pattern                                            |
-| ----------------- | --------------------------------------------------------- |
-| Missing symlink   | `writeFileSync\|renameSync\|appendFileSync` without guard |
-| Missing try/catch | `readFileSync` without surrounding try                    |
-| Atomic write      | `writeFileSync.*tmp` without rm+rename                    |
-| statSync vs lstat | `statSync` (should be `lstatSync` for symlink safety)     |
-| Inline vs shared  | Old inline pattern that should use the new shared helper  |
+| Issue Type         | Search Pattern                                            |
+| ------------------ | --------------------------------------------------------- |
+| Missing symlink    | `writeFileSync\|renameSync\|appendFileSync` without guard |
+| Missing try/catch  | `readFileSync` without surrounding try                    |
+| Atomic write       | `writeFileSync.*tmp` without rm+rename                    |
+| statSync vs lstat  | `statSync` (should be `lstatSync` for symlink safety)     |
+| Inline vs shared   | Old inline pattern that should use the new shared helper  |
+| Env var validation | `SKIP_REASON` (search ALL file types: JS, shell, hooks)   |
+| POSIX compliance   | `$'\\'` or `grep -P` in `.husky/` scripts                 |
+
+**CRITICAL (PR #367 retro):** Propagation checks must search ALL file types that
+consume the same pattern. PR #367 R4 fixed SKIP_REASON validation in shell hooks
+but missed the 3 JS scripts that also read SKIP_REASON — causing 3 extra review
+rounds. When fixing env var handling, always:
+
+1. `grep -rn "ENV_VAR_NAME" scripts/ .claude/hooks/ .husky/ --include="*.js" --include="*.sh"`
+2. Fix ALL consumers in one pass, not just the reported file
+
+---
+
+### 5.7 Input Validation Completeness (NEW — PR #367 Retro)
+
+**Problem:** PR #367 had 4 rounds (R4-R7) of progressively hardening SKIP_REASON
+validation — each round adding one more check. This is a common ping-pong
+pattern.
+
+**Rule:** When adding input validation for ANY user-controlled value (env vars,
+CLI args, file content), implement the FULL validation chain in a single pass:
+
+1. **Type check** — Is the value the expected type?
+2. **Trim/normalize** — Strip whitespace, normalize encoding
+3. **Empty check** — Reject empty after normalization
+4. **Format check** — Single-line, no control chars, expected charset
+5. **Length limit** — Prevent DoS via oversized input
+6. **Encoding safety** — Use `codePointAt` not `charCodeAt` for Unicode
+
+**If a shared validator exists, USE IT:**
+
+- JS: `require("./lib/validate-skip-reason")` for SKIP_REASON
+- Shell: Full validation in `require_skip_reason()` function
+
+**If no shared validator exists, CREATE ONE** if 2+ files need the same
+validation. This prevents future propagation misses.
 
 ---
 

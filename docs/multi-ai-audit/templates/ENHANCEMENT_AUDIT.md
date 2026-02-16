@@ -42,20 +42,20 @@ Use this template when:
 Refactoring) focus on defects, debt, and risk. This template focuses on
 **opportunity** -- things that are not broken but could be meaningfully better.
 
-**Review Domains (10 Enhancement Categories):**
+**Review Scope (10 Enhancement Categories):**
 
-| #   | Domain                 | Focus                                                  |
-| --- | ---------------------- | ------------------------------------------------------ |
-| 1   | app-architecture       | Structural patterns, modularity, scalability headroom  |
-| 2   | product-ux             | User experience gaps, accessibility, feature polish    |
-| 3   | content                | Copy, messaging, help text, onboarding flows           |
-| 4   | devx-automation        | Developer experience, tooling, workflow friction       |
-| 5   | infrastructure         | Hosting, CI/CD, monitoring, cost optimization          |
-| 6   | testing-strategy       | Coverage strategy, test quality, testing gaps          |
-| 7   | documentation-strategy | Docs architecture, discoverability, maintenance burden |
-| 8   | workflow-lifecycle     | Feature lifecycle, deploy pipeline, release process    |
-| 9   | external-services      | Third-party integrations, API usage, vendor fitness    |
-| 10  | meta-tooling           | AI tooling, scripts, automation opportunities          |
+| #   | Domain                 | Location                               | Focus                                                  |
+| --- | ---------------------- | -------------------------------------- | ------------------------------------------------------ |
+| 1   | app-architecture       | `app/`, `lib/`, module structure       | Structural patterns, modularity, scalability headroom  |
+| 2   | product-ux             | `components/`, `app/`, styles          | User experience gaps, accessibility, feature polish    |
+| 3   | content                | `app/`, copy files, help text          | Copy, messaging, help text, onboarding flows           |
+| 4   | devx-automation        | `scripts/`, `.claude/`, `package.json` | Developer experience, tooling, workflow friction       |
+| 5   | infrastructure         | `.github/`, `firebase.*`, hosting      | Hosting, CI/CD, monitoring, cost optimization          |
+| 6   | testing-strategy       | `tests/`, coverage configs             | Coverage strategy, test quality, testing gaps          |
+| 7   | documentation-strategy | `docs/`, `*.md` in root                | Docs architecture, discoverability, maintenance burden |
+| 8   | workflow-lifecycle     | CI/CD, deploy scripts, release flow    | Feature lifecycle, deploy pipeline, release process    |
+| 9   | external-services      | `lib/`, API clients, integrations      | Third-party integrations, API usage, vendor fitness    |
+| 10  | meta-tooling           | `.claude/`, `scripts/`, MCP configs    | AI tooling, scripts, automation opportunities          |
 
 **Expected Output:** Ranked enhancement findings with impact/effort analysis,
 competitor benchmarks, strengths documentation, and prioritized improvement
@@ -1028,9 +1028,10 @@ When using this template:
 
 ## Version History
 
-| Version | Date       | Changes                   | Author |
-| ------- | ---------- | ------------------------- | ------ |
-| 1.0     | 2026-02-11 | Initial template creation | Claude |
+| Version | Date       | Changes                                                                                         | Author |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------- | ------ |
+| 1.1     | 2026-02-16 | AUDIT_STANDARDS compliance: Converted Review Domains to Review Scope table with Location column | Claude |
+| 1.0     | 2026-02-11 | Initial template creation                                                                       | Claude |
 
 ---
 
