@@ -13,8 +13,7 @@
 {"alertIndex":13,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
 {"alertIndex":14,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
 {"alertIndex":15,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
-{"alertIndex":8,"category":"test-results","severity":"warning","message":"Test staleness","decision":"fix_now","timestamp":"2026-02-16T03:23:00Z","executed":true,"fixAction":"npm test - 293 pass, 0 fail"}
-{"alertIndex":16,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":16,"category":"test-results","severity":"warning","message":"Test staleness","decision":"fix_now","timestamp":"2026-02-16T03:23:00Z","executed":true,"fixAction":"npm test - 293 pass, 0 fail"}
 {"alertIndex":17,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
 {"alertIndex":18,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
 {"alertIndex":19,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
@@ -26,4 +25,5 @@
 {"alertIndex":25,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
 {"alertIndex":26,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
 {"alertIndex":27,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
-{"alertIndex":28,"category":"system-self-audit","severity":"info","decision":"create_task","timestamp":"2026-02-16T03:25:00Z","tasks":["Improve external link checker exclusions","Fix commit-log.jsonl staleness"]}
+{"alertIndex":28,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":29,"category":"system-self-audit","severity":"info","decision":"create_task","timestamp":"2026-02-16T03:25:00Z","tasks":["Improve external link checker exclusions","Fix commit-log.jsonl staleness"]}

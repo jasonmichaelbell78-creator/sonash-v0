@@ -122,7 +122,7 @@ for (const group of groups) {
   if (group.length > 1) {
     // Multiple audits flagged same location
     merged = {
-      id: `cross-domain::${group[0].file}::${slugify(mergeTitles(group))}`, // Standard fingerprint
+      id: `cross-domain::${group[0].file}:${group[0].line ?? 0}::${slugify(mergeTitles(group))}`, // Standard fingerprint (includes location)
       domains: group.map((f) => f.domain), // ["code", "security"]
       severity: maxSeverity(group), // Take worst severity
       effort: maxEffort(group), // Take highest effort estimate

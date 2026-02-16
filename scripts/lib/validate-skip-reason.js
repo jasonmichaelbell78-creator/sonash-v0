@@ -8,13 +8,14 @@
  * Usage example:
  *   const { validateSkipReason } = require("./lib/validate-skip-reason");
  *   const result = validateSkipReason(process.env.SKIP_REASON, "SKIP_TRIGGERS=1");
+ *   // usageExample appears in error messages as: SKIP_REASON="..." <usageExample> git commit/push ...
  *   if (!result.valid) {
  *     console.error(result.error);
  *     process.exit(1);
  *   }
  */
 
-function validateSkipReason(rawReason, usageHint = "SKIP_CHECK=1") {
+function validateSkipReason(rawReason, usageExample = "SKIP_CHECK=1") {
   const reason = typeof rawReason === "string" ? rawReason.trim() : "";
 
   if (!reason) {
@@ -23,7 +24,7 @@ function validateSkipReason(rawReason, usageHint = "SKIP_CHECK=1") {
       reason: "",
       error: [
         "❌ SKIP_REASON is required when overriding checks",
-        `   Usage: SKIP_REASON="your reason" ${usageHint} git commit ...`,
+        `   Usage: SKIP_REASON="your reason" ${usageExample} git commit/push ...`,
         "   The audit trail is useless without a reason.",
       ].join("\n"),
     };
@@ -37,11 +38,15 @@ function validateSkipReason(rawReason, usageHint = "SKIP_CHECK=1") {
     };
   }
 
+  // Block ASCII control chars, DEL, C1 control block, and Unicode bidi overrides
+  // Bidi chars (U+202A-202E, U+2066-2069, U+200E-200F) can spoof log output
+  const BIDI_CONTROL_RE = /[\u202A-\u202E\u2066-\u2069\u200E\u200F]/u;
   if (
     [...reason].some((c) => {
       const code = c.codePointAt(0);
-      return code < 0x20 || code === 0x7f;
-    })
+      return code < 0x20 || code === 0x7f || (code >= 0x80 && code <= 0x9f);
+    }) ||
+    BIDI_CONTROL_RE.test(reason)
   ) {
     return {
       valid: false,

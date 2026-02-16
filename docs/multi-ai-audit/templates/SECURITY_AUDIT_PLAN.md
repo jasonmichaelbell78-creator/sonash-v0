@@ -33,23 +33,21 @@ security-focused audit on [Project Name]. Use this template when:
 
 **Review Scope (13 Mandatory Categories):**
 
-| #   | Domain                         | Location                                | Count |
-| --- | ------------------------------ | --------------------------------------- | ----- |
-| 1   | Rate Limiting & Throttling     | `lib/`, `functions/`, `app/api/`        | [X]   |
-| 2   | Input Validation               | `app/`, `components/`, `functions/`     | [X]   |
-| 3   | API Keys & Secrets             | `.env*`, `functions/`, config files     | [X]   |
-| 4   | Authentication & Authorization | `lib/auth/`, `functions/`, `app/api/`   | [X]   |
-| 5   | Firebase Security              | `*.rules`, `functions/`, `firebase.*`   | [X]   |
-| 6   | Dependency & Supply Chain      | `package.json`, `package-lock.json`     | [X]   |
-| 7   | OWASP Top 10                   | All source files                        | [X]   |
-| 8   | Hosting & Headers              | `next.config.*`, `vercel.json`, headers | [X]   |
-| 9   | Framework-Specific Security    | `app/`, `middleware.*`, API routes      | [X]   |
-| 10  | File Handling Security         | Upload handlers, `public/`              | [X]   |
-| 11  | Crypto & Randomness            | `lib/`, `functions/`, crypto usage      | [X]   |
-| 12  | AI Agent Security              | `.claude/`, MCP configs, skill files    | [X]   |
-| 13  | AI-Generated Code Security     | All source files (hallucinated APIs     |
-
-    surfaces, session inconsistencies)
+| #   | Domain                         | Location                                                                | Count |
+| --- | ------------------------------ | ----------------------------------------------------------------------- | ----- |
+| 1   | Rate Limiting & Throttling     | `lib/`, `functions/`, `app/api/`                                        | [X]   |
+| 2   | Input Validation               | `app/`, `components/`, `functions/`                                     | [X]   |
+| 3   | API Keys & Secrets             | `.env*`, `functions/`, config files                                     | [X]   |
+| 4   | Authentication & Authorization | `lib/auth/`, `functions/`, `app/api/`                                   | [X]   |
+| 5   | Firebase Security              | `*.rules`, `functions/`, `firebase.*`                                   | [X]   |
+| 6   | Dependency & Supply Chain      | `package.json`, `package-lock.json`                                     | [X]   |
+| 7   | OWASP Top 10                   | All source files                                                        | [X]   |
+| 8   | Hosting & Headers              | `next.config.*`, `vercel.json`, headers                                 | [X]   |
+| 9   | Framework-Specific Security    | `app/`, `middleware.*`, API routes                                      | [X]   |
+| 10  | File Handling Security         | Upload handlers, `public/`                                              | [X]   |
+| 11  | Crypto & Randomness            | `lib/`, `functions/`, crypto usage                                      | [X]   |
+| 12  | AI Agent Security              | `.claude/`, MCP configs, skill files                                    | [X]   |
+| 13  | AI-Generated Code Security     | All source files (hallucinated APIs, surfaces, session inconsistencies) | [X]   |
 
 **Expected Output:** Security findings with remediation plan, compliance status
 for each mandatory standard, ingested to TDMS for tracking.

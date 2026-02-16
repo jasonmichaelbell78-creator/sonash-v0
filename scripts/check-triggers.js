@@ -391,19 +391,52 @@ function main() {
     const reason = skipResult.reason;
 
     console.log("⚠️  SKIP_TRIGGERS=1 detected - skipping trigger checks");
-    console.log("   (Override logged for audit trail)\n");
+    console.log(`   Reason: ${reason}`);
 
-    // Log the override for accountability
+    // Log the override for accountability — structured audit entry
     // Using execFileSync to prevent command injection from SKIP_REASON
+    let logged = false;
     try {
       const { execFileSync } = require("node:child_process");
       execFileSync("node", ["scripts/log-override.js", "--check=triggers", `--reason=${reason}`], {
         encoding: "utf-8",
         stdio: "inherit",
       });
+      logged = true;
     } catch {
-      console.log("   (Note: Override logging failed, but continuing)\n");
+      // Inline fallback: write structured audit entry directly
+      try {
+        const auditEntry = {
+          timestamp: new Date().toISOString(),
+          check: "triggers",
+          reason,
+          user: process.env.USER || process.env.USERNAME || "unknown",
+          git_branch: (() => {
+            try {
+              return (
+                spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+                  encoding: "utf-8",
+                  timeout: 3000,
+                }).stdout?.trim() || "unknown"
+              );
+            } catch {
+              return "unknown";
+            }
+          })(),
+          outcome: "skipped",
+        };
+        const logPath = path.join(resolveGitRoot(), ".claude", "override-log.jsonl");
+        fs.appendFileSync(logPath, JSON.stringify(auditEntry) + "\n");
+        logged = true;
+      } catch {
+        // Both paths failed — warn but don't block
+      }
     }
+    console.log(
+      logged
+        ? "   (Override persisted to .claude/override-log.jsonl)\n"
+        : "   ⚠️  WARNING: Override audit log write failed — entry not persisted\n"
+    );
 
     process.exit(0);
   }
