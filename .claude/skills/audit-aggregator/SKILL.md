@@ -33,9 +33,11 @@ Before running aggregation, verify:
    `docs/audits/comprehensive/audit-YYYY-MM-DD/` exists and is writable
 
 **If fewer than 5 reports exist:** Warn the user and list which reports are
-missing. Proceed with available reports for the Markdown narrative, but **do
-not** generate `comprehensive-findings.jsonl` to avoid polluting TDMS
-intake/metrics with a partial dataset. Note the gap in the executive summary.
+missing. Proceed with available reports for the Markdown narrative only, and
+clearly mark the report as **PARTIAL -- TDMS SKIPPED**. **Do not** generate
+`comprehensive-findings.jsonl`, and **do not run any Post-Audit TDMS steps**
+(schema validation, intake, views, metrics, roadmap sync) to avoid polluting
+TDMS intake/metrics with a partial dataset.
 
 ---
 
@@ -119,7 +121,7 @@ Group findings by `(file, line)` pair:
 // Pseudo-code
 const groups = groupBy(findings, (f) => `${f.file}:${f.line}`);
 
-for (const group of groups) {
+for (const group of Object.values(groups)) {
   if (group.length > 1) {
     // Multiple audits flagged same location
     const sorted = [...group].sort((a, b) =>
@@ -130,6 +132,7 @@ for (const group of groups) {
     merged = {
       fingerprint: `cross-domain::${sorted[0].file}::${sorted[0].line ?? 0}::${slugify(titles.join(" + "))}`, // Canonical key for dedupe + TDMS
       domains, // Deduplicated + sorted for stable output
+      cross_domain: true, // Preserve cross-cutting semantics without breaking TDMS category enums
       severity: maxSeverity(group), // Take worst severity
       effort: maxEffort(group), // Take highest effort estimate
       confidence: maxConfidence(group), // Take highest confidence
@@ -160,7 +163,7 @@ Before:
   SEC-012: Exception vulnerability (S0, E1) at auth.ts:45
 
 After:
-  cross-domain::auth.ts::error-handling-exception-vuln (S0, E1, Domains: 2)
+  cross-domain::src/auth.ts::45::error-handling-exception-vuln (S0, E1, Domains: 2)
     Category: Cross-Domain (Code + Security)
 ```
 

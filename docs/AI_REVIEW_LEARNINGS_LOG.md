@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.19 **Created:** 2026-01-02 **Last Updated:** 2026-02-16
+**Document Version:** 17.20 **Created:** 2026-01-02 **Last Updated:** 2026-02-16
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.20   | 2026-02-16 | Review #334: PR #368 R6 — fstatSync fd validation, empty-reason-on-failure, console truncation, EXIT trap robustness, Object.values iteration, cross_domain marker, partial TDMS guard. 8 fixed, 3 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | 17.19   | 2026-02-16 | Review #333: PR #368 R5 — TOCTOU fd-write, argument injection, symlink directory guard, domains dedupe, canonical category, partial data guard. 8 fixed, 4 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 17.18   | 2026-02-16 | Review #330: PR #367 R7 — codePointAt (3 files), suppressAll category guard, code fence parsing, POSIX EXIT trap helper, shell control char validation. 8 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | 17.17   | 2026-02-16 | Review #329: PR #367 R6 — Control char + length validation (3 JS scripts), POSIX-safe CR detection (2 hooks), suppressAll explicit flag, severity normalization. 5 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -648,6 +649,42 @@ unique | **Fixed:** 100 | **Deferred:** 6 CC (pre-existing) | **Rejected:** ~24
 **Verdict:** R1-R3 productive. R4-R7 were progressive hardening ping-pong.
 Highest-impact fix: shared SKIP_REASON validator + filterSuppressedAlerts tests
 would have saved 3 rounds.
+
+---
+
+#### Review #334: PR #368 R6 — fstatSync fd Validation, Empty-Reason-on-Failure, EXIT Trap Robustness (2026-02-16)
+
+**Source:** Qodo Compliance (3) + Qodo Suggestions (7) + SonarCloud (2 Hotspots)
+**PR/Branch:** claude/cherry-pick-recent-commits-X1eKD (PR #368)
+**Suggestions:** 10 total (Fixed: 8, Rejected: 3 — 1 overlap with fix)
+
+**Patterns Identified:**
+
+1. **fstatSync after fd open** — After `openSync`, verify via
+   `fstatSync(fd).isFile()` that the descriptor points to a regular file. This
+   closes the remaining TOCTOU window between pre-open lstatSync checks and the
+   actual write. Also use `writeSync(fd, ...)` instead of
+   `writeFileSync(fd, ...)` for consistency.
+2. **Never return unsafe values on validation failure** — All failure paths in
+   validators should return sanitized (empty) values, not echo back the invalid
+   input. Callers may log the returned `reason` field without re-checking
+   `valid`.
+3. **Shell trap chaining via variable accumulation** — Parsing `trap -p EXIT`
+   output with `sed` is fragile across shells. Using a shell variable
+   (`EXIT_TRAP_CHAIN`) to accumulate commands is simpler and more portable.
+4. **Propagation: template changes must update live code** — When a template
+   (FIX_TEMPLATES.md) is updated, the live implementation (.husky/pre-commit)
+   must be updated in the same commit to stay in sync.
+
+**Key Learnings:**
+
+- SonarCloud 2 Security Hotspots were the same TOCTOU/symlink pattern from R5.
+  The fstatSync fix closes the remaining gap after fd-based write was introduced
+  in R5. Cross-referencing tools continues to prevent duplicate work.
+- Qodo compliance continues to flag SKIP_REASON persistence (R3-R6) — by-design,
+  consistently rejecting.
+- Pseudocode in SKILL.md needs the same rigor as production code — `groupBy`
+  returns an object, `Object.values()` is needed to iterate correctly.
 
 ---
 

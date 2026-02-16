@@ -41,7 +41,7 @@ function validateSkipReason(rawReason, usageExample = "SKIP_CHECK=1") {
   if (/[\r\n]/.test(reason)) {
     return {
       valid: false,
-      reason,
+      reason: "",
       error: "❌ SKIP_REASON must be single-line (no CR/LF)",
     };
   }
@@ -58,7 +58,7 @@ function validateSkipReason(rawReason, usageExample = "SKIP_CHECK=1") {
   ) {
     return {
       valid: false,
-      reason,
+      reason: "",
       error: "❌ SKIP_REASON must not contain control characters",
     };
   }

@@ -391,7 +391,8 @@ function main() {
     const reason = skipResult.reason;
 
     console.log("⚠️  SKIP_TRIGGERS=1 detected - skipping trigger checks");
-    console.log(`   Reason: ${reason}`);
+    const displayReason = reason.length > 200 ? reason.slice(0, 200) + "..." : reason;
+    console.log(`   Reason: ${displayReason}`);
 
     // Log the override for accountability — structured audit entry
     // Using execFileSync to prevent command injection from SKIP_REASON
@@ -462,8 +463,12 @@ function main() {
         // Atomic open+chmod+write via file descriptor to eliminate TOCTOU race
         const fd = fs.openSync(logPath, "a", 0o600);
         try {
+          const st = fs.fstatSync(fd);
+          if (!st.isFile()) {
+            throw new Error("override log target is not a regular file");
+          }
           fs.fchmodSync(fd, 0o600);
-          fs.writeFileSync(fd, JSON.stringify(auditEntry) + "\n", { encoding: "utf-8" });
+          fs.writeSync(fd, JSON.stringify(auditEntry) + "\n", undefined, "utf-8");
         } finally {
           fs.closeSync(fd);
         }

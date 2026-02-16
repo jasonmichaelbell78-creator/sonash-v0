@@ -1156,17 +1156,10 @@ fi
 
 ```bash
 # ✅ POSIX-safe helper — chains without overwriting
+# Uses a shell variable to accumulate trap commands (avoids fragile trap -p parsing)
 add_exit_trap() {
-  prev="$(trap -p EXIT 2>/dev/null || true)"
-  case "$prev" in
-    *"EXIT"*)
-      prev_cmd=$(printf '%s' "$prev" | sed "s/^[^']*'\(.*\)'[^']*EXIT.*/\1/")
-      trap "${prev_cmd}; $1" EXIT
-      ;;
-    *)
-      trap "$1" EXIT
-      ;;
-  esac
+  EXIT_TRAP_CHAIN="${EXIT_TRAP_CHAIN:+$EXIT_TRAP_CHAIN; }$1"
+  trap "$EXIT_TRAP_CHAIN" EXIT
 }
 
 TMPFILE="$(mktemp)" || { echo "Failed to create temp file"; exit 1; }
