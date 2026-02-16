@@ -114,6 +114,7 @@ Compliance scores against AUDIT_STANDARDS.md Section 5:
 | 24  | Audit health skill            | YES — /audit-health meta-check                                     |
 | 25  | Resolution feedback loop      | YES — track which findings get fixed                               |
 | 26  | Template compliance validator | YES — automated template standard check                            |
+| 27  | Multi-AI category scoping     | Modify existing skill to allow 1, N, or all categories             |
 
 ---
 
@@ -747,6 +748,53 @@ Create `scripts/audit/validate-templates.js`:
 Add npm script:
 `"audit:validate-templates": "node scripts/audit/validate-templates.js"`
 
+### Step 40: Multi-AI Audit Category Scoping
+
+Modify `.claude/skills/multi-ai-audit/SKILL.md` Phase 1 (Step 1.3) to allow
+selecting one, multiple, or all categories at session start.
+
+**Current behavior:** Shows all 9 categories, user picks one at a time via the
+category-by-category loop.
+
+**New behavior:** Add scope selection before the category menu:
+
+```
+=== Multi-AI Audit: [session_id] ===
+
+Audit scope:
+  a. All categories (full 9-category sweep)
+  b. Select specific categories
+  c. Single category
+
+Enter choice:
+```
+
+- **"a" / "all"**: Sets pending list to all 9 categories, starts with first
+- **"b" / "select"**: Shows numbered list, user enters comma-separated (e.g.,
+  `1,3,7` or `security, performance`)
+- **"c" / "single"**: Shows numbered list, user picks exactly one
+
+**State file change:** Add `selected_categories: [...]` field to
+`session-state.json`. The existing category-by-category workflow (template
+output -> collect findings -> aggregate -> next category -> unify) stays exactly
+the same — it just iterates over whichever categories were selected instead of
+implicitly assuming all 9.
+
+**Also update `scripts/multi-ai/state-manager.js`:** The `create` command should
+accept an optional `--categories` flag:
+
+```bash
+node scripts/multi-ai/state-manager.js create --categories security,performance
+```
+
+If no flag provided, defaults to all 9 (backward compatible).
+
+**Files modified:**
+
+- `.claude/skills/multi-ai-audit/SKILL.md` — Add scope selection to Phase 1
+- `scripts/multi-ai/state-manager.js` — Add `--categories` flag to `create`
+- `docs/audits/AUDIT_STANDARDS.md` — Update multi-AI workflow description
+
 ---
 
 ## Execution Strategy
@@ -806,6 +854,7 @@ Wave 8 — Improvements (after Wave 7):
   [Step 37: Audit health skill]
   [Step 38: Resolution feedback loop]
   [Step 39: Template compliance validator]
+  [Step 40: Multi-AI audit category scoping]
 ```
 
 ---
@@ -841,6 +890,7 @@ Wave 8 — Improvements (after Wave 7):
 26. [ ] All 8 improvement scripts created and wired into npm
 27. [ ] No orphaned audit files outside standard paths
 28. [ ] All new files have proper document headers
+29. [ ] `/multi-ai-audit` supports single, multi, and all-category scoping
 
 ---
 

@@ -191,7 +191,7 @@ _Active implementation plans_
 
 | Document                                                                                        | Description                                                     | References | Last Modified |
 | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Implementation Plan: Audit Ecosystem Codification](docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md) | <!-- prettier-ignore-start -->                                  | ↓1 ↑0      | 2026-02-16    |
+| [Implementation Plan: Audit Ecosystem Codification](docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md) | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-16    |
 | [SoNash Testing User Manual](docs/plans/TESTING_USER_MANUAL.md)                                 | <!-- prettier-ignore-start -->                                  | ↓5 ↑0      | 2026-02-16    |
 | [Testing Infrastructure Plan](docs/plans/TESTING_INFRASTRUCTURE_PLAN.md)                        | This document outlines a comprehensive testing infrastructur... | ↓1 ↑2      | 2026-02-16    |
 | [Track A Admin Panel Testing Plan](docs/plans/TRACK_A_TESTING_PLAN.md)                          | Comprehensive testing plan for Track A Admin Panel features ... | ↓1 ↑0      | 2026-02-16    |
@@ -427,7 +427,7 @@ _Uncategorized_
 | Document                                                                                                  | Description                       | References | Last Modified |
 | --------------------------------------------------------------------------------------------------------- | --------------------------------- | ---------- | ------------- |
 | [AI Optimization Audit Plan](.claude/plans/ai-optimization-audit.md)                                      | <!-- prettier-ignore-start -->    | ↓0 ↑0      | 2026-02-16    |
-| [Audit Ecosystem Full Health Remediation Plan](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)              | <!-- prettier-ignore-start -->    | ↓0 ↑0      | 2026-02-16    |
+| [Audit Ecosystem Full Health Remediation Plan](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)              | <!-- prettier-ignore-start -->    | ↓1 ↑0      | 2026-02-16    |
 | [Audit Template & Schema Full Overhaul Plan](.claude/plans/audit-template-schema-overhaul.md)             | -                                 | ↓0 ↑0      | 2026-02-16    |
 | [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md) | Create a comprehensive tool that: | ↓0 ↑0      | 2026-02-16    |
 | [Plan: Manifest JSON Refactors](.claude/plans/manifest-json-refactors.md)                                 | -                                 | ↓0 ↑0      | 2026-02-16    |
@@ -645,7 +645,6 @@ Documents with no inbound links (not referenced by any other document):
 - [.github/workflows/test-automation.yml](.claude/agents/test-engineer.md)
 - [ui ux designer](.claude/agents/ui-ux-designer.md)
 - [Commands Folder - DEPRECATED](.claude/commands/README.md)
-- [Audit Ecosystem Full Health Remediation Plan](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)
 - [AI Optimization Audit Plan](.claude/plans/ai-optimization-audit.md)
 - [Audit Template &amp; Schema Full Overhaul Plan](.claude/plans/audit-template-schema-overhaul.md)
 - [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md)
@@ -772,6 +771,7 @@ Documents with no inbound links (not referenced by any other document):
 - [AI Optimization Audit Report \(2026-02-14\)](docs/audits/single-session/ai-optimization/audit-2026-02-14/AI_OPTIMIZATION_AUDIT_REPORT.md)
 - [AI Optimization Audit — Review Decisions](docs/audits/single-session/ai-optimization/audit-2026-02-14/REVIEW_DECISIONS.md)
 - [Context Preservation Pattern](docs/patterns/context-preservation-pattern.md)
+- [Implementation Plan: Audit Ecosystem Codification](docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md)
 - [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md)
 - [\[Document Title\]](docs/templates/CANONICAL_DOC_TEMPLATE.md)
 - [\[Document Title\]](docs/templates/FOUNDATION_DOC_TEMPLATE.md)
