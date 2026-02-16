@@ -620,21 +620,21 @@ priority = severity_score × cross_domain_mult × effort_inv × dep_mult × hots
 
 Items auto-assign based on category + file patterns:
 
-| Category      | File Pattern            | Track    |
-| ------------- | ----------------------- | -------- |
-| security      | \*                      | Track-S  |
-| performance   | \*                      | Track-P  |
-| process       | \*                      | Track-D  |
-| refactoring   | \*                      | M2.3-REF |
-| documentation | \*                      | M1.5     |
-| code-quality  | scripts/, .claude/      | Track-E  |
-| code-quality  | .github/                | Track-D  |
-| code-quality  | tests/                  | Track-T  |
-| code-quality  | functions/              | M2.2     |
-| code-quality  | components/, lib/, app/ | M2.1     |
-| enhancements  | \*                      | M1.5     |
-| ai-opt        | .claude/, scripts/      | Track-D  |
-| ai-opt        | \*                      | Track-E  |
+| Category        | File Pattern            | Track    |
+| --------------- | ----------------------- | -------- |
+| security        | \*                      | Track-S  |
+| performance     | \*                      | Track-P  |
+| process         | \*                      | Track-D  |
+| refactoring     | \*                      | M2.3-REF |
+| documentation   | \*                      | M1.5     |
+| code-quality    | scripts/, .claude/      | Track-E  |
+| code-quality    | .github/                | Track-D  |
+| code-quality    | tests/                  | Track-T  |
+| code-quality    | functions/              | M2.2     |
+| code-quality    | components/, lib/, app/ | M2.1     |
+| enhancements    | \*                      | M1.5     |
+| ai-optimization | .claude/, scripts/      | Track-D  |
+| ai-optimization | \*                      | Track-E  |
 
 See `docs/technical-debt/views/unplaced-items.md` for current assignments.
 

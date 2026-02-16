@@ -456,7 +456,7 @@ Each line must be a valid JSON object matching the TDMS schema:
   "category": "cross-domain",
   "severity": "S0",
   "effort": "E1",
-  "confidence": 95,
+  "confidence": 0.95,
   "domains": [
     "code",
     "security",

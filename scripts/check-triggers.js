@@ -395,14 +395,14 @@ function main() {
 
     // Log the override for accountability — structured audit entry
     // Using execFileSync to prevent command injection from SKIP_REASON
-    let logged = false;
+    let logDestination = "none";
     try {
       const { execFileSync } = require("node:child_process");
       execFileSync("node", ["scripts/log-override.js", "--check=triggers", `--reason=${reason}`], {
         encoding: "utf-8",
         stdio: "inherit",
       });
-      logged = true;
+      logDestination = "script";
     } catch {
       // Inline fallback: write structured audit entry directly
       try {
@@ -410,7 +410,13 @@ function main() {
           timestamp: new Date().toISOString(),
           check: "triggers",
           reason,
-          user: process.env.USER || process.env.USERNAME || "unknown",
+          // Log operator identity without PII — use hashed username
+          user: (() => {
+            const raw = process.env.USER || process.env.USERNAME || "unknown";
+            if (raw === "unknown") return raw;
+            const { createHash } = require("node:crypto");
+            return `user-${createHash("sha256").update(raw).digest("hex").slice(0, 8)}`;
+          })(),
           git_branch: (() => {
             try {
               return (
@@ -425,17 +431,33 @@ function main() {
           })(),
           outcome: "skipped",
         };
-        const logPath = path.join(resolveGitRoot(), ".claude", "override-log.jsonl");
+        const gitRoot = (() => {
+          try {
+            return resolveGitRoot();
+          } catch {
+            return process.cwd();
+          }
+        })();
+        const logDir = path.join(gitRoot, ".claude");
+        fs.mkdirSync(logDir, { recursive: true });
+        const logPath = path.join(logDir, "override-log.jsonl");
+        // Symlink guard: prevent writing through symlinks (SEC-001)
+        const realPath = fs.realpathSync(logDir);
+        if (!logPath.startsWith(realPath)) {
+          throw new Error("symlink detected");
+        }
         fs.appendFileSync(logPath, JSON.stringify(auditEntry) + "\n");
-        logged = true;
+        logDestination = "file";
       } catch {
         // Both paths failed — warn but don't block
       }
     }
     console.log(
-      logged
-        ? "   (Override persisted to .claude/override-log.jsonl)\n"
-        : "   ⚠️  WARNING: Override audit log write failed — entry not persisted\n"
+      logDestination === "script"
+        ? "   (Override logged for audit trail)\n"
+        : logDestination === "file"
+          ? "   (Override persisted to .claude/override-log.jsonl via fallback)\n"
+          : "   ⚠️  WARNING: Override audit log write failed — entry not persisted\n"
     );
 
     process.exit(0);
