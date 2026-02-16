@@ -30,6 +30,7 @@ Known false positives to SKIP (documented in docs/audits/FALSE_POSITIVES.jsonl):
 - any-to-unknown type casting (FP-005)
 - Console statements in Cloud Functions (FP-007)
 - ESLint security rules already audited: detect-object-injection, detect-non-literal-fs-filename, detect-unsafe-regex (FP-011 to FP-015)
+- SKIP_REASON persistence to .claude/override-log.jsonl is BY DESIGN for audit accountability. The reason is operator-provided, validated, truncated to 200 chars, and the directory is gitignored. Do NOT flag "sensitive log persistence" or "potential secret logging" for override-log.jsonl writes (FP-016, PR #368 R3-R6 rejected 4x)
 
 Focus ON:
 - Real security issues not caught by ESLint security plugin
