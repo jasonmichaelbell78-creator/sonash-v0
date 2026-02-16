@@ -36,10 +36,10 @@ const ROOT = join(__dirname, "..");
 const LEARNINGS_LOG = join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const REVIEWS_FILE = join(ROOT, ".claude", "state", "reviews.jsonl");
 
-const args = process.argv.slice(2);
-const applyMode = args.includes("--apply");
-const checkMode = args.includes("--check");
-const quiet = args.includes("--quiet");
+const args = new Set(process.argv.slice(2));
+const applyMode = args.has("--apply");
+const checkMode = args.has("--check");
+const quiet = args.has("--quiet");
 
 function log(msg) {
   if (!quiet) console.log(msg);
@@ -48,9 +48,9 @@ function log(msg) {
 function sanitizeError(err) {
   const msg = err instanceof Error ? err.message : String(err);
   return msg
-    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
+    .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
+    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
+    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]");
 }
 
 /**
@@ -157,8 +157,8 @@ function parseMarkdownReviews(content) {
       const pattern = m[1]
         .trim()
         .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-")
+        .replaceAll(/[^a-z0-9\s-]/g, "")
+        .replaceAll(/\s+/g, "-")
         .slice(0, 60);
       if (pattern && !review.patterns.includes(pattern)) {
         review.patterns.push(pattern);
@@ -223,8 +223,8 @@ function main() {
       return;
     }
 
-    const maxExisting = existingIds.size > 0 ? Math.max(...existingIds) : 0;
-    const maxMd = mdReviews.length > 0 ? Math.max(...mdReviews.map((r) => r.id)) : 0;
+    const maxExisting = [...existingIds].reduce((a, b) => (b > a ? b : a), 0);
+    const maxMd = mdReviews.reduce((a, r) => (r.id > a ? r.id : a), 0);
 
     log(`\n⚠️  ${missing.length} reviews in markdown but not in JSONL:`);
     log(`  IDs: ${missing.map((r) => "#" + r.id).join(", ")}`);
@@ -238,9 +238,23 @@ function main() {
     }
 
     if (applyMode) {
-      if (!isSafeToWrite(REVIEWS_FILE)) return;
+      if (!isSafeToWrite(REVIEWS_FILE)) {
+        console.error("❌ Refusing to write: symlink detected at reviews.jsonl");
+        process.exitCode = 2;
+        return;
+      }
+      const stateDir = join(ROOT, ".claude", "state");
+      if (!existsSync(stateDir)) {
+        require("node:fs").mkdirSync(stateDir, { recursive: true });
+      }
       const lines = missing.map((r) => JSON.stringify(r));
-      appendFileSync(REVIEWS_FILE, lines.join("\n") + "\n");
+      try {
+        appendFileSync(REVIEWS_FILE, lines.join("\n") + "\n");
+      } catch (err) {
+        console.error("❌ Failed to write reviews.jsonl:", sanitizeError(err));
+        process.exitCode = 2;
+        return;
+      }
       log(`\n✅ Appended ${missing.length} reviews to reviews.jsonl`);
       log(`  Range: #${missing[0].id} - #${missing[missing.length - 1].id}`);
       process.exitCode = 0;

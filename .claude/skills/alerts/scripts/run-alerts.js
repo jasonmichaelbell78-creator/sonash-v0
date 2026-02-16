@@ -278,12 +278,14 @@ function runCommandSafe(bin, args = [], options = {}) {
       stdio: ["pipe", "pipe", "pipe"],
     };
     const output = execFileSync(bin, args, safeOptions);
-    return { success: true, output: output.trim(), stderr: "", code: 0 };
+    return { success: true, output: String(output ?? "").trim(), stderr: "", code: 0 };
   } catch (error) {
+    const stdoutStr = error?.stdout == null ? "" : String(error.stdout);
+    const stderrStr = error?.stderr == null ? "" : String(error.stderr);
     return {
       success: false,
-      output: error.stdout?.trim() || "",
-      stderr: error.stderr?.trim() || "",
+      output: stdoutStr.trim(),
+      stderr: stderrStr.trim(),
       code: error.status || 1,
     };
   }
@@ -459,7 +461,7 @@ function loadBaseline() {
     if (!baseline) return null;
     // Only use if from today (same session day)
     const baselineDateObj = new Date(baseline.timestamp);
-    if (isNaN(baselineDateObj.getTime())) return null;
+    if (Number.isNaN(baselineDateObj.getTime())) return null;
     const baselineDate = baselineDateObj.toDateString();
     const today = new Date().toDateString();
     if (baselineDate === today) {
@@ -1569,13 +1571,15 @@ function checkSkipAbuse() {
   const WINDOW_COUNT = 5;
   const WINDOW_SIZE = (7 * DAY_MS) / WINDOW_COUNT; // ~1.4 days per window
   const windowCounts = Array(WINDOW_COUNT).fill(0);
-  for (const e of entries) {
+  for (const e of last7d) {
     const t = new Date(e.timestamp).getTime();
     if (isNaN(t)) continue;
-    const windowIdx = Math.min(WINDOW_COUNT - 1, Math.max(0, Math.floor((now - t) / WINDOW_SIZE)));
+    const ageMs = now - t;
+    if (ageMs < 0 || ageMs > 7 * DAY_MS) continue;
+    const windowIdx = Math.min(WINDOW_COUNT - 1, Math.max(0, Math.floor(ageMs / WINDOW_SIZE)));
     windowCounts[WINDOW_COUNT - 1 - windowIdx]++; // oldest first
   }
-  const windowValues = windowCounts.filter((_, i) => i < windowCounts.length); // all windows
+  const windowValues = windowCounts;
   let trendDirection = "stable";
   if (windowValues.length >= 2) {
     const first = windowValues[0];
@@ -2199,9 +2203,11 @@ function checkSessionState() {
   let staleDays = 0;
   const lastCommitDate = handoff.lastCommitDate || handoff.last_commit_date;
   if (lastCommitDate) {
-    staleDays = Math.floor(
-      (Date.now() - new Date(lastCommitDate).getTime()) / (24 * 60 * 60 * 1000)
-    );
+    const lastTs = new Date(lastCommitDate).getTime();
+    if (!Number.isNaN(lastTs)) {
+      const ageMs = Date.now() - lastTs;
+      staleDays = ageMs > 0 ? Math.floor(ageMs / (24 * 60 * 60 * 1000)) : 0;
+    }
   }
 
   const totalUncommitted =
@@ -2857,11 +2863,10 @@ function filterSuppressedAlerts() {
     catData.alerts = catData.alerts.filter((alert) => {
       return !activeSups.some((sup) => {
         if (sup.category && sup.category !== cat) return false;
-        if (sup.messagePattern && sup.messagePattern.trim() !== "") {
-          // Use case-insensitive string matching (safe — no regex injection)
-          return alert.message.toLowerCase().includes(sup.messagePattern.toLowerCase());
-        }
-        return false;
+        // If no message pattern, suppress entire category
+        if (!sup.messagePattern || sup.messagePattern.trim() === "") return true;
+        // Use case-insensitive string matching (safe — no regex injection)
+        return alert.message.toLowerCase().includes(sup.messagePattern.toLowerCase());
       });
     });
     filteredCount += before - catData.alerts.length;

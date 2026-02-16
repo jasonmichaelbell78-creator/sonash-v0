@@ -617,6 +617,35 @@ _Reviews #137-179 have been archived to
 
 ---
 
+#### Review #325: PR #367 R2 — Trend Bug, Suppression Logic, Security Hardening (2026-02-16)
+
+**Source:** CI (Prettier) + SonarCloud (15) + Qodo PR Compliance (5) + Qodo Code
+Suggestions (20) **PR/Branch:** claude/read-session-commits-ZpJLX (PR #367)
+**Suggestions:** 40 total (Fixed: 21, Deferred: 6, Rejected: 5)
+
+**Patterns Identified:**
+
+1. **R1 agent incomplete fixes** — 3 parallel agents in R1 missed several items
+   (trend bug, suppressions, runCommandSafe). Verification pass didn't catch
+   them.
+2. **EXIT trap overwrite** — Shell scripts using multiple mktemp calls each set
+   their own trap, overwriting previous cleanup.
+3. **Category-wide suppression blocked** — Empty messagePattern returned false
+   instead of true, preventing category-level suppression.
+
+**Key Learnings:**
+
+- Parallel agent results need explicit verification against the original item
+  list
+- Shell EXIT trap chaining requires capturing previous trap with `trap -p EXIT`
+- SonarCloud cognitive complexity items are consistently pre-existing (CC 16-64)
+
+**Resolution Stats:** 21 fixed (7 major, 12 minor, 2 trivial), 6 deferred
+(cognitive complexity, pre-existing), 5 rejected (false positives/design). 3
+parallel agents, 12 files modified.
+
+---
+
 #### Review #324: PR #367 R1 — Alerts Overhaul Security + Code Quality (2026-02-16)
 
 **Source:** SonarCloud (24) + Qodo PR Compliance (6) + Qodo Code Suggestions

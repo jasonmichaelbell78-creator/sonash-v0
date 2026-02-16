@@ -115,9 +115,10 @@ function main() {
         const warnings = warningsData.warnings || [];
         const newestWarning = warnings.reduce((max, w) => {
           const t = new Date(w.timestamp).getTime();
+          if (Number.isNaN(t)) return max;
           return t > max ? t : max;
         }, 0);
-        if (ackTime >= newestWarning) {
+        if (newestWarning > 0 && ackTime >= newestWarning) {
           alertsAcknowledged = true;
         }
       }

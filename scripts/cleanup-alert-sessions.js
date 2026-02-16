@@ -37,6 +37,7 @@ function main() {
     if (rel.startsWith("..") || path.isAbsolute(rel)) continue;
     try {
       const stat = fs.lstatSync(filePath);
+      if (stat.isSymbolicLink()) continue;
       if (stat.mtimeMs < cutoff) {
         fs.rmSync(filePath, { force: true });
         deleted++;

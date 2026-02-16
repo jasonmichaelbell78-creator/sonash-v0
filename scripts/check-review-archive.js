@@ -73,13 +73,14 @@ function extractReviewIds(filePath) {
  */
 function checkWrongHeadings(filePath, fileName) {
   try {
+    if (lstatSync(filePath).isSymbolicLink()) return 0;
     const content = readFileSync(filePath, "utf8");
     const wrongHeadings = (content.match(/^###\s+Review\s+#\d+/gm) || []).length;
     if (wrongHeadings > 0) {
       warn(`${fileName}: ${wrongHeadings} reviews use ### instead of #### heading`);
       if (fixMode) {
         if (!isSafeToWrite(filePath)) return 0;
-        const fixed = content.replace(/^###(\s+Review\s+#)/gm, "####$1");
+        const fixed = content.replaceAll(/^###(\s+Review\s+#)/gm, "####$1");
         writeFileSync(filePath, fixed);
         console.log(`    → Fixed ${wrongHeadings} headings`);
       }
@@ -143,9 +144,13 @@ function main() {
       if (!allIds.has(id)) allIds.set(id, []);
       allIds.get(id).push("AI_REVIEW_LEARNINGS_LOG.md");
     }
-    console.log(
-      `  Active log: ${logIds.length} reviews (#${Math.min(...logIds)}-#${Math.max(...logIds)})`
-    );
+    if (logIds.length > 0) {
+      console.log(
+        `  Active log: ${logIds.length} reviews (#${Math.min(...logIds)}-#${Math.max(...logIds)})`
+      );
+    } else {
+      console.log("  Active log: 0 reviews");
+    }
   }
 
   // Archive files
@@ -258,6 +263,6 @@ try {
   main();
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
-  console.error("Error:", msg.replace(/C:\\Users\\[^\\]+/gi, "[PATH]"));
+  console.error("Error:", msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]"));
   process.exitCode = 2;
 }

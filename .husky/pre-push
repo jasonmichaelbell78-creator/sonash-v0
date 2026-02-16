@@ -69,8 +69,8 @@ if [ -n "${script_changes:-}" ]; then
     if [ "${SKIP_REVIEWER:-}" != "1" ]; then
       exit 1
     fi
-    echo "  ⚠️ Bypassed with SKIP_REVIEWER=1"
     require_skip_reason "SKIP_REVIEWER=1"
+    echo "  ⚠️ Bypassed with SKIP_REVIEWER=1"
     node scripts/log-override.js --quick --check=reviewer --reason="$SKIP_REASON" 2>/dev/null || true
     node scripts/append-hook-warning.js --hook=pre-push --type=reviewer --severity=warning --message="Code-reviewer bypassed for script changes" --action="Run code-reviewer agent" 2>/dev/null || true
   else

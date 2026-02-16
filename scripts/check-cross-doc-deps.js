@@ -108,6 +108,8 @@ function getStagedFilesFiltered(filter) {
       ["diff", "--cached", "--name-only", `--diff-filter=${filter}`],
       {
         encoding: "utf-8",
+        timeout: 5000,
+        maxBuffer: 10 * 1024 * 1024,
       }
     );
     return output

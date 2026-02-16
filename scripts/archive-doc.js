@@ -196,9 +196,15 @@ function safeWriteFile(filePath, content, description) {
         error: `Refusing to write: symlink detected at tmp path for ${description}`,
       };
     }
+    if (!isSafeToWrite(bakPath)) {
+      return {
+        success: false,
+        error: `Refusing to write: symlink detected at backup path for ${description}`,
+      };
+    }
     writeFileSync(tmpPath, content, "utf-8");
     try {
-      // Atomic swap — isSafeToWrite guards verified for filePath and tmpPath above
+      // Atomic swap — isSafeToWrite guards verified for filePath/tmpPath/bakPath above
       if (existsSync(filePath)) renameSync(filePath, bakPath);
       renameSync(tmpPath, filePath);
     } catch (error_) {
