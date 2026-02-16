@@ -426,6 +426,33 @@ Full markdown report with all findings, baselines, and recommendations.
 
 ---
 
+## Context Recovery
+
+If the session is interrupted (compaction, timeout, crash):
+
+1. **Check for state file:**
+   `.claude/state/audit-code-quality-<date>.state.json`
+2. **If state file exists and is < 24 hours old:** Resume from last completed
+   stage
+3. **If state file is stale (> 24 hours):** Start fresh — findings may be
+   outdated
+4. **Always preserve:** Any partial findings already written to the output
+   directory
+
+### State File Format
+
+```json
+{
+  "audit_type": "code-quality",
+  "date": "YYYY-MM-DD",
+  "stage_completed": "analysis|review|report",
+  "partial_findings_path": "docs/audits/single-session/code/audit-YYYY-MM-DD/",
+  "last_updated": "ISO-8601"
+}
+```
+
+---
+
 ## Post-Audit Validation
 
 **Before finalizing the audit:**

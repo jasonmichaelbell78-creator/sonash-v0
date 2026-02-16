@@ -116,6 +116,7 @@ export function createSession() {
     status: "in_progress",
     workflow_phase: "starting",
     current_category: null,
+    selected_categories: [...VALID_CATEGORIES],
     categories: initializeCategoryState(),
     final_output: null,
     last_updated: now,
@@ -446,11 +447,42 @@ export { VALID_CATEGORIES, VALID_STATUS, VALID_PHASES, CONFIG };
 // CLI usage
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const command = process.argv[2];
+  const args = process.argv.slice(3);
 
   switch (command) {
-    case "create":
-      createSession();
+    case "create": {
+      const session = createSession();
+
+      // Parse --categories flag: --categories=security,performance
+      const categoriesArg = args.find((a) => a.startsWith("--categories"));
+      if (categoriesArg) {
+        const cats = categoriesArg
+          .split("=")[1]
+          ?.split(",")
+          .map((c) => c.trim());
+        if (cats && cats.length > 0) {
+          // Validate each category
+          const invalid = cats.filter((c) => !VALID_CATEGORIES.includes(c));
+          if (invalid.length > 0) {
+            console.error(`Invalid categories: ${invalid.join(", ")}`);
+            console.error(`Valid: ${VALID_CATEGORIES.join(", ")}`);
+            process.exit(1);
+          }
+          session.selected_categories = cats;
+          // Mark non-selected categories as skipped
+          for (const cat of VALID_CATEGORIES) {
+            if (!cats.includes(cat)) {
+              session.categories[cat].status = "skipped";
+            }
+          }
+          // Save the updated state with category scoping applied
+          writeStateFile(session);
+          saveBackupState(session);
+          console.log(`Scoped to categories: ${cats.join(", ")}`);
+        }
+      }
       break;
+    }
     case "load": {
       const session = loadSession();
       if (session) {

@@ -911,16 +911,41 @@ After ALL findings reviewed, summarize:
 
 ---
 
-## Recovery Procedures
+## Context Recovery
 
-### If Stage Fails
+If the session is interrupted (compaction, timeout, crash):
+
+1. **Check for state file:**
+   `.claude/state/audit-documentation-<date>.state.json`
+2. **If state file exists and is < 24 hours old:** Resume from last completed
+   stage
+3. **If state file is stale (> 24 hours):** Start fresh — findings may be
+   outdated
+4. **Always preserve:** Any partial findings already written to the output
+   directory
+
+### State File Format
+
+```json
+{
+  "audit_type": "documentation",
+  "date": "YYYY-MM-DD",
+  "stage_completed": "analysis|review|report",
+  "partial_findings_path": "docs/audits/single-session/documentation/audit-YYYY-MM-DD/",
+  "last_updated": "ISO-8601"
+}
+```
+
+### Additional Recovery Steps
+
+#### If Stage Fails
 
 1. **Missing output file:** Re-run specific agent with explicit file write
 2. **Empty output file:** Check agent for errors, re-run with verbose
 3. **Schema validation fails:** Parse errors line-by-line, fix malformed
 4. **Context compaction:** Verify AUDIT_DIR path, re-run from last checkpoint
 
-### If Context Compacts Mid-Audit
+#### If Context Compacts Mid-Audit
 
 Read the partial outputs already saved to `${AUDIT_DIR}/` and resume from the
 last completed stage.
