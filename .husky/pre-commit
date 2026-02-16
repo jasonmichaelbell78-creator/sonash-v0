@@ -42,15 +42,23 @@ fi
 
 # 3. Run pattern compliance check on staged files (catches issues before PR review tools)
 # Review #308: Capture output once instead of running command twice
-echo "  ▶ Running pattern compliance..."
-if ! patterns_output="$(node scripts/check-pattern-compliance.js --staged 2>&1)"; then
-  echo "  ❌ Pattern compliance failed"
-  printf '%s\n' "$patterns_output" | tail -15
-  echo ""
-  echo "  Fix pattern issues before committing. Run: node scripts/check-pattern-compliance.js --staged"
-  exit 1
+# Override with: SKIP_REASON="reason" SKIP_PATTERN_CHECK=1 git commit ...
+if [ -n "$SKIP_PATTERN_CHECK" ]; then
+  require_skip_reason "SKIP_PATTERN_CHECK=1"
+  node scripts/log-override.js --quick --check=pattern-compliance --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "  ⏭️ Skipping pattern compliance (SKIP_PATTERN_CHECK=1)"
+else
+  echo "  ▶ Running pattern compliance..."
+  if ! patterns_output="$(node scripts/check-pattern-compliance.js --staged 2>&1)"; then
+    echo "  ❌ Pattern compliance failed"
+    printf '%s\n' "$patterns_output" | tail -15
+    echo ""
+    echo "  Fix pattern issues before committing. Run: node scripts/check-pattern-compliance.js --staged"
+    echo "  Override: SKIP_REASON=\"reason\" SKIP_PATTERN_CHECK=1 git commit ..."
+    exit 1
+  fi
+  echo "  ✅ Pattern compliance passed"
 fi
-echo "  ✅ Pattern compliance passed"
 
 # 4. Run tests - stream output using temp file
 # Review #322: Run tests for config files that can break builds; skip for doc-only
@@ -132,17 +140,23 @@ fi
 # 7. Cross-document dependency check (BLOCKING - Session #69)
 # Blocks commit when documents are modified that have known dependencies on other docs
 # Hook-quality fix: --trivial skips enforcement for whitespace/comment/formatting-only changes
-# Override with: SKIP_CROSS_DOC_CHECK=1 git commit ...
+# Override with: SKIP_REASON="reason" SKIP_CROSS_DOC_CHECK=1 git commit ...
 # See: docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers
-echo "  ▶ Checking cross-document dependencies..."
-if ! node scripts/check-cross-doc-deps.js --trivial; then
-  echo "  ❌ Cross-document dependency check failed"
-  echo ""
-  echo "  Fix dependencies before committing. Run: npm run crossdoc:check"
-  echo "  Override: SKIP_REASON=\"reason\" SKIP_CROSS_DOC_CHECK=1 git commit ..."
-  exit 1
+if [ -n "$SKIP_CROSS_DOC_CHECK" ]; then
+  require_skip_reason "SKIP_CROSS_DOC_CHECK=1"
+  node scripts/log-override.js --quick --check=cross-doc-deps --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "  ⏭️ Skipping cross-doc dependency check (SKIP_CROSS_DOC_CHECK=1)"
+else
+  echo "  ▶ Checking cross-document dependencies..."
+  if ! node scripts/check-cross-doc-deps.js --trivial; then
+    echo "  ❌ Cross-document dependency check failed"
+    echo ""
+    echo "  Fix dependencies before committing. Run: npm run crossdoc:check"
+    echo "  Override: SKIP_REASON=\"reason\" SKIP_CROSS_DOC_CHECK=1 git commit ..."
+    exit 1
+  fi
+  echo "  ✅ Cross-document dependencies satisfied"
 fi
-echo "  ✅ Cross-document dependencies satisfied"
 
 # 8. Documentation Index auto-update (AUTO-FIX - Session #103, fixed #149)
 # When .md files are staged, auto-regenerate and re-stage DOCUMENTATION_INDEX.md

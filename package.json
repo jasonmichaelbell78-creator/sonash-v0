@@ -75,7 +75,8 @@
     "docs:external-links": "node scripts/check-external-links.js",
     "docs:accuracy": "node scripts/check-content-accuracy.js",
     "docs:placement": "node scripts/check-doc-placement.js",
-    "session:end": "node scripts/session-end-commit.js"
+    "session:end": "node scripts/session-end-commit.js",
+    "alerts:cleanup": "node scripts/cleanup-alert-sessions.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
