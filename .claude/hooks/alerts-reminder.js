@@ -129,7 +129,7 @@ function main() {
     if (!alertsAcknowledged) {
       const warnings = warningsData.warnings || [];
       const counts = { error: 0, warning: 0, info: 0 };
-      for (const w of warnings) {
+      for (const w of Array.isArray(warnings) ? warnings : []) {
         const raw = typeof w?.severity === "string" ? w.severity : "";
         const sev = raw === "error" || raw === "warning" || raw === "info" ? raw : "warning";
         counts[sev] = counts[sev] + 1;

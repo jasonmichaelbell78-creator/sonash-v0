@@ -2896,8 +2896,9 @@ function filterSuppressedAlerts() {
       return !activeSups.some((sup) => {
         if (sup.category && sup.category !== cat) return false;
         const pattern = typeof sup.messagePattern === "string" ? sup.messagePattern.trim() : "";
-        // Require explicit suppressAll flag for category-wide suppression
-        if (sup.suppressAll === true) return true;
+        // Require explicit suppressAll flag AND valid category for category-wide suppression
+        if (sup.suppressAll === true)
+          return typeof sup.category === "string" && sup.category.trim() !== "";
         if (pattern === "") return false;
         // Use case-insensitive string matching (safe — no regex injection)
         const msg = typeof alert.message === "string" ? alert.message : String(alert.message ?? "");

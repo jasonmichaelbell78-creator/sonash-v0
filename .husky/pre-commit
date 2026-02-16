@@ -16,13 +16,37 @@ require_skip_reason() {
     echo "  ❌ SKIP_REASON must be a single line (no CR/LF characters)"
     exit 1
   fi
-  # Validate minimum length to prevent meaningless skip reasons like "x" or "test"
+  # Reject control characters (prevents log injection) — POSIX-safe
+  if printf '%s' "$SKIP_REASON" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+    echo "  ❌ SKIP_REASON must not contain control characters"
+    exit 1
+  fi
+  # Enforce max length to prevent DoS via oversized reasons
   skip_len=${#SKIP_REASON}
+  if [ "$skip_len" -gt 500 ]; then
+    echo "  ❌ SKIP_REASON must be <= 500 characters (got $skip_len)"
+    exit 1
+  fi
+  # Validate minimum length to prevent meaningless skip reasons like "x" or "test"
   if [ "$skip_len" -lt 10 ]; then
     echo "  ❌ SKIP_REASON must be at least 10 characters (got $skip_len)"
     echo "  Provide a meaningful reason for the audit trail."
     exit 1
   fi
+}
+
+# POSIX-safe EXIT trap chaining — appends cleanup commands without overwriting prior traps
+add_exit_trap() {
+  prev="$(trap -p EXIT 2>/dev/null || true)"
+  case "$prev" in
+    *"EXIT"*)
+      prev_cmd=$(printf '%s' "$prev" | sed "s/^[^']*'\(.*\)'[^']*EXIT.*/\1/")
+      trap "${prev_cmd}; $1" EXIT
+      ;;
+    *)
+      trap "$1" EXIT
+      ;;
+  esac
 }
 
 echo "🔍 Running pre-commit checks..."
@@ -86,7 +110,7 @@ if [ "${SKIP_AUDIT_VALIDATION:-}" != "1" ]; then
     # Review #204: Pipe creates subshell where variable changes don't propagate
     # Chain with existing EXIT trap instead of overwriting
     AUDIT_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
-    trap 'rm -f "$TEST_TMPFILE" "$AUDIT_TMPFILE" 2>/dev/null' EXIT
+    add_exit_trap 'rm -f "$AUDIT_TMPFILE" 2>/dev/null'
     echo "$STAGED_AUDIT_FILES" > "$AUDIT_TMPFILE"
     AUDIT_FAILED=0
     while IFS= read -r audit_file || [ -n "$audit_file" ]; do
@@ -129,14 +153,8 @@ if [ "${SKIP_TESTS:-}" = "1" ]; then
 # Review #322 Round 4: Include lockfiles (package-lock.json, yarn.lock, pnpm-lock.yaml)
 elif printf '%s\n' "$STAGED_FILES" | grep -Eq '^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|tsconfig.*\.json|next\.config\.(js|mjs|ts)|\.husky/|\.github/)'; then
   echo "  ▶ Running tests (config changes detected)..."
-  TEST_TMPFILE=$(mktemp)
-  # Chain with existing EXIT trap (don't overwrite AUDIT_TMPFILE cleanup)
-  prev_trap="$(trap -p EXIT | sed "s/^trap -- '\(.*\)' EXIT$/\1/" || true)"
-  if [ -n "${prev_trap:-}" ]; then
-    trap "${prev_trap}; rm -f \"\$TEST_TMPFILE\" 2>/dev/null" EXIT
-  else
-    trap 'rm -f "$TEST_TMPFILE" 2>/dev/null' EXIT
-  fi
+  TEST_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
+  add_exit_trap 'rm -f "$TEST_TMPFILE" 2>/dev/null'
 
   if ! npm test > "$TEST_TMPFILE" 2>&1; then
     echo "  ❌ Tests failed"
@@ -156,8 +174,8 @@ else
     echo "  ⏭️ Skipping tests (doc-only commit)"
   else
     echo "  ▶ Running tests..."
-    TEST_TMPFILE=$(mktemp)
-    trap 'rm -f "$TEST_TMPFILE" "$AUDIT_TMPFILE" 2>/dev/null' EXIT
+    TEST_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
+    add_exit_trap 'rm -f "$TEST_TMPFILE" 2>/dev/null'
 
     if ! npm test > "$TEST_TMPFILE" 2>&1; then
       echo "  ❌ Tests failed"

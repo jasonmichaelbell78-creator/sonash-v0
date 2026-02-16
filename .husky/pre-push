@@ -16,8 +16,18 @@ require_skip_reason() {
     echo "  ❌ SKIP_REASON must be a single line (no CR/LF characters)"
     exit 1
   fi
-  # Validate minimum length to prevent meaningless skip reasons like "x" or "test"
+  # Reject control characters (prevents log injection) — POSIX-safe
+  if printf '%s' "$SKIP_REASON" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+    echo "  ❌ SKIP_REASON must not contain control characters"
+    exit 1
+  fi
+  # Enforce max length to prevent DoS via oversized reasons
   skip_len=${#SKIP_REASON}
+  if [ "$skip_len" -gt 500 ]; then
+    echo "  ❌ SKIP_REASON must be <= 500 characters (got $skip_len)"
+    exit 1
+  fi
+  # Validate minimum length to prevent meaningless skip reasons like "x" or "test"
   if [ "$skip_len" -lt 10 ]; then
     echo "  ❌ SKIP_REASON must be at least 10 characters (got $skip_len)"
     echo "  Provide a meaningful reason for the audit trail."

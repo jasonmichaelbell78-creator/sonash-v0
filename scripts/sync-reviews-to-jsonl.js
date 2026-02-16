@@ -86,8 +86,16 @@ function parseMarkdownReviews(content) {
   const reviews = [];
   const lines = content.split("\n");
   let current = null;
+  let inFence = false;
 
   for (const line of lines) {
+    // Skip content inside fenced code blocks to avoid parsing headers from examples
+    if (line.trim().startsWith("```")) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+
     // Match #### Review #N: Title (YYYY-MM-DD)
     const headerMatch = line.match(/^####\s+Review\s+#(\d+):?\s*(.*)/);
     if (headerMatch) {

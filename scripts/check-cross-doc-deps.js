@@ -420,7 +420,7 @@ try {
 
     if (
       [...reason].some((c) => {
-        const code = c.charCodeAt(0);
+        const code = c.codePointAt(0);
         return code < 0x20 || code === 0x7f;
       })
     ) {

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.17 **Created:** 2026-01-02 **Last Updated:** 2026-02-16
+**Document Version:** 17.18 **Created:** 2026-01-02 **Last Updated:** 2026-02-16
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.18   | 2026-02-16 | Review #330: PR #367 R7 — codePointAt (3 files), suppressAll category guard, code fence parsing, POSIX EXIT trap helper, shell control char validation. 8 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | 17.17   | 2026-02-16 | Review #329: PR #367 R6 — Control char + length validation (3 JS scripts), POSIX-safe CR detection (2 hooks), suppressAll explicit flag, severity normalization. 5 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 17.16   | 2026-02-16 | Review #328: PR #367 R5 — Suppression type validation, POSIX-safe grep replacement, SKIP_REASON newline propagation to 3 JS scripts, ENOENT code preservation, toCount string coercion, triggers fail-closed. 9 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 17.15   | 2026-02-16 | Review #327: PR #367 R4 — Fail closed security (5 files), log injection prevention (pre-commit/pre-push), trap chaining, audit output capture, input normalization (toCount/filesRead), exit code preservation. 13 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -619,6 +620,36 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #330: PR #367 R7 — codePointAt, suppressAll Category Guard, Code Fence Parsing, EXIT Trap (2026-02-16)
+
+**Source:** SonarCloud (11) + Qodo Compliance (2) + Qodo Suggestions (8)
+**PR/Branch:** claude/read-session-commits-ZpJLX (PR #367) **Suggestions:** 21
+total (Fixed: 8, Already Deferred: 6, Already Rejected: 2, Rejected: 5)
+
+**Patterns Identified:**
+
+1. **codePointAt vs charCodeAt** — `charCodeAt` doesn't handle multi-byte
+   Unicode correctly; `codePointAt` is the safer default for character code
+   comparisons
+2. **suppressAll requires category** — suppressAll without a category would
+   suppress ALL alerts across ALL categories; now requires valid category string
+3. **Code fence awareness** — Markdown parser incorrectly matched review headers
+   inside fenced code blocks; skip lines when `inFence` is true
+4. **POSIX EXIT trap chaining** — Manual `trap -p EXIT | sed` is brittle and
+   non-portable; `add_exit_trap` helper safely chains cleanup commands
+5. **Shell control char validation** — Propagated from JS scripts to shell hooks
+   using POSIX `LC_ALL=C grep -q '[[:cntrl:]]'`
+
+**Key Learnings:**
+
+- `codePointAt` handles surrogate pairs and astral Unicode correctly
+- Category-wide suppression needs both `suppressAll: true` AND a valid category
+- Markdown parsing must account for code fences to avoid false header matches
+- Shell trap chaining via sed is fragile; a helper function is more maintainable
+- Always propagate validation patterns from JS to shell hooks and vice versa
 
 ---
 
