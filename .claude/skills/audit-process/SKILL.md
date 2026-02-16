@@ -1372,7 +1372,8 @@ recently, run it first.
 
 ## Threshold System
 
-This audit **resets the process category threshold** in `docs/AUDIT_TRACKER.md`.
+This audit **resets the process category threshold** in
+`docs/audits/AUDIT_TRACKER.md`.
 
 **Process audit triggers:**
 

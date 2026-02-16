@@ -278,8 +278,8 @@ apply.
 ### Templates
 
 - Multi-AI Security Audit:
-  `/docs/multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md`
-- Multi-AI Code Review: `/docs/multi-ai-audit/templates/CODE_REVIEW_PLAN.md`
+  `/docs/audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md`
+- Multi-AI Code Review: `/docs/audits/multi-ai/templates/CODE_REVIEW_PLAN.md`
 - Review Retrospective: `/docs/templates/REVIEW_RETROSPECTIVE_TEMPLATE.md`
   (Phase 3)
 

@@ -84,15 +84,15 @@ code reviews and audits:
 
 ### Framework Documents
 
-| Document                     | Purpose                                            | Location                                      |
-| ---------------------------- | -------------------------------------------------- | --------------------------------------------- |
-| **COORDINATOR.md**           | Central coordination hub, baselines, audit history | `docs/multi-ai-audit/COORDINATOR.md`          |
-| **AGGREGATOR.md**            | 2-tier aggregation process, deduplication rules    | `docs/multi-ai-audit/templates/AGGREGATOR.md` |
-| **JSONL_SCHEMA_STANDARD.md** | Canonical JSONL schema for all findings            | `docs/templates/JSONL_SCHEMA_STANDARD.md`     |
+| Document                     | Purpose                                            | Location                                       |
+| ---------------------------- | -------------------------------------------------- | ---------------------------------------------- |
+| **COORDINATOR.md**           | Central coordination hub, baselines, audit history | `docs/audits/multi-ai/COORDINATOR.md`          |
+| **AGGREGATOR.md**            | 2-tier aggregation process, deduplication rules    | `docs/audits/multi-ai/templates/AGGREGATOR.md` |
+| **JSONL_SCHEMA_STANDARD.md** | Canonical JSONL schema for all findings            | `docs/templates/JSONL_SCHEMA_STANDARD.md`      |
 
 ### Audit Templates
 
-All templates now in `docs/multi-ai-audit/templates/`:
+All templates now in `docs/audits/multi-ai/templates/`:
 
 | Template                              | Category                 | Description                                              |
 | ------------------------------------- | ------------------------ | -------------------------------------------------------- |
@@ -178,7 +178,7 @@ All templates now in `docs/multi-ai-audit/templates/`:
 
 ### Multi-AI Review Templates
 
-All templates now located in `docs/multi-ai-audit/templates/`:
+All templates now located in `docs/audits/multi-ai/templates/`:
 
 | Template                              | Purpose                                               |
 | ------------------------------------- | ----------------------------------------------------- |
@@ -192,7 +192,7 @@ All templates now located in `docs/multi-ai-audit/templates/`:
 | **AGGREGATOR.md**                     | 2-tier aggregation process                            |
 | **SHARED_TEMPLATE_BASE.md**           | Shared boilerplate for all audit templates            |
 
-See [docs/multi-ai-audit/README.md](./multi-ai-audit/README.md) for full
+See [docs/audits/multi-ai/README.md](./multi-ai-audit/README.md) for full
 navigation.
 
 ### Other Templates
@@ -260,7 +260,7 @@ navigation.
   [FIREBASE_CHANGE_POLICY.md](./FIREBASE_CHANGE_POLICY.md)
 - **Submit a PR** → [PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md)
 - **Run a multi-AI audit** →
-  [docs/multi-ai-audit/README.md](./multi-ai-audit/README.md)
+  [docs/audits/multi-ai/README.md](./multi-ai-audit/README.md)
 - **Fix anti-patterns** → [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)
 - **Understand current session** → [SESSION_CONTEXT.md](../SESSION_CONTEXT.md)
 - **See project roadmap** → [ROADMAP.md](../ROADMAP.md)

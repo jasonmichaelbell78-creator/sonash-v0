@@ -58,22 +58,22 @@ Compliance scores against AUDIT_STANDARDS.md Section 5:
 
 ### Dimension 3: Process & Tracking (8 issues)
 
-| Issue                                        | Severity | Location                                     |
-| -------------------------------------------- | -------- | -------------------------------------------- |
-| AUDIT_TRACKER.md missing ai-optimization row | HIGH     | `docs/AUDIT_TRACKER.md`                      |
-| COORDINATOR.md stale (missing 2 newest cats) | HIGH     | `docs/multi-ai-audit/COORDINATOR.md`         |
-| COORDINATOR.md baselines from 2026-01-11     | MEDIUM   | `docs/multi-ai-audit/COORDINATOR.md`         |
-| No threshold enforcement hooks               | MEDIUM   | Missing                                      |
-| AI_WORKFLOW.md audit references outdated     | MEDIUM   | `AI_WORKFLOW.md`                             |
-| Codification doc status still PLANNED        | LOW      | `docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md` |
-| Audit docs scattered across 4 locations      | HIGH     | Multiple                                     |
-| Missing directory scaffold (6 of 9 dirs)     | MEDIUM   | `docs/audits/single-session/`                |
+| Issue                                        | Severity | Location                                      |
+| -------------------------------------------- | -------- | --------------------------------------------- |
+| AUDIT_TRACKER.md missing ai-optimization row | HIGH     | `docs/audits/AUDIT_TRACKER.md`                |
+| COORDINATOR.md stale (missing 2 newest cats) | HIGH     | `docs/audits/multi-ai/COORDINATOR.md`         |
+| COORDINATOR.md baselines from 2026-01-11     | MEDIUM   | `docs/audits/multi-ai/COORDINATOR.md`         |
+| No threshold enforcement hooks               | MEDIUM   | Missing                                       |
+| AI_WORKFLOW.md audit references outdated     | MEDIUM   | `AI_WORKFLOW.md`                              |
+| Codification doc status still PLANNED        | LOW      | `docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md` |
+| Audit docs scattered across 4 locations      | HIGH     | Multiple                                      |
+| Missing directory scaffold (6 of 9 dirs)     | MEDIUM   | `docs/audits/single-session/`                 |
 
 ### Dimension 4: Multi-AI Templates (8 issues)
 
 | Issue                                                   | Severity     | Location                            |
 | ------------------------------------------------------- | ------------ | ----------------------------------- |
-| Template naming inconsistency (\_PLAN.md vs \_AUDIT.md) | MEDIUM       | `docs/multi-ai-audit/templates/`    |
+| Template naming inconsistency (\_PLAN.md vs \_AUDIT.md) | MEDIUM       | `docs/audits/multi-ai/templates/`   |
 | SHARED_TEMPLATE_BASE incomplete                         | HIGH         | `templates/SHARED_TEMPLATE_BASE.md` |
 | 7 of 9 templates missing quality guardrails             | HIGH         | Various templates                   |
 | No template compliance validation                       | MEDIUM       | Missing                             |
@@ -86,35 +86,35 @@ Compliance scores against AUDIT_STANDARDS.md Section 5:
 
 ## Decision Record (5 Q&A Batches + Improvements)
 
-| #   | Decision                      | Choice                                                             |
-| --- | ----------------------------- | ------------------------------------------------------------------ |
-| 1   | Multi-AI location             | Move `docs/multi-ai-audit/` -> `docs/audits/multi-ai/`             |
-| 2   | Tracker location              | Move `docs/AUDIT_TRACKER.md` -> `docs/audits/AUDIT_TRACKER.md`     |
-| 3   | Ad-hoc ai-opt results         | Move `docs/ai-optimization-audit/` -> standard single-session path |
-| 4   | Codification doc              | Move to `docs/audits/` as reference doc, update status             |
-| 5   | Empty directories             | Scaffold all 9 single-session + comprehensive + multi-ai dirs      |
-| 6   | Results index                 | Auto-generated `RESULTS_INDEX.md` via script                       |
-| 7   | Skill fixes                   | Fix ALL skills (paths, output dirs, consistency)                   |
-| 8   | Old locations                 | Delete entirely after move (no pointer files)                      |
-| 9   | Missing scripts               | Create all missing scripts and wire into npm                       |
-| 10  | Index generation              | Auto-generated via `scripts/audit/generate-results-index.js`       |
-| 11  | Cross-reference updates       | Full grep + fix all refs across entire codebase                    |
-| 12  | Severity scale conflict       | Standardize to S0-S3 everywhere (fix I0-I3 in audit-enhancements)  |
-| 13  | Non-compliant skill approach  | Full rewrite to match AUDIT_STANDARDS.md Section 5                 |
-| 14  | Threshold enforcement         | Session-start warnings (not auto-trigger)                          |
-| 15  | Missing referenced docs       | Create all 3 non-existent docs that comprehensive references       |
-| 16  | TDMS script bugs              | Fix all bugs (intake, validate, metrics)                           |
-| 17  | npm scripts                   | Add all missing audit-related npm scripts                          |
-| 18  | Scope                         | Full remediation — everything audit-related                        |
-| 19  | Post-audit automation         | YES — create script to auto-intake, auto-views, auto-commit        |
-| 20  | Commit counter                | YES — hook-based threshold enforcement                             |
-| 21  | Pre-audit check               | YES — verify prerequisites before running audit                    |
-| 22  | Trend/diff tracking           | YES — compare findings across audit runs                           |
-| 23  | Context recovery standard     | YES — standardize context recovery in all audit skills             |
-| 24  | Audit health skill            | YES — /audit-health meta-check                                     |
-| 25  | Resolution feedback loop      | YES — track which findings get fixed                               |
-| 26  | Template compliance validator | YES — automated template standard check                            |
-| 27  | Multi-AI category scoping     | Modify existing skill to allow 1, N, or all categories             |
+| #   | Decision                      | Choice                                                                             |
+| --- | ----------------------------- | ---------------------------------------------------------------------------------- |
+| 1   | Multi-AI location             | Move `docs/audits/multi-ai/` -> `docs/audits/multi-ai/`                            |
+| 2   | Tracker location              | Move `docs/audits/AUDIT_TRACKER.md` -> `docs/audits/AUDIT_TRACKER.md`              |
+| 3   | Ad-hoc ai-opt results         | Move `docs/audits/single-session/ai-optimization/` -> standard single-session path |
+| 4   | Codification doc              | Move to `docs/audits/` as reference doc, update status                             |
+| 5   | Empty directories             | Scaffold all 9 single-session + comprehensive + multi-ai dirs                      |
+| 6   | Results index                 | Auto-generated `RESULTS_INDEX.md` via script                                       |
+| 7   | Skill fixes                   | Fix ALL skills (paths, output dirs, consistency)                                   |
+| 8   | Old locations                 | Delete entirely after move (no pointer files)                                      |
+| 9   | Missing scripts               | Create all missing scripts and wire into npm                                       |
+| 10  | Index generation              | Auto-generated via `scripts/audit/generate-results-index.js`                       |
+| 11  | Cross-reference updates       | Full grep + fix all refs across entire codebase                                    |
+| 12  | Severity scale conflict       | Standardize to S0-S3 everywhere (fix I0-I3 in audit-enhancements)                  |
+| 13  | Non-compliant skill approach  | Full rewrite to match AUDIT_STANDARDS.md Section 5                                 |
+| 14  | Threshold enforcement         | Session-start warnings (not auto-trigger)                                          |
+| 15  | Missing referenced docs       | Create all 3 non-existent docs that comprehensive references                       |
+| 16  | TDMS script bugs              | Fix all bugs (intake, validate, metrics)                                           |
+| 17  | npm scripts                   | Add all missing audit-related npm scripts                                          |
+| 18  | Scope                         | Full remediation — everything audit-related                                        |
+| 19  | Post-audit automation         | YES — create script to auto-intake, auto-views, auto-commit                        |
+| 20  | Commit counter                | YES — hook-based threshold enforcement                                             |
+| 21  | Pre-audit check               | YES — verify prerequisites before running audit                                    |
+| 22  | Trend/diff tracking           | YES — compare findings across audit runs                                           |
+| 23  | Context recovery standard     | YES — standardize context recovery in all audit skills                             |
+| 24  | Audit health skill            | YES — /audit-health meta-check                                                     |
+| 25  | Resolution feedback loop      | YES — track which findings get fixed                                               |
+| 26  | Template compliance validator | YES — automated template standard check                                            |
+| 27  | Multi-AI category scoping     | Modify existing skill to allow 1, N, or all categories                             |
 
 ---
 
@@ -149,7 +149,7 @@ Create 7 new directories with `.gitkeep` files.
 
 ### Step 2: Move All Files (4 Source Locations -> Consolidated)
 
-**2a: Move `docs/multi-ai-audit/*` -> `docs/audits/multi-ai/`**
+**2a: Move `docs/audits/multi-ai/*` -> `docs/audits/multi-ai/`**
 
 All contents including: README.md, COORDINATOR.md, templates/ (11 files:
 SHARED_TEMPLATE_BASE.md, AGGREGATOR.md, CODE_REVIEW_PLAN.md,
@@ -158,17 +158,18 @@ DOCUMENTATION_AUDIT.md, PROCESS_AUDIT.md, ENGINEERING_PRODUCTIVITY_AUDIT.md,
 ENHANCEMENT_AUDIT.md, AI_OPTIMIZATION_AUDIT.md).
 
 ```bash
-git mv docs/multi-ai-audit/* docs/audits/multi-ai/
-rmdir docs/multi-ai-audit
+git mv docs/audits/multi-ai/* docs/audits/multi-ai/
+rmdir docs/audits/multi-ai
 ```
 
-**2b: Move `docs/AUDIT_TRACKER.md` -> `docs/audits/AUDIT_TRACKER.md`**
+**2b: Move `docs/audits/AUDIT_TRACKER.md` -> `docs/audits/AUDIT_TRACKER.md`**
 
 ```bash
-git mv docs/AUDIT_TRACKER.md docs/audits/AUDIT_TRACKER.md
+git mv docs/audits/AUDIT_TRACKER.md docs/audits/AUDIT_TRACKER.md
 ```
 
-**2c: Merge `docs/ai-optimization-audit/` into standard location**
+**2c: Merge `docs/audits/single-session/ai-optimization/` into standard
+location**
 
 Check if `docs/audits/single-session/ai-optimization/audit-2026-02-13/` already
 has the same content. If not, merge findings and summary. Then delete the ad-hoc
@@ -176,13 +177,13 @@ location.
 
 ```bash
 # Compare and merge
-# Then: git rm -r docs/ai-optimization-audit/
+# Then: git rm -r docs/audits/single-session/ai-optimization/
 ```
 
-**2d: Move `docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md` -> `docs/audits/`**
+**2d: Move `docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md` -> `docs/audits/`**
 
 ```bash
-git mv docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md
+git mv docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md
 ```
 
 Update status from `PLANNED` to `COMPLETED/REFERENCE`.
@@ -191,31 +192,31 @@ Update status from `PLANNED` to `COMPLETED/REFERENCE`.
 
 Full codebase grep and fix for every moved path:
 
-**3a: Fix `docs/multi-ai-audit` references**
+**3a: Fix `docs/audits/multi-ai` references**
 
 ```bash
-grep -rl "docs/multi-ai-audit" . --include="*.md" --include="*.js" --include="*.json"
-# Replace: docs/multi-ai-audit -> docs/audits/multi-ai
+grep -rl "docs/audits/multi-ai" . --include="*.md" --include="*.js" --include="*.json"
+# Replace: docs/audits/multi-ai -> docs/audits/multi-ai
 ```
 
 Expected hits: all audit skills, README files, AUDIT_STANDARDS.md, scripts,
 possibly hooks.
 
-**3b: Fix `docs/AUDIT_TRACKER` references**
+**3b: Fix `docs/audits/AUDIT_TRACKER` references**
 
 ```bash
 grep -rl "AUDIT_TRACKER" . --include="*.md" --include="*.js"
 # Update relative paths based on new location at docs/audits/AUDIT_TRACKER.md
 ```
 
-**3c: Fix `docs/ai-optimization-audit` references**
+**3c: Fix `docs/audits/single-session/ai-optimization` references**
 
 ```bash
 grep -rl "ai-optimization-audit" . --include="*.md" --include="*.js"
 # Replace with docs/audits/single-session/ai-optimization/
 ```
 
-**3d: Fix `plans/AUDIT_ECOSYSTEM_CODIFICATION` references**
+**3d: Fix `audits/AUDIT_ECOSYSTEM_CODIFICATION` references**
 
 ```bash
 grep -rl "AUDIT_ECOSYSTEM_CODIFICATION" . --include="*.md"
@@ -224,7 +225,7 @@ grep -rl "AUDIT_ECOSYSTEM_CODIFICATION" . --include="*.md"
 
 **3e: Fix internal relative paths in moved docs**
 
-After moving `docs/multi-ai-audit/` -> `docs/audits/multi-ai/`, all relative
+After moving `docs/audits/multi-ai/` -> `docs/audits/multi-ai/`, all relative
 paths in those files that reference `../technical-debt/`,
 `../../AI_WORKFLOW.md`, etc. need depth adjustment (one level deeper now).
 
@@ -312,7 +313,7 @@ Add to `package.json`:
 
 Also verify these existing scripts still work after Wave 1 moves:
 
-- `aggregate:audit-findings` — may reference old `docs/multi-ai-audit/` paths
+- `aggregate:audit-findings` — may reference old `docs/audits/multi-ai/` paths
 - `audit:validate` — verify correct locations
 - `audit:reset` — verify uses new `docs/audits/AUDIT_TRACKER.md` path
 
@@ -627,8 +628,9 @@ tracker refs, verify all section cross-references still valid.
 
 - Verify no audit files exist outside `docs/audits/`
 - Verify no broken symlinks or empty directories (except .gitkeep)
-- Verify old locations fully deleted: `docs/multi-ai-audit/`,
-  `docs/ai-optimization-audit/`, `docs/AUDIT_TRACKER.md` (old path)
+- Verify old locations fully deleted: `docs/audits/multi-ai/`,
+  `docs/audits/single-session/ai-optimization/`, `docs/audits/AUDIT_TRACKER.md`
+  (old path)
 
 ### Step 30: Run All Validation Scripts
 

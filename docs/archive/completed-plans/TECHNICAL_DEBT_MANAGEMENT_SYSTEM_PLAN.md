@@ -225,10 +225,11 @@ docs/technical-debt/
 
 **Move to:** `docs/archive/technical-debt-sources-2026-01/`
 
-> **⚠️ EXCEPTION:** `docs/AUDIT_TRACKER.md` is NOT archived. It remains in place
-> because it tracks **audit trigger thresholds** (when to run next audit), which
-> is separate from debt findings tracking. The `check-review-needed.js` script
-> reads audit dates from this file. See Session #119 decision.
+> **⚠️ EXCEPTION:** `docs/audits/AUDIT_TRACKER.md` is NOT archived. It remains
+> in place because it tracks **audit trigger thresholds** (when to run next
+> audit), which is separate from debt findings tracking. The
+> `check-review-needed.js` script reads audit dates from this file. See Session
+> #119 decision.
 
 ```
 ├── MANIFEST.md                    # What was archived and why
@@ -241,7 +242,7 @@ docs/technical-debt/
     ├── SONARCLOUD_TRIAGE.md
     └── TECHNICAL_DEBT_MASTER.md
 
-# NOTE: AUDIT_TRACKER.md is NOT archived - it remains at docs/AUDIT_TRACKER.md
+# NOTE: AUDIT_TRACKER.md is NOT archived - it remains at docs/audits/AUDIT_TRACKER.md
 # Reason: It tracks audit trigger thresholds (when to run next audit), which is
 # separate from debt findings tracking. The check-review-needed.js script reads
 # audit dates from this file to calculate triggers.

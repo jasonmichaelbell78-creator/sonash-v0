@@ -29,7 +29,7 @@ AI assistants **When to Use**: Start of EVERY session **Last Updated**:
 1. Update SESSION_CONTEXT.md
 2. Update relevant planning docs
 3. Add entry to compliance log in
-   [COORDINATOR.md](./docs/multi-ai-audit/COORDINATOR.md)
+   [COORDINATOR.md](./docs/audits/multi-ai/COORDINATOR.md)
 4. Commit documentation changes
 5. Verify all work documented
 
@@ -93,7 +93,7 @@ Recovery Notebook project. It provides:
 ```
 ☐ 1. Read SESSION_CONTEXT.md (current status, next goals)
 ☐ 2. Read GLOBAL_SECURITY_STANDARDS.md (MANDATORY before any coding)
-☐ 3. Check docs/multi-ai-audit/COORDINATOR.md:
+☐ 3. Check docs/audits/multi-ai/COORDINATOR.md:
      - Increment session counter
      - Note any health issues
 ☐ 4. Check AUDIT_TRACKER.md:
@@ -120,11 +120,11 @@ Recovery Notebook project. It provides:
 > [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md).
 >
 > **IMPORTANT**: Step 3 tracks session count for health triggers. Increment the
-> counter in docs/multi-ai-audit/COORDINATOR.md → "Session Counter" section.
+> counter in docs/audits/multi-ai/COORDINATOR.md → "Session Counter" section.
 >
 > **AUDIT TRACKING**: Step 4 tracks audit thresholds by category. Single-session
 > audits can be run via `/audit-code`, `/audit-security`, etc. See
-> [AUDIT_TRACKER.md](./docs/AUDIT_TRACKER.md).
+> [AUDIT_TRACKER.md](./docs/audits/AUDIT_TRACKER.md).
 >
 > **MANDATORY**: Step 5 ensures you leverage ALL available tools. If a skill or
 > agent clearly applies to your task, you MUST use it. See "Available AI
@@ -151,13 +151,13 @@ Recovery Notebook project. It provides:
    - Secrets management rules
    - OWASP compliance checklist
 
-3. **[COORDINATOR.md](./docs/multi-ai-audit/COORDINATOR.md)** - Project health &
-   reviews
+3. **[COORDINATOR.md](./docs/audits/multi-ai/COORDINATOR.md)** - Project health
+   & reviews
    - Session counter (increment each session)
    - Project Health Dashboard
    - Compliance log
 
-4. **[AUDIT_TRACKER.md](./docs/AUDIT_TRACKER.md)** - Audit thresholds &
+4. **[AUDIT_TRACKER.md](./docs/audits/AUDIT_TRACKER.md)** - Audit thresholds &
    scheduling
    - Per-category threshold tracking (code, security, performance, refactoring,
      documentation, process)

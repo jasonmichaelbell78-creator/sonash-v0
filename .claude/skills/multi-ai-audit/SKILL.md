@@ -133,7 +133,7 @@ Enter category name or number (or "status" to see progress):
 Read the appropriate template file:
 
 ```
-docs/multi-ai-audit/templates/<CATEGORY_TEMPLATE>.md
+docs/audits/multi-ai/templates/<CATEGORY_TEMPLATE>.md
 ```
 
 Template mapping:
@@ -872,7 +872,7 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 
 - [JSONL_SCHEMA_STANDARD.md](../../../docs/templates/JSONL_SCHEMA_STANDARD.md) -
   Field definitions
-- [docs/multi-ai-audit/templates/](../../../docs/multi-ai-audit/templates/) -
+- [docs/audits/multi-ai/templates/](../../../docs/audits/multi-ai/templates/) -
   Audit templates
 - [scripts/multi-ai/](../../../scripts/multi-ai/) - Processing scripts
   (normalize, aggregate, unify)

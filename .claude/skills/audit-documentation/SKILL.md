@@ -890,10 +890,10 @@ counts). Check `npm run review:check` for current multi-AI trigger status.
 
 When modifying this skill, also update:
 
-| Document                                               | Section                        |
-| ------------------------------------------------------ | ------------------------------ |
-| `docs/multi-ai-audit/templates/DOCUMENTATION_AUDIT.md` | Sync category list             |
-| `docs/SLASH_COMMANDS_REFERENCE.md`                     | /audit-documentation reference |
+| Document                                                | Section                        |
+| ------------------------------------------------------- | ------------------------------ |
+| `docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md` | Sync category list             |
+| `docs/SLASH_COMMANDS_REFERENCE.md`                      | /audit-documentation reference |
 
 ---
 

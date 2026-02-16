@@ -1221,7 +1221,7 @@
 | DEBT-2390 | Quality: .claude/skills/ docs have inconsistent SKILL.md ...   | .claude/skills/\*/SKILL.md                                                   | 0         | documentation            | E2     |
 | DEBT-2391 | Quality: DEVELOPMENT.md scores 7/10 - wall of text in Git...   | DEVELOPMENT.md                                                               | 0         | documentation            | E2     |
 | DEBT-2392 | Readability: DEVELOPMENT.md has 110-line section without ...   | DEVELOPMENT.md                                                               | 0         | documentation            | E2     |
-| DEBT-2393 | Gap: Missing overview for multi-ai audit system                | docs/multi-ai-audit/README.md                                                | 0         | documentation            | E2     |
+| DEBT-2393 | Gap: Missing overview for multi-ai audit system                | docs/audits/multi-ai/README.md                                               | 0         | documentation            | E2     |
 | DEBT-2394 | Quality: SECURITY.md scores 8/10 - clear but missing thre...   | docs/SECURITY.md                                                             | 0         | documentation            | E2     |
 | DEBT-2395 | Quality: SESSION_CONTEXT.md scores 6/10 - excessive sessi...   | SESSION_CONTEXT.md                                                           | 0         | documentation            | E2     |
 | DEBT-2396 | Readability: SESSION_CONTEXT.md session summaries are den...   | SESSION_CONTEXT.md                                                           | 0         | documentation            | E2     |
@@ -1765,13 +1765,13 @@
 | DEBT-2074 | CODE_PATTERNS.md <-> SECURITY_CHECKLIST.md missing cross-...   | docs/agent_docs/CODE_PATTERNS.md                                   | 0         | documentation | E0     |
 | DEBT-2075 | SECURITY_CHECKLIST.md doesn't reference CLAUDE.md              | docs/agent_docs/SECURITY_CHECKLIST.md                              | 0         | documentation | E0     |
 | DEBT-2076 | Outdated redirect: cloud.google.com/recaptcha-enterprise/...   | docs/APPCHECK_SETUP.md                                             | 0         | documentation | E0     |
-| DEBT-2077 | AUDIT_TRACKER.md has Status in Purpose line instead of me...   | docs/AUDIT_TRACKER.md                                              | 0         | documentation | E0     |
-| DEBT-2078 | Structure: AUDIT_TRACKER.md should be Tier 4 Operational       | docs/AUDIT_TRACKER.md                                              | 0         | documentation | E0     |
+| DEBT-2077 | AUDIT_TRACKER.md has Status in Purpose line instead of me...   | docs/audits/AUDIT_TRACKER.md                                       | 0         | documentation | E0     |
+| DEBT-2078 | Structure: AUDIT_TRACKER.md should be Tier 4 Operational       | docs/audits/AUDIT_TRACKER.md                                       | 0         | documentation | E0     |
 | DEBT-2079 | DOCUMENTATION_STANDARDS.md doesn't reference CLAUDE.md         | docs/DOCUMENTATION_STANDARDS.md                                    | 0         | documentation | E0     |
 | DEBT-2080 | FIREBASE_CHANGE_POLICY.md has multiple Last Updated dates...   | docs/FIREBASE_CHANGE_POLICY.md                                     | 0         | documentation | E0     |
 | DEBT-2081 | Broken anchor link: ../ROADMAP.md#offline-support-critical     | docs/LIGHTHOUSE_INTEGRATION_PLAN.md                                | 0         | documentation | E0     |
 | DEBT-2082 | Broken anchor link: ../ROADMAP.md#m3-meetings-location-pl...   | docs/MONETIZATION_RESEARCH.md                                      | 0         | documentation | E0     |
-| DEBT-2083 | Broken anchor link: ../technical-debt/PROCEDURE.md#11-cat...   | docs/multi-ai-audit/COORDINATOR.md                                 | 0         | documentation | E0     |
+| DEBT-2083 | Broken anchor link: ../technical-debt/PROCEDURE.md#11-cat...   | docs/audits/multi-ai/COORDINATOR.md                                | 0         | documentation | E0     |
 | DEBT-2084 | Broken anchor link: ../../ROADMAP.md#track-t---testing-in...   | docs/plans/TESTING_INFRASTRUCTURE_PLAN.md                          | 0         | documentation | E0     |
 | DEBT-2085 | SESSION_DECISIONS.md missing Created field                     | docs/SESSION_DECISIONS.md                                          | 0         | documentation | E0     |
 | DEBT-2086 | SLASH_COMMANDS_REFERENCE.md potentially stale (33 days old)    | docs/SLASH_COMMANDS_REFERENCE.md                                   | 0         | documentation | E0     |
@@ -1867,7 +1867,7 @@
 | DEBT-2176 | Broken internal link: ../canonical/README.md                   | docs/audits/single-session/README.md                               | 0         | documentation | E1     |
 | DEBT-2177 | Broken internal link: ../../AUDIT_FINDINGS_PROCEDURE.md        | docs/audits/single-session/README.md                               | 0         | documentation | E1     |
 | DEBT-2178 | Broken internal link: ../archive/completed-decisions/ADR-...   | docs/decisions/README.md                                           | 0         | documentation | E1     |
-| DEBT-2179 | Broken internal link: path.md                                  | docs/multi-ai-audit/templates/DOCUMENTATION_AUDIT.md               | 0         | documentation | E1     |
+| DEBT-2179 | Broken internal link: path.md                                  | docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md              | 0         | documentation | E1     |
 | DEBT-2180 | Broken internal link: ./reviews/2026-Q1/PROCESS_AUDIT_FIN...   | docs/OPERATIONAL_VISIBILITY_SPRINT.md                              | 0         | documentation | E1     |
 | DEBT-2181 | Broken internal link: ./audits/comprehensive/AUDIT_SUMMAR...   | docs/OPERATIONAL_VISIBILITY_SPRINT.md                              | 0         | documentation | E1     |
 | DEBT-2182 | Broken internal link: ./archive/2025-dec-reports/BILLING\_...  | docs/SECURITY.md                                                   | 0         | documentation | E1     |
@@ -2106,8 +2106,8 @@
 | DEBT-2427 | Quality: CODE_PATTERNS.md scores 8/10 - good reference bu...   | docs/agent_docs/CODE_PATTERNS.md                                   | 0         | documentation | E2     |
 | DEBT-2428 | Consolidation: Merge small setup guides                        | docs/APPCHECK_SETUP.md                                             | 0         | documentation | E2     |
 | DEBT-2429 | Quality: docs/archive/ has no index or navigation              | docs/archive/                                                      | 0         | documentation | E2     |
-| DEBT-2430 | Diagram opportunity: Multi-AI audit workflow lacks visual...   | docs/multi-ai-audit/README.md                                      | 0         | documentation | E2     |
-| DEBT-2431 | Navigation: Multi-AI audit templates lack consistent cros...   | docs/multi-ai-audit/templates/CODE_REVIEW_PLAN.md                  | 0         | documentation | E2     |
+| DEBT-2430 | Diagram opportunity: Multi-AI audit workflow lacks visual...   | docs/audits/multi-ai/README.md                                     | 0         | documentation | E2     |
+| DEBT-2431 | Navigation: Multi-AI audit templates lack consistent cros...   | docs/audits/multi-ai/templates/CODE_REVIEW_PLAN.md                 | 0         | documentation | E2     |
 | DEBT-2432 | Consolidation: Merge overlapping security docs                 | docs/SECURITY.md                                                   | 0         | documentation | E2     |
 | DEBT-2433 | Diagram opportunity: Technical Debt intake pipeline descr...   | docs/technical-debt/PROCEDURE.md                                   | 0         | documentation | E2     |
 | DEBT-2434 | Navigation: DOCUMENTATION_INDEX.md category organization ...   | DOCUMENTATION_INDEX.md                                             | 0         | documentation | E2     |

@@ -591,7 +591,7 @@ npm run tdms:metrics
 ## Multi-AI Template
 
 For cross-model consensus audits, see:
-`docs/multi-ai-audit/templates/ENHANCEMENT_AUDIT.md`
+`docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md`
 
 This template can be injected into any AI system (Claude, GPT, Gemini, Copilot)
 with the repo context for independent enhancement discovery.

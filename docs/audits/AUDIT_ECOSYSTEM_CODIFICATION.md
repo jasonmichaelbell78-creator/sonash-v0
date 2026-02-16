@@ -20,7 +20,8 @@ templates, ~15 pipeline scripts, and full TDMS integration. However:
 - Results pipeline is inconsistent: outputs land in 4+ different patterns
 - FALSE_POSITIVES.jsonl path mismatch across 8 skill files
 - audit-aggregator expects comprehensive/ dir that was never populated
-- docs/ai-optimization-audit/ is an ad-hoc location outside the standard tree
+- docs/audits/single-session/ai-optimization/ is an ad-hoc location outside the
+  standard tree
 
 This plan codifies the entire audit ecosystem: standards, results pipeline,
 skills, templates, and documentation.
@@ -56,7 +57,7 @@ skills, templates, and documentation.
 2. **`docs/audits/README.md`** — Ecosystem hub with mermaid diagram
 3. **`.claude/skills/audit-ai-optimization/SKILL.md`** — Meta-audit skill (12
    domains, 3 stages)
-4. **`docs/multi-ai-audit/templates/AI_OPTIMIZATION_AUDIT.md`** — Multi-AI
+4. **`docs/audits/multi-ai/templates/AI_OPTIMIZATION_AUDIT.md`** — Multi-AI
    template (~700-900 lines)
 5. **`.claude/skills/create-audit/SKILL.md`** — Interactive wizard skill
 
@@ -76,9 +77,9 @@ skills, templates, and documentation.
    FALSE_POSITIVES path + fix output dir (currently writes to comprehensive/
    instead of single-session/)
 10. **`.claude/skills/audit-enhancements/SKILL.md`** — Fix FALSE_POSITIVES path
-11. **`docs/AUDIT_TRACKER.md`** — Add ai-optimization category row
+11. **`docs/audits/AUDIT_TRACKER.md`** — Add ai-optimization category row
 12. **`.claude/skills/SKILL_INDEX.md`** — Add new skill entries
-13. **`docs/multi-ai-audit/README.md`** — Update template count + references
+13. **`docs/audits/multi-ai/README.md`** — Update template count + references
 
 ---
 
@@ -198,7 +199,7 @@ self-contained and auditable.
 Ensure session output goes to `docs/audits/multi-ai/<session-id>/` with standard
 subdirs: `raw/`, `canon/`, `final/`.
 
-### 3f. Move docs/ai-optimization-audit/ to Standard Location
+### 3f. Move docs/audits/single-session/ai-optimization/ to Standard Location
 
 Move existing ad-hoc audit results to:
 `docs/audits/single-session/ai-optimization/audit-2026-02-13/`
@@ -254,7 +255,7 @@ become the first entry in the new standard path.
 
 ## Step 5: Multi-AI Template
 
-**File:** `docs/multi-ai-audit/templates/AI_OPTIMIZATION_AUDIT.md`
+**File:** `docs/audits/multi-ai/templates/AI_OPTIMIZATION_AUDIT.md`
 
 ~700-900 lines:
 
@@ -312,7 +313,7 @@ Interactive skill that scaffolds a new audit type:
    parallel/sequential
 2. **Generate:**
    - `.claude/skills/audit-<name>/SKILL.md` (from standards template)
-   - `docs/multi-ai-audit/templates/<NAME>_AUDIT.md` (from standards template)
+   - `docs/audits/multi-ai/templates/<NAME>_AUDIT.md` (from standards template)
    - `docs/audits/single-session/<name>/` directory
    - Entry in `AUDIT_TRACKER.md` with threshold
 3. **Optionally:** Add to audit-comprehensive staging
@@ -324,12 +325,12 @@ References AUDIT_STANDARDS.md for all conventions.
 
 ## Step 9: Update Supporting Files
 
-1. **`docs/AUDIT_TRACKER.md`** — Add ai-optimization row:
+1. **`docs/audits/AUDIT_TRACKER.md`** — Add ai-optimization row:
    `| AI Optimization | Never | — | 50 commits OR skill/hook/config changes |`
 2. **`.claude/skills/SKILL_INDEX.md`** — Add `audit-ai-optimization` and
    `create-audit`
-3. **`docs/multi-ai-audit/README.md`** — Update template count (8+1 -> 8+2), add
-   ai-optimization template reference, update category list
+3. **`docs/audits/multi-ai/README.md`** — Update template count (8+1 -> 8+2),
+   add ai-optimization template reference, update category list
 
 ---
 

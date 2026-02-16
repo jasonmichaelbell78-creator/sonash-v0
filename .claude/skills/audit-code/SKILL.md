@@ -192,7 +192,7 @@ Note patterns to exclude from final findings.
 
 **Step 4: Check Template Currency**
 
-Read `docs/multi-ai-audit/templates/CODE_REVIEW_PLAN.md` and verify:
+Read `docs/audits/multi-ai/templates/CODE_REVIEW_PLAN.md` and verify:
 
 - [ ] Stack versions match package.json
 - [ ] Test count baseline is accurate
@@ -532,10 +532,10 @@ After ALL findings reviewed, summarize:
 
 ### Category-Specific Thresholds
 
-This audit **resets the code category threshold** in `docs/AUDIT_TRACKER.md`
-(single-session audits reset their own category; multi-AI audits reset all
-thresholds). Reset means the commit counter for this category starts counting
-from zero after this audit.
+This audit **resets the code category threshold** in
+`docs/audits/AUDIT_TRACKER.md` (single-session audits reset their own category;
+multi-AI audits reset all thresholds). Reset means the commit counter for this
+category starts counting from zero after this audit.
 
 **Code audit triggers (check AUDIT_TRACKER.md):**
 

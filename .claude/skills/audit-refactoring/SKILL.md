@@ -96,7 +96,7 @@ Note patterns to exclude from final findings.
 
 **Step 4: Check Template Currency**
 
-Read `docs/multi-ai-audit/templates/REFACTORING_AUDIT.md` and verify:
+Read `docs/audits/multi-ai/templates/REFACTORING_AUDIT.md` and verify:
 
 - [ ] SonarCloud baseline is current (778 issues, 47 CRITICAL)
 - [ ] Known god objects are listed
@@ -426,7 +426,7 @@ After ALL findings reviewed, summarize:
 ### Category-Specific Thresholds
 
 This audit **resets the refactoring category threshold** in
-`docs/AUDIT_TRACKER.md` (single-session audits reset their own category;
+`docs/audits/AUDIT_TRACKER.md` (single-session audits reset their own category;
 multi-AI audits reset all thresholds). Reset means the commit counter for this
 category starts counting from zero after this audit.
 

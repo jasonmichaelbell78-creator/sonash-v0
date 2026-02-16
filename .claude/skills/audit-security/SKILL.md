@@ -236,7 +236,7 @@ Note patterns to exclude from final findings.
 
 **Step 4: Check Template Currency**
 
-Read `docs/multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md` and verify:
+Read `docs/audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md` and verify:
 
 - [ ] FIREBASE_CHANGE_POLICY.md reference is valid
 - [ ] Security-sensitive file list is current
@@ -608,10 +608,10 @@ After ALL findings reviewed, summarize:
 
 ### Category-Specific Thresholds
 
-This audit **resets the security category threshold** in `docs/AUDIT_TRACKER.md`
-(single-session audits reset their own category; multi-AI audits reset all
-thresholds). Reset means the commit counter for this category starts counting
-from zero after this audit.
+This audit **resets the security category threshold** in
+`docs/audits/AUDIT_TRACKER.md` (single-session audits reset their own category;
+multi-AI audits reset all thresholds). Reset means the commit counter for this
+category starts counting from zero after this audit.
 
 **Security audit triggers (check AUDIT_TRACKER.md):**
 

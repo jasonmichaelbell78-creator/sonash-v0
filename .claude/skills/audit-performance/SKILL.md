@@ -176,7 +176,7 @@ with no exclusions.
 
 **Step 4: Check Template Currency**
 
-Read `docs/multi-ai-audit/templates/PERFORMANCE_AUDIT_PLAN.md` and verify:
+Read `docs/audits/multi-ai/templates/PERFORMANCE_AUDIT_PLAN.md` and verify:
 
 - [ ] Stack versions match package.json
 - [ ] Bundle size baseline is recent
@@ -515,7 +515,7 @@ After ALL findings reviewed, summarize:
 ### Category-Specific Thresholds
 
 This audit **resets the performance category threshold** in
-`docs/AUDIT_TRACKER.md` (single-session audits reset their own category;
+`docs/audits/AUDIT_TRACKER.md` (single-session audits reset their own category;
 multi-AI audits reset all thresholds). Reset means the commit counter for this
 category starts counting from zero after this audit.
 

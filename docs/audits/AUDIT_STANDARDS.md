@@ -155,7 +155,7 @@ Each agent prompt MUST include:
 
 ## 6. Multi-AI Template Standard
 
-Every multi-AI template (`docs/multi-ai-audit/templates/<NAME>_AUDIT.md`) MUST
+Every multi-AI template (`docs/audits/multi-ai/templates/<NAME>_AUDIT.md`) MUST
 include:
 
 ```markdown
@@ -298,14 +298,14 @@ and generate all required files.
 1. **Create skill:** `.claude/skills/audit-<name>/SKILL.md`
    - Follow Section 5 structure standard
    - Fork from closest existing skill (e.g., `audit-process` for complex audits)
-2. **Create template:** `docs/multi-ai-audit/templates/<NAME>_AUDIT.md`
+2. **Create template:** `docs/audits/multi-ai/templates/<NAME>_AUDIT.md`
    - Follow Section 6 template standard
    - Fork from closest existing template
 3. **Create output directory:** `docs/audits/single-session/<name>/`
-4. **Update tracker:** Add row to `docs/AUDIT_TRACKER.md`
+4. **Update tracker:** Add row to `docs/audits/AUDIT_TRACKER.md`
 5. **Update index:** Add entry to `.claude/skills/SKILL_INDEX.md`
 6. **Update multi-ai README:** Update template count in
-   `docs/multi-ai-audit/README.md`
+   `docs/audits/multi-ai/README.md`
 7. **Update comprehensive:** If permanent, add to
    `.claude/skills/audit-comprehensive/SKILL.md`
 8. **Verify integration:**
@@ -321,7 +321,7 @@ and generate all required files.
   - `scripts/debt/intake-audit.js` (category validation)
   - `scripts/debt/extract-audits.js` (category normalization)
   - `scripts/debt/validate-schema.js` (category enum)
-  - `docs/AUDIT_TRACKER.md` (threshold row)
+  - `docs/audits/AUDIT_TRACKER.md` (threshold row)
   - `audit-comprehensive/SKILL.md` (stage allocation)
   - `audit-aggregator/SKILL.md` (input list)
 

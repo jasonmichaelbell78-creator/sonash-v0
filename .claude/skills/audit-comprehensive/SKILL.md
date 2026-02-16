@@ -258,7 +258,8 @@ each batch. This file survives context compaction.
 
 ### 1. Update AUDIT_TRACKER.md
 
-Add an entry to **each of the 9 category tables** in `docs/AUDIT_TRACKER.md`:
+Add an entry to **each of the 9 category tables** in
+`docs/audits/AUDIT_TRACKER.md`:
 
 | Date    | Session       | Commits Covered | Files Covered | Findings                     | Reset Threshold |
 | ------- | ------------- | --------------- | ------------- | ---------------------------- | --------------- |
