@@ -123,6 +123,17 @@ This script:
 - Appends an entry to `.claude/state/velocity-log.jsonl`
 - Prints a summary with rolling average and trend
 
+## 7b. Review Sync
+
+Sync any new review entries from the markdown log to the JSONL consumption file:
+
+```bash
+npm run reviews:sync -- --apply
+```
+
+This ensures `AI_REVIEW_LEARNINGS_LOG.md` and `.claude/state/reviews.jsonl` stay
+in sync. If no new reviews were added this session, the script exits cleanly.
+
 ## 8. TDMS Consolidation & Metrics
 
 Run the full consolidation pipeline to ensure dedup is current (~1.5s):

@@ -37,11 +37,14 @@ import {
 } from "node:fs";
 import { join, dirname, basename, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import matter from "gray-matter";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const require_ = createRequire(import.meta.url);
+const { isSafeToWrite } = require_("../.claude/hooks/lib/symlink-guard");
 const ROOT = join(__dirname, "..");
 
 // Directories
@@ -171,6 +174,34 @@ function safeReadFile(filePath, description) {
  * @param {string} description - Human-readable description for errors
  * @returns {{success: boolean, error?: string}}
  */
+/**
+ * Atomic swap: write to tmp, rename to target with backup and restore on failure
+ */
+function atomicSwap(filePath, tmpPath, bakPath) {
+  try {
+    if (existsSync(filePath)) renameSync(filePath, bakPath);
+    renameSync(tmpPath, filePath);
+  } catch (error_) {
+    try {
+      if (existsSync(bakPath) && !existsSync(filePath)) renameSync(bakPath, filePath);
+    } catch {
+      /* best effort restore */
+    }
+    throw error_;
+  } finally {
+    try {
+      if (existsSync(tmpPath)) unlinkSync(tmpPath);
+    } catch {
+      /* best effort */
+    }
+    try {
+      if (existsSync(bakPath)) unlinkSync(bakPath);
+    } catch {
+      /* best effort */
+    }
+  }
+}
+
 function safeWriteFile(filePath, content, description) {
   if (DRY_RUN) {
     console.log(`[DRY RUN] Would write ${content.length} characters to ${description}`);
@@ -179,35 +210,29 @@ function safeWriteFile(filePath, content, description) {
 
   verbose(`Writing ${content.length} characters to ${description}`);
 
+  const tmpPath = filePath + ".tmp";
+  const bakPath = filePath + ".bak";
+
+  // Symlink guard: check target, tmp, and backup paths before any write
+  if (!isSafeToWrite(filePath)) {
+    return { success: false, error: `Refusing to write: symlink detected at ${description}` };
+  }
+  if (!isSafeToWrite(tmpPath)) {
+    return {
+      success: false,
+      error: `Refusing to write: symlink detected at tmp path for ${description}`,
+    };
+  }
+  if (!isSafeToWrite(bakPath)) {
+    return {
+      success: false,
+      error: `Refusing to write: symlink detected at backup path for ${description}`,
+    };
+  }
+
   try {
-    const tmpPath = filePath + ".tmp";
-    const bakPath = filePath + ".bak";
     writeFileSync(tmpPath, content, "utf-8");
-    try {
-      // Backup-swap: preserve original until new file is in place
-      if (existsSync(filePath)) renameSync(filePath, bakPath);
-      renameSync(tmpPath, filePath);
-    } catch (error_) {
-      // Restore from backup if swap failed
-      try {
-        if (existsSync(bakPath) && !existsSync(filePath)) renameSync(bakPath, filePath);
-      } catch {
-        /* best effort restore */
-      }
-      throw error_;
-    } finally {
-      // Clean up temp/backup files
-      try {
-        if (existsSync(tmpPath)) unlinkSync(tmpPath);
-      } catch {
-        /* best effort */
-      }
-      try {
-        if (existsSync(bakPath)) unlinkSync(bakPath);
-      } catch {
-        /* best effort */
-      }
-    }
+    atomicSwap(filePath, tmpPath, bakPath);
     return { success: true };
   } catch (error) {
     return {

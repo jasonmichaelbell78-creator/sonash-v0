@@ -14,9 +14,9 @@
  * Output: v2 JSON schema to stdout, progress to stderr.
  */
 
-let execSync, fs, path;
+let execSync, execFileSync, fs, path;
 try {
-  ({ execSync } = require("node:child_process"));
+  ({ execSync, execFileSync } = require("node:child_process"));
   fs = require("node:fs");
   path = require("node:path");
 } catch (err) {
@@ -24,6 +24,17 @@ try {
   const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
   console.error(`Fatal: failed to load core Node.js modules (${code})`);
   process.exit(1);
+}
+
+// Symlink guard (Review #316-#323)
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require(
+    path.join(__dirname, "..", "..", "..", "hooks", "lib", "symlink-guard")
+  ));
+} catch {
+  console.error("  [warn] symlink-guard unavailable; disabling writes");
+  isSafeToWrite = () => false;
 }
 
 // Find project root (where package.json is)
@@ -108,7 +119,55 @@ const BENCHMARKS = {
   skip_abuse: {
     overrides_24h: { good: 0, average: 1, poor: 3 },
     overrides_7d: { good: 0, average: 3, poor: 6 },
-    no_reason_pct: { good: 0, average: 10, poor: 25 },
+    no_reason_pct: { good: 0, average: 1, poor: 5 },
+  },
+  // New checkers (W2)
+  session_state: {
+    uncommitted_files: { good: 0, average: 5, poor: 15 },
+    stale_branch_days: { good: 0, average: 3, poor: 7 },
+  },
+  pattern_hotspots: {
+    repeat_offenders: { good: 0, average: 3, poor: 8 },
+  },
+  context_usage: {
+    files_read: { good: 10, average: 20, poor: 40 },
+  },
+  debt_intake: {
+    intake_30d: { good: 5, average: 15, poor: 30 },
+    s0_intake_rate: { good: 0, average: 0.1, poor: 0.3 },
+  },
+  debt_resolution: {
+    resolved_30d: { good: 10, average: 5, poor: 0 },
+  },
+  roadmap_hygiene: {
+    issues: { good: 0, average: 2, poor: 5 },
+  },
+  trigger_compliance: {
+    failures: { good: 0, average: 2, poor: 5 },
+  },
+  pattern_sync: {
+    outdated: { good: 0, average: 3, poor: 5 },
+  },
+  doc_placement: {
+    misplaced: { good: 0, average: 2, poor: 5 },
+  },
+  external_links: {
+    broken: { good: 0, average: 3, poor: 10 },
+  },
+  unused_deps: {
+    unused: { good: 0, average: 5, poor: 15 },
+  },
+  review_churn: {
+    churn_pct: { good: 10, average: 20, poor: 35 },
+  },
+  backlog_health: {
+    issues: { good: 0, average: 3, poor: 8 },
+  },
+  github_actions: {
+    failures: { good: 0, average: 1, poor: 3 },
+  },
+  sonarcloud: {
+    failed_conditions: { good: 0, average: 1, poor: 3 },
   },
 };
 
@@ -180,6 +239,7 @@ function safeReadLines(filePath) {
 
 /**
  * Run a command and capture output
+ * @deprecated Use runCommandSafe() for new code — avoids shell injection risks
  */
 function runCommand(cmd, options = {}) {
   try {
@@ -196,7 +256,49 @@ function runCommand(cmd, options = {}) {
       success: false,
       output: error.stdout?.trim() || "",
       stderr: error.stderr?.trim() || "",
-      code: error.status || 1,
+      code:
+        typeof error?.status === "number"
+          ? error.status
+          : typeof error?.code === "number"
+            ? error.code
+            : 1,
+    };
+  }
+}
+
+/**
+ * Run a command safely using execFileSync (no shell injection)
+ * @param {string} bin - Executable name or path
+ * @param {string[]} args - Array of arguments
+ * @param {object} options - Options (timeout, cwd, etc.)
+ * @returns {{ success: boolean, output: string, stderr: string, code: number }}
+ */
+function runCommandSafe(bin, args = [], options = {}) {
+  try {
+    const safeOptions = {
+      encoding: options.encoding || "utf8",
+      timeout: options.timeout || 60000,
+      maxBuffer: options.maxBuffer || 10 * 1024 * 1024,
+      cwd: options.cwd || ROOT_DIR,
+      env: options.env,
+      stdio: ["pipe", "pipe", "pipe"],
+    };
+    const output = execFileSync(bin, args, safeOptions);
+    return { success: true, output: String(output ?? "").trim(), stderr: "", code: 0 };
+  } catch (error) {
+    const stdoutStr = error?.stdout == null ? "" : String(error.stdout);
+    const stderrStr = error?.stderr == null ? "" : String(error.stderr);
+    const codeStr = typeof error?.code === "string" ? error.code : "";
+    return {
+      success: false,
+      output: stdoutStr.trim(),
+      stderr: `${stderrStr}${codeStr ? `\n[spawn_code] ${codeStr}` : ""}`.trim(),
+      code:
+        typeof error?.status === "number"
+          ? error.status
+          : typeof error?.code === "number"
+            ? error.code
+            : 1,
     };
   }
 }
@@ -370,7 +472,9 @@ function loadBaseline() {
     const baseline = safeParse(content);
     if (!baseline) return null;
     // Only use if from today (same session day)
-    const baselineDate = new Date(baseline.timestamp).toDateString();
+    const baselineDateObj = new Date(baseline.timestamp);
+    if (Number.isNaN(baselineDateObj.getTime())) return null;
+    const baselineDate = baselineDateObj.toDateString();
     const today = new Date().toDateString();
     if (baselineDate === today) {
       return baseline;
@@ -413,6 +517,7 @@ function saveBaseline() {
       fs.mkdirSync(stateDir, { recursive: true });
     }
     const tmpPath = `${BASELINE_PATH}.tmp`;
+    if (!isSafeToWrite(BASELINE_PATH) || !isSafeToWrite(tmpPath)) return;
     const data = JSON.stringify(baseline, null, 2);
     fs.writeFileSync(tmpPath, data, "utf-8"); // atomic: write .tmp then renameSync below
     if (fs.existsSync(BASELINE_PATH)) fs.rmSync(BASELINE_PATH, { force: true });
@@ -477,16 +582,16 @@ function checkCodeHealth() {
   let eslintErrCount = 0;
 
   // TypeScript errors
-  let tsResult = runCommand("npm run type-check", { timeout: 120000 });
+  let tsResult = runCommandSafe("npm", ["run", "type-check"], { timeout: 120000 });
   const tsCombinedOutput = `${tsResult.output || ""}\n${tsResult.stderr || ""}`;
   if (tsCombinedOutput.includes("Missing script")) {
-    tsResult = runCommand("npx tsc --noEmit", { timeout: 120000 });
+    tsResult = runCommandSafe("npx", ["tsc", "--noEmit"], { timeout: 120000 });
   }
 
   const tsFullOutput = `${tsResult.output || ""}\n${tsResult.stderr || ""}`;
   if (!tsResult.success && !tsFullOutput.includes("Missing script")) {
     const errorMatch = tsFullOutput.match(/Found (\d+) error/i);
-    tsErrorCount = errorMatch ? parseInt(errorMatch[1], 10) : 1;
+    tsErrorCount = errorMatch ? Number.parseInt(errorMatch[1], 10) : 1;
 
     addAlert(
       "code",
@@ -498,13 +603,13 @@ function checkCodeHealth() {
   }
 
   // ESLint warnings
-  const lintResult = runCommand("npm run lint", { timeout: 120000 });
+  const lintResult = runCommandSafe("npm", ["run", "lint"], { timeout: 120000 });
   const lintFullOutput = `${lintResult.output || ""}\n${lintResult.stderr || ""}`;
   if (!lintResult.success) {
     const warnMatch = lintFullOutput.match(/(\d+) warning/);
     const errMatch = lintFullOutput.match(/(\d+) error/);
-    eslintWarnCount = warnMatch ? parseInt(warnMatch[1], 10) : 0;
-    eslintErrCount = errMatch ? parseInt(errMatch[1], 10) : 0;
+    eslintWarnCount = warnMatch ? Number.parseInt(warnMatch[1], 10) : 0;
+    eslintErrCount = errMatch ? Number.parseInt(errMatch[1], 10) : 0;
 
     if (eslintErrCount > 0) {
       addAlert("code", "error", `${eslintErrCount} ESLint error(s)`, null, "Run: npm run lint");
@@ -521,14 +626,14 @@ function checkCodeHealth() {
   }
 
   // Pattern violations
-  const patternsResult = runCommand("npm run patterns:check", { timeout: 60000 });
+  const patternsResult = runCommandSafe("npm", ["run", "patterns:check"], { timeout: 60000 });
   const patternsFullOutput = `${patternsResult.output || ""}\n${patternsResult.stderr || ""}`;
   if (!patternsResult.success && patternsFullOutput.includes("violation")) {
     addAlert("code", "warning", "Pattern violations found", null, "Run: npm run patterns:check");
   }
 
   // Circular dependencies
-  const circularResult = runCommand("npm run deps:circular", { timeout: 60000 });
+  const circularResult = runCommandSafe("npm", ["run", "deps:circular"], { timeout: 60000 });
   const circularFullOutput = `${circularResult.output || ""}\n${circularResult.stderr || ""}`;
   const missingScript = /Missing script/i.test(circularFullOutput);
 
@@ -594,7 +699,7 @@ function checkSecurity() {
   let auditCountsKnown = false;
 
   // npm audit
-  const auditResult = runCommand("npm audit --json", { timeout: 60000 });
+  const auditResult = runCommandSafe("npm", ["audit", "--json"], { timeout: 60000 });
   try {
     const out = (auditResult.output || "").trim();
     const err = (auditResult.stderr || "").trim();
@@ -671,7 +776,7 @@ function checkSecurity() {
   }
 
   // Security patterns check
-  const securityResult = runCommand("npm run security:check", { timeout: 60000 });
+  const securityResult = runCommandSafe("npm", ["run", "security:check"], { timeout: 60000 });
   const securityFullOutput = `${securityResult.output || ""}\n${securityResult.stderr || ""}`;
   if (!securityResult.success && securityFullOutput.includes("warning")) {
     addAlert(
@@ -748,40 +853,7 @@ function checkSessionContext() {
   });
 }
 
-// ============================================================================
-// CURRENT ALERTS (FULL MODE)
-// ============================================================================
-
-function checkCurrentAlerts() {
-  console.error("  Checking current alerts...");
-
-  const alertsPath = path.join(ROOT_DIR, ".claude", "pending-alerts.json");
-  let alertsData = null;
-
-  try {
-    const content = fs.readFileSync(alertsPath, "utf8");
-    alertsData = safeParse(content);
-  } catch {
-    // File doesn't exist - try to generate
-  }
-
-  // Legacy generate-pending-alerts.js removed in Session #158
-  // Alerts are now fully handled by this script (run-alerts.js)
-
-  let alertCount = 0;
-  if (alertsData) {
-    for (const alert of alertsData.alerts || []) {
-      const severity =
-        alert.severity === "error" ? "error" : alert.severity === "warning" ? "warning" : "info";
-      addAlert("alerts", severity, alert.message, alert.details, alert.action);
-      alertCount++;
-    }
-  }
-
-  addContext("alerts", {
-    totals: { count: alertCount },
-  });
-}
+// checkCurrentAlerts() removed — orphaned pending-alerts.json eliminated (Overhaul W1.4)
 
 // ============================================================================
 // DOCUMENTATION HEALTH (FULL MODE)
@@ -791,7 +863,7 @@ function checkDocumentationHealth() {
   console.error("  Checking documentation health...");
 
   // CANON validation
-  const canonResult = runCommand("npm run validate:canon", { timeout: 60000 });
+  const canonResult = runCommandSafe("npm", ["run", "validate:canon"], { timeout: 60000 });
   const canonFullOutput = `${canonResult.output || ""}\n${canonResult.stderr || ""}`;
   if (!canonResult.success) {
     const issueMatch = canonFullOutput.match(/(\d+)\s+issue/i);
@@ -806,7 +878,7 @@ function checkDocumentationHealth() {
   }
 
   // Cross-doc dependencies
-  const crossdocResult = runCommand("npm run crossdoc:check", { timeout: 60000 });
+  const crossdocResult = runCommandSafe("npm", ["run", "crossdoc:check"], { timeout: 60000 });
   const crossdocFullOutput = `${crossdocResult.output || ""}\n${crossdocResult.stderr || ""}`;
   if (!crossdocResult.success && crossdocFullOutput.includes("Missing")) {
     addAlert(
@@ -1090,10 +1162,10 @@ function checkLearningEffectiveness() {
   const criticalMatch = content.match(/Critical Pattern Success\s*\|\s*([\d.]+)%/);
 
   const effectiveness = effectivenessMatch ? parseFloat(effectivenessMatch[1]) : null;
-  const failing = failingMatch ? parseInt(failingMatch[1], 10) : 0;
+  const failing = failingMatch ? Number.parseInt(failingMatch[1], 10) : 0;
   const automationCoverage = automationMatch ? parseFloat(automationMatch[1]) : null;
-  const learned = learnedMatch ? parseInt(learnedMatch[1], 10) : 0;
-  const automated = automatedMatch ? parseInt(automatedMatch[1], 10) : 0;
+  const learned = learnedMatch ? Number.parseInt(learnedMatch[1], 10) : 0;
+  const automated = automatedMatch ? Number.parseInt(automatedMatch[1], 10) : 0;
   const criticalSuccess = criticalMatch ? parseFloat(criticalMatch[1]) : null;
 
   // Rate against benchmarks
@@ -1206,9 +1278,13 @@ function checkAgentCompliance() {
   }
 
   let changedFiles = [];
-  const lastCommitResult = runCommand("git diff --name-only --diff-filter=ACM HEAD~1 HEAD", {
-    timeout: 10000,
-  });
+  const lastCommitResult = runCommandSafe(
+    "git",
+    ["diff", "--name-only", "--diff-filter=ACM", "HEAD~1", "HEAD"],
+    {
+      timeout: 10000,
+    }
+  );
   if (lastCommitResult.success) {
     changedFiles = lastCommitResult.output
       .split("\n")
@@ -1216,8 +1292,15 @@ function checkAgentCompliance() {
       .filter(Boolean);
   } else {
     // Fallback for initial commit: diff against empty tree
-    const initialResult = runCommand(
-      "git diff --name-only --diff-filter=ACM 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD",
+    const initialResult = runCommandSafe(
+      "git",
+      [
+        "diff",
+        "--name-only",
+        "--diff-filter=ACM",
+        "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+        "HEAD",
+      ],
       { timeout: 10000 }
     );
     if (initialResult.success) {
@@ -1431,8 +1514,14 @@ function checkSkipAbuse() {
   const cutoff24h = now - DAY_MS;
   const cutoff7d = now - 7 * DAY_MS;
 
-  const last24h = entries.filter((e) => new Date(e.timestamp).getTime() > cutoff24h);
-  const last7d = entries.filter((e) => new Date(e.timestamp).getTime() > cutoff7d);
+  const last24h = entries.filter((e) => {
+    const t = new Date(e.timestamp).getTime();
+    return !isNaN(t) && t > cutoff24h;
+  });
+  const last7d = entries.filter((e) => {
+    const t = new Date(e.timestamp).getTime();
+    return !isNaN(t) && t > cutoff7d;
+  });
 
   const noReasonEntries = last7d.filter(
     (e) => !e.reason || e.reason === "No reason" || e.reason === "No reason provided"
@@ -1490,9 +1579,34 @@ function checkSkipAbuse() {
     );
   }
 
+  // Trend tracking: bucket entries into 5 time windows (W1.5)
+  const WINDOW_COUNT = 5;
+  const WINDOW_SIZE = (7 * DAY_MS) / WINDOW_COUNT; // ~1.4 days per window
+  const windowCounts = Array(WINDOW_COUNT).fill(0);
+  for (const e of last7d) {
+    const t = new Date(e.timestamp).getTime();
+    if (isNaN(t)) continue;
+    const ageMs = now - t;
+    if (ageMs < 0 || ageMs > 7 * DAY_MS) continue;
+    const windowIdx = Math.min(WINDOW_COUNT - 1, Math.max(0, Math.floor(ageMs / WINDOW_SIZE)));
+    windowCounts[WINDOW_COUNT - 1 - windowIdx]++; // oldest first
+  }
+  const windowValues = windowCounts;
+  let trendDirection = "stable";
+  if (windowValues.length >= 2) {
+    const first = windowValues[0];
+    const last = windowValues[windowValues.length - 1];
+    const delta = last - first;
+    const pct = first !== 0 ? Math.round((delta / first) * 100) : delta !== 0 ? 100 : 0;
+    if (Math.abs(pct) >= 5) {
+      trendDirection = delta > 0 ? "increasing" : "decreasing";
+    }
+  }
+
   addContext("skip-abuse", {
     benchmarks: BENCHMARKS.skip_abuse,
     ratings: { overrides_24h: rate24h, overrides_7d: rate7d, no_reason_pct: rateNoReason },
+    trend: { direction: trendDirection, values: windowCounts },
     totals: {
       count_24h: last24h.length,
       count_7d: last7d.length,
@@ -1976,14 +2090,14 @@ function checkCommitActivity() {
 function checkRoadmapValidation() {
   console.error("  Checking roadmap validation...");
 
-  const result = runCommand("npm run roadmap:validate", { timeout: 30000 });
+  const result = runCommandSafe("npm", ["run", "roadmap:validate"], { timeout: 30000 });
   const output = `${result.output || ""}\n${result.stderr || ""}`;
 
   const warningMatch = output.match(/(\d+)\s+Warning/i);
   const errorMatch = output.match(/(\d+)\s+Error/i);
 
-  const warningCount = warningMatch ? parseInt(warningMatch[1], 10) : 0;
-  const errorCount = errorMatch ? parseInt(errorMatch[1], 10) : 0;
+  const warningCount = warningMatch ? Number.parseInt(warningMatch[1], 10) : 0;
+  const errorCount = errorMatch ? Number.parseInt(errorMatch[1], 10) : 0;
 
   if (errorCount > 0) {
     const bulletLines = output.match(/^\s+[•·]\s+.+$/gm) || [];
@@ -2027,16 +2141,16 @@ function checkRoadmapValidation() {
 function checkHookHealth() {
   console.error("  Checking hook health...");
 
-  const result = runCommand("npm run hooks:health", { timeout: 30000 });
+  const result = runCommandSafe("npm", ["run", "hooks:health"], { timeout: 30000 });
   const output = `${result.output || ""}\n${result.stderr || ""}`;
 
   const hookCountMatch = output.match(/All (\d+) hooks valid/i);
-  const hookCount = hookCountMatch ? parseInt(hookCountMatch[1], 10) : null;
+  const hookCount = hookCountMatch ? Number.parseInt(hookCountMatch[1], 10) : null;
 
   const sessionsStarted = output.match(/Total sessions started:\s*(\d+)/i);
   const sessionsCompleted = output.match(/Sessions completed:\s*(\d+)/i);
-  const started = sessionsStarted ? parseInt(sessionsStarted[1], 10) : 0;
-  const completed = sessionsCompleted ? parseInt(sessionsCompleted[1], 10) : 0;
+  const started = sessionsStarted ? Number.parseInt(sessionsStarted[1], 10) : 0;
+  const completed = sessionsCompleted ? Number.parseInt(sessionsCompleted[1], 10) : 0;
 
   if (hookCount) {
     addAlert("hook-health", "info", `${hookCount} hooks registered and valid`, null, null);
@@ -2075,20 +2189,814 @@ function checkHookHealth() {
 }
 
 // ============================================================================
+// NEW CHECKERS — Category A: State File Checkers (W2)
+// ============================================================================
+
+/**
+ * A1: Session State — uncommitted files, stale branches (Limited mode)
+ */
+function checkSessionState() {
+  console.error("  Checking session state...");
+
+  const handoffPath = path.join(ROOT_DIR, ".claude", "state", "handoff.json");
+  let handoff = null;
+  try {
+    handoff = JSON.parse(fs.readFileSync(handoffPath, "utf8"));
+  } catch {
+    addContext("session-state", { no_data: true, label: "Session State" });
+    return;
+  }
+
+  const toCount = (v) => {
+    if (typeof v === "number" && Number.isFinite(v)) return v;
+    if (typeof v === "string") {
+      const n = Number(v);
+      if (Number.isFinite(n)) return n;
+    }
+    if (Array.isArray(v)) return v.length;
+    return 0;
+  };
+  const uncommitted = toCount(handoff.uncommittedFiles ?? handoff.uncommitted_files ?? 0);
+  const untracked = toCount(handoff.untrackedCount ?? handoff.untracked_count ?? 0);
+  const branch = handoff.branch || handoff.currentBranch || "unknown";
+
+  // Check for stale branch (days since last commit on branch)
+  let staleDays = 0;
+  const lastCommitDate = handoff.lastCommitDate || handoff.last_commit_date;
+  if (lastCommitDate) {
+    const lastTs = new Date(lastCommitDate).getTime();
+    if (!Number.isNaN(lastTs)) {
+      const ageMs = Date.now() - lastTs;
+      staleDays = ageMs > 0 ? Math.floor(ageMs / (24 * 60 * 60 * 1000)) : 0;
+    }
+  }
+
+  const totalUncommitted =
+    (typeof uncommitted === "number" ? uncommitted : 0) +
+    (typeof untracked === "number" ? untracked : 0);
+
+  if (totalUncommitted > BENCHMARKS.session_state.uncommitted_files.poor) {
+    addAlert(
+      "session-state",
+      "error",
+      `${totalUncommitted} uncommitted/untracked files on branch '${branch}'`,
+      null,
+      "Review and commit or stash changes"
+    );
+  } else if (totalUncommitted > BENCHMARKS.session_state.uncommitted_files.average) {
+    addAlert(
+      "session-state",
+      "warning",
+      `${totalUncommitted} uncommitted/untracked files`,
+      null,
+      "Review working tree"
+    );
+  }
+
+  if (staleDays > BENCHMARKS.session_state.stale_branch_days.poor) {
+    addAlert(
+      "session-state",
+      "warning",
+      `Branch '${branch}' last commit ${staleDays} days ago`,
+      null,
+      "Consider merging or rebasing"
+    );
+  }
+
+  addContext("session-state", { uncommitted: totalUncommitted, untracked, branch, staleDays });
+}
+
+/**
+ * A2: Pattern Hotspots — repeat-offender files (Limited mode)
+ */
+function checkPatternHotspots() {
+  console.error("  Checking pattern hotspots...");
+
+  const warnedPath = path.join(ROOT_DIR, ".claude", "state", "warned-files.json");
+  let data = null;
+  try {
+    data = JSON.parse(fs.readFileSync(warnedPath, "utf8"));
+  } catch {
+    addContext("pattern-hotspots", { no_data: true, label: "Pattern Hotspots" });
+    return;
+  }
+
+  const files = data.files || data;
+  if (!files || typeof files !== "object") {
+    addContext("pattern-hotspots", { no_data: true, label: "Pattern Hotspots" });
+    return;
+  }
+
+  // Count files with 3+ violations
+  const entries = Object.entries(files);
+  const hotspots = entries.filter(
+    ([, count]) => (typeof count === "number" ? count : count?.count || 0) >= 3
+  );
+
+  if (hotspots.length > BENCHMARKS.pattern_hotspots.repeat_offenders.poor) {
+    addAlert(
+      "pattern-hotspots",
+      "error",
+      `${hotspots.length} files with 3+ pattern violations`,
+      hotspots
+        .slice(0, 5)
+        .map(([f]) => path.basename(f))
+        .join(", "),
+      "Run: npm run patterns:check-all"
+    );
+  } else if (hotspots.length > BENCHMARKS.pattern_hotspots.repeat_offenders.average) {
+    addAlert(
+      "pattern-hotspots",
+      "warning",
+      `${hotspots.length} repeat-offender files`,
+      hotspots
+        .slice(0, 3)
+        .map(([f]) => path.basename(f))
+        .join(", "),
+      "Run: npm run patterns:check"
+    );
+  } else if (hotspots.length > 0) {
+    addAlert(
+      "pattern-hotspots",
+      "info",
+      `${hotspots.length} file(s) with multiple violations`,
+      null,
+      null
+    );
+  }
+
+  addContext("pattern-hotspots", {
+    totalFiles: entries.length,
+    hotspotCount: hotspots.length,
+    topHotspots: hotspots.slice(0, 5).map(([f, c]) => ({
+      file: path.basename(f),
+      count: typeof c === "number" ? c : c?.count || 0,
+    })),
+  });
+}
+
+/**
+ * A3: Debt Intake — 30-day intake velocity (Full mode)
+ */
+function checkDebtIntake() {
+  console.error("  Checking debt intake...");
+
+  const logPath = path.join(ROOT_DIR, "docs", "technical-debt", "logs", "intake-log.jsonl");
+  const lines = safeReadLines(logPath);
+  if (lines.length === 0) {
+    addContext("debt-intake", { no_data: true, label: "Debt Intake" });
+    return;
+  }
+
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  let intake30d = 0;
+  let s0Intake = 0;
+  const sources = {};
+
+  for (const line of lines) {
+    const entry = safeParse(line);
+    if (!entry) continue;
+    const ts = new Date(entry.timestamp || entry.date || "").getTime();
+    if (isNaN(ts)) continue;
+    if (ts >= thirtyDaysAgo) {
+      intake30d++;
+      if (entry.severity === "S0") s0Intake++;
+      const src = entry.source || "unknown";
+      sources[src] = (sources[src] || 0) + 1;
+    }
+  }
+
+  const s0Rate = intake30d > 0 ? s0Intake / intake30d : 0;
+
+  if (intake30d > BENCHMARKS.debt_intake.intake_30d.poor) {
+    addAlert(
+      "debt-intake",
+      "warning",
+      `${intake30d} new debt items in 30 days (high intake)`,
+      `S0 rate: ${(s0Rate * 100).toFixed(0)}%`,
+      "Review intake sources"
+    );
+  } else if (intake30d > BENCHMARKS.debt_intake.intake_30d.average) {
+    addAlert("debt-intake", "info", `${intake30d} new debt items in 30 days`, null, null);
+  }
+
+  if (s0Rate > BENCHMARKS.debt_intake.s0_intake_rate.poor) {
+    addAlert(
+      "debt-intake",
+      "error",
+      `S0 intake rate ${(s0Rate * 100).toFixed(0)}% — too many critical items`,
+      null,
+      "Prioritize S0 resolution"
+    );
+  }
+
+  addContext("debt-intake", {
+    intake30d,
+    s0Intake,
+    s0Rate,
+    topSources: Object.entries(sources)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5),
+  });
+}
+
+/**
+ * A4: Debt Resolution — resolution velocity (Full mode)
+ */
+function checkDebtResolution() {
+  console.error("  Checking debt resolution...");
+
+  const logPath = path.join(ROOT_DIR, "docs", "technical-debt", "logs", "resolution-log.jsonl");
+  const lines = safeReadLines(logPath);
+  if (lines.length === 0) {
+    addContext("debt-resolution", { no_data: true, label: "Debt Resolution" });
+    return;
+  }
+
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  let resolved30d = 0;
+
+  for (const line of lines) {
+    const entry = safeParse(line);
+    if (!entry) continue;
+    const ts = new Date(entry.timestamp || entry.date || "").getTime();
+    if (isNaN(ts)) continue;
+    if (ts >= thirtyDaysAgo) resolved30d++;
+  }
+
+  if (resolved30d <= BENCHMARKS.debt_resolution.resolved_30d.poor) {
+    addAlert(
+      "debt-resolution",
+      "warning",
+      `Only ${resolved30d} debt items resolved in 30 days`,
+      null,
+      "Prioritize tech debt resolution"
+    );
+  } else if (resolved30d < BENCHMARKS.debt_resolution.resolved_30d.average) {
+    addAlert("debt-resolution", "info", `${resolved30d} items resolved in 30 days`, null, null);
+  }
+
+  addContext("debt-resolution", { resolved30d, totalResolutions: lines.length });
+}
+
+/**
+ * A5: Context Usage — files read count (Limited mode)
+ */
+function checkContextUsage() {
+  console.error("  Checking context usage...");
+
+  const trackingPath = path.join(ROOT_DIR, ".claude", "hooks", ".context-tracking-state.json");
+  let data = null;
+  try {
+    data = JSON.parse(fs.readFileSync(trackingPath, "utf8"));
+  } catch {
+    addContext("context-usage", { no_data: true, label: "Context Usage" });
+    return;
+  }
+
+  const rawFilesRead = data.filesRead ?? data.files_read ?? 0;
+  const filesRead = Array.isArray(rawFilesRead)
+    ? rawFilesRead.length
+    : typeof rawFilesRead === "number" && Number.isFinite(rawFilesRead)
+      ? rawFilesRead
+      : 0;
+
+  if (filesRead > BENCHMARKS.context_usage.files_read.poor) {
+    addAlert(
+      "context-usage",
+      "warning",
+      `${filesRead} files read — high context usage`,
+      null,
+      "Consider saving context to MCP memory"
+    );
+  } else if (filesRead > BENCHMARKS.context_usage.files_read.average) {
+    addAlert("context-usage", "info", `${filesRead} files read this session`, null, null);
+  }
+
+  addContext("context-usage", { filesRead });
+}
+
+// ============================================================================
+// NEW CHECKERS — Category B: npm Script Checkers (W2, Full mode)
+// ============================================================================
+
+/**
+ * Generic npm script checker — runs a script and parses output for issues
+ */
+function checkNpmScript(category, label, scriptArgs, parseOutput) {
+  console.error(`  Checking ${label}...`);
+
+  const result = runCommandSafe("npm", ["run", ...scriptArgs], { timeout: 30000 });
+  const output = `${result.output || ""}\n${result.stderr || ""}`;
+
+  try {
+    parseOutput(output, result);
+  } catch (err) {
+    addAlert(
+      category,
+      "info",
+      `${label} check completed with parse error`,
+      safeErrorMsg(err),
+      null
+    );
+  }
+}
+
+/**
+ * B1: Roadmap Hygiene (Full mode)
+ */
+function checkRoadmapHygiene() {
+  checkNpmScript("roadmap-hygiene", "Roadmap Hygiene", ["roadmap:hygiene"], (output, result) => {
+    const issueMatch = output.match(/(\d+)\s+issue/i);
+    const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
+
+    if (issues > BENCHMARKS.roadmap_hygiene.issues.poor) {
+      addAlert(
+        "roadmap-hygiene",
+        "error",
+        `${issues} roadmap hygiene issues`,
+        null,
+        "Run: npm run roadmap:hygiene"
+      );
+    } else if (issues > BENCHMARKS.roadmap_hygiene.issues.average) {
+      addAlert(
+        "roadmap-hygiene",
+        "warning",
+        `${issues} roadmap hygiene issues`,
+        null,
+        "Run: npm run roadmap:hygiene"
+      );
+    }
+
+    addContext("roadmap-hygiene", { issues });
+  });
+}
+
+/**
+ * B2: Trigger Compliance (Full mode)
+ */
+function checkTriggerCompliance() {
+  checkNpmScript(
+    "trigger-compliance",
+    "Trigger Compliance",
+    ["triggers:check"],
+    (output, result) => {
+      const failMatch = output.match(/(\d+)\s+fail/i);
+      const failures = failMatch ? Number.parseInt(failMatch[1], 10) : result.success ? 0 : 1;
+
+      if (failures > BENCHMARKS.trigger_compliance.failures.poor) {
+        addAlert(
+          "trigger-compliance",
+          "error",
+          `${failures} trigger compliance failures`,
+          null,
+          "Run: npm run triggers:check"
+        );
+      } else if (failures > BENCHMARKS.trigger_compliance.failures.average) {
+        addAlert(
+          "trigger-compliance",
+          "warning",
+          `${failures} trigger compliance issues`,
+          null,
+          "Run: npm run triggers:check"
+        );
+      }
+
+      addContext("trigger-compliance", { failures });
+    }
+  );
+}
+
+/**
+ * B3: Pattern Sync (Full mode)
+ */
+function checkPatternSync() {
+  checkNpmScript("pattern-sync", "Pattern Sync", ["patterns:sync"], (output, result) => {
+    const outdatedMatch = output.match(/(\d+)\s+(?:outdated|out.of.sync|stale)/i);
+    const outdated = outdatedMatch ? Number.parseInt(outdatedMatch[1], 10) : result.success ? 0 : 1;
+
+    if (outdated > BENCHMARKS.pattern_sync.outdated.poor) {
+      addAlert(
+        "pattern-sync",
+        "warning",
+        `${outdated} patterns out of sync`,
+        null,
+        "Run: npm run patterns:sync"
+      );
+    } else if (outdated > BENCHMARKS.pattern_sync.outdated.average) {
+      addAlert("pattern-sync", "info", `${outdated} patterns need sync`, null, null);
+    }
+
+    addContext("pattern-sync", { outdated });
+  });
+}
+
+/**
+ * B4: Doc Placement (Full mode)
+ */
+function checkDocPlacement() {
+  checkNpmScript("doc-placement", "Doc Placement", ["docs:placement"], (output, result) => {
+    const misplacedMatch = output.match(/(\d+)\s+misplaced/i);
+    const misplaced = misplacedMatch
+      ? Number.parseInt(misplacedMatch[1], 10)
+      : result.success
+        ? 0
+        : 1;
+
+    if (misplaced > BENCHMARKS.doc_placement.misplaced.poor) {
+      addAlert(
+        "doc-placement",
+        "warning",
+        `${misplaced} misplaced documents`,
+        null,
+        "Run: npm run docs:placement"
+      );
+    } else if (misplaced > BENCHMARKS.doc_placement.misplaced.average) {
+      addAlert("doc-placement", "info", `${misplaced} docs may be misplaced`, null, null);
+    }
+
+    addContext("doc-placement", { misplaced });
+  });
+}
+
+/**
+ * B5: External Links (Full mode)
+ */
+function checkExternalLinks() {
+  checkNpmScript("external-links", "External Links", ["docs:external-links"], (output, result) => {
+    const brokenMatch = output.match(/(\d+)\s+broken/i);
+    const broken = brokenMatch ? Number.parseInt(brokenMatch[1], 10) : result.success ? 0 : 1;
+
+    if (broken > BENCHMARKS.external_links.broken.poor) {
+      addAlert(
+        "external-links",
+        "error",
+        `${broken} broken external links`,
+        null,
+        "Run: npm run docs:external-links"
+      );
+    } else if (broken > BENCHMARKS.external_links.broken.average) {
+      addAlert(
+        "external-links",
+        "warning",
+        `${broken} broken links found`,
+        null,
+        "Run: npm run docs:external-links"
+      );
+    }
+
+    addContext("external-links", { broken });
+  });
+}
+
+/**
+ * B6: Unused Dependencies (Full mode)
+ */
+function checkUnusedDeps() {
+  checkNpmScript("unused-deps", "Unused Dependencies", ["deps:unused"], (output, result) => {
+    const unusedMatch = output.match(/(\d+)\s+unused/i);
+    const fileMatches = output.match(/^✖\s+/gm);
+    // Also count lines starting with package-like names (e.g., "  packageName")
+    const lineMatches = output.split("\n").filter((l) => l.trim() && /^[\s*-]*[a-z@]/.test(l));
+    const unused = unusedMatch
+      ? Number.parseInt(unusedMatch[1], 10)
+      : fileMatches
+        ? fileMatches.length
+        : lineMatches.length > 0
+          ? lineMatches.length
+          : result.success
+            ? 0
+            : 0;
+
+    if (unused > BENCHMARKS.unused_deps.unused.poor) {
+      addAlert(
+        "unused-deps",
+        "warning",
+        `${unused} unused dependencies detected`,
+        null,
+        "Run: npm run deps:unused"
+      );
+    } else if (unused > BENCHMARKS.unused_deps.unused.average) {
+      addAlert("unused-deps", "info", `${unused} potentially unused deps`, null, null);
+    }
+
+    addContext("unused-deps", { unused });
+  });
+}
+
+/**
+ * B7: Review Churn (Full mode)
+ */
+function checkReviewChurn() {
+  checkNpmScript("review-churn", "Review Churn", ["review:churn"], (output, result) => {
+    const churnMatch = output.match(/churn[:\s]+(\d+(?:\.\d+)?)\s*%/i);
+    const churnPct = churnMatch ? parseFloat(churnMatch[1]) : result.success ? 0 : null;
+
+    if (churnPct === null) {
+      addContext("review-churn", { no_data: true, label: "Review Churn" });
+      return;
+    }
+
+    if (churnPct > BENCHMARKS.review_churn.churn_pct.poor) {
+      addAlert(
+        "review-churn",
+        "warning",
+        `Review churn at ${churnPct.toFixed(1)}%`,
+        null,
+        "High churn indicates repeated fixes"
+      );
+    } else if (churnPct > BENCHMARKS.review_churn.churn_pct.average) {
+      addAlert("review-churn", "info", `Review churn: ${churnPct.toFixed(1)}%`, null, null);
+    }
+
+    addContext("review-churn", { churnPct });
+  });
+}
+
+/**
+ * B8: Backlog Health (Full mode)
+ */
+function checkBacklogHealth() {
+  checkNpmScript("backlog-health", "Backlog Health", ["backlog:check"], (output, result) => {
+    const issueMatch = output.match(/(\d+)\s+(?:issue|problem|warning)/i);
+    const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
+
+    if (issues > BENCHMARKS.backlog_health.issues.poor) {
+      addAlert(
+        "backlog-health",
+        "warning",
+        `${issues} backlog health issues`,
+        null,
+        "Run: npm run backlog:check"
+      );
+    } else if (issues > BENCHMARKS.backlog_health.issues.average) {
+      addAlert("backlog-health", "info", `${issues} backlog issues`, null, null);
+    }
+
+    addContext("backlog-health", { issues });
+  });
+}
+
+// ============================================================================
+// NEW CHECKERS — Category C: CI/CD Checkers (W2, Full mode)
+// ============================================================================
+
+/**
+ * C1: GitHub Actions — recent workflow run status (Full mode)
+ */
+function checkGitHubActions() {
+  console.error("  Checking GitHub Actions...");
+
+  const result = runCommandSafe(
+    "gh",
+    ["run", "list", "--limit", "5", "--json", "status,conclusion,name"],
+    { timeout: 15000 }
+  );
+  if (!result.success || !result.output) {
+    addContext("github-actions", { no_data: true, label: "GitHub Actions" });
+    return;
+  }
+
+  const runs = safeParse(result.output, []);
+  if (!Array.isArray(runs) || runs.length === 0) {
+    addContext("github-actions", { no_data: true, label: "GitHub Actions" });
+    return;
+  }
+
+  const failures = runs.filter((r) => r.conclusion === "failure");
+  const inProgress = runs.filter((r) => r.status === "in_progress");
+
+  if (failures.length > BENCHMARKS.github_actions.failures.poor) {
+    addAlert(
+      "github-actions",
+      "error",
+      `${failures.length}/${runs.length} recent CI runs failed`,
+      failures.map((r) => r.name).join(", "),
+      "Check: gh run list"
+    );
+  } else if (failures.length > BENCHMARKS.github_actions.failures.average) {
+    addAlert(
+      "github-actions",
+      "warning",
+      `${failures.length} CI failure(s) in last ${runs.length} runs`,
+      null,
+      "Check: gh run list"
+    );
+  }
+
+  if (inProgress.length > 0) {
+    addAlert("github-actions", "info", `${inProgress.length} CI run(s) in progress`, null, null);
+  }
+
+  addContext("github-actions", {
+    totalRuns: runs.length,
+    failures: failures.length,
+    inProgress: inProgress.length,
+  });
+}
+
+/**
+ * C2: SonarCloud — quality gate status (Full mode)
+ */
+function checkSonarCloud() {
+  console.error("  Checking SonarCloud...");
+
+  // Try local cache first
+  const cachePath = path.join(ROOT_DIR, ".claude", "state", "sonarcloud-cache.json");
+  let data = null;
+  try {
+    const raw = fs.readFileSync(cachePath, "utf8");
+    data = JSON.parse(raw);
+    // Cache valid for 1 hour
+    const cacheTs = new Date(data.timestamp || "").getTime();
+    const cacheAge = isNaN(cacheTs) ? Infinity : Date.now() - cacheTs;
+    if (cacheAge > 60 * 60 * 1000) data = null;
+  } catch {
+    data = null;
+  }
+
+  if (!data) {
+    // Try gh-based fetch as fallback (sonarcloud MCP may not be available)
+    addContext("sonarcloud", { no_data: true, label: "SonarCloud", reason: "No recent cache" });
+    return;
+  }
+
+  const status = data.qualityGate || data.status || "UNKNOWN";
+  const failedConditions = data.failedConditions || [];
+
+  if (
+    status === "ERROR" ||
+    failedConditions.length > BENCHMARKS.sonarcloud.failed_conditions.poor
+  ) {
+    addAlert(
+      "sonarcloud",
+      "error",
+      `SonarCloud quality gate: ${status}`,
+      failedConditions.map((c) => c.metricKey || c).join(", "),
+      "Review SonarCloud dashboard"
+    );
+  } else if (failedConditions.length > BENCHMARKS.sonarcloud.failed_conditions.average) {
+    addAlert(
+      "sonarcloud",
+      "warning",
+      `${failedConditions.length} SonarCloud condition(s) failing`,
+      null,
+      "Review SonarCloud dashboard"
+    );
+  }
+
+  addContext("sonarcloud", { status, failedConditions: failedConditions.length });
+}
+
+// ============================================================================
+// SUPPRESSION FILTER (W3)
+// ============================================================================
+
+/**
+ * Filter out suppressed alerts based on .claude/state/alert-suppressions.json
+ * Runs after all checkers, before computeHealthScore()
+ */
+function filterSuppressedAlerts() {
+  const suppressPath = path.join(ROOT_DIR, ".claude", "state", "alert-suppressions.json");
+  let suppressions = [];
+  try {
+    const data = JSON.parse(fs.readFileSync(suppressPath, "utf8"));
+    suppressions = data.suppressions || [];
+  } catch {
+    return; // No suppressions file
+  }
+
+  if (suppressions.length === 0) return;
+
+  // Filter out non-object/null entries (defensive against malformed JSON)
+  suppressions = suppressions.filter(
+    (s) => s != null && typeof s === "object" && !Array.isArray(s)
+  );
+  if (suppressions.length === 0) return;
+
+  const now = Date.now();
+  const activeSups = suppressions.filter((s) => {
+    if (s.expiresAt) {
+      const expiryTs = new Date(s.expiresAt).getTime();
+      if (isNaN(expiryTs)) return false; // Invalid date = treat as expired
+      return expiryTs > now;
+    }
+    return true;
+  });
+
+  if (activeSups.length === 0) return;
+
+  let filteredCount = 0;
+
+  for (const [cat, catData] of Object.entries(results.categories)) {
+    if (!catData.alerts || catData.alerts.length === 0) continue;
+
+    const before = catData.alerts.length;
+    catData.alerts = catData.alerts.filter((alert) => {
+      return !activeSups.some((sup) => {
+        if (sup.category && sup.category !== cat) return false;
+        const pattern = typeof sup.messagePattern === "string" ? sup.messagePattern.trim() : "";
+        // Require explicit suppressAll flag AND valid category for category-wide suppression
+        if (sup.suppressAll === true)
+          return typeof sup.category === "string" && sup.category.trim() !== "";
+        if (pattern === "") return false;
+        // Use case-insensitive string matching (safe — no regex injection)
+        const msg = typeof alert.message === "string" ? alert.message : String(alert.message ?? "");
+        return msg.toLowerCase().includes(pattern.toLowerCase());
+      });
+    });
+    filteredCount += before - catData.alerts.length;
+  }
+
+  // Recalculate summary counts
+  if (filteredCount > 0) {
+    results.summary = { errors: 0, warnings: 0, info: 0 };
+    for (const catData of Object.values(results.categories)) {
+      for (const alert of catData.alerts || []) {
+        const key =
+          alert.severity === "error"
+            ? "errors"
+            : alert.severity === "warning"
+              ? "warnings"
+              : "info";
+        results.summary[key]++;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// HEALTH SCORE LOG (W1.2)
+// ============================================================================
+
+/**
+ * Append health score to history log
+ */
+function appendHealthScoreLog() {
+  const logPath = path.join(ROOT_DIR, ".claude", "state", "health-score-log.jsonl");
+  if (!isSafeToWrite(logPath)) return;
+  try {
+    const stateDir = path.dirname(logPath);
+    if (!fs.existsSync(stateDir)) {
+      fs.mkdirSync(stateDir, { recursive: true });
+    }
+
+    const categoryScores = {};
+    if (results.healthScore?.breakdown) {
+      for (const [cat, info] of Object.entries(results.healthScore.breakdown)) {
+        categoryScores[cat] = info.score;
+      }
+    }
+
+    const entry = JSON.stringify({
+      timestamp: results.timestamp,
+      mode: results.mode,
+      grade: results.healthScore?.grade,
+      score: results.healthScore?.score,
+      summary: results.summary,
+      categoryScores,
+    });
+    fs.appendFileSync(logPath, entry + "\n");
+  } catch (err) {
+    console.error(`  [warn] Failed to append health score log: ${safeErrorMsg(err)}`);
+  }
+}
+
+// ============================================================================
 // HEALTH SCORE COMPUTATION
 // ============================================================================
 
 function computeHealthScore() {
+  // Core (70%)
   const weights = {
-    code: 0.2,
-    security: 0.2,
-    "debt-metrics": 0.15,
-    "test-results": 0.15,
-    learning: 0.1,
-    velocity: 0.05,
-    "review-quality": 0.05,
-    "agent-compliance": 0.05,
-    docs: 0.05,
+    code: 0.15,
+    security: 0.15,
+    "debt-metrics": 0.11,
+    "test-results": 0.1,
+    learning: 0.07,
+    "skip-abuse": 0.03,
+    session: 0.03,
+    "agent-compliance": 0.04,
+    // New state (8%)
+    "session-state": 0.03,
+    "pattern-hotspots": 0.03,
+    "context-usage": 0.02,
+    // Existing adjusted (9%)
+    velocity: 0.03,
+    "review-quality": 0.03,
+    docs: 0.03,
+    // Full-mode only (contribute when measured)
+    "debt-intake": 0.02,
+    "roadmap-hygiene": 0.02,
+    "trigger-compliance": 0.01,
+    "pattern-sync": 0.01,
+    "doc-placement": 0.01,
+    "external-links": 0.01,
+    "unused-deps": 0.01,
+    "review-churn": 0.01,
+    "backlog-health": 0.01,
+    "github-actions": 0.02,
+    sonarcloud: 0.02,
   };
 
   const breakdown = {};
@@ -2167,7 +3075,7 @@ function buildSessionPlan() {
 function main() {
   console.error(`\n\u{1F50D} Running ${isFullMode ? "FULL" : "LIMITED"} alerts check...\n`);
 
-  // Always run (Limited mode)
+  // Always run (Limited mode — 12 categories)
   checkCodeHealth();
   checkSecurity();
   checkSessionContext();
@@ -2177,10 +3085,13 @@ function main() {
   checkHookWarnings();
   checkSkipAbuse();
   checkTestResults();
+  // New limited-mode checkers (A1, A2, A5)
+  checkSessionState();
+  checkPatternHotspots();
+  checkContextUsage();
 
-  // Full mode only
+  // Full mode only (additional 17 categories)
   if (isFullMode) {
-    checkCurrentAlerts();
     checkDocumentationHealth();
     checkRoadmapPlanning();
     checkReviewQuality();
@@ -2190,9 +3101,22 @@ function main() {
     checkCommitActivity();
     checkRoadmapValidation();
     checkHookHealth();
+    // New full-mode checkers (A3, A4, B1-B8, C1, C2)
+    checkDebtIntake();
+    checkDebtResolution();
+    checkRoadmapHygiene();
+    checkTriggerCompliance();
+    checkPatternSync();
+    checkDocPlacement();
+    checkExternalLinks();
+    checkUnusedDeps();
+    checkReviewChurn();
+    checkBacklogHealth();
+    checkGitHubActions();
+    checkSonarCloud();
   }
 
-  // Ensure every category appears
+  // Ensure every limited-mode category appears
   ensureCategory("code", "Code Health");
   ensureCategory("security", "Security");
   ensureCategory("session", "Session Context");
@@ -2202,9 +3126,11 @@ function main() {
   ensureCategory("hook-warnings", "Hook Warnings");
   ensureCategory("skip-abuse", "Skip Abuse");
   ensureCategory("test-results", "Test Results");
+  ensureCategory("session-state", "Session State");
+  ensureCategory("pattern-hotspots", "Pattern Hotspots");
+  ensureCategory("context-usage", "Context Usage");
 
   if (isFullMode) {
-    ensureCategory("alerts", "Current Alerts");
     ensureCategory("docs", "Documentation Health");
     ensureCategory("roadmap", "Roadmap/Planning");
     ensureCategory("review-quality", "Review Quality");
@@ -2214,7 +3140,22 @@ function main() {
     ensureCategory("commit-activity", "Commit Activity");
     ensureCategory("roadmap-health", "Roadmap Validation");
     ensureCategory("hook-health", "Hook Health");
+    ensureCategory("debt-intake", "Debt Intake");
+    ensureCategory("debt-resolution", "Debt Resolution");
+    ensureCategory("roadmap-hygiene", "Roadmap Hygiene");
+    ensureCategory("trigger-compliance", "Trigger Compliance");
+    ensureCategory("pattern-sync", "Pattern Sync");
+    ensureCategory("doc-placement", "Doc Placement");
+    ensureCategory("external-links", "External Links");
+    ensureCategory("unused-deps", "Unused Dependencies");
+    ensureCategory("review-churn", "Review Churn");
+    ensureCategory("backlog-health", "Backlog Health");
+    ensureCategory("github-actions", "GitHub Actions");
+    ensureCategory("sonarcloud", "SonarCloud");
   }
+
+  // Filter suppressed alerts (W3)
+  filterSuppressedAlerts();
 
   // Compute health score and session plan
   computeHealthScore();
@@ -2228,6 +3169,9 @@ function main() {
 
   // Save baseline (first run only)
   saveBaseline();
+
+  // Append health score to history log (W1.2)
+  appendHealthScoreLog();
 
   // Output JSON to stdout
   console.log(JSON.stringify(results, null, 2));

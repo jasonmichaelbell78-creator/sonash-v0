@@ -65,7 +65,7 @@ reviews cover:
 
 ## Archived Reviews
 
-### Review #179: PR #277 Round 4 - Consistency & Pagination (2026-01-18)
+#### Review #179: PR #277 Round 4 - Consistency & Pagination (2026-01-18)
 
 **Source:** Qodo Compliance + Qodo PR Suggestions **PR/Branch:**
 feature/admin-panel-phase-3 (PR #277) **Suggestions:** 8 items (Critical: 1,
@@ -107,7 +107,7 @@ Major: 3, Minor: 2, Verified: 2)
 
 ---
 
-### Review #145: Settings Page Accessibility & Security (2026-01-14)
+#### Review #145: Settings Page Accessibility & Security (2026-01-14)
 
 **Source:** SonarCloud + Qodo PR Compliance + Qodo PR Suggestions **PR/Branch:**
 claude/general-dev-session-A1az1 **Suggestions:** 14 items (Major: 5, Minor: 9)
@@ -153,7 +153,7 @@ claude/general-dev-session-A1az1 **Suggestions:** 14 items (Major: 5, Minor: 9)
 
 ---
 
-### Review #146: Operational Visibility Sprint PR Feedback (2026-01-15)
+#### Review #146: Operational Visibility Sprint PR Feedback (2026-01-15)
 
 **Source:** Documentation Lint + Qodo Compliance + CI + PR Suggestions
 **PR/Branch:** claude/lighthouse-integration-planning-YdBkz **Suggestions:** 21
@@ -198,7 +198,7 @@ items (Major: 7, Minor: 8, Trivial: 2, Deferred: 1)
 
 ---
 
-### Review #147: CI Blocker Fixes + Firebase Error Handling (2026-01-15)
+#### Review #147: CI Blocker Fixes + Firebase Error Handling (2026-01-15)
 
 **Source:** CI Failures + Qodo Compliance + PR Suggestions **PR/Branch:**
 claude/lighthouse-integration-planning-YdBkz **Suggestions:** 7 items (Critical:
@@ -233,7 +233,7 @@ claude/lighthouse-integration-planning-YdBkz **Suggestions:** 7 items (Critical:
 
 ---
 
-### Review #148: Dev Dashboard Security Hardening (2026-01-15)
+#### Review #148: Dev Dashboard Security Hardening (2026-01-15)
 
 **Source:** CI Feedback + Qodo Compliance + PR Suggestions **PR/Branch:**
 claude/lighthouse-integration-planning-YdBkz **Suggestions:** 11 items (Major:
@@ -275,7 +275,7 @@ claude/lighthouse-integration-planning-YdBkz **Suggestions:** 11 items (Major:
 
 ---
 
-### Review #149: Robustness & Error Handling Improvements (2026-01-15)
+#### Review #149: Robustness & Error Handling Improvements (2026-01-15)
 
 **Source:** CI Feedback + PR Suggestions **PR/Branch:**
 claude/lighthouse-integration-planning-YdBkz **Suggestions:** 5 items (Major: 1,
@@ -308,7 +308,7 @@ Minor: 4)
 
 ---
 
-### Review #150: Deployment Safety & Async Cleanup (2026-01-15)
+#### Review #150: Deployment Safety & Async Cleanup (2026-01-15)
 
 **Source:** PR Code Suggestions (Qodo) **PR/Branch:**
 claude/lighthouse-integration-planning-YdBkz **Suggestions:** 7 items (Major: 2,
@@ -345,7 +345,7 @@ Minor: 5)
 
 ---
 
-### Review #151: ErrorsTab Expandable Details PR Feedback (2026-01-15)
+#### Review #151: ErrorsTab Expandable Details PR Feedback (2026-01-15)
 
 **Source:** CI Feedback + Qodo PR Compliance + PR Code Suggestions
 **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 9 items (Critical: 1,
@@ -390,7 +390,7 @@ Major: 2, Minor: 5, Deferred: 1)
 
 ---
 
-### Review #152: Admin Error Utils PR Feedback (2026-01-15)
+#### Review #152: Admin Error Utils PR Feedback (2026-01-15)
 
 **Source:** SonarCloud Security Hotspots + Qodo PR Code Suggestions + CI
 Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
@@ -431,7 +431,7 @@ Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
 
 ---
 
-### Review #153: Admin Error Utils Follow-up (2026-01-15)
+#### Review #153: Admin Error Utils Follow-up (2026-01-15)
 
 **Source:** Qodo PR Code Suggestions + CI Feedback **PR/Branch:**
 claude/new-session-UhAVn **Suggestions:** 6 items (Critical: 1, Minor: 5)
@@ -467,7 +467,7 @@ claude/new-session-UhAVn **Suggestions:** 6 items (Critical: 1, Minor: 5)
 
 ---
 
-### Review #154: Admin Error Utils Security Hardening (2026-01-15)
+#### Review #154: Admin Error Utils Security Hardening (2026-01-15)
 
 **Source:** Qodo PR Code Suggestions + CI Feedback **PR/Branch:**
 claude/new-session-UhAVn **Suggestions:** 5 items (Minor: 5)
@@ -500,7 +500,7 @@ claude/new-session-UhAVn **Suggestions:** 5 items (Minor: 5)
 
 ---
 
-### Review #155: Security Check Self-Detection & CI Fix (2026-01-16)
+#### Review #155: Security Check Self-Detection & CI Fix (2026-01-16)
 
 **Source:** Qodo PR Code Suggestions + CI Feedback **PR/Branch:**
 claude/new-session-UhAVn **Suggestions:** 4 items (Major: 2, Minor: 2)
@@ -532,7 +532,7 @@ claude/new-session-UhAVn **Suggestions:** 4 items (Major: 2, Minor: 2)
 
 ---
 
-### Review #156: Security Hardening & Pre-Push Fix (2026-01-16)
+#### Review #156: Security Hardening & Pre-Push Fix (2026-01-16)
 
 **Source:** Qodo PR Code Suggestions + CI Feedback **PR/Branch:**
 claude/new-session-UhAVn **Suggestions:** 4 items (Major: 2, Minor: 2)
@@ -565,7 +565,7 @@ claude/new-session-UhAVn **Suggestions:** 4 items (Major: 2, Minor: 2)
 
 ---
 
-### Review #161: lint-staged PR Feedback (2026-01-16)
+#### Review #161: lint-staged PR Feedback (2026-01-16)
 
 **Source:** Qodo PR Compliance + CI Feedback **PR/Branch:**
 claude/roadmap-analysis-6LQlO **Suggestions:** 3 items (Major: 2, Minor: 1)
@@ -595,7 +595,7 @@ claude/roadmap-analysis-6LQlO **Suggestions:** 3 items (Major: 2, Minor: 1)
 
 ---
 
-### Review #162: Track A Admin Panel PR Feedback (2026-01-16)
+#### Review #162: Track A Admin Panel PR Feedback (2026-01-16)
 
 **Source:** Qodo PR Compliance + PR Code Suggestions + CI Feedback
 **PR/Branch:** claude/complete-track-a-jZCcz **Suggestions:** 22 items
@@ -654,7 +654,7 @@ claude/roadmap-analysis-6LQlO **Suggestions:** 3 items (Major: 2, Minor: 1)
 
 ---
 
-### Review #163: Track A PR Follow-up Compliance (2026-01-17)
+#### Review #163: Track A PR Follow-up Compliance (2026-01-17)
 
 **Source:** Qodo PR Compliance + PR Code Suggestions **PR/Branch:**
 claude/cherry-pick-track-a-6TRVG **Suggestions:** 12 items (Major: 5, Minor: 5,
@@ -702,7 +702,7 @@ Trivial: 2)
 
 ---
 
-### Review #164: Track A Cherry-Pick PR Qodo Compliance (2026-01-17)
+#### Review #164: Track A Cherry-Pick PR Qodo Compliance (2026-01-17)
 
 **Source:** Qodo Compliance + PR Code Suggestions **PR/Branch:**
 claude/cherry-pick-track-a-6TRVG **Suggestions:** 10 items (Critical: 1, Major:
@@ -765,7 +765,7 @@ claude/cherry-pick-track-a-6TRVG **Suggestions:** 10 items (Critical: 1, Major:
 
 ---
 
-### Review #165: Track A Follow-up Qodo Compliance (2026-01-17)
+#### Review #165: Track A Follow-up Qodo Compliance (2026-01-17)
 
 **Source:** Qodo Compliance + PR Code Suggestions + CI Feedback **PR/Branch:**
 claude/cherry-pick-track-a-6TRVG **Suggestions:** 12 items (Critical: 1, Major:
@@ -825,7 +825,7 @@ claude/cherry-pick-track-a-6TRVG **Suggestions:** 12 items (Critical: 1, Major:
 
 ---
 
-### Review #171: aggregate-audit-findings.js PR Hardening (2026-01-17)
+#### Review #171: aggregate-audit-findings.js PR Hardening (2026-01-17)
 
 **Source:** SonarCloud Security Hotspots + SonarCloud Issues + Qodo PR
 Compliance + CI Feedback **PR/Branch:** audit/single-session-2026-01-17
@@ -900,7 +900,7 @@ Deferred: 2)
 
 ---
 
-### Review #137: PR #243 SonarQube Security Hotspots & Qodo Suggestions (2026-01-13)
+#### Review #137: PR #243 SonarQube Security Hotspots & Qodo Suggestions (2026-01-13)
 
 **Source:** Mixed - SonarQube Security Hotspots + Qodo PR Code Suggestions
 **PR/Branch:** PR #243 / claude/cherry-pick-phase-4b-fAyRp **Suggestions:** 12
@@ -946,7 +946,7 @@ improvements.
 
 ---
 
-### Review #138: PR #243 Step 4C Qodo Compliance Review (2026-01-13)
+#### Review #138: PR #243 Step 4C Qodo Compliance Review (2026-01-13)
 
 **Source:** Qodo Compliance (2 rounds) **PR/Branch:** PR #243 /
 claude/cherry-pick-phase-4b-fAyRp **Suggestions:** 7 items (Critical: 0, Major:
@@ -987,7 +987,7 @@ claude/cherry-pick-phase-4b-fAyRp **Suggestions:** 7 items (Critical: 0, Major:
 
 ---
 
-### Review #139: PR Cherry-Pick Security Audit CI Fixes (2026-01-13)
+#### Review #139: PR Cherry-Pick Security Audit CI Fixes (2026-01-13)
 
 **Source:** Qodo Compliance + CI Feedback **PR/Branch:** PR /
 claude/cherry-pick-security-audit-CqGum **Suggestions:** 11 items (Critical: 0,
@@ -1039,7 +1039,7 @@ Major: 2, Minor: 8, Trivial: 1)
 
 ---
 
-### Review #140: PR Review Processing Round 2 (2026-01-13)
+#### Review #140: PR Review Processing Round 2 (2026-01-13)
 
 **Source:** Qodo PR Suggestions **PR/Branch:** PR /
 claude/cherry-pick-security-audit-CqGum **Suggestions:** 7 items (Medium: 1,
@@ -1066,7 +1066,7 @@ Low: 6)
 
 ---
 
-### Review #141: PR Review Processing Round 3 (2026-01-13)
+#### Review #141: PR Review Processing Round 3 (2026-01-13)
 
 **Source:** Qodo PR Suggestions **PR/Branch:** PR /
 claude/cherry-pick-security-audit-CqGum **Suggestions:** 5 items (Medium: 1,
@@ -1090,7 +1090,7 @@ Low: 4)
 
 ---
 
-### Review #142: PR #281 SonarCloud Workflow Configuration (2026-01-18)
+#### Review #142: PR #281 SonarCloud Workflow Configuration (2026-01-18)
 
 **Source:** Qodo Compliance + Qodo PR Suggestions + SonarCloud (2 rounds)
 **PR/Branch:** PR #281 / feature/admin-panel-phase-3 **Suggestions:** 12 unique
@@ -1154,7 +1154,7 @@ security, API authentication, and script robustness.
 
 ---
 
-### Review #143: CI Pattern Compliance and Command Injection Fix (2026-01-13)
+#### Review #143: CI Pattern Compliance and Command Injection Fix (2026-01-13)
 
 **Source:** Qodo PR Compliance + SonarCloud + Pattern Compliance CI
 **PR/Branch:** claude/cherry-pick-security-phase-5-nGkAt **Suggestions:** 20+
@@ -1187,7 +1187,7 @@ items (Critical: 1, Major: 6, Minor: 8+)
 
 ---
 
-### Review #144: Step 6-7 PR CI Fixes (2026-01-14)
+#### Review #144: Step 6-7 PR CI Fixes (2026-01-14)
 
 **Source:** CI Failures + Qodo PR Suggestions **PR/Branch:**
 claude/step6-roadmap-integration-nGkAt **Suggestions:** 8 items (Critical: 1,

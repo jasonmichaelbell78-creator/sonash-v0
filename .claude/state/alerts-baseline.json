@@ -1,69 +1,149 @@
 {
-  "timestamp": "2026-02-14T16:00:39.188Z",
+  "timestamp": "2026-02-15T14:32:14.596Z",
   "healthScore": {
-    "grade": "A",
-    "score": 90,
+    "grade": "C",
+    "score": 75,
     "breakdown": {
       "code": {
-        "score": 100,
-        "weight": 0.2,
-        "measured": true
-      },
-      "security": {
-        "score": 100,
-        "weight": 0.2,
-        "measured": true
-      },
-      "debt-metrics": {
         "score": 60,
         "weight": 0.15,
         "measured": true
       },
-      "test-results": {
-        "score": 90,
+      "security": {
+        "score": 70,
         "weight": 0.15,
         "measured": true
       },
-      "learning": {
+      "debt-metrics": {
+        "score": 50,
+        "weight": 0.12,
+        "measured": true
+      },
+      "test-results": {
         "score": 90,
         "weight": 0.1,
         "measured": true
       },
+      "learning": {
+        "score": 90,
+        "weight": 0.08,
+        "measured": true
+      },
+      "skip-abuse": {
+        "score": 60,
+        "weight": 0.03,
+        "measured": true
+      },
+      "session": {
+        "score": 100,
+        "weight": 0.03,
+        "measured": true
+      },
+      "agent-compliance": {
+        "score": 100,
+        "weight": 0.04,
+        "measured": true
+      },
+      "session-state": {
+        "score": 100,
+        "weight": 0.03,
+        "measured": true
+      },
+      "pattern-hotspots": {
+        "score": 100,
+        "weight": 0.03,
+        "measured": true
+      },
+      "context-usage": {
+        "score": 100,
+        "weight": 0.02,
+        "measured": true
+      },
       "velocity": {
         "score": null,
-        "weight": 0.05,
+        "weight": 0.03,
         "measured": false
       },
       "review-quality": {
         "score": null,
-        "weight": 0.05,
+        "weight": 0.03,
         "measured": false
-      },
-      "agent-compliance": {
-        "score": 100,
-        "weight": 0.05,
-        "measured": true
       },
       "docs": {
         "score": null,
-        "weight": 0.05,
+        "weight": 0.03,
+        "measured": false
+      },
+      "debt-intake": {
+        "score": null,
+        "weight": 0.02,
+        "measured": false
+      },
+      "roadmap-hygiene": {
+        "score": null,
+        "weight": 0.02,
+        "measured": false
+      },
+      "trigger-compliance": {
+        "score": null,
+        "weight": 0.01,
+        "measured": false
+      },
+      "pattern-sync": {
+        "score": null,
+        "weight": 0.01,
+        "measured": false
+      },
+      "doc-placement": {
+        "score": null,
+        "weight": 0.01,
+        "measured": false
+      },
+      "external-links": {
+        "score": null,
+        "weight": 0.01,
+        "measured": false
+      },
+      "unused-deps": {
+        "score": null,
+        "weight": 0.01,
+        "measured": false
+      },
+      "review-churn": {
+        "score": null,
+        "weight": 0.01,
+        "measured": false
+      },
+      "backlog-health": {
+        "score": null,
+        "weight": 0.01,
+        "measured": false
+      },
+      "github-actions": {
+        "score": null,
+        "weight": 0.02,
+        "measured": false
+      },
+      "sonarcloud": {
+        "score": null,
+        "weight": 0.02,
         "measured": false
       }
     }
   },
   "summary": {
-    "errors": 1,
-    "warnings": 6,
+    "errors": 4,
+    "warnings": 9,
     "info": 4
   },
   "categoryScores": {
     "code": {
-      "errors": 0,
-      "warnings": 0,
+      "errors": 1,
+      "warnings": 1,
       "info": 0
     },
     "security": {
-      "errors": 0,
+      "errors": 1,
       "warnings": 0,
       "info": 0
     },
@@ -74,7 +154,7 @@
     },
     "debt-metrics": {
       "errors": 1,
-      "warnings": 1,
+      "warnings": 2,
       "info": 1
     },
     "learning": {
@@ -93,14 +173,29 @@
       "info": 1
     },
     "skip-abuse": {
-      "errors": 0,
-      "warnings": 0,
+      "errors": 1,
+      "warnings": 1,
       "info": 0
     },
     "test-results": {
       "errors": 0,
       "warnings": 1,
       "info": 1
+    },
+    "session-state": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "pattern-hotspots": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "context-usage": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
     }
   }
 }

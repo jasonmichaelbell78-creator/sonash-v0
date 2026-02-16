@@ -57,6 +57,11 @@ const TRIGGERS = {
     paths: [".claude/skills/", ".claude/commands/"],
     action: "Validate skill structure and test invocation",
   },
+  review_sync: {
+    severity: "warning",
+    description: "Reviews in markdown not synced to JSONL",
+    action: "Run: npm run reviews:sync -- --apply",
+  },
 };
 
 /**
@@ -304,6 +309,72 @@ function checkSkillValidationTrigger(files) {
   return { triggered: false, name: "skill_validation" };
 }
 
+// Check if reviews in markdown are synced to JSONL (Session #162)
+function checkReviewSyncTrigger() {
+  const trigger = TRIGGERS.review_sync;
+
+  try {
+    const rootDir = resolveGitRoot();
+    const learningsLog = path.join(rootDir, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
+    const reviewsJsonl = path.join(rootDir, ".claude", "state", "reviews.jsonl");
+
+    if (!fs.existsSync(learningsLog)) {
+      return { triggered: false, name: "review_sync" };
+    }
+
+    // Get max review ID from markdown
+    let mdMax = 0;
+    try {
+      const content = fs.readFileSync(learningsLog, "utf8");
+      const matches = content.matchAll(/^####\s+Review\s+#(\d+)/gm);
+      for (const m of matches) {
+        const id = Number.parseInt(m[1], 10);
+        if (id > mdMax) mdMax = id;
+      }
+    } catch {
+      return { triggered: false, name: "review_sync" };
+    }
+
+    // Get max review ID from JSONL
+    let jsonlMax = 0;
+    if (fs.existsSync(reviewsJsonl)) {
+      try {
+        const lines = fs
+          .readFileSync(reviewsJsonl, "utf8")
+          .replaceAll("\r\n", "\n")
+          .trim()
+          .split("\n");
+        for (const line of lines) {
+          try {
+            const id = JSON.parse(line).id;
+            if (typeof id === "number" && id > jsonlMax) jsonlMax = id;
+          } catch {
+            /* skip */
+          }
+        }
+      } catch {
+        /* skip */
+      }
+    }
+
+    const drift = mdMax - jsonlMax;
+    if (drift > 0) {
+      return {
+        triggered: true,
+        name: "review_sync",
+        severity: trigger.severity,
+        description: trigger.description,
+        action: trigger.action,
+        details: `  - ${drift} reviews in markdown (#${jsonlMax + 1}-#${mdMax}) not synced to reviews.jsonl`,
+      };
+    }
+
+    return { triggered: false, name: "review_sync" };
+  } catch {
+    return { triggered: false, name: "review_sync" };
+  }
+}
+
 // Main execution
 function main() {
   const args = process.argv.slice(2);
@@ -311,6 +382,36 @@ function main() {
 
   // Check for SKIP_TRIGGERS override (documented in SKILL_AGENT_POLICY.md)
   if (process.env.SKIP_TRIGGERS === "1") {
+    const rawReason = process.env.SKIP_REASON;
+    const reason = typeof rawReason === "string" ? rawReason.trim() : "";
+
+    if (!reason) {
+      console.error("❌ SKIP_REASON is required when overriding checks");
+      console.error('   Usage: SKIP_REASON="your reason" SKIP_TRIGGERS=1 git push ...');
+      console.error("   The audit trail is useless without a reason.");
+      process.exit(1);
+    }
+
+    if (/[\r\n]/.test(reason)) {
+      console.error("❌ SKIP_REASON must be single-line (no CR/LF)");
+      process.exit(1);
+    }
+
+    if (
+      [...reason].some((c) => {
+        const code = c.codePointAt(0);
+        return code < 0x20 || code === 0x7f;
+      })
+    ) {
+      console.error("❌ SKIP_REASON must not contain control characters");
+      process.exit(1);
+    }
+
+    if (reason.length > 500) {
+      console.error("❌ SKIP_REASON is too long (max 500 chars)");
+      process.exit(1);
+    }
+
     console.log("⚠️  SKIP_TRIGGERS=1 detected - skipping trigger checks");
     console.log("   (Override logged for audit trail)\n");
 
@@ -318,13 +419,11 @@ function main() {
     // Using execFileSync to prevent command injection from SKIP_REASON
     try {
       const { execFileSync } = require("node:child_process");
-      const reason = process.env.SKIP_REASON || "";
       execFileSync("node", ["scripts/log-override.js", "--check=triggers", `--reason=${reason}`], {
         encoding: "utf-8",
         stdio: "inherit",
       });
     } catch {
-      // Non-fatal - continue even if logging fails
       console.log("   (Note: Override logging failed, but continuing)\n");
     }
 
@@ -354,7 +453,8 @@ function main() {
   results.push(
     checkSecurityTrigger(files),
     checkConsolidationTrigger(),
-    checkSkillValidationTrigger(files)
+    checkSkillValidationTrigger(files),
+    checkReviewSyncTrigger()
   );
 
   // Filter and display results

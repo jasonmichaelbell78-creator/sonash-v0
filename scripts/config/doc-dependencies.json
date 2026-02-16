@@ -29,13 +29,15 @@
       "trigger": ".claude/commands/",
       "dependents": [".claude/COMMAND_REFERENCE.md"],
       "reason": "Skill/command registry must be complete",
-      "checkDiff": false
+      "checkDiff": false,
+      "gitFilter": "AD"
     },
     {
       "trigger": ".claude/skills/",
       "dependents": [".claude/COMMAND_REFERENCE.md"],
       "reason": "Skill/command registry must be complete",
-      "checkDiff": false
+      "checkDiff": false,
+      "gitFilter": "AD"
     },
     {
       "trigger": "app/admin/",

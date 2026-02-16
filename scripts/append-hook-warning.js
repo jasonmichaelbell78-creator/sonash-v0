@@ -14,8 +14,25 @@
  * @created 2026-01-28
  */
 
-const fs = require("node:fs");
-const path = require("node:path");
+let fs, path;
+try {
+  fs = require("node:fs");
+  path = require("node:path");
+} catch (e) {
+  console.error("Failed to load required modules:", e.message);
+  process.exit(1);
+}
+
+// Symlink guard (Review #316-#323)
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require(
+    path.join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")
+  ));
+} catch {
+  console.error("symlink-guard unavailable; disabling writes");
+  isSafeToWrite = () => false;
+}
 
 const ROOT_DIR = path.join(__dirname, "..");
 const WARNINGS_FILE = path.join(ROOT_DIR, ".claude", "hook-warnings.json");
@@ -56,6 +73,7 @@ function readWarnings() {
 function writeWarnings(data) {
   const tmpFile = `${WARNINGS_FILE}.tmp`;
   try {
+    if (!isSafeToWrite(WARNINGS_FILE) || !isSafeToWrite(tmpFile)) return;
     const claudeDir = path.dirname(WARNINGS_FILE);
     if (!fs.existsSync(claudeDir)) {
       fs.mkdirSync(claudeDir, { recursive: true });
@@ -114,6 +132,27 @@ function appendWarning(hook, type, severity, message, action = null) {
     }
 
     writeWarnings(data);
+
+    // Permanent JSONL audit trail (best-effort, never block hooks)
+    try {
+      const logDir = path.join(ROOT_DIR, ".claude", "state");
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+      const logPath = path.join(logDir, "hook-warnings-log.jsonl");
+      if (!isSafeToWrite(logPath)) return;
+      const entry = JSON.stringify({
+        hook,
+        type,
+        severity: severity || "warning",
+        message,
+        action,
+        timestamp: new Date().toISOString(),
+      });
+      fs.appendFileSync(logPath, entry + "\n");
+    } catch {
+      // Best-effort — never block hooks on log failure
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.11 **Created:** 2026-01-02 **Last Updated:** 2026-02-15
+**Document Version:** 17.18 **Created:** 2026-01-02 **Last Updated:** 2026-02-16
 
 ## Purpose
 
@@ -28,6 +28,13 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.18   | 2026-02-16 | Review #330: PR #367 R7 — codePointAt (3 files), suppressAll category guard, code fence parsing, POSIX EXIT trap helper, shell control char validation. 8 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 17.17   | 2026-02-16 | Review #329: PR #367 R6 — Control char + length validation (3 JS scripts), POSIX-safe CR detection (2 hooks), suppressAll explicit flag, severity normalization. 5 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 17.16   | 2026-02-16 | Review #328: PR #367 R5 — Suppression type validation, POSIX-safe grep replacement, SKIP_REASON newline propagation to 3 JS scripts, ENOENT code preservation, toCount string coercion, triggers fail-closed. 9 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 17.15   | 2026-02-16 | Review #327: PR #367 R4 — Fail closed security (5 files), log injection prevention (pre-commit/pre-push), trap chaining, audit output capture, input normalization (toCount/filesRead), exit code preservation. 13 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 17.14   | 2026-02-16 | Review #326: PR #367 R3 — Weight normalization (1.02→1.00), CC reduction (archive-doc.js, sync-reviews-to-jsonl.js), suppression filter type checks, for-of loops, dedup learnings. 8 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 17.13   | 2026-02-16 | Review #325: PR #367 R2 — Trend bug fix, suppression filter logic, security hardening. 21 fixed, 6 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| 17.12   | 2026-02-16 | Review #324: PR #367 R1 — Alerts overhaul security + code quality. 49 items from SonarCloud/Qodo: runCommandSafe shell injection hardening, parseInt→Number.parseInt (6), replace→replaceAll (10), empty regex guard, symlink guards (2 scripts), skip reason validation, cognitive complexity deferrals (6). 3 parallel agents.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 17.11   | 2026-02-15 | Review #323: PR #366 R8 — tmpPath symlink guards (5 files), Firestore regex hyphen bypass fix (\w+ → [A-Za-z0-9_-]+), log-override path.resolve safety. 7 fixed, 5 rejected (wx flag, bidirectional containment, env path trust, cooldown read symlink, streaming line count). Propagation check confirmed all atomic write paths now guarded.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 17.10   | 2026-02-15 | Review #322: PR #366 R7 — Comprehensive symlink hardening: path.isAbsolute guard, tmp path guards (7 files), rotate-state.js (4 paths), inline→shared helper migration, commit-tracker author restore. 9 fixed, 3 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.9    | 2026-02-15 | Review #321: PR #366 R6 — Shared symlink-guard.js helper (ancestor traversal), self-healing cooldown, TOCTOU try/catch, milestone string bug, NUL delimiter, directive "ok" output. 11 fixed, 2 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -613,6 +620,200 @@ _Reviews #180-201 have been archived to
 
 _Reviews #137-179 have been archived to
 [docs/archive/REVIEWS_137-179.md](./archive/REVIEWS_137-179.md). See Archive 5._
+
+---
+
+#### Review #330: PR #367 R7 — codePointAt, suppressAll Category Guard, Code Fence Parsing, EXIT Trap (2026-02-16)
+
+**Source:** SonarCloud (11) + Qodo Compliance (2) + Qodo Suggestions (8)
+**PR/Branch:** claude/read-session-commits-ZpJLX (PR #367) **Suggestions:** 21
+total (Fixed: 8, Already Deferred: 6, Already Rejected: 2, Rejected: 5)
+
+**Patterns Identified:**
+
+1. **codePointAt vs charCodeAt** — `charCodeAt` doesn't handle multi-byte
+   Unicode correctly; `codePointAt` is the safer default for character code
+   comparisons
+2. **suppressAll requires category** — suppressAll without a category would
+   suppress ALL alerts across ALL categories; now requires valid category string
+3. **Code fence awareness** — Markdown parser incorrectly matched review headers
+   inside fenced code blocks; skip lines when `inFence` is true
+4. **POSIX EXIT trap chaining** — Manual `trap -p EXIT | sed` is brittle and
+   non-portable; `add_exit_trap` helper safely chains cleanup commands
+5. **Shell control char validation** — Propagated from JS scripts to shell hooks
+   using POSIX `LC_ALL=C grep -q '[[:cntrl:]]'`
+
+**Key Learnings:**
+
+- `codePointAt` handles surrogate pairs and astral Unicode correctly
+- Category-wide suppression needs both `suppressAll: true` AND a valid category
+- Markdown parsing must account for code fences to avoid false header matches
+- Shell trap chaining via sed is fragile; a helper function is more maintainable
+- Always propagate validation patterns from JS to shell hooks and vice versa
+
+---
+
+#### Review #329: PR #367 R6 — Control Chars, suppressAll, POSIX CR Fix, Severity Normalization (2026-02-16)
+
+**Source:** SonarCloud (8) + Qodo Compliance (3) + Qodo Suggestions (5)
+**PR/Branch:** claude/read-session-commits-ZpJLX (PR #367) **Suggestions:** 16
+total (Fixed: 5, Already Deferred: 6, Already Rejected: 2, Rejected: 3)
+
+**Patterns Identified:**
+
+1. **Control char + length validation** — SKIP_REASON can contain control chars
+   beyond CR/LF; added `[\u0000-\u001f\u007f]` check and 500-char max
+2. **suppressAll explicit flag** — Empty messagePattern was suppressing entire
+   categories; now requires `suppressAll: true` for category-wide suppression
+3. **POSIX CR detection** — `$'\r'` is bash-specific; use `printf '\r'` variable
+4. **Severity normalization** — Unexpected severity values in warnings caused
+   NaN counts; clamp to known values
+
+**Key Learnings:**
+
+- Control character validation catches more injection vectors than just CR/LF
+- Category-wide suppression is a dangerous footgun — require explicit opt-in
+- Shell portability: `$'...'` ANSI-C quoting is bash-only, not POSIX sh
+- Propagation of validation patterns across all 3 JS scripts + 2 shell hooks
+
+---
+
+#### Review #328: PR #367 R5 — Suppression Validation, POSIX Portability, Newline Propagation (2026-02-16)
+
+**Source:** SonarCloud (8) + Qodo PR Compliance (5) + Qodo Code Suggestions (9)
+**PR/Branch:** claude/read-session-commits-ZpJLX (PR #367) **Suggestions:** 22
+total (Fixed: 9, Already Deferred: 6, Already Rejected: 2, Rejected: 5)
+
+**Patterns Identified:**
+
+1. **Suppression type guard** — filterSuppressedAlerts crashed on non-object
+   entries in suppressions JSON; added defensive filter
+2. **POSIX portability** — `grep -P` not available on all systems; replaced with
+   `wc -l` + `grep -q $'\r'` for newline detection
+3. **Propagation miss** — R4 added newline guards to shell hooks but missed JS
+   scripts (check-triggers.js, check-cross-doc-deps.js, check-doc-headers.js)
+4. **ENOENT preservation** — string error codes from execFileSync lost in catch;
+   now appended to stderr for debugging
+
+**Key Learnings:**
+
+- Propagation checks must cover BOTH shell hooks AND JS scripts that handle the
+  same env vars
+- `grep -P` (Perl regex) is a GNU extension, not POSIX — use `wc -l` for newline
+  counting
+- `typeof error.code === "string"` captures ENOENT/EACCES while numeric check
+  captures exit codes
+- Suppression files are external input — always validate entry types before
+  property access
+
+---
+
+#### Review #327: PR #367 R4 — Fail Closed, Log Injection, Trap Chaining, Input Normalization (2026-02-16)
+
+**Source:** SonarCloud (9) + Qodo PR Compliance (5) + Qodo Code Suggestions (10)
+**PR/Branch:** claude/read-session-commits-ZpJLX (PR #367) **Suggestions:** 24
+total (Fixed: 13, Already Deferred: 6, Already Fixed: 1, Rejected: 4)
+
+**Patterns Identified:**
+
+1. **Fail-closed security** — `isSafeToWrite = () => true` fallback changed to
+   `() => false` across all 5 files
+2. **Log injection prevention** — SKIP_REASON newline guard added to pre-commit
+   and pre-push hooks
+3. **Shell trap chaining** — Second `trap ... EXIT` overwrites first; use
+   `trap -p EXIT` to capture and chain
+
+**Key Learnings:**
+
+- Fail-open fallbacks for security modules are a recurring anti-pattern
+- Shell EXIT traps must be chained, not overwritten
+- `handoff.json` field types vary; normalize with `toCount()` helper
+- Running validate-audit.js twice is wasteful; capture output once
+
+---
+
+#### Review #326: PR #367 R3 — Weight Normalization, CC Reduction, Symlink Guards (2026-02-16)
+
+**Source:** SonarCloud (11) + Qodo PR Compliance (2) + Qodo Code Suggestions (8)
+**PR/Branch:** claude/read-session-commits-ZpJLX (PR #367) **Suggestions:** 21
+total (Fixed: 8, Already Deferred: 6, Already Rejected: 3, New Rejected: 4)
+
+**Patterns Identified:**
+
+1. **Tool conflict resolution** — SonarCloud wants `Math.max()` but pattern
+   compliance blocks it; resolved by classifying as REJECT with documented
+   reason
+2. **CC reduction via extraction** — Moving symlink checks outside try blocks or
+   into helper functions reduces nesting-based cognitive complexity
+3. **Type-safe defensive coding** — `typeof x === "string"` before `.trim()`,
+   `Array.isArray()` before `.reduce()` prevents crashes from malformed JSON
+   data
+
+**Key Learnings:**
+
+- When tools conflict (SonarCloud vs pattern compliance), document the conflict
+  and reject the item with a clear rationale rather than flip-flopping
+- Health score weight normalization is already handled by `measuredWeight`
+  division, but keeping raw weights summing to 1.0 prevents confusion
+- Deduplicating extracted learnings with a Set prevents data quality issues in
+  JSONL consumption files
+
+---
+
+#### Review #325: PR #367 R2 — Trend Bug, Suppression Logic, Security Hardening (2026-02-16)
+
+**Source:** CI (Prettier) + SonarCloud (15) + Qodo PR Compliance (5) + Qodo Code
+Suggestions (20) **PR/Branch:** claude/read-session-commits-ZpJLX (PR #367)
+**Suggestions:** 40 total (Fixed: 21, Deferred: 6, Rejected: 5)
+
+**Patterns Identified:**
+
+1. **R1 agent incomplete fixes** — 3 parallel agents in R1 missed several items
+   (trend bug, suppressions, runCommandSafe). Verification pass didn't catch
+   them.
+2. **EXIT trap overwrite** — Shell scripts using multiple mktemp calls each set
+   their own trap, overwriting previous cleanup.
+3. **Category-wide suppression blocked** — Empty messagePattern returned false
+   instead of true, preventing category-level suppression.
+
+**Key Learnings:**
+
+- Parallel agent results need explicit verification against the original item
+  list
+- Shell EXIT trap chaining requires capturing previous trap with `trap -p EXIT`
+- SonarCloud cognitive complexity items are consistently pre-existing (CC 16-64)
+
+**Resolution Stats:** 21 fixed (7 major, 12 minor, 2 trivial), 6 deferred
+(cognitive complexity, pre-existing), 5 rejected (false positives/design). 3
+parallel agents, 12 files modified.
+
+---
+
+#### Review #324: PR #367 R1 — Alerts Overhaul Security + Code Quality (2026-02-16)
+
+**Source:** SonarCloud (24) + Qodo PR Compliance (6) + Qodo Code Suggestions
+(14) **PR/Branch:** claude/read-session-commits-ZpJLX (PR #367) **Suggestions:**
+49 total (Fixed: 36, Deferred: 7, Rejected: 7)
+
+**Patterns Identified:**
+
+1. `runCommandSafe` options spread allows `shell: true` injection — hardened
+   with explicit allowlist
+2. `parseInt` → `Number.parseInt` consistency (6 instances across 3 files)
+3. `.replace(/x/g, y)` → `.replaceAll("x", y)` modernization (10 instances)
+4. Empty regex `new RegExp("")` matches everything — must guard in suppression
+   filter
+5. Symlink write guards missing in 2 new utility scripts (propagation check
+   caught)
+
+**Key Learnings:**
+
+- Parallel 3-agent review processing (security / code quality / hooks+docs)
+- First use of propagation check on new scripts added in same PR
+- SonarCloud cognitive complexity deferrals (6 items, all pre-existing CC 16-64)
+
+**Resolution Stats:** 36 fixed, 7 deferred (cognitive complexity), 7 rejected
+(false positives/design choices). 3 parallel agents, 10 files modified.
 
 ---
 

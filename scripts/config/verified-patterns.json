@@ -88,7 +88,10 @@
     "sync-roadmap-refs.js",
     "rotate-state.js",
     "user-prompt-handler.js",
-    "post-read-handler.js"
+    "post-read-handler.js",
+    "check-triggers.js",
+    "sync-reviews-to-jsonl.js",
+    "check-review-archive.js"
   ],
   "exec-without-global": [
     "validate-phase-completion.js",
@@ -124,7 +127,8 @@
     "log-override.js",
     "rotate-state.js",
     "user-prompt-handler.js",
-    "post-read-handler.js"
+    "post-read-handler.js",
+    "check-triggers.js"
   ],
   "json-parse-without-try": [
     "alerts-reminder.js",
@@ -148,7 +152,8 @@
     "log-override.js",
     "rotate-state.js",
     "user-prompt-handler.js",
-    "post-read-handler.js"
+    "post-read-handler.js",
+    "check-triggers.js"
   ],
   "unescaped-regexp-input": ["suggest-pattern-automation.js", "pattern-check.js"],
   "unbounded-regex-quantifier": ["suggest-pattern-automation.js"],

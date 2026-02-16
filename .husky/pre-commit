@@ -2,6 +2,53 @@
 # Pre-commit hook - AUTOMATED GATE (not optional documentation)
 # This blocks commits if checks fail
 
+# Shared guard: any SKIP_ override requires SKIP_REASON (Session #162)
+require_skip_reason() {
+  if [ -z "${SKIP_REASON:-}" ]; then
+    echo "  ❌ SKIP_REASON is required when overriding checks"
+    echo "  Usage: SKIP_REASON=\"your reason\" $1 git commit ..."
+    echo "  The audit trail is useless without a reason."
+    exit 1
+  fi
+  # Reject multi-line reasons (prevents JSONL/log injection) — POSIX-safe (no grep -P)
+  cr="$(printf '\r')"
+  if [ "$(printf '%s' "$SKIP_REASON" | wc -l | tr -d ' ')" -gt 1 ] || printf '%s' "$SKIP_REASON" | grep -q "$cr"; then
+    echo "  ❌ SKIP_REASON must be a single line (no CR/LF characters)"
+    exit 1
+  fi
+  # Reject control characters (prevents log injection) — POSIX-safe
+  if printf '%s' "$SKIP_REASON" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+    echo "  ❌ SKIP_REASON must not contain control characters"
+    exit 1
+  fi
+  # Enforce max length to prevent DoS via oversized reasons
+  skip_len=${#SKIP_REASON}
+  if [ "$skip_len" -gt 500 ]; then
+    echo "  ❌ SKIP_REASON must be <= 500 characters (got $skip_len)"
+    exit 1
+  fi
+  # Validate minimum length to prevent meaningless skip reasons like "x" or "test"
+  if [ "$skip_len" -lt 10 ]; then
+    echo "  ❌ SKIP_REASON must be at least 10 characters (got $skip_len)"
+    echo "  Provide a meaningful reason for the audit trail."
+    exit 1
+  fi
+}
+
+# POSIX-safe EXIT trap chaining — appends cleanup commands without overwriting prior traps
+add_exit_trap() {
+  prev="$(trap -p EXIT 2>/dev/null || true)"
+  case "$prev" in
+    *"EXIT"*)
+      prev_cmd=$(printf '%s' "$prev" | sed "s/^[^']*'\(.*\)'[^']*EXIT.*/\1/")
+      trap "${prev_cmd}; $1" EXIT
+      ;;
+    *)
+      trap "$1" EXIT
+      ;;
+  esac
+}
+
 echo "🔍 Running pre-commit checks..."
 
 # 1. Run ESLint - rely on exit code, not output parsing
@@ -32,31 +79,82 @@ fi
 
 # 3. Run pattern compliance check on staged files (catches issues before PR review tools)
 # Review #308: Capture output once instead of running command twice
-echo "  ▶ Running pattern compliance..."
-if ! patterns_output="$(node scripts/check-pattern-compliance.js --staged 2>&1)"; then
-  echo "  ❌ Pattern compliance failed"
-  printf '%s\n' "$patterns_output" | tail -15
-  echo ""
-  echo "  Fix pattern issues before committing. Run: node scripts/check-pattern-compliance.js --staged"
-  exit 1
+# Override with: SKIP_REASON="reason" SKIP_PATTERN_CHECK=1 git commit ...
+if [ "${SKIP_PATTERN_CHECK:-}" = "1" ]; then
+  require_skip_reason "SKIP_PATTERN_CHECK=1"
+  node scripts/log-override.js --quick --check=pattern-compliance --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "  ⏭️ Skipping pattern compliance (SKIP_PATTERN_CHECK=1)"
+else
+  echo "  ▶ Running pattern compliance..."
+  if ! patterns_output="$(node scripts/check-pattern-compliance.js --staged 2>&1)"; then
+    echo "  ❌ Pattern compliance failed"
+    printf '%s\n' "$patterns_output" | tail -15
+    echo ""
+    echo "  Fix pattern issues before committing. Run: node scripts/check-pattern-compliance.js --staged"
+    echo "  Override: SKIP_REASON=\"reason\" SKIP_PATTERN_CHECK=1 git commit ..."
+    exit 1
+  fi
+  echo "  ✅ Pattern compliance passed"
 fi
-echo "  ✅ Pattern compliance passed"
 
-# 4. Run tests - stream output using temp file
+# 4. Audit file S0/S1 validation (BLOCKING - Session #98)
+# Validates that S0/S1 findings have proper verification_steps
+# Moved before functional checks: security gates should run early
+# Override with: SKIP_AUDIT_VALIDATION=1 git commit ...
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
+if [ "${SKIP_AUDIT_VALIDATION:-}" != "1" ]; then
+  STAGED_AUDIT_FILES=$(printf '%s\n' "$STAGED_FILES" | grep -E "docs/audits/.*\.jsonl$" || true)
+  if [ -n "$STAGED_AUDIT_FILES" ]; then
+    echo "  ▶ Validating audit S0/S1 compliance..."
+    # POSIX-compatible: Write to temp file, read with while loop
+    # Review #204: Pipe creates subshell where variable changes don't propagate
+    # Chain with existing EXIT trap instead of overwriting
+    AUDIT_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
+    add_exit_trap 'rm -f "$AUDIT_TMPFILE" 2>/dev/null'
+    echo "$STAGED_AUDIT_FILES" > "$AUDIT_TMPFILE"
+    AUDIT_FAILED=0
+    while IFS= read -r audit_file || [ -n "$audit_file" ]; do
+      [ -z "$audit_file" ] && continue
+      audit_out="$(node scripts/validate-audit.js "$audit_file" --strict-s0s1 2>&1)"
+      audit_code=$?
+      if [ "$audit_code" -ne 0 ]; then
+        AUDIT_FAILED=1
+        echo "  ❌ S0/S1 validation failed: $audit_file"
+        printf '%s\n' "$audit_out" | grep -E "^   ❌|BLOCKING" | head -5
+      fi
+    done < "$AUDIT_TMPFILE"
+    rm -f "$AUDIT_TMPFILE"
+    if [ "$AUDIT_FAILED" -eq 1 ]; then
+      echo ""
+      echo "  Fix S0/S1 violations or downgrade severity. Run:"
+      echo "    node scripts/validate-audit.js <file> --strict-s0s1"
+      echo "  Override: SKIP_REASON=\"reason\" SKIP_AUDIT_VALIDATION=1 git commit ..."
+      exit 1
+    fi
+    echo "  ✅ Audit S0/S1 validation passed"
+  fi
+else
+  require_skip_reason "SKIP_AUDIT_VALIDATION=1"
+  node scripts/log-override.js --quick --check=audit-s0s1 --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "  ⏭️ Skipping audit validation (SKIP_AUDIT_VALIDATION set)"
+fi
+
+# 5. Run tests - stream output using temp file
 # Review #322: Run tests for config files that can break builds; skip for doc-only
 # Override with: SKIP_TESTS=1 git commit ... (use sparingly)
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
 DOC_ONLY_COMMIT=0
 
-if [ -n "$SKIP_TESTS" ]; then
-  node scripts/log-override.js --quick --check=tests --reason="${SKIP_REASON:-No reason}" 2>/dev/null || true
+if [ "${SKIP_TESTS:-}" = "1" ]; then
+  require_skip_reason "SKIP_TESTS=1"
+  node scripts/log-override.js --quick --check=tests --reason="$SKIP_REASON" 2>/dev/null || true
   echo "  ⏭️ Skipping tests (SKIP_TESTS=1)"
 # Always run tests for risky config changes that can break builds/tests
 # Review #322 Round 4: Include lockfiles (package-lock.json, yarn.lock, pnpm-lock.yaml)
 elif printf '%s\n' "$STAGED_FILES" | grep -Eq '^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|tsconfig.*\.json|next\.config\.(js|mjs|ts)|\.husky/|\.github/)'; then
   echo "  ▶ Running tests (config changes detected)..."
-  TEST_TMPFILE=$(mktemp)
-  trap 'rm -f "$TEST_TMPFILE"' EXIT
+  TEST_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
+  add_exit_trap 'rm -f "$TEST_TMPFILE" 2>/dev/null'
 
   if ! npm test > "$TEST_TMPFILE" 2>&1; then
     echo "  ❌ Tests failed"
@@ -76,8 +174,8 @@ else
     echo "  ⏭️ Skipping tests (doc-only commit)"
   else
     echo "  ▶ Running tests..."
-    TEST_TMPFILE=$(mktemp)
-    trap 'rm -f "$TEST_TMPFILE"' EXIT
+    TEST_TMPFILE="$(mktemp)" || { echo "  ❌ Failed to create temp file"; exit 1; }
+    add_exit_trap 'rm -f "$TEST_TMPFILE" 2>/dev/null'
 
     if ! npm test > "$TEST_TMPFILE" 2>&1; then
       echo "  ❌ Tests failed"
@@ -90,7 +188,7 @@ else
   fi
 fi
 
-# 5. CANON schema validation (non-blocking warning, ~1s)
+# 6. CANON schema validation (non-blocking warning, ~1s)
 # Validates CANON files when audit output is staged
 # Review #322 Round 3: Use printf for safer file path handling
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
@@ -104,7 +202,7 @@ if printf '%s\n' "$STAGED_FILES" | grep -q "docs/reviews/.*\.jsonl"; then
   fi
 fi
 
-# 6. Skill configuration validation (non-blocking, when skill files modified)
+# 7. Skill configuration validation (non-blocking, when skill files modified)
 # Review #322 Round 4: Include .claude/skills/ not just .claude/commands/
 if printf '%s\n' "$STAGED_FILES" | grep -Eq '\.(claude)/(skills|commands)/.*\.md$'; then
   echo "  ▶ Validating skill configurations..."
@@ -118,31 +216,38 @@ if printf '%s\n' "$STAGED_FILES" | grep -Eq '\.(claude)/(skills|commands)/.*\.md
   fi
 fi
 
-# 7. Cross-document dependency check (BLOCKING - Session #69)
+# 8. Cross-document dependency check (BLOCKING - Session #69)
 # Blocks commit when documents are modified that have known dependencies on other docs
 # Hook-quality fix: --trivial skips enforcement for whitespace/comment/formatting-only changes
-# Override with: SKIP_CROSS_DOC_CHECK=1 git commit ...
+# Override with: SKIP_REASON="reason" SKIP_CROSS_DOC_CHECK=1 git commit ...
 # See: docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers
-echo "  ▶ Checking cross-document dependencies..."
-if ! node scripts/check-cross-doc-deps.js --trivial; then
-  echo "  ❌ Cross-document dependency check failed"
-  echo ""
-  echo "  Fix dependencies before committing. Run: npm run crossdoc:check"
-  echo "  Override (use sparingly): SKIP_CROSS_DOC_CHECK=1 git commit ..."
-  exit 1
+if [ "${SKIP_CROSS_DOC_CHECK:-}" = "1" ]; then
+  require_skip_reason "SKIP_CROSS_DOC_CHECK=1"
+  node scripts/log-override.js --quick --check=cross-doc-deps --reason="$SKIP_REASON" 2>/dev/null || true
+  echo "  ⏭️ Skipping cross-doc dependency check (SKIP_CROSS_DOC_CHECK=1)"
+else
+  echo "  ▶ Checking cross-document dependencies..."
+  if ! node scripts/check-cross-doc-deps.js --trivial; then
+    echo "  ❌ Cross-document dependency check failed"
+    echo ""
+    echo "  Fix dependencies before committing. Run: npm run crossdoc:check"
+    echo "  Override: SKIP_REASON=\"reason\" SKIP_CROSS_DOC_CHECK=1 git commit ..."
+    exit 1
+  fi
+  echo "  ✅ Cross-document dependencies satisfied"
 fi
-echo "  ✅ Cross-document dependencies satisfied"
 
-# 8. Documentation Index auto-update (AUTO-FIX - Session #103, fixed #149)
+# 9. Documentation Index auto-update (AUTO-FIX - Session #103, fixed #149)
 # When .md files are staged, auto-regenerate and re-stage DOCUMENTATION_INDEX.md
 # This eliminates timing issues where lint-staged's stash/restore cycle
 # drops DOCUMENTATION_INDEX.md from the staging area (false-positive failures).
 # Override with: SKIP_DOC_INDEX_CHECK=1 git commit ...
-if [ -n "$SKIP_DOC_INDEX_CHECK" ]; then
-  node scripts/log-override.js --quick --check=doc-index --reason="${SKIP_REASON:-No reason}" 2>/dev/null || true
+if [ "${SKIP_DOC_INDEX_CHECK:-}" = "1" ]; then
+  require_skip_reason "SKIP_DOC_INDEX_CHECK=1"
+  node scripts/log-override.js --quick --check=doc-index --reason="$SKIP_REASON" 2>/dev/null || true
   echo "  ⏭️ Skipping doc index check (SKIP_DOC_INDEX_CHECK=1)"
 fi
-if [ -z "$SKIP_DOC_INDEX_CHECK" ]; then
+if [ "${SKIP_DOC_INDEX_CHECK:-}" != "1" ]; then
   CHANGED_MD_FILES=$(git diff --cached --name-only --diff-filter=ADM | grep -E '\.md$' || true)
   if [ -n "$CHANGED_MD_FILES" ]; then
     echo "  ▶ Auto-updating documentation index..."
@@ -157,13 +262,14 @@ if [ -z "$SKIP_DOC_INDEX_CHECK" ]; then
   fi
 fi
 
-# 8.5. Document header validation for NEW docs (BLOCKING - Session #115)
+# 10. Document header validation for NEW docs (BLOCKING - Session #115)
 # Ensures new .md files have required headers (Version, Last Updated, Status)
 # Override with: SKIP_DOC_HEADER_CHECK=1 git commit ...
-if [ -n "$SKIP_DOC_HEADER_CHECK" ]; then
-  node scripts/log-override.js --quick --check=doc-header --reason="${SKIP_REASON:-No reason}" 2>/dev/null || true
+if [ "${SKIP_DOC_HEADER_CHECK:-}" = "1" ]; then
+  require_skip_reason "SKIP_DOC_HEADER_CHECK=1"
+  node scripts/log-override.js --quick --check=doc-header --reason="$SKIP_REASON" 2>/dev/null || true
 fi
-if [ -z "$SKIP_DOC_HEADER_CHECK" ]; then
+if [ "${SKIP_DOC_HEADER_CHECK:-}" != "1" ]; then
   NEW_MD_FILES=$(git diff --cached --name-only --diff-filter=A | grep -E '\.md$' || true)
   if [ -n "$NEW_MD_FILES" ]; then
     echo "  ▶ Validating new document headers..."
@@ -174,7 +280,7 @@ if [ -z "$SKIP_DOC_HEADER_CHECK" ]; then
   fi
 fi
 
-# 9. Learning entry reminder (non-blocking, ~0.5s)  [was step 8]
+# 11. Learning entry reminder (non-blocking, ~0.5s)
 # Reminds to capture learnings when it looks like PR feedback was addressed
 LEARNINGS_LOG="docs/AI_REVIEW_LEARNINGS_LOG.md"
 
@@ -195,48 +301,11 @@ else
   fi
 fi
 
-# 10. Audit file S0/S1 validation (BLOCKING - Session #98)
-# Validates that S0/S1 findings have proper verification_steps
-# Override with: SKIP_AUDIT_VALIDATION=1 git commit ...
-if [ -z "$SKIP_AUDIT_VALIDATION" ]; then
-  STAGED_AUDIT_FILES=$(printf '%s\n' "$STAGED_FILES" | grep -E "docs/audits/.*\.jsonl$" || true)
-  if [ -n "$STAGED_AUDIT_FILES" ]; then
-    echo "  ▶ Validating audit S0/S1 compliance..."
-    # POSIX-compatible: Write to temp file, read with while loop
-    # Review #204: Pipe creates subshell where variable changes don't propagate
-    # Chain with existing EXIT trap instead of overwriting
-    AUDIT_TMPFILE=$(mktemp)
-    trap 'rm -f "$TEST_TMPFILE" "$AUDIT_TMPFILE" 2>/dev/null' EXIT
-    echo "$STAGED_AUDIT_FILES" > "$AUDIT_TMPFILE"
-    AUDIT_FAILED=0
-    while IFS= read -r audit_file || [ -n "$audit_file" ]; do
-      [ -z "$audit_file" ] && continue
-      if ! node scripts/validate-audit.js "$audit_file" --strict-s0s1 > /dev/null 2>&1; then
-        AUDIT_FAILED=1
-        echo "  ❌ S0/S1 validation failed: $audit_file"
-        node scripts/validate-audit.js "$audit_file" --strict-s0s1 2>&1 | grep -E "^   ❌|BLOCKING" | head -5
-      fi
-    done < "$AUDIT_TMPFILE"
-    rm -f "$AUDIT_TMPFILE"
-    if [ "$AUDIT_FAILED" -eq 1 ]; then
-      echo ""
-      echo "  Fix S0/S1 violations or downgrade severity. Run:"
-      echo "    node scripts/validate-audit.js <file> --strict-s0s1"
-      echo "  Override (use sparingly): SKIP_AUDIT_VALIDATION=1 git commit ..."
-      exit 1
-    fi
-    echo "  ✅ Audit S0/S1 validation passed"
-  fi
-else
-  node scripts/log-override.js --quick --check=audit-s0s1 --reason="${SKIP_REASON:-No reason}" 2>/dev/null || true
-  echo "  ⏭️ Skipping audit validation (SKIP_AUDIT_VALIDATION set)"
-fi
-
-# 11. Agent compliance check (non-blocking warning - Session #101)
+# 12. Agent compliance check (non-blocking warning - Session #101)
 # Warns if code files are being committed but agents weren't invoked
 # Make blocking with: STRICT_AGENT_CHECK=1 git commit ...
 echo "  ▶ Checking agent compliance..."
-if [ -n "$STRICT_AGENT_CHECK" ]; then
+if [ -n "${STRICT_AGENT_CHECK:-}" ]; then
   if ! node scripts/check-agent-compliance.js --strict 2>&1; then
     exit 1
   fi
@@ -248,14 +317,15 @@ else
   fi
 fi
 
-# 12. Technical debt schema validation (BLOCKING - TDMS Phase 7)
+# 13. Technical debt schema validation (BLOCKING - TDMS Phase 7)
 # Validates MASTER_DEBT.jsonl schema when modified
 # Hook-quality fix: --staged-only validates only changed lines, not the entire file
 # Override with: SKIP_DEBT_VALIDATION=1 git commit ...
-if [ -n "$SKIP_DEBT_VALIDATION" ]; then
-  node scripts/log-override.js --quick --check=debt-schema --reason="${SKIP_REASON:-No reason}" 2>/dev/null || true
+if [ "${SKIP_DEBT_VALIDATION:-}" = "1" ]; then
+  require_skip_reason "SKIP_DEBT_VALIDATION=1"
+  node scripts/log-override.js --quick --check=debt-schema --reason="$SKIP_REASON" 2>/dev/null || true
 fi
-if [ -z "$SKIP_DEBT_VALIDATION" ]; then
+if [ "${SKIP_DEBT_VALIDATION:-}" != "1" ]; then
   if printf '%s\n' "$STAGED_FILES" | grep -q "docs/technical-debt/MASTER_DEBT.jsonl"; then
     echo "  ▶ Validating technical debt schema (changed lines)..."
     if ! node scripts/debt/validate-schema.js --staged-only > /dev/null 2>&1; then
@@ -264,14 +334,14 @@ if [ -z "$SKIP_DEBT_VALIDATION" ]; then
       echo ""
       echo "  Fix schema issues before committing. Run:"
       echo "    node scripts/debt/validate-schema.js --staged-only"
-      echo "  Override (use sparingly): SKIP_DEBT_VALIDATION=1 git commit ..."
+      echo "  Override: SKIP_REASON=\"reason\" SKIP_DEBT_VALIDATION=1 git commit ..."
       exit 1
     fi
     echo "  ✅ Technical debt schema passed"
   fi
 fi
 
-# 13. Technical debt canonical location check (WARNING - TDMS Phase 7)
+# 14. Technical debt canonical location check (WARNING - TDMS Phase 7)
 # Session #128: Canonical locations for debt data:
 #   - docs/technical-debt/ (MASTER_DEBT.jsonl + views)
 #   - docs/audits/single-session/ (audit output files)

@@ -16,7 +16,7 @@ const path = require("node:path");
 const { isSafeToWrite } = require("./lib/symlink-guard");
 
 const ROOT_DIR = path.resolve(__dirname, "../..");
-const ALERTS_FILE = path.join(ROOT_DIR, ".claude", "pending-alerts.json");
+const WARNINGS_FILE = path.join(ROOT_DIR, ".claude", "hook-warnings.json");
 const ALERTS_ACK_FILE = path.join(ROOT_DIR, ".claude", "alerts-acknowledged.json");
 const PENDING_MCP_SAVE_FILE = path.join(ROOT_DIR, ".claude", "pending-mcp-save.json");
 const CONTEXT_TRACKING_FILE = path.join(
@@ -94,43 +94,46 @@ function main() {
 
   const messages = [];
 
-  // Check for pending alerts
-  // Pattern #70: Skip existsSync - use try/catch alone (race condition safe)
-  let alertsAcknowledged = false;
-  let alertsData = null;
-
-  // Try to read alerts file
+  // Check for unacknowledged hook warnings
+  let warningsData = null;
   try {
-    const content = fs.readFileSync(ALERTS_FILE, "utf8");
-    alertsData = JSON.parse(content);
+    const content = fs.readFileSync(WARNINGS_FILE, "utf8");
+    warningsData = JSON.parse(content);
   } catch {
-    // File doesn't exist or can't be read - no alerts to check
+    // File doesn't exist or can't be read
   }
 
-  if (alertsData) {
+  if (warningsData) {
     // Check if alerts were acknowledged
+    let alertsAcknowledged = false;
     try {
       const ackContent = fs.readFileSync(ALERTS_ACK_FILE, "utf8");
       const ackData = JSON.parse(ackContent);
-
-      if (ackData.acknowledgedAt && alertsData.generated) {
+      if (ackData.acknowledgedAt) {
         const ackTime = new Date(ackData.acknowledgedAt).getTime();
-        const alertsTime = new Date(alertsData.generated).getTime();
-        // Review #322: Use >= to handle identical timestamps correctly
-        if (ackTime >= alertsTime) {
+        // Find the newest warning timestamp
+        const warnings = Array.isArray(warningsData.warnings) ? warningsData.warnings : [];
+        const newestWarning = warnings.reduce((max, w) => {
+          const t = new Date(w?.timestamp).getTime();
+          if (Number.isNaN(t)) return max;
+          return t > max ? t : max;
+        }, 0);
+        if (newestWarning > 0 && ackTime >= newestWarning) {
           alertsAcknowledged = true;
         }
       }
     } catch {
-      // Ack file doesn't exist or can't be read - treat as not acknowledged
+      // Ack file doesn't exist
     }
 
     if (!alertsAcknowledged) {
+      const warnings = warningsData.warnings || [];
       const counts = { error: 0, warning: 0, info: 0 };
-      for (const alert of alertsData.alerts || []) {
-        counts[alert.severity] = (counts[alert.severity] || 0) + 1;
+      for (const w of Array.isArray(warnings) ? warnings : []) {
+        const raw = typeof w?.severity === "string" ? w.severity : "";
+        const sev = raw === "error" || raw === "warning" || raw === "info" ? raw : "warning";
+        counts[sev] = counts[sev] + 1;
       }
-
       const total = counts.error + counts.warning + counts.info;
       if (total > 0) {
         const parts = [];
@@ -182,7 +185,7 @@ function main() {
     } catch {
       /* best-effort */
     }
-    fs.renameSync(tmpCooldown, COOLDOWN_FILE);
+    fs.renameSync(tmpCooldown, COOLDOWN_FILE); // isSafeToWrite guards on lines 173-178
   } catch {
     try {
       fs.rmSync(tmpCooldown, { force: true });

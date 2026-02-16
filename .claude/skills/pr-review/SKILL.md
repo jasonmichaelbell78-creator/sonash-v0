@@ -92,6 +92,20 @@ If new large files exist:
 2. Fix issues found
 3. THEN push to CI
 
+### Security Pattern Sweep (NEW — PR #366 Retro)
+
+**Before the first push**, if the PR introduces security-adjacent code (write
+helpers, state files, hooks), run a targeted grep for all write paths:
+
+```bash
+# Find all unguarded write paths in hooks/scripts
+grep -rn 'writeFileSync\|renameSync\|appendFileSync' .claude/hooks/ scripts/ --include="*.js" | grep -v 'isSafeToWrite'
+```
+
+This catches the most common ping-pong pattern: a security fix applied to one
+file while the same pattern exists in 10+ other files. PR #366 had 5 rounds of
+symlink guard ping-pong that this sweep would have prevented.
+
 ---
 
 ## STEP 0: CONTEXT LOADING (Tiered Access)
@@ -488,8 +502,9 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 ## Version History
 
-| Version | Date       | Description                                                |
-| ------- | ---------- | ---------------------------------------------------------- |
-| 2.1     | 2026-02-14 | Extract reference docs: SonarCloud, agents, TDMS, learning |
-| 2.0     | 2026-02-10 | Full protocol with parallel agents, TDMS integration       |
-| 1.0     | 2026-01-15 | Initial version                                            |
+| Version | Date       | Description                                                    |
+| ------- | ---------- | -------------------------------------------------------------- |
+| 2.2     | 2026-02-15 | Add Security Pattern Sweep + Propagation Check (PR #366 retro) |
+| 2.1     | 2026-02-14 | Extract reference docs: SonarCloud, agents, TDMS, learning     |
+| 2.0     | 2026-02-10 | Full protocol with parallel agents, TDMS integration           |
+| 1.0     | 2026-01-15 | Initial version                                                |

@@ -167,15 +167,40 @@ function getStagedFiles(filter = "A") {
 function main() {
   // Review #217: Implement documented SKIP_DOC_HEADER_CHECK override
   if (process.env.SKIP_DOC_HEADER_CHECK === "1") {
+    const rawReason = process.env.SKIP_REASON;
+    const reason = typeof rawReason === "string" ? rawReason.trim() : "";
+
+    if (!reason) {
+      log("❌ SKIP_REASON is required when overriding checks", colors.red);
+      log('   Usage: SKIP_REASON="reason" SKIP_DOC_HEADER_CHECK=1 git commit ...', colors.yellow);
+      log("   The audit trail is useless without a reason.", colors.red);
+      process.exit(1);
+    }
+
+    if (/[\r\n]/.test(reason)) {
+      log("❌ SKIP_REASON must be single-line (no CR/LF)", colors.red);
+      process.exit(1);
+    }
+
+    if (
+      [...reason].some((c) => {
+        const code = c.codePointAt(0);
+        return code < 0x20 || code === 0x7f;
+      })
+    ) {
+      log("❌ SKIP_REASON must not contain control characters", colors.red);
+      process.exit(1);
+    }
+
+    if (reason.length > 500) {
+      log("❌ SKIP_REASON is too long (max 500 chars)", colors.red);
+      process.exit(1);
+    }
+
     try {
       execFileSync(
         "node",
-        [
-          "scripts/log-override.js",
-          "--quick",
-          "--check=doc-header",
-          `--reason=${process.env.SKIP_REASON || "No reason"}`,
-        ],
+        ["scripts/log-override.js", "--quick", "--check=doc-header", `--reason=${reason}`],
         { timeout: 3000, stdio: "pipe" }
       );
     } catch {

@@ -1,10 +1,11 @@
 ---
 name: alerts
 description: |
-  Intelligent health dashboard with scoring, benchmarks, trends, and session
-  planning. Triggers: "alerts", "check alerts", "what needs attention", "system
-  health", "show warnings", "pending issues". Default mode (--limited) checks 8
-  categories. Use --full for comprehensive reporting with all 18 categories.
+  Intelligent health dashboard with scoring, benchmarks, trends, and interactive
+  alert-by-alert workflow. Triggers: "alerts", "check alerts", "what needs
+  attention", "system health", "show warnings", "pending issues". Default mode
+  (--limited) checks 12 categories. Use --full for comprehensive reporting with
+  all 33 categories.
 ---
 
 # Alerts — Intelligent Health Dashboard
@@ -13,307 +14,269 @@ description: |
 
 This skill provides an intelligent health dashboard that goes beyond raw data.
 It computes health scores, rates metrics against benchmarks, shows trends via
-sparklines, groups related items, and builds prioritized session plans.
+sparklines, groups related items, and uses an interactive alert-by-alert
+workflow where each alert is presented individually for user decision.
 
 **Output is v2 JSON** with `{alerts:[], context:{}}` per category, health
 scores, benchmarks, trends, and session plans. Claude renders this as a rich
-visual dashboard with progress bars, sparklines, and interactive drill-downs.
+visual dashboard and walks through alerts one at a time.
 
 ## Usage
 
 ```
-/alerts           # Limited mode (default) - quick health check (8 categories)
-/alerts --full    # Full mode - comprehensive reporting (18 categories)
+/alerts           # Limited mode (default) - quick health check (12 categories)
+/alerts --full    # Full mode - comprehensive reporting (33 categories)
 ```
 
 ## Workflow
 
-### Step 1: Run the Script
+### Phase 1: Run & Parse
+
+1. Run the alerts script:
 
 ```bash
 node .claude/skills/alerts/scripts/run-alerts.js --limited   # or --full
 ```
 
-The script outputs v2 JSON to stdout and progress to stderr.
+2. Parse the v2 JSON output from stdout (progress goes to stderr).
 
-### Step 2: Parse the v2 JSON
+3. Create a session decision log file:
+   - Path: `.claude/tmp/alert-session-{YYYY-MM-DD-HHMM}.jsonl`
+   - Create `.claude/tmp/` directory if it doesn't exist
 
-Parse the JSON output. Key fields:
+4. Load suppression list from `.claude/state/alert-suppressions.json`
+   - If file doesn't exist, treat as empty suppressions list
 
-- `healthScore` — `{grade, score, breakdown}` with letter grade and 0-100 score
-- `categories` — Each has `{alerts:[], context:{}}` with benchmarks, ratings,
-  trends, groups
-- `sessionPlan` — Prioritized action list (all errors + top warnings, ~5 items)
-- `delta` — (optional) Changes since first run today:
-  `{scoreBefore, scoreAfter, scoreDelta, categoryChanges}`
-- `summary` — `{errors, warnings, info}` counts
+### Phase 2: Dashboard Overview (compact)
 
-### Step 3: Present the Health Dashboard
-
-Use this exact visual template. Replace values from the parsed JSON.
-
-**CRITICAL:** Use Unicode box-drawing characters, progress bars (`████░░░░`),
-sparklines (`▁▂▃▄▅▆▇█`), and emoji badges exactly as shown. This is a VISUAL
-dashboard, not a text dump.
-
-#### Main Dashboard Template
+Present a compact 3-line header plus category scorecard:
 
 ```
-╔══════════════════════════════════════════════════════════════════╗
-║                                                                  ║
-║   🏥 PROJECT HEALTH REPORT                                      ║
-║                                                                  ║
-║        {grade}    {score} / 100                                  ║
-║   {progress_bar}  {score}%                                       ║
-║                                                                  ║
-║   🔴 {errors} errors  ·  🟡 {warnings} warnings  ·  🔵 {info} info  ║
-║                                                                  ║
-╚══════════════════════════════════════════════════════════════════╝
+Health: {grade} ({score}/100)  |  🔴 {errors} errors · 🟡 {warnings} warnings · 🔵 {info} info
 ```
 
-Progress bar: Use `█` for filled and `░` for empty. Scale to ~45 chars wide.
-Example for 68%: `████████████████████████████████░░░░░░░░░░░░░░░`
-
-If `delta` exists in the JSON (re-run), add to the header:
+Then show category scorecard table (compact format):
 
 ```
-║        {grade}    {score} / 100    ↑ from {gradeBefore} ({scoreBefore})  ║
+┌──────────────┬───────┬────────────┐
+│ Category     │ Score │ Rating     │
+├──────────────┼───────┼────────────┤
+│ 🛡️ Security  │  100  │ 🟢 Good    │
+│ 📋 Debt      │   40  │ 🔴 Poor    │
+└──────────────┴───────┴────────────┘
 ```
 
-#### Category Scorecard
+Then say: **"Found N alerts to review. Walking through each one..."**
 
-Build from `healthScore.breakdown`. Map category keys to display names and
-icons:
+### Phase 3: Alert-by-Alert Loop
 
-| Key              | Icon | Display Name |
-| ---------------- | ---- | ------------ |
-| code             | 💻   | Code Health  |
-| security         | 🛡️   | Security     |
-| debt-metrics     | 📋   | Debt         |
-| test-results     | 🧪   | Tests        |
-| learning         | 📚   | Learning     |
-| velocity         | 🎯   | Velocity     |
-| review-quality   | 🔍   | Reviews      |
-| agent-compliance | 🤖   | Agents       |
-| docs             | 📝   | Docs         |
+Sort all alerts: errors first, then warnings, then info.
+
+For each alert, present a full context card:
 
 ```
-┌──────────────┬───────┬────────────┬───────────┬─────────────────┐
-│ Category     │ Score │ Rating     │ Trend     │ Spark           │
-├──────────────┼───────┼────────────┼───────────┼─────────────────┤
-│ 🛡️ Security  │  100  │ 🟢 Good    │ → Stable  │ ▁▁▁▁▁           │
-│ 🧪 Tests     │   85  │ 🟡 Average │ → Stable  │ ▃▃▅▅▅           │
-│ 📚 Learning  │   80  │ 🟢 Good    │ ↗ Rising  │ ▂▃▃▅▅           │
-│ 💻 Code      │   70  │ 🟡 Average │ ↑ Better  │ ▇▆▅▃▃           │
-│ 📋 Debt      │   40  │ 🔴 Poor    │ ↓ Growing │ ▁▂▃▅▇           │
-└──────────────┴───────┴────────────┴───────────┴─────────────────┘
-```
+━━━ Alert {n}/{total} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{severity_badge} {category_icon} {category_name}
 
-Rating mapping from score: 90+ = 🟢 Good, 70+ = 🟡 Average, <70 = 🔴 Poor.
+{message}
 
-Trend: Look at `context.trend.direction` if available. Map:
-
-- `stable` → `→ Stable`
-- `increasing` → `↑ Rising` (for metrics where higher is bad like debt, use
-  `↓ Growing`)
-- `decreasing` → `↓ Falling` (for metrics where lower is bad, use `↑ Improving`)
-
-Sparkline: Use `context.sparklines.*` or `context.trend.values` with sparkline
-chars `▁▂▃▄▅▆▇█`.
-
-#### Errors Section
-
-```
-🔴 ERRORS — must fix before shipping ──────────────────────────────
-
-  ❶  {icon} {category} │ {message}
-     ├── {details or group summary}
-     ├── Top: {topItem.id} {topItem.file} ({topItem.effort})
-     └── 💡 {contextual suggestion based on data}
-     → {action}
-```
-
-Number errors with ❶❷❸❹❺. Include:
-
-- Group summary from `context.groups` if available
-- Top items from `context.topItems` if available
-- A `💡` suggestion line with contextual advice (e.g., "These are mostly E0
-  quick-fixes")
-
-#### Warnings Section
-
-```
-🟡 WARNINGS — should address this session ─────────────────────────
-
-  ❸  {icon} {category} │ {message}
-     ├── {breakdown or distribution}
-     ├── 💡 {suggestion}
-     └── Consider: {alternative action}
-     → {action}
-```
-
-Continue numbering from errors. Include:
-
-- Distribution data from `context.groups` (e.g., "code-quality 69% ·
-  documentation 26%")
-- Suggestions with effort estimates where possible
-- Alternative approaches (e.g., "Consider: Run /sonarcloud-sprint for batch
-  cleanup")
-
-#### Info Section
-
-```
-🔵 INFO — awareness only ──────────────────────────────────────────
-
-  •  {icon} {category}: {concise one-liner}
-```
-
-Keep info items to single lines. Pull key numbers from `context.totals`.
-
-#### Session Plan
-
-```
-📋 SUGGESTED SESSION PLAN ─────────────────────────────────────────
-
-  ① {action} ({item count}, {effort hint})
-     Impact: {before_emoji}→{after_emoji} Would raise {category} score from {before} → ~{after}
-  ② {action}
-     Impact: {description}
-  ③ Continue with planned work from SESSION_CONTEXT.md
-
-  Estimated grade after ①②③: {current_grade} ({current_score}) → {projected_grade} ({projected_score})
-```
-
-Build from `sessionPlan[]`. For each item:
-
-- Use ①②③④⑤ circled numbers
-- Estimate score impact: each error fixed = +30 to category, each warning = +10
-- Show projected grade improvement
-
-#### Delta Section (re-run only)
-
-If `delta` exists in the JSON:
-
-```
-✅ FIXED THIS SESSION ─────────────────────────────────────────────
-
-  ✓ {metric}: {before} → {after} ({change})    {icon} {category} {scoreBefore} → {scoreAfter} (+{delta})
-  ✓ {metric}: {before} → {after}               {icon} {category} {scoreBefore} → {scoreAfter} (+{delta})
-
-  Session impact: {summary of severity changes}
-```
-
-#### Interactive Options
-
-Always end with options:
-
-```
+Details: {details or benchmarks}
+Trend: {sparkline if available}
+Action: {suggested action}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  a) 🔧 Start fixing {top error category} items
-  b) 🔧 Fix {second priority}
-  c) 🔍 Drill into a category for full details
-  d) 📊 Run /alerts --full for all 18 categories
 ```
 
-Adapt options based on what was found. If no errors, lead with top warnings. If
-in full mode, replace option d) with another relevant action.
+Use `AskUserQuestion` with severity-appropriate options:
 
-### Step 4: Category Drill-Down
+**ERROR alerts:**
 
-When user asks to drill into a category, present the full context card:
+- Fix Now — execute the fix immediately
+- Defer — add to deferred list for batch execution
+- Suppress (permanent) — suppress this alert type permanently
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                                                                   │
-│  {icon} {CATEGORY NAME}                                          │
-│                                                                   │
-│     Score: {score}/100  {rating_emoji} {rating_label}            │
-│     {progress_bar}  {score}%                                      │
-│                                                                   │
-└──────────────────────────────────────────────────────────────────┘
-```
+**WARNING alerts:**
 
-#### Benchmarks Table
+- Fix Now
+- Defer
+- Ignore (session) — skip for this session only
+- Suppress (permanent)
 
-```
-📊 BENCHMARKS vs ACTUAL
-┌───────────────────┬──────────┬──────────┬──────────┬────────────┐
-│ Metric            │ Actual   │ Rating   │ Target   │ Gap        │
-├───────────────────┼──────────┼──────────┼──────────┼────────────┤
-│ {metric_name}     │ {value}  │ {emoji}  │ {target} │ {gap}      │
-└───────────────────┴──────────┴──────────┴──────────┴────────────┘
-```
+**INFO alerts:**
 
-Build from `context.benchmarks` and `context.ratings`. Gap = target - actual.
-Rating emoji: good = 🟢, average = 🟡, poor = 🔴.
+- Acknowledge — mark as seen
+- Ignore (session)
+- Suppress (permanent)
 
-#### Trends
+**If user chooses "Suppress":**
 
-```
-📈 TRENDS (last 5 snapshots)
-  {metric}: {value1} → {value2} → ... → {valueN}
-            {sparkline_bar}  {direction} {delta}% {emoji}
-            💡 {contextual interpretation}
-```
+- Ask for a reason (mandatory) via AskUserQuestion
+- Write suppression entry to `.claude/state/alert-suppressions.json`
 
-Use sparkline chars for visual trend. Add 💡 interpretation:
+**If user chooses "Fix Now":**
 
-- Growing debt: "Growth rate is accelerating — consider a cleanup sprint"
-- Improving S0: "Good trajectory — S0 approaching zero"
-- Stable tests: "Consistent pass rate — good stability"
+- Execute the fix action immediately
+- Mark as `executed: true` in the session log
 
-#### Top Items (if available)
+**Log every decision** to the session JSONL file:
 
-```
-🔴 TOP {SEVERITY} ITEMS
-┌──────────────┬─────────────────────────┬──────────────────────────┬────────┐
-│ ID           │ Issue                   │ Location                 │ Effort │
-├──────────────┼─────────────────────────┼──────────────────────────┼────────┤
-│ {id}         │ {title}                 │ {file}                   │ {eff}  │
-└──────────────┴─────────────────────────┴──────────────────────────┴────────┘
+```json
+{
+  "alertIndex": 1,
+  "category": "debt-metrics",
+  "severity": "error",
+  "message": "...",
+  "decision": "fix_now",
+  "timestamp": "...",
+  "executed": true,
+  "fixAction": "..."
+}
 ```
 
-#### Groups (if available)
+### Phase 4: Action Plan Summary
 
-Use proportional bar charts:
-
-```
-📦 BY {GROUP_FIELD}
-  {name}  {bar}  {count}  ({percent}%)
-          💡 {suggestion for this group}
-```
-
-Bar: Scale largest group to ~35 chars of `█`, others proportionally. Add 💡
-per-group suggestion:
-
-- code-quality: "Largest bucket — /sonarcloud-sprint can batch-fix"
-- E0 items: "Start here — each takes <5 min"
-
-#### Drill-Down Options
+After all alerts have been reviewed, show a summary:
 
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  a) 🔧 Fix the {count} {severity} items (grouped by type)
-  b) 📊 Show {other_severity} breakdown
-  c) 🏃 Run {relevant sprint/cleanup command}
-  d) ← Back to dashboard
+📋 SESSION SUMMARY
+  ✅ Fixed: N
+  ⏳ Deferred: N
+  ⏭️ Ignored: N
+  🔇 Suppressed: N
 ```
 
-### Step 5: Post-Fix Flow
+If deferred items exist, list them numbered with their actions.
 
-After the user fixes issues:
+Use `AskUserQuestion` to ask: **"Execute deferred fixes now?"**
 
-1. Offer to re-run `/alerts` to verify improvements
-2. On re-run, the script auto-computes delta from baseline
-3. Show the delta section highlighting what improved
-4. Update session plan with remaining items
-5. If all errors cleared, congratulate and suggest moving to planned work
+- Options: Execute all, Execute selected, Skip
+
+### Phase 5: Batch Execution
+
+If the user chose to execute deferred fixes:
+
+1. Execute each deferred fix in order
+2. After each: update session log with `executed: true` or `executionError`
+3. Show progress: `[1/3] Fixing X... done`
+
+### Phase 6: System Self-Audit (Final Alert)
+
+After all individual alerts have been processed, present one final "meta-alert":
+a self-audit of the alerts system itself. This is NOT from run-alerts.js —
+Claude performs it live by analyzing the session's data.
+
+**What the self-audit checks:**
+
+1. **Checker coverage**: How many checkers returned `no_data: true`? List them.
+   Surfaces gaps where data sources are missing or broken.
+
+2. **Suppression health**: How many alerts are suppressed? Are any suppressions
+   older than 90 days (stale)? Any categories entirely suppressed (masking real
+   issues)?
+
+3. **Score integrity**: Are any categories unmeasured (`measured: false`)? What
+   % of total weight is unmeasured? If >20%, flag as warning.
+
+4. **Decision balance**: From this session's decisions — what's the
+   fix/defer/ignore/suppress ratio? High ignore rate may indicate alert fatigue.
+   High suppress rate may indicate noisy checkers.
+
+5. **Trend health**: Are health scores trending down over recent entries in
+   `health-score-log.jsonl`? Are any categories consistently "poor"?
+
+6. **Process gap detection**: Check if the following are missing/empty/stale:
+   - `health-score-log.jsonl` (no history = can't trend)
+   - `hook-warnings-log.jsonl` (no permanent record)
+   - `alert-suppressions.json` (no suppression management)
+   - `override-log.jsonl` (no override tracking)
+   - Session decision logs in `.claude/tmp/` (no decision audit trail)
+
+7. **Actionable suggestions**: Based on findings, suggest specific improvements:
+   - "3 checkers returned no data — verify these npm scripts exist: ..."
+   - "Suppression X is 120 days old — review if still valid"
+   - "Health score dropped 15 points over last 5 runs — investigate category"
+   - "70% of alerts were ignored — consider tuning benchmarks to reduce noise"
+
+**Presentation**: Use `AskUserQuestion` with options:
+
+- Acknowledge
+- Create improvement task(s)
+- Suppress self-audit
+
+**Log decision** to session JSONL with `category: "system-self-audit"`.
+
+### Phase 7: Cleanup & Verification
+
+1. Write `.claude/alerts-acknowledged.json`:
+
+   ```json
+   {
+     "acknowledgedAt": "ISO-8601",
+     "alertsProcessed": N,
+     "alertsFixed": N,
+     "sessionLog": ".claude/tmp/alert-session-{timestamp}.jsonl"
+   }
+   ```
+
+2. Write any new suppressions to `.claude/state/alert-suppressions.json`
+
+3. Clear resolved alerts from `.claude/hook-warnings.json` (remove warnings
+   whose messages match fixed alerts)
+
+4. Offer re-run: **"Re-run /alerts to verify improvements?"**
+
+5. If user accepts, re-run and show delta section:
+   ```
+   ✅ FIXED THIS SESSION
+     ✓ {metric}: {before} → {after} ({change})
+     Session impact: Grade {before} → {after} (+{delta})
+   ```
+
+## Suppression System
+
+**File**: `.claude/state/alert-suppressions.json`
+
+```json
+{
+  "version": 1,
+  "suppressions": [
+    {
+      "id": "suppress-{timestamp}",
+      "category": "docs",
+      "messagePattern": "CANON validation",
+      "reason": "Known false positive (mandatory)",
+      "suppressedAt": "ISO-8601",
+      "expiresAt": null
+    }
+  ]
+}
+```
+
+Suppressions are filtered by `run-alerts.js` after all checkers run, before
+health score computation. Match by `category` + regex on `message`. Expired
+suppressions are skipped.
+
+## Session Decision Log
+
+**File pattern**: `.claude/tmp/alert-session-{YYYY-MM-DD-HHMM}.jsonl`
+
+```json
+{
+  "alertIndex": 1,
+  "category": "debt-metrics",
+  "severity": "error",
+  "message": "...",
+  "decision": "defer",
+  "timestamp": "...",
+  "executed": false,
+  "fixAction": "..."
+}
+```
+
+Cleanup: `npm run alerts:cleanup` deletes session logs older than 7 days.
 
 ## Modes
 
-### Limited Mode (Default) — 8 Categories
+### Limited Mode (Default) — 12 Categories
 
 Quick health check:
 
@@ -324,19 +287,37 @@ Quick health check:
 5. **Learning Health** — Failing patterns, effectiveness, automation
 6. **Agent Compliance** — Required agents vs actual invocations
 7. **Hook Warnings** — Deduplicated warnings, age tracking
-8. **Test Results** — Pass/fail/error counts, staleness
+8. **Skip Abuse** — Override tracking, trends
+9. **Test Results** — Pass/fail/error counts, staleness
+10. **Session State** — Uncommitted files, stale branches
+11. **Pattern Hotspots** — Repeat-offender files
+12. **Context Usage** — Files-read count, excessive context warning
 
-### Full Mode (--full) — 18 Categories
+### Full Mode (--full) — 33 Categories
 
-Everything in Limited plus: 9. **Current Alerts** — Deferred PR items 10.
-**Documentation Health** — CANON, cross-doc deps, staleness 11.
-**Roadmap/Planning** — Blocked/overdue items 12. **Review Quality** — PR rounds,
-fix ratios 13. **Consolidation** — Reviews pending, suggested rules 14.
-**Velocity** — Items/session, acceleration detection 15. **Session Activity** —
-Files, commits, skills last session 16. **Commit Activity** — 24h commits,
-attribution, last commit age 17. **Roadmap Validation** —
-`npm run roadmap:validate` 18. **Hook Health** — Registration status, session
-completion rate
+Everything in Limited plus 21 additional categories:
+
+13. **Debt Intake** — 30-day intake velocity, source effectiveness
+14. **Debt Resolution** — Resolution velocity, enhancement of existing checker
+15. **Documentation Health** — CANON, cross-doc deps, staleness
+16. **Roadmap/Planning** — Blocked/overdue items
+17. **Review Quality** — PR rounds, fix ratios
+18. **Consolidation** — Reviews pending, suggested rules
+19. **Velocity** — Items/session, acceleration detection
+20. **Session Activity** — Files, commits, skills last session
+21. **Commit Activity** — 24h commits, attribution, last commit age
+22. **Roadmap Validation** — `npm run roadmap:validate`
+23. **Hook Health** — Registration status, session completion rate
+24. **Roadmap Hygiene** — `npm run roadmap:hygiene`
+25. **Trigger Compliance** — `npm run triggers:check`
+26. **Pattern Sync** — `npm run patterns:sync`
+27. **Doc Placement** — `npm run docs:placement`
+28. **External Links** — `npm run docs:external-links`
+29. **Unused Deps** — `npm run deps:unused`
+30. **Review Churn** — `npm run review:churn`
+31. **Backlog Health** — `npm run backlog:check`
+32. **GitHub Actions** — CI/CD status via `gh run list`
+33. **SonarCloud** — Quality gate status
 
 ## Benchmark Reference
 
@@ -408,17 +389,53 @@ All ratings use three tiers: 🟢 Good, 🟡 Average, 🔴 Poor.
 
 The overall health score is a weighted average of category scores:
 
+**Core (70%):**
+
 | Category    | Weight |
 | ----------- | ------ |
-| Code Health | 20%    |
-| Security    | 20%    |
-| Debt        | 15%    |
-| Tests       | 15%    |
-| Learning    | 10%    |
-| Velocity    | 5%     |
-| Reviews     | 5%     |
-| Agents      | 5%     |
-| Docs        | 5%     |
+| Code Health | 15%    |
+| Security    | 15%    |
+| Debt        | 12%    |
+| Tests       | 10%    |
+| Learning    | 8%     |
+| Skip Abuse  | 3%     |
+| Session     | 3%     |
+| Agents      | 4%     |
+
+**New state (8%):**
+
+| Category         | Weight |
+| ---------------- | ------ |
+| Session State    | 3%     |
+| Pattern Hotspots | 3%     |
+| Context Usage    | 2%     |
+
+**Existing adjusted (9%):**
+
+| Category | Weight |
+| -------- | ------ |
+| Velocity | 3%     |
+| Reviews  | 3%     |
+| Docs     | 3%     |
+
+**Full-mode only (contribute when measured):**
+
+| Category           | Weight |
+| ------------------ | ------ |
+| Debt Intake        | 2%     |
+| Roadmap Hygiene    | 2%     |
+| Trigger Compliance | 1%     |
+| Pattern Sync       | 1%     |
+| Doc Placement      | 1%     |
+| External Links     | 1%     |
+| Unused Deps        | 1%     |
+| Review Churn       | 1%     |
+| Backlog            | 1%     |
+| GitHub Actions     | 2%     |
+| SonarCloud         | 2%     |
+
+All new full-mode categories use `measured: false` fallback so limited mode
+scores stay stable.
 
 **Category scoring:** Start at 100, deduct 30 per error, 10 per warning. **Grade
 scale:** A = 90+, B = 80+, C = 70+, D = 60+, F = <60.
@@ -434,8 +451,8 @@ scale:** A = 90+, B = 80+, C = 70+, D = 60+, F = <60.
     "grade": "B",
     "score": 74,
     "breakdown": {
-      "code": { "score": 70, "weight": 0.20 },
-      "security": { "score": 100, "weight": 0.20 }
+      "code": { "score": 70, "weight": 0.15, "measured": true },
+      "security": { "score": 100, "weight": 0.15, "measured": true }
     }
   },
   "categories": {
@@ -443,42 +460,18 @@ scale:** A = 90+, B = 80+, C = 70+, D = 60+, F = <60.
       "alerts": [
         { "severity": "error", "message": "...", "details": "...", "action": "..." }
       ],
-      "context": {
-        "benchmarks": { ... },
-        "ratings": { ... },
-        "trend": { "open": { "direction": "increasing", "values": [...], "delta": 5, "deltaPercent": 3 } },
-        "sparklines": { "open": "▁▂▃▅▇" },
-        "groups": { "by_category": [...], "by_effort": [...] },
-        "topItems": { "s0": [...] },
-        "totals": { "total": 2190, "open": 1786, "resolved": 162, "s0": 9, "s1": 363, "resRate": 7 },
-        "by_severity": { "S0": 27, "S1": 388, "S2": 968, "S3": 807 }
-      }
+      "context": { ... }
     }
   },
   "summary": { "errors": 2, "warnings": 4, "info": 3 },
-  "sessionPlan": [
-    {
-      "priority": 1,
-      "category": "debt-metrics",
-      "action": "Fix S0 critical items",
-      "message": "9 S0 items...",
-      "impact": "high"
-    }
-  ],
-  "delta": {
-    "scoreBefore": 68,
-    "gradeBefore": "C",
-    "scoreAfter": 72,
-    "gradeAfter": "C",
-    "scoreDelta": 4,
-    "categoryChanges": { ... }
-  }
+  "sessionPlan": [ ... ],
+  "delta": { ... }
 }
 ```
 
 ## Scripts
 
-### scripts/run-alerts.js
+### run-alerts.js
 
 Main script. Outputs v2 JSON to stdout, progress to stderr.
 
@@ -493,12 +486,19 @@ Exit code 1 if any error-level alerts, 0 otherwise.
 `.claude/state/alerts-baseline.json`. Subsequent runs compute deltas
 automatically. The baseline resets daily.
 
+### cleanup-alert-sessions.js
+
+Deletes session decision logs older than 7 days.
+
+```bash
+npm run alerts:cleanup
+```
+
 ## Integration
 
 At session start, Claude should:
 
 1. Run `/alerts` (limited mode) automatically
-2. Present the visual dashboard (Step 3 above)
-3. Offer interactive options including drill-down and fixes
-4. Help fix top issues before starting planned work
-5. After fixes, offer to re-run to verify improvements
+2. Walk through the interactive Phase 2-7 workflow
+3. Help fix issues before starting planned work
+4. After fixes, offer to re-run to verify improvements

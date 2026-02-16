@@ -31,6 +31,8 @@
     "lessons:surface": "node scripts/surface-lessons-learned.js",
     "session:gaps": "node scripts/check-session-gaps.js",
     "session:gaps:fix": "node scripts/check-session-gaps.js --fix",
+    "reviews:sync": "node scripts/sync-reviews-to-jsonl.js",
+    "reviews:check-archive": "node scripts/check-review-archive.js",
     "consolidation:run": "node scripts/run-consolidation.js",
     "learning:analyze": "node scripts/analyze-learning-effectiveness.js",
     "learning:dashboard": "node scripts/analyze-learning-effectiveness.js --format dashboard",
@@ -73,7 +75,8 @@
     "docs:external-links": "node scripts/check-external-links.js",
     "docs:accuracy": "node scripts/check-content-accuracy.js",
     "docs:placement": "node scripts/check-doc-placement.js",
-    "session:end": "node scripts/session-end-commit.js"
+    "session:end": "node scripts/session-end-commit.js",
+    "alerts:cleanup": "node scripts/cleanup-alert-sessions.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"

@@ -2,6 +2,39 @@
 # Pre-push hook - Additional gate before pushing to remote
 # This blocks pushes if checks fail
 
+# Shared guard: any SKIP_ override requires SKIP_REASON (Session #162)
+require_skip_reason() {
+  if [ -z "${SKIP_REASON:-}" ]; then
+    echo "  ❌ SKIP_REASON is required when overriding checks"
+    echo "  Usage: SKIP_REASON=\"your reason\" $1 git push ..."
+    echo "  The audit trail is useless without a reason."
+    exit 1
+  fi
+  # Reject multi-line reasons (prevents JSONL/log injection) — POSIX-safe (no grep -P)
+  cr="$(printf '\r')"
+  if [ "$(printf '%s' "$SKIP_REASON" | wc -l | tr -d ' ')" -gt 1 ] || printf '%s' "$SKIP_REASON" | grep -q "$cr"; then
+    echo "  ❌ SKIP_REASON must be a single line (no CR/LF characters)"
+    exit 1
+  fi
+  # Reject control characters (prevents log injection) — POSIX-safe
+  if printf '%s' "$SKIP_REASON" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+    echo "  ❌ SKIP_REASON must not contain control characters"
+    exit 1
+  fi
+  # Enforce max length to prevent DoS via oversized reasons
+  skip_len=${#SKIP_REASON}
+  if [ "$skip_len" -gt 500 ]; then
+    echo "  ❌ SKIP_REASON must be <= 500 characters (got $skip_len)"
+    exit 1
+  fi
+  # Validate minimum length to prevent meaningless skip reasons like "x" or "test"
+  if [ "$skip_len" -lt 10 ]; then
+    echo "  ❌ SKIP_REASON must be at least 10 characters (got $skip_len)"
+    echo "  Provide a meaningful reason for the audit trail."
+    exit 1
+  fi
+}
+
 echo "🚀 Running pre-push checks..."
 
 # 1. Tests already run in pre-commit (Quick Win - Session #113)
@@ -42,18 +75,19 @@ if [ -n "${script_changes:-}" ]; then
     fi
   fi
 
-  if [ $reviewer_ran -eq 0 ]; then
+  if [ "$reviewer_ran" -eq 0 ]; then
     echo "  ⚠️ Script changes detected but code-reviewer not invoked this session"
     echo "  Changed files:"
     printf '%s\n' "$script_changes" | while read -r f; do echo "    - $f"; done
     echo ""
     echo "  Run code-reviewer before pushing script changes."
-    echo "  Use: SKIP_REVIEWER=1 git push to bypass (not recommended)"
+    echo "  Use: SKIP_REASON=\"reason\" SKIP_REVIEWER=1 git push to bypass (not recommended)"
     if [ "${SKIP_REVIEWER:-}" != "1" ]; then
       exit 1
     fi
+    require_skip_reason "SKIP_REVIEWER=1"
     echo "  ⚠️ Bypassed with SKIP_REVIEWER=1"
-    node scripts/log-override.js --quick --check=reviewer --reason="${SKIP_REASON:-No reason}" 2>/dev/null || true
+    node scripts/log-override.js --quick --check=reviewer --reason="$SKIP_REASON" 2>/dev/null || true
     node scripts/append-hook-warning.js --hook=pre-push --type=reviewer --severity=warning --message="Code-reviewer bypassed for script changes" --action="Run code-reviewer agent" 2>/dev/null || true
   else
     echo "  ✅ Code-reviewer was invoked for script changes"
@@ -72,7 +106,7 @@ security_diff=$(git diff --diff-filter=ACMR @{u}...HEAD -U0 2>/dev/null | grep -
 diff_exit=$?
 set -e
 
-if [ $diff_exit -ne 0 ] || [ -z "${security_diff:-}" ]; then
+if [ "$diff_exit" -ne 0 ] || [ -z "${security_diff:-}" ]; then
   echo "  ⚠️ No upstream or no added lines detected; skipping security scan"
 else
   # Write added lines to temp file for scanning
@@ -86,7 +120,7 @@ else
   code=$?
   set -e
 
-  if [ $code -ne 0 ]; then
+  if [ "$code" -ne 0 ]; then
     echo "  ❌ Security violations found in NEW code"
     printf '%s\n' "$out" | grep -E "CRITICAL|HIGH|🛑|file:" | head -15
     echo ""
@@ -126,7 +160,7 @@ audit_exit=$?
 if [ "$had_errexit" -eq 1 ]; then
   set -e
 fi
-if [ $audit_exit -ne 0 ]; then
+if [ "$audit_exit" -ne 0 ]; then
   # Check if it's a real vulnerability (exit code 1) vs network error
   if echo "$audit_output" | grep -q "vulnerabilities"; then
     echo "  ⚠️ Security vulnerabilities found (not blocking - run: npm audit)"
@@ -143,19 +177,20 @@ fi
 # Checks: security_audit (files with auth/token/etc.), consolidation, skill_validation
 echo "  ▶ Checking event-based triggers..."
 if [ "${SKIP_TRIGGERS:-}" = "1" ]; then
+  require_skip_reason "SKIP_TRIGGERS=1"
   echo "  ⚠️ Triggers skipped (SKIP_TRIGGERS=1)"
   # Log the override for audit trail with reason
-  node scripts/log-override.js --check=triggers --reason="${SKIP_REASON:-No reason provided}" 2>/dev/null || true
+  node scripts/log-override.js --check=triggers --reason="$SKIP_REASON" 2>/dev/null || true
 else
   triggers_output=$(npm run triggers:check 2>&1)
   triggers_exit=$?
-  if [ $triggers_exit -eq 1 ]; then
+  if [ "$triggers_exit" -eq 1 ]; then
     echo "  ❌ Blocking trigger(s) activated"
     printf '%s\n' "$triggers_output" | grep -E "^🚫|^❌|^   Action:|^   Files:" | head -20
     echo ""
-    echo "  Complete required actions or use: SKIP_TRIGGERS=1 git push"
+    echo "  Complete required actions or use: SKIP_REASON=\"reason\" SKIP_TRIGGERS=1 git push"
     exit 1
-  elif [ $triggers_exit -eq 0 ]; then
+  elif [ "$triggers_exit" -eq 0 ]; then
     # Show warnings but don't block
     if echo "$triggers_output" | grep -q "⚠️"; then
       printf '%s\n' "$triggers_output" | grep -E "^⚠️|^   Action:" | head -10
@@ -170,6 +205,13 @@ else
     else
       echo "  ✅ No blocking triggers"
     fi
+  else
+    # Fail closed: unexpected exit code means something went wrong
+    echo "  ❌ Triggers check failed (exit $triggers_exit)"
+    printf '%s\n' "$triggers_output" | tail -20
+    echo ""
+    echo "  Fix the triggers checker error or use: SKIP_REASON=\"reason\" SKIP_TRIGGERS=1 git push"
+    exit 1
   fi
 fi
 
