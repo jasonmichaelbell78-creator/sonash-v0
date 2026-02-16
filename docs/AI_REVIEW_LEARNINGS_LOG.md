@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.20 **Created:** 2026-01-02 **Last Updated:** 2026-02-16
+**Document Version:** 17.21 **Created:** 2026-01-02 **Last Updated:** 2026-02-16
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.21   | 2026-02-16 | PR #368 Retrospective: 6 rounds, 65 items, symlink/TOCTOU ping-pong across R1-R6, SKIP_REASON persistence rejected 4x. Key action: fstatSync-after-open pattern rule.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 17.20   | 2026-02-16 | Review #334: PR #368 R6 — fstatSync fd validation, empty-reason-on-failure, console truncation, EXIT trap robustness, Object.values iteration, cross_domain marker, partial TDMS guard. 8 fixed, 3 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | 17.19   | 2026-02-16 | Review #333: PR #368 R5 — TOCTOU fd-write, argument injection, symlink directory guard, domains dedupe, canonical category, partial data guard. 8 fixed, 4 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 17.18   | 2026-02-16 | Review #330: PR #367 R7 — codePointAt (3 files), suppressAll category guard, code fence parsing, POSIX EXIT trap helper, shell control char validation. 8 fixed, 6 CC deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -649,6 +650,109 @@ unique | **Fixed:** 100 | **Deferred:** 6 CC (pre-existing) | **Rejected:** ~24
 **Verdict:** R1-R3 productive. R4-R7 were progressive hardening ping-pong.
 Highest-impact fix: shared SKIP_REASON validator + filterSuppressedAlerts tests
 would have saved 3 rounds.
+
+---
+
+### PR #368 Retrospective (2026-02-16)
+
+#### Review Cycle Summary
+
+- **Rounds:** 6 (R1 through R6, all on 2026-02-16)
+- **Total items processed:** ~65 (Fixed: ~50, Rejected: ~15, Deferred: 0)
+- **TDMS items created:** 0
+- **Key files:** `check-triggers.js` (+93 lines), `validate-skip-reason.js`
+  (+35/-20), `run-alerts.js` (+20), `SKILL.md` (+27), `.husky/pre-commit`
+  (+13/-13), `FIX_TEMPLATES.md` (+13/-13)
+
+#### Churn Analysis
+
+- **R1->R2: Symlink guard incomplete** (ping-pong)
+  - R1 added realpathSync on logDir; R2 Qodo flagged logPath itself could be a
+    symlink
+  - **Root cause:** Partial fix — checked directory but not file
+  - **Prevention:** Checklist: "symlink guards must cover both directory AND
+    file targets"
+
+- **R2->R3: Symlink still incomplete + shell:true recurring** (ping-pong)
+  - R2 added lstatSync on file; R3 Qodo flagged ancestor directory + shell:true
+    again
+  - **Root cause:** shell:true was "explained away" with comments in R1-R2
+    instead of eliminated
+  - **Prevention:** "Explain-away" is not a fix. Eliminate the attack surface
+    (`.cmd` suffix approach)
+
+- **R3->R4: DoS in validation + TOCTOU in file creation** (ping-pong)
+  - R3 added validateSkipReason but length check was after char iteration
+  - **Root cause:** Validation order wasn't optimized (cheap checks first)
+  - **Prevention:** Input validation template:
+    type→trim→empty→length→format→encoding (Step 5.7)
+
+- **R4->R5: TOCTOU in file creation race** (ping-pong)
+  - R4 added explicit file permissions but via separate existsSync +
+    openSync("wx") + appendFileSync
+  - **Root cause:** Three separate fs calls = TOCTOU window
+  - **Prevention:** Atomic fd-based pattern: openSync("a") + fchmodSync +
+    writeSync + closeSync
+
+- **R5->R6: fstatSync gap in fd-based write** (ping-pong)
+  - R5 introduced fd-based write but didn't verify fd points to regular file
+  - **Root cause:** Incremental hardening — each round fixed one layer but not
+    the next
+  - **Prevention:** FIX_TEMPLATES.md template for "secure file write" covering
+    the full chain
+
+- **SKIP_REASON persistence: rejected consistently R3-R6** (NOT ping-pong)
+  - Qodo compliance re-flagged this every round; rejected each time with same
+    justification
+  - This is correct behavior — consistent rejection prevents churn
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                           | Rounds      | Already Automated?                 | Recommended Action                                                                                   |
+| --------------------------------- | ----------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Symlink guard completeness        | R1,R2,R3    | Partial (check-pattern-compliance) | Add rule: `writeFileSync\|appendFileSync\|openSync` must have both dir+file symlink checks (~30 min) |
+| TOCTOU file write                 | R4,R5,R6    | No                                 | Add FIX_TEMPLATES.md template #22: "Secure Audit File Write" with full fd-based pattern (~15 min)    |
+| SKIP_REASON persistence rejection | R3,R4,R5,R6 | No                                 | Add Qodo suppression rule for "sensitive log persistence" on `override-log.jsonl` (~10 min)          |
+| shell:true elimination            | R1,R2,R3    | No (fixed at source)               | Fixed permanently in R3 via .cmd suffix — no automation needed                                       |
+| Validation order (cheap first)    | R3,R4       | No                                 | Already codified in Step 5.7 of pr-review SKILL.md                                                   |
+
+#### Skills/Templates to Update
+
+- **FIX_TEMPLATES.md:** Add Template #22 "Secure Audit File Write" — the full
+  fd-based write pattern (openSync→fstatSync→fchmodSync→writeSync→closeSync)
+  used in R5+R6. Would have saved 2 rounds (~15 min effort).
+- **pr-review SKILL.md:** The Step 5.7 input validation chain (added from PR
+  #367 retro) worked — R4 was the only validation-order issue. No update needed.
+- **CODE_PATTERNS.md:** Document fstatSync-after-open as mandatory for
+  security-sensitive writes (~10 min effort).
+
+#### Process Improvements
+
+1. **"Full chain" security fixes, not incremental** — R1-R6 each fixed one layer
+   of the symlink/TOCTOU defense (dir check → file check → realpath →
+   permissions → fd-based → fstatSync). A single comprehensive fix using
+   FIX_TEMPLATES would have resolved this in R1-R2. Evidence: 4 rounds of TOCTOU
+   ping-pong (R3-R6).
+2. **Consistent rejection prevents churn** — SKIP_REASON persistence was
+   rejected identically in R3-R6 with the same justification. This is working
+   correctly — the reviewer re-flags it each round, we reject it each round, no
+   code changes. Evidence: 0 wasted commits from this pattern.
+3. **Eliminate, don't explain** — shell:true persisted R1-R3 because the "fix"
+   was adding comments. The R3 `.cmd` suffix approach eliminated the risk
+   entirely. Rule: if a reviewer keeps flagging the same thing despite your
+   comments, eliminate the surface area instead.
+
+#### Verdict
+
+The review cycle was **moderately inefficient** — 6 rounds where 3 would have
+sufficed. The core issue was **incremental security hardening** instead of
+applying the full defense-in-depth pattern upfront. Rounds R1-R2 were productive
+(adding new functionality). Rounds R3-R6 were progressive layering of the same
+symlink/TOCTOU fix that could have been done once with a complete template.
+
+**Highest-impact change:** Create FIX_TEMPLATES.md Template #22 ("Secure Audit
+File Write") with the full fd-based chain. This single template would have
+prevented R4-R6 entirely, saving ~3 review rounds.
 
 ---
 
