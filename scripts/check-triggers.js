@@ -397,6 +397,21 @@ function main() {
       process.exit(1);
     }
 
+    if (
+      [...reason].some((c) => {
+        const code = c.charCodeAt(0);
+        return code < 0x20 || code === 0x7f;
+      })
+    ) {
+      console.error("❌ SKIP_REASON must not contain control characters");
+      process.exit(1);
+    }
+
+    if (reason.length > 500) {
+      console.error("❌ SKIP_REASON is too long (max 500 chars)");
+      process.exit(1);
+    }
+
     console.log("⚠️  SKIP_TRIGGERS=1 detected - skipping trigger checks");
     console.log("   (Override logged for audit trail)\n");
 

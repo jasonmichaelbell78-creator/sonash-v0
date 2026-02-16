@@ -130,8 +130,9 @@ function main() {
       const warnings = warningsData.warnings || [];
       const counts = { error: 0, warning: 0, info: 0 };
       for (const w of warnings) {
-        const sev = w.severity || "warning";
-        counts[sev] = (counts[sev] || 0) + 1;
+        const raw = typeof w?.severity === "string" ? w.severity : "";
+        const sev = raw === "error" || raw === "warning" || raw === "info" ? raw : "warning";
+        counts[sev] = counts[sev] + 1;
       }
       const total = counts.error + counts.warning + counts.info;
       if (total > 0) {

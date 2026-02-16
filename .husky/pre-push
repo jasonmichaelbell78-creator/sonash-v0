@@ -11,7 +11,8 @@ require_skip_reason() {
     exit 1
   fi
   # Reject multi-line reasons (prevents JSONL/log injection) — POSIX-safe (no grep -P)
-  if [ "$(printf '%s' "$SKIP_REASON" | wc -l | tr -d ' ')" -gt 1 ] || printf '%s' "$SKIP_REASON" | grep -q $'\r'; then
+  cr="$(printf '\r')"
+  if [ "$(printf '%s' "$SKIP_REASON" | wc -l | tr -d ' ')" -gt 1 ] || printf '%s' "$SKIP_REASON" | grep -q "$cr"; then
     echo "  ❌ SKIP_REASON must be a single line (no CR/LF characters)"
     exit 1
   fi

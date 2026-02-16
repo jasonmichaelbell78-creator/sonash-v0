@@ -168,10 +168,32 @@ function main() {
   // Review #217: Implement documented SKIP_DOC_HEADER_CHECK override
   if (process.env.SKIP_DOC_HEADER_CHECK === "1") {
     const rawReason = process.env.SKIP_REASON;
-    const reason = typeof rawReason === "string" ? rawReason.trim() : "No reason";
+    const reason = typeof rawReason === "string" ? rawReason.trim() : "";
+
+    if (!reason) {
+      log("❌ SKIP_REASON is required when overriding checks", colors.red);
+      log('   Usage: SKIP_REASON="reason" SKIP_DOC_HEADER_CHECK=1 git commit ...', colors.yellow);
+      log("   The audit trail is useless without a reason.", colors.red);
+      process.exit(1);
+    }
 
     if (/[\r\n]/.test(reason)) {
       log("❌ SKIP_REASON must be single-line (no CR/LF)", colors.red);
+      process.exit(1);
+    }
+
+    if (
+      [...reason].some((c) => {
+        const code = c.charCodeAt(0);
+        return code < 0x20 || code === 0x7f;
+      })
+    ) {
+      log("❌ SKIP_REASON must not contain control characters", colors.red);
+      process.exit(1);
+    }
+
+    if (reason.length > 500) {
+      log("❌ SKIP_REASON is too long (max 500 chars)", colors.red);
       process.exit(1);
     }
 

@@ -418,6 +418,21 @@ try {
       process.exit(1);
     }
 
+    if (
+      [...reason].some((c) => {
+        const code = c.charCodeAt(0);
+        return code < 0x20 || code === 0x7f;
+      })
+    ) {
+      log("❌ SKIP_REASON must not contain control characters", colors.red);
+      process.exit(1);
+    }
+
+    if (reason.length > 500) {
+      log("❌ SKIP_REASON is too long (max 500 chars)", colors.red);
+      process.exit(1);
+    }
+
     try {
       execFileSync(
         "node",

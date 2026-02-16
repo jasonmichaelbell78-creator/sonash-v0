@@ -2895,9 +2895,10 @@ function filterSuppressedAlerts() {
     catData.alerts = catData.alerts.filter((alert) => {
       return !activeSups.some((sup) => {
         if (sup.category && sup.category !== cat) return false;
-        // If no message pattern, suppress entire category
         const pattern = typeof sup.messagePattern === "string" ? sup.messagePattern.trim() : "";
-        if (pattern === "") return true;
+        // Require explicit suppressAll flag for category-wide suppression
+        if (sup.suppressAll === true) return true;
+        if (pattern === "") return false;
         // Use case-insensitive string matching (safe — no regex injection)
         const msg = typeof alert.message === "string" ? alert.message : String(alert.message ?? "");
         return msg.toLowerCase().includes(pattern.toLowerCase());
