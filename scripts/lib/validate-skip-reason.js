@@ -29,6 +29,15 @@ function validateSkipReason(rawReason, usageExample = "SKIP_CHECK=1") {
     };
   }
 
+  // Length check first — prevents DoS from oversized input before expensive iteration
+  if (reason.length > 500) {
+    return {
+      valid: false,
+      reason,
+      error: "❌ SKIP_REASON is too long (max 500 chars)",
+    };
+  }
+
   if (/[\r\n]/.test(reason)) {
     return {
       valid: false,
@@ -51,14 +60,6 @@ function validateSkipReason(rawReason, usageExample = "SKIP_CHECK=1") {
       valid: false,
       reason,
       error: "❌ SKIP_REASON must not contain control characters",
-    };
-  }
-
-  if (reason.length > 500) {
-    return {
-      valid: false,
-      reason,
-      error: "❌ SKIP_REASON is too long (max 500 chars)",
     };
   }
 

@@ -403,10 +403,10 @@ function main() {
         stdio: "inherit",
       });
       logDestination = "script";
-    } catch (primaryErr) {
+    } catch (error_) {
       // Inline fallback: write structured audit entry directly
       // Log primary failure for debugging (stderr only, not persisted)
-      console.error(`   [debug] Primary logger failed: ${primaryErr?.message ?? "unknown"}`);
+      console.error(`   [debug] Primary logger failed: ${error_?.message ?? "unknown"}`);
       try {
         // Truncate reason to prevent accidental secret persistence (max 200 chars)
         const safeReason = reason.length > 200 ? reason.slice(0, 200) + "..." : reason;
@@ -455,11 +455,15 @@ function main() {
         if (fs.existsSync(logPath) && fs.lstatSync(logPath).isSymbolicLink()) {
           throw new Error("symlink detected on log file");
         }
+        // Set restrictive permissions on new files to prevent leaks on shared systems
+        if (!fs.existsSync(logPath)) {
+          fs.closeSync(fs.openSync(logPath, "wx", 0o600));
+        }
         fs.appendFileSync(logPath, JSON.stringify(auditEntry) + "\n");
         logDestination = "file";
-      } catch (fallbackErr) {
+      } catch (error_) {
         // Both paths failed — warn but don't block
-        console.error(`   [debug] Fallback logger failed: ${fallbackErr?.message ?? "unknown"}`);
+        console.error(`   [debug] Fallback logger failed: ${error_?.message ?? "unknown"}`);
       }
     }
     let logMessage;

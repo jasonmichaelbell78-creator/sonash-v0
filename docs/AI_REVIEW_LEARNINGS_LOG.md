@@ -650,6 +650,40 @@ would have saved 3 rounds.
 
 ---
 
+#### Review #332: PR #368 R4 — DoS Length Check, Fingerprint Stability, File Perms (2026-02-16)
+
+**Source:** SonarCloud (2) + Qodo Compliance (5) + Qodo Suggestions (5)
+**PR/Branch:** claude/cherry-pick-recent-commits-X1eKD (PR #368)
+**Suggestions:** 12 total (Fixed: 8, Rejected: 4)
+
+**Patterns Identified:**
+
+1. **Length check before expensive iteration** — validate-skip-reason iterated
+   all chars via `[...reason].some()` before checking length, enabling DoS.
+   Always check length first for bounded-input functions.
+2. **Deterministic fingerprint generation** — Sorting findings before generating
+   the cross-domain ID ensures stable deduplication across runs. Without
+   sorting, non-deterministic input order produces different IDs for the same
+   findings.
+3. **Restrictive file permissions on audit logs** — New files created via
+   `appendFileSync` inherit umask (often 0o644). Explicitly creating with 0o600
+   prevents info leaks on shared systems.
+4. **Schema alignment: fingerprint vs id** — TDMS schema uses `fingerprint` as
+   canonical key; using `id` for the same purpose creates pipeline mismatches.
+
+**Key Learnings:**
+
+- Qodo compliance continues to flag SKIP_REASON persistence as a risk across
+  multiple rounds ([3], [6], [7]). This is by-design: audit logs MUST contain
+  the reason to be useful. The `.claude/` directory is gitignored. Truncation
+  (200 chars) is sufficient mitigation. Rejecting these consistently prevents
+  ping-pong.
+- The symlink guard ancestor-directory claim is incorrect — `realpathSync`
+  already resolves all symlinks in the entire path chain. Validating each claim
+  before accepting saves unnecessary code churn.
+
+---
+
 #### Review #331: PR #368 R3 — Symlink Hardening, shell:true Elimination, Ternary Extract (2026-02-16)
 
 **Source:** SonarCloud (1) + Qodo Compliance (5) + Qodo Suggestions (7)

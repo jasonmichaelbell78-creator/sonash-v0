@@ -121,15 +121,19 @@ const groups = groupBy(findings, (f) => `${f.file}:${f.line}`);
 for (const group of groups) {
   if (group.length > 1) {
     // Multiple audits flagged same location
+    const sorted = [...group].sort((a, b) =>
+      `${a.file}::${a.line ?? 0}`.localeCompare(`${b.file}::${b.line ?? 0}`)
+    );
+    const titles = [...new Set(group.map((f) => f.title).filter(Boolean))].sort();
     merged = {
-      id: `cross-domain::${group[0].file}::${group[0].line ?? 0}::${slugify(mergeTitles(group))}`, // Standard fingerprint (file::line::slug)
+      fingerprint: `cross-domain::${sorted[0].file}::${sorted[0].line ?? 0}::${slugify(titles.join(" + "))}`, // Canonical key for dedupe + TDMS
       domains: group.map((f) => f.domain), // ["code", "security"]
       severity: maxSeverity(group), // Take worst severity
       effort: maxEffort(group), // Take highest effort estimate
       confidence: maxConfidence(group), // Take highest confidence
       title: mergeTitles(group), // Combine titles
       description: mergeDescriptions(group), // Combine contexts
-      category: "Cross-Domain", // Flag as spanning multiple domains
+      category: "cross-domain", // Flag as spanning multiple domains
       ...
     };
   }
@@ -453,7 +457,7 @@ Each line must be a valid JSON object matching the TDMS schema:
 {
   "fingerprint": "cross-domain::auth.ts::error-handling",
   "title": "Missing error handling + Exception vulnerability",
-  "category": "code-quality",
+  "category": "security",
   "severity": "S0",
   "effort": "E1",
   "confidence": 0.95,
