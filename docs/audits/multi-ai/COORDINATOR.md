@@ -36,13 +36,15 @@ Starting any review process, checking if review is needed
 
 | Review Type                    | Template                                                                           | Use When                                                                              |
 | ------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Code Review                    | [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)                             | PRs, feature completion, tactical issues                                              |
-| Security Audit                 | [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)                       | Security concerns, auth changes, pre-release, dependency vulnerabilities              |
-| Performance Audit              | [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)                 | Slow app, bundle growth, before traffic increase                                      |
+| Code Review                    | [CODE_REVIEW_AUDIT.md](./templates/CODE_REVIEW_AUDIT.md)                           | PRs, feature completion, tactical issues                                              |
+| Security Audit                 | [SECURITY_AUDIT.md](./templates/SECURITY_AUDIT.md)                                 | Security concerns, auth changes, pre-release, dependency vulnerabilities              |
+| Performance Audit              | [PERFORMANCE_AUDIT.md](./templates/PERFORMANCE_AUDIT.md)                           | Slow app, bundle growth, before traffic increase                                      |
 | Refactoring Plan               | [REFACTORING_AUDIT.md](./templates/REFACTORING_AUDIT.md)                           | Tech debt, architecture consolidation, vibe coding cleanup, SonarCloud CRITICAL items |
 | Documentation Audit            | [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)                       | Broken links, stale docs, coverage gaps, quarterly doc health check                   |
 | Process Audit                  | [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)                                   | CI/CD reliability, hook effectiveness, automation health, quarterly process review    |
 | Engineering Productivity Audit | [ENGINEERING_PRODUCTIVITY_AUDIT.md](./templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | DX friction, debugging difficulties, offline gaps, build/CI slowness, test issues     |
+| Enhancement Audit              | [ENHANCEMENT_AUDIT.md](./templates/ENHANCEMENT_AUDIT.md)                           | Feature gaps, UX improvements, roadmap opportunities                                  |
+| AI Optimization Audit          | [AI_OPTIMIZATION_AUDIT.md](./templates/AI_OPTIMIZATION_AUDIT.md)                   | Token waste, skill overlap, hook latency, AI workflow friction                        |
 
 ### Template Selection Decision Tree
 
@@ -66,6 +68,12 @@ START
   │
   ├─ Are there CI/CD, hooks, or automation issues?
   │   └─ YES → Process Audit Template
+  │
+  ├─ Are there feature gaps or UX improvements needed?
+  │   └─ YES → Enhancement Audit Template
+  │
+  ├─ Is there AI workflow friction, token waste, or skill overlap?
+  │   └─ YES → AI Optimization Audit Template
   │
   └─ Otherwise → Code Review Template
 ```
@@ -192,6 +200,10 @@ echo "=== Check triggers against thresholds above ==="
 ### Current Project Baseline
 
 **Last Updated:** 2026-01-11
+
+> **Note:** These baselines are from 2026-01-10 and are now stale. They will be
+> updated on the next multi-AI audit run (scheduled when 100+ commits or 14+
+> days threshold is reached).
 
 ```yaml
 # Repository Stats
@@ -703,9 +715,9 @@ It should NOT be used for:
 - **[DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md)** - Document
   formatting standards
 - **Audit Templates:**
-  - [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)
-  - [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)
-  - [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)
+  - [CODE_REVIEW_AUDIT.md](./templates/CODE_REVIEW_AUDIT.md)
+  - [SECURITY_AUDIT.md](./templates/SECURITY_AUDIT.md)
+  - [PERFORMANCE_AUDIT.md](./templates/PERFORMANCE_AUDIT.md)
   - [REFACTORING_AUDIT.md](./templates/REFACTORING_AUDIT.md)
   - [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)
   - [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)

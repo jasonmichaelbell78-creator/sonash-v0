@@ -96,8 +96,8 @@ Recovery Notebook project. It provides:
 ☐ 3. Check docs/audits/multi-ai/COORDINATOR.md:
      - Increment session counter
      - Note any health issues
-☐ 4. Check AUDIT_TRACKER.md:
-     - Check audit thresholds for each category
+☐ 4. Check docs/audits/AUDIT_TRACKER.md:
+     - Check audit thresholds for each of 9 categories
      - Note if any single-session audits are due
      - Check multi-AI audit scheduling triggers
 ☐ 5. Check Available Capabilities (MANDATORY):
@@ -159,8 +159,9 @@ Recovery Notebook project. It provides:
 
 4. **[AUDIT_TRACKER.md](./docs/audits/AUDIT_TRACKER.md)** - Audit thresholds &
    scheduling
-   - Per-category threshold tracking (code, security, performance, refactoring,
-     documentation, process)
+   - Per-category threshold tracking (9 categories: code-quality, security,
+     performance, refactoring, documentation, process, engineering-productivity,
+     enhancements, ai-optimization)
    - Single-session audit history
    - Multi-AI audit scheduling triggers
 

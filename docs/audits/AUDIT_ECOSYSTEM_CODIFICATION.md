@@ -2,9 +2,14 @@
 
 <!-- prettier-ignore-start -->
 **Document Version:** 1.0
-**Last Updated:** 2026-02-14
-**Status:** PLANNED
+**Last Updated:** 2026-02-16
+**Status:** COMPLETED/REFERENCE
 <!-- prettier-ignore-end -->
+
+> **Note:** This document captures the original design decisions and
+> implementation plan for the audit ecosystem codification. For current
+> standards see [AUDIT_STANDARDS.md](./AUDIT_STANDARDS.md). For current
+> ecosystem state see [docs/audits/README.md](./README.md).
 
 ## Context
 

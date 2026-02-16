@@ -197,7 +197,7 @@ include:
 ```
 
 **Reference:** Shared boilerplate in
-[SHARED_TEMPLATE_BASE.md](../multi-ai-audit/templates/SHARED_TEMPLATE_BASE.md)
+[SHARED_TEMPLATE_BASE.md](./multi-ai/templates/SHARED_TEMPLATE_BASE.md)
 
 ---
 

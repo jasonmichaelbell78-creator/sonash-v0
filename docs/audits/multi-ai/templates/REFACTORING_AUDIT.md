@@ -39,7 +39,7 @@ large-scale refactoring audit on [Project Name]. Use this template when:
 - Codebase needs systematic cleanup before scaling
 
 **This is for LARGE-SCALE refactoring, not tactical bug fixes.** For smaller
-code quality issues, use CODE_REVIEW_PLAN.md.
+code quality issues, use CODE_REVIEW_AUDIT.md.
 
 **Review Scope (5 Sub-Categories):**
 
@@ -572,7 +572,7 @@ For each AI model, save:
 
 ### Step 2: Run Refactoring Aggregator
 
-Use the aggregation prompt from CODE_REVIEW_PLAN.md with these modifications:
+Use the aggregation prompt from CODE_REVIEW_AUDIT.md with these modifications:
 
 ```markdown
 REFACTORING-SPECIFIC AGGREGATION RULES
@@ -619,7 +619,7 @@ For each refactoring phase, follow the 4-step workflow:
 1. IMPLEMENTATION -> 2. REVIEW R1 -> 3. REVIEW R2 -> 4. BETWEEN-PR CHECKLIST
 ```
 
-See CODE_REVIEW_PLAN.md for detailed prompts.
+See CODE_REVIEW_AUDIT.md for detailed prompts.
 
 ### Refactoring-Specific Implementation Rules
 
@@ -744,15 +744,29 @@ When using this template:
   Canonical JSONL schema for all review templates
 - **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
 - **[REFACTORING_AUDIT.md](./REFACTORING_AUDIT.md)** - This document
-- **[CODE_REVIEW_PLAN.md](./CODE_REVIEW_PLAN.md)** - Tactical code review
+- **[CODE_REVIEW_AUDIT.md](./CODE_REVIEW_AUDIT.md)** - Tactical code review
   (smaller issues)
 - **[SECURITY_AUDIT_PLAN.md](./SECURITY_AUDIT_PLAN.md)** - Security-focused
   reviews
-- **[PERFORMANCE_AUDIT_PLAN.md](./PERFORMANCE_AUDIT_PLAN.md)** -
-  Performance-focused reviews
+- **[PERFORMANCE_AUDIT.md](./PERFORMANCE_AUDIT.md)** - Performance-focused
+  reviews
 - **EIGHT_PHASE_REFACTOR_PLAN.md** - Example of this template in action
 - **[GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md)** -
   Security standards to maintain during refactoring
+
+---
+
+## Quality Guardrails
+
+- **Minimum confidence threshold**: 0.7 — findings below this should go to
+  "Inconclusive" section
+- **Evidence requirements**: Every finding must include specific file paths,
+  line numbers, and code snippets where applicable
+- **False positive awareness**: Check
+  `docs/technical-debt/FALSE_POSITIVES.jsonl` for patterns that have been
+  previously dismissed
+- **Severity calibration**: Use SHARED_TEMPLATE_BASE.md severity scale — S0
+  should be rare (production-breaking only)
 
 ---
 

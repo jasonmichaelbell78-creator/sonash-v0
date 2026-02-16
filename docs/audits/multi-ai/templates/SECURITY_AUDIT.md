@@ -802,6 +802,20 @@ Use R1, R2, and Between-PR checklist from MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
 > [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
 > below takes precedence.
 
+## Quality Guardrails
+
+- **Minimum confidence threshold**: 0.7 — findings below this should go to
+  "Inconclusive" section
+- **Evidence requirements**: Every finding must include specific file paths,
+  line numbers, and code snippets where applicable
+- **False positive awareness**: Check
+  `docs/technical-debt/FALSE_POSITIVES.jsonl` for patterns that have been
+  previously dismissed
+- **Severity calibration**: Use SHARED_TEMPLATE_BASE.md severity scale — S0
+  should be rare (production-breaking only)
+
+---
+
 ## TDMS Integration
 
 ### Automatic Intake
@@ -856,7 +870,7 @@ After TDMS intake:
 
 When using this template:
 
-1. **Copy this template** to `docs/reviews/SECURITY_AUDIT_PLAN_[YYYY]_Q[X].md`
+1. **Copy this template** to `docs/reviews/SECURITY_AUDIT_[YYYY]_Q[X].md`
 2. **Fill in Audit Context** with project-specific details
 3. **Run the security audit prompt** on each model
 4. **Collect outputs** in specified formats
@@ -888,7 +902,7 @@ When using this template:
 - **[GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md)** -
   Mandatory standards being verified
 - **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
-- **[CODE_REVIEW_PLAN.md](./CODE_REVIEW_PLAN.md)** - General code review
+- **[CODE_REVIEW_AUDIT.md](./CODE_REVIEW_AUDIT.md)** - General code review
   template
 - **[SECURITY.md](../../SECURITY.md)** - Additional security documentation
 - **firestore.rules** - Firebase security rules
@@ -911,4 +925,4 @@ When using this template:
 
 ---
 
-**END OF SECURITY_AUDIT_PLAN.md**
+**END OF SECURITY_AUDIT.md**

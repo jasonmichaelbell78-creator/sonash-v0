@@ -907,6 +907,20 @@ Create `docs/reviews/ENHANCEMENT_AUDIT_[YYYY]_Q[X].md` with:
 
 ---
 
+## Quality Guardrails
+
+- **Minimum confidence threshold**: 0.7 — findings below this should go to
+  "Inconclusive" section
+- **Evidence requirements**: Every finding must include specific file paths,
+  line numbers, and code snippets where applicable
+- **False positive awareness**: Check
+  `docs/technical-debt/FALSE_POSITIVES.jsonl` for patterns that have been
+  previously dismissed
+- **Severity calibration**: Use SHARED_TEMPLATE_BASE.md severity scale — S0
+  should be rare (production-breaking only)
+
+---
+
 ## TDMS Integration
 
 ### Automatic Intake
@@ -1016,8 +1030,8 @@ When using this template:
   (consolidation)
 - **[ENGINEERING_PRODUCTIVITY_AUDIT.md](./ENGINEERING_PRODUCTIVITY_AUDIT.md)**
   - Engineering productivity (DX friction)
-- **[PERFORMANCE_AUDIT_PLAN.md](./PERFORMANCE_AUDIT_PLAN.md)** -
-  Performance-focused reviews
+- **[PERFORMANCE_AUDIT.md](./PERFORMANCE_AUDIT.md)** - Performance-focused
+  reviews
 - **[SECURITY_AUDIT_PLAN.md](./SECURITY_AUDIT_PLAN.md)** - Security-focused
   reviews
 - **[DOCUMENTATION_AUDIT.md](./DOCUMENTATION_AUDIT.md)** - Documentation quality

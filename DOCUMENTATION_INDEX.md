@@ -140,12 +140,12 @@ _Single-session and multi-AI audit outputs_
 
 | Document                                                                                                               | Description                                                     | References | Last Modified |
 | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Audit Ecosystem](docs/audits/README.md)                                                                               | <!-- prettier-ignore-start -->                                  | ↓0 ↑2      | 2026-02-16    |
-| [Audit Results Index](docs/audits/RESULTS_INDEX.md)                                                                    | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-16    |
-| [Audit Standards](docs/audits/AUDIT_STANDARDS.md)                                                                      | <What this audit checks and why>                                | ↓2 ↑1      | 2026-02-16    |
-| [Audit Tracker](docs/audits/AUDIT_TRACKER.md)                                                                          | Track single-session and multi-AI audit completions for thre... | ↓2 ↑0      | 2026-02-16    |
+| [Audit Ecosystem](docs/audits/README.md)                                                                               | <!-- prettier-ignore-start -->                                  | ↓1 ↑18     | 2026-02-16    |
+| [Audit Results Index](docs/audits/RESULTS_INDEX.md)                                                                    | <!-- prettier-ignore-start -->                                  | ↓1 ↑0      | 2026-02-16    |
+| [Audit Standards](docs/audits/AUDIT_STANDARDS.md)                                                                      | <What this audit checks and why>                                | ↓3 ↑2      | 2026-02-16    |
+| [Audit Tracker](docs/audits/AUDIT_TRACKER.md)                                                                          | Track single-session and multi-AI audit completions for thre... | ↓3 ↑0      | 2026-02-16    |
 | [Automation Audit Report — 2026-02-09](docs/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md) | - **Total findings:** 258                                       | ↓0 ↑0      | 2026-02-16    |
-| [Implementation Plan: Audit Ecosystem Codification](docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md)                       | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-16    |
+| [Implementation Plan: Audit Ecosystem Codification](docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md)                       | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-02-16    |
 
 ### Audit Templates (Tier 3)
 
@@ -153,17 +153,17 @@ _Multi-AI audit execution templates_
 
 | Document                                                                                                                        | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [[Project Name] Multi-AI AI Optimization Audit Plan](docs/audits/multi-ai/templates/AI_OPTIMIZATION_AUDIT.md)                   | This document serves as the **execution plan** for running a... | ↓1 ↑1      | 2026-02-16    |
-| [[Project Name] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_PLAN.md)                                  | -                                                               | ↓8 ↑5      | 2026-02-16    |
-| [[Project Name] Multi-AI Documentation Audit Plan](docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md)                       | This document serves as the **execution plan** for running a... | ↓3 ↑3      | 2026-02-16    |
-| [[Project Name] Multi-AI Engineering Productivity Audit Plan](docs/audits/multi-ai/templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | This document serves as the **execution plan** for running a... | ↓3 ↑3      | 2026-02-16    |
-| [[Project Name] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT_PLAN.md)                      | This document serves as the **execution plan** for running a... | ↓5 ↑4      | 2026-02-16    |
-| [[Project Name] Multi-AI Process & Automation Audit Plan](docs/audits/multi-ai/templates/PROCESS_AUDIT.md)                      | -                                                               | ↓4 ↑3      | 2026-02-16    |
-| [[Project Name] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)                                | This document serves as the **execution plan** for running a... | ↓5 ↑6      | 2026-02-16    |
-| [[Project Name] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md)                            | -                                                               | ↓6 ↑3      | 2026-02-16    |
-| [Enhancement Audit Template (Multi-AI Injectable)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md)                         | -                                                               | ↓1 ↑10     | 2026-02-16    |
-| [Multi-AI Audit Aggregator Template](docs/audits/multi-ai/templates/AGGREGATOR.md)                                              | Deduplicate and verify findings within ONE audit category be... | ↓4 ↑0      | 2026-02-16    |
-| [Multi-AI Audit Shared Template Base](docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md)                                   | Shared boilerplate for                                          | ↓10 ↑2     | 2026-02-16    |
+| [[Project Name] Multi-AI AI Optimization Audit Plan](docs/audits/multi-ai/templates/AI_OPTIMIZATION_AUDIT.md)                   | This document serves as the **execution plan** for running a... | ↓3 ↑1      | 2026-02-16    |
+| [[Project Name] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)                                 | -                                                               | ↓6 ↑5      | 2026-02-16    |
+| [[Project Name] Multi-AI Documentation Audit Plan](docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md)                       | This document serves as the **execution plan** for running a... | ↓4 ↑2      | 2026-02-16    |
+| [[Project Name] Multi-AI Engineering Productivity Audit Plan](docs/audits/multi-ai/templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | This document serves as the **execution plan** for running a... | ↓4 ↑3      | 2026-02-16    |
+| [[Project Name] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md)                           | This document serves as the **execution plan** for running a... | ↓6 ↑4      | 2026-02-16    |
+| [[Project Name] Multi-AI Process & Automation Audit Plan](docs/audits/multi-ai/templates/PROCESS_AUDIT.md)                      | -                                                               | ↓5 ↑2      | 2026-02-16    |
+| [[Project Name] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)                                | This document serves as the **execution plan** for running a... | ↓6 ↑5      | 2026-02-16    |
+| [[Project Name] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT.md)                                 | -                                                               | ↓5 ↑3      | 2026-02-16    |
+| [Enhancement Audit Template (Multi-AI Injectable)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md)                         | -                                                               | ↓3 ↑8      | 2026-02-16    |
+| [Multi-AI Audit Aggregator Template](docs/audits/multi-ai/templates/AGGREGATOR.md)                                              | Deduplicate and verify findings within ONE audit category be... | ↓5 ↑0      | 2026-02-16    |
+| [Multi-AI Audit Shared Template Base](docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md)                                   | Shared boilerplate for                                          | ↓12 ↑2     | 2026-02-16    |
 
 ### Core Documentation (Tier 3)
 
@@ -184,8 +184,8 @@ _Multi-AI audit orchestration and coordination_
 
 | Document                                                           | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
-| [Multi-AI Audit System](docs/audits/multi-ai/README.md)            | Templates and processes for running audits across multiple A... | ↓1 ↑12     | 2026-02-16    |
-| [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md) | Master index and                                                | ↓11 ↑9     | 2026-02-16    |
+| [Multi-AI Audit System](docs/audits/multi-ai/README.md)            | Templates and processes for running audits across multiple A... | ↓2 ↑12     | 2026-02-16    |
+| [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md) | Master index and                                                | ↓12 ↑11    | 2026-02-16    |
 
 ### Plans (Tier 3)
 
@@ -218,6 +218,9 @@ _Claude Code skills_
 | [Code Reviewer](.claude/skills/code-reviewer/SKILL.md)                                                                              | Code review toolkit tailored for the SoNash codebase.             | ↓0 ↑0      | 2026-02-16    |
 | [Coding Standards](.claude/skills/code-reviewer/references/coding_standards.md)                                                     | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-02-16    |
 | [Common Antipatterns](.claude/skills/code-reviewer/references/common_antipatterns.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-02-16    |
+| [Comprehensive Audit Recovery Procedures](.claude/skills/audit-comprehensive/reference/RECOVERY_PROCEDURES.md)                      | Persist critical environment variables across context compac...   | ↓2 ↑0      | 2026-02-16    |
+| [Comprehensive Audit Triage Guide](.claude/skills/audit-comprehensive/reference/TRIAGE_GUIDE.md)                                    | Complete guide for triaging findings from the 9-domain compr...   | ↓1 ↑0      | 2026-02-16    |
+| [Comprehensive Audit Wave Details](.claude/skills/audit-comprehensive/reference/WAVE_DETAILS.md)                                    | Core technical audits that form the foundation for all subse...   | ↓1 ↑1      | 2026-02-16    |
 | [Comprehensive Automation Audit](.claude/skills/audit-process/SKILL.md)                                                             | -                                                                 | ↓0 ↑0      | 2026-02-16    |
 | [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)                                        | -                                                                 | ↓0 ↑6      | 2026-02-16    |
 | [Condition-Based Waiting](.claude/skills/systematic-debugging/condition-based-waiting.md)                                           | Flaky tests often guess at timing with arbitrary delays. Thi...   | ↓0 ↑0      | 2026-02-16    |
@@ -270,7 +273,6 @@ _Claude Code skills_
 | [Qa Best Practices](.claude/skills/senior-qa/references/qa_best_practices.md)                                                       | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-02-16    |
 | [quick-fix Skill](.claude/skills/quick-fix/SKILL.md)                                                                                | Auto-suggest fixes for common pre-commit and pattern complia...   | ↓0 ↑0      | 2026-02-16    |
 | [React Patterns](.claude/skills/senior-frontend/references/react_patterns.md)                                                       | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-02-16    |
-| [Recovery Procedures](.claude/skills/audit-comprehensive/reference/RECOVERY_PROCEDURES.md)                                          | How to resume a comprehensive audit after context compaction...   | ↓1 ↑0      | 2026-02-16    |
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-02-16    |
 | [Senior Architect](.claude/skills/senior-architect/SKILL.md)                                                                        | Complete toolkit for senior architect with modern tools and ...   | ↓0 ↑0      | 2026-02-16    |
 | [Senior Backend](.claude/skills/senior-backend/SKILL.md)                                                                            | Complete toolkit for senior backend with modern tools and be...   | ↓0 ↑0      | 2026-02-16    |
@@ -301,14 +303,12 @@ _Claude Code skills_
 | [Tech Stack Guide](.claude/skills/senior-fullstack/references/tech_stack_guide.md)                                                  | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-02-16    |
 | [Test Automation Patterns](.claude/skills/senior-qa/references/test_automation_patterns.md)                                         | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-02-16    |
 | [Testing Strategies](.claude/skills/senior-qa/references/testing_strategies.md)                                                     | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-02-16    |
-| [Triage & Roadmap Integration Guide](.claude/skills/audit-comprehensive/reference/TRIAGE_GUIDE.md)                                  | After TDMS intake completes, triage new items into the roadm...   | ↓1 ↑0      | 2026-02-16    |
 | [UI Design System](.claude/skills/ui-design-system/SKILL.md)                                                                        | Professional toolkit for creating and maintaining scalable d...   | ↓0 ↑0      | 2026-02-16    |
 | [Using Skills](.claude/skills/using-superpowers/SKILL.md)                                                                           | -                                                                 | ↓0 ↑0      | 2026-02-16    |
 | [UX Researcher & Designer](.claude/skills/ux-researcher-designer/SKILL.md)                                                          | Comprehensive toolkit for user-centered research and experie...   | ↓0 ↑0      | 2026-02-16    |
 | [Validate Claude Folder](.claude/skills/validate-claude-folder/SKILL.md)                                                            | Check the `.claude` folder for configuration consistency, do...   | ↓0 ↑2      | 2026-02-16    |
 | [Verify & Triage Technical Debt](.claude/skills/verify-technical-debt/SKILL.md)                                                     | -                                                                 | ↓0 ↑0      | 2026-02-16    |
 | [Visual Generation Guide for Market Research Reports](.claude/skills/market-research-reports/references/visual_generation_guide.md) | Foundation visual showing historical and projected market si...   | ↓0 ↑0      | 2026-02-16    |
-| [Wave-by-Wave Execution Details](.claude/skills/audit-comprehensive/reference/WAVE_DETAILS.md)                                      | Detailed agent launch instructions, checkpoint verification,...   | ↓1 ↑0      | 2026-02-16    |
 | [Web Application Testing](.claude/skills/webapp-testing/SKILL.md)                                                                   | To test local web applications, write native Python Playwrig...   | ↓0 ↑0      | 2026-02-16    |
 
 ### Slash Commands (Tier 3)
@@ -549,28 +549,28 @@ _Auto-generated debt dashboards_
 
 Documents that are linked to most frequently:
 
-| Document                                                                                                     | Inbound Links | Referenced By                                           |
-| ------------------------------------------------------------------------------------------------------------ | ------------- | ------------------------------------------------------- |
-| [SoNash Product Roadmap](ROADMAP.md)                                                                         | 18            | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +15 more         |
-| [Security &amp; Privacy Guide](docs/SECURITY.md)                                                             | 12            | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +9 more          |
-| [Development Guide](DEVELOPMENT.md)                                                                          | 11            | HOOKS, AI_WORKFLOW, ARCHITECTURE +8 more                |
-| [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                                           | 11            | AI_WORKFLOW, README, CODE_REVIEW_PLAN +8 more           |
-| [Architecture Documentation](ARCHITECTURE.md)                                                                | 10            | AI_WORKFLOW, DEVELOPMENT, README +7 more                |
-| [Multi-AI Audit Shared Template Base](docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md)                | 10            | README, AI_OPTIMIZATION_AUDIT, CODE_REVIEW_PLAN +7 more |
-| [AI Workflow Guide](AI_WORKFLOW.md)                                                                          | 9             | HOOKS, README, SESSION_CONTEXT +6 more                  |
-| [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                               | 9             | AI_WORKFLOW, README, FIREBASE_CHANGE_POLICY +6 more     |
-| [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                       | 8             | AI_WORKFLOW, README, SESSION_CONTEXT +5 more            |
-| [\[Project Name\] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_PLAN.md)             | 8             | COORDINATOR, README, DOCUMENTATION_AUDIT +5 more        |
-| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                            | 7             | SKILL, SKILL, AI_WORKFLOW +4 more                       |
-| [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                       | 7             | ARCHITECTURE, DEVELOPMENT, README +4 more               |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                           | 7             | SKILL, README, claude +4 more                           |
-| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                       | 7             | SKILL, SKILL, SKILL +4 more                             |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                             | 7             | SKILL, SKILL, SKILL +4 more                             |
-| [\[Project Name\] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md)       | 6             | COORDINATOR, README, CODE_REVIEW_PLAN +3 more           |
-| [Session Context](SESSION_CONTEXT.md)                                                                        | 5             | AI_WORKFLOW, ROADMAP, claude +2 more                    |
-| [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                                    | 5             | README, ROADMAP, ROADMAP_LOG +2 more                    |
-| [Testing Plan](docs/TESTING_PLAN.md)                                                                         | 5             | ARCHITECTURE, DEVELOPMENT, README +2 more               |
-| [\[Project Name\] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT_PLAN.md) | 5             | COORDINATOR, README, CODE_REVIEW_PLAN +2 more           |
+| Document                                                                                                | Inbound Links | Referenced By                                       |
+| ------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------- |
+| [SoNash Product Roadmap](ROADMAP.md)                                                                    | 18            | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +15 more     |
+| [Security &amp; Privacy Guide](docs/SECURITY.md)                                                        | 12            | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +9 more      |
+| [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                                      | 12            | AI_WORKFLOW, README, README +9 more                 |
+| [Multi-AI Audit Shared Template Base](docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md)           | 12            | AUDIT_STANDARDS, README, README +9 more             |
+| [Development Guide](DEVELOPMENT.md)                                                                     | 11            | HOOKS, AI_WORKFLOW, ARCHITECTURE +8 more            |
+| [Architecture Documentation](ARCHITECTURE.md)                                                           | 10            | AI_WORKFLOW, DEVELOPMENT, README +7 more            |
+| [AI Workflow Guide](AI_WORKFLOW.md)                                                                     | 9             | HOOKS, README, SESSION_CONTEXT +6 more              |
+| [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                          | 9             | AI_WORKFLOW, README, FIREBASE_CHANGE_POLICY +6 more |
+| [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                  | 8             | AI_WORKFLOW, README, SESSION_CONTEXT +5 more        |
+| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                       | 7             | SKILL, SKILL, AI_WORKFLOW +4 more                   |
+| [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                  | 7             | ARCHITECTURE, DEVELOPMENT, README +4 more           |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                      | 7             | SKILL, README, claude +4 more                       |
+| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                  | 7             | SKILL, SKILL, SKILL +4 more                         |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                        | 7             | SKILL, SKILL, SKILL +4 more                         |
+| [\[Project Name\] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)       | 6             | README, COORDINATOR, README +3 more                 |
+| [\[Project Name\] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md) | 6             | README, COORDINATOR, README +3 more                 |
+| [\[Project Name\] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)      | 6             | README, COORDINATOR, README +3 more                 |
+| [Session Context](SESSION_CONTEXT.md)                                                                   | 5             | AI_WORKFLOW, ROADMAP, claude +2 more                |
+| [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                               | 5             | README, ROADMAP, ROADMAP_LOG +2 more                |
+| [Testing Plan](docs/TESTING_PLAN.md)                                                                    | 5             | ARCHITECTURE, DEVELOPMENT, README +2 more           |
 
 ### Most Linking Documents (Outbound Links)
 
@@ -578,26 +578,26 @@ Documents that link to other documents most frequently:
 
 | Document                                                                                                  | Outbound Links |
 | --------------------------------------------------------------------------------------------------------- | -------------- |
+| [Audit Ecosystem](docs/audits/README.md)                                                                  | 18             |
 | [SoNash Product Roadmap](ROADMAP.md)                                                                      | 17             |
 | [AI Workflow Guide](AI_WORKFLOW.md)                                                                       | 16             |
 | [SoNash - Sober Nashville Recovery Notebook](README.md)                                                   | 15             |
 | [Multi-AI Audit System](docs/audits/multi-ai/README.md)                                                   | 12             |
 | [Development Guide](DEVELOPMENT.md)                                                                       | 11             |
+| [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                                        | 11             |
 | [Documentation Inventory](docs/README.md)                                                                 | 10             |
-| [Enhancement Audit Template \(Multi-AI Injectable\)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md) | 10             |
 | [Session Context](SESSION_CONTEXT.md)                                                                     | 9              |
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                        | 9              |
-| [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                                        | 9              |
+| [Enhancement Audit Template \(Multi-AI Injectable\)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md) | 8              |
 | [AI Context &amp; Rules for SoNash](claude.md)                                                            | 7              |
 | [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)              | 6              |
 | [Single-Session Refactoring Audit](.claude/skills/audit-refactoring/SKILL.md)                             | 6              |
 | [Architecture Documentation](ARCHITECTURE.md)                                                             | 6              |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                                                                      | 6              |
-| [\[Project Name\] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)        | 6              |
 | [Claude Hooks Documentation](.claude/HOOKS.md)                                                            | 5              |
 | [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                                  | 5              |
-| [\[Project Name\] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_PLAN.md)          | 5              |
-| [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md)                                       | 4              |
+| [\[Project Name\] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)         | 5              |
+| [\[Project Name\] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)        | 5              |
 
 ---
 
@@ -605,7 +605,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**178 orphaned documents:**
+**175 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [Find Skills](.agents/skills/find-skills/SKILL.md)
@@ -768,9 +768,6 @@ Documents with no inbound links (not referenced by any other document):
 - [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)
 - [MCP Server Setup Guide](docs/MCP_SETUP.md)
 - [Documentation Inventory](docs/README.md)
-- [Implementation Plan: Audit Ecosystem Codification](docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md)
-- [Audit Ecosystem](docs/audits/README.md)
-- [Audit Results Index](docs/audits/RESULTS_INDEX.md)
 - [AI Optimization Audit — Summary Report](docs/audits/single-session/ai-optimization/audit-2026-02-12-legacy/SUMMARY.md)
 - [AI Optimization Audit — Summary Report](docs/audits/single-session/ai-optimization/audit-2026-02-13/SUMMARY.md)
 - [AI Optimization Audit Report \(2026-02-14\)](docs/audits/single-session/ai-optimization/audit-2026-02-14/AI_OPTIMIZATION_AUDIT_REPORT.md)
@@ -848,9 +845,9 @@ Documents with no inbound links (not referenced by any other document):
 | 51  | [.claude/skills/audit-aggregator/SKILL.md](.claude/skills/audit-aggregator/SKILL.md)                                                                                                       | Audit Aggregator Agent                                             | 3    | -                                                                               |
 | 52  | [.claude/skills/audit-ai-optimization/SKILL.md](.claude/skills/audit-ai-optimization/SKILL.md)                                                                                             | Single-Session AI Optimization Audit                               | 3    | -                                                                               |
 | 53  | [.claude/skills/audit-code/SKILL.md](.claude/skills/audit-code/SKILL.md)                                                                                                                   | Single-Session Code Review Audit                                   | 3    | -                                                                               |
-| 54  | [.claude/skills/audit-comprehensive/reference/RECOVERY_PROCEDURES.md](.claude/skills/audit-comprehensive/reference/RECOVERY_PROCEDURES.md)                                                 | Recovery Procedures                                                | 3    | ACTIVE                                                                          |
-| 55  | [.claude/skills/audit-comprehensive/reference/TRIAGE_GUIDE.md](.claude/skills/audit-comprehensive/reference/TRIAGE_GUIDE.md)                                                               | Triage &amp; Roadmap Integration Guide                             | 3    | ACTIVE                                                                          |
-| 56  | [.claude/skills/audit-comprehensive/reference/WAVE_DETAILS.md](.claude/skills/audit-comprehensive/reference/WAVE_DETAILS.md)                                                               | Wave-by-Wave Execution Details                                     | 3    | ACTIVE                                                                          |
+| 54  | [.claude/skills/audit-comprehensive/reference/RECOVERY_PROCEDURES.md](.claude/skills/audit-comprehensive/reference/RECOVERY_PROCEDURES.md)                                                 | Comprehensive Audit Recovery Procedures                            | 3    | ACTIVE                                                                          |
+| 55  | [.claude/skills/audit-comprehensive/reference/TRIAGE_GUIDE.md](.claude/skills/audit-comprehensive/reference/TRIAGE_GUIDE.md)                                                               | Comprehensive Audit Triage Guide                                   | 3    | ACTIVE                                                                          |
+| 56  | [.claude/skills/audit-comprehensive/reference/WAVE_DETAILS.md](.claude/skills/audit-comprehensive/reference/WAVE_DETAILS.md)                                                               | Comprehensive Audit Wave Details                                   | 3    | ACTIVE                                                                          |
 | 57  | [.claude/skills/audit-comprehensive/SKILL.md](.claude/skills/audit-comprehensive/SKILL.md)                                                                                                 | Comprehensive Multi-Domain Audit Orchestrator                      | 3    | -                                                                               |
 | 58  | [.claude/skills/audit-documentation/SKILL.md](.claude/skills/audit-documentation/SKILL.md)                                                                                                 | Single-Session Documentation Audit                                 | 3    | -                                                                               |
 | 59  | [.claude/skills/audit-engineering-productivity/SKILL.md](.claude/skills/audit-engineering-productivity/SKILL.md)                                                                           | Single-Session Engineering Productivity Audit                      | 3    | -                                                                               |
@@ -983,21 +980,21 @@ Documents with no inbound links (not referenced by any other document):
 | 186 | [docs/AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                                                         | AI Review Learnings Log                                            | 4    | Fully consolidated into claude.md v2.7                                          |
 | 187 | [docs/AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)                                                                                                                                     | 🤖 AI Code Review Process                                          | 4    | Active                                                                          |
 | 188 | [docs/APPCHECK_SETUP.md](docs/APPCHECK_SETUP.md)                                                                                                                                           | App Check Setup Guide                                              | 2    | Active **Last Updated:** 2026-01-03                                             |
-| 189 | [docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md](docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md)                                                                                                 | Implementation Plan: Audit Ecosystem Codification                  | 3    | PLANNED                                                                         |
+| 189 | [docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md](docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md)                                                                                                 | Implementation Plan: Audit Ecosystem Codification                  | 3    | COMPLETED/REFERENCE                                                             |
 | 190 | [docs/audits/AUDIT_STANDARDS.md](docs/audits/AUDIT_STANDARDS.md)                                                                                                                           | Audit Standards                                                    | 3    | ACTIVE                                                                          |
 | 191 | [docs/audits/AUDIT_TRACKER.md](docs/audits/AUDIT_TRACKER.md)                                                                                                                               | Audit Tracker                                                      | 3    | -                                                                               |
 | 192 | [docs/audits/multi-ai/COORDINATOR.md](docs/audits/multi-ai/COORDINATOR.md)                                                                                                                 | Multi-AI Review Coordinator                                        | 3    | -                                                                               |
 | 193 | [docs/audits/multi-ai/README.md](docs/audits/multi-ai/README.md)                                                                                                                           | Multi-AI Audit System                                              | 3    | -                                                                               |
 | 194 | [docs/audits/multi-ai/templates/AGGREGATOR.md](docs/audits/multi-ai/templates/AGGREGATOR.md)                                                                                               | Multi-AI Audit Aggregator Template                                 | 3    | -                                                                               |
 | 195 | [docs/audits/multi-ai/templates/AI_OPTIMIZATION_AUDIT.md](docs/audits/multi-ai/templates/AI_OPTIMIZATION_AUDIT.md)                                                                         | \[Project Name\] Multi-AI AI Optimization Audit Plan               | 3    | PENDING                                                                         |
-| 196 | [docs/audits/multi-ai/templates/CODE_REVIEW_PLAN.md](docs/audits/multi-ai/templates/CODE_REVIEW_PLAN.md)                                                                                   | \[Project Name\] Multi-AI Code Review Plan                         | 3    | PENDING \| IN_PROGRESS \| COMPLETE \*\*Overall                                  |
+| 196 | [docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md](docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md)                                                                                 | \[Project Name\] Multi-AI Code Review Plan                         | 3    | PENDING \| IN_PROGRESS \| COMPLETE \*\*Overall                                  |
 | 197 | [docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md](docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md)                                                                             | \[Project Name\] Multi-AI Documentation Audit Plan                 | 3    | PENDING \| IN_PROGRESS \| COMPLETE \*\*Overall                                  |
 | 198 | [docs/audits/multi-ai/templates/ENGINEERING_PRODUCTIVITY_AUDIT.md](docs/audits/multi-ai/templates/ENGINEERING_PRODUCTIVITY_AUDIT.md)                                                       | \[Project Name\] Multi-AI Engineering Productivity Audit Plan      | 3    | PENDING \| IN_PROGRESS \| COMPLETE \*\*Overall                                  |
 | 199 | [docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md)                                                                                 | Enhancement Audit Template \(Multi-AI Injectable\)                 | 3    | DRAFT                                                                           |
-| 200 | [docs/audits/multi-ai/templates/PERFORMANCE_AUDIT_PLAN.md](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT_PLAN.md)                                                                       | \[Project Name\] Multi-AI Performance Audit Plan                   | 3    | PENDING \| IN_PROGRESS \| COMPLETE \*\*Overall                                  |
+| 200 | [docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md)                                                                                 | \[Project Name\] Multi-AI Performance Audit Plan                   | 3    | PENDING \| IN_PROGRESS \| COMPLETE \*\*Overall                                  |
 | 201 | [docs/audits/multi-ai/templates/PROCESS_AUDIT.md](docs/audits/multi-ai/templates/PROCESS_AUDIT.md)                                                                                         | \[Project Name\] Multi-AI Process &amp; Automation Audit Plan      | 3    | PENDING \| IN_PROGRESS \| COMPLETE \*\*Overall                                  |
 | 202 | [docs/audits/multi-ai/templates/REFACTORING_AUDIT.md](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)                                                                                 | \[Project Name\] Multi-AI Refactoring Audit                        | 3    | PENDING \| IN_PROGRESS \| COMPLETE \*\*Overall                                  |
-| 203 | [docs/audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md](docs/audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md)                                                                             | \[Project Name\] Multi-AI Security Audit Plan                      | 3    | PENDING \| IN_PROGRESS \| COMPLETE \*\*Overall                                  |
+| 203 | [docs/audits/multi-ai/templates/SECURITY_AUDIT.md](docs/audits/multi-ai/templates/SECURITY_AUDIT.md)                                                                                       | \[Project Name\] Multi-AI Security Audit Plan                      | 3    | PENDING \| IN_PROGRESS \| COMPLETE \*\*Overall                                  |
 | 204 | [docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md](docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md)                                                                           | Multi-AI Audit Shared Template Base                                | 3    | ACTIVE **Tier:** 4 \(Reference\) **Purpose:** Shared boilerplate for            |
 | 205 | [docs/audits/README.md](docs/audits/README.md)                                                                                                                                             | Audit Ecosystem                                                    | 3    | ACTIVE                                                                          |
 | 206 | [docs/audits/RESULTS_INDEX.md](docs/audits/RESULTS_INDEX.md)                                                                                                                               | Audit Results Index                                                | 3    | ACTIVE                                                                          |
