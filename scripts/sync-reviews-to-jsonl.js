@@ -29,7 +29,8 @@ let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require(join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")));
 } catch {
-  isSafeToWrite = () => true; // Fallback if guard not available
+  console.error("symlink-guard unavailable; refusing to write");
+  isSafeToWrite = () => false;
 }
 
 const ROOT = join(__dirname, "..");

@@ -33,7 +33,8 @@ try {
     path.join(__dirname, "..", "..", "..", "hooks", "lib", "symlink-guard")
   ));
 } catch {
-  isSafeToWrite = () => true; // Fallback if guard not available
+  console.error("  [warn] symlink-guard unavailable; disabling writes");
+  isSafeToWrite = () => false;
 }
 
 // Find project root (where package.json is)
@@ -255,7 +256,12 @@ function runCommand(cmd, options = {}) {
       success: false,
       output: error.stdout?.trim() || "",
       stderr: error.stderr?.trim() || "",
-      code: error.status || 1,
+      code:
+        typeof error?.status === "number"
+          ? error.status
+          : typeof error?.code === "number"
+            ? error.code
+            : 1,
     };
   }
 }
@@ -286,7 +292,12 @@ function runCommandSafe(bin, args = [], options = {}) {
       success: false,
       output: stdoutStr.trim(),
       stderr: stderrStr.trim(),
-      code: error.status || 1,
+      code:
+        typeof error?.status === "number"
+          ? error.status
+          : typeof error?.code === "number"
+            ? error.code
+            : 1,
     };
   }
 }
@@ -2195,8 +2206,13 @@ function checkSessionState() {
     return;
   }
 
-  const uncommitted = handoff.uncommittedFiles || handoff.uncommitted_files || 0;
-  const untracked = handoff.untrackedCount || handoff.untracked_count || 0;
+  const toCount = (v) => {
+    if (typeof v === "number" && Number.isFinite(v)) return v;
+    if (Array.isArray(v)) return v.length;
+    return 0;
+  };
+  const uncommitted = toCount(handoff.uncommittedFiles ?? handoff.uncommitted_files ?? 0);
+  const untracked = toCount(handoff.untrackedCount ?? handoff.untracked_count ?? 0);
   const branch = handoff.branch || handoff.currentBranch || "unknown";
 
   // Check for stale branch (days since last commit on branch)
@@ -2433,7 +2449,12 @@ function checkContextUsage() {
     return;
   }
 
-  const filesRead = data.filesRead?.length || data.files_read || 0;
+  const rawFilesRead = data.filesRead ?? data.files_read ?? 0;
+  const filesRead = Array.isArray(rawFilesRead)
+    ? rawFilesRead.length
+    : typeof rawFilesRead === "number" && Number.isFinite(rawFilesRead)
+      ? rawFilesRead
+      : 0;
 
   if (filesRead > BENCHMARKS.context_usage.files_read.poor) {
     addAlert(

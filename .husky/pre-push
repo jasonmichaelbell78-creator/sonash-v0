@@ -10,6 +10,11 @@ require_skip_reason() {
     echo "  The audit trail is useless without a reason."
     exit 1
   fi
+  # Reject multi-line reasons (prevents JSONL/log injection)
+  if printf '%s' "$SKIP_REASON" | grep -qP '[\r\n]'; then
+    echo "  ❌ SKIP_REASON must be a single line (no CR/LF characters)"
+    exit 1
+  fi
   # Validate minimum length to prevent meaningless skip reasons like "x" or "test"
   skip_len=${#SKIP_REASON}
   if [ "$skip_len" -lt 10 ]; then

@@ -10,6 +10,11 @@ require_skip_reason() {
     echo "  The audit trail is useless without a reason."
     exit 1
   fi
+  # Reject multi-line reasons (prevents JSONL/log injection)
+  if printf '%s' "$SKIP_REASON" | grep -qP '[\r\n]'; then
+    echo "  ❌ SKIP_REASON must be a single line (no CR/LF characters)"
+    exit 1
+  fi
   # Validate minimum length to prevent meaningless skip reasons like "x" or "test"
   skip_len=${#SKIP_REASON}
   if [ "$skip_len" -lt 10 ]; then
@@ -85,10 +90,12 @@ if [ "${SKIP_AUDIT_VALIDATION:-}" != "1" ]; then
     AUDIT_FAILED=0
     while IFS= read -r audit_file || [ -n "$audit_file" ]; do
       [ -z "$audit_file" ] && continue
-      if ! node scripts/validate-audit.js "$audit_file" --strict-s0s1 > /dev/null 2>&1; then
+      audit_out="$(node scripts/validate-audit.js "$audit_file" --strict-s0s1 2>&1)"
+      audit_code=$?
+      if [ "$audit_code" -ne 0 ]; then
         AUDIT_FAILED=1
         echo "  ❌ S0/S1 validation failed: $audit_file"
-        node scripts/validate-audit.js "$audit_file" --strict-s0s1 2>&1 | grep -E "^   ❌|BLOCKING" | head -5
+        printf '%s\n' "$audit_out" | grep -E "^   ❌|BLOCKING" | head -5
       fi
     done < "$AUDIT_TMPFILE"
     rm -f "$AUDIT_TMPFILE"
@@ -122,7 +129,13 @@ if [ "${SKIP_TESTS:-}" = "1" ]; then
 elif printf '%s\n' "$STAGED_FILES" | grep -Eq '^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|tsconfig.*\.json|next\.config\.(js|mjs|ts)|\.husky/|\.github/)'; then
   echo "  ▶ Running tests (config changes detected)..."
   TEST_TMPFILE=$(mktemp)
-  trap 'rm -f "$TEST_TMPFILE" "$AUDIT_TMPFILE" 2>/dev/null' EXIT
+  # Chain with existing EXIT trap (don't overwrite AUDIT_TMPFILE cleanup)
+  prev_trap="$(trap -p EXIT | sed "s/^trap -- '\(.*\)' EXIT$/\1/" || true)"
+  if [ -n "${prev_trap:-}" ]; then
+    trap "${prev_trap}; rm -f \"\$TEST_TMPFILE\" 2>/dev/null" EXIT
+  else
+    trap 'rm -f "$TEST_TMPFILE" 2>/dev/null' EXIT
+  fi
 
   if ! npm test > "$TEST_TMPFILE" 2>&1; then
     echo "  ❌ Tests failed"

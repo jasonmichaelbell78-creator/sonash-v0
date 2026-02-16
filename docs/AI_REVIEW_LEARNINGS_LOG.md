@@ -617,6 +617,30 @@ _Reviews #137-179 have been archived to
 
 ---
 
+#### Review #327: PR #367 R4 — Fail Closed, Log Injection, Trap Chaining, Input Normalization (2026-02-16)
+
+**Source:** SonarCloud (9) + Qodo PR Compliance (5) + Qodo Code Suggestions (10)
+**PR/Branch:** claude/read-session-commits-ZpJLX (PR #367) **Suggestions:** 24
+total (Fixed: 13, Already Deferred: 6, Already Fixed: 1, Rejected: 4)
+
+**Patterns Identified:**
+
+1. **Fail-closed security** — `isSafeToWrite = () => true` fallback changed to
+   `() => false` across all 5 files
+2. **Log injection prevention** — SKIP_REASON newline guard added to pre-commit
+   and pre-push hooks
+3. **Shell trap chaining** — Second `trap ... EXIT` overwrites first; use
+   `trap -p EXIT` to capture and chain
+
+**Key Learnings:**
+
+- Fail-open fallbacks for security modules are a recurring anti-pattern
+- Shell EXIT traps must be chained, not overwritten
+- `handoff.json` field types vary; normalize with `toCount()` helper
+- Running validate-audit.js twice is wasteful; capture output once
+
+---
+
 #### Review #326: PR #367 R3 — Weight Normalization, CC Reduction, Symlink Guards (2026-02-16)
 
 **Source:** SonarCloud (11) + Qodo PR Compliance (2) + Qodo Code Suggestions (8)

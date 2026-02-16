@@ -174,6 +174,34 @@ function safeReadFile(filePath, description) {
  * @param {string} description - Human-readable description for errors
  * @returns {{success: boolean, error?: string}}
  */
+/**
+ * Atomic swap: write to tmp, rename to target with backup and restore on failure
+ */
+function atomicSwap(filePath, tmpPath, bakPath) {
+  try {
+    if (existsSync(filePath)) renameSync(filePath, bakPath);
+    renameSync(tmpPath, filePath);
+  } catch (error_) {
+    try {
+      if (existsSync(bakPath) && !existsSync(filePath)) renameSync(bakPath, filePath);
+    } catch {
+      /* best effort restore */
+    }
+    throw error_;
+  } finally {
+    try {
+      if (existsSync(tmpPath)) unlinkSync(tmpPath);
+    } catch {
+      /* best effort */
+    }
+    try {
+      if (existsSync(bakPath)) unlinkSync(bakPath);
+    } catch {
+      /* best effort */
+    }
+  }
+}
+
 function safeWriteFile(filePath, content, description) {
   if (DRY_RUN) {
     console.log(`[DRY RUN] Would write ${content.length} characters to ${description}`);
@@ -204,31 +232,7 @@ function safeWriteFile(filePath, content, description) {
 
   try {
     writeFileSync(tmpPath, content, "utf-8");
-    try {
-      // Atomic swap — isSafeToWrite guards verified for filePath/tmpPath/bakPath above
-      if (existsSync(filePath)) renameSync(filePath, bakPath);
-      renameSync(tmpPath, filePath);
-    } catch (error_) {
-      // Restore from backup — isSafeToWrite verified above, fail-safe only
-      try {
-        if (existsSync(bakPath) && !existsSync(filePath)) renameSync(bakPath, filePath);
-      } catch {
-        /* best effort restore */
-      }
-      throw error_;
-    } finally {
-      // Clean up temp/backup files
-      try {
-        if (existsSync(tmpPath)) unlinkSync(tmpPath);
-      } catch {
-        /* best effort */
-      }
-      try {
-        if (existsSync(bakPath)) unlinkSync(bakPath);
-      } catch {
-        /* best effort */
-      }
-    }
+    atomicSwap(filePath, tmpPath, bakPath);
     return { success: true };
   } catch (error) {
     return {
