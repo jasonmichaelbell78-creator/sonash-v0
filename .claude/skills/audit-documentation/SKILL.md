@@ -2,12 +2,22 @@
 name: audit-documentation
 description:
   Run a multi-stage parallel documentation audit with 18 specialized agents
+supports_parallel: true
+fallback_available: true
+estimated_time_parallel: 20 min
+estimated_time_sequential: 90 min
 ---
 
-# Multi-Stage Parallel Documentation Audit
+# Single-Session Documentation Audit
 
-**Version:** 2.0 **Total Agents:** 18 parallel agents across 5 stages + 1
-synthesis stage
+## Execution Mode Selection
+
+| Condition                                 | Mode       | Time    |
+| ----------------------------------------- | ---------- | ------- |
+| Task tool available + no context pressure | Parallel   | ~20 min |
+| Task tool unavailable                     | Sequential | ~90 min |
+| Context running low (<20% remaining)      | Sequential | ~90 min |
+| User requests sequential                  | Sequential | ~90 min |
 
 ---
 
@@ -17,12 +27,15 @@ This audit uses parallel agent execution across 6 stages to comprehensively
 analyze documentation quality, accuracy, and lifecycle status. Each stage
 produces JSONL output that feeds into the final synthesis.
 
+**Version:** 2.0 **Total Agents:** 18 parallel agents across 5 stages + 1
+synthesis stage
+
 **Output Directory:**
 `docs/audits/single-session/documentation/audit-[YYYY-MM-DD]/`
 
 ---
 
-## Pre-Audit Setup
+## Pre-Audit Validation
 
 **Step 0: Episodic Memory Search (Session #128)**
 
@@ -55,7 +68,24 @@ mcp__plugin_episodic -
 
 ---
 
-**Step 1: Create Output Directory**
+**Step 1: Read False Positives Database**
+
+Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and filter findings matching:
+
+- Category: `documentation`
+- Expired entries (skip if `expires` date passed)
+
+Note patterns to exclude from final findings.
+
+**Step 2: Check Prior Audit Results**
+
+Check `docs/audits/single-session/documentation/` for previous audit outputs to:
+
+- Compare against previous doc health metrics
+- Avoid re-flagging resolved issues
+- Track recurring patterns
+
+**Step 3: Verify Output Directory**
 
 ```bash
 AUDIT_DIR="docs/audits/single-session/documentation/audit-$(date +%Y-%m-%d)"
@@ -63,15 +93,13 @@ mkdir -p "$AUDIT_DIR"
 echo "Audit output: $AUDIT_DIR"
 ```
 
-**Step 2: Load False Positives Database**
+**Step 4: Check Thresholds**
 
-Read `docs/technical-debt/FALSE_POSITIVES.jsonl` and note patterns to exclude
-from findings (filter by category: `documentation`).
+Run `npm run review:check` and report results. If no thresholds are triggered:
 
-**Step 3: Check Thresholds**
-
-Run `npm run review:check` - proceed regardless of result (user invoked
-intentionally).
+- Display: "⚠️ No review thresholds triggered. Proceed anyway? (This is a
+  lightweight single-session audit)"
+- Continue with audit regardless (user invoked intentionally)
 
 ---
 
@@ -810,45 +838,65 @@ After ALL findings reviewed, summarize:
 
 ---
 
-## Post-Audit Actions
+## Post-Audit Validation
 
-### 1. Save Outputs
+**Before finalizing the audit:**
 
-Verify all files saved to `${AUDIT_DIR}/`:
+1. **Run Validation Script:**
 
-- [ ] stage-1-\*.md, stage-1-links.json
-- [ ] stage-2-\*.jsonl
-- [ ] stage-3-\*.jsonl
-- [ ] stage-4-\*.jsonl
-- [ ] stage-5-\*.jsonl
-- [ ] all-findings.jsonl (merged, deduplicated)
-- [ ] FINAL_REPORT.md
+   ```bash
+   node scripts/validate-audit.js ${AUDIT_DIR}/all-findings.jsonl
+   ```
 
-### 2. TDMS Integration
+2. **Validation Checks:**
+   - All findings have required fields
+   - No matches in FALSE_POSITIVES.jsonl (or documented override)
+   - No duplicate findings
+   - All S0/S1 have HIGH or MEDIUM confidence
+   - All S0/S1 have verification evidence
 
-```bash
-node scripts/debt/intake-audit.js ${AUDIT_DIR}/all-findings.jsonl --source "audit-documentation-$(date +%Y-%m-%d)"
-```
+3. **If validation fails:**
+   - Review flagged findings
+   - Fix or document exceptions
+   - Re-run validation
 
-### 3. Update AUDIT_TRACKER.md
+---
 
-Add entry to "Documentation Audits" table:
+## TDMS Intake & Commit
 
-| Date    | Session | Commits | Files | Findings  | Confidence | Validation |
-| ------- | ------- | ------- | ----- | --------- | ---------- | ---------- |
-| [today] | [#]     | [X]     | [Y]   | [summary] | HIGH       | PASSED     |
-
-### 4. Reset Threshold
-
-Single-session audits reset the documentation category threshold.
-
-```bash
-node scripts/reset-audit-triggers.js --type=single --category=documentation --apply
-```
-
-### 5. Offer Fixes
-
-Ask user: "Would you like me to fix any immediate items now?"
+1. Display summary to user
+2. Confirm files saved to `${AUDIT_DIR}/`:
+   - [ ] stage-1-\*.md, stage-1-links.json
+   - [ ] stage-2-\*.jsonl
+   - [ ] stage-3-\*.jsonl
+   - [ ] stage-4-\*.jsonl
+   - [ ] stage-5-\*.jsonl
+   - [ ] all-findings.jsonl (merged, deduplicated)
+   - [ ] FINAL_REPORT.md
+3. Run `node scripts/validate-audit.js ${AUDIT_DIR}/all-findings.jsonl`
+4. **Validate CANON schema** (if audit updates CANON files):
+   ```bash
+   npm run validate:canon
+   ```
+   Ensure all CANON files pass validation before committing.
+5. **Update AUDIT_TRACKER.md** - Add entry to "Documentation Audits" table:
+   - Date: Today's date
+   - Session: Current session number from SESSION_CONTEXT.md
+   - Commits Covered: Number of commits since last documentation audit
+   - Files Covered: Number of files analyzed
+   - Findings: Total count (e.g., "5 S1, 12 S2, 8 S3")
+   - Reset Threshold: YES (single-session audits reset that category's
+     threshold)
+   - Run:
+     `node scripts/reset-audit-triggers.js --type=single --category=documentation --apply`
+6. **TDMS Integration (MANDATORY)** - Ingest findings to canonical debt store:
+   ```bash
+   node scripts/debt/intake-audit.js ${AUDIT_DIR}/all-findings.jsonl --source "audit-documentation-$(date +%Y-%m-%d)"
+   ```
+   This assigns DEBT-XXXX IDs and adds to
+   `docs/technical-debt/MASTER_DEBT.jsonl`. See
+   `docs/technical-debt/PROCEDURE.md` for the full TDMS workflow.
+7. Ask: "Would you like me to fix any of these issues now?"
 
 ---
 

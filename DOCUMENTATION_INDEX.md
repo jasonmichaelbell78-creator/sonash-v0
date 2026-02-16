@@ -99,7 +99,7 @@ _Foundation technical reference_
 | [Sentry Integration Guide for SoNash Admin Panel](docs/SENTRY_INTEGRATION_GUIDE.md)               | Step-by-step guide to integrate Sentry error tracking into t... | ↓1 ↑0      | 2026-02-16    |
 | [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                         | Verify requests come from your legitimate app, not bots or s... | ↓5 ↑2      | 2026-02-16    |
 | [SonarCloud Cleanup Sprint Runbook](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)                           | This runbook provides a repeatable process for SonarCloud an... | ↓1 ↑0      | 2026-02-16    |
-| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                 | -                                                               | ↓5 ↑4      | 2026-02-16    |
+| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                 | -                                                               | ↓7 ↑4      | 2026-02-16    |
 
 ### Root Documents (Tier 2)
 
@@ -117,7 +117,7 @@ _AI agent reference docs_
 | Document                                                                            | Description                                                     | References | Last Modified |
 | ----------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Agent Orchestration Reference](docs/agent_docs/AGENT_ORCHESTRATION.md)             | Detailed guidance for parallelizing agents, forming teams, a... | ↓1 ↑0      | 2026-02-16    |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                  | This document contains detailed code patterns and anti-patte... | ↓6 ↑2      | 2026-02-16    |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                  | This document contains detailed code patterns and anti-patte... | ↓7 ↑2      | 2026-02-16    |
 | [Context Preservation & Compaction Safety](docs/agent_docs/CONTEXT_PRESERVATION.md) | Detailed guidance for preventing loss of important decisions... | ↓1 ↑0      | 2026-02-16    |
 | [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)       | Copy-paste fix templates for the top 26 most common Qodo PR ... | ↓1 ↑0      | 2026-02-16    |
 | [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)             | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-02-16    |
@@ -142,8 +142,8 @@ _Single-session and multi-AI audit outputs_
 | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Audit Ecosystem](docs/audits/README.md)                                                                               | <!-- prettier-ignore-start -->                                  | ↓0 ↑2      | 2026-02-16    |
 | [Audit Results Index](docs/audits/RESULTS_INDEX.md)                                                                    | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-16    |
-| [Audit Standards](docs/audits/AUDIT_STANDARDS.md)                                                                      | <What this audit checks and why>                                | ↓1 ↑1      | 2026-02-16    |
-| [Audit Tracker](docs/audits/AUDIT_TRACKER.md)                                                                          | Track single-session and multi-AI audit completions for thre... | ↓1 ↑0      | 2026-02-16    |
+| [Audit Standards](docs/audits/AUDIT_STANDARDS.md)                                                                      | <What this audit checks and why>                                | ↓2 ↑1      | 2026-02-16    |
+| [Audit Tracker](docs/audits/AUDIT_TRACKER.md)                                                                          | Track single-session and multi-AI audit completions for thre... | ↓2 ↑0      | 2026-02-16    |
 | [Automation Audit Report — 2026-02-09](docs/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md) | - **Total findings:** 258                                       | ↓0 ↑0      | 2026-02-16    |
 | [Implementation Plan: Audit Ecosystem Codification](docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md)                       | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-16    |
 
@@ -219,7 +219,7 @@ _Claude Code skills_
 | [Coding Standards](.claude/skills/code-reviewer/references/coding_standards.md)                                                     | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-02-16    |
 | [Common Antipatterns](.claude/skills/code-reviewer/references/common_antipatterns.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-02-16    |
 | [Comprehensive Automation Audit](.claude/skills/audit-process/SKILL.md)                                                             | -                                                                 | ↓0 ↑0      | 2026-02-16    |
-| [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)                                        | -                                                                 | ↓0 ↑3      | 2026-02-16    |
+| [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)                                        | -                                                                 | ↓0 ↑6      | 2026-02-16    |
 | [Condition-Based Waiting](.claude/skills/systematic-debugging/condition-based-waiting.md)                                           | Flaky tests often guess at timing with arbitrary delays. Thi...   | ↓0 ↑0      | 2026-02-16    |
 | [Content Research Writer](.claude/skills/content-research-writer/SKILL.md)                                                          | This skill acts as your writing partner, helping you researc...   | ↓0 ↑0      | 2026-02-16    |
 | [Create Audit Wizard](.claude/skills/create-audit/SKILL.md)                                                                         | <Description of when to use this template>                        | ↓0 ↑0      | 2026-02-16    |
@@ -256,7 +256,6 @@ _Claude Code skills_
 | [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md)                                                                 | To create high-quality MCP (Model Context Protocol) servers ...   | ↓0 ↑4      | 2026-02-16    |
 | [MCP Server Evaluation Guide](.claude/skills/mcp-builder/reference/evaluation.md)                                                   | This document provides guidance on creating comprehensive ev...   | ↓1 ↑0      | 2026-02-16    |
 | [Multi-AI Audit Orchestrator](.claude/skills/multi-ai-audit/SKILL.md)                                                               | Single-entry-point skill that orchestrates the entire multi-...   | ↓0 ↑2      | 2026-02-16    |
-| [Multi-Stage Parallel Documentation Audit](.claude/skills/audit-documentation/SKILL.md)                                             | -                                                                 | ↓0 ↑0      | 2026-02-16    |
 | [Nextjs Optimization Guide](.claude/skills/senior-frontend/references/nextjs_optimization_guide.md)                                 | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-02-16    |
 | [Node/TypeScript MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/node_mcp_server.md)                          | This document provides Node/TypeScript-specific best practic...   | ↓1 ↑0      | 2026-02-16    |
 | [OpenRouter Integration for MarkItDown](.claude/skills/markitdown/OPENROUTER_INTEGRATION.md)                                        | This MarkItDown skill has been configured to use \*\*OpenRoute... | ↓0 ↑0      | 2026-02-16    |
@@ -284,9 +283,10 @@ _Claude Code skills_
 | [Session End Checklist](.claude/skills/session-end/SKILL.md)                                                                        | Before ending the session, complete these steps:                  | ↓0 ↑0      | 2026-02-16    |
 | [Single-Session AI Optimization Audit](.claude/skills/audit-ai-optimization/SKILL.md)                                               | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-16    |
 | [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)                                                              | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-16    |
+| [Single-Session Documentation Audit](.claude/skills/audit-documentation/SKILL.md)                                                   | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-16    |
 | [Single-Session Engineering Productivity Audit](.claude/skills/audit-engineering-productivity/SKILL.md)                             | Evaluates developer experience (DX), debugging capabilities,...   | ↓0 ↑0      | 2026-02-16    |
 | [Single-Session Performance Audit](.claude/skills/audit-performance/SKILL.md)                                                       | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-16    |
-| [Single-Session Refactoring Audit](.claude/skills/audit-refactoring/SKILL.md)                                                       | -                                                                 | ↓0 ↑0      | 2026-02-16    |
+| [Single-Session Refactoring Audit](.claude/skills/audit-refactoring/SKILL.md)                                                       | This audit identifies technical debt related to code structu...   | ↓0 ↑6      | 2026-02-16    |
 | [Single-Session Security Audit](.claude/skills/audit-security/SKILL.md)                                                             | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-16    |
 | [SKILL](.claude/skills/frontend-design/SKILL.md)                                                                                    | -                                                                 | ↓0 ↑0      | 2026-02-16    |
 | [Skill Creator](.claude/skills/skill-creator/SKILL.md)                                                                              | This skill provides guidance for creating effective skills.       | ↓0 ↑1      | 2026-02-16    |
@@ -327,7 +327,7 @@ _TDMS tracking and management_
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-02-16    |
 | [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓2 ↑4      | 2026-02-16    |
-| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓5 ↑1      | 2026-02-16    |
+| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓7 ↑1      | 2026-02-16    |
 | [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-02-16    |
 
 ### Templates (Tier 3)
@@ -342,7 +342,7 @@ _Document and audit templates_
 | [[Workflow/Reference Name]](docs/templates/REFERENCE_DOC_TEMPLATE.md)            | -                                                               | ↓0 ↑0      | 2026-02-16    |
 | [CANON Quick Reference Card](docs/templates/CANON_QUICK_REFERENCE.md)            | One-page quick reference for Multi-AI audits. Distilled from... | ↓0 ↑0      | 2026-02-16    |
 | [How to [Accomplish Task]](docs/templates/GUIDE_DOC_TEMPLATE.md)                 | -                                                               | ↓0 ↑2      | 2026-02-16    |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | Standardized JSONL output schema for all multi-AI review tem... | ↓5 ↑2      | 2026-02-16    |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | Standardized JSONL output schema for all multi-AI review tem... | ↓7 ↑2      | 2026-02-16    |
 
 ### .agent > workflows (Tier 4)
 
@@ -561,16 +561,16 @@ Documents that are linked to most frequently:
 | [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                               | 9             | AI_WORKFLOW, README, FIREBASE_CHANGE_POLICY +6 more     |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                       | 8             | AI_WORKFLOW, README, SESSION_CONTEXT +5 more            |
 | [\[Project Name\] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_PLAN.md)             | 8             | COORDINATOR, README, DOCUMENTATION_AUDIT +5 more        |
+| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                            | 7             | SKILL, SKILL, AI_WORKFLOW +4 more                       |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                       | 7             | ARCHITECTURE, DEVELOPMENT, README +4 more               |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                           | 6             | README, claude, AI_REVIEW_LEARNINGS_LOG +3 more         |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                           | 7             | SKILL, README, claude +4 more                           |
+| [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md)                       | 7             | SKILL, SKILL, SKILL +4 more                             |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                             | 7             | SKILL, SKILL, SKILL +4 more                             |
 | [\[Project Name\] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md)       | 6             | COORDINATOR, README, CODE_REVIEW_PLAN +3 more           |
 | [Session Context](SESSION_CONTEXT.md)                                                                        | 5             | AI_WORKFLOW, ROADMAP, claude +2 more                    |
-| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                            | 5             | AI_WORKFLOW, DOCUMENT_DEPENDENCIES, README +2 more      |
 | [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                                    | 5             | README, ROADMAP, ROADMAP_LOG +2 more                    |
 | [Testing Plan](docs/TESTING_PLAN.md)                                                                         | 5             | ARCHITECTURE, DEVELOPMENT, README +2 more               |
 | [\[Project Name\] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT_PLAN.md) | 5             | COORDINATOR, README, CODE_REVIEW_PLAN +2 more           |
-| [\[Project Name\] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)           | 5             | COORDINATOR, README, CODE_REVIEW_PLAN +2 more           |
-| [SoNash Testing User Manual](docs/plans/TESTING_USER_MANUAL.md)                                              | 5             | ARCHITECTURE, DEVELOPMENT, README +2 more               |
 
 ### Most Linking Documents (Outbound Links)
 
@@ -589,6 +589,8 @@ Documents that link to other documents most frequently:
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                        | 9              |
 | [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                                        | 9              |
 | [AI Context &amp; Rules for SoNash](claude.md)                                                            | 7              |
+| [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)              | 6              |
+| [Single-Session Refactoring Audit](.claude/skills/audit-refactoring/SKILL.md)                             | 6              |
 | [Architecture Documentation](ARCHITECTURE.md)                                                             | 6              |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                                                                      | 6              |
 | [\[Project Name\] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)        | 6              |
@@ -596,8 +598,6 @@ Documents that link to other documents most frequently:
 | [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                                  | 5              |
 | [\[Project Name\] Multi-AI Code Review Plan](docs/audits/multi-ai/templates/CODE_REVIEW_PLAN.md)          | 5              |
 | [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md)                                       | 4              |
-| [PR Code Review Processor](.claude/skills/pr-review/SKILL.md)                                             | 4              |
-| [SoNash Future Roadmap](ROADMAP_FUTURE.md)                                                                | 4              |
 
 ---
 
@@ -658,7 +658,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Single-Session AI Optimization Audit](.claude/skills/audit-ai-optimization/SKILL.md)
 - [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)
 - [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)
-- [Multi-Stage Parallel Documentation Audit](.claude/skills/audit-documentation/SKILL.md)
+- [Single-Session Documentation Audit](.claude/skills/audit-documentation/SKILL.md)
 - [Single-Session Engineering Productivity Audit](.claude/skills/audit-engineering-productivity/SKILL.md)
 - [Enhancement Audit](.claude/skills/audit-enhancements/SKILL.md)
 - [Single-Session Performance Audit](.claude/skills/audit-performance/SKILL.md)
@@ -852,7 +852,7 @@ Documents with no inbound links (not referenced by any other document):
 | 55  | [.claude/skills/audit-comprehensive/reference/TRIAGE_GUIDE.md](.claude/skills/audit-comprehensive/reference/TRIAGE_GUIDE.md)                                                               | Triage &amp; Roadmap Integration Guide                             | 3    | ACTIVE                                                                          |
 | 56  | [.claude/skills/audit-comprehensive/reference/WAVE_DETAILS.md](.claude/skills/audit-comprehensive/reference/WAVE_DETAILS.md)                                                               | Wave-by-Wave Execution Details                                     | 3    | ACTIVE                                                                          |
 | 57  | [.claude/skills/audit-comprehensive/SKILL.md](.claude/skills/audit-comprehensive/SKILL.md)                                                                                                 | Comprehensive Multi-Domain Audit Orchestrator                      | 3    | -                                                                               |
-| 58  | [.claude/skills/audit-documentation/SKILL.md](.claude/skills/audit-documentation/SKILL.md)                                                                                                 | Multi-Stage Parallel Documentation Audit                           | 3    | -                                                                               |
+| 58  | [.claude/skills/audit-documentation/SKILL.md](.claude/skills/audit-documentation/SKILL.md)                                                                                                 | Single-Session Documentation Audit                                 | 3    | -                                                                               |
 | 59  | [.claude/skills/audit-engineering-productivity/SKILL.md](.claude/skills/audit-engineering-productivity/SKILL.md)                                                                           | Single-Session Engineering Productivity Audit                      | 3    | -                                                                               |
 | 60  | [.claude/skills/audit-enhancements/SKILL.md](.claude/skills/audit-enhancements/SKILL.md)                                                                                                   | Enhancement Audit                                                  | 3    | -                                                                               |
 | 61  | [.claude/skills/audit-performance/SKILL.md](.claude/skills/audit-performance/SKILL.md)                                                                                                     | Single-Session Performance Audit                                   | 3    | -                                                                               |

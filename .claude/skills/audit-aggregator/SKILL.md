@@ -45,15 +45,15 @@ TDMS intake/metrics with a partial dataset.
 
 **Expected Files:**
 
-- `docs/audits/comprehensive/audit-code-report.md`
-- `docs/audits/comprehensive/audit-security-report.md`
-- `docs/audits/comprehensive/audit-performance-report.md`
-- `docs/audits/comprehensive/audit-documentation-report.md`
-- `docs/audits/comprehensive/audit-refactoring-report.md`
-- `docs/audits/comprehensive/audit-process-report.md`
-- `docs/audits/comprehensive/audit-engineering-productivity-report.md`
-- `docs/audits/comprehensive/audit-enhancements-report.md`
-- `docs/audits/comprehensive/audit-ai-optimization-report.md`
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/audit-code-report.md`
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/audit-security-report.md`
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/audit-performance-report.md`
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/audit-documentation-report.md`
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/audit-refactoring-report.md`
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/audit-process-report.md`
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/audit-engineering-productivity-report.md`
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/audit-enhancements-report.md`
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/audit-ai-optimization-report.md`
 
 **Required Format (in each report):**
 
@@ -166,6 +166,30 @@ After:
   cross-domain::src/auth.ts::45::error-handling-exception-vuln (S0, E1, Domains: 2)
     Category: Cross-Domain (Code + Security)
 ```
+
+**Category Mapping (`mapPrimaryCategory`):**
+
+When merging findings from multiple domains, map to a canonical TDMS category
+using the primary domain:
+
+| Domain                     | TDMS Category              | Notes                                        |
+| -------------------------- | -------------------------- | -------------------------------------------- |
+| `code`                     | `code-quality`             | Code hygiene, types, framework patterns      |
+| `security`                 | `security`                 | Auth, vulnerabilities, data exposure         |
+| `performance`              | `performance`              | Bottlenecks, bundle size, rendering          |
+| `refactoring`              | `refactoring`              | Duplication, coupling, structural debt       |
+| `documentation`            | `documentation`            | Coverage, accuracy, freshness                |
+| `process`                  | `process`                  | CI/CD, hooks, scripts, automation            |
+| `engineering-productivity` | `engineering-productivity` | DX, debugging tools, workflow friction       |
+| `enhancements`             | `enhancements`             | Feature gaps, UX improvements, product ideas |
+| `ai-optimization`          | `ai-optimization`          | Token waste, skill overlap, hook latency     |
+
+**For cross-domain findings:**
+
+- If 2+ domains: use the highest-severity domain's category
+- If equal severity: use security > performance > code-quality > others
+- Preserve all domains in `domains` array field
+- Add `cross_domain: true` flag for reporting
 
 ---
 
