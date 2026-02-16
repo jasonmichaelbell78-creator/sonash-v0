@@ -283,6 +283,11 @@ function runCommandSafe(bin, args = [], options = {}) {
       env: options.env,
       stdio: ["pipe", "pipe", "pipe"],
     };
+    // Windows: npm/npx/gh are .cmd batch files that require a shell to execute.
+    // shell:true is safe here because args are arrays we control (no user input).
+    if (process.platform === "win32" && (bin === "npm" || bin === "npx" || bin === "gh")) {
+      safeOptions.shell = true;
+    }
     const output = execFileSync(bin, args, safeOptions);
     return { success: true, output: String(output ?? "").trim(), stderr: "", code: 0 };
   } catch (error) {

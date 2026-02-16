@@ -2,7 +2,7 @@
 
 **Document Version**: 4.2 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-14 (Session #159)
+2026-02-16 (Session #162)
 
 ## AI Instructions
 
@@ -48,32 +48,27 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #158 Summary** (AI OPTIMIZATION AUDIT — ALERTS FIX + FORMAT + BLOAT):
-
-- Fixed 35 blocking pattern violations in `run-alerts.js`
-- Completed AI optimization audit SUMMARY.md — marked all Act Now items DONE
-- Implemented AI optimization audit across Format + AI Instruction domains
-
-**Session #159 Summary** (AUDIT ECOSYSTEM CODIFICATION — PLANNING):
-
-- Planned full audit ecosystem codification (10-step plan, 5 waves)
-- 20 design decisions across 5 Q&A batches
-- Plan saved to `docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md`
-- Scope: 5 new files, 12+ modified files
-- Key deliverables: AUDIT_STANDARDS.md, audit-ai-optimization skill,
-  AI_OPTIMIZATION_AUDIT template, create-audit wizard, ecosystem hub
-
 **Session #160 Summary** (AI OPTIMIZATION SPRINT — WAVES 7-8 COMPLETE):
 
 - Completed Wave 7: Large skill splits (pr-review 840→423 lines,
   audit-comprehensive 854→425 lines, code-reviewer trimmed)
 - Completed Wave 8: PostToolUse hook consolidation — 28 process spawns → 3 (90%
   reduction)
-  - Created `post-write-validator.js` consolidating 10 Write/Edit hooks into
-    single process
-  - Optimized `pre-compaction-save.js` git calls: 6 → 3
-  - Optimized `commit-tracker.js` git calls: 4 → 2
 - **All 8 waves of AI Optimization Sprint now complete (71 items resolved)**
+
+**Session #161-162 Summary** (PR #367 ALERTS OVERHAUL — 7 REVIEW ROUNDS):
+
+- Processed PR #367 review rounds R1-R7 (~100 items across SonarCloud + Qodo)
+- Created Reviews #324-330 in AI_REVIEW_LEARNINGS_LOG.md
+- PR #367 Retrospective: identified 3 ping-pong chains, 3-4 avoidable rounds
+- Created shared `scripts/lib/validate-skip-reason.js` (extracted from 3
+  scripts)
+- Added FIX_TEMPLATES 25-26, CODE_PATTERNS 2.9 (3 new patterns)
+- Updated pr-review SKILL.md: Step 5.6 propagation + Step 5.7 input validation
+- Fixed runCommandSafe Windows ENOENT (shell:true for npm/npx/gh on Windows)
+- Health score: C(75) → B(88) after ENOENT fix
+- Created DEBT-2979 (link checker FP), DEBT-2980 (commit tracker staleness)
+- Tests: 293/294 passing
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -146,7 +141,7 @@ Use team-based parallelization for Waves 1 and 2.
 4. Document using template
 5. Implement and commit with review summary
 
-**Last Processed**: 2026-02-11 (Reviews #283-284: PR #359 feedback)
+**Last Processed**: 2026-02-16 (Reviews #324-330: PR #367 R1-R7)
 
 ---
 

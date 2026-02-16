@@ -1,39 +1,43 @@
 {
-  "generated": "2026-02-15T03:02:22.761Z",
-  "generated_date": "2026-02-15",
+  "generated": "2026-02-16T03:30:44.023Z",
+  "generated_date": "2026-02-16",
   "summary": {
-    "total": 2290,
-    "open": 1879,
-    "resolved": 169,
+    "total": 2302,
+    "open": 1890,
+    "resolved": 170,
     "false_positives": 242,
     "resolution_rate_pct": 7
   },
   "by_status": {
-    "NEW": 87,
+    "NEW": 96,
     "VERIFIED": 1792,
     "IN_PROGRESS": 0,
-    "RESOLVED": 169,
-    "FALSE_POSITIVE": 242
+    "RESOLVED": 170,
+    "FALSE_POSITIVE": 242,
+    "open": 2
   },
   "by_severity": {
     "S0": 27,
     "S1": 390,
-    "S2": 1021,
-    "S3": 852
+    "S2": 1026,
+    "S3": 859
   },
   "by_category": {
-    "code-quality": 1326,
-    "security": 81,
+    "code-quality": 1328,
+    "security": 85,
     "performance": 50,
-    "documentation": 465,
-    "refactoring": 21,
-    "process": 334,
+    "documentation": 466,
+    "refactoring": 22,
+    "process": 336,
     "engineering-productivity": 4,
-    "enhancements": 9
+    "enhancements": 9,
+    "tooling": 2
   },
   "by_source": {
-    "unknown": 2289,
-    "pr-review-286": 1
+    "unknown": 2296,
+    "pr-review-286": 1,
+    "pr-review-366-r2": 3,
+    "alerts-self-audit": 2
   },
   "alerts": {
     "s0_count": 9,
@@ -161,6 +165,6 @@
     "avg_age_days": 0,
     "oldest_age_days": 0,
     "oldest_item_id": null,
-    "verification_queue_size": 87
+    "verification_queue_size": 96
   }
 }

@@ -1,0 +1,29 @@
+{"alertIndex":1,"category":"debt-metrics","severity":"error","message":"9 S0 critical debt item(s) need attention","decision":"defer","timestamp":"2026-02-16T03:19:00Z","executed":false,"fixAction":"Run /task-next or fix S0 items directly"}
+{"alertIndex":2,"category":"skip-abuse","severity":"error","message":"35 checks overridden in last 24h","decision":"ignore","timestamp":"2026-02-16T03:19:30Z","executed":false}
+{"alertIndex":3,"category":"external-links","severity":"error","message":"29 broken external links","decision":"ignore","timestamp":"2026-02-16T03:22:00Z","executed":false,"note":"All 29 are false positives - localhost, placeholders, API endpoints, backtick-quoted URLs"}
+{"alertIndex":4,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":5,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":6,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":7,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":8,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":9,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":10,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":11,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":12,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":13,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":14,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":15,"category":"warnings-batch","severity":"warning","decision":"ignore","timestamp":"2026-02-16T03:23:00Z","executed":false,"note":"Batch ignored - known context"}
+{"alertIndex":8,"category":"test-results","severity":"warning","message":"Test staleness","decision":"fix_now","timestamp":"2026-02-16T03:23:00Z","executed":true,"fixAction":"npm test - 293 pass, 0 fail"}
+{"alertIndex":16,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":17,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":18,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":19,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":20,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":21,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":22,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":23,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":24,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":25,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":26,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":27,"category":"info-batch","severity":"info","decision":"acknowledge","timestamp":"2026-02-16T03:24:00Z"}
+{"alertIndex":28,"category":"system-self-audit","severity":"info","decision":"create_task","timestamp":"2026-02-16T03:25:00Z","tasks":["Improve external link checker exclusions","Fix commit-log.jsonl staleness"]}
