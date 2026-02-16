@@ -22,6 +22,22 @@ actionable.
 
 ## 2026-02 Sessions
 
+### Session #161-162 (2026-02-15)
+
+**Focus**: PR #367 ALERTS OVERHAUL — 7 REVIEW ROUNDS
+
+- Processed PR #367 review rounds R1-R7 (~100 items across SonarCloud + Qodo)
+- Created Reviews #324-330 in AI_REVIEW_LEARNINGS_LOG.md
+- PR #367 Retrospective: identified 3 ping-pong chains, 3-4 avoidable rounds
+- Created shared `scripts/lib/validate-skip-reason.js` (extracted from 3
+  scripts)
+- Added FIX_TEMPLATES 25-26, CODE_PATTERNS 2.9 (3 new patterns)
+- Updated pr-review SKILL.md: Step 5.6 propagation + Step 5.7 input validation
+- Fixed runCommandSafe Windows ENOENT (shell:true for npm/npx/gh on Windows)
+- Health score: C(75) -> B(88) after ENOENT fix
+- Created DEBT-2979 (link checker FP), DEBT-2980 (commit tracker staleness)
+- Tests: 293/294 passing
+
 ### Session #160 (2026-02-15)
 
 **Focus**: AI OPTIMIZATION SPRINT — WAVES 7-8 COMPLETE

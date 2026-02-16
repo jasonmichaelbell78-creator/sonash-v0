@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 4.2 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 4.3 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-16 (Session #162)
+2026-02-16 (Session #164)
 
 ## AI Instructions
 
@@ -48,20 +48,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #161-162 Summary** (PR #367 ALERTS OVERHAUL — 7 REVIEW ROUNDS):
-
-- Processed PR #367 review rounds R1-R7 (~100 items across SonarCloud + Qodo)
-- Created Reviews #324-330 in AI_REVIEW_LEARNINGS_LOG.md
-- PR #367 Retrospective: identified 3 ping-pong chains, 3-4 avoidable rounds
-- Created shared `scripts/lib/validate-skip-reason.js` (extracted from 3
-  scripts)
-- Added FIX_TEMPLATES 25-26, CODE_PATTERNS 2.9 (3 new patterns)
-- Updated pr-review SKILL.md: Step 5.6 propagation + Step 5.7 input validation
-- Fixed runCommandSafe Windows ENOENT (shell:true for npm/npx/gh on Windows)
-- Health score: C(75) → B(88) after ENOENT fix
-- Created DEBT-2979 (link checker FP), DEBT-2980 (commit tracker staleness)
-- Tests: 293/294 passing
-
 **Session #163 Summary** (AUDIT ECOSYSTEM FULL HEALTH PLAN):
 
 - Deep-dived into full audit ecosystem health via `/deep-plan`
@@ -79,6 +65,21 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
   Missing Docs+Templates, Process & Automation, Verification, Improvements (8
   new scripts)
 - Plan saved to `.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md` and pushed
+
+**Session #164 Summary** (AUDIT ECOSYSTEM REMEDIATION — WAVES 1-8):
+
+- Executed full 39-step remediation plan across 8 waves from
+  `.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md`
+- **Wave 1**: Consolidated audit ecosystem structure (scaffold dirs, move files)
+- **Wave 2-3**: 9-category alignment, severity standardization (I0-I3→S0-S3),
+  TDMS pipeline fixes
+- **Wave 4**: Rewrote 4 audit skills to AUDIT_STANDARDS compliance
+- **Wave 5-6**: Missing docs, template guardrails, template renames, governance
+- **Wave 8**: 8 improvement scripts, audit-health skill, category scoping
+- Applied PR #368 retro recommendations (template, pattern rule, Qodo
+  suppression)
+- Synced 4 reviews, incremented session counter
+- Tests: 293/294 passing
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -219,6 +220,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------- | ------ |
+| 4.3     | 2026-02-16 | Session #164: Audit ecosystem remediation waves 1-8      | Claude |
 | 4.2     | 2026-02-12 | Session #154: Alerts enhancement plan + dead data audit  | Claude |
 | 4.1     | 2026-02-12 | Session #151: Enhancement audit + skill improvements     | Claude |
 | 4.0     | 2026-02-11 | Session #149: Major refactor - archived history, trimmed | Claude |

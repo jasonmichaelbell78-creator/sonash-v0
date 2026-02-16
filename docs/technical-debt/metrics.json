@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-16T14:49:26.832Z",
+  "generated": "2026-02-16T21:08:35.649Z",
   "generated_date": "2026-02-16",
   "summary": {
     "total": 2302,
@@ -32,10 +32,9 @@
     "enhancements": 9
   },
   "by_source": {
-    "unknown": 2296,
+    "unknown": 2298,
     "pr-review-286": 1,
-    "pr-review-366-r2": 3,
-    "alerts-self-audit": 2
+    "pr-review-366-r2": 3
   },
   "alerts": {
     "s0_count": 9,
@@ -160,9 +159,9 @@
     ]
   },
   "health": {
-    "avg_age_days": 0,
-    "oldest_age_days": 0,
-    "oldest_item_id": null,
+    "avg_age_days": 12,
+    "oldest_age_days": 17,
+    "oldest_item_id": "DEBT-0001",
     "verification_queue_size": 98
   }
 }

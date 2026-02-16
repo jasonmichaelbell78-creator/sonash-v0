@@ -128,23 +128,22 @@ _...and 355 more S1 items_
 
 ## Health Metrics
 
-| Metric               | Value    |
-| -------------------- | -------- |
-| Verification Queue   | 98 items |
-| Avg Age (Open Items) | 0 days   |
-| Oldest Item Age      | 0 days   |
-| Oldest Item          | N/A      |
+| Metric               | Value     |
+| -------------------- | --------- |
+| Verification Queue   | 98 items  |
+| Avg Age (Open Items) | 12 days   |
+| Oldest Item Age      | 17 days   |
+| Oldest Item          | DEBT-0001 |
 
 ---
 
 ## Data Sources
 
-| Source            | Count |
-| ----------------- | ----- |
-| unknown           | 2296  |
-| pr-review-366-r2  | 3     |
-| alerts-self-audit | 2     |
-| pr-review-286     | 1     |
+| Source           | Count |
+| ---------------- | ----- |
+| unknown          | 2298  |
+| pr-review-366-r2 | 3     |
+| pr-review-286    | 1     |
 
 ---
 
