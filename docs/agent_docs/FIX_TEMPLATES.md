@@ -1,14 +1,14 @@
 # Fix Templates for Qodo PR Review Findings
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.2
-**Last Updated:** 2026-02-15
+**Document Version:** 1.4
+**Last Updated:** 2026-02-16
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 ## Purpose
 
-Copy-paste fix templates for the top 23 most common Qodo PR review findings in
+Copy-paste fix templates for the top 26 most common Qodo PR review findings in
 the SoNash codebase. Each template is self-contained: paste the "Good Code"
 block directly into the flagged location. Project-specific helpers are
 referenced where available.
@@ -1053,11 +1053,145 @@ grep -rn '\.tmp[`"'"'"']' .claude/hooks/ scripts/ --include="*.js" | grep -v isS
 
 ---
 
+## Template 25: SKIP_REASON Full Validation Chain
+
+**Triggered by**: Qodo "Input Validation" / SonarCloud "codePointAt"
+**Severity**: MAJOR **Review frequency**: PR #367 R4-R7 (4 rounds of progressive
+hardening)
+
+### Bad Code (incomplete validation)
+
+```javascript
+if (!process.env.SKIP_REASON) {
+  console.error("Need a reason");
+  process.exit(1);
+}
+```
+
+### Good Code (shared module)
+
+```javascript
+const { validateSkipReason } = require("./lib/validate-skip-reason");
+
+const result = validateSkipReason(process.env.SKIP_REASON, "SKIP_CHECK_NAME=1");
+if (!result.valid) {
+  console.error(result.error);
+  process.exit(1);
+}
+const reason = result.reason; // trimmed, validated
+```
+
+### What the Shared Module Validates
+
+1. **Type check** — `typeof rawReason === "string"`
+2. **Trim** — Strips whitespace
+3. **Empty check** — Requires non-empty after trim
+4. **Single-line** — Rejects CR/LF (prevents JSONL injection)
+5. **Control chars** — Rejects `\u0000-\u001f` and `\u007f` via `codePointAt`
+6. **Length limit** — Max 500 chars (prevents DoS)
+
+### Shell Equivalent (for .husky/ hooks)
+
+```bash
+# Reject control characters (POSIX-safe)
+if printf '%s' "$SKIP_REASON" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+  echo "  ❌ SKIP_REASON must not contain control characters"
+  exit 1
+fi
+# Length limit
+skip_len=${#SKIP_REASON}
+if [ "$skip_len" -gt 500 ]; then
+  echo "  ❌ SKIP_REASON must be <= 500 characters (got $skip_len)"
+  exit 1
+fi
+```
+
+### Propagation Check
+
+After applying this fix, search for ALL SKIP_REASON consumers:
+
+```bash
+grep -rn 'SKIP_REASON' scripts/ .claude/hooks/ .husky/ --include="*.js" --include="*.sh"
+```
+
+---
+
+## Template 26: POSIX Shell Portability
+
+**Triggered by**: Qodo "Shell Compatibility" / SonarCloud POSIX warnings
+**Severity**: MINOR **Review frequency**: PR #367 R4-R6 (3 rounds of progressive
+POSIX fixes)
+
+### Common Non-POSIX Constructs
+
+| Non-POSIX (Bash-only)    | POSIX Replacement                                |
+| ------------------------ | ------------------------------------------------ |
+| `grep -P '\r'`           | `cr="$(printf '\r')"; grep -q "$cr"`             |
+| `$'\r'` (ANSI-C quoting) | `cr="$(printf '\r')"`                            |
+| `[[ ... ]]`              | `[ ... ]`                                        |
+| `grep -P` (Perl regex)   | `grep -E` (ERE) or `LC_ALL=C grep '[[:cntrl:]]'` |
+| `local` in non-function  | Define in function scope only                    |
+| `source file`            | `. file`                                         |
+
+### CR Detection (Correct)
+
+```bash
+# ✅ POSIX-safe — works in dash, ash, sh
+cr="$(printf '\r')"
+if printf '%s' "$VAR" | grep -Fq "$cr"; then
+  echo "Contains carriage return"
+fi
+```
+
+### Control Character Detection (Correct)
+
+```bash
+# ✅ POSIX-safe — LC_ALL=C ensures [:cntrl:] works consistently
+if printf '%s' "$VAR" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+  echo "Contains control characters"
+fi
+```
+
+### EXIT Trap Chaining (Correct)
+
+```bash
+# ✅ POSIX-safe helper — chains without overwriting
+add_exit_trap() {
+  prev="$(trap -p EXIT 2>/dev/null || true)"
+  case "$prev" in
+    *"EXIT"*)
+      prev_cmd=$(printf '%s' "$prev" | sed "s/^[^']*'\(.*\)'[^']*EXIT.*/\1/")
+      trap "${prev_cmd}; $1" EXIT
+      ;;
+    *)
+      trap "$1" EXIT
+      ;;
+  esac
+}
+
+TMPFILE="$(mktemp)" || { echo "Failed to create temp file"; exit 1; }
+add_exit_trap 'rm -f "$TMPFILE" 2>/dev/null'
+```
+
+### Propagation Check
+
+After fixing POSIX issues, verify all hook scripts:
+
+```bash
+# Check for bash-specific constructs in POSIX sh scripts
+grep -rn '\$'"'"'\\' .husky/ --include="*.sh" 2>/dev/null  # ANSI-C quoting
+grep -rn 'grep -P' .husky/ scripts/ --include="*.sh" 2>/dev/null  # Perl regex
+grep -rn '\[\[' .husky/ --include="*.sh" 2>/dev/null  # Double brackets
+```
+
+---
+
 ## Version History
 
-| Version | Date       | Change                                               |
-| ------- | ---------- | ---------------------------------------------------- |
-| 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)              |
-| 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)       |
-| 1.1     | 2026-02-14 | Add Templates 21-22 (regex complexity, atomic write) |
-| 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis       |
+| Version | Date       | Change                                                                                              |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| 1.4     | 2026-02-16 | Add Templates 25-26 (SKIP_REASON validation chain, POSIX shell portability). Source: PR #367 retro. |
+| 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)                                                             |
+| 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)                                                      |
+| 1.1     | 2026-02-14 | Add Templates 21-22 (regex complexity, atomic write)                                                |
+| 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis                                                      |

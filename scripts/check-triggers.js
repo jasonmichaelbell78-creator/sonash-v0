@@ -22,6 +22,7 @@
 const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { validateSkipReason } = require("./lib/validate-skip-reason");
 
 // Configuration
 const TRIGGERS = {
@@ -382,35 +383,12 @@ function main() {
 
   // Check for SKIP_TRIGGERS override (documented in SKILL_AGENT_POLICY.md)
   if (process.env.SKIP_TRIGGERS === "1") {
-    const rawReason = process.env.SKIP_REASON;
-    const reason = typeof rawReason === "string" ? rawReason.trim() : "";
-
-    if (!reason) {
-      console.error("❌ SKIP_REASON is required when overriding checks");
-      console.error('   Usage: SKIP_REASON="your reason" SKIP_TRIGGERS=1 git push ...');
-      console.error("   The audit trail is useless without a reason.");
+    const skipResult = validateSkipReason(process.env.SKIP_REASON, "SKIP_TRIGGERS=1");
+    if (!skipResult.valid) {
+      console.error(skipResult.error);
       process.exit(1);
     }
-
-    if (/[\r\n]/.test(reason)) {
-      console.error("❌ SKIP_REASON must be single-line (no CR/LF)");
-      process.exit(1);
-    }
-
-    if (
-      [...reason].some((c) => {
-        const code = c.codePointAt(0);
-        return code < 0x20 || code === 0x7f;
-      })
-    ) {
-      console.error("❌ SKIP_REASON must not contain control characters");
-      process.exit(1);
-    }
-
-    if (reason.length > 500) {
-      console.error("❌ SKIP_REASON is too long (max 500 chars)");
-      process.exit(1);
-    }
+    const reason = skipResult.reason;
 
     console.log("⚠️  SKIP_TRIGGERS=1 detected - skipping trigger checks");
     console.log("   (Override logged for audit trail)\n");

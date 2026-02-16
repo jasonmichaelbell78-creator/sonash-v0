@@ -23,6 +23,7 @@
 
 const { execFileSync } = require("node:child_process");
 const { loadConfigWithRegex } = require("./config/load-config");
+const { validateSkipReason } = require("./lib/validate-skip-reason");
 
 // Parse arguments
 const args = process.argv.slice(2);
@@ -400,38 +401,12 @@ function checkDependencies() {
 try {
   // Allow override via environment variable
   if (process.env.SKIP_CROSS_DOC_CHECK === "1") {
-    const rawReason = process.env.SKIP_REASON;
-    const reason = typeof rawReason === "string" ? rawReason.trim() : "";
-
-    if (!reason) {
-      log("❌ SKIP_REASON is required when overriding checks", colors.red);
-      log(
-        '   Usage: SKIP_REASON="your reason" SKIP_CROSS_DOC_CHECK=1 git commit ...',
-        colors.yellow
-      );
-      log("   The audit trail is useless without a reason.", colors.red);
+    const skipResult = validateSkipReason(process.env.SKIP_REASON, "SKIP_CROSS_DOC_CHECK=1");
+    if (!skipResult.valid) {
+      log(skipResult.error, colors.red);
       process.exit(1);
     }
-
-    if (/[\r\n]/.test(reason)) {
-      log("❌ SKIP_REASON must be single-line (no CR/LF)", colors.red);
-      process.exit(1);
-    }
-
-    if (
-      [...reason].some((c) => {
-        const code = c.codePointAt(0);
-        return code < 0x20 || code === 0x7f;
-      })
-    ) {
-      log("❌ SKIP_REASON must not contain control characters", colors.red);
-      process.exit(1);
-    }
-
-    if (reason.length > 500) {
-      log("❌ SKIP_REASON is too long (max 500 chars)", colors.red);
-      process.exit(1);
-    }
+    const reason = skipResult.reason;
 
     try {
       execFileSync(

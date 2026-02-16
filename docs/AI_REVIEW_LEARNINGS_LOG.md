@@ -623,6 +623,33 @@ _Reviews #137-179 have been archived to
 
 ---
 
+### PR #367 Retrospective (2026-02-16)
+
+**Rounds:** 7 (R1-R7, all same day) | **Items:** 193 total appearances, ~100
+unique | **Fixed:** 100 | **Deferred:** 6 CC (pre-existing) | **Rejected:** ~24
+
+**Ping-pong chains (3-4 avoidable rounds):**
+
+- **SKIP_REASON validation** (R4-R7): 4 rounds of progressive hardening
+  (newlines, propagation to JS, control chars, codePointAt). Should have been
+  one comprehensive pass. **Fix:** Extract to shared
+  `scripts/lib/validate-skip-reason.js`.
+- **POSIX portability** (R4-R6): `grep -P` then `$'\r'` then `printf '\r'`. Each
+  fix used a still-non-POSIX construct. **Fix:** Add `shellcheck` to pre-commit.
+- **suppressAll edge cases** (R5-R7): Type guard then explicit flag then
+  category requirement. 3 rounds for one filter function. **Fix:** Unit tests
+  for `filterSuppressedAlerts()`.
+
+**Automation candidates:** CC eslint rule (~30 min), shared validateSkipReason
+(~20 min), shellcheck for hooks (~15 min), suppress SonarCloud S7741 Math.max
+(~5 min).
+
+**Verdict:** R1-R3 productive. R4-R7 were progressive hardening ping-pong.
+Highest-impact fix: shared SKIP_REASON validator + filterSuppressedAlerts tests
+would have saved 3 rounds.
+
+---
+
 #### Review #330: PR #367 R7 — codePointAt, suppressAll Category Guard, Code Fence Parsing, EXIT Trap (2026-02-16)
 
 **Source:** SonarCloud (11) + Qodo Compliance (2) + Qodo Suggestions (8)
