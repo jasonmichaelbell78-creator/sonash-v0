@@ -403,13 +403,17 @@ function main() {
         stdio: "inherit",
       });
       logDestination = "script";
-    } catch {
+    } catch (primaryErr) {
       // Inline fallback: write structured audit entry directly
+      // Log primary failure for debugging (stderr only, not persisted)
+      console.error(`   [debug] Primary logger failed: ${primaryErr?.message ?? "unknown"}`);
       try {
+        // Truncate reason to prevent accidental secret persistence (max 200 chars)
+        const safeReason = reason.length > 200 ? reason.slice(0, 200) + "..." : reason;
         const auditEntry = {
           timestamp: new Date().toISOString(),
           check: "triggers",
-          reason,
+          reason: safeReason,
           // Log operator identity without PII — use hashed username
           user: (() => {
             const raw = process.env.USER || process.env.USERNAME || "unknown";
@@ -419,12 +423,13 @@ function main() {
           })(),
           git_branch: (() => {
             try {
-              return (
-                spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
-                  encoding: "utf-8",
-                  timeout: 3000,
-                }).stdout?.trim() || "unknown"
-              );
+              const res = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+                encoding: "utf-8",
+                timeout: 3000,
+                stdio: ["ignore", "pipe", "ignore"],
+              });
+              if (res.error || res.status !== 0) return "unknown";
+              return res.stdout?.trim() || "unknown";
             } catch {
               return "unknown";
             }
@@ -442,23 +447,30 @@ function main() {
         fs.mkdirSync(logDir, { recursive: true });
         const logPath = path.join(logDir, "override-log.jsonl");
         // Symlink guard: prevent writing through symlinks (SEC-001)
-        const realPath = fs.realpathSync(logDir);
-        if (!logPath.startsWith(realPath)) {
-          throw new Error("symlink detected");
+        const realLogDir = fs.realpathSync(logDir);
+        const rel = path.relative(realLogDir, logPath);
+        if (rel.startsWith("..") || path.isAbsolute(rel)) {
+          throw new Error("symlink/path traversal detected on directory");
+        }
+        if (fs.existsSync(logPath) && fs.lstatSync(logPath).isSymbolicLink()) {
+          throw new Error("symlink detected on log file");
         }
         fs.appendFileSync(logPath, JSON.stringify(auditEntry) + "\n");
         logDestination = "file";
-      } catch {
+      } catch (fallbackErr) {
         // Both paths failed — warn but don't block
+        console.error(`   [debug] Fallback logger failed: ${fallbackErr?.message ?? "unknown"}`);
       }
     }
-    console.log(
-      logDestination === "script"
-        ? "   (Override logged for audit trail)\n"
-        : logDestination === "file"
-          ? "   (Override persisted to .claude/override-log.jsonl via fallback)\n"
-          : "   ⚠️  WARNING: Override audit log write failed — entry not persisted\n"
-    );
+    let logMessage;
+    if (logDestination === "script") {
+      logMessage = "   (Override logged for audit trail)\n";
+    } else if (logDestination === "file") {
+      logMessage = "   (Override persisted to .claude/override-log.jsonl via fallback)\n";
+    } else {
+      logMessage = "   ⚠️  WARNING: Override audit log write failed — entry not persisted\n";
+    }
+    console.log(logMessage);
 
     process.exit(0);
   }

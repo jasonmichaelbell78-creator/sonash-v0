@@ -122,7 +122,7 @@ for (const group of groups) {
   if (group.length > 1) {
     // Multiple audits flagged same location
     merged = {
-      id: `cross-domain::${group[0].file}:${group[0].line ?? 0}::${slugify(mergeTitles(group))}`, // Standard fingerprint (includes location)
+      id: `cross-domain::${group[0].file}::${group[0].line ?? 0}::${slugify(mergeTitles(group))}`, // Standard fingerprint (file::line::slug)
       domains: group.map((f) => f.domain), // ["code", "security"]
       severity: maxSeverity(group), // Take worst severity
       effort: maxEffort(group), // Take highest effort estimate
@@ -453,7 +453,7 @@ Each line must be a valid JSON object matching the TDMS schema:
 {
   "fingerprint": "cross-domain::auth.ts::error-handling",
   "title": "Missing error handling + Exception vulnerability",
-  "category": "cross-domain",
+  "category": "code-quality",
   "severity": "S0",
   "effort": "E1",
   "confidence": 0.95,

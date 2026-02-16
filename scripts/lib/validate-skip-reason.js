@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Shared SKIP_REASON validation (PR #367 retro — extract from 3 scripts)
  *

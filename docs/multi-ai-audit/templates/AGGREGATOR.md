@@ -633,8 +633,9 @@ Items auto-assign based on category + file patterns:
 | code-quality    | functions/              | M2.2     |
 | code-quality    | components/, lib/, app/ | M2.1     |
 | enhancements    | \*                      | M1.5     |
-| ai-optimization | .claude/, scripts/      | Track-D  |
-| ai-optimization | \*                      | Track-E  |
+| ai-optimization | .claude/                | Track-D  |
+| ai-optimization | scripts/                | Track-E  |
+| ai-optimization | \*                      | Track-D  |
 
 See `docs/technical-debt/views/unplaced-items.md` for current assignments.
 

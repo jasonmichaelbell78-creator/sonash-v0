@@ -650,6 +650,42 @@ would have saved 3 rounds.
 
 ---
 
+#### Review #331: PR #368 R3 — Symlink Hardening, shell:true Elimination, Ternary Extract (2026-02-16)
+
+**Source:** SonarCloud (1) + Qodo Compliance (5) + Qodo Suggestions (7)
+**PR/Branch:** claude/cherry-pick-recent-commits-X1eKD (PR #368)
+**Suggestions:** 13 total (Fixed: 12, Duplicate: 1)
+
+**Patterns Identified:**
+
+1. **Symlink guard must check file AND directory** — realpathSync on logDir
+   alone doesn't prevent the file itself being a symlink; use lstatSync on the
+   file too
+2. **shell:true → .cmd suffix on Windows** — Instead of `shell: true` for
+   npm/npx/gh on Windows, directly invoke `bin.cmd` to eliminate shell injection
+   surface entirely
+3. **Nested ternaries are SonarCloud code smells** — Extract to if/else
+   statements for maintainability
+4. **Capture error in catch blocks** — Bare `catch {}` hinders debugging; at
+   minimum log to stderr
+5. **Truncate user-supplied audit fields** — Cap `reason` at 200 chars to
+   prevent accidental secret persistence
+6. **spawnSync needs status/error checks** — Check `res.error` and `res.status`
+   before trusting stdout; set explicit stdio to prevent interactive hangs
+
+**Key Learnings:**
+
+- Round 2 found the symlink guard from R1 was incomplete (checked dir but not
+  file). Pattern: security reviews iterate until every attack vector is
+  addressed.
+- The shell:true issue persisted across 4 compliance rounds because the fix was
+  always "add a comment explaining it's safe" instead of eliminating the risk.
+  Qodo's imp:9 suggestion to use `.cmd` suffix was the correct resolution.
+- Non-canonical categories in TDMS examples (`cross-domain`) would break
+  downstream automation. Template examples must use real enum values.
+
+---
+
 #### Review #330: PR #367 R7 — codePointAt, suppressAll Category Guard, Code Fence Parsing, EXIT Trap (2026-02-16)
 
 **Source:** SonarCloud (11) + Qodo Compliance (2) + Qodo Suggestions (8)
