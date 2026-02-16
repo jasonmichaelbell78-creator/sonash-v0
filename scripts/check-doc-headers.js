@@ -167,15 +167,18 @@ function getStagedFiles(filter = "A") {
 function main() {
   // Review #217: Implement documented SKIP_DOC_HEADER_CHECK override
   if (process.env.SKIP_DOC_HEADER_CHECK === "1") {
+    const rawReason = process.env.SKIP_REASON;
+    const reason = typeof rawReason === "string" ? rawReason.trim() : "No reason";
+
+    if (/[\r\n]/.test(reason)) {
+      log("❌ SKIP_REASON must be single-line (no CR/LF)", colors.red);
+      process.exit(1);
+    }
+
     try {
       execFileSync(
         "node",
-        [
-          "scripts/log-override.js",
-          "--quick",
-          "--check=doc-header",
-          `--reason=${process.env.SKIP_REASON || "No reason"}`,
-        ],
+        ["scripts/log-override.js", "--quick", "--check=doc-header", `--reason=${reason}`],
         { timeout: 3000, stdio: "pipe" }
       );
     } catch {

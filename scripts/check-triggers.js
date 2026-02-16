@@ -382,12 +382,21 @@ function main() {
 
   // Check for SKIP_TRIGGERS override (documented in SKILL_AGENT_POLICY.md)
   if (process.env.SKIP_TRIGGERS === "1") {
-    if (!process.env.SKIP_REASON) {
+    const rawReason = process.env.SKIP_REASON;
+    const reason = typeof rawReason === "string" ? rawReason.trim() : "";
+
+    if (!reason) {
       console.error("❌ SKIP_REASON is required when overriding checks");
       console.error('   Usage: SKIP_REASON="your reason" SKIP_TRIGGERS=1 git push ...');
       console.error("   The audit trail is useless without a reason.");
       process.exit(1);
     }
+
+    if (/[\r\n]/.test(reason)) {
+      console.error("❌ SKIP_REASON must be single-line (no CR/LF)");
+      process.exit(1);
+    }
+
     console.log("⚠️  SKIP_TRIGGERS=1 detected - skipping trigger checks");
     console.log("   (Override logged for audit trail)\n");
 
@@ -395,13 +404,11 @@ function main() {
     // Using execFileSync to prevent command injection from SKIP_REASON
     try {
       const { execFileSync } = require("node:child_process");
-      execFileSync(
-        "node",
-        ["scripts/log-override.js", "--check=triggers", `--reason=${process.env.SKIP_REASON}`],
-        { encoding: "utf-8", stdio: "inherit" }
-      );
+      execFileSync("node", ["scripts/log-override.js", "--check=triggers", `--reason=${reason}`], {
+        encoding: "utf-8",
+        stdio: "inherit",
+      });
     } catch {
-      // Non-fatal - continue even if logging fails
       console.log("   (Note: Override logging failed, but continuing)\n");
     }
 

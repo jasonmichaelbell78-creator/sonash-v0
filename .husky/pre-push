@@ -10,8 +10,8 @@ require_skip_reason() {
     echo "  The audit trail is useless without a reason."
     exit 1
   fi
-  # Reject multi-line reasons (prevents JSONL/log injection)
-  if printf '%s' "$SKIP_REASON" | grep -qP '[\r\n]'; then
+  # Reject multi-line reasons (prevents JSONL/log injection) — POSIX-safe (no grep -P)
+  if [ "$(printf '%s' "$SKIP_REASON" | wc -l | tr -d ' ')" -gt 1 ] || printf '%s' "$SKIP_REASON" | grep -q $'\r'; then
     echo "  ❌ SKIP_REASON must be a single line (no CR/LF characters)"
     exit 1
   fi
@@ -194,6 +194,13 @@ else
     else
       echo "  ✅ No blocking triggers"
     fi
+  else
+    # Fail closed: unexpected exit code means something went wrong
+    echo "  ❌ Triggers check failed (exit $triggers_exit)"
+    printf '%s\n' "$triggers_output" | tail -20
+    echo ""
+    echo "  Fix the triggers checker error or use: SKIP_REASON=\"reason\" SKIP_TRIGGERS=1 git push"
+    exit 1
   fi
 fi
 

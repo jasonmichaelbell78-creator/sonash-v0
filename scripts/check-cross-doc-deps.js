@@ -400,7 +400,10 @@ function checkDependencies() {
 try {
   // Allow override via environment variable
   if (process.env.SKIP_CROSS_DOC_CHECK === "1") {
-    if (!process.env.SKIP_REASON) {
+    const rawReason = process.env.SKIP_REASON;
+    const reason = typeof rawReason === "string" ? rawReason.trim() : "";
+
+    if (!reason) {
       log("❌ SKIP_REASON is required when overriding checks", colors.red);
       log(
         '   Usage: SKIP_REASON="your reason" SKIP_CROSS_DOC_CHECK=1 git commit ...',
@@ -409,15 +412,16 @@ try {
       log("   The audit trail is useless without a reason.", colors.red);
       process.exit(1);
     }
+
+    if (/[\r\n]/.test(reason)) {
+      log("❌ SKIP_REASON must be single-line (no CR/LF)", colors.red);
+      process.exit(1);
+    }
+
     try {
       execFileSync(
         "node",
-        [
-          "scripts/log-override.js",
-          "--quick",
-          "--check=cross-doc",
-          `--reason=${process.env.SKIP_REASON}`,
-        ],
+        ["scripts/log-override.js", "--quick", "--check=cross-doc", `--reason=${reason}`],
         { timeout: 3000, stdio: "pipe" }
       );
     } catch {

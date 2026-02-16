@@ -288,10 +288,11 @@ function runCommandSafe(bin, args = [], options = {}) {
   } catch (error) {
     const stdoutStr = error?.stdout == null ? "" : String(error.stdout);
     const stderrStr = error?.stderr == null ? "" : String(error.stderr);
+    const codeStr = typeof error?.code === "string" ? error.code : "";
     return {
       success: false,
       output: stdoutStr.trim(),
-      stderr: stderrStr.trim(),
+      stderr: `${stderrStr}${codeStr ? `\n[spawn_code] ${codeStr}` : ""}`.trim(),
       code:
         typeof error?.status === "number"
           ? error.status
@@ -2208,6 +2209,10 @@ function checkSessionState() {
 
   const toCount = (v) => {
     if (typeof v === "number" && Number.isFinite(v)) return v;
+    if (typeof v === "string") {
+      const n = Number(v);
+      if (Number.isFinite(n)) return n;
+    }
     if (Array.isArray(v)) return v.length;
     return 0;
   };
@@ -2861,6 +2866,12 @@ function filterSuppressedAlerts() {
     return; // No suppressions file
   }
 
+  if (suppressions.length === 0) return;
+
+  // Filter out non-object/null entries (defensive against malformed JSON)
+  suppressions = suppressions.filter(
+    (s) => s != null && typeof s === "object" && !Array.isArray(s)
+  );
   if (suppressions.length === 0) return;
 
   const now = Date.now();
