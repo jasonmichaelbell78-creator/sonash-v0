@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-16T03:30:44.023Z",
+  "generated": "2026-02-16T14:49:26.832Z",
   "generated_date": "2026-02-16",
   "summary": {
     "total": 2302,
@@ -9,12 +9,11 @@
     "resolution_rate_pct": 7
   },
   "by_status": {
-    "NEW": 96,
+    "NEW": 98,
     "VERIFIED": 1792,
     "IN_PROGRESS": 0,
     "RESOLVED": 170,
-    "FALSE_POSITIVE": 242,
-    "open": 2
+    "FALSE_POSITIVE": 242
   },
   "by_severity": {
     "S0": 27,
@@ -29,9 +28,8 @@
     "documentation": 466,
     "refactoring": 22,
     "process": 336,
-    "engineering-productivity": 4,
-    "enhancements": 9,
-    "tooling": 2
+    "engineering-productivity": 6,
+    "enhancements": 9
   },
   "by_source": {
     "unknown": 2296,
@@ -165,6 +163,6 @@
     "avg_age_days": 0,
     "oldest_age_days": 0,
     "oldest_item_id": null,
-    "verification_queue_size": 96
+    "verification_queue_size": 98
   }
 }

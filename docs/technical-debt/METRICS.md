@@ -42,7 +42,7 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 96    |
+| NEW            | 98    |
 | VERIFIED       | 1792  |
 | IN_PROGRESS    | 0     |
 | RESOLVED       | 170   |
@@ -72,8 +72,7 @@ distribution.
 | performance              | 50    |
 | refactoring              | 22    |
 | enhancements             | 9     |
-| engineering-productivity | 4     |
-| tooling                  | 2     |
+| engineering-productivity | 6     |
 
 ---
 
@@ -131,7 +130,7 @@ _...and 355 more S1 items_
 
 | Metric               | Value    |
 | -------------------- | -------- |
-| Verification Queue   | 96 items |
+| Verification Queue   | 98 items |
 | Avg Age (Open Items) | 0 days   |
 | Oldest Item Age      | 0 days   |
 | Oldest Item          | N/A      |

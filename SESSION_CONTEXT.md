@@ -48,14 +48,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #160 Summary** (AI OPTIMIZATION SPRINT — WAVES 7-8 COMPLETE):
-
-- Completed Wave 7: Large skill splits (pr-review 840→423 lines,
-  audit-comprehensive 854→425 lines, code-reviewer trimmed)
-- Completed Wave 8: PostToolUse hook consolidation — 28 process spawns → 3 (90%
-  reduction)
-- **All 8 waves of AI Optimization Sprint now complete (71 items resolved)**
-
 **Session #161-162 Summary** (PR #367 ALERTS OVERHAUL — 7 REVIEW ROUNDS):
 
 - Processed PR #367 review rounds R1-R7 (~100 items across SonarCloud + Qodo)
@@ -69,6 +61,24 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - Health score: C(75) → B(88) after ENOENT fix
 - Created DEBT-2979 (link checker FP), DEBT-2980 (commit tracker staleness)
 - Tests: 293/294 passing
+
+**Session #163 Summary** (AUDIT ECOSYSTEM FULL HEALTH PLAN):
+
+- Deep-dived into full audit ecosystem health via `/deep-plan`
+- Ran 6 parallel analysis agents across skills, TDMS pipeline, process,
+  templates, orphans, cross-refs
+- Identified **41 issues** across 4 dimensions (7 critical, 12 high, 13 medium,
+  9 low)
+- Critical findings: state-manager.js missing 2 categories (BLOCKER),
+  generate-metrics.js age calc bug, audit-schema.json missing ai-optimization, 3
+  broken cross-refs in audit-comprehensive, comprehensive only covers 7/9
+  domains
+- Produced **39-step remediation plan across 8 waves** with 26 user-approved
+  decisions
+- Waves: Structure, Category Alignment, TDMS Pipeline Fixes, Skill Rewrites,
+  Missing Docs+Templates, Process & Automation, Verification, Improvements (8
+  new scripts)
+- Plan saved to `.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md` and pushed
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -98,22 +108,25 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-**Execute Audit Ecosystem Codification plan** —
-[docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md](docs/plans/AUDIT_ECOSYSTEM_CODIFICATION.md)
+**Execute Audit Ecosystem Full Health Remediation** —
+[.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)
 
-10-step implementation in 5 waves:
+39-step implementation across 8 waves:
 
-1. **Wave 1** (parallel): AUDIT_STANDARDS.md + README hub + FALSE_POSITIVES path
-   fixes (8 skills) + output path standardization
-2. **Wave 2** (parallel): audit-ai-optimization skill + AI_OPTIMIZATION_AUDIT
-   template + create-audit wizard
-3. **Wave 3** (sequential): Update audit-comprehensive (Stage 2.5) +
-   audit-aggregator (9 domains)
-4. **Wave 4**: Update supporting files (AUDIT_TRACKER, SKILL_INDEX,
-   multi-ai-audit README)
-5. **Wave 5**: Full cross-reference audit + verification checklist (12 checks)
+1. **Wave 1**: Structure — scaffold dirs, move files, fix cross-refs
+2. **Wave 2**: Category Alignment — fix 9-category defs everywhere, fix
+   I0-I3→S0-S3
+3. **Wave 3**: TDMS Pipeline Fixes — intake, validate, metrics bugs + new
+   scripts
+4. **Wave 4**: Skill Rewrites — refactoring, documentation, aggregator,
+   eng-prod, comprehensive
+5. **Wave 5**: Missing Docs + Templates — 3 missing docs, guardrails, template
+   renames
+6. **Wave 6**: Process & Automation — tracker, coordinator, threshold hook
+7. **Wave 7**: Verification — cross-refs, validation scripts, RESULTS_INDEX
+8. **Wave 8**: Improvements — 8 new automation scripts
 
-Use team-based parallelization for Waves 1 and 2.
+**Note**: This supersedes the older AUDIT_ECOSYSTEM_CODIFICATION plan.
 
 ### After Audit Codification
 
