@@ -6,8 +6,8 @@ description:
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.3
-**Last Updated:** 2026-02-06
+**Document Version:** 1.4
+**Last Updated:** 2026-02-16
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -116,6 +116,8 @@ Select a category to audit:
   5. documentation - Links, staleness, coverage, tiers
   6. process       - CI/CD, hooks, scripts, triggers
   7. engineering-productivity - Golden path, debugging, DX
+  8. enhancements  - Feature gaps, UX improvements, nice-to-haves
+  9. ai-optimization - Token waste, skill overlap, hook latency
 
 Enter category name or number (or "status" to see progress):
 ```
@@ -145,6 +147,8 @@ Template mapping:
 | documentation            | DOCUMENTATION_AUDIT.md            |
 | process                  | PROCESS_AUDIT.md                  |
 | engineering-productivity | ENGINEERING_PRODUCTIVITY_AUDIT.md |
+| enhancements             | ENHANCEMENT_AUDIT.md              |
+| ai-optimization          | AI_OPTIMIZATION_AUDIT.md          |
 
 ### Step 2.2: Extract Main Prompt
 
@@ -203,6 +207,8 @@ placeholders filled) to know what to audit. This has been a recurring error.
 | documentation            | DOCUMENTATION_AUDIT.md            | Parts 1-5: Role/Context, Anti-Hallucination Rules, Documentation Phases, Output Format, Verification                                                |
 | process                  | PROCESS_AUDIT.md                  | Parts 1-5: Role/Context, Anti-Hallucination Rules, Process Phases, Output Format, Verification                                                      |
 | engineering-productivity | ENGINEERING_PRODUCTIVITY_AUDIT.md | Parts 1-5: Role/Context, Anti-Hallucination Rules, EP Phases, Output Format, Verification                                                           |
+| enhancements             | ENHANCEMENT_AUDIT.md              | Parts 1-5: Role/Context, Anti-Hallucination Rules, Enhancement Phases (all domains), Output Format, Verification                                    |
+| ai-optimization          | AI_OPTIMIZATION_AUDIT.md          | Parts 1-5: Role/Context, Anti-Hallucination Rules, AI Optimization Phases (12 domains), Output Format, Verification                                 |
 
 **Self-check before outputting:** Count the lines you are about to output. If it
 is significantly shorter than the source template's prompt section, you are
@@ -399,7 +405,7 @@ Severity breakdown:
 
 Output: docs/audits/multi-ai/<session>/canon/CANON-[CATEGORY].jsonl
 
-Select next category (1-7) or say "finish" to unify all.
+Select next category (1-9) or say "finish" to unify all.
 ```
 
 ### Step 4.4: Update State
@@ -466,7 +472,7 @@ This:
 === Unification Complete ===
 
 Session: [session_id]
-Categories completed: [count]/7
+Categories completed: [count]/9
 
 Aggregation Summary:
   Total AI sources: [count]
@@ -579,18 +585,22 @@ node scripts/debt/assign-roadmap-refs.js --dry-run --verbose --report
 
 This maps each new DEBT item to a roadmap track/milestone using:
 
-| Category                | Track Assignment |
-| ----------------------- | ---------------- |
-| security                | Track-S          |
-| performance             | Track-P          |
-| process                 | Track-D          |
-| refactoring             | M2.3-REF         |
-| documentation           | M1.5             |
-| code-quality (scripts/) | Track-E          |
-| code-quality (.github/) | Track-D          |
-| code-quality (tests/)   | Track-T          |
-| code-quality (app/)     | M2.1             |
-| code-quality (default)  | M2.1             |
+| Category                   | Track Assignment |
+| -------------------------- | ---------------- |
+| security                   | Track-S          |
+| performance                | Track-P          |
+| process                    | Track-D          |
+| refactoring                | M2.3-REF         |
+| documentation              | M1.5             |
+| code-quality (scripts/)    | Track-E          |
+| code-quality (.github/)    | Track-D          |
+| code-quality (tests/)      | Track-T          |
+| code-quality (app/)        | M2.1             |
+| code-quality (default)     | M2.1             |
+| enhancements               | M1.5             |
+| ai-optimization (.claude/) | Track-D          |
+| ai-optimization (scripts/) | Track-E          |
+| ai-optimization (default)  | Track-D          |
 
 ### Step 7.2: Severity-Weighted Placement Summary
 
@@ -700,7 +710,7 @@ Pipeline Summary:
   ┌─────────────────────┬──────────┐
   │ Stage               │ Result   │
   ├─────────────────────┼──────────┤
-  │ Categories audited  │ [X]/7    │
+  │ Categories audited  │ [X]/9    │
   │ AI sources used     │ [count]  │
   │ Raw findings        │ [count]  │
   │ After dedup         │ [count]  │
@@ -778,11 +788,13 @@ Category Progress:
   - documentation - pending
   - process       - pending
   - engineering-productivity - pending
+  - enhancements  - pending
+  - ai-optimization - pending
 
 Legend: ✓ complete, ○ in progress, - pending
 
 Commands:
-  • Select category: Enter name or number (1-7)
+  • Select category: Enter name or number (1-9)
   • Add findings: "add <source>"
   • Aggregate: "done"
   • Skip: "skip"
@@ -881,6 +893,7 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 
 | Version | Date       | Changes                                                                                                                                                                                  |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.4     | 2026-02-16 | Added enhancements + ai-optimization categories (7→9), updated template mapping, output checklist, status display, roadmap integration table, and all count references                   |
 | 1.3     | 2026-02-06 | Added per-category output checklist to Step 2.3 to prevent template summarization/truncation (recurring error)                                                                           |
 | 1.2     | 2026-02-05 | Fixed template mapping table format, standardized prompt extraction regex, resolved REFACTORING_AUDIT.md ambiguity                                                                       |
 | 1.1     | 2026-02-05 | Added Phase 6 (TDMS intake), Phase 7 (roadmap integration), Phase 8 (summary) — automates the full pipeline from unified findings through MASTER_DEBT.jsonl and roadmap track assignment |
