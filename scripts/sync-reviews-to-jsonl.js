@@ -24,6 +24,14 @@
 const { existsSync, readFileSync, appendFileSync, lstatSync } = require("node:fs");
 const { join } = require("node:path");
 
+// Symlink guard (Review #316-#323)
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require(join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")));
+} catch {
+  isSafeToWrite = () => true; // Fallback if guard not available
+}
+
 const ROOT = join(__dirname, "..");
 const LEARNINGS_LOG = join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const REVIEWS_FILE = join(ROOT, ".claude", "state", "reviews.jsonl");
@@ -53,7 +61,7 @@ function loadExistingIds() {
   if (!existsSync(REVIEWS_FILE)) return ids;
 
   try {
-    const content = readFileSync(REVIEWS_FILE, "utf8").replace(/\r\n/g, "\n").trim();
+    const content = readFileSync(REVIEWS_FILE, "utf8").replaceAll("\r\n", "\n").trim();
     if (!content) return ids;
     for (const line of content.split("\n")) {
       try {
@@ -86,7 +94,7 @@ function parseMarkdownReviews(content) {
     if (headerMatch) {
       if (current) reviews.push(current);
 
-      const id = parseInt(headerMatch[1], 10);
+      const id = Number.parseInt(headerMatch[1], 10);
       const titleAndDate = headerMatch[2].trim();
       const dateMatch = titleAndDate.match(/\((\d{4}-\d{2}-\d{2})\)\s*$/);
       const date = dateMatch ? dateMatch[1] : null;
@@ -133,15 +141,15 @@ function parseMarkdownReviews(content) {
 
     // PR number
     const prMatch = raw.match(/PR\s*#(\d+)/);
-    if (prMatch) review.pr = parseInt(prMatch[1], 10);
+    if (prMatch) review.pr = Number.parseInt(prMatch[1], 10);
 
     // Fixed count
     const fixedMatch = raw.match(/Fixed:\s*(\d+)/i) || raw.match(/fixed\s*(\d+)/i);
-    if (fixedMatch) review.fixed = parseInt(fixedMatch[1], 10);
+    if (fixedMatch) review.fixed = Number.parseInt(fixedMatch[1], 10);
 
     // Deferred count
     const deferredMatch = raw.match(/Deferred:\s*(\d+)/i) || raw.match(/deferred\s*(\d+)/i);
-    if (deferredMatch) review.deferred = parseInt(deferredMatch[1], 10);
+    if (deferredMatch) review.deferred = Number.parseInt(deferredMatch[1], 10);
 
     // Patterns from numbered lists under "Patterns Identified" or "Key Patterns"
     const patternMatches = raw.matchAll(/^\d+\.\s+\*\*([^*]+)\*\*/gm);
@@ -230,6 +238,7 @@ function main() {
     }
 
     if (applyMode) {
+      if (!isSafeToWrite(REVIEWS_FILE)) return;
       const lines = missing.map((r) => JSON.stringify(r));
       appendFileSync(REVIEWS_FILE, lines.join("\n") + "\n");
       log(`\n✅ Appended ${missing.length} reviews to reviews.jsonl`);

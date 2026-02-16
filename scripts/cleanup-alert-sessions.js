@@ -36,7 +36,7 @@ function main() {
     const rel = path.relative(TMP_DIR, filePath);
     if (rel.startsWith("..") || path.isAbsolute(rel)) continue;
     try {
-      const stat = fs.statSync(filePath);
+      const stat = fs.lstatSync(filePath);
       if (stat.mtimeMs < cutoff) {
         fs.rmSync(filePath, { force: true });
         deleted++;

@@ -5,7 +5,7 @@ description: |
   alert-by-alert workflow. Triggers: "alerts", "check alerts", "what needs
   attention", "system health", "show warnings", "pending issues". Default mode
   (--limited) checks 12 categories. Use --full for comprehensive reporting with
-  all 29 categories.
+  all 33 categories.
 ---
 
 # Alerts — Intelligent Health Dashboard
@@ -25,7 +25,7 @@ visual dashboard and walks through alerts one at a time.
 
 ```
 /alerts           # Limited mode (default) - quick health check (12 categories)
-/alerts --full    # Full mode - comprehensive reporting (29 categories)
+/alerts --full    # Full mode - comprehensive reporting (33 categories)
 ```
 
 ## Workflow
@@ -293,9 +293,9 @@ Quick health check:
 11. **Pattern Hotspots** — Repeat-offender files
 12. **Context Usage** — Files-read count, excessive context warning
 
-### Full Mode (--full) — 29 Categories
+### Full Mode (--full) — 33 Categories
 
-Everything in Limited plus:
+Everything in Limited plus 21 additional categories:
 
 13. **Debt Intake** — 30-day intake velocity, source effectiveness
 14. **Debt Resolution** — Resolution velocity, enhancement of existing checker

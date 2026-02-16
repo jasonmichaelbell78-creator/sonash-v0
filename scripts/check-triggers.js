@@ -328,7 +328,7 @@ function checkReviewSyncTrigger() {
       const content = fs.readFileSync(learningsLog, "utf8");
       const matches = content.matchAll(/^####\s+Review\s+#(\d+)/gm);
       for (const m of matches) {
-        const id = parseInt(m[1], 10);
+        const id = Number.parseInt(m[1], 10);
         if (id > mdMax) mdMax = id;
       }
     } catch {
@@ -341,7 +341,7 @@ function checkReviewSyncTrigger() {
       try {
         const lines = fs
           .readFileSync(reviewsJsonl, "utf8")
-          .replace(/\r\n/g, "\n")
+          .replaceAll("\r\n", "\n")
           .trim()
           .split("\n");
         for (const line of lines) {

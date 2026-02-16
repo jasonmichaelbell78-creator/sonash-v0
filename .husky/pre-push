@@ -10,6 +10,13 @@ require_skip_reason() {
     echo "  The audit trail is useless without a reason."
     exit 1
   fi
+  # Validate minimum length to prevent meaningless skip reasons like "x" or "test"
+  skip_len=${#SKIP_REASON}
+  if [ "$skip_len" -lt 10 ]; then
+    echo "  ❌ SKIP_REASON must be at least 10 characters (got $skip_len)"
+    echo "  Provide a meaningful reason for the audit trail."
+    exit 1
+  fi
 }
 
 echo "🚀 Running pre-push checks..."
@@ -52,7 +59,7 @@ if [ -n "${script_changes:-}" ]; then
     fi
   fi
 
-  if [ $reviewer_ran -eq 0 ]; then
+  if [ "$reviewer_ran" -eq 0 ]; then
     echo "  ⚠️ Script changes detected but code-reviewer not invoked this session"
     echo "  Changed files:"
     printf '%s\n' "$script_changes" | while read -r f; do echo "    - $f"; done
@@ -83,7 +90,7 @@ security_diff=$(git diff --diff-filter=ACMR @{u}...HEAD -U0 2>/dev/null | grep -
 diff_exit=$?
 set -e
 
-if [ $diff_exit -ne 0 ] || [ -z "${security_diff:-}" ]; then
+if [ "$diff_exit" -ne 0 ] || [ -z "${security_diff:-}" ]; then
   echo "  ⚠️ No upstream or no added lines detected; skipping security scan"
 else
   # Write added lines to temp file for scanning
@@ -97,7 +104,7 @@ else
   code=$?
   set -e
 
-  if [ $code -ne 0 ]; then
+  if [ "$code" -ne 0 ]; then
     echo "  ❌ Security violations found in NEW code"
     printf '%s\n' "$out" | grep -E "CRITICAL|HIGH|🛑|file:" | head -15
     echo ""
@@ -137,7 +144,7 @@ audit_exit=$?
 if [ "$had_errexit" -eq 1 ]; then
   set -e
 fi
-if [ $audit_exit -ne 0 ]; then
+if [ "$audit_exit" -ne 0 ]; then
   # Check if it's a real vulnerability (exit code 1) vs network error
   if echo "$audit_output" | grep -q "vulnerabilities"; then
     echo "  ⚠️ Security vulnerabilities found (not blocking - run: npm audit)"
@@ -161,13 +168,13 @@ if [ "${SKIP_TRIGGERS:-}" = "1" ]; then
 else
   triggers_output=$(npm run triggers:check 2>&1)
   triggers_exit=$?
-  if [ $triggers_exit -eq 1 ]; then
+  if [ "$triggers_exit" -eq 1 ]; then
     echo "  ❌ Blocking trigger(s) activated"
     printf '%s\n' "$triggers_output" | grep -E "^🚫|^❌|^   Action:|^   Files:" | head -20
     echo ""
     echo "  Complete required actions or use: SKIP_REASON=\"reason\" SKIP_TRIGGERS=1 git push"
     exit 1
-  elif [ $triggers_exit -eq 0 ]; then
+  elif [ "$triggers_exit" -eq 0 ]; then
     # Show warnings but don't block
     if echo "$triggers_output" | grep -q "⚠️"; then
       printf '%s\n' "$triggers_output" | grep -E "^⚠️|^   Action:" | head -10

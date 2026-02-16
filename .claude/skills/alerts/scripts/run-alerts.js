@@ -269,13 +269,15 @@ function runCommand(cmd, options = {}) {
  */
 function runCommandSafe(bin, args = [], options = {}) {
   try {
-    const output = execFileSync(bin, args, {
-      cwd: ROOT_DIR,
-      encoding: "utf8",
+    const safeOptions = {
+      encoding: options.encoding || "utf8",
       timeout: options.timeout || 60000,
+      maxBuffer: options.maxBuffer || 10 * 1024 * 1024,
+      cwd: options.cwd || ROOT_DIR,
+      env: options.env,
       stdio: ["pipe", "pipe", "pipe"],
-      ...options,
-    });
+    };
+    const output = execFileSync(bin, args, safeOptions);
     return { success: true, output: output.trim(), stderr: "", code: 0 };
   } catch (error) {
     return {
@@ -456,7 +458,9 @@ function loadBaseline() {
     const baseline = safeParse(content);
     if (!baseline) return null;
     // Only use if from today (same session day)
-    const baselineDate = new Date(baseline.timestamp).toDateString();
+    const baselineDateObj = new Date(baseline.timestamp);
+    if (isNaN(baselineDateObj.getTime())) return null;
+    const baselineDate = baselineDateObj.toDateString();
     const today = new Date().toDateString();
     if (baselineDate === today) {
       return baseline;
@@ -573,7 +577,7 @@ function checkCodeHealth() {
   const tsFullOutput = `${tsResult.output || ""}\n${tsResult.stderr || ""}`;
   if (!tsResult.success && !tsFullOutput.includes("Missing script")) {
     const errorMatch = tsFullOutput.match(/Found (\d+) error/i);
-    tsErrorCount = errorMatch ? parseInt(errorMatch[1], 10) : 1;
+    tsErrorCount = errorMatch ? Number.parseInt(errorMatch[1], 10) : 1;
 
     addAlert(
       "code",
@@ -590,8 +594,8 @@ function checkCodeHealth() {
   if (!lintResult.success) {
     const warnMatch = lintFullOutput.match(/(\d+) warning/);
     const errMatch = lintFullOutput.match(/(\d+) error/);
-    eslintWarnCount = warnMatch ? parseInt(warnMatch[1], 10) : 0;
-    eslintErrCount = errMatch ? parseInt(errMatch[1], 10) : 0;
+    eslintWarnCount = warnMatch ? Number.parseInt(warnMatch[1], 10) : 0;
+    eslintErrCount = errMatch ? Number.parseInt(errMatch[1], 10) : 0;
 
     if (eslintErrCount > 0) {
       addAlert("code", "error", `${eslintErrCount} ESLint error(s)`, null, "Run: npm run lint");
@@ -1144,10 +1148,10 @@ function checkLearningEffectiveness() {
   const criticalMatch = content.match(/Critical Pattern Success\s*\|\s*([\d.]+)%/);
 
   const effectiveness = effectivenessMatch ? parseFloat(effectivenessMatch[1]) : null;
-  const failing = failingMatch ? parseInt(failingMatch[1], 10) : 0;
+  const failing = failingMatch ? Number.parseInt(failingMatch[1], 10) : 0;
   const automationCoverage = automationMatch ? parseFloat(automationMatch[1]) : null;
-  const learned = learnedMatch ? parseInt(learnedMatch[1], 10) : 0;
-  const automated = automatedMatch ? parseInt(automatedMatch[1], 10) : 0;
+  const learned = learnedMatch ? Number.parseInt(learnedMatch[1], 10) : 0;
+  const automated = automatedMatch ? Number.parseInt(automatedMatch[1], 10) : 0;
   const criticalSuccess = criticalMatch ? parseFloat(criticalMatch[1]) : null;
 
   // Rate against benchmarks
@@ -1496,8 +1500,14 @@ function checkSkipAbuse() {
   const cutoff24h = now - DAY_MS;
   const cutoff7d = now - 7 * DAY_MS;
 
-  const last24h = entries.filter((e) => new Date(e.timestamp).getTime() > cutoff24h);
-  const last7d = entries.filter((e) => new Date(e.timestamp).getTime() > cutoff7d);
+  const last24h = entries.filter((e) => {
+    const t = new Date(e.timestamp).getTime();
+    return !isNaN(t) && t > cutoff24h;
+  });
+  const last7d = entries.filter((e) => {
+    const t = new Date(e.timestamp).getTime();
+    return !isNaN(t) && t > cutoff7d;
+  });
 
   const noReasonEntries = last7d.filter(
     (e) => !e.reason || e.reason === "No reason" || e.reason === "No reason provided"
@@ -1561,6 +1571,7 @@ function checkSkipAbuse() {
   const windowCounts = Array(WINDOW_COUNT).fill(0);
   for (const e of entries) {
     const t = new Date(e.timestamp).getTime();
+    if (isNaN(t)) continue;
     const windowIdx = Math.min(WINDOW_COUNT - 1, Math.max(0, Math.floor((now - t) / WINDOW_SIZE)));
     windowCounts[WINDOW_COUNT - 1 - windowIdx]++; // oldest first
   }
@@ -2069,8 +2080,8 @@ function checkRoadmapValidation() {
   const warningMatch = output.match(/(\d+)\s+Warning/i);
   const errorMatch = output.match(/(\d+)\s+Error/i);
 
-  const warningCount = warningMatch ? parseInt(warningMatch[1], 10) : 0;
-  const errorCount = errorMatch ? parseInt(errorMatch[1], 10) : 0;
+  const warningCount = warningMatch ? Number.parseInt(warningMatch[1], 10) : 0;
+  const errorCount = errorMatch ? Number.parseInt(errorMatch[1], 10) : 0;
 
   if (errorCount > 0) {
     const bulletLines = output.match(/^\s+[•·]\s+.+$/gm) || [];
@@ -2118,12 +2129,12 @@ function checkHookHealth() {
   const output = `${result.output || ""}\n${result.stderr || ""}`;
 
   const hookCountMatch = output.match(/All (\d+) hooks valid/i);
-  const hookCount = hookCountMatch ? parseInt(hookCountMatch[1], 10) : null;
+  const hookCount = hookCountMatch ? Number.parseInt(hookCountMatch[1], 10) : null;
 
   const sessionsStarted = output.match(/Total sessions started:\s*(\d+)/i);
   const sessionsCompleted = output.match(/Sessions completed:\s*(\d+)/i);
-  const started = sessionsStarted ? parseInt(sessionsStarted[1], 10) : 0;
-  const completed = sessionsCompleted ? parseInt(sessionsCompleted[1], 10) : 0;
+  const started = sessionsStarted ? Number.parseInt(sessionsStarted[1], 10) : 0;
+  const completed = sessionsCompleted ? Number.parseInt(sessionsCompleted[1], 10) : 0;
 
   if (hookCount) {
     addAlert("hook-health", "info", `${hookCount} hooks registered and valid`, null, null);
@@ -2319,6 +2330,7 @@ function checkDebtIntake() {
     const entry = safeParse(line);
     if (!entry) continue;
     const ts = new Date(entry.timestamp || entry.date || "").getTime();
+    if (isNaN(ts)) continue;
     if (ts >= thirtyDaysAgo) {
       intake30d++;
       if (entry.severity === "S0") s0Intake++;
@@ -2381,6 +2393,7 @@ function checkDebtResolution() {
     const entry = safeParse(line);
     if (!entry) continue;
     const ts = new Date(entry.timestamp || entry.date || "").getTime();
+    if (isNaN(ts)) continue;
     if (ts >= thirtyDaysAgo) resolved30d++;
   }
 
@@ -2463,7 +2476,7 @@ function checkNpmScript(category, label, scriptArgs, parseOutput) {
 function checkRoadmapHygiene() {
   checkNpmScript("roadmap-hygiene", "Roadmap Hygiene", ["roadmap:hygiene"], (output, result) => {
     const issueMatch = output.match(/(\d+)\s+issue/i);
-    const issues = issueMatch ? parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
+    const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
 
     if (issues > BENCHMARKS.roadmap_hygiene.issues.poor) {
       addAlert(
@@ -2497,7 +2510,7 @@ function checkTriggerCompliance() {
     ["triggers:check"],
     (output, result) => {
       const failMatch = output.match(/(\d+)\s+fail/i);
-      const failures = failMatch ? parseInt(failMatch[1], 10) : result.success ? 0 : 1;
+      const failures = failMatch ? Number.parseInt(failMatch[1], 10) : result.success ? 0 : 1;
 
       if (failures > BENCHMARKS.trigger_compliance.failures.poor) {
         addAlert(
@@ -2528,7 +2541,7 @@ function checkTriggerCompliance() {
 function checkPatternSync() {
   checkNpmScript("pattern-sync", "Pattern Sync", ["patterns:sync"], (output, result) => {
     const outdatedMatch = output.match(/(\d+)\s+(?:outdated|out.of.sync|stale)/i);
-    const outdated = outdatedMatch ? parseInt(outdatedMatch[1], 10) : result.success ? 0 : 1;
+    const outdated = outdatedMatch ? Number.parseInt(outdatedMatch[1], 10) : result.success ? 0 : 1;
 
     if (outdated > BENCHMARKS.pattern_sync.outdated.poor) {
       addAlert(
@@ -2552,7 +2565,11 @@ function checkPatternSync() {
 function checkDocPlacement() {
   checkNpmScript("doc-placement", "Doc Placement", ["docs:placement"], (output, result) => {
     const misplacedMatch = output.match(/(\d+)\s+misplaced/i);
-    const misplaced = misplacedMatch ? parseInt(misplacedMatch[1], 10) : result.success ? 0 : 1;
+    const misplaced = misplacedMatch
+      ? Number.parseInt(misplacedMatch[1], 10)
+      : result.success
+        ? 0
+        : 1;
 
     if (misplaced > BENCHMARKS.doc_placement.misplaced.poor) {
       addAlert(
@@ -2576,7 +2593,7 @@ function checkDocPlacement() {
 function checkExternalLinks() {
   checkNpmScript("external-links", "External Links", ["docs:external-links"], (output, result) => {
     const brokenMatch = output.match(/(\d+)\s+broken/i);
-    const broken = brokenMatch ? parseInt(brokenMatch[1], 10) : result.success ? 0 : 1;
+    const broken = brokenMatch ? Number.parseInt(brokenMatch[1], 10) : result.success ? 0 : 1;
 
     if (broken > BENCHMARKS.external_links.broken.poor) {
       addAlert(
@@ -2607,13 +2624,17 @@ function checkUnusedDeps() {
   checkNpmScript("unused-deps", "Unused Dependencies", ["deps:unused"], (output, result) => {
     const unusedMatch = output.match(/(\d+)\s+unused/i);
     const fileMatches = output.match(/^✖\s+/gm);
+    // Also count lines starting with package-like names (e.g., "  packageName")
+    const lineMatches = output.split("\n").filter((l) => l.trim() && /^[\s*-]*[a-z@]/.test(l));
     const unused = unusedMatch
-      ? parseInt(unusedMatch[1], 10)
+      ? Number.parseInt(unusedMatch[1], 10)
       : fileMatches
         ? fileMatches.length
-        : result.success
-          ? 0
-          : 0;
+        : lineMatches.length > 0
+          ? lineMatches.length
+          : result.success
+            ? 0
+            : 0;
 
     if (unused > BENCHMARKS.unused_deps.unused.poor) {
       addAlert(
@@ -2666,7 +2687,7 @@ function checkReviewChurn() {
 function checkBacklogHealth() {
   checkNpmScript("backlog-health", "Backlog Health", ["backlog:check"], (output, result) => {
     const issueMatch = output.match(/(\d+)\s+(?:issue|problem|warning)/i);
-    const issues = issueMatch ? parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
+    const issues = issueMatch ? Number.parseInt(issueMatch[1], 10) : result.success ? 0 : 1;
 
     if (issues > BENCHMARKS.backlog_health.issues.poor) {
       addAlert(
@@ -2755,7 +2776,8 @@ function checkSonarCloud() {
     const raw = fs.readFileSync(cachePath, "utf8");
     data = JSON.parse(raw);
     // Cache valid for 1 hour
-    const cacheAge = Date.now() - new Date(data.timestamp || "").getTime();
+    const cacheTs = new Date(data.timestamp || "").getTime();
+    const cacheAge = isNaN(cacheTs) ? Infinity : Date.now() - cacheTs;
     if (cacheAge > 60 * 60 * 1000) data = null;
   } catch {
     data = null;
@@ -2817,7 +2839,9 @@ function filterSuppressedAlerts() {
   const now = Date.now();
   const activeSups = suppressions.filter((s) => {
     if (s.expiresAt) {
-      return new Date(s.expiresAt).getTime() > now;
+      const expiryTs = new Date(s.expiresAt).getTime();
+      if (isNaN(expiryTs)) return false; // Invalid date = treat as expired
+      return expiryTs > now;
     }
     return true;
   });
@@ -2833,7 +2857,7 @@ function filterSuppressedAlerts() {
     catData.alerts = catData.alerts.filter((alert) => {
       return !activeSups.some((sup) => {
         if (sup.category && sup.category !== cat) return false;
-        if (sup.messagePattern) {
+        if (sup.messagePattern && sup.messagePattern.trim() !== "") {
           // Use case-insensitive string matching (safe — no regex injection)
           return alert.message.toLowerCase().includes(sup.messagePattern.toLowerCase());
         }

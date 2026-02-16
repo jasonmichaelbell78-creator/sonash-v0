@@ -19,8 +19,16 @@
  *   2 = Error
  */
 
-const { existsSync, readFileSync, readdirSync, lstatSync } = require("node:fs");
+const { existsSync, readFileSync, readdirSync, writeFileSync, lstatSync } = require("node:fs");
 const { join } = require("node:path");
+
+// Symlink guard (Review #316-#323)
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require(join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")));
+} catch {
+  isSafeToWrite = () => true; // Fallback if guard not available
+}
 
 const ROOT = join(__dirname, "..");
 const ARCHIVE_DIR = join(ROOT, "docs", "archive");
@@ -52,7 +60,7 @@ function extractReviewIds(filePath) {
     const regex = /^####\s+Review\s+#(\d+)/gm;
     let match;
     while ((match = regex.exec(content)) !== null) {
-      ids.push(parseInt(match[1], 10));
+      ids.push(Number.parseInt(match[1], 10));
     }
     return ids;
   } catch {
@@ -70,7 +78,7 @@ function checkWrongHeadings(filePath, fileName) {
     if (wrongHeadings > 0) {
       warn(`${fileName}: ${wrongHeadings} reviews use ### instead of #### heading`);
       if (fixMode) {
-        const { writeFileSync } = require("node:fs");
+        if (!isSafeToWrite(filePath)) return 0;
         const fixed = content.replace(/^###(\s+Review\s+#)/gm, "####$1");
         writeFileSync(filePath, fixed);
         console.log(`    → Fixed ${wrongHeadings} headings`);
@@ -89,7 +97,7 @@ function checkWrongHeadings(filePath, fileName) {
 function getJsonlMaxId() {
   if (!existsSync(REVIEWS_JSONL)) return 0;
   try {
-    const lines = readFileSync(REVIEWS_JSONL, "utf8").replace(/\r\n/g, "\n").trim().split("\n");
+    const lines = readFileSync(REVIEWS_JSONL, "utf8").replaceAll("\r\n", "\n").trim().split("\n");
     let max = 0;
     for (const line of lines) {
       try {
