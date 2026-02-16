@@ -182,26 +182,27 @@ function safeWriteFile(filePath, content, description) {
 
   verbose(`Writing ${content.length} characters to ${description}`);
 
-  // Symlink guard: check target and tmp paths before any write
+  const tmpPath = filePath + ".tmp";
+  const bakPath = filePath + ".bak";
+
+  // Symlink guard: check target, tmp, and backup paths before any write
   if (!isSafeToWrite(filePath)) {
     return { success: false, error: `Refusing to write: symlink detected at ${description}` };
   }
+  if (!isSafeToWrite(tmpPath)) {
+    return {
+      success: false,
+      error: `Refusing to write: symlink detected at tmp path for ${description}`,
+    };
+  }
+  if (!isSafeToWrite(bakPath)) {
+    return {
+      success: false,
+      error: `Refusing to write: symlink detected at backup path for ${description}`,
+    };
+  }
 
   try {
-    const tmpPath = filePath + ".tmp";
-    const bakPath = filePath + ".bak";
-    if (!isSafeToWrite(tmpPath)) {
-      return {
-        success: false,
-        error: `Refusing to write: symlink detected at tmp path for ${description}`,
-      };
-    }
-    if (!isSafeToWrite(bakPath)) {
-      return {
-        success: false,
-        error: `Refusing to write: symlink detected at backup path for ${description}`,
-      };
-    }
     writeFileSync(tmpPath, content, "utf-8");
     try {
       // Atomic swap — isSafeToWrite guards verified for filePath/tmpPath/bakPath above

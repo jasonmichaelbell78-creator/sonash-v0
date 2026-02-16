@@ -86,9 +86,7 @@ function parseMarkdownReviews(content) {
   const lines = content.split("\n");
   let current = null;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
+  for (const line of lines) {
     // Match #### Review #N: Title (YYYY-MM-DD)
     const headerMatch = line.match(/^####\s+Review\s+#(\d+):?\s*(.*)/);
     if (headerMatch) {
@@ -167,10 +165,12 @@ function parseMarkdownReviews(content) {
 
     // Learnings from "Key Learnings" or "Lesson" sections
     const learningLines = raw.match(/[-*]\s+(?:`[^`]+`\s+)?[A-Z].{15,}/g) || [];
+    const seenLearnings = new Set();
     for (const ll of learningLines.slice(0, 7)) {
       const cleaned = ll.replace(/^[-*]\s+/, "").trim();
-      if (cleaned.length > 20 && cleaned.length < 300) {
+      if (cleaned.length > 20 && cleaned.length < 300 && !seenLearnings.has(cleaned)) {
         review.learnings.push(cleaned);
+        seenLearnings.add(cleaned);
       }
     }
 
@@ -181,6 +181,17 @@ function parseMarkdownReviews(content) {
   }
 
   return reviews;
+}
+
+/**
+ * Check if a path is a symlink (safe — returns false on error)
+ */
+function isSymlink(filePath) {
+  try {
+    return lstatSync(filePath).isSymbolicLink();
+  } catch {
+    return false;
+  }
 }
 
 function main() {
@@ -194,15 +205,10 @@ function main() {
       return;
     }
 
-    // Symlink check
-    try {
-      if (lstatSync(LEARNINGS_LOG).isSymbolicLink()) {
-        console.error("Refusing to read symlink");
-        process.exitCode = 2;
-        return;
-      }
-    } catch {
-      /* file may not exist yet */
+    if (isSymlink(LEARNINGS_LOG)) {
+      console.error("Refusing to read symlink");
+      process.exitCode = 2;
+      return;
     }
 
     // Load data

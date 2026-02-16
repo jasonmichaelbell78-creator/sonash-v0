@@ -8,6 +8,16 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
+// Symlink guard (Review #316-#323)
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require(
+    path.join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")
+  ));
+} catch {
+  isSafeToWrite = () => true; // Fallback if guard not available
+}
+
 const ROOT_DIR = path.join(__dirname, "..");
 const TMP_DIR = path.join(ROOT_DIR, ".claude", "tmp");
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -39,6 +49,7 @@ function main() {
       const stat = fs.lstatSync(filePath);
       if (stat.isSymbolicLink()) continue;
       if (stat.mtimeMs < cutoff) {
+        if (!isSafeToWrite(filePath)) continue;
         fs.rmSync(filePath, { force: true });
         deleted++;
       }

@@ -112,9 +112,9 @@ function main() {
       if (ackData.acknowledgedAt) {
         const ackTime = new Date(ackData.acknowledgedAt).getTime();
         // Find the newest warning timestamp
-        const warnings = warningsData.warnings || [];
+        const warnings = Array.isArray(warningsData.warnings) ? warningsData.warnings : [];
         const newestWarning = warnings.reduce((max, w) => {
-          const t = new Date(w.timestamp).getTime();
+          const t = new Date(w?.timestamp).getTime();
           if (Number.isNaN(t)) return max;
           return t > max ? t : max;
         }, 0);

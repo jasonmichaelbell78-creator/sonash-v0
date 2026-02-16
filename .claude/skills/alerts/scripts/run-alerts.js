@@ -2864,9 +2864,11 @@ function filterSuppressedAlerts() {
       return !activeSups.some((sup) => {
         if (sup.category && sup.category !== cat) return false;
         // If no message pattern, suppress entire category
-        if (!sup.messagePattern || sup.messagePattern.trim() === "") return true;
+        const pattern = typeof sup.messagePattern === "string" ? sup.messagePattern.trim() : "";
+        if (pattern === "") return true;
         // Use case-insensitive string matching (safe — no regex injection)
-        return alert.message.toLowerCase().includes(sup.messagePattern.toLowerCase());
+        const msg = typeof alert.message === "string" ? alert.message : String(alert.message ?? "");
+        return msg.toLowerCase().includes(pattern.toLowerCase());
       });
     });
     filteredCount += before - catData.alerts.length;
@@ -2935,9 +2937,9 @@ function computeHealthScore() {
   const weights = {
     code: 0.15,
     security: 0.15,
-    "debt-metrics": 0.12,
+    "debt-metrics": 0.11,
     "test-results": 0.1,
-    learning: 0.08,
+    learning: 0.07,
     "skip-abuse": 0.03,
     session: 0.03,
     "agent-compliance": 0.04,

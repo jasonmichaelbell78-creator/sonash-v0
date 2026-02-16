@@ -617,6 +617,34 @@ _Reviews #137-179 have been archived to
 
 ---
 
+#### Review #326: PR #367 R3 — Weight Normalization, CC Reduction, Symlink Guards (2026-02-16)
+
+**Source:** SonarCloud (11) + Qodo PR Compliance (2) + Qodo Code Suggestions (8)
+**PR/Branch:** claude/read-session-commits-ZpJLX (PR #367) **Suggestions:** 21
+total (Fixed: 8, Already Deferred: 6, Already Rejected: 3, New Rejected: 4)
+
+**Patterns Identified:**
+
+1. **Tool conflict resolution** — SonarCloud wants `Math.max()` but pattern
+   compliance blocks it; resolved by classifying as REJECT with documented
+   reason
+2. **CC reduction via extraction** — Moving symlink checks outside try blocks or
+   into helper functions reduces nesting-based cognitive complexity
+3. **Type-safe defensive coding** — `typeof x === "string"` before `.trim()`,
+   `Array.isArray()` before `.reduce()` prevents crashes from malformed JSON
+   data
+
+**Key Learnings:**
+
+- When tools conflict (SonarCloud vs pattern compliance), document the conflict
+  and reject the item with a clear rationale rather than flip-flopping
+- Health score weight normalization is already handled by `measuredWeight`
+  division, but keeping raw weights summing to 1.0 prevents confusion
+- Deduplicating extracted learnings with a Set prevents data quality issues in
+  JSONL consumption files
+
+---
+
 #### Review #325: PR #367 R2 — Trend Bug, Suppression Logic, Security Hardening (2026-02-16)
 
 **Source:** CI (Prettier) + SonarCloud (15) + Qodo PR Compliance (5) + Qodo Code
