@@ -190,12 +190,12 @@ function mapDocStandardsToTdms(item) {
     mapCommonAuditFields(item, mapped, metadata);
 
     // Clean up Doc Standards-specific fields that shouldn't be in TDMS
+    // Keep confidence in MASTER_DEBT for quality tracking (was previously lost)
     delete mapped.fingerprint;
     delete mapped.files;
     delete mapped.why_it_matters;
     delete mapped.suggested_fix;
     delete mapped.acceptance_tests;
-    delete mapped.confidence;
   }
 
   return { item: mapped, metadata };
@@ -334,6 +334,16 @@ function validateAndNormalize(item, sourceFile) {
   if (normalizedFile && !isValidFilePath(normalizedFile)) {
     warnings.push(
       `Invalid file path: "${mappedItem.file || "(empty)"}". TDMS requires a real file path.`
+    );
+  }
+
+  // Warn when S0/S1 findings lack verification_steps
+  if (
+    (mappedItem.severity === "S0" || mappedItem.severity === "S1") &&
+    !mappedItem.verification_steps
+  ) {
+    warnings.push(
+      `S0/S1 finding missing verification_steps (recommended for critical/high severity)`
     );
   }
 

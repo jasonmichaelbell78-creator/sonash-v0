@@ -76,6 +76,16 @@ function validateItem(item, lineNum) {
     errors.push(`Line ${lineNum}: Invalid ID format: "${item.id}" (expected DEBT-XXXX)`);
   }
 
+  // Validate source_id format (audit-<category>-YYYY-MM-DD or similar patterns)
+  if (item.source_id) {
+    const validSourceIdPattern = /^(audit[:-]|sonarcloud[:-]|manual[:-]|review[:-]|CANON-)/;
+    if (!validSourceIdPattern.test(item.source_id)) {
+      warnings.push(
+        `Line ${lineNum}: Non-standard source_id format: "${item.source_id}" (expected prefix: audit:, sonarcloud:, manual:, review:, CANON-)`
+      );
+    }
+  }
+
   // Validate category
   if (item.category && !VALID_CATEGORIES.includes(item.category)) {
     errors.push(
@@ -90,11 +100,9 @@ function validateItem(item, lineNum) {
     );
   }
 
-  // Validate type
+  // Validate type (strict — invalid types are errors, not warnings)
   if (item.type && !VALID_TYPES.includes(item.type)) {
-    warnings.push(
-      `Line ${lineNum}: Invalid type: "${item.type}" (valid: ${VALID_TYPES.join(", ")})`
-    );
+    errors.push(`Line ${lineNum}: Invalid type: "${item.type}" (valid: ${VALID_TYPES.join(", ")})`);
   }
 
   // Validate status
@@ -163,6 +171,13 @@ function validateItem(item, lineNum) {
     if (item.impact !== undefined && !/^I[0-3]$/.test(item.impact)) {
       warnings.push(`Line ${lineNum}: Enhancement impact must be I0-I3, got: "${item.impact}"`);
     }
+  }
+
+  // Enforce verification_steps for S0/S1 severity findings
+  if ((item.severity === "S0" || item.severity === "S1") && !item.verification_steps) {
+    warnings.push(
+      `Line ${lineNum}: S0/S1 finding "${item.id}" missing verification_steps (recommended for critical/high severity)`
+    );
   }
 
   // Check for duplicate detection fields

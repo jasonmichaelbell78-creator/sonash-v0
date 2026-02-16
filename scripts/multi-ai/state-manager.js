@@ -31,13 +31,15 @@ const CONFIG = {
 
 // Valid categories for multi-AI audit
 const VALID_CATEGORIES = [
-  "code",
+  "code-quality",
   "security",
   "performance",
   "refactoring",
   "documentation",
   "process",
   "engineering-productivity",
+  "enhancements",
+  "ai-optimization",
 ];
 
 // Category status values
