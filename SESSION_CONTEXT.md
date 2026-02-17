@@ -48,24 +48,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #163 Summary** (AUDIT ECOSYSTEM FULL HEALTH PLAN):
-
-- Deep-dived into full audit ecosystem health via `/deep-plan`
-- Ran 6 parallel analysis agents across skills, TDMS pipeline, process,
-  templates, orphans, cross-refs
-- Identified **41 issues** across 4 dimensions (7 critical, 12 high, 13 medium,
-  9 low)
-- Critical findings: state-manager.js missing 2 categories (BLOCKER),
-  generate-metrics.js age calc bug, audit-schema.json missing ai-optimization, 3
-  broken cross-refs in audit-comprehensive, comprehensive only covers 7/9
-  domains
-- Produced **39-step remediation plan across 8 waves** with 26 user-approved
-  decisions
-- Waves: Structure, Category Alignment, TDMS Pipeline Fixes, Skill Rewrites,
-  Missing Docs+Templates, Process & Automation, Verification, Improvements (8
-  new scripts)
-- Plan saved to `.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md` and pushed
-
 **Session #164 Summary** (AUDIT ECOSYSTEM REMEDIATION — WAVES 1-8):
 
 - Executed full 39-step remediation plan across 8 waves from
@@ -80,6 +62,21 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
   suppression)
 - Synced 4 reviews, incremented session counter
 - Tests: 293/294 passing
+
+**Session #165 Summary** (PR #369 R8-R9 + RETRO + SKILL UPDATE):
+
+- Processed PR #369 R8 (13 items: 8 fixed, 5 rejected) and R9 (9 items: 5 fixed,
+  4 rejected)
+- R8: CC extraction (buildResults+statusIcon, guardSymlink+safeRename), symlink
+  walk skip, detectAndMapFormat early-return, error field strings
+- R9: Fail-closed guardSymlink (propagated to 2 files), non-object JSONL guard,
+  guardSymlink pattern recognizer, source_id regex tightening, file path
+  normalization warning
+- Produced comprehensive PR #369 retrospective (9 rounds, 119 items, 4 ping-pong
+  chains, cross-PR systemic analysis)
+- Updated pr-retro SKILL.md v1.0 → v2.1: comprehensive format canonical, 10
+  mandatory sections, 5 known churn patterns, TDMS enforcement for action items,
+  4 compliance mechanisms, display-to-user rule
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
