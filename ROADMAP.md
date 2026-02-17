@@ -310,8 +310,8 @@ reliability, and solo developer automations.
 | 1      | `scripts/`                 |   601 |   106 | Low      | ✅ Done |
 | 2      | `components/`              |   334 |   100 | Moderate | ✅ Done |
 | 3      | `.claude/` + `docs/`       |   241 |    84 | Zero     | ✅ Done |
-| 4      | `lib/` + `hooks/` + `app/` |   160 |    40 | Moderate | Pending |
-| 5      | `.github/` + config        |   154 |    40 | Moderate | Pending |
+| 4      | `lib/` + `hooks/` + `app/` |   214 |    40 | Moderate | Pending |
+| 5      | `.github/` + config        |   156 |    40 | Moderate | Pending |
 | 6      | `functions/` + rules       |    80 |     9 | High     | Pending |
 | 7      | `tests/` + systemic        |   151 |    12 | Mixed    | Pending |
 | skip   | Dedicated sessions         |     6 |     - | -        | Later   |
@@ -319,6 +319,14 @@ reliability, and solo developer automations.
 **Approach:** File-based (not category-based) to avoid revisiting files. Each
 sprint uses parallel agents + wave-based execution + per-wave commits.
 Lightweight verification per sprint; comprehensive audit only after Sprint 7.
+
+**Session #166 Verification & Triage (228 items verified, 96 placed):**
+
+- 54 code-quality/refactoring items → Sprint 4 (2 S0, 13 S1, 24 S2, 15 S3)
+- 2 process items → Sprint 5 (S3)
+- 35 ai-optimization items → Track D (2 S1, 15 S2, 18 S3)
+- 4 security items → M4.5 (2 S2, 2 S3)
+- 1 documentation item → Track B (S3)
 
 **Enhancement Audit Items (Session #151, migrated to TDMS):**
 

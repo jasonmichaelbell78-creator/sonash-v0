@@ -210,7 +210,7 @@ function mergeItems(primary, secondary) {
   }
 
   // Merge evidence arrays
-  if (secondary.evidence) {
+  if (Array.isArray(secondary.evidence)) {
     merged.evidence = [
       ...(merged.evidence || []),
       ...secondary.evidence.filter((e) => !(merged.evidence || []).includes(e)),

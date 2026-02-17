@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.26 **Created:** 2026-01-02 **Last Updated:** 2026-02-17
+**Document Version:** 17.30 **Created:** 2026-01-02 **Last Updated:** 2026-02-17
 
 ## Purpose
 
@@ -28,6 +28,10 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.30   | 2026-02-17 | Review #347: PR #370 R5 — 9 items (3 MAJOR, 3 MINOR, 3 rejected). TOCTOU file path fix, CWD-independent normalizeFilePath, trailing slash preservation, unknown non-flag token errors, assignedIds filter, improved error message.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 17.29   | 2026-02-17 | Review #346: PR #370 R4 — 11 items (3 MAJOR, 5 MINOR, 3 rejected). Dynamic path prefix in normalizeFilePath, ensureDefaults on merged items, unknown CLI arg errors, negated condition flip, symlink check reorder, evidence guard, --file path validation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 17.28   | 2026-02-17 | Review #345: PR #370 R3 — 11 items (6 MAJOR, 4 MINOR, 1 enhancement). parseArgs CC reduction (while-loop + extracted validators), writeOutputJson hardening (symlink order, tmp cleanup, pre-remove), generate-views.js manual item preservation, source data normalization, --pr validation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 17.27   | 2026-02-17 | Review #344: PR #370 R2 — 11 items (1 CRITICAL, 4 MAJOR, 3 MINOR, 2 data quality, 1 deferred). Path traversal on --output-json, SonarCloud i assignment, extracted writeOutputJson helper, 5 orphaned ROADMAP DEBT refs, evidence dedup + absolute path re-apply, symlink guards.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | 17.26   | 2026-02-17 | PR #369 Retrospective: 9 rounds, 119 items (78 fixed, 41 rejected). Symlink ping-pong (8 rounds), CC ping-pong (6 rounds). Key action: add CC complexity lint rule to pre-commit hook.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.25   | 2026-02-17 | Review #338: PR #369 R4 — 12 items (3 MAJOR, 3 MINOR, 6 rejected). realpathSync symlink hardening (post-audit), atomic write tmp+rename (generate-results-index), early return invalid date, fail fast JSONL, String(title), safe error.message.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 17.24   | 2026-02-17 | Review #337: PR #369 R3 — 12 items (4 MAJOR, 3 MINOR, 5 rejected). Repo containment (post-audit), canonical category mapping (generate-results-index), sinceDate validation, writeFileSync try/catch, string line normalization in getFileRef, push batching residuals.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -1036,6 +1040,113 @@ documented but never executed.
 
 3. **Add Qodo suppression for JSONL pipeline output** (~15 min). Eliminates ~34%
    of all review items as noise.
+
+---
+
+#### Review #347: PR #370 R5 — TOCTOU file path, CWD-independent normalization, trailing slash preservation (2026-02-17)
+
+**Source:** Qodo Compliance (3) + Qodo Suggestions (6) **PR/Branch:**
+claude/new-session-6kCvR (PR #370) **Suggestions:** 9 total (Fixed: 6,
+Rejected: 3)
+
+**Patterns Identified:**
+
+1. **TOCTOU on validated path** — `validatePathInDir` checks resolved path but
+   raw input is stored. Must persist the resolved value.
+2. **CWD-dependent path.resolve** — `path.resolve(filePath)` resolves against
+   CWD, not repo root. Fragile if script invoked from different directory.
+3. **Path normalization strips trailing slash** — `normalizeFilePath` converts
+   `scripts/` to `scripts`, breaking directory-level DEBT item file references.
+4. **Repeat items converging** — Actor context (R3,R4,R5) and unstructured logs
+   (R3,R4,R5) repeatedly flagged despite rejection. Stable rejection rationale.
+
+**Rejected:** [1] Arbitrary file overwrite (already constrained to REPO_ROOT via
+validatePathInDir + refuseSymlinkWithParents), [2] Missing actor context (3rd
+repeat — captured in resolution-log.jsonl), [3] Unstructured console logs (3rd
+repeat — pre-existing pattern, DEBT-0455)
+
+**Resolution Stats:** 6/9 fixed (67%), 3/9 rejected
+
+---
+
+#### Review #346: PR #370 R4 — dynamic path prefix, merged defaults, unknown arg guard, negated condition (2026-02-17)
+
+**Source:** SonarCloud (1) + Qodo Suggestions (5) + Qodo Compliance (5)
+**PR/Branch:** claude/new-session-6kCvR (PR #370) **Suggestions:** 11 total
+(Fixed: 8, Rejected: 3)
+
+**Patterns Identified:**
+
+1. **Hard-coded path prefix** — `normalizeFilePath` used literal
+   `"home/user/sonash-v0/"` instead of dynamic `path.resolve(__dirname)`.
+   Non-portable across environments.
+2. **Merged items bypass pipeline** — `mergeManualItems` pushed items without
+   calling `ensureDefaults()`, so path normalization was skipped.
+3. **Unknown args silently ignored** — parseArgs dropped unrecognized flags
+   without warning, making typos in CI invisible.
+4. **Negated condition readability** — SonarCloud flags `if (!x.includes(y))` as
+   harder to read. Flip to positive condition first.
+
+**Rejected:** [8,11] Actor in JSON (captured in resolution-log.jsonl), [9]
+Unstructured logs (pre-existing architectural pattern across all TDMS scripts)
+
+**Resolution Stats:** 8/11 fixed (73%), 3/11 rejected
+
+---
+
+#### Review #345: PR #370 R3 — parseArgs CC+i refactor, writeOutputJson hardening, generate-views preservation (2026-02-17)
+
+**Source:** SonarCloud (4) + Qodo Suggestions (6) + User Request (1)
+**PR/Branch:** claude/new-session-6kCvR (PR #370) **Suggestions:** 11 total
+(Fixed: 11, Deferred: 0)
+
+**Patterns Identified:**
+
+1. **for-loop i assignment** — SonarCloud flags `i += 1` in for-loop body. Fix:
+   convert to while-loop where i management is explicit.
+2. **CC reduction via extraction** — parseArgs CC 16>15. Fix: extract
+   `validateOutputJsonPath` and `validatePrNumber` validators.
+3. **Symlink check ordering** — Must check parent symlinks BEFORE mkdirSync, not
+   after. Also clean up tmp file on error.
+4. **generate-views.js overwrites** — Manual additions to MASTER_DEBT.jsonl lost
+   when generate-views rebuilds from raw/deduped.jsonl. Fix: preserve existing
+   items not present in deduped input.
+5. **Cross-platform rename** — Pre-remove destination before renameSync for
+   Windows compatibility.
+6. **Source data normalization** — Absolute paths in raw/deduped.jsonl propagate
+   to MASTER_DEBT.jsonl and views on every regeneration. Fix: normalize at
+   source AND add normalizeFilePath guard in generate-views.js pipeline.
+
+**Resolution Stats:** 11/11 fixed (100%), 0 deferred
+
+---
+
+#### Review #344: PR #370 R2 — resolve-bulk.js hardening, MASTER_DEBT data quality, orphaned ROADMAP refs (2026-02-17)
+
+**Source:** SonarCloud (1) + Qodo Compliance (3) + Qodo Suggestions (5) + CI (2)
+**PR/Branch:** claude/new-session-6kCvR (PR #370) **Suggestions:** 11 total
+(Fixed: 10, Deferred: 1)
+
+**Patterns Identified:**
+
+1. **Path traversal on CLI --output-json** — Arbitrary file write via
+   user-supplied path. Fix: validatePathInDir to restrict within repo root.
+2. **SonarCloud i assignment** — `parsed.outputJson = args[++i]` flagged. Fix:
+   separate increment from assignment.
+3. **Duplicated write blocks** — Two identical writeFileSync blocks triggered
+   7.4% SonarCloud duplication. Fix: extract `writeOutputJson` helper with
+   atomic tmp+rename, path validation, and timestamp.
+4. **Orphaned ROADMAP DEBT refs** — sync-roadmap-refs CI check catches refs to
+   DEBT IDs not in MASTER_DEBT.jsonl.
+5. **lint-staged evidence loss** — Large JSONL changes (dedup + path fix) lost
+   during lint-staged backup/restore cycle. Fix: re-apply and commit carefully.
+6. **generate-views.js overwrites MASTER_DEBT** — Running generate-views.js
+   after manually adding items to MASTER_DEBT.jsonl destroys those additions
+   because it rebuilds from raw/deduped.jsonl. Fix: add items after view
+   generation, or add to raw/deduped.jsonl source.
+
+**Resolution Stats:** 10/11 fixed (91%), 1/11 deferred (docs:check 36
+pre-existing errors → DEBT tracking)
 
 ---
 

@@ -209,6 +209,20 @@ function assignStableId(item, idMap, usedIds, nextId) {
   return { id: generateDebtId(nextId), isNew: true };
 }
 
+// Normalize file paths: strip absolute repo prefix if present
+function normalizeFilePath(filePath) {
+  if (typeof filePath !== "string") return filePath;
+  const repoRootAbs = path.resolve(__dirname, "../..");
+  const repoRoot = repoRootAbs + path.sep;
+  const hadTrailingSlash = filePath.endsWith("/") || filePath.endsWith(path.sep);
+  const resolved = path.resolve(repoRootAbs, filePath);
+  if (resolved.startsWith(repoRoot)) {
+    const relative = resolved.slice(repoRoot.length).split(path.sep).join("/");
+    return hadTrailingSlash ? relative + "/" : relative;
+  }
+  return filePath;
+}
+
 // Ensure required fields have defaults
 function ensureDefaults(item) {
   if (!item.source_id) {
@@ -216,6 +230,15 @@ function ensureDefaults(item) {
   }
   if (!item.status) {
     item.status = "NEW";
+  }
+  // Normalize absolute paths to repo-relative
+  item.file = normalizeFilePath(item.file);
+  if (Array.isArray(item.evidence)) {
+    for (const e of item.evidence) {
+      if (e && typeof e === "object") {
+        e.file = normalizeFilePath(e.file);
+      }
+    }
   }
 }
 
@@ -454,10 +477,37 @@ Run \`verify-technical-debt\` skill to process this queue.
   console.log(`  ✅ ${path.join(VIEWS_DIR, "verification-queue.md")}`);
 }
 
+// Preserve manually-added items from MASTER_DEBT.jsonl not in deduped input.
+// Items added directly to MASTER_DEBT.jsonl (e.g. orphaned ROADMAP refs)
+// would be lost on regeneration since readAndAssignIds reads from deduped.jsonl.
+function mergeManualItems(items) {
+  const { itemMap } = loadExistingItems();
+  const assignedIds = new Set(
+    items.map((item) => item && item.id).filter((id) => typeof id === "string" && id.length > 0)
+  );
+  let mergedCount = 0;
+
+  for (const [id, existing] of itemMap) {
+    if (!assignedIds.has(id)) {
+      ensureDefaults(existing);
+      items.push(existing);
+      assignedIds.add(id);
+      mergedCount++;
+    }
+  }
+
+  if (mergedCount > 0) {
+    console.log(`  🔗 Preserved ${mergedCount} manually-added item(s) from MASTER_DEBT.jsonl`);
+  }
+
+  return mergedCount;
+}
+
 function main() {
   console.log("📝 Generating TDMS views and final output...\n");
 
   const { items, newCount, preservedCount } = readAndAssignIds();
+  mergeManualItems(items);
 
   writeMasterFile(items);
 
