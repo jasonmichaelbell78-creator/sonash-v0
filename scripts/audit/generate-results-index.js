@@ -238,11 +238,20 @@ function main() {
   } catch {
     // File doesn't exist yet — safe to write
   }
+
+  // Atomic write: tmp file + rename to reduce TOCTOU window
+  const tmpFile = path.join(outputDir, `.RESULTS_INDEX.md.tmp-${process.pid}`);
   try {
-    fs.writeFileSync(outputFile, markdown, "utf8");
+    fs.writeFileSync(tmpFile, markdown, "utf8");
+    fs.renameSync(tmpFile, outputFile);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error(`Error: Failed to write results index: ${msg}`);
+    try {
+      if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
+    } catch {
+      /* cleanup best-effort */
+    }
     process.exit(2);
   }
   console.log(`✓ Generated: ${outputFile}`);

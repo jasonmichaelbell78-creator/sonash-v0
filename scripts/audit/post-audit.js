@@ -156,11 +156,36 @@ function main() {
   // and relative paths work when invoking the script.
   const resolvedInput = path.resolve(inputFile);
 
-  // Verify input is within the repo root to prevent processing external files
-  if (!resolvedInput.startsWith(REPO_ROOT + path.sep) && resolvedInput !== REPO_ROOT) {
+  // Verify input is within the repo root (resolve symlinks to prevent bypass)
+  let repoReal;
+  let inputReal;
+  try {
+    repoReal = fs.realpathSync(REPO_ROOT);
+    inputReal = fs.realpathSync(resolvedInput);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`Error: Failed to resolve input path: ${msg}`);
+    process.exit(1);
+  }
+
+  // Refuse symlinked inputs
+  try {
+    const st = fs.lstatSync(resolvedInput);
+    if (st.isSymbolicLink()) {
+      console.error(`Error: Refusing to process symlinked input file: ${resolvedInput}`);
+      process.exit(1);
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`Error: Unable to stat input file: ${msg}`);
+    process.exit(1);
+  }
+
+  const rel = path.relative(repoReal, inputReal);
+  if (rel.startsWith("..") || path.isAbsolute(rel)) {
     console.error(`Error: Input file must be within the repository root.`);
-    console.error(`  Input:     ${resolvedInput}`);
-    console.error(`  Repo root: ${REPO_ROOT}`);
+    console.error(`  Input:     ${inputReal}`);
+    console.error(`  Repo root: ${repoReal}`);
     process.exit(1);
   }
 
@@ -185,15 +210,14 @@ function main() {
   }
 
   if (validation.errors.length > 0) {
-    // Non-fatal: some lines are invalid JSON but file has content
-    console.warn(`Warning: ${validation.errors.length} invalid JSON line(s):`);
+    console.error(`Validation failed: ${validation.errors.length} invalid JSON line(s):`);
     for (const e of validation.errors.slice(0, 10)) {
-      console.warn(`  - ${e}`);
+      console.error(`  - ${e}`);
     }
     if (validation.errors.length > 10) {
-      console.warn(`  ... and ${validation.errors.length - 10} more`);
+      console.error(`  ... and ${validation.errors.length - 10} more`);
     }
-    console.warn("Continuing with best-effort processing...");
+    process.exit(1);
   }
 
   console.log(`Validated: ${validation.lineCount} JSON lines found.`);

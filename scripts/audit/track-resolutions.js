@@ -158,6 +158,7 @@ function getCommitCountSince(relPath, sinceDate) {
   if (!normalized || !isPathContained(normalized)) return -1;
 
   const hasValidSince = typeof sinceDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(sinceDate);
+  if (sinceDate && !hasValidSince) return -1;
 
   try {
     const args = ["log", "--oneline"];

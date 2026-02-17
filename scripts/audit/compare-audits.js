@@ -187,7 +187,9 @@ function findingKey(finding) {
 
   // Normalize file: use finding.file or first element of finding.files
   const file = finding.file || (Array.isArray(finding.files) && finding.files[0]) || "unknown";
-  const title = (finding.title || "untitled").trim().toLowerCase();
+  const title = String(finding.title ?? "untitled")
+    .trim()
+    .toLowerCase();
   const rawLine =
     typeof finding.line === "string" ? Number.parseInt(finding.line, 10) : finding.line;
   const line = Number.isFinite(rawLine) ? String(rawLine) : "";

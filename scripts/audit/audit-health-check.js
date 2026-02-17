@@ -173,7 +173,8 @@ function checkStateManagerCategories() {
       );
     }
   } catch (error) {
-    addResult("State Manager Categories", false, `Error reading state-manager: ${error.message}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    addResult("State Manager Categories", false, `Error reading state-manager: ${msg}`);
   }
 }
 
