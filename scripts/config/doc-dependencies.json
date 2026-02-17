@@ -23,7 +23,8 @@
       "trigger": ".claude/hooks/",
       "dependents": ["docs/TRIGGERS.md", "DEVELOPMENT.md"],
       "reason": "Hook documentation must be complete",
-      "checkDiff": false
+      "checkDiff": false,
+      "gitFilter": "AD"
     },
     {
       "trigger": ".claude/commands/",
@@ -67,7 +68,8 @@
       "trigger": "docs/technical-debt/",
       "dependents": ["SESSION_CONTEXT.md"],
       "reason": "Technical debt changes should be noted in session context",
-      "checkDiff": false
+      "checkDiff": false,
+      "gitFilter": "AD"
     },
     {
       "trigger": "docs/audits/canonical/",

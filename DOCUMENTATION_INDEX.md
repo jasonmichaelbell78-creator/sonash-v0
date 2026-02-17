@@ -81,7 +81,7 @@ _Essential project-level documentation_
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑15     | 2026-02-17    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-17    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑17    | 2026-02-17    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑18    | 2026-02-17    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                | ↓4 ↑6      | 2026-02-17    |
 
 ### Core Documentation (Tier 2)
@@ -519,7 +519,7 @@ _Reference_
 
 | Document                                   | Description                                                       | References | Last Modified |
 | ------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓4 ↑7      | 2026-02-17    |
+| [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓5 ↑7      | 2026-02-17    |
 | [AI Workflow Guide](AI_WORKFLOW.md)        | \*\*Every phase, section, or milestone completion MUST include... | ↓9 ↑16     | 2026-02-17    |
 | [Session Context](SESSION_CONTEXT.md)      | -                                                                 | ↓5 ↑9      | 2026-02-17    |
 
@@ -571,8 +571,8 @@ Documents that are linked to most frequently:
 | [\[Project Name\] Multi-AI Performance Audit Plan](docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md) | 6             | README, COORDINATOR, README +3 more                 |
 | [\[Project Name\] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)      | 6             | README, COORDINATOR, README +3 more                 |
 | [Session Context](SESSION_CONTEXT.md)                                                                   | 5             | AI_WORKFLOW, ROADMAP, claude +2 more                |
+| [AI Context &amp; Rules for SoNash](claude.md)                                                          | 5             | README, ROADMAP, AI_REVIEW_LEARNINGS_LOG +2 more    |
 | [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                               | 5             | README, ROADMAP, ROADMAP_LOG +2 more                |
-| [Testing Plan](docs/TESTING_PLAN.md)                                                                    | 5             | ARCHITECTURE, DEVELOPMENT, README +2 more           |
 
 ### Most Linking Documents (Outbound Links)
 
@@ -580,8 +580,8 @@ Documents that link to other documents most frequently:
 
 | Document                                                                                                  | Outbound Links |
 | --------------------------------------------------------------------------------------------------------- | -------------- |
+| [SoNash Product Roadmap](ROADMAP.md)                                                                      | 18             |
 | [Audit Ecosystem](docs/audits/README.md)                                                                  | 18             |
-| [SoNash Product Roadmap](ROADMAP.md)                                                                      | 17             |
 | [AI Workflow Guide](AI_WORKFLOW.md)                                                                       | 16             |
 | [SoNash - Sober Nashville Recovery Notebook](README.md)                                                   | 15             |
 | [Multi-AI Audit System](docs/audits/multi-ai/README.md)                                                   | 12             |

@@ -21,7 +21,8 @@
 ## AI Instructions
 
 > For detailed AI update instructions, cross-document update triggers, and
-> validation commands, see [CLAUDE.md Section 6](./CLAUDE.md).
+> validation commands, see
+> [claude.md Section 6](./claude.md#6-agentskill-triggers).
 
 **Quick Reference:**
 
@@ -296,6 +297,37 @@ reliability, and solo developer automations.
 | **Track O** | Owner Actions (manual setup)          | 📋 **DO FIRST** | ~10 min   | Jason  |
 | **Track P** | Performance Critical (CWV fix)        | 📋 Planned      | ~24 hours | Claude |
 | **Track T** | Testing Infrastructure (Playwright)   | 🔄 Phase 1 Done | ~70 hours | Claude |
+
+### S0 Critical Debt (Immediate Action)
+
+> **Policy:** S0 items are always in the active sprint regardless of track.
+> **Source:** MASTER_DEBT.jsonl (status=VERIFIED, severity=S0)
+
+| ID        | Title                                              | File                                                | Category     | Effort |
+| --------- | -------------------------------------------------- | --------------------------------------------------- | ------------ | ------ |
+| DEBT-0012 | Cognitive Complexity 22 to 15                      | functions/src/admin.ts:576                          | code-quality | E0     |
+| DEBT-0037 | Cognitive Complexity 17 to 15                      | components/widgets/compact-meeting-countdown.tsx:69 | code-quality | E0     |
+| DEBT-0854 | App Check disabled on production Cloud Functions   | functions/src/index.ts                              | security     | E2     |
+| DEBT-1056 | Cognitive Complexity 16 to 15                      | components/admin/errors-tab.tsx                     | code-quality | E0     |
+| DEBT-1064 | Nesting >4 levels deep                             | components/admin/logs-tab.tsx                       | code-quality | E0     |
+| DEBT-1538 | Cognitive Complexity 16 to 15                      | functions/src/jobs.ts                               | code-quality | E0     |
+| DEBT-1624 | Cognitive Complexity 17 to 15                      | components/dev/lighthouse-tab.tsx                   | code-quality | E0     |
+| DEBT-1912 | Client-side filtering of sensitive data            | hooks/use-journal.ts                                | code-quality | E1     |
+| DEBT-2499 | pull_request_target security vulnerability         | .github/workflows/deploy-firebase.yml               | process      | E2     |
+| DEBT-3079 | 57 AI Instructions sections = ~4,500+ tokens waste | N/A                                                 | code-quality | E0     |
+| DEBT-3080 | Session Counter Regex in 5 hooks                   | .claude/hooks/commit-tracker.js                     | code-quality | E1     |
+
+**Total: 11 items | ~8 hours estimated (6xE0 + 3xE1 + 2xE2)**
+
+**Cross-references:**
+
+- DEBT-0854 also tracked in Track S S0 Critical Security (line ~683)
+- DEBT-2499 also relevant to Track D CI Reliability
+- DEBT-0012, DEBT-1538 will be addressed in Grand Plan Sprint 6 (functions/)
+- DEBT-0037, DEBT-1056, DEBT-1064, DEBT-1624 covered by Grand Plan Sprint 2
+  (components/) - already done
+- CANON-0067 (47 cognitive complexity violations) is a broader parent item in
+  M2.3-REF
 
 ### GRAND PLAN: Technical Debt Elimination (1,727 items)
 
@@ -678,6 +710,9 @@ Check disabled, reCAPTCHA fail-open, missing headers). For security **features**
 
 #### S0 Critical Security (4 unique issues - deduplicated from 18 items)
 
+> **Note:** DEBT-0854 (App Check disabled) has been promoted to the **S0
+> Critical Debt** section in the Active Sprint above for immediate action.
+
 | ID         | Issue                                                 | File                     | Effort |
 | ---------- | ----------------------------------------------------- | ------------------------ | ------ |
 | DEBT-0854+ | App Check disabled on Cloud Functions                 | functions/src/index.ts   | E1     |
@@ -688,7 +723,7 @@ Check disabled, reCAPTCHA fail-open, missing headers). For security **features**
 **S0 Action Items:**
 
 - [ ] **S1:** Re-enable App Check on Cloud Functions (DEBT-0854, 0856,
-      0860, 0865)
+      0860, 0865) -- **See S0 Critical Debt in Active Sprint**
 - [ ] **S2:** Close direct client write path to journalEntries (DEBT-0850,
       0855, 0857)
 - [ ] **S3:** Add security headers to firebase.json (DEBT-0087)
@@ -1401,26 +1436,26 @@ Technical debt is now tracked in TECHNICAL_DEBT_MASTER.md which consolidates:
 - MASTER_ISSUE_LIST legacy items (cross-referenced, many duplicates)
 - ROADMAP inline items (CANON-, DEDUP-, EFF-, PERF-)
 
-| Severity | Count | Description                 | Sprint Location       |
-| -------- | ----- | --------------------------- | --------------------- |
-| **S0**   | 7     | Critical - Immediate action | Track D (Performance) |
-| **S1**   | 28    | High - Current/next sprint  | Track D + M1.5        |
-| **S2**   | 45    | Medium - Backlog priority   | M2                    |
-| **S3**   | 32    | Low - Nice to have          | Backlog               |
+| Severity | Count | Description                 | Sprint Location                      |
+| -------- | ----- | --------------------------- | ------------------------------------ |
+| **S0**   | 11    | Critical - Immediate action | **Active Sprint - S0 Critical Debt** |
+| **S1**   | 28    | High - Current/next sprint  | Track D + M1.5                       |
+| **S2**   | 45    | Medium - Backlog priority   | M2                                   |
+| **S3**   | 32    | Low - Nice to have          | Backlog                              |
 
 ### S0 Critical Items (Immediate Action)
 
-| ID           | Title                       | Effort | Sprint Location    |
-| ------------ | --------------------------- | ------ | ------------------ |
-| ~~SEC-001~~  | ~~Credentials in git~~      | -      | **FALSE POSITIVE** |
-| ~~SEC-002~~  | ~~Firebase key exposed~~    | -      | **FALSE POSITIVE** |
-| **PERF-001** | Unoptimized images (11MB)   | E2     | Track D - D1       |
-| **PERF-002** | No code splitting           | E2     | Track D - D2       |
-| **PERF-003** | Missing React memoization   | E2     | Track D - D3       |
-| **PERF-004** | Unbounded Firestore queries | E2     | Track D - D4       |
-| **PERF-005** | No service worker           | E2     | Track D - D5       |
-| **PERF-007** | Missing cache headers       | E1     | Track D - D5       |
-| MASTER-0078  | App Check disabled          | E2     | M4.5               |
+| ID           | Title                       | Effort | Sprint Location                    |
+| ------------ | --------------------------- | ------ | ---------------------------------- |
+| ~~SEC-001~~  | ~~Credentials in git~~      | -      | **FALSE POSITIVE**                 |
+| ~~SEC-002~~  | ~~Firebase key exposed~~    | -      | **FALSE POSITIVE**                 |
+| **PERF-001** | Unoptimized images (11MB)   | E2     | Track D - D1                       |
+| **PERF-002** | No code splitting           | E2     | Track D - D2                       |
+| **PERF-003** | Missing React memoization   | E2     | Track D - D3                       |
+| **PERF-004** | Unbounded Firestore queries | E2     | Track D - D4                       |
+| **PERF-005** | No service worker           | E2     | Track D - D5                       |
+| **PERF-007** | Missing cache headers       | E1     | Track D - D5                       |
+| MASTER-0078  | App Check disabled          | E2     | **S0 Critical Debt** (= DEBT-0854) |
 
 ### Quick Wins (E0/E1) - ~12 Hours Total
 
@@ -1997,11 +2032,11 @@ Architecture refactoring, schema optimization, and infrastructure work.
 
 **S0 Critical Items:**
 
-| ID         | Title                                  | Effort | PR  |
-| ---------- | -------------------------------------- | ------ | --- |
-| DEDUP-0001 | Re-enable App Check (see above)        | E2     | -   |
-| DEDUP-0002 | Close legacy journalEntries write path | E2     | PR2 |
-| DEDUP-0011 | Fix useJournal memory leak             | E1     | PR1 |
+| ID         | Title                                                                          | Effort | PR  |
+| ---------- | ------------------------------------------------------------------------------ | ------ | --- |
+| DEDUP-0001 | Re-enable App Check -- **See S0 Critical Debt in Active Sprint** (= DEBT-0854) | E2     | -   |
+| DEDUP-0002 | Close legacy journalEntries write path                                         | E2     | PR2 |
+| DEDUP-0011 | Fix useJournal memory leak                                                     | E1     | PR1 |
 
 **S1 High Priority (Top 5):**
 
@@ -2026,7 +2061,8 @@ Architecture refactoring, schema optimization, and infrastructure work.
 #### Session #116 Refactoring Priority Items (S0/S1)
 
 - [ ] **CANON-0067:** 47 CRITICAL cognitive complexity violations `scripts/`
-      [E3] - S0
+      [E3] - S0 -- **Note:** Individual S0 items (DEBT-0012, DEBT-1538, etc.)
+      tracked in S0 Critical Debt section
 - [ ] **CANON-0023:** Deprecated saveNotebookJournalEntry still used in 6+
       components `firestore-service.ts` [E2] - S1
 - [ ] **CANON-0032:** Critical logic divergence in journal saving
@@ -3107,7 +3143,7 @@ Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
 Update this document when milestone status changes, new features are added,
 priorities change, or progress percentages change significantly (>10%). For full
 trigger matrix and cross-document update rules, see
-[CLAUDE.md Section 7](./CLAUDE.md).
+[claude.md Section 7](./claude.md#7-reference-docs).
 
 ---
 
