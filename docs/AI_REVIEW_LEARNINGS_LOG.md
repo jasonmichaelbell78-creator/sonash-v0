@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.22 **Created:** 2026-01-02 **Last Updated:** 2026-02-17
+**Document Version:** 17.23 **Created:** 2026-01-02 **Last Updated:** 2026-02-17
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.23   | 2026-02-17 | Review #336: PR #369 R2 — 38 items (6 MAJOR, 10 MINOR, 14 rejected). CC reduction (3 functions), push batching (4 files), normalizeRepoRelPath, table column alignment, symlink guards, line normalization.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.22   | 2026-02-17 | Review #335: PR #369 R1 — 63 items (5 CRITICAL, 16 MAJOR, 37 MINOR, 5 data quality). CI blocker: execSync command injection in 3 new audit scripts. Pattern: new scripts generated without security-helpers integration. 8 CC reductions, findingKey collision fix, .bak file removal.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.21   | 2026-02-16 | PR #368 Retrospective: 6 rounds, 65 items, symlink/TOCTOU ping-pong across R1-R6, SKIP_REASON persistence rejected 4x. Key action: fstatSync-after-open pattern rule.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 17.20   | 2026-02-16 | Review #334: PR #368 R6 — fstatSync fd validation, empty-reason-on-failure, console truncation, EXIT trap robustness, Object.values iteration, cross_domain marker, partial TDMS guard. 8 fixed, 3 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -754,6 +755,43 @@ symlink/TOCTOU fix that could have been done once with a complete template.
 **Highest-impact change:** Create FIX_TEMPLATES.md Template #22 ("Secure Audit
 File Write") with the full fd-based chain. This single template would have
 prevented R4-R6 entirely, saving ~3 review rounds.
+
+---
+
+#### Review #336: PR #369 R2 — CC Reduction, Push Batching, Symlink Guards, Line Normalization (2026-02-17)
+
+**Source:** SonarCloud (18 Issues + 3 Hotspots) + Qodo Compliance (5) + Qodo
+Suggestions (14) **PR/Branch:** claude/cherry-pick-recent-commits-X1eKD (PR
+#369) **Suggestions:** 38 total (Fixed: 24, Rejected: 14)
+
+**Patterns Identified:**
+
+1. **CC extraction helpers** — SonarCloud CC 20>15 flags resolved by extracting
+   `findThresholdTableStart()`/`extractTableRows()` (count-commits-since),
+   `collectSingleSessionAudits()`/`collectComprehensiveAudits()`/`collectMultiAiAudits()`
+   (generate-results-index), `exitWithError()`/`validateAllTemplates()`
+   (validate-templates).
+2. **Array#push batching** — SonarCloud flags consecutive `.push()` calls. Fix:
+   batch into single `.push(a, b, c)`. Applied across 4 files (compare-audits,
+   post-audit, validate-templates).
+3. **normalizeRepoRelPath** — File paths with `:lineNumber` suffix (e.g.
+   `file.js:123`) cause false "file deleted" classifications. Strip with
+   `.replace(/:(\d+)$/, "")` before fs/git operations.
+4. **Table column alignment** — Markdown table parsing with
+   `.filter(c => c.length > 0)` silently drops empty cells, shifting column
+   indices. Use `.slice(1, -1)` instead.
+5. **Number.isFinite for line 0** — Truthy check `if (finding.line)` skips
+   line 0. Use `Number.isFinite()` for line number checks.
+
+**Key Rejections (14):**
+
+- S5852 regex DoS (3): Linear regex `(\d+)\s+commits` has no backtracking risk
+- S4036 PATH lookup (2): Dev CLI tools, not production server code
+- TOCTOU race: Acceptable for local dev tooling
+- JSONL data quality (6): Pre-existing entries outside PR diff scope
+- state-manager.js CLI parsing: Pre-existing, not touched by this PR
+
+**Resolution Stats:** 24/38 fixed (63%), 14/38 rejected with justification
 
 ---
 

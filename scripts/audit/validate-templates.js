@@ -143,9 +143,9 @@ function validateTemplate(filename, content) {
     name: "Canonical category",
     passed: category !== null,
     detail:
-      category !== null
-        ? `Matches "${category}"`
-        : "MISSING - filename does not match any canonical category",
+      category === null
+        ? "MISSING - filename does not match any canonical category"
+        : `Matches "${category}"`,
   });
 
   // Check 3: File is not empty and has more than 20 lines
@@ -255,9 +255,7 @@ function validateTemplate(filename, content) {
 function formatHumanReport(results) {
   const lines = [];
 
-  lines.push("Template Compliance Report");
-  lines.push("\u2550".repeat(27));
-  lines.push("");
+  lines.push("Template Compliance Report", "\u2550".repeat(27), "");
 
   for (const result of results) {
     // Filename with dotted leader and score
@@ -284,8 +282,10 @@ function formatHumanReport(results) {
       ? Math.round(results.reduce((sum, r) => sum + r.percentage, 0) / totalTemplates)
       : 0;
 
-  lines.push(`Overall: ${passingCount}/${totalTemplates} templates at 80%+ compliance`);
-  lines.push(`Average score: ${averageScore}%`);
+  lines.push(
+    `Overall: ${passingCount}/${totalTemplates} templates at 80%+ compliance`,
+    `Average score: ${averageScore}%`
+  );
 
   // Warn about any below threshold
   const belowThreshold = results.filter((r) => r.percentage < 70);
@@ -338,84 +338,91 @@ function formatJsonReport(results) {
 }
 
 /**
- * Main entry point.
+ * Exit with a fatal error, formatting output per mode.
+ * @param {boolean} jsonMode - Whether to output JSON
+ * @param {object} jsonPayload - JSON object to output in JSON mode
+ * @param {string} humanMessage - Message to output in human mode
  */
-function main() {
-  const args = process.argv.slice(2);
-  const jsonMode = args.includes("--json");
-
-  // List template files
-  const { files, error: listError } = listTemplateFiles();
-  if (listError) {
-    if (jsonMode) {
-      console.log(JSON.stringify({ error: `Failed to list templates: ${listError}` }, null, 2));
-    } else {
-      console.error(`Error: Failed to list templates in ${TEMPLATES_DIR}: ${listError}`);
-    }
-    process.exit(1);
+function exitWithError(jsonMode, jsonPayload, humanMessage) {
+  if (jsonMode) {
+    console.log(JSON.stringify(jsonPayload, null, 2));
+  } else {
+    console.error(humanMessage);
   }
+  process.exit(1);
+}
 
-  if (files.length === 0) {
-    if (jsonMode) {
-      console.log(JSON.stringify({ error: "No template files found", templates: [] }, null, 2));
-    } else {
-      console.error(`Error: No .md template files found in ${TEMPLATES_DIR}`);
-    }
-    process.exit(1);
-  }
+/**
+ * Build an empty/error result placeholder for a template that could not be validated.
+ * @param {string} filename - Template filename
+ * @param {string} error - Error description
+ * @returns {object}
+ */
+function emptyResult(filename, error) {
+  return { filename, checks: [], score: 0, total: 10, percentage: 0, category: null, error };
+}
 
-  // Sort files alphabetically for consistent output
-  files.sort();
-
-  // Validate each template
+/**
+ * Validate all template files and collect results.
+ * @param {string[]} files - Sorted list of template filenames
+ * @param {boolean} jsonMode - Whether to output JSON (affects error-only entries)
+ * @returns {Array} Validation results
+ */
+function validateAllTemplates(files, jsonMode) {
   const results = [];
   for (const filename of files) {
     const filePath = path.join(TEMPLATES_DIR, filename);
     const { content, error: readError } = safeReadFile(filePath);
 
     if (readError) {
-      if (jsonMode) {
-        results.push({
-          filename,
-          checks: [],
-          score: 0,
-          total: 10,
-          percentage: 0,
-          category: null,
-          error: readError,
-        });
-      } else {
-        console.error(`Warning: Could not read ${filename}: ${readError}`);
-      }
+      if (jsonMode) results.push(emptyResult(filename, readError));
+      else console.error(`Warning: Could not read ${filename}: ${readError}`);
       continue;
     }
 
-    if (content === null || content.trim() === "") {
-      results.push({
-        filename,
-        checks: [],
-        score: 0,
-        total: 10,
-        percentage: 0,
-        category: null,
-        error: "File is empty",
-      });
+    if (!content || content.trim() === "") {
+      results.push(emptyResult(filename, "File is empty"));
       continue;
     }
 
     results.push(validateTemplate(filename, content));
   }
+  return results;
+}
 
-  // Output report
-  if (jsonMode) {
-    const report = formatJsonReport(results);
-    console.log(JSON.stringify(report, null, 2));
-  } else {
-    const report = formatHumanReport(results);
-    console.log(report);
+/**
+ * Main entry point.
+ */
+function main() {
+  const args = process.argv.slice(2);
+  const jsonMode = args.includes("--json");
+
+  const { files, error: listError } = listTemplateFiles();
+  if (listError) {
+    exitWithError(
+      jsonMode,
+      { error: `Failed to list templates: ${listError}` },
+      `Error: Failed to list templates in ${TEMPLATES_DIR}: ${listError}`
+    );
   }
 
-  // Determine exit code: exit 1 if any template below 70%
+  if (files.length === 0) {
+    exitWithError(
+      jsonMode,
+      { error: "No template files found", templates: [] },
+      `Error: No .md template files found in ${TEMPLATES_DIR}`
+    );
+  }
+
+  files.sort();
+  const results = validateAllTemplates(files, jsonMode);
+
+  if (jsonMode) {
+    console.log(JSON.stringify(formatJsonReport(results), null, 2));
+  } else {
+    console.log(formatHumanReport(results));
+  }
+
   const anyBelowThreshold = results.some((r) => r.percentage < 70);
   process.exit(anyBelowThreshold ? 1 : 0);
 }

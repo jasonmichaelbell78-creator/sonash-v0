@@ -83,8 +83,8 @@ function extractThreshold(rawTrigger) {
 function parseTableRow(line, categories) {
   const cells = line
     .split("|")
-    .map((c) => c.trim())
-    .filter((c) => c.length > 0);
+    .slice(1, -1)
+    .map((c) => c.trim());
 
   if (cells.length < 5) return null;
 
@@ -112,6 +112,41 @@ function parseTableRow(line, categories) {
  *
  * Returns an array of { display, key, lastAuditDate, threshold } objects.
  */
+/**
+ * Find the start index of the Single-Session Audit Thresholds table header row.
+ * @param {string[]} lines - file lines
+ * @returns {number} index of the table header row, or -1 if not found
+ */
+function findThresholdTableStart(lines) {
+  for (let i = 0; i < lines.length; i++) {
+    if (!lines[i].includes("Single-Session Audit Thresholds")) continue;
+    for (let j = i + 1; j < lines.length; j++) {
+      if (lines[j].trim().startsWith("|") && lines[j].includes("Category")) {
+        return j;
+      }
+    }
+    break;
+  }
+  return -1;
+}
+
+/**
+ * Extract table rows starting after the header+separator.
+ * @param {string[]} lines - file lines
+ * @param {number} tableStartIndex - index of the header row
+ * @returns {Array} parsed category rows
+ */
+function extractTableRows(lines, tableStartIndex) {
+  const results = [];
+  for (let i = tableStartIndex + 2; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line.startsWith("|")) break;
+    const row = parseTableRow(line, CATEGORIES);
+    if (row) results.push(row);
+  }
+  return results;
+}
+
 function parseTrackerTable() {
   let content;
   try {
@@ -123,44 +158,14 @@ function parseTrackerTable() {
   }
 
   const lines = content.split("\n");
-
-  // Locate the single-session threshold table by finding its header
-  let tableStartIndex = -1;
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].includes("Single-Session Audit Thresholds")) {
-      // The markdown table header row starts after the section heading.
-      // Walk forward to find the first pipe-delimited row that is the header.
-      for (let j = i + 1; j < lines.length; j++) {
-        if (lines[j].trim().startsWith("|") && lines[j].includes("Category")) {
-          tableStartIndex = j;
-          break;
-        }
-      }
-      break;
-    }
-  }
+  const tableStartIndex = findThresholdTableStart(lines);
 
   if (tableStartIndex === -1) {
     console.error("Could not locate Single-Session Audit Thresholds table in AUDIT_TRACKER.md");
     return null;
   }
 
-  // Parse table rows (skip header row and separator row)
-  const results = [];
-  for (let i = tableStartIndex + 2; i < lines.length; i++) {
-    const line = lines[i].trim();
-    // Stop at end of table (empty line or non-table line)
-    if (!line.startsWith("|")) {
-      break;
-    }
-
-    const row = parseTableRow(line, CATEGORIES);
-    if (row) {
-      results.push(row);
-    }
-  }
-
-  return results;
+  return extractTableRows(lines, tableStartIndex);
 }
 
 /**

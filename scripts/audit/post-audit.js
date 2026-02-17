@@ -193,30 +193,21 @@ function main() {
   // --- Pipeline steps --------------------------------------------------------
   const results = [];
 
-  // Step 1: TDMS intake
   results.push(
+    // Step 1: TDMS intake
     runStep("TDMS Intake", process.execPath, [
       path.join(REPO_ROOT, "scripts/debt/intake-audit.js"),
       resolvedInput,
-    ])
-  );
-
-  // Step 2: Regenerate views
-  results.push(
+    ]),
+    // Step 2: Regenerate views
     runStep("Generate Views", process.execPath, [
       path.join(REPO_ROOT, "scripts/debt/generate-views.js"),
-    ])
-  );
-
-  // Step 3: Regenerate metrics
-  results.push(
+    ]),
+    // Step 3: Regenerate metrics
     runStep("Generate Metrics", process.execPath, [
       path.join(REPO_ROOT, "scripts/debt/generate-metrics.js"),
-    ])
-  );
-
-  // Step 4: Regenerate results index
-  results.push(
+    ]),
+    // Step 4: Regenerate results index
     runStep("Generate Results Index", process.execPath, [
       path.join(REPO_ROOT, "scripts/audit/generate-results-index.js"),
     ])

@@ -52,85 +52,94 @@ function extractDate(dirName) {
 }
 
 /**
- * Collect all audit results
+ * Collect single-session audit results from category subdirectories.
  */
-function collectAuditResults() {
+function collectSingleSessionAudits() {
   const results = [];
-
-  // Single-session audits: docs/audits/single-session/*/audit-*/
   const singleSessionBase = path.join(auditsDir, "single-session");
-  if (fs.existsSync(singleSessionBase)) {
-    const categories = fs
-      .readdirSync(singleSessionBase, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory());
+  if (!fs.existsSync(singleSessionBase)) return results;
 
-    for (const category of categories) {
-      const categoryPath = path.join(singleSessionBase, category.name);
-      const auditDirs = findAuditDirectories(categoryPath, /^audit-/);
+  const categories = fs
+    .readdirSync(singleSessionBase, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory());
 
-      for (const auditDir of auditDirs) {
-        const dirName = path.basename(auditDir);
-        const date = extractDate(dirName);
-        const relativePath = path.relative(auditsDir, auditDir);
+  for (const category of categories) {
+    const categoryPath = path.join(singleSessionBase, category.name);
+    const auditDirs = findAuditDirectories(categoryPath, /^audit-/);
 
-        if (date) {
-          results.push({
-            date,
-            type: "Single-Session",
-            category: category.name,
-            path: relativePath,
-          });
-        }
+    for (const auditDir of auditDirs) {
+      const date = extractDate(path.basename(auditDir));
+      if (date) {
+        results.push({
+          date,
+          type: "Single-Session",
+          category: category.name,
+          path: path.relative(auditsDir, auditDir),
+        });
       }
     }
   }
+  return results;
+}
 
-  // Comprehensive audits: docs/audits/comprehensive/audit-*/
+/**
+ * Collect comprehensive audit results.
+ */
+function collectComprehensiveAudits() {
+  const results = [];
   const comprehensiveBase = path.join(auditsDir, "comprehensive");
-  const comprehensiveAudits = findAuditDirectories(comprehensiveBase, /^audit-/);
+  const auditDirs = findAuditDirectories(comprehensiveBase, /^audit-/);
 
-  for (const auditDir of comprehensiveAudits) {
-    const dirName = path.basename(auditDir);
-    const date = extractDate(dirName);
-    const relativePath = path.relative(auditsDir, auditDir);
-
+  for (const auditDir of auditDirs) {
+    const date = extractDate(path.basename(auditDir));
     if (date) {
       results.push({
         date,
         type: "Comprehensive",
         category: "N/A",
-        path: relativePath,
+        path: path.relative(auditsDir, auditDir),
       });
     }
   }
+  return results;
+}
 
-  // Multi-AI audits: docs/audits/multi-ai/*/ (skip templates/)
+/**
+ * Collect multi-AI audit results (skip templates/).
+ */
+function collectMultiAiAudits() {
+  const results = [];
   const multiAiBase = path.join(auditsDir, "multi-ai");
-  if (fs.existsSync(multiAiBase)) {
-    const entries = fs
-      .readdirSync(multiAiBase, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory() && entry.name !== "templates");
+  if (!fs.existsSync(multiAiBase)) return results;
 
-    for (const entry of entries) {
-      const entryPath = path.join(multiAiBase, entry.name);
-      const dirName = entry.name;
-      const date = extractDate(dirName);
-      const relativePath = path.relative(auditsDir, entryPath);
+  const entries = fs
+    .readdirSync(multiAiBase, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && entry.name !== "templates");
 
-      if (date) {
-        results.push({
-          date,
-          type: "Multi-AI",
-          category: "N/A",
-          path: relativePath,
-        });
-      }
+  for (const entry of entries) {
+    const date = extractDate(entry.name);
+    if (date) {
+      results.push({
+        date,
+        type: "Multi-AI",
+        category: "N/A",
+        path: path.relative(auditsDir, path.join(multiAiBase, entry.name)),
+      });
     }
   }
+  return results;
+}
 
-  // Sort by date descending
+/**
+ * Collect all audit results
+ */
+function collectAuditResults() {
+  const results = [
+    ...collectSingleSessionAudits(),
+    ...collectComprehensiveAudits(),
+    ...collectMultiAiAudits(),
+  ];
   results.sort((a, b) => b.date.localeCompare(a.date));
-
   return results;
 }
 
@@ -196,7 +205,17 @@ function main() {
   // Generate markdown
   const markdown = generateMarkdown(results);
 
-  // Write output file (with symlink guard)
+  // Symlink guard — check both directory and file
+  const outputDir = path.dirname(outputFile);
+  try {
+    const dirStat = fs.lstatSync(outputDir);
+    if (dirStat.isSymbolicLink()) {
+      console.error(`Error: ${outputDir} is a symlink — refusing to write`);
+      process.exit(2);
+    }
+  } catch {
+    // Directory doesn't exist — mkdirSync above handles creation
+  }
   try {
     const stat = fs.lstatSync(outputFile);
     if (stat.isSymbolicLink()) {

@@ -112,7 +112,8 @@ function checkSchemaCategories() {
       );
     }
   } catch (error) {
-    addResult("Schema Categories", false, `Error reading schema: ${error.message}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    addResult("Schema Categories", false, `Error reading schema: ${msg}`);
   }
 }
 

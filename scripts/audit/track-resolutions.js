@@ -94,6 +94,17 @@ function readMasterDebt() {
  * @param {Array<Object>} items
  */
 function writeMasterDebt(items) {
+  // Symlink guard — refuse to write through a symlink
+  try {
+    const stat = fs.lstatSync(MASTER_DEBT_PATH);
+    if (stat.isSymbolicLink()) {
+      console.error(`Error: ${MASTER_DEBT_PATH} is a symlink — refusing to write`);
+      process.exit(1);
+    }
+  } catch {
+    // File doesn't exist yet — safe to write
+  }
+
   const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
   try {
     fs.writeFileSync(MASTER_DEBT_PATH, content, "utf8");
@@ -114,9 +125,23 @@ function writeMasterDebt(items) {
  * @param {string} relPath - path relative to repo root
  * @returns {boolean}
  */
+/**
+ * Normalize a repo-relative path by stripping trailing :line suffixes.
+ * @param {string} relPath - path that may contain :lineNumber suffix
+ * @returns {string|null} normalized path, or null if invalid
+ */
+function normalizeRepoRelPath(relPath) {
+  if (typeof relPath !== "string") return null;
+  const trimmed = relPath.trim();
+  if (!trimmed) return null;
+  // Strip only a trailing ":<digits>" suffix (preserve other colons like C:\)
+  return trimmed.replace(/:(\d+)$/, "");
+}
+
 function fileExists(relPath) {
-  if (!relPath || !isPathContained(relPath)) return false;
-  const absPath = path.join(REPO_ROOT, relPath);
+  const normalized = normalizeRepoRelPath(relPath);
+  if (!normalized || !isPathContained(normalized)) return false;
+  const absPath = path.join(REPO_ROOT, normalized);
   return fs.existsSync(absPath);
 }
 
@@ -129,9 +154,10 @@ function fileExists(relPath) {
  * @returns {number} commit count, or -1 on error
  */
 function getCommitCountSince(relPath, sinceDate) {
-  if (!relPath || !isPathContained(relPath)) return -1;
+  const normalized = normalizeRepoRelPath(relPath);
+  if (!normalized || !isPathContained(normalized)) return -1;
   try {
-    const args = ["log", "--oneline", `--since=${sinceDate}`, "--", relPath];
+    const args = ["log", "--oneline", `--since=${sinceDate}`, "--", normalized];
     const result = execFileSync("git", args, {
       cwd: REPO_ROOT,
       encoding: "utf8",

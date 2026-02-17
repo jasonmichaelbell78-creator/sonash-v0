@@ -188,7 +188,9 @@ function findingKey(finding) {
   // Normalize file: use finding.file or first element of finding.files
   const file = finding.file || (Array.isArray(finding.files) && finding.files[0]) || "unknown";
   const title = (finding.title || "untitled").trim().toLowerCase();
-  const line = Number.isFinite(finding.line) ? String(finding.line) : "";
+  const rawLine =
+    typeof finding.line === "string" ? Number.parseInt(finding.line, 10) : finding.line;
+  const line = Number.isFinite(rawLine) ? String(rawLine) : "";
 
   return `file+title+line::${file}::${title}::${line}`;
 }
@@ -205,7 +207,7 @@ function getFile(finding) {
  */
 function getFileRef(finding) {
   const file = getFile(finding);
-  if (finding.line) {
+  if (Number.isFinite(finding.line)) {
     return `${file}:${finding.line}`;
   }
   // Check if file already has :line suffix
@@ -608,19 +610,17 @@ function generateMarkdownReport(category, date1, date2, findings1, findings2, co
 
   lines.push(`# Audit Comparison: ${category}`, `## ${date1} \u2192 ${date2}`, "");
 
-  lines.push(...generateSummaryTable(date1, date2, findings1, findings2, sev1, sev2));
-  lines.push(...generateFindingsList("New Findings", comparison.newFindings, "_No new findings._"));
   lines.push(
+    ...generateSummaryTable(date1, date2, findings1, findings2, sev1, sev2),
+    ...generateFindingsList("New Findings", comparison.newFindings, "_No new findings._"),
     ...generateFindingsList(
       "Resolved Findings",
       comparison.resolvedFindings,
       "_No resolved findings._"
-    )
-  );
-  lines.push(...generateSeverityChangesSection(comparison.severityChanges));
-  lines.push(...generateFilePatterns(date1, date2, comparison.filePatterns));
-  lines.push(...generateTitlePatterns(date1, date2, comparison.titlePatterns));
-  lines.push(
+    ),
+    ...generateSeverityChangesSection(comparison.severityChanges),
+    ...generateFilePatterns(date1, date2, comparison.filePatterns),
+    ...generateTitlePatterns(date1, date2, comparison.titlePatterns),
     ...generateTrendSection(
       date1,
       date2,
