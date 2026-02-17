@@ -212,10 +212,13 @@ function assignStableId(item, idMap, usedIds, nextId) {
 // Normalize file paths: strip absolute repo prefix if present
 function normalizeFilePath(filePath) {
   if (typeof filePath !== "string") return filePath;
-  const repoRoot = path.resolve(__dirname, "../..") + path.sep;
-  const resolved = path.resolve(filePath);
+  const repoRootAbs = path.resolve(__dirname, "../..");
+  const repoRoot = repoRootAbs + path.sep;
+  const hadTrailingSlash = filePath.endsWith("/") || filePath.endsWith(path.sep);
+  const resolved = path.resolve(repoRootAbs, filePath);
   if (resolved.startsWith(repoRoot)) {
-    return resolved.slice(repoRoot.length).split(path.sep).join("/");
+    const relative = resolved.slice(repoRoot.length).split(path.sep).join("/");
+    return hadTrailingSlash ? relative + "/" : relative;
   }
   return filePath;
 }
@@ -479,7 +482,9 @@ Run \`verify-technical-debt\` skill to process this queue.
 // would be lost on regeneration since readAndAssignIds reads from deduped.jsonl.
 function mergeManualItems(items) {
   const { itemMap } = loadExistingItems();
-  const assignedIds = new Set(items.map((item) => item.id));
+  const assignedIds = new Set(
+    items.map((item) => item && item.id).filter((id) => typeof id === "string" && id.length > 0)
+  );
   let mergedCount = 0;
 
   for (const [id, existing] of itemMap) {

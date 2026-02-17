@@ -120,7 +120,7 @@
 | DEBT-0053 | useJournal mixes domain logic with transport (httpsCallab...   | S1       | hooks/use-journal.ts                                                                                                                                                        | 0    |
 | DEBT-0054 | TodayPage is a god component mixing 4+ responsibilities        | S1       | components/notebook/pages/today-page.tsx                                                                                                                                    | 0    |
 | DEBT-0055 | Direct Firebase SDK usage in UI components bypasses servi...   | S1       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-0056 | Automation scripts have critically low test coverage (2-7...   | S1       | scripts                                                                                                                                                                     | 0    |
+| DEBT-0056 | Automation scripts have critically low test coverage (2-7...   | S1       | scripts/                                                                                                                                                                    | 0    |
 | DEBT-0057 | Missing security scanning in CI (npm audit, CodeQL, Depen...   | S1       | .github/workflows/ci.yml                                                                                                                                                    | 0    |
 | DEBT-0058 | Deploy workflow calls gcloud without installing Google Cl...   | S1       | .github/workflows/deploy-firebase.yml                                                                                                                                       | 0    |
 | DEBT-0059 | Landing page forced to client-side rendering blocks SSR f...   | S1       | app/page.tsx                                                                                                                                                                | 0    |
@@ -347,10 +347,10 @@
 | DEBT-1970 | App Check is entirely disabled on client and server            | S1       | lib/firebase.ts                                                                                                                                                             | 0    |
 | DEBT-1972 | Type Divergence: Client types vs Server schemas                | S1       | types/journal.ts                                                                                                                                                            | 0    |
 | DEBT-1973 | God Object: components/admin/users-tab.tsx (2092 lines)        | S1       | components/admin/users-tab.tsx                                                                                                                                              | 0    |
-| DEBT-1974 | No service worker — app cannot load at all when offline        | S1       | public                                                                                                                                                                      | 1    |
+| DEBT-1974 | No service worker — app cannot load at all when offline        | S1       | public/                                                                                                                                                                     | 1    |
 | DEBT-1984 | Excessive Cognitive Complexity (40+ files)                     | S1       | scripts/check-docs-light.js                                                                                                                                                 | 0    |
 | DEBT-1986 | God Object: functions/src/admin.ts (4108 lines)                | S1       | functions/src/admin.ts                                                                                                                                                      | 0    |
-| DEBT-1988 | Zero Component Test Coverage                                   | S1       | components                                                                                                                                                                  | 0    |
+| DEBT-1988 | Zero Component Test Coverage                                   | S1       | components/                                                                                                                                                                 | 0    |
 | DEBT-2746 | Item Name                                                      | S1       | N/A                                                                                                                                                                         | 0    |
 | DEBT-2865 | PostToolUse Write: 10 sequential hook processes spawned p...   | S1       | .claude/settings.json                                                                                                                                                       | 0    |
 | DEBT-2866 | PostToolUse Edit: 9 sequential hook processes spawned per...   | S1       | .claude/settings.json                                                                                                                                                       | 0    |
@@ -377,7 +377,7 @@
 | DEBT-3086 | generate-pending-alerts.js fragile DEFERRED item extraction    | S1       | scripts/generate-pending-alerts.js                                                                                                                                          | 0    |
 | DEBT-3091 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused         | S1       | docs/HOOKIFY_STRATEGY.md                                                                                                                                                    | 0    |
 | DEBT-3099 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes           | S1       | docs/agent_docs/FIX_TEMPLATES.md                                                                                                                                            | 0    |
-| DEBT-3104 | Technical debt view files - generated views without integ...   | S1       | docs/technical-debt/views                                                                                                                                                   | 0    |
+| DEBT-3104 | Technical debt view files - generated views without integ...   | S1       | docs/technical-debt/views/                                                                                                                                                  | 0    |
 | DEBT-2743 | Untitled                                                       | S2       | N/A                                                                                                                                                                         | 0    |
 | DEBT-0140 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | app/meetings/all/page.tsx                                                                                                                                                   | 45   |
 | DEBT-0141 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | components/admin/links-tab.tsx                                                                                                                                              | 250  |
@@ -644,9 +644,9 @@
 | DEBT-0438 | No correlation/request ID tracing                              | S2       | lib/logger.ts                                                                                                                                                               | 1    |
 | DEBT-0439 | Nested component definition                                    | S2       | components/admin/admin-tabs.tsx                                                                                                                                             | 64   |
 | DEBT-0461 | No npm run dev:offline script - requires 2 terminals for ...   | S2       | package.json                                                                                                                                                                | 5    |
-| DEBT-0462 | No scripts/doctor.js for environment validation                | S2       | scripts                                                                                                                                                                     | 0    |
-| DEBT-0463 | 8:1 ratio of console.log to structured logger calls (3111...   | S2       | app                                                                                                                                                                         | 0    |
-| DEBT-0464 | No service worker - no offline asset caching                   | S2       | public                                                                                                                                                                      | 0    |
+| DEBT-0462 | No scripts/doctor.js for environment validation                | S2       | scripts/                                                                                                                                                                    | 0    |
+| DEBT-0463 | 8:1 ratio of console.log to structured logger calls (3111...   | S2       | app/                                                                                                                                                                        | 0    |
+| DEBT-0464 | No service worker - no offline asset caching                   | S2       | public/                                                                                                                                                                     | 0    |
 | DEBT-0465 | Add .strict() to Zod schemas                                   | S2       | N/A                                                                                                                                                                         | 0    |
 | DEBT-0466 | Extract time rotation utilities                                | S2       | N/A                                                                                                                                                                         | 0    |
 | DEBT-0467 | Consolidate DailyQuoteCard                                     | S2       | N/A                                                                                                                                                                         | 0    |
@@ -694,10 +694,10 @@
 | DEBT-0514 | Decompose Step1WorksheetCard                                   | S2       | N/A                                                                                                                                                                         | 0    |
 | DEBT-0533 | Debug console logs in production component                     | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 594  |
 | DEBT-0534 | Callback parameter typed as any                                | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 505  |
-| DEBT-0535 | Missing React.Suspense for code splitting                      | S2       | components                                                                                                                                                                  | 0    |
+| DEBT-0535 | Missing React.Suspense for code splitting                      | S2       | components/                                                                                                                                                                 | 0    |
 | DEBT-0536 | ESLint rule suppression for exhaustive deps                    | S2       | hooks/use-geolocation.ts                                                                                                                                                    | 171  |
-| DEBT-0537 | No component tests                                             | S2       | tests                                                                                                                                                                       | 0    |
-| DEBT-0538 | Potential copy-paste code blocks in admin tabs                 | S2       | components/admin                                                                                                                                                            | 0    |
+| DEBT-0537 | No component tests                                             | S2       | tests/                                                                                                                                                                      | 0    |
+| DEBT-0538 | Potential copy-paste code blocks in admin tabs                 | S2       | components/admin/                                                                                                                                                           | 0    |
 | DEBT-0539 | Complex nested logic without early returns                     | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 698  |
 | DEBT-0540 | Missing correlation IDs for request tracing                    | S2       | lib/firestore-service.ts                                                                                                                                                    | 0    |
 | DEBT-0541 | Inconsistent error context across components                   | S2       | various                                                                                                                                                                     | 0    |
@@ -1022,11 +1022,11 @@
 | DEBT-1979 | Duplicate Quote Widget Components (3 Variants)                 | S2       | components/widgets/daily-quote-card.tsx                                                                                                                                     | 0    |
 | DEBT-1980 | Inconsistent lib/db/ Write Patterns                            | S2       | lib/db/sober-living.ts                                                                                                                                                      | 0    |
 | DEBT-1981 | Duplicate generateSearchableText implementations               | S2       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-1982 | No environment validation/doctor script                        | S2       | scripts                                                                                                                                                                     | 1    |
+| DEBT-1982 | No environment validation/doctor script                        | S2       | scripts/                                                                                                                                                                    | 1    |
 | DEBT-1983 | Dual hooks directories: hooks/ and lib/hooks/                  | S2       | hooks/use-journal.ts                                                                                                                                                        | 0    |
 | DEBT-1987 | Logger is present but lacks correlation/request IDs; trac...   | S2       | lib/logger.ts                                                                                                                                                               | 99   |
 | DEBT-1989 | Potential Firestore-rules alignment risk for direct weekl...   | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 0    |
-| DEBT-1992 | 8:1 console.log to logger ratio — production observabilit...   | S2       | app                                                                                                                                                                         | 1    |
+| DEBT-1992 | 8:1 console.log to logger ratio — production observabilit...   | S2       | app/                                                                                                                                                                        | 1    |
 | DEBT-2747 | Session-start timeout risks in low-bandwidth environments      | S2       | 1                                                                                                                                                                           | 0    |
 | DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | multiple                                                                                                                                                                    | 0    |
 | DEBT-2749 | Firebase deployment lacks rollback on partial failure          | S2       | 1                                                                                                                                                                           | 0    |
@@ -1140,7 +1140,7 @@
 | DEBT-3041 | update-legacy-lines.js - Unused legacy findings line numb...   | S2       | scripts/update-legacy-lines.js                                                                                                                                              | 0    |
 | DEBT-3045 | agent-trigger-enforcer.js runs on every code file edit wi...   | S2       | .claude/hooks/agent-trigger-enforcer.js                                                                                                                                     | 0    |
 | DEBT-3046 | Three Read hooks contend for .context-tracking-state.json...   | S2       | .claude/hooks/large-context-warning.js, .claude/hooks/auto-save-context.js, .claude/hooks/compaction-handoff.js                                                             | 0    |
-| DEBT-3047 | State file sprawl across .claude/hooks/ and .claude/state/     | S2       | .claude/state/, .claude/hooks                                                                                                                                               | 0    |
+| DEBT-3047 | State file sprawl across .claude/hooks/ and .claude/state/     | S2       | .claude/state/, .claude/hooks/                                                                                                                                              | 0    |
 | DEBT-3048 | validation hooks could share file read to reduce I/O           | S2       | .claude/hooks/component-size-check.js, firestore-write-block.js, test-mocking-validator.js, app-check-validator.js, typescript-strict-check.js, repository-pattern-check.js | 0    |
 | DEBT-3053 | session-start.js does heavy work at SessionStart (builds,...   | S2       | .claude/hooks/session-start.js                                                                                                                                              | 0    |
 | DEBT-3054 | Auto-save-context hook reads 4 files per Read operation t...   | S2       | .claude/hooks/auto-save-context.js                                                                                                                                          | 0    |
@@ -1355,7 +1355,7 @@
 | DEBT-0799 | Nested ternary operator                                        | S3       | components/admin/logs-tab.tsx                                                                                                                                               | 481  |
 | DEBT-0800 | Nested template literals (6 occurrences)                       | S3       | functions/src/admin.ts                                                                                                                                                      | 1388 |
 | DEBT-0820 | Setup requires multiple commands - no single bootstrap         | S3       | package.json                                                                                                                                                                | 5    |
-| DEBT-0821 | Error messages lack actionable fix hints - generic 'Pleas...   | S3       | components                                                                                                                                                                  | 0    |
+| DEBT-0821 | Error messages lack actionable fix hints - generic 'Pleas...   | S3       | components/                                                                                                                                                                 | 0    |
 | DEBT-0822 | OfflineIndicator is display-only - no sync status or retr...   | S3       | components/status/offline-indicator.tsx                                                                                                                                     | 7    |
 | DEBT-0824 | Fix @ts-expect-error suppression                               | S3       | N/A                                                                                                                                                                         | 0    |
 | DEBT-0825 | Remove duplicate CloudFunctionError                            | S3       | N/A                                                                                                                                                                         | 0    |
@@ -1452,7 +1452,7 @@
 | DEBT-3096 | MCP_SETUP.md - 178 lines configuration guide without trac...   | S3       | docs/MCP_SETUP.md                                                                                                                                                           | 0    |
 | DEBT-3097 | LEARNING_METRICS.md - 84 lines metrics tracking document       | S3       | docs/LEARNING_METRICS.md                                                                                                                                                    | 0    |
 | DEBT-3098 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve...   | S3       | docs/AUTOMATION_AUDIT_REPORT.md                                                                                                                                             | 0    |
-| DEBT-3102 | ADR template and decisions/README - decision framework un...   | S3       | docs/decisions                                                                                                                                                              | 0    |
+| DEBT-3102 | ADR template and decisions/README - decision framework un...   | S3       | docs/decisions/                                                                                                                                                             | 0    |
 | DEBT-0012 | Refactor this function to reduce its Cognitive Complexity...   | S0       | functions/src/admin.ts                                                                                                                                                      | 576  |
 | DEBT-0037 | Refactor this function to reduce its Cognitive Complexity...   | S0       | components/widgets/compact-meeting-countdown.tsx                                                                                                                            | 69   |
 | DEBT-0852 | Multiple CI quality gates configured as non-blocking (con...   | S0       | .github/workflows/ci.yml                                                                                                                                                    | 0    |
@@ -1496,7 +1496,7 @@
 | DEBT-0445 | TRIGGERS.md last updated 2026-01-02 (15 days stale)            | S2       | docs/TRIGGERS.md                                                   | 1    |
 | DEBT-0446 | DOCUMENTATION_STANDARDS.md last updated 2026-01-01 (16 da...   | S2       | docs/DOCUMENTATION_STANDARDS.md                                    | 1    |
 | DEBT-0447 | DOCUMENT_DEPENDENCIES.md claims SYNCED but sync check rep...   | S2       | docs/DOCUMENT_DEPENDENCIES.md                                      | 3    |
-| DEBT-0448 | 15 recent commits touch docs but AUDIT_TRACKER shows only...   | S2       | docs                                                               | 0    |
+| DEBT-0448 | 15 recent commits touch docs but AUDIT_TRACKER shows only...   | S2       | docs/                                                              | 0    |
 | DEBT-0957 | Archive Docs Never Checked for Link Rot                        | S2       | N/A                                                                | 0    |
 | DEBT-1969 | External URL dead: refugerecovery.org/meetings/ returns 404    | S2       | README.md                                                          | 1    |
 | DEBT-2022 | Structure: COMMAND_REFERENCE.md should be Tier 1 Canonical     | S2       | .claude/COMMAND_REFERENCE.md                                       | 0    |
@@ -1549,7 +1549,7 @@
 | DEBT-2399 | Gap: Undocumented core lib modules                             | S2       | lib/firestore-service.ts                                           | 0    |
 | DEBT-2833 | Audit all manual CLI tools and add to COMMAND_REFERENCE.md     | S2       | .claude/COMMAND_REFERENCE.md                                       | 0    |
 | DEBT-2811 | Documentation effectiveness metrics — track which docs ar...   | S2       | docs                                                               | 0    |
-| DEBT-0806 | Archive docs contain significant link rot after moves          | S3       | docs/archive                                                       | 0    |
+| DEBT-0806 | Archive docs contain significant link rot after moves          | S3       | docs/archive/                                                      | 0    |
 | DEBT-0807 | PR_REVIEW_PROMPT_TEMPLATE.md lacks Last Updated and Versi...   | S3       | docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md      | 1    |
 | DEBT-0808 | DOCUMENTATION_INDEX.md orphaned - not referenced by any m...   | S3       | DOCUMENTATION_INDEX.md                                             | 1    |
 | DEBT-1993 | Potential Misplaced Plans in Archive/Templates                 | S3       | docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md | 1    |
@@ -1572,7 +1572,7 @@
 | DEBT-2020 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | SESSION_CONTEXT.md                                                 | 0    |
 | DEBT-2021 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | SESSION_CONTEXT.md                                                 | 0    |
 | DEBT-2058 | COMMAND_REFERENCE.md has inconsistent version format           | S3       | .claude/COMMAND_REFERENCE.md                                       | 0    |
-| DEBT-2059 | Structure: skills/ vs agents/ directory overlap                | S3       | .claude/skills                                                     | 0    |
+| DEBT-2059 | Structure: skills/ vs agents/ directory overlap                | S3       | .claude/skills/                                                    | 0    |
 | DEBT-2060 | Bare URLs without link text                                    | S3       | AI_WORKFLOW.md                                                     | 0    |
 | DEBT-2061 | AI_WORKFLOW.md has inline metadata format instead of table     | S3       | AI_WORKFLOW.md                                                     | 0    |
 | DEBT-2062 | AI_WORKFLOW.md doesn't link back to CLAUDE.md                  | S3       | AI_WORKFLOW.md                                                     | 0    |
@@ -1688,7 +1688,7 @@
 | DEBT-2172 | Broken internal link: ./archive/REVIEWS_202-212.md             | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
 | DEBT-2173 | Broken internal link: ./archive/REVIEWS_180-201.md             | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
 | DEBT-2174 | Broken internal link: ./archive/REVIEWS_137-179.md             | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2175 | Structure: Archive directory organization inconsistent         | S3       | docs/archive/2025-dec-reports                                      | 0    |
+| DEBT-2175 | Structure: Archive directory organization inconsistent         | S3       | docs/archive/2025-dec-reports/                                     | 0    |
 | DEBT-2176 | Broken internal link: ../canonical/README.md                   | S3       | docs/audits/single-session/README.md                               | 0    |
 | DEBT-2177 | Broken internal link: ../../AUDIT_FINDINGS_PROCEDURE.md        | S3       | docs/audits/single-session/README.md                               | 0    |
 | DEBT-2178 | Broken internal link: ../archive/completed-decisions/ADR-...   | S3       | docs/decisions/README.md                                           | 0    |
@@ -1930,7 +1930,7 @@
 | DEBT-2426 | Diagram opportunity: Compaction-resilient state persisten...   | S3       | CLAUDE.md                                                          | 0    |
 | DEBT-2427 | Quality: CODE_PATTERNS.md scores 8/10 - good reference bu...   | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
 | DEBT-2428 | Consolidation: Merge small setup guides                        | S3       | docs/APPCHECK_SETUP.md                                             | 0    |
-| DEBT-2429 | Quality: docs/archive/ has no index or navigation              | S3       | docs/archive                                                       | 0    |
+| DEBT-2429 | Quality: docs/archive/ has no index or navigation              | S3       | docs/archive/                                                      | 0    |
 | DEBT-2430 | Diagram opportunity: Multi-AI audit workflow lacks visual...   | S3       | docs/multi-ai-audit/README.md                                      | 0    |
 | DEBT-2431 | Navigation: Multi-AI audit templates lack consistent cros...   | S3       | docs/multi-ai-audit/templates/CODE_REVIEW_PLAN.md                  | 0    |
 | DEBT-2432 | Consolidation: Merge overlapping security docs                 | S3       | docs/SECURITY.md                                                   | 0    |
@@ -1976,7 +1976,7 @@
 | DEBT-0091 | Large monolithic component (1117 lines) without code spli... | S1       | components/notebook/pages/today-page.tsx | 1    |
 | DEBT-0092 | No React.memo on frequently re-rendered admin list (924 l... | S1       | components/admin/users-tab.tsx           | 84   |
 | DEBT-0132 | Enable SSR for landing page                                  | S1       | app/page.tsx                             | 1    |
-| DEBT-0134 | Unoptimized images (11MB)                                    | S1       | public/images/gemini-generated           | 1    |
+| DEBT-0134 | Unoptimized images (11MB)                                    | S1       | public/images/gemini-generated/          | 1    |
 | DEBT-0135 | No code splitting                                            | S1       | app/notebook/[notebookId]/page.tsx       | 1    |
 | DEBT-0950 | MoodSparkline Redundant Fetch Duplicates Journal Data        | S1       | N/A                                      | 0    |
 | DEBT-1541 | The 'value' object passed as the value prop to the Contex... | S1       | lib/contexts/admin-tab-context.tsx       | 126  |
@@ -2062,7 +2062,7 @@
 | DEBT-2732 | Duplicated: Path validation logic across 16+ hooks            | S1       | .claude/hooks/check-edit-requirements.js            | 18   |
 | DEBT-2740 | Duplicated: check-edit-requirements and check-write-requi...  | S1       | .claude/hooks/check-edit-requirements.js            | 1    |
 | DEBT-0443 | GitHub Actions using version tags instead of commit SHAs      | S2       | .github/workflows/auto-label-review-tier.yml        | 18   |
-| DEBT-0455 | 28 scripts have 715 console.log/error/warn calls without ...  | S2       | scripts                                             | 0    |
+| DEBT-0455 | 28 scripts have 715 console.log/error/warn calls without ...  | S2       | scripts/                                            | 0    |
 | DEBT-0456 | Artifact upload without retention policy                      | S2       | .github/workflows/ci.yml                            | 99   |
 | DEBT-0457 | Git diff with @{u}...HEAD fails on new branches without u...  | S2       | .husky/pre-push                                     | 48   |
 | DEBT-0469 | GitHub Actions using version tags instead of commit SHAs      | S2       | N/A                                                 | 0    |
@@ -2070,7 +2070,7 @@
 | DEBT-0516 | Add Network Status to Logs                                    | S2       | lib/logger.ts                                       | 45   |
 | DEBT-0517 | Create Smoke Test Script                                      | S2       | scripts/smoke-test.js                               | 1    |
 | DEBT-0518 | Add Bug Report GitHub Template                                | S2       | .github/ISSUE_TEMPLATE/bug_report.md                | 1    |
-| DEBT-0519 | Offline Tests                                                 | S2       | tests/offline                                       | 1    |
+| DEBT-0519 | Offline Tests                                                 | S2       | tests/offline/                                      | 1    |
 | DEBT-0520 | Network Failure Error Handling Tests                          | S2       | tests/admin/network-failure.test.ts                 | 1    |
 | DEBT-0953 | Backlog Enforcement Job Obsolete After TDMS Migration         | S2       | N/A                                                 | 0    |
 | DEBT-0958 | Function Deletion with Force Flag Lacks Validation            | S2       | N/A                                                 | 0    |
@@ -2164,7 +2164,7 @@
 | DEBT-2625 | Inconsistent: File path validation and sanitization           | S2       | scripts/archive-doc.js                              | 83   |
 | DEBT-2626 | Inconsistent: Error sanitization approaches                   | S2       | scripts/archive-doc.js                              | 41   |
 | DEBT-2627 | Gap: Shell scripts not linted or validated                    | S2       | .claude/hooks/analyze-user-request.sh               | 1    |
-| DEBT-2629 | Gap: Scripts directory missing test coverage                  | S2       | scripts                                             | 1    |
+| DEBT-2629 | Gap: Scripts directory missing test coverage                  | S2       | scripts/                                            | 1    |
 | DEBT-2630 | Gap: Firebase functions lack integration tests                | S2       | functions/src/admin.ts                              | 1    |
 | DEBT-2633 | Gap: Environment files not validated                          | S2       | .env.local.example                                  | 1    |
 | DEBT-2635 | Gap: No syntax validation for committed shell scripts in CI   | S2       | .github/workflows/ci.yml                            | 1    |
@@ -2188,14 +2188,14 @@
 | DEBT-2741 | Duplicated: Pattern check implementation between hook and...  | S2       | .claude/hooks/pattern-check.js                      | 1    |
 | DEBT-2742 | Duplicated: Validation between validate-audit.js and vali...  | S2       | scripts/validate-audit.js                           | 1    |
 | DEBT-2803 | Consolidate regex pattern linter into ESLint plugin           | S2       | scripts/check-pattern-compliance.js                 | 0    |
-| DEBT-2840 | Add automatic ROADMAP.md completion detection                 | S2       | scripts                                             | 0    |
-| DEBT-2981 | Automate archival of completed ROADMAP.md items to ROADMA...  | S2       | scripts                                             | 0    |
+| DEBT-2840 | Add automatic ROADMAP.md completion detection                 | S2       | scripts/                                            | 0    |
+| DEBT-2981 | Automate archival of completed ROADMAP.md items to ROADMA...  | S2       | scripts/                                            | 0    |
 | DEBT-0812 | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                     | 36   |
 | DEBT-0813 | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                   | 21   |
 | DEBT-0814 | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                      | 245  |
 | DEBT-0815 | Script has minimal console output (1 call)                    | S3       | scripts/check-cross-doc-deps.js                     | 1    |
 | DEBT-0816 | TRIGGERS.md last updated 2026-01-02 but hooks updated since   | S3       | docs/TRIGGERS.md                                    | 1    |
-| DEBT-0817 | All 12 slash commands have frontmatter descriptions           | S3       | .claude/commands                                    | 0    |
+| DEBT-0817 | All 12 slash commands have frontmatter descriptions           | S3       | .claude/commands/                                   | 0    |
 | DEBT-2457 | Manual-only scripts not in automation                         | S3       | scripts/ai-review.js                                | 1    |
 | DEBT-2466 | Duplicated: TTY-aware color code across 3+ scripts            | S3       | 48-56                                               | 0    |
 | DEBT-2468 | Duplicated: Git staged files retrieval across scripts         | S3       | 83-97                                               | 0    |
@@ -2268,7 +2268,7 @@
 | DEBT-2623 | Inconsistent: Error message formatting                        | S3       | scripts/check-agent-compliance.js                   | 163  |
 | DEBT-2624 | Inconsistent: Command line argument parsing                   | S3       | scripts/check-agent-compliance.js                   | 29   |
 | DEBT-2628 | Gap: Config .mjs files excluded from linting                  | S3       | eslint.config.mjs                                   | 25   |
-| DEBT-2631 | Gap: Skills missing usage documentation                       | S3       | .claude/skills                                      | 1    |
+| DEBT-2631 | Gap: Skills missing usage documentation                       | S3       | .claude/skills/                                     | 1    |
 | DEBT-2632 | Gap: YAML workflow files not linted                           | S3       | .github/workflows/ci.yml                            | 1    |
 | DEBT-2634 | Gap: Firebase functions TypeScript not type-checked in pr...  | S3       | .husky/pre-push                                     | 82   |
 | DEBT-2636 | Gap: No validation that new files are covered by appropri...  | S3       | .husky/pre-commit                                   | 1    |
@@ -2292,10 +2292,10 @@
 | DEBT-2654 | Improve: Migrate manual documentation tasks to automated ...  | S3       | package.json                                        | 14   |
 | DEBT-2655 | Improve: Add workflow for stale branch cleanup                | S3       | N/A                                                 | 0    |
 | DEBT-2656 | Improve: Replace manual trigger checks with GitHub Action...  | S3       | .github/workflows/ci.yml                            | 42   |
-| DEBT-2657 | Docs: Missing README in scripts/lib/                          | S3       | scripts/lib                                         | 1    |
-| DEBT-2658 | Docs: Missing README in scripts/config/                       | S3       | scripts/config                                      | 1    |
-| DEBT-2659 | Docs: Missing README in scripts/debt/                         | S3       | scripts/debt                                        | 1    |
-| DEBT-2660 | Docs: Missing README in scripts/audit/                        | S3       | scripts/audit                                       | 1    |
+| DEBT-2657 | Docs: Missing README in scripts/lib/                          | S3       | scripts/lib/                                        | 1    |
+| DEBT-2658 | Docs: Missing README in scripts/config/                       | S3       | scripts/config/                                     | 1    |
+| DEBT-2659 | Docs: Missing README in scripts/debt/                         | S3       | scripts/debt/                                       | 1    |
+| DEBT-2660 | Docs: Missing README in scripts/audit/                        | S3       | scripts/audit/                                      | 1    |
 | DEBT-2661 | Docs: No header comment in enrich-addresses.ts                | S3       | scripts/enrich-addresses.ts                         | 1    |
 | DEBT-2662 | Docs: No header comment in test-geocode.ts                    | S3       | scripts/test-geocode.ts                             | 1    |
 | DEBT-2663 | Docs: No header comment in sync-geocache.ts                   | S3       | scripts/sync-geocache.ts                            | 1    |

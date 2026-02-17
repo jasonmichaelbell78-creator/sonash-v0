@@ -82,12 +82,16 @@ function parseArgs(args) {
         console.error("Error: Missing value for --file <path>");
         process.exit(1);
       }
-      validatePathInDir(REPO_ROOT, path.resolve(REPO_ROOT, next));
-      parsed.file = next;
+      const resolvedFilePath = path.resolve(REPO_ROOT, next);
+      validatePathInDir(REPO_ROOT, resolvedFilePath);
+      parsed.file = resolvedFilePath;
     } else if (arg.match(/^DEBT-\d+$/)) {
       parsed.debtIds.push(arg);
     } else if (arg.startsWith("-")) {
       console.error(`Error: Unknown option: ${arg}`);
+      process.exit(1);
+    } else {
+      console.error(`Error: Unknown argument: ${arg}`);
       process.exit(1);
     }
     i += 1;
@@ -263,7 +267,7 @@ Example:
 
   // Validate arguments
   if (parsed.debtIds.length === 0) {
-    console.error("Error: At least one DEBT-XXXX ID is required");
+    console.error("Error: Provide at least one DEBT-XXXX ID or use --file <path>");
     process.exit(1);
   }
 
