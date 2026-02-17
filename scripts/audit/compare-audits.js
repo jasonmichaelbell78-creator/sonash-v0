@@ -50,6 +50,14 @@ const CATEGORY_DIR_MAPPING = {
 // Severity levels in order of criticality
 const SEVERITY_LEVELS = ["S0", "S1", "S2", "S3"];
 
+// Severity display labels
+const SEVERITY_LABELS = {
+  S0: "S0 Critical",
+  S1: "S1 High",
+  S2: "S2 Medium",
+  S3: "S3 Low",
+};
+
 /**
  * Parse command-line arguments
  * @returns {{ category: string, date1: string, date2: string, jsonOutput: boolean } | null}
@@ -118,9 +126,6 @@ Examples:
 
 /**
  * Resolve the JSONL file path for a category and date
- * @param {string} category - Canonical category name
- * @param {string} date - Date in YYYY-MM-DD format
- * @returns {string} Absolute path to the findings.jsonl file
  */
 function resolveJsonlPath(category, date) {
   const dirName = CATEGORY_DIR_MAPPING[category];
@@ -129,9 +134,6 @@ function resolveJsonlPath(category, date) {
 
 /**
  * Load and parse a JSONL file
- * @param {string} filePath - Absolute path to JSONL file
- * @returns {Object[]} Array of parsed finding objects
- * @throws {Error} If file does not exist or cannot be parsed
  */
 function loadJsonlFile(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -170,26 +172,29 @@ function loadJsonlFile(filePath) {
 
 /**
  * Generate a stable matching key for a finding.
- * Prefers source_id if available, falls back to file + title composite.
- * @param {Object} finding - A parsed finding object
- * @returns {string} A stable key for matching across runs
+ * Prefers source_id, then id, then content_hash, falls back to file + title + line composite.
  */
 function findingKey(finding) {
   if (finding.source_id && typeof finding.source_id === "string") {
     return `source_id::${finding.source_id}`;
   }
+  if (finding.id && typeof finding.id === "string") {
+    return `id::${finding.id}`;
+  }
+  if (finding.content_hash && typeof finding.content_hash === "string") {
+    return `content_hash::${finding.content_hash}`;
+  }
 
   // Normalize file: use finding.file or first element of finding.files
   const file = finding.file || (Array.isArray(finding.files) && finding.files[0]) || "unknown";
   const title = (finding.title || "untitled").trim().toLowerCase();
+  const line = Number.isFinite(finding.line) ? String(finding.line) : "";
 
-  return `file+title::${file}::${title}`;
+  return `file+title+line::${file}::${title}::${line}`;
 }
 
 /**
  * Get the primary file reference from a finding
- * @param {Object} finding - A parsed finding object
- * @returns {string} The primary file path
  */
 function getFile(finding) {
   return finding.file || (Array.isArray(finding.files) && finding.files[0]) || "unknown";
@@ -197,8 +202,6 @@ function getFile(finding) {
 
 /**
  * Get a line reference from a finding (if available)
- * @param {Object} finding - A parsed finding object
- * @returns {string} File with optional line number
  */
 function getFileRef(finding) {
   const file = getFile(finding);
@@ -214,8 +217,6 @@ function getFileRef(finding) {
 
 /**
  * Count findings by severity
- * @param {Object[]} findings - Array of finding objects
- * @returns {Object} Map of severity to count
  */
 function countBySeverity(findings) {
   const counts = {};
@@ -233,9 +234,6 @@ function countBySeverity(findings) {
 
 /**
  * Compare two sets of audit findings
- * @param {Object[]} findings1 - Findings from date1
- * @param {Object[]} findings2 - Findings from date2
- * @returns {Object} Comparison result with new, resolved, changed, recurring
  */
 function compareFindings(findings1, findings2) {
   // Index findings by key
@@ -260,7 +258,6 @@ function compareFindings(findings1, findings2) {
   for (const [key, f2] of map2) {
     if (map1.has(key)) {
       const f1 = map1.get(key);
-      // Check for severity change
       if (f1.severity !== f2.severity) {
         severityChanges.push({
           title: f2.title || f1.title || "Untitled",
@@ -271,7 +268,6 @@ function compareFindings(findings1, findings2) {
           finding2: f2,
         });
       }
-      // It is recurring (present in both)
       recurring.push({
         title: f2.title || f1.title || "Untitled",
         file: getFileRef(f2),
@@ -280,7 +276,6 @@ function compareFindings(findings1, findings2) {
         finding2: f2,
       });
     } else {
-      // New in date2
       newFindings.push(f2);
     }
   }
@@ -292,25 +287,15 @@ function compareFindings(findings1, findings2) {
     }
   }
 
-  // Detect recurring patterns: files or similar titles that appear across both runs
+  // Detect recurring patterns
   const filePatterns = detectFilePatterns(findings1, findings2);
   const titlePatterns = detectTitlePatterns(findings1, findings2);
 
-  return {
-    newFindings,
-    resolvedFindings,
-    severityChanges,
-    recurring,
-    filePatterns,
-    titlePatterns,
-  };
+  return { newFindings, resolvedFindings, severityChanges, recurring, filePatterns, titlePatterns };
 }
 
 /**
  * Detect files that have findings in both audit runs
- * @param {Object[]} findings1
- * @param {Object[]} findings2
- * @returns {Object[]} Array of { file, count1, count2 }
  */
 function detectFilePatterns(findings1, findings2) {
   const fileCounts1 = new Map();
@@ -337,17 +322,55 @@ function detectFilePatterns(findings1, findings2) {
     }
   }
 
-  // Sort by total findings descending
   patterns.sort((a, b) => b.count1 + b.count2 - (a.count1 + a.count2));
-
   return patterns;
 }
 
 /**
+ * Calculate Jaccard similarity between two sets of words
+ */
+function jaccardSimilarity(words1, words2) {
+  const intersection = new Set([...words1].filter((w) => words2.has(w)));
+  const union = new Set([...words1, ...words2]);
+  return union.size === 0 ? 0 : intersection.size / union.size;
+}
+
+/**
+ * Extract significant words from a title
+ */
+function significantWords(title, stopWords) {
+  return new Set(
+    title
+      .toLowerCase()
+      .replaceAll(/[^a-z0-9\s-]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 2 && !stopWords.has(w))
+  );
+}
+
+/**
+ * Collect new and resolved finding keys for title pattern detection
+ */
+function collectNewAndResolvedKeys(map1, map2) {
+  const newKeys = new Set();
+  const resolvedKeys = new Set();
+
+  for (const [key] of map2) {
+    if (!map1.has(key)) {
+      newKeys.add(key);
+    }
+  }
+  for (const [key] of map1) {
+    if (!map2.has(key)) {
+      resolvedKeys.add(key);
+    }
+  }
+
+  return { newKeys, resolvedKeys };
+}
+
+/**
  * Detect similar titles across audit runs (based on shared significant words)
- * @param {Object[]} findings1
- * @param {Object[]} findings2
- * @returns {Object[]} Array of { title1, title2, similarity }
  */
 function detectTitlePatterns(findings1, findings2) {
   const patterns = [];
@@ -380,26 +403,6 @@ function detectTitlePatterns(findings1, findings2) {
     "that",
   ]);
 
-  /**
-   * Extract significant words from a title
-   * @param {string} title
-   * @returns {Set<string>}
-   */
-  function significantWords(title) {
-    return new Set(
-      title
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, " ")
-        .split(/\s+/)
-        .filter((w) => w.length > 2 && !stopWords.has(w))
-    );
-  }
-
-  // Only look at new findings from date2 vs. resolved findings from date1
-  // to detect findings that might have been "renamed" but address the same issue
-  const newKeys = new Set();
-  const resolvedKeys = new Set();
-
   const map1 = new Map();
   for (const f of findings1) {
     map1.set(findingKey(f), f);
@@ -409,32 +412,20 @@ function detectTitlePatterns(findings1, findings2) {
     map2.set(findingKey(f), f);
   }
 
-  for (const [key] of map2) {
-    if (!map1.has(key)) {
-      newKeys.add(key);
-    }
-  }
-  for (const [key] of map1) {
-    if (!map2.has(key)) {
-      resolvedKeys.add(key);
-    }
-  }
+  const { newKeys, resolvedKeys } = collectNewAndResolvedKeys(map1, map2);
 
   const newFindings = findings2.filter((f) => newKeys.has(findingKey(f)));
   const resolvedFindings = findings1.filter((f) => resolvedKeys.has(findingKey(f)));
 
   for (const nf of newFindings) {
-    const nfWords = significantWords(nf.title || "");
+    const nfWords = significantWords(nf.title || "", stopWords);
     if (nfWords.size === 0) continue;
 
     for (const rf of resolvedFindings) {
-      const rfWords = significantWords(rf.title || "");
+      const rfWords = significantWords(rf.title || "", stopWords);
       if (rfWords.size === 0) continue;
 
-      // Jaccard similarity
-      const intersection = new Set([...nfWords].filter((w) => rfWords.has(w)));
-      const union = new Set([...nfWords, ...rfWords]);
-      const similarity = intersection.size / union.size;
+      const similarity = jaccardSimilarity(nfWords, rfWords);
 
       if (similarity >= 0.4) {
         patterns.push({
@@ -448,16 +439,12 @@ function detectTitlePatterns(findings1, findings2) {
     }
   }
 
-  // Sort by similarity descending
   patterns.sort((a, b) => b.similarity - a.similarity);
-
   return patterns;
 }
 
 /**
  * Format a signed change number
- * @param {number} n
- * @returns {string}
  */
 function formatChange(n) {
   if (n > 0) return `+${n}`;
@@ -466,129 +453,129 @@ function formatChange(n) {
 }
 
 /**
- * Generate a markdown diff report
- * @param {string} category
- * @param {string} date1
- * @param {string} date2
- * @param {Object[]} findings1
- * @param {Object[]} findings2
- * @param {Object} comparison - Result from compareFindings
- * @returns {string} Markdown content
+ * Generate the summary table section
  */
-function generateMarkdownReport(category, date1, date2, findings1, findings2, comparison) {
-  const sev1 = countBySeverity(findings1);
-  const sev2 = countBySeverity(findings2);
+function generateSummaryTable(date1, date2, findings1, findings2, sev1, sev2) {
   const totalChange = findings2.length - findings1.length;
-
-  const lines = [];
-
-  lines.push(`# Audit Comparison: ${category}`);
-  lines.push(`## ${date1} → ${date2}`);
-  lines.push("");
-
-  // Summary table
-  lines.push("### Summary");
-  lines.push("");
-  lines.push("| Metric | " + date1 + " | " + date2 + " | Change |");
-  lines.push("|--------|-------|-------|--------|");
-  lines.push(
-    `| Total findings | ${findings1.length} | ${findings2.length} | ${formatChange(totalChange)} |`
-  );
+  const lines = [
+    "### Summary",
+    "",
+    "| Metric | " + date1 + " | " + date2 + " | Change |",
+    "|--------|-------|-------|--------|",
+    `| Total findings | ${findings1.length} | ${findings2.length} | ${formatChange(totalChange)} |`,
+  ];
 
   for (const sev of SEVERITY_LEVELS) {
-    const label =
-      sev === "S0"
-        ? "S0 Critical"
-        : sev === "S1"
-          ? "S1 High"
-          : sev === "S2"
-            ? "S2 Medium"
-            : "S3 Low";
+    const label = SEVERITY_LABELS[sev] || sev;
     const change = sev2[sev] - sev1[sev];
     lines.push(`| ${label} | ${sev1[sev]} | ${sev2[sev]} | ${formatChange(change)} |`);
   }
 
   lines.push("");
+  return lines;
+}
 
-  // New findings
-  lines.push(`### New Findings (${comparison.newFindings.length})`);
-  lines.push("");
-  if (comparison.newFindings.length === 0) {
-    lines.push("_No new findings._");
+/**
+ * Generate a findings list section
+ */
+function generateFindingsList(title, findings, emptyMsg) {
+  const lines = [`### ${title} (${findings.length})`, ""];
+
+  if (findings.length === 0) {
+    lines.push(emptyMsg, "");
   } else {
-    for (const f of comparison.newFindings) {
+    for (const f of findings) {
       const sev = f.severity || "??";
-      const title = f.title || "Untitled";
+      const itemTitle = f.title || "Untitled";
       const fileRef = getFileRef(f);
-      lines.push(`- [${sev}] ${title} (${fileRef})`);
+      lines.push(`- [${sev}] ${itemTitle} (${fileRef})`);
     }
+    lines.push("");
   }
-  lines.push("");
 
-  // Resolved findings
-  lines.push(`### Resolved Findings (${comparison.resolvedFindings.length})`);
-  lines.push("");
-  if (comparison.resolvedFindings.length === 0) {
-    lines.push("_No resolved findings._");
+  return lines;
+}
+
+/**
+ * Generate severity changes section
+ */
+function generateSeverityChangesSection(severityChanges) {
+  const lines = [`### Severity Changes (${severityChanges.length})`, ""];
+
+  if (severityChanges.length === 0) {
+    lines.push("_No severity changes._", "");
   } else {
-    for (const f of comparison.resolvedFindings) {
-      const sev = f.severity || "??";
-      const title = f.title || "Untitled";
-      const fileRef = getFileRef(f);
-      lines.push(`- [${sev}] ${title} (${fileRef})`);
-    }
-  }
-  lines.push("");
-
-  // Severity changes
-  lines.push(`### Severity Changes (${comparison.severityChanges.length})`);
-  lines.push("");
-  if (comparison.severityChanges.length === 0) {
-    lines.push("_No severity changes._");
-  } else {
-    for (const sc of comparison.severityChanges) {
-      lines.push(`- ${sc.title}: ${sc.oldSeverity} → ${sc.newSeverity} (${sc.file})`);
-    }
-  }
-  lines.push("");
-
-  // Recurring patterns - files
-  if (comparison.filePatterns.length > 0) {
-    lines.push(`### Recurring File Patterns (${comparison.filePatterns.length})`);
-    lines.push("");
-    lines.push("Files with findings in both audit runs:");
-    lines.push("");
-    lines.push("| File | " + date1 + " | " + date2 + " |");
-    lines.push("|------|-------|-------|");
-    for (const fp of comparison.filePatterns.slice(0, 20)) {
-      lines.push(`| ${fp.file} | ${fp.count1} | ${fp.count2} |`);
-    }
-    if (comparison.filePatterns.length > 20) {
-      lines.push(`| _...and ${comparison.filePatterns.length - 20} more_ | | |`);
+    for (const sc of severityChanges) {
+      lines.push(`- ${sc.title}: ${sc.oldSeverity} \u2192 ${sc.newSeverity} (${sc.file})`);
     }
     lines.push("");
   }
 
-  // Recurring patterns - similar titles
-  if (comparison.titlePatterns.length > 0) {
-    lines.push(`### Similar Title Patterns (${comparison.titlePatterns.length})`);
-    lines.push("");
-    lines.push("Findings with similar titles across runs (possible renames or related issues):");
-    lines.push("");
-    for (const tp of comparison.titlePatterns.slice(0, 15)) {
-      lines.push(`- **${tp.similarity}% similar**`);
-      lines.push(`  - ${date1}: ${tp.title1} (${tp.file1})`);
-      lines.push(`  - ${date2}: ${tp.title2} (${tp.file2})`);
-    }
-    if (comparison.titlePatterns.length > 15) {
-      lines.push(`- _...and ${comparison.titlePatterns.length - 15} more_`);
-    }
-    lines.push("");
+  return lines;
+}
+
+/**
+ * Generate recurring file patterns section
+ */
+function generateFilePatterns(date1, date2, filePatterns) {
+  if (filePatterns.length === 0) return [];
+
+  const lines = [
+    `### Recurring File Patterns (${filePatterns.length})`,
+    "",
+    "Files with findings in both audit runs:",
+    "",
+    "| File | " + date1 + " | " + date2 + " |",
+    "|------|-------|-------|",
+  ];
+
+  for (const fp of filePatterns.slice(0, 20)) {
+    lines.push(`| ${fp.file} | ${fp.count1} | ${fp.count2} |`);
   }
 
-  // Overall trend
-  lines.push("### Trend");
+  if (filePatterns.length > 20) {
+    lines.push(`| _...and ${filePatterns.length - 20} more_ | | |`);
+  }
+
   lines.push("");
+  return lines;
+}
+
+/**
+ * Generate similar title patterns section
+ */
+function generateTitlePatterns(date1, date2, titlePatterns) {
+  if (titlePatterns.length === 0) return [];
+
+  const lines = [
+    `### Similar Title Patterns (${titlePatterns.length})`,
+    "",
+    "Findings with similar titles across runs (possible renames or related issues):",
+    "",
+  ];
+
+  for (const tp of titlePatterns.slice(0, 15)) {
+    lines.push(
+      `- **${tp.similarity}% similar**`,
+      `  - ${date1}: ${tp.title1} (${tp.file1})`,
+      `  - ${date2}: ${tp.title2} (${tp.file2})`
+    );
+  }
+
+  if (titlePatterns.length > 15) {
+    lines.push(`- _...and ${titlePatterns.length - 15} more_`);
+  }
+
+  lines.push("");
+  return lines;
+}
+
+/**
+ * Generate trend analysis section
+ */
+function generateTrendSection(date1, date2, totalChange, resolvedCount, newCount) {
+  const lines = ["### Trend", ""];
+
   if (totalChange < 0) {
     lines.push(
       `Overall improvement: ${Math.abs(totalChange)} fewer finding(s) in ${date2} compared to ${date1}.`
@@ -601,26 +588,53 @@ function generateMarkdownReport(category, date1, date2, findings1, findings2, co
     lines.push(`Finding count unchanged between ${date1} and ${date2}.`);
   }
 
-  if (comparison.resolvedFindings.length > 0 && comparison.newFindings.length > 0) {
-    lines.push(
-      `${comparison.resolvedFindings.length} resolved, ${comparison.newFindings.length} new.`
-    );
+  if (resolvedCount > 0 && newCount > 0) {
+    lines.push(`${resolvedCount} resolved, ${newCount} new.`);
   }
 
   lines.push("");
+  return lines;
+}
+
+/**
+ * Generate a markdown diff report
+ */
+function generateMarkdownReport(category, date1, date2, findings1, findings2, comparison) {
+  const sev1 = countBySeverity(findings1);
+  const sev2 = countBySeverity(findings2);
+  const totalChange = findings2.length - findings1.length;
+
+  const lines = [];
+
+  lines.push(`# Audit Comparison: ${category}`, `## ${date1} \u2192 ${date2}`, "");
+
+  lines.push(...generateSummaryTable(date1, date2, findings1, findings2, sev1, sev2));
+  lines.push(...generateFindingsList("New Findings", comparison.newFindings, "_No new findings._"));
+  lines.push(
+    ...generateFindingsList(
+      "Resolved Findings",
+      comparison.resolvedFindings,
+      "_No resolved findings._"
+    )
+  );
+  lines.push(...generateSeverityChangesSection(comparison.severityChanges));
+  lines.push(...generateFilePatterns(date1, date2, comparison.filePatterns));
+  lines.push(...generateTitlePatterns(date1, date2, comparison.titlePatterns));
+  lines.push(
+    ...generateTrendSection(
+      date1,
+      date2,
+      totalChange,
+      comparison.resolvedFindings.length,
+      comparison.newFindings.length
+    )
+  );
 
   return lines.join("\n");
 }
 
 /**
  * Generate a machine-readable JSON report
- * @param {string} category
- * @param {string} date1
- * @param {string} date2
- * @param {Object[]} findings1
- * @param {Object[]} findings2
- * @param {Object} comparison - Result from compareFindings
- * @returns {Object} JSON report object
  */
 function generateJsonReport(category, date1, date2, findings1, findings2, comparison) {
   const sev1 = countBySeverity(findings1);
@@ -681,11 +695,9 @@ function main() {
 
   const { category, date1, date2, jsonOutput } = parsed;
 
-  // Resolve file paths
   const file1 = resolveJsonlPath(category, date1);
   const file2 = resolveJsonlPath(category, date2);
 
-  // Load findings from both runs
   let findings1;
   try {
     findings1 = loadJsonlFile(file1);
@@ -704,10 +716,8 @@ function main() {
     process.exit(1);
   }
 
-  // Compare
   const comparison = compareFindings(findings1, findings2);
 
-  // Output
   if (jsonOutput) {
     const report = generateJsonReport(category, date1, date2, findings1, findings2, comparison);
     console.log(JSON.stringify(report, null, 2));

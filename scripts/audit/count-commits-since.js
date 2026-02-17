@@ -3,7 +3,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
 const TRACKER_PATH = path.join(REPO_ROOT, "docs", "audits", "AUDIT_TRACKER.md");
@@ -31,18 +31,79 @@ function parseArgs(argv) {
   let categoryFilter = null;
   let jsonOutput = false;
 
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--json") {
+  for (const arg of args) {
+    if (arg === "--json") {
       jsonOutput = true;
-    } else if (args[i] === "--category" && i + 1 < args.length) {
-      categoryFilter = args[i + 1];
-      i++;
-    } else if (args[i].startsWith("--category=")) {
-      categoryFilter = args[i].split("=")[1];
+    } else if (arg.startsWith("--category=")) {
+      categoryFilter = arg.split("=")[1];
     }
   }
 
+  // Handle --category <value> format (space-separated)
+  const catIdx = args.indexOf("--category");
+  if (catIdx !== -1 && catIdx + 1 < args.length && !args[catIdx + 1].startsWith("--")) {
+    categoryFilter = args[catIdx + 1];
+  }
+
   return { categoryFilter, jsonOutput };
+}
+
+/**
+ * Extract a date string (YYYY-MM-DD) from a raw "Last Audit" cell value.
+ * Returns null if the value indicates "never" or no date is found.
+ *
+ * @param {string} raw - the raw cell text, e.g. "2026-02-07 (Comprehensive)" or "Never"
+ * @returns {string | null}
+ */
+function extractLastAuditDate(raw) {
+  if (raw.toLowerCase() === "never") return null;
+  const match = raw.match(/(\d{4}-\d{2}-\d{2})/);
+  return match ? match[1] : null;
+}
+
+/**
+ * Extract the commit threshold number from a raw "Trigger At" cell value.
+ *
+ * @param {string} rawTrigger - e.g. "25 commits" or "25 commits OR 15 files"
+ * @returns {number}
+ */
+function extractThreshold(rawTrigger) {
+  const match = rawTrigger.match(/(\d+)\s+commits/i);
+  return match ? Number.parseInt(match[1], 10) : DEFAULT_THRESHOLD;
+}
+
+/**
+ * Parse a single table row into a category result object.
+ * Returns null if the row does not match a known category or has too few cells.
+ *
+ * @param {string} line - a pipe-delimited markdown table row
+ * @param {Array<{display: string, key: string}>} categories - known categories
+ * @returns {{ display: string, key: string, lastAuditDate: string|null, threshold: number }|null}
+ */
+function parseTableRow(line, categories) {
+  const cells = line
+    .split("|")
+    .map((c) => c.trim())
+    .filter((c) => c.length > 0);
+
+  if (cells.length < 5) return null;
+
+  const rawCategory = cells[0].replaceAll("**", "").trim();
+  const rawLastAudit = cells[1].replaceAll("_", "").trim();
+  const rawTrigger = cells[4].trim();
+
+  const matched = categories.find((cat) => {
+    const displayLower = cat.display.toLowerCase();
+    return (
+      rawCategory.toLowerCase() === displayLower || rawCategory.toLowerCase().includes(displayLower)
+    );
+  });
+  if (!matched) return null;
+
+  const lastAuditDate = extractLastAuditDate(rawLastAudit);
+  const threshold = extractThreshold(rawTrigger);
+
+  return { display: matched.display, key: matched.key, lastAuditDate, threshold };
 }
 
 /**
@@ -93,55 +154,10 @@ function parseTrackerTable() {
       break;
     }
 
-    const cells = line
-      .split("|")
-      .map((c) => c.trim())
-      .filter((c) => c.length > 0);
-
-    // cells[0] = Category, cells[1] = Last Audit, cells[4] = Trigger At
-    if (cells.length < 5) {
-      continue;
+    const row = parseTableRow(line, CATEGORIES);
+    if (row) {
+      results.push(row);
     }
-
-    const rawCategory = cells[0].replace(/\*\*/g, "").trim();
-    const rawLastAudit = cells[1].replace(/_/g, "").trim();
-    const rawTrigger = cells[4].trim();
-
-    // Match this row to one of our known categories
-    const matched = CATEGORIES.find((cat) => {
-      const displayLower = cat.display.toLowerCase();
-      const categoryLower = rawCategory.toLowerCase();
-      return categoryLower === displayLower || categoryLower.includes(displayLower);
-    });
-
-    if (!matched) {
-      continue;
-    }
-
-    // Extract date from "Last Audit" column
-    // Formats seen: "2026-02-07 (Comprehensive)", "2026-02-09 (Single)", "Never"
-    let lastAuditDate = null;
-    if (rawLastAudit.toLowerCase() !== "never") {
-      const dateMatch = rawLastAudit.match(/(\d{4}-\d{2}-\d{2})/);
-      if (dateMatch) {
-        lastAuditDate = dateMatch[1];
-      }
-    }
-
-    // Extract commit threshold from "Trigger At" column
-    // Patterns: "25 commits", "25 commits OR 15 files", etc.
-    let threshold = DEFAULT_THRESHOLD;
-    const thresholdMatch = rawTrigger.match(/(\d+)\s+commits/i);
-    if (thresholdMatch) {
-      threshold = parseInt(thresholdMatch[1], 10);
-    }
-
-    results.push({
-      display: matched.display,
-      key: matched.key,
-      lastAuditDate,
-      threshold,
-    });
   }
 
   return results;
@@ -153,19 +169,47 @@ function parseTrackerTable() {
  */
 function countCommitsSince(date) {
   try {
-    const sinceArg = date ? `--since=${date}` : "";
-    const cmd = `git log --oneline ${sinceArg} -- . | wc -l`;
-    const output = execSync(cmd, {
+    const args = ["log", "--oneline"];
+    if (date) args.push(`--since=${date}`);
+    args.push("--", ".");
+    const output = execFileSync("git", args, {
       cwd: REPO_ROOT,
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
     });
-    return parseInt(output.trim(), 10) || 0;
+    const lines = output
+      .trim()
+      .split("\n")
+      .filter((l) => l.trim());
+    return lines.length;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(`Error counting commits: ${message}`);
     return 0;
   }
+}
+
+/**
+ * Output the "no data available" message for JSON or text mode.
+ */
+function printNoData(jsonOutput, detail) {
+  if (jsonOutput) {
+    console.log("{}");
+  } else {
+    console.log("Audit Commit Thresholds:");
+    console.log(`  ${detail || "(unable to read AUDIT_TRACKER.md)"}`);
+  }
+}
+
+/**
+ * Filter tracker data to a single category if a filter is provided.
+ */
+function filterCategories(trackerData, categoryFilter) {
+  if (!categoryFilter) return trackerData;
+  const filterLower = categoryFilter.toLowerCase();
+  return trackerData.filter((cat) => {
+    return cat.display.toLowerCase() === filterLower || cat.key.toLowerCase() === filterLower;
+  });
 }
 
 /**
@@ -176,33 +220,16 @@ function main() {
 
   const trackerData = parseTrackerTable();
   if (!trackerData) {
-    // Could not parse tracker; exit cleanly (informational script)
-    if (jsonOutput) {
-      console.log("{}");
-    } else {
-      console.log("Audit Commit Thresholds:");
-      console.log("  (unable to read AUDIT_TRACKER.md)");
-    }
+    printNoData(jsonOutput, null);
     process.exit(0);
   }
 
   // Filter to a single category if requested
-  let categories = trackerData;
-  if (categoryFilter) {
-    const filterLower = categoryFilter.toLowerCase();
-    categories = trackerData.filter((cat) => {
-      return cat.display.toLowerCase() === filterLower || cat.key.toLowerCase() === filterLower;
-    });
+  const categories = filterCategories(trackerData, categoryFilter);
 
-    if (categories.length === 0) {
-      if (jsonOutput) {
-        console.log("{}");
-      } else {
-        console.log(`Audit Commit Thresholds:`);
-        console.log(`  No matching category found for: ${categoryFilter}`);
-      }
-      process.exit(0);
-    }
+  if (categories.length === 0) {
+    printNoData(jsonOutput, `No matching category found for: ${categoryFilter}`);
+    process.exit(0);
   }
 
   // Count commits for each category

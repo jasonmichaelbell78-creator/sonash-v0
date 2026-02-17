@@ -27,11 +27,9 @@ const CATEGORY_DIR_MAP = {
 function parseArgs() {
   const args = process.argv.slice(2);
   let category = null;
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--category" && i + 1 < args.length) {
-      category = args[i + 1];
-      i++;
-    }
+  const catIdx = args.indexOf("--category");
+  if (catIdx !== -1 && catIdx + 1 < args.length) {
+    category = args[catIdx + 1];
   }
   return { category };
 }

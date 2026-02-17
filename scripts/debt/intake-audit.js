@@ -305,16 +305,13 @@ function preserveEnhancementFields(normalized, mappedItem) {
   }
 }
 
-// Validate and normalize an input item
-function validateAndNormalize(item, sourceFile) {
-  const errors = [];
-  const warnings = [];
-
-  // Try enhancement audit → TDMS mapping first (enhancement items share
-  // fields with Doc Standards like fingerprint/why_it_matters, so check first)
+/**
+ * Detect the input format and apply the appropriate mapping to TDMS format.
+ * Tries enhancement audit first (shares fields with Doc Standards), then Doc Standards.
+ */
+function detectAndMapFormat(item) {
   let { item: mappedItem, metadata: mappingMetadata } = mapEnhancementAuditToTdms(item);
 
-  // If not enhancement audit, try Doc Standards → TDMS mapping
   if (mappingMetadata.format_detected === "tdms") {
     const docResult = mapDocStandardsToTdms(item);
     if (docResult.metadata.format_detected === "doc-standards") {
@@ -323,12 +320,21 @@ function validateAndNormalize(item, sourceFile) {
     }
   }
 
-  // Required fields check (after mapping)
+  return { mappedItem, mappingMetadata };
+}
+
+/**
+ * Check required fields and validate file paths on a mapped item.
+ * Returns arrays of errors and warnings.
+ */
+function checkRequiredFields(mappedItem) {
+  const errors = [];
+  const warnings = [];
+
   if (!mappedItem.title) errors.push("Missing required field: title");
   if (!mappedItem.severity) errors.push("Missing required field: severity");
   if (!mappedItem.category) errors.push("Missing required field: category");
 
-  // File path validation - warn on invalid paths (TDMS compliance)
   const normalizedFile = normalizeFilePath(mappedItem.file || "");
   if (normalizedFile) mappedItem.file = normalizedFile;
   if (normalizedFile && !isValidFilePath(normalizedFile)) {
@@ -337,7 +343,6 @@ function validateAndNormalize(item, sourceFile) {
     );
   }
 
-  // Warn when S0/S1 findings lack verification_steps
   if (
     (mappedItem.severity === "S0" || mappedItem.severity === "S1") &&
     !mappedItem.verification_steps
@@ -346,6 +351,14 @@ function validateAndNormalize(item, sourceFile) {
       `S0/S1 finding missing verification_steps (recommended for critical/high severity)`
     );
   }
+
+  return { errors, warnings };
+}
+
+// Validate and normalize an input item
+function validateAndNormalize(item, sourceFile) {
+  const { mappedItem, mappingMetadata } = detectAndMapFormat(item);
+  const { errors, warnings } = checkRequiredFields(mappedItem);
 
   if (errors.length > 0) {
     return { valid: false, errors, warnings };

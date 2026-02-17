@@ -143,13 +143,13 @@ function checkStateManagerCategories() {
       return;
     }
 
-    // Parse the array content
+    // Parse the array content — remove quotes with separate replacements to avoid regex grouping bug
     const arrayContent = match[1];
     const categories = arrayContent
       .split(",")
       .map((s) => s.trim())
-      .filter((s) => s)
-      .map((s) => s.replace(/^['"]|['"]$/g, "")); // Remove quotes
+      .filter(Boolean)
+      .map((s) => s.replace(/^['"]/, "").replace(/['"]$/, ""));
 
     const missing = [];
     for (const category of CANONICAL_CATEGORIES) {
@@ -179,10 +179,10 @@ function checkStateManagerCategories() {
 function checkTrackerExists() {
   console.log("\n=== Check 4: Audit Tracker ===");
 
-  if (!fs.existsSync(TRACKER_PATH)) {
-    addResult("Audit Tracker", false, `AUDIT_TRACKER.md does not exist: ${TRACKER_PATH}`);
-  } else {
+  if (fs.existsSync(TRACKER_PATH)) {
     addResult("Audit Tracker", true, "AUDIT_TRACKER.md exists");
+  } else {
+    addResult("Audit Tracker", false, `AUDIT_TRACKER.md does not exist: ${TRACKER_PATH}`);
   }
 }
 
@@ -202,11 +202,8 @@ function checkOrphanedAudits() {
   }
 
   if (orphanedDirs.length > 0) {
-    addResult(
-      "Orphaned Audits",
-      false,
-      `Found orphaned directories: ${orphanedDirs.map((d) => `docs/${d}`).join(", ")}`
-    );
+    const orphanedPaths = orphanedDirs.map((d) => `docs/${d}`);
+    addResult("Orphaned Audits", false, `Found orphaned directories: ${orphanedPaths.join(", ")}`);
   } else {
     addResult("Orphaned Audits", true, "No orphaned audit directories found");
   }
@@ -245,8 +242,8 @@ function checkStaleBaselines() {
         const age = now - baselineDate.getTime();
 
         if (age > thirtyDaysMs) {
-          const daysOld = Math.floor(age / (24 * 60 * 60 * 1000));
-          staleBaselines.push(`${dateMatch[1]} (${daysOld} days old)`);
+          const staleDays = Math.floor(age / (24 * 60 * 60 * 1000));
+          staleBaselines.push(`${dateMatch[1]} (${staleDays} days old)`);
         }
       }
     }
@@ -275,7 +272,7 @@ function printReport() {
   console.log("=".repeat(70));
 
   for (const result of results) {
-    const status = result.passed ? "✓ PASS" : "✗ FAIL";
+    const status = result.passed ? "\u2713 PASS" : "\u2717 FAIL";
     console.log(`\n${status} - ${result.check}`);
     console.log(`  ${result.message}`);
   }
@@ -283,7 +280,7 @@ function printReport() {
   console.log("\n" + "=".repeat(70));
   const passCount = results.filter((r) => r.passed).length;
   const totalCount = results.length;
-  const overallStatus = allPassed ? "✓ HEALTHY" : "✗ ISSUES FOUND";
+  const overallStatus = allPassed ? "\u2713 HEALTHY" : "\u2717 ISSUES FOUND";
 
   console.log(`OVERALL STATUS: ${overallStatus} (${passCount}/${totalCount} checks passed)`);
   console.log("=".repeat(70) + "\n");

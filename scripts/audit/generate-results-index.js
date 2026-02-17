@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /* global __dirname */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Resolve paths relative to repo root
 const repoRoot = path.resolve(__dirname, "../../");
@@ -196,7 +196,16 @@ function main() {
   // Generate markdown
   const markdown = generateMarkdown(results);
 
-  // Write output file
+  // Write output file (with symlink guard)
+  try {
+    const stat = fs.lstatSync(outputFile);
+    if (stat.isSymbolicLink()) {
+      console.error(`Error: ${outputFile} is a symlink — refusing to write`);
+      process.exit(2);
+    }
+  } catch {
+    // File doesn't exist yet — safe to write
+  }
   fs.writeFileSync(outputFile, markdown, "utf8");
   console.log(`✓ Generated: ${outputFile}`);
   console.log(`  - Single-Session: ${results.filter((r) => r.type === "Single-Session").length}`);

@@ -23,7 +23,7 @@ const REPO_ROOT = path.resolve(__dirname, "..", "..");
 const TEMPLATES_DIR = path.join(REPO_ROOT, "docs", "audits", "multi-ai", "templates");
 
 // Files to exclude from validation (not category audit templates)
-const EXCLUDED_FILES = ["SHARED_TEMPLATE_BASE.md", "AGGREGATOR.md"];
+const EXCLUDED_FILES = new Set(["SHARED_TEMPLATE_BASE.md", "AGGREGATOR.md"]);
 
 // Map from filename token to canonical category
 const FILENAME_TO_CATEGORY = {
@@ -60,7 +60,7 @@ function safeReadFile(filePath) {
 function listTemplateFiles() {
   try {
     const entries = fs.readdirSync(TEMPLATES_DIR);
-    const mdFiles = entries.filter((f) => f.endsWith(".md") && !EXCLUDED_FILES.includes(f));
+    const mdFiles = entries.filter((f) => f.endsWith(".md") && !EXCLUDED_FILES.has(f));
     return { files: mdFiles, error: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

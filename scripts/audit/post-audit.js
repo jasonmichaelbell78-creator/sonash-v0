@@ -24,7 +24,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
 
@@ -84,20 +84,23 @@ function validateJsonlFile(filePath) {
 }
 
 /**
- * Run a pipeline step via execSync, capturing success/failure.
+ * Run a pipeline step via execFileSync, capturing success/failure.
+ * Uses execFileSync with args array to prevent command injection (SEC-001/S4721).
  *
  * @param {string} label - human-readable step name
- * @param {string} command - shell command to execute
+ * @param {string} cmd - executable to run (e.g. process.execPath)
+ * @param {string[]} args - arguments array
  * @returns {{ label: string, passed: boolean, error: string | null }}
  */
-function runStep(label, command) {
+function runStep(label, cmd, args) {
+  const displayCmd = [cmd, ...args].join(" ");
   console.log(`\n${"=".repeat(60)}`);
   console.log(`  STEP: ${label}`);
-  console.log(`  CMD:  ${command}`);
+  console.log(`  CMD:  ${displayCmd}`);
   console.log("=".repeat(60));
 
   try {
-    execSync(command, { stdio: "inherit", cwd: REPO_ROOT });
+    execFileSync(cmd, args, { stdio: "inherit", cwd: REPO_ROOT });
     console.log(`  -> ${label}: PASSED`);
     return { label, passed: true, error: null };
   } catch (err) {
@@ -192,28 +195,31 @@ function main() {
 
   // Step 1: TDMS intake
   results.push(
-    runStep(
-      "TDMS Intake",
-      `node ${path.join(REPO_ROOT, "scripts/debt/intake-audit.js")} ${resolvedInput}`
-    )
+    runStep("TDMS Intake", process.execPath, [
+      path.join(REPO_ROOT, "scripts/debt/intake-audit.js"),
+      resolvedInput,
+    ])
   );
 
   // Step 2: Regenerate views
   results.push(
-    runStep("Generate Views", `node ${path.join(REPO_ROOT, "scripts/debt/generate-views.js")}`)
+    runStep("Generate Views", process.execPath, [
+      path.join(REPO_ROOT, "scripts/debt/generate-views.js"),
+    ])
   );
 
   // Step 3: Regenerate metrics
   results.push(
-    runStep("Generate Metrics", `node ${path.join(REPO_ROOT, "scripts/debt/generate-metrics.js")}`)
+    runStep("Generate Metrics", process.execPath, [
+      path.join(REPO_ROOT, "scripts/debt/generate-metrics.js"),
+    ])
   );
 
   // Step 4: Regenerate results index
   results.push(
-    runStep(
-      "Generate Results Index",
-      `node ${path.join(REPO_ROOT, "scripts/audit/generate-results-index.js")}`
-    )
+    runStep("Generate Results Index", process.execPath, [
+      path.join(REPO_ROOT, "scripts/audit/generate-results-index.js"),
+    ])
   );
 
   // --- Summary ---------------------------------------------------------------

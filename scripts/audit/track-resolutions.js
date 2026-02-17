@@ -22,10 +22,20 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync } = require("node:child_process");
+const { execFileSync } = require("node:child_process");
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
 const MASTER_DEBT_PATH = path.join(REPO_ROOT, "docs", "technical-debt", "MASTER_DEBT.jsonl");
+
+/**
+ * Validate that a relative path resolves within REPO_ROOT (SEC-008).
+ * @param {string} relPath - path relative to repo root
+ * @returns {boolean}
+ */
+function isPathContained(relPath) {
+  const resolved = path.resolve(REPO_ROOT, relPath);
+  return resolved.startsWith(REPO_ROOT + path.sep) || resolved === REPO_ROOT;
+}
 
 // ---------------------------------------------------------------------------
 // Argument parsing
@@ -100,23 +110,29 @@ function writeMasterDebt(items) {
 
 /**
  * Check if a file exists in the working tree.
+ * Validates path containment before checking (SEC-008).
  * @param {string} relPath - path relative to repo root
  * @returns {boolean}
  */
 function fileExists(relPath) {
+  if (!relPath || !isPathContained(relPath)) return false;
   const absPath = path.join(REPO_ROOT, relPath);
   return fs.existsSync(absPath);
 }
 
 /**
  * Get the number of commits that modified a file since a given date.
+ * Uses execFileSync with args array to prevent command injection (SEC-001/S4721).
+ * Validates path containment before querying (SEC-008).
  * @param {string} relPath - path relative to repo root
  * @param {string} sinceDate - ISO date string (e.g. "2026-01-30")
  * @returns {number} commit count, or -1 on error
  */
 function getCommitCountSince(relPath, sinceDate) {
+  if (!relPath || !isPathContained(relPath)) return -1;
   try {
-    const result = execSync(`git log --oneline --since="${sinceDate}" -- "${relPath}"`, {
+    const args = ["log", "--oneline", `--since=${sinceDate}`, "--", relPath];
+    const result = execFileSync("git", args, {
       cwd: REPO_ROOT,
       encoding: "utf8",
       stdio: ["pipe", "pipe", "pipe"],
@@ -140,8 +156,8 @@ function getCommitCountSince(relPath, sinceDate) {
  * Categorize a single open debt item.
  *
  * @param {Object} item - parsed debt item
- * @returns {{ category: string, reason: string }}
- *   category: "likely_resolved" | "potentially_resolved" | "still_open" | "unknown"
+ * @returns {{ classification: string, reason: string }}
+ *   classification: "likely_resolved" | "potentially_resolved" | "still_open" | "unknown"
  */
 function classifyItem(item) {
   // No file field — can't determine
@@ -190,6 +206,91 @@ function classifyItem(item) {
 }
 
 // ---------------------------------------------------------------------------
+// Report output helpers (extracted to reduce cognitive complexity of main)
+// ---------------------------------------------------------------------------
+
+/**
+ * Format a result entry for JSON output (strips internal item reference).
+ * @param {Object} r - result entry
+ * @returns {{ id: string|null, title: string, file: string|null, reason: string }}
+ */
+function formatResultEntry(r) {
+  return { id: r.id, title: r.title, file: r.file, reason: r.reason };
+}
+
+/**
+ * Print machine-readable JSON report.
+ */
+function printJsonReport(results, openItems, category, apply, appliedCount) {
+  const output = {
+    summary: {
+      total_open: openItems.length,
+      likely_resolved: results.likely_resolved.length,
+      potentially_resolved: results.potentially_resolved.length,
+      still_open: results.still_open.length,
+      unknown: results.unknown.length,
+      applied: apply ? appliedCount : 0,
+      mode: apply ? "apply" : "dry-run",
+    },
+    likely_resolved: results.likely_resolved.map(formatResultEntry),
+    potentially_resolved: results.potentially_resolved.map(formatResultEntry),
+    still_open: results.still_open.map(formatResultEntry),
+    unknown: results.unknown.map(formatResultEntry),
+  };
+
+  if (category) {
+    output.summary.category_filter = category;
+  }
+
+  console.log(JSON.stringify(output, null, 2));
+}
+
+/**
+ * Print human-readable text report.
+ */
+function printHumanReport(results, openItems, category, apply, appliedCount) {
+  console.log("");
+  console.log("Resolution Tracking Report:");
+
+  if (category) {
+    console.log(`  Category filter: ${category}`);
+  }
+
+  console.log(`  Mode: ${apply ? "apply" : "dry-run"}`);
+  console.log(`  Total open items: ${openItems.length}`);
+  console.log(
+    `  Likely resolved: ${results.likely_resolved.length} (files deleted or significantly changed)`
+  );
+  console.log(`  Potentially resolved: ${results.potentially_resolved.length} (files modified)`);
+  console.log(`  Still open: ${results.still_open.length} (unchanged)`);
+  console.log(`  Unknown: ${results.unknown.length} (no file reference)`);
+
+  if (results.likely_resolved.length > 0) {
+    console.log("");
+    console.log("Likely Resolved Items:");
+    for (const r of results.likely_resolved) {
+      console.log(`  - ${r.id}: ${r.title} (${r.reason})`);
+    }
+  }
+
+  if (results.potentially_resolved.length > 0) {
+    console.log("");
+    console.log("Potentially Resolved Items:");
+    for (const r of results.potentially_resolved) {
+      console.log(`  - ${r.id}: ${r.title} (${r.reason})`);
+    }
+  }
+
+  if (apply && appliedCount > 0) {
+    console.log("");
+    console.log(`Applied: ${appliedCount} item(s) marked as RESOLVED in MASTER_DEBT.jsonl`);
+  } else if (!apply && results.likely_resolved.length > 0) {
+    console.log("");
+    console.log("Run with --apply to mark likely resolved items as RESOLVED in MASTER_DEBT.jsonl.");
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -225,7 +326,7 @@ function main() {
   for (const item of openItems) {
     const { classification, reason } = classifyItem(item);
     results[classification].push({
-      id: item.id || "NO-ID",
+      id: item.id ?? null,
       title: item.title || "(no title)",
       file: item.file || null,
       reason,
@@ -237,13 +338,14 @@ function main() {
   let appliedCount = 0;
   if (apply && results.likely_resolved.length > 0) {
     const nowISO = new Date().toISOString().split("T")[0];
-    const likelyIds = new Set(results.likely_resolved.map((r) => r.id));
+    const likelyIds = new Set(results.likely_resolved.map((r) => r.id).filter(Boolean));
 
-    for (let i = 0; i < allItems.length; i++) {
-      if (likelyIds.has(allItems[i].id)) {
-        allItems[i].status = "RESOLVED";
-        allItems[i].resolved_at = nowISO;
-        allItems[i].resolved_by = "auto-resolution-tracker";
+    for (const item of allItems) {
+      if (!item.id) continue;
+      if (likelyIds.has(item.id)) {
+        item.status = "RESOLVED";
+        item.resolved_at = nowISO;
+        item.resolved_by = "auto-resolution-tracker";
         appliedCount++;
       }
     }
@@ -253,90 +355,9 @@ function main() {
 
   // Output
   if (jsonOutput) {
-    const output = {
-      summary: {
-        total_open: openItems.length,
-        likely_resolved: results.likely_resolved.length,
-        potentially_resolved: results.potentially_resolved.length,
-        still_open: results.still_open.length,
-        unknown: results.unknown.length,
-        applied: apply ? appliedCount : 0,
-        mode: apply ? "apply" : "dry-run",
-      },
-      likely_resolved: results.likely_resolved.map((r) => ({
-        id: r.id,
-        title: r.title,
-        file: r.file,
-        reason: r.reason,
-      })),
-      potentially_resolved: results.potentially_resolved.map((r) => ({
-        id: r.id,
-        title: r.title,
-        file: r.file,
-        reason: r.reason,
-      })),
-      still_open: results.still_open.map((r) => ({
-        id: r.id,
-        title: r.title,
-        file: r.file,
-        reason: r.reason,
-      })),
-      unknown: results.unknown.map((r) => ({
-        id: r.id,
-        title: r.title,
-        file: r.file,
-        reason: r.reason,
-      })),
-    };
-
-    if (category) {
-      output.summary.category_filter = category;
-    }
-
-    console.log(JSON.stringify(output, null, 2));
+    printJsonReport(results, openItems, category, apply, appliedCount);
   } else {
-    // Human-readable report
-    console.log("");
-    console.log("Resolution Tracking Report:");
-
-    if (category) {
-      console.log(`  Category filter: ${category}`);
-    }
-
-    console.log(`  Mode: ${apply ? "apply" : "dry-run"}`);
-    console.log(`  Total open items: ${openItems.length}`);
-    console.log(
-      `  Likely resolved: ${results.likely_resolved.length} (files deleted or significantly changed)`
-    );
-    console.log(`  Potentially resolved: ${results.potentially_resolved.length} (files modified)`);
-    console.log(`  Still open: ${results.still_open.length} (unchanged)`);
-    console.log(`  Unknown: ${results.unknown.length} (no file reference)`);
-
-    if (results.likely_resolved.length > 0) {
-      console.log("");
-      console.log("Likely Resolved Items:");
-      for (const r of results.likely_resolved) {
-        console.log(`  - ${r.id}: ${r.title} (${r.reason})`);
-      }
-    }
-
-    if (results.potentially_resolved.length > 0) {
-      console.log("");
-      console.log("Potentially Resolved Items:");
-      for (const r of results.potentially_resolved) {
-        console.log(`  - ${r.id}: ${r.title} (${r.reason})`);
-      }
-    }
-
-    if (apply && appliedCount > 0) {
-      console.log("");
-      console.log(`Applied: ${appliedCount} item(s) marked as RESOLVED in MASTER_DEBT.jsonl`);
-    } else if (!apply && results.likely_resolved.length > 0) {
-      console.log("");
-      console.log(
-        "Run with --apply to mark likely resolved items as RESOLVED in MASTER_DEBT.jsonl."
-      );
-    }
+    printHumanReport(results, openItems, category, apply, appliedCount);
   }
 
   process.exit(0);
