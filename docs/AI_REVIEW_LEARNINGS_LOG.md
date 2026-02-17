@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.25 **Created:** 2026-01-02 **Last Updated:** 2026-02-17
+**Document Version:** 17.26 **Created:** 2026-01-02 **Last Updated:** 2026-02-17
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.26   | 2026-02-17 | PR #369 Retrospective: 9 rounds, 119 items (78 fixed, 41 rejected). Symlink ping-pong (8 rounds), CC ping-pong (6 rounds). Key action: add CC complexity lint rule to pre-commit hook.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.25   | 2026-02-17 | Review #338: PR #369 R4 — 12 items (3 MAJOR, 3 MINOR, 6 rejected). realpathSync symlink hardening (post-audit), atomic write tmp+rename (generate-results-index), early return invalid date, fail fast JSONL, String(title), safe error.message.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 17.24   | 2026-02-17 | Review #337: PR #369 R3 — 12 items (4 MAJOR, 3 MINOR, 5 rejected). Repo containment (post-audit), canonical category mapping (generate-results-index), sinceDate validation, writeFileSync try/catch, string line normalization in getFileRef, push batching residuals.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 17.23   | 2026-02-17 | Review #336: PR #369 R2 — 38 items (6 MAJOR, 10 MINOR, 14 rejected). CC reduction (3 functions), push batching (4 files), normalizeRepoRelPath, table column alignment, symlink guards, line normalization.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -757,6 +758,284 @@ symlink/TOCTOU fix that could have been done once with a complete template.
 **Highest-impact change:** Create FIX_TEMPLATES.md Template #22 ("Secure Audit
 File Write") with the full fd-based chain. This single template would have
 prevented R4-R6 entirely, saving ~3 review rounds.
+
+---
+
+### PR #369 Retrospective (2026-02-17)
+
+#### Review Cycle Summary
+
+- **Rounds:** 9 (R1–R9, all on 2026-02-17)
+- **Total items processed:** 119 (Fixed: 78, Rejected: 41, Deferred: 0)
+- **TDMS items created:** 0
+- **Review IDs:** #335 (R1) through #343 (R9)
+- **Files in original PR diff:** 12 scripts across `scripts/audit/`,
+  `scripts/debt/`, `scripts/check-pattern-compliance.js`
+- **Review sources:** SonarCloud (CC, hotspots, code smells) + Qodo (security,
+  compliance, code suggestions)
+
+#### Per-Round Breakdown
+
+| Round | Items | Fixed | Rejected | Key Focus Area                                          |
+| ----- | ----- | ----- | -------- | ------------------------------------------------------- |
+| R1    | 63    | 58    | 5        | execSync→execFileSync (CRITICAL), CC reduction          |
+| R2    | 38    | 24    | 14       | CC extraction, push batching, normalizeRepoRelPath      |
+| R3    | 12    | 7     | 5        | Repo containment, category mapping, date validation     |
+| R4    | 12    | 6     | 6        | realpathSync, atomic write, fail-fast JSONL             |
+| R5    | 12    | 7     | 5        | CC extraction, tmpFile symlink, ISO normalization       |
+| R6    | 11    | 7     | 4        | CC extraction x2, wx flag, atomic writeMasterDebt       |
+| R7    | 10    | 7     | 3        | CC indexByKey, ancestor symlink, fstatSync scan         |
+| R8    | 13    | 8     | 5        | CC buildResults+safeRename, symlink walk, format        |
+| R9    | 9     | 5     | 4        | Fail-closed guard, non-object guard, pattern recognizer |
+
+**Observation:** R1 was the only high-volume round (63 items — 5 CRITICAL
+command injection). R2 was moderate (38 items). R3-R9 were all 9-13 items each,
+suggesting diminishing returns after R2.
+
+#### Churn Analysis — Detailed Ping-Pong Chains
+
+**Chain 1: Symlink/Security Hardening (R2→R3→R4→R5→R6→R7→R8→R9 = 8 rounds)**
+
+This was the dominant churn driver. Each round added one layer of defense, and
+the next round found a gap:
+
+| Round | What was added                           | What the next round found missing                   |
+| ----- | ---------------------------------------- | --------------------------------------------------- |
+| R2    | Basic lstatSync symlink check on outputs | R3: No containment check on CLI input path          |
+| R3    | `startsWith(REPO_ROOT)` containment      | R4: startsWith bypassable via symlinks→realpathSync |
+| R4    | realpathSync + atomic write (tmp+rename) | R5: tmpFile itself could be pre-existing symlink    |
+| R5    | lstatSync on tmpFile + Windows fallback  | R6: Should use `wx` flag instead of manual check    |
+| R6    | `wx` flag, extracted guardSymlink()      | R7: Ancestor dir could be symlink (realpathSync)    |
+| R7    | Ancestor containment, dir/dest fallback  | R8: walk() follows symlinks during directory scan   |
+| R8    | `isSymbolicLink()` in walk()             | R9: guardSymlink catch swallows EPERM/EIO           |
+| R9    | Fail-closed catch (ENOENT/ENOTDIR only)  | (resolved)                                          |
+
+- **Root cause:** Incremental hardening — each round fixed the specific issue
+  flagged without auditing all write paths holistically. The propagation check
+  (SKILL.md v2.2) was added mid-cycle but not applied retroactively.
+- **What should have happened:** R2 fix + `grep -rn 'writeFileSync\|renameSync'`
+  across all files in scope → apply Template 27 (Secure Audit File Write) to
+  every write path in one pass. This existed in FIX_TEMPLATES.md since PR #368
+  but wasn't used.
+- **Avoidable rounds:** R4-R9 (6 rounds) could have been resolved in R3-R4 with
+  holistic write-path audit.
+
+**Chain 2: Cognitive Complexity (R1→R2→R5→R6→R7→R8 = 6 rounds)**
+
+SonarCloud flagged CC >15 in new/modified functions each round:
+
+| Round | Functions flagged (CC)                                         | Extraction applied                                           |
+| ----- | -------------------------------------------------------------- | ------------------------------------------------------------ |
+| R1    | Multiple main() functions (CC 20-30)                           | Some extracted, most deferred to R2                          |
+| R2    | count-commits-since main(), results-index, validate-templates  | findThresholdTableStart, collectSingleSession, etc.          |
+| R5    | post-audit.js main() (CC 20)                                   | validateInputPath() extracted                                |
+| R6    | results-index main() (CC 17), track-resolutions main() (CC 22) | guardSymlink+atomicWrite, classifyOpenItems+applyResolutions |
+| R7    | compare-audits compareFindings() (CC 17)                       | indexByKey() extracted                                       |
+| R8    | count-commits main() (CC 17), writeMasterDebt (CC 20)          | buildResults+statusIcon, guardSymlink+safeRename             |
+
+- **Root cause:** No CC lint rule exists. Functions are written, SonarCloud
+  flags them post-push, extraction creates new functions that sometimes also
+  exceed CC 15.
+- **What should have happened:** Run
+  `npx eslint --rule 'complexity: [error, 15]'` on all new files BEFORE first
+  push. Every CC violation would have been caught in R1.
+- **Cross-PR pattern:** This is the #1 systemic issue. PR #366 had CC in 4
+  rounds. PR #367 had CC in 6 rounds (deferred). PR #368 had CC in 3 rounds. PR
+  #369 had CC in 6 rounds. **The CC lint rule has been recommended in every
+  retro since #367 and has never been implemented.**
+- **Avoidable rounds:** R5-R8 CC items (4 rounds) would not have existed if R1
+  had clean functions.
+
+**Chain 3: check-pattern-compliance.js (R7→R8→R9 = 3 rounds)**
+
+| Round | What changed                                | What was incomplete                                  |
+| ----- | ------------------------------------------- | ---------------------------------------------------- |
+| R7    | Added fstatSync forward scan                | Scanned from `backStart` not `i`, applied to all ops |
+| R8    | Restricted to `hasOpenSync`, start from `i` | Didn't recognize `guardSymlink` as valid guard       |
+| R9    | Added `guardSymlink` to guard patterns      | (resolved)                                           |
+
+- **Root cause:** Pattern checker modifications were done one-at-a-time without
+  enumerating all guard function names or all scan directions.
+- **Avoidable rounds:** R8-R9 if R7 had added all guard names and correct scan
+  bounds.
+
+**Chain 4: intake-audit.js detectAndMapFormat (R8→R9 = 2 rounds)**
+
+| Round | What changed                       | What was incomplete           |
+| ----- | ---------------------------------- | ----------------------------- |
+| R8    | Refactored to early-return pattern | No guard for non-object input |
+| R9    | Added plain-object type check      | (resolved)                    |
+
+- **Root cause:** Refactoring focused on control flow, not input validation.
+- **Avoidable rounds:** R9 if R8 refactor included type guard.
+
+#### Rejection Analysis (41 items = 34% of total)
+
+The same JSONL data quality suggestions appeared in **every round R1-R9**:
+
+| Rejection Category                   | Occurrences | Files Affected                     |
+| ------------------------------------ | ----------- | ---------------------------------- |
+| JSONL evidence schema normalization  | ~12         | normalized-all.jsonl, audits.jsonl |
+| JSONL file/line field normalization  | ~8          | audits.jsonl                       |
+| JSONL recommendation "" → null       | ~5          | audits.jsonl                       |
+| state-manager.js CLI dedup/filtering | ~6          | state-manager.js                   |
+| SonarCloud S5852 regex DoS (false +) | ~6          | count-commits-since.js             |
+| SonarCloud S4036 PATH lookup         | ~2          | compare-audits.js                  |
+| Other pre-existing                   | ~2          | various                            |
+
+These are legitimate observations about pre-existing data quality, but they are
+**not addressable in this PR** (the JSONL files are pipeline output, not
+hand-edited). They add ~4-5 items of noise per round.
+
+#### Previous Retro Action Items — Implementation Status
+
+Checking what was recommended in previous PR retros and whether it was done:
+
+| Retro   | Recommended Action                               | Status             | Impact on #369                       |
+| ------- | ------------------------------------------------ | ------------------ | ------------------------------------ |
+| PR #367 | CC eslint complexity rule (~30 min)              | **NOT DONE**       | Would have saved 4+ rounds           |
+| PR #367 | Shared validate-skip-reason.js (~20 min)         | DONE               | Not relevant to #369                 |
+| PR #367 | shellcheck for .husky hooks (~15 min)            | **NOT DONE**       | Not relevant to #369                 |
+| PR #368 | FIX_TEMPLATES Template #22 (atomic write)        | DONE (Template 22) | Available but not consistently used  |
+| PR #368 | FIX_TEMPLATES Template #27 (fd-based write)      | DONE (Template 27) | Available but not used for new files |
+| PR #368 | Qodo suppression for SKIP_REASON (~10 min)       | **NOT DONE**       | Not relevant to #369                 |
+| PR #368 | CODE_PATTERNS fstatSync-after-open doc (~10 min) | **UNKNOWN**        | fstatSync was flagged again in R7    |
+
+**Key finding: The #1 recommended action from both PR #367 and PR #368 retros —
+adding a CC complexity rule — has never been implemented. This single omission
+caused 4-6 avoidable rounds in each of the last 3 PRs.**
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern              | Rounds in #369 | Also in PRs    | Already Automated?   | Recommended Action                                             | Effort          |
+| -------------------- | -------------- | -------------- | -------------------- | -------------------------------------------------------------- | --------------- |
+| CC >15 violations    | R1,R2,R5-R8    | #366,#367,#368 | **NO** (3 retros!)   | Add `complexity: [error, 15]` to eslint.config.mjs             | ~30 min         |
+| Symlink guard        | R2-R9          | #366,#368      | Partial              | guardSymlink now shared + in pattern checker. Done for this PR | Done            |
+| JSONL data quality   | R1-R9 (noise)  | #366,#367,#368 | **NO**               | Add `.qodo/suppression.yaml` for pre-existing JSONL patterns   | ~15 min         |
+| Atomic write         | R4-R6          | #368           | Yes (Template 22/27) | Templates exist but weren't used for new audit scripts         | ~0 (discipline) |
+| Fail-closed catch    | R9             | New            | **NO**               | Add Template 28 to FIX_TEMPLATES.md                            | ~15 min         |
+| Pattern checker gaps | R7-R9          | New            | **NO**               | When modifying checker, enumerate ALL guard names in one pass  | ~0 (discipline) |
+
+#### Skills/Templates to Update
+
+1. **eslint.config.mjs:** Add `complexity: ["error", 15]` rule. This is the
+   single highest-impact automation item — recommended in 3 consecutive retros,
+   never implemented. Estimated savings: 4-6 review rounds per PR. (~30 min)
+
+2. **FIX_TEMPLATES.md:** Add Template 28: "Fail-Closed Catch Block" — only allow
+   ENOENT/ENOTDIR through, treat all other errors as fatal. Pattern:
+
+   ```javascript
+   } catch (err) {
+     const code = err && typeof err === "object" ? err.code : null;
+     if (code === "ENOENT" || code === "ENOTDIR") return;
+     const msg = err instanceof Error ? err.message : String(err);
+     console.error(`Error: ${msg}`);
+     process.exit(1);
+   }
+   ```
+
+   (~15 min)
+
+3. **pr-review SKILL.md Step 0.5:** Add: "Run
+   `npx eslint --rule 'complexity: [error, 15]'` on all new/modified .js files
+   before first push." This catches CC before SonarCloud sees it. (~5 min)
+
+4. **CODE_PATTERNS.md:** Add `guardSymlink` to the "recognized symlink guard
+   patterns" list alongside `isSafeToWrite` and `isSymbolicLink`. (~5 min)
+
+5. **.qodo/ suppression config:** Suppress JSONL data quality patterns (evidence
+   schema, file/line normalization, recommendation null) for pipeline output
+   files. Would eliminate ~4 rejected items per round. (~15 min)
+
+#### Process Improvements
+
+1. **IMPLEMENT THE CC RULE** — This has been recommended in 3 consecutive retros
+   (#367, #368, #369) and never done. Each time it's listed as "~30 min" and
+   each time it would have saved 4-6 review rounds. The cumulative cost of NOT
+   implementing it across PRs #366-#369 is approximately **18 avoidable review
+   rounds** of CC-related fixes. This is no longer a "nice to have" — it's the
+   single biggest source of review churn in the project.
+
+2. **Use FIX_TEMPLATES for new files** — Templates 22 and 27 exist (atomic
+   write, fd-based write) but were not applied when writing the original audit
+   scripts. The scripts were written with raw `writeFileSync` and then hardened
+   over 8 rounds. When writing NEW scripts that do file I/O, check FIX_TEMPLATES
+   FIRST and use the established pattern from the start.
+
+3. **Holistic security audit on first flag** — The propagation check (SKILL.md
+   v2.2) was added mid-cycle but never applied retroactively. When a security
+   pattern is first flagged (R2 in this case), immediately:
+
+   ```bash
+   grep -rn 'writeFileSync\|renameSync\|appendFileSync' scripts/ --include="*.js"
+   ```
+
+   and fix ALL instances, not just the flagged one. Evidence: 6 avoidable rounds
+   (R4-R9) from incremental hardening.
+
+4. **Suppress recurring rejections** — 34% of all items processed (41/119) were
+   pre-existing JSONL data quality rejections that appeared in every round. This
+   wastes time categorizing, documenting, and rejecting the same items 9 times.
+   A Qodo suppression config or comment would eliminate this noise entirely.
+
+5. **Complete pattern checker modifications in one pass** — When adding a new
+   guard pattern to check-pattern-compliance.js, enumerate ALL recognized guard
+   function names AND scan directions (forward + backward) before committing.
+   Evidence: 3 rounds (R7-R9) of incremental pattern checker fixes.
+
+#### Cross-PR Systemic Analysis
+
+Comparing the last 4 PR review cycles:
+
+| PR   | Rounds | Total Items | CC Rounds   | Symlink Rounds | JSONL Rejections | Key Issue              |
+| ---- | ------ | ----------- | ----------- | -------------- | ---------------- | ---------------------- |
+| #366 | 8      | ~90         | 4           | 5              | ~20              | Symlink ping-pong      |
+| #367 | 7      | ~193        | 6(deferred) | 0              | ~24              | SKIP_REASON validation |
+| #368 | 6      | ~65         | 3           | 3              | ~15              | TOCTOU fd-based write  |
+| #369 | 9      | 119         | 6           | 8              | 41               | Both CC + symlink      |
+
+**Systemic patterns visible across all 4 PRs:**
+
+1. **CC is the #1 cross-PR churn driver** — Appeared in every PR, consuming 19+
+   rounds total across the 4 PRs. A lint rule would have prevented nearly all of
+   them.
+
+2. **Symlink/security hardening is the #2 driver** — PR #366 pioneered the
+   patterns, #368 refined with fd-based writes, #369 re-learned the same lessons
+   on new files. The templates (22, 27) exist but aren't used proactively.
+
+3. **JSONL data quality is persistent noise** — ~100 rejected items across 4
+   PRs, all the same patterns (evidence schema, file normalization). Never
+   suppressed, never fixed (because they're pipeline output), just rejected
+   every round.
+
+4. **Retro action items are not being implemented** — The CC rule has been
+   recommended 3 times. Qodo suppression has been recommended 2 times. Neither
+   has been done. This suggests retro action items need a tracking mechanism
+   (e.g., TDMS entries or sprint tasks) rather than just documenting them in the
+   learnings log.
+
+#### Verdict
+
+The review cycle was **significantly longer than necessary** — 9 rounds where
+3-4 would have sufficed with existing tooling. This is the 4th consecutive PR
+with the same root causes (CC violations, incremental security hardening, JSONL
+rejection noise). The retro process itself is failing — action items are
+documented but never executed.
+
+**Three concrete actions that would have the most impact:**
+
+1. **Add `complexity: [error, 15]` to eslint.config.mjs** (~30 min). This is the
+   single highest-ROI change. It has been recommended in 3 retros and would have
+   saved ~18 rounds across the last 4 PRs.
+
+2. **Create TDMS entries for retro action items** — Stop relying on the
+   learnings log to drive implementation. Create DEBT entries with owners and
+   sprint assignments so they actually get done.
+
+3. **Add Qodo suppression for JSONL pipeline output** (~15 min). Eliminates ~34%
+   of all review items as noise.
 
 ---
 
