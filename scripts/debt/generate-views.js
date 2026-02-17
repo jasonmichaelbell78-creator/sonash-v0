@@ -212,9 +212,11 @@ function assignStableId(item, idMap, usedIds, nextId) {
 // Normalize file paths: strip absolute repo prefix if present
 function normalizeFilePath(filePath) {
   if (typeof filePath !== "string") return filePath;
-  const prefix = "home/user/sonash-v0/";
-  const idx = filePath.indexOf(prefix);
-  if (idx >= 0) return filePath.substring(idx + prefix.length);
+  const repoRoot = path.resolve(__dirname, "../..") + path.sep;
+  const resolved = path.resolve(filePath);
+  if (resolved.startsWith(repoRoot)) {
+    return resolved.slice(repoRoot.length).split(path.sep).join("/");
+  }
   return filePath;
 }
 
@@ -230,7 +232,9 @@ function ensureDefaults(item) {
   item.file = normalizeFilePath(item.file);
   if (Array.isArray(item.evidence)) {
     for (const e of item.evidence) {
-      e.file = normalizeFilePath(e.file);
+      if (e && typeof e === "object") {
+        e.file = normalizeFilePath(e.file);
+      }
     }
   }
 }
@@ -480,6 +484,7 @@ function mergeManualItems(items) {
 
   for (const [id, existing] of itemMap) {
     if (!assignedIds.has(id)) {
+      ensureDefaults(existing);
       items.push(existing);
       assignedIds.add(id);
       mergedCount++;

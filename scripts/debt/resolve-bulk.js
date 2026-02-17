@@ -82,9 +82,13 @@ function parseArgs(args) {
         console.error("Error: Missing value for --file <path>");
         process.exit(1);
       }
+      validatePathInDir(REPO_ROOT, path.resolve(REPO_ROOT, next));
       parsed.file = next;
     } else if (arg.match(/^DEBT-\d+$/)) {
       parsed.debtIds.push(arg);
+    } else if (arg.startsWith("-")) {
+      console.error(`Error: Unknown option: ${arg}`);
+      process.exit(1);
     }
     i += 1;
   }
@@ -104,10 +108,9 @@ function writeOutputJson(outputPath, payload) {
   const tmpPath = path.join(outDir, `.tmp-${path.basename(safePath)}-${process.pid}`);
 
   try {
-    // Refuse symlinked parents before creating directories/writing files
-    refuseSymlinkWithParents(outDir);
     fs.mkdirSync(outDir, { recursive: true });
-    refuseSymlinkWithParents(tmpPath);
+    // Refuse symlinked parents before writing files
+    refuseSymlinkWithParents(outDir);
     refuseSymlinkWithParents(safePath);
     fs.writeFileSync(tmpPath, JSON.stringify(payload, null, 2), "utf-8");
     // Pre-remove destination for cross-platform renameSync compatibility
@@ -291,10 +294,10 @@ Example:
       alreadyResolved.push(debtId);
     } else if (parsed.eligibleOnly) {
       const status = typeof item.status === "string" ? item.status : "UNKNOWN";
-      if (!ELIGIBLE_STATUSES.includes(status)) {
-        ineligible.push({ id: debtId, status });
-      } else {
+      if (ELIGIBLE_STATUSES.includes(status)) {
         found.push(item);
+      } else {
+        ineligible.push({ id: debtId, status });
       }
     } else {
       found.push(item);

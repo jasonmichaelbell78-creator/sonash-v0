@@ -17,7 +17,7 @@ This queue contains items with status=NEW that require verification. Run
 | ID        | Title                                                        | Severity | File           | Line |
 | --------- | ------------------------------------------------------------ | -------- | -------------- | ---- |
 | DEBT-2808 | Date formats inconsistent across the app                     | S2       | src/components | 0    |
-| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | src/           | 0    |
-| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | docs/          | 0    |
+| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | src            | 0    |
+| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | docs           | 0    |
 | DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | package.json   | 0    |
 | DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | src/components | 0    |
