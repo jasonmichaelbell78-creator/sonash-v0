@@ -546,6 +546,148 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews
 
+### PR #371 Retrospective (2026-02-17)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                                         |
+| -------------- | ------------------------------------------------------------- |
+| Rounds         | 2 (R1 2026-02-17, R2 2026-02-17)                              |
+| Total items    | 45 (34 R1 + 11 R2)                                            |
+| Fixed          | 38                                                            |
+| Deferred       | 0                                                             |
+| Rejected       | 7 (3 R1 + 4 R2)                                               |
+| Review sources | SonarCloud (hotspots + issues), Qodo Compliance + Suggestions |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source                      | Items  | Fixed  | Rejected | Key Patterns                                                    |
+| --------- | ---------- | --------------------------- | ------ | ------ | -------- | --------------------------------------------------------------- |
+| R1        | 2026-02-17 | SonarCloud (22) + Qodo (12) | 34     | 31     | 3        | S5852 regex DoS (10), CC >15 (12), atomic write, symlink guards |
+| R2        | 2026-02-17 | SonarCloud (7) + Qodo (4)   | 11     | 7      | 4        | CC extraction (2), options object, for-of, negated condition    |
+| **Total** |            |                             | **45** | **38** | **7**    |                                                                 |
+
+#### Ping-Pong Chains
+
+##### Chain 1: Cognitive Complexity Extraction (R1→R2 = 2 rounds)
+
+| Round | What Happened                                                                                           | Files Affected                 | Root Cause                                     |
+| ----- | ------------------------------------------------------------------------------------------------------- | ------------------------------ | ---------------------------------------------- |
+| R1    | Flagged 12 CC >15 functions. Extracted ~15 helpers. Two new helpers still had CC 33 and CC 17.          | sync-reviews, promote, archive | Extraction didn't verify helpers stayed <CC 15 |
+| R2    | SonarCloud flagged `parseSeverityCount` CC 33 and `parseRetrospectives` CC 17. Extracted 5 sub-helpers. | sync-reviews-to-jsonl.js       | Helpers inherited CC from parent functions     |
+
+**Avoidable rounds:** 0.5 (partial — R2 also had 5 unrelated items)
+**Prevention:** After extracting helpers, run
+`npx eslint --rule 'complexity: [error, 15]'` on modified files.
+
+##### Chain 2: executeArchival Parameter Count (R1→R2 = 2 rounds)
+
+| Round | What Happened                                                         | Files Affected     | Root Cause                         |
+| ----- | --------------------------------------------------------------------- | ------------------ | ---------------------------------- |
+| R1    | Extracted `executeArchival` from `main()` with 10 individual params   | archive-reviews.js | Focused on CC, not API design      |
+| R2    | SonarCloud: "Too many parameters (10). Max 7." Refactored to options. | archive-reviews.js | R1 didn't consider parameter count |
+
+**Avoidable rounds:** 0.5 (partial) **Prevention:** Use options object pattern
+when extracting with 7+ params.
+
+**Total avoidable rounds across all chains: ~1**
+
+#### Rejection Analysis
+
+| Category                  | Count | Rounds | Examples                                                            |
+| ------------------------- | ----- | ------ | ------------------------------------------------------------------- |
+| Unstructured logging      | 2     | R1, R2 | "Use structured JSON logs" — CLI dev tool by design                 |
+| No audit trail            | 2     | R1, R2 | "Log actor identity" — local dev script                             |
+| Silent JSONL parse errors | 2     | R1, R2 | "Swallowed catch blocks" — intentional tolerance for JSONL          |
+| Absolute path leakage     | 1     | R2     | "Paths in DEBT table" — pre-existing in TDMS data, not from this PR |
+
+**Rejection accuracy:** 7/7 correct (100%). 4 of 7 R2 rejections were exact
+repeats from R1 despite `.qodo/pr-agent.toml` suppression config.
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                      | Rounds | Also in PRs | Already Automated? | Recommended Action                                         | Est. Effort |
+| ---------------------------- | ------ | ----------- | ------------------ | ---------------------------------------------------------- | ----------- |
+| CC >15 violations            | R1, R2 | #366-#370   | Yes (warn)         | Upgrade `complexity` from `warn` to `error`                | ~5 min      |
+| S5852 Regex DoS false pos.   | R1     | #369        | No (resolved)      | String parsing eliminates pattern. Done.                   | Done        |
+| Repeat Qodo Compliance       | R1, R2 | #367-#370   | Partial (pr-agent) | Investigate suppression config format for Compliance rules | ~15 min     |
+| Options object for 7+ params | R2     | New         | No                 | Add to FIX_TEMPLATES extraction guidelines                 | ~10 min     |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                     | Implemented?            | Impact on #371                                     |
+| ------- | -------------------------------------- | ----------------------- | -------------------------------------------------- |
+| PR #367 | CC eslint complexity rule              | **YES (warn)**          | Caught as warnings but didn't block push           |
+| PR #368 | FIX_TEMPLATES #22 (atomic write)       | DONE                    | Applied consistently in R1                         |
+| PR #368 | Qodo suppression for recurring items   | **YES but ineffective** | Same compliance items appeared in both rounds      |
+| PR #369 | FIX_TEMPLATES #28 (fail-closed catch)  | DONE                    | Not needed in #371                                 |
+| PR #369 | TDMS entries for retro action items    | DONE                    | Working — action items tracked                     |
+| PR #370 | CC eslint as error (upgrade from warn) | **NOT DONE**            | CC violations reached SonarCloud despite warn rule |
+| PR #370 | Qodo suppression for actor/logs items  | Partial                 | Still appearing                                    |
+
+**Total avoidable rounds from unimplemented retro actions: ~0.5** (CC error rule
+would have caught R2 CC items pre-push)
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | CC Rounds   | Security Rounds | Rejections | Key Issue               |
+| -------- | ------ | ----------- | ----------- | --------------- | ---------- | ----------------------- |
+| #366     | 8      | ~90         | 4           | 5               | ~20        | Symlink ping-pong       |
+| #367     | 7      | ~193        | 6(deferred) | 0               | ~24        | SKIP_REASON validation  |
+| #368     | 6      | ~65         | 3           | 3               | ~15        | TOCTOU fd-based write   |
+| #369     | 9      | 119         | 6           | 8               | 41         | Both CC + symlink       |
+| #370     | 5      | 53          | 1           | 3               | 6          | Path normalization      |
+| **#371** | **2**  | **45**      | **2**       | **0**           | **7**      | **CC extraction+S5852** |
+
+**Persistent cross-PR patterns:**
+
+| Pattern          | PRs Affected | Times Recommended | Status                       | Required Action                                       |
+| ---------------- | ------------ | ----------------- | ---------------------------- | ----------------------------------------------------- |
+| CC lint rule     | #366-#371    | 5x (warn since)   | Partially implemented        | Upgrade to `error` — warn doesn't block pushes        |
+| Qodo suppression | #369-#371    | 3x                | Implemented, **ineffective** | Investigate pr-agent.toml format for Compliance rules |
+| TDMS for retros  | #369-#370    | 2x                | **DONE**                     | Resolved                                              |
+
+#### Skills/Templates to Update
+
+1. **eslint.config.mjs:** Upgrade `complexity` from `["warn", 15]` to
+   `["error", 15]`. Warnings don't block commits/pushes. (~5 min)
+2. **.qodo/pr-agent.toml:** Investigate why repeat compliance items are not
+   suppressed. May need compliance-specific rules vs suggestion rules. (~15 min)
+3. **FIX_TEMPLATES.md:** Add extraction guideline: "Use options object for 7+
+   params. Verify extracted helpers stay under CC 15." (~10 min)
+
+#### Process Improvements
+
+1. **Post-extraction CC verification** — After extracting helpers to reduce CC,
+   run the CC check on new helpers too. R1 extracted ~15 helpers without
+   checking, creating 2 CC violations caught in R2. Evidence: R1→R2 CC chain.
+2. **Upgrade CC rule to error** — `warn` was a good first step but doesn't
+   prevent CI churn. Evidence: R2 CC items despite warn rule.
+3. **Fix Qodo suppression** — `.qodo/pr-agent.toml` did not suppress the 4
+   repeat items in R2. Needs investigation. Evidence: identical R1+R2
+   rejections.
+
+#### Verdict
+
+PR #371 had the **most efficient review cycle in the last 6 PRs** — just 2
+rounds to resolve 45 items (38 fixed, 7 rejected, 84% fix rate). This is a 60%
+reduction from #370 (5 rounds) and 78% from #369 (9 rounds).
+
+Approximately **0.5-1 round was avoidable**. The R2 items split between CC
+violations in extracted helpers (preventable with post-extraction check) and
+genuinely new SonarCloud findings (for-of, negated conditions, .indexOf).
+
+The single highest-impact change is upgrading CC from `warn` to `error` (~5
+min). This blocks pushes with CC >15, preventing the helpers-exceeding-CC
+pattern.
+
+**Trend: Strongly improving.** Rounds: 9→5→2. Items: 119→53→45. Security rounds:
+8→3→0. Rejections: 41→6→7. Prior retro actions (CC warn rule, atomic write
+templates, TDMS tracking) are paying off. One more upgrade (CC error + Qodo
+suppression fix) should enable 1-round cycles.
+
+---
+
 ### PR #367 Retrospective (2026-02-16)
 
 **Rounds:** 7 (R1-R7, all same day) | **Items:** 193 total appearances, ~100
@@ -3342,5 +3484,48 @@ claude/new-session-NgVGX (PR #360) **Suggestions:** 7 total (Critical: 1, Major:
 - Three rounds to fully sweep severity→impact proves grep-first approach is
   essential
 - Object.create(null) is safer than {} for untrusted data cloning
+
+---
+
+### Review #349: PR #371 R3 — Argument Injection, Suppression Scope, Pipeline Robustness
+
+**Date:** 2026-02-17 **Source:** Qodo PR Compliance + Code Suggestions
+**PR/Branch:** PR #371
+
+**Summary:** 7 suggestions (4 consolidated to 1 MAJOR, 2 MINOR, 1 rejected).
+Main issue: unquoted `$staged_js` in the new CC pre-commit gate enabled argument
+injection via crafted filenames and broke on filenames with spaces. Fixed by
+switching from bare `$staged_js` expansion to `printf | xargs ... --` pattern,
+which handles word-splitting safely and uses `--` to prevent `-`-prefixed
+filenames from being interpreted as flags.
+
+**Patterns Identified:**
+
+1. **Unquoted shell variable in command arguments**: `$staged_js` was passed
+   directly to `npx eslint`, enabling both argument injection (filenames
+   starting with `-`) and word-splitting on spaces/newlines. Fixed with
+   `printf '%s\n' "$staged_js" | xargs ... --` pattern.
+2. **Qodo suppression scope mismatch**: `pr_compliance_checker` section scoped
+   to `scripts/` and `.claude/hooks/` but not `docs/technical-debt/`, causing
+   "Absolute path leakage" false positives to persist on TDMS data files.
+3. **grep|head pipeline not fail-safe**: In a Husky hook that may run with
+   `set -e`, `grep "complexity" | head -10` would terminate the script if grep
+   finds no matches, before the proper error message is displayed.
+
+**Resolution:**
+
+- Fixed: 5 items (consolidated from 7 — 4 overlapping suggestions merged)
+- Rejected: 1 item (reviews.jsonl id type — string IDs for retro entries are
+  intentional and consistent across retro-367 through retro-371)
+- Deferred: 0
+
+**Key Learnings:**
+
+- Shell variables used as command arguments must be quoted or piped through
+  xargs
+- The `--` separator prevents filenames from being parsed as flags
+- Qodo compliance checker has separate scope from pr_reviewer — both need
+  matching suppression rules
+- Pipeline commands in hooks should append `|| true` when running under set -e
 
 ---

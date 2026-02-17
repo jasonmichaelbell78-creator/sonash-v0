@@ -55,6 +55,20 @@ if ! npm run lint > /dev/null 2>&1; then
 fi
 echo "  ✅ ESLint passed (0 errors)"
 
+# 1b. CC check on staged JS files (error-level, blocks new CC >15 functions)
+# Global config uses "warn" (113 pre-existing violations). This gate ensures
+# NEW code doesn't introduce CC >15. Recommended in 5 consecutive retros (#367-#371).
+staged_js=$(git diff --cached --name-only --diff-filter=ACM | grep '\.js$' || true)
+if [ -n "$staged_js" ]; then
+  if ! printf '%s\n' "$staged_js" | xargs npx eslint --no-eslintrc --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- > /dev/null 2>&1; then
+    echo "  ❌ Cognitive Complexity >15 in staged files"
+    printf '%s\n' "$staged_js" | xargs npx eslint --no-eslintrc --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- 2>&1 | grep "complexity" | head -10 || true
+    echo ""
+    echo "  Extract helpers to reduce CC. See FIX_TEMPLATES.md Template 30."
+    exit 1
+  fi
+fi
+
 # 2. Auto-format staged files with lint-staged (Prettier)
 # Automatically formats staged files - no manual intervention needed
 echo "  ▶ Running lint-staged (auto-format)..."
