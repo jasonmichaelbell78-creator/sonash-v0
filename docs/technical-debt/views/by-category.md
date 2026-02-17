@@ -9,2529 +9,2595 @@
 
 ---
 
-## ai-optimization (51)
+## ai-optimization (116)
 
-| ID        | Title                                                         | Severity | File                                                                                             | Line |
-| --------- | ------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------ | ---- |
-| DEBT-2990 | PostToolUse Write: 10 sequential hook processes spawned p...  | S1       | .claude/settings.json                                                                            | 0    |
-| DEBT-3105 | Cross-cutting: Hook process spawn explosion — 10+ Node.js...  | S1       | .claude/settings.json                                                                            | 0    |
-| DEBT-3108 | Session-end cleanup is practically dead code — needs migr...  | S1       | .claude/hooks/.session-state.json                                                                | 0    |
-| DEBT-2989 | Audit skills share >50% boilerplate content without share...  | S2       | .claude/skills/audit-comprehensive/SKILL.md                                                      | 0    |
-| DEBT-2991 | compaction-handoff.js uses execSync (shell) instead of ex...  | S2       | .claude/hooks/compaction-handoff.js                                                              | 0    |
-| DEBT-2993 | UserPromptSubmit: 4 hooks run on every user message inclu...  | S2       | .claude/hooks/alerts-reminder.js                                                                 | 0    |
-| DEBT-2997 | Skill overlap: sonarcloud-sprint is superseded by sonarcloud  | S2       | .claude/skills/sonarcloud-sprint/SKILL.md                                                        | 0    |
-| DEBT-2998 | Orphaned skill: find-skills not in SKILL_INDEX.md             | S2       | .claude/skills/find-skills/SKILL.md                                                              | 0    |
-| DEBT-3000 | Agent prompts in audit-process lack CRITICAL RETURN PROTOCOL  | S2       | .claude/skills/audit-process/SKILL.md                                                            | 0    |
-| DEBT-3001 | FALSE_POSITIVES.jsonl not referenced in audit-process or ...  | S2       | .claude/skills/audit-process/SKILL.md                                                            | 0    |
-| DEBT-3004 | MCP filesystem server duplicates native Claude Code Read/...  | S2       | .mcp.json                                                                                        | 0    |
-| DEBT-3007 | session-begin SKILL.md reads ROADMAP.md (3164 lines) in f...  | S2       | .claude/skills/session-begin/SKILL.md                                                            | 0    |
-| DEBT-3008 | pr-review SKILL.md is 840 lines loaded entirely when skil...  | S2       | .claude/skills/pr-review/SKILL.md                                                                | 0    |
-| DEBT-3009 | audit-comprehensive SKILL.md is 854 lines loaded entirely...  | S2       | .claude/skills/audit-comprehensive/SKILL.md                                                      | 0    |
-| DEBT-3011 | alerts-reminder.js injects context-consuming messages on ...  | S2       | .claude/hooks/alerts-reminder.js                                                                 | 0    |
-| DEBT-3014 | commit-log.jsonl has no rotation/size-cap logic (39KB, ap...  | S2       | .claude/state/commit-log.jsonl                                                                   | 0    |
-| DEBT-3015 | handoff.json embeds full commitLog array (25KB, unbounded...  | S2       | .claude/state/handoff.json                                                                       | 0    |
-| DEBT-3106 | No automated SKILL_INDEX.md sync — 9 orphaned skills disc...  | S2       | .claude/skills/SKILL_INDEX.md                                                                    | 0    |
-| DEBT-3113 | velocity-log.jsonl has malformed sprint field data            | S2       | .claude/state/velocity-log.jsonl                                                                 | 0    |
-| DEBT-3117 | .session-state.json shows 166 begins vs 16 ends (10:1 ratio)  | S2       | .claude/hooks/.session-state.json                                                                | 0    |
-| DEBT-3118 | session-start.js hook outputs ~50 lines of checklist text...  | S2       | .claude/hooks/session-start.js                                                                   | 0    |
-| DEBT-3120 | 10 PostToolUse hooks fire on every Write operation creati...  | S2       | .claude/settings.json                                                                            | 0    |
-| DEBT-3122 | MCP memory server configured but not enabled — 3 skills h...  | S2       | .mcp.json                                                                                        | 0    |
-| DEBT-3126 | Multi-line regex with greedy \[\s\S\]\*? quantifier in aut... | S2       | .claude/hooks/auto-save-context.js                                                               | 0    |
-| DEBT-2988 | TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md marked COMPLETE ...  | S3       | docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md                                              | 0    |
-| DEBT-2992 | check-edit-requirements.js and check-write-requirements.j...  | S3       | .claude/hooks/check-edit-requirements.js                                                         | 0    |
-| DEBT-2994 | pre-compaction-save.js calls 7 git subprocess operations ...  | S3       | .claude/hooks/pre-compaction-save.js                                                             | 0    |
-| DEBT-2995 | commit-tracker.js spawns 4 git subprocesses on commit det...  | S3       | .claude/hooks/commit-tracker.js                                                                  | 0    |
-| DEBT-2996 | pattern-check.js calls fs.realpathSync twice (file and pr...  | S3       | .claude/hooks/pattern-check.js                                                                   | 0    |
-| DEBT-2999 | SKILL_INDEX.md claims 55 total skills but count is inaccu...  | S3       | .claude/skills/SKILL_INDEX.md                                                                    | 0    |
-| DEBT-3002 | pre-commit-fixer agent prompts are generic category dispa...  | S3       | .claude/skills/pre-commit-fixer/SKILL.md                                                         | 0    |
-| DEBT-3003 | MCP git server configured but unused and redundant with n...  | S3       | .mcp.json                                                                                        | 0    |
-| DEBT-3005 | 7 mcp**filesystem** permissions approved in settings.loca...  | S3       | .claude/settings.local.json                                                                      | 0    |
-| DEBT-3006 | 3 mcp**serena** permissions approved but serena is in dis...  | S3       | .claude/settings.local.json                                                                      | 0    |
-| DEBT-3010 | Edit and MultiEdit hook lists are identical 9-hook copies...  | S3       | .claude/settings.json                                                                            | 0    |
-| DEBT-3012 | analyze-user-request.js high-confidence matches inject di...  | S3       | .claude/hooks/analyze-user-request.js                                                            | 0    |
-| DEBT-3013 | code-reviewer SKILL.md contains generic boilerplate not s...  | S3       | .claude/skills/code-reviewer/SKILL.md                                                            | 0    |
-| DEBT-3016 | reviews.jsonl has no rotation (19KB, 30+ entries, thresho...  | S3       | .claude/state/reviews.jsonl                                                                      | 0    |
-| DEBT-3107 | No pre-commit check for FALSE_POSITIVES.jsonl integration...  | S3       | .claude/skills/audit-process/SKILL.md                                                            | 0    |
-| DEBT-3109 | warned-files.json grows unbounded (4KB, 48 entries, no ex...  | S3       | .claude/state/warned-files.json                                                                  | 0    |
-| DEBT-3110 | task-audit-template-overhaul.state.json is stale (7 days,...  | S3       | .claude/state/task-audit-template-overhaul.state.json                                            | 0    |
-| DEBT-3111 | override-log.jsonl has no rotation or size cap                | S3       | .claude/override-log.jsonl                                                                       | 0    |
-| DEBT-3112 | agent-invocations.jsonl has no rotation or size cap           | S3       | .claude/state/agent-invocations.jsonl                                                            | 0    |
-| DEBT-3114 | .claude/tmp-alerts.json persists across sessions (temp fi...  | S3       | .claude/tmp-alerts.json                                                                          | 0    |
-| DEBT-3115 | session-end does not clean .session-agents.json or .agent...  | S3       | .claude/skills/session-end/SKILL.md                                                              | 0    |
-| DEBT-3116 | MEMORY.md is within size limits but contains completed/st...  | S3       | C:/Users/jason/.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/MEMORY.md | 0    |
-| DEBT-3119 | compact-restore.js injects full recovery context (~30 lin...  | S3       | .claude/hooks/compact-restore.js                                                                 | 0    |
-| DEBT-3121 | 3 hooks on every Read operation add latency without conte...  | S3       | .claude/settings.json                                                                            | 0    |
-| DEBT-3123 | MCP github server enabled but not configured in .mcp.json...  | S3       | .claude/settings.local.json                                                                      | 0    |
-| DEBT-3124 | MCP global template (.claude/mcp.global-template.json) in...  | S3       | .claude/mcp.global-template.json                                                                 | 0    |
-| DEBT-3125 | MCP firebase server enabled but not configured — may rely...  | S3       | .claude/settings.local.json                                                                      | 0    |
+| ID | Title | Severity | File | Line |
+|---|---|---|---|---|
+| DEBT-2990 | PostToolUse Write: 10 sequential hook processes spawned p... | S1 | .claude/settings.json | 0 |
+| DEBT-3105 | Cross-cutting: Hook process spawn explosion — 10+ Node.js... | S1 | .claude/settings.json | 0 |
+| DEBT-3108 | Session-end cleanup is practically dead code — needs migr... | S1 | .claude/hooks/.session-state.json | 0 |
+| DEBT-3182 | session-start.js uses execSync with shell:true — subproce... | S1 | .claude/hooks/session-start.js | 0 |
+| DEBT-3183 | SessionStart uses stacked synchronous subprocesses across... | S1 | .claude/settings.json | 0 |
+| DEBT-3202 | session-start.js outputs 400-600 tokens of verbose status... | S1 | .claude/hooks/session-start.js | 0 |
+| DEBT-3203 | SessionStart critical path runs multiple heavyweight sync... | S1 | .claude/hooks/session-start.js | 0 |
+| DEBT-3204 | Hook Latency: Unconditional test build | S1 | .claude/hooks/session-start.js | 0 |
+| DEBT-3205 | SessionStart runs 4 sequential Node process spawns — 4-8s... | S1 | .claude/settings.json | 0 |
+| DEBT-3206 | COMMAND_REFERENCE.md is 109KB — loaded on demand but risk... | S1 | .claude/COMMAND_REFERENCE.md | 0 |
+| DEBT-3207 | Session-start hook uses execSync for version checks that ... | S1 | .claude/hooks/session-start.js | 0 |
+| DEBT-2989 | Audit skills share >50% boilerplate content without share... | S2 | .claude/skills/audit-comprehensive/SKILL.md | 0 |
+| DEBT-2991 | compaction-handoff.js uses execSync (shell) instead of ex... | S2 | .claude/hooks/compaction-handoff.js | 0 |
+| DEBT-2993 | UserPromptSubmit: 4 hooks run on every user message inclu... | S2 | .claude/hooks/alerts-reminder.js | 0 |
+| DEBT-2997 | Skill overlap: sonarcloud-sprint is superseded by sonarcloud | S2 | .claude/skills/sonarcloud-sprint/SKILL.md | 0 |
+| DEBT-2998 | Orphaned skill: find-skills not in SKILL_INDEX.md | S2 | .claude/skills/find-skills/SKILL.md | 0 |
+| DEBT-3000 | Agent prompts in audit-process lack CRITICAL RETURN PROTOCOL | S2 | .claude/skills/audit-process/SKILL.md | 0 |
+| DEBT-3001 | FALSE_POSITIVES.jsonl not referenced in audit-process or ... | S2 | .claude/skills/audit-process/SKILL.md | 0 |
+| DEBT-3004 | MCP filesystem server duplicates native Claude Code Read/... | S2 | .mcp.json | 0 |
+| DEBT-3007 | session-begin SKILL.md reads ROADMAP.md (3164 lines) in f... | S2 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-3008 | pr-review SKILL.md is 840 lines loaded entirely when skil... | S2 | .claude/skills/pr-review/SKILL.md | 0 |
+| DEBT-3009 | audit-comprehensive SKILL.md is 854 lines loaded entirely... | S2 | .claude/skills/audit-comprehensive/SKILL.md | 0 |
+| DEBT-3011 | alerts-reminder.js injects context-consuming messages on ... | S2 | .claude/hooks/alerts-reminder.js | 0 |
+| DEBT-3014 | commit-log.jsonl has no rotation/size-cap logic (39KB, ap... | S2 | .claude/state/commit-log.jsonl | 0 |
+| DEBT-3015 | handoff.json embeds full commitLog array (25KB, unbounded... | S2 | .claude/state/handoff.json | 0 |
+| DEBT-3106 | No automated SKILL_INDEX.md sync — 9 orphaned skills disc... | S2 | .claude/skills/SKILL_INDEX.md | 0 |
+| DEBT-3113 | velocity-log.jsonl has malformed sprint field data | S2 | .claude/state/velocity-log.jsonl | 0 |
+| DEBT-3117 | .session-state.json shows 166 begins vs 16 ends (10:1 ratio) | S2 | .claude/hooks/.session-state.json | 0 |
+| DEBT-3118 | session-start.js hook outputs ~50 lines of checklist text... | S2 | .claude/hooks/session-start.js | 0 |
+| DEBT-3120 | 10 PostToolUse hooks fire on every Write operation creati... | S2 | .claude/settings.json | 0 |
+| DEBT-3122 | MCP memory server configured but not enabled — 3 skills h... | S2 | .mcp.json | 0 |
+| DEBT-3126 | Multi-line regex with greedy \[\s\S\]*? quantifier in aut... | S2 | .claude/hooks/auto-save-context.js | 0 |
+| DEBT-3184 | Dead Script: dedupe-quotes.ts | S2 | scripts/dedupe-quotes.ts | 0 |
+| DEBT-3185 | Dead Script: enrich-addresses.ts | S2 | scripts/enrich-addresses.ts | 0 |
+| DEBT-3186 | Dead Script: import-nashville-links.ts | S2 | scripts/import-nashville-links.ts | 0 |
+| DEBT-3187 | Dead Script: migrate-library-content.ts | S2 | scripts/migrate-library-content.ts | 0 |
+| DEBT-3188 | Dead Script: migrate-meetings-dayindex.ts | S2 | scripts/migrate-meetings-dayindex.ts | 0 |
+| DEBT-3189 | Dead Script: migrate-to-journal.ts | S2 | scripts/migrate-to-journal.ts | 0 |
+| DEBT-3190 | Dead Script: seed-meetings.ts | S2 | scripts/seed-meetings.ts | 0 |
+| DEBT-3191 | Dead Script: seed-real-data.ts | S2 | scripts/seed-real-data.ts | 0 |
+| DEBT-3192 | Dead Script: seed-sober-living-data.ts | S2 | scripts/seed-sober-living-data.ts | 0 |
+| DEBT-3193 | Dead Script: set-admin-claim.ts | S2 | scripts/set-admin-claim.ts | 0 |
+| DEBT-3194 | Dead Script: sync-geocache.ts | S2 | scripts/sync-geocache.ts | 0 |
+| DEBT-3195 | Dead Script: test-geocode.ts | S2 | scripts/test-geocode.ts | 0 |
+| DEBT-3196 | Dead Script: retry-failures.ts | S2 | scripts/retry-failures.ts | 0 |
+| DEBT-3197 | session-start.js spawns 2 unnecessary child processes for... | S2 | .claude/hooks/session-start.js | 0 |
+| DEBT-3198 | session-start.sh (365 lines) is dead code — replaced by s... | S2 | .claude/hooks/session-start.sh | 0 |
+| DEBT-3199 | stop-serena-dashboard.js runs every SessionStart despite ... | S2 | .claude/hooks/stop-serena-dashboard.js | 0 |
+| DEBT-3200 | Shell hooks (.sh) are dead code — replaced by .js equival... | S2 | .claude/hooks/session-start.sh | 0 |
+| DEBT-3201 | Agent sub-prompts omit evidence field from output schema | S2 | .claude/skills/audit-ai-optimization/SKILL.md | 0 |
+| DEBT-3208 | Dead Documentation: Code Review Checklist references | S2 | .claude/skills/code-reviewer/SKILL.md | 140 |
+| DEBT-3209 | Fragile Parsing: Git output parsing in post-read-handler.js | S2 | .claude/hooks/post-read-handler.js | 0 |
+| DEBT-3210 | AI Instruction Bloat: audit-code SKILL.md | S2 | .claude/skills/audit-code/SKILL.md | 0 |
+| DEBT-3211 | check-edit-requirements.sh and check-write-requirements.s... | S2 | .claude/hooks/check-edit-requirements.sh | 0 |
+| DEBT-3212 | post-write-validator.js and pattern-check.js share identi... | S2 | .claude/hooks/post-write-validator.js | 0 |
+| DEBT-3213 | Multiple hooks contain duplicated gitExec helper function | S2 | .claude/hooks/post-read-handler.js | 0 |
+| DEBT-3214 | Context Optimization: Heavy episodic memory search | S2 | .claude/skills/audit-code/SKILL.md | 0 |
+| DEBT-3215 | Pre-commit subagent Task prompt is under-specified for de... | S2 | .claude/skills/pre-commit-fixer/SKILL.md | 0 |
+| DEBT-3216 | CRITICAL Persistence Rules boilerplate copy-pasted across... | S2 | .claude/skills/audit-ai-optimization/SKILL.md | 0 |
+| DEBT-3217 | hook-warnings-log.jsonl has repetitive low-value entries ... | S2 | .claude/state/hook-warnings-log.jsonl | 0 |
+| DEBT-3218 | Legacy shell hook scripts appear runtime-unused (possibly... | S2 | .claude/hooks/analyze-user-request.sh | 0 |
+| DEBT-3219 | 13 consolidated-out hook JS files remain as dead standalo... | S2 | .claude/hooks/agent-trigger-enforcer.js | 0 |
+| DEBT-3220 | Task() sub-agents dont check FALSE_POSITIVES.jsonl before... | S2 | .claude/skills/audit-ai-optimization/SKILL.md | 0 |
+| DEBT-3221 | stop-serena-dashboard.js uses 6+ execFileSync calls at se... | S2 | .claude/hooks/stop-serena-dashboard.js | 0 |
+| DEBT-3222 | Scripts not in package.json: add-false-positive.js, assig... | S2 | scripts/add-false-positive.js | 0 |
+| DEBT-3223 | Hooks use string manipulation where JSON.parse should be ... | S2 | .claude/hooks/state-utils.js | 0 |
+| DEBT-3224 | Audit skill prompts may not consistently reference FALSE_... | S2 | .claude/skills/audit-ai-optimization/SKILL.md | 0 |
+| DEBT-3226 | Skill Overlap: audit-code vs code-reviewer | S2 | .claude/skills/audit-code/SKILL.md | 0 |
+| DEBT-3230 | Subprocess Overhead: Node spawning in hooks | S2 | .claude/hooks/session-start.js | 0 |
+| DEBT-3232 | SKILL.md file exceeds 500 lines with duplicated boilerplate | S2 | .claude/skills/audit-ai-optimization/SKILL.md | 0 |
+| DEBT-3235 | Audit skill templates have high duplication and could be ... | S2 | .claude/skills/audit-code/SKILL.md | 0 |
+| DEBT-3236 | Session-start hook is 505 lines with inline prompts >10 l... | S2 | .claude/hooks/session-start.js | 0 |
+| DEBT-3237 | State JSONL files growing without bounds - reviews.jsonl ... | S2 | .claude/state/reviews.jsonl | 0 |
+| DEBT-3240 | Skills read entire large files when only headers/sections... | S2 | .claude/skills/session-begin/ | 0 |
+| DEBT-3241 | doc-optimizer and audit-process SKILL.md exceed 1500 line... | S2 | .claude/skills/doc-optimizer/SKILL.md | 0 |
+| DEBT-3242 | 10 audit skills share >50% identical structure without sh... | S2 | .claude/skills/audit-code/SKILL.md | 0 |
+| DEBT-2988 | TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md marked COMPLETE ... | S3 | docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md | 0 |
+| DEBT-2992 | check-edit-requirements.js and check-write-requirements.j... | S3 | .claude/hooks/check-edit-requirements.js | 0 |
+| DEBT-2994 | pre-compaction-save.js calls 7 git subprocess operations ... | S3 | .claude/hooks/pre-compaction-save.js | 0 |
+| DEBT-2995 | commit-tracker.js spawns 4 git subprocesses on commit det... | S3 | .claude/hooks/commit-tracker.js | 0 |
+| DEBT-2996 | pattern-check.js calls fs.realpathSync twice (file and pr... | S3 | .claude/hooks/pattern-check.js | 0 |
+| DEBT-2999 | SKILL_INDEX.md claims 55 total skills but count is inaccu... | S3 | .claude/skills/SKILL_INDEX.md | 0 |
+| DEBT-3002 | pre-commit-fixer agent prompts are generic category dispa... | S3 | .claude/skills/pre-commit-fixer/SKILL.md | 0 |
+| DEBT-3003 | MCP git server configured but unused and redundant with n... | S3 | .mcp.json | 0 |
+| DEBT-3005 | 7 mcp__filesystem__ permissions approved in settings.loca... | S3 | .claude/settings.local.json | 0 |
+| DEBT-3006 | 3 mcp__serena__ permissions approved but serena is in dis... | S3 | .claude/settings.local.json | 0 |
+| DEBT-3010 | Edit and MultiEdit hook lists are identical 9-hook copies... | S3 | .claude/settings.json | 0 |
+| DEBT-3012 | analyze-user-request.js high-confidence matches inject di... | S3 | .claude/hooks/analyze-user-request.js | 0 |
+| DEBT-3013 | code-reviewer SKILL.md contains generic boilerplate not s... | S3 | .claude/skills/code-reviewer/SKILL.md | 0 |
+| DEBT-3016 | reviews.jsonl has no rotation (19KB, 30+ entries, thresho... | S3 | .claude/state/reviews.jsonl | 0 |
+| DEBT-3107 | No pre-commit check for FALSE_POSITIVES.jsonl integration... | S3 | .claude/skills/audit-process/SKILL.md | 0 |
+| DEBT-3109 | warned-files.json grows unbounded (4KB, 48 entries, no ex... | S3 | .claude/state/warned-files.json | 0 |
+| DEBT-3110 | task-audit-template-overhaul.state.json is stale (7 days,... | S3 | .claude/state/task-audit-template-overhaul.state.json | 0 |
+| DEBT-3111 | override-log.jsonl has no rotation or size cap | S3 | .claude/override-log.jsonl | 0 |
+| DEBT-3112 | agent-invocations.jsonl has no rotation or size cap | S3 | .claude/state/agent-invocations.jsonl | 0 |
+| DEBT-3114 | .claude/tmp-alerts.json persists across sessions (temp fi... | S3 | .claude/tmp-alerts.json | 0 |
+| DEBT-3115 | session-end does not clean .session-agents.json or .agent... | S3 | .claude/skills/session-end/SKILL.md | 0 |
+| DEBT-3116 | MEMORY.md is within size limits but contains completed/st... | S3 | C:/Users/jason/.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/MEMORY.md | 0 |
+| DEBT-3119 | compact-restore.js injects full recovery context (~30 lin... | S3 | .claude/hooks/compact-restore.js | 0 |
+| DEBT-3121 | 3 hooks on every Read operation add latency without conte... | S3 | .claude/settings.json | 0 |
+| DEBT-3123 | MCP github server enabled but not configured in .mcp.json... | S3 | .claude/settings.local.json | 0 |
+| DEBT-3124 | MCP global template (.claude/mcp.global-template.json) in... | S3 | .claude/mcp.global-template.json | 0 |
+| DEBT-3125 | MCP firebase server enabled but not configured — may rely... | S3 | .claude/settings.local.json | 0 |
+| DEBT-3225 | filesystem MCP server configured but permanently disabled... | S3 | .mcp.json | 0 |
+| DEBT-3227 | Dead Documentation: technical-debt/INDEX.md | S3 | docs/technical-debt/INDEX.md | 0 |
+| DEBT-3228 | MCP Config Efficiency: Unused filesystem server | S3 | .mcp.json | 0 |
+| DEBT-3229 | Format Waste: Verbose session-start output | S3 | .claude/hooks/session-start.js | 0 |
+| DEBT-3231 | Dead Documentation: technical-debt/logs artifacts | S3 | docs/technical-debt/logs/verification-log.jsonl | 0 |
+| DEBT-3233 | settings.json disabledMcpjsonServers has 3 stale entries ... | S3 | .claude/settings.json | 0 |
+| DEBT-3234 | Session-begin checklist duplicates mandatory context reads | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-3238 | session-start.js reads full reviews.jsonl for a single co... | S3 | .claude/hooks/session-start.js | 0 |
+| DEBT-3239 | MCP servers configured but 4 are disabled — disabled list... | S3 | .claude/settings.json | 0 |
+| DEBT-3243 | Multiple hooks duplicate loadJson/saveJson atomic write p... | S3 | .claude/hooks/post-read-handler.js | 0 |
+| DEBT-3244 | health-score-log.jsonl and hook-warnings-log.jsonl grow u... | S3 | .claude/state/health-score-log.jsonl | 0 |
+| DEBT-3245 | Remote-branch parsing relies on delimiter split that can ... | S3 | .claude/hooks/check-remote-session-context.js | 0 |
+| DEBT-3246 | Shell script hooks may be redundant with Node.js versions | S3 | .claude/hooks/session-start.sh | 0 |
 
 ## code-quality (1454)
 
-| ID        | Title                                                          | Severity | File                                                                                                                                                                        | Line |
-| --------- | -------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
-| DEBT-0001 | Provide a compare function to avoid sorting elements alph...   | S1       | app/meetings/all/page.tsx                                                                                                                                                   | 164  |
-| DEBT-0002 | Provide a compare function to avoid sorting elements alph...   | S1       | components/notebook/pages/resources-page.tsx                                                                                                                                | 306  |
-| DEBT-0003 | Use '[[' instead of '[' for conditional tests. The '[[' c...   | S1       | .claude/hooks/session-start.sh                                                                                                                                              | 264  |
-| DEBT-0004 | Use '[[' instead of '[' for conditional tests. The '[[' c...   | S1       | .claude/hooks/pattern-check.sh                                                                                                                                              | 89   |
-| DEBT-0005 | Use '[[' instead of '[' for conditional tests. The '[[' c...   | S1       | scripts/check-review-triggers.sh                                                                                                                                            | 44   |
-| DEBT-0006 | Use '[[' instead of '[' for conditional tests. The '[[' c...   | S1       | .claude/skills/artifacts-builder/scripts/bundle-artifact.sh                                                                                                                 | 7    |
-| DEBT-0007 | Use '[[' instead of '[' for conditional tests. The '[[' c...   | S1       | .claude/skills/artifacts-builder/scripts/init-artifact.sh                                                                                                                   | 11   |
-| DEBT-0008 | Use '[[' instead of '[' for conditional tests. The '[[' c...   | S1       | .claude/skills/systematic-debugging/find-polluter.sh                                                                                                                        | 8    |
-| DEBT-0009 | Exporting mutable 'let' binding, use 'const' instead.          | S1       | lib/firebase.ts                                                                                                                                                             | 137  |
-| DEBT-0010 | Refactor this function to reduce its Cognitive Complexity...   | S1       | lib/db/meetings.ts                                                                                                                                                          | 21   |
-| DEBT-0011 | Refactor this function to reduce its Cognitive Complexity...   | S1       | components/admin/admin-crud-table.tsx                                                                                                                                       | 83   |
-| DEBT-0013 | Refactor this function to reduce its Cognitive Complexity...   | S1       | functions/src/index.ts                                                                                                                                                      | 486  |
-| DEBT-0014 | Refactor this code to not nest functions more than 4 leve...   | S1       | hooks/use-daily-quote.ts                                                                                                                                                    | 159  |
-| DEBT-0015 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/validate-canon-schema.js                                                                                                                                            | 235  |
-| DEBT-0016 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/normalize-canon-ids.js                                                                                                                                              | 188  |
-| DEBT-0017 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-review-needed.js                                                                                                                                              | 254  |
-| DEBT-0018 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/generate-documentation-index.js                                                                                                                                     | 141  |
-| DEBT-0019 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/validate-audit.js                                                                                                                                                   | 211  |
-| DEBT-0020 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/add-false-positive.js                                                                                                                                               | 139  |
-| DEBT-0021 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-document-sync.js                                                                                                                                              | 200  |
-| DEBT-0022 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/phase-complete-check.js                                                                                                                                             | 133  |
-| DEBT-0023 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/validate-phase-completion.js                                                                                                                                        | 26   |
-| DEBT-0024 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/assign-review-tier.js                                                                                                                                               | 354  |
-| DEBT-0025 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-pattern-compliance.js                                                                                                                                         | 541  |
-| DEBT-0026 | Add a default case (\*) to handle unexpected values.           | S1       | .claude/hooks/pattern-check.sh                                                                                                                                              | 36   |
-| DEBT-0027 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/surface-lessons-learned.js                                                                                                                                          | 80   |
-| DEBT-0028 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/suggest-pattern-automation.js                                                                                                                                       | 107  |
-| DEBT-0029 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-docs-light.js                                                                                                                                                 | 514  |
-| DEBT-0030 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/archive-doc.js                                                                                                                                                      | 473  |
-| DEBT-0031 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/enrich-addresses.ts                                                                                                                                                 | 15   |
-| DEBT-0032 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/migrate-meetings-dayindex.ts                                                                                                                                        | 29   |
-| DEBT-0033 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/retry-failures.ts                                                                                                                                                   | 12   |
-| DEBT-0034 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/update-readme-status.js                                                                                                                                             | 151  |
-| DEBT-0035 | Refactor this function to reduce its Cognitive Complexity...   | S1       | functions/src/security-wrapper.ts                                                                                                                                           | 106  |
-| DEBT-0036 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/migrate-to-journal.ts                                                                                                                                               | 198  |
-| DEBT-0038 | Refactor this function to reduce its Cognitive Complexity...   | S1       | components/notebook/pages/history-page.tsx                                                                                                                                  | 50   |
-| DEBT-0039 | Refactor this code to not nest functions more than 4 leve...   | S1       | components/notebook/pages/today-page.tsx                                                                                                                                    | 337  |
-| DEBT-0040 | Refactor this function to reduce its Cognitive Complexity...   | S1       | components/notebook/features/clean-time-display.tsx                                                                                                                         | 29   |
-| DEBT-0041 | Refactor this function to reduce its Cognitive Complexity...   | S1       | components/notebook/pages/today-page.tsx                                                                                                                                    | 651  |
-| DEBT-0042 | Refactor this function to reduce its Cognitive Complexity...   | S1       | app/meetings/all/page.tsx                                                                                                                                                   | 62   |
-| DEBT-0043 | Refactor this function to reduce its Cognitive Complexity...   | S1       | components/notebook/pages/resources-page.tsx                                                                                                                                | 40   |
-| DEBT-0044 | Refactor this function to reduce its Cognitive Complexity...   | S1       | components/growth/NightReviewCard.tsx                                                                                                                                       | 75   |
-| DEBT-0047 | Time-of-day rotation logic duplicated in quotes.ts and sl...   | S1       | lib/db/quotes.ts                                                                                                                                                            | 0    |
-| DEBT-0048 | Cloud Function error handling pattern duplicated 4-6x acr...   | S1       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0049 | Journal entry type definitions diverge between client typ...   | S1       | types/journal.ts                                                                                                                                                            | 0    |
-| DEBT-0050 | No test coverage for high-complexity scripts                   | S1       | scripts/assign-review-tier.js                                                                                                                                               | 0    |
-| DEBT-0051 | App Check temporarily disabled across all Cloud Functions      | S1       | functions/src/index.ts                                                                                                                                                      | 0    |
-| DEBT-0052 | Deprecated saveNotebookJournalEntry still used in 6+ UI c...   | S1       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0053 | useJournal mixes domain logic with transport (httpsCallab...   | S1       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-0054 | TodayPage is a god component mixing 4+ responsibilities        | S1       | components/notebook/pages/today-page.tsx                                                                                                                                    | 0    |
-| DEBT-0055 | Direct Firebase SDK usage in UI components bypasses servi...   | S1       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-0056 | Automation scripts have critically low test coverage (2-7...   | S1       | scripts/                                                                                                                                                                    | 0    |
-| DEBT-0057 | Missing security scanning in CI (npm audit, CodeQL, Depen...   | S1       | .github/workflows/ci.yml                                                                                                                                                    | 0    |
-| DEBT-0058 | Deploy workflow calls gcloud without installing Google Cl...   | S1       | .github/workflows/deploy-firebase.yml                                                                                                                                       | 0    |
-| DEBT-0059 | Landing page forced to client-side rendering blocks SSR f...   | S1       | app/page.tsx                                                                                                                                                                | 0    |
-| DEBT-0060 | Excessive 'use client' directives prevent SSR optimization     | S1       | app/page.tsx                                                                                                                                                                | 0    |
-| DEBT-0061 | Static export disables Next.js image optimization              | S1       | next.config.mjs                                                                                                                                                             | 0    |
-| DEBT-0062 | TodayPage re-subscribes on journalEntry change                 | S1       | components/notebook/pages/today-page.tsx                                                                                                                                    | 0    |
-| DEBT-0063 | Notebook module registry eagerly imports all pages             | S1       | components/notebook/roadmap-modules.tsx                                                                                                                                     | 0    |
-| DEBT-0064 | Broken relative links in review/output docs (wrong ../ de...   | S1       | docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md                                                                                                             | 0    |
-| DEBT-0065 | [X] placeholders remain in 2026-Q1 plan instances              | S1       | docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md                                                                                                                            | 0    |
-| DEBT-0066 | Console.\* usage in app components bypasses standardized l...  | S1       | lib/db/library.ts                                                                                                                                                           | 0    |
-| DEBT-0067 | Cloud Function schema missing 'step-1-worksheet' journal ...   | S1       | functions/src/schemas.ts                                                                                                                                                    | 0    |
-| DEBT-0069 | Cloud Function error handling duplicated (4 locations) + ...   | S1       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0070 | Critical logic divergence in journal saving (deprecated F...   | S1       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0072 | Server layout composes client providers; boundary should ...   | S1       | app/layout.tsx                                                                                                                                                              | 0    |
-| DEBT-0074 | Missing automated tests for Cloud Function security layer...   | S1       | functions/src/index.ts                                                                                                                                                      | 0    |
-| DEBT-0075 | No integration tests for Firestore rules (emulator-based)      | S1       | firestore.rules                                                                                                                                                             | 0    |
-| DEBT-0076 | Security-critical files have low test coverage (account-l...   | S1       | lib/auth/account-linking.ts                                                                                                                                                 | 0    |
-| DEBT-0082 | Console.\* usage in production code bypasses standardized ...  | S1       | lib/db/library.ts                                                                                                                                                           | 0    |
-| DEBT-0083 | Cloud Function error handling duplicated 4-6x with duplic...   | S1       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0085 | 5 failing tests in check-docs-light.test.ts                    | S1       | tests/scripts/check-docs-light.test.ts                                                                                                                                      | 199  |
-| DEBT-0086 | Very high cognitive complexity in adminListUsers               | S1       | functions/src/admin.ts                                                                                                                                                      | 1835 |
-| DEBT-0097 | No correlation IDs for request tracing (frontend to backend)   | S1       | lib/logger.ts                                                                                                                                                               | 1    |
-| DEBT-0098 | No offline write queue - data loss when user goes offline      | S1       | hooks/use-journal.ts                                                                                                                                                        | 319  |
-| DEBT-0099 | No Firebase persistence enabled - Firestore cache not per...   | S1       | lib/firebase.ts                                                                                                                                                             | 1    |
-| DEBT-0103 | Fix journal entry type mismatch                                | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0104 | Extract error handling utility                                 | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0105 | Remove deprecated saveNotebookJournalEntry                     | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0106 | Enable SSR for landing page                                    | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0113 | Separate domain/transport in useJournal                        | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0114 | Reduce 'use client' directives                                 | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0115 | Split TodayPage god component                                  | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0116 | Explicit client providers wrapper                              | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0117 | Implement image optimization                                   | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0118 | Fix TodayPage subscription bug                                 | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0119 | Lazy load notebook modules                                     | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0120 | Add Cloud Function security tests                              | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0121 | Add Firestore rules emulator tests                             | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0122 | Increase security file coverage                                | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0123 | Add script test coverage (CI)                                  | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0124 | Fix broken relative links                                      | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0125 | Replace [X] placeholders                                       | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0126 | Add npm audit + CodeQL + Dependabot                            | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0127 | Add gcloud setup to deploy workflow                            | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0128 | Item Name                                                      | S1       | components/notebook/pages/today-page.tsx                                                                                                                                    | 89   |
-| DEBT-0131 | Replace console.\* with logger                                 | S1       | lib/db/library.ts                                                                                                                                                           | 23   |
-| DEBT-0139 | Large component file (1179 lines)                              | S1       | components/notebook/pages/today-page.tsx                                                                                                                                    | 1    |
-| DEBT-0147 | A form label must be associated with a control.                | S1       | components/growth/NightReviewCard.tsx                                                                                                                                       | 406  |
-| DEBT-0149 | Avoid non-native interactive elements. If using native HT...   | S1       | components/journal/entry-detail-dialog.tsx                                                                                                                                  | 18   |
-| DEBT-0150 | Avoid non-native interactive elements. If using native HT...   | S1       | components/journal/entry-feed.tsx                                                                                                                                           | 152  |
-| DEBT-0151 | A form label must be associated with a control.                | S1       | components/journal/entry-wizard.tsx                                                                                                                                         | 152  |
-| DEBT-0168 | A form label must be associated with a control.                | S1       | components/admin/meetings-tab.tsx                                                                                                                                           | 89   |
-| DEBT-0171 | A form label must be associated with a control.                | S1       | components/journal/entry-forms/daily-log-form.tsx                                                                                                                           | 75   |
-| DEBT-0173 | A form label must be associated with a control.                | S1       | components/journal/entry-forms/inventory-form.tsx                                                                                                                           | 71   |
-| DEBT-0174 | A form label must be associated with a control.                | S1       | components/journal/entry-forms/mood-form.tsx                                                                                                                                | 71   |
-| DEBT-0194 | Simplify this regular expression to reduce its complexity...   | S1       | scripts/check-pattern-compliance.js                                                                                                                                         | 114  |
-| DEBT-0199 | Extract this nested ternary operation into an independent...   | S1       | components/admin/meetings-tab.tsx                                                                                                                                           | 263  |
-| DEBT-0200 | Extract this nested ternary operation into an independent...   | S1       | components/admin/sober-living-tab.tsx                                                                                                                                       | 148  |
-| DEBT-0201 | Extract this nested ternary operation into an independent...   | S1       | components/auth/sign-in-modal.tsx                                                                                                                                           | 61   |
-| DEBT-0205 | Extract this nested ternary operation into an independent...   | S1       | components/growth/SpotCheckCard.tsx                                                                                                                                         | 52   |
-| DEBT-0206 | Use <output> instead of the "status" role to ensure acces...   | S1       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 742  |
-| DEBT-0209 | Do not use Array index in keys                                 | S1       | components/journal/entry-detail-dialog.tsx                                                                                                                                  | 346  |
-| DEBT-0211 | Extract this nested ternary operation into an independent...   | S1       | components/notebook/pages/history-page.tsx                                                                                                                                  | 59   |
-| DEBT-0212 | Extract this nested ternary operation into an independent...   | S1       | components/notebook/pages/resources-page.tsx                                                                                                                                | 607  |
-| DEBT-0214 | Extract this nested ternary operation into an independent...   | S1       | functions/src/admin.ts                                                                                                                                                      | 1148 |
-| DEBT-0229 | Extract this nested ternary operation into an independent...   | S1       | scripts/generate-documentation-index.js                                                                                                                                     | 615  |
-| DEBT-0245 | Extract this nested ternary operation into an independent...   | S1       | scripts/update-readme-status.js                                                                                                                                             | 356  |
-| DEBT-0298 | Replace this character class by the character itself.          | S1       | scripts/check-docs-light.js                                                                                                                                                 | 162  |
-| DEBT-0318 | Do not use Array index in keys                                 | S1       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 376  |
-| DEBT-0322 | Extract this nested ternary operation into an independent...   | S1       | components/admin/errors-tab.tsx                                                                                                                                             | 108  |
-| DEBT-0323 | Extract this nested ternary operation into an independent...   | S1       | components/admin/dashboard-tab.tsx                                                                                                                                          | 241  |
-| DEBT-0331 | Extract this nested ternary operation into an independent...   | S1       | components/celebrations/milestone-modal.tsx                                                                                                                                 | 33   |
-| DEBT-0336 | Use <input type="radio"> instead of the "radio" role to e...   | S1       | components/notebook/features/check-in-questions.tsx                                                                                                                         | 43   |
-| DEBT-0342 | Prefer using an optional chain expression instead, as it'...   | S1       | lib/utils/anonymous-backup.ts                                                                                                                                               | 41   |
-| DEBT-0348 | Extract this nested ternary operation into an independent...   | S1       | app/meetings/all/page.tsx                                                                                                                                                   | 361  |
-| DEBT-0352 | Member 'config' is never reassigned; mark it as `readonly`.    | S1       | functions/src/firestore-rate-limiter.ts                                                                                                                                     | 27   |
-| DEBT-0851 | 47 CRITICAL cognitive complexity violations in scripts (1...   | S1       | scripts/assign-review-tier.js                                                                                                                                               | 0    |
-| DEBT-0863 | Reduce 47 CRITICAL complexity functions                        | S1       | scripts/assign-review-tier.js                                                                                                                                               | 0    |
-| DEBT-0931 | TodayPage Component Critical - N+1 Queries, 940+ Lines, 1...   | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0941 | Explicit 'any' Type in Production Callback                     | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0942 | Multiple 'any' Types in Test Mock Setup (10+ instances)        | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0962 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/eval/eval-sonarcloud-report.js                                                                                                                                      | 142  |
-| DEBT-0968 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/eval/eval-sonarcloud-snapshot.js                                                                                                                                    | 100  |
-| DEBT-0973 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/eval/eval-sonarcloud-stage.js                                                                                                                                       | 218  |
-| DEBT-0981 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/multi-ai/eval-check-stage.js                                                                                                                                        | 60   |
-| DEBT-0987 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/multi-ai/eval-report.js                                                                                                                                             | 37   |
-| DEBT-0988 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/multi-ai/normalize-format.js                                                                                                                                        | 129  |
-| DEBT-0989 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/multi-ai/state-manager.js                                                                                                                                           | 179  |
-| DEBT-0996 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/multi-ai/fix-schema.js                                                                                                                                              | 460  |
-| DEBT-0999 | Prefer top-level await over using a promise chain.             | S1       | scripts/multi-ai/unify-findings.js                                                                                                                                          | 709  |
-| DEBT-1010 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/multi-ai/eval-snapshot.js                                                                                                                                           | 70   |
-| DEBT-1017 | Extract this nested ternary operation into an independent...   | S1       | scripts/multi-ai/aggregate-category.js                                                                                                                                      | 196  |
-| DEBT-1019 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/multi-ai/aggregate-category.js                                                                                                                                      | 245  |
-| DEBT-1022 | Prefer top-level await over using a promise chain.             | S1       | scripts/multi-ai/aggregate-category.js                                                                                                                                      | 586  |
-| DEBT-1026 | Group parts of the regex together to make the intended op...   | S1       | scripts/multi-ai/fix-schema.js                                                                                                                                              | 255  |
-| DEBT-1042 | Group parts of the regex together to make the intended op...   | S1       | scripts/multi-ai/normalize-format.js                                                                                                                                        | 740  |
-| DEBT-1047 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/multi-ai/unify-findings.js                                                                                                                                          | 181  |
-| DEBT-1050 | Remove this useless assignment to variable "category".         | S1       | scripts/multi-ai/unify-findings.js                                                                                                                                          | 287  |
-| DEBT-1051 | Add an initial value to this "reduce()" call.                  | S1       | scripts/multi-ai/unify-findings.js                                                                                                                                          | 305  |
-| DEBT-1053 | Remove this useless assignment to variable "mergeLog".         | S1       | scripts/multi-ai/unify-findings.js                                                                                                                                          | 586  |
-| DEBT-1058 | Prefer `childNode.remove()` over `parentNode.removeChild(...   | S1       | components/admin/jobs-tab.tsx                                                                                                                                               | 237  |
-| DEBT-1059 | Prefer `childNode.remove()` over `parentNode.removeChild(...   | S1       | components/admin/logs-tab.tsx                                                                                                                                               | 380  |
-| DEBT-1060 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/sync-consolidation-counter.js                                                                                                                                       | 71   |
-| DEBT-1067 | Remove duplicates in this character class.                     | S1       | components/admin/logs-tab.tsx                                                                                                                                               | 317  |
-| DEBT-1069 | Non-interactive elements should not be assigned mouse or ...   | S1       | components/admin/errors-tab.tsx                                                                                                                                             | 404  |
-| DEBT-1070 | Use <dialog> instead of the "dialog" role to ensure acces...   | S1       | components/admin/errors-tab.tsx                                                                                                                                             | 404  |
-| DEBT-1098 | Extract this nested ternary operation into an independent...   | S1       | components/admin/jobs-tab.tsx                                                                                                                                               | 285  |
-| DEBT-1104 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/audit/transform-jsonl-schema.js                                                                                                                                     | 225  |
-| DEBT-1116 | Extract this nested ternary operation into an independent...   | S1       | scripts/audit/transform-jsonl-schema.js                                                                                                                                     | 440  |
-| DEBT-1120 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 652  |
-| DEBT-1127 | Extract this nested ternary operation into an independent...   | S1       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 1184 |
-| DEBT-1144 | Prefer top-level await over using a promise chain.             | S1       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 1227 |
-| DEBT-1150 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/intake-audit.js                                                                                                                                                | 116  |
-| DEBT-1155 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/lib/ai-pattern-checks.js                                                                                                                                            | 102  |
-| DEBT-1156 | Update this function so that its implementation is not id...   | S1       | scripts/lib/ai-pattern-checks.js                                                                                                                                            | 244  |
-| DEBT-1159 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-content-accuracy.js                                                                                                                                           | 190  |
-| DEBT-1168 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-external-links.js                                                                                                                                             | 320  |
-| DEBT-1180 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-doc-placement.js                                                                                                                                              | 160  |
-| DEBT-1183 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/assign-roadmap-refs.js                                                                                                                                         | 125  |
-| DEBT-1188 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/generate-metrics.js                                                                                                                                            | 76   |
-| DEBT-1189 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/sync-claude-settings.js                                                                                                                                             | 191  |
-| DEBT-1191 | This always evaluates to truthy. Consider refactoring thi...   | S1       | scripts/sync-claude-settings.js                                                                                                                                             | 313  |
-| DEBT-1200 | Extract this nested ternary operation into an independent...   | S1       | scripts/sync-claude-settings.js                                                                                                                                             | 385  |
-| DEBT-1209 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/check-phase-status.js                                                                                                                                          | 75   |
-| DEBT-1214 | Extract this nested ternary operation into an independent...   | S1       | scripts/aggregate-audit-findings.js                                                                                                                                         | 738  |
-| DEBT-1221 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/resolve-item.js                                                                                                                                                | 102  |
-| DEBT-1223 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/dedup-multi-pass.js                                                                                                                                            | 209  |
-| DEBT-1226 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/generate-views.js                                                                                                                                              | 113  |
-| DEBT-1229 | Prefer top-level await over using a promise chain.             | S1       | scripts/debt/extract-audits.js                                                                                                                                              | 241  |
-| DEBT-1241 | Remove this assignment of "i".                                 | S1       | scripts/debt/resolve-bulk.js                                                                                                                                                | 36   |
-| DEBT-1243 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/resolve-bulk.js                                                                                                                                                | 129  |
-| DEBT-1244 | Prefer top-level await over using a promise chain.             | S1       | scripts/debt/resolve-bulk.js                                                                                                                                                | 273  |
-| DEBT-1249 | Remove this assignment of "i".                                 | S1       | scripts/debt/resolve-item.js                                                                                                                                                | 40   |
-| DEBT-1251 | Prefer top-level await over using a promise chain.             | S1       | scripts/debt/resolve-item.js                                                                                                                                                | 276  |
-| DEBT-1254 | Remove this assignment of "i".                                 | S1       | scripts/debt/validate-schema.js                                                                                                                                             | 58   |
-| DEBT-1255 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/validate-schema.js                                                                                                                                             | 67   |
-| DEBT-1257 | Prefer top-level await over using a promise chain.             | S1       | scripts/debt/validate-schema.js                                                                                                                                             | 292  |
-| DEBT-1262 | Prefer top-level await over using a promise chain.             | S1       | scripts/debt/intake-audit.js                                                                                                                                                | 574  |
-| DEBT-1267 | Remove this assignment of "i".                                 | S1       | scripts/debt/intake-manual.js                                                                                                                                               | 69   |
-| DEBT-1269 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/intake-manual.js                                                                                                                                               | 168  |
-| DEBT-1272 | Prefer top-level await over using a promise chain.             | S1       | scripts/debt/intake-manual.js                                                                                                                                               | 389  |
-| DEBT-1277 | Remove this assignment of "i".                                 | S1       | scripts/debt/intake-pr-deferred.js                                                                                                                                          | 62   |
-| DEBT-1283 | Prefer top-level await over using a promise chain.             | S1       | scripts/debt/intake-pr-deferred.js                                                                                                                                          | 300  |
-| DEBT-1288 | Remove this assignment of "i".                                 | S1       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 96   |
-| DEBT-1290 | Refactor this code to not use nested template literals.        | S1       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 237  |
-| DEBT-1291 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 446  |
-| DEBT-1292 | Prefer top-level await over using a promise chain.             | S1       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 679  |
-| DEBT-1307 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/extract-audits.js                                                                                                                                              | 163  |
-| DEBT-1312 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/extract-reviews.js                                                                                                                                             | 158  |
-| DEBT-1315 | Prefer top-level await over using a promise chain.             | S1       | scripts/debt/extract-reviews.js                                                                                                                                             | 269  |
-| DEBT-1320 | Extract this nested ternary operation into an independent...   | S1       | scripts/debt/generate-views.js                                                                                                                                              | 324  |
-| DEBT-1324 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/debt/normalize-all.js                                                                                                                                               | 134  |
-| DEBT-1326 | Prefer top-level await over using a promise chain.             | S1       | scripts/debt/normalize-all.js                                                                                                                                               | 227  |
-| DEBT-1330 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/aggregate-audit-findings.js                                                                                                                                         | 411  |
-| DEBT-1337 | Extract this nested ternary operation into an independent...   | S1       | scripts/generate-placement-report.js                                                                                                                                        | 50   |
-| DEBT-1339 | Replace this alternation with a character class.               | S1       | scripts/aggregate-audit-findings.js                                                                                                                                         | 488  |
-| DEBT-1341 | Group parts of the regex together to make the intended op...   | S1       | scripts/aggregate-audit-findings.js                                                                                                                                         | 540  |
-| DEBT-1343 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-doc-headers.js                                                                                                                                                | 182  |
-| DEBT-1358 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/generate-pending-alerts.js                                                                                                                                          | 31   |
-| DEBT-1361 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-backlog-health.js                                                                                                                                             | 153  |
-| DEBT-1368 | Refactor this code to not use nested template literals.        | S1       | scripts/generate-pending-alerts.js                                                                                                                                          | 96   |
-| DEBT-1373 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-agent-compliance.js                                                                                                                                           | 151  |
-| DEBT-1389 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-pattern-sync.js                                                                                                                                               | 90   |
-| DEBT-1390 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 316  |
-| DEBT-1394 | Extract this nested ternary operation into an independent...   | S1       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 599  |
-| DEBT-1397 | Remove this useless assignment to variable "trends".           | S1       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 791  |
-| DEBT-1398 | Remove this assignment of "i".                                 | S1       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 1052 |
-| DEBT-1406 | Remove duplicates in this character class.                     | S1       | scripts/lib/security-helpers.js                                                                                                                                             | 30   |
-| DEBT-1419 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/lib/security-helpers.js                                                                                                                                             | 257  |
-| DEBT-1422 | Remove this assignment of "i".                                 | S1       | scripts/lib/security-helpers.js                                                                                                                                             | 306  |
-| DEBT-1452 | Prefer top-level await over using a promise chain.             | S1       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 1265 |
-| DEBT-1453 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/run-consolidation.js                                                                                                                                                | 662  |
-| DEBT-1471 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-hook-health.js                                                                                                                                                | 204  |
-| DEBT-1472 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/test-hooks.js                                                                                                                                                       | 291  |
-| DEBT-1473 | 'If' statement should not be the only statement in 'else'...   | S1       | scripts/test-hooks.js                                                                                                                                                       | 375  |
-| DEBT-1475 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/secrets/decrypt-secrets.js                                                                                                                                          | 177  |
-| DEBT-1476 | Prefer top-level await over using a promise chain.             | S1       | scripts/secrets/decrypt-secrets.js                                                                                                                                          | 266  |
-| DEBT-1478 | Prefer top-level await over using a promise chain.             | S1       | scripts/secrets/encrypt-secrets.js                                                                                                                                          | 201  |
-| DEBT-1483 | Remove this useless assignment to variable "argReal".          | S1       | scripts/validate-canon-schema.js                                                                                                                                            | 427  |
-| DEBT-1492 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/verify-sonar-phase.js                                                                                                                                               | 208  |
-| DEBT-1505 | Remove this useless assignment to variable "found".            | S1       | docs/archive/obsolete-scripts-2026-02/generate-sonar-report-with-snippets.js                                                                                                | 181  |
-| DEBT-1512 | Remove this useless assignment to variable "found".            | S1       | scripts/generate-detailed-sonar-report.js                                                                                                                                   | 274  |
-| DEBT-1524 | Use <img alt=...> instead of the "presentation" role to e...   | S1       | components/admin/errors-tab.tsx                                                                                                                                             | 888  |
-| DEBT-1525 | Use <img alt=...> instead of the "presentation" role to e...   | S1       | components/admin/users-tab.tsx                                                                                                                                              | 1395 |
-| DEBT-1527 | Non-interactive elements should not be assigned mouse or ...   | S1       | components/admin/users-tab.tsx                                                                                                                                              | 1582 |
-| DEBT-1528 | Use <dialog> instead of the "dialog" role to ensure acces...   | S1       | components/admin/users-tab.tsx                                                                                                                                              | 1582 |
-| DEBT-1535 | A form label must be associated with a control.                | S1       | components/admin/errors-tab.tsx                                                                                                                                             | 896  |
-| DEBT-1537 | Remove this useless assignment to variable "hasMore".          | S1       | functions/src/jobs.ts                                                                                                                                                       | 172  |
-| DEBT-1554 | Prefer `childNode.remove()` over `parentNode.removeChild(...   | S1       | lib/utils/error-export.ts                                                                                                                                                   | 293  |
-| DEBT-1561 | A form label must be associated with a control.                | S1       | components/admin/privileges-tab.tsx                                                                                                                                         | 298  |
-| DEBT-1564 | Use <input type="checkbox"> instead of the "checkbox" rol...   | S1       | components/admin/privileges-tab.tsx                                                                                                                                         | 346  |
-| DEBT-1565 | Extract this nested ternary operation into an independent...   | S1       | components/admin/privileges-tab.tsx                                                                                                                                         | 478  |
-| DEBT-1567 | Extract this nested ternary operation into an independent...   | S1       | components/admin/users-tab.tsx                                                                                                                                              | 1171 |
-| DEBT-1568 | Prefer using an optional chain expression instead, as it'...   | S1       | functions/src/admin.ts                                                                                                                                                      | 3365 |
-| DEBT-1590 | Extract this nested ternary operation into an independent...   | S1       | components/admin/logs-tab.tsx                                                                                                                                               | 682  |
-| DEBT-1603 | Replace this character class by the character itself.          | S1       | scripts/run-consolidation.js                                                                                                                                                | 326  |
-| DEBT-1605 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-cross-doc-deps.js                                                                                                                                             | 227  |
-| DEBT-1614 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/security-check.js                                                                                                                                                   | 400  |
-| DEBT-1617 | Simplify this regular expression to reduce its complexity...   | S1       | lib/utils/admin-error-utils.ts                                                                                                                                              | 34   |
-| DEBT-1625 | Extract this nested ternary operation into an independent...   | S1       | app/dev/page.tsx                                                                                                                                                            | 105  |
-| DEBT-1627 | Prefer top-level await over using a promise chain.             | S1       | scripts/lighthouse-audit.js                                                                                                                                                 | 252  |
-| DEBT-1633 | Remove this useless assignment to variable "originalClean...   | S1       | components/settings/settings-page.tsx                                                                                                                                       | 249  |
-| DEBT-1638 | Remove duplicates in this character class.                     | S1       | scripts/log-session-activity.js                                                                                                                                             | 50   |
-| DEBT-1640 | Refactor this code to not use nested template literals.        | S1       | scripts/check-triggers.js                                                                                                                                                   | 198  |
-| DEBT-1641 | Remove duplicates in this character class.                     | S1       | scripts/log-override.js                                                                                                                                                     | 58   |
-| DEBT-1643 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/check-triggers.js                                                                                                                                                   | 259  |
-| DEBT-1644 | Refactor this function to reduce its Cognitive Complexity...   | S1       | scripts/validate-skill-config.js                                                                                                                                            | 98   |
-| DEBT-1649 | Remove this useless assignment to variable "isSession".        | S1       | scripts/validate-skill-config.js                                                                                                                                            | 113  |
-| DEBT-1914 | Performance anti-pattern: Excessive re-renders from conte...   | S1       | components/providers/auth-provider.tsx                                                                                                                                      | 43   |
-| DEBT-1915 | Missing input validation on server-generated data              | S1       | hooks/use-journal.ts                                                                                                                                                        | 172  |
-| DEBT-1916 | Data flow violation: Direct Firestore writes in admin com...   | S1       | components/admin/dashboard-tab.tsx                                                                                                                                          | 4    |
-| DEBT-1917 | Missing error boundary coverage for async operations           | S1       | components/providers/error-boundary.tsx                                                                                                                                     | 37   |
-| DEBT-1918 | Missing cleanup for onSnapshot listener                        | S1       | hooks/use-journal.ts                                                                                                                                                        | 284  |
-| DEBT-1919 | Unvalidated URL construction in GCP links                      | S1       | components/admin/logs-tab.tsx                                                                                                                                               | 436  |
-| DEBT-1952 | DEVELOPMENT.md references npm script type-check that does...   | S1       | DEVELOPMENT.md                                                                                                                                                              | 848  |
-| DEBT-1953 | OfflineIndicator uses navigator.onLine in useState initia...   | S1       | components/status/offline-indicator.tsx                                                                                                                                     | 0    |
-| DEBT-1955 | Firebase App Check is disabled in client initialization path   | S1       | lib/firebase.ts                                                                                                                                                             | 0    |
-| DEBT-1956 | reCAPTCHA Token Bypass (Existing DEBT-0045)                    | S1       | functions/src/security-wrapper.ts                                                                                                                                           | 0    |
-| DEBT-1957 | Inconsistent Admin Write Patterns (Cloud Functions vs Dir...   | S1       | components/admin/meetings-tab.tsx                                                                                                                                           | 0    |
-| DEBT-1959 | Firestore rules may not cover worksheets subcollection         | S1       | firestore.rules                                                                                                                                                             | 0    |
-| DEBT-1961 | Sentry DSN, Firebase API key, and reCAPTCHA site key comm...   | S1       | .env.production                                                                                                                                                             | 0    |
-| DEBT-1966 | Critical Paths Lack Test Coverage                              | S1       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-1967 | Oversized UI Components (1,000-2,000+ Lines Each)              | S1       | components/admin/users-tab.tsx                                                                                                                                              | 0    |
-| DEBT-1968 | No correlation ID system for distributed tracing               | S1       | lib/logger.ts                                                                                                                                                               | 99   |
-| DEBT-1970 | App Check is entirely disabled on client and server            | S1       | lib/firebase.ts                                                                                                                                                             | 0    |
-| DEBT-1972 | Type Divergence: Client types vs Server schemas                | S1       | types/journal.ts                                                                                                                                                            | 0    |
-| DEBT-1973 | God Object: components/admin/users-tab.tsx (2092 lines)        | S1       | components/admin/users-tab.tsx                                                                                                                                              | 0    |
-| DEBT-1974 | No service worker — app cannot load at all when offline        | S1       | public/                                                                                                                                                                     | 1    |
-| DEBT-1984 | Excessive Cognitive Complexity (40+ files)                     | S1       | scripts/check-docs-light.js                                                                                                                                                 | 0    |
-| DEBT-1986 | God Object: functions/src/admin.ts (4108 lines)                | S1       | functions/src/admin.ts                                                                                                                                                      | 0    |
-| DEBT-1988 | Zero Component Test Coverage                                   | S1       | components/                                                                                                                                                                 | 0    |
-| DEBT-2746 | Item Name                                                      | S1       | N/A                                                                                                                                                                         | 0    |
-| DEBT-2865 | PostToolUse Write: 10 sequential hook processes spawned p...   | S1       | .claude/settings.json                                                                                                                                                       | 0    |
-| DEBT-2866 | PostToolUse Edit: 9 sequential hook processes spawned per...   | S1       | .claude/settings.json                                                                                                                                                       | 0    |
-| DEBT-3017 | ROADMAP.md milestone tracking tables                           | S1       | ROADMAP.md                                                                                                                                                                  | 0    |
-| DEBT-3018 | AUDIT_TRACKER.md audit log tables                              | S1       | docs/AUDIT_TRACKER.md                                                                                                                                                       | 0    |
-| DEBT-3019 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas    | S1       | docs/EXPANSION_EVALUATION_TRACKER.md                                                                                                                                        | 0    |
-| DEBT-3020 | AUDIT_TRACKER.md threshold matrix and version history          | S1       | docs/AUDIT_TRACKER.md                                                                                                                                                       | 0    |
-| DEBT-3040 | sync-claude-settings.js - Unused Claude Code settings syn...   | S1       | scripts/sync-claude-settings.js                                                                                                                                             | 0    |
-| DEBT-3042 | Write/Edit/MultiEdit share 8 redundant hooks (~530ms over...   | S1       | .claude/settings.json                                                                                                                                                       | 0    |
-| DEBT-3044 | check-write-requirements vs check-edit-requirements dupli...   | S1       | .claude/hooks/check-write-requirements.js, .claude/hooks/check-edit-requirements.js                                                                                         | 0    |
-| DEBT-3049 | audit-s0s1-validator.js only triggers on audit files but ...   | S1       | .claude/hooks/audit-s0s1-validator.js                                                                                                                                       | 0    |
-| DEBT-3050 | Read hooks have no execution order guarantee - context tr...   | S1       | .claude/hooks/large-context-warning.js, .claude/hooks/auto-save-context.js, .claude/hooks/compaction-handoff.js                                                             | 0    |
-| DEBT-3057 | Multiple audit skills with overlapping domain coverage         | S1       | .claude/skills/audit-\*/SKILL.md                                                                                                                                            | 0    |
-| DEBT-3059 | Senior specialist skills vs audit-comprehensive coverage       | S1       | .claude/skills/senior-\*/SKILL.md                                                                                                                                           | 0    |
-| DEBT-3063 | Unclear relationship: audit-validation-wrapper vs audit-c...   | S1       | .claude/skills/audit-validation-wrapper/SKILL.md                                                                                                                            | 0    |
-| DEBT-3067 | Audit skill explosion: 9 audit-related skills with incons...   | S1       | .claude/skills/audit-\*/SKILL.md                                                                                                                                            | 0    |
-| DEBT-3071 | Deprecated or unclear purpose: artifacts-builder, markitd...   | S1       | .claude/skills/artifacts-builder/SKILL.md, markitdown/SKILL.md, mcp-builder/SKILL.md, expansion-evaluation/SKILL.md, systematic-debugging/SKILL.md                          | 0    |
-| DEBT-3072 | 57 documents with duplicate/inconsistent AI Instructions ...   | S1       | docs/\*_/_.md, SESSION_CONTEXT.md, AUDIT_TRACKER.md, PLAN_MAP.md (and 54 others)                                                                                            | 0    |
-| DEBT-3073 | AI Instructions placement violates own DOCUMENTATION_STAN...   | S1       | docs/DOCUMENTATION_STANDARDS.md, docs/APPCHECK_SETUP.md, docs/INCIDENT_RESPONSE.md, docs/SONARCLOUD_CLEANUP_RUNBOOK.md (and others)                                         | 0    |
-| DEBT-3082 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl...   | S1       | scripts/check-backlog-health.js                                                                                                                                             | 0    |
-| DEBT-3083 | Markdown table parsing in update-readme-status.js with pi...   | S1       | scripts/update-readme-status.js                                                                                                                                             | 0    |
-| DEBT-3084 | check-session-gaps.js relies on hardcoded Session Context...   | S1       | scripts/check-session-gaps.js                                                                                                                                               | 0    |
-| DEBT-3085 | aggregate-audit-findings.js markdown parsing fragility in...   | S1       | scripts/aggregate-audit-findings.js                                                                                                                                         | 0    |
-| DEBT-3086 | generate-pending-alerts.js fragile DEFERRED item extraction    | S1       | scripts/generate-pending-alerts.js                                                                                                                                          | 0    |
-| DEBT-3091 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused         | S1       | docs/HOOKIFY_STRATEGY.md                                                                                                                                                    | 0    |
-| DEBT-3099 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes           | S1       | docs/agent_docs/FIX_TEMPLATES.md                                                                                                                                            | 0    |
-| DEBT-3104 | Technical debt view files - generated views without integ...   | S1       | docs/technical-debt/views/                                                                                                                                                  | 0    |
-| DEBT-3131 | ROADMAP.md milestone tracking tables                           | S1       | home/user/sonash-v0/ROADMAP.md                                                                                                                                              | 0    |
-| DEBT-3132 | AUDIT_TRACKER.md audit log tables                              | S1       | home/user/sonash-v0/docs/AUDIT_TRACKER.md                                                                                                                                   | 0    |
-| DEBT-3133 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas    | S1       | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md                                                                                                                    | 0    |
-| DEBT-3134 | AUDIT_TRACKER.md threshold matrix and version history          | S1       | home/user/sonash-v0/docs/AUDIT_TRACKER.md                                                                                                                                   | 0    |
-| DEBT-3154 | sync-claude-settings.js - Unused Claude Code settings syn...   | S1       | home/user/sonash-v0/scripts/sync-claude-settings.js                                                                                                                         | 0    |
-| DEBT-3159 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl...   | S1       | home/user/sonash-v0/scripts/check-backlog-health.js                                                                                                                         | 0    |
-| DEBT-3160 | Markdown table parsing in update-readme-status.js with pi...   | S1       | home/user/sonash-v0/scripts/update-readme-status.js                                                                                                                         | 0    |
-| DEBT-3161 | check-session-gaps.js relies on hardcoded Session Context...   | S1       | home/user/sonash-v0/scripts/check-session-gaps.js                                                                                                                           | 0    |
-| DEBT-3162 | aggregate-audit-findings.js markdown parsing fragility in...   | S1       | home/user/sonash-v0/scripts/aggregate-audit-findings.js                                                                                                                     | 0    |
-| DEBT-3163 | generate-pending-alerts.js fragile DEFERRED item extraction    | S1       | home/user/sonash-v0/scripts/generate-pending-alerts.js                                                                                                                      | 0    |
-| DEBT-3168 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused         | S1       | home/user/sonash-v0/docs/HOOKIFY_STRATEGY.md                                                                                                                                | 0    |
-| DEBT-3176 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes           | S1       | home/user/sonash-v0/docs/agent_docs/FIX_TEMPLATES.md                                                                                                                        | 0    |
-| DEBT-3181 | Technical debt view files - generated views without integ...   | S1       | home/user/sonash-v0/docs/technical-debt/views/                                                                                                                              | 0    |
-| DEBT-2743 | Untitled                                                       | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0140 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | app/meetings/all/page.tsx                                                                                                                                                   | 45   |
-| DEBT-0141 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | components/admin/links-tab.tsx                                                                                                                                              | 250  |
-| DEBT-0142 | Prefer `Number.parseFloat` over `parseFloat`.                  | S2       | components/admin/meetings-tab.tsx                                                                                                                                           | 150  |
-| DEBT-0143 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | components/admin/meetings-tab.tsx                                                                                                                                           | 234  |
-| DEBT-0144 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | components/admin/prayers-tab.tsx                                                                                                                                            | 236  |
-| DEBT-0145 | Avoid non-native interactive elements. If using native HT...   | S2       | components/admin/users-tab.tsx                                                                                                                                              | 563  |
-| DEBT-0146 | Ambiguous spacing after previous element span                  | S2       | components/growth/GratitudeCard.tsx                                                                                                                                         | 128  |
-| DEBT-0148 | Ambiguous spacing after previous element span                  | S2       | components/growth/SpotCheckCard.tsx                                                                                                                                         | 167  |
-| DEBT-0152 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | components/notebook/pages/resources-page.tsx                                                                                                                                | 52   |
-| DEBT-0153 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | lib/db/meetings.ts                                                                                                                                                          | 26   |
-| DEBT-0154 | Prefer `Number.isNaN` over `isNaN`.                            | S2       | lib/db/meetings.ts                                                                                                                                                          | 58   |
-| DEBT-0155 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/check-consolidation-status.js                                                                                                                                       | 39   |
-| DEBT-0156 | Group parts of the regex together to make the intended op...   | S2       | scripts/seed-meetings.ts                                                                                                                                                    | 79   |
-| DEBT-0157 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/seed-real-data.ts                                                                                                                                                   | 129  |
-| DEBT-0158 | Do not use an object literal as default for parameter `re...   | S2       | scripts/generate-documentation-index.js                                                                                                                                     | 141  |
-| DEBT-0159 | Remove this assignment of "i".                                 | S2       | scripts/add-false-positive.js                                                                                                                                               | 252  |
-| DEBT-0160 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/check-document-sync.js                                                                                                                                              | 289  |
-| DEBT-0161 | Remove this assignment of "i".                                 | S2       | scripts/assign-review-tier.js                                                                                                                                               | 458  |
-| DEBT-0162 | Prefer `Number.isNaN` over `isNaN`.                            | S2       | scripts/check-review-needed.js                                                                                                                                              | 196  |
-| DEBT-0163 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/check-docs-light.js                                                                                                                                                 | 97   |
-| DEBT-0164 | Prefer `Number.isNaN` over `isNaN`.                            | S2       | scripts/check-docs-light.js                                                                                                                                                 | 206  |
-| DEBT-0165 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/update-readme-status.js                                                                                                                                             | 219  |
-| DEBT-0166 | Prefer `Number.parseFloat` over `parseFloat`.                  | S2       | scripts/retry-failures.ts                                                                                                                                                   | 135  |
-| DEBT-0167 | Prefer `Number.parseFloat` over `parseFloat`.                  | S2       | scripts/enrich-addresses.ts                                                                                                                                                 | 163  |
-| DEBT-0169 | Remove this conditional structure or edit its code blocks...   | S2       | lib/utils.ts                                                                                                                                                                | 28   |
-| DEBT-0170 | Ambiguous spacing after previous element span                  | S2       | components/journal/entry-card.tsx                                                                                                                                           | 152  |
-| DEBT-0172 | A form label must be associated with a control.                | S2       | components/journal/entry-forms/gratitude-form.tsx                                                                                                                           | 77   |
-| DEBT-0175 | Add an initial value to this "reduce()" call.                  | S2       | components/widgets/compact-meeting-countdown.tsx                                                                                                                            | 153  |
-| DEBT-0176 | Avoid non-native interactive elements. If using native HT...   | S2       | components/widgets/compact-meeting-countdown.tsx                                                                                                                            | 273  |
-| DEBT-0177 | A form label must be associated with a control.                | S2       | components/growth/GratitudeCard.tsx                                                                                                                                         | 136  |
-| DEBT-0178 | A form label must be associated with a control.                | S2       | components/ui/label.tsx                                                                                                                                                     | 6    |
-| DEBT-0179 | Prefer `Number.parseFloat` over `parseFloat`.                  | S2       | scripts/seed-real-data.ts                                                                                                                                                   | 92   |
-| DEBT-0180 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/seed-meetings.ts                                                                                                                                                    | 42   |
-| DEBT-0181 | Prefer `Number.isNaN` over `isNaN`.                            | S2       | tests/utils/date-utils.test.ts                                                                                                                                              | 74   |
-| DEBT-0182 | Prefer `Number.NaN` over `NaN`.                                | S2       | tests/utils/firebase-types.test.ts                                                                                                                                          | 121  |
-| DEBT-0183 | Prefer `Number.isNaN` over `isNaN`.                            | S2       | tests/utils/firebase-types.test.ts                                                                                                                                          | 140  |
-| DEBT-0184 | Prefer `Number.isNaN` over `isNaN`.                            | S2       | lib/types/firebase-types.ts                                                                                                                                                 | 56   |
-| DEBT-0185 | Prefer `Number.isNaN` over `isNaN`.                            | S2       | components/onboarding/onboarding-wizard.tsx                                                                                                                                 | 135  |
-| DEBT-0186 | Unexpected unknown at-rule "@custom-variant"                   | S2       | app/globals.css                                                                                                                                                             | 4    |
-| DEBT-0187 | Unexpected unknown at-rule "@custom-variant"                   | S2       | styles/globals.css                                                                                                                                                          | 4    |
-| DEBT-0188 | Prefer `node:child_process` over `child_process`.              | S2       | tests/scripts/check-docs-light.test.ts                                                                                                                                      | 3    |
-| DEBT-0189 | Prefer `node:path` over `path`.                                | S2       | tests/scripts/check-docs-light.test.ts                                                                                                                                      | 4    |
-| DEBT-0190 | Prefer `node:fs` over `fs`.                                    | S2       | tests/scripts/check-docs-light.test.ts                                                                                                                                      | 5    |
-| DEBT-0191 | Prefer `node:child_process` over `child_process`.              | S2       | tests/scripts/update-readme-status.test.ts                                                                                                                                  | 3    |
-| DEBT-0192 | Prefer `node:path` over `path`.                                | S2       | tests/scripts/update-readme-status.test.ts                                                                                                                                  | 4    |
-| DEBT-0193 | Prefer `node:fs` over `fs`.                                    | S2       | tests/scripts/update-readme-status.test.ts                                                                                                                                  | 5    |
-| DEBT-0195 | Remove duplicates in this character class.                     | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 233  |
-| DEBT-0196 | `extensions` should be a `Set`, and use `extensions.has()...   | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 463  |
-| DEBT-0197 | `ignoreDirs` should be a `Set`, and use `ignoreDirs.has()...   | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 464  |
-| DEBT-0198 | This branch's code block is the same as the block for the...   | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 499  |
-| DEBT-0202 | Extract this nested ternary operation into an independent...   | S2       | components/celebrations/celebration-overlay.tsx                                                                                                                             | 64   |
-| DEBT-0203 | Extract this nested ternary operation into an independent...   | S2       | components/celebrations/celebration-provider.tsx                                                                                                                            | 35   |
-| DEBT-0204 | Prefer using an optional chain expression instead, as it'...   | S2       | components/growth/NightReviewCard.tsx                                                                                                                                       | 527  |
-| DEBT-0207 | Extract this nested ternary operation into an independent...   | S2       | components/journal/entry-card.tsx                                                                                                                                           | 82   |
-| DEBT-0208 | Extract this nested ternary operation into an independent...   | S2       | components/journal/entry-detail-dialog.tsx                                                                                                                                  | 107  |
-| DEBT-0210 | Use <details>, <fieldset>, <optgroup>, or <address> inste...   | S2       | components/notebook/features/enhanced-mood-selector.tsx                                                                                                                     | 82   |
-| DEBT-0213 | Extract this nested ternary operation into an independent...   | S2       | components/onboarding/onboarding-wizard.tsx                                                                                                                                 | 195  |
-| DEBT-0215 | Refactor this code to not use nested template literals.        | S2       | lib/security/firestore-validation.ts                                                                                                                                        | 99   |
-| DEBT-0216 | Prefer top-level await over using a promise chain.             | S2       | scripts/add-false-positive.js                                                                                                                                               | 370  |
-| DEBT-0217 | Refactor this code to not use nested template literals.        | S2       | scripts/ai-review.js                                                                                                                                                        | 394  |
-| DEBT-0218 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/archive-doc.js                                                                                                                                                      | 36   |
-| DEBT-0219 | Prefer `node:path` over `path`.                                | S2       | scripts/archive-doc.js                                                                                                                                                      | 37   |
-| DEBT-0220 | Prefer `node:url` over `url`.                                  | S2       | scripts/archive-doc.js                                                                                                                                                      | 38   |
-| DEBT-0221 | `knownFlags` should be a `Set`, and use `knownFlags.has()...   | S2       | scripts/assign-review-tier.js                                                                                                                                               | 444  |
-| DEBT-0222 | Extract this nested ternary operation into an independent...   | S2       | scripts/check-document-sync.js                                                                                                                                              | 408  |
-| DEBT-0223 | Simplify this regular expression to reduce its complexity...   | S2       | scripts/check-review-needed.js                                                                                                                                              | 68   |
-| DEBT-0224 | Refactor this code to not use nested template literals.        | S2       | scripts/check-review-needed.js                                                                                                                                              | 273  |
-| DEBT-0225 | Extract this nested ternary operation into an independent...   | S2       | scripts/check-review-needed.js                                                                                                                                              | 797  |
-| DEBT-0226 | Prefer top-level await over using a promise chain.             | S2       | scripts/check-review-needed.js                                                                                                                                              | 977  |
-| DEBT-0227 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/enrich-addresses.ts                                                                                                                                                 | 3    |
-| DEBT-0228 | Prefer `node:path` over `path`.                                | S2       | scripts/enrich-addresses.ts                                                                                                                                                 | 4    |
-| DEBT-0230 | Prefer top-level await over using a promise chain.             | S2       | scripts/mcp/sonarcloud-server.js                                                                                                                                            | 486  |
-| DEBT-0231 | Prefer `.find(…)` over `.filter(…)`.                           | S2       | scripts/normalize-canon-ids.js                                                                                                                                              | 189  |
-| DEBT-0232 | Prefer top-level await over using a promise chain.             | S2       | scripts/phase-complete-check.js                                                                                                                                             | 575  |
-| DEBT-0233 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/retry-failures.ts                                                                                                                                                   | 3    |
-| DEBT-0234 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/retry-failures.ts                                                                                                                                                   | 4    |
-| DEBT-0235 | Prefer `node:path` over `path`.                                | S2       | scripts/retry-failures.ts                                                                                                                                                   | 5    |
-| DEBT-0236 | Prefer top-level await over using a promise chain.             | S2       | scripts/seed-meetings.ts                                                                                                                                                    | 133  |
-| DEBT-0237 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/seed-real-data.ts                                                                                                                                                   | 1    |
-| DEBT-0238 | Prefer `node:readline` over `readline`.                        | S2       | scripts/seed-real-data.ts                                                                                                                                                   | 2    |
-| DEBT-0239 | Prefer top-level await over an async function `setAdminCl...   | S2       | scripts/set-admin-claim.ts                                                                                                                                                  | 109  |
-| DEBT-0240 | Refactor this code to not use nested template literals.        | S2       | scripts/suggest-pattern-automation.js                                                                                                                                       | 376  |
-| DEBT-0241 | Replace this alternation with a character class.               | S2       | scripts/surface-lessons-learned.js                                                                                                                                          | 170  |
-| DEBT-0242 | Prefer top-level await over using a promise chain.             | S2       | scripts/surface-lessons-learned.js                                                                                                                                          | 376  |
-| DEBT-0243 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/sync-geocache.ts                                                                                                                                                    | 3    |
-| DEBT-0244 | Prefer `node:path` over `path`.                                | S2       | scripts/sync-geocache.ts                                                                                                                                                    | 4    |
-| DEBT-0246 | Prefer top-level await over using a promise chain.             | S2       | scripts/validate-audit.js                                                                                                                                                   | 634  |
-| DEBT-0247 | Add an explicit return statement at the end of the function.   | S2       | .claude/hooks/session-start.sh                                                                                                                                              | 58   |
-| DEBT-0248 | `args` should be a `Set`, and use `args.has()` to check e...   | S2       | scripts/generate-documentation-index.js                                                                                                                                     | 75   |
-| DEBT-0249 | Prefer `node:path` over `path`.                                | S2       | scripts/check-document-sync.js                                                                                                                                              | 20   |
-| DEBT-0250 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/check-document-sync.js                                                                                                                                              | 19   |
-| DEBT-0251 | Complete the task associated to this "TODO" comment.           | S2       | scripts/check-document-sync.js                                                                                                                                              | 139  |
-| DEBT-0252 | Prefer `node:url` over `url`.                                  | S2       | scripts/check-document-sync.js                                                                                                                                              | 21   |
-| DEBT-0253 | `args` should be a `Set`, and use `args.has()` to check e...   | S2       | scripts/check-document-sync.js                                                                                                                                              | 28   |
-| DEBT-0254 | Complete the task associated to this "TODO" comment.           | S2       | .github/workflows/ci.yml                                                                                                                                                    | 86   |
-| DEBT-0255 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/assign-review-tier.js                                                                                                                                               | 20   |
-| DEBT-0256 | Prefer `node:path` over `path`.                                | S2       | scripts/assign-review-tier.js                                                                                                                                               | 21   |
-| DEBT-0257 | Prefer `node:url` over `url`.                                  | S2       | scripts/assign-review-tier.js                                                                                                                                               | 22   |
-| DEBT-0258 | Prefer `node:url` over `url`.                                  | S2       | scripts/surface-lessons-learned.js                                                                                                                                          | 21   |
-| DEBT-0259 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/ai-review.js                                                                                                                                                        | 15   |
-| DEBT-0260 | Prefer `node:path` over `path`.                                | S2       | scripts/ai-review.js                                                                                                                                                        | 16   |
-| DEBT-0261 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/ai-review.js                                                                                                                                                        | 17   |
-| DEBT-0262 | Prefer `node:url` over `url`.                                  | S2       | scripts/phase-complete-check.js                                                                                                                                             | 22   |
-| DEBT-0263 | Prefer `node:child_process` over `child_process`.              | S2       | tests/scripts/phase-complete-check.test.ts                                                                                                                                  | 3    |
-| DEBT-0264 | Prefer `node:path` over `path`.                                | S2       | tests/scripts/phase-complete-check.test.ts                                                                                                                                  | 4    |
-| DEBT-0265 | Prefer `node:fs` over `fs`.                                    | S2       | tests/scripts/phase-complete-check.test.ts                                                                                                                                  | 5    |
-| DEBT-0266 | Prefer `node:child_process` over `child_process`.              | S2       | tests/scripts/surface-lessons-learned.test.ts                                                                                                                               | 3    |
-| DEBT-0267 | Prefer `node:path` over `path`.                                | S2       | tests/scripts/surface-lessons-learned.test.ts                                                                                                                               | 4    |
-| DEBT-0268 | Prefer `node:fs` over `fs`.                                    | S2       | tests/scripts/surface-lessons-learned.test.ts                                                                                                                               | 5    |
-| DEBT-0269 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/phase-complete-check.js                                                                                                                                             | 20   |
-| DEBT-0270 | Prefer `node:path` over `path`.                                | S2       | scripts/phase-complete-check.js                                                                                                                                             | 21   |
-| DEBT-0271 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/surface-lessons-learned.js                                                                                                                                          | 18   |
-| DEBT-0272 | Prefer `node:path` over `path`.                                | S2       | scripts/surface-lessons-learned.js                                                                                                                                          | 19   |
-| DEBT-0273 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/surface-lessons-learned.js                                                                                                                                          | 20   |
-| DEBT-0274 | Add an explicit return statement at the end of the function.   | S2       | .claude/hooks/coderabbit-review.sh                                                                                                                                          | 29   |
-| DEBT-0275 | Assign this positional parameter to a local variable.          | S2       | .claude/hooks/coderabbit-review.sh                                                                                                                                          | 33   |
-| DEBT-0276 | Add an explicit return statement at the end of the function.   | S2       | .claude/hooks/check-mcp-servers.sh                                                                                                                                          | 25   |
-| DEBT-0277 | Add an explicit return statement at the end of the function.   | S2       | .claude/hooks/analyze-user-request.sh                                                                                                                                       | 33   |
-| DEBT-0278 | Prefer `node:path` over `path`.                                | S2       | scripts/suggest-pattern-automation.js                                                                                                                                       | 20   |
-| DEBT-0279 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/suggest-pattern-automation.js                                                                                                                                       | 19   |
-| DEBT-0280 | Prefer `node:url` over `url`.                                  | S2       | scripts/suggest-pattern-automation.js                                                                                                                                       | 21   |
-| DEBT-0281 | Replace this character class by the character itself.          | S2       | scripts/suggest-pattern-automation.js                                                                                                                                       | 49   |
-| DEBT-0282 | Redirect this error message to stderr (>&2).                   | S2       | .claude/hooks/session-start.sh                                                                                                                                              | 295  |
-| DEBT-0283 | Prefer top-level await over using a promise chain.             | S2       | scripts/enrich-addresses.ts                                                                                                                                                 | 215  |
-| DEBT-0284 | Prefer top-level await over using a promise chain.             | S2       | scripts/migrate-to-journal.ts                                                                                                                                               | 297  |
-| DEBT-0285 | Prefer top-level await over using a promise chain.             | S2       | scripts/seed-real-data.ts                                                                                                                                                   | 223  |
-| DEBT-0286 | Prefer top-level await over using a promise chain.             | S2       | scripts/sync-geocache.ts                                                                                                                                                    | 126  |
-| DEBT-0287 | Prefer top-level await over using a promise chain.             | S2       | scripts/retry-failures.ts                                                                                                                                                   | 169  |
-| DEBT-0288 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 19   |
-| DEBT-0289 | Remove duplicates in this character class.                     | S2       | scripts/lib/sanitize-error.js                                                                                                                                               | 30   |
-| DEBT-0290 | Prefer `node:path` over `path`.                                | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 20   |
-| DEBT-0291 | Prefer `node:url` over `url`.                                  | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 21   |
-| DEBT-0292 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 22   |
-| DEBT-0293 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/validate-phase-completion.js                                                                                                                                        | 16   |
-| DEBT-0294 | Prefer `node:path` over `path`.                                | S2       | scripts/validate-phase-completion.js                                                                                                                                        | 17   |
-| DEBT-0295 | Prefer `node:url` over `url`.                                  | S2       | scripts/validate-phase-completion.js                                                                                                                                        | 18   |
-| DEBT-0296 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/phase-complete-check.js                                                                                                                                             | 18   |
-| DEBT-0297 | Prefer `node:readline` over `readline`.                        | S2       | scripts/phase-complete-check.js                                                                                                                                             | 19   |
-| DEBT-0299 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/check-docs-light.js                                                                                                                                                 | 28   |
-| DEBT-0300 | Prefer `node:path` over `path`.                                | S2       | scripts/check-docs-light.js                                                                                                                                                 | 29   |
-| DEBT-0301 | Prefer `node:url` over `url`.                                  | S2       | scripts/check-docs-light.js                                                                                                                                                 | 30   |
-| DEBT-0302 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/update-readme-status.js                                                                                                                                             | 26   |
-| DEBT-0303 | Prefer `node:path` over `path`.                                | S2       | scripts/update-readme-status.js                                                                                                                                             | 27   |
-| DEBT-0304 | Prefer `node:url` over `url`.                                  | S2       | scripts/update-readme-status.js                                                                                                                                             | 28   |
-| DEBT-0305 | `args` should be a `Set`, and use `args.has()` to check e...   | S2       | scripts/update-readme-status.js                                                                                                                                             | 40   |
-| DEBT-0306 | Redirect this error message to stderr (>&2).                   | S2       | .claude/skills/artifacts-builder/scripts/bundle-artifact.sh                                                                                                                 | 8    |
-| DEBT-0307 | Redirect this error message to stderr (>&2).                   | S2       | .claude/skills/artifacts-builder/scripts/init-artifact.sh                                                                                                                   | 12   |
-| DEBT-0308 | Remove this commented out code.                                | S2       | functions/src/index.ts                                                                                                                                                      | 508  |
-| DEBT-0309 | Remove this commented out code.                                | S2       | lib/firebase.ts                                                                                                                                                             | 61   |
-| DEBT-0310 | Prefer `node:path` over `path`.                                | S2       | scripts/migrate-addresses.ts                                                                                                                                                | 12   |
-| DEBT-0311 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/migrate-addresses.ts                                                                                                                                                | 13   |
-| DEBT-0312 | Prefer top-level await over using a promise chain.             | S2       | scripts/migrate-addresses.ts                                                                                                                                                | 102  |
-| DEBT-0313 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/migrate-meetings-dayindex.ts                                                                                                                                        | 14   |
-| DEBT-0314 | Remove this useless assignment to variable "hasMore".          | S2       | scripts/migrate-to-journal.ts                                                                                                                                               | 261  |
-| DEBT-0315 | Prefer `node:path` over `path`.                                | S2       | scripts/migrate-meetings-dayindex.ts                                                                                                                                        | 13   |
-| DEBT-0316 | Prefer top-level await over using a promise chain.             | S2       | scripts/migrate-meetings-dayindex.ts                                                                                                                                        | 160  |
-| DEBT-0317 | 'If' statement should not be the only statement in 'else'...   | S2       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 638  |
-| DEBT-0319 | Complete the task associated to this "TODO" comment.           | S2       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 12   |
-| DEBT-0320 | Extract this nested ternary operation into an independent...   | S2       | components/notebook/features/check-in-progress.tsx                                                                                                                          | 35   |
-| DEBT-0321 | Extract this nested ternary operation into an independent...   | S2       | components/notebook/features/enhanced-mood-selector.tsx                                                                                                                     | 102  |
-| DEBT-0324 | This branch's code block is the same as the block for the...   | S2       | lib/utils.ts                                                                                                                                                                | 32   |
-| DEBT-0325 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/import-nashville-links.ts                                                                                                                                           | 3    |
-| DEBT-0326 | Prefer `node:path` over `path`.                                | S2       | scripts/import-nashville-links.ts                                                                                                                                           | 4    |
-| DEBT-0327 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/migrate-library-content.ts                                                                                                                                          | 3    |
-| DEBT-0328 | Prefer `node:path` over `path`.                                | S2       | scripts/migrate-library-content.ts                                                                                                                                          | 4    |
-| DEBT-0329 | The object passed as the value prop to the Context provid...   | S2       | components/celebrations/celebration-provider.tsx                                                                                                                            | 44   |
-| DEBT-0330 | Extract this nested ternary operation into an independent...   | S2       | components/celebrations/confetti-burst.tsx                                                                                                                                  | 66   |
-| DEBT-0332 | Extract this nested ternary operation into an independent...   | S2       | components/notebook/book-cover.tsx                                                                                                                                          | 252  |
-| DEBT-0333 | Prefer top-level await over using a promise chain.             | S2       | scripts/import-nashville-links.ts                                                                                                                                           | 258  |
-| DEBT-0334 | Prefer top-level await over using a promise chain.             | S2       | scripts/migrate-library-content.ts                                                                                                                                          | 205  |
-| DEBT-0335 | Use <details>, <fieldset>, <optgroup>, or <address> inste...   | S2       | components/notebook/features/check-in-questions.tsx                                                                                                                         | 36   |
-| DEBT-0337 | Do not use Array index in keys                                 | S2       | components/notebook/features/clean-time-display.tsx                                                                                                                         | 98   |
-| DEBT-0338 | Use <details>, <fieldset>, <optgroup>, or <address> inste...   | S2       | components/notebook/features/mood-selector.tsx                                                                                                                              | 51   |
-| DEBT-0339 | Extract this nested ternary operation into an independent...   | S2       | components/notebook/features/recovery-notepad.tsx                                                                                                                           | 99   |
-| DEBT-0340 | Do not use Array index in keys                                 | S2       | components/notebook/pages/library-page.tsx                                                                                                                                  | 170  |
-| DEBT-0341 | Do not use Array index in keys                                 | S2       | components/onboarding/onboarding-wizard.tsx                                                                                                                                 | 515  |
-| DEBT-0343 | Prefer using an optional chain expression instead, as it'...   | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 177  |
-| DEBT-0344 | Do not use Array index in keys                                 | S2       | components/journal/entry-card.tsx                                                                                                                                           | 125  |
-| DEBT-0345 | Do not use Array index in keys                                 | S2       | components/journal/entry-feed.tsx                                                                                                                                           | 194  |
-| DEBT-0346 | Do not use Array index in keys                                 | S2       | components/journal/entry-forms/gratitude-form.tsx                                                                                                                           | 82   |
-| DEBT-0347 | Do not use Array index in keys                                 | S2       | components/journal/entry-wizard.tsx                                                                                                                                         | 131  |
-| DEBT-0349 | Do not use Array index in keys                                 | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 803  |
-| DEBT-0350 | Move function 'formatTime' to the outer scope.                 | S2       | components/widgets/compact-meeting-countdown.tsx                                                                                                                            | 241  |
-| DEBT-0351 | Prefer `node:crypto` over `crypto`.                            | S2       | functions/src/security-logger.ts                                                                                                                                            | 9    |
-| DEBT-0353 | Extract this nested ternary operation into an independent...   | S2       | components/growth/NightReviewCard.tsx                                                                                                                                       | 567  |
-| DEBT-0354 | Prefer top-level await over an async function `testGeocod...   | S2       | scripts/test-geocode.ts                                                                                                                                                     | 40   |
-| DEBT-0355 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/seed-meetings.ts                                                                                                                                                    | 9    |
-| DEBT-0356 | Prefer `node:path` over `path`.                                | S2       | scripts/seed-meetings.ts                                                                                                                                                    | 10   |
-| DEBT-0357 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/set-admin-claim.ts                                                                                                                                                  | 11   |
-| DEBT-0358 | Prefer `node:path` over `path`.                                | S2       | scripts/set-admin-claim.ts                                                                                                                                                  | 12   |
-| DEBT-0359 | The object passed as the value prop to the Context provid...   | S2       | components/providers/auth-context.tsx                                                                                                                                       | 118  |
-| DEBT-0360 | The object passed as the value prop to the Context provid...   | S2       | components/providers/daily-log-context.tsx                                                                                                                                  | 75   |
-| DEBT-0361 | 'If' statement should not be the only statement in 'else'...   | S2       | components/providers/profile-context.tsx                                                                                                                                    | 71   |
-| DEBT-0362 | The object passed as the value prop to the Context provid...   | S2       | components/providers/profile-context.tsx                                                                                                                                    | 131  |
-| DEBT-0363 | 'If' statement should not be the only statement in 'else'...   | S2       | components/auth/account-link-modal.tsx                                                                                                                                      | 34   |
-| DEBT-0364 | Prefer `node:crypto` over `crypto`.                            | S2       | lib/sentry.client.ts                                                                                                                                                        | 11   |
-| DEBT-0365 | Prefer using an optional chain expression instead, as it'...   | S2       | lib/security/firestore-validation.ts                                                                                                                                        | 42   |
-| DEBT-0366 | Prefer `node:path` over `path`.                                | S2       | next.config.mjs                                                                                                                                                             | 1    |
-| DEBT-0367 | Prefer `node:url` over `url`.                                  | S2       | next.config.mjs                                                                                                                                                             | 2    |
-| DEBT-0368 | Complete the task associated to this "TODO" comment.           | S2       | lib/database/firestore-adapter.ts                                                                                                                                           | 51   |
-| DEBT-0369 | Complete the task associated to this "TODO" comment.           | S2       | lib/logger.ts                                                                                                                                                               | 107  |
-| DEBT-0370 | Member 'config' is never reassigned; mark it as `readonly`.    | S2       | lib/utils/rate-limiter.ts                                                                                                                                                   | 17   |
-| DEBT-0371 | Either use this collection's contents or remove the colle...   | S2       | tests/firestore-service.test.ts                                                                                                                                             | 18   |
-| DEBT-0372 | Do not use Array index in keys                                 | S2       | components/notebook/visualizations/mood-sparkline.tsx                                                                                                                       | 98   |
-| DEBT-0373 | Do not use Array index in keys                                 | S2       | components/notebook/notebook-shell.tsx                                                                                                                                      | 135  |
-| DEBT-0374 | Do not use Array index in keys                                 | S2       | components/notebook/pages/resources-page.tsx                                                                                                                                | 368  |
-| DEBT-0375 | Do not use Array index in keys                                 | S2       | components/notebook/pages/support-page.tsx                                                                                                                                  | 115  |
-| DEBT-0382 | DailyQuoteCard component duplicated across 2-3 locations       | S2       | components/notebook/features/daily-quote-card.tsx                                                                                                                           | 0    |
-| DEBT-0383 | Critical paths have low test coverage (firestore-service ...   | S2       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0384 | reCAPTCHA token fetch/include pattern repeated 5x across ...   | S2       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0385 | Firebase collection access scattered across 22+ files wit...   | S2       | lib/db/slogans.ts                                                                                                                                                           | 0    |
-| DEBT-0386 | reCAPTCHA action strings duplicated as literals (no share...   | S2       | functions/src/recaptcha-verify.ts                                                                                                                                           | 0    |
-| DEBT-0387 | Growth card dialog/save pattern duplicated across 4 compo...   | S2       | components/growth/SpotCheckCard.tsx                                                                                                                                         | 0    |
-| DEBT-0388 | CRUD service patterns repeated across lib/db modules           | S2       | lib/db/quotes.ts                                                                                                                                                            | 0    |
-| DEBT-0389 | Admin Cloud Function wiring duplicated across 5 admin tabs     | S2       | components/admin/dashboard-tab.tsx                                                                                                                                          | 0    |
-| DEBT-0390 | Dual-write pattern to inventory AND journal collections        | S2       | components/growth/SpotCheckCard.tsx                                                                                                                                         | 0    |
-| DEBT-0391 | Deprecated API usage (31 instances) + Nested ternaries (4...   | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-0392 | safeReadFile/safeWriteFile utilities duplicated across 3 ...   | S2       | scripts/archive-doc.js                                                                                                                                                      | 0    |
-| DEBT-0393 | FirestoreAdapter exists but is unused (realtime boundary ...   | S2       | lib/database/firestore-adapter.ts                                                                                                                                           | 0    |
-| DEBT-0394 | Searchable-text generation duplicated with inconsistent s...   | S2       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-0395 | DEVELOPMENT.md workflow triggers don't match actual workf...   | S2       | DEVELOPMENT.md                                                                                                                                                              | 0    |
-| DEBT-0396 | Pre-commit hook runs full test suite causing slow commits...   | S2       | .husky/pre-commit                                                                                                                                                           | 0    |
-| DEBT-0397 | Pattern checker reports 93+ violations but CI check is no...   | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 0    |
-| DEBT-0398 | Firebase CLI version unpinned in deploy workflow               | S2       | .github/workflows/deploy-firebase.yml                                                                                                                                       | 0    |
-| DEBT-0399 | Auto-label workflow has invalid if: expression syntax          | S2       | .github/workflows/auto-label-review-tier.yml                                                                                                                                | 0    |
-| DEBT-0400 | Sentry integration incomplete - no Web Vitals reporting        | S2       | lib/sentry.client.ts                                                                                                                                                        | 0    |
-| DEBT-0401 | Duplicate DailyQuoteCard implementations + unbounded quot...   | S2       | components/widgets/daily-quote-card.tsx                                                                                                                                     | 0    |
-| DEBT-0402 | Celebration animations create 150+ DOM elements without r...   | S2       | components/celebrations/confetti-burst.tsx                                                                                                                                  | 0    |
-| DEBT-0403 | No React.memo usage causes unnecessary re-renders in list...   | S2       | components/journal/entry-card.tsx                                                                                                                                           | 0    |
-| DEBT-0404 | Hero background image bypasses Next.js image optimization      | S2       | app/page.tsx                                                                                                                                                                | 0    |
-| DEBT-0405 | Large entry lists not virtualized - DOM grows linearly wi...   | S2       | components/journal/entry-feed.tsx                                                                                                                                           | 0    |
-| DEBT-0406 | Meeting map renders all markers without clustering             | S2       | app/meetings/all/page.tsx                                                                                                                                                   | 0    |
-| DEBT-0407 | 7 unused dependencies increasing bundle size                   | S2       | package.json                                                                                                                                                                | 0    |
-| DEBT-0408 | Console statements in production code                          | S2       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-0409 | Firebase queries lack consistent indexing and limits           | S2       | lib/db/meetings.ts                                                                                                                                                          | 0    |
-| DEBT-0410 | Admin CRUD table fetches entire collections without pagin...   | S2       | components/admin/admin-crud-table.tsx                                                                                                                                       | 0    |
-| DEBT-0411 | Step1WorksheetCard excessive complexity (804 lines)            | S2       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 0    |
-| DEBT-0412 | No route-level loading UI (loading.tsx) or Suspense bound...   | S2       | app/page.tsx                                                                                                                                                                | 0    |
-| DEBT-0413 | JournalHub eagerly imports all entry forms                     | S2       | components/journal/journal-hub.tsx                                                                                                                                          | 0    |
-| DEBT-0414 | DOCUMENTATION_INDEX.md orphaned and missing required sect...   | S2       | DOCUMENTATION_INDEX.md                                                                                                                                                      | 0    |
-| DEBT-0415 | Tier 2 docs missing required metadata (Document Version, ...   | S2       | docs/ANTIGRAVITY_GUIDE.md                                                                                                                                                   | 0    |
-| DEBT-0416 | Standards/templates contain live placeholder links and in...   | S2       | docs/DOCUMENTATION_STANDARDS.md                                                                                                                                             | 0    |
-| DEBT-0417 | DOCUMENT_DEPENDENCIES.md claims SYNCED but has 30+ issues      | S2       | docs/DOCUMENT_DEPENDENCIES.md                                                                                                                                               | 0    |
-| DEBT-0418 | PR_REVIEW_PROMPT_TEMPLATE lacks required metadata and ver...   | S2       | docs/PR_REVIEW_PROMPT_TEMPLATE.md                                                                                                                                           | 0    |
-| DEBT-0419 | CODE_PATTERNS.md referenced with incorrect path                | S2       | docs/agent_docs/CODE_PATTERNS.md                                                                                                                                            | 0    |
-| DEBT-0420 | Duplicate CODE_REVIEW_PLAN_2026_Q1.md exists in two locat...   | S2       | docs/CODE_REVIEW_PLAN_2026_Q1.md                                                                                                                                            | 0    |
-| DEBT-0421 | Duplicated time-of-day rotation logic for quotes and slogans   | S2       | lib/db/quotes.ts                                                                                                                                                            | 0    |
-| DEBT-0422 | Unsafe type assertions with 'as unknown as' (worksheet + ...   | S2       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 0    |
-| DEBT-0424 | Journal entry type definitions duplicated across client t...   | S2       | types/journal.ts                                                                                                                                                            | 0    |
-| DEBT-0425 | Missing error.message null safety in TodayPage catch block     | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 0    |
-| DEBT-0426 | Unsafe localStorage JSON.parse in use-smart-prompts hook       | S2       | components/notebook/hooks/use-smart-prompts.ts                                                                                                                              | 0    |
-| DEBT-0427 | Duplicated DailyQuoteCard component exists in multiple di...   | S2       | components/notebook/features/daily-quote-card.tsx                                                                                                                           | 0    |
-| DEBT-0428 | Inconsistent Firebase Functions import pattern (static vs...   | S2       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0429 | Inconsistent httpsCallable typing (missing generic reques...   | S2       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0430 | useJournal sets up its own auth listener instead of using...   | S2       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-0431 | Cloud Function integration test is skipped in firestore-s...   | S2       | tests/firestore-service.test.ts                                                                                                                                             | 0    |
-| DEBT-0432 | Journal entry schema data is weakly typed (z.record unkno...   | S2       | functions/src/schemas.ts                                                                                                                                                    | 0    |
-| DEBT-0433 | No tests for useJournal hook                                   | S2       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-0434 | Zod schemas permissive - missing .strict() and allows arb...   | S2       | functions/src/schemas.ts                                                                                                                                                    | 0    |
-| DEBT-0435 | Debug console.log statements in production code                | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 396  |
-| DEBT-0436 | High cognitive complexity in adminSetUserPrivilege             | S2       | functions/src/admin.ts                                                                                                                                                      | 1726 |
-| DEBT-0437 | High cognitive complexity in UsersTab component                | S2       | components/admin/users-tab.tsx                                                                                                                                              | 84   |
-| DEBT-0438 | No correlation/request ID tracing                              | S2       | lib/logger.ts                                                                                                                                                               | 1    |
-| DEBT-0439 | Nested component definition                                    | S2       | components/admin/admin-tabs.tsx                                                                                                                                             | 64   |
-| DEBT-0461 | No npm run dev:offline script - requires 2 terminals for ...   | S2       | package.json                                                                                                                                                                | 5    |
-| DEBT-0462 | No scripts/doctor.js for environment validation                | S2       | scripts/                                                                                                                                                                    | 0    |
-| DEBT-0463 | 8:1 ratio of console.log to structured logger calls (3111...   | S2       | app/                                                                                                                                                                        | 0    |
-| DEBT-0464 | No service worker - no offline asset caching                   | S2       | public/                                                                                                                                                                     | 0    |
-| DEBT-0465 | Add .strict() to Zod schemas                                   | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0466 | Extract time rotation utilities                                | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0467 | Consolidate DailyQuoteCard                                     | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0468 | Debug console.log statements in production code                | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0474 | Add error.message null safety                                  | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0475 | Safe localStorage JSON.parse                                   | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0476 | Replace unsafe type assertions                                 | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0477 | Single source for journal types                                | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0478 | Type httpsCallable generics                                    | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0479 | Create callSecureFunction wrapper                              | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0480 | Shared reCAPTCHA action constants                              | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0481 | Extract useGrowthCardDialog hook                               | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0482 | Route Firebase through service layer                           | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0483 | Create typed collection helpers                                | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0484 | Clarify FirestoreAdapter boundary                              | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0485 | Audit inventory dual-write pattern                             | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0486 | Complete Sentry integration                                    | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0487 | Add reduced-motion to animations                               | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0488 | Add React.memo to list components                              | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0489 | Optimize hero background image                                 | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0490 | Add virtualization to large lists                              | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0491 | Add marker clustering to map                                   | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0492 | Remove 7 unused dependencies                                   | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0493 | Add Firebase query indexes                                     | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0494 | Paginate admin CRUD table                                      | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0495 | Add loading.tsx files                                          | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0496 | Lazy load JournalHub forms                                     | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0497 | Unskip Cloud Function test                                     | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0498 | Add useJournal hook tests                                      | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0499 | Increase critical path coverage                                | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0500 | Create CRUD factory                                            | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0501 | Centralize admin function wrappers                             | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0502 | Extract safeReadFile/safeWriteFile                             | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0503 | Consolidate searchable-text generation                         | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0504 | Add DOCUMENTATION_INDEX to README                              | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0505 | Add Tier 2 required metadata                                   | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0506 | Fix standards placeholder links                                | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0507 | Update DOCUMENT_DEPENDENCIES sync                              | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0508 | Add PR_REVIEW_PROMPT metadata                                  | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0509 | Fix CODE_PATTERNS.md path references                           | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0510 | Update DEVELOPMENT.md workflow docs                            | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0511 | Move full tests to pre-push only                               | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0512 | Pin firebase-tools version                                     | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0513 | Fix auto-label workflow if syntax                              | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0514 | Decompose Step1WorksheetCard                                   | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0533 | Debug console logs in production component                     | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 594  |
-| DEBT-0534 | Callback parameter typed as any                                | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 505  |
-| DEBT-0535 | Missing React.Suspense for code splitting                      | S2       | components/                                                                                                                                                                 | 0    |
-| DEBT-0536 | ESLint rule suppression for exhaustive deps                    | S2       | hooks/use-geolocation.ts                                                                                                                                                    | 171  |
-| DEBT-0537 | No component tests                                             | S2       | tests/                                                                                                                                                                      | 0    |
-| DEBT-0538 | Potential copy-paste code blocks in admin tabs                 | S2       | components/admin/                                                                                                                                                           | 0    |
-| DEBT-0539 | Complex nested logic without early returns                     | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 698  |
-| DEBT-0540 | Missing correlation IDs for request tracing                    | S2       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0541 | Inconsistent error context across components                   | S2       | various                                                                                                                                                                     | 0    |
-| DEBT-0542 | Admin CRUD table pulls full collections via getDocs witho...   | S2       | components/admin/admin-crud-table.tsx                                                                                                                                       | 0    |
-| DEBT-0543 | Meetings map may jank at scale without marker clustering ...   | S2       | components/maps/meeting-map.tsx                                                                                                                                             | 0    |
-| DEBT-0544 | High-intensity confetti spawns up to 150 animated DOM nodes    | S2       | components/celebrations/confetti-burst.tsx                                                                                                                                  | 0    |
-| DEBT-0545 | Console statements exist in production code; should be ga...   | S2       | components/\*\*                                                                                                                                                             | 0    |
-| DEBT-0546 | reCAPTCHA Enterprise script injected on every route (even...   | S2       | app/layout.tsx                                                                                                                                                              | 0    |
-| DEBT-0547 | No Core Web Vitals tracking configured (LCP/CLS/INP)           | S2       | app/layout.tsx                                                                                                                                                              | 0    |
-| DEBT-0548 | Client Sentry config imports Node crypto, risking polyfil...   | S2       | lib/sentry.client.ts                                                                                                                                                        | 0    |
-| DEBT-0549 | AnimatePresence transitions may cause CLS without explici...   | S2       | app/page.tsx                                                                                                                                                                | 0    |
-| DEBT-0550 | No caching strategy for Firestore queries; mounts trigger...   | S2       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-0551 | useJournal filters soft-deleted entries client-side inste...   | S2       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-0552 | NotebookShell likely bundles most notebook pages because ...   | S2       | components/notebook/roadmap-modules.tsx                                                                                                                                     | 0    |
-| DEBT-0553 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 419  |
-| DEBT-0556 | Visible, non-interactive elements with click handlers mus...   | S2       | components/journal/entry-detail-dialog.tsx                                                                                                                                  | 18   |
-| DEBT-0557 | Visible, non-interactive elements with click handlers mus...   | S2       | components/journal/entry-feed.tsx                                                                                                                                           | 152  |
-| DEBT-0558 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | functions/src/admin.ts                                                                                                                                                      | 110  |
-| DEBT-0559 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | hooks/use-journal.ts                                                                                                                                                        | 72   |
-| DEBT-0560 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/ai-review.js                                                                                                                                                        | 44   |
-| DEBT-0561 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/archive-doc.js                                                                                                                                                      | 368  |
-| DEBT-0562 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/assign-review-tier.js                                                                                                                                               | 30   |
-| DEBT-0563 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/check-docs-light.js                                                                                                                                                 | 141  |
-| DEBT-0564 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/dedupe-quotes.ts                                                                                                                                                    | 217  |
-| DEBT-0565 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/enrich-addresses.ts                                                                                                                                                 | 91   |
-| DEBT-0566 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/generate-documentation-index.js                                                                                                                                     | 72   |
-| DEBT-0567 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/import-nashville-links.ts                                                                                                                                           | 206  |
-| DEBT-0568 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/migrate-library-content.ts                                                                                                                                          | 129  |
-| DEBT-0569 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/normalize-canon-ids.js                                                                                                                                              | 57   |
-| DEBT-0570 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/phase-complete-check.js                                                                                                                                             | 106  |
-| DEBT-0571 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/retry-failures.ts                                                                                                                                                   | 57   |
-| DEBT-0573 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/suggest-pattern-automation.js                                                                                                                                       | 88   |
-| DEBT-0574 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/surface-lessons-learned.js                                                                                                                                          | 264  |
-| DEBT-0575 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/update-readme-status.js                                                                                                                                             | 211  |
-| DEBT-0578 | Prefer `String.fromCodePoint()` over `String.fromCharCode...   | S2       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 380  |
-| DEBT-0581 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | functions/src/security-logger.ts                                                                                                                                            | 188  |
-| DEBT-0590 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/check-pattern-compliance.js                                                                                                                                         | 221  |
-| DEBT-0592 | 'next' imported multiple times.                                | S2       | app/layout.tsx                                                                                                                                                              | 2    |
-| DEBT-0598 | Prefer `globalThis.window` over `window`.                      | S2       | components/celebrations/confetti-burst.tsx                                                                                                                                  | 33   |
-| DEBT-0601 | This assertion is unnecessary since it does not change th...   | S2       | components/journal/entry-detail-dialog.tsx                                                                                                                                  | 286  |
-| DEBT-0605 | Prefer `globalThis` over `window`.                             | S2       | components/notebook/features/enhanced-mood-selector.tsx                                                                                                                     | 76   |
-| DEBT-0607 | 'lucide-react' imported multiple times.                        | S2       | components/notebook/pages/resources-page.tsx                                                                                                                                | 3    |
-| DEBT-0615 | Prefer `globalThis` over `window`.                             | S2       | components/status/offline-indicator.tsx                                                                                                                                     | 22   |
-| DEBT-0619 | 'data.content \|\| ""' will use Object's default stringific... | S2       | hooks/use-journal.ts                                                                                                                                                        | 101  |
-| DEBT-0620 | 'data.step4_surrender \|\| ""' will use Object's default st... | S2       | hooks/use-journal.ts                                                                                                                                                        | 113  |
-| DEBT-0623 | Prefer `globalThis.window` over `window`.                      | S2       | lib/firebase.ts                                                                                                                                                             | 44   |
-| DEBT-0627 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/archive-doc.js                                                                                                                                                      | 340  |
-| DEBT-0628 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/generate-documentation-index.js                                                                                                                                     | 125  |
-| DEBT-0629 | Do not call `Array#push()` multiple times.                     | S2       | scripts/generate-documentation-index.js                                                                                                                                     | 571  |
-| DEBT-0630 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/normalize-canon-ids.js                                                                                                                                              | 58   |
-| DEBT-0631 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/suggest-pattern-automation.js                                                                                                                                       | 57   |
-| DEBT-0640 | Unexpected negated condition.                                  | S2       | scripts/validate-audit.js                                                                                                                                                   | 270  |
-| DEBT-0642 | Handle this exception or don't catch it at all.                | S2       | scripts/check-document-sync.js                                                                                                                                              | 95   |
-| DEBT-0645 | Unexpected negated condition.                                  | S2       | scripts/phase-complete-check.js                                                                                                                                             | 330  |
-| DEBT-0649 | Unexpected negated condition.                                  | S2       | scripts/validate-phase-completion.js                                                                                                                                        | 77   |
-| DEBT-0657 | Prefer `globalThis` over `window`.                             | S2       | lib/utils/storage.ts                                                                                                                                                        | 23   |
-| DEBT-0660 | Prefer `globalThis` over `window`.                             | S2       | lib/recaptcha.ts                                                                                                                                                            | 46   |
-| DEBT-0681 | Prefer `globalThis` over `window`.                             | S2       | components/ui/voice-text-area.tsx                                                                                                                                           | 20   |
-| DEBT-0682 | Prefer `globalThis` over `window`.                             | S2       | hooks/use-speech-recognition.ts                                                                                                                                             | 22   |
-| DEBT-0684 | 'lucide-react' imported multiple times.                        | S2       | components/growth/NightReviewCard.tsx                                                                                                                                       | 5    |
-| DEBT-0685 | 'lucide-react' imported multiple times.                        | S2       | components/growth/SpotCheckCard.tsx                                                                                                                                         | 5    |
-| DEBT-0687 | Prefer `globalThis.window` over `window`.                      | S2       | components/celebrations/firework-burst.tsx                                                                                                                                  | 32   |
-| DEBT-0715 | '@/lib/db/meetings' imported multiple times.                   | S2       | components/admin/meetings-tab.tsx                                                                                                                                           | 9    |
-| DEBT-0718 | Prefer `globalThis.window` over `window`.                      | S2       | components/pwa/install-prompt.tsx                                                                                                                                           | 18   |
-| DEBT-0728 | Use `export…from` to re-export `NotebookModule`.               | S2       | components/notebook/roadmap-modules.tsx                                                                                                                                     | 12   |
-| DEBT-0734 | Unexpected negated condition.                                  | S2       | components/notebook/pages/resources-page.tsx                                                                                                                                | 236  |
-| DEBT-0740 | Use `export…from` to re-export `useAuthCore`.                  | S2       | components/providers/auth-provider.tsx                                                                                                                                      | 22   |
-| DEBT-0750 | 'unknown' overrides all other types in this union type.        | S2       | lib/types/daily-log.ts                                                                                                                                                      | 28   |
-| DEBT-0761 | 'nickname' PropType is defined but prop is never used          | S2       | components/notebook/book-cover.tsx                                                                                                                                          | 26   |
-| DEBT-0768 | Unexpected negated condition.                                  | S2       | components/notebook/book-cover.tsx                                                                                                                                          | 158  |
-| DEBT-0961 | Prefer `node:crypto` over `crypto`.                            | S2       | scripts/eval/eval-sonarcloud-stage.js                                                                                                                                       | 22   |
-| DEBT-0963 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/eval/eval-sonarcloud-report.js                                                                                                                                      | 24   |
-| DEBT-0964 | Prefer `node:path` over `path`.                                | S2       | scripts/eval/eval-sonarcloud-report.js                                                                                                                                      | 25   |
-| DEBT-0965 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/eval/eval-sonarcloud-snapshot.js                                                                                                                                    | 19   |
-| DEBT-0966 | Prefer `node:path` over `path`.                                | S2       | scripts/eval/eval-sonarcloud-snapshot.js                                                                                                                                    | 20   |
-| DEBT-0967 | Prefer `node:crypto` over `crypto`.                            | S2       | scripts/eval/eval-sonarcloud-snapshot.js                                                                                                                                    | 21   |
-| DEBT-0969 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/eval/eval-sonarcloud-snapshot.js                                                                                                                                    | 145  |
-| DEBT-0970 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/eval/eval-sonarcloud-stage.js                                                                                                                                       | 20   |
-| DEBT-0971 | Prefer `node:path` over `path`.                                | S2       | scripts/eval/eval-sonarcloud-stage.js                                                                                                                                       | 21   |
-| DEBT-0972 | Unexpected negated condition.                                  | S2       | scripts/eval/eval-sonarcloud-stage.js                                                                                                                                       | 156  |
-| DEBT-0990 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/debt/generate-views.js                                                                                                                                              | 87   |
-| DEBT-0997 | Remove this unused import of 'join'.                           | S2       | scripts/multi-ai/normalize-format.js                                                                                                                                        | 15   |
-| DEBT-0998 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/multi-ai/state-manager.js                                                                                                                                           | 51   |
-| DEBT-1000 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/multi-ai/eval-check-stage.js                                                                                                                                        | 22   |
-| DEBT-1001 | Prefer `node:path` over `path`.                                | S2       | scripts/multi-ai/eval-check-stage.js                                                                                                                                        | 23   |
-| DEBT-1005 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/multi-ai/eval-report.js                                                                                                                                             | 22   |
-| DEBT-1006 | Prefer `node:path` over `path`.                                | S2       | scripts/multi-ai/eval-report.js                                                                                                                                             | 23   |
-| DEBT-1007 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/multi-ai/eval-snapshot.js                                                                                                                                           | 20   |
-| DEBT-1008 | Prefer `node:path` over `path`.                                | S2       | scripts/multi-ai/eval-snapshot.js                                                                                                                                           | 21   |
-| DEBT-1009 | Prefer `node:crypto` over `crypto`.                            | S2       | scripts/multi-ai/eval-snapshot.js                                                                                                                                           | 22   |
-| DEBT-1011 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/multi-ai/eval-snapshot.js                                                                                                                                           | 93   |
-| DEBT-1012 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/multi-ai/aggregate-category.js                                                                                                                                      | 69   |
-| DEBT-1016 | Handle this exception or don't catch it at all.                | S2       | scripts/multi-ai/aggregate-category.js                                                                                                                                      | 144  |
-| DEBT-1020 | Expected a `for-of` loop instead of a `for` loop with thi...   | S2       | scripts/multi-ai/aggregate-category.js                                                                                                                                      | 254  |
-| DEBT-1023 | Remove this unused import of 'join'.                           | S2       | scripts/multi-ai/fix-schema.js                                                                                                                                              | 17   |
-| DEBT-1024 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/multi-ai/fix-schema.js                                                                                                                                              | 236  |
-| DEBT-1025 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/multi-ai/fix-schema.js                                                                                                                                              | 255  |
-| DEBT-1030 | Handle this exception or don't catch it at all.                | S2       | scripts/multi-ai/fix-schema.js                                                                                                                                              | 537  |
-| DEBT-1031 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/multi-ai/normalize-format.js                                                                                                                                        | 311  |
-| DEBT-1040 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/multi-ai/normalize-format.js                                                                                                                                        | 721  |
-| DEBT-1043 | Don't use a zero fraction in the number.                       | S2       | scripts/multi-ai/unify-findings.js                                                                                                                                          | 50   |
-| DEBT-1044 | Handle this exception or don't catch it at all.                | S2       | scripts/multi-ai/unify-findings.js                                                                                                                                          | 79   |
-| DEBT-1049 | Remove the declaration of the unused 'category' variable.      | S2       | scripts/multi-ai/unify-findings.js                                                                                                                                          | 287  |
-| DEBT-1052 | Remove the declaration of the unused 'mergeLog' variable.      | S2       | scripts/multi-ai/unify-findings.js                                                                                                                                          | 586  |
-| DEBT-1061 | Prefer `globalThis.window` over `window`.                      | S2       | components/admin/errors-tab.tsx                                                                                                                                             | 688  |
-| DEBT-1063 | 'input' will use Object's default stringification format ...   | S2       | components/admin/logs-tab.tsx                                                                                                                                               | 338  |
-| DEBT-1065 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | components/admin/logs-tab.tsx                                                                                                                                               | 315  |
-| DEBT-1072 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/sync-consolidation-counter.js                                                                                                                                       | 74   |
-| DEBT-1073 | The catch parameter `readErr` should be named `error_`.        | S2       | scripts/sync-consolidation-counter.js                                                                                                                                       | 75   |
-| DEBT-1074 | This assertion is unnecessary since it does not change th...   | S2       | functions/src/jobs.ts                                                                                                                                                       | 379  |
-| DEBT-1075 | 'unknown' overrides all other types in this union type.        | S2       | functions/src/security-logger.ts                                                                                                                                            | 426  |
-| DEBT-1076 | 'error' will use Object's default stringification format ...   | S2       | functions/src/security-logger.ts                                                                                                                                            | 438  |
-| DEBT-1086 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | components/admin/jobs-tab.tsx                                                                                                                                               | 72   |
-| DEBT-1091 | Prefer `node:crypto` over `crypto`.                            | S2       | functions/src/jobs.ts                                                                                                                                                       | 23   |
-| DEBT-1101 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/sync-consolidation-counter.js                                                                                                                                       | 37   |
-| DEBT-1106 | Handle this exception or don't catch it at all.                | S2       | scripts/audit/transform-jsonl-schema.js                                                                                                                                     | 591  |
-| DEBT-1107 | The catch parameter `renameErr` should be named `error_`.      | S2       | scripts/audit/transform-jsonl-schema.js                                                                                                                                     | 591  |
-| DEBT-1108 | The catch parameter `unlinkErr` should be named `error_`.      | S2       | scripts/audit/transform-jsonl-schema.js                                                                                                                                     | 599  |
-| DEBT-1109 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/audit/transform-jsonl-schema.js                                                                                                                                     | 193  |
-| DEBT-1110 | The empty object is useless.                                   | S2       | scripts/audit/transform-jsonl-schema.js                                                                                                                                     | 461  |
-| DEBT-1113 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/audit/transform-jsonl-schema.js                                                                                                                                     | 22   |
-| DEBT-1114 | Prefer `node:path` over `path`.                                | S2       | scripts/audit/transform-jsonl-schema.js                                                                                                                                     | 23   |
-| DEBT-1118 | Unexpected negated condition.                                  | S2       | scripts/audit/transform-jsonl-schema.js                                                                                                                                     | 557  |
-| DEBT-1119 | The '**proto**' property is deprecated.                        | S2       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 195  |
-| DEBT-1123 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 36   |
-| DEBT-1124 | Handle this exception or don't catch it at all.                | S2       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 200  |
-| DEBT-1128 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 24   |
-| DEBT-1129 | Prefer `node:path` over `path`.                                | S2       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 25   |
-| DEBT-1130 | Prefer `node:crypto` over `crypto`.                            | S2       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 26   |
-| DEBT-1131 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 27   |
-| DEBT-1133 | Unexpected negated condition.                                  | S2       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 382  |
-| DEBT-1137 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/audit/validate-audit-integration.js                                                                                                                                 | 591  |
-| DEBT-1145 | Prefer `node:os` over `os`.                                    | S2       | scripts/debt/intake-audit.js                                                                                                                                                | 35   |
-| DEBT-1147 | Unexpected negated condition.                                  | S2       | scripts/debt/intake-audit.js                                                                                                                                                | 143  |
-| DEBT-1148 | The catch parameter `readErr` should be named `error_`.        | S2       | scripts/debt/intake-audit.js                                                                                                                                                | 288  |
-| DEBT-1151 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/debt/intake-audit.js                                                                                                                                                | 87   |
-| DEBT-1153 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/debt/intake-audit.js                                                                                                                                                | 153  |
-| DEBT-1160 | The empty object is useless.                                   | S2       | scripts/check-content-accuracy.js                                                                                                                                           | 56   |
-| DEBT-1162 | This pattern can be replaced with '\\'.                        | S2       | scripts/check-content-accuracy.js                                                                                                                                           | 242  |
-| DEBT-1167 | Handle this exception or don't catch it at all.                | S2       | scripts/check-external-links.js                                                                                                                                             | 219  |
-| DEBT-1172 | This pattern can be replaced with '\\'.                        | S2       | scripts/check-doc-placement.js                                                                                                                                              | 162  |
-| DEBT-1184 | The catch parameter `backupErr` should be named `error_`.      | S2       | scripts/debt/assign-roadmap-refs.js                                                                                                                                         | 266  |
-| DEBT-1185 | The catch parameter `writeErr` should be named `error_`.       | S2       | scripts/debt/assign-roadmap-refs.js                                                                                                                                         | 281  |
-| DEBT-1186 | Handle this exception or don't catch it at all.                | S2       | scripts/debt/assign-roadmap-refs.js                                                                                                                                         | 285  |
-| DEBT-1193 | Handle this exception or don't catch it at all.                | S2       | scripts/sync-claude-settings.js                                                                                                                                             | 419  |
-| DEBT-1194 | Unexpected negated condition.                                  | S2       | scripts/sync-claude-settings.js                                                                                                                                             | 413  |
-| DEBT-1196 | The catch parameter `_e` should be named `error_`.             | S2       | scripts/sync-claude-settings.js                                                                                                                                             | 463  |
-| DEBT-1197 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/sync-claude-settings.js                                                                                                                                             | 16   |
-| DEBT-1198 | Prefer `node:path` over `path`.                                | S2       | scripts/sync-claude-settings.js                                                                                                                                             | 17   |
-| DEBT-1202 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/assign-roadmap-refs.js                                                                                                                                         | 32   |
-| DEBT-1203 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/assign-roadmap-refs.js                                                                                                                                         | 33   |
-| DEBT-1204 | Expected a `for-of` loop instead of a `for` loop with thi...   | S2       | scripts/debt/assign-roadmap-refs.js                                                                                                                                         | 42   |
-| DEBT-1206 | Unexpected negated condition.                                  | S2       | scripts/debt/assign-roadmap-refs.js                                                                                                                                         | 184  |
-| DEBT-1207 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/generate-metrics.js                                                                                                                                            | 20   |
-| DEBT-1208 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/generate-metrics.js                                                                                                                                            | 21   |
-| DEBT-1210 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/check-phase-status.js                                                                                                                                          | 11   |
-| DEBT-1211 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/check-phase-status.js                                                                                                                                          | 12   |
-| DEBT-1212 | Unexpected negated condition.                                  | S2       | scripts/debt/check-phase-status.js                                                                                                                                          | 89   |
-| DEBT-1215 | Prefer `Number.NaN` over `NaN`.                                | S2       | scripts/aggregate-audit-findings.js                                                                                                                                         | 740  |
-| DEBT-1218 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/debt/normalize-all.js                                                                                                                                               | 65   |
-| DEBT-1219 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/debt/resolve-bulk.js                                                                                                                                                | 20   |
-| DEBT-1220 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/debt/intake-audit.js                                                                                                                                                | 36   |
-| DEBT-1222 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 32   |
-| DEBT-1224 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 244  |
-| DEBT-1225 | Handle this exception or don't catch it at all.                | S2       | scripts/create-canonical-findings.js                                                                                                                                        | 81   |
-| DEBT-1227 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/aggregate-audit-findings.js                                                                                                                                         | 186  |
-| DEBT-1228 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/create-canonical-findings.js                                                                                                                                        | 102  |
-| DEBT-1233 | Handle this exception or don't catch it at all.                | S2       | scripts/migrate-existing-findings.js                                                                                                                                        | 32   |
-| DEBT-1234 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/sync-roadmap-refs.js                                                                                                                                           | 12   |
-| DEBT-1235 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/sync-roadmap-refs.js                                                                                                                                           | 13   |
-| DEBT-1236 | Prefer `node:url` over `url`.                                  | S2       | scripts/debt/sync-roadmap-refs.js                                                                                                                                           | 14   |
-| DEBT-1238 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/resolve-bulk.js                                                                                                                                                | 18   |
-| DEBT-1239 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/resolve-bulk.js                                                                                                                                                | 19   |
-| DEBT-1240 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/debt/resolve-bulk.js                                                                                                                                                | 35   |
-| DEBT-1245 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/resolve-item.js                                                                                                                                                | 19   |
-| DEBT-1246 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/resolve-item.js                                                                                                                                                | 20   |
-| DEBT-1247 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/debt/resolve-item.js                                                                                                                                                | 21   |
-| DEBT-1248 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/debt/resolve-item.js                                                                                                                                                | 39   |
-| DEBT-1252 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/validate-schema.js                                                                                                                                             | 19   |
-| DEBT-1253 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/validate-schema.js                                                                                                                                             | 20   |
-| DEBT-1259 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/intake-audit.js                                                                                                                                                | 33   |
-| DEBT-1260 | Prefer `node:crypto` over `crypto`.                            | S2       | scripts/debt/intake-audit.js                                                                                                                                                | 34   |
-| DEBT-1263 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/intake-manual.js                                                                                                                                               | 32   |
-| DEBT-1264 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/intake-manual.js                                                                                                                                               | 33   |
-| DEBT-1265 | Prefer `node:crypto` over `crypto`.                            | S2       | scripts/debt/intake-manual.js                                                                                                                                               | 34   |
-| DEBT-1266 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/debt/intake-manual.js                                                                                                                                               | 35   |
-| DEBT-1268 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/debt/intake-manual.js                                                                                                                                               | 102  |
-| DEBT-1270 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/debt/intake-manual.js                                                                                                                                               | 172  |
-| DEBT-1273 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/intake-pr-deferred.js                                                                                                                                          | 29   |
-| DEBT-1274 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/intake-pr-deferred.js                                                                                                                                          | 30   |
-| DEBT-1275 | Prefer `node:crypto` over `crypto`.                            | S2       | scripts/debt/intake-pr-deferred.js                                                                                                                                          | 31   |
-| DEBT-1276 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/debt/intake-pr-deferred.js                                                                                                                                          | 32   |
-| DEBT-1278 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/debt/intake-pr-deferred.js                                                                                                                                          | 95   |
-| DEBT-1279 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/debt/intake-pr-deferred.js                                                                                                                                          | 152  |
-| DEBT-1284 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 29   |
-| DEBT-1285 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 30   |
-| DEBT-1286 | Prefer `node:crypto` over `crypto`.                            | S2       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 31   |
-| DEBT-1287 | Prefer `node:readline` over `readline`.                        | S2       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 33   |
-| DEBT-1289 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/debt/sync-sonarcloud.js                                                                                                                                             | 130  |
-| DEBT-1293 | Prefer `node:fs` over `fs`.                                    | S2       | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js                                                                                                                 | 12   |
-| DEBT-1294 | Prefer `node:path` over `path`.                                | S2       | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js                                                                                                                 | 13   |
-| DEBT-1295 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js                                                                                                                 | 49   |
-| DEBT-1297 | Prefer `node:child_process` over `child_process`.              | S2       | scripts/debt/consolidate-all.js                                                                                                                                             | 12   |
-| DEBT-1298 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/consolidate-all.js                                                                                                                                             | 13   |
-| DEBT-1299 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/consolidate-all.js                                                                                                                                             | 14   |
-| DEBT-1300 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/dedup-multi-pass.js                                                                                                                                            | 19   |
-| DEBT-1301 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/dedup-multi-pass.js                                                                                                                                            | 20   |
-| DEBT-1302 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/debt/dedup-multi-pass.js                                                                                                                                            | 71   |
-| DEBT-1304 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/extract-audits.js                                                                                                                                              | 15   |
-| DEBT-1305 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/extract-audits.js                                                                                                                                              | 16   |
-| DEBT-1306 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/debt/extract-audits.js                                                                                                                                              | 62   |
-| DEBT-1308 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/debt/extract-audits.js                                                                                                                                              | 167  |
-| DEBT-1309 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/extract-reviews.js                                                                                                                                             | 15   |
-| DEBT-1310 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/extract-reviews.js                                                                                                                                             | 16   |
-| DEBT-1311 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/debt/extract-reviews.js                                                                                                                                             | 60   |
-| DEBT-1313 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/debt/extract-reviews.js                                                                                                                                             | 165  |
-| DEBT-1316 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/generate-views.js                                                                                                                                              | 17   |
-| DEBT-1317 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/generate-views.js                                                                                                                                              | 18   |
-| DEBT-1318 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/debt/generate-views.js                                                                                                                                              | 47   |
-| DEBT-1319 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/debt/generate-views.js                                                                                                                                              | 47   |
-| DEBT-1321 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/debt/normalize-all.js                                                                                                                                               | 14   |
-| DEBT-1322 | Prefer `node:path` over `path`.                                | S2       | scripts/debt/normalize-all.js                                                                                                                                               | 15   |
-| DEBT-1323 | Prefer `node:crypto` over `crypto`.                            | S2       | scripts/debt/normalize-all.js                                                                                                                                               | 16   |
-| DEBT-1327 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/migrate-existing-findings.js                                                                                                                                        | 56   |
-| DEBT-1331 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/aggregate-audit-findings.js                                                                                                                                         | 468  |
-| DEBT-1346 | Prefer `Math.min()` to simplify ternary expressions.           | S2       | scripts/run-consolidation.js                                                                                                                                                | 539  |
-| DEBT-1349 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/run-consolidation.js                                                                                                                                                | 103  |
-| DEBT-1359 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/generate-pending-alerts.js                                                                                                                                          | 51   |
-| DEBT-1362 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/check-backlog-health.js                                                                                                                                             | 157  |
-| DEBT-1363 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/append-hook-warning.js                                                                                                                                              | 17   |
-| DEBT-1364 | Prefer `node:path` over `path`.                                | S2       | scripts/append-hook-warning.js                                                                                                                                              | 18   |
-| DEBT-1365 | Prefer `node:fs` over `fs`.                                    | S2       | scripts/generate-pending-alerts.js                                                                                                                                          | 19   |
-| DEBT-1366 | Prefer `node:path` over `path`.                                | S2       | scripts/generate-pending-alerts.js                                                                                                                                          | 20   |
-| DEBT-1367 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/generate-pending-alerts.js                                                                                                                                          | 72   |
-| DEBT-1371 | Unexpected negated condition.                                  | S2       | scripts/check-roadmap-health.js                                                                                                                                             | 251  |
-| DEBT-1374 | Replace this if-then-else flow by a single return statement.   | S2       | scripts/check-docs-light.js                                                                                                                                                 | 302  |
-| DEBT-1382 | Use concise character class syntax '\D' instead of '[^0-9]'.   | S2       | scripts/check-pattern-sync.js                                                                                                                                               | 41   |
-| DEBT-1383 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/check-pattern-sync.js                                                                                                                                               | 67   |
-| DEBT-1384 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 253  |
-| DEBT-1385 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 47   |
-| DEBT-1386 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 75   |
-| DEBT-1396 | Remove the declaration of the unused 'trends' variable.        | S2       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 791  |
-| DEBT-1399 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/check-pattern-sync.js                                                                                                                                               | 45   |
-| DEBT-1402 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/lib/security-helpers.js                                                                                                                                             | 27   |
-| DEBT-1415 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/lib/security-helpers.js                                                                                                                                             | 68   |
-| DEBT-1420 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/lib/security-helpers.js                                                                                                                                             | 288  |
-| DEBT-1421 | Prefer `Number.isNaN` over `isNaN`.                            | S2       | scripts/lib/security-helpers.js                                                                                                                                             | 289  |
-| DEBT-1427 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/run-consolidation.js                                                                                                                                                | 39   |
-| DEBT-1438 | Prefer `Number.isNaN` over `isNaN`.                            | S2       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 1228 |
-| DEBT-1442 | Expected a `for-of` loop instead of a `for` loop with thi...   | S2       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 248  |
-| DEBT-1454 | The catch parameter `analysisErr` should be named `error_`.    | S2       | scripts/run-consolidation.js                                                                                                                                                | 715  |
-| DEBT-1455 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/lib/validate-paths.js                                                                                                                                               | 26   |
-| DEBT-1474 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | S2       | scripts/secrets/decrypt-secrets.js                                                                                                                                          | 155  |
-| DEBT-1477 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | S2       | scripts/secrets/encrypt-secrets.js                                                                                                                                          | 113  |
-| DEBT-1480 | Remove this unused import of 'statSync'.                       | S2       | scripts/validate-canon-schema.js                                                                                                                                            | 20   |
-| DEBT-1481 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/security-check.js                                                                                                                                                   | 160  |
-| DEBT-1484 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/verify-sonar-phase.js                                                                                                                                               | 221  |
-| DEBT-1486 | Handle this exception or don't catch it at all.                | S2       | scripts/check-docs-light.js                                                                                                                                                 | 686  |
-| DEBT-1489 | This assertion is unnecessary since it does not change th...   | S2       | functions/src/admin.ts                                                                                                                                                      | 1108 |
-| DEBT-1496 | 'data.mood' will use Object's default stringification for...   | S2       | components/notebook/pages/history-page.tsx                                                                                                                                  | 73   |
-| DEBT-1501 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/verify-sonar-phase.js                                                                                                                                               | 34   |
-| DEBT-1503 | Remove the declaration of the unused '\_phaseConfig' varia...  | S2       | scripts/verify-sonar-phase.js                                                                                                                                               | 382  |
-| DEBT-1504 | Remove the declaration of the unused 'found' variable.         | S2       | docs/archive/obsolete-scripts-2026-02/generate-sonar-report-with-snippets.js                                                                                                | 181  |
-| DEBT-1506 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/generate-detailed-sonar-report.js                                                                                                                                   | 111  |
-| DEBT-1513 | Remove the declaration of the unused 'found' variable.         | S2       | scripts/generate-detailed-sonar-report.js                                                                                                                                   | 274  |
-| DEBT-1518 | Prefer `globalThis` over `window`.                             | S2       | components/admin/errors-tab.tsx                                                                                                                                             | 399  |
-| DEBT-1522 | Prefer `globalThis` over `window`.                             | S2       | components/admin/users-tab.tsx                                                                                                                                              | 339  |
-| DEBT-1529 | Unexpected negated condition.                                  | S2       | lib/utils/error-export.ts                                                                                                                                                   | 118  |
-| DEBT-1530 | Prefer `globalThis.window` over `window`.                      | S2       | lib/utils/error-export.ts                                                                                                                                                   | 118  |
-| DEBT-1533 | 'date-fns' imported multiple times.                            | S2       | components/admin/users-tab.tsx                                                                                                                                              | 27   |
-| DEBT-1536 | Prefer `Math.max()` to simplify ternary expressions.           | S2       | components/admin/users-tab.tsx                                                                                                                                              | 119  |
-| DEBT-1539 | Mark the props of the component as read-only.                  | S2       | lib/contexts/admin-tab-context.tsx                                                                                                                                          | 66   |
-| DEBT-1540 | useState call is not destructured into value + setter pair     | S2       | lib/contexts/admin-tab-context.tsx                                                                                                                                          | 67   |
-| DEBT-1550 | 'PerformanceTiming' is deprecated.                             | S2       | lib/utils/error-export.ts                                                                                                                                                   | 154  |
-| DEBT-1551 | 'navigationStart' is deprecated.                               | S2       | lib/utils/error-export.ts                                                                                                                                                   | 157  |
-| DEBT-1552 | 'loadEventEnd' is deprecated.                                  | S2       | lib/utils/error-export.ts                                                                                                                                                   | 158  |
-| DEBT-1553 | 'domContentLoadedEventEnd' is deprecated.                      | S2       | lib/utils/error-export.ts                                                                                                                                                   | 159  |
-| DEBT-1555 | The signature '(commandId: string, showUI?: boolean \| und...  | S2       | lib/utils/error-export.ts                                                                                                                                                   | 318  |
-| DEBT-1558 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | components/admin/privileges-tab.tsx                                                                                                                                         | 305  |
-| DEBT-1569 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | functions/src/admin.ts                                                                                                                                                      | 3500 |
-| DEBT-1570 | Prefer `Number.parseFloat` over `parseFloat`.                  | S2       | functions/src/admin.ts                                                                                                                                                      | 3568 |
-| DEBT-1573 | Remove this unused import of 'readdirSync'.                    | S2       | scripts/aggregate-audit-findings.js                                                                                                                                         | 21   |
-| DEBT-1575 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/aggregate-audit-findings.js                                                                                                                                         | 236  |
-| DEBT-1576 | Unnecessary use of conditional expression for default ass...   | S2       | scripts/aggregate-audit-findings.js                                                                                                                                         | 1154 |
-| DEBT-1579 | This pattern can be replaced with '\r\n'.                      | S2       | scripts/check-docs-light.js                                                                                                                                                 | 158  |
-| DEBT-1581 | Replace this union type with a type alias.                     | S2       | functions/src/admin.ts                                                                                                                                                      | 2324 |
-| DEBT-1589 | Mark the props of the component as read-only.                  | S2       | components/admin/logs-tab.tsx                                                                                                                                               | 173  |
-| DEBT-1593 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/check-cross-doc-deps.js                                                                                                                                             | 187  |
-| DEBT-1598 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/run-consolidation.js                                                                                                                                                | 89   |
-| DEBT-1606 | Remove this unused import of 'statSync'.                       | S2       | scripts/security-check.js                                                                                                                                                   | 20   |
-| DEBT-1607 | Remove this unused import of 'isAbsolute'.                     | S2       | scripts/security-check.js                                                                                                                                                   | 22   |
-| DEBT-1608 | Unexpected negated condition.                                  | S2       | scripts/check-backlog-health.js                                                                                                                                             | 266  |
-| DEBT-1609 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | scripts/check-backlog-health.js                                                                                                                                             | 29   |
-| DEBT-1615 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | lib/utils/admin-error-utils.ts                                                                                                                                              | 19   |
-| DEBT-1621 | Mark the props of the component as read-only.                  | S2       | components/admin/errors-tab.tsx                                                                                                                                             | 139  |
-| DEBT-1628 | Prefer `globalThis.window` over `window`.                      | S2       | app/dev/page.tsx                                                                                                                                                            | 30   |
-| DEBT-1629 | Mark the props of the component as read-only.                  | S2       | components/dev/dev-dashboard.tsx                                                                                                                                            | 24   |
-| DEBT-1631 | Mark the props of the component as read-only.                  | S2       | components/dev/dev-tabs.tsx                                                                                                                                                 | 54   |
-| DEBT-1632 | Mark the props of the component as read-only.                  | S2       | components/dev/lighthouse-tab.tsx                                                                                                                                           | 64   |
-| DEBT-1635 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | lib/logger.ts                                                                                                                                                               | 87   |
-| DEBT-1636 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/verify-skill-usage.js                                                                                                                                               | 78   |
-| DEBT-1637 | Prefer `String#replaceAll()` over `String#replace()`.          | S2       | scripts/log-session-activity.js                                                                                                                                             | 68   |
-| DEBT-1645 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | S2       | scripts/log-override.js                                                                                                                                                     | 73   |
-| DEBT-1648 | Remove the declaration of the unused 'isSession' variable.     | S2       | scripts/validate-skill-config.js                                                                                                                                            | 113  |
-| DEBT-1650 | `String.raw` should be used to avoid escaping `\`.             | S2       | scripts/validate-skill-config.js                                                                                                                                            | 118  |
-| DEBT-1920 | API design inconsistency: Mixed return patterns                | S2       | lib/firestore-service.ts                                                                                                                                                    | 262  |
-| DEBT-1924 | God component: dashboard-tab.tsx with excessive state man...   | S2       | components/admin/dashboard-tab.tsx                                                                                                                                          | 952  |
-| DEBT-1925 | Any type usage in today-page.tsx snapshot handler              | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 507  |
-| DEBT-1926 | Tight coupling between UI components and Firebase SDK          | S2       | hooks/use-journal.ts                                                                                                                                                        | 350  |
-| DEBT-1927 | Hardcoded bucket name in Cloud Functions                       | S2       | functions/src/jobs.ts                                                                                                                                                       | 602  |
-| DEBT-1928 | Inconsistent state management patterns across providers        | S2       | components/providers/auth-provider.tsx                                                                                                                                      | 38   |
-| DEBT-1929 | Anti-pattern: Firestore queries in components instead of ...   | S2       | hooks/use-journal.ts                                                                                                                                                        | 277  |
-| DEBT-1930 | Missing dependency in useEffect for logs refresh               | S2       | components/admin/logs-tab.tsx                                                                                                                                               | 418  |
-| DEBT-1931 | Missing loading state coordination across contexts             | S2       | hooks/use-journal.ts                                                                                                                                                        | 428  |
-| DEBT-1932 | Missing error boundary in inventory form                       | S2       | components/journal/entry-forms/inventory-form.tsx                                                                                                                           | 38   |
-| DEBT-1934 | Missing abstraction for real-time subscriptions                | S2       | hooks/use-journal.ts                                                                                                                                                        | 284  |
-| DEBT-1935 | Firestore timestamp validation inconsistency                   | S2       | hooks/use-journal.ts                                                                                                                                                        | 178  |
-| DEBT-1939 | Race condition in parallel file processing                     | S2       | functions/src/jobs.ts                                                                                                                                                       | 627  |
-| DEBT-1960 | Hardcoded reCAPTCHA site key fallback in Cloud Functions       | S2       | functions/src/recaptcha-verify.ts                                                                                                                                           | 0    |
-| DEBT-1963 | Functions code imports type from undeclared direct depend...   | S2       | functions/src/jobs.ts                                                                                                                                                       | 0    |
-| DEBT-1975 | Potential empty catch blocks in scripts                        | S2       | scripts/seed-real-data.ts                                                                                                                                                   | 0    |
-| DEBT-1979 | Duplicate Quote Widget Components (3 Variants)                 | S2       | components/widgets/daily-quote-card.tsx                                                                                                                                     | 0    |
-| DEBT-1980 | Inconsistent lib/db/ Write Patterns                            | S2       | lib/db/sober-living.ts                                                                                                                                                      | 0    |
-| DEBT-1981 | Duplicate generateSearchableText implementations               | S2       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-1982 | No environment validation/doctor script                        | S2       | scripts/                                                                                                                                                                    | 1    |
-| DEBT-1983 | Dual hooks directories: hooks/ and lib/hooks/                  | S2       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-1987 | Logger is present but lacks correlation/request IDs; trac...   | S2       | lib/logger.ts                                                                                                                                                               | 99   |
-| DEBT-1989 | Potential Firestore-rules alignment risk for direct weekl...   | S2       | components/notebook/pages/today-page.tsx                                                                                                                                    | 0    |
-| DEBT-1992 | 8:1 console.log to logger ratio — production observabilit...   | S2       | app/                                                                                                                                                                        | 1    |
-| DEBT-2747 | Session-start timeout risks in low-bandwidth environments      | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2749 | Firebase deployment lacks rollback on partial failure          | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2750 | CI runs full build twice - once for lint, once for test        | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2751 | SonarCloud not enforced in CI gates                            | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2752 | Sentry disabled in dev mode by default                         | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2753 | Hook performance not tracked - no metrics on execution time    | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2754 | Pre-push duplicates pre-commit pattern checks                  | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2755 | Untitled finding                                               | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-3130 | Untitled finding                                               | S2       | N/A                                                                                                                                                                         | 0    |
-| DEBT-2757 | Small touch targets on mobile - tabs only 8-10px padding       | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2758 | No focus trap management in modals and dialogs                 | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2759 | Missing error state illustrations - plain text errors only     | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2760 | Missing loading skeletons on data-heavy pages                  | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2761 | No optimistic updates for form submissions                     | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2762 | Missing keyboard shortcuts for power users                     | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2763 | Form validation shows errors only on submit, not inline        | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2764 | Missing Cloud Functions integration tests - only 1 skippe...   | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2765 | No visual regression testing despite Playwright being ins...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2766 | Coverage thresholds not enforced despite c8 being available    | S2       | 10-12                                                                                                                                                                       | 0    |
-| DEBT-2767 | Limited script testing - 5 test files for 60+ npm scripts      | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2768 | No performance benchmarks for pagination and data loading      | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2769 | Error boundary and Sentry integration not tested               | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2770 | Flaky timing in rate limiter tests using real setTimeout       | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2771 | msw installed but unused for API mocking                       | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2772 | Enable Next.js experimental optimizations and bundle anal...   | S2       | 12-19                                                                                                                                                                       | 0    |
-| DEBT-2773 | Add Content-Security-Policy header to Firebase hosting co...   | S2       | 6-57                                                                                                                                                                        | 0    |
-| DEBT-2775 | Firestore security rules file not found in repository          | S2       | 72-74                                                                                                                                                                       | 0    |
-| DEBT-2776 | Configure Next.js build cache and dependency caching for ...   | S2       | 12                                                                                                                                                                          | 0    |
-| DEBT-2777 | Lazy load Leaflet and Recharts with dynamic imports and S...   | S2       | 1-80                                                                                                                                                                        | 0    |
-| DEBT-2778 | Upgrade Firebase Functions to Node.js 24 runtime               | S2       | 68                                                                                                                                                                          | 0    |
-| DEBT-2779 | Add composite index for userId + timestamp on security_lo...   | S2       | 18-80                                                                                                                                                                       | 0    |
-| DEBT-2780 | AI_WORKFLOW.md size optimization - 872 lines may exceed e...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2782 | Security guidance consolidation - multiple overlapping se...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2784 | Cross-reference navigation overhead in documentation           | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2785 | Pre-commit hook parallelization - sequential checks could...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2786 | CI non-blocking checks should block - 5 checks use contin...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2787 | Script consolidation - 30+ check/validate/sync scripts wi...   | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2788 | Generic button labels - Submit used instead of action-spe...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2789 | Error messages don't guide user to fix the problem             | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2790 | Inconsistent terminology - meeting vs session vs appointment   | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2791 | Confirmation dialogs lack specific consequences                | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2792 | Loading text inconsistency - Loading... vs Fetching vs sp...   | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2794 | Success feedback messages too brief                            | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2795 | Consolidate duplicate mood selector components - 3 implem...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2796 | Extract meeting time parsing logic - ~80 lines duplicated...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2797 | Migrate useAuth consumers to focused hooks - 16 component...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2798 | Extract common form state logic - ~150 lines of duplicate...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2799 | Create barrel exports for component directories - only 1 ...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2800 | Collocate related quote components - 3 variants scattered...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2801 | Standardize export style - 38 default vs 69 named exports...   | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2802 | useDailyQuote hook has smart module-level caching prevent...   | S2       | 1                                                                                                                                                                           | 0    |
-| DEBT-2804 | writeFileSync without atomic write pattern and missing en...   | S2       | scripts/suggest-pattern-automation.js                                                                                                                                       | 397  |
-| DEBT-2805 | writeFileSync without atomic write pattern                     | S2       | scripts/archive-doc.js                                                                                                                                                      | 182  |
-| DEBT-2969 | Date formats inconsistent across the app                       | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2966 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2967 | Documentation effectiveness metrics - no tracking of whic...   | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2968 | Add engines field to root package.json for CI/CD consistency   | S2       | 1-165                                                                                                                                                                       | 0    |
-| DEBT-2965 | Missing ARIA labels on critical navigation tabs                | S2       | multiple                                                                                                                                                                    | 0    |
-| DEBT-2835 | OPT-P004: update-readme-status.js table parsing requires ...   | S2       | scripts/update-readme-status.js                                                                                                                                             | 156  |
-| DEBT-2836 | OPT-P006: aggregate-audit-findings.js fragile markdown pa...   | S2       | scripts/aggregate-audit-findings.js                                                                                                                                         | 322  |
-| DEBT-2984 | Stale documentation markers - 96 TODO/TBD occurrences acr...   | S2       | docs/technical-debt/views/by-status.md                                                                                                                                      | 0    |
-| DEBT-2985 | Documentation effectiveness metrics - no tracking of whic...   | S2       | docs/README.md                                                                                                                                                              | 0    |
-| DEBT-2986 | Add engines field to root package.json for CI/CD consistency   | S2       | package.json                                                                                                                                                                | 0    |
-| DEBT-2987 | Date formats inconsistent across the app                       | S2       | lib/utils/date-utils.ts                                                                                                                                                     | 0    |
-| DEBT-2972 | session-start.js outputs 40+ decorative lines with emoji ...   | S2       | .claude/hooks/session-start.js                                                                                                                                              | 0    |
-| DEBT-2973 | Multi-line regex with greedy [\s\S]\*? quantifier in auto-...  | S2       | .claude/hooks/auto-save-context.js                                                                                                                                          | 0    |
-| DEBT-2976 | Fragile markdown field parsing regex repeated across 3+ s...   | S2       | .claude/hooks/commit-tracker.js                                                                                                                                             | 0    |
-| DEBT-2859 | doc-optimizer SKILL.md has duplicated CRITICAL RETURN PRO...   | S2       | .claude/skills/doc-optimizer/SKILL.md                                                                                                                                       | 0    |
-| DEBT-2860 | Audit skills share >50% boilerplate content without share...   | S2       | .claude/skills/audit-comprehensive/SKILL.md                                                                                                                                 | 0    |
-| DEBT-2862 | SessionStart: session-start.js spawns 6+ sequential execS...   | S2       | .claude/hooks/session-start.js                                                                                                                                              | 0    |
-| DEBT-2863 | SessionStart: check-remote-session-context.js runs git fe...   | S2       | .claude/hooks/check-remote-session-context.js                                                                                                                               | 0    |
-| DEBT-2867 | PostToolUse Read: 3 hooks with redundant file reads and s...   | S2       | .claude/hooks/large-context-warning.js                                                                                                                                      | 0    |
-| DEBT-2868 | compaction-handoff.js uses execSync (shell) instead of ex...   | S2       | .claude/hooks/compaction-handoff.js                                                                                                                                         | 0    |
-| DEBT-2870 | Duplicate file content reads across PostToolUse hooks          | S2       | .claude/hooks/firestore-write-block.js                                                                                                                                      | 0    |
-| DEBT-2873 | UserPromptSubmit: 4 hooks run on every user message inclu...   | S2       | .claude/hooks/alerts-reminder.js                                                                                                                                            | 0    |
-| DEBT-2878 | Skill overlap: sonarcloud-sprint is superseded by sonarcloud   | S2       | .claude/skills/sonarcloud-sprint/SKILL.md                                                                                                                                   | 0    |
-| DEBT-2882 | Skill overlap: ui-design-system vs ux-researcher-designer...   | S2       | .claude/skills/ui-design-system/SKILL.md                                                                                                                                    | 0    |
-| DEBT-2886 | Orphaned skill: find-skills not in SKILL_INDEX.md              | S2       | .claude/skills/find-skills/SKILL.md                                                                                                                                         | 0    |
-| DEBT-2887 | Orphaned skill: pre-commit-fixer not in SKILL_INDEX.md         | S2       | .claude/skills/pre-commit-fixer/SKILL.md                                                                                                                                    | 0    |
-| DEBT-2888 | Orphaned skill: task-next not in SKILL_INDEX.md                | S2       | .claude/skills/task-next/SKILL.md                                                                                                                                           | 0    |
-| DEBT-2889 | Orphaned skill: multi-ai-audit not in SKILL_INDEX.md           | S2       | .claude/skills/multi-ai-audit/SKILL.md                                                                                                                                      | 0    |
-| DEBT-2890 | Orphaned skill: add-debt not in SKILL_INDEX.md                 | S2       | .claude/skills/add-debt/SKILL.md                                                                                                                                            | 0    |
-| DEBT-2891 | Orphaned skill: verify-technical-debt not in SKILL_INDEX.md    | S2       | .claude/skills/verify-technical-debt/SKILL.md                                                                                                                               | 0    |
-| DEBT-2892 | Orphaned skill: pr-retro not in SKILL_INDEX.md                 | S2       | .claude/skills/pr-retro/SKILL.md                                                                                                                                            | 0    |
-| DEBT-2893 | Orphaned skill: sonarcloud not in SKILL_INDEX.md (only so...   | S2       | .claude/skills/sonarcloud/SKILL.md                                                                                                                                          | 0    |
-| DEBT-2894 | Orphaned skill: test-suite not in SKILL_INDEX.md               | S2       | .claude/skills/test-suite/SKILL.md                                                                                                                                          | 0    |
-| DEBT-2896 | Agent prompts in audit-process lack CRITICAL RETURN PROTOCOL   | S2       | .claude/skills/audit-process/SKILL.md                                                                                                                                       | 0    |
-| DEBT-2898 | Agent prompts in audit-documentation lack explicit JSONL ...   | S2       | .claude/skills/audit-documentation/SKILL.md                                                                                                                                 | 0    |
-| DEBT-2899 | Agent prompts in audit-enhancements reference subagent wi...   | S2       | .claude/skills/audit-enhancements/SKILL.md                                                                                                                                  | 0    |
-| DEBT-2900 | FALSE_POSITIVES.jsonl not referenced in audit-process or ...   | S2       | .claude/skills/audit-process/SKILL.md                                                                                                                                       | 0    |
-| DEBT-2903 | MCP memory server configured but not enabled - 3 skills h...   | S2       | .mcp.json                                                                                                                                                                   | 0    |
-| DEBT-2904 | MCP filesystem server duplicates native Claude Code Read/...   | S2       | .mcp.json                                                                                                                                                                   | 0    |
-| DEBT-2910 | session-begin SKILL.md reads ROADMAP.md (3164 lines) in f...   | S2       | .claude/skills/session-begin/SKILL.md                                                                                                                                       | 0    |
-| DEBT-2912 | session-begin reads Technical Debt INDEX.md + AI_WORKFLOW...   | S2       | .claude/skills/session-begin/SKILL.md                                                                                                                                       | 0    |
-| DEBT-2914 | pr-review SKILL.md is 840 lines loaded entirely when skil...   | S2       | .claude/skills/pr-review/SKILL.md                                                                                                                                           | 0    |
-| DEBT-2915 | audit-comprehensive SKILL.md is 854 lines loaded entirely...   | S2       | .claude/skills/audit-comprehensive/SKILL.md                                                                                                                                 | 0    |
-| DEBT-2917 | alerts-reminder.js injects context-consuming messages on ...   | S2       | .claude/hooks/alerts-reminder.js                                                                                                                                            | 0    |
-| DEBT-2921 | commit-log.jsonl has no rotation/size-cap logic (39KB, ap...   | S2       | .claude/state/commit-log.jsonl                                                                                                                                              | 0    |
-| DEBT-2922 | handoff.json embeds full commitLog array (25KB, unbounded...   | S2       | .claude/state/handoff.json                                                                                                                                                  | 0    |
-| DEBT-3021 | DOCUMENT_DEPENDENCIES.md sync status tracking                  | S2       | docs/DOCUMENT_DEPENDENCIES.md                                                                                                                                               | 0    |
-| DEBT-3022 | SESSION_CONTEXT.md quick status table                          | S2       | SESSION_CONTEXT.md                                                                                                                                                          | 0    |
-| DEBT-3023 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m...   | S2       | docs/DOCUMENT_DEPENDENCIES.md                                                                                                                                               | 0    |
-| DEBT-3024 | ROADMAP.md detailed milestone specifications embedded          | S2       | ROADMAP.md                                                                                                                                                                  | 0    |
-| DEBT-3025 | PR_WORKFLOW_CHECKLIST.md version history table                 | S2       | docs/PR_WORKFLOW_CHECKLIST.md                                                                                                                                               | 0    |
-| DEBT-3026 | EXPANSION_EVALUATION_TRACKER.md command reference table        | S2       | docs/EXPANSION_EVALUATION_TRACKER.md                                                                                                                                        | 0    |
-| DEBT-3031 | ai-review.js - Unused AI review prompt applicator              | S2       | scripts/ai-review.js                                                                                                                                                        | 0    |
-| DEBT-3033 | create-canonical-findings.js - Unused canonical findings ...   | S2       | scripts/create-canonical-findings.js                                                                                                                                        | 0    |
-| DEBT-3034 | generate-pending-alerts.js - Unused session-start alert g...   | S2       | scripts/generate-pending-alerts.js                                                                                                                                          | 0    |
-| DEBT-3036 | migrate-existing-findings.js - Unused legacy findings mig...   | S2       | scripts/migrate-existing-findings.js                                                                                                                                        | 0    |
-| DEBT-3038 | regenerate-findings-index.js - Unused canonical findings ...   | S2       | scripts/regenerate-findings-index.js                                                                                                                                        | 0    |
-| DEBT-3041 | update-legacy-lines.js - Unused legacy findings line numb...   | S2       | scripts/update-legacy-lines.js                                                                                                                                              | 0    |
-| DEBT-3045 | agent-trigger-enforcer.js runs on every code file edit wi...   | S2       | .claude/hooks/agent-trigger-enforcer.js                                                                                                                                     | 0    |
-| DEBT-3046 | Three Read hooks contend for .context-tracking-state.json...   | S2       | .claude/hooks/large-context-warning.js, .claude/hooks/auto-save-context.js, .claude/hooks/compaction-handoff.js                                                             | 0    |
-| DEBT-3047 | State file sprawl across .claude/hooks/ and .claude/state/     | S2       | .claude/state/, .claude/hooks/                                                                                                                                              | 0    |
-| DEBT-3048 | validation hooks could share file read to reduce I/O           | S2       | .claude/hooks/component-size-check.js, firestore-write-block.js, test-mocking-validator.js, app-check-validator.js, typescript-strict-check.js, repository-pattern-check.js | 0    |
-| DEBT-3053 | session-start.js does heavy work at SessionStart (builds,...   | S2       | .claude/hooks/session-start.js                                                                                                                                              | 0    |
-| DEBT-3054 | Auto-save-context hook reads 4 files per Read operation t...   | S2       | .claude/hooks/auto-save-context.js                                                                                                                                          | 0    |
-| DEBT-3056 | SessionStart hook chain is sequential with no paralleliza...   | S2       | .claude/hooks/session-start.js                                                                                                                                              | 0    |
-| DEBT-3058 | Skill overlap: docs-sync vs docs-update vs doc-optimizer       | S2       | .claude/skills/docs-sync/SKILL.md, docs-update/SKILL.md, doc-optimizer/SKILL.md                                                                                             | 0    |
-| DEBT-3060 | Empty or minimal SKILL.md descriptions                         | S2       | .claude/skills/[multiple]/SKILL.md                                                                                                                                          | 0    |
-| DEBT-3061 | Skill overlap: debt tracking skills (add-deferred-debt, a...   | S2       | .claude/skills/add-deferred-debt/SKILL.md, add-manual-debt/SKILL.md, verify-technical-debt/SKILL.md, sync-sonarcloud-debt/SKILL.md                                          | 0    |
-| DEBT-3062 | Skill overlap: PR and review skills (pr-review, pr-retro,...   | S2       | .claude/skills/pr-review/SKILL.md, pr-retro/SKILL.md, code-reviewer/SKILL.md, requesting-code-review/SKILL.md                                                               | 0    |
-| DEBT-3065 | Potential deprecation: skill-creator, skill-related skill...   | S2       | .claude/skills/skill-creator/SKILL.md, find-skills/SKILL.md                                                                                                                 | 0    |
-| DEBT-3068 | Skill naming inconsistency: enhancement vs audit-enhancem...   | S2       | .claude/skills/audit-enhancements/SKILL.md, audit-process/SKILL.md                                                                                                          | 0    |
-| DEBT-3069 | Marketing-focused skills in technical codebase (content-r...   | S2       | .claude/skills/content-research-writer/SKILL.md, market-research-reports/SKILL.md, ux-researcher-designer/SKILL.md                                                          | 0    |
-| DEBT-3070 | Undefined skill descriptions create discovery problem (50...   | S2       | .claude/skills/\*/SKILL.md                                                                                                                                                  | 0    |
-| DEBT-3074 | Redundant App Check instructions across 3 documents            | S2       | docs/APPCHECK_SETUP.md, docs/RECAPTCHA_REMOVAL_GUIDE.md, claude.md                                                                                                          | 0    |
-| DEBT-3075 | Outdated IMS references in SESSION_HISTORY.md and AI_REVI...   | S2       | docs/SESSION_HISTORY.md (lines 25-50), docs/AI_REVIEW_LEARNINGS_LOG.md (lines with 'IMS→TDMS'), docs/AUDIT_TRACKER.md (version 2.6-2.7)                                     | 0    |
-| DEBT-3087 | check-roadmap-health.js version parsing regex scoped to s...   | S2       | scripts/check-roadmap-health.js                                                                                                                                             | 0    |
-| DEBT-3088 | Multi-AI normalize-format.js markdown table detection and...   | S2       | scripts/multi-ai/normalize-format.js                                                                                                                                        | 0    |
-| DEBT-3089 | verify-sonar-phase.js hardcoded security section header d...   | S2       | scripts/verify-sonar-phase.js                                                                                                                                               | 0    |
-| DEBT-3092 | RECAPTCHA_REMOVAL_GUIDE.md - 745 lines about Firebase con...   | S2       | docs/RECAPTCHA_REMOVAL_GUIDE.md                                                                                                                                             | 0    |
-| DEBT-3093 | REVIEW_POLICY_INDEX.md - 370 lines index without inbound ...   | S2       | docs/REVIEW_POLICY_INDEX.md                                                                                                                                                 | 0    |
-| DEBT-3094 | PLAN_MAP.md - 242 lines documentation hierarchy map never...   | S2       | docs/PLAN_MAP.md                                                                                                                                                            | 0    |
-| DEBT-3095 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev...   | S2       | docs/MCP_SERVER_AUDIT.md                                                                                                                                                    | 0    |
-| DEBT-3100 | SKILL_AGENT_POLICY.md - 0 refs despite defining usage policy   | S2       | docs/agent_docs/SKILL_AGENT_POLICY.md                                                                                                                                       | 0    |
-| DEBT-3101 | Audit inventory stage files (6 files) - generated but unr...   | S2       | docs/audits/single-session/process/audit-2026-02-09/stage-1\*.md                                                                                                            | 0    |
-| DEBT-3103 | Plan documents with zero inbound refs - 5 planning files ...   | S2       | docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others                                                                                                                           | 0    |
-| DEBT-3135 | DOCUMENT_DEPENDENCIES.md sync status tracking                  | S2       | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md                                                                                                                           | 0    |
-| DEBT-3136 | SESSION_CONTEXT.md quick status table                          | S2       | home/user/sonash-v0/SESSION_CONTEXT.md                                                                                                                                      | 0    |
-| DEBT-3137 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m...   | S2       | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md                                                                                                                           | 0    |
-| DEBT-3138 | ROADMAP.md detailed milestone specifications embedded          | S2       | home/user/sonash-v0/ROADMAP.md                                                                                                                                              | 0    |
-| DEBT-3139 | PR_WORKFLOW_CHECKLIST.md version history table                 | S2       | home/user/sonash-v0/docs/PR_WORKFLOW_CHECKLIST.md                                                                                                                           | 0    |
-| DEBT-3140 | EXPANSION_EVALUATION_TRACKER.md command reference table        | S2       | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md                                                                                                                    | 0    |
-| DEBT-3145 | ai-review.js - Unused AI review prompt applicator              | S2       | home/user/sonash-v0/scripts/ai-review.js                                                                                                                                    | 0    |
-| DEBT-3147 | create-canonical-findings.js - Unused canonical findings ...   | S2       | home/user/sonash-v0/scripts/create-canonical-findings.js                                                                                                                    | 0    |
-| DEBT-3148 | generate-pending-alerts.js - Unused session-start alert g...   | S2       | home/user/sonash-v0/scripts/generate-pending-alerts.js                                                                                                                      | 0    |
-| DEBT-3150 | migrate-existing-findings.js - Unused legacy findings mig...   | S2       | home/user/sonash-v0/scripts/migrate-existing-findings.js                                                                                                                    | 0    |
-| DEBT-3152 | regenerate-findings-index.js - Unused canonical findings ...   | S2       | home/user/sonash-v0/scripts/regenerate-findings-index.js                                                                                                                    | 0    |
-| DEBT-3155 | update-legacy-lines.js - Unused legacy findings line numb...   | S2       | home/user/sonash-v0/scripts/update-legacy-lines.js                                                                                                                          | 0    |
-| DEBT-3164 | check-roadmap-health.js version parsing regex scoped to s...   | S2       | home/user/sonash-v0/scripts/check-roadmap-health.js                                                                                                                         | 0    |
-| DEBT-3165 | Multi-AI normalize-format.js markdown table detection and...   | S2       | home/user/sonash-v0/scripts/multi-ai/normalize-format.js                                                                                                                    | 0    |
-| DEBT-3166 | verify-sonar-phase.js hardcoded security section header d...   | S2       | home/user/sonash-v0/scripts/verify-sonar-phase.js                                                                                                                           | 0    |
-| DEBT-3169 | RECAPTCHA_REMOVAL_GUIDE.md - 745 lines about Firebase con...   | S2       | home/user/sonash-v0/docs/RECAPTCHA_REMOVAL_GUIDE.md                                                                                                                         | 0    |
-| DEBT-3170 | REVIEW_POLICY_INDEX.md - 370 lines index without inbound ...   | S2       | home/user/sonash-v0/docs/REVIEW_POLICY_INDEX.md                                                                                                                             | 0    |
-| DEBT-3171 | PLAN_MAP.md - 242 lines documentation hierarchy map never...   | S2       | home/user/sonash-v0/docs/PLAN_MAP.md                                                                                                                                        | 0    |
-| DEBT-3172 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev...   | S2       | home/user/sonash-v0/docs/MCP_SERVER_AUDIT.md                                                                                                                                | 0    |
-| DEBT-3177 | SKILL_AGENT_POLICY.md - 0 refs despite defining usage policy   | S2       | home/user/sonash-v0/docs/agent_docs/SKILL_AGENT_POLICY.md                                                                                                                   | 0    |
-| DEBT-3178 | Audit inventory stage files (6 files) - generated but unr...   | S2       | home/user/sonash-v0/docs/audits/single-session/process/audit-2026-02-09/stage-1\*.md                                                                                        | 0    |
-| DEBT-3180 | Plan documents with zero inbound refs - 5 planning files ...   | S2       | home/user/sonash-v0/docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others                                                                                                       | 0    |
-| DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | components/admin/errors-tab.tsx                                                                                                                                             | 37   |
-| DEBT-0555 | Visible, non-interactive elements with click handlers mus...   | S3       | components/admin/users-tab.tsx                                                                                                                                              | 563  |
-| DEBT-0572 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | scripts/seed-meetings.ts                                                                                                                                                    | 79   |
-| DEBT-0576 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | scripts/check-consolidation-status.js                                                                                                                                       | 34   |
-| DEBT-0577 | Prefer `String#codePointAt()` over `String#charCodeAt()`.      | S3       | scripts/suggest-pattern-automation.js                                                                                                                                       | 296  |
-| DEBT-0579 | Use `new Array()` instead of `Array()`.                        | S3       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 121  |
-| DEBT-0580 | Visible, non-interactive elements with click handlers mus...   | S3       | components/widgets/compact-meeting-countdown.tsx                                                                                                                            | 273  |
-| DEBT-0582 | Prefer `String#replaceAll()` over `String#replace()`.          | S3       | lib/sentry.client.ts                                                                                                                                                        | 48   |
-| DEBT-0583 | Use `new Array()` instead of `Array()`.                        | S3       | components/notebook/notebook-shell.tsx                                                                                                                                      | 133  |
-| DEBT-0584 | Use `new Array()` instead of `Array()`.                        | S3       | components/notebook/pages/support-page.tsx                                                                                                                                  | 114  |
-| DEBT-0585 | 'useAuth' is deprecated.                                       | S3       | components/home/home-client.tsx                                                                                                                                             | 7    |
-| DEBT-0586 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/home/home-client.tsx                                                                                                                                             | 21   |
-| DEBT-0587 | Unexpected negated condition.                                  | S3       | components/home/home-client.tsx                                                                                                                                             | 42   |
-| DEBT-0588 | Prefer `.some(…)` over `.find(…)`.                             | S3       | functions/src/admin.ts                                                                                                                                                      | 644  |
-| DEBT-0591 | Prefer `globalThis.window` over `window`.                      | S3       | app/admin/page.tsx                                                                                                                                                          | 31   |
-| DEBT-0593 | 'useAuth' is deprecated.                                       | S3       | app/meetings/all/page.tsx                                                                                                                                                   | 19   |
-| DEBT-0594 | Use the "RegExp.exec()" method instead.                        | S3       | app/meetings/all/page.tsx                                                                                                                                                   | 42   |
-| DEBT-0595 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | app/meetings/all/page.tsx                                                                                                                                                   | 72   |
-| DEBT-0596 | Unexpected negated condition.                                  | S3       | components/admin/links-tab.tsx                                                                                                                                              | 286  |
-| DEBT-0597 | Unexpected negated condition.                                  | S3       | components/admin/prayers-tab.tsx                                                                                                                                            | 272  |
-| DEBT-0599 | Unexpected negated condition.                                  | S3       | components/celebrations/milestone-modal.tsx                                                                                                                                 | 105  |
-| DEBT-0600 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 491  |
-| DEBT-0602 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/journal/journal-hub.tsx                                                                                                                                          | 25   |
-| DEBT-0603 | Mark the props of the component as read-only.                  | S3       | components/meetings/meeting-details-dialog.tsx                                                                                                                              | 23   |
-| DEBT-0604 | Mark the props of the component as read-only.                  | S3       | components/notebook/features/enhanced-mood-selector.tsx                                                                                                                     | 50   |
-| DEBT-0606 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/notebook/notebook-shell.tsx                                                                                                                                      | 34   |
-| DEBT-0608 | 'useAuth' is deprecated.                                       | S3       | components/notebook/pages/resources-page.tsx                                                                                                                                | 11   |
-| DEBT-0609 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/notebook/pages/resources-page.tsx                                                                                                                                | 52   |
-| DEBT-0610 | The signature '(): Promise<Meeting[]>' of 'MeetingsServic...   | S3       | components/notebook/pages/resources-page.tsx                                                                                                                                | 162  |
-| DEBT-0611 | Use the "RegExp.exec()" method instead.                        | S3       | components/notebook/pages/resources-page.tsx                                                                                                                                | 213  |
-| DEBT-0612 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | S3       | components/notebook/pages/today-page.tsx                                                                                                                                    | 122  |
-| DEBT-0613 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/onboarding/onboarding-wizard.tsx                                                                                                                                 | 31   |
-| DEBT-0614 | `new Error()` is too unspecific for a type check. Use `ne...   | S3       | components/onboarding/onboarding-wizard.tsx                                                                                                                                 | 136  |
-| DEBT-0616 | Use the "RegExp.exec()" method instead.                        | S3       | components/widgets/compact-meeting-countdown.tsx                                                                                                                            | 73   |
-| DEBT-0617 | Compare with `undefined` directly instead of using `typeof`.   | S3       | hooks/use-daily-quote.ts                                                                                                                                                    | 170  |
-| DEBT-0618 | Prefer `globalThis.window` over `window`.                      | S3       | hooks/use-geolocation.ts                                                                                                                                                    | 80   |
-| DEBT-0621 | Replace this union type with a type alias.                     | S3       | lib/db/collections.ts                                                                                                                                                       | 97   |
-| DEBT-0622 | Use the "RegExp.exec()" method instead.                        | S3       | lib/db/meetings.ts                                                                                                                                                          | 34   |
-| DEBT-0624 | Unexpected negated condition.                                  | S3       | lib/firebase.ts                                                                                                                                                             | 141  |
-| DEBT-0625 | Use `export…from` to re-export `DailyLog`.                     | S3       | lib/firestore-service.ts                                                                                                                                                    | 97   |
-| DEBT-0626 | Use `export…from` to re-export `DailyLogHistoryResult`.        | S3       | lib/firestore-service.ts                                                                                                                                                    | 97   |
-| DEBT-0632 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | S3       | scripts/update-readme-status.js                                                                                                                                             | 204  |
-| DEBT-0633 | Use the "RegExp.exec()" method instead.                        | S3       | tests/utils/logger.test.ts                                                                                                                                                  | 173  |
-| DEBT-0634 | Compare with `undefined` directly instead of using `typeof`.   | S3       | components/notebook/hooks/use-smart-prompts.ts                                                                                                                              | 47   |
-| DEBT-0635 | Unexpected negated condition.                                  | S3       | scripts/check-consolidation-status.js                                                                                                                                       | 41   |
-| DEBT-0636 | Remove this unused import of 'mkdirSync'.                      | S3       | scripts/normalize-canon-ids.js                                                                                                                                              | 21   |
-| DEBT-0637 | Remove this unused import of 'basename'.                       | S3       | scripts/normalize-canon-ids.js                                                                                                                                              | 22   |
-| DEBT-0638 | Unexpected negated condition.                                  | S3       | scripts/normalize-canon-ids.js                                                                                                                                              | 309  |
-| DEBT-0639 | Define a constant instead of using the literal 'functions...   | S3       | .claude/hooks/session-start.sh                                                                                                                                              | 203  |
-| DEBT-0641 | `String.raw` should be used to avoid escaping `\`.             | S3       | scripts/add-false-positive.js                                                                                                                                               | 270  |
-| DEBT-0643 | Prefer using nullish coalescing operator (`??=`) instead ...   | S3       | tests/scripts/phase-complete-check.test.ts                                                                                                                                  | 49   |
-| DEBT-0644 | Handle this exception or don't catch it at all.                | S3       | scripts/phase-complete-check.js                                                                                                                                             | 217  |
-| DEBT-0646 | The empty object is useless.                                   | S3       | eslint.config.mjs                                                                                                                                                           | 13   |
-| DEBT-0647 | Define a constant instead of using the literal '━━━━━━━━━...   | S3       | .claude/hooks/session-start.sh                                                                                                                                              | 303  |
-| DEBT-0648 | Remove the declaration of the unused 'preserveStackInDev'...   | S3       | scripts/lib/sanitize-error.js                                                                                                                                               | 65   |
-| DEBT-0650 | Unexpected negated condition.                                  | S3       | scripts/archive-doc.js                                                                                                                                                      | 572  |
-| DEBT-0651 | Unexpected negated condition.                                  | S3       | scripts/check-docs-light.js                                                                                                                                                 | 425  |
-| DEBT-0652 | Prefer `Date.now()` over `new Date()`.                         | S3       | scripts/check-docs-light.js                                                                                                                                                 | 434  |
-| DEBT-0653 | Unexpected negated condition.                                  | S3       | scripts/update-readme-status.js                                                                                                                                             | 497  |
-| DEBT-0654 | Define a constant instead of using the literal 'package-l...   | S3       | .claude/hooks/session-start.sh                                                                                                                                              | 180  |
-| DEBT-0655 | Define a constant instead of using the literal '=========...   | S3       | scripts/check-review-triggers.sh                                                                                                                                            | 156  |
-| DEBT-0656 | Prefer `globalThis.window` over `window`.                      | S3       | lib/utils/storage.ts                                                                                                                                                        | 17   |
-| DEBT-0658 | Prefer `globalThis.window` over `window`.                      | S3       | lib/recaptcha.ts                                                                                                                                                            | 36   |
-| DEBT-0659 | `new Error()` is too unspecific for a type check. Use `ne...   | S3       | lib/recaptcha.ts                                                                                                                                                            | 37   |
-| DEBT-0661 | Do not call `Array#push()` multiple times.                     | S3       | scripts/enrich-addresses.ts                                                                                                                                                 | 128  |
-| DEBT-0662 | Do not call `Array#push()` multiple times.                     | S3       | scripts/retry-failures.ts                                                                                                                                                   | 98   |
-| DEBT-0663 | Unexpected negated condition.                                  | S3       | scripts/sync-geocache.ts                                                                                                                                                    | 88   |
-| DEBT-0664 | Mark the props of the component as read-only.                  | S3       | components/admin/meetings-tab.tsx                                                                                                                                           | 24   |
-| DEBT-0665 | Mark the props of the component as read-only.                  | S3       | components/admin/slogans-tab.tsx                                                                                                                                            | 28   |
-| DEBT-0666 | Prefer `globalThis` over `window`.                             | S3       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 697  |
-| DEBT-0667 | A fragment with only one child is redundant.                   | S3       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 709  |
-| DEBT-0668 | 'useAuth' is deprecated.                                       | S3       | components/growth/Step1WorksheetCard.tsx                                                                                                                                    | 14   |
-| DEBT-0669 | Mark the props of the component as read-only.                  | S3       | components/notebook/features/recovery-notepad.tsx                                                                                                                           | 25   |
-| DEBT-0670 | Expected a `for-of` loop instead of a `for` loop with thi...   | S3       | functions/src/index.ts                                                                                                                                                      | 694  |
-| DEBT-0671 | arrow function is equivalent to `Boolean`. Use `Boolean` ...   | S3       | components/notebook/hooks/use-smart-prompts.ts                                                                                                                              | 102  |
-| DEBT-0672 | Mark the props of the component as read-only.                  | S3       | components/notebook/pages/today-page.tsx                                                                                                                                    | 40   |
-| DEBT-0673 | Mark the props of the component as read-only.                  | S3       | components/notebook/features/check-in-progress.tsx                                                                                                                          | 9    |
-| DEBT-0674 | Mark the props of the component as read-only.                  | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 17   |
-| DEBT-0675 | Prefer `globalThis` over `window`.                             | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 36   |
-| DEBT-0676 | Mark the props of the component as read-only.                  | S3       | components/notebook/features/smart-prompt.tsx                                                                                                                               | 16   |
-| DEBT-0677 | Unexpected negated condition.                                  | S3       | components/admin/users-tab.tsx                                                                                                                                              | 429  |
-| DEBT-0678 | Unexpected negated condition.                                  | S3       | functions/src/index.ts                                                                                                                                                      | 200  |
-| DEBT-0679 | Prefer `globalThis.window` over `window`.                      | S3       | lib/utils.ts                                                                                                                                                                | 28   |
-| DEBT-0680 | Mark the props of the component as read-only.                  | S3       | components/celebrations/milestone-modal.tsx                                                                                                                                 | 22   |
-| DEBT-0683 | Mark the props of the component as read-only.                  | S3       | components/journal/timeline.tsx                                                                                                                                             | 21   |
-| DEBT-0686 | Mark the props of the component as read-only.                  | S3       | components/notebook/pages/growth-page.tsx                                                                                                                                   | 15   |
-| DEBT-0688 | Mark the props of the component as read-only.                  | S3       | components/celebrations/celebration-overlay.tsx                                                                                                                             | 15   |
-| DEBT-0689 | Mark the props of the component as read-only.                  | S3       | components/celebrations/celebration-provider.tsx                                                                                                                            | 19   |
-| DEBT-0690 | Mark the props of the component as read-only.                  | S3       | components/celebrations/confetti-burst.tsx                                                                                                                                  | 26   |
-| DEBT-0691 | Mark the props of the component as read-only.                  | S3       | components/celebrations/firework-burst.tsx                                                                                                                                  | 26   |
-| DEBT-0692 | Mark the props of the component as read-only.                  | S3       | components/celebrations/success-pulse.tsx                                                                                                                                   | 12   |
-| DEBT-0693 | Mark the props of the component as read-only.                  | S3       | components/notebook/features/check-in-questions.tsx                                                                                                                         | 29   |
-| DEBT-0694 | Mark the props of the component as read-only.                  | S3       | components/notebook/features/clean-time-display.tsx                                                                                                                         | 29   |
-| DEBT-0695 | Mark the props of the component as read-only.                  | S3       | components/notebook/features/mood-selector.tsx                                                                                                                              | 45   |
-| DEBT-0696 | Mark the props of the component as read-only.                  | S3       | components/admin/glossary-tab.tsx                                                                                                                                           | 28   |
-| DEBT-0697 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-forms/daily-log-form.tsx                                                                                                                           | 25   |
-| DEBT-0698 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-card.tsx                                                                                                                                           | 16   |
-| DEBT-0699 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-creator-menu.tsx                                                                                                                                   | 51   |
-| DEBT-0700 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-detail-dialog.tsx                                                                                                                                  | 10   |
-| DEBT-0701 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-forms/free-write-form.tsx                                                                                                                          | 15   |
-| DEBT-0702 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-forms/gratitude-form.tsx                                                                                                                           | 15   |
-| DEBT-0703 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-forms/inventory-form.tsx                                                                                                                           | 15   |
-| DEBT-0704 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-forms/mood-form.tsx                                                                                                                                | 25   |
-| DEBT-0705 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-menu.tsx                                                                                                                                           | 28   |
-| DEBT-0706 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-wizard.tsx                                                                                                                                         | 13   |
-| DEBT-0707 | Mark the props of the component as read-only.                  | S3       | components/journal/floating-pen.tsx                                                                                                                                         | 12   |
-| DEBT-0708 | 'useAuth' is deprecated.                                       | S3       | components/journal/journal-hub.tsx                                                                                                                                          | 10   |
-| DEBT-0709 | Mark the props of the component as read-only.                  | S3       | components/journal/journal-layout.tsx                                                                                                                                       | 9    |
-| DEBT-0710 | Mark the props of the component as read-only.                  | S3       | components/journal/lock-screen.tsx                                                                                                                                          | 7    |
-| DEBT-0711 | Mark the props of the component as read-only.                  | S3       | components/journal/ribbon-nav.tsx                                                                                                                                           | 64   |
-| DEBT-0712 | Unexpected negated condition.                                  | S3       | app/meetings/all/page.tsx                                                                                                                                                   | 364  |
-| DEBT-0713 | Prefer using nullish coalescing operator (`??=`) instead ...   | S3       | components/widgets/compact-meeting-countdown.tsx                                                                                                                            | 191  |
-| DEBT-0714 | Mark the props of the component as read-only.                  | S3       | components/admin/admin-crud-table.tsx                                                                                                                                       | 24   |
-| DEBT-0716 | Mark the props of the component as read-only.                  | S3       | components/admin/quotes-tab.tsx                                                                                                                                             | 24   |
-| DEBT-0717 | Mark the props of the component as read-only.                  | S3       | components/admin/sober-living-tab.tsx                                                                                                                                       | 17   |
-| DEBT-0720 | 'useAuth' is deprecated.                                       | S3       | components/growth/GratitudeCard.tsx                                                                                                                                         | 15   |
-| DEBT-0721 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/growth/GratitudeCard.tsx                                                                                                                                         | 35   |
-| DEBT-0722 | 'useAuth' is deprecated.                                       | S3       | components/growth/NightReviewCard.tsx                                                                                                                                       | 15   |
-| DEBT-0723 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/growth/NightReviewCard.tsx                                                                                                                                       | 85   |
-| DEBT-0724 | 'useAuth' is deprecated.                                       | S3       | components/growth/SpotCheckCard.tsx                                                                                                                                         | 15   |
-| DEBT-0725 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/growth/SpotCheckCard.tsx                                                                                                                                         | 31   |
-| DEBT-0726 | Mark the props of the component as read-only.                  | S3       | components/journal/entry-feed.tsx                                                                                                                                           | 16   |
-| DEBT-0727 | Mark the props of the component as read-only.                  | S3       | components/journal/journal-sidebar.tsx                                                                                                                                      | 15   |
-| DEBT-0729 | Mark the props of the component as read-only.                  | S3       | components/admin/admin-tabs.tsx                                                                                                                                             | 32   |
-| DEBT-0730 | Mark the props of the component as read-only.                  | S3       | components/maps/meeting-map.tsx                                                                                                                                             | 76   |
-| DEBT-0731 | 'useAuth' is deprecated.                                       | S3       | components/notebook/journal-modal.tsx                                                                                                                                       | 7    |
-| DEBT-0732 | Mark the props of the component as read-only.                  | S3       | components/notebook/journal-modal.tsx                                                                                                                                       | 27   |
-| DEBT-0733 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/notebook/journal-modal.tsx                                                                                                                                       | 28   |
-| DEBT-0735 | Mark the props of the component as read-only.                  | S3       | app/admin/layout.tsx                                                                                                                                                        | 12   |
-| DEBT-0736 | Mark the props of the component as read-only.                  | S3       | components/ui/skeleton.tsx                                                                                                                                                  | 12   |
-| DEBT-0737 | Mark the props of the component as read-only.                  | S3       | components/ui/empty-state.tsx                                                                                                                                               | 39   |
-| DEBT-0738 | Mark the props of the component as read-only.                  | S3       | components/providers/auth-context.tsx                                                                                                                                       | 81   |
-| DEBT-0739 | Unexpected negated condition.                                  | S3       | components/providers/auth-context.tsx                                                                                                                                       | 90   |
-| DEBT-0741 | Mark the props of the component as read-only.                  | S3       | components/providers/auth-provider.tsx                                                                                                                                      | 38   |
-| DEBT-0742 | Mark the props of the component as read-only.                  | S3       | components/providers/daily-log-context.tsx                                                                                                                                  | 31   |
-| DEBT-0743 | Mark the props of the component as read-only.                  | S3       | components/providers/profile-context.tsx                                                                                                                                    | 41   |
-| DEBT-0744 | Mark the props of the component as read-only.                  | S3       | components/auth/account-link-modal.tsx                                                                                                                                      | 13   |
-| DEBT-0745 | 'useAuth' is deprecated.                                       | S3       | components/notebook/notebook-shell.tsx                                                                                                                                      | 10   |
-| DEBT-0746 | Prefer `globalThis.window` over `window`.                      | S3       | lib/sentry.client.ts                                                                                                                                                        | 24   |
-| DEBT-0747 | Don't use a zero fraction in the number.                       | S3       | lib/sentry.client.ts                                                                                                                                                        | 42   |
-| DEBT-0748 | Prefer `globalThis` over `window`.                             | S3       | components/providers/error-boundary.tsx                                                                                                                                     | 49   |
-| DEBT-0749 | Use `export…from` to re-export `DailyLog`.                     | S3       | lib/database/database-interface.ts                                                                                                                                          | 12   |
-| DEBT-0751 | 'unknown' overrides all other types in this union type.        | S3       | lib/database/database-interface.ts                                                                                                                                          | 19   |
-| DEBT-0752 | 'useAuth' is deprecated.                                       | S3       | components/status/auth-error-banner.tsx                                                                                                                                     | 6    |
-| DEBT-0753 | Mark the props of the component as read-only.                  | S3       | components/status/auth-error-banner.tsx                                                                                                                                     | 14   |
-| DEBT-0754 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/status/auth-error-banner.tsx                                                                                                                                     | 15   |
-| DEBT-0755 | Prefer `globalThis.window` over `window`.                      | S3       | components/notebook/book-cover.tsx                                                                                                                                          | 37   |
-| DEBT-0756 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/notebook/pages/today-page.tsx                                                                                                                                    | 74   |
-| DEBT-0757 | 'useAuth' is deprecated.                                       | S3       | components/notebook/visualizations/mood-sparkline.tsx                                                                                                                       | 6    |
-| DEBT-0758 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/notebook/visualizations/mood-sparkline.tsx                                                                                                                       | 10   |
-| DEBT-0759 | Mark the props of the component as read-only.                  | S3       | components/auth/sign-in-modal.tsx                                                                                                                                           | 20   |
-| DEBT-0760 | 'useAuth' is deprecated.                                       | S3       | components/notebook/book-cover.tsx                                                                                                                                          | 7    |
-| DEBT-0762 | Mark the props of the component as read-only.                  | S3       | components/notebook/book-cover.tsx                                                                                                                                          | 30   |
-| DEBT-0763 | The signature '(): { user: any; loading: any; isAnonymous...   | S3       | components/notebook/book-cover.tsx                                                                                                                                          | 31   |
-| DEBT-0764 | 'useAuth' is deprecated.                                       | S3       | components/onboarding/onboarding-wizard.tsx                                                                                                                                 | 5    |
-| DEBT-0765 | Mark the props of the component as read-only.                  | S3       | components/onboarding/onboarding-wizard.tsx                                                                                                                                 | 30   |
-| DEBT-0766 | 'useAuth' is deprecated.                                       | S3       | components/notebook/pages/today-page.tsx                                                                                                                                    | 4    |
-| DEBT-0767 | Mark the props of the component as read-only.                  | S3       | components/desktop/sobriety-chip.tsx                                                                                                                                        | 29   |
-| DEBT-0769 | Mark the props of the component as read-only.                  | S3       | components/notebook/bookmark-ribbon.tsx                                                                                                                                     | 10   |
-| DEBT-0770 | Mark the props of the component as read-only.                  | S3       | components/notebook/notebook-page.tsx                                                                                                                                       | 9    |
-| DEBT-0771 | Mark the props of the component as read-only.                  | S3       | components/notebook/notebook-shell.tsx                                                                                                                                      | 33   |
-| DEBT-0772 | Mark the props of the component as read-only.                  | S3       | components/notebook/pages/placeholder-page.tsx                                                                                                                              | 8    |
-| DEBT-0773 | Mark the props of the component as read-only.                  | S3       | components/notebook/sticky-note.tsx                                                                                                                                         | 14   |
-| DEBT-0774 | Mark the props of the component as read-only.                  | S3       | components/notebook/tab-navigation.tsx                                                                                                                                      | 18   |
-| DEBT-0776 | CloudFunctionError interface defined twice in same file        | S3       | lib/firestore-service.ts                                                                                                                                                    | 0    |
-| DEBT-0777 | Batch fix opportunities: 200+ ESLint auto-fixable issues       | S3       | multiple                                                                                                                                                                    | 0    |
-| DEBT-0778 | Batch fix opportunities: 79 replaceAll() + 71 node: prefi...   | S3       | multiple                                                                                                                                                                    | 0    |
-| DEBT-0779 | parseTime() meeting helper duplicated in two pages             | S3       | app/meetings/all/page.tsx                                                                                                                                                   | 0    |
-| DEBT-0780 | DEVELOPMENT.md Husky section missing pattern compliance step   | S3       | DEVELOPMENT.md                                                                                                                                                              | 0    |
-| DEBT-0781 | CI workflow lacks explicit permissions block (security ha...   | S3       | .github/workflows/ci.yml                                                                                                                                                    | 0    |
-| DEBT-0782 | Pattern checker produces false positives for controlled n...   | S3       | scripts/check-pattern-compliance.js                                                                                                                                         | 0    |
-| DEBT-0783 | Review trigger thresholds may cause alert fatigue for pro...   | S3       | scripts/check-review-needed.js                                                                                                                                              | 0    |
-| DEBT-0784 | Deploy workflow secret handling may be brittle for multil...   | S3       | .github/workflows/deploy-firebase.yml                                                                                                                                       | 0    |
-| DEBT-0785 | Archive docs contain significant link rot after archival/...   | S3       | docs/archive/AI_HANDOFF-2026-01-02.md                                                                                                                                       | 0    |
-| DEBT-0786 | Template date placeholders using literal YYYY-MM-DD format     | S3       | docs/templates/FOUNDATION_DOC_TEMPLATE.md                                                                                                                                   | 0    |
-| DEBT-0787 | Template docs located outside docs/templates/ directory        | S3       | docs/PR_REVIEW_PROMPT_TEMPLATE.md                                                                                                                                           | 0    |
-| DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes...   | S3       | docs/DEVELOPMENT.md                                                                                                                                                         | 0    |
-| DEBT-0789 | ROADMAP anchor links may be fragile due to emoji/punctuat...   | S3       | ROADMAP.md                                                                                                                                                                  | 0    |
-| DEBT-0790 | @ts-expect-error suppression comment in production code        | S3       | components/notebook/pages/resources-page.tsx                                                                                                                                | 0    |
-| DEBT-0791 | Environment variables accessed directly in components (ce...   | S3       | app/layout.tsx                                                                                                                                                              | 0    |
-| DEBT-0792 | 'any' types leaking into production code (needs tightening)    | S3       | lib/sentry.client.ts                                                                                                                                                        | 0    |
-| DEBT-0793 | Landing page forced to client component for top-level state    | S3       | app/page.tsx                                                                                                                                                                | 0    |
-| DEBT-0794 | void operator usage flagged by SonarCloud                      | S3       | components/admin/logs-tab.tsx                                                                                                                                               | 287  |
-| DEBT-0795 | @ts-expect-error suppression for type mismatch                 | S3       | components/notebook/pages/resources-page.tsx                                                                                                                                | 444  |
-| DEBT-0796 | TODO comment for unimplemented feature                         | S3       | lib/database/firestore-adapter.ts                                                                                                                                           | 51   |
-| DEBT-0797 | TODO comment for user preferences feature                      | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 12   |
-| DEBT-0798 | Useless assignment to hasMore variable                         | S3       | functions/src/jobs.ts                                                                                                                                                       | 620  |
-| DEBT-0799 | Nested ternary operator                                        | S3       | components/admin/logs-tab.tsx                                                                                                                                               | 481  |
-| DEBT-0800 | Nested template literals (6 occurrences)                       | S3       | functions/src/admin.ts                                                                                                                                                      | 1388 |
-| DEBT-0820 | Setup requires multiple commands - no single bootstrap         | S3       | package.json                                                                                                                                                                | 5    |
-| DEBT-0821 | Error messages lack actionable fix hints - generic 'Pleas...   | S3       | components/                                                                                                                                                                 | 0    |
-| DEBT-0822 | OfflineIndicator is display-only - no sync status or retr...   | S3       | components/status/offline-indicator.tsx                                                                                                                                     | 7    |
-| DEBT-0824 | Fix @ts-expect-error suppression                               | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0825 | Remove duplicate CloudFunctionError                            | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0826 | Run ESLint auto-fix                                            | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0827 | Extract parseTime helper                                       | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0828 | Replace template date placeholders                             | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0829 | Move PR template to docs/templates/                            | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0830 | Update DEVELOPMENT.md test count                               | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0831 | Document fragile anchor links                                  | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0832 | Update Husky docs for patterns:check                           | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0833 | Add explicit permissions block                                 | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0834 | Replace 'any' with proper types                                | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0835 | replaceAll + node: prefix batch                                | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0836 | Improve deploy secret handling                                 | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0837 | Missing "AI Instructions" Sections                             | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0838 | Fix deprecated APIs + nested ternaries                         | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0839 | Fix archive link rot                                           | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0840 | Missing "Quick Start" Sections                                 | S3       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0841 | Underscore-prefixed unused variables                           | S3       | components/notebook/pages/today-page.tsx                                                                                                                                    | 305  |
-| DEBT-0842 | TODO comments without issue references                         | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 12   |
-| DEBT-0843 | Any type usage in test files                                   | S3       | tests/firestore-service.test.ts                                                                                                                                             | 18   |
-| DEBT-0845 | Sentry client initialization exists but is not invoked au...   | S3       | lib/sentry.client.ts                                                                                                                                                        | 0    |
-| DEBT-0846 | Timeline may re-group/re-sort even though useJournal alre...   | S3       | components/journal/timeline.tsx                                                                                                                                             | 0    |
-| DEBT-0847 | Event listener/timer cleanup verification needed across m...   | S3       | components/\*\*                                                                                                                                                             | 0    |
-| DEBT-0848 | Sentry tracesSampleRate is low in production; may miss pe...   | S3       | lib/sentry.client.ts                                                                                                                                                        | 0    |
-| DEBT-0849 | Unused dependencies remain in runtime dependencies (tool-...   | S3       | package.json                                                                                                                                                                | 0    |
-| DEBT-0868 | Add type: module to package.json to eliminate NODE warnings    | S3       | package.json                                                                                                                                                                | 1    |
-| DEBT-1089 | Complete the task associated to this "TODO" comment.           | S3       | functions/src/admin.ts                                                                                                                                                      | 2769 |
-| DEBT-1157 | Complete the task associated to this "TODO" comment.           | S3       | scripts/lib/ai-pattern-checks.js                                                                                                                                            | 300  |
-| DEBT-1163 | Complete the task associated to this "TODO" comment.           | S3       | scripts/check-doc-placement.js                                                                                                                                              | 158  |
-| DEBT-1166 | Complete the task associated to this "TODO" comment.           | S3       | scripts/check-external-links.js                                                                                                                                             | 105  |
-| DEBT-1170 | Complete the task associated to this "TODO" comment.           | S3       | scripts/check-content-accuracy.js                                                                                                                                           | 188  |
-| DEBT-1449 | Complete the task associated to this "TODO" comment.           | S3       | scripts/analyze-learning-effectiveness.js                                                                                                                                   | 1067 |
-| DEBT-1943 | Inefficient type checking in safeToIso                         | S3       | functions/src/admin.ts                                                                                                                                                      | 113  |
-| DEBT-1944 | Unbounded retry loop risk in jobs.ts                           | S3       | functions/src/jobs.ts                                                                                                                                                       | 529  |
-| DEBT-1947 | Type coercion in generateSearchableText                        | S3       | hooks/use-journal.ts                                                                                                                                                        | 102  |
-| DEBT-1995 | No UI indicator for online/offline state                       | S3       | components/offline-indicator.tsx                                                                                                                                            | 1    |
-| DEBT-1997 | Potentially missing performance monitoring                     | S3       | lib/performance.ts                                                                                                                                                          | 1    |
-| DEBT-2970 | TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md marked COMPLETE ...   | S3       | docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md                                                                                                                         | 0    |
-| DEBT-2971 | SESSION_HISTORY.md and SESSION_DECISIONS.md not in DOCUME...   | S3       | docs/SESSION_HISTORY.md                                                                                                                                                     | 0    |
-| DEBT-2974 | JSONL line counting pattern repeated 5x without abstraction    | S3       | .claude/hooks/session-start.js                                                                                                                                              | 0    |
-| DEBT-2975 | String concatenation for file paths instead of path.join       | S3       | scripts/archive-doc.js                                                                                                                                                      | 0    |
-| DEBT-2977 | Hooks output decorative error messages instead of machine...   | S3       | .claude/hooks/auto-save-context.js                                                                                                                                          | 0    |
-| DEBT-2978 | Unused fields in commit-log.jsonl state file                   | S3       | .claude/state/commit-log.jsonl                                                                                                                                              | 0    |
-| DEBT-2861 | pattern-check.js has inline pattern definitions that coul...   | S3       | .claude/hooks/pattern-check.js                                                                                                                                              | 0    |
-| DEBT-2864 | SessionStart: stop-serena-dashboard.js spawns PowerShell ...   | S3       | .claude/hooks/stop-serena-dashboard.js                                                                                                                                      | 0    |
-| DEBT-2869 | agent-trigger-enforcer.js loads external config via requi...   | S3       | .claude/hooks/agent-trigger-enforcer.js                                                                                                                                     | 0    |
-| DEBT-2871 | large-context-warning.js reads entire file just to count ...   | S3       | .claude/hooks/large-context-warning.js                                                                                                                                      | 0    |
-| DEBT-2872 | check-edit-requirements.js and check-write-requirements.j...   | S3       | .claude/hooks/check-edit-requirements.js                                                                                                                                    | 0    |
-| DEBT-2874 | pre-compaction-save.js calls 7 git subprocess operations ...   | S3       | .claude/hooks/pre-compaction-save.js                                                                                                                                        | 0    |
-| DEBT-2875 | commit-tracker.js spawns 4 git subprocesses on commit det...   | S3       | .claude/hooks/commit-tracker.js                                                                                                                                             | 0    |
-| DEBT-2876 | pattern-check.js calls fs.realpathSync twice (file and pr...   | S3       | .claude/hooks/pattern-check.js                                                                                                                                              | 0    |
-| DEBT-2877 | alerts-reminder.js reads 4 JSON files synchronously on ev...   | S3       | .claude/hooks/alerts-reminder.js                                                                                                                                            | 0    |
-| DEBT-2879 | Skill overlap: code-reviewer listed in two SKILL_INDEX ca...   | S3       | .claude/skills/SKILL_INDEX.md                                                                                                                                               | 0    |
-| DEBT-2880 | Skill overlap: senior-fullstack listed in two SKILL_INDEX...   | S3       | .claude/skills/SKILL_INDEX.md                                                                                                                                               | 0    |
-| DEBT-2881 | Skill overlap: frontend-design vs senior-frontend have ov...   | S3       | .claude/skills/frontend-design/SKILL.md                                                                                                                                     | 0    |
-| DEBT-2883 | Skill overlap: senior-qa vs webapp-testing vs test-suite ...   | S3       | .claude/skills/senior-qa/SKILL.md                                                                                                                                           | 0    |
-| DEBT-2884 | Skill overlap: checkpoint vs save-context both preserve s...   | S3       | .claude/skills/checkpoint/SKILL.md                                                                                                                                          | 0    |
-| DEBT-2885 | Skill overlap: docs-sync vs docs-update both handle docum...   | S3       | .claude/skills/docs-sync/SKILL.md                                                                                                                                           | 0    |
-| DEBT-2895 | SKILL_INDEX.md claims 55 total skills but count is inaccu...   | S3       | .claude/skills/SKILL_INDEX.md                                                                                                                                               | 0    |
-| DEBT-2897 | Agent prompts in audit-process Stage 1 use markdown outpu...   | S3       | .claude/skills/audit-process/SKILL.md                                                                                                                                       | 0    |
-| DEBT-2901 | pre-commit-fixer agent prompts are generic category dispa...   | S3       | .claude/skills/pre-commit-fixer/SKILL.md                                                                                                                                    | 0    |
-| DEBT-2902 | MCP git server configured but unused and redundant with n...   | S3       | .mcp.json                                                                                                                                                                   | 0    |
-| DEBT-2905 | MCP github server enabled but not configured - redundant ...   | S3       | .claude/settings.local.json                                                                                                                                                 | 0    |
-| DEBT-2906 | 7 mcp**filesystem** permissions approved in settings.loca...   | S3       | .claude/settings.local.json                                                                                                                                                 | 0    |
-| DEBT-2907 | 3 mcp**serena** permissions approved but serena is in dis...   | S3       | .claude/settings.local.json                                                                                                                                                 | 0    |
-| DEBT-2908 | MCP global template includes puppeteer which conflicts wi...   | S3       | .claude/mcp.global-template.json                                                                                                                                            | 0    |
-| DEBT-2909 | MCP firebase server enabled but not configured - may rely...   | S3       | .claude/settings.local.json                                                                                                                                                 | 0    |
-| DEBT-2911 | session-begin instructs reading CODE_PATTERNS.md (600 lin...   | S3       | .claude/skills/session-begin/SKILL.md                                                                                                                                       | 0    |
-| DEBT-2913 | compact-restore.js injects full recovery context even whe...   | S3       | .claude/hooks/compact-restore.js                                                                                                                                            | 0    |
-| DEBT-2916 | Edit and MultiEdit hook lists are identical 9-hook copies...   | S3       | .claude/settings.json                                                                                                                                                       | 0    |
-| DEBT-2918 | analyze-user-request.js high-confidence matches inject di...   | S3       | .claude/hooks/analyze-user-request.js                                                                                                                                       | 0    |
-| DEBT-2919 | session-begin SKILL.md is 361 lines with redundant hook-a...   | S3       | .claude/skills/session-begin/SKILL.md                                                                                                                                       | 0    |
-| DEBT-2920 | code-reviewer SKILL.md contains generic boilerplate not s...   | S3       | .claude/skills/code-reviewer/SKILL.md                                                                                                                                       | 0    |
-| DEBT-2923 | reviews.jsonl has no rotation (19KB, 30+ entries, thresho...   | S3       | .claude/state/reviews.jsonl                                                                                                                                                 | 0    |
-| DEBT-2952 | Add integration tests for hook consolidation (post-write-...   | S3       | .claude/hooks/post-write-validator.js                                                                                                                                       | 0    |
-| DEBT-2954 | Add error boundary tests for hook failure isolation            | S3       | .claude/hooks/post-write-validator.js                                                                                                                                       | 0    |
-| DEBT-3027 | SESSION_CONTEXT.md recent session summaries                    | S3       | SESSION_CONTEXT.md                                                                                                                                                          | 0    |
-| DEBT-3028 | PLAN_MAP.md version history table                              | S3       | docs/PLAN_MAP.md                                                                                                                                                            | 0    |
-| DEBT-3029 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou...   | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                                                                                                                             | 0    |
-| DEBT-3030 | ROADMAP_LOG.md completed items history (31KB, 1,129 lines)     | S3       | ROADMAP_LOG.md                                                                                                                                                              | 0    |
-| DEBT-3032 | check-review-triggers.sh - Dead shell script for multi-AI...   | S3       | scripts/check-review-triggers.sh                                                                                                                                            | 0    |
-| DEBT-3035 | generate-placement-report.js - Unused roadmap placement s...   | S3       | scripts/generate-placement-report.js                                                                                                                                        | 0    |
-| DEBT-3037 | redeploy-admin-dashboard.sh - Firebase deployment helper ...   | S3       | scripts/redeploy-admin-dashboard.sh                                                                                                                                         | 0    |
-| DEBT-3039 | seed-commit-log.js - One-time commit log backfill utility      | S3       | scripts/seed-commit-log.js                                                                                                                                                  | 0    |
-| DEBT-3051 | Bash hook (commit-tracker) does fast-path regex on every ...   | S3       | .claude/hooks/commit-tracker.js                                                                                                                                             | 0    |
-| DEBT-3052 | check-write-requirements and check-edit-requirements coul...   | S3       | .claude/hooks/check-write-requirements.js, .claude/hooks/check-edit-requirements.js                                                                                         | 0    |
-| DEBT-3055 | TypeScript strict check runs on every Write/Edit/MultiEdi...   | S3       | .claude/hooks/typescript-strict-check.js                                                                                                                                    | 0    |
-| DEBT-3064 | Placeholder skills with minimal utility (using-superpower...   | S3       | .claude/skills/using-superpowers/SKILL.md, task-next/SKILL.md, validate-claude-folder/SKILL.md                                                                              | 0    |
-| DEBT-3066 | Session lifecycle skills (session-begin, session-end, che...   | S3       | .claude/skills/session-begin/SKILL.md, session-end/SKILL.md, checkpoint/SKILL.md                                                                                            | 0    |
-| DEBT-3076 | Inconsistent AI Instructions format across document tiers      | S3       | docs/\*.md (all 57 files)                                                                                                                                                   | 0    |
-| DEBT-3077 | Disconnected AI Instructions from actual automation - TES...   | S3       | docs/TESTING_PLAN.md, docs/SONARCLOUD_CLEANUP_RUNBOOK.md, docs/RECAPTCHA_REMOVAL_GUIDE.md                                                                                   | 0    |
-| DEBT-3078 | AI Instructions in SESSION_CONTEXT.md creates circular re...   | S3       | SESSION_CONTEXT.md, AI_WORKFLOW.md, ROADMAP.md                                                                                                                              | 0    |
-| DEBT-3096 | MCP_SETUP.md - 178 lines configuration guide without trac...   | S3       | docs/MCP_SETUP.md                                                                                                                                                           | 0    |
-| DEBT-3097 | LEARNING_METRICS.md - 84 lines metrics tracking document       | S3       | docs/LEARNING_METRICS.md                                                                                                                                                    | 0    |
-| DEBT-3098 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve...   | S3       | docs/AUTOMATION_AUDIT_REPORT.md                                                                                                                                             | 0    |
-| DEBT-3102 | ADR template and decisions/README - decision framework un...   | S3       | docs/decisions/                                                                                                                                                             | 0    |
-| DEBT-3141 | SESSION_CONTEXT.md recent session summaries                    | S3       | home/user/sonash-v0/SESSION_CONTEXT.md                                                                                                                                      | 0    |
-| DEBT-3142 | PLAN_MAP.md version history table                              | S3       | home/user/sonash-v0/docs/PLAN_MAP.md                                                                                                                                        | 0    |
-| DEBT-3143 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou...   | S3       | home/user/sonash-v0/docs/AI_REVIEW_LEARNINGS_LOG.md                                                                                                                         | 0    |
-| DEBT-3144 | ROADMAP_LOG.md completed items history (31KB, 1,129 lines)     | S3       | home/user/sonash-v0/ROADMAP_LOG.md                                                                                                                                          | 0    |
-| DEBT-3146 | check-review-triggers.sh - Dead shell script for multi-AI...   | S3       | home/user/sonash-v0/scripts/check-review-triggers.sh                                                                                                                        | 0    |
-| DEBT-3149 | generate-placement-report.js - Unused roadmap placement s...   | S3       | home/user/sonash-v0/scripts/generate-placement-report.js                                                                                                                    | 0    |
-| DEBT-3151 | redeploy-admin-dashboard.sh - Firebase deployment helper ...   | S3       | home/user/sonash-v0/scripts/redeploy-admin-dashboard.sh                                                                                                                     | 0    |
-| DEBT-3153 | seed-commit-log.js - One-time commit log backfill utility      | S3       | home/user/sonash-v0/scripts/seed-commit-log.js                                                                                                                              | 0    |
-| DEBT-3173 | MCP_SETUP.md - 178 lines configuration guide without trac...   | S3       | home/user/sonash-v0/docs/MCP_SETUP.md                                                                                                                                       | 0    |
-| DEBT-3174 | LEARNING_METRICS.md - 84 lines metrics tracking document       | S3       | home/user/sonash-v0/docs/LEARNING_METRICS.md                                                                                                                                | 0    |
-| DEBT-3175 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve...   | S3       | home/user/sonash-v0/docs/AUTOMATION_AUDIT_REPORT.md                                                                                                                         | 0    |
-| DEBT-3179 | ADR template and decisions/README - decision framework un...   | S3       | home/user/sonash-v0/docs/decisions/                                                                                                                                         | 0    |
-| DEBT-0012 | Refactor this function to reduce its Cognitive Complexity...   | S0       | functions/src/admin.ts                                                                                                                                                      | 576  |
-| DEBT-0037 | Refactor this function to reduce its Cognitive Complexity...   | S0       | components/widgets/compact-meeting-countdown.tsx                                                                                                                            | 69   |
-| DEBT-0852 | Multiple CI quality gates configured as non-blocking (con...   | S0       | .github/workflows/ci.yml                                                                                                                                                    | 0    |
-| DEBT-0853 | useJournal creates redundant auth listener + potential me...   | S0       | hooks/use-journal.ts                                                                                                                                                        | 0    |
-| DEBT-0862 | Fix useJournal memory leak                                     | S0       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0864 | Convert CI gates to blocking                                   | S0       | N/A                                                                                                                                                                         | 0    |
-| DEBT-0867 | Fix useJournal memory leak                                     | S0       | hooks/use-journal.ts                                                                                                                                                        | 156  |
-| DEBT-1056 | Refactor this function to reduce its Cognitive Complexity...   | S0       | components/admin/errors-tab.tsx                                                                                                                                             | 327  |
-| DEBT-1064 | Refactor this code to not nest functions more than 4 leve...   | S0       | components/admin/logs-tab.tsx                                                                                                                                               | 342  |
-| DEBT-1296 | Refactor this function to reduce its Cognitive Complexity...   | S0       | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js                                                                                                                 | 137  |
-| DEBT-1538 | Refactor this function to reduce its Cognitive Complexity...   | S0       | functions/src/jobs.ts                                                                                                                                                       | 1059 |
-| DEBT-1624 | Refactor this function to reduce its Cognitive Complexity...   | S0       | components/dev/lighthouse-tab.tsx                                                                                                                                           | 81   |
-| DEBT-1912 | Security risk: Client-side filtering of sensitive data         | S0       | hooks/use-journal.ts                                                                                                                                                        | 174  |
-| DEBT-3043 | pattern-check.js spawns subprocess every Write/Edit/Multi...   | S0       | .claude/hooks/pattern-check.js                                                                                                                                              | 0    |
-| DEBT-3079 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | N/A                                                                                                                                                                         | 0    |
-| DEBT-3080 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | .claude/hooks/commit-tracker.js                                                                                                                                             | 0    |
-| DEBT-3081 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...   | S0       | .claude/hooks/auto-save-context.js                                                                                                                                          | 0    |
-| DEBT-3090 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...   | S0       | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md                                                                                                                          | 0    |
-| DEBT-3156 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | All 57 files with AI Instructions sections                                                                                                                                  | 0    |
-| DEBT-3157 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | home/user/sonash-v0/.claude/hooks/commit-tracker.js                                                                                                                         | 0    |
-| DEBT-3158 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...   | S0       | home/user/sonash-v0/.claude/hooks/auto-save-context.js                                                                                                                      | 0    |
-| DEBT-3167 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...   | S0       | home/user/sonash-v0/docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md                                                                                                      | 0    |
+| ID | Title | Severity | File | Line |
+|---|---|---|---|---|
+| DEBT-0001 | Provide a compare function to avoid sorting elements alph... | S1 | app/meetings/all/page.tsx | 164 |
+| DEBT-0002 | Provide a compare function to avoid sorting elements alph... | S1 | components/notebook/pages/resources-page.tsx | 306 |
+| DEBT-0003 | Use '[[' instead of '[' for conditional tests. The '[[' c... | S1 | .claude/hooks/session-start.sh | 264 |
+| DEBT-0004 | Use '[[' instead of '[' for conditional tests. The '[[' c... | S1 | .claude/hooks/pattern-check.sh | 89 |
+| DEBT-0005 | Use '[[' instead of '[' for conditional tests. The '[[' c... | S1 | scripts/check-review-triggers.sh | 44 |
+| DEBT-0006 | Use '[[' instead of '[' for conditional tests. The '[[' c... | S1 | .claude/skills/artifacts-builder/scripts/bundle-artifact.sh | 7 |
+| DEBT-0007 | Use '[[' instead of '[' for conditional tests. The '[[' c... | S1 | .claude/skills/artifacts-builder/scripts/init-artifact.sh | 11 |
+| DEBT-0008 | Use '[[' instead of '[' for conditional tests. The '[[' c... | S1 | .claude/skills/systematic-debugging/find-polluter.sh | 8 |
+| DEBT-0009 | Exporting mutable 'let' binding, use 'const' instead. | S1 | lib/firebase.ts | 137 |
+| DEBT-0010 | Refactor this function to reduce its Cognitive Complexity... | S1 | lib/db/meetings.ts | 21 |
+| DEBT-0011 | Refactor this function to reduce its Cognitive Complexity... | S1 | components/admin/admin-crud-table.tsx | 83 |
+| DEBT-0013 | Refactor this function to reduce its Cognitive Complexity... | S1 | functions/src/index.ts | 486 |
+| DEBT-0014 | Refactor this code to not nest functions more than 4 leve... | S1 | hooks/use-daily-quote.ts | 159 |
+| DEBT-0015 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/validate-canon-schema.js | 235 |
+| DEBT-0016 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/normalize-canon-ids.js | 188 |
+| DEBT-0017 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-review-needed.js | 254 |
+| DEBT-0018 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/generate-documentation-index.js | 141 |
+| DEBT-0019 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/validate-audit.js | 211 |
+| DEBT-0020 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/add-false-positive.js | 139 |
+| DEBT-0021 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-document-sync.js | 200 |
+| DEBT-0022 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/phase-complete-check.js | 133 |
+| DEBT-0023 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/validate-phase-completion.js | 26 |
+| DEBT-0024 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/assign-review-tier.js | 354 |
+| DEBT-0025 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-pattern-compliance.js | 541 |
+| DEBT-0026 | Add a default case (*) to handle unexpected values. | S1 | .claude/hooks/pattern-check.sh | 36 |
+| DEBT-0027 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/surface-lessons-learned.js | 80 |
+| DEBT-0028 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/suggest-pattern-automation.js | 107 |
+| DEBT-0029 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-docs-light.js | 514 |
+| DEBT-0030 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/archive-doc.js | 473 |
+| DEBT-0031 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/enrich-addresses.ts | 15 |
+| DEBT-0032 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/migrate-meetings-dayindex.ts | 29 |
+| DEBT-0033 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/retry-failures.ts | 12 |
+| DEBT-0034 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/update-readme-status.js | 151 |
+| DEBT-0035 | Refactor this function to reduce its Cognitive Complexity... | S1 | functions/src/security-wrapper.ts | 106 |
+| DEBT-0036 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/migrate-to-journal.ts | 198 |
+| DEBT-0038 | Refactor this function to reduce its Cognitive Complexity... | S1 | components/notebook/pages/history-page.tsx | 50 |
+| DEBT-0039 | Refactor this code to not nest functions more than 4 leve... | S1 | components/notebook/pages/today-page.tsx | 337 |
+| DEBT-0040 | Refactor this function to reduce its Cognitive Complexity... | S1 | components/notebook/features/clean-time-display.tsx | 29 |
+| DEBT-0041 | Refactor this function to reduce its Cognitive Complexity... | S1 | components/notebook/pages/today-page.tsx | 651 |
+| DEBT-0042 | Refactor this function to reduce its Cognitive Complexity... | S1 | app/meetings/all/page.tsx | 62 |
+| DEBT-0043 | Refactor this function to reduce its Cognitive Complexity... | S1 | components/notebook/pages/resources-page.tsx | 40 |
+| DEBT-0044 | Refactor this function to reduce its Cognitive Complexity... | S1 | components/growth/NightReviewCard.tsx | 75 |
+| DEBT-0047 | Time-of-day rotation logic duplicated in quotes.ts and sl... | S1 | lib/db/quotes.ts | 0 |
+| DEBT-0048 | Cloud Function error handling pattern duplicated 4-6x acr... | S1 | lib/firestore-service.ts | 0 |
+| DEBT-0049 | Journal entry type definitions diverge between client typ... | S1 | types/journal.ts | 0 |
+| DEBT-0050 | No test coverage for high-complexity scripts | S1 | scripts/assign-review-tier.js | 0 |
+| DEBT-0051 | App Check temporarily disabled across all Cloud Functions | S1 | functions/src/index.ts | 0 |
+| DEBT-0052 | Deprecated saveNotebookJournalEntry still used in 6+ UI c... | S1 | lib/firestore-service.ts | 0 |
+| DEBT-0053 | useJournal mixes domain logic with transport (httpsCallab... | S1 | hooks/use-journal.ts | 0 |
+| DEBT-0054 | TodayPage is a god component mixing 4+ responsibilities | S1 | components/notebook/pages/today-page.tsx | 0 |
+| DEBT-0055 | Direct Firebase SDK usage in UI components bypasses servi... | S1 | hooks/use-journal.ts | 0 |
+| DEBT-0056 | Automation scripts have critically low test coverage (2-7... | S1 | scripts/ | 0 |
+| DEBT-0057 | Missing security scanning in CI (npm audit, CodeQL, Depen... | S1 | .github/workflows/ci.yml | 0 |
+| DEBT-0058 | Deploy workflow calls gcloud without installing Google Cl... | S1 | .github/workflows/deploy-firebase.yml | 0 |
+| DEBT-0059 | Landing page forced to client-side rendering blocks SSR f... | S1 | app/page.tsx | 0 |
+| DEBT-0060 | Excessive 'use client' directives prevent SSR optimization | S1 | app/page.tsx | 0 |
+| DEBT-0061 | Static export disables Next.js image optimization | S1 | next.config.mjs | 0 |
+| DEBT-0062 | TodayPage re-subscribes on journalEntry change | S1 | components/notebook/pages/today-page.tsx | 0 |
+| DEBT-0063 | Notebook module registry eagerly imports all pages | S1 | components/notebook/roadmap-modules.tsx | 0 |
+| DEBT-0064 | Broken relative links in review/output docs (wrong ../ de... | S1 | docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md | 0 |
+| DEBT-0065 | [X] placeholders remain in 2026-Q1 plan instances | S1 | docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md | 0 |
+| DEBT-0066 | Console.* usage in app components bypasses standardized l... | S1 | lib/db/library.ts | 0 |
+| DEBT-0067 | Cloud Function schema missing 'step-1-worksheet' journal ... | S1 | functions/src/schemas.ts | 0 |
+| DEBT-0069 | Cloud Function error handling duplicated (4 locations) + ... | S1 | lib/firestore-service.ts | 0 |
+| DEBT-0070 | Critical logic divergence in journal saving (deprecated F... | S1 | lib/firestore-service.ts | 0 |
+| DEBT-0072 | Server layout composes client providers; boundary should ... | S1 | app/layout.tsx | 0 |
+| DEBT-0074 | Missing automated tests for Cloud Function security layer... | S1 | functions/src/index.ts | 0 |
+| DEBT-0075 | No integration tests for Firestore rules (emulator-based) | S1 | firestore.rules | 0 |
+| DEBT-0076 | Security-critical files have low test coverage (account-l... | S1 | lib/auth/account-linking.ts | 0 |
+| DEBT-0082 | Console.* usage in production code bypasses standardized ... | S1 | lib/db/library.ts | 0 |
+| DEBT-0083 | Cloud Function error handling duplicated 4-6x with duplic... | S1 | lib/firestore-service.ts | 0 |
+| DEBT-0085 | 5 failing tests in check-docs-light.test.ts | S1 | tests/scripts/check-docs-light.test.ts | 199 |
+| DEBT-0086 | Very high cognitive complexity in adminListUsers | S1 | functions/src/admin.ts | 1835 |
+| DEBT-0097 | No correlation IDs for request tracing (frontend to backend) | S1 | lib/logger.ts | 1 |
+| DEBT-0098 | No offline write queue - data loss when user goes offline | S1 | hooks/use-journal.ts | 319 |
+| DEBT-0099 | No Firebase persistence enabled - Firestore cache not per... | S1 | lib/firebase.ts | 1 |
+| DEBT-0103 | Fix journal entry type mismatch | S1 | N/A | 0 |
+| DEBT-0104 | Extract error handling utility | S1 | N/A | 0 |
+| DEBT-0105 | Remove deprecated saveNotebookJournalEntry | S1 | N/A | 0 |
+| DEBT-0106 | Enable SSR for landing page | S1 | N/A | 0 |
+| DEBT-0113 | Separate domain/transport in useJournal | S1 | N/A | 0 |
+| DEBT-0114 | Reduce 'use client' directives | S1 | N/A | 0 |
+| DEBT-0115 | Split TodayPage god component | S1 | N/A | 0 |
+| DEBT-0116 | Explicit client providers wrapper | S1 | N/A | 0 |
+| DEBT-0117 | Implement image optimization | S1 | N/A | 0 |
+| DEBT-0118 | Fix TodayPage subscription bug | S1 | N/A | 0 |
+| DEBT-0119 | Lazy load notebook modules | S1 | N/A | 0 |
+| DEBT-0120 | Add Cloud Function security tests | S1 | N/A | 0 |
+| DEBT-0121 | Add Firestore rules emulator tests | S1 | N/A | 0 |
+| DEBT-0122 | Increase security file coverage | S1 | N/A | 0 |
+| DEBT-0123 | Add script test coverage (CI) | S1 | N/A | 0 |
+| DEBT-0124 | Fix broken relative links | S1 | N/A | 0 |
+| DEBT-0125 | Replace [X] placeholders | S1 | N/A | 0 |
+| DEBT-0126 | Add npm audit + CodeQL + Dependabot | S1 | N/A | 0 |
+| DEBT-0127 | Add gcloud setup to deploy workflow | S1 | N/A | 0 |
+| DEBT-0128 | Item Name | S1 | components/notebook/pages/today-page.tsx | 89 |
+| DEBT-0131 | Replace console.* with logger | S1 | lib/db/library.ts | 23 |
+| DEBT-0139 | Large component file (1179 lines) | S1 | components/notebook/pages/today-page.tsx | 1 |
+| DEBT-0147 | A form label must be associated with a control. | S1 | components/growth/NightReviewCard.tsx | 406 |
+| DEBT-0149 | Avoid non-native interactive elements. If using native HT... | S1 | components/journal/entry-detail-dialog.tsx | 18 |
+| DEBT-0150 | Avoid non-native interactive elements. If using native HT... | S1 | components/journal/entry-feed.tsx | 152 |
+| DEBT-0151 | A form label must be associated with a control. | S1 | components/journal/entry-wizard.tsx | 152 |
+| DEBT-0168 | A form label must be associated with a control. | S1 | components/admin/meetings-tab.tsx | 89 |
+| DEBT-0171 | A form label must be associated with a control. | S1 | components/journal/entry-forms/daily-log-form.tsx | 75 |
+| DEBT-0173 | A form label must be associated with a control. | S1 | components/journal/entry-forms/inventory-form.tsx | 71 |
+| DEBT-0174 | A form label must be associated with a control. | S1 | components/journal/entry-forms/mood-form.tsx | 71 |
+| DEBT-0194 | Simplify this regular expression to reduce its complexity... | S1 | scripts/check-pattern-compliance.js | 114 |
+| DEBT-0199 | Extract this nested ternary operation into an independent... | S1 | components/admin/meetings-tab.tsx | 263 |
+| DEBT-0200 | Extract this nested ternary operation into an independent... | S1 | components/admin/sober-living-tab.tsx | 148 |
+| DEBT-0201 | Extract this nested ternary operation into an independent... | S1 | components/auth/sign-in-modal.tsx | 61 |
+| DEBT-0205 | Extract this nested ternary operation into an independent... | S1 | components/growth/SpotCheckCard.tsx | 52 |
+| DEBT-0206 | Use <output> instead of the "status" role to ensure acces... | S1 | components/growth/Step1WorksheetCard.tsx | 742 |
+| DEBT-0209 | Do not use Array index in keys | S1 | components/journal/entry-detail-dialog.tsx | 346 |
+| DEBT-0211 | Extract this nested ternary operation into an independent... | S1 | components/notebook/pages/history-page.tsx | 59 |
+| DEBT-0212 | Extract this nested ternary operation into an independent... | S1 | components/notebook/pages/resources-page.tsx | 607 |
+| DEBT-0214 | Extract this nested ternary operation into an independent... | S1 | functions/src/admin.ts | 1148 |
+| DEBT-0229 | Extract this nested ternary operation into an independent... | S1 | scripts/generate-documentation-index.js | 615 |
+| DEBT-0245 | Extract this nested ternary operation into an independent... | S1 | scripts/update-readme-status.js | 356 |
+| DEBT-0298 | Replace this character class by the character itself. | S1 | scripts/check-docs-light.js | 162 |
+| DEBT-0318 | Do not use Array index in keys | S1 | components/growth/Step1WorksheetCard.tsx | 376 |
+| DEBT-0322 | Extract this nested ternary operation into an independent... | S1 | components/admin/errors-tab.tsx | 108 |
+| DEBT-0323 | Extract this nested ternary operation into an independent... | S1 | components/admin/dashboard-tab.tsx | 241 |
+| DEBT-0331 | Extract this nested ternary operation into an independent... | S1 | components/celebrations/milestone-modal.tsx | 33 |
+| DEBT-0336 | Use <input type="radio"> instead of the "radio" role to e... | S1 | components/notebook/features/check-in-questions.tsx | 43 |
+| DEBT-0342 | Prefer using an optional chain expression instead, as it'... | S1 | lib/utils/anonymous-backup.ts | 41 |
+| DEBT-0348 | Extract this nested ternary operation into an independent... | S1 | app/meetings/all/page.tsx | 361 |
+| DEBT-0352 | Member 'config' is never reassigned; mark it as `readonly`. | S1 | functions/src/firestore-rate-limiter.ts | 27 |
+| DEBT-0851 | 47 CRITICAL cognitive complexity violations in scripts (1... | S1 | scripts/assign-review-tier.js | 0 |
+| DEBT-0863 | Reduce 47 CRITICAL complexity functions | S1 | scripts/assign-review-tier.js | 0 |
+| DEBT-0931 | TodayPage Component Critical - N+1 Queries, 940+ Lines, 1... | S1 | N/A | 0 |
+| DEBT-0941 | Explicit 'any' Type in Production Callback | S1 | N/A | 0 |
+| DEBT-0942 | Multiple 'any' Types in Test Mock Setup (10+ instances) | S1 | N/A | 0 |
+| DEBT-0962 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/eval/eval-sonarcloud-report.js | 142 |
+| DEBT-0968 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/eval/eval-sonarcloud-snapshot.js | 100 |
+| DEBT-0973 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/eval/eval-sonarcloud-stage.js | 218 |
+| DEBT-0981 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/multi-ai/eval-check-stage.js | 60 |
+| DEBT-0987 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/multi-ai/eval-report.js | 37 |
+| DEBT-0988 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/multi-ai/normalize-format.js | 129 |
+| DEBT-0989 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/multi-ai/state-manager.js | 179 |
+| DEBT-0996 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/multi-ai/fix-schema.js | 460 |
+| DEBT-0999 | Prefer top-level await over using a promise chain. | S1 | scripts/multi-ai/unify-findings.js | 709 |
+| DEBT-1010 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/multi-ai/eval-snapshot.js | 70 |
+| DEBT-1017 | Extract this nested ternary operation into an independent... | S1 | scripts/multi-ai/aggregate-category.js | 196 |
+| DEBT-1019 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/multi-ai/aggregate-category.js | 245 |
+| DEBT-1022 | Prefer top-level await over using a promise chain. | S1 | scripts/multi-ai/aggregate-category.js | 586 |
+| DEBT-1026 | Group parts of the regex together to make the intended op... | S1 | scripts/multi-ai/fix-schema.js | 255 |
+| DEBT-1042 | Group parts of the regex together to make the intended op... | S1 | scripts/multi-ai/normalize-format.js | 740 |
+| DEBT-1047 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/multi-ai/unify-findings.js | 181 |
+| DEBT-1050 | Remove this useless assignment to variable "category". | S1 | scripts/multi-ai/unify-findings.js | 287 |
+| DEBT-1051 | Add an initial value to this "reduce()" call. | S1 | scripts/multi-ai/unify-findings.js | 305 |
+| DEBT-1053 | Remove this useless assignment to variable "mergeLog". | S1 | scripts/multi-ai/unify-findings.js | 586 |
+| DEBT-1058 | Prefer `childNode.remove()` over `parentNode.removeChild(... | S1 | components/admin/jobs-tab.tsx | 237 |
+| DEBT-1059 | Prefer `childNode.remove()` over `parentNode.removeChild(... | S1 | components/admin/logs-tab.tsx | 380 |
+| DEBT-1060 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/sync-consolidation-counter.js | 71 |
+| DEBT-1067 | Remove duplicates in this character class. | S1 | components/admin/logs-tab.tsx | 317 |
+| DEBT-1069 | Non-interactive elements should not be assigned mouse or ... | S1 | components/admin/errors-tab.tsx | 404 |
+| DEBT-1070 | Use <dialog> instead of the "dialog" role to ensure acces... | S1 | components/admin/errors-tab.tsx | 404 |
+| DEBT-1098 | Extract this nested ternary operation into an independent... | S1 | components/admin/jobs-tab.tsx | 285 |
+| DEBT-1104 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/audit/transform-jsonl-schema.js | 225 |
+| DEBT-1116 | Extract this nested ternary operation into an independent... | S1 | scripts/audit/transform-jsonl-schema.js | 440 |
+| DEBT-1120 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/audit/validate-audit-integration.js | 652 |
+| DEBT-1127 | Extract this nested ternary operation into an independent... | S1 | scripts/audit/validate-audit-integration.js | 1184 |
+| DEBT-1144 | Prefer top-level await over using a promise chain. | S1 | scripts/audit/validate-audit-integration.js | 1227 |
+| DEBT-1150 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/intake-audit.js | 116 |
+| DEBT-1155 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/lib/ai-pattern-checks.js | 102 |
+| DEBT-1156 | Update this function so that its implementation is not id... | S1 | scripts/lib/ai-pattern-checks.js | 244 |
+| DEBT-1159 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-content-accuracy.js | 190 |
+| DEBT-1168 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-external-links.js | 320 |
+| DEBT-1180 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-doc-placement.js | 160 |
+| DEBT-1183 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/assign-roadmap-refs.js | 125 |
+| DEBT-1188 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/generate-metrics.js | 76 |
+| DEBT-1189 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/sync-claude-settings.js | 191 |
+| DEBT-1191 | This always evaluates to truthy. Consider refactoring thi... | S1 | scripts/sync-claude-settings.js | 313 |
+| DEBT-1200 | Extract this nested ternary operation into an independent... | S1 | scripts/sync-claude-settings.js | 385 |
+| DEBT-1209 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/check-phase-status.js | 75 |
+| DEBT-1214 | Extract this nested ternary operation into an independent... | S1 | scripts/aggregate-audit-findings.js | 738 |
+| DEBT-1221 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/resolve-item.js | 102 |
+| DEBT-1223 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/dedup-multi-pass.js | 209 |
+| DEBT-1226 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/generate-views.js | 113 |
+| DEBT-1229 | Prefer top-level await over using a promise chain. | S1 | scripts/debt/extract-audits.js | 241 |
+| DEBT-1241 | Remove this assignment of "i". | S1 | scripts/debt/resolve-bulk.js | 36 |
+| DEBT-1243 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/resolve-bulk.js | 129 |
+| DEBT-1244 | Prefer top-level await over using a promise chain. | S1 | scripts/debt/resolve-bulk.js | 273 |
+| DEBT-1249 | Remove this assignment of "i". | S1 | scripts/debt/resolve-item.js | 40 |
+| DEBT-1251 | Prefer top-level await over using a promise chain. | S1 | scripts/debt/resolve-item.js | 276 |
+| DEBT-1254 | Remove this assignment of "i". | S1 | scripts/debt/validate-schema.js | 58 |
+| DEBT-1255 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/validate-schema.js | 67 |
+| DEBT-1257 | Prefer top-level await over using a promise chain. | S1 | scripts/debt/validate-schema.js | 292 |
+| DEBT-1262 | Prefer top-level await over using a promise chain. | S1 | scripts/debt/intake-audit.js | 574 |
+| DEBT-1267 | Remove this assignment of "i". | S1 | scripts/debt/intake-manual.js | 69 |
+| DEBT-1269 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/intake-manual.js | 168 |
+| DEBT-1272 | Prefer top-level await over using a promise chain. | S1 | scripts/debt/intake-manual.js | 389 |
+| DEBT-1277 | Remove this assignment of "i". | S1 | scripts/debt/intake-pr-deferred.js | 62 |
+| DEBT-1283 | Prefer top-level await over using a promise chain. | S1 | scripts/debt/intake-pr-deferred.js | 300 |
+| DEBT-1288 | Remove this assignment of "i". | S1 | scripts/debt/sync-sonarcloud.js | 96 |
+| DEBT-1290 | Refactor this code to not use nested template literals. | S1 | scripts/debt/sync-sonarcloud.js | 237 |
+| DEBT-1291 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/sync-sonarcloud.js | 446 |
+| DEBT-1292 | Prefer top-level await over using a promise chain. | S1 | scripts/debt/sync-sonarcloud.js | 679 |
+| DEBT-1307 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/extract-audits.js | 163 |
+| DEBT-1312 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/extract-reviews.js | 158 |
+| DEBT-1315 | Prefer top-level await over using a promise chain. | S1 | scripts/debt/extract-reviews.js | 269 |
+| DEBT-1320 | Extract this nested ternary operation into an independent... | S1 | scripts/debt/generate-views.js | 324 |
+| DEBT-1324 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/debt/normalize-all.js | 134 |
+| DEBT-1326 | Prefer top-level await over using a promise chain. | S1 | scripts/debt/normalize-all.js | 227 |
+| DEBT-1330 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/aggregate-audit-findings.js | 411 |
+| DEBT-1337 | Extract this nested ternary operation into an independent... | S1 | scripts/generate-placement-report.js | 50 |
+| DEBT-1339 | Replace this alternation with a character class. | S1 | scripts/aggregate-audit-findings.js | 488 |
+| DEBT-1341 | Group parts of the regex together to make the intended op... | S1 | scripts/aggregate-audit-findings.js | 540 |
+| DEBT-1343 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-doc-headers.js | 182 |
+| DEBT-1358 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/generate-pending-alerts.js | 31 |
+| DEBT-1361 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-backlog-health.js | 153 |
+| DEBT-1368 | Refactor this code to not use nested template literals. | S1 | scripts/generate-pending-alerts.js | 96 |
+| DEBT-1373 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-agent-compliance.js | 151 |
+| DEBT-1389 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-pattern-sync.js | 90 |
+| DEBT-1390 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/analyze-learning-effectiveness.js | 316 |
+| DEBT-1394 | Extract this nested ternary operation into an independent... | S1 | scripts/analyze-learning-effectiveness.js | 599 |
+| DEBT-1397 | Remove this useless assignment to variable "trends". | S1 | scripts/analyze-learning-effectiveness.js | 791 |
+| DEBT-1398 | Remove this assignment of "i". | S1 | scripts/analyze-learning-effectiveness.js | 1052 |
+| DEBT-1406 | Remove duplicates in this character class. | S1 | scripts/lib/security-helpers.js | 30 |
+| DEBT-1419 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/lib/security-helpers.js | 257 |
+| DEBT-1422 | Remove this assignment of "i". | S1 | scripts/lib/security-helpers.js | 306 |
+| DEBT-1452 | Prefer top-level await over using a promise chain. | S1 | scripts/analyze-learning-effectiveness.js | 1265 |
+| DEBT-1453 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/run-consolidation.js | 662 |
+| DEBT-1471 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-hook-health.js | 204 |
+| DEBT-1472 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/test-hooks.js | 291 |
+| DEBT-1473 | 'If' statement should not be the only statement in 'else'... | S1 | scripts/test-hooks.js | 375 |
+| DEBT-1475 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/secrets/decrypt-secrets.js | 177 |
+| DEBT-1476 | Prefer top-level await over using a promise chain. | S1 | scripts/secrets/decrypt-secrets.js | 266 |
+| DEBT-1478 | Prefer top-level await over using a promise chain. | S1 | scripts/secrets/encrypt-secrets.js | 201 |
+| DEBT-1483 | Remove this useless assignment to variable "argReal". | S1 | scripts/validate-canon-schema.js | 427 |
+| DEBT-1492 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/verify-sonar-phase.js | 208 |
+| DEBT-1505 | Remove this useless assignment to variable "found". | S1 | docs/archive/obsolete-scripts-2026-02/generate-sonar-report-with-snippets.js | 181 |
+| DEBT-1512 | Remove this useless assignment to variable "found". | S1 | scripts/generate-detailed-sonar-report.js | 274 |
+| DEBT-1524 | Use <img alt=...> instead of the "presentation" role to e... | S1 | components/admin/errors-tab.tsx | 888 |
+| DEBT-1525 | Use <img alt=...> instead of the "presentation" role to e... | S1 | components/admin/users-tab.tsx | 1395 |
+| DEBT-1527 | Non-interactive elements should not be assigned mouse or ... | S1 | components/admin/users-tab.tsx | 1582 |
+| DEBT-1528 | Use <dialog> instead of the "dialog" role to ensure acces... | S1 | components/admin/users-tab.tsx | 1582 |
+| DEBT-1535 | A form label must be associated with a control. | S1 | components/admin/errors-tab.tsx | 896 |
+| DEBT-1537 | Remove this useless assignment to variable "hasMore". | S1 | functions/src/jobs.ts | 172 |
+| DEBT-1554 | Prefer `childNode.remove()` over `parentNode.removeChild(... | S1 | lib/utils/error-export.ts | 293 |
+| DEBT-1561 | A form label must be associated with a control. | S1 | components/admin/privileges-tab.tsx | 298 |
+| DEBT-1564 | Use <input type="checkbox"> instead of the "checkbox" rol... | S1 | components/admin/privileges-tab.tsx | 346 |
+| DEBT-1565 | Extract this nested ternary operation into an independent... | S1 | components/admin/privileges-tab.tsx | 478 |
+| DEBT-1567 | Extract this nested ternary operation into an independent... | S1 | components/admin/users-tab.tsx | 1171 |
+| DEBT-1568 | Prefer using an optional chain expression instead, as it'... | S1 | functions/src/admin.ts | 3365 |
+| DEBT-1590 | Extract this nested ternary operation into an independent... | S1 | components/admin/logs-tab.tsx | 682 |
+| DEBT-1603 | Replace this character class by the character itself. | S1 | scripts/run-consolidation.js | 326 |
+| DEBT-1605 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-cross-doc-deps.js | 227 |
+| DEBT-1614 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/security-check.js | 400 |
+| DEBT-1617 | Simplify this regular expression to reduce its complexity... | S1 | lib/utils/admin-error-utils.ts | 34 |
+| DEBT-1625 | Extract this nested ternary operation into an independent... | S1 | app/dev/page.tsx | 105 |
+| DEBT-1627 | Prefer top-level await over using a promise chain. | S1 | scripts/lighthouse-audit.js | 252 |
+| DEBT-1633 | Remove this useless assignment to variable "originalClean... | S1 | components/settings/settings-page.tsx | 249 |
+| DEBT-1638 | Remove duplicates in this character class. | S1 | scripts/log-session-activity.js | 50 |
+| DEBT-1640 | Refactor this code to not use nested template literals. | S1 | scripts/check-triggers.js | 198 |
+| DEBT-1641 | Remove duplicates in this character class. | S1 | scripts/log-override.js | 58 |
+| DEBT-1643 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/check-triggers.js | 259 |
+| DEBT-1644 | Refactor this function to reduce its Cognitive Complexity... | S1 | scripts/validate-skill-config.js | 98 |
+| DEBT-1649 | Remove this useless assignment to variable "isSession". | S1 | scripts/validate-skill-config.js | 113 |
+| DEBT-1914 | Performance anti-pattern: Excessive re-renders from conte... | S1 | components/providers/auth-provider.tsx | 43 |
+| DEBT-1915 | Missing input validation on server-generated data | S1 | hooks/use-journal.ts | 172 |
+| DEBT-1916 | Data flow violation: Direct Firestore writes in admin com... | S1 | components/admin/dashboard-tab.tsx | 4 |
+| DEBT-1917 | Missing error boundary coverage for async operations | S1 | components/providers/error-boundary.tsx | 37 |
+| DEBT-1918 | Missing cleanup for onSnapshot listener | S1 | hooks/use-journal.ts | 284 |
+| DEBT-1919 | Unvalidated URL construction in GCP links | S1 | components/admin/logs-tab.tsx | 436 |
+| DEBT-1952 | DEVELOPMENT.md references npm script type-check that does... | S1 | DEVELOPMENT.md | 848 |
+| DEBT-1953 | OfflineIndicator uses navigator.onLine in useState initia... | S1 | components/status/offline-indicator.tsx | 0 |
+| DEBT-1955 | Firebase App Check is disabled in client initialization path | S1 | lib/firebase.ts | 0 |
+| DEBT-1956 | reCAPTCHA Token Bypass (Existing DEBT-0045) | S1 | functions/src/security-wrapper.ts | 0 |
+| DEBT-1957 | Inconsistent Admin Write Patterns (Cloud Functions vs Dir... | S1 | components/admin/meetings-tab.tsx | 0 |
+| DEBT-1959 | Firestore rules may not cover worksheets subcollection | S1 | firestore.rules | 0 |
+| DEBT-1961 | Sentry DSN, Firebase API key, and reCAPTCHA site key comm... | S1 | .env.production | 0 |
+| DEBT-1966 | Critical Paths Lack Test Coverage | S1 | hooks/use-journal.ts | 0 |
+| DEBT-1967 | Oversized UI Components (1,000-2,000+ Lines Each) | S1 | components/admin/users-tab.tsx | 0 |
+| DEBT-1968 | No correlation ID system for distributed tracing | S1 | lib/logger.ts | 99 |
+| DEBT-1970 | App Check is entirely disabled on client and server | S1 | lib/firebase.ts | 0 |
+| DEBT-1972 | Type Divergence: Client types vs Server schemas | S1 | types/journal.ts | 0 |
+| DEBT-1973 | God Object: components/admin/users-tab.tsx (2092 lines) | S1 | components/admin/users-tab.tsx | 0 |
+| DEBT-1974 | No service worker — app cannot load at all when offline | S1 | public/ | 1 |
+| DEBT-1984 | Excessive Cognitive Complexity (40+ files) | S1 | scripts/check-docs-light.js | 0 |
+| DEBT-1986 | God Object: functions/src/admin.ts (4108 lines) | S1 | functions/src/admin.ts | 0 |
+| DEBT-1988 | Zero Component Test Coverage | S1 | components/ | 0 |
+| DEBT-2746 | Item Name | S1 | N/A | 0 |
+| DEBT-2865 | PostToolUse Write: 10 sequential hook processes spawned p... | S1 | .claude/settings.json | 0 |
+| DEBT-2866 | PostToolUse Edit: 9 sequential hook processes spawned per... | S1 | .claude/settings.json | 0 |
+| DEBT-3017 | ROADMAP.md milestone tracking tables | S1 | ROADMAP.md | 0 |
+| DEBT-3018 | AUDIT_TRACKER.md audit log tables | S1 | docs/AUDIT_TRACKER.md | 0 |
+| DEBT-3019 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas | S1 | docs/EXPANSION_EVALUATION_TRACKER.md | 0 |
+| DEBT-3020 | AUDIT_TRACKER.md threshold matrix and version history | S1 | docs/AUDIT_TRACKER.md | 0 |
+| DEBT-3040 | sync-claude-settings.js - Unused Claude Code settings syn... | S1 | scripts/sync-claude-settings.js | 0 |
+| DEBT-3042 | Write/Edit/MultiEdit share 8 redundant hooks (~530ms over... | S1 | .claude/settings.json | 0 |
+| DEBT-3044 | check-write-requirements vs check-edit-requirements dupli... | S1 | .claude/hooks/check-write-requirements.js, .claude/hooks/check-edit-requirements.js | 0 |
+| DEBT-3049 | audit-s0s1-validator.js only triggers on audit files but ... | S1 | .claude/hooks/audit-s0s1-validator.js | 0 |
+| DEBT-3050 | Read hooks have no execution order guarantee - context tr... | S1 | .claude/hooks/large-context-warning.js, .claude/hooks/auto-save-context.js, .claude/hooks/compaction-handoff.js | 0 |
+| DEBT-3057 | Multiple audit skills with overlapping domain coverage | S1 | .claude/skills/audit-*/SKILL.md | 0 |
+| DEBT-3059 | Senior specialist skills vs audit-comprehensive coverage | S1 | .claude/skills/senior-*/SKILL.md | 0 |
+| DEBT-3063 | Unclear relationship: audit-validation-wrapper vs audit-c... | S1 | .claude/skills/audit-validation-wrapper/SKILL.md | 0 |
+| DEBT-3067 | Audit skill explosion: 9 audit-related skills with incons... | S1 | .claude/skills/audit-*/SKILL.md | 0 |
+| DEBT-3071 | Deprecated or unclear purpose: artifacts-builder, markitd... | S1 | .claude/skills/artifacts-builder/SKILL.md, markitdown/SKILL.md, mcp-builder/SKILL.md, expansion-evaluation/SKILL.md, systematic-debugging/SKILL.md | 0 |
+| DEBT-3072 | 57 documents with duplicate/inconsistent AI Instructions ... | S1 | docs/**/*.md, SESSION_CONTEXT.md, AUDIT_TRACKER.md, PLAN_MAP.md (and 54 others) | 0 |
+| DEBT-3073 | AI Instructions placement violates own DOCUMENTATION_STAN... | S1 | docs/DOCUMENTATION_STANDARDS.md, docs/APPCHECK_SETUP.md, docs/INCIDENT_RESPONSE.md, docs/SONARCLOUD_CLEANUP_RUNBOOK.md (and others) | 0 |
+| DEBT-3082 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl... | S1 | scripts/check-backlog-health.js | 0 |
+| DEBT-3083 | Markdown table parsing in update-readme-status.js with pi... | S1 | scripts/update-readme-status.js | 0 |
+| DEBT-3084 | check-session-gaps.js relies on hardcoded Session Context... | S1 | scripts/check-session-gaps.js | 0 |
+| DEBT-3085 | aggregate-audit-findings.js markdown parsing fragility in... | S1 | scripts/aggregate-audit-findings.js | 0 |
+| DEBT-3086 | generate-pending-alerts.js fragile DEFERRED item extraction | S1 | scripts/generate-pending-alerts.js | 0 |
+| DEBT-3091 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused | S1 | docs/HOOKIFY_STRATEGY.md | 0 |
+| DEBT-3099 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes | S1 | docs/agent_docs/FIX_TEMPLATES.md | 0 |
+| DEBT-3104 | Technical debt view files - generated views without integ... | S1 | docs/technical-debt/views/ | 0 |
+| DEBT-3131 | ROADMAP.md milestone tracking tables | S1 | home/user/sonash-v0/ROADMAP.md | 0 |
+| DEBT-3132 | AUDIT_TRACKER.md audit log tables | S1 | home/user/sonash-v0/docs/AUDIT_TRACKER.md | 0 |
+| DEBT-3133 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas | S1 | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md | 0 |
+| DEBT-3134 | AUDIT_TRACKER.md threshold matrix and version history | S1 | home/user/sonash-v0/docs/AUDIT_TRACKER.md | 0 |
+| DEBT-3154 | sync-claude-settings.js - Unused Claude Code settings syn... | S1 | home/user/sonash-v0/scripts/sync-claude-settings.js | 0 |
+| DEBT-3159 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl... | S1 | home/user/sonash-v0/scripts/check-backlog-health.js | 0 |
+| DEBT-3160 | Markdown table parsing in update-readme-status.js with pi... | S1 | home/user/sonash-v0/scripts/update-readme-status.js | 0 |
+| DEBT-3161 | check-session-gaps.js relies on hardcoded Session Context... | S1 | home/user/sonash-v0/scripts/check-session-gaps.js | 0 |
+| DEBT-3162 | aggregate-audit-findings.js markdown parsing fragility in... | S1 | home/user/sonash-v0/scripts/aggregate-audit-findings.js | 0 |
+| DEBT-3163 | generate-pending-alerts.js fragile DEFERRED item extraction | S1 | home/user/sonash-v0/scripts/generate-pending-alerts.js | 0 |
+| DEBT-3168 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused | S1 | home/user/sonash-v0/docs/HOOKIFY_STRATEGY.md | 0 |
+| DEBT-3176 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes | S1 | home/user/sonash-v0/docs/agent_docs/FIX_TEMPLATES.md | 0 |
+| DEBT-3181 | Technical debt view files - generated views without integ... | S1 | home/user/sonash-v0/docs/technical-debt/views/ | 0 |
+| DEBT-0140 | Prefer `Number.parseInt` over `parseInt`. | S2 | app/meetings/all/page.tsx | 45 |
+| DEBT-0141 | Prefer `Number.parseInt` over `parseInt`. | S2 | components/admin/links-tab.tsx | 250 |
+| DEBT-0142 | Prefer `Number.parseFloat` over `parseFloat`. | S2 | components/admin/meetings-tab.tsx | 150 |
+| DEBT-0143 | Prefer `Number.parseInt` over `parseInt`. | S2 | components/admin/meetings-tab.tsx | 234 |
+| DEBT-0144 | Prefer `Number.parseInt` over `parseInt`. | S2 | components/admin/prayers-tab.tsx | 236 |
+| DEBT-0145 | Avoid non-native interactive elements. If using native HT... | S2 | components/admin/users-tab.tsx | 563 |
+| DEBT-0146 | Ambiguous spacing after previous element span | S2 | components/growth/GratitudeCard.tsx | 128 |
+| DEBT-0148 | Ambiguous spacing after previous element span | S2 | components/growth/SpotCheckCard.tsx | 167 |
+| DEBT-0152 | Prefer `Number.parseInt` over `parseInt`. | S2 | components/notebook/pages/resources-page.tsx | 52 |
+| DEBT-0153 | Prefer `Number.parseInt` over `parseInt`. | S2 | lib/db/meetings.ts | 26 |
+| DEBT-0154 | Prefer `Number.isNaN` over `isNaN`. | S2 | lib/db/meetings.ts | 58 |
+| DEBT-0155 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/check-consolidation-status.js | 39 |
+| DEBT-0156 | Group parts of the regex together to make the intended op... | S2 | scripts/seed-meetings.ts | 79 |
+| DEBT-0157 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/seed-real-data.ts | 129 |
+| DEBT-0158 | Do not use an object literal as default for parameter `re... | S2 | scripts/generate-documentation-index.js | 141 |
+| DEBT-0159 | Remove this assignment of "i". | S2 | scripts/add-false-positive.js | 252 |
+| DEBT-0160 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/check-document-sync.js | 289 |
+| DEBT-0161 | Remove this assignment of "i". | S2 | scripts/assign-review-tier.js | 458 |
+| DEBT-0162 | Prefer `Number.isNaN` over `isNaN`. | S2 | scripts/check-review-needed.js | 196 |
+| DEBT-0163 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/check-docs-light.js | 97 |
+| DEBT-0164 | Prefer `Number.isNaN` over `isNaN`. | S2 | scripts/check-docs-light.js | 206 |
+| DEBT-0165 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/update-readme-status.js | 219 |
+| DEBT-0166 | Prefer `Number.parseFloat` over `parseFloat`. | S2 | scripts/retry-failures.ts | 135 |
+| DEBT-0167 | Prefer `Number.parseFloat` over `parseFloat`. | S2 | scripts/enrich-addresses.ts | 163 |
+| DEBT-0169 | Remove this conditional structure or edit its code blocks... | S2 | lib/utils.ts | 28 |
+| DEBT-0170 | Ambiguous spacing after previous element span | S2 | components/journal/entry-card.tsx | 152 |
+| DEBT-0172 | A form label must be associated with a control. | S2 | components/journal/entry-forms/gratitude-form.tsx | 77 |
+| DEBT-0175 | Add an initial value to this "reduce()" call. | S2 | components/widgets/compact-meeting-countdown.tsx | 153 |
+| DEBT-0176 | Avoid non-native interactive elements. If using native HT... | S2 | components/widgets/compact-meeting-countdown.tsx | 273 |
+| DEBT-0177 | A form label must be associated with a control. | S2 | components/growth/GratitudeCard.tsx | 136 |
+| DEBT-0178 | A form label must be associated with a control. | S2 | components/ui/label.tsx | 6 |
+| DEBT-0179 | Prefer `Number.parseFloat` over `parseFloat`. | S2 | scripts/seed-real-data.ts | 92 |
+| DEBT-0180 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/seed-meetings.ts | 42 |
+| DEBT-0181 | Prefer `Number.isNaN` over `isNaN`. | S2 | tests/utils/date-utils.test.ts | 74 |
+| DEBT-0182 | Prefer `Number.NaN` over `NaN`. | S2 | tests/utils/firebase-types.test.ts | 121 |
+| DEBT-0183 | Prefer `Number.isNaN` over `isNaN`. | S2 | tests/utils/firebase-types.test.ts | 140 |
+| DEBT-0184 | Prefer `Number.isNaN` over `isNaN`. | S2 | lib/types/firebase-types.ts | 56 |
+| DEBT-0185 | Prefer `Number.isNaN` over `isNaN`. | S2 | components/onboarding/onboarding-wizard.tsx | 135 |
+| DEBT-0186 | Unexpected unknown at-rule "@custom-variant" | S2 | app/globals.css | 4 |
+| DEBT-0187 | Unexpected unknown at-rule "@custom-variant" | S2 | styles/globals.css | 4 |
+| DEBT-0188 | Prefer `node:child_process` over `child_process`. | S2 | tests/scripts/check-docs-light.test.ts | 3 |
+| DEBT-0189 | Prefer `node:path` over `path`. | S2 | tests/scripts/check-docs-light.test.ts | 4 |
+| DEBT-0190 | Prefer `node:fs` over `fs`. | S2 | tests/scripts/check-docs-light.test.ts | 5 |
+| DEBT-0191 | Prefer `node:child_process` over `child_process`. | S2 | tests/scripts/update-readme-status.test.ts | 3 |
+| DEBT-0192 | Prefer `node:path` over `path`. | S2 | tests/scripts/update-readme-status.test.ts | 4 |
+| DEBT-0193 | Prefer `node:fs` over `fs`. | S2 | tests/scripts/update-readme-status.test.ts | 5 |
+| DEBT-0195 | Remove duplicates in this character class. | S2 | scripts/check-pattern-compliance.js | 233 |
+| DEBT-0196 | `extensions` should be a `Set`, and use `extensions.has()... | S2 | scripts/check-pattern-compliance.js | 463 |
+| DEBT-0197 | `ignoreDirs` should be a `Set`, and use `ignoreDirs.has()... | S2 | scripts/check-pattern-compliance.js | 464 |
+| DEBT-0198 | This branch's code block is the same as the block for the... | S2 | scripts/check-pattern-compliance.js | 499 |
+| DEBT-0202 | Extract this nested ternary operation into an independent... | S2 | components/celebrations/celebration-overlay.tsx | 64 |
+| DEBT-0203 | Extract this nested ternary operation into an independent... | S2 | components/celebrations/celebration-provider.tsx | 35 |
+| DEBT-0204 | Prefer using an optional chain expression instead, as it'... | S2 | components/growth/NightReviewCard.tsx | 527 |
+| DEBT-0207 | Extract this nested ternary operation into an independent... | S2 | components/journal/entry-card.tsx | 82 |
+| DEBT-0208 | Extract this nested ternary operation into an independent... | S2 | components/journal/entry-detail-dialog.tsx | 107 |
+| DEBT-0210 | Use <details>, <fieldset>, <optgroup>, or <address> inste... | S2 | components/notebook/features/enhanced-mood-selector.tsx | 82 |
+| DEBT-0213 | Extract this nested ternary operation into an independent... | S2 | components/onboarding/onboarding-wizard.tsx | 195 |
+| DEBT-0215 | Refactor this code to not use nested template literals. | S2 | lib/security/firestore-validation.ts | 99 |
+| DEBT-0216 | Prefer top-level await over using a promise chain. | S2 | scripts/add-false-positive.js | 370 |
+| DEBT-0217 | Refactor this code to not use nested template literals. | S2 | scripts/ai-review.js | 394 |
+| DEBT-0218 | Prefer `node:fs` over `fs`. | S2 | scripts/archive-doc.js | 36 |
+| DEBT-0219 | Prefer `node:path` over `path`. | S2 | scripts/archive-doc.js | 37 |
+| DEBT-0220 | Prefer `node:url` over `url`. | S2 | scripts/archive-doc.js | 38 |
+| DEBT-0221 | `knownFlags` should be a `Set`, and use `knownFlags.has()... | S2 | scripts/assign-review-tier.js | 444 |
+| DEBT-0222 | Extract this nested ternary operation into an independent... | S2 | scripts/check-document-sync.js | 408 |
+| DEBT-0223 | Simplify this regular expression to reduce its complexity... | S2 | scripts/check-review-needed.js | 68 |
+| DEBT-0224 | Refactor this code to not use nested template literals. | S2 | scripts/check-review-needed.js | 273 |
+| DEBT-0225 | Extract this nested ternary operation into an independent... | S2 | scripts/check-review-needed.js | 797 |
+| DEBT-0226 | Prefer top-level await over using a promise chain. | S2 | scripts/check-review-needed.js | 977 |
+| DEBT-0227 | Prefer `node:fs` over `fs`. | S2 | scripts/enrich-addresses.ts | 3 |
+| DEBT-0228 | Prefer `node:path` over `path`. | S2 | scripts/enrich-addresses.ts | 4 |
+| DEBT-0230 | Prefer top-level await over using a promise chain. | S2 | scripts/mcp/sonarcloud-server.js | 486 |
+| DEBT-0231 | Prefer `.find(…)` over `.filter(…)`. | S2 | scripts/normalize-canon-ids.js | 189 |
+| DEBT-0232 | Prefer top-level await over using a promise chain. | S2 | scripts/phase-complete-check.js | 575 |
+| DEBT-0233 | Prefer `node:child_process` over `child_process`. | S2 | scripts/retry-failures.ts | 3 |
+| DEBT-0234 | Prefer `node:fs` over `fs`. | S2 | scripts/retry-failures.ts | 4 |
+| DEBT-0235 | Prefer `node:path` over `path`. | S2 | scripts/retry-failures.ts | 5 |
+| DEBT-0236 | Prefer top-level await over using a promise chain. | S2 | scripts/seed-meetings.ts | 133 |
+| DEBT-0237 | Prefer `node:fs` over `fs`. | S2 | scripts/seed-real-data.ts | 1 |
+| DEBT-0238 | Prefer `node:readline` over `readline`. | S2 | scripts/seed-real-data.ts | 2 |
+| DEBT-0239 | Prefer top-level await over an async function `setAdminCl... | S2 | scripts/set-admin-claim.ts | 109 |
+| DEBT-0240 | Refactor this code to not use nested template literals. | S2 | scripts/suggest-pattern-automation.js | 376 |
+| DEBT-0241 | Replace this alternation with a character class. | S2 | scripts/surface-lessons-learned.js | 170 |
+| DEBT-0242 | Prefer top-level await over using a promise chain. | S2 | scripts/surface-lessons-learned.js | 376 |
+| DEBT-0243 | Prefer `node:fs` over `fs`. | S2 | scripts/sync-geocache.ts | 3 |
+| DEBT-0244 | Prefer `node:path` over `path`. | S2 | scripts/sync-geocache.ts | 4 |
+| DEBT-0246 | Prefer top-level await over using a promise chain. | S2 | scripts/validate-audit.js | 634 |
+| DEBT-0247 | Add an explicit return statement at the end of the function. | S2 | .claude/hooks/session-start.sh | 58 |
+| DEBT-0248 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/generate-documentation-index.js | 75 |
+| DEBT-0249 | Prefer `node:path` over `path`. | S2 | scripts/check-document-sync.js | 20 |
+| DEBT-0250 | Prefer `node:fs` over `fs`. | S2 | scripts/check-document-sync.js | 19 |
+| DEBT-0251 | Complete the task associated to this "TODO" comment. | S2 | scripts/check-document-sync.js | 139 |
+| DEBT-0252 | Prefer `node:url` over `url`. | S2 | scripts/check-document-sync.js | 21 |
+| DEBT-0253 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/check-document-sync.js | 28 |
+| DEBT-0254 | Complete the task associated to this "TODO" comment. | S2 | .github/workflows/ci.yml | 86 |
+| DEBT-0255 | Prefer `node:fs` over `fs`. | S2 | scripts/assign-review-tier.js | 20 |
+| DEBT-0256 | Prefer `node:path` over `path`. | S2 | scripts/assign-review-tier.js | 21 |
+| DEBT-0257 | Prefer `node:url` over `url`. | S2 | scripts/assign-review-tier.js | 22 |
+| DEBT-0258 | Prefer `node:url` over `url`. | S2 | scripts/surface-lessons-learned.js | 21 |
+| DEBT-0259 | Prefer `node:fs` over `fs`. | S2 | scripts/ai-review.js | 15 |
+| DEBT-0260 | Prefer `node:path` over `path`. | S2 | scripts/ai-review.js | 16 |
+| DEBT-0261 | Prefer `node:child_process` over `child_process`. | S2 | scripts/ai-review.js | 17 |
+| DEBT-0262 | Prefer `node:url` over `url`. | S2 | scripts/phase-complete-check.js | 22 |
+| DEBT-0263 | Prefer `node:child_process` over `child_process`. | S2 | tests/scripts/phase-complete-check.test.ts | 3 |
+| DEBT-0264 | Prefer `node:path` over `path`. | S2 | tests/scripts/phase-complete-check.test.ts | 4 |
+| DEBT-0265 | Prefer `node:fs` over `fs`. | S2 | tests/scripts/phase-complete-check.test.ts | 5 |
+| DEBT-0266 | Prefer `node:child_process` over `child_process`. | S2 | tests/scripts/surface-lessons-learned.test.ts | 3 |
+| DEBT-0267 | Prefer `node:path` over `path`. | S2 | tests/scripts/surface-lessons-learned.test.ts | 4 |
+| DEBT-0268 | Prefer `node:fs` over `fs`. | S2 | tests/scripts/surface-lessons-learned.test.ts | 5 |
+| DEBT-0269 | Prefer `node:fs` over `fs`. | S2 | scripts/phase-complete-check.js | 20 |
+| DEBT-0270 | Prefer `node:path` over `path`. | S2 | scripts/phase-complete-check.js | 21 |
+| DEBT-0271 | Prefer `node:fs` over `fs`. | S2 | scripts/surface-lessons-learned.js | 18 |
+| DEBT-0272 | Prefer `node:path` over `path`. | S2 | scripts/surface-lessons-learned.js | 19 |
+| DEBT-0273 | Prefer `node:child_process` over `child_process`. | S2 | scripts/surface-lessons-learned.js | 20 |
+| DEBT-0274 | Add an explicit return statement at the end of the function. | S2 | .claude/hooks/coderabbit-review.sh | 29 |
+| DEBT-0275 | Assign this positional parameter to a local variable. | S2 | .claude/hooks/coderabbit-review.sh | 33 |
+| DEBT-0276 | Add an explicit return statement at the end of the function. | S2 | .claude/hooks/check-mcp-servers.sh | 25 |
+| DEBT-0277 | Add an explicit return statement at the end of the function. | S2 | .claude/hooks/analyze-user-request.sh | 33 |
+| DEBT-0278 | Prefer `node:path` over `path`. | S2 | scripts/suggest-pattern-automation.js | 20 |
+| DEBT-0279 | Prefer `node:fs` over `fs`. | S2 | scripts/suggest-pattern-automation.js | 19 |
+| DEBT-0280 | Prefer `node:url` over `url`. | S2 | scripts/suggest-pattern-automation.js | 21 |
+| DEBT-0281 | Replace this character class by the character itself. | S2 | scripts/suggest-pattern-automation.js | 49 |
+| DEBT-0282 | Redirect this error message to stderr (>&2). | S2 | .claude/hooks/session-start.sh | 295 |
+| DEBT-0283 | Prefer top-level await over using a promise chain. | S2 | scripts/enrich-addresses.ts | 215 |
+| DEBT-0284 | Prefer top-level await over using a promise chain. | S2 | scripts/migrate-to-journal.ts | 297 |
+| DEBT-0285 | Prefer top-level await over using a promise chain. | S2 | scripts/seed-real-data.ts | 223 |
+| DEBT-0286 | Prefer top-level await over using a promise chain. | S2 | scripts/sync-geocache.ts | 126 |
+| DEBT-0287 | Prefer top-level await over using a promise chain. | S2 | scripts/retry-failures.ts | 169 |
+| DEBT-0288 | Prefer `node:fs` over `fs`. | S2 | scripts/check-pattern-compliance.js | 19 |
+| DEBT-0289 | Remove duplicates in this character class. | S2 | scripts/lib/sanitize-error.js | 30 |
+| DEBT-0290 | Prefer `node:path` over `path`. | S2 | scripts/check-pattern-compliance.js | 20 |
+| DEBT-0291 | Prefer `node:url` over `url`. | S2 | scripts/check-pattern-compliance.js | 21 |
+| DEBT-0292 | Prefer `node:child_process` over `child_process`. | S2 | scripts/check-pattern-compliance.js | 22 |
+| DEBT-0293 | Prefer `node:fs` over `fs`. | S2 | scripts/validate-phase-completion.js | 16 |
+| DEBT-0294 | Prefer `node:path` over `path`. | S2 | scripts/validate-phase-completion.js | 17 |
+| DEBT-0295 | Prefer `node:url` over `url`. | S2 | scripts/validate-phase-completion.js | 18 |
+| DEBT-0296 | Prefer `node:child_process` over `child_process`. | S2 | scripts/phase-complete-check.js | 18 |
+| DEBT-0297 | Prefer `node:readline` over `readline`. | S2 | scripts/phase-complete-check.js | 19 |
+| DEBT-0299 | Prefer `node:fs` over `fs`. | S2 | scripts/check-docs-light.js | 28 |
+| DEBT-0300 | Prefer `node:path` over `path`. | S2 | scripts/check-docs-light.js | 29 |
+| DEBT-0301 | Prefer `node:url` over `url`. | S2 | scripts/check-docs-light.js | 30 |
+| DEBT-0302 | Prefer `node:fs` over `fs`. | S2 | scripts/update-readme-status.js | 26 |
+| DEBT-0303 | Prefer `node:path` over `path`. | S2 | scripts/update-readme-status.js | 27 |
+| DEBT-0304 | Prefer `node:url` over `url`. | S2 | scripts/update-readme-status.js | 28 |
+| DEBT-0305 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/update-readme-status.js | 40 |
+| DEBT-0306 | Redirect this error message to stderr (>&2). | S2 | .claude/skills/artifacts-builder/scripts/bundle-artifact.sh | 8 |
+| DEBT-0307 | Redirect this error message to stderr (>&2). | S2 | .claude/skills/artifacts-builder/scripts/init-artifact.sh | 12 |
+| DEBT-0308 | Remove this commented out code. | S2 | functions/src/index.ts | 508 |
+| DEBT-0309 | Remove this commented out code. | S2 | lib/firebase.ts | 61 |
+| DEBT-0310 | Prefer `node:path` over `path`. | S2 | scripts/migrate-addresses.ts | 12 |
+| DEBT-0311 | Prefer `node:fs` over `fs`. | S2 | scripts/migrate-addresses.ts | 13 |
+| DEBT-0312 | Prefer top-level await over using a promise chain. | S2 | scripts/migrate-addresses.ts | 102 |
+| DEBT-0313 | Prefer `node:fs` over `fs`. | S2 | scripts/migrate-meetings-dayindex.ts | 14 |
+| DEBT-0314 | Remove this useless assignment to variable "hasMore". | S2 | scripts/migrate-to-journal.ts | 261 |
+| DEBT-0315 | Prefer `node:path` over `path`. | S2 | scripts/migrate-meetings-dayindex.ts | 13 |
+| DEBT-0316 | Prefer top-level await over using a promise chain. | S2 | scripts/migrate-meetings-dayindex.ts | 160 |
+| DEBT-0317 | 'If' statement should not be the only statement in 'else'... | S2 | components/growth/Step1WorksheetCard.tsx | 638 |
+| DEBT-0319 | Complete the task associated to this "TODO" comment. | S2 | components/notebook/features/quick-actions-fab.tsx | 12 |
+| DEBT-0320 | Extract this nested ternary operation into an independent... | S2 | components/notebook/features/check-in-progress.tsx | 35 |
+| DEBT-0321 | Extract this nested ternary operation into an independent... | S2 | components/notebook/features/enhanced-mood-selector.tsx | 102 |
+| DEBT-0324 | This branch's code block is the same as the block for the... | S2 | lib/utils.ts | 32 |
+| DEBT-0325 | Prefer `node:fs` over `fs`. | S2 | scripts/import-nashville-links.ts | 3 |
+| DEBT-0326 | Prefer `node:path` over `path`. | S2 | scripts/import-nashville-links.ts | 4 |
+| DEBT-0327 | Prefer `node:fs` over `fs`. | S2 | scripts/migrate-library-content.ts | 3 |
+| DEBT-0328 | Prefer `node:path` over `path`. | S2 | scripts/migrate-library-content.ts | 4 |
+| DEBT-0329 | The object passed as the value prop to the Context provid... | S2 | components/celebrations/celebration-provider.tsx | 44 |
+| DEBT-0330 | Extract this nested ternary operation into an independent... | S2 | components/celebrations/confetti-burst.tsx | 66 |
+| DEBT-0332 | Extract this nested ternary operation into an independent... | S2 | components/notebook/book-cover.tsx | 252 |
+| DEBT-0333 | Prefer top-level await over using a promise chain. | S2 | scripts/import-nashville-links.ts | 258 |
+| DEBT-0334 | Prefer top-level await over using a promise chain. | S2 | scripts/migrate-library-content.ts | 205 |
+| DEBT-0335 | Use <details>, <fieldset>, <optgroup>, or <address> inste... | S2 | components/notebook/features/check-in-questions.tsx | 36 |
+| DEBT-0337 | Do not use Array index in keys | S2 | components/notebook/features/clean-time-display.tsx | 98 |
+| DEBT-0338 | Use <details>, <fieldset>, <optgroup>, or <address> inste... | S2 | components/notebook/features/mood-selector.tsx | 51 |
+| DEBT-0339 | Extract this nested ternary operation into an independent... | S2 | components/notebook/features/recovery-notepad.tsx | 99 |
+| DEBT-0340 | Do not use Array index in keys | S2 | components/notebook/pages/library-page.tsx | 170 |
+| DEBT-0341 | Do not use Array index in keys | S2 | components/onboarding/onboarding-wizard.tsx | 515 |
+| DEBT-0343 | Prefer using an optional chain expression instead, as it'... | S2 | components/notebook/pages/today-page.tsx | 177 |
+| DEBT-0344 | Do not use Array index in keys | S2 | components/journal/entry-card.tsx | 125 |
+| DEBT-0345 | Do not use Array index in keys | S2 | components/journal/entry-feed.tsx | 194 |
+| DEBT-0346 | Do not use Array index in keys | S2 | components/journal/entry-forms/gratitude-form.tsx | 82 |
+| DEBT-0347 | Do not use Array index in keys | S2 | components/journal/entry-wizard.tsx | 131 |
+| DEBT-0349 | Do not use Array index in keys | S2 | components/notebook/pages/today-page.tsx | 803 |
+| DEBT-0350 | Move function 'formatTime' to the outer scope. | S2 | components/widgets/compact-meeting-countdown.tsx | 241 |
+| DEBT-0351 | Prefer `node:crypto` over `crypto`. | S2 | functions/src/security-logger.ts | 9 |
+| DEBT-0353 | Extract this nested ternary operation into an independent... | S2 | components/growth/NightReviewCard.tsx | 567 |
+| DEBT-0354 | Prefer top-level await over an async function `testGeocod... | S2 | scripts/test-geocode.ts | 40 |
+| DEBT-0355 | Prefer `node:fs` over `fs`. | S2 | scripts/seed-meetings.ts | 9 |
+| DEBT-0356 | Prefer `node:path` over `path`. | S2 | scripts/seed-meetings.ts | 10 |
+| DEBT-0357 | Prefer `node:fs` over `fs`. | S2 | scripts/set-admin-claim.ts | 11 |
+| DEBT-0358 | Prefer `node:path` over `path`. | S2 | scripts/set-admin-claim.ts | 12 |
+| DEBT-0359 | The object passed as the value prop to the Context provid... | S2 | components/providers/auth-context.tsx | 118 |
+| DEBT-0360 | The object passed as the value prop to the Context provid... | S2 | components/providers/daily-log-context.tsx | 75 |
+| DEBT-0361 | 'If' statement should not be the only statement in 'else'... | S2 | components/providers/profile-context.tsx | 71 |
+| DEBT-0362 | The object passed as the value prop to the Context provid... | S2 | components/providers/profile-context.tsx | 131 |
+| DEBT-0363 | 'If' statement should not be the only statement in 'else'... | S2 | components/auth/account-link-modal.tsx | 34 |
+| DEBT-0364 | Prefer `node:crypto` over `crypto`. | S2 | lib/sentry.client.ts | 11 |
+| DEBT-0365 | Prefer using an optional chain expression instead, as it'... | S2 | lib/security/firestore-validation.ts | 42 |
+| DEBT-0366 | Prefer `node:path` over `path`. | S2 | next.config.mjs | 1 |
+| DEBT-0367 | Prefer `node:url` over `url`. | S2 | next.config.mjs | 2 |
+| DEBT-0368 | Complete the task associated to this "TODO" comment. | S2 | lib/database/firestore-adapter.ts | 51 |
+| DEBT-0369 | Complete the task associated to this "TODO" comment. | S2 | lib/logger.ts | 107 |
+| DEBT-0370 | Member 'config' is never reassigned; mark it as `readonly`. | S2 | lib/utils/rate-limiter.ts | 17 |
+| DEBT-0371 | Either use this collection's contents or remove the colle... | S2 | tests/firestore-service.test.ts | 18 |
+| DEBT-0372 | Do not use Array index in keys | S2 | components/notebook/visualizations/mood-sparkline.tsx | 98 |
+| DEBT-0373 | Do not use Array index in keys | S2 | components/notebook/notebook-shell.tsx | 135 |
+| DEBT-0374 | Do not use Array index in keys | S2 | components/notebook/pages/resources-page.tsx | 368 |
+| DEBT-0375 | Do not use Array index in keys | S2 | components/notebook/pages/support-page.tsx | 115 |
+| DEBT-0382 | DailyQuoteCard component duplicated across 2-3 locations | S2 | components/notebook/features/daily-quote-card.tsx | 0 |
+| DEBT-0383 | Critical paths have low test coverage (firestore-service ... | S2 | lib/firestore-service.ts | 0 |
+| DEBT-0384 | reCAPTCHA token fetch/include pattern repeated 5x across ... | S2 | lib/firestore-service.ts | 0 |
+| DEBT-0385 | Firebase collection access scattered across 22+ files wit... | S2 | lib/db/slogans.ts | 0 |
+| DEBT-0386 | reCAPTCHA action strings duplicated as literals (no share... | S2 | functions/src/recaptcha-verify.ts | 0 |
+| DEBT-0387 | Growth card dialog/save pattern duplicated across 4 compo... | S2 | components/growth/SpotCheckCard.tsx | 0 |
+| DEBT-0388 | CRUD service patterns repeated across lib/db modules | S2 | lib/db/quotes.ts | 0 |
+| DEBT-0389 | Admin Cloud Function wiring duplicated across 5 admin tabs | S2 | components/admin/dashboard-tab.tsx | 0 |
+| DEBT-0390 | Dual-write pattern to inventory AND journal collections | S2 | components/growth/SpotCheckCard.tsx | 0 |
+| DEBT-0391 | Deprecated API usage (31 instances) + Nested ternaries (4... | S2 | multiple | 0 |
+| DEBT-0392 | safeReadFile/safeWriteFile utilities duplicated across 3 ... | S2 | scripts/archive-doc.js | 0 |
+| DEBT-0393 | FirestoreAdapter exists but is unused (realtime boundary ... | S2 | lib/database/firestore-adapter.ts | 0 |
+| DEBT-0394 | Searchable-text generation duplicated with inconsistent s... | S2 | hooks/use-journal.ts | 0 |
+| DEBT-0395 | DEVELOPMENT.md workflow triggers don't match actual workf... | S2 | DEVELOPMENT.md | 0 |
+| DEBT-0396 | Pre-commit hook runs full test suite causing slow commits... | S2 | .husky/pre-commit | 0 |
+| DEBT-0397 | Pattern checker reports 93+ violations but CI check is no... | S2 | scripts/check-pattern-compliance.js | 0 |
+| DEBT-0398 | Firebase CLI version unpinned in deploy workflow | S2 | .github/workflows/deploy-firebase.yml | 0 |
+| DEBT-0399 | Auto-label workflow has invalid if: expression syntax | S2 | .github/workflows/auto-label-review-tier.yml | 0 |
+| DEBT-0400 | Sentry integration incomplete - no Web Vitals reporting | S2 | lib/sentry.client.ts | 0 |
+| DEBT-0401 | Duplicate DailyQuoteCard implementations + unbounded quot... | S2 | components/widgets/daily-quote-card.tsx | 0 |
+| DEBT-0402 | Celebration animations create 150+ DOM elements without r... | S2 | components/celebrations/confetti-burst.tsx | 0 |
+| DEBT-0403 | No React.memo usage causes unnecessary re-renders in list... | S2 | components/journal/entry-card.tsx | 0 |
+| DEBT-0404 | Hero background image bypasses Next.js image optimization | S2 | app/page.tsx | 0 |
+| DEBT-0405 | Large entry lists not virtualized - DOM grows linearly wi... | S2 | components/journal/entry-feed.tsx | 0 |
+| DEBT-0406 | Meeting map renders all markers without clustering | S2 | app/meetings/all/page.tsx | 0 |
+| DEBT-0407 | 7 unused dependencies increasing bundle size | S2 | package.json | 0 |
+| DEBT-0408 | Console statements in production code | S2 | hooks/use-journal.ts | 0 |
+| DEBT-0409 | Firebase queries lack consistent indexing and limits | S2 | lib/db/meetings.ts | 0 |
+| DEBT-0410 | Admin CRUD table fetches entire collections without pagin... | S2 | components/admin/admin-crud-table.tsx | 0 |
+| DEBT-0411 | Step1WorksheetCard excessive complexity (804 lines) | S2 | components/growth/Step1WorksheetCard.tsx | 0 |
+| DEBT-0412 | No route-level loading UI (loading.tsx) or Suspense bound... | S2 | app/page.tsx | 0 |
+| DEBT-0413 | JournalHub eagerly imports all entry forms | S2 | components/journal/journal-hub.tsx | 0 |
+| DEBT-0414 | DOCUMENTATION_INDEX.md orphaned and missing required sect... | S2 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-0415 | Tier 2 docs missing required metadata (Document Version, ... | S2 | docs/ANTIGRAVITY_GUIDE.md | 0 |
+| DEBT-0416 | Standards/templates contain live placeholder links and in... | S2 | docs/DOCUMENTATION_STANDARDS.md | 0 |
+| DEBT-0417 | DOCUMENT_DEPENDENCIES.md claims SYNCED but has 30+ issues | S2 | docs/DOCUMENT_DEPENDENCIES.md | 0 |
+| DEBT-0418 | PR_REVIEW_PROMPT_TEMPLATE lacks required metadata and ver... | S2 | docs/PR_REVIEW_PROMPT_TEMPLATE.md | 0 |
+| DEBT-0419 | CODE_PATTERNS.md referenced with incorrect path | S2 | docs/agent_docs/CODE_PATTERNS.md | 0 |
+| DEBT-0420 | Duplicate CODE_REVIEW_PLAN_2026_Q1.md exists in two locat... | S2 | docs/CODE_REVIEW_PLAN_2026_Q1.md | 0 |
+| DEBT-0421 | Duplicated time-of-day rotation logic for quotes and slogans | S2 | lib/db/quotes.ts | 0 |
+| DEBT-0422 | Unsafe type assertions with 'as unknown as' (worksheet + ... | S2 | components/growth/Step1WorksheetCard.tsx | 0 |
+| DEBT-0424 | Journal entry type definitions duplicated across client t... | S2 | types/journal.ts | 0 |
+| DEBT-0425 | Missing error.message null safety in TodayPage catch block | S2 | components/notebook/pages/today-page.tsx | 0 |
+| DEBT-0426 | Unsafe localStorage JSON.parse in use-smart-prompts hook | S2 | components/notebook/hooks/use-smart-prompts.ts | 0 |
+| DEBT-0427 | Duplicated DailyQuoteCard component exists in multiple di... | S2 | components/notebook/features/daily-quote-card.tsx | 0 |
+| DEBT-0428 | Inconsistent Firebase Functions import pattern (static vs... | S2 | lib/firestore-service.ts | 0 |
+| DEBT-0429 | Inconsistent httpsCallable typing (missing generic reques... | S2 | lib/firestore-service.ts | 0 |
+| DEBT-0430 | useJournal sets up its own auth listener instead of using... | S2 | hooks/use-journal.ts | 0 |
+| DEBT-0431 | Cloud Function integration test is skipped in firestore-s... | S2 | tests/firestore-service.test.ts | 0 |
+| DEBT-0432 | Journal entry schema data is weakly typed (z.record unkno... | S2 | functions/src/schemas.ts | 0 |
+| DEBT-0433 | No tests for useJournal hook | S2 | hooks/use-journal.ts | 0 |
+| DEBT-0434 | Zod schemas permissive - missing .strict() and allows arb... | S2 | functions/src/schemas.ts | 0 |
+| DEBT-0435 | Debug console.log statements in production code | S2 | components/notebook/pages/today-page.tsx | 396 |
+| DEBT-0436 | High cognitive complexity in adminSetUserPrivilege | S2 | functions/src/admin.ts | 1726 |
+| DEBT-0437 | High cognitive complexity in UsersTab component | S2 | components/admin/users-tab.tsx | 84 |
+| DEBT-0438 | No correlation/request ID tracing | S2 | lib/logger.ts | 1 |
+| DEBT-0439 | Nested component definition | S2 | components/admin/admin-tabs.tsx | 64 |
+| DEBT-0461 | No npm run dev:offline script - requires 2 terminals for ... | S2 | package.json | 5 |
+| DEBT-0462 | No scripts/doctor.js for environment validation | S2 | scripts/ | 0 |
+| DEBT-0463 | 8:1 ratio of console.log to structured logger calls (3111... | S2 | app/ | 0 |
+| DEBT-0464 | No service worker - no offline asset caching | S2 | public/ | 0 |
+| DEBT-0465 | Add .strict() to Zod schemas | S2 | N/A | 0 |
+| DEBT-0466 | Extract time rotation utilities | S2 | N/A | 0 |
+| DEBT-0467 | Consolidate DailyQuoteCard | S2 | N/A | 0 |
+| DEBT-0468 | Debug console.log statements in production code | S2 | N/A | 0 |
+| DEBT-0474 | Add error.message null safety | S2 | N/A | 0 |
+| DEBT-0475 | Safe localStorage JSON.parse | S2 | N/A | 0 |
+| DEBT-0476 | Replace unsafe type assertions | S2 | N/A | 0 |
+| DEBT-0477 | Single source for journal types | S2 | N/A | 0 |
+| DEBT-0478 | Type httpsCallable generics | S2 | N/A | 0 |
+| DEBT-0479 | Create callSecureFunction wrapper | S2 | N/A | 0 |
+| DEBT-0480 | Shared reCAPTCHA action constants | S2 | N/A | 0 |
+| DEBT-0481 | Extract useGrowthCardDialog hook | S2 | N/A | 0 |
+| DEBT-0482 | Route Firebase through service layer | S2 | N/A | 0 |
+| DEBT-0483 | Create typed collection helpers | S2 | N/A | 0 |
+| DEBT-0484 | Clarify FirestoreAdapter boundary | S2 | N/A | 0 |
+| DEBT-0485 | Audit inventory dual-write pattern | S2 | N/A | 0 |
+| DEBT-0486 | Complete Sentry integration | S2 | N/A | 0 |
+| DEBT-0487 | Add reduced-motion to animations | S2 | N/A | 0 |
+| DEBT-0488 | Add React.memo to list components | S2 | N/A | 0 |
+| DEBT-0489 | Optimize hero background image | S2 | N/A | 0 |
+| DEBT-0490 | Add virtualization to large lists | S2 | N/A | 0 |
+| DEBT-0491 | Add marker clustering to map | S2 | N/A | 0 |
+| DEBT-0492 | Remove 7 unused dependencies | S2 | N/A | 0 |
+| DEBT-0493 | Add Firebase query indexes | S2 | N/A | 0 |
+| DEBT-0494 | Paginate admin CRUD table | S2 | N/A | 0 |
+| DEBT-0495 | Add loading.tsx files | S2 | N/A | 0 |
+| DEBT-0496 | Lazy load JournalHub forms | S2 | N/A | 0 |
+| DEBT-0497 | Unskip Cloud Function test | S2 | N/A | 0 |
+| DEBT-0498 | Add useJournal hook tests | S2 | N/A | 0 |
+| DEBT-0499 | Increase critical path coverage | S2 | N/A | 0 |
+| DEBT-0500 | Create CRUD factory | S2 | N/A | 0 |
+| DEBT-0501 | Centralize admin function wrappers | S2 | N/A | 0 |
+| DEBT-0502 | Extract safeReadFile/safeWriteFile | S2 | N/A | 0 |
+| DEBT-0503 | Consolidate searchable-text generation | S2 | N/A | 0 |
+| DEBT-0504 | Add DOCUMENTATION_INDEX to README | S2 | N/A | 0 |
+| DEBT-0505 | Add Tier 2 required metadata | S2 | N/A | 0 |
+| DEBT-0506 | Fix standards placeholder links | S2 | N/A | 0 |
+| DEBT-0507 | Update DOCUMENT_DEPENDENCIES sync | S2 | N/A | 0 |
+| DEBT-0508 | Add PR_REVIEW_PROMPT metadata | S2 | N/A | 0 |
+| DEBT-0509 | Fix CODE_PATTERNS.md path references | S2 | N/A | 0 |
+| DEBT-0510 | Update DEVELOPMENT.md workflow docs | S2 | N/A | 0 |
+| DEBT-0511 | Move full tests to pre-push only | S2 | N/A | 0 |
+| DEBT-0512 | Pin firebase-tools version | S2 | N/A | 0 |
+| DEBT-0513 | Fix auto-label workflow if syntax | S2 | N/A | 0 |
+| DEBT-0514 | Decompose Step1WorksheetCard | S2 | N/A | 0 |
+| DEBT-0533 | Debug console logs in production component | S2 | components/notebook/pages/today-page.tsx | 594 |
+| DEBT-0534 | Callback parameter typed as any | S2 | components/notebook/pages/today-page.tsx | 505 |
+| DEBT-0535 | Missing React.Suspense for code splitting | S2 | components/ | 0 |
+| DEBT-0536 | ESLint rule suppression for exhaustive deps | S2 | hooks/use-geolocation.ts | 171 |
+| DEBT-0537 | No component tests | S2 | tests/ | 0 |
+| DEBT-0538 | Potential copy-paste code blocks in admin tabs | S2 | components/admin/ | 0 |
+| DEBT-0539 | Complex nested logic without early returns | S2 | components/notebook/pages/today-page.tsx | 698 |
+| DEBT-0540 | Missing correlation IDs for request tracing | S2 | lib/firestore-service.ts | 0 |
+| DEBT-0541 | Inconsistent error context across components | S2 | various | 0 |
+| DEBT-0542 | Admin CRUD table pulls full collections via getDocs witho... | S2 | components/admin/admin-crud-table.tsx | 0 |
+| DEBT-0543 | Meetings map may jank at scale without marker clustering ... | S2 | components/maps/meeting-map.tsx | 0 |
+| DEBT-0544 | High-intensity confetti spawns up to 150 animated DOM nodes | S2 | components/celebrations/confetti-burst.tsx | 0 |
+| DEBT-0545 | Console statements exist in production code; should be ga... | S2 | components/** | 0 |
+| DEBT-0546 | reCAPTCHA Enterprise script injected on every route (even... | S2 | app/layout.tsx | 0 |
+| DEBT-0547 | No Core Web Vitals tracking configured (LCP/CLS/INP) | S2 | app/layout.tsx | 0 |
+| DEBT-0548 | Client Sentry config imports Node crypto, risking polyfil... | S2 | lib/sentry.client.ts | 0 |
+| DEBT-0549 | AnimatePresence transitions may cause CLS without explici... | S2 | app/page.tsx | 0 |
+| DEBT-0550 | No caching strategy for Firestore queries; mounts trigger... | S2 | hooks/use-journal.ts | 0 |
+| DEBT-0551 | useJournal filters soft-deleted entries client-side inste... | S2 | hooks/use-journal.ts | 0 |
+| DEBT-0552 | NotebookShell likely bundles most notebook pages because ... | S2 | components/notebook/roadmap-modules.tsx | 0 |
+| DEBT-0553 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/check-pattern-compliance.js | 419 |
+| DEBT-0556 | Visible, non-interactive elements with click handlers mus... | S2 | components/journal/entry-detail-dialog.tsx | 18 |
+| DEBT-0557 | Visible, non-interactive elements with click handlers mus... | S2 | components/journal/entry-feed.tsx | 152 |
+| DEBT-0558 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | functions/src/admin.ts | 110 |
+| DEBT-0559 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | hooks/use-journal.ts | 72 |
+| DEBT-0560 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/ai-review.js | 44 |
+| DEBT-0561 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/archive-doc.js | 368 |
+| DEBT-0562 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/assign-review-tier.js | 30 |
+| DEBT-0563 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/check-docs-light.js | 141 |
+| DEBT-0564 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/dedupe-quotes.ts | 217 |
+| DEBT-0565 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/enrich-addresses.ts | 91 |
+| DEBT-0566 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/generate-documentation-index.js | 72 |
+| DEBT-0567 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/import-nashville-links.ts | 206 |
+| DEBT-0568 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/migrate-library-content.ts | 129 |
+| DEBT-0569 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/normalize-canon-ids.js | 57 |
+| DEBT-0570 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/phase-complete-check.js | 106 |
+| DEBT-0571 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/retry-failures.ts | 57 |
+| DEBT-0573 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/suggest-pattern-automation.js | 88 |
+| DEBT-0574 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/surface-lessons-learned.js | 264 |
+| DEBT-0575 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/update-readme-status.js | 211 |
+| DEBT-0578 | Prefer `String.fromCodePoint()` over `String.fromCharCode... | S2 | components/growth/Step1WorksheetCard.tsx | 380 |
+| DEBT-0581 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | functions/src/security-logger.ts | 188 |
+| DEBT-0590 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/check-pattern-compliance.js | 221 |
+| DEBT-0592 | 'next' imported multiple times. | S2 | app/layout.tsx | 2 |
+| DEBT-0598 | Prefer `globalThis.window` over `window`. | S2 | components/celebrations/confetti-burst.tsx | 33 |
+| DEBT-0601 | This assertion is unnecessary since it does not change th... | S2 | components/journal/entry-detail-dialog.tsx | 286 |
+| DEBT-0605 | Prefer `globalThis` over `window`. | S2 | components/notebook/features/enhanced-mood-selector.tsx | 76 |
+| DEBT-0607 | 'lucide-react' imported multiple times. | S2 | components/notebook/pages/resources-page.tsx | 3 |
+| DEBT-0615 | Prefer `globalThis` over `window`. | S2 | components/status/offline-indicator.tsx | 22 |
+| DEBT-0619 | 'data.content \|\| ""' will use Object's default stringific... | S2 | hooks/use-journal.ts | 101 |
+| DEBT-0620 | 'data.step4_surrender \|\| ""' will use Object's default st... | S2 | hooks/use-journal.ts | 113 |
+| DEBT-0623 | Prefer `globalThis.window` over `window`. | S2 | lib/firebase.ts | 44 |
+| DEBT-0627 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/archive-doc.js | 340 |
+| DEBT-0628 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/generate-documentation-index.js | 125 |
+| DEBT-0629 | Do not call `Array#push()` multiple times. | S2 | scripts/generate-documentation-index.js | 571 |
+| DEBT-0630 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/normalize-canon-ids.js | 58 |
+| DEBT-0631 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/suggest-pattern-automation.js | 57 |
+| DEBT-0640 | Unexpected negated condition. | S2 | scripts/validate-audit.js | 270 |
+| DEBT-0642 | Handle this exception or don't catch it at all. | S2 | scripts/check-document-sync.js | 95 |
+| DEBT-0645 | Unexpected negated condition. | S2 | scripts/phase-complete-check.js | 330 |
+| DEBT-0649 | Unexpected negated condition. | S2 | scripts/validate-phase-completion.js | 77 |
+| DEBT-0657 | Prefer `globalThis` over `window`. | S2 | lib/utils/storage.ts | 23 |
+| DEBT-0660 | Prefer `globalThis` over `window`. | S2 | lib/recaptcha.ts | 46 |
+| DEBT-0681 | Prefer `globalThis` over `window`. | S2 | components/ui/voice-text-area.tsx | 20 |
+| DEBT-0682 | Prefer `globalThis` over `window`. | S2 | hooks/use-speech-recognition.ts | 22 |
+| DEBT-0684 | 'lucide-react' imported multiple times. | S2 | components/growth/NightReviewCard.tsx | 5 |
+| DEBT-0685 | 'lucide-react' imported multiple times. | S2 | components/growth/SpotCheckCard.tsx | 5 |
+| DEBT-0687 | Prefer `globalThis.window` over `window`. | S2 | components/celebrations/firework-burst.tsx | 32 |
+| DEBT-0715 | '@/lib/db/meetings' imported multiple times. | S2 | components/admin/meetings-tab.tsx | 9 |
+| DEBT-0718 | Prefer `globalThis.window` over `window`. | S2 | components/pwa/install-prompt.tsx | 18 |
+| DEBT-0728 | Use `export…from` to re-export `NotebookModule`. | S2 | components/notebook/roadmap-modules.tsx | 12 |
+| DEBT-0734 | Unexpected negated condition. | S2 | components/notebook/pages/resources-page.tsx | 236 |
+| DEBT-0740 | Use `export…from` to re-export `useAuthCore`. | S2 | components/providers/auth-provider.tsx | 22 |
+| DEBT-0750 | 'unknown' overrides all other types in this union type. | S2 | lib/types/daily-log.ts | 28 |
+| DEBT-0761 | 'nickname' PropType is defined but prop is never used | S2 | components/notebook/book-cover.tsx | 26 |
+| DEBT-0768 | Unexpected negated condition. | S2 | components/notebook/book-cover.tsx | 158 |
+| DEBT-0961 | Prefer `node:crypto` over `crypto`. | S2 | scripts/eval/eval-sonarcloud-stage.js | 22 |
+| DEBT-0963 | Prefer `node:fs` over `fs`. | S2 | scripts/eval/eval-sonarcloud-report.js | 24 |
+| DEBT-0964 | Prefer `node:path` over `path`. | S2 | scripts/eval/eval-sonarcloud-report.js | 25 |
+| DEBT-0965 | Prefer `node:fs` over `fs`. | S2 | scripts/eval/eval-sonarcloud-snapshot.js | 19 |
+| DEBT-0966 | Prefer `node:path` over `path`. | S2 | scripts/eval/eval-sonarcloud-snapshot.js | 20 |
+| DEBT-0967 | Prefer `node:crypto` over `crypto`. | S2 | scripts/eval/eval-sonarcloud-snapshot.js | 21 |
+| DEBT-0969 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/eval/eval-sonarcloud-snapshot.js | 145 |
+| DEBT-0970 | Prefer `node:fs` over `fs`. | S2 | scripts/eval/eval-sonarcloud-stage.js | 20 |
+| DEBT-0971 | Prefer `node:path` over `path`. | S2 | scripts/eval/eval-sonarcloud-stage.js | 21 |
+| DEBT-0972 | Unexpected negated condition. | S2 | scripts/eval/eval-sonarcloud-stage.js | 156 |
+| DEBT-0990 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/debt/generate-views.js | 87 |
+| DEBT-0997 | Remove this unused import of 'join'. | S2 | scripts/multi-ai/normalize-format.js | 15 |
+| DEBT-0998 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/multi-ai/state-manager.js | 51 |
+| DEBT-1000 | Prefer `node:fs` over `fs`. | S2 | scripts/multi-ai/eval-check-stage.js | 22 |
+| DEBT-1001 | Prefer `node:path` over `path`. | S2 | scripts/multi-ai/eval-check-stage.js | 23 |
+| DEBT-1005 | Prefer `node:fs` over `fs`. | S2 | scripts/multi-ai/eval-report.js | 22 |
+| DEBT-1006 | Prefer `node:path` over `path`. | S2 | scripts/multi-ai/eval-report.js | 23 |
+| DEBT-1007 | Prefer `node:fs` over `fs`. | S2 | scripts/multi-ai/eval-snapshot.js | 20 |
+| DEBT-1008 | Prefer `node:path` over `path`. | S2 | scripts/multi-ai/eval-snapshot.js | 21 |
+| DEBT-1009 | Prefer `node:crypto` over `crypto`. | S2 | scripts/multi-ai/eval-snapshot.js | 22 |
+| DEBT-1011 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/multi-ai/eval-snapshot.js | 93 |
+| DEBT-1012 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/multi-ai/aggregate-category.js | 69 |
+| DEBT-1016 | Handle this exception or don't catch it at all. | S2 | scripts/multi-ai/aggregate-category.js | 144 |
+| DEBT-1020 | Expected a `for-of` loop instead of a `for` loop with thi... | S2 | scripts/multi-ai/aggregate-category.js | 254 |
+| DEBT-1023 | Remove this unused import of 'join'. | S2 | scripts/multi-ai/fix-schema.js | 17 |
+| DEBT-1024 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/multi-ai/fix-schema.js | 236 |
+| DEBT-1025 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/multi-ai/fix-schema.js | 255 |
+| DEBT-1030 | Handle this exception or don't catch it at all. | S2 | scripts/multi-ai/fix-schema.js | 537 |
+| DEBT-1031 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/multi-ai/normalize-format.js | 311 |
+| DEBT-1040 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/multi-ai/normalize-format.js | 721 |
+| DEBT-1043 | Don't use a zero fraction in the number. | S2 | scripts/multi-ai/unify-findings.js | 50 |
+| DEBT-1044 | Handle this exception or don't catch it at all. | S2 | scripts/multi-ai/unify-findings.js | 79 |
+| DEBT-1049 | Remove the declaration of the unused 'category' variable. | S2 | scripts/multi-ai/unify-findings.js | 287 |
+| DEBT-1052 | Remove the declaration of the unused 'mergeLog' variable. | S2 | scripts/multi-ai/unify-findings.js | 586 |
+| DEBT-1061 | Prefer `globalThis.window` over `window`. | S2 | components/admin/errors-tab.tsx | 688 |
+| DEBT-1063 | 'input' will use Object's default stringification format ... | S2 | components/admin/logs-tab.tsx | 338 |
+| DEBT-1065 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | components/admin/logs-tab.tsx | 315 |
+| DEBT-1072 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/sync-consolidation-counter.js | 74 |
+| DEBT-1073 | The catch parameter `readErr` should be named `error_`. | S2 | scripts/sync-consolidation-counter.js | 75 |
+| DEBT-1074 | This assertion is unnecessary since it does not change th... | S2 | functions/src/jobs.ts | 379 |
+| DEBT-1075 | 'unknown' overrides all other types in this union type. | S2 | functions/src/security-logger.ts | 426 |
+| DEBT-1076 | 'error' will use Object's default stringification format ... | S2 | functions/src/security-logger.ts | 438 |
+| DEBT-1086 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | components/admin/jobs-tab.tsx | 72 |
+| DEBT-1091 | Prefer `node:crypto` over `crypto`. | S2 | functions/src/jobs.ts | 23 |
+| DEBT-1101 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/sync-consolidation-counter.js | 37 |
+| DEBT-1106 | Handle this exception or don't catch it at all. | S2 | scripts/audit/transform-jsonl-schema.js | 591 |
+| DEBT-1107 | The catch parameter `renameErr` should be named `error_`. | S2 | scripts/audit/transform-jsonl-schema.js | 591 |
+| DEBT-1108 | The catch parameter `unlinkErr` should be named `error_`. | S2 | scripts/audit/transform-jsonl-schema.js | 599 |
+| DEBT-1109 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/audit/transform-jsonl-schema.js | 193 |
+| DEBT-1110 | The empty object is useless. | S2 | scripts/audit/transform-jsonl-schema.js | 461 |
+| DEBT-1113 | Prefer `node:fs` over `fs`. | S2 | scripts/audit/transform-jsonl-schema.js | 22 |
+| DEBT-1114 | Prefer `node:path` over `path`. | S2 | scripts/audit/transform-jsonl-schema.js | 23 |
+| DEBT-1118 | Unexpected negated condition. | S2 | scripts/audit/transform-jsonl-schema.js | 557 |
+| DEBT-1119 | The '__proto__' property is deprecated. | S2 | scripts/audit/validate-audit-integration.js | 195 |
+| DEBT-1123 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/audit/validate-audit-integration.js | 36 |
+| DEBT-1124 | Handle this exception or don't catch it at all. | S2 | scripts/audit/validate-audit-integration.js | 200 |
+| DEBT-1128 | Prefer `node:fs` over `fs`. | S2 | scripts/audit/validate-audit-integration.js | 24 |
+| DEBT-1129 | Prefer `node:path` over `path`. | S2 | scripts/audit/validate-audit-integration.js | 25 |
+| DEBT-1130 | Prefer `node:crypto` over `crypto`. | S2 | scripts/audit/validate-audit-integration.js | 26 |
+| DEBT-1131 | Prefer `node:child_process` over `child_process`. | S2 | scripts/audit/validate-audit-integration.js | 27 |
+| DEBT-1133 | Unexpected negated condition. | S2 | scripts/audit/validate-audit-integration.js | 382 |
+| DEBT-1137 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/audit/validate-audit-integration.js | 591 |
+| DEBT-1145 | Prefer `node:os` over `os`. | S2 | scripts/debt/intake-audit.js | 35 |
+| DEBT-1147 | Unexpected negated condition. | S2 | scripts/debt/intake-audit.js | 143 |
+| DEBT-1148 | The catch parameter `readErr` should be named `error_`. | S2 | scripts/debt/intake-audit.js | 288 |
+| DEBT-1151 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/debt/intake-audit.js | 87 |
+| DEBT-1153 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/debt/intake-audit.js | 153 |
+| DEBT-1160 | The empty object is useless. | S2 | scripts/check-content-accuracy.js | 56 |
+| DEBT-1162 | This pattern can be replaced with '\\'. | S2 | scripts/check-content-accuracy.js | 242 |
+| DEBT-1167 | Handle this exception or don't catch it at all. | S2 | scripts/check-external-links.js | 219 |
+| DEBT-1172 | This pattern can be replaced with '\\'. | S2 | scripts/check-doc-placement.js | 162 |
+| DEBT-1184 | The catch parameter `backupErr` should be named `error_`. | S2 | scripts/debt/assign-roadmap-refs.js | 266 |
+| DEBT-1185 | The catch parameter `writeErr` should be named `error_`. | S2 | scripts/debt/assign-roadmap-refs.js | 281 |
+| DEBT-1186 | Handle this exception or don't catch it at all. | S2 | scripts/debt/assign-roadmap-refs.js | 285 |
+| DEBT-1193 | Handle this exception or don't catch it at all. | S2 | scripts/sync-claude-settings.js | 419 |
+| DEBT-1194 | Unexpected negated condition. | S2 | scripts/sync-claude-settings.js | 413 |
+| DEBT-1196 | The catch parameter `_e` should be named `error_`. | S2 | scripts/sync-claude-settings.js | 463 |
+| DEBT-1197 | Prefer `node:fs` over `fs`. | S2 | scripts/sync-claude-settings.js | 16 |
+| DEBT-1198 | Prefer `node:path` over `path`. | S2 | scripts/sync-claude-settings.js | 17 |
+| DEBT-1202 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/assign-roadmap-refs.js | 32 |
+| DEBT-1203 | Prefer `node:path` over `path`. | S2 | scripts/debt/assign-roadmap-refs.js | 33 |
+| DEBT-1204 | Expected a `for-of` loop instead of a `for` loop with thi... | S2 | scripts/debt/assign-roadmap-refs.js | 42 |
+| DEBT-1206 | Unexpected negated condition. | S2 | scripts/debt/assign-roadmap-refs.js | 184 |
+| DEBT-1207 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/generate-metrics.js | 20 |
+| DEBT-1208 | Prefer `node:path` over `path`. | S2 | scripts/debt/generate-metrics.js | 21 |
+| DEBT-1210 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/check-phase-status.js | 11 |
+| DEBT-1211 | Prefer `node:path` over `path`. | S2 | scripts/debt/check-phase-status.js | 12 |
+| DEBT-1212 | Unexpected negated condition. | S2 | scripts/debt/check-phase-status.js | 89 |
+| DEBT-1215 | Prefer `Number.NaN` over `NaN`. | S2 | scripts/aggregate-audit-findings.js | 740 |
+| DEBT-1218 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/debt/normalize-all.js | 65 |
+| DEBT-1219 | Prefer `node:child_process` over `child_process`. | S2 | scripts/debt/resolve-bulk.js | 20 |
+| DEBT-1220 | Prefer `node:child_process` over `child_process`. | S2 | scripts/debt/intake-audit.js | 36 |
+| DEBT-1222 | Prefer `node:child_process` over `child_process`. | S2 | scripts/debt/sync-sonarcloud.js | 32 |
+| DEBT-1224 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/debt/sync-sonarcloud.js | 244 |
+| DEBT-1225 | Handle this exception or don't catch it at all. | S2 | scripts/create-canonical-findings.js | 81 |
+| DEBT-1227 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/aggregate-audit-findings.js | 186 |
+| DEBT-1228 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/create-canonical-findings.js | 102 |
+| DEBT-1233 | Handle this exception or don't catch it at all. | S2 | scripts/migrate-existing-findings.js | 32 |
+| DEBT-1234 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/sync-roadmap-refs.js | 12 |
+| DEBT-1235 | Prefer `node:path` over `path`. | S2 | scripts/debt/sync-roadmap-refs.js | 13 |
+| DEBT-1236 | Prefer `node:url` over `url`. | S2 | scripts/debt/sync-roadmap-refs.js | 14 |
+| DEBT-1238 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/resolve-bulk.js | 18 |
+| DEBT-1239 | Prefer `node:path` over `path`. | S2 | scripts/debt/resolve-bulk.js | 19 |
+| DEBT-1240 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/debt/resolve-bulk.js | 35 |
+| DEBT-1245 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/resolve-item.js | 19 |
+| DEBT-1246 | Prefer `node:path` over `path`. | S2 | scripts/debt/resolve-item.js | 20 |
+| DEBT-1247 | Prefer `node:child_process` over `child_process`. | S2 | scripts/debt/resolve-item.js | 21 |
+| DEBT-1248 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/debt/resolve-item.js | 39 |
+| DEBT-1252 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/validate-schema.js | 19 |
+| DEBT-1253 | Prefer `node:path` over `path`. | S2 | scripts/debt/validate-schema.js | 20 |
+| DEBT-1259 | Prefer `node:path` over `path`. | S2 | scripts/debt/intake-audit.js | 33 |
+| DEBT-1260 | Prefer `node:crypto` over `crypto`. | S2 | scripts/debt/intake-audit.js | 34 |
+| DEBT-1263 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/intake-manual.js | 32 |
+| DEBT-1264 | Prefer `node:path` over `path`. | S2 | scripts/debt/intake-manual.js | 33 |
+| DEBT-1265 | Prefer `node:crypto` over `crypto`. | S2 | scripts/debt/intake-manual.js | 34 |
+| DEBT-1266 | Prefer `node:child_process` over `child_process`. | S2 | scripts/debt/intake-manual.js | 35 |
+| DEBT-1268 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/debt/intake-manual.js | 102 |
+| DEBT-1270 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/debt/intake-manual.js | 172 |
+| DEBT-1273 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/intake-pr-deferred.js | 29 |
+| DEBT-1274 | Prefer `node:path` over `path`. | S2 | scripts/debt/intake-pr-deferred.js | 30 |
+| DEBT-1275 | Prefer `node:crypto` over `crypto`. | S2 | scripts/debt/intake-pr-deferred.js | 31 |
+| DEBT-1276 | Prefer `node:child_process` over `child_process`. | S2 | scripts/debt/intake-pr-deferred.js | 32 |
+| DEBT-1278 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/debt/intake-pr-deferred.js | 95 |
+| DEBT-1279 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/debt/intake-pr-deferred.js | 152 |
+| DEBT-1284 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/sync-sonarcloud.js | 29 |
+| DEBT-1285 | Prefer `node:path` over `path`. | S2 | scripts/debt/sync-sonarcloud.js | 30 |
+| DEBT-1286 | Prefer `node:crypto` over `crypto`. | S2 | scripts/debt/sync-sonarcloud.js | 31 |
+| DEBT-1287 | Prefer `node:readline` over `readline`. | S2 | scripts/debt/sync-sonarcloud.js | 33 |
+| DEBT-1289 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/debt/sync-sonarcloud.js | 130 |
+| DEBT-1293 | Prefer `node:fs` over `fs`. | S2 | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js | 12 |
+| DEBT-1294 | Prefer `node:path` over `path`. | S2 | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js | 13 |
+| DEBT-1295 | Prefer `Number.parseInt` over `parseInt`. | S2 | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js | 49 |
+| DEBT-1297 | Prefer `node:child_process` over `child_process`. | S2 | scripts/debt/consolidate-all.js | 12 |
+| DEBT-1298 | Prefer `node:path` over `path`. | S2 | scripts/debt/consolidate-all.js | 13 |
+| DEBT-1299 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/consolidate-all.js | 14 |
+| DEBT-1300 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/dedup-multi-pass.js | 19 |
+| DEBT-1301 | Prefer `node:path` over `path`. | S2 | scripts/debt/dedup-multi-pass.js | 20 |
+| DEBT-1302 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/debt/dedup-multi-pass.js | 71 |
+| DEBT-1304 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/extract-audits.js | 15 |
+| DEBT-1305 | Prefer `node:path` over `path`. | S2 | scripts/debt/extract-audits.js | 16 |
+| DEBT-1306 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/debt/extract-audits.js | 62 |
+| DEBT-1308 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/debt/extract-audits.js | 167 |
+| DEBT-1309 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/extract-reviews.js | 15 |
+| DEBT-1310 | Prefer `node:path` over `path`. | S2 | scripts/debt/extract-reviews.js | 16 |
+| DEBT-1311 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/debt/extract-reviews.js | 60 |
+| DEBT-1313 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/debt/extract-reviews.js | 165 |
+| DEBT-1316 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/generate-views.js | 17 |
+| DEBT-1317 | Prefer `node:path` over `path`. | S2 | scripts/debt/generate-views.js | 18 |
+| DEBT-1318 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/debt/generate-views.js | 47 |
+| DEBT-1319 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/debt/generate-views.js | 47 |
+| DEBT-1321 | Prefer `node:fs` over `fs`. | S2 | scripts/debt/normalize-all.js | 14 |
+| DEBT-1322 | Prefer `node:path` over `path`. | S2 | scripts/debt/normalize-all.js | 15 |
+| DEBT-1323 | Prefer `node:crypto` over `crypto`. | S2 | scripts/debt/normalize-all.js | 16 |
+| DEBT-1327 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/migrate-existing-findings.js | 56 |
+| DEBT-1331 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/aggregate-audit-findings.js | 468 |
+| DEBT-1346 | Prefer `Math.min()` to simplify ternary expressions. | S2 | scripts/run-consolidation.js | 539 |
+| DEBT-1349 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/run-consolidation.js | 103 |
+| DEBT-1359 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/generate-pending-alerts.js | 51 |
+| DEBT-1362 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/check-backlog-health.js | 157 |
+| DEBT-1363 | Prefer `node:fs` over `fs`. | S2 | scripts/append-hook-warning.js | 17 |
+| DEBT-1364 | Prefer `node:path` over `path`. | S2 | scripts/append-hook-warning.js | 18 |
+| DEBT-1365 | Prefer `node:fs` over `fs`. | S2 | scripts/generate-pending-alerts.js | 19 |
+| DEBT-1366 | Prefer `node:path` over `path`. | S2 | scripts/generate-pending-alerts.js | 20 |
+| DEBT-1367 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/generate-pending-alerts.js | 72 |
+| DEBT-1371 | Unexpected negated condition. | S2 | scripts/check-roadmap-health.js | 251 |
+| DEBT-1374 | Replace this if-then-else flow by a single return statement. | S2 | scripts/check-docs-light.js | 302 |
+| DEBT-1382 | Use concise character class syntax '\D' instead of '[^0-9]'. | S2 | scripts/check-pattern-sync.js | 41 |
+| DEBT-1383 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/check-pattern-sync.js | 67 |
+| DEBT-1384 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/analyze-learning-effectiveness.js | 253 |
+| DEBT-1385 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/analyze-learning-effectiveness.js | 47 |
+| DEBT-1386 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/analyze-learning-effectiveness.js | 75 |
+| DEBT-1396 | Remove the declaration of the unused 'trends' variable. | S2 | scripts/analyze-learning-effectiveness.js | 791 |
+| DEBT-1399 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/check-pattern-sync.js | 45 |
+| DEBT-1402 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/lib/security-helpers.js | 27 |
+| DEBT-1415 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/lib/security-helpers.js | 68 |
+| DEBT-1420 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/lib/security-helpers.js | 288 |
+| DEBT-1421 | Prefer `Number.isNaN` over `isNaN`. | S2 | scripts/lib/security-helpers.js | 289 |
+| DEBT-1427 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/run-consolidation.js | 39 |
+| DEBT-1438 | Prefer `Number.isNaN` over `isNaN`. | S2 | scripts/analyze-learning-effectiveness.js | 1228 |
+| DEBT-1442 | Expected a `for-of` loop instead of a `for` loop with thi... | S2 | scripts/analyze-learning-effectiveness.js | 248 |
+| DEBT-1454 | The catch parameter `analysisErr` should be named `error_`. | S2 | scripts/run-consolidation.js | 715 |
+| DEBT-1455 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/lib/validate-paths.js | 26 |
+| DEBT-1474 | Prefer `String#codePointAt()` over `String#charCodeAt()`. | S2 | scripts/secrets/decrypt-secrets.js | 155 |
+| DEBT-1477 | Prefer `String#codePointAt()` over `String#charCodeAt()`. | S2 | scripts/secrets/encrypt-secrets.js | 113 |
+| DEBT-1480 | Remove this unused import of 'statSync'. | S2 | scripts/validate-canon-schema.js | 20 |
+| DEBT-1481 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/security-check.js | 160 |
+| DEBT-1484 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/verify-sonar-phase.js | 221 |
+| DEBT-1486 | Handle this exception or don't catch it at all. | S2 | scripts/check-docs-light.js | 686 |
+| DEBT-1489 | This assertion is unnecessary since it does not change th... | S2 | functions/src/admin.ts | 1108 |
+| DEBT-1496 | 'data.mood' will use Object's default stringification for... | S2 | components/notebook/pages/history-page.tsx | 73 |
+| DEBT-1501 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/verify-sonar-phase.js | 34 |
+| DEBT-1503 | Remove the declaration of the unused '_phaseConfig' varia... | S2 | scripts/verify-sonar-phase.js | 382 |
+| DEBT-1504 | Remove the declaration of the unused 'found' variable. | S2 | docs/archive/obsolete-scripts-2026-02/generate-sonar-report-with-snippets.js | 181 |
+| DEBT-1506 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/generate-detailed-sonar-report.js | 111 |
+| DEBT-1513 | Remove the declaration of the unused 'found' variable. | S2 | scripts/generate-detailed-sonar-report.js | 274 |
+| DEBT-1518 | Prefer `globalThis` over `window`. | S2 | components/admin/errors-tab.tsx | 399 |
+| DEBT-1522 | Prefer `globalThis` over `window`. | S2 | components/admin/users-tab.tsx | 339 |
+| DEBT-1529 | Unexpected negated condition. | S2 | lib/utils/error-export.ts | 118 |
+| DEBT-1530 | Prefer `globalThis.window` over `window`. | S2 | lib/utils/error-export.ts | 118 |
+| DEBT-1533 | 'date-fns' imported multiple times. | S2 | components/admin/users-tab.tsx | 27 |
+| DEBT-1536 | Prefer `Math.max()` to simplify ternary expressions. | S2 | components/admin/users-tab.tsx | 119 |
+| DEBT-1539 | Mark the props of the component as read-only. | S2 | lib/contexts/admin-tab-context.tsx | 66 |
+| DEBT-1540 | useState call is not destructured into value + setter pair | S2 | lib/contexts/admin-tab-context.tsx | 67 |
+| DEBT-1550 | 'PerformanceTiming' is deprecated. | S2 | lib/utils/error-export.ts | 154 |
+| DEBT-1551 | 'navigationStart' is deprecated. | S2 | lib/utils/error-export.ts | 157 |
+| DEBT-1552 | 'loadEventEnd' is deprecated. | S2 | lib/utils/error-export.ts | 158 |
+| DEBT-1553 | 'domContentLoadedEventEnd' is deprecated. | S2 | lib/utils/error-export.ts | 159 |
+| DEBT-1555 | The signature '(commandId: string, showUI?: boolean \| und... | S2 | lib/utils/error-export.ts | 318 |
+| DEBT-1558 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | components/admin/privileges-tab.tsx | 305 |
+| DEBT-1569 | Prefer `Number.parseInt` over `parseInt`. | S2 | functions/src/admin.ts | 3500 |
+| DEBT-1570 | Prefer `Number.parseFloat` over `parseFloat`. | S2 | functions/src/admin.ts | 3568 |
+| DEBT-1573 | Remove this unused import of 'readdirSync'. | S2 | scripts/aggregate-audit-findings.js | 21 |
+| DEBT-1575 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/aggregate-audit-findings.js | 236 |
+| DEBT-1576 | Unnecessary use of conditional expression for default ass... | S2 | scripts/aggregate-audit-findings.js | 1154 |
+| DEBT-1579 | This pattern can be replaced with '\r\n'. | S2 | scripts/check-docs-light.js | 158 |
+| DEBT-1581 | Replace this union type with a type alias. | S2 | functions/src/admin.ts | 2324 |
+| DEBT-1589 | Mark the props of the component as read-only. | S2 | components/admin/logs-tab.tsx | 173 |
+| DEBT-1593 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/check-cross-doc-deps.js | 187 |
+| DEBT-1598 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/run-consolidation.js | 89 |
+| DEBT-1606 | Remove this unused import of 'statSync'. | S2 | scripts/security-check.js | 20 |
+| DEBT-1607 | Remove this unused import of 'isAbsolute'. | S2 | scripts/security-check.js | 22 |
+| DEBT-1608 | Unexpected negated condition. | S2 | scripts/check-backlog-health.js | 266 |
+| DEBT-1609 | Prefer `Number.parseInt` over `parseInt`. | S2 | scripts/check-backlog-health.js | 29 |
+| DEBT-1615 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | lib/utils/admin-error-utils.ts | 19 |
+| DEBT-1621 | Mark the props of the component as read-only. | S2 | components/admin/errors-tab.tsx | 139 |
+| DEBT-1628 | Prefer `globalThis.window` over `window`. | S2 | app/dev/page.tsx | 30 |
+| DEBT-1629 | Mark the props of the component as read-only. | S2 | components/dev/dev-dashboard.tsx | 24 |
+| DEBT-1631 | Mark the props of the component as read-only. | S2 | components/dev/dev-tabs.tsx | 54 |
+| DEBT-1632 | Mark the props of the component as read-only. | S2 | components/dev/lighthouse-tab.tsx | 64 |
+| DEBT-1635 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | lib/logger.ts | 87 |
+| DEBT-1636 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/verify-skill-usage.js | 78 |
+| DEBT-1637 | Prefer `String#replaceAll()` over `String#replace()`. | S2 | scripts/log-session-activity.js | 68 |
+| DEBT-1645 | Prefer `String#codePointAt()` over `String#charCodeAt()`. | S2 | scripts/log-override.js | 73 |
+| DEBT-1648 | Remove the declaration of the unused 'isSession' variable. | S2 | scripts/validate-skill-config.js | 113 |
+| DEBT-1650 | `String.raw` should be used to avoid escaping `\`. | S2 | scripts/validate-skill-config.js | 118 |
+| DEBT-1920 | API design inconsistency: Mixed return patterns | S2 | lib/firestore-service.ts | 262 |
+| DEBT-1924 | God component: dashboard-tab.tsx with excessive state man... | S2 | components/admin/dashboard-tab.tsx | 952 |
+| DEBT-1925 | Any type usage in today-page.tsx snapshot handler | S2 | components/notebook/pages/today-page.tsx | 507 |
+| DEBT-1926 | Tight coupling between UI components and Firebase SDK | S2 | hooks/use-journal.ts | 350 |
+| DEBT-1927 | Hardcoded bucket name in Cloud Functions | S2 | functions/src/jobs.ts | 602 |
+| DEBT-1928 | Inconsistent state management patterns across providers | S2 | components/providers/auth-provider.tsx | 38 |
+| DEBT-1929 | Anti-pattern: Firestore queries in components instead of ... | S2 | hooks/use-journal.ts | 277 |
+| DEBT-1930 | Missing dependency in useEffect for logs refresh | S2 | components/admin/logs-tab.tsx | 418 |
+| DEBT-1931 | Missing loading state coordination across contexts | S2 | hooks/use-journal.ts | 428 |
+| DEBT-1932 | Missing error boundary in inventory form | S2 | components/journal/entry-forms/inventory-form.tsx | 38 |
+| DEBT-1934 | Missing abstraction for real-time subscriptions | S2 | hooks/use-journal.ts | 284 |
+| DEBT-1935 | Firestore timestamp validation inconsistency | S2 | hooks/use-journal.ts | 178 |
+| DEBT-1939 | Race condition in parallel file processing | S2 | functions/src/jobs.ts | 627 |
+| DEBT-1960 | Hardcoded reCAPTCHA site key fallback in Cloud Functions | S2 | functions/src/recaptcha-verify.ts | 0 |
+| DEBT-1963 | Functions code imports type from undeclared direct depend... | S2 | functions/src/jobs.ts | 0 |
+| DEBT-1975 | Potential empty catch blocks in scripts | S2 | scripts/seed-real-data.ts | 0 |
+| DEBT-1979 | Duplicate Quote Widget Components (3 Variants) | S2 | components/widgets/daily-quote-card.tsx | 0 |
+| DEBT-1980 | Inconsistent lib/db/ Write Patterns | S2 | lib/db/sober-living.ts | 0 |
+| DEBT-1981 | Duplicate generateSearchableText implementations | S2 | hooks/use-journal.ts | 0 |
+| DEBT-1982 | No environment validation/doctor script | S2 | scripts/ | 1 |
+| DEBT-1983 | Dual hooks directories: hooks/ and lib/hooks/ | S2 | hooks/use-journal.ts | 0 |
+| DEBT-1987 | Logger is present but lacks correlation/request IDs; trac... | S2 | lib/logger.ts | 99 |
+| DEBT-1989 | Potential Firestore-rules alignment risk for direct weekl... | S2 | components/notebook/pages/today-page.tsx | 0 |
+| DEBT-1992 | 8:1 console.log to logger ratio — production observabilit... | S2 | app/ | 1 |
+| DEBT-2743 | Untitled | S2 | N/A | 0 |
+| DEBT-2747 | Session-start timeout risks in low-bandwidth environments | S2 | 1 | 0 |
+| DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools | S2 | multiple | 0 |
+| DEBT-2749 | Firebase deployment lacks rollback on partial failure | S2 | 1 | 0 |
+| DEBT-2750 | CI runs full build twice - once for lint, once for test | S2 | 1 | 0 |
+| DEBT-2751 | SonarCloud not enforced in CI gates | S2 | 1 | 0 |
+| DEBT-2752 | Sentry disabled in dev mode by default | S2 | 1 | 0 |
+| DEBT-2753 | Hook performance not tracked - no metrics on execution time | S2 | multiple | 0 |
+| DEBT-2754 | Pre-push duplicates pre-commit pattern checks | S2 | 1 | 0 |
+| DEBT-2755 | Untitled finding | S2 | N/A | 0 |
+| DEBT-2757 | Small touch targets on mobile - tabs only 8-10px padding | S2 | multiple | 0 |
+| DEBT-2758 | No focus trap management in modals and dialogs | S2 | multiple | 0 |
+| DEBT-2759 | Missing error state illustrations - plain text errors only | S2 | multiple | 0 |
+| DEBT-2760 | Missing loading skeletons on data-heavy pages | S2 | multiple | 0 |
+| DEBT-2761 | No optimistic updates for form submissions | S2 | multiple | 0 |
+| DEBT-2762 | Missing keyboard shortcuts for power users | S2 | multiple | 0 |
+| DEBT-2763 | Form validation shows errors only on submit, not inline | S2 | multiple | 0 |
+| DEBT-2764 | Missing Cloud Functions integration tests - only 1 skippe... | S2 | multiple | 0 |
+| DEBT-2765 | No visual regression testing despite Playwright being ins... | S2 | 1 | 0 |
+| DEBT-2766 | Coverage thresholds not enforced despite c8 being available | S2 | 10-12 | 0 |
+| DEBT-2767 | Limited script testing - 5 test files for 60+ npm scripts | S2 | multiple | 0 |
+| DEBT-2768 | No performance benchmarks for pagination and data loading | S2 | multiple | 0 |
+| DEBT-2769 | Error boundary and Sentry integration not tested | S2 | multiple | 0 |
+| DEBT-2770 | Flaky timing in rate limiter tests using real setTimeout | S2 | 1 | 0 |
+| DEBT-2771 | msw installed but unused for API mocking | S2 | 1 | 0 |
+| DEBT-2772 | Enable Next.js experimental optimizations and bundle anal... | S2 | 12-19 | 0 |
+| DEBT-2773 | Add Content-Security-Policy header to Firebase hosting co... | S2 | 6-57 | 0 |
+| DEBT-2775 | Firestore security rules file not found in repository | S2 | 72-74 | 0 |
+| DEBT-2776 | Configure Next.js build cache and dependency caching for ... | S2 | 12 | 0 |
+| DEBT-2777 | Lazy load Leaflet and Recharts with dynamic imports and S... | S2 | 1-80 | 0 |
+| DEBT-2778 | Upgrade Firebase Functions to Node.js 24 runtime | S2 | 68 | 0 |
+| DEBT-2779 | Add composite index for userId + timestamp on security_lo... | S2 | 18-80 | 0 |
+| DEBT-2780 | AI_WORKFLOW.md size optimization - 872 lines may exceed e... | S2 | 1 | 0 |
+| DEBT-2782 | Security guidance consolidation - multiple overlapping se... | S2 | 1 | 0 |
+| DEBT-2784 | Cross-reference navigation overhead in documentation | S2 | 1 | 0 |
+| DEBT-2785 | Pre-commit hook parallelization - sequential checks could... | S2 | 1 | 0 |
+| DEBT-2786 | CI non-blocking checks should block - 5 checks use contin... | S2 | 1 | 0 |
+| DEBT-2787 | Script consolidation - 30+ check/validate/sync scripts wi... | S2 | multiple | 0 |
+| DEBT-2788 | Generic button labels - Submit used instead of action-spe... | S2 | 1 | 0 |
+| DEBT-2789 | Error messages don't guide user to fix the problem | S2 | multiple | 0 |
+| DEBT-2790 | Inconsistent terminology - meeting vs session vs appointment | S2 | multiple | 0 |
+| DEBT-2791 | Confirmation dialogs lack specific consequences | S2 | multiple | 0 |
+| DEBT-2792 | Loading text inconsistency - Loading... vs Fetching vs sp... | S2 | multiple | 0 |
+| DEBT-2794 | Success feedback messages too brief | S2 | multiple | 0 |
+| DEBT-2795 | Consolidate duplicate mood selector components - 3 implem... | S2 | 1 | 0 |
+| DEBT-2796 | Extract meeting time parsing logic - ~80 lines duplicated... | S2 | 1 | 0 |
+| DEBT-2797 | Migrate useAuth consumers to focused hooks - 16 component... | S2 | 1 | 0 |
+| DEBT-2798 | Extract common form state logic - ~150 lines of duplicate... | S2 | 1 | 0 |
+| DEBT-2799 | Create barrel exports for component directories - only 1 ... | S2 | 1 | 0 |
+| DEBT-2800 | Collocate related quote components - 3 variants scattered... | S2 | 1 | 0 |
+| DEBT-2801 | Standardize export style - 38 default vs 69 named exports... | S2 | multiple | 0 |
+| DEBT-2802 | useDailyQuote hook has smart module-level caching prevent... | S2 | 1 | 0 |
+| DEBT-2804 | writeFileSync without atomic write pattern and missing en... | S2 | scripts/suggest-pattern-automation.js | 397 |
+| DEBT-2805 | writeFileSync without atomic write pattern | S2 | scripts/archive-doc.js | 182 |
+| DEBT-2835 | OPT-P004: update-readme-status.js table parsing requires ... | S2 | scripts/update-readme-status.js | 156 |
+| DEBT-2836 | OPT-P006: aggregate-audit-findings.js fragile markdown pa... | S2 | scripts/aggregate-audit-findings.js | 322 |
+| DEBT-2859 | doc-optimizer SKILL.md has duplicated CRITICAL RETURN PRO... | S2 | .claude/skills/doc-optimizer/SKILL.md | 0 |
+| DEBT-2860 | Audit skills share >50% boilerplate content without share... | S2 | .claude/skills/audit-comprehensive/SKILL.md | 0 |
+| DEBT-2862 | SessionStart: session-start.js spawns 6+ sequential execS... | S2 | .claude/hooks/session-start.js | 0 |
+| DEBT-2863 | SessionStart: check-remote-session-context.js runs git fe... | S2 | .claude/hooks/check-remote-session-context.js | 0 |
+| DEBT-2867 | PostToolUse Read: 3 hooks with redundant file reads and s... | S2 | .claude/hooks/large-context-warning.js | 0 |
+| DEBT-2868 | compaction-handoff.js uses execSync (shell) instead of ex... | S2 | .claude/hooks/compaction-handoff.js | 0 |
+| DEBT-2870 | Duplicate file content reads across PostToolUse hooks | S2 | .claude/hooks/firestore-write-block.js | 0 |
+| DEBT-2873 | UserPromptSubmit: 4 hooks run on every user message inclu... | S2 | .claude/hooks/alerts-reminder.js | 0 |
+| DEBT-2878 | Skill overlap: sonarcloud-sprint is superseded by sonarcloud | S2 | .claude/skills/sonarcloud-sprint/SKILL.md | 0 |
+| DEBT-2882 | Skill overlap: ui-design-system vs ux-researcher-designer... | S2 | .claude/skills/ui-design-system/SKILL.md | 0 |
+| DEBT-2886 | Orphaned skill: find-skills not in SKILL_INDEX.md | S2 | .claude/skills/find-skills/SKILL.md | 0 |
+| DEBT-2887 | Orphaned skill: pre-commit-fixer not in SKILL_INDEX.md | S2 | .claude/skills/pre-commit-fixer/SKILL.md | 0 |
+| DEBT-2888 | Orphaned skill: task-next not in SKILL_INDEX.md | S2 | .claude/skills/task-next/SKILL.md | 0 |
+| DEBT-2889 | Orphaned skill: multi-ai-audit not in SKILL_INDEX.md | S2 | .claude/skills/multi-ai-audit/SKILL.md | 0 |
+| DEBT-2890 | Orphaned skill: add-debt not in SKILL_INDEX.md | S2 | .claude/skills/add-debt/SKILL.md | 0 |
+| DEBT-2891 | Orphaned skill: verify-technical-debt not in SKILL_INDEX.md | S2 | .claude/skills/verify-technical-debt/SKILL.md | 0 |
+| DEBT-2892 | Orphaned skill: pr-retro not in SKILL_INDEX.md | S2 | .claude/skills/pr-retro/SKILL.md | 0 |
+| DEBT-2893 | Orphaned skill: sonarcloud not in SKILL_INDEX.md (only so... | S2 | .claude/skills/sonarcloud/SKILL.md | 0 |
+| DEBT-2894 | Orphaned skill: test-suite not in SKILL_INDEX.md | S2 | .claude/skills/test-suite/SKILL.md | 0 |
+| DEBT-2896 | Agent prompts in audit-process lack CRITICAL RETURN PROTOCOL | S2 | .claude/skills/audit-process/SKILL.md | 0 |
+| DEBT-2898 | Agent prompts in audit-documentation lack explicit JSONL ... | S2 | .claude/skills/audit-documentation/SKILL.md | 0 |
+| DEBT-2899 | Agent prompts in audit-enhancements reference subagent wi... | S2 | .claude/skills/audit-enhancements/SKILL.md | 0 |
+| DEBT-2900 | FALSE_POSITIVES.jsonl not referenced in audit-process or ... | S2 | .claude/skills/audit-process/SKILL.md | 0 |
+| DEBT-2903 | MCP memory server configured but not enabled - 3 skills h... | S2 | .mcp.json | 0 |
+| DEBT-2904 | MCP filesystem server duplicates native Claude Code Read/... | S2 | .mcp.json | 0 |
+| DEBT-2910 | session-begin SKILL.md reads ROADMAP.md (3164 lines) in f... | S2 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2912 | session-begin reads Technical Debt INDEX.md + AI_WORKFLOW... | S2 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2914 | pr-review SKILL.md is 840 lines loaded entirely when skil... | S2 | .claude/skills/pr-review/SKILL.md | 0 |
+| DEBT-2915 | audit-comprehensive SKILL.md is 854 lines loaded entirely... | S2 | .claude/skills/audit-comprehensive/SKILL.md | 0 |
+| DEBT-2917 | alerts-reminder.js injects context-consuming messages on ... | S2 | .claude/hooks/alerts-reminder.js | 0 |
+| DEBT-2921 | commit-log.jsonl has no rotation/size-cap logic (39KB, ap... | S2 | .claude/state/commit-log.jsonl | 0 |
+| DEBT-2922 | handoff.json embeds full commitLog array (25KB, unbounded... | S2 | .claude/state/handoff.json | 0 |
+| DEBT-2965 | Missing ARIA labels on critical navigation tabs | S2 | multiple | 0 |
+| DEBT-2966 | Stale documentation markers - 96 TODO/TBD occurrences acr... | S2 | multiple | 0 |
+| DEBT-2967 | Documentation effectiveness metrics - no tracking of whic... | S2 | multiple | 0 |
+| DEBT-2968 | Add engines field to root package.json for CI/CD consistency | S2 | 1-165 | 0 |
+| DEBT-2969 | Date formats inconsistent across the app | S2 | multiple | 0 |
+| DEBT-2972 | session-start.js outputs 40+ decorative lines with emoji ... | S2 | .claude/hooks/session-start.js | 0 |
+| DEBT-2973 | Multi-line regex with greedy [\s\S]*? quantifier in auto-... | S2 | .claude/hooks/auto-save-context.js | 0 |
+| DEBT-2976 | Fragile markdown field parsing regex repeated across 3+ s... | S2 | .claude/hooks/commit-tracker.js | 0 |
+| DEBT-2984 | Stale documentation markers - 96 TODO/TBD occurrences acr... | S2 | docs/technical-debt/views/by-status.md | 0 |
+| DEBT-2985 | Documentation effectiveness metrics - no tracking of whic... | S2 | docs/README.md | 0 |
+| DEBT-2986 | Add engines field to root package.json for CI/CD consistency | S2 | package.json | 0 |
+| DEBT-2987 | Date formats inconsistent across the app | S2 | lib/utils/date-utils.ts | 0 |
+| DEBT-3021 | DOCUMENT_DEPENDENCIES.md sync status tracking | S2 | docs/DOCUMENT_DEPENDENCIES.md | 0 |
+| DEBT-3022 | SESSION_CONTEXT.md quick status table | S2 | SESSION_CONTEXT.md | 0 |
+| DEBT-3023 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m... | S2 | docs/DOCUMENT_DEPENDENCIES.md | 0 |
+| DEBT-3024 | ROADMAP.md detailed milestone specifications embedded | S2 | ROADMAP.md | 0 |
+| DEBT-3025 | PR_WORKFLOW_CHECKLIST.md version history table | S2 | docs/PR_WORKFLOW_CHECKLIST.md | 0 |
+| DEBT-3026 | EXPANSION_EVALUATION_TRACKER.md command reference table | S2 | docs/EXPANSION_EVALUATION_TRACKER.md | 0 |
+| DEBT-3031 | ai-review.js - Unused AI review prompt applicator | S2 | scripts/ai-review.js | 0 |
+| DEBT-3033 | create-canonical-findings.js - Unused canonical findings ... | S2 | scripts/create-canonical-findings.js | 0 |
+| DEBT-3034 | generate-pending-alerts.js - Unused session-start alert g... | S2 | scripts/generate-pending-alerts.js | 0 |
+| DEBT-3036 | migrate-existing-findings.js - Unused legacy findings mig... | S2 | scripts/migrate-existing-findings.js | 0 |
+| DEBT-3038 | regenerate-findings-index.js - Unused canonical findings ... | S2 | scripts/regenerate-findings-index.js | 0 |
+| DEBT-3041 | update-legacy-lines.js - Unused legacy findings line numb... | S2 | scripts/update-legacy-lines.js | 0 |
+| DEBT-3045 | agent-trigger-enforcer.js runs on every code file edit wi... | S2 | .claude/hooks/agent-trigger-enforcer.js | 0 |
+| DEBT-3046 | Three Read hooks contend for .context-tracking-state.json... | S2 | .claude/hooks/large-context-warning.js, .claude/hooks/auto-save-context.js, .claude/hooks/compaction-handoff.js | 0 |
+| DEBT-3047 | State file sprawl across .claude/hooks/ and .claude/state/ | S2 | .claude/state/, .claude/hooks/ | 0 |
+| DEBT-3048 | validation hooks could share file read to reduce I/O | S2 | .claude/hooks/component-size-check.js, firestore-write-block.js, test-mocking-validator.js, app-check-validator.js, typescript-strict-check.js, repository-pattern-check.js | 0 |
+| DEBT-3053 | session-start.js does heavy work at SessionStart (builds,... | S2 | .claude/hooks/session-start.js | 0 |
+| DEBT-3054 | Auto-save-context hook reads 4 files per Read operation t... | S2 | .claude/hooks/auto-save-context.js | 0 |
+| DEBT-3056 | SessionStart hook chain is sequential with no paralleliza... | S2 | .claude/hooks/session-start.js | 0 |
+| DEBT-3058 | Skill overlap: docs-sync vs docs-update vs doc-optimizer | S2 | .claude/skills/docs-sync/SKILL.md, docs-update/SKILL.md, doc-optimizer/SKILL.md | 0 |
+| DEBT-3060 | Empty or minimal SKILL.md descriptions | S2 | .claude/skills/[multiple]/SKILL.md | 0 |
+| DEBT-3061 | Skill overlap: debt tracking skills (add-deferred-debt, a... | S2 | .claude/skills/add-deferred-debt/SKILL.md, add-manual-debt/SKILL.md, verify-technical-debt/SKILL.md, sync-sonarcloud-debt/SKILL.md | 0 |
+| DEBT-3062 | Skill overlap: PR and review skills (pr-review, pr-retro,... | S2 | .claude/skills/pr-review/SKILL.md, pr-retro/SKILL.md, code-reviewer/SKILL.md, requesting-code-review/SKILL.md | 0 |
+| DEBT-3065 | Potential deprecation: skill-creator, skill-related skill... | S2 | .claude/skills/skill-creator/SKILL.md, find-skills/SKILL.md | 0 |
+| DEBT-3068 | Skill naming inconsistency: enhancement vs audit-enhancem... | S2 | .claude/skills/audit-enhancements/SKILL.md, audit-process/SKILL.md | 0 |
+| DEBT-3069 | Marketing-focused skills in technical codebase (content-r... | S2 | .claude/skills/content-research-writer/SKILL.md, market-research-reports/SKILL.md, ux-researcher-designer/SKILL.md | 0 |
+| DEBT-3070 | Undefined skill descriptions create discovery problem (50... | S2 | .claude/skills/*/SKILL.md | 0 |
+| DEBT-3074 | Redundant App Check instructions across 3 documents | S2 | docs/APPCHECK_SETUP.md, docs/RECAPTCHA_REMOVAL_GUIDE.md, claude.md | 0 |
+| DEBT-3075 | Outdated IMS references in SESSION_HISTORY.md and AI_REVI... | S2 | docs/SESSION_HISTORY.md (lines 25-50), docs/AI_REVIEW_LEARNINGS_LOG.md (lines with 'IMS→TDMS'), docs/AUDIT_TRACKER.md (version 2.6-2.7) | 0 |
+| DEBT-3087 | check-roadmap-health.js version parsing regex scoped to s... | S2 | scripts/check-roadmap-health.js | 0 |
+| DEBT-3088 | Multi-AI normalize-format.js markdown table detection and... | S2 | scripts/multi-ai/normalize-format.js | 0 |
+| DEBT-3089 | verify-sonar-phase.js hardcoded security section header d... | S2 | scripts/verify-sonar-phase.js | 0 |
+| DEBT-3092 | RECAPTCHA_REMOVAL_GUIDE.md - 745 lines about Firebase con... | S2 | docs/RECAPTCHA_REMOVAL_GUIDE.md | 0 |
+| DEBT-3093 | REVIEW_POLICY_INDEX.md - 370 lines index without inbound ... | S2 | docs/REVIEW_POLICY_INDEX.md | 0 |
+| DEBT-3094 | PLAN_MAP.md - 242 lines documentation hierarchy map never... | S2 | docs/PLAN_MAP.md | 0 |
+| DEBT-3095 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev... | S2 | docs/MCP_SERVER_AUDIT.md | 0 |
+| DEBT-3100 | SKILL_AGENT_POLICY.md - 0 refs despite defining usage policy | S2 | docs/agent_docs/SKILL_AGENT_POLICY.md | 0 |
+| DEBT-3101 | Audit inventory stage files (6 files) - generated but unr... | S2 | docs/audits/single-session/process/audit-2026-02-09/stage-1*.md | 0 |
+| DEBT-3103 | Plan documents with zero inbound refs - 5 planning files ... | S2 | docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others | 0 |
+| DEBT-3130 | Untitled finding | S2 | N/A | 0 |
+| DEBT-3135 | DOCUMENT_DEPENDENCIES.md sync status tracking | S2 | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md | 0 |
+| DEBT-3136 | SESSION_CONTEXT.md quick status table | S2 | home/user/sonash-v0/SESSION_CONTEXT.md | 0 |
+| DEBT-3137 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m... | S2 | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md | 0 |
+| DEBT-3138 | ROADMAP.md detailed milestone specifications embedded | S2 | home/user/sonash-v0/ROADMAP.md | 0 |
+| DEBT-3139 | PR_WORKFLOW_CHECKLIST.md version history table | S2 | home/user/sonash-v0/docs/PR_WORKFLOW_CHECKLIST.md | 0 |
+| DEBT-3140 | EXPANSION_EVALUATION_TRACKER.md command reference table | S2 | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md | 0 |
+| DEBT-3145 | ai-review.js - Unused AI review prompt applicator | S2 | home/user/sonash-v0/scripts/ai-review.js | 0 |
+| DEBT-3147 | create-canonical-findings.js - Unused canonical findings ... | S2 | home/user/sonash-v0/scripts/create-canonical-findings.js | 0 |
+| DEBT-3148 | generate-pending-alerts.js - Unused session-start alert g... | S2 | home/user/sonash-v0/scripts/generate-pending-alerts.js | 0 |
+| DEBT-3150 | migrate-existing-findings.js - Unused legacy findings mig... | S2 | home/user/sonash-v0/scripts/migrate-existing-findings.js | 0 |
+| DEBT-3152 | regenerate-findings-index.js - Unused canonical findings ... | S2 | home/user/sonash-v0/scripts/regenerate-findings-index.js | 0 |
+| DEBT-3155 | update-legacy-lines.js - Unused legacy findings line numb... | S2 | home/user/sonash-v0/scripts/update-legacy-lines.js | 0 |
+| DEBT-3164 | check-roadmap-health.js version parsing regex scoped to s... | S2 | home/user/sonash-v0/scripts/check-roadmap-health.js | 0 |
+| DEBT-3165 | Multi-AI normalize-format.js markdown table detection and... | S2 | home/user/sonash-v0/scripts/multi-ai/normalize-format.js | 0 |
+| DEBT-3166 | verify-sonar-phase.js hardcoded security section header d... | S2 | home/user/sonash-v0/scripts/verify-sonar-phase.js | 0 |
+| DEBT-3169 | RECAPTCHA_REMOVAL_GUIDE.md - 745 lines about Firebase con... | S2 | home/user/sonash-v0/docs/RECAPTCHA_REMOVAL_GUIDE.md | 0 |
+| DEBT-3170 | REVIEW_POLICY_INDEX.md - 370 lines index without inbound ... | S2 | home/user/sonash-v0/docs/REVIEW_POLICY_INDEX.md | 0 |
+| DEBT-3171 | PLAN_MAP.md - 242 lines documentation hierarchy map never... | S2 | home/user/sonash-v0/docs/PLAN_MAP.md | 0 |
+| DEBT-3172 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev... | S2 | home/user/sonash-v0/docs/MCP_SERVER_AUDIT.md | 0 |
+| DEBT-3177 | SKILL_AGENT_POLICY.md - 0 refs despite defining usage policy | S2 | home/user/sonash-v0/docs/agent_docs/SKILL_AGENT_POLICY.md | 0 |
+| DEBT-3178 | Audit inventory stage files (6 files) - generated but unr... | S2 | home/user/sonash-v0/docs/audits/single-session/process/audit-2026-02-09/stage-1*.md | 0 |
+| DEBT-3180 | Plan documents with zero inbound refs - 5 planning files ... | S2 | home/user/sonash-v0/docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others | 0 |
+| DEBT-0554 | Prefer `String#replaceAll()` over `String#replace()`. | S3 | components/admin/errors-tab.tsx | 37 |
+| DEBT-0555 | Visible, non-interactive elements with click handlers mus... | S3 | components/admin/users-tab.tsx | 563 |
+| DEBT-0572 | Prefer `String#replaceAll()` over `String#replace()`. | S3 | scripts/seed-meetings.ts | 79 |
+| DEBT-0576 | Prefer `String#replaceAll()` over `String#replace()`. | S3 | scripts/check-consolidation-status.js | 34 |
+| DEBT-0577 | Prefer `String#codePointAt()` over `String#charCodeAt()`. | S3 | scripts/suggest-pattern-automation.js | 296 |
+| DEBT-0579 | Use `new Array()` instead of `Array()`. | S3 | components/growth/Step1WorksheetCard.tsx | 121 |
+| DEBT-0580 | Visible, non-interactive elements with click handlers mus... | S3 | components/widgets/compact-meeting-countdown.tsx | 273 |
+| DEBT-0582 | Prefer `String#replaceAll()` over `String#replace()`. | S3 | lib/sentry.client.ts | 48 |
+| DEBT-0583 | Use `new Array()` instead of `Array()`. | S3 | components/notebook/notebook-shell.tsx | 133 |
+| DEBT-0584 | Use `new Array()` instead of `Array()`. | S3 | components/notebook/pages/support-page.tsx | 114 |
+| DEBT-0585 | 'useAuth' is deprecated. | S3 | components/home/home-client.tsx | 7 |
+| DEBT-0586 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/home/home-client.tsx | 21 |
+| DEBT-0587 | Unexpected negated condition. | S3 | components/home/home-client.tsx | 42 |
+| DEBT-0588 | Prefer `.some(…)` over `.find(…)`. | S3 | functions/src/admin.ts | 644 |
+| DEBT-0591 | Prefer `globalThis.window` over `window`. | S3 | app/admin/page.tsx | 31 |
+| DEBT-0593 | 'useAuth' is deprecated. | S3 | app/meetings/all/page.tsx | 19 |
+| DEBT-0594 | Use the "RegExp.exec()" method instead. | S3 | app/meetings/all/page.tsx | 42 |
+| DEBT-0595 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | app/meetings/all/page.tsx | 72 |
+| DEBT-0596 | Unexpected negated condition. | S3 | components/admin/links-tab.tsx | 286 |
+| DEBT-0597 | Unexpected negated condition. | S3 | components/admin/prayers-tab.tsx | 272 |
+| DEBT-0599 | Unexpected negated condition. | S3 | components/celebrations/milestone-modal.tsx | 105 |
+| DEBT-0600 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/growth/Step1WorksheetCard.tsx | 491 |
+| DEBT-0602 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/journal/journal-hub.tsx | 25 |
+| DEBT-0603 | Mark the props of the component as read-only. | S3 | components/meetings/meeting-details-dialog.tsx | 23 |
+| DEBT-0604 | Mark the props of the component as read-only. | S3 | components/notebook/features/enhanced-mood-selector.tsx | 50 |
+| DEBT-0606 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/notebook/notebook-shell.tsx | 34 |
+| DEBT-0608 | 'useAuth' is deprecated. | S3 | components/notebook/pages/resources-page.tsx | 11 |
+| DEBT-0609 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/notebook/pages/resources-page.tsx | 52 |
+| DEBT-0610 | The signature '(): Promise<Meeting[]>' of 'MeetingsServic... | S3 | components/notebook/pages/resources-page.tsx | 162 |
+| DEBT-0611 | Use the "RegExp.exec()" method instead. | S3 | components/notebook/pages/resources-page.tsx | 213 |
+| DEBT-0612 | arrow function is equivalent to `Boolean`. Use `Boolean` ... | S3 | components/notebook/pages/today-page.tsx | 122 |
+| DEBT-0613 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/onboarding/onboarding-wizard.tsx | 31 |
+| DEBT-0614 | `new Error()` is too unspecific for a type check. Use `ne... | S3 | components/onboarding/onboarding-wizard.tsx | 136 |
+| DEBT-0616 | Use the "RegExp.exec()" method instead. | S3 | components/widgets/compact-meeting-countdown.tsx | 73 |
+| DEBT-0617 | Compare with `undefined` directly instead of using `typeof`. | S3 | hooks/use-daily-quote.ts | 170 |
+| DEBT-0618 | Prefer `globalThis.window` over `window`. | S3 | hooks/use-geolocation.ts | 80 |
+| DEBT-0621 | Replace this union type with a type alias. | S3 | lib/db/collections.ts | 97 |
+| DEBT-0622 | Use the "RegExp.exec()" method instead. | S3 | lib/db/meetings.ts | 34 |
+| DEBT-0624 | Unexpected negated condition. | S3 | lib/firebase.ts | 141 |
+| DEBT-0625 | Use `export…from` to re-export `DailyLog`. | S3 | lib/firestore-service.ts | 97 |
+| DEBT-0626 | Use `export…from` to re-export `DailyLogHistoryResult`. | S3 | lib/firestore-service.ts | 97 |
+| DEBT-0632 | arrow function is equivalent to `Boolean`. Use `Boolean` ... | S3 | scripts/update-readme-status.js | 204 |
+| DEBT-0633 | Use the "RegExp.exec()" method instead. | S3 | tests/utils/logger.test.ts | 173 |
+| DEBT-0634 | Compare with `undefined` directly instead of using `typeof`. | S3 | components/notebook/hooks/use-smart-prompts.ts | 47 |
+| DEBT-0635 | Unexpected negated condition. | S3 | scripts/check-consolidation-status.js | 41 |
+| DEBT-0636 | Remove this unused import of 'mkdirSync'. | S3 | scripts/normalize-canon-ids.js | 21 |
+| DEBT-0637 | Remove this unused import of 'basename'. | S3 | scripts/normalize-canon-ids.js | 22 |
+| DEBT-0638 | Unexpected negated condition. | S3 | scripts/normalize-canon-ids.js | 309 |
+| DEBT-0639 | Define a constant instead of using the literal 'functions... | S3 | .claude/hooks/session-start.sh | 203 |
+| DEBT-0641 | `String.raw` should be used to avoid escaping `\`. | S3 | scripts/add-false-positive.js | 270 |
+| DEBT-0643 | Prefer using nullish coalescing operator (`??=`) instead ... | S3 | tests/scripts/phase-complete-check.test.ts | 49 |
+| DEBT-0644 | Handle this exception or don't catch it at all. | S3 | scripts/phase-complete-check.js | 217 |
+| DEBT-0646 | The empty object is useless. | S3 | eslint.config.mjs | 13 |
+| DEBT-0647 | Define a constant instead of using the literal '━━━━━━━━━... | S3 | .claude/hooks/session-start.sh | 303 |
+| DEBT-0648 | Remove the declaration of the unused 'preserveStackInDev'... | S3 | scripts/lib/sanitize-error.js | 65 |
+| DEBT-0650 | Unexpected negated condition. | S3 | scripts/archive-doc.js | 572 |
+| DEBT-0651 | Unexpected negated condition. | S3 | scripts/check-docs-light.js | 425 |
+| DEBT-0652 | Prefer `Date.now()` over `new Date()`. | S3 | scripts/check-docs-light.js | 434 |
+| DEBT-0653 | Unexpected negated condition. | S3 | scripts/update-readme-status.js | 497 |
+| DEBT-0654 | Define a constant instead of using the literal 'package-l... | S3 | .claude/hooks/session-start.sh | 180 |
+| DEBT-0655 | Define a constant instead of using the literal '=========... | S3 | scripts/check-review-triggers.sh | 156 |
+| DEBT-0656 | Prefer `globalThis.window` over `window`. | S3 | lib/utils/storage.ts | 17 |
+| DEBT-0658 | Prefer `globalThis.window` over `window`. | S3 | lib/recaptcha.ts | 36 |
+| DEBT-0659 | `new Error()` is too unspecific for a type check. Use `ne... | S3 | lib/recaptcha.ts | 37 |
+| DEBT-0661 | Do not call `Array#push()` multiple times. | S3 | scripts/enrich-addresses.ts | 128 |
+| DEBT-0662 | Do not call `Array#push()` multiple times. | S3 | scripts/retry-failures.ts | 98 |
+| DEBT-0663 | Unexpected negated condition. | S3 | scripts/sync-geocache.ts | 88 |
+| DEBT-0664 | Mark the props of the component as read-only. | S3 | components/admin/meetings-tab.tsx | 24 |
+| DEBT-0665 | Mark the props of the component as read-only. | S3 | components/admin/slogans-tab.tsx | 28 |
+| DEBT-0666 | Prefer `globalThis` over `window`. | S3 | components/growth/Step1WorksheetCard.tsx | 697 |
+| DEBT-0667 | A fragment with only one child is redundant. | S3 | components/growth/Step1WorksheetCard.tsx | 709 |
+| DEBT-0668 | 'useAuth' is deprecated. | S3 | components/growth/Step1WorksheetCard.tsx | 14 |
+| DEBT-0669 | Mark the props of the component as read-only. | S3 | components/notebook/features/recovery-notepad.tsx | 25 |
+| DEBT-0670 | Expected a `for-of` loop instead of a `for` loop with thi... | S3 | functions/src/index.ts | 694 |
+| DEBT-0671 | arrow function is equivalent to `Boolean`. Use `Boolean` ... | S3 | components/notebook/hooks/use-smart-prompts.ts | 102 |
+| DEBT-0672 | Mark the props of the component as read-only. | S3 | components/notebook/pages/today-page.tsx | 40 |
+| DEBT-0673 | Mark the props of the component as read-only. | S3 | components/notebook/features/check-in-progress.tsx | 9 |
+| DEBT-0674 | Mark the props of the component as read-only. | S3 | components/notebook/features/quick-actions-fab.tsx | 17 |
+| DEBT-0675 | Prefer `globalThis` over `window`. | S3 | components/notebook/features/quick-actions-fab.tsx | 36 |
+| DEBT-0676 | Mark the props of the component as read-only. | S3 | components/notebook/features/smart-prompt.tsx | 16 |
+| DEBT-0677 | Unexpected negated condition. | S3 | components/admin/users-tab.tsx | 429 |
+| DEBT-0678 | Unexpected negated condition. | S3 | functions/src/index.ts | 200 |
+| DEBT-0679 | Prefer `globalThis.window` over `window`. | S3 | lib/utils.ts | 28 |
+| DEBT-0680 | Mark the props of the component as read-only. | S3 | components/celebrations/milestone-modal.tsx | 22 |
+| DEBT-0683 | Mark the props of the component as read-only. | S3 | components/journal/timeline.tsx | 21 |
+| DEBT-0686 | Mark the props of the component as read-only. | S3 | components/notebook/pages/growth-page.tsx | 15 |
+| DEBT-0688 | Mark the props of the component as read-only. | S3 | components/celebrations/celebration-overlay.tsx | 15 |
+| DEBT-0689 | Mark the props of the component as read-only. | S3 | components/celebrations/celebration-provider.tsx | 19 |
+| DEBT-0690 | Mark the props of the component as read-only. | S3 | components/celebrations/confetti-burst.tsx | 26 |
+| DEBT-0691 | Mark the props of the component as read-only. | S3 | components/celebrations/firework-burst.tsx | 26 |
+| DEBT-0692 | Mark the props of the component as read-only. | S3 | components/celebrations/success-pulse.tsx | 12 |
+| DEBT-0693 | Mark the props of the component as read-only. | S3 | components/notebook/features/check-in-questions.tsx | 29 |
+| DEBT-0694 | Mark the props of the component as read-only. | S3 | components/notebook/features/clean-time-display.tsx | 29 |
+| DEBT-0695 | Mark the props of the component as read-only. | S3 | components/notebook/features/mood-selector.tsx | 45 |
+| DEBT-0696 | Mark the props of the component as read-only. | S3 | components/admin/glossary-tab.tsx | 28 |
+| DEBT-0697 | Mark the props of the component as read-only. | S3 | components/journal/entry-forms/daily-log-form.tsx | 25 |
+| DEBT-0698 | Mark the props of the component as read-only. | S3 | components/journal/entry-card.tsx | 16 |
+| DEBT-0699 | Mark the props of the component as read-only. | S3 | components/journal/entry-creator-menu.tsx | 51 |
+| DEBT-0700 | Mark the props of the component as read-only. | S3 | components/journal/entry-detail-dialog.tsx | 10 |
+| DEBT-0701 | Mark the props of the component as read-only. | S3 | components/journal/entry-forms/free-write-form.tsx | 15 |
+| DEBT-0702 | Mark the props of the component as read-only. | S3 | components/journal/entry-forms/gratitude-form.tsx | 15 |
+| DEBT-0703 | Mark the props of the component as read-only. | S3 | components/journal/entry-forms/inventory-form.tsx | 15 |
+| DEBT-0704 | Mark the props of the component as read-only. | S3 | components/journal/entry-forms/mood-form.tsx | 25 |
+| DEBT-0705 | Mark the props of the component as read-only. | S3 | components/journal/entry-menu.tsx | 28 |
+| DEBT-0706 | Mark the props of the component as read-only. | S3 | components/journal/entry-wizard.tsx | 13 |
+| DEBT-0707 | Mark the props of the component as read-only. | S3 | components/journal/floating-pen.tsx | 12 |
+| DEBT-0708 | 'useAuth' is deprecated. | S3 | components/journal/journal-hub.tsx | 10 |
+| DEBT-0709 | Mark the props of the component as read-only. | S3 | components/journal/journal-layout.tsx | 9 |
+| DEBT-0710 | Mark the props of the component as read-only. | S3 | components/journal/lock-screen.tsx | 7 |
+| DEBT-0711 | Mark the props of the component as read-only. | S3 | components/journal/ribbon-nav.tsx | 64 |
+| DEBT-0712 | Unexpected negated condition. | S3 | app/meetings/all/page.tsx | 364 |
+| DEBT-0713 | Prefer using nullish coalescing operator (`??=`) instead ... | S3 | components/widgets/compact-meeting-countdown.tsx | 191 |
+| DEBT-0714 | Mark the props of the component as read-only. | S3 | components/admin/admin-crud-table.tsx | 24 |
+| DEBT-0716 | Mark the props of the component as read-only. | S3 | components/admin/quotes-tab.tsx | 24 |
+| DEBT-0717 | Mark the props of the component as read-only. | S3 | components/admin/sober-living-tab.tsx | 17 |
+| DEBT-0720 | 'useAuth' is deprecated. | S3 | components/growth/GratitudeCard.tsx | 15 |
+| DEBT-0721 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/growth/GratitudeCard.tsx | 35 |
+| DEBT-0722 | 'useAuth' is deprecated. | S3 | components/growth/NightReviewCard.tsx | 15 |
+| DEBT-0723 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/growth/NightReviewCard.tsx | 85 |
+| DEBT-0724 | 'useAuth' is deprecated. | S3 | components/growth/SpotCheckCard.tsx | 15 |
+| DEBT-0725 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/growth/SpotCheckCard.tsx | 31 |
+| DEBT-0726 | Mark the props of the component as read-only. | S3 | components/journal/entry-feed.tsx | 16 |
+| DEBT-0727 | Mark the props of the component as read-only. | S3 | components/journal/journal-sidebar.tsx | 15 |
+| DEBT-0729 | Mark the props of the component as read-only. | S3 | components/admin/admin-tabs.tsx | 32 |
+| DEBT-0730 | Mark the props of the component as read-only. | S3 | components/maps/meeting-map.tsx | 76 |
+| DEBT-0731 | 'useAuth' is deprecated. | S3 | components/notebook/journal-modal.tsx | 7 |
+| DEBT-0732 | Mark the props of the component as read-only. | S3 | components/notebook/journal-modal.tsx | 27 |
+| DEBT-0733 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/notebook/journal-modal.tsx | 28 |
+| DEBT-0735 | Mark the props of the component as read-only. | S3 | app/admin/layout.tsx | 12 |
+| DEBT-0736 | Mark the props of the component as read-only. | S3 | components/ui/skeleton.tsx | 12 |
+| DEBT-0737 | Mark the props of the component as read-only. | S3 | components/ui/empty-state.tsx | 39 |
+| DEBT-0738 | Mark the props of the component as read-only. | S3 | components/providers/auth-context.tsx | 81 |
+| DEBT-0739 | Unexpected negated condition. | S3 | components/providers/auth-context.tsx | 90 |
+| DEBT-0741 | Mark the props of the component as read-only. | S3 | components/providers/auth-provider.tsx | 38 |
+| DEBT-0742 | Mark the props of the component as read-only. | S3 | components/providers/daily-log-context.tsx | 31 |
+| DEBT-0743 | Mark the props of the component as read-only. | S3 | components/providers/profile-context.tsx | 41 |
+| DEBT-0744 | Mark the props of the component as read-only. | S3 | components/auth/account-link-modal.tsx | 13 |
+| DEBT-0745 | 'useAuth' is deprecated. | S3 | components/notebook/notebook-shell.tsx | 10 |
+| DEBT-0746 | Prefer `globalThis.window` over `window`. | S3 | lib/sentry.client.ts | 24 |
+| DEBT-0747 | Don't use a zero fraction in the number. | S3 | lib/sentry.client.ts | 42 |
+| DEBT-0748 | Prefer `globalThis` over `window`. | S3 | components/providers/error-boundary.tsx | 49 |
+| DEBT-0749 | Use `export…from` to re-export `DailyLog`. | S3 | lib/database/database-interface.ts | 12 |
+| DEBT-0751 | 'unknown' overrides all other types in this union type. | S3 | lib/database/database-interface.ts | 19 |
+| DEBT-0752 | 'useAuth' is deprecated. | S3 | components/status/auth-error-banner.tsx | 6 |
+| DEBT-0753 | Mark the props of the component as read-only. | S3 | components/status/auth-error-banner.tsx | 14 |
+| DEBT-0754 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/status/auth-error-banner.tsx | 15 |
+| DEBT-0755 | Prefer `globalThis.window` over `window`. | S3 | components/notebook/book-cover.tsx | 37 |
+| DEBT-0756 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/notebook/pages/today-page.tsx | 74 |
+| DEBT-0757 | 'useAuth' is deprecated. | S3 | components/notebook/visualizations/mood-sparkline.tsx | 6 |
+| DEBT-0758 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/notebook/visualizations/mood-sparkline.tsx | 10 |
+| DEBT-0759 | Mark the props of the component as read-only. | S3 | components/auth/sign-in-modal.tsx | 20 |
+| DEBT-0760 | 'useAuth' is deprecated. | S3 | components/notebook/book-cover.tsx | 7 |
+| DEBT-0762 | Mark the props of the component as read-only. | S3 | components/notebook/book-cover.tsx | 30 |
+| DEBT-0763 | The signature '(): { user: any; loading: any; isAnonymous... | S3 | components/notebook/book-cover.tsx | 31 |
+| DEBT-0764 | 'useAuth' is deprecated. | S3 | components/onboarding/onboarding-wizard.tsx | 5 |
+| DEBT-0765 | Mark the props of the component as read-only. | S3 | components/onboarding/onboarding-wizard.tsx | 30 |
+| DEBT-0766 | 'useAuth' is deprecated. | S3 | components/notebook/pages/today-page.tsx | 4 |
+| DEBT-0767 | Mark the props of the component as read-only. | S3 | components/desktop/sobriety-chip.tsx | 29 |
+| DEBT-0769 | Mark the props of the component as read-only. | S3 | components/notebook/bookmark-ribbon.tsx | 10 |
+| DEBT-0770 | Mark the props of the component as read-only. | S3 | components/notebook/notebook-page.tsx | 9 |
+| DEBT-0771 | Mark the props of the component as read-only. | S3 | components/notebook/notebook-shell.tsx | 33 |
+| DEBT-0772 | Mark the props of the component as read-only. | S3 | components/notebook/pages/placeholder-page.tsx | 8 |
+| DEBT-0773 | Mark the props of the component as read-only. | S3 | components/notebook/sticky-note.tsx | 14 |
+| DEBT-0774 | Mark the props of the component as read-only. | S3 | components/notebook/tab-navigation.tsx | 18 |
+| DEBT-0776 | CloudFunctionError interface defined twice in same file | S3 | lib/firestore-service.ts | 0 |
+| DEBT-0777 | Batch fix opportunities: 200+ ESLint auto-fixable issues | S3 | multiple | 0 |
+| DEBT-0778 | Batch fix opportunities: 79 replaceAll() + 71 node: prefi... | S3 | multiple | 0 |
+| DEBT-0779 | parseTime() meeting helper duplicated in two pages | S3 | app/meetings/all/page.tsx | 0 |
+| DEBT-0780 | DEVELOPMENT.md Husky section missing pattern compliance step | S3 | DEVELOPMENT.md | 0 |
+| DEBT-0781 | CI workflow lacks explicit permissions block (security ha... | S3 | .github/workflows/ci.yml | 0 |
+| DEBT-0782 | Pattern checker produces false positives for controlled n... | S3 | scripts/check-pattern-compliance.js | 0 |
+| DEBT-0783 | Review trigger thresholds may cause alert fatigue for pro... | S3 | scripts/check-review-needed.js | 0 |
+| DEBT-0784 | Deploy workflow secret handling may be brittle for multil... | S3 | .github/workflows/deploy-firebase.yml | 0 |
+| DEBT-0785 | Archive docs contain significant link rot after archival/... | S3 | docs/archive/AI_HANDOFF-2026-01-02.md | 0 |
+| DEBT-0786 | Template date placeholders using literal YYYY-MM-DD format | S3 | docs/templates/FOUNDATION_DOC_TEMPLATE.md | 0 |
+| DEBT-0787 | Template docs located outside docs/templates/ directory | S3 | docs/PR_REVIEW_PROMPT_TEMPLATE.md | 0 |
+| DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes... | S3 | docs/DEVELOPMENT.md | 0 |
+| DEBT-0789 | ROADMAP anchor links may be fragile due to emoji/punctuat... | S3 | ROADMAP.md | 0 |
+| DEBT-0790 | @ts-expect-error suppression comment in production code | S3 | components/notebook/pages/resources-page.tsx | 0 |
+| DEBT-0791 | Environment variables accessed directly in components (ce... | S3 | app/layout.tsx | 0 |
+| DEBT-0792 | 'any' types leaking into production code (needs tightening) | S3 | lib/sentry.client.ts | 0 |
+| DEBT-0793 | Landing page forced to client component for top-level state | S3 | app/page.tsx | 0 |
+| DEBT-0794 | void operator usage flagged by SonarCloud | S3 | components/admin/logs-tab.tsx | 287 |
+| DEBT-0795 | @ts-expect-error suppression for type mismatch | S3 | components/notebook/pages/resources-page.tsx | 444 |
+| DEBT-0796 | TODO comment for unimplemented feature | S3 | lib/database/firestore-adapter.ts | 51 |
+| DEBT-0797 | TODO comment for user preferences feature | S3 | components/notebook/features/quick-actions-fab.tsx | 12 |
+| DEBT-0798 | Useless assignment to hasMore variable | S3 | functions/src/jobs.ts | 620 |
+| DEBT-0799 | Nested ternary operator | S3 | components/admin/logs-tab.tsx | 481 |
+| DEBT-0800 | Nested template literals (6 occurrences) | S3 | functions/src/admin.ts | 1388 |
+| DEBT-0820 | Setup requires multiple commands - no single bootstrap | S3 | package.json | 5 |
+| DEBT-0821 | Error messages lack actionable fix hints - generic 'Pleas... | S3 | components/ | 0 |
+| DEBT-0822 | OfflineIndicator is display-only - no sync status or retr... | S3 | components/status/offline-indicator.tsx | 7 |
+| DEBT-0824 | Fix @ts-expect-error suppression | S3 | N/A | 0 |
+| DEBT-0825 | Remove duplicate CloudFunctionError | S3 | N/A | 0 |
+| DEBT-0826 | Run ESLint auto-fix | S3 | N/A | 0 |
+| DEBT-0827 | Extract parseTime helper | S3 | N/A | 0 |
+| DEBT-0828 | Replace template date placeholders | S3 | N/A | 0 |
+| DEBT-0829 | Move PR template to docs/templates/ | S3 | N/A | 0 |
+| DEBT-0830 | Update DEVELOPMENT.md test count | S3 | N/A | 0 |
+| DEBT-0831 | Document fragile anchor links | S3 | N/A | 0 |
+| DEBT-0832 | Update Husky docs for patterns:check | S3 | N/A | 0 |
+| DEBT-0833 | Add explicit permissions block | S3 | N/A | 0 |
+| DEBT-0834 | Replace 'any' with proper types | S3 | N/A | 0 |
+| DEBT-0835 | replaceAll + node: prefix batch | S3 | N/A | 0 |
+| DEBT-0836 | Improve deploy secret handling | S3 | N/A | 0 |
+| DEBT-0837 | Missing "AI Instructions" Sections | S3 | N/A | 0 |
+| DEBT-0838 | Fix deprecated APIs + nested ternaries | S3 | N/A | 0 |
+| DEBT-0839 | Fix archive link rot | S3 | N/A | 0 |
+| DEBT-0840 | Missing "Quick Start" Sections | S3 | N/A | 0 |
+| DEBT-0841 | Underscore-prefixed unused variables | S3 | components/notebook/pages/today-page.tsx | 305 |
+| DEBT-0842 | TODO comments without issue references | S3 | components/notebook/features/quick-actions-fab.tsx | 12 |
+| DEBT-0843 | Any type usage in test files | S3 | tests/firestore-service.test.ts | 18 |
+| DEBT-0845 | Sentry client initialization exists but is not invoked au... | S3 | lib/sentry.client.ts | 0 |
+| DEBT-0846 | Timeline may re-group/re-sort even though useJournal alre... | S3 | components/journal/timeline.tsx | 0 |
+| DEBT-0847 | Event listener/timer cleanup verification needed across m... | S3 | components/** | 0 |
+| DEBT-0848 | Sentry tracesSampleRate is low in production; may miss pe... | S3 | lib/sentry.client.ts | 0 |
+| DEBT-0849 | Unused dependencies remain in runtime dependencies (tool-... | S3 | package.json | 0 |
+| DEBT-0868 | Add type: module to package.json to eliminate NODE warnings | S3 | package.json | 1 |
+| DEBT-1089 | Complete the task associated to this "TODO" comment. | S3 | functions/src/admin.ts | 2769 |
+| DEBT-1157 | Complete the task associated to this "TODO" comment. | S3 | scripts/lib/ai-pattern-checks.js | 300 |
+| DEBT-1163 | Complete the task associated to this "TODO" comment. | S3 | scripts/check-doc-placement.js | 158 |
+| DEBT-1166 | Complete the task associated to this "TODO" comment. | S3 | scripts/check-external-links.js | 105 |
+| DEBT-1170 | Complete the task associated to this "TODO" comment. | S3 | scripts/check-content-accuracy.js | 188 |
+| DEBT-1449 | Complete the task associated to this "TODO" comment. | S3 | scripts/analyze-learning-effectiveness.js | 1067 |
+| DEBT-1943 | Inefficient type checking in safeToIso | S3 | functions/src/admin.ts | 113 |
+| DEBT-1944 | Unbounded retry loop risk in jobs.ts | S3 | functions/src/jobs.ts | 529 |
+| DEBT-1947 | Type coercion in generateSearchableText | S3 | hooks/use-journal.ts | 102 |
+| DEBT-1995 | No UI indicator for online/offline state | S3 | components/offline-indicator.tsx | 1 |
+| DEBT-1997 | Potentially missing performance monitoring | S3 | lib/performance.ts | 1 |
+| DEBT-2861 | pattern-check.js has inline pattern definitions that coul... | S3 | .claude/hooks/pattern-check.js | 0 |
+| DEBT-2864 | SessionStart: stop-serena-dashboard.js spawns PowerShell ... | S3 | .claude/hooks/stop-serena-dashboard.js | 0 |
+| DEBT-2869 | agent-trigger-enforcer.js loads external config via requi... | S3 | .claude/hooks/agent-trigger-enforcer.js | 0 |
+| DEBT-2871 | large-context-warning.js reads entire file just to count ... | S3 | .claude/hooks/large-context-warning.js | 0 |
+| DEBT-2872 | check-edit-requirements.js and check-write-requirements.j... | S3 | .claude/hooks/check-edit-requirements.js | 0 |
+| DEBT-2874 | pre-compaction-save.js calls 7 git subprocess operations ... | S3 | .claude/hooks/pre-compaction-save.js | 0 |
+| DEBT-2875 | commit-tracker.js spawns 4 git subprocesses on commit det... | S3 | .claude/hooks/commit-tracker.js | 0 |
+| DEBT-2876 | pattern-check.js calls fs.realpathSync twice (file and pr... | S3 | .claude/hooks/pattern-check.js | 0 |
+| DEBT-2877 | alerts-reminder.js reads 4 JSON files synchronously on ev... | S3 | .claude/hooks/alerts-reminder.js | 0 |
+| DEBT-2879 | Skill overlap: code-reviewer listed in two SKILL_INDEX ca... | S3 | .claude/skills/SKILL_INDEX.md | 0 |
+| DEBT-2880 | Skill overlap: senior-fullstack listed in two SKILL_INDEX... | S3 | .claude/skills/SKILL_INDEX.md | 0 |
+| DEBT-2881 | Skill overlap: frontend-design vs senior-frontend have ov... | S3 | .claude/skills/frontend-design/SKILL.md | 0 |
+| DEBT-2883 | Skill overlap: senior-qa vs webapp-testing vs test-suite ... | S3 | .claude/skills/senior-qa/SKILL.md | 0 |
+| DEBT-2884 | Skill overlap: checkpoint vs save-context both preserve s... | S3 | .claude/skills/checkpoint/SKILL.md | 0 |
+| DEBT-2885 | Skill overlap: docs-sync vs docs-update both handle docum... | S3 | .claude/skills/docs-sync/SKILL.md | 0 |
+| DEBT-2895 | SKILL_INDEX.md claims 55 total skills but count is inaccu... | S3 | .claude/skills/SKILL_INDEX.md | 0 |
+| DEBT-2897 | Agent prompts in audit-process Stage 1 use markdown outpu... | S3 | .claude/skills/audit-process/SKILL.md | 0 |
+| DEBT-2901 | pre-commit-fixer agent prompts are generic category dispa... | S3 | .claude/skills/pre-commit-fixer/SKILL.md | 0 |
+| DEBT-2902 | MCP git server configured but unused and redundant with n... | S3 | .mcp.json | 0 |
+| DEBT-2905 | MCP github server enabled but not configured - redundant ... | S3 | .claude/settings.local.json | 0 |
+| DEBT-2906 | 7 mcp__filesystem__ permissions approved in settings.loca... | S3 | .claude/settings.local.json | 0 |
+| DEBT-2907 | 3 mcp__serena__ permissions approved but serena is in dis... | S3 | .claude/settings.local.json | 0 |
+| DEBT-2908 | MCP global template includes puppeteer which conflicts wi... | S3 | .claude/mcp.global-template.json | 0 |
+| DEBT-2909 | MCP firebase server enabled but not configured - may rely... | S3 | .claude/settings.local.json | 0 |
+| DEBT-2911 | session-begin instructs reading CODE_PATTERNS.md (600 lin... | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2913 | compact-restore.js injects full recovery context even whe... | S3 | .claude/hooks/compact-restore.js | 0 |
+| DEBT-2916 | Edit and MultiEdit hook lists are identical 9-hook copies... | S3 | .claude/settings.json | 0 |
+| DEBT-2918 | analyze-user-request.js high-confidence matches inject di... | S3 | .claude/hooks/analyze-user-request.js | 0 |
+| DEBT-2919 | session-begin SKILL.md is 361 lines with redundant hook-a... | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2920 | code-reviewer SKILL.md contains generic boilerplate not s... | S3 | .claude/skills/code-reviewer/SKILL.md | 0 |
+| DEBT-2923 | reviews.jsonl has no rotation (19KB, 30+ entries, thresho... | S3 | .claude/state/reviews.jsonl | 0 |
+| DEBT-2952 | Add integration tests for hook consolidation (post-write-... | S3 | .claude/hooks/post-write-validator.js | 0 |
+| DEBT-2954 | Add error boundary tests for hook failure isolation | S3 | .claude/hooks/post-write-validator.js | 0 |
+| DEBT-2970 | TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md marked COMPLETE ... | S3 | docs/plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md | 0 |
+| DEBT-2971 | SESSION_HISTORY.md and SESSION_DECISIONS.md not in DOCUME... | S3 | docs/SESSION_HISTORY.md | 0 |
+| DEBT-2974 | JSONL line counting pattern repeated 5x without abstraction | S3 | .claude/hooks/session-start.js | 0 |
+| DEBT-2975 | String concatenation for file paths instead of path.join | S3 | scripts/archive-doc.js | 0 |
+| DEBT-2977 | Hooks output decorative error messages instead of machine... | S3 | .claude/hooks/auto-save-context.js | 0 |
+| DEBT-2978 | Unused fields in commit-log.jsonl state file | S3 | .claude/state/commit-log.jsonl | 0 |
+| DEBT-3027 | SESSION_CONTEXT.md recent session summaries | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-3028 | PLAN_MAP.md version history table | S3 | docs/PLAN_MAP.md | 0 |
+| DEBT-3029 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou... | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-3030 | ROADMAP_LOG.md completed items history (31KB, 1,129 lines) | S3 | ROADMAP_LOG.md | 0 |
+| DEBT-3032 | check-review-triggers.sh - Dead shell script for multi-AI... | S3 | scripts/check-review-triggers.sh | 0 |
+| DEBT-3035 | generate-placement-report.js - Unused roadmap placement s... | S3 | scripts/generate-placement-report.js | 0 |
+| DEBT-3037 | redeploy-admin-dashboard.sh - Firebase deployment helper ... | S3 | scripts/redeploy-admin-dashboard.sh | 0 |
+| DEBT-3039 | seed-commit-log.js - One-time commit log backfill utility | S3 | scripts/seed-commit-log.js | 0 |
+| DEBT-3051 | Bash hook (commit-tracker) does fast-path regex on every ... | S3 | .claude/hooks/commit-tracker.js | 0 |
+| DEBT-3052 | check-write-requirements and check-edit-requirements coul... | S3 | .claude/hooks/check-write-requirements.js, .claude/hooks/check-edit-requirements.js | 0 |
+| DEBT-3055 | TypeScript strict check runs on every Write/Edit/MultiEdi... | S3 | .claude/hooks/typescript-strict-check.js | 0 |
+| DEBT-3064 | Placeholder skills with minimal utility (using-superpower... | S3 | .claude/skills/using-superpowers/SKILL.md, task-next/SKILL.md, validate-claude-folder/SKILL.md | 0 |
+| DEBT-3066 | Session lifecycle skills (session-begin, session-end, che... | S3 | .claude/skills/session-begin/SKILL.md, session-end/SKILL.md, checkpoint/SKILL.md | 0 |
+| DEBT-3076 | Inconsistent AI Instructions format across document tiers | S3 | docs/*.md (all 57 files) | 0 |
+| DEBT-3077 | Disconnected AI Instructions from actual automation - TES... | S3 | docs/TESTING_PLAN.md, docs/SONARCLOUD_CLEANUP_RUNBOOK.md, docs/RECAPTCHA_REMOVAL_GUIDE.md | 0 |
+| DEBT-3078 | AI Instructions in SESSION_CONTEXT.md creates circular re... | S3 | SESSION_CONTEXT.md, AI_WORKFLOW.md, ROADMAP.md | 0 |
+| DEBT-3096 | MCP_SETUP.md - 178 lines configuration guide without trac... | S3 | docs/MCP_SETUP.md | 0 |
+| DEBT-3097 | LEARNING_METRICS.md - 84 lines metrics tracking document | S3 | docs/LEARNING_METRICS.md | 0 |
+| DEBT-3098 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve... | S3 | docs/AUTOMATION_AUDIT_REPORT.md | 0 |
+| DEBT-3102 | ADR template and decisions/README - decision framework un... | S3 | docs/decisions/ | 0 |
+| DEBT-3141 | SESSION_CONTEXT.md recent session summaries | S3 | home/user/sonash-v0/SESSION_CONTEXT.md | 0 |
+| DEBT-3142 | PLAN_MAP.md version history table | S3 | home/user/sonash-v0/docs/PLAN_MAP.md | 0 |
+| DEBT-3143 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou... | S3 | home/user/sonash-v0/docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-3144 | ROADMAP_LOG.md completed items history (31KB, 1,129 lines) | S3 | home/user/sonash-v0/ROADMAP_LOG.md | 0 |
+| DEBT-3146 | check-review-triggers.sh - Dead shell script for multi-AI... | S3 | home/user/sonash-v0/scripts/check-review-triggers.sh | 0 |
+| DEBT-3149 | generate-placement-report.js - Unused roadmap placement s... | S3 | home/user/sonash-v0/scripts/generate-placement-report.js | 0 |
+| DEBT-3151 | redeploy-admin-dashboard.sh - Firebase deployment helper ... | S3 | home/user/sonash-v0/scripts/redeploy-admin-dashboard.sh | 0 |
+| DEBT-3153 | seed-commit-log.js - One-time commit log backfill utility | S3 | home/user/sonash-v0/scripts/seed-commit-log.js | 0 |
+| DEBT-3173 | MCP_SETUP.md - 178 lines configuration guide without trac... | S3 | home/user/sonash-v0/docs/MCP_SETUP.md | 0 |
+| DEBT-3174 | LEARNING_METRICS.md - 84 lines metrics tracking document | S3 | home/user/sonash-v0/docs/LEARNING_METRICS.md | 0 |
+| DEBT-3175 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve... | S3 | home/user/sonash-v0/docs/AUTOMATION_AUDIT_REPORT.md | 0 |
+| DEBT-3179 | ADR template and decisions/README - decision framework un... | S3 | home/user/sonash-v0/docs/decisions/ | 0 |
+| DEBT-0012 | Refactor this function to reduce its Cognitive Complexity... | S0 | functions/src/admin.ts | 576 |
+| DEBT-0037 | Refactor this function to reduce its Cognitive Complexity... | S0 | components/widgets/compact-meeting-countdown.tsx | 69 |
+| DEBT-0852 | Multiple CI quality gates configured as non-blocking (con... | S0 | .github/workflows/ci.yml | 0 |
+| DEBT-0853 | useJournal creates redundant auth listener + potential me... | S0 | hooks/use-journal.ts | 0 |
+| DEBT-0862 | Fix useJournal memory leak | S0 | N/A | 0 |
+| DEBT-0864 | Convert CI gates to blocking | S0 | N/A | 0 |
+| DEBT-0867 | Fix useJournal memory leak | S0 | hooks/use-journal.ts | 156 |
+| DEBT-1056 | Refactor this function to reduce its Cognitive Complexity... | S0 | components/admin/errors-tab.tsx | 327 |
+| DEBT-1064 | Refactor this code to not nest functions more than 4 leve... | S0 | components/admin/logs-tab.tsx | 342 |
+| DEBT-1296 | Refactor this function to reduce its Cognitive Complexity... | S0 | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js | 137 |
+| DEBT-1538 | Refactor this function to reduce its Cognitive Complexity... | S0 | functions/src/jobs.ts | 1059 |
+| DEBT-1624 | Refactor this function to reduce its Cognitive Complexity... | S0 | components/dev/lighthouse-tab.tsx | 81 |
+| DEBT-1912 | Security risk: Client-side filtering of sensitive data | S0 | hooks/use-journal.ts | 174 |
+| DEBT-3043 | pattern-check.js spawns subprocess every Write/Edit/Multi... | S0 | .claude/hooks/pattern-check.js | 0 |
+| DEBT-3079 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | S0 | N/A | 0 |
+| DEBT-3080 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks | S0 | .claude/hooks/commit-tracker.js | 0 |
+| DEBT-3081 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | S0 | .claude/hooks/auto-save-context.js | 0 |
+| DEBT-3090 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide... | S0 | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md | 0 |
+| DEBT-3156 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | S0 | All 57 files with AI Instructions sections | 0 |
+| DEBT-3157 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks | S0 | home/user/sonash-v0/.claude/hooks/commit-tracker.js | 0 |
+| DEBT-3158 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | S0 | home/user/sonash-v0/.claude/hooks/auto-save-context.js | 0 |
+| DEBT-3167 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide... | S0 | home/user/sonash-v0/docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md | 0 |
 
 ## documentation (467)
 
-| ID        | Title                                                          | Severity | File                                                               | Line |
-| --------- | -------------------------------------------------------------- | -------- | ------------------------------------------------------------------ | ---- |
-| DEBT-0089 | 16 broken anchor links detected by docs:check                  | S1       | SESSION_CONTEXT.md                                                 | 47   |
-| DEBT-0090 | 20 placeholder issues across 5 template instances              | S1       | docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md             | 1    |
-| DEBT-0938 | Comprehensive Audit Reports Missing Standard Structure         | S1       | N/A                                                                | 0    |
-| DEBT-0939 | Broken Link to FALSE_POSITIVES.jsonl in Agent Policy           | S1       | N/A                                                                | 0    |
-| DEBT-0940 | Missing CONTRIBUTING.md at Root Level                          | S1       | N/A                                                                | 0    |
-| DEBT-1958 | DEVELOPMENT.md references missing npm script type-check        | S1       | DEVELOPMENT.md                                                     | 848  |
-| DEBT-1962 | DOCUMENTATION_INDEX.md contains broken links to missing s...   | S1       | DOCUMENTATION_INDEX.md                                             | 464  |
-| DEBT-1964 | 498 external URLs need validation (expected 60-100 failures)   | S1       | docs/resources/recovery-resources.md                               | 1    |
-| DEBT-1998 | Invalid placeholder URL in example: full-url.com               | S1       | docs/DOCUMENTATION_STANDARDS.md                                    | 0    |
-| DEBT-1999 | Broken external link: console.firebase.google.com/support...   | S1       | docs/INCIDENT_RESPONSE.md                                          | 0    |
-| DEBT-2000 | Broken anchor link: ./ROADMAP_LOG.md#m16---admin-panel--t...   | S1       | ROADMAP.md                                                         | 0    |
-| DEBT-2001 | Broken anchor link: docs/DOCUMENT_DEPENDENCIES.md#cross-d...   | S1       | ROADMAP.md                                                         | 0    |
-| DEBT-2002 | Broken anchor link: ./ROADMAP.md#active-sprint-operationa...   | S1       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2003 | Broken anchor link: ./ROADMAP.md#m2-architecture-refactor...   | S1       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2007 | Contradiction: Security rules enforcement for direct writes    | S1       | CLAUDE.md                                                          | 0    |
-| DEBT-2008 | Contradiction: Pre-commit hook blocking status for patter...   | S1       | CLAUDE.md                                                          | 89   |
-| DEBT-0444 | 99 files fail docs:check (313 errors, 177 warnings)            | S2       | scripts/README.md                                                  | 1    |
-| DEBT-0445 | TRIGGERS.md last updated 2026-01-02 (15 days stale)            | S2       | docs/TRIGGERS.md                                                   | 1    |
-| DEBT-0446 | DOCUMENTATION_STANDARDS.md last updated 2026-01-01 (16 da...   | S2       | docs/DOCUMENTATION_STANDARDS.md                                    | 1    |
-| DEBT-0447 | DOCUMENT_DEPENDENCIES.md claims SYNCED but sync check rep...   | S2       | docs/DOCUMENT_DEPENDENCIES.md                                      | 3    |
-| DEBT-0448 | 15 recent commits touch docs but AUDIT_TRACKER shows only...   | S2       | docs/                                                              | 0    |
-| DEBT-0957 | Archive Docs Never Checked for Link Rot                        | S2       | N/A                                                                | 0    |
-| DEBT-1969 | External URL dead: refugerecovery.org/meetings/ returns 404    | S2       | README.md                                                          | 1    |
-| DEBT-2022 | Structure: COMMAND_REFERENCE.md should be Tier 1 Canonical     | S2       | .claude/COMMAND_REFERENCE.md                                       | 0    |
-| DEBT-2023 | Structure: AI_WORKFLOW.md should be Tier 1 Canonical           | S2       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2024 | SECURITY_CHECKLIST.md missing Document Version and Status      | S2       | docs/agent_docs/SECURITY_CHECKLIST.md                              | 0    |
-| DEBT-2025 | APPCHECK_SETUP.md missing Document Version                     | S2       | docs/APPCHECK_SETUP.md                                             | 0    |
-| DEBT-2026 | RECAPTCHA_REMOVAL_GUIDE.md missing Document Version            | S2       | docs/RECAPTCHA_REMOVAL_GUIDE.md                                    | 0    |
-| DEBT-2027 | TESTING_PLAN.md missing Document Version                       | S2       | docs/TESTING_PLAN.md                                               | 0    |
-| DEBT-2028 | Code blocks missing language specifier                         | S2       | CLAUDE.md                                                          | 0    |
-| DEBT-2029 | Inaccurate Firebase version in CLAUDE.md                       | S2       | CLAUDE.md                                                          | 0    |
-| DEBT-2030 | DEVELOPMENT.md missing Status field in metadata                | S2       | DEVELOPMENT.md                                                     | 0    |
-| DEBT-2031 | CODE_PATTERNS.md uses lowercase 'claude.md' instead of 'C...   | S2       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
-| DEBT-2032 | AI_REVIEW_PROCESS.md missing Status field                      | S2       | docs/AI_REVIEW_PROCESS.md                                          | 0    |
-| DEBT-2033 | APPCHECK_SETUP.md missing Document Version field               | S2       | docs/APPCHECK_SETUP.md                                             | 0    |
-| DEBT-2034 | Broken anchor link: ../ROADMAP.md#dependencies                 | S2       | docs/DOCUMENTATION_STANDARDS.md                                    | 0    |
-| DEBT-2035 | INCIDENT_RESPONSE.md missing Document Version field            | S2       | docs/INCIDENT_RESPONSE.md                                          | 0    |
-| DEBT-2036 | MCP_SETUP.md missing Status field                              | S2       | docs/MCP_SETUP.md                                                  | 0    |
-| DEBT-2037 | TESTING_PLAN.md missing Document Version field                 | S2       | docs/TESTING_PLAN.md                                               | 0    |
-| DEBT-2038 | Structure: ROADMAP_LOG.md should be Tier 1 Canonical           | S2       | ROADMAP_LOG.md                                                     | 0    |
-| DEBT-2039 | ROADMAP.md missing last updated date (stale > 30 days)         | S2       | ROADMAP.md                                                         | 0    |
-| DEBT-2040 | Inconsistent heading levels in SESSION_CONTEXT.md              | S2       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2041 | Line length exceeds recommended limit                          | S2       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2042 | Structure: SESSION_CONTEXT.md should be Tier 1 Canonical       | S2       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2043 | Structure: .claude/ directory contains Tier 1 candidates       | S2       | .claude/COMMAND_REFERENCE.md                                       | 0    |
-| DEBT-2044 | EXPANSION_EVALUATION_TRACKER.md using deprecated date-bas...   | S2       | docs/EXPANSION_EVALUATION_TRACKER.md                               | 0    |
-| DEBT-2045 | REVIEW_POLICY_ARCHITECTURE.md has conflicting status indi...   | S2       | docs/REVIEW_POLICY_ARCHITECTURE.md                                 | 0    |
-| DEBT-2046 | Inconsistent terminology: 'skill' vs 'command' vs 'slash ...   | S2       | 127-154                                                            | 0    |
-| DEBT-2047 | Inconsistent terminology: 'agent' vs 'subagent' vs 'worker'    | S2       | 156-174                                                            | 0    |
-| DEBT-2048 | Duplication: Session Start Protocol in CLAUDE.md and AI_W...   | S2       | 21-42                                                              | 0    |
-| DEBT-2049 | Duplication: Compaction-resilient state persistence in CL...   | S2       | 395-425                                                            | 0    |
-| DEBT-2050 | Inconsistent terminology: 'Cloud Functions' capitalization     | S2       | CLAUDE.md                                                          | 72   |
-| DEBT-2051 | Inconsistent terminology: 'App Check' vs 'AppCheck' vs 'a...   | S2       | CLAUDE.md                                                          | 74   |
-| DEBT-2052 | MONETIZATION_RESEARCH.md has stale Last Updated date (ove...   | S2       | docs/MONETIZATION_RESEARCH.md                                      | 0    |
-| DEBT-2053 | PR_WORKFLOW_CHECKLIST.md missing Version History table         | S2       | docs/PR_WORKFLOW_CHECKLIST.md                                      | 0    |
-| DEBT-2054 | Structure: SESSION_DECISIONS.md placement incorrect            | S2       | docs/SESSION_DECISIONS.md                                          | 0    |
-| DEBT-2055 | Historical ideation document is unlinked                       | S2       | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md                 | 0    |
-| DEBT-2056 | Master documentation index is not linked from entry points     | S2       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2057 | Duplication: Agent/Skill Triggers table in CLAUDE.md and ...   | S2       | 129-144                                                            | 0    |
-| DEBT-2388 | Quality: CLAUDE.md scores 8/10 - missing cross-references...   | S2       | CLAUDE.md                                                          | 0    |
-| DEBT-2389 | Quality: .claude/agents/ docs lack usage examples              | S2       | .claude/agents/\*.md                                               | 0    |
-| DEBT-2390 | Quality: .claude/skills/ docs have inconsistent SKILL.md ...   | S2       | .claude/skills/\*/SKILL.md                                         | 0    |
-| DEBT-2391 | Quality: DEVELOPMENT.md scores 7/10 - wall of text in Git...   | S2       | DEVELOPMENT.md                                                     | 0    |
-| DEBT-2392 | Readability: DEVELOPMENT.md has 110-line section without ...   | S2       | DEVELOPMENT.md                                                     | 0    |
-| DEBT-2393 | Gap: Missing overview for multi-ai audit system                | S2       | docs/multi-ai-audit/README.md                                      | 0    |
-| DEBT-2394 | Quality: SECURITY.md scores 8/10 - clear but missing thre...   | S2       | docs/SECURITY.md                                                   | 0    |
-| DEBT-2395 | Quality: SESSION_CONTEXT.md scores 6/10 - excessive sessi...   | S2       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2396 | Readability: SESSION_CONTEXT.md session summaries are den...   | S2       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2397 | Gap: Undocumented agent team workflows                         | S2       | CLAUDE.md                                                          | 0    |
-| DEBT-2398 | Gap: No quickstart guide for new developers                    | S2       | DEVELOPMENT.md                                                     | 0    |
-| DEBT-2399 | Gap: Undocumented core lib modules                             | S2       | lib/firestore-service.ts                                           | 0    |
-| DEBT-2833 | Audit all manual CLI tools and add to COMMAND_REFERENCE.md     | S2       | .claude/COMMAND_REFERENCE.md                                       | 0    |
-| DEBT-2811 | Documentation effectiveness metrics — track which docs ar...   | S2       | docs                                                               | 0    |
-| DEBT-0806 | Archive docs contain significant link rot after moves          | S3       | docs/archive/                                                      | 0    |
-| DEBT-0807 | PR_REVIEW_PROMPT_TEMPLATE.md lacks Last Updated and Versi...   | S3       | docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md      | 1    |
-| DEBT-0808 | DOCUMENTATION_INDEX.md orphaned - not referenced by any m...   | S3       | DOCUMENTATION_INDEX.md                                             | 1    |
-| DEBT-1993 | Potential Misplaced Plans in Archive/Templates                 | S3       | docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md | 1    |
-| DEBT-1994 | docs/OPERATIONAL_VISIBILITY_SPRINT.md and docs/HOOKIFY_ST...   | S3       | docs/OPERATIONAL_VISIBILITY_SPRINT.md                              | 1    |
-| DEBT-1996 | Markdownlint and Prettier checks not confirmed                 | S3       | docs/\*_/_.md                                                      | 1    |
-| DEBT-2004 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP...   | S3       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2005 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP...   | S3       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2006 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | ARCHITECTURE.md                                                    | 0    |
-| DEBT-2009 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2016 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2010 | Broken internal link: ./docs/archive/completed-plans/EIGH...   | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2011 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2015 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2012 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2013 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2014 | Broken internal link: ./docs/archive/SoNash\_\_AdminPanelEn... | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2017 | Broken internal link: ./docs/archive/2025-dec-reports/JOU...   | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2018 | Broken internal link: ./docs/archive/2025-dec-reports/LIB...   | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2019 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | S3       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2020 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2021 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2058 | COMMAND_REFERENCE.md has inconsistent version format           | S3       | .claude/COMMAND_REFERENCE.md                                       | 0    |
-| DEBT-2059 | Structure: skills/ vs agents/ directory overlap                | S3       | .claude/skills/                                                    | 0    |
-| DEBT-2060 | Bare URLs without link text                                    | S3       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2061 | AI_WORKFLOW.md has inline metadata format instead of table     | S3       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2062 | AI_WORKFLOW.md doesn't link back to CLAUDE.md                  | S3       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2063 | AI_WORKFLOW.md missing Status field                            | S3       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2064 | ARCHITECTURE.md outdated by 23 days                            | S3       | ARCHITECTURE.md                                                    | 0    |
-| DEBT-2065 | CLAUDE.md missing Status field                                 | S3       | CLAUDE.md                                                          | 0    |
-| DEBT-2066 | APPCHECK_SETUP.md outdated by 25 days                          | S3       | docs/APPCHECK_SETUP.md                                             | 0    |
-| DEBT-2067 | LEARNING_METRICS.md missing tier declaration                   | S3       | docs/LEARNING_METRICS.md                                           | 0    |
-| DEBT-2068 | RECAPTCHA_REMOVAL_GUIDE.md outdated by 25 days                 | S3       | docs/RECAPTCHA_REMOVAL_GUIDE.md                                    | 0    |
-| DEBT-2069 | SECURITY.md outdated by 23 days                                | S3       | docs/SECURITY.md                                                   | 0    |
-| DEBT-2070 | SESSION_DECISIONS.md missing Status field                      | S3       | docs/SESSION_DECISIONS.md                                          | 0    |
-| DEBT-2071 | Inconsistent list marker style                                 | S3       | CLAUDE.md                                                          | 0    |
-| DEBT-2072 | Broken anchor link: ../ROADMAP.md#phase-4-error-tracking-...   | S3       | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md               | 0    |
-| DEBT-2073 | Broken anchor link: ../ROADMAP.md#phase-5-system-logs-gcp...   | S3       | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md               | 0    |
-| DEBT-2074 | CODE_PATTERNS.md <-> SECURITY_CHECKLIST.md missing cross-...   | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
-| DEBT-2075 | SECURITY_CHECKLIST.md doesn't reference CLAUDE.md              | S3       | docs/agent_docs/SECURITY_CHECKLIST.md                              | 0    |
-| DEBT-2076 | Outdated redirect: cloud.google.com/recaptcha-enterprise/...   | S3       | docs/APPCHECK_SETUP.md                                             | 0    |
-| DEBT-2077 | AUDIT_TRACKER.md has Status in Purpose line instead of me...   | S3       | docs/AUDIT_TRACKER.md                                              | 0    |
-| DEBT-2078 | Structure: AUDIT_TRACKER.md should be Tier 4 Operational       | S3       | docs/AUDIT_TRACKER.md                                              | 0    |
-| DEBT-2079 | DOCUMENTATION_STANDARDS.md doesn't reference CLAUDE.md         | S3       | docs/DOCUMENTATION_STANDARDS.md                                    | 0    |
-| DEBT-2080 | FIREBASE_CHANGE_POLICY.md has multiple Last Updated dates...   | S3       | docs/FIREBASE_CHANGE_POLICY.md                                     | 0    |
-| DEBT-2081 | Broken anchor link: ../ROADMAP.md#offline-support-critical     | S3       | docs/LIGHTHOUSE_INTEGRATION_PLAN.md                                | 0    |
-| DEBT-2082 | Broken anchor link: ../ROADMAP.md#m3-meetings-location-pl...   | S3       | docs/MONETIZATION_RESEARCH.md                                      | 0    |
-| DEBT-2083 | Broken anchor link: ../technical-debt/PROCEDURE.md#11-cat...   | S3       | docs/multi-ai-audit/COORDINATOR.md                                 | 0    |
-| DEBT-2084 | Broken anchor link: ../../ROADMAP.md#track-t---testing-in...   | S3       | docs/plans/TESTING_INFRASTRUCTURE_PLAN.md                          | 0    |
-| DEBT-2085 | SESSION_DECISIONS.md missing Created field                     | S3       | docs/SESSION_DECISIONS.md                                          | 0    |
-| DEBT-2086 | SLASH_COMMANDS_REFERENCE.md potentially stale (33 days old)    | S3       | docs/SLASH_COMMANDS_REFERENCE.md                                   | 0    |
-| DEBT-2087 | Outdated redirect: docs.anthropic.com/claude-code redirec...   | S3       | docs/SLASH_COMMANDS_REFERENCE.md                                   | 0    |
-| DEBT-2088 | Structure: technical-debt/PROCEDURE.md placement review        | S3       | docs/technical-debt/PROCEDURE.md                                   | 0    |
-| DEBT-2089 | Naming: Inconsistent use of PROCEDURE vs GUIDE vs WORKFLOW     | S3       | docs/technical-debt/PROCEDURE.md                                   | 0    |
-| DEBT-2090 | Broken anchor link: ./DOCUMENT_DEPENDENCIES.md#cross-docu...   | S3       | docs/TRIGGERS.md                                                   | 0    |
-| DEBT-2091 | Case mismatch in link: CLAUDE.md                               | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2092 | Inconsistent blank lines around headings                       | S3       | GLOBAL_SECURITY_STANDARDS.md                                       | 0    |
-| DEBT-2093 | Structure: ROADMAP.md vs ROADMAP_FUTURE.md separation          | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2094 | Multiple H1 headings in single document                        | S3       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2095 | Trailing spaces at end of lines                                | S3       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2096 | Table formatting inconsistencies                               | S3       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2097 | Emoji usage in headings                                        | S3       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2098 | SESSION_CONTEXT.md has inconsistent metadata format            | S3       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2099 | Broken internal link: ./SHARED_TEMPLATE_BASE.md#ai-models      | S3       | .claude/plans/audit-template-schema-overhaul.md                    | 0    |
-| DEBT-2100 | Broken internal link: ./audit-code-report.md                   | S3       | .claude/skills/audit-aggregator/SKILL.md                           | 0    |
-| DEBT-2101 | Broken internal link: ./audit-security-report.md               | S3       | .claude/skills/audit-aggregator/SKILL.md                           | 0    |
-| DEBT-2102 | Broken internal link: ./audit-performance-report.md            | S3       | .claude/skills/audit-aggregator/SKILL.md                           | 0    |
-| DEBT-2103 | Broken internal link: ./audit-documentation-report.md          | S3       | .claude/skills/audit-aggregator/SKILL.md                           | 0    |
-| DEBT-2104 | Broken internal link: ./audit-refactoring-report.md            | S3       | .claude/skills/audit-aggregator/SKILL.md                           | 0    |
-| DEBT-2105 | Broken internal link: ./audit-process-report.md                | S3       | .claude/skills/audit-aggregator/SKILL.md                           | 0    |
-| DEBT-2106 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-aggregator/SKILL.md                           | 0    |
-| DEBT-2107 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-aggregator/SKILL.md                           | 0    |
-| DEBT-2108 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-aggregator/SKILL.md                           | 0    |
-| DEBT-2109 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-code/SKILL.md                                 | 0    |
-| DEBT-2110 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-code/SKILL.md                                 | 0    |
-| DEBT-2111 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-code/SKILL.md                                 | 0    |
-| DEBT-2112 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | .claude/skills/audit-code/SKILL.md                                 | 0    |
-| DEBT-2113 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-comprehensive/SKILL.md                        | 0    |
-| DEBT-2114 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-comprehensive/SKILL.md                        | 0    |
-| DEBT-2115 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-comprehensive/SKILL.md                        | 0    |
-| DEBT-2116 | Broken internal link: path.md                                  | S3       | .claude/skills/audit-documentation/SKILL.md                        | 0    |
-| DEBT-2117 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-documentation/SKILL.md                        | 0    |
-| DEBT-2118 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-documentation/SKILL.md                        | 0    |
-| DEBT-2119 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-documentation/SKILL.md                        | 0    |
-| DEBT-2120 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-performance/SKILL.md                          | 0    |
-| DEBT-2121 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-performance/SKILL.md                          | 0    |
-| DEBT-2122 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-performance/SKILL.md                          | 0    |
-| DEBT-2123 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-process/SKILL.md                              | 0    |
-| DEBT-2124 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-process/SKILL.md                              | 0    |
-| DEBT-2125 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-process/SKILL.md                              | 0    |
-| DEBT-2126 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | .claude/skills/audit-process/SKILL.md                              | 0    |
-| DEBT-2127 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-refactoring/SKILL.md                          | 0    |
-| DEBT-2128 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-refactoring/SKILL.md                          | 0    |
-| DEBT-2129 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-refactoring/SKILL.md                          | 0    |
-| DEBT-2130 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | .claude/skills/audit-refactoring/SKILL.md                          | 0    |
-| DEBT-2131 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/audit-security/SKILL.md                             | 0    |
-| DEBT-2132 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-security/SKILL.md                             | 0    |
-| DEBT-2133 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/audit-security/SKILL.md                             | 0    |
-| DEBT-2134 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md         | S3       | .claude/skills/audit-security/SKILL.md                             | 0    |
-| DEBT-2135 | Broken internal link: docs/agent_docs/SECURITY_CHECKLIST.md    | S3       | .claude/skills/audit-security/SKILL.md                             | 0    |
-| DEBT-2136 | Broken internal link: docs/GLOBAL_SECURITY_STANDARDS.md        | S3       | .claude/skills/audit-security/SKILL.md                             | 0    |
-| DEBT-2137 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/audit-validation-wrapper/SKILL.md                   | 0    |
-| DEBT-2138 | Broken internal link: ../.claude/skills/audit-comprehensi...   | S3       | .claude/skills/audit-validation-wrapper/SKILL.md                   | 0    |
-| DEBT-2139 | Broken internal link: path.md                                  | S3       | .claude/skills/doc-optimizer/SKILL.md                              | 0    |
-| DEBT-2140 | Broken internal link: docs/technical-debt/PROCEDURE.md         | S3       | .claude/skills/doc-optimizer/SKILL.md                              | 0    |
-| DEBT-2141 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR...   | S3       | .claude/skills/doc-optimizer/SKILL.md                              | 0    |
-| DEBT-2142 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md          | S3       | .claude/skills/doc-optimizer/SKILL.md                              | 0    |
-| DEBT-2143 | Broken internal link: ../../SESSION_CONTEXT.md                 | S3       | .claude/skills/session-begin/SKILL.md                              | 0    |
-| DEBT-2144 | Broken internal link: ../../SESSION_CONTEXT.md                 | S3       | .claude/skills/session-begin/SKILL.md                              | 0    |
-| DEBT-2145 | Broken internal link: ../../ROADMAP.md                         | S3       | .claude/skills/session-begin/SKILL.md                              | 0    |
-| DEBT-2147 | Broken internal link: ../../ROADMAP.md                         | S3       | .claude/skills/session-begin/SKILL.md                              | 0    |
-| DEBT-2146 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md    | S3       | .claude/skills/session-begin/SKILL.md                              | 0    |
-| DEBT-2151 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md    | S3       | .claude/skills/session-begin/SKILL.md                              | 0    |
-| DEBT-2148 | Broken internal link: ../../docs/agent_docs/CODE_PATTERNS.md   | S3       | .claude/skills/session-begin/SKILL.md                              | 0    |
-| DEBT-2149 | Broken internal link: ../../docs/TECHNICAL_DEBT_MASTER.md      | S3       | .claude/skills/session-begin/SKILL.md                              | 0    |
-| DEBT-2150 | Broken internal link: ../../docs/DOCUMENT_DEPENDENCIES.md      | S3       | .claude/skills/session-begin/SKILL.md                              | 0    |
-| DEBT-2152 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | .claude/skills/sonarcloud-sprint/SKILL.md                          | 0    |
-| DEBT-2153 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | .claude/skills/sonarcloud-sprint/SKILL.md                          | 0    |
-| DEBT-2154 | Broken internal link: docs/SONARCLOUD_CLEANUP_RUNBOOK.md       | S3       | .claude/skills/sonarcloud-sprint/SKILL.md                          | 0    |
-| DEBT-2155 | Broken internal link: docs/SONARCLOUD_TRIAGE.md                | S3       | .claude/skills/sonarcloud-sprint/SKILL.md                          | 0    |
-| DEBT-2156 | SESSION_HISTORY.md is append-only but lacks archival policy    | S3       | docs/SESSION_HISTORY.md                                            | 0    |
-| DEBT-2157 | Link distribution imbalance between CLAUDE.md and AI_WORK...   | S3       | CLAUDE.md                                                          | 0    |
-| DEBT-2158 | Duplication: Documentation hierarchy/tiers in CLAUDE.md a...   | S3       | 114-123                                                            | 0    |
-| DEBT-2159 | Inconsistent terminology: 'TDMS' expansion                     | S3       | multiple                                                           | 0    |
-| DEBT-2160 | Inconsistent terminology: 'finding' vs 'issue' vs 'item'       | S3       | multiple                                                           | 0    |
-| DEBT-2161 | Broken internal link: ./archive/SoNash\_\_AdminPanelEnhance... | S3       | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md               | 0    |
-| DEBT-2162 | Broken internal link: ./archive/SoNash\_\_AdminPanelEnhance... | S3       | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md               | 0    |
-| DEBT-2163 | Missing 'Related Documents' sections in agent_docs             | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
-| DEBT-2164 | Structure: docs/agent_docs/ naming convention                  | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
-| DEBT-2165 | Broken internal link: ./archive/REVIEWS_1-40.md                | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2166 | Broken internal link: ./archive/REVIEWS_1-40.md                | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2167 | Broken internal link: ./archive/REVIEWS_1-40.md                | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2168 | Broken internal link: ./archive/REVIEWS_42-60.md               | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2169 | Broken internal link: ./archive/REVIEWS_61-100.md              | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2170 | Broken internal link: ./archive/REVIEWS_101-136.md             | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2171 | Broken internal link: ./archive/REVIEWS_137-179.md             | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2172 | Broken internal link: ./archive/REVIEWS_202-212.md             | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2173 | Broken internal link: ./archive/REVIEWS_180-201.md             | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2174 | Broken internal link: ./archive/REVIEWS_137-179.md             | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md                                    | 0    |
-| DEBT-2175 | Structure: Archive directory organization inconsistent         | S3       | docs/archive/2025-dec-reports/                                     | 0    |
-| DEBT-2176 | Broken internal link: ../canonical/README.md                   | S3       | docs/audits/single-session/README.md                               | 0    |
-| DEBT-2177 | Broken internal link: ../../AUDIT_FINDINGS_PROCEDURE.md        | S3       | docs/audits/single-session/README.md                               | 0    |
-| DEBT-2178 | Broken internal link: ../archive/completed-decisions/ADR-...   | S3       | docs/decisions/README.md                                           | 0    |
-| DEBT-2179 | Broken internal link: path.md                                  | S3       | docs/multi-ai-audit/templates/DOCUMENTATION_AUDIT.md               | 0    |
-| DEBT-2180 | Broken internal link: ./reviews/2026-Q1/PROCESS_AUDIT_FIN...   | S3       | docs/OPERATIONAL_VISIBILITY_SPRINT.md                              | 0    |
-| DEBT-2181 | Broken internal link: ./audits/comprehensive/AUDIT_SUMMAR...   | S3       | docs/OPERATIONAL_VISIBILITY_SPRINT.md                              | 0    |
-| DEBT-2182 | Broken internal link: ./archive/2025-dec-reports/BILLING\_...  | S3       | docs/SECURITY.md                                                   | 0    |
-| DEBT-2183 | Broken internal link: ./archive/2025-dec-reports/BILLING\_...  | S3       | docs/SECURITY.md                                                   | 0    |
-| DEBT-2184 | Broken internal link: ./archive/2025-dec-reports/BILLING\_...  | S3       | docs/SECURITY.md                                                   | 0    |
-| DEBT-2185 | SESSION_DECISIONS.md has no outgoing links                     | S3       | docs/SESSION_DECISIONS.md                                          | 0    |
-| DEBT-2186 | SESSION_DECISIONS.md missing 'How to Use This Document' s...   | S3       | docs/SESSION_DECISIONS.md                                          | 0    |
-| DEBT-2187 | Broken internal link: ./archive/completed-plans/sonarclou...   | S3       | docs/SONARCLOUD_CLEANUP_RUNBOOK.md                                 | 0    |
-| DEBT-2188 | Broken internal link: ./archive/completed-plans/sonarclou...   | S3       | docs/SONARCLOUD_CLEANUP_RUNBOOK.md                                 | 0    |
-| DEBT-2189 | Broken internal link: audits/sonarcloud-dismissals.md          | S3       | docs/SONARCLOUD_CLEANUP_RUNBOOK.md                                 | 0    |
-| DEBT-2190 | Broken internal link: SONARCLOUD_TRIAGE.md                     | S3       | docs/SONARCLOUD_CLEANUP_RUNBOOK.md                                 | 0    |
-| DEBT-2191 | Broken internal link: ../archive/tdms-intermediates-2026-...   | S3       | docs/technical-debt/FINAL_SYSTEM_AUDIT.md                          | 0    |
-| DEBT-2192 | Broken internal link: ../archive/technical-debt-sources-2...   | S3       | docs/technical-debt/FINAL_SYSTEM_AUDIT.md                          | 0    |
-| DEBT-2193 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2199 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2204 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2194 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2200 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2203 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2195 | Broken internal link: src/dataconnect-generated/README.md      | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2208 | Broken internal link: src/dataconnect-generated/README.md      | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2196 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2202 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2206 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2197 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2201 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2205 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2198 | Broken internal link: src/dataconnect-generated/react/REA...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2207 | Broken internal link: src/dataconnect-generated/react/REA...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2209 | Broken internal link: docs/archive/2025-dec-reports/AGGRE...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2210 | Broken internal link: docs/archive/2025-dec-reports/APP_C...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2211 | Broken internal link: docs/archive/2025-dec-reports/ARCHI...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2212 | Broken internal link: docs/archive/2025-dec-reports/ARCHI...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2213 | Broken internal link: docs/archive/2025-dec-reports/BILLI...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2214 | Broken internal link: docs/archive/2025-dec-reports/CODE\_...  | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2215 | Broken internal link: docs/archive/2025-dec-reports/CONSO...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2216 | Broken internal link: docs/archive/2025-dec-reports/DEPEN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2217 | Broken internal link: docs/archive/2025-dec-reports/ESLIN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2218 | Broken internal link: docs/archive/2025-dec-reports/JOURN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2219 | Broken internal link: docs/archive/2025-dec-reports/LIBRA...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2220 | Broken internal link: docs/archive/2025-dec-reports/REFAC...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2221 | Broken internal link: docs/archive/2025-dec-reports/REFAC...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2222 | Broken internal link: docs/archive/2025-dec-reports/ROADM...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2223 | Broken internal link: docs/archive/2025-dec-reports/ROADM...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2224 | Broken internal link: docs/archive/2025-dec-reports/ULTRA...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2225 | Broken internal link: docs/archive/2025-dec-reports/XSS_P...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2226 | Broken internal link: docs/archive/2026-jan-deprecated/AN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2227 | Broken internal link: docs/archive/2026-jan-deprecated/AR...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2228 | Broken internal link: docs/archive/2026-jan-deprecated/CU...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2229 | Broken internal link: docs/archive/2026-jan-deprecated/PR...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2230 | Broken internal link: docs/archive/2026-jan-deprecated/RO...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2231 | Broken internal link: docs/archive/2026-jan-deprecated/SL...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2232 | Broken internal link: docs/archive/2026-jan-deprecated/br...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2233 | Broken internal link: docs/archive/2026-jan-deprecated/br...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2234 | Broken internal link: docs/archive/AI_HANDOFF-2026-01-02.md    | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2235 | Broken internal link: docs/archive/AI_STANDARDIZED_REPORT.md   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2236 | Broken internal link: docs/archive/APPCHECK_FRESH_SETUP.md     | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2237 | Broken internal link: docs/archive/ARCHIVE_INDEX.md            | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2238 | Broken internal link: docs/archive/ChatGPT_Multi_AI_Refac...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2239 | Broken internal link: docs/archive/GitHub_Code_Analysis_a...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2240 | Broken internal link: docs/archive/IMPLEMENTATION_PROMPTS.md   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2241 | Broken internal link: docs/archive/Monetization*Research*...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2242 | Broken internal link: docs/archive/RECAPTCHA_PROBLEM_SUMM...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2243 | Broken internal link: docs/archive/REVIEWS_1-40.md             | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2244 | Broken internal link: docs/archive/REVIEWS_101-136.md          | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2245 | Broken internal link: docs/archive/REVIEWS_137-179.md          | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2246 | Broken internal link: docs/archive/REVIEWS_180-201.md          | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2247 | Broken internal link: docs/archive/REVIEWS_202-212.md          | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2248 | Broken internal link: docs/archive/REVIEWS_42-60.md            | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2249 | Broken internal link: docs/archive/REVIEWS_61-100.md           | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2250 | Broken internal link: docs/archive/Refactoring_PR_Plan.md      | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2251 | Broken internal link: docs/archive/SUPABASE_MIGRATION_ANA...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2252 | Broken internal link: docs/archive/SoNash_Code_Review_Con...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2253 | Broken internal link: docs/archive/SoNash\_\_AdminPanelEnha... | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2254 | Broken internal link: docs/archive/SoNash\_\_AdminPanelEnha... | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2255 | Broken internal link: docs/archive/SoNash\_\_AdminPanelEnha... | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2256 | Broken internal link: docs/archive/SoNash\_\_Phase1_ClaudeC... | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2257 | Broken internal link: docs/archive/SoNash\_\_Phase1_ClaudeC... | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2258 | Broken internal link: docs/archive/SoNash\_\_Phase1_ClaudeC... | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2259 | Broken internal link: docs/archive/TESTING_CHECKLIST.md        | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2260 | Broken internal link: docs/archive/architecture-reviews-d...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2261 | Broken internal link: docs/archive/architecture-reviews-d...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2262 | Broken internal link: docs/archive/completed-audits/PHASE...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2263 | Broken internal link: docs/archive/completed-decisions/AD...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2264 | Broken internal link: docs/archive/completed-plans/DOCUME...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2265 | Broken internal link: docs/archive/completed-plans/EIGHT\_...  | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2266 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2267 | Broken internal link: docs/archive/completed-plans/TRACK\_...  | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2268 | Broken internal link: docs/archive/completed-plans/sonarc...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2269 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2270 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2271 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2272 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2273 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2274 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2275 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2276 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2277 | Broken internal link: docs/archive/consolidated-2025-12-1...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2278 | Broken internal link: docs/archive/deprecated-findings-do...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2279 | Broken internal link: docs/archive/deprecated-findings-do...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2280 | Broken internal link: docs/archive/deprecated-findings-do...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2281 | Broken internal link: docs/archive/expansion-ideation/REA...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2282 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2283 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2284 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2285 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2286 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2287 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2288 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2289 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2290 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2291 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2292 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2293 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2294 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2295 | Broken internal link: docs/archive/expansion-ideation/SoN...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2296 | Broken internal link: docs/archive/firestore-rules.md          | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2297 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2298 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2299 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2300 | Broken internal link: docs/archive/handoffs-2025-12/HANDO...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2301 | Broken internal link: docs/archive/legacy*task_list_2025*...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2302 | Broken internal link: docs/archive/local-resources-review.md   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2303 | Broken internal link: docs/archive/obsolete-scripts-2026-...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2304 | Broken internal link: docs/archive/source-data/Recovery_P...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2305 | Broken internal link: docs/archive/source-data/nashville\_...  | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2306 | Broken internal link: docs/archive/source-data/recovery_q...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2307 | Broken internal link: docs/archive/superseded-plans/LOCAL...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2308 | Broken internal link: docs/archive/superseded-plans/M1.6\_...  | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2309 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2310 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2311 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2312 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2313 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2314 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2315 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2316 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2317 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2318 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2319 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2320 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2321 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2322 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2323 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2324 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2325 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2326 | Broken internal link: docs/archive/tdms-intermediates-202...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2327 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2328 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2329 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2330 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2331 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2332 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2333 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2334 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2335 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2336 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2337 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2338 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2339 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2340 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2341 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2342 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2343 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2344 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2345 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2346 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2347 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2348 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2349 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2350 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2351 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2352 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2353 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2354 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2355 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2356 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2357 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2358 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2359 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2360 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2361 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2362 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2363 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2364 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2365 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2366 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2367 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2368 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2369 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2370 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2371 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2372 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2373 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2374 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2375 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2376 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2377 | Broken internal link: docs/archive/technical-debt-sources...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2378 | Broken internal link: docs/archive/completed-plans/INTEGR...   | S3       | README.md                                                          | 0    |
-| DEBT-2379 | Broken internal link: ./docs/archive/2025-dec-reports/CON...   | S3       | ROADMAP_LOG.md                                                     | 0    |
-| DEBT-2380 | Broken internal link: ./docs/archive/SoNash_Code_Review_C...   | S3       | ROADMAP_LOG.md                                                     | 0    |
-| DEBT-2381 | Broken internal link: ./docs/archive/2025-dec-reports/JOU...   | S3       | ROADMAP_LOG.md                                                     | 0    |
-| DEBT-2382 | Broken internal link: ./docs/archive/completed-plans/EIGH...   | S3       | ROADMAP_LOG.md                                                     | 0    |
-| DEBT-2383 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP...   | S3       | ROADMAP_LOG.md                                                     | 0    |
-| DEBT-2384 | No stale anchor references detected                            | S3       | N/A                                                                | 0    |
-| DEBT-2385 | ARCHITECTURE.md <-> DEVELOPMENT.md have good bidirectiona...   | S3       | ARCHITECTURE.md                                                    | 0    |
-| DEBT-2386 | CLAUDE.md Documentation Index has proper hyperlinks            | S3       | CLAUDE.md                                                          | 0    |
-| DEBT-2387 | SESSION_CONTEXT.md <-> ROADMAP.md have excellent bidirect...   | S3       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2400 | Navigation: Skill index exists but not prominently linked...   | S3       | .claude/skills/SKILL_INDEX.md                                      | 0    |
-| DEBT-2401 | Quality: AI_WORKFLOW.md scores 8/10 - good structure but ...   | S3       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2402 | Navigation: AI_WORKFLOW.md (861 lines) lacks comprehensiv...   | S3       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2403 | Navigation: Decision tree format in AI_WORKFLOW.md not sc...   | S3       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2404 | Quality: ARCHITECTURE.md scores 9/10 - excellent structure     | S3       | ARCHITECTURE.md                                                    | 0    |
-| DEBT-2405 | Navigation: ARCHITECTURE.md (780 lines) lacks TOC              | S3       | ARCHITECTURE.md                                                    | 0    |
-| DEBT-2406 | Navigation: CLAUDE.md Section 5 links do not provide onwa...   | S3       | CLAUDE.md                                                          | 0    |
-| DEBT-2407 | Navigation: DEVELOPMENT.md (1095 lines) lacks comprehensi...   | S3       | DEVELOPMENT.md                                                     | 0    |
-| DEBT-2408 | Navigation: CODE_PATTERNS.md (591 lines) lacks TOC             | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
-| DEBT-2409 | Navigation: Archive folders lack README explaining contents    | S3       | docs/archive/2025-dec-reports                                      | 0    |
-| DEBT-2410 | Gap: Missing cross-links in audit documentation                | S3       | docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md            | 0    |
-| DEBT-2411 | Quality: DOCUMENTATION_STANDARDS.md scores 9/10 - excelle...   | S3       | docs/DOCUMENTATION_STANDARDS.md                                    | 0    |
-| DEBT-2412 | Navigation: PROCEDURE.md (585 lines) lacks TOC                 | S3       | docs/technical-debt/PROCEDURE.md                                   | 0    |
-| DEBT-2413 | Navigation: Technical debt views lack navigation back to ...   | S3       | docs/technical-debt/views/by-category.md                           | 0    |
-| DEBT-2414 | Navigation: README.md lacks TOC for 370-line document          | S3       | README.md                                                          | 0    |
-| DEBT-2415 | Navigation: No clear path from README to troubleshooting ...   | S3       | README.md                                                          | 0    |
-| DEBT-2416 | Typo: ROADMAP.md has inconsistent capitalization in miles...   | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2417 | Navigation: Scripts README lacks usage examples                | S3       | scripts/README.md                                                  | 0    |
-| DEBT-2418 | Navigation: Session Context breadcrumbs missing from SESS...   | S3       | SESSION_CONTEXT.md                                                 | 0    |
-| DEBT-2419 | Navigation: Fire DataConnect generated docs lack context ...   | S3       | src/dataconnect-generated/README.md                                | 0    |
-| DEBT-2420 | Gap: Missing skill usage examples beyond SKILL.md              | S3       | .claude/skills/\*/SKILL.md                                         | 0    |
-| DEBT-2421 | Navigation: Skill docs lack consistent 'Prerequisites' se...   | S3       | .claude/skills/\*/SKILL.md                                         | 0    |
-| DEBT-2422 | Diagram opportunity: Agent team vs subagent execution mod...   | S3       | .claude/skills/audit-comprehensive/SKILL.md                        | 0    |
-| DEBT-2423 | Navigation: Skill docs lack consistent 'Next Steps' sections   | S3       | .claude/skills/code-reviewer/SKILL.md                              | 0    |
-| DEBT-2424 | Diagram opportunity: AI_WORKFLOW.md decision tree only in...   | S3       | AI_WORKFLOW.md                                                     | 0    |
-| DEBT-2425 | Diagram opportunity: ARCHITECTURE.md security layers desc...   | S3       | ARCHITECTURE.md                                                    | 0    |
-| DEBT-2426 | Diagram opportunity: Compaction-resilient state persisten...   | S3       | CLAUDE.md                                                          | 0    |
-| DEBT-2427 | Quality: CODE_PATTERNS.md scores 8/10 - good reference bu...   | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
-| DEBT-2428 | Consolidation: Merge small setup guides                        | S3       | docs/APPCHECK_SETUP.md                                             | 0    |
-| DEBT-2429 | Quality: docs/archive/ has no index or navigation              | S3       | docs/archive/                                                      | 0    |
-| DEBT-2430 | Diagram opportunity: Multi-AI audit workflow lacks visual...   | S3       | docs/multi-ai-audit/README.md                                      | 0    |
-| DEBT-2431 | Navigation: Multi-AI audit templates lack consistent cros...   | S3       | docs/multi-ai-audit/templates/CODE_REVIEW_PLAN.md                  | 0    |
-| DEBT-2432 | Consolidation: Merge overlapping security docs                 | S3       | docs/SECURITY.md                                                   | 0    |
-| DEBT-2433 | Diagram opportunity: Technical Debt intake pipeline descr...   | S3       | docs/technical-debt/PROCEDURE.md                                   | 0    |
-| DEBT-2434 | Navigation: DOCUMENTATION_INDEX.md category organization ...   | S3       | DOCUMENTATION_INDEX.md                                             | 0    |
-| DEBT-2435 | Quality: ROADMAP.md scores 7/10 - large tables reduce rea...   | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2436 | Navigation: ROADMAP.md (3360 lines) lacks TOC                  | S3       | ROADMAP.md                                                         | 0    |
-| DEBT-2437 | Gap: Undocumented utility scripts                              | S3       | scripts/assign-review-tier.js                                      | 0    |
-| DEBT-2438 | Gap: Undocumented scripts library modules                      | S3       | scripts/lib/sanitize-error.js                                      | 0    |
-| DEBT-2439 | Gap: Missing troubleshooting guide                             | S3       | DEVELOPMENT.md                                                     | 0    |
-| DEBT-2440 | Gap: No migration guide for legacy patterns                    | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
-| DEBT-2955 | Document atomic write pattern as reusable helper               | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
+| ID | Title | Severity | File | Line |
+|---|---|---|---|---|
+| DEBT-0089 | 16 broken anchor links detected by docs:check | S1 | SESSION_CONTEXT.md | 47 |
+| DEBT-0090 | 20 placeholder issues across 5 template instances | S1 | docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md | 1 |
+| DEBT-0938 | Comprehensive Audit Reports Missing Standard Structure | S1 | N/A | 0 |
+| DEBT-0939 | Broken Link to FALSE_POSITIVES.jsonl in Agent Policy | S1 | N/A | 0 |
+| DEBT-0940 | Missing CONTRIBUTING.md at Root Level | S1 | N/A | 0 |
+| DEBT-1958 | DEVELOPMENT.md references missing npm script type-check | S1 | DEVELOPMENT.md | 848 |
+| DEBT-1962 | DOCUMENTATION_INDEX.md contains broken links to missing s... | S1 | DOCUMENTATION_INDEX.md | 464 |
+| DEBT-1964 | 498 external URLs need validation (expected 60-100 failures) | S1 | docs/resources/recovery-resources.md | 1 |
+| DEBT-1998 | Invalid placeholder URL in example: full-url.com | S1 | docs/DOCUMENTATION_STANDARDS.md | 0 |
+| DEBT-1999 | Broken external link: console.firebase.google.com/support... | S1 | docs/INCIDENT_RESPONSE.md | 0 |
+| DEBT-2000 | Broken anchor link: ./ROADMAP_LOG.md#m16---admin-panel--t... | S1 | ROADMAP.md | 0 |
+| DEBT-2001 | Broken anchor link: docs/DOCUMENT_DEPENDENCIES.md#cross-d... | S1 | ROADMAP.md | 0 |
+| DEBT-2002 | Broken anchor link: ./ROADMAP.md#active-sprint-operationa... | S1 | SESSION_CONTEXT.md | 0 |
+| DEBT-2003 | Broken anchor link: ./ROADMAP.md#m2-architecture-refactor... | S1 | SESSION_CONTEXT.md | 0 |
+| DEBT-2007 | Contradiction: Security rules enforcement for direct writes | S1 | CLAUDE.md | 0 |
+| DEBT-2008 | Contradiction: Pre-commit hook blocking status for patter... | S1 | CLAUDE.md | 89 |
+| DEBT-0444 | 99 files fail docs:check (313 errors, 177 warnings) | S2 | scripts/README.md | 1 |
+| DEBT-0445 | TRIGGERS.md last updated 2026-01-02 (15 days stale) | S2 | docs/TRIGGERS.md | 1 |
+| DEBT-0446 | DOCUMENTATION_STANDARDS.md last updated 2026-01-01 (16 da... | S2 | docs/DOCUMENTATION_STANDARDS.md | 1 |
+| DEBT-0447 | DOCUMENT_DEPENDENCIES.md claims SYNCED but sync check rep... | S2 | docs/DOCUMENT_DEPENDENCIES.md | 3 |
+| DEBT-0448 | 15 recent commits touch docs but AUDIT_TRACKER shows only... | S2 | docs/ | 0 |
+| DEBT-0957 | Archive Docs Never Checked for Link Rot | S2 | N/A | 0 |
+| DEBT-1969 | External URL dead: refugerecovery.org/meetings/ returns 404 | S2 | README.md | 1 |
+| DEBT-2022 | Structure: COMMAND_REFERENCE.md should be Tier 1 Canonical | S2 | .claude/COMMAND_REFERENCE.md | 0 |
+| DEBT-2023 | Structure: AI_WORKFLOW.md should be Tier 1 Canonical | S2 | AI_WORKFLOW.md | 0 |
+| DEBT-2024 | SECURITY_CHECKLIST.md missing Document Version and Status | S2 | docs/agent_docs/SECURITY_CHECKLIST.md | 0 |
+| DEBT-2025 | APPCHECK_SETUP.md missing Document Version | S2 | docs/APPCHECK_SETUP.md | 0 |
+| DEBT-2026 | RECAPTCHA_REMOVAL_GUIDE.md missing Document Version | S2 | docs/RECAPTCHA_REMOVAL_GUIDE.md | 0 |
+| DEBT-2027 | TESTING_PLAN.md missing Document Version | S2 | docs/TESTING_PLAN.md | 0 |
+| DEBT-2028 | Code blocks missing language specifier | S2 | CLAUDE.md | 0 |
+| DEBT-2029 | Inaccurate Firebase version in CLAUDE.md | S2 | CLAUDE.md | 0 |
+| DEBT-2030 | DEVELOPMENT.md missing Status field in metadata | S2 | DEVELOPMENT.md | 0 |
+| DEBT-2031 | CODE_PATTERNS.md uses lowercase 'claude.md' instead of 'C... | S2 | docs/agent_docs/CODE_PATTERNS.md | 0 |
+| DEBT-2032 | AI_REVIEW_PROCESS.md missing Status field | S2 | docs/AI_REVIEW_PROCESS.md | 0 |
+| DEBT-2033 | APPCHECK_SETUP.md missing Document Version field | S2 | docs/APPCHECK_SETUP.md | 0 |
+| DEBT-2034 | Broken anchor link: ../ROADMAP.md#dependencies | S2 | docs/DOCUMENTATION_STANDARDS.md | 0 |
+| DEBT-2035 | INCIDENT_RESPONSE.md missing Document Version field | S2 | docs/INCIDENT_RESPONSE.md | 0 |
+| DEBT-2036 | MCP_SETUP.md missing Status field | S2 | docs/MCP_SETUP.md | 0 |
+| DEBT-2037 | TESTING_PLAN.md missing Document Version field | S2 | docs/TESTING_PLAN.md | 0 |
+| DEBT-2038 | Structure: ROADMAP_LOG.md should be Tier 1 Canonical | S2 | ROADMAP_LOG.md | 0 |
+| DEBT-2039 | ROADMAP.md missing last updated date (stale > 30 days) | S2 | ROADMAP.md | 0 |
+| DEBT-2040 | Inconsistent heading levels in SESSION_CONTEXT.md | S2 | SESSION_CONTEXT.md | 0 |
+| DEBT-2041 | Line length exceeds recommended limit | S2 | SESSION_CONTEXT.md | 0 |
+| DEBT-2042 | Structure: SESSION_CONTEXT.md should be Tier 1 Canonical | S2 | SESSION_CONTEXT.md | 0 |
+| DEBT-2043 | Structure: .claude/ directory contains Tier 1 candidates | S2 | .claude/COMMAND_REFERENCE.md | 0 |
+| DEBT-2044 | EXPANSION_EVALUATION_TRACKER.md using deprecated date-bas... | S2 | docs/EXPANSION_EVALUATION_TRACKER.md | 0 |
+| DEBT-2045 | REVIEW_POLICY_ARCHITECTURE.md has conflicting status indi... | S2 | docs/REVIEW_POLICY_ARCHITECTURE.md | 0 |
+| DEBT-2046 | Inconsistent terminology: 'skill' vs 'command' vs 'slash ... | S2 | 127-154 | 0 |
+| DEBT-2047 | Inconsistent terminology: 'agent' vs 'subagent' vs 'worker' | S2 | 156-174 | 0 |
+| DEBT-2048 | Duplication: Session Start Protocol in CLAUDE.md and AI_W... | S2 | 21-42 | 0 |
+| DEBT-2049 | Duplication: Compaction-resilient state persistence in CL... | S2 | 395-425 | 0 |
+| DEBT-2050 | Inconsistent terminology: 'Cloud Functions' capitalization | S2 | CLAUDE.md | 72 |
+| DEBT-2051 | Inconsistent terminology: 'App Check' vs 'AppCheck' vs 'a... | S2 | CLAUDE.md | 74 |
+| DEBT-2052 | MONETIZATION_RESEARCH.md has stale Last Updated date (ove... | S2 | docs/MONETIZATION_RESEARCH.md | 0 |
+| DEBT-2053 | PR_WORKFLOW_CHECKLIST.md missing Version History table | S2 | docs/PR_WORKFLOW_CHECKLIST.md | 0 |
+| DEBT-2054 | Structure: SESSION_DECISIONS.md placement incorrect | S2 | docs/SESSION_DECISIONS.md | 0 |
+| DEBT-2055 | Historical ideation document is unlinked | S2 | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md | 0 |
+| DEBT-2056 | Master documentation index is not linked from entry points | S2 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2057 | Duplication: Agent/Skill Triggers table in CLAUDE.md and ... | S2 | 129-144 | 0 |
+| DEBT-2388 | Quality: CLAUDE.md scores 8/10 - missing cross-references... | S2 | CLAUDE.md | 0 |
+| DEBT-2389 | Quality: .claude/agents/ docs lack usage examples | S2 | .claude/agents/*.md | 0 |
+| DEBT-2390 | Quality: .claude/skills/ docs have inconsistent SKILL.md ... | S2 | .claude/skills/*/SKILL.md | 0 |
+| DEBT-2391 | Quality: DEVELOPMENT.md scores 7/10 - wall of text in Git... | S2 | DEVELOPMENT.md | 0 |
+| DEBT-2392 | Readability: DEVELOPMENT.md has 110-line section without ... | S2 | DEVELOPMENT.md | 0 |
+| DEBT-2393 | Gap: Missing overview for multi-ai audit system | S2 | docs/multi-ai-audit/README.md | 0 |
+| DEBT-2394 | Quality: SECURITY.md scores 8/10 - clear but missing thre... | S2 | docs/SECURITY.md | 0 |
+| DEBT-2395 | Quality: SESSION_CONTEXT.md scores 6/10 - excessive sessi... | S2 | SESSION_CONTEXT.md | 0 |
+| DEBT-2396 | Readability: SESSION_CONTEXT.md session summaries are den... | S2 | SESSION_CONTEXT.md | 0 |
+| DEBT-2397 | Gap: Undocumented agent team workflows | S2 | CLAUDE.md | 0 |
+| DEBT-2398 | Gap: No quickstart guide for new developers | S2 | DEVELOPMENT.md | 0 |
+| DEBT-2399 | Gap: Undocumented core lib modules | S2 | lib/firestore-service.ts | 0 |
+| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2 | docs | 0 |
+| DEBT-2833 | Audit all manual CLI tools and add to COMMAND_REFERENCE.md | S2 | .claude/COMMAND_REFERENCE.md | 0 |
+| DEBT-0806 | Archive docs contain significant link rot after moves | S3 | docs/archive/ | 0 |
+| DEBT-0807 | PR_REVIEW_PROMPT_TEMPLATE.md lacks Last Updated and Versi... | S3 | docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md | 1 |
+| DEBT-0808 | DOCUMENTATION_INDEX.md orphaned - not referenced by any m... | S3 | DOCUMENTATION_INDEX.md | 1 |
+| DEBT-1993 | Potential Misplaced Plans in Archive/Templates | S3 | docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md | 1 |
+| DEBT-1994 | docs/OPERATIONAL_VISIBILITY_SPRINT.md and docs/HOOKIFY_ST... | S3 | docs/OPERATIONAL_VISIBILITY_SPRINT.md | 1 |
+| DEBT-1996 | Markdownlint and Prettier checks not confirmed | S3 | docs/**/*.md | 1 |
+| DEBT-2004 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP... | S3 | AI_WORKFLOW.md | 0 |
+| DEBT-2005 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP... | S3 | AI_WORKFLOW.md | 0 |
+| DEBT-2006 | Broken internal link: docs/archive/completed-plans/INTEGR... | S3 | ARCHITECTURE.md | 0 |
+| DEBT-2009 | Broken internal link: docs/archive/completed-plans/INTEGR... | S3 | ROADMAP.md | 0 |
+| DEBT-2010 | Broken internal link: ./docs/archive/completed-plans/EIGH... | S3 | ROADMAP.md | 0 |
+| DEBT-2011 | Broken internal link: docs/archive/completed-plans/sonarc... | S3 | ROADMAP.md | 0 |
+| DEBT-2012 | Broken internal link: docs/archive/completed-plans/TRACK_... | S3 | ROADMAP.md | 0 |
+| DEBT-2013 | Broken internal link: docs/archive/completed-plans/TRACK_... | S3 | ROADMAP.md | 0 |
+| DEBT-2014 | Broken internal link: ./docs/archive/SoNash__AdminPanelEn... | S3 | ROADMAP.md | 0 |
+| DEBT-2015 | Broken internal link: docs/archive/completed-plans/sonarc... | S3 | ROADMAP.md | 0 |
+| DEBT-2016 | Broken internal link: docs/archive/completed-plans/INTEGR... | S3 | ROADMAP.md | 0 |
+| DEBT-2017 | Broken internal link: ./docs/archive/2025-dec-reports/JOU... | S3 | ROADMAP.md | 0 |
+| DEBT-2018 | Broken internal link: ./docs/archive/2025-dec-reports/LIB... | S3 | ROADMAP.md | 0 |
+| DEBT-2019 | Broken internal link: docs/archive/completed-plans/TRACK_... | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-2020 | Broken internal link: docs/archive/completed-plans/sonarc... | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-2021 | Broken internal link: docs/archive/completed-plans/INTEGR... | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-2058 | COMMAND_REFERENCE.md has inconsistent version format | S3 | .claude/COMMAND_REFERENCE.md | 0 |
+| DEBT-2059 | Structure: skills/ vs agents/ directory overlap | S3 | .claude/skills/ | 0 |
+| DEBT-2060 | Bare URLs without link text | S3 | AI_WORKFLOW.md | 0 |
+| DEBT-2061 | AI_WORKFLOW.md has inline metadata format instead of table | S3 | AI_WORKFLOW.md | 0 |
+| DEBT-2062 | AI_WORKFLOW.md doesn't link back to CLAUDE.md | S3 | AI_WORKFLOW.md | 0 |
+| DEBT-2063 | AI_WORKFLOW.md missing Status field | S3 | AI_WORKFLOW.md | 0 |
+| DEBT-2064 | ARCHITECTURE.md outdated by 23 days | S3 | ARCHITECTURE.md | 0 |
+| DEBT-2065 | CLAUDE.md missing Status field | S3 | CLAUDE.md | 0 |
+| DEBT-2066 | APPCHECK_SETUP.md outdated by 25 days | S3 | docs/APPCHECK_SETUP.md | 0 |
+| DEBT-2067 | LEARNING_METRICS.md missing tier declaration | S3 | docs/LEARNING_METRICS.md | 0 |
+| DEBT-2068 | RECAPTCHA_REMOVAL_GUIDE.md outdated by 25 days | S3 | docs/RECAPTCHA_REMOVAL_GUIDE.md | 0 |
+| DEBT-2069 | SECURITY.md outdated by 23 days | S3 | docs/SECURITY.md | 0 |
+| DEBT-2070 | SESSION_DECISIONS.md missing Status field | S3 | docs/SESSION_DECISIONS.md | 0 |
+| DEBT-2071 | Inconsistent list marker style | S3 | CLAUDE.md | 0 |
+| DEBT-2072 | Broken anchor link: ../ROADMAP.md#phase-4-error-tracking-... | S3 | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md | 0 |
+| DEBT-2073 | Broken anchor link: ../ROADMAP.md#phase-5-system-logs-gcp... | S3 | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md | 0 |
+| DEBT-2074 | CODE_PATTERNS.md <-> SECURITY_CHECKLIST.md missing cross-... | S3 | docs/agent_docs/CODE_PATTERNS.md | 0 |
+| DEBT-2075 | SECURITY_CHECKLIST.md doesn't reference CLAUDE.md | S3 | docs/agent_docs/SECURITY_CHECKLIST.md | 0 |
+| DEBT-2076 | Outdated redirect: cloud.google.com/recaptcha-enterprise/... | S3 | docs/APPCHECK_SETUP.md | 0 |
+| DEBT-2077 | AUDIT_TRACKER.md has Status in Purpose line instead of me... | S3 | docs/AUDIT_TRACKER.md | 0 |
+| DEBT-2078 | Structure: AUDIT_TRACKER.md should be Tier 4 Operational | S3 | docs/AUDIT_TRACKER.md | 0 |
+| DEBT-2079 | DOCUMENTATION_STANDARDS.md doesn't reference CLAUDE.md | S3 | docs/DOCUMENTATION_STANDARDS.md | 0 |
+| DEBT-2080 | FIREBASE_CHANGE_POLICY.md has multiple Last Updated dates... | S3 | docs/FIREBASE_CHANGE_POLICY.md | 0 |
+| DEBT-2081 | Broken anchor link: ../ROADMAP.md#offline-support-critical | S3 | docs/LIGHTHOUSE_INTEGRATION_PLAN.md | 0 |
+| DEBT-2082 | Broken anchor link: ../ROADMAP.md#m3-meetings-location-pl... | S3 | docs/MONETIZATION_RESEARCH.md | 0 |
+| DEBT-2083 | Broken anchor link: ../technical-debt/PROCEDURE.md#11-cat... | S3 | docs/multi-ai-audit/COORDINATOR.md | 0 |
+| DEBT-2084 | Broken anchor link: ../../ROADMAP.md#track-t---testing-in... | S3 | docs/plans/TESTING_INFRASTRUCTURE_PLAN.md | 0 |
+| DEBT-2085 | SESSION_DECISIONS.md missing Created field | S3 | docs/SESSION_DECISIONS.md | 0 |
+| DEBT-2086 | SLASH_COMMANDS_REFERENCE.md potentially stale (33 days old) | S3 | docs/SLASH_COMMANDS_REFERENCE.md | 0 |
+| DEBT-2087 | Outdated redirect: docs.anthropic.com/claude-code redirec... | S3 | docs/SLASH_COMMANDS_REFERENCE.md | 0 |
+| DEBT-2088 | Structure: technical-debt/PROCEDURE.md placement review | S3 | docs/technical-debt/PROCEDURE.md | 0 |
+| DEBT-2089 | Naming: Inconsistent use of PROCEDURE vs GUIDE vs WORKFLOW | S3 | docs/technical-debt/PROCEDURE.md | 0 |
+| DEBT-2090 | Broken anchor link: ./DOCUMENT_DEPENDENCIES.md#cross-docu... | S3 | docs/TRIGGERS.md | 0 |
+| DEBT-2091 | Case mismatch in link: CLAUDE.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2092 | Inconsistent blank lines around headings | S3 | GLOBAL_SECURITY_STANDARDS.md | 0 |
+| DEBT-2093 | Structure: ROADMAP.md vs ROADMAP_FUTURE.md separation | S3 | ROADMAP.md | 0 |
+| DEBT-2094 | Multiple H1 headings in single document | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-2095 | Trailing spaces at end of lines | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-2096 | Table formatting inconsistencies | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-2097 | Emoji usage in headings | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-2098 | SESSION_CONTEXT.md has inconsistent metadata format | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-2099 | Broken internal link: ./SHARED_TEMPLATE_BASE.md#ai-models | S3 | .claude/plans/audit-template-schema-overhaul.md | 0 |
+| DEBT-2100 | Broken internal link: ./audit-code-report.md | S3 | .claude/skills/audit-aggregator/SKILL.md | 0 |
+| DEBT-2101 | Broken internal link: ./audit-security-report.md | S3 | .claude/skills/audit-aggregator/SKILL.md | 0 |
+| DEBT-2102 | Broken internal link: ./audit-performance-report.md | S3 | .claude/skills/audit-aggregator/SKILL.md | 0 |
+| DEBT-2103 | Broken internal link: ./audit-documentation-report.md | S3 | .claude/skills/audit-aggregator/SKILL.md | 0 |
+| DEBT-2104 | Broken internal link: ./audit-refactoring-report.md | S3 | .claude/skills/audit-aggregator/SKILL.md | 0 |
+| DEBT-2105 | Broken internal link: ./audit-process-report.md | S3 | .claude/skills/audit-aggregator/SKILL.md | 0 |
+| DEBT-2106 | Broken internal link: docs/technical-debt/PROCEDURE.md | S3 | .claude/skills/audit-aggregator/SKILL.md | 0 |
+| DEBT-2107 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR... | S3 | .claude/skills/audit-aggregator/SKILL.md | 0 |
+| DEBT-2108 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md | S3 | .claude/skills/audit-aggregator/SKILL.md | 0 |
+| DEBT-2109 | Broken internal link: docs/technical-debt/PROCEDURE.md | S3 | .claude/skills/audit-code/SKILL.md | 0 |
+| DEBT-2110 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR... | S3 | .claude/skills/audit-code/SKILL.md | 0 |
+| DEBT-2111 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md | S3 | .claude/skills/audit-code/SKILL.md | 0 |
+| DEBT-2112 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md | S3 | .claude/skills/audit-code/SKILL.md | 0 |
+| DEBT-2113 | Broken internal link: docs/technical-debt/PROCEDURE.md | S3 | .claude/skills/audit-comprehensive/SKILL.md | 0 |
+| DEBT-2114 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR... | S3 | .claude/skills/audit-comprehensive/SKILL.md | 0 |
+| DEBT-2115 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md | S3 | .claude/skills/audit-comprehensive/SKILL.md | 0 |
+| DEBT-2116 | Broken internal link: path.md | S3 | .claude/skills/audit-documentation/SKILL.md | 0 |
+| DEBT-2117 | Broken internal link: docs/technical-debt/PROCEDURE.md | S3 | .claude/skills/audit-documentation/SKILL.md | 0 |
+| DEBT-2118 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR... | S3 | .claude/skills/audit-documentation/SKILL.md | 0 |
+| DEBT-2119 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md | S3 | .claude/skills/audit-documentation/SKILL.md | 0 |
+| DEBT-2120 | Broken internal link: docs/technical-debt/PROCEDURE.md | S3 | .claude/skills/audit-performance/SKILL.md | 0 |
+| DEBT-2121 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR... | S3 | .claude/skills/audit-performance/SKILL.md | 0 |
+| DEBT-2122 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md | S3 | .claude/skills/audit-performance/SKILL.md | 0 |
+| DEBT-2123 | Broken internal link: docs/technical-debt/PROCEDURE.md | S3 | .claude/skills/audit-process/SKILL.md | 0 |
+| DEBT-2124 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR... | S3 | .claude/skills/audit-process/SKILL.md | 0 |
+| DEBT-2125 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md | S3 | .claude/skills/audit-process/SKILL.md | 0 |
+| DEBT-2126 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md | S3 | .claude/skills/audit-process/SKILL.md | 0 |
+| DEBT-2127 | Broken internal link: docs/technical-debt/PROCEDURE.md | S3 | .claude/skills/audit-refactoring/SKILL.md | 0 |
+| DEBT-2128 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR... | S3 | .claude/skills/audit-refactoring/SKILL.md | 0 |
+| DEBT-2129 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md | S3 | .claude/skills/audit-refactoring/SKILL.md | 0 |
+| DEBT-2130 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md | S3 | .claude/skills/audit-refactoring/SKILL.md | 0 |
+| DEBT-2131 | Broken internal link: docs/technical-debt/PROCEDURE.md | S3 | .claude/skills/audit-security/SKILL.md | 0 |
+| DEBT-2132 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR... | S3 | .claude/skills/audit-security/SKILL.md | 0 |
+| DEBT-2133 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md | S3 | .claude/skills/audit-security/SKILL.md | 0 |
+| DEBT-2134 | Broken internal link: docs/agent_docs/CODE_PATTERNS.md | S3 | .claude/skills/audit-security/SKILL.md | 0 |
+| DEBT-2135 | Broken internal link: docs/agent_docs/SECURITY_CHECKLIST.md | S3 | .claude/skills/audit-security/SKILL.md | 0 |
+| DEBT-2136 | Broken internal link: docs/GLOBAL_SECURITY_STANDARDS.md | S3 | .claude/skills/audit-security/SKILL.md | 0 |
+| DEBT-2137 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR... | S3 | .claude/skills/audit-validation-wrapper/SKILL.md | 0 |
+| DEBT-2138 | Broken internal link: ../.claude/skills/audit-comprehensi... | S3 | .claude/skills/audit-validation-wrapper/SKILL.md | 0 |
+| DEBT-2139 | Broken internal link: path.md | S3 | .claude/skills/doc-optimizer/SKILL.md | 0 |
+| DEBT-2140 | Broken internal link: docs/technical-debt/PROCEDURE.md | S3 | .claude/skills/doc-optimizer/SKILL.md | 0 |
+| DEBT-2141 | Broken internal link: docs/templates/JSONL_SCHEMA_STANDAR... | S3 | .claude/skills/doc-optimizer/SKILL.md | 0 |
+| DEBT-2142 | Broken internal link: docs/DOCUMENTATION_STANDARDS.md | S3 | .claude/skills/doc-optimizer/SKILL.md | 0 |
+| DEBT-2143 | Broken internal link: ../../SESSION_CONTEXT.md | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2144 | Broken internal link: ../../SESSION_CONTEXT.md | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2145 | Broken internal link: ../../ROADMAP.md | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2146 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2147 | Broken internal link: ../../ROADMAP.md | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2148 | Broken internal link: ../../docs/agent_docs/CODE_PATTERNS.md | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2149 | Broken internal link: ../../docs/TECHNICAL_DEBT_MASTER.md | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2150 | Broken internal link: ../../docs/DOCUMENT_DEPENDENCIES.md | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2151 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md | S3 | .claude/skills/session-begin/SKILL.md | 0 |
+| DEBT-2152 | Broken internal link: docs/audits/sonarcloud-issues-detai... | S3 | .claude/skills/sonarcloud-sprint/SKILL.md | 0 |
+| DEBT-2153 | Broken internal link: docs/archive/completed-plans/sonarc... | S3 | .claude/skills/sonarcloud-sprint/SKILL.md | 0 |
+| DEBT-2154 | Broken internal link: docs/SONARCLOUD_CLEANUP_RUNBOOK.md | S3 | .claude/skills/sonarcloud-sprint/SKILL.md | 0 |
+| DEBT-2155 | Broken internal link: docs/SONARCLOUD_TRIAGE.md | S3 | .claude/skills/sonarcloud-sprint/SKILL.md | 0 |
+| DEBT-2156 | SESSION_HISTORY.md is append-only but lacks archival policy | S3 | docs/SESSION_HISTORY.md | 0 |
+| DEBT-2157 | Link distribution imbalance between CLAUDE.md and AI_WORK... | S3 | CLAUDE.md | 0 |
+| DEBT-2158 | Duplication: Documentation hierarchy/tiers in CLAUDE.md a... | S3 | 114-123 | 0 |
+| DEBT-2159 | Inconsistent terminology: 'TDMS' expansion | S3 | multiple | 0 |
+| DEBT-2160 | Inconsistent terminology: 'finding' vs 'issue' vs 'item' | S3 | multiple | 0 |
+| DEBT-2161 | Broken internal link: ./archive/SoNash__AdminPanelEnhance... | S3 | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md | 0 |
+| DEBT-2162 | Broken internal link: ./archive/SoNash__AdminPanelEnhance... | S3 | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md | 0 |
+| DEBT-2163 | Missing 'Related Documents' sections in agent_docs | S3 | docs/agent_docs/CODE_PATTERNS.md | 0 |
+| DEBT-2164 | Structure: docs/agent_docs/ naming convention | S3 | docs/agent_docs/CODE_PATTERNS.md | 0 |
+| DEBT-2165 | Broken internal link: ./archive/REVIEWS_1-40.md | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-2166 | Broken internal link: ./archive/REVIEWS_1-40.md | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-2167 | Broken internal link: ./archive/REVIEWS_1-40.md | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-2168 | Broken internal link: ./archive/REVIEWS_42-60.md | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-2169 | Broken internal link: ./archive/REVIEWS_61-100.md | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-2170 | Broken internal link: ./archive/REVIEWS_101-136.md | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-2171 | Broken internal link: ./archive/REVIEWS_137-179.md | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-2172 | Broken internal link: ./archive/REVIEWS_202-212.md | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-2173 | Broken internal link: ./archive/REVIEWS_180-201.md | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-2174 | Broken internal link: ./archive/REVIEWS_137-179.md | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-2175 | Structure: Archive directory organization inconsistent | S3 | docs/archive/2025-dec-reports/ | 0 |
+| DEBT-2176 | Broken internal link: ../canonical/README.md | S3 | docs/audits/single-session/README.md | 0 |
+| DEBT-2177 | Broken internal link: ../../AUDIT_FINDINGS_PROCEDURE.md | S3 | docs/audits/single-session/README.md | 0 |
+| DEBT-2178 | Broken internal link: ../archive/completed-decisions/ADR-... | S3 | docs/decisions/README.md | 0 |
+| DEBT-2179 | Broken internal link: path.md | S3 | docs/multi-ai-audit/templates/DOCUMENTATION_AUDIT.md | 0 |
+| DEBT-2180 | Broken internal link: ./reviews/2026-Q1/PROCESS_AUDIT_FIN... | S3 | docs/OPERATIONAL_VISIBILITY_SPRINT.md | 0 |
+| DEBT-2181 | Broken internal link: ./audits/comprehensive/AUDIT_SUMMAR... | S3 | docs/OPERATIONAL_VISIBILITY_SPRINT.md | 0 |
+| DEBT-2182 | Broken internal link: ./archive/2025-dec-reports/BILLING_... | S3 | docs/SECURITY.md | 0 |
+| DEBT-2183 | Broken internal link: ./archive/2025-dec-reports/BILLING_... | S3 | docs/SECURITY.md | 0 |
+| DEBT-2184 | Broken internal link: ./archive/2025-dec-reports/BILLING_... | S3 | docs/SECURITY.md | 0 |
+| DEBT-2185 | SESSION_DECISIONS.md has no outgoing links | S3 | docs/SESSION_DECISIONS.md | 0 |
+| DEBT-2186 | SESSION_DECISIONS.md missing 'How to Use This Document' s... | S3 | docs/SESSION_DECISIONS.md | 0 |
+| DEBT-2187 | Broken internal link: ./archive/completed-plans/sonarclou... | S3 | docs/SONARCLOUD_CLEANUP_RUNBOOK.md | 0 |
+| DEBT-2188 | Broken internal link: ./archive/completed-plans/sonarclou... | S3 | docs/SONARCLOUD_CLEANUP_RUNBOOK.md | 0 |
+| DEBT-2189 | Broken internal link: audits/sonarcloud-dismissals.md | S3 | docs/SONARCLOUD_CLEANUP_RUNBOOK.md | 0 |
+| DEBT-2190 | Broken internal link: SONARCLOUD_TRIAGE.md | S3 | docs/SONARCLOUD_CLEANUP_RUNBOOK.md | 0 |
+| DEBT-2191 | Broken internal link: ../archive/tdms-intermediates-2026-... | S3 | docs/technical-debt/FINAL_SYSTEM_AUDIT.md | 0 |
+| DEBT-2192 | Broken internal link: ../archive/technical-debt-sources-2... | S3 | docs/technical-debt/FINAL_SYSTEM_AUDIT.md | 0 |
+| DEBT-2193 | Broken internal link: docs/SoNash_Technical_Ideation_Mult... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2194 | Broken internal link: docs/audits/sonarcloud-issues-detai... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2195 | Broken internal link: src/dataconnect-generated/README.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2196 | Broken internal link: src/dataconnect-generated/.guides/u... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2197 | Broken internal link: src/dataconnect-generated/.guides/s... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2198 | Broken internal link: src/dataconnect-generated/react/REA... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2199 | Broken internal link: docs/SoNash_Technical_Ideation_Mult... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2200 | Broken internal link: docs/audits/sonarcloud-issues-detai... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2201 | Broken internal link: src/dataconnect-generated/.guides/s... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2202 | Broken internal link: src/dataconnect-generated/.guides/u... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2203 | Broken internal link: docs/audits/sonarcloud-issues-detai... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2204 | Broken internal link: docs/SoNash_Technical_Ideation_Mult... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2205 | Broken internal link: src/dataconnect-generated/.guides/s... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2206 | Broken internal link: src/dataconnect-generated/.guides/u... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2207 | Broken internal link: src/dataconnect-generated/react/REA... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2208 | Broken internal link: src/dataconnect-generated/README.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2209 | Broken internal link: docs/archive/2025-dec-reports/AGGRE... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2210 | Broken internal link: docs/archive/2025-dec-reports/APP_C... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2211 | Broken internal link: docs/archive/2025-dec-reports/ARCHI... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2212 | Broken internal link: docs/archive/2025-dec-reports/ARCHI... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2213 | Broken internal link: docs/archive/2025-dec-reports/BILLI... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2214 | Broken internal link: docs/archive/2025-dec-reports/CODE_... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2215 | Broken internal link: docs/archive/2025-dec-reports/CONSO... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2216 | Broken internal link: docs/archive/2025-dec-reports/DEPEN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2217 | Broken internal link: docs/archive/2025-dec-reports/ESLIN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2218 | Broken internal link: docs/archive/2025-dec-reports/JOURN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2219 | Broken internal link: docs/archive/2025-dec-reports/LIBRA... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2220 | Broken internal link: docs/archive/2025-dec-reports/REFAC... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2221 | Broken internal link: docs/archive/2025-dec-reports/REFAC... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2222 | Broken internal link: docs/archive/2025-dec-reports/ROADM... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2223 | Broken internal link: docs/archive/2025-dec-reports/ROADM... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2224 | Broken internal link: docs/archive/2025-dec-reports/ULTRA... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2225 | Broken internal link: docs/archive/2025-dec-reports/XSS_P... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2226 | Broken internal link: docs/archive/2026-jan-deprecated/AN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2227 | Broken internal link: docs/archive/2026-jan-deprecated/AR... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2228 | Broken internal link: docs/archive/2026-jan-deprecated/CU... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2229 | Broken internal link: docs/archive/2026-jan-deprecated/PR... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2230 | Broken internal link: docs/archive/2026-jan-deprecated/RO... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2231 | Broken internal link: docs/archive/2026-jan-deprecated/SL... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2232 | Broken internal link: docs/archive/2026-jan-deprecated/br... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2233 | Broken internal link: docs/archive/2026-jan-deprecated/br... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2234 | Broken internal link: docs/archive/AI_HANDOFF-2026-01-02.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2235 | Broken internal link: docs/archive/AI_STANDARDIZED_REPORT.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2236 | Broken internal link: docs/archive/APPCHECK_FRESH_SETUP.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2237 | Broken internal link: docs/archive/ARCHIVE_INDEX.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2238 | Broken internal link: docs/archive/ChatGPT_Multi_AI_Refac... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2239 | Broken internal link: docs/archive/GitHub_Code_Analysis_a... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2240 | Broken internal link: docs/archive/IMPLEMENTATION_PROMPTS.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2241 | Broken internal link: docs/archive/Monetization_Research_... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2242 | Broken internal link: docs/archive/RECAPTCHA_PROBLEM_SUMM... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2243 | Broken internal link: docs/archive/REVIEWS_1-40.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2244 | Broken internal link: docs/archive/REVIEWS_101-136.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2245 | Broken internal link: docs/archive/REVIEWS_137-179.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2246 | Broken internal link: docs/archive/REVIEWS_180-201.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2247 | Broken internal link: docs/archive/REVIEWS_202-212.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2248 | Broken internal link: docs/archive/REVIEWS_42-60.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2249 | Broken internal link: docs/archive/REVIEWS_61-100.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2250 | Broken internal link: docs/archive/Refactoring_PR_Plan.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2251 | Broken internal link: docs/archive/SUPABASE_MIGRATION_ANA... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2252 | Broken internal link: docs/archive/SoNash_Code_Review_Con... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2253 | Broken internal link: docs/archive/SoNash__AdminPanelEnha... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2254 | Broken internal link: docs/archive/SoNash__AdminPanelEnha... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2255 | Broken internal link: docs/archive/SoNash__AdminPanelEnha... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2256 | Broken internal link: docs/archive/SoNash__Phase1_ClaudeC... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2257 | Broken internal link: docs/archive/SoNash__Phase1_ClaudeC... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2258 | Broken internal link: docs/archive/SoNash__Phase1_ClaudeC... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2259 | Broken internal link: docs/archive/TESTING_CHECKLIST.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2260 | Broken internal link: docs/archive/architecture-reviews-d... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2261 | Broken internal link: docs/archive/architecture-reviews-d... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2262 | Broken internal link: docs/archive/completed-audits/PHASE... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2263 | Broken internal link: docs/archive/completed-decisions/AD... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2264 | Broken internal link: docs/archive/completed-plans/DOCUME... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2265 | Broken internal link: docs/archive/completed-plans/EIGHT_... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2266 | Broken internal link: docs/archive/completed-plans/INTEGR... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2267 | Broken internal link: docs/archive/completed-plans/TRACK_... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2268 | Broken internal link: docs/archive/completed-plans/sonarc... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2269 | Broken internal link: docs/archive/consolidated-2025-12-1... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2270 | Broken internal link: docs/archive/consolidated-2025-12-1... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2271 | Broken internal link: docs/archive/consolidated-2025-12-1... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2272 | Broken internal link: docs/archive/consolidated-2025-12-1... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2273 | Broken internal link: docs/archive/consolidated-2025-12-1... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2274 | Broken internal link: docs/archive/consolidated-2025-12-1... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2275 | Broken internal link: docs/archive/consolidated-2025-12-1... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2276 | Broken internal link: docs/archive/consolidated-2025-12-1... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2277 | Broken internal link: docs/archive/consolidated-2025-12-1... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2278 | Broken internal link: docs/archive/deprecated-findings-do... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2279 | Broken internal link: docs/archive/deprecated-findings-do... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2280 | Broken internal link: docs/archive/deprecated-findings-do... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2281 | Broken internal link: docs/archive/expansion-ideation/REA... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2282 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2283 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2284 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2285 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2286 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2287 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2288 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2289 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2290 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2291 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2292 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2293 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2294 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2295 | Broken internal link: docs/archive/expansion-ideation/SoN... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2296 | Broken internal link: docs/archive/firestore-rules.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2297 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2298 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2299 | Broken internal link: docs/archive/handoffs-2025-12/AI_HA... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2300 | Broken internal link: docs/archive/handoffs-2025-12/HANDO... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2301 | Broken internal link: docs/archive/legacy_task_list_2025_... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2302 | Broken internal link: docs/archive/local-resources-review.md | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2303 | Broken internal link: docs/archive/obsolete-scripts-2026-... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2304 | Broken internal link: docs/archive/source-data/Recovery_P... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2305 | Broken internal link: docs/archive/source-data/nashville_... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2306 | Broken internal link: docs/archive/source-data/recovery_q... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2307 | Broken internal link: docs/archive/superseded-plans/LOCAL... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2308 | Broken internal link: docs/archive/superseded-plans/M1.6_... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2309 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2310 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2311 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2312 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2313 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2314 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2315 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2316 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2317 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2318 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2319 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2320 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2321 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2322 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2323 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2324 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2325 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2326 | Broken internal link: docs/archive/tdms-intermediates-202... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2327 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2328 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2329 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2330 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2331 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2332 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2333 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2334 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2335 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2336 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2337 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2338 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2339 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2340 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2341 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2342 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2343 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2344 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2345 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2346 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2347 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2348 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2349 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2350 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2351 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2352 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2353 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2354 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2355 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2356 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2357 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2358 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2359 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2360 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2361 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2362 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2363 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2364 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2365 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2366 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2367 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2368 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2369 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2370 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2371 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2372 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2373 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2374 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2375 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2376 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2377 | Broken internal link: docs/archive/technical-debt-sources... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2378 | Broken internal link: docs/archive/completed-plans/INTEGR... | S3 | README.md | 0 |
+| DEBT-2379 | Broken internal link: ./docs/archive/2025-dec-reports/CON... | S3 | ROADMAP_LOG.md | 0 |
+| DEBT-2380 | Broken internal link: ./docs/archive/SoNash_Code_Review_C... | S3 | ROADMAP_LOG.md | 0 |
+| DEBT-2381 | Broken internal link: ./docs/archive/2025-dec-reports/JOU... | S3 | ROADMAP_LOG.md | 0 |
+| DEBT-2382 | Broken internal link: ./docs/archive/completed-plans/EIGH... | S3 | ROADMAP_LOG.md | 0 |
+| DEBT-2383 | Broken internal link: ./docs/archive/IMPLEMENTATION_PROMP... | S3 | ROADMAP_LOG.md | 0 |
+| DEBT-2384 | No stale anchor references detected | S3 | N/A | 0 |
+| DEBT-2385 | ARCHITECTURE.md <-> DEVELOPMENT.md have good bidirectiona... | S3 | ARCHITECTURE.md | 0 |
+| DEBT-2386 | CLAUDE.md Documentation Index has proper hyperlinks | S3 | CLAUDE.md | 0 |
+| DEBT-2387 | SESSION_CONTEXT.md <-> ROADMAP.md have excellent bidirect... | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-2400 | Navigation: Skill index exists but not prominently linked... | S3 | .claude/skills/SKILL_INDEX.md | 0 |
+| DEBT-2401 | Quality: AI_WORKFLOW.md scores 8/10 - good structure but ... | S3 | AI_WORKFLOW.md | 0 |
+| DEBT-2402 | Navigation: AI_WORKFLOW.md (861 lines) lacks comprehensiv... | S3 | AI_WORKFLOW.md | 0 |
+| DEBT-2403 | Navigation: Decision tree format in AI_WORKFLOW.md not sc... | S3 | AI_WORKFLOW.md | 0 |
+| DEBT-2404 | Quality: ARCHITECTURE.md scores 9/10 - excellent structure | S3 | ARCHITECTURE.md | 0 |
+| DEBT-2405 | Navigation: ARCHITECTURE.md (780 lines) lacks TOC | S3 | ARCHITECTURE.md | 0 |
+| DEBT-2406 | Navigation: CLAUDE.md Section 5 links do not provide onwa... | S3 | CLAUDE.md | 0 |
+| DEBT-2407 | Navigation: DEVELOPMENT.md (1095 lines) lacks comprehensi... | S3 | DEVELOPMENT.md | 0 |
+| DEBT-2408 | Navigation: CODE_PATTERNS.md (591 lines) lacks TOC | S3 | docs/agent_docs/CODE_PATTERNS.md | 0 |
+| DEBT-2409 | Navigation: Archive folders lack README explaining contents | S3 | docs/archive/2025-dec-reports | 0 |
+| DEBT-2410 | Gap: Missing cross-links in audit documentation | S3 | docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md | 0 |
+| DEBT-2411 | Quality: DOCUMENTATION_STANDARDS.md scores 9/10 - excelle... | S3 | docs/DOCUMENTATION_STANDARDS.md | 0 |
+| DEBT-2412 | Navigation: PROCEDURE.md (585 lines) lacks TOC | S3 | docs/technical-debt/PROCEDURE.md | 0 |
+| DEBT-2413 | Navigation: Technical debt views lack navigation back to ... | S3 | docs/technical-debt/views/by-category.md | 0 |
+| DEBT-2414 | Navigation: README.md lacks TOC for 370-line document | S3 | README.md | 0 |
+| DEBT-2415 | Navigation: No clear path from README to troubleshooting ... | S3 | README.md | 0 |
+| DEBT-2416 | Typo: ROADMAP.md has inconsistent capitalization in miles... | S3 | ROADMAP.md | 0 |
+| DEBT-2417 | Navigation: Scripts README lacks usage examples | S3 | scripts/README.md | 0 |
+| DEBT-2418 | Navigation: Session Context breadcrumbs missing from SESS... | S3 | SESSION_CONTEXT.md | 0 |
+| DEBT-2419 | Navigation: Fire DataConnect generated docs lack context ... | S3 | src/dataconnect-generated/README.md | 0 |
+| DEBT-2420 | Gap: Missing skill usage examples beyond SKILL.md | S3 | .claude/skills/*/SKILL.md | 0 |
+| DEBT-2421 | Navigation: Skill docs lack consistent 'Prerequisites' se... | S3 | .claude/skills/*/SKILL.md | 0 |
+| DEBT-2422 | Diagram opportunity: Agent team vs subagent execution mod... | S3 | .claude/skills/audit-comprehensive/SKILL.md | 0 |
+| DEBT-2423 | Navigation: Skill docs lack consistent 'Next Steps' sections | S3 | .claude/skills/code-reviewer/SKILL.md | 0 |
+| DEBT-2424 | Diagram opportunity: AI_WORKFLOW.md decision tree only in... | S3 | AI_WORKFLOW.md | 0 |
+| DEBT-2425 | Diagram opportunity: ARCHITECTURE.md security layers desc... | S3 | ARCHITECTURE.md | 0 |
+| DEBT-2426 | Diagram opportunity: Compaction-resilient state persisten... | S3 | CLAUDE.md | 0 |
+| DEBT-2427 | Quality: CODE_PATTERNS.md scores 8/10 - good reference bu... | S3 | docs/agent_docs/CODE_PATTERNS.md | 0 |
+| DEBT-2428 | Consolidation: Merge small setup guides | S3 | docs/APPCHECK_SETUP.md | 0 |
+| DEBT-2429 | Quality: docs/archive/ has no index or navigation | S3 | docs/archive/ | 0 |
+| DEBT-2430 | Diagram opportunity: Multi-AI audit workflow lacks visual... | S3 | docs/multi-ai-audit/README.md | 0 |
+| DEBT-2431 | Navigation: Multi-AI audit templates lack consistent cros... | S3 | docs/multi-ai-audit/templates/CODE_REVIEW_PLAN.md | 0 |
+| DEBT-2432 | Consolidation: Merge overlapping security docs | S3 | docs/SECURITY.md | 0 |
+| DEBT-2433 | Diagram opportunity: Technical Debt intake pipeline descr... | S3 | docs/technical-debt/PROCEDURE.md | 0 |
+| DEBT-2434 | Navigation: DOCUMENTATION_INDEX.md category organization ... | S3 | DOCUMENTATION_INDEX.md | 0 |
+| DEBT-2435 | Quality: ROADMAP.md scores 7/10 - large tables reduce rea... | S3 | ROADMAP.md | 0 |
+| DEBT-2436 | Navigation: ROADMAP.md (3360 lines) lacks TOC | S3 | ROADMAP.md | 0 |
+| DEBT-2437 | Gap: Undocumented utility scripts | S3 | scripts/assign-review-tier.js | 0 |
+| DEBT-2438 | Gap: Undocumented scripts library modules | S3 | scripts/lib/sanitize-error.js | 0 |
+| DEBT-2439 | Gap: Missing troubleshooting guide | S3 | DEVELOPMENT.md | 0 |
+| DEBT-2440 | Gap: No migration guide for legacy patterns | S3 | docs/agent_docs/CODE_PATTERNS.md | 0 |
+| DEBT-2955 | Document atomic write pattern as reusable helper | S3 | docs/agent_docs/CODE_PATTERNS.md | 0 |
 
 ## engineering-productivity (9)
 
-| ID        | Title                                                        | Severity | File                            | Line |
-| --------- | ------------------------------------------------------------ | -------- | ------------------------------- | ---- |
-| DEBT-0933 | Firebase IndexedDB Persistence Not Enabled - Critical Off... | S1       | N/A                             | 0    |
-| DEBT-0934 | No Service Worker - App Cannot Load Offline At All           | S1       | N/A                             | 0    |
-| DEBT-0935 | No Offline Write Queue - Journal Entries Lost Forever        | S1       | N/A                             | 0    |
-| DEBT-2834 | Composite validator: consolidate 9 PostToolUse hooks into... | S2       | .claude/settings.json           | 57   |
-| DEBT-2979 | External link checker has ~100% false positive rate          | S2       | scripts/check-external-links.js | 0    |
-| DEBT-2980 | Commit tracker shows 212h stale despite recent commits       | S2       | .claude/hooks/commit-tracker.js | 0    |
-| DEBT-3127 | Add shellcheck to pre-commit hooks for shell script linting  | S2       | .husky/                         | 0    |
-| DEBT-3128 | Archive reviews #285-334 to reduce learnings log from 340... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md | 0    |
-| DEBT-3129 | Refresh Quick Pattern Index with recent patterns from rev... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md | 0    |
+| ID | Title | Severity | File | Line |
+|---|---|---|---|---|
+| DEBT-0933 | Firebase IndexedDB Persistence Not Enabled - Critical Off... | S1 | N/A | 0 |
+| DEBT-0934 | No Service Worker - App Cannot Load Offline At All | S1 | N/A | 0 |
+| DEBT-0935 | No Offline Write Queue - Journal Entries Lost Forever | S1 | N/A | 0 |
+| DEBT-2834 | Composite validator: consolidate 9 PostToolUse hooks into... | S2 | .claude/settings.json | 57 |
+| DEBT-2979 | External link checker has ~100% false positive rate | S2 | scripts/check-external-links.js | 0 |
+| DEBT-2980 | Commit tracker shows 212h stale despite recent commits | S2 | .claude/hooks/commit-tracker.js | 0 |
+| DEBT-3127 | Add shellcheck to pre-commit hooks for shell script linting | S2 | .husky/ | 0 |
+| DEBT-3128 | Archive reviews #285-334 to reduce learnings log from 340... | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
+| DEBT-3129 | Refresh Quick Pattern Index with recent patterns from rev... | S3 | docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
 
 ## enhancements (8)
 
-| ID        | Title                                                        | Severity | File                                      | Line |
-| --------- | ------------------------------------------------------------ | -------- | ----------------------------------------- | ---- |
-| DEBT-2806 | Inconsistent loading states - spinners vs text vs skeleto... | S2       | multiple                                  | 0    |
-| DEBT-2807 | Generic button labels - Submit used instead of action-spe... | S2       | components/journal/journal-entry-form.tsx | 1    |
-| DEBT-2810 | Security guidance consolidation - multiple overlapping se... | S2       | docs/SECURITY.md                          | 1    |
-| DEBT-2814 | Pre-push duplicates pre-commit pattern checks                | S2       | .husky/pre-push                           | 1    |
-| DEBT-2808 | Date formats inconsistent across the app                     | S2       | src/components                            | 0    |
-| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | src                                       | 0    |
-| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | package.json                              | 0    |
-| DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | src/components                            | 0    |
+| ID | Title | Severity | File | Line |
+|---|---|---|---|---|
+| DEBT-2806 | Inconsistent loading states - spinners vs text vs skeleto... | S2 | multiple | 0 |
+| DEBT-2807 | Generic button labels - Submit used instead of action-spe... | S2 | components/journal/journal-entry-form.tsx | 1 |
+| DEBT-2808 | Date formats inconsistent across the app | S2 | src/components | 0 |
+| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files | S2 | src | 0 |
+| DEBT-2810 | Security guidance consolidation - multiple overlapping se... | S2 | docs/SECURITY.md | 1 |
+| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2 | package.json | 0 |
+| DEBT-2813 | Missing ARIA labels on critical navigation tabs | S2 | src/components | 0 |
+| DEBT-2814 | Pre-push duplicates pre-commit pattern checks | S2 | .husky/pre-push | 1 |
 
 ## performance (50)
 
-| ID        | Title                                                        | Severity | File                                     | Line |
-| --------- | ------------------------------------------------------------ | -------- | ---------------------------------------- | ---- |
-| DEBT-0084 | Landing page forced to client-side rendering blocks SSR      | S1       | app/page.tsx                             | 0    |
-| DEBT-0091 | Large monolithic component (1117 lines) without code spli... | S1       | components/notebook/pages/today-page.tsx | 1    |
-| DEBT-0092 | No React.memo on frequently re-rendered admin list (924 l... | S1       | components/admin/users-tab.tsx           | 84   |
-| DEBT-0132 | Enable SSR for landing page                                  | S1       | app/page.tsx                             | 1    |
-| DEBT-0134 | Unoptimized images (11MB)                                    | S1       | public/images/gemini-generated/          | 1    |
-| DEBT-0135 | No code splitting                                            | S1       | app/notebook/[notebookId]/page.tsx       | 1    |
-| DEBT-0950 | MoodSparkline Redundant Fetch Duplicates Journal Data        | S1       | N/A                                      | 0    |
-| DEBT-1541 | The 'value' object passed as the value prop to the Contex... | S1       | lib/contexts/admin-tab-context.tsx       | 126  |
-| DEBT-1588 | Move this component definition out of the parent componen... | S1       | components/admin/admin-tabs.tsx          | 75   |
-| DEBT-1622 | Do not use Array index in keys                               | S1       | components/admin/errors-tab.tsx          | 244  |
-| DEBT-1965 | Notebook Animation Delays Interactivity                      | S1       | components/notebook/notebook-shell.tsx   | 189  |
-| DEBT-1971 | Framer Motion Overuse - Heavy Animation Library              | S1       | package.json                             | 92   |
-| DEBT-1990 | Excessive client-component surface ("use client" appears ... | S1       | app/admin/page.tsx                       | 1    |
-| DEBT-0449 | 30+ components with inline onClick arrow functions           | S2       | components                               | 0    |
-| DEBT-0450 | 28 components with inline style objects                      | S2       | components                               | 0    |
-| DEBT-0451 | Large chunk file (628KB) indicates code splitting opportu... | S2       | .next/static/chunks                      | 0    |
-| DEBT-0452 | 20+ uses of key={index} in list rendering                    | S2       | components                               | 0    |
-| DEBT-0453 | setInterval without visibility check continues in background | S2       | components/widgets/meeting-countdown.tsx | 41   |
-| DEBT-0454 | getAllMeetings() deprecated but still available without l... | S2       | lib/db/meetings.ts                       | 129  |
-| DEBT-0521 | Historical Score Tracking                                    | S2       | .lighthouse/history.json                 | 1    |
-| DEBT-0522 | Performance Budgets                                          | S2       | lighthouserc.js                          | 1    |
-| DEBT-0523 | Development Dashboard Integration                            | S2       | app/dev/page.tsx                         | 1    |
-| DEBT-0524 | PWA Audit Baseline                                           | S2       | app/manifest.ts                          | 1    |
-| DEBT-0525 | Missing cache headers                                        | S2       | firebase.json                            | 15   |
-| DEBT-0589 | Do not call `Array#push()` multiple times.                   | S2       | hooks/use-journal.ts                     | 114  |
-| DEBT-0900 | Optimize admin analytics functions (cache/pre-compute)       | S2       | functions/src/admin.ts                   | 2726 |
-| DEBT-0955 | Large ResourcesPage Not Code-Split (960 lines, ~50KB)        | S2       | N/A                                      | 0    |
-| DEBT-0960 | Pre-Push Redundant Checks (15-40s)                           | S2       | N/A                                      | 0    |
-| DEBT-0979 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE... | S2       | scripts/eval/eval-sonarcloud-stage.js    | 614  |
-| DEBT-1002 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE... | S2       | scripts/multi-ai/eval-check-stage.js     | 370  |
-| DEBT-1027 | arrow function is equivalent to `Boolean`. Use `Boolean` ... | S2       | scripts/multi-ai/fix-schema.js           | 256  |
-| DEBT-1045 | arrow function is equivalent to `Boolean`. Use `Boolean` ... | S2       | scripts/multi-ai/unify-findings.js       | 99   |
-| DEBT-1062 | Prefer `.at(…)` over `[….length - index]`.                   | S2       | components/admin/analytics-tab.tsx       | 219  |
-| DEBT-1146 | `DANGEROUS_KEYS` should be a `Set`, and use `DANGEROUS_KE... | S2       | scripts/debt/intake-audit.js             | 39   |
-| DEBT-1237 | `args` should be a `Set`, and use `args.has()` to check e... | S2       | scripts/debt/sync-roadmap-refs.js        | 25   |
-| DEBT-1344 | `args` should be a `Set`, and use `args.has()` to check e... | S2       | scripts/check-doc-headers.js             | 42   |
-| DEBT-1372 | `args` should be a `Set`, and use `args.has()` to check e... | S2       | scripts/check-agent-compliance.js        | 29   |
-| DEBT-1401 | `args` should be a `Set`, and use `args.has()` to check e... | S2       | scripts/check-pattern-sync.js            | 263  |
-| DEBT-1479 | `args` should be a `Set`, and use `args.has()` to check e... | S2       | scripts/secrets/decrypt-secrets.js       | 178  |
-| DEBT-1560 | `BUILT_IN_TYPES` should be a `Set`, and use `BUILT_IN_TYP... | S2       | components/admin/privileges-tab.tsx      | 31   |
-| DEBT-1572 | Prefer negative index over length minus index for `slice`.   | S2       | scripts/aggregate-audit-findings.js      | 330  |
-| DEBT-1600 | `args` should be a `Set`, and use `args.has()` to check e... | S2       | scripts/run-consolidation.js             | 55   |
-| DEBT-1604 | `args` should be a `Set`, and use `args.has()` to check e... | S2       | scripts/check-cross-doc-deps.js          | 27   |
-| DEBT-1620 | `components` should be a `Set`, and use `components.has()... | S2       | tests/error-knowledge-base.test.ts       | 144  |
-| DEBT-1646 | Do not call `Array#push()` multiple times.                   | S2       | scripts/check-triggers.js                | 306  |
-| DEBT-1652 | `args` should be a `Set`, and use `args.has()` to check e... | S2       | scripts/verify-skill-usage.js            | 222  |
-| DEBT-0809 | Only 6 dynamic imports despite 101 client components         | S3       | components                               | 0    |
-| DEBT-0810 | useMemo/useCallback usage is inconsistent                    | S3       | components                               | 0    |
-| DEBT-0811 | Image optimization disabled (unoptimized: true)              | S3       | next.config.mjs                          | 14   |
-| DEBT-0858 | useJournal creates redundant auth listener + potential me... | S0       | hooks/use-journal.ts                     | 0    |
+| ID | Title | Severity | File | Line |
+|---|---|---|---|---|
+| DEBT-0084 | Landing page forced to client-side rendering blocks SSR | S1 | app/page.tsx | 0 |
+| DEBT-0091 | Large monolithic component (1117 lines) without code spli... | S1 | components/notebook/pages/today-page.tsx | 1 |
+| DEBT-0092 | No React.memo on frequently re-rendered admin list (924 l... | S1 | components/admin/users-tab.tsx | 84 |
+| DEBT-0132 | Enable SSR for landing page | S1 | app/page.tsx | 1 |
+| DEBT-0134 | Unoptimized images (11MB) | S1 | public/images/gemini-generated/ | 1 |
+| DEBT-0135 | No code splitting | S1 | app/notebook/[notebookId]/page.tsx | 1 |
+| DEBT-0950 | MoodSparkline Redundant Fetch Duplicates Journal Data | S1 | N/A | 0 |
+| DEBT-1541 | The 'value' object passed as the value prop to the Contex... | S1 | lib/contexts/admin-tab-context.tsx | 126 |
+| DEBT-1588 | Move this component definition out of the parent componen... | S1 | components/admin/admin-tabs.tsx | 75 |
+| DEBT-1622 | Do not use Array index in keys | S1 | components/admin/errors-tab.tsx | 244 |
+| DEBT-1965 | Notebook Animation Delays Interactivity | S1 | components/notebook/notebook-shell.tsx | 189 |
+| DEBT-1971 | Framer Motion Overuse - Heavy Animation Library | S1 | package.json | 92 |
+| DEBT-1990 | Excessive client-component surface ("use client" appears ... | S1 | app/admin/page.tsx | 1 |
+| DEBT-0449 | 30+ components with inline onClick arrow functions | S2 | components | 0 |
+| DEBT-0450 | 28 components with inline style objects | S2 | components | 0 |
+| DEBT-0451 | Large chunk file (628KB) indicates code splitting opportu... | S2 | .next/static/chunks | 0 |
+| DEBT-0452 | 20+ uses of key={index} in list rendering | S2 | components | 0 |
+| DEBT-0453 | setInterval without visibility check continues in background | S2 | components/widgets/meeting-countdown.tsx | 41 |
+| DEBT-0454 | getAllMeetings() deprecated but still available without l... | S2 | lib/db/meetings.ts | 129 |
+| DEBT-0521 | Historical Score Tracking | S2 | .lighthouse/history.json | 1 |
+| DEBT-0522 | Performance Budgets | S2 | lighthouserc.js | 1 |
+| DEBT-0523 | Development Dashboard Integration | S2 | app/dev/page.tsx | 1 |
+| DEBT-0524 | PWA Audit Baseline | S2 | app/manifest.ts | 1 |
+| DEBT-0525 | Missing cache headers | S2 | firebase.json | 15 |
+| DEBT-0589 | Do not call `Array#push()` multiple times. | S2 | hooks/use-journal.ts | 114 |
+| DEBT-0900 | Optimize admin analytics functions (cache/pre-compute) | S2 | functions/src/admin.ts | 2726 |
+| DEBT-0955 | Large ResourcesPage Not Code-Split (960 lines, ~50KB) | S2 | N/A | 0 |
+| DEBT-0960 | Pre-Push Redundant Checks (15-40s) | S2 | N/A | 0 |
+| DEBT-0979 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE... | S2 | scripts/eval/eval-sonarcloud-stage.js | 614 |
+| DEBT-1002 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE... | S2 | scripts/multi-ai/eval-check-stage.js | 370 |
+| DEBT-1027 | arrow function is equivalent to `Boolean`. Use `Boolean` ... | S2 | scripts/multi-ai/fix-schema.js | 256 |
+| DEBT-1045 | arrow function is equivalent to `Boolean`. Use `Boolean` ... | S2 | scripts/multi-ai/unify-findings.js | 99 |
+| DEBT-1062 | Prefer `.at(…)` over `[….length - index]`. | S2 | components/admin/analytics-tab.tsx | 219 |
+| DEBT-1146 | `DANGEROUS_KEYS` should be a `Set`, and use `DANGEROUS_KE... | S2 | scripts/debt/intake-audit.js | 39 |
+| DEBT-1237 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/debt/sync-roadmap-refs.js | 25 |
+| DEBT-1344 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/check-doc-headers.js | 42 |
+| DEBT-1372 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/check-agent-compliance.js | 29 |
+| DEBT-1401 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/check-pattern-sync.js | 263 |
+| DEBT-1479 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/secrets/decrypt-secrets.js | 178 |
+| DEBT-1560 | `BUILT_IN_TYPES` should be a `Set`, and use `BUILT_IN_TYP... | S2 | components/admin/privileges-tab.tsx | 31 |
+| DEBT-1572 | Prefer negative index over length minus index for `slice`. | S2 | scripts/aggregate-audit-findings.js | 330 |
+| DEBT-1600 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/run-consolidation.js | 55 |
+| DEBT-1604 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/check-cross-doc-deps.js | 27 |
+| DEBT-1620 | `components` should be a `Set`, and use `components.has()... | S2 | tests/error-knowledge-base.test.ts | 144 |
+| DEBT-1646 | Do not call `Array#push()` multiple times. | S2 | scripts/check-triggers.js | 306 |
+| DEBT-1652 | `args` should be a `Set`, and use `args.has()` to check e... | S2 | scripts/verify-skill-usage.js | 222 |
+| DEBT-0809 | Only 6 dynamic imports despite 101 client components | S3 | components | 0 |
+| DEBT-0810 | useMemo/useCallback usage is inconsistent | S3 | components | 0 |
+| DEBT-0811 | Image optimization disabled (unoptimized: true) | S3 | next.config.mjs | 14 |
+| DEBT-0858 | useJournal creates redundant auth listener + potential me... | S0 | hooks/use-journal.ts | 0 |
 
 ## process (336)
 
-| ID        | Title                                                         | Severity | File                                                | Line |
-| --------- | ------------------------------------------------------------- | -------- | --------------------------------------------------- | ---- |
-| DEBT-0133 | Offline Queue Infrastructure                                  | S1       | hooks/use-journal.ts                                | 319  |
-| DEBT-0944 | Tests Not Run for Config Changes (eslint, firebase.json, ...  | S1       | N/A                                                 | 0    |
-| DEBT-0945 | Doc-Only Commit Detection Misclassifies Critical JSONL        | S1       | N/A                                                 | 0    |
-| DEBT-0946 | Cross-Document Override SKIP_CROSS_DOC_CHECK Not Implemented  | S1       | N/A                                                 | 0    |
-| DEBT-0948 | Functions Directory Not Linted in CI                          | S1       | N/A                                                 | 0    |
-| DEBT-1954 | Firebase Functions use Node 20 but CI uses Node 22 — vers...  | S1       | .github/workflows/ci.yml                            | 21   |
-| DEBT-2450 | Orphaned: assign-review-tier.js disabled in workflow          | S1       | .github/workflows/auto-label-review-tier.yml        | 56   |
-| DEBT-2455 | Obsolete: backlog-enforcement.yml checks deleted file         | S1       | .github/workflows/backlog-enforcement.yml           | 32   |
-| DEBT-2462 | Duplicated: Test execution in pre-commit AND CI               | S1       | 59-87                                               | 0    |
-| DEBT-2463 | Duplicated: Path validation logic across 16+ hooks            | S1       | 18-63                                               | 0    |
-| DEBT-2465 | Duplicated: Error message extraction pattern across 42+ f...  | S1       | scripts/check-pattern-compliance.js                 | 40   |
-| DEBT-2474 | Duplicated: check-edit-requirements and check-write-requi...  | S1       | 1-108                                               | 0    |
-| DEBT-2500 | CI gap: No test coverage thresholds enforced                  | S1       | .github/workflows/ci.yml                            | 115  |
-| DEBT-2542 | Skill issue: gh-fix-ci references non-existent inspect_pr...  | S1       | .claude/skills/gh-fix-ci/SKILL.md                   | 36   |
-| DEBT-2576 | Perf: check-docs-light.js - Synchronous file reads in map()   | S1       | scripts/check-docs-light.js                         | 825  |
-| DEBT-2579 | Perf: generate-documentation-index.js - Synchronous file ...  | S1       | scripts/generate-documentation-index.js             | 913  |
-| DEBT-2582 | Perf: aggregate-audit-findings.js - O(n^2) deduplication ...  | S1       | scripts/aggregate-audit-findings.js                 | 1309 |
-| DEBT-2589 | Error handling: Empty catch blocks swallow errors in gsd-...  | S1       | .claude/hooks/global/gsd-check-update.js            | 38   |
-| DEBT-2590 | Error handling: 200+ empty catch blocks across hooks and ...  | S1       | .claude/hooks/component-size-check.js               | 47   |
-| DEBT-2592 | Error handling: readFileSync without try/catch in multipl...  | S1       | scripts/verify-sonar-phase.js                       | 134  |
-| DEBT-2593 | Error handling: execSync without timeout or error handling    | S1       | scripts/validate-audit.js                           | 651  |
-| DEBT-2595 | Error handling: State file operations fail silently           | S1       | .claude/hooks/state-utils.js                        | 75   |
-| DEBT-2601 | Error handling: Hook execution errors not propagated to user  | S1       | .claude/hooks/component-size-check.js               | 47   |
-| DEBT-2602 | Error handling: generate-pending-alerts.js throws error o...  | S1       | scripts/generate-pending-alerts.js                  | 389  |
-| DEBT-2604 | Error handling: execSync in validation scripts can hang o...  | S1       | scripts/validate-audit.js                           | 651  |
-| DEBT-2605 | Quality: TOCTOU race condition in ai-review.js                | S1       | scripts/ai-review.js                                | 139  |
-| DEBT-2606 | Quality: TOCTOU race condition in check-consolidation-sta...  | S1       | scripts/check-consolidation-status.js               | 89   |
-| DEBT-2607 | Quality: TOCTOU race condition in resolve-item.js             | S1       | scripts/debt/resolve-item.js                        | 53   |
-| DEBT-2616 | Quality: Missing validation on parsed JSON objects            | S1       | scripts/debt/intake-audit.js                        | 119  |
-| DEBT-2617 | Quality: Unsafe regex patterns in pattern checker             | S1       | 106-300                                             | 0    |
-| DEBT-2700 | Quality: Unsafe regex patterns in pattern checker             | S1       | scripts/check-pattern-compliance.js                 | 106  |
-| DEBT-2731 | Duplicated: Test execution in pre-commit AND CI               | S1       | .husky/pre-commit                                   | 59   |
-| DEBT-2732 | Duplicated: Path validation logic across 16+ hooks            | S1       | .claude/hooks/check-edit-requirements.js            | 18   |
-| DEBT-2740 | Duplicated: check-edit-requirements and check-write-requi...  | S1       | .claude/hooks/check-edit-requirements.js            | 1    |
-| DEBT-0443 | GitHub Actions using version tags instead of commit SHAs      | S2       | .github/workflows/auto-label-review-tier.yml        | 18   |
-| DEBT-0455 | 28 scripts have 715 console.log/error/warn calls without ...  | S2       | scripts/                                            | 0    |
-| DEBT-0456 | Artifact upload without retention policy                      | S2       | .github/workflows/ci.yml                            | 99   |
-| DEBT-0457 | Git diff with @{u}...HEAD fails on new branches without u...  | S2       | .husky/pre-push                                     | 48   |
-| DEBT-0469 | GitHub Actions using version tags instead of commit SHAs      | S2       | N/A                                                 | 0    |
-| DEBT-0515 | Add Correlation IDs to Logger                                 | S2       | lib/logger.ts                                       | 1    |
-| DEBT-0516 | Add Network Status to Logs                                    | S2       | lib/logger.ts                                       | 45   |
-| DEBT-0517 | Create Smoke Test Script                                      | S2       | scripts/smoke-test.js                               | 1    |
-| DEBT-0518 | Add Bug Report GitHub Template                                | S2       | .github/ISSUE_TEMPLATE/bug_report.md                | 1    |
-| DEBT-0519 | Offline Tests                                                 | S2       | tests/offline/                                      | 1    |
-| DEBT-0520 | Network Failure Error Handling Tests                          | S2       | tests/admin/network-failure.test.ts                 | 1    |
-| DEBT-0953 | Backlog Enforcement Job Obsolete After TDMS Migration         | S2       | N/A                                                 | 0    |
-| DEBT-0958 | Function Deletion with Force Flag Lacks Validation            | S2       | N/A                                                 | 0    |
-| DEBT-0959 | Pre-Commit Total Time 15-30s - Developer Friction             | S2       | N/A                                                 | 0    |
-| DEBT-1991 | Oversized scripts: aggregate-audit-findings.js (63KB), ch...  | S2       | scripts/aggregate-audit-findings.js                 | 1    |
-| DEBT-2441 | Orphaned: seed-commit-log.js                                  | S2       | scripts/seed-commit-log.js                          | 1    |
-| DEBT-2442 | Orphaned: sync-claude-settings.js                             | S2       | scripts/sync-claude-settings.js                     | 1    |
-| DEBT-2443 | Orphaned: update-legacy-lines.js                              | S2       | scripts/update-legacy-lines.js                      | 1    |
-| DEBT-2444 | Orphaned: create-canonical-findings.js                        | S2       | scripts/create-canonical-findings.js                | 1    |
-| DEBT-2445 | Orphaned: generate-detailed-sonar-report.js                   | S2       | scripts/generate-detailed-sonar-report.js           | 1    |
-| DEBT-2446 | Orphaned: generate-placement-report.js                        | S2       | scripts/generate-placement-report.js                | 1    |
-| DEBT-2447 | Orphaned: migrate-existing-findings.js                        | S2       | scripts/migrate-existing-findings.js                | 1    |
-| DEBT-2448 | Orphaned: regenerate-findings-index.js                        | S2       | scripts/regenerate-findings-index.js                | 1    |
-| DEBT-2449 | Orphaned: verify-sonar-phase.js                               | S2       | scripts/verify-sonar-phase.js                       | 1    |
-| DEBT-2451 | Orphaned: TypeScript migration scripts (14 files)             | S2       | scripts/dedupe-quotes.ts                            | 1    |
-| DEBT-2452 | Orphaned npm script: learning:category                        | S2       | package.json                                        | 38   |
-| DEBT-2453 | Orphaned npm script: learning:since                           | S2       | package.json                                        | 39   |
-| DEBT-2454 | Orphaned npm script: phase:complete:auto                      | S2       | package.json                                        | 23   |
-| DEBT-2456 | Narrow trigger: validate-plan.yml for specific archived file  | S2       | .github/workflows/validate-plan.yml                 | 6    |
-| DEBT-2458 | Duplicated: ESLint validation in pre-commit AND CI            | S2       | .husky/pre-commit                                   | 9    |
-| DEBT-2459 | Duplicated: Pattern compliance check in pre-commit AND CI     | S2       | .husky/pre-commit                                   | 35   |
-| DEBT-2460 | Duplicated: Technical debt schema validation in pre-commi...  | S2       | .husky/pre-commit                                   | 248  |
-| DEBT-2461 | Duplicated: CANON schema validation in pre-commit AND CI      | S2       | .husky/pre-commit                                   | 97   |
-| DEBT-2464 | Duplicated: File reading logic across 5 hooks                 | S2       | 114-124                                             | 0    |
-| DEBT-2467 | Duplicated: Security validations across all hooks             | S2       | 40-62                                               | 0    |
-| DEBT-2470 | Duplicated: Base directory resolution across hooks            | S2       | .claude/hooks/check-edit-requirements.js            | 18   |
-| DEBT-2473 | Duplicated: ALLOWED_PATHS pattern matching across hooks       | S2       | 30-38                                               | 0    |
-| DEBT-2475 | Duplicated: Pattern check implementation between hook and...  | S2       | 1-223                                               | 0    |
-| DEBT-2476 | Duplicated: Validation between validate-audit.js and vali...  | S2       | 1-80                                                | 0    |
-| DEBT-2485 | Never executes: validate-plan workflow for archived file      | S2       | .github/workflows/validate-plan.yml                 | 7    |
-| DEBT-2486 | Ineffective: audit-s0s1-validator defaults to WARN mode       | S2       | .claude/hooks/audit-s0s1-validator.js               | 21   |
-| DEBT-2487 | Ineffective: pattern-check hook never blocks violations       | S2       | .claude/hooks/pattern-check.js                      | 221  |
-| DEBT-2489 | Ineffective: Pre-commit bypass conditions too easy            | S2       | .husky/pre-commit                                   | 46   |
-| DEBT-2494 | Ineffective: large-context-warning warningShown flag prev...  | S2       | .claude/hooks/large-context-warning.js              | 146  |
-| DEBT-2495 | Ineffective: check-remote-session-context always succeeds     | S2       | .claude/hooks/check-remote-session-context.js       | 32   |
-| DEBT-2497 | Ineffective: commit-tracker continueOnError makes failure...  | S2       | .claude/settings.json                               | 251  |
-| DEBT-2501 | CI gap: continue-on-error bypasses critical validations       | S2       | .github/workflows/ci.yml                            | 74   |
-| DEBT-2502 | CI gap: Missing secrets cause silent build success            | S2       | 154-159                                             | 0    |
-| DEBT-2503 | CI gap: Pattern compliance only checks changed files in PRs   | S2       | 58-68                                               | 0    |
-| DEBT-2504 | CI gap: Build job re-installs dependencies wastefully         | S2       | 136-149                                             | 0    |
-| DEBT-2505 | CI gap: Race condition in tier label assignment               | S2       | 77-150                                              | 0    |
-| DEBT-2506 | CI gap: Inline tier assignment logic creates maintenance ...  | S2       | 60-75                                               | 0    |
-| DEBT-2507 | CI gap: Fork PRs completely skip SonarCloud analysis          | S2       | 22-24                                               | 0    |
-| DEBT-2508 | CI gap: Firebase deployment has no success validation         | S2       | 140-147                                             | 0    |
-| DEBT-2509 | CI gap: Deployment has no rollback mechanism                  | S2       | 140-147                                             | 0    |
-| DEBT-2510 | CI gap: Service account credentials written to filesystem     | S2       | 120-124                                             | 0    |
-| DEBT-2529 | CI gap: Tier comment spam on every synchronize event          | S2       | .github/workflows/auto-label-review-tier.yml        | 186  |
-| DEBT-2530 | Bug: check-review-needed.js - getNextDay() fails silently...  | S2       | scripts/check-review-needed.js                      | 170  |
-| DEBT-2531 | Bug: check-cross-doc-deps.js - checkDiffPattern() silentl...  | S2       | scripts/check-cross-doc-deps.js                     | 100  |
-| DEBT-2532 | Bug: check-cross-doc-deps.js - inconsistent behavior with...  | S2       | scripts/check-cross-doc-deps.js                     | 69   |
-| DEBT-2533 | Bug: security-check.js - getStagedFiles() returns empty a...  | S2       | scripts/security-check.js                           | 310  |
-| DEBT-2540 | Skill issue: episodic memory MCP not configured but refer...  | S2       | audit-process/SKILL.md                              | 1    |
-| DEBT-2541 | Skill issue: audit skills reference non-existent FALSE_PO...  | S2       | audit-process/SKILL.md                              | 172  |
-| DEBT-2543 | Skill issue: systematic-debugging references non-existent...  | S2       | systematic-debugging/SKILL.md                       | 229  |
-| DEBT-2545 | Skill issue: audit-process has complex 7-stage orchestrat...  | S2       | audit-process/SKILL.md                              | 1    |
-| DEBT-2548 | Slow: ESLint full codebase scan in pre-commit                 | S2       | .husky/pre-commit                                   | 9    |
-| DEBT-2549 | Duplicate: Pattern compliance runs in both pre-commit and...  | S2       | .husky/pre-commit                                   | 35   |
-| DEBT-2550 | Slow: TypeScript full project type check on every push        | S2       | .husky/pre-push                                     | 83   |
-| DEBT-2551 | Slow: Circular dependency scan on entire codebase every push  | S2       | .husky/pre-push                                     | 12   |
-| DEBT-2552 | Slow: Test suite rebuilds TypeScript on every test run        | S2       | package.json                                        | 11   |
-| DEBT-2554 | Performance: 10 Claude hooks run on every Write/Edit oper...  | S2       | 57-111                                              | 0    |
-| DEBT-2561 | CI slow: Build job waits unnecessarily for all lint/test ...  | S2       | .github/workflows/ci.yml                            | 136  |
-| DEBT-2562 | CI slow: Redundant npm ci in build job                        | S2       | .github/workflows/ci.yml                            | 149  |
-| DEBT-2563 | CI slow: No Next.js build cache                               | S2       | .github/workflows/ci.yml                            | 152  |
-| DEBT-2564 | CI slow: No path filters on main CI workflow                  | S2       | .github/workflows/ci.yml                            | 3    |
-| DEBT-2565 | CI slow: Firebase deploy builds app twice                     | S2       | .github/workflows/deploy-firebase.yml               | 47   |
-| DEBT-2573 | Perf: check-pattern-compliance.js - Synchronous file read...  | S2       | scripts/check-pattern-compliance.js                 | 799  |
-| DEBT-2574 | Perf: check-pattern-compliance.js - O(n\*m) pattern matchi... | S2       | scripts/check-pattern-compliance.js                 | 733  |
-| DEBT-2577 | Perf: check-docs-light.js - O(n^2) anchor link validation     | S2       | scripts/check-docs-light.js                         | 411  |
-| DEBT-2578 | Perf: check-docs-light.js - Repeated realpath/stat calls      | S2       | scripts/check-docs-light.js                         | 686  |
-| DEBT-2581 | Perf: generate-documentation-index.js - O(n\*m) reference ... | S2       | scripts/generate-documentation-index.js             | 524  |
-| DEBT-2583 | Perf: aggregate-audit-findings.js - Synchronous JSONL fil...  | S2       | scripts/aggregate-audit-findings.js                 | 1201 |
-| DEBT-2584 | Perf: aggregate-audit-findings.js - Expensive Levenshtein...  | S2       | scripts/aggregate-audit-findings.js                 | 1013 |
-| DEBT-2586 | Perf: check-content-accuracy.js - Synchronous file reads ...  | S2       | scripts/check-content-accuracy.js                   | 458  |
-| DEBT-2587 | Perf: check-content-accuracy.js - Regex compilation in ho...  | S2       | scripts/check-content-accuracy.js                   | 114  |
-| DEBT-2588 | Perf: check-content-accuracy.js - O(lines \* patterns) nes... | S2       | scripts/check-content-accuracy.js                   | 136  |
-| DEBT-2591 | Error handling: Hook validation exits with 0 on security ...  | S2       | .claude/hooks/typescript-strict-check.js            | 28   |
-| DEBT-2594 | Error handling: Error messages expose full system paths       | S2       | scripts/validate-audit.js                           | 110  |
-| DEBT-2596 | Error handling: JSON.parse failures without validation co...  | S2       | scripts/verify-skill-usage.js                       | 136  |
-| DEBT-2597 | Error handling: Missing error messages in file write oper...  | S2       | scripts/update-readme-status.js                     | 107  |
-| DEBT-2599 | Error handling: Validation scripts exit 0 with violations...  | S2       | scripts/verify-skill-usage.js                       | 232  |
-| DEBT-2600 | Error handling: Multiple exit(0) calls suggest unclear co...  | S2       | .claude/hooks/typescript-strict-check.js            | 28   |
-| DEBT-2603 | Error handling: sync-sonarcloud.js API errors expose impl...  | S2       | scripts/debt/sync-sonarcloud.js                     | 290  |
-| DEBT-2608 | Quality: Magic number - hardcoded port without explanation    | S2       | .claude/hooks/stop-serena-dashboard.js              | 30   |
-| DEBT-2609 | Quality: Magic number - MAX_LENGTH without explanation        | S2       | .claude/hooks/analyze-user-request.js               | 37   |
-| DEBT-2610 | Quality: Magic number - SINGLE_FILE_LINE_LIMIT without ex...  | S2       | .claude/hooks/large-context-warning.js              | 20   |
-| DEBT-2611 | Quality: Magic number - ARCHIVE_LINE_THRESHOLD without ex...  | S2       | scripts/check-consolidation-status.js               | 26   |
-| DEBT-2612 | Quality: Magic number - REQUEST_TIMEOUT_MS without explan...  | S2       | scripts/mcp/sonarcloud-server.js                    | 68   |
-| DEBT-2613 | Quality: Hardcoded path should be configurable                | S2       | .claude/hooks/state-utils.js                        | 22   |
-| DEBT-2614 | Quality: Multiple hardcoded debt paths                        | S2       | scripts/debt/intake-audit.js                        | 53   |
-| DEBT-2625 | Inconsistent: File path validation and sanitization           | S2       | scripts/archive-doc.js                              | 83   |
-| DEBT-2626 | Inconsistent: Error sanitization approaches                   | S2       | scripts/archive-doc.js                              | 41   |
-| DEBT-2627 | Gap: Shell scripts not linted or validated                    | S2       | .claude/hooks/analyze-user-request.sh               | 1    |
-| DEBT-2629 | Gap: Scripts directory missing test coverage                  | S2       | scripts/                                            | 1    |
-| DEBT-2630 | Gap: Firebase functions lack integration tests                | S2       | functions/src/admin.ts                              | 1    |
-| DEBT-2633 | Gap: Environment files not validated                          | S2       | .env.local.example                                  | 1    |
-| DEBT-2635 | Gap: No syntax validation for committed shell scripts in CI   | S2       | .github/workflows/ci.yml                            | 1    |
-| DEBT-2702 | Performance: 10 Claude hooks run on every Write/Edit oper...  | S2       | .claude/settings.json                               | 57   |
-| DEBT-2708 | Skill issue: episodic memory MCP not configured but refer...  | S2       | .claude/skills/audit-process/SKILL.md               | 1    |
-| DEBT-2709 | Skill issue: audit skills reference non-existent FALSE_PO...  | S2       | .claude/skills/audit-process/SKILL.md               | 172  |
-| DEBT-2710 | Skill issue: systematic-debugging references non-existent...  | S2       | .claude/skills/systematic-debugging/SKILL.md        | 229  |
-| DEBT-2712 | Skill issue: audit-process has complex 7-stage orchestrat...  | S2       | .claude/skills/audit-process/SKILL.md               | 1    |
-| DEBT-2715 | CI gap: Missing secrets cause silent build success            | S2       | .github/workflows/ci.yml                            | 154  |
-| DEBT-2716 | CI gap: Pattern compliance only checks changed files in PRs   | S2       | .github/workflows/ci.yml                            | 58   |
-| DEBT-2717 | CI gap: Build job re-installs dependencies wastefully         | S2       | .github/workflows/ci.yml                            | 136  |
-| DEBT-2718 | CI gap: Race condition in tier label assignment               | S2       | .github/workflows/auto-label-review-tier.yml        | 77   |
-| DEBT-2719 | CI gap: Inline tier assignment logic creates maintenance ...  | S2       | .github/workflows/auto-label-review-tier.yml        | 60   |
-| DEBT-2720 | CI gap: Fork PRs completely skip SonarCloud analysis          | S2       | .github/workflows/sonarcloud.yml                    | 22   |
-| DEBT-2721 | CI gap: Firebase deployment has no success validation         | S2       | .github/workflows/deploy-firebase.yml               | 140  |
-| DEBT-2722 | CI gap: Deployment has no rollback mechanism                  | S2       | .github/workflows/deploy-firebase.yml               | 140  |
-| DEBT-2723 | CI gap: Service account credentials written to filesystem     | S2       | .github/workflows/deploy-firebase.yml               | 120  |
-| DEBT-2733 | Duplicated: File reading logic across 5 hooks                 | S2       | .claude/hooks/firestore-write-block.js              | 114  |
-| DEBT-2735 | Duplicated: Security validations across all hooks             | S2       | .claude/hooks/check-edit-requirements.js            | 40   |
-| DEBT-2739 | Duplicated: ALLOWED_PATHS pattern matching across hooks       | S2       | .claude/hooks/firestore-write-block.js              | 30   |
-| DEBT-2741 | Duplicated: Pattern check implementation between hook and...  | S2       | .claude/hooks/pattern-check.js                      | 1    |
-| DEBT-2742 | Duplicated: Validation between validate-audit.js and vali...  | S2       | scripts/validate-audit.js                           | 1    |
-| DEBT-2803 | Consolidate regex pattern linter into ESLint plugin           | S2       | scripts/check-pattern-compliance.js                 | 0    |
-| DEBT-2840 | Add automatic ROADMAP.md completion detection                 | S2       | scripts/                                            | 0    |
-| DEBT-2981 | Automate archival of completed ROADMAP.md items to ROADMA...  | S2       | scripts/                                            | 0    |
-| DEBT-0812 | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                     | 36   |
-| DEBT-0813 | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                   | 21   |
-| DEBT-0814 | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                      | 245  |
-| DEBT-0815 | Script has minimal console output (1 call)                    | S3       | scripts/check-cross-doc-deps.js                     | 1    |
-| DEBT-0816 | TRIGGERS.md last updated 2026-01-02 but hooks updated since   | S3       | docs/TRIGGERS.md                                    | 1    |
-| DEBT-0817 | All 12 slash commands have frontmatter descriptions           | S3       | .claude/commands/                                   | 0    |
-| DEBT-2457 | Manual-only scripts not in automation                         | S3       | scripts/ai-review.js                                | 1    |
-| DEBT-2466 | Duplicated: TTY-aware color code across 3+ scripts            | S3       | 48-56                                               | 0    |
-| DEBT-2468 | Duplicated: Git staged files retrieval across scripts         | S3       | 83-97                                               | 0    |
-| DEBT-2469 | Duplicated: Config loading pattern across 17+ files           | S3       | 34-43                                               | 0    |
-| DEBT-2471 | Duplicated: JSON argument parsing across hooks                | S3       | 20-31                                               | 0    |
-| DEBT-2472 | Duplicated: File extension checks across hooks                | S3       | .claude/hooks/firestore-write-block.js              | 102  |
-| DEBT-2477 | Never executes: AUDIT_FINDINGS_BACKLOG.md backlog check       | S3       | .github/workflows/backlog-enforcement.yml           | 32   |
-| DEBT-2478 | Never executes: npm script test:coverage:report               | S3       | package.json                                        | 13   |
-| DEBT-2479 | Never executes: npm script learning:category                  | S3       | package.json                                        | 38   |
-| DEBT-2481 | Never executes: npm script config:validate                    | S3       | package.json                                        | 52   |
-| DEBT-2482 | Never executes: npm script session:summary                    | S3       | package.json                                        | 41   |
-| DEBT-2483 | Never executes: npm script override:list                      | S3       | package.json                                        | 43   |
-| DEBT-2484 | Never executes: GitHub workflow master branch trigger         | S3       | .github/workflows/backlog-enforcement.yml           | 5    |
-| DEBT-2488 | Ineffective: Small file bypass in pattern-check               | S3       | .claude/hooks/pattern-check.js                      | 138  |
-| DEBT-2490 | Ineffective: Network failures treated as success in pre-push  | S3       | .husky/pre-push                                     | 107  |
-| DEBT-2491 | Ineffective: check-write-requirements POST-TASK not enforced  | S3       | .claude/hooks/check-write-requirements.js           | 72   |
-| DEBT-2492 | Ineffective: component-size-check always succeeds             | S3       | .claude/hooks/component-size-check.js               | 142  |
-| DEBT-2493 | Ineffective: agent-trigger-enforcer Phase 2/3 not impleme...  | S3       | .claude/hooks/agent-trigger-enforcer.js             | 295  |
-| DEBT-2496 | Ineffective: audit-s0s1-validator allows parse errors         | S3       | .claude/hooks/audit-s0s1-validator.js               | 84   |
-| DEBT-2498 | Ineffective: Pre-push SKIP_TRIGGERS bypass has no budget      | S3       | .husky/pre-push                                     | 123  |
-| DEBT-2511 | CI gap: Deleting functions uses continue-on-error hiding ...  | S3       | 131-138                                             | 0    |
-| DEBT-2512 | CI gap: Preview and production use different env var sources  | S3       | .github/workflows/deploy-firebase.yml               | 51   |
-| DEBT-2513 | CI gap: Backlog check gracefully skips with no replacemen...  | S3       | 35-42                                               | 0    |
-| DEBT-2514 | CI gap: Security pattern check runs file-by-file ineffici...  | S3       | 147-150                                             | 0    |
-| DEBT-2515 | CI gap: Documentation linting skips archive files entirely    | S3       | 78-81                                               | 0    |
-| DEBT-2516 | CI gap: Resolve debt workflow only runs on merged PRs         | S3       | .github/workflows/resolve-debt.yml                  | 11   |
-| DEBT-2517 | CI gap: Debt resolution skips CI with [skip ci]               | S3       | .github/workflows/resolve-debt.yml                  | 88   |
-| DEBT-2518 | CI gap: Debt resolution has race condition on rebase          | S3       | .github/workflows/resolve-debt.yml                  | 92   |
-| DEBT-2519 | CI gap: Review trigger check has fragile JSON validation      | S3       | 46-50                                               | 0    |
-| DEBT-2520 | CI gap: Review check uses continue-on-error hiding crashes    | S3       | .github/workflows/review-check.yml                  | 33   |
-| DEBT-2521 | CI gap: Phase validation workflow is likely dead code         | S3       | .github/workflows/validate-plan.yml                 | 7    |
-| DEBT-2522 | CI gap: Sync README has fragile retry logic                   | S3       | 64-78                                               | 0    |
-| DEBT-2523 | CI gap: Sync README uses --no-verify bypassing hooks          | S3       | .github/workflows/sync-readme.yml                   | 57   |
-| DEBT-2524 | CI gap: Inconsistent GitHub Action version pinning            | S3       | .github/workflows/ci.yml                            | 45   |
-| DEBT-2525 | CI gap: No validation of Node.js version consistency          | S3       | .github/workflows/ci.yml                            | 21   |
-| DEBT-2526 | CI gap: Template file exclusion is brittle regex              | S3       | 72-75                                               | 0    |
-| DEBT-2527 | CI gap: Markdown injection sanitization incomplete            | S3       | .github/workflows/docs-lint.yml                     | 91   |
-| DEBT-2528 | CI gap: Changed files detection could miss merge commits      | S3       | .github/workflows/backlog-enforcement.yml           | 127  |
-| DEBT-2534 | Bug: validate-audit.js - wildcard file patterns not valid...  | S3       | scripts/validate-audit.js                           | 370  |
-| DEBT-2535 | Enhancement: generate-documentation-index.js - no visibil...  | S3       | scripts/generate-documentation-index.js             | 417  |
-| DEBT-2536 | Enhancement: check-pattern-compliance.js - silent filteri...  | S3       | scripts/check-pattern-compliance.js                 | 494  |
-| DEBT-2537 | Bug: aggregate-audit-findings.js - potential long-running...  | S3       | scripts/aggregate-audit-findings.js                 | 1446 |
-| DEBT-2538 | Skill issue: skill-registry.json does not exist               | S3       | .claude                                             | 1    |
-| DEBT-2539 | Skill issue: SKILL_INDEX.md has incorrect skill count         | S3       | .claude/skills/SKILL_INDEX.md                       | 3    |
-| DEBT-2544 | Skill issue: code-reviewer scripts may be non-functional ...  | S3       | code-reviewer/scripts/pr_analyzer.py                | 1    |
-| DEBT-2546 | Skill issue: multiple audit skills have duplicate functio...  | S3       | audit-process/SKILL.md                              | 100  |
-| DEBT-2547 | Skill issue: session-begin references deprecated TECHNICA...  | S3       | session-begin/SKILL.md                              | 301  |
-| DEBT-2553 | Inefficient: Sequential security checks in pre-push           | S3       | 50-65                                               | 0    |
-| DEBT-2555 | Inefficient: Pattern check runs on every file write via C...  | S3       | .claude/hooks/pattern-check.js                      | 1    |
-| DEBT-2556 | Inefficient: Multiple git status/diff scans in pre-commit     | S3       | 47,94,138,159,194                                   | 0    |
-| DEBT-2557 | Risk: No timeout on npm test in pre-commit                    | S3       | 59,80                                               | 0    |
-| DEBT-2558 | Optimization: Doc-only commit detection could be smarter      | S3       | 68-88                                               | 0    |
-| DEBT-2559 | Slow: Session start hooks add 2-5s latency to every session   | S3       | 8-44                                                | 0    |
-| DEBT-2560 | Optimization: UserPromptSubmit hooks run before every use...  | S3       | 265-290                                             | 0    |
-| DEBT-2566 | CI slow: Firebase deploys run sequentially                    | S3       | .github/workflows/deploy-firebase.yml               | 141  |
-| DEBT-2567 | CI slow: SonarCloud runs on all changes including docs        | S3       | .github/workflows/sonarcloud.yml                    | 7    |
-| DEBT-2568 | CI slow: Full git history fetched unnecessarily               | S3       | .github/workflows/sonarcloud.yml                    | 31   |
-| DEBT-2569 | CI slow: Backlog workflow installs deps twice                 | S3       | .github/workflows/backlog-enforcement.yml           | 26   |
-| DEBT-2570 | CI slow: Review check runs on all PRs without path filters    | S3       | .github/workflows/review-check.yml                  | 3    |
-| DEBT-2571 | CI slow: Auto-label workflow has no npm cache                 | S3       | .github/workflows/auto-label-review-tier.yml        | 22   |
-| DEBT-2572 | CI slow: Docs lint processes files sequentially               | S3       | .github/workflows/docs-lint.yml                     | 58   |
-| DEBT-2575 | Perf: check-pattern-compliance.js - Regex recompilation i...  | S3       | scripts/check-pattern-compliance.js                 | 659  |
-| DEBT-2580 | Perf: generate-documentation-index.js - Regex compilation...  | S3       | scripts/generate-documentation-index.js             | 376  |
-| DEBT-2585 | Perf: aggregate-audit-findings.js - Repeated string norma...  | S3       | scripts/aggregate-audit-findings.js                 | 1044 |
-| DEBT-2618 | Inconsistent: Mixed CommonJS and ESM module systems           | S3       | scripts/append-hook-warning.js                      | 1    |
-| DEBT-2619 | Inconsistent: node: prefix usage in imports                   | S3       | scripts/validate-audit.js                           | 18   |
-| DEBT-2620 | Inconsistent: Emoji usage in console output                   | S3       | scripts/seed-commit-log.js                          | 105  |
-| DEBT-2621 | Inconsistent: Exit code handling patterns                     | S3       | scripts/check-agent-compliance.js                   | 192  |
-| DEBT-2622 | Inconsistent: Verbose/debug logging approaches                | S3       | scripts/archive-doc.js                              | 72   |
-| DEBT-2623 | Inconsistent: Error message formatting                        | S3       | scripts/check-agent-compliance.js                   | 163  |
-| DEBT-2624 | Inconsistent: Command line argument parsing                   | S3       | scripts/check-agent-compliance.js                   | 29   |
-| DEBT-2628 | Gap: Config .mjs files excluded from linting                  | S3       | eslint.config.mjs                                   | 25   |
-| DEBT-2631 | Gap: Skills missing usage documentation                       | S3       | .claude/skills/                                     | 1    |
-| DEBT-2632 | Gap: YAML workflow files not linted                           | S3       | .github/workflows/ci.yml                            | 1    |
-| DEBT-2634 | Gap: Firebase functions TypeScript not type-checked in pr...  | S3       | .husky/pre-push                                     | 82   |
-| DEBT-2636 | Gap: No validation that new files are covered by appropri...  | S3       | .husky/pre-commit                                   | 1    |
-| DEBT-2637 | Improve: Consolidate duplicate script patterns into singl...  | S3       | package.json                                        | 1    |
-| DEBT-2638 | Improve: Reduce pre-commit hook check duplication with CI     | S3       | .husky/pre-commit                                   | 1    |
-| DEBT-2639 | Improve: Eliminate redundant npm run then re-run pattern ...  | S3       | .husky/pre-commit                                   | 9    |
-| DEBT-2640 | Improve: Add CI caching for test build artifacts              | S3       | .github/workflows/ci.yml                            | 114  |
-| DEBT-2641 | Improve: Combine test:build and type check into single ts...  | S3       | package.json                                        | 11   |
-| DEBT-2642 | Improve: Parallelize independent CI jobs                      | S3       | .github/workflows/ci.yml                            | 1    |
-| DEBT-2643 | Improve: Make npm audit scheduled instead of on every push    | S3       | .husky/pre-push                                     | 92   |
-| DEBT-2644 | Improve: Auto-update DOCUMENTATION_INDEX.md in pre-commit...  | S3       | .husky/pre-commit                                   | 134  |
-| DEBT-2645 | Improve: Combine docs-lint.yml checks into main CI workflow   | S3       | .github/workflows/docs-lint.yml                     | 1    |
-| DEBT-2646 | Improve: Use task runner (turbo/nx) for script orchestration  | S3       | package.json                                        | 1    |
-| DEBT-2647 | Improve: Simplify Firebase deployment workflow                | S3       | .github/workflows/deploy-firebase.yml               | 73   |
-| DEBT-2648 | Improve: Backlog enforcement workflow references archived...  | S3       | .github/workflows/backlog-enforcement.yml           | 32   |
-| DEBT-2649 | Improve: Add hook timing instrumentation                      | S3       | .husky/pre-commit                                   | 1    |
-| DEBT-2650 | Improve: Consolidate security checking into single workflow   | S3       | .github/workflows/backlog-enforcement.yml           | 103  |
-| DEBT-2651 | Improve: Use lint-staged for more than just formatting        | S3       | package.json                                        | 78   |
-| DEBT-2652 | Improve: Add commit message validation hook                   | S3       | .husky/\_/commit-msg                                | 1    |
-| DEBT-2653 | Improve: Add GitHub Actions workflow caching strategy         | S3       | .github/workflows/ci.yml                            | 22   |
-| DEBT-2654 | Improve: Migrate manual documentation tasks to automated ...  | S3       | package.json                                        | 14   |
-| DEBT-2655 | Improve: Add workflow for stale branch cleanup                | S3       | N/A                                                 | 0    |
-| DEBT-2656 | Improve: Replace manual trigger checks with GitHub Action...  | S3       | .github/workflows/ci.yml                            | 42   |
-| DEBT-2657 | Docs: Missing README in scripts/lib/                          | S3       | scripts/lib/                                        | 1    |
-| DEBT-2658 | Docs: Missing README in scripts/config/                       | S3       | scripts/config/                                     | 1    |
-| DEBT-2659 | Docs: Missing README in scripts/debt/                         | S3       | scripts/debt/                                       | 1    |
-| DEBT-2660 | Docs: Missing README in scripts/audit/                        | S3       | scripts/audit/                                      | 1    |
-| DEBT-2661 | Docs: No header comment in enrich-addresses.ts                | S3       | scripts/enrich-addresses.ts                         | 1    |
-| DEBT-2662 | Docs: No header comment in test-geocode.ts                    | S3       | scripts/test-geocode.ts                             | 1    |
-| DEBT-2663 | Docs: No header comment in sync-geocache.ts                   | S3       | scripts/sync-geocache.ts                            | 1    |
-| DEBT-2664 | Docs: No header comment in retry-failures.ts                  | S3       | scripts/retry-failures.ts                           | 1    |
-| DEBT-2665 | Docs: No header comment in migrate-library-content.ts         | S3       | scripts/migrate-library-content.ts                  | 1    |
-| DEBT-2666 | Docs: No header comment in seed-real-data.ts                  | S3       | scripts/seed-real-data.ts                           | 1    |
-| DEBT-2667 | Docs: Inadequate header in dedupe-quotes.ts                   | S3       | scripts/dedupe-quotes.ts                            | 1    |
-| DEBT-2668 | Docs: Config file ai-patterns.json lacks inline documenta...  | S3       | scripts/config/ai-patterns.json                     | 1    |
-| DEBT-2669 | Docs: Config file audit-config.json lacks inline document...  | S3       | scripts/config/audit-config.json                    | 1    |
-| DEBT-2670 | Docs: Config file audit-schema.json lacks inline document...  | S3       | scripts/config/audit-schema.json                    | 1    |
-| DEBT-2671 | Docs: Config file skill-config.json lacks inline document...  | S3       | scripts/config/skill-config.json                    | 1    |
-| DEBT-2672 | Docs: Excessively long file aggregate-audit-findings.js (...  | S3       | scripts/aggregate-audit-findings.js                 | 1    |
-| DEBT-2673 | Docs: Excessively long file analyze-learning-effectivenes...  | S3       | scripts/analyze-learning-effectiveness.js           | 1    |
-| DEBT-2674 | Docs: Excessively long file validate-audit-integration.js...  | S3       | scripts/audit/validate-audit-integration.js         | 1    |
-| DEBT-2675 | Docs: Excessively long file check-review-needed.js (1056 ...  | S3       | scripts/check-review-needed.js                      | 1    |
-| DEBT-2676 | Docs: Excessively long file multi-ai/normalize-format.js ...  | S3       | scripts/multi-ai/normalize-format.js                | 1    |
-| DEBT-2677 | Docs: Excessively long file validate-audit.js (980 lines)     | S3       | scripts/validate-audit.js                           | 1    |
-| DEBT-2678 | Docs: Excessively long file generate-documentation-index....  | S3       | scripts/generate-documentation-index.js             | 1    |
-| DEBT-2679 | Docs: Excessively long file check-docs-light.js (866 lines)   | S3       | scripts/check-docs-light.js                         | 1    |
-| DEBT-2680 | Docs: Excessively long file check-pattern-compliance.js (...  | S3       | scripts/check-pattern-compliance.js                 | 1    |
-| DEBT-2681 | Docs: Excessively long file debt/sync-sonarcloud.js (770 ...  | S3       | scripts/debt/sync-sonarcloud.js                     | 1    |
-| DEBT-2682 | Docs: Excessively long file audit/transform-jsonl-schema....  | S3       | scripts/audit/transform-jsonl-schema.js             | 1    |
-| DEBT-2683 | Docs: Excessively long file run-consolidation.js (743 lines)  | S3       | scripts/run-consolidation.js                        | 1    |
-| DEBT-2684 | Docs: Excessively long file multi-ai/unify-findings.js (7...  | S3       | scripts/multi-ai/unify-findings.js                  | 1    |
-| DEBT-2685 | Docs: Excessively long file archive-doc.js (712 lines)        | S3       | scripts/archive-doc.js                              | 1    |
-| DEBT-2686 | Docs: Excessively long file check-external-links.js (701 ...  | S3       | scripts/check-external-links.js                     | 1    |
-| DEBT-2687 | Docs: Excessively long file phase-complete-check.js (690 ...  | S3       | scripts/phase-complete-check.js                     | 1    |
-| DEBT-2688 | Docs: Excessively long file check-doc-placement.js (616 l...  | S3       | scripts/check-doc-placement.js                      | 1    |
-| DEBT-2689 | Docs: Excessively long file multi-ai/fix-schema.js (615 l...  | S3       | scripts/multi-ai/fix-schema.js                      | 1    |
-| DEBT-2690 | Docs: Excessively long file multi-ai/aggregate-category.j...  | S3       | scripts/multi-ai/aggregate-category.js              | 1    |
-| DEBT-2691 | Docs: Excessively long file verify-sonar-phase.js (597 li...  | S3       | scripts/verify-sonar-phase.js                       | 1    |
-| DEBT-2692 | Docs: Excessively long file update-readme-status.js (597 ...  | S3       | scripts/update-readme-status.js                     | 1    |
-| DEBT-2693 | Docs: Excessively long file debt/intake-audit.js (586 lines)  | S3       | scripts/debt/intake-audit.js                        | 1    |
-| DEBT-2694 | Docs: Excessively long file generate-detailed-sonar-repor...  | S3       | scripts/generate-detailed-sonar-report.js           | 1    |
-| DEBT-2695 | Docs: Excessively long file lib/ai-pattern-checks.js (554...  | S3       | scripts/lib/ai-pattern-checks.js                    | 1    |
-| DEBT-2696 | Docs: Excessively long file migrate-existing-findings.js ...  | S3       | scripts/migrate-existing-findings.js                | 1    |
-| DEBT-2697 | Docs: Excessively long file check-content-accuracy.js (51...  | S3       | scripts/check-content-accuracy.js                   | 1    |
-| DEBT-2698 | Docs: Excessively long file sync-claude-settings.js (501 ...  | S3       | scripts/sync-claude-settings.js                     | 1    |
-| DEBT-2699 | Improve: Add workflow for stale branch cleanup                | S3       | .github/workflows/\*                                | 1    |
-| DEBT-2701 | Inefficient: Sequential security checks in pre-push           | S3       | .husky/pre-push                                     | 50   |
-| DEBT-2703 | Inefficient: Multiple git status/diff scans in pre-commit     | S3       | .husky/pre-commit                                   | 47   |
-| DEBT-2704 | Risk: No timeout on npm test in pre-commit                    | S3       | .husky/pre-commit                                   | 59   |
-| DEBT-2705 | Optimization: Doc-only commit detection could be smarter      | S3       | .husky/pre-commit                                   | 68   |
-| DEBT-2706 | Slow: Session start hooks add 2-5s latency to every session   | S3       | .claude/settings.json                               | 8    |
-| DEBT-2707 | Optimization: UserPromptSubmit hooks run before every use...  | S3       | .claude/settings.json                               | 265  |
-| DEBT-2711 | Skill issue: code-reviewer scripts may be non-functional ...  | S3       | .claude/skills/code-reviewer/scripts/pr_analyzer.py | 1    |
-| DEBT-2713 | Skill issue: multiple audit skills have duplicate functio...  | S3       | .claude/skills/audit-process/SKILL.md               | 100  |
-| DEBT-2714 | Skill issue: session-begin references deprecated TECHNICA...  | S3       | .claude/skills/session-begin/SKILL.md               | 301  |
-| DEBT-2724 | CI gap: Deleting functions uses continue-on-error hiding ...  | S3       | .github/workflows/deploy-firebase.yml               | 131  |
-| DEBT-2725 | CI gap: Backlog check gracefully skips with no replacemen...  | S3       | .github/workflows/backlog-enforcement.yml           | 35   |
-| DEBT-2726 | CI gap: Security pattern check runs file-by-file ineffici...  | S3       | .github/workflows/backlog-enforcement.yml           | 147  |
-| DEBT-2727 | CI gap: Documentation linting skips archive files entirely    | S3       | .github/workflows/docs-lint.yml                     | 78   |
-| DEBT-2728 | CI gap: Review trigger check has fragile JSON validation      | S3       | .github/workflows/review-check.yml                  | 46   |
-| DEBT-2729 | CI gap: Sync README has fragile retry logic                   | S3       | .github/workflows/sync-readme.yml                   | 64   |
-| DEBT-2730 | CI gap: Template file exclusion is brittle regex              | S3       | .github/workflows/docs-lint.yml                     | 72   |
-| DEBT-2734 | Duplicated: TTY-aware color code across 3+ scripts            | S3       | scripts/check-doc-headers.js                        | 48   |
-| DEBT-2736 | Duplicated: Git staged files retrieval across scripts         | S3       | scripts/check-cross-doc-deps.js                     | 83   |
-| DEBT-2737 | Duplicated: Config loading pattern across 17+ files           | S3       | scripts/check-pattern-compliance.js                 | 34   |
-| DEBT-2738 | Duplicated: JSON argument parsing across hooks                | S3       | .claude/hooks/check-edit-requirements.js            | 20   |
-| DEBT-2982 | Add validation that completed ROADMAP items have been arc...  | S3       | scripts/check-roadmap-health.js                     | 0    |
-| DEBT-2983 | Add bidirectional SESSION_CONTEXT.md ↔ ROADMAP.md sync va...  | S3       | scripts/check-cross-doc-deps.js                     | 0    |
-| DEBT-2953 | Add audit logging for state file rotation events              | S3       | .claude/hooks/lib/rotate-state.js                   | 0    |
-| DEBT-2958 | Hook scripts lack durable audit trail logging                 | S3       | N/A                                                 | 0    |
-| DEBT-0859 | CI quality gates non-blocking allowing regressions            | S0       | .github/workflows/ci.yml                            | 0    |
-| DEBT-2499 | CI gap: pull_request_target security vulnerability allows...  | S0       | .github/workflows/deploy-firebase.yml               | 7    |
-| DEBT-2744 | Error handling: continueOnError used appropriately in set...  | S0       | .claude/settings.json                               | 24   |
-| DEBT-2745 | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                        | 21   |
+| ID | Title | Severity | File | Line |
+|---|---|---|---|---|
+| DEBT-0133 | Offline Queue Infrastructure | S1 | hooks/use-journal.ts | 319 |
+| DEBT-0944 | Tests Not Run for Config Changes (eslint, firebase.json, ... | S1 | N/A | 0 |
+| DEBT-0945 | Doc-Only Commit Detection Misclassifies Critical JSONL | S1 | N/A | 0 |
+| DEBT-0946 | Cross-Document Override SKIP_CROSS_DOC_CHECK Not Implemented | S1 | N/A | 0 |
+| DEBT-0948 | Functions Directory Not Linted in CI | S1 | N/A | 0 |
+| DEBT-1954 | Firebase Functions use Node 20 but CI uses Node 22 — vers... | S1 | .github/workflows/ci.yml | 21 |
+| DEBT-2450 | Orphaned: assign-review-tier.js disabled in workflow | S1 | .github/workflows/auto-label-review-tier.yml | 56 |
+| DEBT-2455 | Obsolete: backlog-enforcement.yml checks deleted file | S1 | .github/workflows/backlog-enforcement.yml | 32 |
+| DEBT-2462 | Duplicated: Test execution in pre-commit AND CI | S1 | 59-87 | 0 |
+| DEBT-2463 | Duplicated: Path validation logic across 16+ hooks | S1 | 18-63 | 0 |
+| DEBT-2465 | Duplicated: Error message extraction pattern across 42+ f... | S1 | scripts/check-pattern-compliance.js | 40 |
+| DEBT-2474 | Duplicated: check-edit-requirements and check-write-requi... | S1 | 1-108 | 0 |
+| DEBT-2500 | CI gap: No test coverage thresholds enforced | S1 | .github/workflows/ci.yml | 115 |
+| DEBT-2542 | Skill issue: gh-fix-ci references non-existent inspect_pr... | S1 | .claude/skills/gh-fix-ci/SKILL.md | 36 |
+| DEBT-2576 | Perf: check-docs-light.js - Synchronous file reads in map() | S1 | scripts/check-docs-light.js | 825 |
+| DEBT-2579 | Perf: generate-documentation-index.js - Synchronous file ... | S1 | scripts/generate-documentation-index.js | 913 |
+| DEBT-2582 | Perf: aggregate-audit-findings.js - O(n^2) deduplication ... | S1 | scripts/aggregate-audit-findings.js | 1309 |
+| DEBT-2589 | Error handling: Empty catch blocks swallow errors in gsd-... | S1 | .claude/hooks/global/gsd-check-update.js | 38 |
+| DEBT-2590 | Error handling: 200+ empty catch blocks across hooks and ... | S1 | .claude/hooks/component-size-check.js | 47 |
+| DEBT-2592 | Error handling: readFileSync without try/catch in multipl... | S1 | scripts/verify-sonar-phase.js | 134 |
+| DEBT-2593 | Error handling: execSync without timeout or error handling | S1 | scripts/validate-audit.js | 651 |
+| DEBT-2595 | Error handling: State file operations fail silently | S1 | .claude/hooks/state-utils.js | 75 |
+| DEBT-2601 | Error handling: Hook execution errors not propagated to user | S1 | .claude/hooks/component-size-check.js | 47 |
+| DEBT-2602 | Error handling: generate-pending-alerts.js throws error o... | S1 | scripts/generate-pending-alerts.js | 389 |
+| DEBT-2604 | Error handling: execSync in validation scripts can hang o... | S1 | scripts/validate-audit.js | 651 |
+| DEBT-2605 | Quality: TOCTOU race condition in ai-review.js | S1 | scripts/ai-review.js | 139 |
+| DEBT-2606 | Quality: TOCTOU race condition in check-consolidation-sta... | S1 | scripts/check-consolidation-status.js | 89 |
+| DEBT-2607 | Quality: TOCTOU race condition in resolve-item.js | S1 | scripts/debt/resolve-item.js | 53 |
+| DEBT-2616 | Quality: Missing validation on parsed JSON objects | S1 | scripts/debt/intake-audit.js | 119 |
+| DEBT-2617 | Quality: Unsafe regex patterns in pattern checker | S1 | 106-300 | 0 |
+| DEBT-2700 | Quality: Unsafe regex patterns in pattern checker | S1 | scripts/check-pattern-compliance.js | 106 |
+| DEBT-2731 | Duplicated: Test execution in pre-commit AND CI | S1 | .husky/pre-commit | 59 |
+| DEBT-2732 | Duplicated: Path validation logic across 16+ hooks | S1 | .claude/hooks/check-edit-requirements.js | 18 |
+| DEBT-2740 | Duplicated: check-edit-requirements and check-write-requi... | S1 | .claude/hooks/check-edit-requirements.js | 1 |
+| DEBT-0443 | GitHub Actions using version tags instead of commit SHAs | S2 | .github/workflows/auto-label-review-tier.yml | 18 |
+| DEBT-0455 | 28 scripts have 715 console.log/error/warn calls without ... | S2 | scripts/ | 0 |
+| DEBT-0456 | Artifact upload without retention policy | S2 | .github/workflows/ci.yml | 99 |
+| DEBT-0457 | Git diff with @{u}...HEAD fails on new branches without u... | S2 | .husky/pre-push | 48 |
+| DEBT-0469 | GitHub Actions using version tags instead of commit SHAs | S2 | N/A | 0 |
+| DEBT-0515 | Add Correlation IDs to Logger | S2 | lib/logger.ts | 1 |
+| DEBT-0516 | Add Network Status to Logs | S2 | lib/logger.ts | 45 |
+| DEBT-0517 | Create Smoke Test Script | S2 | scripts/smoke-test.js | 1 |
+| DEBT-0518 | Add Bug Report GitHub Template | S2 | .github/ISSUE_TEMPLATE/bug_report.md | 1 |
+| DEBT-0519 | Offline Tests | S2 | tests/offline/ | 1 |
+| DEBT-0520 | Network Failure Error Handling Tests | S2 | tests/admin/network-failure.test.ts | 1 |
+| DEBT-0953 | Backlog Enforcement Job Obsolete After TDMS Migration | S2 | N/A | 0 |
+| DEBT-0958 | Function Deletion with Force Flag Lacks Validation | S2 | N/A | 0 |
+| DEBT-0959 | Pre-Commit Total Time 15-30s - Developer Friction | S2 | N/A | 0 |
+| DEBT-1991 | Oversized scripts: aggregate-audit-findings.js (63KB), ch... | S2 | scripts/aggregate-audit-findings.js | 1 |
+| DEBT-2441 | Orphaned: seed-commit-log.js | S2 | scripts/seed-commit-log.js | 1 |
+| DEBT-2442 | Orphaned: sync-claude-settings.js | S2 | scripts/sync-claude-settings.js | 1 |
+| DEBT-2443 | Orphaned: update-legacy-lines.js | S2 | scripts/update-legacy-lines.js | 1 |
+| DEBT-2444 | Orphaned: create-canonical-findings.js | S2 | scripts/create-canonical-findings.js | 1 |
+| DEBT-2445 | Orphaned: generate-detailed-sonar-report.js | S2 | scripts/generate-detailed-sonar-report.js | 1 |
+| DEBT-2446 | Orphaned: generate-placement-report.js | S2 | scripts/generate-placement-report.js | 1 |
+| DEBT-2447 | Orphaned: migrate-existing-findings.js | S2 | scripts/migrate-existing-findings.js | 1 |
+| DEBT-2448 | Orphaned: regenerate-findings-index.js | S2 | scripts/regenerate-findings-index.js | 1 |
+| DEBT-2449 | Orphaned: verify-sonar-phase.js | S2 | scripts/verify-sonar-phase.js | 1 |
+| DEBT-2451 | Orphaned: TypeScript migration scripts (14 files) | S2 | scripts/dedupe-quotes.ts | 1 |
+| DEBT-2452 | Orphaned npm script: learning:category | S2 | package.json | 38 |
+| DEBT-2453 | Orphaned npm script: learning:since | S2 | package.json | 39 |
+| DEBT-2454 | Orphaned npm script: phase:complete:auto | S2 | package.json | 23 |
+| DEBT-2456 | Narrow trigger: validate-plan.yml for specific archived file | S2 | .github/workflows/validate-plan.yml | 6 |
+| DEBT-2458 | Duplicated: ESLint validation in pre-commit AND CI | S2 | .husky/pre-commit | 9 |
+| DEBT-2459 | Duplicated: Pattern compliance check in pre-commit AND CI | S2 | .husky/pre-commit | 35 |
+| DEBT-2460 | Duplicated: Technical debt schema validation in pre-commi... | S2 | .husky/pre-commit | 248 |
+| DEBT-2461 | Duplicated: CANON schema validation in pre-commit AND CI | S2 | .husky/pre-commit | 97 |
+| DEBT-2464 | Duplicated: File reading logic across 5 hooks | S2 | 114-124 | 0 |
+| DEBT-2467 | Duplicated: Security validations across all hooks | S2 | 40-62 | 0 |
+| DEBT-2470 | Duplicated: Base directory resolution across hooks | S2 | .claude/hooks/check-edit-requirements.js | 18 |
+| DEBT-2473 | Duplicated: ALLOWED_PATHS pattern matching across hooks | S2 | 30-38 | 0 |
+| DEBT-2475 | Duplicated: Pattern check implementation between hook and... | S2 | 1-223 | 0 |
+| DEBT-2476 | Duplicated: Validation between validate-audit.js and vali... | S2 | 1-80 | 0 |
+| DEBT-2485 | Never executes: validate-plan workflow for archived file | S2 | .github/workflows/validate-plan.yml | 7 |
+| DEBT-2486 | Ineffective: audit-s0s1-validator defaults to WARN mode | S2 | .claude/hooks/audit-s0s1-validator.js | 21 |
+| DEBT-2487 | Ineffective: pattern-check hook never blocks violations | S2 | .claude/hooks/pattern-check.js | 221 |
+| DEBT-2489 | Ineffective: Pre-commit bypass conditions too easy | S2 | .husky/pre-commit | 46 |
+| DEBT-2494 | Ineffective: large-context-warning warningShown flag prev... | S2 | .claude/hooks/large-context-warning.js | 146 |
+| DEBT-2495 | Ineffective: check-remote-session-context always succeeds | S2 | .claude/hooks/check-remote-session-context.js | 32 |
+| DEBT-2497 | Ineffective: commit-tracker continueOnError makes failure... | S2 | .claude/settings.json | 251 |
+| DEBT-2501 | CI gap: continue-on-error bypasses critical validations | S2 | .github/workflows/ci.yml | 74 |
+| DEBT-2502 | CI gap: Missing secrets cause silent build success | S2 | 154-159 | 0 |
+| DEBT-2503 | CI gap: Pattern compliance only checks changed files in PRs | S2 | 58-68 | 0 |
+| DEBT-2504 | CI gap: Build job re-installs dependencies wastefully | S2 | 136-149 | 0 |
+| DEBT-2505 | CI gap: Race condition in tier label assignment | S2 | 77-150 | 0 |
+| DEBT-2506 | CI gap: Inline tier assignment logic creates maintenance ... | S2 | 60-75 | 0 |
+| DEBT-2507 | CI gap: Fork PRs completely skip SonarCloud analysis | S2 | 22-24 | 0 |
+| DEBT-2508 | CI gap: Firebase deployment has no success validation | S2 | 140-147 | 0 |
+| DEBT-2509 | CI gap: Deployment has no rollback mechanism | S2 | 140-147 | 0 |
+| DEBT-2510 | CI gap: Service account credentials written to filesystem | S2 | 120-124 | 0 |
+| DEBT-2529 | CI gap: Tier comment spam on every synchronize event | S2 | .github/workflows/auto-label-review-tier.yml | 186 |
+| DEBT-2530 | Bug: check-review-needed.js - getNextDay() fails silently... | S2 | scripts/check-review-needed.js | 170 |
+| DEBT-2531 | Bug: check-cross-doc-deps.js - checkDiffPattern() silentl... | S2 | scripts/check-cross-doc-deps.js | 100 |
+| DEBT-2532 | Bug: check-cross-doc-deps.js - inconsistent behavior with... | S2 | scripts/check-cross-doc-deps.js | 69 |
+| DEBT-2533 | Bug: security-check.js - getStagedFiles() returns empty a... | S2 | scripts/security-check.js | 310 |
+| DEBT-2540 | Skill issue: episodic memory MCP not configured but refer... | S2 | audit-process/SKILL.md | 1 |
+| DEBT-2541 | Skill issue: audit skills reference non-existent FALSE_PO... | S2 | audit-process/SKILL.md | 172 |
+| DEBT-2543 | Skill issue: systematic-debugging references non-existent... | S2 | systematic-debugging/SKILL.md | 229 |
+| DEBT-2545 | Skill issue: audit-process has complex 7-stage orchestrat... | S2 | audit-process/SKILL.md | 1 |
+| DEBT-2548 | Slow: ESLint full codebase scan in pre-commit | S2 | .husky/pre-commit | 9 |
+| DEBT-2549 | Duplicate: Pattern compliance runs in both pre-commit and... | S2 | .husky/pre-commit | 35 |
+| DEBT-2550 | Slow: TypeScript full project type check on every push | S2 | .husky/pre-push | 83 |
+| DEBT-2551 | Slow: Circular dependency scan on entire codebase every push | S2 | .husky/pre-push | 12 |
+| DEBT-2552 | Slow: Test suite rebuilds TypeScript on every test run | S2 | package.json | 11 |
+| DEBT-2554 | Performance: 10 Claude hooks run on every Write/Edit oper... | S2 | 57-111 | 0 |
+| DEBT-2561 | CI slow: Build job waits unnecessarily for all lint/test ... | S2 | .github/workflows/ci.yml | 136 |
+| DEBT-2562 | CI slow: Redundant npm ci in build job | S2 | .github/workflows/ci.yml | 149 |
+| DEBT-2563 | CI slow: No Next.js build cache | S2 | .github/workflows/ci.yml | 152 |
+| DEBT-2564 | CI slow: No path filters on main CI workflow | S2 | .github/workflows/ci.yml | 3 |
+| DEBT-2565 | CI slow: Firebase deploy builds app twice | S2 | .github/workflows/deploy-firebase.yml | 47 |
+| DEBT-2573 | Perf: check-pattern-compliance.js - Synchronous file read... | S2 | scripts/check-pattern-compliance.js | 799 |
+| DEBT-2574 | Perf: check-pattern-compliance.js - O(n*m) pattern matchi... | S2 | scripts/check-pattern-compliance.js | 733 |
+| DEBT-2577 | Perf: check-docs-light.js - O(n^2) anchor link validation | S2 | scripts/check-docs-light.js | 411 |
+| DEBT-2578 | Perf: check-docs-light.js - Repeated realpath/stat calls | S2 | scripts/check-docs-light.js | 686 |
+| DEBT-2581 | Perf: generate-documentation-index.js - O(n*m) reference ... | S2 | scripts/generate-documentation-index.js | 524 |
+| DEBT-2583 | Perf: aggregate-audit-findings.js - Synchronous JSONL fil... | S2 | scripts/aggregate-audit-findings.js | 1201 |
+| DEBT-2584 | Perf: aggregate-audit-findings.js - Expensive Levenshtein... | S2 | scripts/aggregate-audit-findings.js | 1013 |
+| DEBT-2586 | Perf: check-content-accuracy.js - Synchronous file reads ... | S2 | scripts/check-content-accuracy.js | 458 |
+| DEBT-2587 | Perf: check-content-accuracy.js - Regex compilation in ho... | S2 | scripts/check-content-accuracy.js | 114 |
+| DEBT-2588 | Perf: check-content-accuracy.js - O(lines * patterns) nes... | S2 | scripts/check-content-accuracy.js | 136 |
+| DEBT-2591 | Error handling: Hook validation exits with 0 on security ... | S2 | .claude/hooks/typescript-strict-check.js | 28 |
+| DEBT-2594 | Error handling: Error messages expose full system paths | S2 | scripts/validate-audit.js | 110 |
+| DEBT-2596 | Error handling: JSON.parse failures without validation co... | S2 | scripts/verify-skill-usage.js | 136 |
+| DEBT-2597 | Error handling: Missing error messages in file write oper... | S2 | scripts/update-readme-status.js | 107 |
+| DEBT-2599 | Error handling: Validation scripts exit 0 with violations... | S2 | scripts/verify-skill-usage.js | 232 |
+| DEBT-2600 | Error handling: Multiple exit(0) calls suggest unclear co... | S2 | .claude/hooks/typescript-strict-check.js | 28 |
+| DEBT-2603 | Error handling: sync-sonarcloud.js API errors expose impl... | S2 | scripts/debt/sync-sonarcloud.js | 290 |
+| DEBT-2608 | Quality: Magic number - hardcoded port without explanation | S2 | .claude/hooks/stop-serena-dashboard.js | 30 |
+| DEBT-2609 | Quality: Magic number - MAX_LENGTH without explanation | S2 | .claude/hooks/analyze-user-request.js | 37 |
+| DEBT-2610 | Quality: Magic number - SINGLE_FILE_LINE_LIMIT without ex... | S2 | .claude/hooks/large-context-warning.js | 20 |
+| DEBT-2611 | Quality: Magic number - ARCHIVE_LINE_THRESHOLD without ex... | S2 | scripts/check-consolidation-status.js | 26 |
+| DEBT-2612 | Quality: Magic number - REQUEST_TIMEOUT_MS without explan... | S2 | scripts/mcp/sonarcloud-server.js | 68 |
+| DEBT-2613 | Quality: Hardcoded path should be configurable | S2 | .claude/hooks/state-utils.js | 22 |
+| DEBT-2614 | Quality: Multiple hardcoded debt paths | S2 | scripts/debt/intake-audit.js | 53 |
+| DEBT-2625 | Inconsistent: File path validation and sanitization | S2 | scripts/archive-doc.js | 83 |
+| DEBT-2626 | Inconsistent: Error sanitization approaches | S2 | scripts/archive-doc.js | 41 |
+| DEBT-2627 | Gap: Shell scripts not linted or validated | S2 | .claude/hooks/analyze-user-request.sh | 1 |
+| DEBT-2629 | Gap: Scripts directory missing test coverage | S2 | scripts/ | 1 |
+| DEBT-2630 | Gap: Firebase functions lack integration tests | S2 | functions/src/admin.ts | 1 |
+| DEBT-2633 | Gap: Environment files not validated | S2 | .env.local.example | 1 |
+| DEBT-2635 | Gap: No syntax validation for committed shell scripts in CI | S2 | .github/workflows/ci.yml | 1 |
+| DEBT-2702 | Performance: 10 Claude hooks run on every Write/Edit oper... | S2 | .claude/settings.json | 57 |
+| DEBT-2708 | Skill issue: episodic memory MCP not configured but refer... | S2 | .claude/skills/audit-process/SKILL.md | 1 |
+| DEBT-2709 | Skill issue: audit skills reference non-existent FALSE_PO... | S2 | .claude/skills/audit-process/SKILL.md | 172 |
+| DEBT-2710 | Skill issue: systematic-debugging references non-existent... | S2 | .claude/skills/systematic-debugging/SKILL.md | 229 |
+| DEBT-2712 | Skill issue: audit-process has complex 7-stage orchestrat... | S2 | .claude/skills/audit-process/SKILL.md | 1 |
+| DEBT-2715 | CI gap: Missing secrets cause silent build success | S2 | .github/workflows/ci.yml | 154 |
+| DEBT-2716 | CI gap: Pattern compliance only checks changed files in PRs | S2 | .github/workflows/ci.yml | 58 |
+| DEBT-2717 | CI gap: Build job re-installs dependencies wastefully | S2 | .github/workflows/ci.yml | 136 |
+| DEBT-2718 | CI gap: Race condition in tier label assignment | S2 | .github/workflows/auto-label-review-tier.yml | 77 |
+| DEBT-2719 | CI gap: Inline tier assignment logic creates maintenance ... | S2 | .github/workflows/auto-label-review-tier.yml | 60 |
+| DEBT-2720 | CI gap: Fork PRs completely skip SonarCloud analysis | S2 | .github/workflows/sonarcloud.yml | 22 |
+| DEBT-2721 | CI gap: Firebase deployment has no success validation | S2 | .github/workflows/deploy-firebase.yml | 140 |
+| DEBT-2722 | CI gap: Deployment has no rollback mechanism | S2 | .github/workflows/deploy-firebase.yml | 140 |
+| DEBT-2723 | CI gap: Service account credentials written to filesystem | S2 | .github/workflows/deploy-firebase.yml | 120 |
+| DEBT-2733 | Duplicated: File reading logic across 5 hooks | S2 | .claude/hooks/firestore-write-block.js | 114 |
+| DEBT-2735 | Duplicated: Security validations across all hooks | S2 | .claude/hooks/check-edit-requirements.js | 40 |
+| DEBT-2739 | Duplicated: ALLOWED_PATHS pattern matching across hooks | S2 | .claude/hooks/firestore-write-block.js | 30 |
+| DEBT-2741 | Duplicated: Pattern check implementation between hook and... | S2 | .claude/hooks/pattern-check.js | 1 |
+| DEBT-2742 | Duplicated: Validation between validate-audit.js and vali... | S2 | scripts/validate-audit.js | 1 |
+| DEBT-2803 | Consolidate regex pattern linter into ESLint plugin | S2 | scripts/check-pattern-compliance.js | 0 |
+| DEBT-2840 | Add automatic ROADMAP.md completion detection | S2 | scripts/ | 0 |
+| DEBT-2981 | Automate archival of completed ROADMAP.md items to ROADMA... | S2 | scripts/ | 0 |
+| DEBT-0812 | tj-actions/changed-files without CVE-pinned version | S3 | .github/workflows/docs-lint.yml | 36 |
+| DEBT-0813 | lint-staged using npx --no-install may fail if not in cache | S3 | .husky/pre-commit | 21 |
+| DEBT-0814 | Multiple trap commands may override each other | S3 | .claude/hooks/session-start.sh | 245 |
+| DEBT-0815 | Script has minimal console output (1 call) | S3 | scripts/check-cross-doc-deps.js | 1 |
+| DEBT-0816 | TRIGGERS.md last updated 2026-01-02 but hooks updated since | S3 | docs/TRIGGERS.md | 1 |
+| DEBT-0817 | All 12 slash commands have frontmatter descriptions | S3 | .claude/commands/ | 0 |
+| DEBT-2457 | Manual-only scripts not in automation | S3 | scripts/ai-review.js | 1 |
+| DEBT-2466 | Duplicated: TTY-aware color code across 3+ scripts | S3 | 48-56 | 0 |
+| DEBT-2468 | Duplicated: Git staged files retrieval across scripts | S3 | 83-97 | 0 |
+| DEBT-2469 | Duplicated: Config loading pattern across 17+ files | S3 | 34-43 | 0 |
+| DEBT-2471 | Duplicated: JSON argument parsing across hooks | S3 | 20-31 | 0 |
+| DEBT-2472 | Duplicated: File extension checks across hooks | S3 | .claude/hooks/firestore-write-block.js | 102 |
+| DEBT-2477 | Never executes: AUDIT_FINDINGS_BACKLOG.md backlog check | S3 | .github/workflows/backlog-enforcement.yml | 32 |
+| DEBT-2478 | Never executes: npm script test:coverage:report | S3 | package.json | 13 |
+| DEBT-2479 | Never executes: npm script learning:category | S3 | package.json | 38 |
+| DEBT-2481 | Never executes: npm script config:validate | S3 | package.json | 52 |
+| DEBT-2482 | Never executes: npm script session:summary | S3 | package.json | 41 |
+| DEBT-2483 | Never executes: npm script override:list | S3 | package.json | 43 |
+| DEBT-2484 | Never executes: GitHub workflow master branch trigger | S3 | .github/workflows/backlog-enforcement.yml | 5 |
+| DEBT-2488 | Ineffective: Small file bypass in pattern-check | S3 | .claude/hooks/pattern-check.js | 138 |
+| DEBT-2490 | Ineffective: Network failures treated as success in pre-push | S3 | .husky/pre-push | 107 |
+| DEBT-2491 | Ineffective: check-write-requirements POST-TASK not enforced | S3 | .claude/hooks/check-write-requirements.js | 72 |
+| DEBT-2492 | Ineffective: component-size-check always succeeds | S3 | .claude/hooks/component-size-check.js | 142 |
+| DEBT-2493 | Ineffective: agent-trigger-enforcer Phase 2/3 not impleme... | S3 | .claude/hooks/agent-trigger-enforcer.js | 295 |
+| DEBT-2496 | Ineffective: audit-s0s1-validator allows parse errors | S3 | .claude/hooks/audit-s0s1-validator.js | 84 |
+| DEBT-2498 | Ineffective: Pre-push SKIP_TRIGGERS bypass has no budget | S3 | .husky/pre-push | 123 |
+| DEBT-2511 | CI gap: Deleting functions uses continue-on-error hiding ... | S3 | 131-138 | 0 |
+| DEBT-2512 | CI gap: Preview and production use different env var sources | S3 | .github/workflows/deploy-firebase.yml | 51 |
+| DEBT-2513 | CI gap: Backlog check gracefully skips with no replacemen... | S3 | 35-42 | 0 |
+| DEBT-2514 | CI gap: Security pattern check runs file-by-file ineffici... | S3 | 147-150 | 0 |
+| DEBT-2515 | CI gap: Documentation linting skips archive files entirely | S3 | 78-81 | 0 |
+| DEBT-2516 | CI gap: Resolve debt workflow only runs on merged PRs | S3 | .github/workflows/resolve-debt.yml | 11 |
+| DEBT-2517 | CI gap: Debt resolution skips CI with [skip ci] | S3 | .github/workflows/resolve-debt.yml | 88 |
+| DEBT-2518 | CI gap: Debt resolution has race condition on rebase | S3 | .github/workflows/resolve-debt.yml | 92 |
+| DEBT-2519 | CI gap: Review trigger check has fragile JSON validation | S3 | 46-50 | 0 |
+| DEBT-2520 | CI gap: Review check uses continue-on-error hiding crashes | S3 | .github/workflows/review-check.yml | 33 |
+| DEBT-2521 | CI gap: Phase validation workflow is likely dead code | S3 | .github/workflows/validate-plan.yml | 7 |
+| DEBT-2522 | CI gap: Sync README has fragile retry logic | S3 | 64-78 | 0 |
+| DEBT-2523 | CI gap: Sync README uses --no-verify bypassing hooks | S3 | .github/workflows/sync-readme.yml | 57 |
+| DEBT-2524 | CI gap: Inconsistent GitHub Action version pinning | S3 | .github/workflows/ci.yml | 45 |
+| DEBT-2525 | CI gap: No validation of Node.js version consistency | S3 | .github/workflows/ci.yml | 21 |
+| DEBT-2526 | CI gap: Template file exclusion is brittle regex | S3 | 72-75 | 0 |
+| DEBT-2527 | CI gap: Markdown injection sanitization incomplete | S3 | .github/workflows/docs-lint.yml | 91 |
+| DEBT-2528 | CI gap: Changed files detection could miss merge commits | S3 | .github/workflows/backlog-enforcement.yml | 127 |
+| DEBT-2534 | Bug: validate-audit.js - wildcard file patterns not valid... | S3 | scripts/validate-audit.js | 370 |
+| DEBT-2535 | Enhancement: generate-documentation-index.js - no visibil... | S3 | scripts/generate-documentation-index.js | 417 |
+| DEBT-2536 | Enhancement: check-pattern-compliance.js - silent filteri... | S3 | scripts/check-pattern-compliance.js | 494 |
+| DEBT-2537 | Bug: aggregate-audit-findings.js - potential long-running... | S3 | scripts/aggregate-audit-findings.js | 1446 |
+| DEBT-2538 | Skill issue: skill-registry.json does not exist | S3 | .claude | 1 |
+| DEBT-2539 | Skill issue: SKILL_INDEX.md has incorrect skill count | S3 | .claude/skills/SKILL_INDEX.md | 3 |
+| DEBT-2544 | Skill issue: code-reviewer scripts may be non-functional ... | S3 | code-reviewer/scripts/pr_analyzer.py | 1 |
+| DEBT-2546 | Skill issue: multiple audit skills have duplicate functio... | S3 | audit-process/SKILL.md | 100 |
+| DEBT-2547 | Skill issue: session-begin references deprecated TECHNICA... | S3 | session-begin/SKILL.md | 301 |
+| DEBT-2553 | Inefficient: Sequential security checks in pre-push | S3 | 50-65 | 0 |
+| DEBT-2555 | Inefficient: Pattern check runs on every file write via C... | S3 | .claude/hooks/pattern-check.js | 1 |
+| DEBT-2556 | Inefficient: Multiple git status/diff scans in pre-commit | S3 | 47,94,138,159,194 | 0 |
+| DEBT-2557 | Risk: No timeout on npm test in pre-commit | S3 | 59,80 | 0 |
+| DEBT-2558 | Optimization: Doc-only commit detection could be smarter | S3 | 68-88 | 0 |
+| DEBT-2559 | Slow: Session start hooks add 2-5s latency to every session | S3 | 8-44 | 0 |
+| DEBT-2560 | Optimization: UserPromptSubmit hooks run before every use... | S3 | 265-290 | 0 |
+| DEBT-2566 | CI slow: Firebase deploys run sequentially | S3 | .github/workflows/deploy-firebase.yml | 141 |
+| DEBT-2567 | CI slow: SonarCloud runs on all changes including docs | S3 | .github/workflows/sonarcloud.yml | 7 |
+| DEBT-2568 | CI slow: Full git history fetched unnecessarily | S3 | .github/workflows/sonarcloud.yml | 31 |
+| DEBT-2569 | CI slow: Backlog workflow installs deps twice | S3 | .github/workflows/backlog-enforcement.yml | 26 |
+| DEBT-2570 | CI slow: Review check runs on all PRs without path filters | S3 | .github/workflows/review-check.yml | 3 |
+| DEBT-2571 | CI slow: Auto-label workflow has no npm cache | S3 | .github/workflows/auto-label-review-tier.yml | 22 |
+| DEBT-2572 | CI slow: Docs lint processes files sequentially | S3 | .github/workflows/docs-lint.yml | 58 |
+| DEBT-2575 | Perf: check-pattern-compliance.js - Regex recompilation i... | S3 | scripts/check-pattern-compliance.js | 659 |
+| DEBT-2580 | Perf: generate-documentation-index.js - Regex compilation... | S3 | scripts/generate-documentation-index.js | 376 |
+| DEBT-2585 | Perf: aggregate-audit-findings.js - Repeated string norma... | S3 | scripts/aggregate-audit-findings.js | 1044 |
+| DEBT-2618 | Inconsistent: Mixed CommonJS and ESM module systems | S3 | scripts/append-hook-warning.js | 1 |
+| DEBT-2619 | Inconsistent: node: prefix usage in imports | S3 | scripts/validate-audit.js | 18 |
+| DEBT-2620 | Inconsistent: Emoji usage in console output | S3 | scripts/seed-commit-log.js | 105 |
+| DEBT-2621 | Inconsistent: Exit code handling patterns | S3 | scripts/check-agent-compliance.js | 192 |
+| DEBT-2622 | Inconsistent: Verbose/debug logging approaches | S3 | scripts/archive-doc.js | 72 |
+| DEBT-2623 | Inconsistent: Error message formatting | S3 | scripts/check-agent-compliance.js | 163 |
+| DEBT-2624 | Inconsistent: Command line argument parsing | S3 | scripts/check-agent-compliance.js | 29 |
+| DEBT-2628 | Gap: Config .mjs files excluded from linting | S3 | eslint.config.mjs | 25 |
+| DEBT-2631 | Gap: Skills missing usage documentation | S3 | .claude/skills/ | 1 |
+| DEBT-2632 | Gap: YAML workflow files not linted | S3 | .github/workflows/ci.yml | 1 |
+| DEBT-2634 | Gap: Firebase functions TypeScript not type-checked in pr... | S3 | .husky/pre-push | 82 |
+| DEBT-2636 | Gap: No validation that new files are covered by appropri... | S3 | .husky/pre-commit | 1 |
+| DEBT-2637 | Improve: Consolidate duplicate script patterns into singl... | S3 | package.json | 1 |
+| DEBT-2638 | Improve: Reduce pre-commit hook check duplication with CI | S3 | .husky/pre-commit | 1 |
+| DEBT-2639 | Improve: Eliminate redundant npm run then re-run pattern ... | S3 | .husky/pre-commit | 9 |
+| DEBT-2640 | Improve: Add CI caching for test build artifacts | S3 | .github/workflows/ci.yml | 114 |
+| DEBT-2641 | Improve: Combine test:build and type check into single ts... | S3 | package.json | 11 |
+| DEBT-2642 | Improve: Parallelize independent CI jobs | S3 | .github/workflows/ci.yml | 1 |
+| DEBT-2643 | Improve: Make npm audit scheduled instead of on every push | S3 | .husky/pre-push | 92 |
+| DEBT-2644 | Improve: Auto-update DOCUMENTATION_INDEX.md in pre-commit... | S3 | .husky/pre-commit | 134 |
+| DEBT-2645 | Improve: Combine docs-lint.yml checks into main CI workflow | S3 | .github/workflows/docs-lint.yml | 1 |
+| DEBT-2646 | Improve: Use task runner (turbo/nx) for script orchestration | S3 | package.json | 1 |
+| DEBT-2647 | Improve: Simplify Firebase deployment workflow | S3 | .github/workflows/deploy-firebase.yml | 73 |
+| DEBT-2648 | Improve: Backlog enforcement workflow references archived... | S3 | .github/workflows/backlog-enforcement.yml | 32 |
+| DEBT-2649 | Improve: Add hook timing instrumentation | S3 | .husky/pre-commit | 1 |
+| DEBT-2650 | Improve: Consolidate security checking into single workflow | S3 | .github/workflows/backlog-enforcement.yml | 103 |
+| DEBT-2651 | Improve: Use lint-staged for more than just formatting | S3 | package.json | 78 |
+| DEBT-2652 | Improve: Add commit message validation hook | S3 | .husky/_/commit-msg | 1 |
+| DEBT-2653 | Improve: Add GitHub Actions workflow caching strategy | S3 | .github/workflows/ci.yml | 22 |
+| DEBT-2654 | Improve: Migrate manual documentation tasks to automated ... | S3 | package.json | 14 |
+| DEBT-2655 | Improve: Add workflow for stale branch cleanup | S3 | N/A | 0 |
+| DEBT-2656 | Improve: Replace manual trigger checks with GitHub Action... | S3 | .github/workflows/ci.yml | 42 |
+| DEBT-2657 | Docs: Missing README in scripts/lib/ | S3 | scripts/lib/ | 1 |
+| DEBT-2658 | Docs: Missing README in scripts/config/ | S3 | scripts/config/ | 1 |
+| DEBT-2659 | Docs: Missing README in scripts/debt/ | S3 | scripts/debt/ | 1 |
+| DEBT-2660 | Docs: Missing README in scripts/audit/ | S3 | scripts/audit/ | 1 |
+| DEBT-2661 | Docs: No header comment in enrich-addresses.ts | S3 | scripts/enrich-addresses.ts | 1 |
+| DEBT-2662 | Docs: No header comment in test-geocode.ts | S3 | scripts/test-geocode.ts | 1 |
+| DEBT-2663 | Docs: No header comment in sync-geocache.ts | S3 | scripts/sync-geocache.ts | 1 |
+| DEBT-2664 | Docs: No header comment in retry-failures.ts | S3 | scripts/retry-failures.ts | 1 |
+| DEBT-2665 | Docs: No header comment in migrate-library-content.ts | S3 | scripts/migrate-library-content.ts | 1 |
+| DEBT-2666 | Docs: No header comment in seed-real-data.ts | S3 | scripts/seed-real-data.ts | 1 |
+| DEBT-2667 | Docs: Inadequate header in dedupe-quotes.ts | S3 | scripts/dedupe-quotes.ts | 1 |
+| DEBT-2668 | Docs: Config file ai-patterns.json lacks inline documenta... | S3 | scripts/config/ai-patterns.json | 1 |
+| DEBT-2669 | Docs: Config file audit-config.json lacks inline document... | S3 | scripts/config/audit-config.json | 1 |
+| DEBT-2670 | Docs: Config file audit-schema.json lacks inline document... | S3 | scripts/config/audit-schema.json | 1 |
+| DEBT-2671 | Docs: Config file skill-config.json lacks inline document... | S3 | scripts/config/skill-config.json | 1 |
+| DEBT-2672 | Docs: Excessively long file aggregate-audit-findings.js (... | S3 | scripts/aggregate-audit-findings.js | 1 |
+| DEBT-2673 | Docs: Excessively long file analyze-learning-effectivenes... | S3 | scripts/analyze-learning-effectiveness.js | 1 |
+| DEBT-2674 | Docs: Excessively long file validate-audit-integration.js... | S3 | scripts/audit/validate-audit-integration.js | 1 |
+| DEBT-2675 | Docs: Excessively long file check-review-needed.js (1056 ... | S3 | scripts/check-review-needed.js | 1 |
+| DEBT-2676 | Docs: Excessively long file multi-ai/normalize-format.js ... | S3 | scripts/multi-ai/normalize-format.js | 1 |
+| DEBT-2677 | Docs: Excessively long file validate-audit.js (980 lines) | S3 | scripts/validate-audit.js | 1 |
+| DEBT-2678 | Docs: Excessively long file generate-documentation-index.... | S3 | scripts/generate-documentation-index.js | 1 |
+| DEBT-2679 | Docs: Excessively long file check-docs-light.js (866 lines) | S3 | scripts/check-docs-light.js | 1 |
+| DEBT-2680 | Docs: Excessively long file check-pattern-compliance.js (... | S3 | scripts/check-pattern-compliance.js | 1 |
+| DEBT-2681 | Docs: Excessively long file debt/sync-sonarcloud.js (770 ... | S3 | scripts/debt/sync-sonarcloud.js | 1 |
+| DEBT-2682 | Docs: Excessively long file audit/transform-jsonl-schema.... | S3 | scripts/audit/transform-jsonl-schema.js | 1 |
+| DEBT-2683 | Docs: Excessively long file run-consolidation.js (743 lines) | S3 | scripts/run-consolidation.js | 1 |
+| DEBT-2684 | Docs: Excessively long file multi-ai/unify-findings.js (7... | S3 | scripts/multi-ai/unify-findings.js | 1 |
+| DEBT-2685 | Docs: Excessively long file archive-doc.js (712 lines) | S3 | scripts/archive-doc.js | 1 |
+| DEBT-2686 | Docs: Excessively long file check-external-links.js (701 ... | S3 | scripts/check-external-links.js | 1 |
+| DEBT-2687 | Docs: Excessively long file phase-complete-check.js (690 ... | S3 | scripts/phase-complete-check.js | 1 |
+| DEBT-2688 | Docs: Excessively long file check-doc-placement.js (616 l... | S3 | scripts/check-doc-placement.js | 1 |
+| DEBT-2689 | Docs: Excessively long file multi-ai/fix-schema.js (615 l... | S3 | scripts/multi-ai/fix-schema.js | 1 |
+| DEBT-2690 | Docs: Excessively long file multi-ai/aggregate-category.j... | S3 | scripts/multi-ai/aggregate-category.js | 1 |
+| DEBT-2691 | Docs: Excessively long file verify-sonar-phase.js (597 li... | S3 | scripts/verify-sonar-phase.js | 1 |
+| DEBT-2692 | Docs: Excessively long file update-readme-status.js (597 ... | S3 | scripts/update-readme-status.js | 1 |
+| DEBT-2693 | Docs: Excessively long file debt/intake-audit.js (586 lines) | S3 | scripts/debt/intake-audit.js | 1 |
+| DEBT-2694 | Docs: Excessively long file generate-detailed-sonar-repor... | S3 | scripts/generate-detailed-sonar-report.js | 1 |
+| DEBT-2695 | Docs: Excessively long file lib/ai-pattern-checks.js (554... | S3 | scripts/lib/ai-pattern-checks.js | 1 |
+| DEBT-2696 | Docs: Excessively long file migrate-existing-findings.js ... | S3 | scripts/migrate-existing-findings.js | 1 |
+| DEBT-2697 | Docs: Excessively long file check-content-accuracy.js (51... | S3 | scripts/check-content-accuracy.js | 1 |
+| DEBT-2698 | Docs: Excessively long file sync-claude-settings.js (501 ... | S3 | scripts/sync-claude-settings.js | 1 |
+| DEBT-2699 | Improve: Add workflow for stale branch cleanup | S3 | .github/workflows/* | 1 |
+| DEBT-2701 | Inefficient: Sequential security checks in pre-push | S3 | .husky/pre-push | 50 |
+| DEBT-2703 | Inefficient: Multiple git status/diff scans in pre-commit | S3 | .husky/pre-commit | 47 |
+| DEBT-2704 | Risk: No timeout on npm test in pre-commit | S3 | .husky/pre-commit | 59 |
+| DEBT-2705 | Optimization: Doc-only commit detection could be smarter | S3 | .husky/pre-commit | 68 |
+| DEBT-2706 | Slow: Session start hooks add 2-5s latency to every session | S3 | .claude/settings.json | 8 |
+| DEBT-2707 | Optimization: UserPromptSubmit hooks run before every use... | S3 | .claude/settings.json | 265 |
+| DEBT-2711 | Skill issue: code-reviewer scripts may be non-functional ... | S3 | .claude/skills/code-reviewer/scripts/pr_analyzer.py | 1 |
+| DEBT-2713 | Skill issue: multiple audit skills have duplicate functio... | S3 | .claude/skills/audit-process/SKILL.md | 100 |
+| DEBT-2714 | Skill issue: session-begin references deprecated TECHNICA... | S3 | .claude/skills/session-begin/SKILL.md | 301 |
+| DEBT-2724 | CI gap: Deleting functions uses continue-on-error hiding ... | S3 | .github/workflows/deploy-firebase.yml | 131 |
+| DEBT-2725 | CI gap: Backlog check gracefully skips with no replacemen... | S3 | .github/workflows/backlog-enforcement.yml | 35 |
+| DEBT-2726 | CI gap: Security pattern check runs file-by-file ineffici... | S3 | .github/workflows/backlog-enforcement.yml | 147 |
+| DEBT-2727 | CI gap: Documentation linting skips archive files entirely | S3 | .github/workflows/docs-lint.yml | 78 |
+| DEBT-2728 | CI gap: Review trigger check has fragile JSON validation | S3 | .github/workflows/review-check.yml | 46 |
+| DEBT-2729 | CI gap: Sync README has fragile retry logic | S3 | .github/workflows/sync-readme.yml | 64 |
+| DEBT-2730 | CI gap: Template file exclusion is brittle regex | S3 | .github/workflows/docs-lint.yml | 72 |
+| DEBT-2734 | Duplicated: TTY-aware color code across 3+ scripts | S3 | scripts/check-doc-headers.js | 48 |
+| DEBT-2736 | Duplicated: Git staged files retrieval across scripts | S3 | scripts/check-cross-doc-deps.js | 83 |
+| DEBT-2737 | Duplicated: Config loading pattern across 17+ files | S3 | scripts/check-pattern-compliance.js | 34 |
+| DEBT-2738 | Duplicated: JSON argument parsing across hooks | S3 | .claude/hooks/check-edit-requirements.js | 20 |
+| DEBT-2953 | Add audit logging for state file rotation events | S3 | .claude/hooks/lib/rotate-state.js | 0 |
+| DEBT-2958 | Hook scripts lack durable audit trail logging | S3 | N/A | 0 |
+| DEBT-2982 | Add validation that completed ROADMAP items have been arc... | S3 | scripts/check-roadmap-health.js | 0 |
+| DEBT-2983 | Add bidirectional SESSION_CONTEXT.md ↔ ROADMAP.md sync va... | S3 | scripts/check-cross-doc-deps.js | 0 |
+| DEBT-0859 | CI quality gates non-blocking allowing regressions | S0 | .github/workflows/ci.yml | 0 |
+| DEBT-2499 | CI gap: pull_request_target security vulnerability allows... | S0 | .github/workflows/deploy-firebase.yml | 7 |
+| DEBT-2744 | Error handling: continueOnError used appropriately in set... | S0 | .claude/settings.json | 24 |
+| DEBT-2745 | Security: Potential command injection in resolve-item.js ... | S0 | scripts/debt/resolve-item.js | 21 |
 
 ## refactoring (22)
 
-| ID        | Title                                                        | Severity | File                                               | Line |
-| --------- | ------------------------------------------------------------ | -------- | -------------------------------------------------- | ---- |
-| DEBT-0093 | TodayPage god component (1117 lines, 14 useState, 10 useE... | S1       | components/notebook/pages/today-page.tsx           | 1    |
-| DEBT-0094 | UsersTab god component (924 lines, 21 useState, 3 useEffect) | S1       | components/admin/users-tab.tsx                     | 1    |
-| DEBT-0095 | Time-of-day rotation logic duplicated in quotes.ts and sl... | S1       | lib/db/quotes.ts                                   | 44   |
-| DEBT-0096 | Direct Firebase SDK usage in 22+ files bypasses service l... | S1       | hooks/use-journal.ts                               | 31   |
-| DEBT-0136 | Split admin.ts (3,111 lines)                                 | S1       | functions/src/admin.ts                             | 143  |
-| DEBT-0137 | Split users-tab.tsx (2,092 lines)                            | S1       | components/admin/users-tab.tsx                     | 84   |
-| DEBT-0936 | Cloud Functions Index File God Object (811 Lines)            | S1       | N/A                                                | 0    |
-| DEBT-0937 | Admin Functions File Exceeds Complexity (800+ Lines, 21 O... | S1       | N/A                                                | 0    |
-| DEBT-1976 | Direct Firestore SDK reads in UI/components bypass typed ... | S1       | components/admin/admin-crud-table.tsx              | 0    |
-| DEBT-1977 | Cloud Function calling patterns duplicated despite existi... | S1       | components/admin/admin-crud-table.tsx              | 0    |
-| DEBT-1978 | Error logging inconsistent: many call sites log raw error... | S1       | app/admin/page.tsx                                 | 0    |
-| DEBT-1985 | Triple data access layer: 3 overlapping Firestore patterns   | S1       | lib/firestore-service.ts                           | 0    |
-| DEBT-0458 | Step1WorksheetCard large component (845 lines) with neste... | S2       | components/growth/Step1WorksheetCard.tsx           | 1    |
-| DEBT-0459 | ResourcesPage large component (728 lines) mixing meetings... | S2       | components/notebook/pages/resources-page.tsx       | 1    |
-| DEBT-0460 | reCAPTCHA token fetch pattern repeated 5x across codebase    | S2       | hooks/use-journal.ts                               | 281  |
-| DEBT-0526 | Split today-page.tsx (1,199 lines)                           | S2       | components/notebook/pages/today-page.tsx           | 396  |
-| DEBT-0527 | Split dashboard-tab.tsx (1,031 lines)                        | S2       | components/admin/dashboard-tab.tsx                 | 1    |
-| DEBT-0528 | Repository pattern violations                                | S2       | lib/firestore-service.ts                           | 1    |
-| DEBT-0956 | useJournal Hook Has 7 Responsibilities (438 lines)           | S2       | N/A                                                | 0    |
-| DEBT-2956 | HookRunner framework — centralized hook orchestration wit... | S2       | .claude/hooks/post-write-validator.js              | 0    |
-| DEBT-0818 | 2 tracked TODO markers in codebase                           | S3       | components/notebook/features/quick-actions-fab.tsx | 12   |
-| DEBT-0819 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3       | lib/logger.ts                                      | 86   |
+| ID | Title | Severity | File | Line |
+|---|---|---|---|---|
+| DEBT-0093 | TodayPage god component (1117 lines, 14 useState, 10 useE... | S1 | components/notebook/pages/today-page.tsx | 1 |
+| DEBT-0094 | UsersTab god component (924 lines, 21 useState, 3 useEffect) | S1 | components/admin/users-tab.tsx | 1 |
+| DEBT-0095 | Time-of-day rotation logic duplicated in quotes.ts and sl... | S1 | lib/db/quotes.ts | 44 |
+| DEBT-0096 | Direct Firebase SDK usage in 22+ files bypasses service l... | S1 | hooks/use-journal.ts | 31 |
+| DEBT-0136 | Split admin.ts (3,111 lines) | S1 | functions/src/admin.ts | 143 |
+| DEBT-0137 | Split users-tab.tsx (2,092 lines) | S1 | components/admin/users-tab.tsx | 84 |
+| DEBT-0936 | Cloud Functions Index File God Object (811 Lines) | S1 | N/A | 0 |
+| DEBT-0937 | Admin Functions File Exceeds Complexity (800+ Lines, 21 O... | S1 | N/A | 0 |
+| DEBT-1976 | Direct Firestore SDK reads in UI/components bypass typed ... | S1 | components/admin/admin-crud-table.tsx | 0 |
+| DEBT-1977 | Cloud Function calling patterns duplicated despite existi... | S1 | components/admin/admin-crud-table.tsx | 0 |
+| DEBT-1978 | Error logging inconsistent: many call sites log raw error... | S1 | app/admin/page.tsx | 0 |
+| DEBT-1985 | Triple data access layer: 3 overlapping Firestore patterns | S1 | lib/firestore-service.ts | 0 |
+| DEBT-0458 | Step1WorksheetCard large component (845 lines) with neste... | S2 | components/growth/Step1WorksheetCard.tsx | 1 |
+| DEBT-0459 | ResourcesPage large component (728 lines) mixing meetings... | S2 | components/notebook/pages/resources-page.tsx | 1 |
+| DEBT-0460 | reCAPTCHA token fetch pattern repeated 5x across codebase | S2 | hooks/use-journal.ts | 281 |
+| DEBT-0526 | Split today-page.tsx (1,199 lines) | S2 | components/notebook/pages/today-page.tsx | 396 |
+| DEBT-0527 | Split dashboard-tab.tsx (1,031 lines) | S2 | components/admin/dashboard-tab.tsx | 1 |
+| DEBT-0528 | Repository pattern violations | S2 | lib/firestore-service.ts | 1 |
+| DEBT-0956 | useJournal Hook Has 7 Responsibilities (438 lines) | S2 | N/A | 0 |
+| DEBT-2956 | HookRunner framework — centralized hook orchestration wit... | S2 | .claude/hooks/post-write-validator.js | 0 |
+| DEBT-0818 | 2 tracked TODO markers in codebase | S3 | components/notebook/features/quick-actions-fab.tsx | 12 |
+| DEBT-0819 | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3 | lib/logger.ts | 86 |
 
 ## security (85)
 
-| ID        | Title                                                        | Severity | File                                         | Line |
-| --------- | ------------------------------------------------------------ | -------- | -------------------------------------------- | ---- |
-| DEBT-0045 | reCAPTCHA token missing does not block requests (logs but... | S1       | functions/src/security-wrapper.ts            | 0    |
-| DEBT-0046 | Rate limiting is incomplete (no IP throttling, admin endp... | S1       | functions/src/security-wrapper.ts            | 0    |
-| DEBT-0068 | Client App Check initialization is disabled/commented out    | S1       | lib/firebase.ts                              | 0    |
-| DEBT-0071 | reCAPTCHA verification is logged but not enforced when co... | S1       | functions/src/security-wrapper.ts            | 0    |
-| DEBT-0073 | Admin-claim Firestore rule writes lack function-only defe... | S1       | firestore.rules                              | 0    |
-| DEBT-0077 | reCAPTCHA verification coverage may be incomplete when Ap... | S1       | functions/src/index.ts                       | 0    |
-| DEBT-0078 | Potential rate limit bypass via cycling anonymous account... | S1       | components/providers/auth-context.tsx        | 0    |
-| DEBT-0079 | Potential sensitive data in localStorage (needs audit)       | S1       | N/A                                          | 0    |
-| DEBT-0080 | reCAPTCHA verification logged but not enforced (fail-open)   | S1       | functions/src/security-wrapper.ts            | 0    |
-| DEBT-0081 | Rate limiting incomplete (no IP throttling, admin endpoin... | S1       | functions/src/security-wrapper.ts            | 0    |
-| DEBT-0087 | Missing critical security headers                            | S1       | firebase.json                                | 6    |
-| DEBT-0088 | App Check disabled on Cloud Functions                        | S1       | functions/src/index.ts                       | 84   |
-| DEBT-0100 | Make reCAPTCHA fail-closed                                   | S1       | N/A                                          | 0    |
-| DEBT-0101 | Complete rate limiting (IP + admin)                          | S1       | N/A                                          | 0    |
-| DEBT-0102 | Replace console.\* with logger                               | S1       | N/A                                          | 0    |
-| DEBT-0108 | Restore client App Check init                                | S1       | N/A                                          | 0    |
-| DEBT-0109 | Admin-claim rules defense-in-depth                           | S1       | N/A                                          | 0    |
-| DEBT-0110 | Verify reCAPTCHA coverage                                    | S1       | N/A                                          | 0    |
-| DEBT-0111 | Rate limit bypass mitigation                                 | S1       | N/A                                          | 0    |
-| DEBT-0112 | Audit localStorage for sensitive data                        | S1       | N/A                                          | 0    |
-| DEBT-0129 | Make reCAPTCHA fail-closed                                   | S1       | functions/src/security-wrapper.ts            | 89   |
-| DEBT-0130 | Complete rate limiting (IP + admin)                          | S1       | functions/src/security-wrapper.ts            | 45   |
-| DEBT-0138 | Rate limiting on public endpoints                            | S1       | functions/src/security-wrapper.ts            | 45   |
-| DEBT-0932 | App Check Disabled + No Offline Support = Security & UX Gap  | S1       | N/A                                          | 0    |
-| DEBT-0943 | Firebase Credentials Written to Disk in Deployment           | S1       | N/A                                          | 0    |
-| DEBT-0947 | Trigger Override Logging Silently Fails with \|\| true       | S1       | N/A                                          | 0    |
-| DEBT-0949 | GitHub Actions Secrets Not Rotated Regularly                 | S1       | N/A                                          | 0    |
-| DEBT-0376 | Zod schemas missing .strict() (unknown fields accepted)      | S2       | functions/src/schemas.ts                     | 0    |
-| DEBT-0377 | Hardcoded fallback reCAPTCHA site key in server verificat... | S2       | functions/src/recaptcha-verify.ts            | 0    |
-| DEBT-0378 | Server-side journal entry type enum missing 'step-1-works... | S2       | functions/src/schemas.ts                     | 0    |
-| DEBT-0379 | Permissive z.record(..., z.unknown()) allows arbitrary ne... | S2       | functions/src/schemas.ts                     | 0    |
-| DEBT-0380 | Some admin-managed collections allow direct client writes... | S2       | firestore.rules                              | 0    |
-| DEBT-0381 | Console statements present; replace with structured logge... | S2       | N/A                                          | 0    |
-| DEBT-0470 | Console statements present; replace with structured logge... | S2       | N/A                                          | 0    |
-| DEBT-0423 | ESLint security plugin warnings in scripts (unsafe regex ... | S2       | scripts/check-review-needed.js               | 0    |
-| DEBT-0440 | Hardcoded reCAPTCHA site key fallback                        | S2       | functions/src/recaptcha-verify.ts            | 66   |
-| DEBT-0441 | OS command execution in CLI scripts                          | S2       | scripts/ai-review.js                         | 222  |
-| DEBT-0442 | ReDoS vulnerable regex patterns                              | S2       | functions/src/admin.ts                       | 143  |
-| DEBT-0471 | Address ESLint security warnings                             | S2       | N/A                                          | 0    |
-| DEBT-0472 | Remove hardcoded reCAPTCHA fallback                          | S2       | N/A                                          | 0    |
-| DEBT-0473 | Route admin writes through Functions                         | S2       | N/A                                          | 0    |
-| DEBT-0529 | Restrict CORS origins                                        | S2       | functions/src/index.ts                       | 23   |
-| DEBT-0530 | Admin privilege hardening                                    | S2       | functions/src/admin.ts                       | 89   |
-| DEBT-0531 | Token rotation for long-lived sessions                       | S2       | lib/auth-context.tsx                         | 156  |
-| DEBT-0532 | Security rules for new collections                           | S2       | firestore.rules                              | 45   |
-| DEBT-0951 | Missing Content-Security-Policy Header                       | S2       | N/A                                          | 0    |
-| DEBT-0952 | Script Injection Vulnerability in resolve-debt Workflow      | S2       | N/A                                          | 0    |
-| DEBT-0954 | Security Check Doesn't Scan Cloud Functions                  | S2       | N/A                                          | 0    |
-| DEBT-1921 | Missing Content-Security-Policy header                       | S2       | firebase.json                                | 29   |
-| DEBT-1922 | User profile document allows direct client writes without... | S2       | firestore.rules                              | 26   |
-| DEBT-1923 | Hardcoded reCAPTCHA site key in server-side code             | S2       | functions/src/recaptcha-verify.ts            | 66   |
-| DEBT-1933 | Migration function does not verify source anonymous user ... | S2       | functions/src/index.ts                       | 565  |
-| DEBT-1936 | reCAPTCHA token made optional for data migration function    | S2       | functions/src/index.ts                       | 516  |
-| DEBT-1937 | Migration function skips reCAPTCHA when token is missing     | S2       | functions/src/index.ts                       | 516  |
-| DEBT-1938 | Journal and inventory entry data field accepts arbitrary ... | S2       | functions/src/schemas.ts                     | 32   |
-| DEBT-1940 | CI workflow script injection via unsanitized file names      | S2       | .github/workflows/ci.yml                     | 64   |
-| DEBT-1941 | Firestore security_logs collection missing from security ... | S2       | firestore.rules                              | 1    |
-| DEBT-2957 | Hook project dir escape: cwdInsideProject allows parent d... | S2       | N/A                                          | 0    |
-| DEBT-2960 | Symlink file overwrite in rotate-state.js rotation/prunin... | S2       | .claude/hooks/lib/rotate-state.js            | 25   |
-| DEBT-0775 | App Check disabled on Functions and client init disabled ... | S3       | functions/src/index.ts                       | 0    |
-| DEBT-0801 | SonarCloud: Potentially hard-coded password pattern          | S3       | lib/utils/errors.ts                          | 69   |
-| DEBT-0802 | Math.random for visual effects                               | S3       | components/celebrations/confetti-burst.tsx   | 39   |
-| DEBT-0803 | Secrets expanded in run block                                | S3       | .github/workflows/deploy-firebase.yml        | 58   |
-| DEBT-0804 | process.env.NODE_ENV checks for debug info                   | S3       | components/providers/error-boundary.tsx      | 84   |
-| DEBT-0805 | Agent config files present                                   | S3       | .claude/settings.json                        | 1    |
-| DEBT-0823 | GitHub Actions using version tags instead of SHA             | S3       | .github/workflows/auto-label-review-tier.yml | 29   |
-| DEBT-0844 | Console statements in error paths                            | S3       | lib/utils/callable-errors.ts                 | 182  |
-| DEBT-1942 | Unpinned GitHub Actions in multiple workflows                | S3       | .github/workflows/auto-label-review-tier.yml | 29   |
-| DEBT-1945 | Admin function input validation inconsistency - meetingId... | S3       | functions/src/admin.ts                       | 768  |
-| DEBT-1946 | Daily quotes collection allows direct admin client writes... | S3       | firestore.rules                              | 104  |
-| DEBT-1948 | Firestore security rules missing for security_logs and ad... | S3       | firestore.rules                              | 151  |
-| DEBT-1949 | User ID hash truncation reduces collision resistance for ... | S3       | functions/src/security-logger.ts             | 74   |
-| DEBT-1950 | No middleware.ts for server-side route protection            | S3       | next.config.mjs                              | 13   |
-| DEBT-1951 | Service account credentials written to disk in CI deploy ... | S3       | .github/workflows/deploy-firebase.yml        | 58   |
-| DEBT-2951 | Add symlink audit trail logging to atomic write helpers      | S3       | .claude/hooks/lib/rotate-state.js            | 0    |
-| DEBT-2959 | Hook validators log code snippets that could expose secrets  | S3       | N/A                                          | 0    |
-| DEBT-0850 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                              | 0    |
-| DEBT-0854 | App Check disabled on all production Cloud Functions         | S0       | functions/src/index.ts                       | 0    |
-| DEBT-0855 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                              | 0    |
-| DEBT-0856 | App Check disabled on all Cloud Functions and client init... | S0       | functions/src/index.ts                       | 0    |
-| DEBT-0857 | Legacy journalEntries collection allows direct client wri... | S0       | firestore.rules                              | 0    |
-| DEBT-0860 | Re-enable App Check on Cloud Functions                       | S0       | N/A                                          | 0    |
-| DEBT-0861 | Close legacy journalEntries write path                       | S0       | N/A                                          | 0    |
-| DEBT-0865 | Re-enable App Check on Cloud Functions                       | S0       | lib/firebase.ts                              | 45   |
-| DEBT-0866 | Close legacy journalEntries write path                       | S0       | lib/firestore-service.ts                     | 156  |
+| ID | Title | Severity | File | Line |
+|---|---|---|---|---|
+| DEBT-0045 | reCAPTCHA token missing does not block requests (logs but... | S1 | functions/src/security-wrapper.ts | 0 |
+| DEBT-0046 | Rate limiting is incomplete (no IP throttling, admin endp... | S1 | functions/src/security-wrapper.ts | 0 |
+| DEBT-0068 | Client App Check initialization is disabled/commented out | S1 | lib/firebase.ts | 0 |
+| DEBT-0071 | reCAPTCHA verification is logged but not enforced when co... | S1 | functions/src/security-wrapper.ts | 0 |
+| DEBT-0073 | Admin-claim Firestore rule writes lack function-only defe... | S1 | firestore.rules | 0 |
+| DEBT-0077 | reCAPTCHA verification coverage may be incomplete when Ap... | S1 | functions/src/index.ts | 0 |
+| DEBT-0078 | Potential rate limit bypass via cycling anonymous account... | S1 | components/providers/auth-context.tsx | 0 |
+| DEBT-0079 | Potential sensitive data in localStorage (needs audit) | S1 | N/A | 0 |
+| DEBT-0080 | reCAPTCHA verification logged but not enforced (fail-open) | S1 | functions/src/security-wrapper.ts | 0 |
+| DEBT-0081 | Rate limiting incomplete (no IP throttling, admin endpoin... | S1 | functions/src/security-wrapper.ts | 0 |
+| DEBT-0087 | Missing critical security headers | S1 | firebase.json | 6 |
+| DEBT-0088 | App Check disabled on Cloud Functions | S1 | functions/src/index.ts | 84 |
+| DEBT-0100 | Make reCAPTCHA fail-closed | S1 | N/A | 0 |
+| DEBT-0101 | Complete rate limiting (IP + admin) | S1 | N/A | 0 |
+| DEBT-0102 | Replace console.\* with logger | S1 | N/A | 0 |
+| DEBT-0108 | Restore client App Check init | S1 | N/A | 0 |
+| DEBT-0109 | Admin-claim rules defense-in-depth | S1 | N/A | 0 |
+| DEBT-0110 | Verify reCAPTCHA coverage | S1 | N/A | 0 |
+| DEBT-0111 | Rate limit bypass mitigation | S1 | N/A | 0 |
+| DEBT-0112 | Audit localStorage for sensitive data | S1 | N/A | 0 |
+| DEBT-0129 | Make reCAPTCHA fail-closed | S1 | functions/src/security-wrapper.ts | 89 |
+| DEBT-0130 | Complete rate limiting (IP + admin) | S1 | functions/src/security-wrapper.ts | 45 |
+| DEBT-0138 | Rate limiting on public endpoints | S1 | functions/src/security-wrapper.ts | 45 |
+| DEBT-0932 | App Check Disabled + No Offline Support = Security & UX Gap | S1 | N/A | 0 |
+| DEBT-0943 | Firebase Credentials Written to Disk in Deployment | S1 | N/A | 0 |
+| DEBT-0947 | Trigger Override Logging Silently Fails with \|\| true | S1 | N/A | 0 |
+| DEBT-0949 | GitHub Actions Secrets Not Rotated Regularly | S1 | N/A | 0 |
+| DEBT-0376 | Zod schemas missing .strict() (unknown fields accepted) | S2 | functions/src/schemas.ts | 0 |
+| DEBT-0377 | Hardcoded fallback reCAPTCHA site key in server verificat... | S2 | functions/src/recaptcha-verify.ts | 0 |
+| DEBT-0378 | Server-side journal entry type enum missing 'step-1-works... | S2 | functions/src/schemas.ts | 0 |
+| DEBT-0379 | Permissive z.record(..., z.unknown()) allows arbitrary ne... | S2 | functions/src/schemas.ts | 0 |
+| DEBT-0380 | Some admin-managed collections allow direct client writes... | S2 | firestore.rules | 0 |
+| DEBT-0381 | Console statements present; replace with structured logge... | S2 | N/A | 0 |
+| DEBT-0423 | ESLint security plugin warnings in scripts (unsafe regex ... | S2 | scripts/check-review-needed.js | 0 |
+| DEBT-0440 | Hardcoded reCAPTCHA site key fallback | S2 | functions/src/recaptcha-verify.ts | 66 |
+| DEBT-0441 | OS command execution in CLI scripts | S2 | scripts/ai-review.js | 222 |
+| DEBT-0442 | ReDoS vulnerable regex patterns | S2 | functions/src/admin.ts | 143 |
+| DEBT-0470 | Console statements present; replace with structured logge... | S2 | N/A | 0 |
+| DEBT-0471 | Address ESLint security warnings | S2 | N/A | 0 |
+| DEBT-0472 | Remove hardcoded reCAPTCHA fallback | S2 | N/A | 0 |
+| DEBT-0473 | Route admin writes through Functions | S2 | N/A | 0 |
+| DEBT-0529 | Restrict CORS origins | S2 | functions/src/index.ts | 23 |
+| DEBT-0530 | Admin privilege hardening | S2 | functions/src/admin.ts | 89 |
+| DEBT-0531 | Token rotation for long-lived sessions | S2 | lib/auth-context.tsx | 156 |
+| DEBT-0532 | Security rules for new collections | S2 | firestore.rules | 45 |
+| DEBT-0951 | Missing Content-Security-Policy Header | S2 | N/A | 0 |
+| DEBT-0952 | Script Injection Vulnerability in resolve-debt Workflow | S2 | N/A | 0 |
+| DEBT-0954 | Security Check Doesn't Scan Cloud Functions | S2 | N/A | 0 |
+| DEBT-1921 | Missing Content-Security-Policy header | S2 | firebase.json | 29 |
+| DEBT-1922 | User profile document allows direct client writes without... | S2 | firestore.rules | 26 |
+| DEBT-1923 | Hardcoded reCAPTCHA site key in server-side code | S2 | functions/src/recaptcha-verify.ts | 66 |
+| DEBT-1933 | Migration function does not verify source anonymous user ... | S2 | functions/src/index.ts | 565 |
+| DEBT-1936 | reCAPTCHA token made optional for data migration function | S2 | functions/src/index.ts | 516 |
+| DEBT-1937 | Migration function skips reCAPTCHA when token is missing | S2 | functions/src/index.ts | 516 |
+| DEBT-1938 | Journal and inventory entry data field accepts arbitrary ... | S2 | functions/src/schemas.ts | 32 |
+| DEBT-1940 | CI workflow script injection via unsanitized file names | S2 | .github/workflows/ci.yml | 64 |
+| DEBT-1941 | Firestore security_logs collection missing from security ... | S2 | firestore.rules | 1 |
+| DEBT-2957 | Hook project dir escape: cwdInsideProject allows parent d... | S2 | N/A | 0 |
+| DEBT-2960 | Symlink file overwrite in rotate-state.js rotation/prunin... | S2 | .claude/hooks/lib/rotate-state.js | 25 |
+| DEBT-0775 | App Check disabled on Functions and client init disabled ... | S3 | functions/src/index.ts | 0 |
+| DEBT-0801 | SonarCloud: Potentially hard-coded password pattern | S3 | lib/utils/errors.ts | 69 |
+| DEBT-0802 | Math.random for visual effects | S3 | components/celebrations/confetti-burst.tsx | 39 |
+| DEBT-0803 | Secrets expanded in run block | S3 | .github/workflows/deploy-firebase.yml | 58 |
+| DEBT-0804 | process.env.NODE_ENV checks for debug info | S3 | components/providers/error-boundary.tsx | 84 |
+| DEBT-0805 | Agent config files present | S3 | .claude/settings.json | 1 |
+| DEBT-0823 | GitHub Actions using version tags instead of SHA | S3 | .github/workflows/auto-label-review-tier.yml | 29 |
+| DEBT-0844 | Console statements in error paths | S3 | lib/utils/callable-errors.ts | 182 |
+| DEBT-1942 | Unpinned GitHub Actions in multiple workflows | S3 | .github/workflows/auto-label-review-tier.yml | 29 |
+| DEBT-1945 | Admin function input validation inconsistency - meetingId... | S3 | functions/src/admin.ts | 768 |
+| DEBT-1946 | Daily quotes collection allows direct admin client writes... | S3 | firestore.rules | 104 |
+| DEBT-1948 | Firestore security rules missing for security_logs and ad... | S3 | firestore.rules | 151 |
+| DEBT-1949 | User ID hash truncation reduces collision resistance for ... | S3 | functions/src/security-logger.ts | 74 |
+| DEBT-1950 | No middleware.ts for server-side route protection | S3 | next.config.mjs | 13 |
+| DEBT-1951 | Service account credentials written to disk in CI deploy ... | S3 | .github/workflows/deploy-firebase.yml | 58 |
+| DEBT-2951 | Add symlink audit trail logging to atomic write helpers | S3 | .claude/hooks/lib/rotate-state.js | 0 |
+| DEBT-2959 | Hook validators log code snippets that could expose secrets | S3 | N/A | 0 |
+| DEBT-0850 | Legacy journalEntries collection allows direct client wri... | S0 | firestore.rules | 0 |
+| DEBT-0854 | App Check disabled on all production Cloud Functions | S0 | functions/src/index.ts | 0 |
+| DEBT-0855 | Legacy journalEntries collection allows direct client wri... | S0 | firestore.rules | 0 |
+| DEBT-0856 | App Check disabled on all Cloud Functions and client init... | S0 | functions/src/index.ts | 0 |
+| DEBT-0857 | Legacy journalEntries collection allows direct client wri... | S0 | firestore.rules | 0 |
+| DEBT-0860 | Re-enable App Check on Cloud Functions | S0 | N/A | 0 |
+| DEBT-0861 | Close legacy journalEntries write path | S0 | N/A | 0 |
+| DEBT-0865 | Re-enable App Check on Cloud Functions | S0 | lib/firebase.ts | 45 |
+| DEBT-0866 | Close legacy journalEntries write path | S0 | lib/firestore-service.ts | 156 |
+
