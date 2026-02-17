@@ -1028,7 +1028,11 @@ const ANTI_PATTERNS = [
         let hasGuard = false;
         const backStart = Math.max(0, i - 10);
         for (let j = backStart; j < i; j++) {
-          if (lines[j].includes("isSafeToWrite") || lines[j].includes("isSymbolicLink")) {
+          if (
+            lines[j].includes("isSafeToWrite") ||
+            lines[j].includes("isSymbolicLink") ||
+            lines[j].includes("guardSymlink")
+          ) {
             hasGuard = true;
             break;
           }

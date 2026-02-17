@@ -210,8 +210,12 @@ function guardSymlink(targetPath, label) {
       console.error(`Error: ${label} is a symlink — refusing to write`);
       process.exit(2);
     }
-  } catch {
-    // Path doesn't exist — safe to proceed
+  } catch (err) {
+    const code = err && typeof err === "object" ? err.code : null;
+    if (code === "ENOENT" || code === "ENOTDIR") return;
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`Error: Unable to verify ${label} is not a symlink: ${msg}`);
+    process.exit(2);
   }
 }
 

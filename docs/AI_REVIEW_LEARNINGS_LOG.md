@@ -760,6 +760,33 @@ prevented R4-R6 entirely, saving ~3 review rounds.
 
 ---
 
+#### Review #343: PR #369 R9 — Fail-Closed guardSymlink, Non-Object Guard, Pattern Recognizer, Source ID Regex (2026-02-17)
+
+**Source:** Qodo Suggestions (9) **PR/Branch:**
+claude/cherry-pick-recent-commits-X1eKD (PR \#369) **Suggestions:** 9 total
+(Fixed: 5, Rejected: 4)
+
+**Patterns Identified:**
+
+1. **Fail-closed guardSymlink** — Generic catch in guardSymlink silently
+   swallows unexpected errors (EPERM, EIO). Only ignore ENOENT/ENOTDIR; treat
+   all others as fatal. Propagated to both track-resolutions.js and
+   generate-results-index.js.
+2. **Non-object guard in detectAndMapFormat** — Malformed JSONL lines can parse
+   to primitives/arrays. Added plain-object check with "invalid" format marker.
+3. **Recognize guardSymlink in pattern checker** — New guardSymlink function
+   wasn't listed as a recognized guard pattern in check-pattern-compliance.js,
+   causing false positives on compliant code.
+4. **Source ID regex alignment** — validate-schema.js regex allowed both colon
+   and hyphen separators but warning message only documented colons. Tightened
+   regex to match documented format.
+5. **File path normalization warning** — Non-empty file paths that normalize to
+   empty were silently ignored. Added explicit warning for unnormalizable paths.
+
+**Resolution Stats:** 5/9 fixed (56%), 4/9 rejected (JSONL data quality x4)
+
+---
+
 #### Review #342: PR #369 R8 — CC buildResults+statusIcon, guardSymlink+safeRename, Symlink Walk, detectAndMapFormat (2026-02-17)
 
 **Source:** SonarCloud (3 Issues) + Qodo Security (1) + Qodo Compliance (2) +

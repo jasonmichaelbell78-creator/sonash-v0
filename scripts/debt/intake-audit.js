@@ -310,6 +310,14 @@ function preserveEnhancementFields(normalized, mappedItem) {
  * Tries enhancement audit first (shares fields with Doc Standards), then Doc Standards.
  */
 function detectAndMapFormat(item) {
+  const isPlainObject = typeof item === "object" && item !== null && !Array.isArray(item);
+  if (!isPlainObject) {
+    return {
+      mappedItem: { title: null, severity: null, category: null, file: null },
+      mappingMetadata: { format_detected: "invalid" },
+    };
+  }
+
   const enh = mapEnhancementAuditToTdms(item);
   if (enh.metadata.format_detected === "enhancement-audit") {
     return { mappedItem: enh.item, mappingMetadata: enh.metadata };
@@ -335,12 +343,20 @@ function checkRequiredFields(mappedItem) {
   if (!mappedItem.severity) errors.push("Missing required field: severity");
   if (!mappedItem.category) errors.push("Missing required field: category");
 
-  const normalizedFile = normalizeFilePath(mappedItem.file || "");
-  if (normalizedFile) mappedItem.file = normalizedFile;
-  if (normalizedFile && !isValidFilePath(normalizedFile)) {
+  const rawFile = typeof mappedItem.file === "string" ? mappedItem.file : "";
+  const normalizedFile = normalizeFilePath(rawFile);
+
+  if (rawFile && !normalizedFile) {
     warnings.push(
-      `Invalid file path: "${mappedItem.file || "(empty)"}". TDMS requires a real file path.`
+      `Invalid file path: "${rawFile}" (could not be normalized to a repo-relative path)`
     );
+  } else if (normalizedFile) {
+    mappedItem.file = normalizedFile;
+    if (!isValidFilePath(normalizedFile)) {
+      warnings.push(
+        `Invalid file path: "${normalizedFile}" (must be repo-relative and not contain unsafe segments)`
+      );
+    }
   }
 
   if (

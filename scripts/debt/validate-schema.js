@@ -78,7 +78,7 @@ function validateItem(item, lineNum) {
 
   // Validate source_id format (audit-<category>-YYYY-MM-DD or similar patterns)
   if (item.source_id) {
-    const validSourceIdPattern = /^(audit[:-]|sonarcloud[:-]|manual[:-]|review[:-]|CANON-)/;
+    const validSourceIdPattern = /^(?:audit:|sonarcloud:|manual:|review:|CANON-)/;
     if (!validSourceIdPattern.test(item.source_id)) {
       warnings.push(
         `Line ${lineNum}: Non-standard source_id format: "${item.source_id}" (expected prefix: audit:, sonarcloud:, manual:, review:, CANON-)`
