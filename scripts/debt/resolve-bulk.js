@@ -21,7 +21,9 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
+const { validatePathInDir, refuseSymlinkWithParents } = require("../lib/security-helpers");
 
+const REPO_ROOT = path.resolve(__dirname, "../..");
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
 const LOG_DIR = path.join(DEBT_DIR, "logs");
@@ -45,16 +47,47 @@ function parseArgs(args) {
         console.error("Error: Missing value for --output-json <path>");
         process.exit(1);
       }
-      parsed.outputJson = args[++i];
+      if (next.trim().length === 0 || next.endsWith(path.sep) || next === "." || next === "./") {
+        console.error("Error: Invalid value for --output-json <path>");
+        process.exit(1);
+      }
+      i += 1;
+      parsed.outputJson = next;
     } else if (arg === "--pr" && args[i + 1]) {
-      parsed.pr = Number.parseInt(args[++i], 10);
+      i += 1;
+      parsed.pr = Number.parseInt(args[i], 10);
     } else if (arg === "--file" && args[i + 1]) {
-      parsed.file = args[++i];
+      i += 1;
+      parsed.file = args[i];
     } else if (arg.match(/^DEBT-\d+$/)) {
       parsed.debtIds.push(arg);
     }
   }
   return parsed;
+}
+
+/**
+ * Write resolution summary JSON to a file (atomic tmp+rename).
+ * Path is validated to be within the repo root to prevent path traversal.
+ */
+function writeOutputJson(outputPath, payload) {
+  // Validate path is within repo root
+  const safePath = path.resolve(REPO_ROOT, outputPath);
+  validatePathInDir(REPO_ROOT, safePath);
+
+  try {
+    const outDir = path.dirname(safePath);
+    fs.mkdirSync(outDir, { recursive: true });
+    const tmpPath = path.join(outDir, `.tmp-${path.basename(safePath)}-${process.pid}`);
+    refuseSymlinkWithParents(tmpPath);
+    refuseSymlinkWithParents(safePath);
+    fs.writeFileSync(tmpPath, JSON.stringify(payload, null, 2), "utf-8");
+    fs.renameSync(tmpPath, safePath);
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Failed to write output JSON: ${errMsg}`);
+    process.exit(1);
+  }
 }
 
 // Load items from MASTER_DEBT.jsonl with safe JSON parsing
@@ -251,9 +284,9 @@ Example:
 
   if (found.length === 0) {
     console.log("\n✅ No items to resolve.");
-    // Write output JSON even when nothing resolved (for CI summary)
     if (parsed.outputJson) {
-      const summary = {
+      writeOutputJson(parsed.outputJson, {
+        timestamp: new Date().toISOString(),
         requested: parsed.debtIds.length,
         resolved: 0,
         resolvedItems: [],
@@ -262,17 +295,16 @@ Example:
         ineligibleItems: ineligible,
         notFound: notFound.length,
         notFoundItems: notFound,
-      };
-      try {
-        fs.mkdirSync(path.dirname(parsed.outputJson), { recursive: true });
-        fs.writeFileSync(parsed.outputJson, JSON.stringify(summary, null, 2));
-      } catch (err) {
-        const errMsg = err instanceof Error ? err.message : String(err);
-        console.error(`Failed to write output JSON: ${errMsg}`);
-        process.exit(1);
-      }
+      });
     }
-    process.exit(0);
+
+    const allRequestedAlreadyResolved =
+      parsed.debtIds.length > 0 &&
+      alreadyResolved.length === parsed.debtIds.length &&
+      notFound.length === 0 &&
+      ineligible.length === 0;
+
+    process.exit(allRequestedAlreadyResolved ? 0 : 1);
   }
 
   // Preview items to resolve
@@ -318,7 +350,8 @@ Example:
 
   // Write output JSON for CI consumption
   if (parsed.outputJson) {
-    const summary = {
+    writeOutputJson(parsed.outputJson, {
+      timestamp: new Date().toISOString(),
       requested: parsed.debtIds.length,
       resolved: resolvedIds.length,
       resolvedItems: resolvedIds,
@@ -327,15 +360,7 @@ Example:
       ineligibleItems: ineligible,
       notFound: notFound.length,
       notFoundItems: notFound,
-    };
-    try {
-      fs.mkdirSync(path.dirname(parsed.outputJson), { recursive: true });
-      fs.writeFileSync(parsed.outputJson, JSON.stringify(summary, null, 2));
-    } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      console.error(`Failed to write output JSON: ${errMsg}`);
-      process.exit(1);
-    }
+    });
   }
 
   // Regenerate views

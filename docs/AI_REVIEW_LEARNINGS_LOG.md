@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.26 **Created:** 2026-01-02 **Last Updated:** 2026-02-17
+**Document Version:** 17.27 **Created:** 2026-01-02 **Last Updated:** 2026-02-17
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.27   | 2026-02-17 | Review #344: PR #370 R2 — 11 items (1 CRITICAL, 4 MAJOR, 3 MINOR, 2 data quality, 1 deferred). Path traversal on --output-json, SonarCloud i assignment, extracted writeOutputJson helper, 5 orphaned ROADMAP DEBT refs, evidence dedup + absolute path re-apply, symlink guards.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | 17.26   | 2026-02-17 | PR #369 Retrospective: 9 rounds, 119 items (78 fixed, 41 rejected). Symlink ping-pong (8 rounds), CC ping-pong (6 rounds). Key action: add CC complexity lint rule to pre-commit hook.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 17.25   | 2026-02-17 | Review #338: PR #369 R4 — 12 items (3 MAJOR, 3 MINOR, 6 rejected). realpathSync symlink hardening (post-audit), atomic write tmp+rename (generate-results-index), early return invalid date, fail fast JSONL, String(title), safe error.message.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 17.24   | 2026-02-17 | Review #337: PR #369 R3 — 12 items (4 MAJOR, 3 MINOR, 5 rejected). Repo containment (post-audit), canonical category mapping (generate-results-index), sinceDate validation, writeFileSync try/catch, string line normalization in getFileRef, push batching residuals.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -1036,6 +1037,35 @@ documented but never executed.
 
 3. **Add Qodo suppression for JSONL pipeline output** (~15 min). Eliminates ~34%
    of all review items as noise.
+
+---
+
+#### Review #344: PR #370 R2 — resolve-bulk.js hardening, MASTER_DEBT data quality, orphaned ROADMAP refs (2026-02-17)
+
+**Source:** SonarCloud (1) + Qodo Compliance (3) + Qodo Suggestions (5) + CI (2)
+**PR/Branch:** claude/new-session-6kCvR (PR #370) **Suggestions:** 11 total
+(Fixed: 10, Deferred: 1)
+
+**Patterns Identified:**
+
+1. **Path traversal on CLI --output-json** — Arbitrary file write via
+   user-supplied path. Fix: validatePathInDir to restrict within repo root.
+2. **SonarCloud i assignment** — `parsed.outputJson = args[++i]` flagged. Fix:
+   separate increment from assignment.
+3. **Duplicated write blocks** — Two identical writeFileSync blocks triggered
+   7.4% SonarCloud duplication. Fix: extract `writeOutputJson` helper with
+   atomic tmp+rename, path validation, and timestamp.
+4. **Orphaned ROADMAP DEBT refs** — sync-roadmap-refs CI check catches refs to
+   DEBT IDs not in MASTER_DEBT.jsonl.
+5. **lint-staged evidence loss** — Large JSONL changes (dedup + path fix) lost
+   during lint-staged backup/restore cycle. Fix: re-apply and commit carefully.
+6. **generate-views.js overwrites MASTER_DEBT** — Running generate-views.js
+   after manually adding items to MASTER_DEBT.jsonl destroys those additions
+   because it rebuilds from raw/deduped.jsonl. Fix: add items after view
+   generation, or add to raw/deduped.jsonl source.
+
+**Resolution Stats:** 10/11 fixed (91%), 1/11 deferred (docs:check 36
+pre-existing errors → DEBT tracking)
 
 ---
 
