@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.30 **Created:** 2026-01-02 **Last Updated:** 2026-02-17
+**Document Version:** 17.31 **Created:** 2026-01-02 **Last Updated:** 2026-02-17
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.31   | 2026-02-17 | PR #370 Retrospective: 5 rounds, 53 items (46 fixed, 6 rejected, 1 deferred). 3 ping-pong chains (normalizeFilePath 3 rounds, TOCTOU 2 rounds, unknown args 2 rounds). CC lint rule recommended 4th time. Trend improving (5 rounds vs 9 in #369).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 17.30   | 2026-02-17 | Review #347: PR #370 R5 — 9 items (3 MAJOR, 3 MINOR, 3 rejected). TOCTOU file path fix, CWD-independent normalizeFilePath, trailing slash preservation, unknown non-flag token errors, assignedIds filter, improved error message.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 17.29   | 2026-02-17 | Review #346: PR #370 R4 — 11 items (3 MAJOR, 5 MINOR, 3 rejected). Dynamic path prefix in normalizeFilePath, ensureDefaults on merged items, unknown CLI arg errors, negated condition flip, symlink check reorder, evidence guard, --file path validation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.28   | 2026-02-17 | Review #345: PR #370 R3 — 11 items (6 MAJOR, 4 MINOR, 1 enhancement). parseArgs CC reduction (while-loop + extracted validators), writeOutputJson hardening (symlink order, tmp cleanup, pre-remove), generate-views.js manual item preservation, source data normalization, --pr validation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -1040,6 +1041,236 @@ documented but never executed.
 
 3. **Add Qodo suppression for JSONL pipeline output** (~15 min). Eliminates ~34%
    of all review items as noise.
+
+---
+
+### PR #370 Retrospective (2026-02-17)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                         |
+| -------------- | --------------------------------------------- |
+| Rounds         | 5 (R1-R5, all on 2026-02-17)                  |
+| Total items    | 53                                            |
+| Fixed          | 46                                            |
+| Deferred       | 1 (docs:check pre-existing errors)            |
+| Rejected       | 6                                             |
+| Review sources | SonarCloud, Qodo Compliance, Qodo Suggestions |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source               | Items  | Fixed  | Rejected | Key Patterns                                               |
+| --------- | ---------- | -------------------- | ------ | ------ | -------- | ---------------------------------------------------------- |
+| R1        | 2026-02-17 | Qodo                 | 11     | 11     | 0        | Schema validation, security writeFileSync, data quality    |
+| R2        | 2026-02-17 | SonarCloud+Qodo+CI   | 11     | 10     | 0        | Path traversal, i assignment, write helper, orphaned refs  |
+| R3        | 2026-02-17 | SonarCloud+Qodo+User | 11     | 11     | 0        | CC 16>15, i assignment, symlink order, view preservation   |
+| R4        | 2026-02-17 | SonarCloud+Qodo      | 11     | 8      | 3        | Hard-coded path, merged defaults, unknown args, negated    |
+| R5        | 2026-02-17 | Qodo                 | 9      | 6      | 3        | TOCTOU file path, CWD resolve, trailing slash, assignedIds |
+| **Total** |            |                      | **53** | **46** | **6**    |                                                            |
+
+**Note:** R1 has no learnings log entry (predates numbering). Data from commit
+a5e6d28.
+
+#### Ping-Pong Chains
+
+##### Chain 1: normalizeFilePath Progressive Hardening (R3->R4->R5 = 3 rounds)
+
+| Round | What Happened                                                                                                                        | Files Affected    | Root Cause                  |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------- | --------------------------- |
+| R3    | Added `normalizeFilePath()` with hard-coded string `"home/user/sonash-v0/"`                                                          | generate-views.js | Initial implementation      |
+| R4    | Qodo flagged hard-coded prefix. Changed to `path.resolve(__dirname, "../..")`. Also: `path.resolve(filePath)` resolves against CWD   | generate-views.js | Non-portable, CWD-dependent |
+| R5    | Qodo flagged CWD-dependence. Changed to `path.resolve(repoRootAbs, filePath)`. Also: trailing slash stripped (`scripts/`->`scripts`) | generate-views.js | Incomplete fix from R4      |
+
+**Avoidable rounds:** 1 (R5). If R4 had resolved against repo root AND preserved
+trailing slashes in one pass, R5 would have had no normalizeFilePath items.
+
+**Prevention:** When implementing path normalization, test with: (1) absolute
+paths, (2) relative paths from different CWD, (3) directory paths with trailing
+slash. A simple test matrix catches all edge cases.
+
+##### Chain 2: --file Path Validation (R4->R5 = 2 rounds)
+
+| Round | What Happened                                                     | Files Affected  | Root Cause                                     |
+| ----- | ----------------------------------------------------------------- | --------------- | ---------------------------------------------- |
+| R4    | Added `validatePathInDir` for --file arg                          | resolve-bulk.js | Initial implementation                         |
+| R5    | Qodo flagged TOCTOU: validated resolved path but stored raw input | resolve-bulk.js | Incomplete fix — didn't persist resolved value |
+
+**Avoidable rounds:** 1 (R5). If R4 had stored `resolvedFilePath` instead of
+`next`, the TOCTOU gap wouldn't exist.
+
+**Prevention:** When validating paths, always store the resolved/validated form.
+Never validate one form and store another.
+
+##### Chain 3: Unknown Arg Handling (R4->R5 = 2 rounds)
+
+| Round | What Happened                                                | Files Affected  | Root Cause                           |
+| ----- | ------------------------------------------------------------ | --------------- | ------------------------------------ |
+| R4    | Added `else if (arg.startsWith("-"))` to catch unknown flags | resolve-bulk.js | Initial implementation               |
+| R5    | Qodo flagged non-flag, non-DEBT args still silently ignored  | resolve-bulk.js | Incomplete — only handled `-` prefix |
+
+**Avoidable rounds:** 1 (R5). If R4 had added a final `else` clause for ALL
+unrecognized args (not just flags), R5 wouldn't flag this.
+
+**Prevention:** When adding CLI arg validation, always include a catch-all
+`else` for any unrecognized input. This is a standard pattern.
+
+##### Chain 4: Repeat Compliance Items (R3->R4->R5 = 3 rounds, no code churn)
+
+"Missing actor context" and "Unstructured console logs" were flagged by Qodo
+Compliance in R3, R4, and R5, rejected each time with the same rationale. This
+is NOT ping-pong (no code changes), but adds categorization overhead.
+
+**Total avoidable rounds across all chains: 3** (R5 normalizeFilePath, R5
+TOCTOU, R5 unknown args — all could have been resolved in R4 with more thorough
+fixes)
+
+#### Rejection Analysis
+
+| Category                   | Count | Rounds   | Examples                                                    |
+| -------------------------- | ----- | -------- | ----------------------------------------------------------- |
+| Audit trail actor identity | 3     | R4,R4,R5 | "Missing actor context" — captured in resolution-log.jsonl  |
+| Unstructured console logs  | 3     | R4,R4,R5 | "Use structured logging" — pre-existing pattern (DEBT-0455) |
+
+**Rejection accuracy:** 6/6 rejections were correct (100% accuracy). Both items
+are legitimate observations about pre-existing architectural patterns, but
+fixing them is out of scope for this PR (tracked in DEBT-0455 for structured
+logging; resolution-log.jsonl already captures actor identity for audit trail).
+
+**Note:** The same 2 Qodo compliance items repeated in R3, R4, and R5. Unlike PR
+#369 where JSONL data quality rejections added ~4-5 items of noise per round, PR
+#370's rejection noise was limited to 2-3 items per round in R4-R5. This is a
+significant improvement, likely because PR #370 only modified 2 script files
+(not 12+ like #369).
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                      | Rounds | Also in PRs                | Already Automated?  | Recommended Action                                                     | Est. Effort |
+| ---------------------------- | ------ | -------------------------- | ------------------- | ---------------------------------------------------------------------- | ----------- |
+| CC >15                       | R3     | #366-#369                  | **NO (4th retro!)** | Add `complexity: [error, 15]` to eslint.config.mjs                     | ~30 min     |
+| Incremental path hardening   | R3-R5  | New for path normalization | No                  | Test matrix for normalizeFilePath (abs, relative, trailing slash, CWD) | ~15 min     |
+| TOCTOU validate-then-store   | R4-R5  | #368 (fd-based write)      | No                  | FIX_TEMPLATES: "Always store validated/resolved path, never raw input" | ~10 min     |
+| Repeat compliance rejections | R3-R5  | #369 (JSONL quality)       | **NO (2nd retro)**  | `.qodo/suppression.yaml` for actor context + unstructured logs         | ~15 min     |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                                   | Implemented? | Impact on #370                                  |
+| ------- | ---------------------------------------------------- | ------------ | ----------------------------------------------- |
+| PR #367 | CC eslint complexity rule (~30 min)                  | **NOT DONE** | Caused 1 round (R3 CC 16>15)                    |
+| PR #367 | Shared validate-skip-reason.js (~20 min)             | DONE         | Not relevant to #370                            |
+| PR #367 | shellcheck for .husky hooks (~15 min)                | **NOT DONE** | Not relevant to #370                            |
+| PR #368 | FIX_TEMPLATES Template #22 (atomic write)            | DONE         | Used in writeOutputJson (R2)                    |
+| PR #368 | FIX_TEMPLATES Template #27 (fd-based write)          | DONE         | Not directly used in #370                       |
+| PR #368 | Qodo suppression for SKIP_REASON (~10 min)           | **NOT DONE** | Not relevant to #370                            |
+| PR #368 | CODE_PATTERNS fstatSync-after-open doc               | **NOT DONE** | Not relevant to #370                            |
+| PR #369 | CC eslint complexity rule (~30 min)                  | **NOT DONE** | Same as #367 — caused 1 round                   |
+| PR #369 | Qodo suppression for JSONL pipeline output (~15 min) | **NOT DONE** | Would have suppressed 2-3 repeat items in R4-R5 |
+| PR #369 | FIX_TEMPLATES Template #28 (fail-closed catch)       | **NOT DONE** | Not relevant to #370                            |
+| PR #369 | TDMS entries for retro action items                  | **NOT DONE** | Retro actions continue to be undone             |
+
+**Total avoidable rounds from unimplemented retro actions: 1** (CC rule would
+have caught R3's CC 16>15 pre-push). Lower impact than previous PRs because PR
+#370 only touched 2 script files vs 12+ in #369.
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | CC Rounds   | Path/Security Rounds | Rejections | Key Issue              |
+| -------- | ------ | ----------- | ----------- | -------------------- | ---------- | ---------------------- |
+| #366     | 8      | ~90         | 4           | 5                    | ~20        | Symlink ping-pong      |
+| #367     | 7      | ~193        | 6(deferred) | 0                    | ~24        | SKIP_REASON validation |
+| #368     | 6      | ~65         | 3           | 3                    | ~15        | TOCTOU fd-based write  |
+| #369     | 9      | 119         | 6           | 8                    | 41         | Both CC + symlink      |
+| **#370** | **5**  | **53**      | **1**       | **3**                | **6**      | **Path normalization** |
+
+**Trend: Significant improvement.** PR #370 is the shortest review cycle in the
+last 5 PRs (5 rounds vs 6-9), with the fewest total items (53 vs 65-193), and
+the lowest rejection count (6 vs 15-41).
+
+**Reasons for improvement:**
+
+1. **Smaller scope** — 2 script files modified vs 12+ in #369
+2. **Existing hardening patterns applied** — writeOutputJson used Template #22
+   from R1/R2, preventing 2-3 symlink/atomic write rounds
+3. **Stable rejections** — Only 2 recurring compliance items, rejected
+   consistently (no waffling that causes churn)
+4. **generate-views.js preservation** — The mergeManualItems() pattern worked
+   well, requiring only incremental refinements (not architectural rework)
+
+**Persistent cross-PR patterns:**
+
+| Pattern                         | PRs Affected | Times Recommended | Status            | Required Action                                            |
+| ------------------------------- | ------------ | ----------------- | ----------------- | ---------------------------------------------------------- |
+| CC lint rule                    | #366-#370    | **4x**            | Never implemented | **BLOCKING — 4 retros, ~20 avoidable rounds across 5 PRs** |
+| Qodo suppression                | #369,#370    | 2x                | Never implemented | Should implement before next PR                            |
+| TDMS tracking for retro actions | #369,#370    | 2x                | Never implemented | Retro recommendations decay without tracking               |
+| FIX_TEMPLATES #28 (fail-closed) | #369         | 1x                | Not done          | Low urgency — only relevant to new audit scripts           |
+
+#### Skills/Templates to Update
+
+1. **eslint.config.mjs:** Add `complexity: ["error", 15]` rule. **4th retro
+   recommending this. BLOCKING.** Estimated savings: ~20 avoidable rounds across
+   5 PRs. (~30 min)
+
+2. **FIX_TEMPLATES.md:** Add template: "Validate-then-store path pattern" — when
+   validating a user-supplied path, always store the resolved/validated form,
+   not the raw input. Pattern from R5 TOCTOU fix. (~10 min)
+
+3. **pr-review SKILL.md Step 5:** Add: "When implementing path normalization,
+   verify with test matrix: absolute paths, relative paths from non-repo CWD,
+   directory paths with trailing slash." (~5 min)
+
+4. **.qodo/ suppression config:** Suppress "actor context in JSON output" and
+   "unstructured console logs" for scripts that already use resolution-log.jsonl
+   for audit trails. (~15 min)
+
+#### Process Improvements
+
+1. **Path normalization needs a test matrix** — `normalizeFilePath` went through
+   3 rounds (R3-R5) because edge cases (CWD independence, trailing slashes) were
+   missed. When writing any path manipulation function, immediately test with:
+   absolute path, relative path from different CWD, directory with trailing
+   slash, empty string, non-string input. Evidence: R3-R5 chain.
+
+2. **CLI arg validation: always include catch-all else** — The unknown arg
+   handler went through 2 rounds (R4-R5) because R4 only handled `-` prefixed
+   args. Standard pattern: known options -> DEBT-XXXX match -> flag check ->
+   **else: error**. Evidence: R4-R5 chain.
+
+3. **Store validated forms, not raw input** — The TOCTOU on --file path was a
+   classic validate-then-use-raw pattern. After any `validatePathInDir()` or
+   `path.resolve()`, store the result. Evidence: R4-R5 chain.
+
+4. **Retro action items MUST be tracked in TDMS** — For the 4th consecutive PR,
+   the CC lint rule is recommended and not implemented. The learnings log is
+   clearly insufficient as a tracking mechanism. Action items need DEBT entries
+   with sprint assignments. Evidence: 4 retros, 0 implementation.
+
+#### Verdict
+
+PR #370 had the **most efficient review cycle in the last 5 PRs** — 5 rounds
+with 53 total items, compared to 9 rounds/119 items (#369), 6 rounds/65 items
+(#368), 7 rounds/193 items (#367), and 8 rounds/90 items (#366). This is a clear
+positive trend driven by smaller PR scope and reuse of hardening patterns from
+prior rounds.
+
+Of the 5 rounds, **R1-R3 were fully productive** (100% fix rate, genuine new
+issues). **R4-R5 showed mild ping-pong** in normalizeFilePath (3 rounds) and CLI
+arg validation (2 rounds), but each chain involved genuinely new edge cases
+rather than the deep incremental hardening seen in #369's symlink chain.
+
+**Approximately 1 round was avoidable** (60% of R5 items were incremental
+refinements to R4 fixes). This is a significant improvement over #369's ~6
+avoidable rounds.
+
+**Single highest-impact change:** Implement the CC lint rule
+(`complexity: [error, 15]` in eslint.config.mjs). This has been recommended in
+**4 consecutive retros** and never implemented. While it only caused 1 avoidable
+round in this PR, it has caused ~20 avoidable rounds across the last 5 PRs
+cumulatively. This is the project's most persistent and expensive process gap.
+
+**Trend comparison:** Improving. The per-round efficiency has increased (46/53 =
+87% fix rate vs 78/119 = 66% in #369), rejection noise has decreased (6 vs 41),
+and total cycle length has decreased (5 vs 9). If the CC lint rule is finally
+implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
