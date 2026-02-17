@@ -207,8 +207,10 @@ function getFile(finding) {
  */
 function getFileRef(finding) {
   const file = getFile(finding);
-  if (Number.isFinite(finding.line)) {
-    return `${file}:${finding.line}`;
+  const rawLine =
+    typeof finding.line === "string" ? Number.parseInt(finding.line, 10) : finding.line;
+  if (Number.isFinite(rawLine)) {
+    return `${file}:${rawLine}`;
   }
   // Check if file already has :line suffix
   if (Array.isArray(finding.files) && finding.files[0] && finding.files[0].includes(":")) {
@@ -608,9 +610,10 @@ function generateMarkdownReport(category, date1, date2, findings1, findings2, co
 
   const lines = [];
 
-  lines.push(`# Audit Comparison: ${category}`, `## ${date1} \u2192 ${date2}`, "");
-
   lines.push(
+    `# Audit Comparison: ${category}`,
+    `## ${date1} \u2192 ${date2}`,
+    "",
     ...generateSummaryTable(date1, date2, findings1, findings2, sev1, sev2),
     ...generateFindingsList("New Findings", comparison.newFindings, "_No new findings._"),
     ...generateFindingsList(

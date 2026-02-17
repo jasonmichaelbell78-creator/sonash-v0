@@ -156,8 +156,13 @@ function fileExists(relPath) {
 function getCommitCountSince(relPath, sinceDate) {
   const normalized = normalizeRepoRelPath(relPath);
   if (!normalized || !isPathContained(normalized)) return -1;
+
+  const hasValidSince = typeof sinceDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(sinceDate);
+
   try {
-    const args = ["log", "--oneline", `--since=${sinceDate}`, "--", normalized];
+    const args = ["log", "--oneline"];
+    if (hasValidSince) args.push(`--since=${sinceDate}`);
+    args.push("--", normalized);
     const result = execFileSync("git", args, {
       cwd: REPO_ROOT,
       encoding: "utf8",

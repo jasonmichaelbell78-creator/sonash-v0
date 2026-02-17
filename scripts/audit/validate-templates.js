@@ -290,8 +290,7 @@ function formatHumanReport(results) {
   // Warn about any below threshold
   const belowThreshold = results.filter((r) => r.percentage < 70);
   if (belowThreshold.length > 0) {
-    lines.push("");
-    lines.push(`WARNING: ${belowThreshold.length} template(s) below 70% compliance threshold:`);
+    lines.push("", `WARNING: ${belowThreshold.length} template(s) below 70% compliance threshold:`);
     for (const r of belowThreshold) {
       lines.push(`  - ${r.filename}: ${r.percentage}%`);
     }

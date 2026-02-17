@@ -156,6 +156,14 @@ function main() {
   // and relative paths work when invoking the script.
   const resolvedInput = path.resolve(inputFile);
 
+  // Verify input is within the repo root to prevent processing external files
+  if (!resolvedInput.startsWith(REPO_ROOT + path.sep) && resolvedInput !== REPO_ROOT) {
+    console.error(`Error: Input file must be within the repository root.`);
+    console.error(`  Input:     ${resolvedInput}`);
+    console.error(`  Repo root: ${REPO_ROOT}`);
+    process.exit(1);
+  }
+
   console.log("Post-Audit Pipeline");
   console.log("=".repeat(60));
   console.log(`  Input file:   ${resolvedInput}`);

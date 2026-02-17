@@ -54,6 +54,19 @@ function extractDate(dirName) {
 /**
  * Collect single-session audit results from category subdirectories.
  */
+// Map directory names to canonical category names
+const DIR_TO_CANONICAL = {
+  code: "code-quality",
+  security: "security",
+  performance: "performance",
+  refactoring: "refactoring",
+  documentation: "documentation",
+  process: "process",
+  "engineering-productivity": "engineering-productivity",
+  enhancements: "enhancements",
+  "ai-optimization": "ai-optimization",
+};
+
 function collectSingleSessionAudits() {
   const results = [];
   const singleSessionBase = path.join(auditsDir, "single-session");
@@ -73,7 +86,7 @@ function collectSingleSessionAudits() {
         results.push({
           date,
           type: "Single-Session",
-          category: category.name,
+          category: DIR_TO_CANONICAL[category.name] || category.name,
           path: path.relative(auditsDir, auditDir),
         });
       }
@@ -225,7 +238,13 @@ function main() {
   } catch {
     // File doesn't exist yet — safe to write
   }
-  fs.writeFileSync(outputFile, markdown, "utf8");
+  try {
+    fs.writeFileSync(outputFile, markdown, "utf8");
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`Error: Failed to write results index: ${msg}`);
+    process.exit(2);
+  }
   console.log(`✓ Generated: ${outputFile}`);
   console.log(`  - Single-Session: ${results.filter((r) => r.type === "Single-Session").length}`);
   console.log(`  - Comprehensive: ${results.filter((r) => r.type === "Comprehensive").length}`);
