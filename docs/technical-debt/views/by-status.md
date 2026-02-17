@@ -1933,235 +1933,253 @@ _No items_
 
 _No items_
 
-## RESOLVED (225)
+## RESOLVED (243)
 
-| ID        | Title                                                          | Severity | Category        |
-| --------- | -------------------------------------------------------------- | -------- | --------------- |
-| DEBT-0064 | Broken relative links in review/output docs (wrong ../ de...   | S1       | code-quality    |
-| DEBT-0065 | [X] placeholders remain in 2026-Q1 plan instances              | S1       | code-quality    |
-| DEBT-0084 | Landing page forced to client-side rendering blocks SSR        | S1       | performance     |
-| DEBT-0090 | 20 placeholder issues across 5 template instances              | S1       | documentation   |
-| DEBT-0095 | Time-of-day rotation logic duplicated in quotes.ts and sl...   | S1       | refactoring     |
-| DEBT-0134 | Unoptimized images (11MB)                                      | S1       | performance     |
-| DEBT-0135 | No code splitting                                              | S1       | performance     |
-| DEBT-0863 | Reduce 47 CRITICAL complexity functions                        | S1       | code-quality    |
-| DEBT-0962 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality    |
-| DEBT-0968 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality    |
-| DEBT-0973 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality    |
-| DEBT-0981 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality    |
-| DEBT-0987 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality    |
-| DEBT-1010 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality    |
-| DEBT-1505 | Remove this useless assignment to variable "found".            | S1       | code-quality    |
-| DEBT-1964 | 498 external URLs need validation (expected 60-100 failures)   | S1       | documentation   |
-| DEBT-1998 | Invalid placeholder URL in example: full-url.com               | S1       | documentation   |
-| DEBT-1999 | Broken external link: console.firebase.google.com/support...   | S1       | documentation   |
-| DEBT-2000 | Broken anchor link: ./ROADMAP_LOG.md#m16---admin-panel--t...   | S1       | documentation   |
-| DEBT-2001 | Broken anchor link: docs/DOCUMENT_DEPENDENCIES.md#cross-d...   | S1       | documentation   |
-| DEBT-2002 | Broken anchor link: ./ROADMAP.md#active-sprint-operationa...   | S1       | documentation   |
-| DEBT-2003 | Broken anchor link: ./ROADMAP.md#m2-architecture-refactor...   | S1       | documentation   |
-| DEBT-2007 | Contradiction: Security rules enforcement for direct writes    | S1       | documentation   |
-| DEBT-2865 | PostToolUse Write: 10 sequential hook processes spawned p...   | S1       | code-quality    |
-| DEBT-2866 | PostToolUse Edit: 9 sequential hook processes spawned per...   | S1       | code-quality    |
-| DEBT-3018 | AUDIT_TRACKER.md audit log tables                              | S1       | code-quality    |
-| DEBT-3019 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas    | S1       | code-quality    |
-| DEBT-3020 | AUDIT_TRACKER.md threshold matrix and version history          | S1       | code-quality    |
-| DEBT-3042 | Write/Edit/MultiEdit share 8 redundant hooks (~530ms over...   | S1       | code-quality    |
-| DEBT-3044 | check-write-requirements vs check-edit-requirements dupli...   | S1       | code-quality    |
-| DEBT-3050 | Read hooks have no execution order guarantee - context tr...   | S1       | code-quality    |
-| DEBT-3063 | Unclear relationship: audit-validation-wrapper vs audit-c...   | S1       | code-quality    |
-| DEBT-3082 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl...   | S1       | code-quality    |
-| DEBT-3091 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused         | S1       | code-quality    |
-| DEBT-0274 | Add an explicit return statement at the end of the function.   | S2       | code-quality    |
-| DEBT-0275 | Assign this positional parameter to a local variable.          | S2       | code-quality    |
-| DEBT-0470 | Console statements present; replace with structured logge...   | S2       | security        |
-| DEBT-0415 | Tier 2 docs missing required metadata (Document Version, ...   | S2       | code-quality    |
-| DEBT-0418 | PR_REVIEW_PROMPT_TEMPLATE lacks required metadata and ver...   | S2       | code-quality    |
-| DEBT-0420 | Duplicate CODE_REVIEW_PLAN_2026_Q1.md exists in two locat...   | S2       | code-quality    |
-| DEBT-0451 | Large chunk file (628KB) indicates code splitting opportu...   | S2       | performance     |
-| DEBT-0517 | Create Smoke Test Script                                       | S2       | process         |
-| DEBT-0518 | Add Bug Report GitHub Template                                 | S2       | process         |
-| DEBT-0519 | Offline Tests                                                  | S2       | process         |
-| DEBT-0520 | Network Failure Error Handling Tests                           | S2       | process         |
-| DEBT-0521 | Historical Score Tracking                                      | S2       | performance     |
-| DEBT-0522 | Performance Budgets                                            | S2       | performance     |
-| DEBT-0524 | PWA Audit Baseline                                             | S2       | performance     |
-| DEBT-0531 | Token rotation for long-lived sessions                         | S2       | security        |
-| DEBT-0541 | Inconsistent error context across components                   | S2       | code-quality    |
-| DEBT-0620 | 'data.step4_surrender \|\| ""' will use Object's default st... | S2       | code-quality    |
-| DEBT-0961 | Prefer `node:crypto` over `crypto`.                            | S2       | code-quality    |
-| DEBT-0963 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality    |
-| DEBT-0964 | Prefer `node:path` over `path`.                                | S2       | code-quality    |
-| DEBT-0965 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality    |
-| DEBT-0966 | Prefer `node:path` over `path`.                                | S2       | code-quality    |
-| DEBT-0967 | Prefer `node:crypto` over `crypto`.                            | S2       | code-quality    |
-| DEBT-0969 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality    |
-| DEBT-0970 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality    |
-| DEBT-0971 | Prefer `node:path` over `path`.                                | S2       | code-quality    |
-| DEBT-0972 | Unexpected negated condition.                                  | S2       | code-quality    |
-| DEBT-0979 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE...   | S2       | performance     |
-| DEBT-1000 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality    |
-| DEBT-1001 | Prefer `node:path` over `path`.                                | S2       | code-quality    |
-| DEBT-1002 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE...   | S2       | performance     |
-| DEBT-1005 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality    |
-| DEBT-1006 | Prefer `node:path` over `path`.                                | S2       | code-quality    |
-| DEBT-1007 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality    |
-| DEBT-1008 | Prefer `node:path` over `path`.                                | S2       | code-quality    |
-| DEBT-1009 | Prefer `node:crypto` over `crypto`.                            | S2       | code-quality    |
-| DEBT-1011 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality    |
-| DEBT-1293 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality    |
-| DEBT-1294 | Prefer `node:path` over `path`.                                | S2       | code-quality    |
-| DEBT-1295 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality    |
-| DEBT-1504 | Remove the declaration of the unused 'found' variable.         | S2       | code-quality    |
-| DEBT-2024 | SECURITY_CHECKLIST.md missing Document Version and Status      | S2       | documentation   |
-| DEBT-2025 | APPCHECK_SETUP.md missing Document Version                     | S2       | documentation   |
-| DEBT-2026 | RECAPTCHA_REMOVAL_GUIDE.md missing Document Version            | S2       | documentation   |
-| DEBT-2027 | TESTING_PLAN.md missing Document Version                       | S2       | documentation   |
-| DEBT-2028 | Code blocks missing language specifier                         | S2       | documentation   |
-| DEBT-2029 | Inaccurate Firebase version in CLAUDE.md                       | S2       | documentation   |
-| DEBT-2030 | DEVELOPMENT.md missing Status field in metadata                | S2       | documentation   |
-| DEBT-2031 | CODE_PATTERNS.md uses lowercase 'claude.md' instead of 'C...   | S2       | documentation   |
-| DEBT-2032 | AI_REVIEW_PROCESS.md missing Status field                      | S2       | documentation   |
-| DEBT-2033 | APPCHECK_SETUP.md missing Document Version field               | S2       | documentation   |
-| DEBT-2034 | Broken anchor link: ../ROADMAP.md#dependencies                 | S2       | documentation   |
-| DEBT-2035 | INCIDENT_RESPONSE.md missing Document Version field            | S2       | documentation   |
-| DEBT-2036 | MCP_SETUP.md missing Status field                              | S2       | documentation   |
-| DEBT-2037 | TESTING_PLAN.md missing Document Version field                 | S2       | documentation   |
-| DEBT-2046 | Inconsistent terminology: 'skill' vs 'command' vs 'slash ...   | S2       | documentation   |
-| DEBT-2047 | Inconsistent terminology: 'agent' vs 'subagent' vs 'worker'    | S2       | documentation   |
-| DEBT-2051 | Inconsistent terminology: 'App Check' vs 'AppCheck' vs 'a...   | S2       | documentation   |
-| DEBT-2056 | Master documentation index is not linked from entry points     | S2       | documentation   |
-| DEBT-2057 | Duplication: Agent/Skill Triggers table in CLAUDE.md and ...   | S2       | documentation   |
-| DEBT-2388 | Quality: CLAUDE.md scores 8/10 - missing cross-references...   | S2       | documentation   |
-| DEBT-2389 | Quality: .claude/agents/ docs lack usage examples              | S2       | documentation   |
-| DEBT-2390 | Quality: .claude/skills/ docs have inconsistent SKILL.md ...   | S2       | documentation   |
-| DEBT-2391 | Quality: DEVELOPMENT.md scores 7/10 - wall of text in Git...   | S2       | documentation   |
-| DEBT-2392 | Readability: DEVELOPMENT.md has 110-line section without ...   | S2       | documentation   |
-| DEBT-2397 | Gap: Undocumented agent team workflows                         | S2       | documentation   |
-| DEBT-2464 | Duplicated: File reading logic across 5 hooks                  | S2       | process         |
-| DEBT-2467 | Duplicated: Security validations across all hooks              | S2       | process         |
-| DEBT-2473 | Duplicated: ALLOWED_PATHS pattern matching across hooks        | S2       | process         |
-| DEBT-2475 | Duplicated: Pattern check implementation between hook and...   | S2       | process         |
-| DEBT-2476 | Duplicated: Validation between validate-audit.js and vali...   | S2       | process         |
-| DEBT-2502 | CI gap: Missing secrets cause silent build success             | S2       | process         |
-| DEBT-2503 | CI gap: Pattern compliance only checks changed files in PRs    | S2       | process         |
-| DEBT-2504 | CI gap: Build job re-installs dependencies wastefully          | S2       | process         |
-| DEBT-2505 | CI gap: Race condition in tier label assignment                | S2       | process         |
-| DEBT-2506 | CI gap: Inline tier assignment logic creates maintenance ...   | S2       | process         |
-| DEBT-2507 | CI gap: Fork PRs completely skip SonarCloud analysis           | S2       | process         |
-| DEBT-2508 | CI gap: Firebase deployment has no success validation          | S2       | process         |
-| DEBT-2509 | CI gap: Deployment has no rollback mechanism                   | S2       | process         |
-| DEBT-2510 | CI gap: Service account credentials written to filesystem      | S2       | process         |
-| DEBT-2540 | Skill issue: episodic memory MCP not configured but refer...   | S2       | process         |
-| DEBT-2541 | Skill issue: audit skills reference non-existent FALSE_PO...   | S2       | process         |
-| DEBT-2543 | Skill issue: systematic-debugging references non-existent...   | S2       | process         |
-| DEBT-2545 | Skill issue: audit-process has complex 7-stage orchestrat...   | S2       | process         |
-| DEBT-2554 | Performance: 10 Claude hooks run on every Write/Edit oper...   | S2       | process         |
-| DEBT-2747 | Session-start timeout risks in low-bandwidth environments      | S2       | code-quality    |
-| DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality    |
-| DEBT-2778 | Upgrade Firebase Functions to Node.js 24 runtime               | S2       | code-quality    |
-| DEBT-2802 | useDailyQuote hook has smart module-level caching prevent...   | S2       | code-quality    |
-| DEBT-2804 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality    |
-| DEBT-2805 | writeFileSync without atomic write pattern                     | S2       | code-quality    |
-| DEBT-2840 | Add automatic ROADMAP.md completion detection                  | S2       | process         |
-| DEBT-2981 | Automate archival of completed ROADMAP.md items to ROADMA...   | S2       | process         |
-| DEBT-2863 | SessionStart: check-remote-session-context.js runs git fe...   | S2       | code-quality    |
-| DEBT-2868 | compaction-handoff.js uses execSync (shell) instead of ex...   | S2       | code-quality    |
-| DEBT-2870 | Duplicate file content reads across PostToolUse hooks          | S2       | code-quality    |
-| DEBT-2873 | UserPromptSubmit: 4 hooks run on every user message inclu...   | S2       | code-quality    |
-| DEBT-2993 | UserPromptSubmit: 4 hooks run on every user message inclu...   | S2       | ai-optimization |
-| DEBT-2878 | Skill overlap: sonarcloud-sprint is superseded by sonarcloud   | S2       | code-quality    |
-| DEBT-2997 | Skill overlap: sonarcloud-sprint is superseded by sonarcloud   | S2       | ai-optimization |
-| DEBT-2886 | Orphaned skill: find-skills not in SKILL_INDEX.md              | S2       | code-quality    |
-| DEBT-2887 | Orphaned skill: pre-commit-fixer not in SKILL_INDEX.md         | S2       | code-quality    |
-| DEBT-2888 | Orphaned skill: task-next not in SKILL_INDEX.md                | S2       | code-quality    |
-| DEBT-2889 | Orphaned skill: multi-ai-audit not in SKILL_INDEX.md           | S2       | code-quality    |
-| DEBT-2890 | Orphaned skill: add-debt not in SKILL_INDEX.md                 | S2       | code-quality    |
-| DEBT-2891 | Orphaned skill: verify-technical-debt not in SKILL_INDEX.md    | S2       | code-quality    |
-| DEBT-2892 | Orphaned skill: pr-retro not in SKILL_INDEX.md                 | S2       | code-quality    |
-| DEBT-2893 | Orphaned skill: sonarcloud not in SKILL_INDEX.md (only so...   | S2       | code-quality    |
-| DEBT-2894 | Orphaned skill: test-suite not in SKILL_INDEX.md               | S2       | code-quality    |
-| DEBT-2921 | commit-log.jsonl has no rotation/size-cap logic (39KB, ap...   | S2       | code-quality    |
-| DEBT-2922 | handoff.json embeds full commitLog array (25KB, unbounded...   | S2       | code-quality    |
-| DEBT-3026 | EXPANSION_EVALUATION_TRACKER.md command reference table        | S2       | code-quality    |
-| DEBT-3031 | ai-review.js - Unused AI review prompt applicator              | S2       | code-quality    |
-| DEBT-3033 | create-canonical-findings.js - Unused canonical findings ...   | S2       | code-quality    |
-| DEBT-3034 | generate-pending-alerts.js - Unused session-start alert g...   | S2       | code-quality    |
-| DEBT-3036 | migrate-existing-findings.js - Unused legacy findings mig...   | S2       | code-quality    |
-| DEBT-3038 | regenerate-findings-index.js - Unused canonical findings ...   | S2       | code-quality    |
-| DEBT-3041 | update-legacy-lines.js - Unused legacy findings line numb...   | S2       | code-quality    |
-| DEBT-3047 | State file sprawl across .claude/hooks/ and .claude/state/     | S2       | code-quality    |
-| DEBT-3048 | validation hooks could share file read to reduce I/O           | S2       | code-quality    |
-| DEBT-3060 | Empty or minimal SKILL.md descriptions                         | S2       | code-quality    |
-| DEBT-3070 | Undefined skill descriptions create discovery problem (50...   | S2       | code-quality    |
-| DEBT-3094 | PLAN_MAP.md - 242 lines documentation hierarchy map never...   | S2       | code-quality    |
-| DEBT-0787 | Template docs located outside docs/templates/ directory        | S3       | code-quality    |
-| DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes...   | S3       | code-quality    |
-| DEBT-1995 | No UI indicator for online/offline state                       | S3       | code-quality    |
-| DEBT-1997 | Potentially missing performance monitoring                     | S3       | code-quality    |
-| DEBT-2065 | CLAUDE.md missing Status field                                 | S3       | documentation   |
-| DEBT-2071 | Inconsistent list marker style                                 | S3       | documentation   |
-| DEBT-2092 | Inconsistent blank lines around headings                       | S3       | documentation   |
-| DEBT-2144 | Broken internal link: ../../SESSION_CONTEXT.md                 | S3       | documentation   |
-| DEBT-2147 | Broken internal link: ../../ROADMAP.md                         | S3       | documentation   |
-| DEBT-2151 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md    | S3       | documentation   |
-| DEBT-2157 | Link distribution imbalance between CLAUDE.md and AI_WORK...   | S3       | documentation   |
-| DEBT-2176 | Broken internal link: ../canonical/README.md                   | S3       | documentation   |
-| DEBT-2177 | Broken internal link: ../../AUDIT_FINDINGS_PROCEDURE.md        | S3       | documentation   |
-| DEBT-2199 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | documentation   |
-| DEBT-2204 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | documentation   |
-| DEBT-2200 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | documentation   |
-| DEBT-2203 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | documentation   |
-| DEBT-2208 | Broken internal link: src/dataconnect-generated/README.md      | S3       | documentation   |
-| DEBT-2202 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | documentation   |
-| DEBT-2206 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | documentation   |
-| DEBT-2201 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | documentation   |
-| DEBT-2205 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | documentation   |
-| DEBT-2207 | Broken internal link: src/dataconnect-generated/react/REA...   | S3       | documentation   |
-| DEBT-2386 | CLAUDE.md Documentation Index has proper hyperlinks            | S3       | documentation   |
-| DEBT-2406 | Navigation: CLAUDE.md Section 5 links do not provide onwa...   | S3       | documentation   |
-| DEBT-2410 | Gap: Missing cross-links in audit documentation                | S3       | documentation   |
-| DEBT-2419 | Navigation: Fire DataConnect generated docs lack context ...   | S3       | documentation   |
-| DEBT-2420 | Gap: Missing skill usage examples beyond SKILL.md              | S3       | documentation   |
-| DEBT-2421 | Navigation: Skill docs lack consistent 'Prerequisites' se...   | S3       | documentation   |
-| DEBT-2426 | Diagram opportunity: Compaction-resilient state persisten...   | S3       | documentation   |
-| DEBT-2544 | Skill issue: code-reviewer scripts may be non-functional ...   | S3       | process         |
-| DEBT-2546 | Skill issue: multiple audit skills have duplicate functio...   | S3       | process         |
-| DEBT-2547 | Skill issue: session-begin references deprecated TECHNICA...   | S3       | process         |
-| DEBT-2556 | Inefficient: Multiple git status/diff scans in pre-commit      | S3       | process         |
-| DEBT-2557 | Risk: No timeout on npm test in pre-commit                     | S3       | process         |
-| DEBT-2982 | Add validation that completed ROADMAP items have been arc...   | S3       | process         |
-| DEBT-2983 | Add bidirectional SESSION_CONTEXT.md ↔ ROADMAP.md sync va...   | S3       | process         |
-| DEBT-2872 | check-edit-requirements.js and check-write-requirements.j...   | S3       | code-quality    |
-| DEBT-2876 | pattern-check.js calls fs.realpathSync twice (file and pr...   | S3       | code-quality    |
-| DEBT-2885 | Skill overlap: docs-sync vs docs-update both handle docum...   | S3       | code-quality    |
-| DEBT-2895 | SKILL_INDEX.md claims 55 total skills but count is inaccu...   | S3       | code-quality    |
-| DEBT-2897 | Agent prompts in audit-process Stage 1 use markdown outpu...   | S3       | code-quality    |
-| DEBT-3005 | 7 mcp**filesystem** permissions approved in settings.loca...   | S3       | ai-optimization |
-| DEBT-3006 | 3 mcp**serena** permissions approved but serena is in dis...   | S3       | ai-optimization |
-| DEBT-2923 | reviews.jsonl has no rotation (19KB, 30+ entries, thresho...   | S3       | code-quality    |
-| DEBT-3028 | PLAN_MAP.md version history table                              | S3       | code-quality    |
-| DEBT-3032 | check-review-triggers.sh - Dead shell script for multi-AI...   | S3       | code-quality    |
-| DEBT-3035 | generate-placement-report.js - Unused roadmap placement s...   | S3       | code-quality    |
-| DEBT-3037 | redeploy-admin-dashboard.sh - Firebase deployment helper ...   | S3       | code-quality    |
-| DEBT-0850 | Legacy journalEntries collection allows direct client wri...   | S0       | security        |
-| DEBT-0852 | Multiple CI quality gates configured as non-blocking (con...   | S0       | code-quality    |
-| DEBT-0853 | useJournal creates redundant auth listener + potential me...   | S0       | code-quality    |
-| DEBT-0855 | Legacy journalEntries collection allows direct client wri...   | S0       | security        |
-| DEBT-0856 | App Check disabled on all Cloud Functions and client init...   | S0       | security        |
-| DEBT-0857 | Legacy journalEntries collection allows direct client wri...   | S0       | security        |
-| DEBT-0858 | useJournal creates redundant auth listener + potential me...   | S0       | performance     |
-| DEBT-0859 | CI quality gates non-blocking allowing regressions             | S0       | process         |
-| DEBT-0860 | Re-enable App Check on Cloud Functions                         | S0       | security        |
-| DEBT-0861 | Close legacy journalEntries write path                         | S0       | security        |
-| DEBT-0862 | Fix useJournal memory leak                                     | S0       | code-quality    |
-| DEBT-0864 | Convert CI gates to blocking                                   | S0       | code-quality    |
-| DEBT-0865 | Re-enable App Check on Cloud Functions                         | S0       | security        |
-| DEBT-0866 | Close legacy journalEntries write path                         | S0       | security        |
-| DEBT-0867 | Fix useJournal memory leak                                     | S0       | code-quality    |
-| DEBT-1296 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality    |
-| DEBT-3043 | pattern-check.js spawns subprocess every Write/Edit/Multi...   | S0       | code-quality    |
-| DEBT-3081 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...   | S0       | code-quality    |
-| DEBT-3090 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...   | S0       | code-quality    |
+| ID        | Title                                                          | Severity | Category                 |
+| --------- | -------------------------------------------------------------- | -------- | ------------------------ |
+| DEBT-0064 | Broken relative links in review/output docs (wrong ../ de...   | S1       | code-quality             |
+| DEBT-0065 | [X] placeholders remain in 2026-Q1 plan instances              | S1       | code-quality             |
+| DEBT-0084 | Landing page forced to client-side rendering blocks SSR        | S1       | performance              |
+| DEBT-0090 | 20 placeholder issues across 5 template instances              | S1       | documentation            |
+| DEBT-0095 | Time-of-day rotation logic duplicated in quotes.ts and sl...   | S1       | refactoring              |
+| DEBT-0134 | Unoptimized images (11MB)                                      | S1       | performance              |
+| DEBT-0135 | No code splitting                                              | S1       | performance              |
+| DEBT-0863 | Reduce 47 CRITICAL complexity functions                        | S1       | code-quality             |
+| DEBT-0962 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0968 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0973 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0981 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-0987 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-1010 | Refactor this function to reduce its Cognitive Complexity...   | S1       | code-quality             |
+| DEBT-1505 | Remove this useless assignment to variable "found".            | S1       | code-quality             |
+| DEBT-1964 | 498 external URLs need validation (expected 60-100 failures)   | S1       | documentation            |
+| DEBT-1998 | Invalid placeholder URL in example: full-url.com               | S1       | documentation            |
+| DEBT-1999 | Broken external link: console.firebase.google.com/support...   | S1       | documentation            |
+| DEBT-2000 | Broken anchor link: ./ROADMAP_LOG.md#m16---admin-panel--t...   | S1       | documentation            |
+| DEBT-2001 | Broken anchor link: docs/DOCUMENT_DEPENDENCIES.md#cross-d...   | S1       | documentation            |
+| DEBT-2002 | Broken anchor link: ./ROADMAP.md#active-sprint-operationa...   | S1       | documentation            |
+| DEBT-2003 | Broken anchor link: ./ROADMAP.md#m2-architecture-refactor...   | S1       | documentation            |
+| DEBT-2007 | Contradiction: Security rules enforcement for direct writes    | S1       | documentation            |
+| DEBT-2865 | PostToolUse Write: 10 sequential hook processes spawned p...   | S1       | code-quality             |
+| DEBT-2990 | PostToolUse Write: 10 sequential hook processes spawned p...   | S1       | ai-optimization          |
+| DEBT-2866 | PostToolUse Edit: 9 sequential hook processes spawned per...   | S1       | code-quality             |
+| DEBT-3018 | AUDIT_TRACKER.md audit log tables                              | S1       | code-quality             |
+| DEBT-3019 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas    | S1       | code-quality             |
+| DEBT-3020 | AUDIT_TRACKER.md threshold matrix and version history          | S1       | code-quality             |
+| DEBT-3042 | Write/Edit/MultiEdit share 8 redundant hooks (~530ms over...   | S1       | code-quality             |
+| DEBT-3044 | check-write-requirements vs check-edit-requirements dupli...   | S1       | code-quality             |
+| DEBT-3050 | Read hooks have no execution order guarantee - context tr...   | S1       | code-quality             |
+| DEBT-3063 | Unclear relationship: audit-validation-wrapper vs audit-c...   | S1       | code-quality             |
+| DEBT-3082 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl...   | S1       | code-quality             |
+| DEBT-3091 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused         | S1       | code-quality             |
+| DEBT-0274 | Add an explicit return statement at the end of the function.   | S2       | code-quality             |
+| DEBT-0275 | Assign this positional parameter to a local variable.          | S2       | code-quality             |
+| DEBT-0470 | Console statements present; replace with structured logge...   | S2       | security                 |
+| DEBT-0415 | Tier 2 docs missing required metadata (Document Version, ...   | S2       | code-quality             |
+| DEBT-0418 | PR_REVIEW_PROMPT_TEMPLATE lacks required metadata and ver...   | S2       | code-quality             |
+| DEBT-0420 | Duplicate CODE_REVIEW_PLAN_2026_Q1.md exists in two locat...   | S2       | code-quality             |
+| DEBT-0451 | Large chunk file (628KB) indicates code splitting opportu...   | S2       | performance              |
+| DEBT-0517 | Create Smoke Test Script                                       | S2       | process                  |
+| DEBT-0518 | Add Bug Report GitHub Template                                 | S2       | process                  |
+| DEBT-0519 | Offline Tests                                                  | S2       | process                  |
+| DEBT-0520 | Network Failure Error Handling Tests                           | S2       | process                  |
+| DEBT-0521 | Historical Score Tracking                                      | S2       | performance              |
+| DEBT-0522 | Performance Budgets                                            | S2       | performance              |
+| DEBT-0524 | PWA Audit Baseline                                             | S2       | performance              |
+| DEBT-0531 | Token rotation for long-lived sessions                         | S2       | security                 |
+| DEBT-0541 | Inconsistent error context across components                   | S2       | code-quality             |
+| DEBT-0620 | 'data.step4_surrender \|\| ""' will use Object's default st... | S2       | code-quality             |
+| DEBT-0961 | Prefer `node:crypto` over `crypto`.                            | S2       | code-quality             |
+| DEBT-0963 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality             |
+| DEBT-0964 | Prefer `node:path` over `path`.                                | S2       | code-quality             |
+| DEBT-0965 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality             |
+| DEBT-0966 | Prefer `node:path` over `path`.                                | S2       | code-quality             |
+| DEBT-0967 | Prefer `node:crypto` over `crypto`.                            | S2       | code-quality             |
+| DEBT-0969 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
+| DEBT-0970 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality             |
+| DEBT-0971 | Prefer `node:path` over `path`.                                | S2       | code-quality             |
+| DEBT-0972 | Unexpected negated condition.                                  | S2       | code-quality             |
+| DEBT-0979 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE...   | S2       | performance              |
+| DEBT-1000 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality             |
+| DEBT-1001 | Prefer `node:path` over `path`.                                | S2       | code-quality             |
+| DEBT-1002 | `VALID_SEVERITIES` should be a `Set`, and use `VALID_SEVE...   | S2       | performance              |
+| DEBT-1005 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality             |
+| DEBT-1006 | Prefer `node:path` over `path`.                                | S2       | code-quality             |
+| DEBT-1007 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality             |
+| DEBT-1008 | Prefer `node:path` over `path`.                                | S2       | code-quality             |
+| DEBT-1009 | Prefer `node:crypto` over `crypto`.                            | S2       | code-quality             |
+| DEBT-1011 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
+| DEBT-1293 | Prefer `node:fs` over `fs`.                                    | S2       | code-quality             |
+| DEBT-1294 | Prefer `node:path` over `path`.                                | S2       | code-quality             |
+| DEBT-1295 | Prefer `Number.parseInt` over `parseInt`.                      | S2       | code-quality             |
+| DEBT-1504 | Remove the declaration of the unused 'found' variable.         | S2       | code-quality             |
+| DEBT-2024 | SECURITY_CHECKLIST.md missing Document Version and Status      | S2       | documentation            |
+| DEBT-2025 | APPCHECK_SETUP.md missing Document Version                     | S2       | documentation            |
+| DEBT-2026 | RECAPTCHA_REMOVAL_GUIDE.md missing Document Version            | S2       | documentation            |
+| DEBT-2027 | TESTING_PLAN.md missing Document Version                       | S2       | documentation            |
+| DEBT-2028 | Code blocks missing language specifier                         | S2       | documentation            |
+| DEBT-2029 | Inaccurate Firebase version in CLAUDE.md                       | S2       | documentation            |
+| DEBT-2030 | DEVELOPMENT.md missing Status field in metadata                | S2       | documentation            |
+| DEBT-2031 | CODE_PATTERNS.md uses lowercase 'claude.md' instead of 'C...   | S2       | documentation            |
+| DEBT-2032 | AI_REVIEW_PROCESS.md missing Status field                      | S2       | documentation            |
+| DEBT-2033 | APPCHECK_SETUP.md missing Document Version field               | S2       | documentation            |
+| DEBT-2034 | Broken anchor link: ../ROADMAP.md#dependencies                 | S2       | documentation            |
+| DEBT-2035 | INCIDENT_RESPONSE.md missing Document Version field            | S2       | documentation            |
+| DEBT-2036 | MCP_SETUP.md missing Status field                              | S2       | documentation            |
+| DEBT-2037 | TESTING_PLAN.md missing Document Version field                 | S2       | documentation            |
+| DEBT-2046 | Inconsistent terminology: 'skill' vs 'command' vs 'slash ...   | S2       | documentation            |
+| DEBT-2047 | Inconsistent terminology: 'agent' vs 'subagent' vs 'worker'    | S2       | documentation            |
+| DEBT-2051 | Inconsistent terminology: 'App Check' vs 'AppCheck' vs 'a...   | S2       | documentation            |
+| DEBT-2056 | Master documentation index is not linked from entry points     | S2       | documentation            |
+| DEBT-2057 | Duplication: Agent/Skill Triggers table in CLAUDE.md and ...   | S2       | documentation            |
+| DEBT-2388 | Quality: CLAUDE.md scores 8/10 - missing cross-references...   | S2       | documentation            |
+| DEBT-2389 | Quality: .claude/agents/ docs lack usage examples              | S2       | documentation            |
+| DEBT-2390 | Quality: .claude/skills/ docs have inconsistent SKILL.md ...   | S2       | documentation            |
+| DEBT-2391 | Quality: DEVELOPMENT.md scores 7/10 - wall of text in Git...   | S2       | documentation            |
+| DEBT-2392 | Readability: DEVELOPMENT.md has 110-line section without ...   | S2       | documentation            |
+| DEBT-2397 | Gap: Undocumented agent team workflows                         | S2       | documentation            |
+| DEBT-2464 | Duplicated: File reading logic across 5 hooks                  | S2       | process                  |
+| DEBT-2467 | Duplicated: Security validations across all hooks              | S2       | process                  |
+| DEBT-2473 | Duplicated: ALLOWED_PATHS pattern matching across hooks        | S2       | process                  |
+| DEBT-2475 | Duplicated: Pattern check implementation between hook and...   | S2       | process                  |
+| DEBT-2476 | Duplicated: Validation between validate-audit.js and vali...   | S2       | process                  |
+| DEBT-2502 | CI gap: Missing secrets cause silent build success             | S2       | process                  |
+| DEBT-2503 | CI gap: Pattern compliance only checks changed files in PRs    | S2       | process                  |
+| DEBT-2504 | CI gap: Build job re-installs dependencies wastefully          | S2       | process                  |
+| DEBT-2505 | CI gap: Race condition in tier label assignment                | S2       | process                  |
+| DEBT-2506 | CI gap: Inline tier assignment logic creates maintenance ...   | S2       | process                  |
+| DEBT-2507 | CI gap: Fork PRs completely skip SonarCloud analysis           | S2       | process                  |
+| DEBT-2508 | CI gap: Firebase deployment has no success validation          | S2       | process                  |
+| DEBT-2509 | CI gap: Deployment has no rollback mechanism                   | S2       | process                  |
+| DEBT-2510 | CI gap: Service account credentials written to filesystem      | S2       | process                  |
+| DEBT-2540 | Skill issue: episodic memory MCP not configured but refer...   | S2       | process                  |
+| DEBT-2541 | Skill issue: audit skills reference non-existent FALSE_PO...   | S2       | process                  |
+| DEBT-2543 | Skill issue: systematic-debugging references non-existent...   | S2       | process                  |
+| DEBT-2545 | Skill issue: audit-process has complex 7-stage orchestrat...   | S2       | process                  |
+| DEBT-2554 | Performance: 10 Claude hooks run on every Write/Edit oper...   | S2       | process                  |
+| DEBT-2747 | Session-start timeout risks in low-bandwidth environments      | S2       | code-quality             |
+| DEBT-2748 | Duplicate hook validation for Write+Edit+MultiEdit tools       | S2       | code-quality             |
+| DEBT-2778 | Upgrade Firebase Functions to Node.js 24 runtime               | S2       | code-quality             |
+| DEBT-2802 | useDailyQuote hook has smart module-level caching prevent...   | S2       | code-quality             |
+| DEBT-2804 | writeFileSync without atomic write pattern and missing en...   | S2       | code-quality             |
+| DEBT-2805 | writeFileSync without atomic write pattern                     | S2       | code-quality             |
+| DEBT-2840 | Add automatic ROADMAP.md completion detection                  | S2       | process                  |
+| DEBT-2981 | Automate archival of completed ROADMAP.md items to ROADMA...   | S2       | process                  |
+| DEBT-2972 | session-start.js outputs 40+ decorative lines with emoji ...   | S2       | code-quality             |
+| DEBT-2973 | Multi-line regex with greedy [\s\S]\*? quantifier in auto-...  | S2       | code-quality             |
+| DEBT-2976 | Fragile markdown field parsing regex repeated across 3+ s...   | S2       | code-quality             |
+| DEBT-2989 | Audit skills share >50% boilerplate content without share...   | S2       | ai-optimization          |
+| DEBT-2863 | SessionStart: check-remote-session-context.js runs git fe...   | S2       | code-quality             |
+| DEBT-2868 | compaction-handoff.js uses execSync (shell) instead of ex...   | S2       | code-quality             |
+| DEBT-2870 | Duplicate file content reads across PostToolUse hooks          | S2       | code-quality             |
+| DEBT-2873 | UserPromptSubmit: 4 hooks run on every user message inclu...   | S2       | code-quality             |
+| DEBT-2993 | UserPromptSubmit: 4 hooks run on every user message inclu...   | S2       | ai-optimization          |
+| DEBT-2878 | Skill overlap: sonarcloud-sprint is superseded by sonarcloud   | S2       | code-quality             |
+| DEBT-2997 | Skill overlap: sonarcloud-sprint is superseded by sonarcloud   | S2       | ai-optimization          |
+| DEBT-2882 | Skill overlap: ui-design-system vs ux-researcher-designer...   | S2       | code-quality             |
+| DEBT-2886 | Orphaned skill: find-skills not in SKILL_INDEX.md              | S2       | code-quality             |
+| DEBT-2887 | Orphaned skill: pre-commit-fixer not in SKILL_INDEX.md         | S2       | code-quality             |
+| DEBT-2888 | Orphaned skill: task-next not in SKILL_INDEX.md                | S2       | code-quality             |
+| DEBT-2889 | Orphaned skill: multi-ai-audit not in SKILL_INDEX.md           | S2       | code-quality             |
+| DEBT-2890 | Orphaned skill: add-debt not in SKILL_INDEX.md                 | S2       | code-quality             |
+| DEBT-2891 | Orphaned skill: verify-technical-debt not in SKILL_INDEX.md    | S2       | code-quality             |
+| DEBT-2892 | Orphaned skill: pr-retro not in SKILL_INDEX.md                 | S2       | code-quality             |
+| DEBT-2893 | Orphaned skill: sonarcloud not in SKILL_INDEX.md (only so...   | S2       | code-quality             |
+| DEBT-2894 | Orphaned skill: test-suite not in SKILL_INDEX.md               | S2       | code-quality             |
+| DEBT-2921 | commit-log.jsonl has no rotation/size-cap logic (39KB, ap...   | S2       | code-quality             |
+| DEBT-2922 | handoff.json embeds full commitLog array (25KB, unbounded...   | S2       | code-quality             |
+| DEBT-2979 | External link checker has ~100% false positive rate            | S2       | engineering-productivity |
+| DEBT-2980 | Commit tracker shows 212h stale despite recent commits         | S2       | engineering-productivity |
+| DEBT-3024 | ROADMAP.md detailed milestone specifications embedded          | S2       | code-quality             |
+| DEBT-3026 | EXPANSION_EVALUATION_TRACKER.md command reference table        | S2       | code-quality             |
+| DEBT-3031 | ai-review.js - Unused AI review prompt applicator              | S2       | code-quality             |
+| DEBT-3033 | create-canonical-findings.js - Unused canonical findings ...   | S2       | code-quality             |
+| DEBT-3034 | generate-pending-alerts.js - Unused session-start alert g...   | S2       | code-quality             |
+| DEBT-3036 | migrate-existing-findings.js - Unused legacy findings mig...   | S2       | code-quality             |
+| DEBT-3038 | regenerate-findings-index.js - Unused canonical findings ...   | S2       | code-quality             |
+| DEBT-3041 | update-legacy-lines.js - Unused legacy findings line numb...   | S2       | code-quality             |
+| DEBT-3047 | State file sprawl across .claude/hooks/ and .claude/state/     | S2       | code-quality             |
+| DEBT-3048 | validation hooks could share file read to reduce I/O           | S2       | code-quality             |
+| DEBT-3060 | Empty or minimal SKILL.md descriptions                         | S2       | code-quality             |
+| DEBT-3070 | Undefined skill descriptions create discovery problem (50...   | S2       | code-quality             |
+| DEBT-3094 | PLAN_MAP.md - 242 lines documentation hierarchy map never...   | S2       | code-quality             |
+| DEBT-0787 | Template docs located outside docs/templates/ directory        | S3       | code-quality             |
+| DEBT-0788 | Test count mismatch between DEVELOPMENT.md and actual tes...   | S3       | code-quality             |
+| DEBT-1995 | No UI indicator for online/offline state                       | S3       | code-quality             |
+| DEBT-1997 | Potentially missing performance monitoring                     | S3       | code-quality             |
+| DEBT-2065 | CLAUDE.md missing Status field                                 | S3       | documentation            |
+| DEBT-2071 | Inconsistent list marker style                                 | S3       | documentation            |
+| DEBT-2092 | Inconsistent blank lines around headings                       | S3       | documentation            |
+| DEBT-2144 | Broken internal link: ../../SESSION_CONTEXT.md                 | S3       | documentation            |
+| DEBT-2147 | Broken internal link: ../../ROADMAP.md                         | S3       | documentation            |
+| DEBT-2151 | Broken internal link: ../../docs/AI_REVIEW_LEARNINGS_LOG.md    | S3       | documentation            |
+| DEBT-2157 | Link distribution imbalance between CLAUDE.md and AI_WORK...   | S3       | documentation            |
+| DEBT-2176 | Broken internal link: ../canonical/README.md                   | S3       | documentation            |
+| DEBT-2177 | Broken internal link: ../../AUDIT_FINDINGS_PROCEDURE.md        | S3       | documentation            |
+| DEBT-2199 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | documentation            |
+| DEBT-2204 | Broken internal link: docs/SoNash_Technical_Ideation_Mult...   | S3       | documentation            |
+| DEBT-2200 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | documentation            |
+| DEBT-2203 | Broken internal link: docs/audits/sonarcloud-issues-detai...   | S3       | documentation            |
+| DEBT-2208 | Broken internal link: src/dataconnect-generated/README.md      | S3       | documentation            |
+| DEBT-2202 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | documentation            |
+| DEBT-2206 | Broken internal link: src/dataconnect-generated/.guides/u...   | S3       | documentation            |
+| DEBT-2201 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | documentation            |
+| DEBT-2205 | Broken internal link: src/dataconnect-generated/.guides/s...   | S3       | documentation            |
+| DEBT-2207 | Broken internal link: src/dataconnect-generated/react/REA...   | S3       | documentation            |
+| DEBT-2386 | CLAUDE.md Documentation Index has proper hyperlinks            | S3       | documentation            |
+| DEBT-2406 | Navigation: CLAUDE.md Section 5 links do not provide onwa...   | S3       | documentation            |
+| DEBT-2410 | Gap: Missing cross-links in audit documentation                | S3       | documentation            |
+| DEBT-2419 | Navigation: Fire DataConnect generated docs lack context ...   | S3       | documentation            |
+| DEBT-2420 | Gap: Missing skill usage examples beyond SKILL.md              | S3       | documentation            |
+| DEBT-2421 | Navigation: Skill docs lack consistent 'Prerequisites' se...   | S3       | documentation            |
+| DEBT-2426 | Diagram opportunity: Compaction-resilient state persisten...   | S3       | documentation            |
+| DEBT-2544 | Skill issue: code-reviewer scripts may be non-functional ...   | S3       | process                  |
+| DEBT-2546 | Skill issue: multiple audit skills have duplicate functio...   | S3       | process                  |
+| DEBT-2547 | Skill issue: session-begin references deprecated TECHNICA...   | S3       | process                  |
+| DEBT-2556 | Inefficient: Multiple git status/diff scans in pre-commit      | S3       | process                  |
+| DEBT-2557 | Risk: No timeout on npm test in pre-commit                     | S3       | process                  |
+| DEBT-2982 | Add validation that completed ROADMAP items have been arc...   | S3       | process                  |
+| DEBT-2983 | Add bidirectional SESSION_CONTEXT.md ↔ ROADMAP.md sync va...   | S3       | process                  |
+| DEBT-2970 | TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md marked COMPLETE ...   | S3       | code-quality             |
+| DEBT-2988 | TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md marked COMPLETE ...   | S3       | ai-optimization          |
+| DEBT-2971 | SESSION_HISTORY.md and SESSION_DECISIONS.md not in DOCUME...   | S3       | code-quality             |
+| DEBT-2974 | JSONL line counting pattern repeated 5x without abstraction    | S3       | code-quality             |
+| DEBT-2975 | String concatenation for file paths instead of path.join       | S3       | code-quality             |
+| DEBT-2977 | Hooks output decorative error messages instead of machine...   | S3       | code-quality             |
+| DEBT-2978 | Unused fields in commit-log.jsonl state file                   | S3       | code-quality             |
+| DEBT-2872 | check-edit-requirements.js and check-write-requirements.j...   | S3       | code-quality             |
+| DEBT-2876 | pattern-check.js calls fs.realpathSync twice (file and pr...   | S3       | code-quality             |
+| DEBT-2885 | Skill overlap: docs-sync vs docs-update both handle docum...   | S3       | code-quality             |
+| DEBT-2895 | SKILL_INDEX.md claims 55 total skills but count is inaccu...   | S3       | code-quality             |
+| DEBT-2897 | Agent prompts in audit-process Stage 1 use markdown outpu...   | S3       | code-quality             |
+| DEBT-3005 | 7 mcp**filesystem** permissions approved in settings.loca...   | S3       | ai-optimization          |
+| DEBT-3006 | 3 mcp**serena** permissions approved but serena is in dis...   | S3       | ai-optimization          |
+| DEBT-2923 | reviews.jsonl has no rotation (19KB, 30+ entries, thresho...   | S3       | code-quality             |
+| DEBT-3027 | SESSION_CONTEXT.md recent session summaries                    | S3       | code-quality             |
+| DEBT-3028 | PLAN_MAP.md version history table                              | S3       | code-quality             |
+| DEBT-3032 | check-review-triggers.sh - Dead shell script for multi-AI...   | S3       | code-quality             |
+| DEBT-3035 | generate-placement-report.js - Unused roadmap placement s...   | S3       | code-quality             |
+| DEBT-3037 | redeploy-admin-dashboard.sh - Firebase deployment helper ...   | S3       | code-quality             |
+| DEBT-3052 | check-write-requirements and check-edit-requirements coul...   | S3       | code-quality             |
+| DEBT-0850 | Legacy journalEntries collection allows direct client wri...   | S0       | security                 |
+| DEBT-0852 | Multiple CI quality gates configured as non-blocking (con...   | S0       | code-quality             |
+| DEBT-0853 | useJournal creates redundant auth listener + potential me...   | S0       | code-quality             |
+| DEBT-0855 | Legacy journalEntries collection allows direct client wri...   | S0       | security                 |
+| DEBT-0856 | App Check disabled on all Cloud Functions and client init...   | S0       | security                 |
+| DEBT-0857 | Legacy journalEntries collection allows direct client wri...   | S0       | security                 |
+| DEBT-0858 | useJournal creates redundant auth listener + potential me...   | S0       | performance              |
+| DEBT-0859 | CI quality gates non-blocking allowing regressions             | S0       | process                  |
+| DEBT-0860 | Re-enable App Check on Cloud Functions                         | S0       | security                 |
+| DEBT-0861 | Close legacy journalEntries write path                         | S0       | security                 |
+| DEBT-0862 | Fix useJournal memory leak                                     | S0       | code-quality             |
+| DEBT-0864 | Convert CI gates to blocking                                   | S0       | code-quality             |
+| DEBT-0865 | Re-enable App Check on Cloud Functions                         | S0       | security                 |
+| DEBT-0866 | Close legacy journalEntries write path                         | S0       | security                 |
+| DEBT-0867 | Fix useJournal memory leak                                     | S0       | code-quality             |
+| DEBT-1296 | Refactor this function to reduce its Cognitive Complexity...   | S0       | code-quality             |
+| DEBT-3043 | pattern-check.js spawns subprocess every Write/Edit/Multi...   | S0       | code-quality             |
+| DEBT-3081 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co...   | S0       | code-quality             |
+| DEBT-3090 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide...   | S0       | code-quality             |
 
 ## FALSE_POSITIVE (268)
 

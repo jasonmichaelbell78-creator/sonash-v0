@@ -35,9 +35,8 @@
 | Status         | Count |
 | -------------- | ----- |
 | VERIFIED       | 1911  |
-| RESOLVED       | 225   |
+| RESOLVED       | 243   |
 | FALSE_POSITIVE | 268   |
-| DUPLICATE      | 18    |
 
 ## Views
 

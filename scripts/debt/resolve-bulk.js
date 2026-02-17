@@ -39,7 +39,12 @@ function parseArgs(args) {
       parsed.dryRun = true;
     } else if (arg === "--eligible-only") {
       parsed.eligibleOnly = true;
-    } else if (arg === "--output-json" && args[i + 1]) {
+    } else if (arg === "--output-json") {
+      const next = args[i + 1];
+      if (!next || next.startsWith("--")) {
+        console.error("Error: Missing value for --output-json <path>");
+        process.exit(1);
+      }
       parsed.outputJson = args[++i];
     } else if (arg === "--pr" && args[i + 1]) {
       parsed.pr = Number.parseInt(args[++i], 10);
@@ -251,13 +256,21 @@ Example:
       const summary = {
         requested: parsed.debtIds.length,
         resolved: 0,
+        resolvedItems: [],
         alreadyResolved: alreadyResolved.length,
         ineligible: ineligible.length,
         ineligibleItems: ineligible,
         notFound: notFound.length,
         notFoundItems: notFound,
       };
-      fs.writeFileSync(parsed.outputJson, JSON.stringify(summary, null, 2));
+      try {
+        fs.mkdirSync(path.dirname(parsed.outputJson), { recursive: true });
+        fs.writeFileSync(parsed.outputJson, JSON.stringify(summary, null, 2));
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        console.error(`Failed to write output JSON: ${errMsg}`);
+        process.exit(1);
+      }
     }
     process.exit(0);
   }
@@ -315,7 +328,14 @@ Example:
       notFound: notFound.length,
       notFoundItems: notFound,
     };
-    fs.writeFileSync(parsed.outputJson, JSON.stringify(summary, null, 2));
+    try {
+      fs.mkdirSync(path.dirname(parsed.outputJson), { recursive: true });
+      fs.writeFileSync(parsed.outputJson, JSON.stringify(summary, null, 2));
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.error(`Failed to write output JSON: ${errMsg}`);
+      process.exit(1);
+    }
   }
 
   // Regenerate views
