@@ -9,9 +9,15 @@
 
 ---
 
-## NEW (0)
+## NEW (5)
 
-_No items_
+| ID        | Title                                                        | Severity | Category      |
+| --------- | ------------------------------------------------------------ | -------- | ------------- |
+| DEBT-2808 | Date formats inconsistent across the app                     | S2       | enhancements  |
+| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | enhancements  |
+| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | documentation |
+| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | enhancements  |
+| DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | enhancements  |
 
 ## VERIFIED (1911)
 

@@ -32,36 +32,61 @@ const RESOLUTION_LOG = path.join(LOG_DIR, "resolution-log.jsonl");
 // Statuses eligible for automated resolution via CI workflow
 const ELIGIBLE_STATUSES = ["VERIFIED", "IN_PROGRESS", "TRIAGED"];
 
-// Parse command line arguments
+// Validate --output-json path value (extracted for CC reduction)
+function validateOutputJsonPath(value) {
+  if (!value || value.startsWith("--")) {
+    console.error("Error: Missing value for --output-json <path>");
+    process.exit(1);
+  }
+  if (value.trim().length === 0 || value.endsWith(path.sep) || value === "." || value === "./") {
+    console.error("Error: Invalid value for --output-json <path>");
+    process.exit(1);
+  }
+}
+
+// Validate --pr value is a positive integer (extracted for CC reduction)
+function validatePrNumber(value) {
+  if (!value || value.startsWith("--")) {
+    console.error("Error: Missing value for --pr <number>");
+    process.exit(1);
+  }
+  const num = Number.parseInt(value, 10);
+  if (!Number.isInteger(num) || num <= 0) {
+    console.error("Error: Invalid value for --pr <number>");
+    process.exit(1);
+  }
+  return num;
+}
+
+// Parse command line arguments (while-loop avoids loop-variable reassignment)
 function parseArgs(args) {
   const parsed = { dryRun: false, eligibleOnly: false, debtIds: [] };
-  for (let i = 0; i < args.length; i++) {
+  let i = 0;
+  while (i < args.length) {
     const arg = args[i];
     if (arg === "--dry-run") {
       parsed.dryRun = true;
     } else if (arg === "--eligible-only") {
       parsed.eligibleOnly = true;
     } else if (arg === "--output-json") {
-      const next = args[i + 1];
+      i += 1;
+      validateOutputJsonPath(args[i]);
+      parsed.outputJson = args[i];
+    } else if (arg === "--pr") {
+      i += 1;
+      parsed.pr = validatePrNumber(args[i]);
+    } else if (arg === "--file") {
+      i += 1;
+      const next = args[i];
       if (!next || next.startsWith("--")) {
-        console.error("Error: Missing value for --output-json <path>");
+        console.error("Error: Missing value for --file <path>");
         process.exit(1);
       }
-      if (next.trim().length === 0 || next.endsWith(path.sep) || next === "." || next === "./") {
-        console.error("Error: Invalid value for --output-json <path>");
-        process.exit(1);
-      }
-      i += 1;
-      parsed.outputJson = next;
-    } else if (arg === "--pr" && args[i + 1]) {
-      i += 1;
-      parsed.pr = Number.parseInt(args[i], 10);
-    } else if (arg === "--file" && args[i + 1]) {
-      i += 1;
-      parsed.file = args[i];
+      parsed.file = next;
     } else if (arg.match(/^DEBT-\d+$/)) {
       parsed.debtIds.push(arg);
     }
+    i += 1;
   }
   return parsed;
 }
@@ -75,15 +100,27 @@ function writeOutputJson(outputPath, payload) {
   const safePath = path.resolve(REPO_ROOT, outputPath);
   validatePathInDir(REPO_ROOT, safePath);
 
+  const outDir = path.dirname(safePath);
+  const tmpPath = path.join(outDir, `.tmp-${path.basename(safePath)}-${process.pid}`);
+
   try {
-    const outDir = path.dirname(safePath);
+    // Refuse symlinked parents before creating directories/writing files
+    refuseSymlinkWithParents(outDir);
     fs.mkdirSync(outDir, { recursive: true });
-    const tmpPath = path.join(outDir, `.tmp-${path.basename(safePath)}-${process.pid}`);
     refuseSymlinkWithParents(tmpPath);
     refuseSymlinkWithParents(safePath);
     fs.writeFileSync(tmpPath, JSON.stringify(payload, null, 2), "utf-8");
+    // Pre-remove destination for cross-platform renameSync compatibility
+    if (fs.existsSync(safePath)) {
+      fs.rmSync(safePath, { force: true });
+    }
     fs.renameSync(tmpPath, safePath);
   } catch (err) {
+    try {
+      if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
+    } catch {
+      // ignore cleanup failure
+    }
     const errMsg = err instanceof Error ? err.message : String(err);
     console.error(`Failed to write output JSON: ${errMsg}`);
     process.exit(1);
@@ -252,8 +289,13 @@ Example:
       notFound.push(debtId);
     } else if (item.status === "RESOLVED") {
       alreadyResolved.push(debtId);
-    } else if (parsed.eligibleOnly && !ELIGIBLE_STATUSES.includes(item.status)) {
-      ineligible.push({ id: debtId, status: item.status });
+    } else if (parsed.eligibleOnly) {
+      const status = typeof item.status === "string" ? item.status : "UNKNOWN";
+      if (!ELIGIBLE_STATUSES.includes(status)) {
+        ineligible.push({ id: debtId, status });
+      } else {
+        found.push(item);
+      }
     } else {
       found.push(item);
     }
