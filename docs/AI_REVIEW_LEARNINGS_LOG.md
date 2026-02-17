@@ -1184,11 +1184,12 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
-#### Review #348: PR #371 R1 — SonarCloud S5852 regex DoS, CC refactoring, atomic writes, symlink guards (2026-02-17)
+#### Review #348: PR #371 R1+R2 — SonarCloud S5852 regex DoS, CC refactoring, atomic writes, symlink guards (2026-02-17)
 
-**Source:** SonarCloud (10 hotspots + 12 issues) + Qodo Compliance (2) + Qodo
-Suggestions (11) **PR/Branch:** claude/new-session-6kCvR (PR #371)
-**Suggestions:** 34 total (Fixed: 31, Rejected: 3)
+**Source:** R1: SonarCloud (10 hotspots + 12 issues) + Qodo Compliance (2) +
+Qodo Suggestions (11). R2: SonarCloud (7 issues) + Qodo Compliance (4).
+**PR/Branch:** claude/new-session-6kCvR (PR #371) **Suggestions:** R1: 34 total
+(Fixed: 31, Rejected: 3). R2: 11 total (Fixed: 7, Rejected: 4).
 
 **Patterns Identified:**
 
@@ -1203,10 +1204,23 @@ Suggestions (11) **PR/Branch:** claude/new-session-6kCvR (PR #371)
    files.
 4. **Symlink guard propagation** — Backup write paths (.bak) missed symlink
    guards despite main paths being protected.
+5. **Extracted helpers still exceeding CC 15** — R1 refactoring pushed CC into
+   new helper functions (parseSeverityCount CC 33, parseRetrospectives CC 17).
+   Need to extract sub-helpers from helpers.
+6. **Options object pattern** — Functions with 7+ params should use a single
+   options object for readability and maintainability.
 
-**Rejected:** [25] Unstructured logging (CLI tool by design), [26] No audit
+**R1 Rejected:** [25] Unstructured logging (CLI tool by design), [26] No audit
 trail (local dev script), [27] Silent parse failures (intentional for JSONL
 tolerance)
+
+**R2 Rejected:** [8] Swallowed parse errors (repeat from R1 — intentional for
+JSONL tolerance), [9] Absolute path leakage (pre-existing in TDMS data, not
+introduced by this PR), [10] Audit trail (repeat from R1), [11] Console output
+review (repeat from R1)
+
+**Resolution Stats:** R1: 31/34 fixed (91%), 3/34 rejected. R2: 7/11 fixed
+(64%), 4/11 rejected (all repeats).
 
 ---
 

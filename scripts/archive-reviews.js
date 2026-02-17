@@ -514,19 +514,29 @@ function previewArchival(toArchive, toKeep) {
 
 /**
  * Execute the actual archival: backup, write archive, validate, update log, write log.
+ * @param {Object} opts
+ * @param {Array} opts.toArchive - Entries to archive
+ * @param {Array} opts.toKeep - Entries to keep in active log
+ * @param {string[]} opts.lines - Lines of the active log
+ * @param {string} opts.archiveFilename - Filename for the archive
+ * @param {string} opts.archivePath - Full path to the archive file
+ * @param {number} opts.archiveNumber - Sequential archive number
+ * @param {string} opts.today - Today's date string (YYYY-MM-DD)
+ * @param {number[]} opts.archiveReviewIds - Review IDs being archived
+ * @param {number[]} opts.archiveRetroIds - Retro IDs being archived
  */
-function executeArchival(
-  toArchive,
-  toKeep,
-  lines,
-  content,
-  archiveFilename,
-  archivePath,
-  archiveNumber,
-  today,
-  archiveReviewIds,
-  archiveRetroIds
-) {
+function executeArchival(opts) {
+  const {
+    toArchive,
+    toKeep,
+    lines,
+    archiveFilename,
+    archivePath,
+    archiveNumber,
+    today,
+    archiveReviewIds,
+    archiveRetroIds,
+  } = opts;
   // Check archive path doesn't already exist
   if (existsSync(archivePath)) {
     console.error(`Archive file already exists: ${archiveFilename}`);
@@ -629,7 +639,7 @@ function main() {
     const parsed = validateAndParse();
     if (!parsed) return;
 
-    const { content, lines, entries } = parsed;
+    const { lines, entries } = parsed;
 
     // Select entries for archival
     const { toArchive, toKeep } = selectEntriesForArchival(entries, keepCount);
@@ -681,18 +691,17 @@ function main() {
     }
 
     // --- Apply mode ---
-    executeArchival(
+    executeArchival({
       toArchive,
       toKeep,
       lines,
-      content,
       archiveFilename,
       archivePath,
       archiveNumber,
       today,
       archiveReviewIds,
-      archiveRetroIds
-    );
+      archiveRetroIds,
+    });
   } catch (err) {
     console.error("Error:", sanitizeError(err));
     process.exitCode = 2;

@@ -82,8 +82,7 @@ function toSlug(str) {
   const lower = str.toLowerCase();
   let result = "";
   let lastWasHyphen = false;
-  for (let i = 0; i < lower.length; i++) {
-    const ch = lower[i];
+  for (const ch of lower) {
     if ((ch >= "a" && ch <= "z") || (ch >= "0" && ch <= "9")) {
       result += ch;
       lastWasHyphen = false;
@@ -587,7 +586,10 @@ function applyPromotions(newPromotions, codePatternsContent) {
   const endMarkerIdx = codePatternsContent.lastIndexOf(endMarker);
 
   let updatedContent;
-  if (endMarkerIdx !== -1) {
+  if (endMarkerIdx === -1) {
+    // No end marker, just append
+    updatedContent = codePatternsContent.trimEnd() + "\n" + newContent + "\n";
+  } else {
     // Find the start of the line containing END OF DOCUMENT
     let insertIdx = endMarkerIdx;
     while (insertIdx > 0 && codePatternsContent[insertIdx - 1] !== "\n") {
@@ -598,9 +600,6 @@ function applyPromotions(newPromotions, codePatternsContent) {
       newContent +
       "\n---\n\n" +
       codePatternsContent.slice(insertIdx);
-  } else {
-    // No end marker, just append
-    updatedContent = codePatternsContent.trimEnd() + "\n" + newContent + "\n";
   }
 
   // Atomic write: write to tmp, then rename

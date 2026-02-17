@@ -77,6 +77,35 @@ function atomicWriteFileSync(targetPath, content) {
 }
 
 /**
+ * Try to extract a number in "Label: N" format starting at the character after the label.
+ * Returns the parsed integer, or -1 if not found.
+ */
+function tryLabelColonNumber(text, afterLabel) {
+  let cursor = afterLabel;
+  while (cursor < text.length && (text[cursor] === " " || text[cursor] === "\t")) cursor++;
+  if (cursor >= text.length || text[cursor] !== ":") return -1;
+  cursor++; // skip colon
+  while (cursor < text.length && (text[cursor] === " " || text[cursor] === "\t")) cursor++;
+  const numStart = cursor;
+  while (cursor < text.length && text[cursor] >= "0" && text[cursor] <= "9") cursor++;
+  if (cursor > numStart) return Number.parseInt(text.slice(numStart, cursor), 10);
+  return -1;
+}
+
+/**
+ * Try to extract a number in "N LABEL" format by scanning backwards from just before the label.
+ * Returns the parsed integer, or -1 if not found.
+ */
+function tryNumberBeforeLabel(text, beforePos) {
+  let cursor = beforePos;
+  while (cursor >= 0 && (text[cursor] === " " || text[cursor] === "\t")) cursor--;
+  if (cursor < 0 || text[cursor] < "0" || text[cursor] > "9") return -1;
+  const numEnd = cursor + 1;
+  while (cursor >= 0 && text[cursor] >= "0" && text[cursor] <= "9") cursor--;
+  return Number.parseInt(text.slice(cursor + 1, numEnd), 10);
+}
+
+/**
  * Parse a severity/total count from text using pure string operations (no regex).
  * Supports both "N LABEL" format (e.g., "3 CRITICAL") and "Label: N" format
  * (e.g., "Critical: 3"), case-insensitive.
@@ -91,37 +120,11 @@ function parseSeverityCount(text, label) {
     const pos = lowerText.indexOf(lowerLabel, idx);
     if (pos === -1) break;
 
-    // Try "Label: N" format — look for colon after the label, then digits
-    let afterLabel = pos + lowerLabel.length;
-    let cursor = afterLabel;
-    // Skip whitespace
-    while (cursor < text.length && (text[cursor] === " " || text[cursor] === "\t")) cursor++;
-    if (cursor < text.length && text[cursor] === ":") {
-      cursor++; // skip colon
-      // Skip whitespace after colon
-      while (cursor < text.length && (text[cursor] === " " || text[cursor] === "\t")) cursor++;
-      // Read digits
-      let numStart = cursor;
-      while (cursor < text.length && text[cursor] >= "0" && text[cursor] <= "9") cursor++;
-      if (cursor > numStart) {
-        return Number.parseInt(text.slice(numStart, cursor), 10);
-      }
-    }
+    const colonResult = tryLabelColonNumber(text, pos + lowerLabel.length);
+    if (colonResult >= 0) return colonResult;
 
-    // Try "N LABEL" format — look backwards from pos for digits
-    let beforeLabel = pos - 1;
-    // Skip whitespace before label
-    while (beforeLabel >= 0 && (text[beforeLabel] === " " || text[beforeLabel] === "\t"))
-      beforeLabel--;
-    if (beforeLabel >= 0 && text[beforeLabel] >= "0" && text[beforeLabel] <= "9") {
-      let numEnd = beforeLabel + 1;
-      while (beforeLabel >= 0 && text[beforeLabel] >= "0" && text[beforeLabel] <= "9")
-        beforeLabel--;
-      let numStart = beforeLabel + 1;
-      if (numEnd > numStart) {
-        return Number.parseInt(text.slice(numStart, numEnd), 10);
-      }
-    }
+    const prefixResult = tryNumberBeforeLabel(text, pos - 1);
+    if (prefixResult >= 0) return prefixResult;
 
     idx = pos + 1;
   }
@@ -379,7 +382,7 @@ function extractRetroChurnChains(raw) {
     const secondBold = line.indexOf("**", firstBold + 2);
     if (secondBold === -1) continue;
     // Check for "(ping-pong)" anywhere in the line (case-insensitive)
-    if (lowerLine.indexOf("(ping-pong)") !== -1) {
+    if (lowerLine.includes("(ping-pong)")) {
       churnChains++;
     }
   }
@@ -510,6 +513,51 @@ function extractRetroLearnings(raw) {
 }
 
 /**
+ * Create a new empty retrospective object from a heading match.
+ */
+function createRetroEntry(prNumber, date) {
+  return {
+    id: `retro-${prNumber}`,
+    type: "retrospective",
+    pr: Number.parseInt(prNumber, 10),
+    date,
+    rounds: 0,
+    totalItems: 0,
+    fixed: 0,
+    rejected: 0,
+    deferred: 0,
+    churnChains: 0,
+    automationCandidates: [],
+    skillsToUpdate: [],
+    processImprovements: [],
+    learnings: [],
+    _rawLines: [],
+  };
+}
+
+/**
+ * Check if a line is a section-ending heading (## or ### but not ####).
+ */
+function isSectionEndHeading(line) {
+  return line.startsWith("## ") || (line.startsWith("### ") && !line.startsWith("####"));
+}
+
+/**
+ * Enrich retro entries with structured fields from raw lines via helpers.
+ */
+function enrichRetroEntries(retros) {
+  for (const retro of retros) {
+    const raw = retro._rawLines.join("\n");
+    Object.assign(retro, extractRetroRounds(raw));
+    Object.assign(retro, extractRetroChurnChains(raw));
+    Object.assign(retro, extractRetroAutomation(raw));
+    Object.assign(retro, extractRetroSkillsAndProcess(raw));
+    Object.assign(retro, extractRetroLearnings(raw));
+    delete retro._rawLines;
+  }
+}
+
+/**
  * Parse PR retrospective entries from the markdown.
  * Finds ### PR #N Retrospective sections and extracts structured data.
  */
@@ -526,32 +574,14 @@ function parseRetrospectives(content) {
     }
     if (inFence) continue;
 
-    // Match ### PR #N Retrospective (YYYY-MM-DD)
     const retroMatch = line.match(/^###\s+PR\s+#(\d+)\s+Retrospective\s*\((\d{4}-\d{2}-\d{2})\)/);
     if (retroMatch) {
       if (current) retros.push(current);
-      current = {
-        id: `retro-${retroMatch[1]}`,
-        type: "retrospective",
-        pr: Number.parseInt(retroMatch[1], 10),
-        date: retroMatch[2],
-        rounds: 0,
-        totalItems: 0,
-        fixed: 0,
-        rejected: 0,
-        deferred: 0,
-        churnChains: 0,
-        automationCandidates: [],
-        skillsToUpdate: [],
-        processImprovements: [],
-        learnings: [],
-        _rawLines: [],
-      };
+      current = createRetroEntry(retroMatch[1], retroMatch[2]);
       continue;
     }
 
-    // Stop at next ## or ### heading (but not ####)
-    if (current && /^#{2,3}\s+[^#]/.test(line) && !line.match(/^####/)) {
+    if (current && isSectionEndHeading(line)) {
       retros.push(current);
       current = null;
       continue;
@@ -561,20 +591,7 @@ function parseRetrospectives(content) {
   }
 
   if (current) retros.push(current);
-
-  // Second pass: extract structured fields via helpers
-  for (const retro of retros) {
-    const raw = retro._rawLines.join("\n");
-
-    Object.assign(retro, extractRetroRounds(raw));
-    Object.assign(retro, extractRetroChurnChains(raw));
-    Object.assign(retro, extractRetroAutomation(raw));
-    Object.assign(retro, extractRetroSkillsAndProcess(raw));
-    Object.assign(retro, extractRetroLearnings(raw));
-
-    delete retro._rawLines;
-  }
-
+  enrichRetroEntries(retros);
   return retros;
 }
 
@@ -612,11 +629,11 @@ function runRepairMode(content) {
   if (existsSync(REVIEWS_FILE)) {
     const bakPath = REVIEWS_FILE + ".bak";
     try {
-      if (!isSafeToWrite(bakPath)) {
-        log("  ⚠️ Refusing to write backup: symlink detected (continuing anyway)");
-      } else {
+      if (isSafeToWrite(bakPath)) {
         atomicWriteFileSync(bakPath, readFileSync(REVIEWS_FILE, "utf8"));
         log(`  📦 Backup: reviews.jsonl.bak`);
+      } else {
+        log("  ⚠️ Refusing to write backup: symlink detected (continuing anyway)");
       }
     } catch {
       log("  ⚠️ Could not create backup (continuing anyway)");
