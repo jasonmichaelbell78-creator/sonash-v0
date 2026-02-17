@@ -3486,3 +3486,46 @@ claude/new-session-NgVGX (PR #360) **Suggestions:** 7 total (Critical: 1, Major:
 - Object.create(null) is safer than {} for untrusted data cloning
 
 ---
+
+### Review #349: PR #371 R3 — Argument Injection, Suppression Scope, Pipeline Robustness
+
+**Date:** 2026-02-17 **Source:** Qodo PR Compliance + Code Suggestions
+**PR/Branch:** PR #371
+
+**Summary:** 7 suggestions (4 consolidated to 1 MAJOR, 2 MINOR, 1 rejected).
+Main issue: unquoted `$staged_js` in the new CC pre-commit gate enabled argument
+injection via crafted filenames and broke on filenames with spaces. Fixed by
+switching from bare `$staged_js` expansion to `printf | xargs ... --` pattern,
+which handles word-splitting safely and uses `--` to prevent `-`-prefixed
+filenames from being interpreted as flags.
+
+**Patterns Identified:**
+
+1. **Unquoted shell variable in command arguments**: `$staged_js` was passed
+   directly to `npx eslint`, enabling both argument injection (filenames
+   starting with `-`) and word-splitting on spaces/newlines. Fixed with
+   `printf '%s\n' "$staged_js" | xargs ... --` pattern.
+2. **Qodo suppression scope mismatch**: `pr_compliance_checker` section scoped
+   to `scripts/` and `.claude/hooks/` but not `docs/technical-debt/`, causing
+   "Absolute path leakage" false positives to persist on TDMS data files.
+3. **grep|head pipeline not fail-safe**: In a Husky hook that may run with
+   `set -e`, `grep "complexity" | head -10` would terminate the script if grep
+   finds no matches, before the proper error message is displayed.
+
+**Resolution:**
+
+- Fixed: 5 items (consolidated from 7 — 4 overlapping suggestions merged)
+- Rejected: 1 item (reviews.jsonl id type — string IDs for retro entries are
+  intentional and consistent across retro-367 through retro-371)
+- Deferred: 0
+
+**Key Learnings:**
+
+- Shell variables used as command arguments must be quoted or piped through
+  xargs
+- The `--` separator prevents filenames from being parsed as flags
+- Qodo compliance checker has separate scope from pr_reviewer — both need
+  matching suppression rules
+- Pipeline commands in hooks should append `|| true` when running under set -e
+
+---

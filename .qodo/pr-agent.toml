@@ -66,7 +66,7 @@ When suggesting changes to JSONL data files under docs/technical-debt/:
 # that pr_reviewer instructions did not suppress Compliance checks.
 [pr_compliance_checker]
 extra_instructions = """\
-When checking compliance for scripts under scripts/ or .claude/hooks/:
+When checking compliance for files under scripts/, .claude/hooks/, or docs/technical-debt/:
 
 1. For "Robust Error Handling and Edge Case Management":
    - JSONL parsing code that uses empty catch blocks to skip malformed lines

@@ -60,11 +60,9 @@ echo "  ✅ ESLint passed (0 errors)"
 # NEW code doesn't introduce CC >15. Recommended in 5 consecutive retros (#367-#371).
 staged_js=$(git diff --cached --name-only --diff-filter=ACM | grep '\.js$' || true)
 if [ -n "$staged_js" ]; then
-  # shellcheck disable=SC2086
-  if ! npx eslint --no-eslintrc --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module $staged_js > /dev/null 2>&1; then
+  if ! printf '%s\n' "$staged_js" | xargs npx eslint --no-eslintrc --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- > /dev/null 2>&1; then
     echo "  ❌ Cognitive Complexity >15 in staged files"
-    # shellcheck disable=SC2086
-    npx eslint --no-eslintrc --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module $staged_js 2>&1 | grep "complexity" | head -10
+    printf '%s\n' "$staged_js" | xargs npx eslint --no-eslintrc --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- 2>&1 | grep "complexity" | head -10 || true
     echo ""
     echo "  Extract helpers to reduce CC. See FIX_TEMPLATES.md Template 30."
     exit 1
