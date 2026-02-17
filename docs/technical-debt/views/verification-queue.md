@@ -9,18 +9,68 @@
 
 ---
 
-**Items Needing Verification:** 8
+**Items Needing Verification:** 58
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
 
-| ID        | Title                                                        | Severity | File                            | Line |
-| --------- | ------------------------------------------------------------ | -------- | ------------------------------- | ---- |
-| DEBT-2808 | Date formats inconsistent across the app                     | S2       | src/components                  | 0    |
-| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | src                             | 0    |
-| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | docs                            | 0    |
-| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | package.json                    | 0    |
-| DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | src/components                  | 0    |
-| DEBT-3127 | Add shellcheck to pre-commit hooks for shell script linting  | S2       | .husky/                         | 0    |
-| DEBT-3128 | Archive reviews #285-334 to reduce learnings log from 340... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md | 0    |
-| DEBT-3129 | Refresh Quick Pattern Index with recent patterns from rev... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md | 0    |
+| ID        | Title                                                        | Severity | File                                                                                 | Line |
+| --------- | ------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------ | ---- |
+| DEBT-3131 | ROADMAP.md milestone tracking tables                         | S1       | home/user/sonash-v0/ROADMAP.md                                                       | 0    |
+| DEBT-3132 | AUDIT_TRACKER.md audit log tables                            | S1       | home/user/sonash-v0/docs/AUDIT_TRACKER.md                                            | 0    |
+| DEBT-3133 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas  | S1       | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md                             | 0    |
+| DEBT-3134 | AUDIT_TRACKER.md threshold matrix and version history        | S1       | home/user/sonash-v0/docs/AUDIT_TRACKER.md                                            | 0    |
+| DEBT-3154 | sync-claude-settings.js - Unused Claude Code settings syn... | S1       | home/user/sonash-v0/scripts/sync-claude-settings.js                                  | 0    |
+| DEBT-3159 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl... | S1       | home/user/sonash-v0/scripts/check-backlog-health.js                                  | 0    |
+| DEBT-3160 | Markdown table parsing in update-readme-status.js with pi... | S1       | home/user/sonash-v0/scripts/update-readme-status.js                                  | 0    |
+| DEBT-3161 | check-session-gaps.js relies on hardcoded Session Context... | S1       | home/user/sonash-v0/scripts/check-session-gaps.js                                    | 0    |
+| DEBT-3162 | aggregate-audit-findings.js markdown parsing fragility in... | S1       | home/user/sonash-v0/scripts/aggregate-audit-findings.js                              | 0    |
+| DEBT-3163 | generate-pending-alerts.js fragile DEFERRED item extraction  | S1       | home/user/sonash-v0/scripts/generate-pending-alerts.js                               | 0    |
+| DEBT-3168 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused       | S1       | home/user/sonash-v0/docs/HOOKIFY_STRATEGY.md                                         | 0    |
+| DEBT-3176 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes         | S1       | home/user/sonash-v0/docs/agent_docs/FIX_TEMPLATES.md                                 | 0    |
+| DEBT-3181 | Technical debt view files - generated views without integ... | S1       | home/user/sonash-v0/docs/technical-debt/views/                                       | 0    |
+| DEBT-3130 | Untitled finding                                             | S2       | N/A                                                                                  | 0    |
+| DEBT-3135 | DOCUMENT_DEPENDENCIES.md sync status tracking                | S2       | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md                                    | 0    |
+| DEBT-3136 | SESSION_CONTEXT.md quick status table                        | S2       | home/user/sonash-v0/SESSION_CONTEXT.md                                               | 0    |
+| DEBT-3137 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m... | S2       | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md                                    | 0    |
+| DEBT-3138 | ROADMAP.md detailed milestone specifications embedded        | S2       | home/user/sonash-v0/ROADMAP.md                                                       | 0    |
+| DEBT-3139 | PR_WORKFLOW_CHECKLIST.md version history table               | S2       | home/user/sonash-v0/docs/PR_WORKFLOW_CHECKLIST.md                                    | 0    |
+| DEBT-3140 | EXPANSION_EVALUATION_TRACKER.md command reference table      | S2       | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md                             | 0    |
+| DEBT-3145 | ai-review.js - Unused AI review prompt applicator            | S2       | home/user/sonash-v0/scripts/ai-review.js                                             | 0    |
+| DEBT-3147 | create-canonical-findings.js - Unused canonical findings ... | S2       | home/user/sonash-v0/scripts/create-canonical-findings.js                             | 0    |
+| DEBT-3148 | generate-pending-alerts.js - Unused session-start alert g... | S2       | home/user/sonash-v0/scripts/generate-pending-alerts.js                               | 0    |
+| DEBT-3150 | migrate-existing-findings.js - Unused legacy findings mig... | S2       | home/user/sonash-v0/scripts/migrate-existing-findings.js                             | 0    |
+| DEBT-3152 | regenerate-findings-index.js - Unused canonical findings ... | S2       | home/user/sonash-v0/scripts/regenerate-findings-index.js                             | 0    |
+| DEBT-3155 | update-legacy-lines.js - Unused legacy findings line numb... | S2       | home/user/sonash-v0/scripts/update-legacy-lines.js                                   | 0    |
+| DEBT-3164 | check-roadmap-health.js version parsing regex scoped to s... | S2       | home/user/sonash-v0/scripts/check-roadmap-health.js                                  | 0    |
+| DEBT-3165 | Multi-AI normalize-format.js markdown table detection and... | S2       | home/user/sonash-v0/scripts/multi-ai/normalize-format.js                             | 0    |
+| DEBT-3166 | verify-sonar-phase.js hardcoded security section header d... | S2       | home/user/sonash-v0/scripts/verify-sonar-phase.js                                    | 0    |
+| DEBT-3169 | RECAPTCHA_REMOVAL_GUIDE.md - 745 lines about Firebase con... | S2       | home/user/sonash-v0/docs/RECAPTCHA_REMOVAL_GUIDE.md                                  | 0    |
+| DEBT-3170 | REVIEW_POLICY_INDEX.md - 370 lines index without inbound ... | S2       | home/user/sonash-v0/docs/REVIEW_POLICY_INDEX.md                                      | 0    |
+| DEBT-3171 | PLAN_MAP.md - 242 lines documentation hierarchy map never... | S2       | home/user/sonash-v0/docs/PLAN_MAP.md                                                 | 0    |
+| DEBT-3172 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev... | S2       | home/user/sonash-v0/docs/MCP_SERVER_AUDIT.md                                         | 0    |
+| DEBT-3177 | SKILL_AGENT_POLICY.md - 0 refs despite defining usage policy | S2       | home/user/sonash-v0/docs/agent_docs/SKILL_AGENT_POLICY.md                            | 0    |
+| DEBT-3178 | Audit inventory stage files (6 files) - generated but unr... | S2       | home/user/sonash-v0/docs/audits/single-session/process/audit-2026-02-09/stage-1\*.md | 0    |
+| DEBT-3180 | Plan documents with zero inbound refs - 5 planning files ... | S2       | home/user/sonash-v0/docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others                | 0    |
+| DEBT-2808 | Date formats inconsistent across the app                     | S2       | src/components                                                                       | 0    |
+| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | src                                                                                  | 0    |
+| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | docs                                                                                 | 0    |
+| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | package.json                                                                         | 0    |
+| DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | src/components                                                                       | 0    |
+| DEBT-3127 | Add shellcheck to pre-commit hooks for shell script linting  | S2       | .husky/                                                                              | 0    |
+| DEBT-3141 | SESSION_CONTEXT.md recent session summaries                  | S3       | home/user/sonash-v0/SESSION_CONTEXT.md                                               | 0    |
+| DEBT-3142 | PLAN_MAP.md version history table                            | S3       | home/user/sonash-v0/docs/PLAN_MAP.md                                                 | 0    |
+| DEBT-3143 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou... | S3       | home/user/sonash-v0/docs/AI_REVIEW_LEARNINGS_LOG.md                                  | 0    |
+| DEBT-3144 | ROADMAP_LOG.md completed items history (31KB, 1,129 lines)   | S3       | home/user/sonash-v0/ROADMAP_LOG.md                                                   | 0    |
+| DEBT-3146 | check-review-triggers.sh - Dead shell script for multi-AI... | S3       | home/user/sonash-v0/scripts/check-review-triggers.sh                                 | 0    |
+| DEBT-3149 | generate-placement-report.js - Unused roadmap placement s... | S3       | home/user/sonash-v0/scripts/generate-placement-report.js                             | 0    |
+| DEBT-3151 | redeploy-admin-dashboard.sh - Firebase deployment helper ... | S3       | home/user/sonash-v0/scripts/redeploy-admin-dashboard.sh                              | 0    |
+| DEBT-3153 | seed-commit-log.js - One-time commit log backfill utility    | S3       | home/user/sonash-v0/scripts/seed-commit-log.js                                       | 0    |
+| DEBT-3173 | MCP_SETUP.md - 178 lines configuration guide without trac... | S3       | home/user/sonash-v0/docs/MCP_SETUP.md                                                | 0    |
+| DEBT-3174 | LEARNING_METRICS.md - 84 lines metrics tracking document     | S3       | home/user/sonash-v0/docs/LEARNING_METRICS.md                                         | 0    |
+| DEBT-3175 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve... | S3       | home/user/sonash-v0/docs/AUTOMATION_AUDIT_REPORT.md                                  | 0    |
+| DEBT-3179 | ADR template and decisions/README - decision framework un... | S3       | home/user/sonash-v0/docs/decisions/                                                  | 0    |
+| DEBT-3156 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | S0       | All 57 files with AI Instructions sections                                           | 0    |
+| DEBT-3157 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks          | S0       | home/user/sonash-v0/.claude/hooks/commit-tracker.js                                  | 0    |
+| DEBT-3158 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | S0       | home/user/sonash-v0/.claude/hooks/auto-save-context.js                               | 0    |
+| DEBT-3167 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide... | S0       | home/user/sonash-v0/docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md               | 0    |

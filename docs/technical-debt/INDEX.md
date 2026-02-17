@@ -9,20 +9,20 @@
 
 ---
 
-**Total Items:** 2430
+**Total Items:** 2482
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
-| S0 (Critical) | 32    |
-| S1 (High)     | 417   |
-| S2 (Medium)   | 1079  |
-| S3 (Low)      | 902   |
+| S0 (Critical) | 36    |
+| S1 (High)     | 430   |
+| S2 (Medium)   | 1102  |
+| S3 (Low)      | 914   |
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1402  |
+| code-quality             | 1454  |
 | documentation            | 467   |
 | process                  | 336   |
 | security                 | 85    |
@@ -35,9 +35,9 @@
 | Status         | Count |
 | -------------- | ----- |
 | VERIFIED       | 1911  |
-| RESOLVED       | 243   |
+| RESOLVED       | 245   |
 | FALSE_POSITIVE | 268   |
-| NEW            | 8     |
+| NEW            | 58    |
 
 ## Views
 
@@ -107,6 +107,16 @@
   auto-save-context.js (.claude/hooks/auto-save-context.js:0)
 - **DEBT-3090**: SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ideation
   document never... (docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md:0)
+- **DEBT-3156**: CRITICAL: 57 separate AI Instructions sections = ~4,500+
+  unnecessary tokens p... (All 57 files with AI Instructions sections:0)
+- **DEBT-3157**: SESSION_CONTEXT.md Session Counter Regex in 5 hooks
+  (home/user/sonash-v0/.claude/hooks/commit-tracker.js:0)
+- **DEBT-3158**: SESSION_DECISIONS.md Decision Block Regex in
+  auto-save-context.js
+  (home/user/sonash-v0/.claude/hooks/auto-save-context.js:0)
+- **DEBT-3167**: SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ideation
+  document never... (home/user/sonash-v0/docs/SoNash_Technical_Ideation_Multi_AI
+  1.20.26.md:0)
 
 ## High Priority Items (S1)
 
@@ -154,7 +164,7 @@
 - **DEBT-0021**: Refactor this function to reduce its Cognitive Complexity from
   19 to the 15 a... (scripts/check-document-sync.js:200)
 
-_...and 397 more. See [by-severity.md](./views/by-severity.md)_
+_...and 410 more. See [by-severity.md](./views/by-severity.md)_
 
 ---
 

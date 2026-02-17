@@ -429,7 +429,7 @@ _Uncategorized_
 | Document                                                                                                  | Description                                                     | References | Last Modified |
 | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [AI Optimization Audit Plan](.claude/plans/ai-optimization-audit.md)                                      | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-17    |
-| [Audit Ecosystem Full Health Remediation Plan](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)              | <!-- prettier-ignore-start -->                                  | ↓1 ↑0      | 2026-02-17    |
+| [Audit Ecosystem Full Health Remediation Plan](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)              | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-17    |
 | [Audit Template & Schema Full Overhaul Plan](.claude/plans/audit-template-schema-overhaul.md)             | -                                                               | ↓0 ↑0      | 2026-02-17    |
 | [Implementation Plan: AI Review Learnings System Overhaul](.claude/plans/review-learnings-overhaul.md)    | Move oldest N reviews from the active log to a new archive f... | ↓0 ↑0      | 2026-02-17    |
 | [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md) | Create a comprehensive tool that:                               | ↓0 ↑0      | 2026-02-17    |
@@ -521,7 +521,7 @@ _Reference_
 | ------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓5 ↑7      | 2026-02-17    |
 | [AI Workflow Guide](AI_WORKFLOW.md)        | \*\*Every phase, section, or milestone completion MUST include... | ↓9 ↑16     | 2026-02-17    |
-| [Session Context](SESSION_CONTEXT.md)      | -                                                                 | ↓5 ↑9      | 2026-02-17    |
+| [Session Context](SESSION_CONTEXT.md)      | -                                                                 | ↓5 ↑8      | 2026-02-17    |
 
 ### scripts (Tier 4)
 
@@ -588,8 +588,8 @@ Documents that link to other documents most frequently:
 | [Development Guide](DEVELOPMENT.md)                                                                       | 11             |
 | [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                                        | 11             |
 | [Documentation Inventory](docs/README.md)                                                                 | 10             |
-| [Session Context](SESSION_CONTEXT.md)                                                                     | 9              |
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                        | 9              |
+| [Session Context](SESSION_CONTEXT.md)                                                                     | 8              |
 | [Enhancement Audit Template \(Multi-AI Injectable\)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md) | 8              |
 | [AI Context &amp; Rules for SoNash](claude.md)                                                            | 7              |
 | [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)              | 6              |
@@ -607,7 +607,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**177 orphaned documents:**
+**178 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [Find Skills](.agents/skills/find-skills/SKILL.md)
@@ -648,6 +648,7 @@ Documents with no inbound links (not referenced by any other document):
 - [.github/workflows/test-automation.yml](.claude/agents/test-engineer.md)
 - [ui ux designer](.claude/agents/ui-ux-designer.md)
 - [Commands Folder - DEPRECATED](.claude/commands/README.md)
+- [Audit Ecosystem Full Health Remediation Plan](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)
 - [AI Optimization Audit Plan](.claude/plans/ai-optimization-audit.md)
 - [Audit Template &amp; Schema Full Overhaul Plan](.claude/plans/audit-template-schema-overhaul.md)
 - [Learning Effectiveness Analyzer - Implementation Plan](.claude/plans/learning-effectiveness-analyzer.md)

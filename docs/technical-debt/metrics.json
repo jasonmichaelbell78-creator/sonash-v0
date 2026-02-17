@@ -1,44 +1,43 @@
 {
-  "generated": "2026-02-17T02:52:06.084Z",
+  "generated": "2026-02-17T16:54:06.813Z",
   "generated_date": "2026-02-17",
   "summary": {
-    "total": 2302,
-    "open": 1890,
-    "resolved": 170,
-    "false_positives": 242,
-    "resolution_rate_pct": 7
+    "total": 2482,
+    "open": 1969,
+    "resolved": 245,
+    "false_positives": 268,
+    "resolution_rate_pct": 10
   },
   "by_status": {
-    "NEW": 98,
-    "VERIFIED": 1792,
+    "NEW": 58,
+    "VERIFIED": 1911,
     "IN_PROGRESS": 0,
-    "RESOLVED": 170,
-    "FALSE_POSITIVE": 242
+    "RESOLVED": 245,
+    "FALSE_POSITIVE": 268
   },
   "by_severity": {
-    "S0": 27,
-    "S1": 390,
-    "S2": 1026,
-    "S3": 859
+    "S0": 36,
+    "S1": 430,
+    "S2": 1102,
+    "S3": 914
   },
   "by_category": {
-    "code-quality": 1328,
+    "code-quality": 1454,
     "security": 85,
     "performance": 50,
-    "documentation": 466,
+    "documentation": 467,
     "refactoring": 22,
     "process": 336,
-    "engineering-productivity": 6,
-    "enhancements": 9
+    "engineering-productivity": 9,
+    "enhancements": 8,
+    "ai-optimization": 51
   },
   "by_source": {
-    "unknown": 2298,
-    "pr-review-286": 1,
-    "pr-review-366-r2": 3
+    "unknown": 2482
   },
   "alerts": {
-    "s0_count": 9,
-    "s1_count": 365,
+    "s0_count": 15,
+    "s1_count": 391,
     "s0_items": [
       {
         "id": "DEBT-0012",
@@ -93,6 +92,12 @@
         "title": "CI gap: pull_request_target security vulnerability allows un",
         "file": ".github/workflows/deploy-firebase.yml",
         "line": 7
+      },
+      {
+        "id": "DEBT-3079",
+        "title": "CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn",
+        "file": "N/A",
+        "line": 0
       }
     ],
     "s1_items": [
@@ -159,9 +164,9 @@
     ]
   },
   "health": {
-    "avg_age_days": 13,
+    "avg_age_days": 12,
     "oldest_age_days": 18,
     "oldest_item_id": "DEBT-0001",
-    "verification_queue_size": 98
+    "verification_queue_size": 58
   }
 }

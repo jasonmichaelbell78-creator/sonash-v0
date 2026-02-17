@@ -9,44 +9,48 @@
 
 ---
 
-## S0 - Critical (32)
+## S0 - Critical (36)
 
-| ID        | Title                                                        | File                                                        | Line | Category     | Effort |
-| --------- | ------------------------------------------------------------ | ----------------------------------------------------------- | ---- | ------------ | ------ |
-| DEBT-0012 | Refactor this function to reduce its Cognitive Complexity... | functions/src/admin.ts                                      | 576  | code-quality | E0     |
-| DEBT-0037 | Refactor this function to reduce its Cognitive Complexity... | components/widgets/compact-meeting-countdown.tsx            | 69   | code-quality | E0     |
-| DEBT-0850 | Legacy journalEntries collection allows direct client wri... | firestore.rules                                             | 0    | security     | E2     |
-| DEBT-0852 | Multiple CI quality gates configured as non-blocking (con... | .github/workflows/ci.yml                                    | 0    | code-quality | E2     |
-| DEBT-0853 | useJournal creates redundant auth listener + potential me... | hooks/use-journal.ts                                        | 0    | code-quality | E1     |
-| DEBT-0854 | App Check disabled on all production Cloud Functions         | functions/src/index.ts                                      | 0    | security     | E2     |
-| DEBT-0855 | Legacy journalEntries collection allows direct client wri... | firestore.rules                                             | 0    | security     | E2     |
-| DEBT-0856 | App Check disabled on all Cloud Functions and client init... | functions/src/index.ts                                      | 0    | security     | E2     |
-| DEBT-0857 | Legacy journalEntries collection allows direct client wri... | firestore.rules                                             | 0    | security     | E2     |
-| DEBT-0858 | useJournal creates redundant auth listener + potential me... | hooks/use-journal.ts                                        | 0    | performance  | E1     |
-| DEBT-0859 | CI quality gates non-blocking allowing regressions           | .github/workflows/ci.yml                                    | 0    | process      | E2     |
-| DEBT-0860 | Re-enable App Check on Cloud Functions                       | N/A                                                         | 0    | security     | E2     |
-| DEBT-0861 | Close legacy journalEntries write path                       | N/A                                                         | 0    | security     | E2     |
-| DEBT-0862 | Fix useJournal memory leak                                   | N/A                                                         | 0    | code-quality | E1     |
-| DEBT-0864 | Convert CI gates to blocking                                 | N/A                                                         | 0    | code-quality | E2     |
-| DEBT-0865 | Re-enable App Check on Cloud Functions                       | lib/firebase.ts                                             | 45   | security     | E2     |
-| DEBT-0866 | Close legacy journalEntries write path                       | lib/firestore-service.ts                                    | 156  | security     | E2     |
-| DEBT-0867 | Fix useJournal memory leak                                   | hooks/use-journal.ts                                        | 156  | code-quality | E1     |
-| DEBT-1056 | Refactor this function to reduce its Cognitive Complexity... | components/admin/errors-tab.tsx                             | 327  | code-quality | E0     |
-| DEBT-1064 | Refactor this code to not nest functions more than 4 leve... | components/admin/logs-tab.tsx                               | 342  | code-quality | E0     |
-| DEBT-1296 | Refactor this function to reduce its Cognitive Complexity... | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js | 137  | code-quality | E0     |
-| DEBT-1538 | Refactor this function to reduce its Cognitive Complexity... | functions/src/jobs.ts                                       | 1059 | code-quality | E0     |
-| DEBT-1624 | Refactor this function to reduce its Cognitive Complexity... | components/dev/lighthouse-tab.tsx                           | 81   | code-quality | E0     |
-| DEBT-1912 | Security risk: Client-side filtering of sensitive data       | hooks/use-journal.ts                                        | 174  | code-quality | E1     |
-| DEBT-2499 | CI gap: pull_request_target security vulnerability allows... | .github/workflows/deploy-firebase.yml                       | 7    | process      | E2     |
-| DEBT-2744 | Error handling: continueOnError used appropriately in set... | .claude/settings.json                                       | 24   | process      | E0     |
-| DEBT-2745 | Security: Potential command injection in resolve-item.js ... | scripts/debt/resolve-item.js                                | 21   | process      | E1     |
-| DEBT-3043 | pattern-check.js spawns subprocess every Write/Edit/Multi... | .claude/hooks/pattern-check.js                              | 0    | code-quality | E1     |
-| DEBT-3079 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | N/A                                                         | 0    | code-quality | E0     |
-| DEBT-3080 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks          | .claude/hooks/commit-tracker.js                             | 0    | code-quality | E1     |
-| DEBT-3081 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | .claude/hooks/auto-save-context.js                          | 0    | code-quality | E1     |
-| DEBT-3090 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide... | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md          | 0    | code-quality | E0     |
+| ID        | Title                                                        | File                                                                   | Line | Category     | Effort |
+| --------- | ------------------------------------------------------------ | ---------------------------------------------------------------------- | ---- | ------------ | ------ |
+| DEBT-0012 | Refactor this function to reduce its Cognitive Complexity... | functions/src/admin.ts                                                 | 576  | code-quality | E0     |
+| DEBT-0037 | Refactor this function to reduce its Cognitive Complexity... | components/widgets/compact-meeting-countdown.tsx                       | 69   | code-quality | E0     |
+| DEBT-0850 | Legacy journalEntries collection allows direct client wri... | firestore.rules                                                        | 0    | security     | E2     |
+| DEBT-0852 | Multiple CI quality gates configured as non-blocking (con... | .github/workflows/ci.yml                                               | 0    | code-quality | E2     |
+| DEBT-0853 | useJournal creates redundant auth listener + potential me... | hooks/use-journal.ts                                                   | 0    | code-quality | E1     |
+| DEBT-0854 | App Check disabled on all production Cloud Functions         | functions/src/index.ts                                                 | 0    | security     | E2     |
+| DEBT-0855 | Legacy journalEntries collection allows direct client wri... | firestore.rules                                                        | 0    | security     | E2     |
+| DEBT-0856 | App Check disabled on all Cloud Functions and client init... | functions/src/index.ts                                                 | 0    | security     | E2     |
+| DEBT-0857 | Legacy journalEntries collection allows direct client wri... | firestore.rules                                                        | 0    | security     | E2     |
+| DEBT-0858 | useJournal creates redundant auth listener + potential me... | hooks/use-journal.ts                                                   | 0    | performance  | E1     |
+| DEBT-0859 | CI quality gates non-blocking allowing regressions           | .github/workflows/ci.yml                                               | 0    | process      | E2     |
+| DEBT-0860 | Re-enable App Check on Cloud Functions                       | N/A                                                                    | 0    | security     | E2     |
+| DEBT-0861 | Close legacy journalEntries write path                       | N/A                                                                    | 0    | security     | E2     |
+| DEBT-0862 | Fix useJournal memory leak                                   | N/A                                                                    | 0    | code-quality | E1     |
+| DEBT-0864 | Convert CI gates to blocking                                 | N/A                                                                    | 0    | code-quality | E2     |
+| DEBT-0865 | Re-enable App Check on Cloud Functions                       | lib/firebase.ts                                                        | 45   | security     | E2     |
+| DEBT-0866 | Close legacy journalEntries write path                       | lib/firestore-service.ts                                               | 156  | security     | E2     |
+| DEBT-0867 | Fix useJournal memory leak                                   | hooks/use-journal.ts                                                   | 156  | code-quality | E1     |
+| DEBT-1056 | Refactor this function to reduce its Cognitive Complexity... | components/admin/errors-tab.tsx                                        | 327  | code-quality | E0     |
+| DEBT-1064 | Refactor this code to not nest functions more than 4 leve... | components/admin/logs-tab.tsx                                          | 342  | code-quality | E0     |
+| DEBT-1296 | Refactor this function to reduce its Cognitive Complexity... | docs/archive/obsolete-scripts-2026-02/extract-sonarcloud.js            | 137  | code-quality | E0     |
+| DEBT-1538 | Refactor this function to reduce its Cognitive Complexity... | functions/src/jobs.ts                                                  | 1059 | code-quality | E0     |
+| DEBT-1624 | Refactor this function to reduce its Cognitive Complexity... | components/dev/lighthouse-tab.tsx                                      | 81   | code-quality | E0     |
+| DEBT-1912 | Security risk: Client-side filtering of sensitive data       | hooks/use-journal.ts                                                   | 174  | code-quality | E1     |
+| DEBT-2499 | CI gap: pull_request_target security vulnerability allows... | .github/workflows/deploy-firebase.yml                                  | 7    | process      | E2     |
+| DEBT-2744 | Error handling: continueOnError used appropriately in set... | .claude/settings.json                                                  | 24   | process      | E0     |
+| DEBT-2745 | Security: Potential command injection in resolve-item.js ... | scripts/debt/resolve-item.js                                           | 21   | process      | E1     |
+| DEBT-3043 | pattern-check.js spawns subprocess every Write/Edit/Multi... | .claude/hooks/pattern-check.js                                         | 0    | code-quality | E1     |
+| DEBT-3079 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | N/A                                                                    | 0    | code-quality | E0     |
+| DEBT-3080 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks          | .claude/hooks/commit-tracker.js                                        | 0    | code-quality | E1     |
+| DEBT-3081 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | .claude/hooks/auto-save-context.js                                     | 0    | code-quality | E1     |
+| DEBT-3090 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide... | docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md                     | 0    | code-quality | E0     |
+| DEBT-3156 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | All 57 files with AI Instructions sections                             | 0    | code-quality | E0     |
+| DEBT-3157 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks          | home/user/sonash-v0/.claude/hooks/commit-tracker.js                    | 0    | code-quality | E1     |
+| DEBT-3158 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | home/user/sonash-v0/.claude/hooks/auto-save-context.js                 | 0    | code-quality | E1     |
+| DEBT-3167 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide... | home/user/sonash-v0/docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md | 0    | code-quality | E0     |
 
-## S1 - High (417)
+## S1 - High (430)
 
 | ID        | Title                                                         | File                                                                                                                                               | Line | Category                 | Effort |
 | --------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | ------ |
@@ -467,8 +471,21 @@
 | DEBT-3104 | Technical debt view files - generated views without integ...  | docs/technical-debt/views/                                                                                                                         | 0    | code-quality             | E1     |
 | DEBT-3105 | Cross-cutting: Hook process spawn explosion — 10+ Node.js...  | .claude/settings.json                                                                                                                              | 0    | ai-optimization          | E2     |
 | DEBT-3108 | Session-end cleanup is practically dead code — needs migr...  | .claude/hooks/.session-state.json                                                                                                                  | 0    | ai-optimization          | E2     |
+| DEBT-3131 | ROADMAP.md milestone tracking tables                          | home/user/sonash-v0/ROADMAP.md                                                                                                                     | 0    | code-quality             | E2     |
+| DEBT-3132 | AUDIT_TRACKER.md audit log tables                             | home/user/sonash-v0/docs/AUDIT_TRACKER.md                                                                                                          | 0    | code-quality             | E2     |
+| DEBT-3133 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas   | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md                                                                                           | 0    | code-quality             | E3     |
+| DEBT-3134 | AUDIT_TRACKER.md threshold matrix and version history         | home/user/sonash-v0/docs/AUDIT_TRACKER.md                                                                                                          | 0    | code-quality             | E2     |
+| DEBT-3154 | sync-claude-settings.js - Unused Claude Code settings syn...  | home/user/sonash-v0/scripts/sync-claude-settings.js                                                                                                | 0    | code-quality             | E1     |
+| DEBT-3159 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl...  | home/user/sonash-v0/scripts/check-backlog-health.js                                                                                                | 0    | code-quality             | E2     |
+| DEBT-3160 | Markdown table parsing in update-readme-status.js with pi...  | home/user/sonash-v0/scripts/update-readme-status.js                                                                                                | 0    | code-quality             | E2     |
+| DEBT-3161 | check-session-gaps.js relies on hardcoded Session Context...  | home/user/sonash-v0/scripts/check-session-gaps.js                                                                                                  | 0    | code-quality             | E1     |
+| DEBT-3162 | aggregate-audit-findings.js markdown parsing fragility in...  | home/user/sonash-v0/scripts/aggregate-audit-findings.js                                                                                            | 0    | code-quality             | E2     |
+| DEBT-3163 | generate-pending-alerts.js fragile DEFERRED item extraction   | home/user/sonash-v0/scripts/generate-pending-alerts.js                                                                                             | 0    | code-quality             | E1     |
+| DEBT-3168 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused        | home/user/sonash-v0/docs/HOOKIFY_STRATEGY.md                                                                                                       | 0    | code-quality             | E0     |
+| DEBT-3176 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes          | home/user/sonash-v0/docs/agent_docs/FIX_TEMPLATES.md                                                                                               | 0    | code-quality             | E0     |
+| DEBT-3181 | Technical debt view files - generated views without integ...  | home/user/sonash-v0/docs/technical-debt/views/                                                                                                     | 0    | code-quality             | E1     |
 
-## S2 - Medium (1079)
+## S2 - Medium (1102)
 
 | ID        | Title                                                          | File                                                                                                                                                                        | Line | Category                 | Effort |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | ------ |
@@ -1381,6 +1398,7 @@
 | DEBT-2753 | Hook performance not tracked - no metrics on execution time    | multiple                                                                                                                                                                    | 0    | code-quality             | E2     |
 | DEBT-2754 | Pre-push duplicates pre-commit pattern checks                  | 1                                                                                                                                                                           | 0    | code-quality             | E0     |
 | DEBT-2755 | Untitled finding                                               | N/A                                                                                                                                                                         | 0    | code-quality             | E1     |
+| DEBT-3130 | Untitled finding                                               | N/A                                                                                                                                                                         | 0    | code-quality             | E1     |
 | DEBT-2757 | Small touch targets on mobile - tabs only 8-10px padding       | multiple                                                                                                                                                                    | 0    | code-quality             | E1     |
 | DEBT-2758 | No focus trap management in modals and dialogs                 | multiple                                                                                                                                                                    | 0    | code-quality             | E2     |
 | DEBT-2759 | Missing error state illustrations - plain text errors only     | multiple                                                                                                                                                                    | 0    | code-quality             | E2     |
@@ -1545,6 +1563,28 @@
 | DEBT-3120 | 10 PostToolUse hooks fire on every Write operation creati...   | .claude/settings.json                                                                                                                                                       | 0    | ai-optimization          | E2     |
 | DEBT-3122 | MCP memory server configured but not enabled — 3 skills h...   | .mcp.json                                                                                                                                                                   | 0    | ai-optimization          | E1     |
 | DEBT-3126 | Multi-line regex with greedy \[\s\S\]\*? quantifier in aut...  | .claude/hooks/auto-save-context.js                                                                                                                                          | 0    | ai-optimization          | E1     |
+| DEBT-3135 | DOCUMENT_DEPENDENCIES.md sync status tracking                  | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md                                                                                                                           | 0    | code-quality             | E2     |
+| DEBT-3136 | SESSION_CONTEXT.md quick status table                          | home/user/sonash-v0/SESSION_CONTEXT.md                                                                                                                                      | 0    | code-quality             | E1     |
+| DEBT-3137 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m...   | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md                                                                                                                           | 0    | code-quality             | E2     |
+| DEBT-3138 | ROADMAP.md detailed milestone specifications embedded          | home/user/sonash-v0/ROADMAP.md                                                                                                                                              | 0    | code-quality             | E2     |
+| DEBT-3139 | PR_WORKFLOW_CHECKLIST.md version history table                 | home/user/sonash-v0/docs/PR_WORKFLOW_CHECKLIST.md                                                                                                                           | 0    | code-quality             | E1     |
+| DEBT-3140 | EXPANSION_EVALUATION_TRACKER.md command reference table        | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md                                                                                                                    | 0    | code-quality             | E2     |
+| DEBT-3145 | ai-review.js - Unused AI review prompt applicator              | home/user/sonash-v0/scripts/ai-review.js                                                                                                                                    | 0    | code-quality             | E0     |
+| DEBT-3147 | create-canonical-findings.js - Unused canonical findings ...   | home/user/sonash-v0/scripts/create-canonical-findings.js                                                                                                                    | 0    | code-quality             | E1     |
+| DEBT-3148 | generate-pending-alerts.js - Unused session-start alert g...   | home/user/sonash-v0/scripts/generate-pending-alerts.js                                                                                                                      | 0    | code-quality             | E0     |
+| DEBT-3150 | migrate-existing-findings.js - Unused legacy findings mig...   | home/user/sonash-v0/scripts/migrate-existing-findings.js                                                                                                                    | 0    | code-quality             | E1     |
+| DEBT-3152 | regenerate-findings-index.js - Unused canonical findings ...   | home/user/sonash-v0/scripts/regenerate-findings-index.js                                                                                                                    | 0    | code-quality             | E1     |
+| DEBT-3155 | update-legacy-lines.js - Unused legacy findings line numb...   | home/user/sonash-v0/scripts/update-legacy-lines.js                                                                                                                          | 0    | code-quality             | E1     |
+| DEBT-3164 | check-roadmap-health.js version parsing regex scoped to s...   | home/user/sonash-v0/scripts/check-roadmap-health.js                                                                                                                         | 0    | code-quality             | E1     |
+| DEBT-3165 | Multi-AI normalize-format.js markdown table detection and...   | home/user/sonash-v0/scripts/multi-ai/normalize-format.js                                                                                                                    | 0    | code-quality             | E2     |
+| DEBT-3166 | verify-sonar-phase.js hardcoded security section header d...   | home/user/sonash-v0/scripts/verify-sonar-phase.js                                                                                                                           | 0    | code-quality             | E1     |
+| DEBT-3169 | RECAPTCHA_REMOVAL_GUIDE.md - 745 lines about Firebase con...   | home/user/sonash-v0/docs/RECAPTCHA_REMOVAL_GUIDE.md                                                                                                                         | 0    | code-quality             | E0     |
+| DEBT-3170 | REVIEW_POLICY_INDEX.md - 370 lines index without inbound ...   | home/user/sonash-v0/docs/REVIEW_POLICY_INDEX.md                                                                                                                             | 0    | code-quality             | E0     |
+| DEBT-3171 | PLAN_MAP.md - 242 lines documentation hierarchy map never...   | home/user/sonash-v0/docs/PLAN_MAP.md                                                                                                                                        | 0    | code-quality             | E0     |
+| DEBT-3172 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev...   | home/user/sonash-v0/docs/MCP_SERVER_AUDIT.md                                                                                                                                | 0    | code-quality             | E0     |
+| DEBT-3177 | SKILL_AGENT_POLICY.md - 0 refs despite defining usage policy   | home/user/sonash-v0/docs/agent_docs/SKILL_AGENT_POLICY.md                                                                                                                   | 0    | code-quality             | E0     |
+| DEBT-3178 | Audit inventory stage files (6 files) - generated but unr...   | home/user/sonash-v0/docs/audits/single-session/process/audit-2026-02-09/stage-1\*.md                                                                                        | 0    | code-quality             | E0     |
+| DEBT-3180 | Plan documents with zero inbound refs - 5 planning files ...   | home/user/sonash-v0/docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others                                                                                                       | 0    | code-quality             | E0     |
 | DEBT-2808 | Date formats inconsistent across the app                       | src/components                                                                                                                                                              | 0    | enhancements             | E1     |
 | DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files               | src                                                                                                                                                                         | 0    | enhancements             | E1     |
 | DEBT-2811 | Documentation effectiveness metrics — track which docs ar...   | docs                                                                                                                                                                        | 0    | documentation            | E2     |
@@ -1552,7 +1592,7 @@
 | DEBT-2813 | Missing ARIA labels on critical navigation tabs                | src/components                                                                                                                                                              | 0    | enhancements             | E0     |
 | DEBT-3127 | Add shellcheck to pre-commit hooks for shell script linting    | .husky/                                                                                                                                                                     | 0    | engineering-productivity | E1     |
 
-## S3 - Low (902)
+## S3 - Low (914)
 
 | ID        | Title                                                          | File                                                                                             | Line | Category                 | Effort |
 | --------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---- | ------------------------ | ------ |
@@ -2456,5 +2496,17 @@
 | DEBT-3123 | MCP github server enabled but not configured in .mcp.json...   | .claude/settings.local.json                                                                      | 0    | ai-optimization          | E0     |
 | DEBT-3124 | MCP global template (.claude/mcp.global-template.json) in...   | .claude/mcp.global-template.json                                                                 | 0    | ai-optimization          | E0     |
 | DEBT-3125 | MCP firebase server enabled but not configured — may rely...   | .claude/settings.local.json                                                                      | 0    | ai-optimization          | E0     |
+| DEBT-3141 | SESSION_CONTEXT.md recent session summaries                    | home/user/sonash-v0/SESSION_CONTEXT.md                                                           | 0    | code-quality             | E1     |
+| DEBT-3142 | PLAN_MAP.md version history table                              | home/user/sonash-v0/docs/PLAN_MAP.md                                                             | 0    | code-quality             | E1     |
+| DEBT-3143 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou...   | home/user/sonash-v0/docs/AI_REVIEW_LEARNINGS_LOG.md                                              | 0    | code-quality             | E2     |
+| DEBT-3144 | ROADMAP_LOG.md completed items history (31KB, 1,129 lines)     | home/user/sonash-v0/ROADMAP_LOG.md                                                               | 0    | code-quality             | E1     |
+| DEBT-3146 | check-review-triggers.sh - Dead shell script for multi-AI...   | home/user/sonash-v0/scripts/check-review-triggers.sh                                             | 0    | code-quality             | E0     |
+| DEBT-3149 | generate-placement-report.js - Unused roadmap placement s...   | home/user/sonash-v0/scripts/generate-placement-report.js                                         | 0    | code-quality             | E1     |
+| DEBT-3151 | redeploy-admin-dashboard.sh - Firebase deployment helper ...   | home/user/sonash-v0/scripts/redeploy-admin-dashboard.sh                                          | 0    | code-quality             | E2     |
+| DEBT-3153 | seed-commit-log.js - One-time commit log backfill utility      | home/user/sonash-v0/scripts/seed-commit-log.js                                                   | 0    | code-quality             | E0     |
+| DEBT-3173 | MCP_SETUP.md - 178 lines configuration guide without trac...   | home/user/sonash-v0/docs/MCP_SETUP.md                                                            | 0    | code-quality             | E0     |
+| DEBT-3174 | LEARNING_METRICS.md - 84 lines metrics tracking document       | home/user/sonash-v0/docs/LEARNING_METRICS.md                                                     | 0    | code-quality             | E0     |
+| DEBT-3175 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve...   | home/user/sonash-v0/docs/AUTOMATION_AUDIT_REPORT.md                                              | 0    | code-quality             | E0     |
+| DEBT-3179 | ADR template and decisions/README - decision framework un...   | home/user/sonash-v0/docs/decisions/                                                              | 0    | code-quality             | E0     |
 | DEBT-3128 | Archive reviews #285-334 to reduce learnings log from 340...   | docs/AI_REVIEW_LEARNINGS_LOG.md                                                                  | 0    | engineering-productivity | E1     |
 | DEBT-3129 | Refresh Quick Pattern Index with recent patterns from rev...   | docs/AI_REVIEW_LEARNINGS_LOG.md                                                                  | 0    | engineering-productivity | E1     |

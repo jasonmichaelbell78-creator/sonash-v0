@@ -30,11 +30,11 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 2302  |
-| Open Items      | 1890  |
-| Resolved        | 170   |
-| False Positives | 242   |
-| Resolution Rate | 7%    |
+| Total Items     | 2482  |
+| Open Items      | 1969  |
+| Resolved        | 245   |
+| False Positives | 268   |
+| Resolution Rate | 10%   |
 
 ---
 
@@ -42,11 +42,11 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 98    |
-| VERIFIED       | 1792  |
+| NEW            | 58    |
+| VERIFIED       | 1911  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 170   |
-| FALSE_POSITIVE | 242   |
+| RESOLVED       | 245   |
+| FALSE_POSITIVE | 268   |
 
 ---
 
@@ -54,10 +54,10 @@ distribution.
 
 | Severity      | Count | % of Total |
 | ------------- | ----- | ---------- |
-| S0 (Critical) | 27    | 1%         |
-| S1 (High)     | 390   | 17%        |
-| S2 (Medium)   | 1026  | 45%        |
-| S3 (Low)      | 859   | 37%        |
+| S0 (Critical) | 36    | 1%         |
+| S1 (High)     | 430   | 17%        |
+| S2 (Medium)   | 1102  | 44%        |
+| S3 (Low)      | 914   | 37%        |
 
 ---
 
@@ -65,20 +65,21 @@ distribution.
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 1328  |
-| documentation            | 466   |
+| code-quality             | 1454  |
+| documentation            | 467   |
 | process                  | 336   |
 | security                 | 85    |
+| ai-optimization          | 51    |
 | performance              | 50    |
 | refactoring              | 22    |
-| enhancements             | 9     |
-| engineering-productivity | 6     |
+| engineering-productivity | 9     |
+| enhancements             | 8     |
 
 ---
 
 ## Alerts
 
-### S0 Critical Alerts (9)
+### S0 Critical Alerts (15)
 
 - **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity fr
   (functions/src/admin.ts:576)
@@ -98,8 +99,10 @@ distribution.
   (hooks/use-journal.ts:174)
 - **DEBT-2499**: CI gap: pull_request_target security vulnerability allows un
   (.github/workflows/deploy-firebase.yml:7)
+- **DEBT-3079**: CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn
+  (N/A:0)
 
-### S1 High Priority Alerts (365)
+### S1 High Priority Alerts (391)
 
 - **DEBT-0001**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -122,7 +125,7 @@ distribution.
 - **DEBT-0010**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 355 more S1 items_
+_...and 381 more S1 items_
 
 ---
 
@@ -130,8 +133,8 @@ _...and 355 more S1 items_
 
 | Metric               | Value     |
 | -------------------- | --------- |
-| Verification Queue   | 98 items  |
-| Avg Age (Open Items) | 13 days   |
+| Verification Queue   | 58 items  |
+| Avg Age (Open Items) | 12 days   |
 | Oldest Item Age      | 18 days   |
 | Oldest Item          | DEBT-0001 |
 
@@ -139,11 +142,9 @@ _...and 355 more S1 items_
 
 ## Data Sources
 
-| Source           | Count |
-| ---------------- | ----- |
-| unknown          | 2298  |
-| pr-review-366-r2 | 3     |
-| pr-review-286    | 1     |
+| Source  | Count |
+| ------- | ----- |
+| unknown | 2482  |
 
 ---
 
