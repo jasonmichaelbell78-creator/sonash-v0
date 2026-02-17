@@ -9,10 +9,13 @@
  *   --pr <number>        PR number that resolved these items
  *   --file <path>        File containing DEBT IDs (one per line)
  *   --dry-run            Preview without writing
+ *   --eligible-only      Only resolve items with eligible statuses (not NEW)
+ *   --output-json <path> Write resolution summary JSON for CI consumption
  *
  * Example:
  *   node scripts/debt/resolve-bulk.js --pr 123 DEBT-0042 DEBT-0043 DEBT-0044
  *   node scripts/debt/resolve-bulk.js --pr 123 --file resolved-ids.txt
+ *   node scripts/debt/resolve-bulk.js --pr 123 --eligible-only DEBT-0042 DEBT-0043
  */
 
 const fs = require("node:fs");
@@ -24,13 +27,20 @@ const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
 const LOG_DIR = path.join(DEBT_DIR, "logs");
 const RESOLUTION_LOG = path.join(LOG_DIR, "resolution-log.jsonl");
 
+// Statuses eligible for automated resolution via CI workflow
+const ELIGIBLE_STATUSES = ["VERIFIED", "IN_PROGRESS", "TRIAGED"];
+
 // Parse command line arguments
 function parseArgs(args) {
-  const parsed = { dryRun: false, debtIds: [] };
+  const parsed = { dryRun: false, eligibleOnly: false, debtIds: [] };
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === "--dry-run") {
       parsed.dryRun = true;
+    } else if (arg === "--eligible-only") {
+      parsed.eligibleOnly = true;
+    } else if (arg === "--output-json" && args[i + 1]) {
+      parsed.outputJson = args[++i];
     } else if (arg === "--pr" && args[i + 1]) {
       parsed.pr = Number.parseInt(args[++i], 10);
     } else if (arg === "--file" && args[i + 1]) {
@@ -147,12 +157,16 @@ async function main() {
 Usage: node scripts/debt/resolve-bulk.js [options] <DEBT-XXXX> [DEBT-XXXX...]
 
 Options:
-  --pr <number>        PR number that resolved these items
-  --file <path>        File containing DEBT IDs (one per line)
-  --dry-run            Preview without writing
+  --pr <number>           PR number that resolved these items
+  --file <path>           File containing DEBT IDs (one per line)
+  --dry-run               Preview without writing
+  --eligible-only         Only resolve items with eligible statuses
+                          (${ELIGIBLE_STATUSES.join(", ")}); skip NEW items
+  --output-json <path>    Write resolution summary JSON for CI consumption
 
 Example:
   node scripts/debt/resolve-bulk.js --pr 123 DEBT-0042 DEBT-0043 DEBT-0044
+  node scripts/debt/resolve-bulk.js --pr 123 --eligible-only DEBT-0042 DEBT-0043
   node scripts/debt/resolve-bulk.js --pr 123 --file resolved-ids.txt
 `);
     process.exit(0);
@@ -192,6 +206,7 @@ Example:
   const found = [];
   const notFound = [];
   const alreadyResolved = [];
+  const ineligible = [];
 
   for (const debtId of parsed.debtIds) {
     const item = itemMap.get(debtId);
@@ -199,6 +214,8 @@ Example:
       notFound.push(debtId);
     } else if (item.status === "RESOLVED") {
       alreadyResolved.push(debtId);
+    } else if (parsed.eligibleOnly && !ELIGIBLE_STATUSES.includes(item.status)) {
+      ineligible.push({ id: debtId, status: item.status });
     } else {
       found.push(item);
     }
@@ -208,7 +225,17 @@ Example:
   console.log(`\n📊 Analysis:`);
   console.log(`  ✅ Items to resolve: ${found.length}`);
   console.log(`  ⏭️  Already resolved: ${alreadyResolved.length}`);
+  if (parsed.eligibleOnly) {
+    console.log(`  🚫 Ineligible status: ${ineligible.length}`);
+  }
   console.log(`  ❌ Not found: ${notFound.length}`);
+
+  if (ineligible.length > 0 && ineligible.length <= 10) {
+    console.log(`\n  Ineligible (status not in ${ELIGIBLE_STATUSES.join(", ")}):`);
+    for (const { id, status } of ineligible) {
+      console.log(`    - ${id} (status: ${status})`);
+    }
+  }
 
   if (notFound.length > 0 && notFound.length <= 10) {
     console.log(`\n  Not found:`);
@@ -219,6 +246,19 @@ Example:
 
   if (found.length === 0) {
     console.log("\n✅ No items to resolve.");
+    // Write output JSON even when nothing resolved (for CI summary)
+    if (parsed.outputJson) {
+      const summary = {
+        requested: parsed.debtIds.length,
+        resolved: 0,
+        alreadyResolved: alreadyResolved.length,
+        ineligible: ineligible.length,
+        ineligibleItems: ineligible,
+        notFound: notFound.length,
+        notFoundItems: notFound,
+      };
+      fs.writeFileSync(parsed.outputJson, JSON.stringify(summary, null, 2));
+    }
     process.exit(0);
   }
 
@@ -262,6 +302,21 @@ Example:
   });
 
   console.log(`\n✅ Resolved ${resolvedIds.length} items`);
+
+  // Write output JSON for CI consumption
+  if (parsed.outputJson) {
+    const summary = {
+      requested: parsed.debtIds.length,
+      resolved: resolvedIds.length,
+      resolvedItems: resolvedIds,
+      alreadyResolved: alreadyResolved.length,
+      ineligible: ineligible.length,
+      ineligibleItems: ineligible,
+      notFound: notFound.length,
+      notFoundItems: notFound,
+    };
+    fs.writeFileSync(parsed.outputJson, JSON.stringify(summary, null, 2));
+  }
 
   // Regenerate views
   console.log("\n🔄 Regenerating views...");

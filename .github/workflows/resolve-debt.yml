@@ -27,17 +27,37 @@ jobs:
           # See: Review #224 - SonarCloud S7630 script injection vulnerability
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          # Extract DEBT-XXXX patterns from PR body (using env var, not interpolation)
+          # Only extract DEBT-XXXX IDs from explicit "Resolves:" lines.
+          # This prevents false matches from IDs that are merely mentioned,
+          # created, or referenced in discussion text.
+          # Supported formats:
+          #   Resolves: DEBT-1234 DEBT-5678
+          #   RESOLVES: DEBT-1234, DEBT-5678
+          #   resolves: DEBT-1234
           DEBT_IDS=$(echo "$PR_BODY" | \
+            grep -iE '^\s*resolves\s*:' | \
             grep -oE 'DEBT-[0-9]+' | sort -u | tr '\n' ' ' || true)
 
           # Trim whitespace
           DEBT_IDS=$(echo "$DEBT_IDS" | xargs)
 
-          echo "Found DEBT IDs: $DEBT_IDS"
-          echo "debt_ids=$DEBT_IDS" >> "$GITHUB_OUTPUT"
+          # Also count all DEBT IDs mentioned anywhere (for summary context)
+          ALL_MENTIONED=$(echo "$PR_BODY" | \
+            grep -oE 'DEBT-[0-9]+' | sort -u | tr '\n' ' ' || true)
+          ALL_MENTIONED=$(echo "$ALL_MENTIONED" | xargs)
+          if [ -z "$ALL_MENTIONED" ]; then
+            MENTIONED_COUNT=0
+          else
+            MENTIONED_COUNT=$(echo "$ALL_MENTIONED" | wc -w)
+          fi
 
-          # Count IDs
+          echo "DEBT IDs on Resolves: lines: $DEBT_IDS"
+          echo "All DEBT IDs mentioned in PR body: $ALL_MENTIONED"
+          echo "debt_ids=$DEBT_IDS" >> "$GITHUB_OUTPUT"
+          echo "all_mentioned=$ALL_MENTIONED" >> "$GITHUB_OUTPUT"
+          echo "mentioned_count=$MENTIONED_COUNT" >> "$GITHUB_OUTPUT"
+
+          # Count IDs from Resolves: lines
           if [ -z "$DEBT_IDS" ]; then
             echo "count=0" >> "$GITHUB_OUTPUT"
           else
@@ -63,8 +83,12 @@ jobs:
           echo "Resolving debt items: ${{ steps.extract.outputs.debt_ids }}"
 
           # Run bulk resolution with PR number
+          # --eligible-only: skip items with NEW status (likely just mentioned, not fixed)
+          # --output-json: produce summary for the workflow step summary
           node scripts/debt/resolve-bulk.js \
             --pr ${{ github.event.pull_request.number }} \
+            --eligible-only \
+            --output-json /tmp/resolve-summary.json \
             ${{ steps.extract.outputs.debt_ids }}
 
           # Check if any files changed
@@ -93,18 +117,51 @@ jobs:
           git push
 
       - name: Summary
+        env:
+          EXTRACT_COUNT: ${{ steps.extract.outputs.count }}
+          MENTIONED_COUNT: ${{ steps.extract.outputs.mentioned_count }}
+          DEBT_IDS: ${{ steps.extract.outputs.debt_ids }}
+          ALL_MENTIONED: ${{ steps.extract.outputs.all_mentioned }}
+          CHANGES: ${{ steps.resolve.outputs.changes }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           echo "## Technical Debt Resolution" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "**PR:** #${{ github.event.pull_request.number }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "**DEBT IDs found:** ${{ steps.extract.outputs.count }}" >> "$GITHUB_STEP_SUMMARY"
-          if [ "${{ steps.extract.outputs.count }}" != "0" ]; then
-            echo "**IDs:** ${{ steps.extract.outputs.debt_ids }}" >> "$GITHUB_STEP_SUMMARY"
-            if [ "${{ steps.resolve.outputs.changes }}" == "true" ]; then
-              echo "**Status:** ✅ Resolved and committed" >> "$GITHUB_STEP_SUMMARY"
+          echo "**PR:** #${PR_NUMBER}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$EXTRACT_COUNT" != "0" ]; then
+            echo "**IDs from \`Resolves:\` lines:** ${DEBT_IDS}" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+
+            # Show detailed resolution breakdown from JSON output
+            if [ -f /tmp/resolve-summary.json ]; then
+              RESOLVED=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/resolve-summary.json','utf8')).resolved || 0)")
+              ALREADY=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/resolve-summary.json','utf8')).alreadyResolved || 0)")
+              INELIGIBLE=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/resolve-summary.json','utf8')).ineligible || 0)")
+              NOT_FOUND=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/resolve-summary.json','utf8')).notFound || 0)")
+
+              echo "| Category | Count |" >> "$GITHUB_STEP_SUMMARY"
+              echo "|----------|-------|" >> "$GITHUB_STEP_SUMMARY"
+              echo "| Resolved | ${RESOLVED} |" >> "$GITHUB_STEP_SUMMARY"
+              echo "| Already resolved | ${ALREADY} |" >> "$GITHUB_STEP_SUMMARY"
+              echo "| Ineligible status (NEW) | ${INELIGIBLE} |" >> "$GITHUB_STEP_SUMMARY"
+              echo "| Not found in MASTER_DEBT | ${NOT_FOUND} |" >> "$GITHUB_STEP_SUMMARY"
+              echo "" >> "$GITHUB_STEP_SUMMARY"
+            fi
+
+            if [ "$CHANGES" == "true" ]; then
+              echo "**Result:** Resolved and committed" >> "$GITHUB_STEP_SUMMARY"
             else
-              echo "**Status:** ⚠️ No changes (items may already be resolved)" >> "$GITHUB_STEP_SUMMARY"
+              echo "**Result:** No changes — items were already resolved, ineligible, or not found" >> "$GITHUB_STEP_SUMMARY"
             fi
           else
-            echo "**Status:** ℹ️ No DEBT-XXXX IDs found in PR body" >> "$GITHUB_STEP_SUMMARY"
+            echo "**Result:** No DEBT IDs on \`Resolves:\` lines in PR body" >> "$GITHUB_STEP_SUMMARY"
+            if [ "$MENTIONED_COUNT" != "0" ]; then
+              echo "" >> "$GITHUB_STEP_SUMMARY"
+              echo "**Note:** ${MENTIONED_COUNT} DEBT ID(s) were mentioned elsewhere in the PR body (\`${ALL_MENTIONED}\`) but not on a \`Resolves:\` line. To auto-resolve debt items, add a line like:" >> "$GITHUB_STEP_SUMMARY"
+              echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
+              echo "Resolves: DEBT-1234 DEBT-5678" >> "$GITHUB_STEP_SUMMARY"
+              echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
+            fi
           fi
