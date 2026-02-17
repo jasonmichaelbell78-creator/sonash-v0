@@ -261,6 +261,10 @@ npm run reviews:sync -- --apply
 
 # Check review archive health (heading format, gaps, duplicates — Session #162)
 npm run reviews:check-archive
+
+# Check if active reviews exceed threshold (>20) and suggest archival
+# If overdue, suggest: npm run reviews:archive -- --apply
+npm run reviews:archive
 ```
 
 **Important**: These scripts are **required**. If any script fails:

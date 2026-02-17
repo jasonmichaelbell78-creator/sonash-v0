@@ -130,12 +130,12 @@ same patterns were addressed in prior PRs to avoid re-investigating.
 
 ### 0.2 Tiered Document Loading
 
-| Tier | When          | Documents                                                                               |
-| ---- | ------------- | --------------------------------------------------------------------------------------- |
-| 1    | Always        | `claude.md` (root)                                                                      |
-| 2    | Quick Lookup  | `docs/AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines), `docs/agent_docs/FIX_TEMPLATES.md` |
-| 3    | Investigating | Specific review entries, `docs/AI_REVIEW_PROCESS.md`                                    |
-| 4    | Rarely        | `docs/archive/REVIEWS_1-40.md`                                                          |
+| Tier | When          | Documents                                                                       |
+| ---- | ------------- | ------------------------------------------------------------------------------- |
+| 1    | Always        | `claude.md` (root)                                                              |
+| 2    | Quick Lookup  | `docs/agent_docs/CODE_PATTERNS.md`, `docs/agent_docs/FIX_TEMPLATES.md`          |
+| 3    | Investigating | `docs/AI_REVIEW_LEARNINGS_LOG.md` (active reviews), `docs/AI_REVIEW_PROCESS.md` |
+| 4    | Rarely        | `docs/archive/REVIEWS_*.md`                                                     |
 
 ---
 
@@ -500,8 +500,8 @@ TRIVIAL->S3).
 ## STEP 7: LEARNING CAPTURE (MANDATORY)
 
 Finalize the review number (deferred from Step 3 to avoid collisions), complete
-the learning entry with patterns, resolution stats, and key learnings. Update
-the Quick Index if new pattern categories emerge.
+the learning entry with patterns, resolution stats, and key learnings. Run
+`npm run reviews:sync -- --apply` to sync to JSONL.
 
 > **Details:** See
 > [reference/LEARNING_CAPTURE.md](reference/LEARNING_CAPTURE.md)

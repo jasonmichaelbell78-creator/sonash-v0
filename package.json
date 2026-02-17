@@ -33,6 +33,8 @@
     "session:gaps:fix": "node scripts/check-session-gaps.js --fix",
     "reviews:sync": "node scripts/sync-reviews-to-jsonl.js",
     "reviews:check-archive": "node scripts/check-review-archive.js",
+    "reviews:archive": "node scripts/archive-reviews.js",
+    "reviews:repair": "node scripts/sync-reviews-to-jsonl.js --repair",
     "consolidation:run": "node scripts/run-consolidation.js",
     "learning:analyze": "node scripts/analyze-learning-effectiveness.js",
     "learning:dashboard": "node scripts/analyze-learning-effectiveness.js --format dashboard",
@@ -84,7 +86,8 @@
     "docs:accuracy": "node scripts/check-content-accuracy.js",
     "docs:placement": "node scripts/check-doc-placement.js",
     "session:end": "node scripts/session-end-commit.js",
-    "alerts:cleanup": "node scripts/cleanup-alert-sessions.js"
+    "alerts:cleanup": "node scripts/cleanup-alert-sessions.js",
+    "patterns:promote": "node scripts/promote-patterns.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"

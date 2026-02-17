@@ -63,6 +63,19 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - Synced 4 reviews, incremented session counter
 - Tests: 293/294 passing
 
+**Session #166 Summary** (AI REVIEW LEARNINGS SYSTEM OVERHAUL):
+
+- Full overhaul of AI_REVIEW_LEARNINGS_LOG.md ecosystem (9-step plan)
+- Fixed sync-reviews-to-jsonl.js: severity regex, metadata filtering, --repair
+  mode, retrospective parsing (3 formats)
+- Repaired JSONL data quality: severity 3/61→27/61, learnings 42/61→58/61
+- Cleaned learnings log: removed Quick Index, collapsed version history, removed
+  stale sections (3,423→3,306 lines)
+- Built archive-reviews.js (automated archival, keeps newest 20)
+- Built promote-patterns.js (auto-promotes 3+ patterns to CODE_PATTERNS.md)
+- Updated 14 cross-referenced files (skills, schemas, docs, debt items)
+- Resolved DEBT-3128, DEBT-3129 (Quick Index debt)
+
 **Session #165 Summary** (PR #369 R8-R9 + RETRO + SKILL UPDATE):
 
 - Processed PR #369 R8 (13 items: 8 fixed, 5 rejected) and R9 (9 items: 5 fixed,

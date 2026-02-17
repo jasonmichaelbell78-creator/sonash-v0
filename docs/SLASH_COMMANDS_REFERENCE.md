@@ -146,7 +146,7 @@ status is checked, and the AI is prepared to work effectively.
 6. **Anti-Pattern Awareness** - Scan claude.md Section 4 + CODE_PATTERNS.md
    before writing code
 7. **Script Execution** - Run `npm run patterns:check`, `npm run review:check`,
-   `npm run lessons:surface`
+   `npm run lessons:surface`, `npm run reviews:archive`
 8. **Incident Documentation** - Reminder to document significant errors
 
 #### Scripts Auto-Run
@@ -156,6 +156,9 @@ npm run patterns:check    # Surface known anti-patterns
 npm run patterns:sync     # Verify docs/automation consistency
 npm run review:check      # Check if multi-AI review thresholds reached
 npm run lessons:surface   # Surface past lessons relevant to current work
+npm run reviews:archive   # Check if active reviews exceed threshold (>20)
+npm run reviews:sync -- --apply  # Sync reviews/retros to JSONL
+npm run reviews:check-archive    # Check archive heading format/gaps
 ```
 
 #### Compliance Relevance
@@ -845,11 +848,11 @@ args: arg1 - Description of argument
 | Session management | SessionStart         | -                                 | session-begin, session-end | Covered          |
 | Code review        | UserPromptSubmit     | -                                 | pr-review                  | Covered          |
 | Pattern checking   | pre-commit, pre-push | patterns:check, patterns:sync     | -                          | Covered          |
-| Consolidation      | -                    | lessons:surface, patterns:suggest | -                          | **CRITICAL GAP** |
+| Consolidation      | -                    | lessons:surface, patterns:promote | -                          | Covered          |
 | Security audit     | -                    | -                                 | audit-security             | Covered          |
 | Review triggers    | -                    | review:check                      | -                          | Advisory only    |
 | Phase completion   | -                    | phase-complete-check              | -                          | Manual audit     |
-| Archival           | -                    | archive-doc                       | -                          | No safety check  |
+| Archival           | -                    | reviews:archive, archive-doc      | -                          | Covered          |
 | CANON remediation  | -                    | -                                 | -                          | **CRITICAL GAP** |
 
 ### Priority Implementation Order
