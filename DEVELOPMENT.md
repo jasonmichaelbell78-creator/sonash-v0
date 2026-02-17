@@ -595,22 +595,23 @@ TypeScript rules)
 
 The pre-commit hook (`.husky/pre-commit`) runs multiple validation steps:
 
-| Step               | Command                           | Blocking?                         |
-| ------------------ | --------------------------------- | --------------------------------- |
-| ESLint             | `npm run lint`                    | YES - blocks commit               |
-| lint-staged        | `npx --no-install lint-staged`    | YES - auto-formats                |
-| Pattern compliance | `npm run patterns:check`          | YES - blocks commit               |
-| Tests              | `npm test`                        | YES - blocks commit               |
-| CANON validation   | `npm run validate:canon`          | NO - warning only                 |
-| Skill validation   | `npm run skills:validate`         | NO - warning only                 |
-| Cross-doc deps     | `npm run crossdoc:check`          | YES - blocks commit               |
-| Doc index update   | `npm run docs:index` + Prettier   | AUTO-FIX - regenerates & formats  |
-| Doc header check   | `check-doc-headers.js`            | YES - blocks new .md files        |
-| Learning reminder  | (checks staged files)             | NO - reminder only                |
-| Audit S0/S1        | `validate-audit.js --strict-s0s1` | YES - blocks commit (Session #98) |
-| Agent compliance   | `check-agent-compliance.js`       | NO - warning only                 |
-| Debt schema        | `debt/validate-schema.js`         | YES - blocks commit               |
-| Debt location      | (canonical path check)            | NO - warning only                 |
+| Step               | Command                                   | Blocking?                         |
+| ------------------ | ----------------------------------------- | --------------------------------- |
+| ESLint             | `npm run lint`                            | YES - blocks commit               |
+| CC Gate            | `eslint --rule 'complexity: [error, 15]'` | YES - staged .js only (PR #371)   |
+| lint-staged        | `npx --no-install lint-staged`            | YES - auto-formats                |
+| Pattern compliance | `npm run patterns:check`                  | YES - blocks commit               |
+| Tests              | `npm test`                                | YES - blocks commit               |
+| CANON validation   | `npm run validate:canon`                  | NO - warning only                 |
+| Skill validation   | `npm run skills:validate`                 | NO - warning only                 |
+| Cross-doc deps     | `npm run crossdoc:check`                  | YES - blocks commit               |
+| Doc index update   | `npm run docs:index` + Prettier           | AUTO-FIX - regenerates & formats  |
+| Doc header check   | `check-doc-headers.js`                    | YES - blocks new .md files        |
+| Learning reminder  | (checks staged files)                     | NO - reminder only                |
+| Audit S0/S1        | `validate-audit.js --strict-s0s1`         | YES - blocks commit (Session #98) |
+| Agent compliance   | `check-agent-compliance.js`               | NO - warning only                 |
+| Debt schema        | `debt/validate-schema.js`                 | YES - blocks commit               |
+| Debt location      | (canonical path check)                    | NO - warning only                 |
 
 #### Hook Stages Explained
 
@@ -1287,6 +1288,7 @@ summary command; full dashboard is larger scope.
 
 | Version | Date       | Changes                                                                                                     |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
+| 2.8     | 2026-02-17 | Added CC gate to pre-commit hook table (PR #371 retro action item)                                          |
 | 2.7     | 2026-02-11 | Updated pre-commit hook table: doc index auto-fix with Prettier, doc headers, agent/debt checks (#150)      |
 | 2.6     | 2026-02-08 | Added Agile Process and Process & Tooling Improvements sections (moved from ROADMAP.md v3.22, Session #142) |
 | 2.5     | 2026-02-02 | Added Claude Code settings sync commands and cross-platform setup reference                                 |

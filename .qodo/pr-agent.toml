@@ -1,35 +1,48 @@
 # Qodo PR-Agent Configuration
 # Created: 2026-02-17
+# Updated: 2026-02-17 (PR #371 retro — add pr_compliance suppression)
 # Purpose: Suppress recurring false-positive review items that add noise
 # without actionable value. Each suppression has evidence from PR retros.
 
 [pr_reviewer]
 # Suppress persistent compliance items that have been rejected 3+ times
-# with stable rationale across PRs #369-#370
+# with stable rationale across PRs #369-#371
 
 extra_instructions = """\
-When reviewing files in scripts/debt/ or scripts/audit/:
+When reviewing files in scripts/ or .claude/hooks/:
 
 1. Do NOT flag "Missing actor context" or "actor/user identifier" in JSON
    output files. Actor identity is captured in resolution-log.jsonl, which
    is the durable audit trail. The JSON summary is an ephemeral CI artifact.
-   (Rejected in PR #370 R3, R4, R5 with same rationale)
+   (Rejected in PRs #370-#371, 5+ rounds with same rationale)
 
 2. Do NOT flag "Unstructured console logs" or suggest structured logging
    for CLI scripts. This is a pre-existing architectural pattern across all
    TDMS scripts, tracked as DEBT-0455. Structured logging requires a
    project-wide logger library, not per-file fixes.
-   (Rejected in PR #370 R3, R4, R5 with same rationale)
+   (Rejected in PRs #370-#371, 5+ rounds with same rationale)
 
 3. Do NOT flag data quality issues (placeholder titles, null fields,
    recompute content_hash) in JSONL files under docs/technical-debt/ or
    docs/audits/. These are pipeline output, not hand-edited.
-   (Rejected ~100 times across PRs #366-#370)
+   (Rejected ~100 times across PRs #366-#371)
 
 4. Do NOT flag "sensitive log persistence" or "override log" concerns
    for SKIP_REASON audit trail files. The override-log.jsonl is an
    intentional audit trail that must persist skip reasons.
    (Rejected in PR #368 R3-R6 with same rationale)
+
+5. Do NOT flag "silent parse errors" or "swallowed catch blocks" in JSONL
+   parsing code that uses try/catch with empty catch blocks. This is
+   intentional — JSONL files may have partial writes or malformed lines,
+   and the parser should skip them gracefully rather than crashing.
+   (Rejected in PRs #371 R1+R2 with same rationale)
+
+6. Do NOT flag "absolute path leakage" in TDMS data files (MASTER_DEBT.jsonl,
+   deduped.jsonl). File paths are stored as repo-relative by the pipeline.
+   Any absolute paths in older entries are pre-existing data, not introduced
+   by current PRs.
+   (Rejected in PR #371 R2)
 """
 
 [pr_code_suggestions]
@@ -45,4 +58,35 @@ When suggesting changes to JSONL data files under docs/technical-debt/:
 
 3. Do NOT suggest changing "file" fields to include line numbers when
    the item refers to a directory or multiple files.
+"""
+
+# Compliance section — suppresses Qodo Compliance Guide repeat items
+# These are the "Generic: ..." compliance rules that persist across rounds
+# despite reviewer-section suppression. Added based on PR #371 retro finding
+# that pr_reviewer instructions did not suppress Compliance checks.
+[pr_compliance_checker]
+extra_instructions = """\
+When checking compliance for scripts under scripts/ or .claude/hooks/:
+
+1. For "Robust Error Handling and Edge Case Management":
+   - JSONL parsing code that uses empty catch blocks to skip malformed lines
+     is COMPLIANT. This is intentional resilience, not swallowed errors.
+     The pattern: try { JSON.parse(line) } catch { /* skip */ } is correct.
+   - Do NOT flag this as "Swallowed parse errors".
+
+2. For "Comprehensive Audit Trails":
+   - CLI dev tools and automation scripts that log to console are COMPLIANT.
+     These are not production services requiring durable audit trails.
+   - Audit trail is maintained via resolution-log.jsonl for debt operations.
+   - Do NOT flag "Missing audit context" or "Logging scope unclear".
+
+3. For "Secure Logging Practices":
+   - CLI scripts using console.log are COMPLIANT. Structured JSON logging
+     is tracked as DEBT-0455 and requires a project-wide logger library.
+   - The sanitizeError() function already strips PII from error messages.
+   - Do NOT flag "Unstructured logging" or "Console output review".
+
+4. For "Security-First Input Validation":
+   - Repo-relative file paths in TDMS data files are COMPLIANT.
+   - Do NOT flag "Absolute path leakage" for docs/technical-debt/ files.
 """

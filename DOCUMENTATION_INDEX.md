@@ -119,7 +119,7 @@ _AI agent reference docs_
 | [Agent Orchestration Reference](docs/agent_docs/AGENT_ORCHESTRATION.md)             | Detailed guidance for parallelizing agents, forming teams, a... | ↓1 ↑0      | 2026-02-17    |
 | [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                  | This document contains detailed code patterns and anti-patte... | ↓7 ↑2      | 2026-02-17    |
 | [Context Preservation & Compaction Safety](docs/agent_docs/CONTEXT_PRESERVATION.md) | Detailed guidance for preventing loss of important decisions... | ↓1 ↑0      | 2026-02-17    |
-| [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)       | Copy-paste fix templates for the top 29 most common Qodo PR ... | ↓1 ↑0      | 2026-02-17    |
+| [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)       | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-02-17    |
 | [Security Checklist for Scripts](docs/agent_docs/SECURITY_CHECKLIST.md)             | Use this checklist **BEFORE writing or reviewing** any scrip... | ↓1 ↑0      | 2026-02-17    |
 | [Skill and Agent Usage Policy](docs/agent_docs/SKILL_AGENT_POLICY.md)               | This document defines the policy for creating, using, and ov... | ↓2 ↑3      | 2026-02-17    |
 

@@ -106,18 +106,24 @@ This catches the most common ping-pong pattern: a security fix applied to one
 file while the same pattern exists in 10+ other files. PR #366 had 5 rounds of
 symlink guard ping-pong that this sweep would have prevented.
 
-### Cognitive Complexity Pre-Check (NEW — PR #370 Retro)
+### Cognitive Complexity Pre-Check (Updated — PR #371 Retro)
 
-**Before the first push**, run the CC lint check on all new/modified .js files:
+**Before the first push**, the pre-commit hook automatically runs CC as error on
+staged .js files. This blocks commits with CC >15 functions.
+
+If you need to check manually (e.g., before staging):
 
 ```bash
-npx eslint --rule 'complexity: [error, 15]' <new-or-modified-files>
+npx eslint --no-eslintrc --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module <files>
 ```
 
-This catches CC >15 violations before SonarCloud sees them. The CC lint rule is
-now configured as a warning in eslint.config.mjs, but running it as an error
-pre-push catches violations before CI. CC violations were the #1 cross-PR churn
-driver across PRs #366-#370, causing ~20 avoidable review rounds.
+**After extracting helpers to reduce CC**, re-run the check on the entire file —
+extracted helpers can inherit CC >15 from their parent functions. See
+FIX_TEMPLATES.md Template 30.
+
+CC violations were the #1 cross-PR churn driver across PRs #366-#371, causing
+~20 avoidable review rounds. The pre-commit hook now enforces CC as error on
+staged files (warn globally for 113 pre-existing violations).
 
 ---
 
@@ -575,6 +581,7 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 | Version | Date       | Description                                                                            |
 | ------- | ---------- | -------------------------------------------------------------------------------------- |
+| 2.4     | 2026-02-17 | CC now enforced via pre-commit hook (error on staged files). Source: PR #371 retro.    |
 | 2.3     | 2026-02-17 | Add CC Pre-Push Check (Step 0.5) + Path Test Matrix (Step 5.8). Source: PR #370 retro. |
 | 2.2     | 2026-02-15 | Add Security Pattern Sweep + Propagation Check (PR #366 retro)                         |
 | 2.1     | 2026-02-14 | Extract reference docs: SonarCloud, agents, TDMS, learning                             |

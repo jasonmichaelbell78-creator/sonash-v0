@@ -5,7 +5,7 @@ description:
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.1
+**Document Version:** 2.2
 **Last Updated:** 2026-02-17
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -369,12 +369,16 @@ identify known chains.
 ### Pattern 1: Cognitive Complexity (CC >15)
 
 - **Frequency:** Every PR since #366 (19+ total rounds)
-- **Root cause:** No CC lint rule; SonarCloud flags post-push
+- **Root cause:** Pre-existing CC violations (113 functions) prevent global
+  error
 - **Signature:** SonarCloud "Refactor this function to reduce cognitive
   complexity from X to the 15 allowed"
-- **Known fix:** `npx eslint --rule 'complexity: [error, 15]'` pre-push
-- **Status as of PR #369:** Recommended 3x, never implemented
-- **Templates:** Extract helpers to reduce CC (see R1-R8 patterns)
+- **Known fix:** Pre-commit hook runs CC as error on staged files only
+- **Status as of PR #371:** **IMPLEMENTED.** Pre-commit hook blocks CC >15 on
+  staged .js files. Global config remains `warn` (113 pre-existing violations).
+  Also: after extracting helpers, re-check the ENTIRE file (PR #371 R2 had CC 33
+  and CC 17 in newly extracted helpers).
+- **Templates:** FIX_TEMPLATES.md #30 (CC extraction + options object)
 
 ### Pattern 2: Incremental Security Hardening (Symlink/Write Path)
 
@@ -391,12 +395,15 @@ identify known chains.
 
 ### Pattern 3: JSONL Data Quality Rejections (Noise)
 
-- **Frequency:** Every round of every PR (~100 rejected items across 4 PRs)
+- **Frequency:** Every round of every PR (~100 rejected items across 5 PRs)
 - **Root cause:** Qodo flags pre-existing JSONL pipeline output data
 - **Signature:** "Replace placeholder title", "Use null for empty fields",
   "Update file path", "Recompute content_hash"
 - **Known fix:** Qodo suppression config for pipeline output files
-- **Status as of PR #369:** Recommended 2x, never implemented
+- **Status as of PR #371:** **IMPLEMENTED.** `.qodo/pr-agent.toml` has
+  `pr_reviewer`, `pr_code_suggestions`, AND `pr_compliance_checker` sections
+  suppressing these patterns. Previously only `pr_reviewer` and
+  `pr_code_suggestions` were configured, which didn't suppress Compliance rules.
 
 ### Pattern 4: Pattern Checker Incomplete Modification
 
@@ -488,6 +495,7 @@ The retro connects to other session workflows:
 
 | Version | Date       | Description                                                       |
 | ------- | ---------- | ----------------------------------------------------------------- |
+| 2.2     | 2026-02-17 | Update patterns 1+3 status: CC enforced, Qodo suppression fixed   |
 | 2.1     | 2026-02-17 | Add known patterns, TDMS enforcement, compliance mechanisms       |
 | 2.0     | 2026-02-17 | Comprehensive format canonical: mandatory sections, display rules |
 | 1.0     | 2026-02-12 | Initial version                                                   |

@@ -47,8 +47,9 @@ export default [
       ],
       "@typescript-eslint/no-explicit-any": "warn",
       "no-console": "off",
-      // CC limit — recommended in 4 consecutive PR retros (#367-#370), ~20 avoidable rounds
-      // "warn" globally; SonarCloud enforces as error. Prevents new CC >15 functions.
+      // CC limit — recommended in 5 consecutive PR retros (#367-#371), ~20 avoidable rounds.
+      // "warn" globally (113 pre-existing violations). Pre-commit hook runs CC as error
+      // on staged files only, blocking new CC >15 functions without breaking existing code.
       complexity: ["warn", 15],
     },
   },

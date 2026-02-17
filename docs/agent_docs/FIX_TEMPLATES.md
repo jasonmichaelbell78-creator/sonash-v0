@@ -1,14 +1,14 @@
 # Fix Templates for Qodo PR Review Findings
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.7
+**Document Version:** 1.8
 **Last Updated:** 2026-02-17
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 ## Purpose
 
-Copy-paste fix templates for the top 29 most common Qodo PR review findings in
+Copy-paste fix templates for the top 30 most common Qodo PR review findings in
 the SoNash codebase. Each template is self-contained: paste the "Good Code"
 block directly into the flagged location. Project-specific helpers are
 referenced where available.
@@ -1367,10 +1367,74 @@ When implementing any path manipulation function, test with ALL of these:
 
 ---
 
+## Template 30: CC Extraction — Options Object + Helper Verification
+
+**Triggered by**: SonarCloud "Reduce Cognitive Complexity" / "Too many
+parameters" **Severity**: MAJOR **Review frequency**: 7 occurrences (PRs
+#366-#371)
+
+When extracting a function to reduce Cognitive Complexity, two common mistakes
+cause follow-up review rounds:
+
+1. The extracted helper itself exceeds CC 15
+2. The extracted function has too many parameters (>7)
+
+### Bad Code
+
+```javascript
+// Extracted to reduce main() CC, but helper has CC 33 and 10 params
+function doWork(a, b, c, d, e, f, g, h, i, j) {
+  // ... complex logic with CC > 15
+}
+```
+
+### Good Code
+
+```javascript
+// Options object for 7+ params, sub-helpers for CC reduction
+function doWork(opts) {
+  const { entries, config, output } = opts;
+  const prepared = prepareEntries(entries, config);
+  return writeOutput(prepared, output);
+}
+
+function prepareEntries(entries, config) {
+  // ... focused logic, CC < 15
+}
+
+function writeOutput(prepared, output) {
+  // ... focused logic, CC < 15
+}
+```
+
+### Post-Extraction Verification Checklist
+
+After every CC extraction, run before committing:
+
+```bash
+# Verify ALL functions in modified file stay under CC 15
+npx eslint --rule 'complexity: [error, 15]' <modified-file>
+```
+
+If any extracted helper exceeds CC 15, extract sub-helpers from it until all
+functions are under the limit. This prevents the "fix CC in one function, create
+CC in another" ping-pong pattern that caused 2+ rounds in PRs #369-#371.
+
+### Rules
+
+1. **7+ parameters**: Use a single options object with destructuring
+2. **Verify helpers**: Run CC check on the ENTIRE file after extraction
+3. **Name clearly**: Helper names should describe WHAT they do, not WHERE they
+   came from (e.g., `tryLabelColonNumber` not `parseSeverityCountPart1`)
+4. **Single responsibility**: Each helper should handle one concern
+
+---
+
 ## Version History
 
 | Version | Date       | Change                                                                                              |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| 1.8     | 2026-02-17 | Add Template 30 (CC extraction guidelines). Source: PR #371 retro.                                  |
 | 1.7     | 2026-02-17 | Add Templates 28-29 (fail-closed catch, validate-then-store path). Source: PR #369-#370 retros.     |
 | 1.5     | 2026-02-16 | Add Template 27 (Secure Audit File Write fd-based chain). Source: PR #368 retro.                    |
 | 1.4     | 2026-02-16 | Add Templates 25-26 (SKIP_REASON validation chain, POSIX shell portability). Source: PR #367 retro. |
