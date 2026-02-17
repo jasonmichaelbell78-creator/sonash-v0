@@ -760,6 +760,35 @@ prevented R4-R6 entirely, saving ~3 review rounds.
 
 ---
 
+#### Review #341: PR #369 R7 — CC indexByKey, Ancestor Symlink, fstatSync Forward Scan, Error -1 (2026-02-17)
+
+**Source:** SonarCloud (1 CC Issue) + Qodo Security (2) + Qodo Compliance (2) +
+Qodo Suggestions (5) **PR/Branch:** claude/cherry-pick-recent-commits-X1eKD (PR
+\#369) **Suggestions:** 10 total (Fixed: 7, Rejected: 3)
+
+**Patterns Identified:**
+
+1. **Extract indexByKey() for CC reduction** — compare-audits.js
+   compareFindings() CC 17→~10 by extracting collision-aware Map indexing into a
+   reusable helper.
+2. **Ancestor symlink containment** — Checking only outputDir and outputFile for
+   symlinks misses ancestor path components. Use `realpathSync` +
+   `path.relative` to verify the resolved path stays within repo root.
+3. **Dir + dest symlink guards in fallback** — The Windows cross-platform rename
+   fallback path (rmSync + rename) lacked symlink re-checks. Added lstatSync
+   guards on both directory and destination before rmSync.
+4. **fstatSync forward scan** — Pattern compliance checker only looked backward
+   for fstatSync guards, but fd-based chains (openSync→fstatSync) place the
+   guard after the open. Added forward scan to avoid false positives.
+5. **Return -1 on git error** — Returning 0 from countCommitsSince on error
+   masks failures as "no commits needed". Return -1 and surface as ERROR in
+   output.
+
+**Resolution Stats:** 7/10 fixed (70%), 3/10 rejected (JSONL data quality x2,
+state-manager dedup)
+
+---
+
 #### Review #340: PR #369 R6 — CC Extraction x2, wx Flag, Atomic writeMasterDebt, Collision Detection (2026-02-17)
 
 **Source:** SonarCloud (2 CC Issues) + Qodo Security (1) + Qodo Suggestions (8)

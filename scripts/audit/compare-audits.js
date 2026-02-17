@@ -242,29 +242,29 @@ function countBySeverity(findings) {
 /**
  * Compare two sets of audit findings
  */
-function compareFindings(findings1, findings2) {
-  // Index findings by key (guard against key collisions)
-  const map1 = new Map();
-  let collisions1 = 0;
-  for (const f of findings1) {
+/**
+ * Index findings by key into a Map. Uses first-seen for each key;
+ * returns collision count so callers can warn.
+ * @param {Array<Object>} findings
+ * @returns {{ map: Map<string, Object>, collisions: number }}
+ */
+function indexByKey(findings) {
+  const map = new Map();
+  let collisions = 0;
+  for (const f of findings) {
     const key = findingKey(f);
-    if (map1.has(key)) {
-      collisions1++;
+    if (map.has(key)) {
+      collisions++;
       continue;
     }
-    map1.set(key, f);
+    map.set(key, f);
   }
+  return { map, collisions };
+}
 
-  const map2 = new Map();
-  let collisions2 = 0;
-  for (const f of findings2) {
-    const key = findingKey(f);
-    if (map2.has(key)) {
-      collisions2++;
-      continue;
-    }
-    map2.set(key, f);
-  }
+function compareFindings(findings1, findings2) {
+  const { map: map1, collisions: collisions1 } = indexByKey(findings1);
+  const { map: map2, collisions: collisions2 } = indexByKey(findings2);
 
   if (collisions1 > 0 || collisions2 > 0) {
     console.error(

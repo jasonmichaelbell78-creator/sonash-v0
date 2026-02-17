@@ -57,7 +57,7 @@ function parseArgs(argv) {
  */
 function extractLastAuditDate(raw) {
   if (typeof raw !== "string" || raw.trim() === "") return null;
-  if (raw.toLowerCase() === "never") return null;
+  if (raw.trim().toLowerCase().startsWith("never")) return null;
   const match = raw.match(/(\d{4}-\d{2}-\d{2})/);
   return match ? match[1] : null;
 }
@@ -191,7 +191,7 @@ function countCommitsSince(date) {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(`Error counting commits: ${message}`);
-    return 0;
+    return -1;
   }
 }
 
@@ -244,19 +244,20 @@ function main() {
 
   for (const cat of categories) {
     const commits = countCommitsSince(cat.lastAuditDate);
-    const exceeded = commits >= cat.threshold;
+    const isError = commits < 0;
+    const exceeded = !isError && commits >= cat.threshold;
 
     output[cat.key] = {
-      commits,
+      commits: isError ? null : commits,
       threshold: cat.threshold,
       exceeded,
+      error: isError || undefined,
     };
 
-    const statusIcon = exceeded ? "\u26a0\ufe0f EXCEEDED" : "\u2705 OK";
+    const statusIcon = isError ? "\u274c ERROR" : exceeded ? "\u26a0\ufe0f EXCEEDED" : "\u2705 OK";
+    const commitStr = isError ? " err" : String(commits).padStart(4);
     const label = `${cat.display}:`.padEnd(28);
-    lines.push(
-      `  ${label}${String(commits).padStart(4)} commits (threshold: ${cat.threshold}) ${statusIcon}`
-    );
+    lines.push(`  ${label}${commitStr} commits (threshold: ${cat.threshold}) ${statusIcon}`);
   }
 
   if (jsonOutput) {

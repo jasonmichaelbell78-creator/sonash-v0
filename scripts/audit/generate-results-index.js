@@ -221,6 +221,20 @@ function guardSymlink(targetPath, label) {
  */
 function atomicWrite(content) {
   const outputDir = path.dirname(outputFile);
+
+  // Verify output resolves within repo root (catches ancestor symlinks)
+  try {
+    const realOutputDir = fs.realpathSync(outputDir);
+    const realRepoRoot = fs.realpathSync(repoRoot);
+    const rel = path.relative(realRepoRoot, realOutputDir);
+    if (rel.startsWith("..") || path.isAbsolute(rel)) {
+      console.error(`Error: Output directory resolves outside repo root: ${realOutputDir}`);
+      process.exit(2);
+    }
+  } catch {
+    // outputDir may not exist yet — mkdirSync in main() handles creation
+  }
+
   guardSymlink(outputDir, outputDir);
   guardSymlink(outputFile, outputFile);
 

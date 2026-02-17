@@ -1024,16 +1024,23 @@ const ANTI_PATTERNS = [
         if (trimmed.startsWith("import ") || trimmed.startsWith("import{")) continue;
         // Skip destructured import members (e.g. "  renameSync," inside "import { ... }")
         if (/^\w+,?$/.test(trimmed)) continue;
-        // Look for symlink guard (isSafeToWrite OR lstatSync/isSymbolicLink OR fstatSync) in preceding 10 lines
+        // Look for symlink guard in preceding 10 lines (isSafeToWrite, isSymbolicLink)
         let hasGuard = false;
-        for (let j = Math.max(0, i - 10); j < i; j++) {
-          if (
-            lines[j].includes("isSafeToWrite") ||
-            lines[j].includes("isSymbolicLink") ||
-            lines[j].includes("fstatSync")
-          ) {
+        const backStart = Math.max(0, i - 10);
+        for (let j = backStart; j < i; j++) {
+          if (lines[j].includes("isSafeToWrite") || lines[j].includes("isSymbolicLink")) {
             hasGuard = true;
             break;
+          }
+        }
+        // fd-based chains: openSync→fstatSync places fstatSync AFTER the open call
+        if (!hasGuard) {
+          const fwdEnd = Math.min(lines.length, i + 11);
+          for (let j = backStart; j < fwdEnd; j++) {
+            if (lines[j].includes("fstatSync")) {
+              hasGuard = true;
+              break;
+            }
           }
         }
         if (!hasGuard) {

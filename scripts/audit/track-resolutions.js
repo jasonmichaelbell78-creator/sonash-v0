@@ -115,6 +115,25 @@ function writeMasterDebt(items) {
       fs.renameSync(tmpFile, MASTER_DEBT_PATH);
     } catch {
       // Cross-platform fallback (Windows): remove destination then retry
+      // Re-check dir and dest for symlinks before proceeding
+      try {
+        const dirStat = fs.lstatSync(dir);
+        if (dirStat.isSymbolicLink()) {
+          console.error(`Error: ${dir} is a symlink — refusing to write`);
+          process.exit(1);
+        }
+      } catch {
+        /* dir may not exist */
+      }
+      try {
+        const destStat = fs.lstatSync(MASTER_DEBT_PATH);
+        if (destStat.isSymbolicLink()) {
+          console.error(`Error: ${MASTER_DEBT_PATH} is a symlink — refusing to write`);
+          process.exit(1);
+        }
+      } catch {
+        /* dest may not exist */
+      }
       try {
         fs.rmSync(MASTER_DEBT_PATH, { force: true });
       } catch {
