@@ -7,7 +7,8 @@
     "process",
     "refactoring",
     "engineering-productivity",
-    "enhancements"
+    "enhancements",
+    "ai-optimization"
   ],
   "validSeverities": ["S0", "S1", "S2", "S3"],
   "validTypes": [

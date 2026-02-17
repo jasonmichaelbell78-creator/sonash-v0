@@ -122,7 +122,7 @@ These already use `why_it_matters`/`suggested_fix`/`acceptance_tests`:
 
 ### 2.2 SECURITY_AUDIT_PLAN.md — Major Schema Realignment
 
-**File:** `docs/multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md`
+**File:** `docs/audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md`
 
 **Part 4 (Output Format) changes:**
 
@@ -161,7 +161,7 @@ These already use `why_it_matters`/`suggested_fix`/`acceptance_tests`:
 
 ### 2.3 PERFORMANCE_AUDIT_PLAN.md — Major Schema Realignment
 
-**File:** `docs/multi-ai-audit/templates/PERFORMANCE_AUDIT_PLAN.md`
+**File:** `docs/audits/multi-ai/templates/PERFORMANCE_AUDIT_PLAN.md`
 
 **Part 4 (Output Format) changes:**
 
@@ -191,7 +191,7 @@ These already use `why_it_matters`/`suggested_fix`/`acceptance_tests`:
 
 ### 2.4 DOCUMENTATION_AUDIT.md — Major Schema Realignment
 
-**File:** `docs/multi-ai-audit/templates/DOCUMENTATION_AUDIT.md`
+**File:** `docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md`
 
 **Part 4 (Output Format) changes:**
 
@@ -207,7 +207,7 @@ These already use `why_it_matters`/`suggested_fix`/`acceptance_tests`:
 
 ### 2.5 PROCESS_AUDIT.md — Schema Realignment
 
-**File:** `docs/multi-ai-audit/templates/PROCESS_AUDIT.md`
+**File:** `docs/audits/multi-ai/templates/PROCESS_AUDIT.md`
 
 **Part 4 (Output Format) changes:**
 
@@ -240,7 +240,7 @@ These already use `why_it_matters`/`suggested_fix`/`acceptance_tests`:
 
 ### 3.2 Update Model Names (All 8 Multi-AI Templates + AGGREGATOR)
 
-**All files in `docs/multi-ai-audit/templates/`:**
+**All files in `docs/audits/multi-ai/templates/`:**
 
 - `Claude Opus 4.5` → `Claude Opus 4.6`
 - Verify GPT-5-Codex and Gemini 3 Pro are current
@@ -278,7 +278,7 @@ browse files or run commands, skip to the audit prompt section below.
 
 ### 4.1 Create SHARED_TEMPLATE_BASE.md
 
-**New file:** `docs/multi-ai-audit/templates/SHARED_TEMPLATE_BASE.md`
+**New file:** `docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md`
 
 Extract these sections from all 7 templates into one shared file:
 

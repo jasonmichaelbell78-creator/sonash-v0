@@ -1179,10 +1179,97 @@ grep -rn '\[\[' .husky/ --include="*.sh" 2>/dev/null  # Double brackets
 
 ---
 
+## Template 27: Secure Audit File Write (fd-based)
+
+**Triggered by**: Qodo "TOCTOU race" / "symlink write bypass" / SonarCloud
+Security Hotspot on file writes **Severity**: CRITICAL **Review frequency**: 6x
+(PR #368 R1-R6, each round fixed one layer)
+
+Security-critical file writes (audit logs, state files) need the full fd-based
+defense chain. Incremental fixes (add lstatSync, then add realpathSync, then add
+openSync, then add fstatSync) cause multi-round review ping-pong.
+
+### Pattern (Before — Incremental TOCTOU-vulnerable)
+
+```javascript
+const logDir = path.join(root, ".claude");
+fs.mkdirSync(logDir, { recursive: true });
+const logPath = path.join(logDir, "override-log.jsonl");
+// ❌ Each of these was added in a separate review round:
+// R1: realpathSync check
+// R2: lstatSync on file
+// R4: restrictive permissions
+// R5: fd-based write
+// R6: fstatSync after open
+fs.appendFileSync(logPath, JSON.stringify(entry) + "\n");
+```
+
+### Fix (After — Complete fd-based chain in one pass)
+
+```javascript
+const logDir = path.join(root, ".claude");
+// 1. Dir symlink guard BEFORE mkdir
+if (fs.existsSync(logDir) && fs.lstatSync(logDir).isSymbolicLink()) {
+  throw new Error("symlink detected on log directory");
+}
+fs.mkdirSync(logDir, { recursive: true });
+
+const logPath = path.join(logDir, "override-log.jsonl");
+
+// 2. Path traversal guard via realpathSync
+const realLogDir = fs.realpathSync(logDir);
+const rel = path.relative(realLogDir, logPath);
+if (rel.startsWith("..") || path.isAbsolute(rel)) {
+  throw new Error("path traversal detected");
+}
+
+// 3. File symlink guard
+if (fs.existsSync(logPath) && fs.lstatSync(logPath).isSymbolicLink()) {
+  throw new Error("symlink detected on log file");
+}
+
+// 4. Atomic fd-based write with fstatSync validation
+const fd = fs.openSync(logPath, "a", 0o600);
+try {
+  const st = fs.fstatSync(fd);
+  if (!st.isFile()) {
+    throw new Error("log target is not a regular file");
+  }
+  fs.fchmodSync(fd, 0o600);
+  fs.writeSync(fd, JSON.stringify(entry) + "\n", undefined, "utf-8");
+} finally {
+  fs.closeSync(fd);
+}
+```
+
+### Defense Chain Checklist
+
+1. **Dir symlink check** — `lstatSync(dir).isSymbolicLink()` before `mkdirSync`
+2. **Path traversal** — `realpathSync` + `path.relative` containment
+3. **File symlink check** — `lstatSync(file).isSymbolicLink()` before open
+4. **fd-based open** — `openSync("a", 0o600)` with restrictive permissions
+5. **fstatSync validation** — `fstatSync(fd).isFile()` after open
+6. **fchmodSync** — Enforce 0o600 on every write (handles umask variance)
+7. **writeSync** — Write via fd, not path (eliminates TOCTOU entirely)
+8. **closeSync in finally** — Always close fd even on error
+
+### Common Mistakes When Fixing
+
+- Fixing one layer per round (symlink → permissions → fd → fstatSync) instead of
+  applying the full chain at once
+- Using `writeFileSync(fd, ...)` instead of `writeSync(fd, ...)` — both work but
+  `writeSync` is more explicit for fd-based writes
+- Forgetting `fstatSync(fd).isFile()` — the fd could point to a FIFO, directory,
+  or device node if swapped between lstatSync and openSync
+- Not wrapping in try/finally — fd leak on error
+
+---
+
 ## Version History
 
 | Version | Date       | Change                                                                                              |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| 1.5     | 2026-02-16 | Add Template 27 (Secure Audit File Write fd-based chain). Source: PR #368 retro.                    |
 | 1.4     | 2026-02-16 | Add Templates 25-26 (SKIP_REASON validation chain, POSIX shell portability). Source: PR #367 retro. |
 | 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)                                                             |
 | 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)                                                      |

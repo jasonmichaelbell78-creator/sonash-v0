@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-02-15
+**Last Updated:** 2026-02-16
 
 ---
 
@@ -27,40 +27,40 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #285 - #322 (38 reviews) **Analysis Date:** 2026-02-15
+**Review Range:** #285 - #334 (49 reviews) **Analysis Date:** 2026-02-16
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 85.8% |
-| Patterns Learned          | 256   |
-| Patterns Automated        | 22    |
-| Patterns Failing          | 21    |
-| Critical Pattern Success  | 91.4% |
-| Automation Coverage       | 18.5% |
-| Total Documented Patterns | 324   |
+| Learning Effectiveness    | 84.5% |
+| Patterns Learned          | 254   |
+| Patterns Automated        | 23    |
+| Patterns Failing          | 24    |
+| Critical Pattern Success  | 91.5% |
+| Automation Coverage       | 18.3% |
+| Total Documented Patterns | 328   |
 | Total Automated Patterns  | 60    |
 
 ### Top Recommended Actions
 
 1. **[Automation]** Automate "Session identity check"
-   - Recurred 12 times after documentation \(Reviews: 314, 316, 318, 320, 322\)
+   - Recurred 15 times after documentation \(Reviews: 320, 322, 324, 328, 329\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "JSONL line parsing"
-   - Recurred 10 times after documentation \(Reviews: 311, 315, 316, 318, 319\)
+2. **[Automation]** Automate "Signal error code semantics"
+   - Recurred 11 times after documentation \(Reviews: 305, 321, 328, 331, 333\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
 3. **[Automation]** Automate "Safe percentage"
-   - Recurred 9 times after documentation \(Reviews: 298, 299, 308, 309, 322\)
+   - Recurred 11 times after documentation \(Reviews: 308, 309, 322, 326, 331\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
 4. **[Documentation]** Improve documentation for "Unicode line separators"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Input length DoS"
+5. **[Documentation]** Improve documentation for "Secure file permissions"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 256   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 22    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 25    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 21    | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 254   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 23    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 27    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 24    | Pattern recurred 3+ times - needs automation |
 
 ---
 
@@ -81,4 +81,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-02-15 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-02-16 | Rewritten to focus on Claude's learning effectiveness |

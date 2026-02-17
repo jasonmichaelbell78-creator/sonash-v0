@@ -36,13 +36,15 @@ Starting any review process, checking if review is needed
 
 | Review Type                    | Template                                                                           | Use When                                                                              |
 | ------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Code Review                    | [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)                             | PRs, feature completion, tactical issues                                              |
-| Security Audit                 | [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)                       | Security concerns, auth changes, pre-release, dependency vulnerabilities              |
-| Performance Audit              | [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)                 | Slow app, bundle growth, before traffic increase                                      |
+| Code Review                    | [CODE_REVIEW_AUDIT.md](./templates/CODE_REVIEW_AUDIT.md)                           | PRs, feature completion, tactical issues                                              |
+| Security Audit                 | [SECURITY_AUDIT.md](./templates/SECURITY_AUDIT.md)                                 | Security concerns, auth changes, pre-release, dependency vulnerabilities              |
+| Performance Audit              | [PERFORMANCE_AUDIT.md](./templates/PERFORMANCE_AUDIT.md)                           | Slow app, bundle growth, before traffic increase                                      |
 | Refactoring Plan               | [REFACTORING_AUDIT.md](./templates/REFACTORING_AUDIT.md)                           | Tech debt, architecture consolidation, vibe coding cleanup, SonarCloud CRITICAL items |
 | Documentation Audit            | [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)                       | Broken links, stale docs, coverage gaps, quarterly doc health check                   |
 | Process Audit                  | [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)                                   | CI/CD reliability, hook effectiveness, automation health, quarterly process review    |
 | Engineering Productivity Audit | [ENGINEERING_PRODUCTIVITY_AUDIT.md](./templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | DX friction, debugging difficulties, offline gaps, build/CI slowness, test issues     |
+| Enhancement Audit              | [ENHANCEMENT_AUDIT.md](./templates/ENHANCEMENT_AUDIT.md)                           | Feature gaps, UX improvements, roadmap opportunities                                  |
+| AI Optimization Audit          | [AI_OPTIMIZATION_AUDIT.md](./templates/AI_OPTIMIZATION_AUDIT.md)                   | Token waste, skill overlap, hook latency, AI workflow friction                        |
 
 ### Template Selection Decision Tree
 
@@ -66,6 +68,12 @@ START
   │
   ├─ Are there CI/CD, hooks, or automation issues?
   │   └─ YES → Process Audit Template
+  │
+  ├─ Are there feature gaps or UX improvements needed?
+  │   └─ YES → Enhancement Audit Template
+  │
+  ├─ Is there AI workflow friction, token waste, or skill overlap?
+  │   └─ YES → AI Optimization Audit Template
   │
   └─ Otherwise → Code Review Template
 ```
@@ -192,6 +200,10 @@ echo "=== Check triggers against thresholds above ==="
 ### Current Project Baseline
 
 **Last Updated:** 2026-01-11
+
+> **Note:** These baselines are from 2026-01-10 and are now stale. They will be
+> updated on the next multi-AI audit run (scheduled when 100+ commits or 14+
+> days threshold is reached).
 
 ```yaml
 # Repository Stats
@@ -703,9 +715,9 @@ It should NOT be used for:
 - **[DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md)** - Document
   formatting standards
 - **Audit Templates:**
-  - [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)
-  - [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)
-  - [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)
+  - [CODE_REVIEW_AUDIT.md](./templates/CODE_REVIEW_AUDIT.md)
+  - [SECURITY_AUDIT.md](./templates/SECURITY_AUDIT.md)
+  - [PERFORMANCE_AUDIT.md](./templates/PERFORMANCE_AUDIT.md)
   - [REFACTORING_AUDIT.md](./templates/REFACTORING_AUDIT.md)
   - [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)
   - [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)
@@ -720,19 +732,19 @@ It should NOT be used for:
 
 ## Version History
 
-| Version | Date       | Changes                                                                                                                                                                                                                                                                  | Author |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| 1.9     | 2026-02-04 | **Directory Consolidation**: Moved from docs/MULTI_AI_REVIEW_COORDINATOR.md to docs/multi-ai-audit/COORDINATOR.md; Added Engineering Productivity to Health Dashboard (6th area); Added Automation & Scripts section; Added TDMS views links; Updated all internal paths | Claude |
-| 1.8     | 2026-02-04 | Added Engineering Productivity Audit as 7th review type with template link; Updated decision tree to include DX, debugging, offline, docs, and process branches                                                                                                          | Claude |
-| 1.7     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added TDMS Integration section with post-audit workflow, resources table, and category mapping reference. Added PROCEDURE.md to Related Documents.                                                                                      | Claude |
-| 1.6     | 2026-01-11 | Updated SonarQube baseline (778→941 issues, 47→61 CRITICAL); delta due to new audit scripts; updated batch fix estimates                                                                                                                                                 | Claude |
-| 1.5     | 2026-01-10 | Updated baseline metrics (lint warnings 181→224, baseline date to 2026-01-10); added note about +43 false positive warnings                                                                                                                                              | Claude |
-| 1.4     | 2026-01-06 | Review #68: Added structured remediation fields (risk, release_gate, owner, target_date) for App Check and SonarQube CRITICAL; Fixed EIGHT_PHASE path to archive location; Fixed stale test pass rate                                                                    | Claude |
-| 1.3     | 2026-01-06 | Review #67: Added remediation tracking for App Check and SonarQube CRITICAL; Improved YAML parseability                                                                                                                                                                  | Claude |
-| 1.2b    | 2026-01-05 | Added SonarQube baseline (778 issues, 47 CRITICAL); Added Documentation Audit and Process Audit templates; Referenced 2-tier Aggregator                                                                                                                                  | Claude |
-| 1.2a    | 2026-01-05 | Updated baselines (116 tests, 0 lint errors, 181 warnings); Added App Check status (DISABLED); Added pattern/dependency health metrics                                                                                                                                   | Claude |
-| 1.1     | 2026-01-02 | Clarified scope: repo-wide reviews only; moved session tracking to SESSION_CONTEXT.md                                                                                                                                                                                    | Claude |
-| 1.0     | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template; Initial coordinator creation with non-time-based triggers                                       | Claude |
+| Version | Date       | Changes                                                                                                                                                                                                                                                                   | Author |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.9     | 2026-02-04 | **Directory Consolidation**: Moved from docs/MULTI_AI_REVIEW_COORDINATOR.md to docs/audits/multi-ai/COORDINATOR.md; Added Engineering Productivity to Health Dashboard (6th area); Added Automation & Scripts section; Added TDMS views links; Updated all internal paths | Claude |
+| 1.8     | 2026-02-04 | Added Engineering Productivity Audit as 7th review type with template link; Updated decision tree to include DX, debugging, offline, docs, and process branches                                                                                                           | Claude |
+| 1.7     | 2026-02-01 | **TDMS Integration (Phase 9b)**: Added TDMS Integration section with post-audit workflow, resources table, and category mapping reference. Added PROCEDURE.md to Related Documents.                                                                                       | Claude |
+| 1.6     | 2026-01-11 | Updated SonarQube baseline (778→941 issues, 47→61 CRITICAL); delta due to new audit scripts; updated batch fix estimates                                                                                                                                                  | Claude |
+| 1.5     | 2026-01-10 | Updated baseline metrics (lint warnings 181→224, baseline date to 2026-01-10); added note about +43 false positive warnings                                                                                                                                               | Claude |
+| 1.4     | 2026-01-06 | Review #68: Added structured remediation fields (risk, release_gate, owner, target_date) for App Check and SonarQube CRITICAL; Fixed EIGHT_PHASE path to archive location; Fixed stale test pass rate                                                                     | Claude |
+| 1.3     | 2026-01-06 | Review #67: Added remediation tracking for App Check and SonarQube CRITICAL; Improved YAML parseability                                                                                                                                                                   | Claude |
+| 1.2b    | 2026-01-05 | Added SonarQube baseline (778 issues, 47 CRITICAL); Added Documentation Audit and Process Audit templates; Referenced 2-tier Aggregator                                                                                                                                   | Claude |
+| 1.2a    | 2026-01-05 | Updated baselines (116 tests, 0 lint errors, 181 warnings); Added App Check status (DISABLED); Added pattern/dependency health metrics                                                                                                                                    | Claude |
+| 1.1     | 2026-01-02 | Clarified scope: repo-wide reviews only; moved session tracking to SESSION_CONTEXT.md                                                                                                                                                                                     | Claude |
+| 1.0     | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template; Initial coordinator creation with non-time-based triggers                                        | Claude |
 
 ---
 

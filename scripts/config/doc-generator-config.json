@@ -71,12 +71,12 @@
       "tier": 4,
       "description": "Code analysis and metrics"
     },
-    "docs/multi-ai-audit": {
+    "docs/audits/multi-ai": {
       "name": "Multi-AI Audit System",
       "tier": 3,
       "description": "Multi-AI audit orchestration and coordination"
     },
-    "docs/multi-ai-audit/templates": {
+    "docs/audits/multi-ai/templates": {
       "name": "Audit Templates",
       "tier": 3,
       "description": "Multi-AI audit execution templates"
@@ -106,7 +106,7 @@
       "tier": 4,
       "description": "Documented design patterns"
     },
-    "docs/ai-optimization-audit": {
+    "docs/audits/single-session/ai-optimization": {
       "name": "AI Optimization Audit",
       "tier": 3,
       "description": "AI token and workflow optimization"
@@ -138,7 +138,7 @@
     "docs/MONETIZATION_RESEARCH.md": { "tier": 3 },
     "docs/LIGHTHOUSE_INTEGRATION_PLAN.md": { "tier": 3 },
     "docs/OPERATIONAL_VISIBILITY_SPRINT.md": { "tier": 3 },
-    "docs/AUDIT_TRACKER.md": { "tier": 3 },
+    "docs/audits/AUDIT_TRACKER.md": { "tier": 3 },
     "docs/TESTING_PLAN.md": { "tier": 3 },
     "docs/LEARNING_METRICS.md": { "tier": 3 },
     "docs/AI_REVIEW_PROCESS.md": { "tier": 4 },

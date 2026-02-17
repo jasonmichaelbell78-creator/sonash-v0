@@ -6,7 +6,7 @@ description:
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.4
+**Document Version:** 1.5
 **Last Updated:** 2026-02-16
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -102,7 +102,54 @@ This creates:
   - `final/` - For unified output
 - State file: `.claude/multi-ai-audit/session-state.json`
 
-### Step 1.3: Present Category Menu
+### Step 1.3: Select Audit Scope
+
+After session creation (or when starting a fresh session), present scope
+options:
+
+```
+=== Multi-AI Audit: [session_id] ===
+
+Audit scope:
+  a. All categories (full 9-category sweep)
+  b. Select specific categories
+  c. Single category
+
+Enter choice:
+```
+
+**Option "a" (all):** Set all 9 categories to pending. Proceed to first
+category.
+
+**Option "b" (select):** Display numbered list:
+
+```
+Available categories:
+  1. code-quality
+  2. security
+  3. performance
+  4. refactoring
+  5. documentation
+  6. process
+  7. engineering-productivity
+  8. enhancements
+  9. ai-optimization
+
+Enter category numbers (comma-separated, e.g., 1,3,7):
+```
+
+Set selected categories to "pending", all others to "skipped". Proceed to first
+selected category.
+
+**Option "c" (single):** Display same numbered list, user picks exactly one.
+
+Update state file with selected categories:
+
+```bash
+node scripts/multi-ai/state-manager.js update <session-id> selected_categories='["security","performance"]'
+```
+
+### Step 1.4: Present Category Menu
 
 ```
 === Multi-AI Audit: [session_id] ===
@@ -133,7 +180,7 @@ Enter category name or number (or "status" to see progress):
 Read the appropriate template file:
 
 ```
-docs/multi-ai-audit/templates/<CATEGORY_TEMPLATE>.md
+docs/audits/multi-ai/templates/<CATEGORY_TEMPLATE>.md
 ```
 
 Template mapping:
@@ -872,7 +919,7 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 
 - [JSONL_SCHEMA_STANDARD.md](../../../docs/templates/JSONL_SCHEMA_STANDARD.md) -
   Field definitions
-- [docs/multi-ai-audit/templates/](../../../docs/multi-ai-audit/templates/) -
+- [docs/audits/multi-ai/templates/](../../../docs/audits/multi-ai/templates/) -
   Audit templates
 - [scripts/multi-ai/](../../../scripts/multi-ai/) - Processing scripts
   (normalize, aggregate, unify)
@@ -893,6 +940,7 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 
 | Version | Date       | Changes                                                                                                                                                                                  |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.5     | 2026-02-16 | Added Step 1.3 (audit scope selection) for category scoping: all, select, or single category mode; renumbered category menu to Step 1.4                                                  |
 | 1.4     | 2026-02-16 | Added enhancements + ai-optimization categories (7→9), updated template mapping, output checklist, status display, roadmap integration table, and all count references                   |
 | 1.3     | 2026-02-06 | Added per-category output checklist to Step 2.3 to prevent template summarization/truncation (recurring error)                                                                           |
 | 1.2     | 2026-02-05 | Fixed template mapping table format, standardized prompt extraction regex, resolved REFACTORING_AUDIT.md ambiguity                                                                       |

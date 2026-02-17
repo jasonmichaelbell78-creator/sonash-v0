@@ -1001,29 +1001,50 @@ const ANTI_PATTERNS = [
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
 
-  // writeFileSync/renameSync without isSafeToWrite guard (PR #366, 5 rounds of ping-pong)
+  // writeFileSync/renameSync/appendFileSync/openSync without symlink guard (PR #366+#368 ping-pong)
   // SonarCloud S5852 safe: uses testFn string parsing instead of regex
   {
     id: "write-without-symlink-guard",
     testFn: (content) => {
       const lines = content.split("\n");
       const matches = [];
+      // All fs write operations that need symlink guards
+      const writeOps = ["writeFileSync", "renameSync", "appendFileSync"];
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        // Check for writeFileSync or renameSync calls
-        if (!line.includes("writeFileSync") && !line.includes("renameSync")) continue;
+        // Check for any write operation
+        const hasWriteOp = writeOps.some((op) => line.includes(op));
+        // Also check openSync with write/append flags (a, w, r+, etc.)
+        const hasOpenSync =
+          line.includes("openSync") && /openSync\s*\([^)]*["'](a|w|r\+|a\+|w\+)["']/.test(line);
+        if (!hasWriteOp && !hasOpenSync) continue;
         // Skip comments, imports, and string literals containing the pattern
         const trimmed = line.trim();
         if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
         if (trimmed.startsWith("import ") || trimmed.startsWith("import{")) continue;
         // Skip destructured import members (e.g. "  renameSync," inside "import { ... }")
         if (/^\w+,?$/.test(trimmed)) continue;
-        // Look for isSafeToWrite in the preceding 5 lines
+        // Look for symlink guard in preceding 10 lines (isSafeToWrite, isSymbolicLink)
         let hasGuard = false;
-        for (let j = Math.max(0, i - 5); j < i; j++) {
-          if (lines[j].includes("isSafeToWrite")) {
+        const backStart = Math.max(0, i - 10);
+        for (let j = backStart; j < i; j++) {
+          if (
+            lines[j].includes("isSafeToWrite") ||
+            lines[j].includes("isSymbolicLink") ||
+            lines[j].includes("guardSymlink")
+          ) {
             hasGuard = true;
             break;
+          }
+        }
+        // fd-based chains: openSync→fstatSync places fstatSync AFTER the open call
+        if (!hasGuard && hasOpenSync) {
+          const fwdEnd = Math.min(lines.length, i + 11);
+          for (let j = i; j < fwdEnd; j++) {
+            if (lines[j].includes("fstatSync")) {
+              hasGuard = true;
+              break;
+            }
           }
         }
         if (!hasGuard) {
@@ -1032,8 +1053,9 @@ const ANTI_PATTERNS = [
       }
       return matches;
     },
-    message: "writeFileSync/renameSync without isSafeToWrite() guard — symlink attack vector",
-    fix: "Add: if (!isSafeToWrite(filePath)) return; before write. Import from .claude/hooks/lib/symlink-guard.js",
+    message:
+      "writeFileSync/renameSync/appendFileSync/openSync without symlink guard — use isSafeToWrite() or fd-based chain (Template 27)",
+    fix: "Add: if (!isSafeToWrite(filePath)) return; OR use fd-based chain: openSync→fstatSync→fchmodSync→writeSync→closeSync. See FIX_TEMPLATES.md Template 27.",
     review: "#316-#323 (PR #366 R1-R8, 5 rounds of symlink ping-pong)",
     fileTypes: [".js"],
     pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,

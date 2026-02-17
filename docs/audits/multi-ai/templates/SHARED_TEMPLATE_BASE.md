@@ -8,11 +8,10 @@ all multi-AI audit templates
 
 ## Purpose
 
-This document centralizes the shared sections used across all 7 multi-AI audit
-templates. Each category template (`CODE_REVIEW_PLAN.md`,
-`SECURITY_AUDIT_PLAN.md`, etc.) references this file for common elements,
-keeping domain-specific content in their own files while avoiding ~60-70%
-content duplication.
+This document centralizes the shared sections used across all 9 multi-AI audit
+templates. Each category template (`CODE_REVIEW_AUDIT.md`, `SECURITY_AUDIT.md`,
+etc.) references this file for common elements, keeping domain-specific content
+in their own files while avoiding ~60-70% content duplication.
 
 **When creating a new audit template:** Copy the relevant sections from this
 file and customize the domain-specific parts (marked with `[DOMAIN-SPECIFIC]`
@@ -104,6 +103,8 @@ All audit findings MUST use this base schema (from
 | Documentation            | `documentation`            |
 | Process/Automation       | `process`                  |
 | Engineering Productivity | `engineering-productivity` |
+| AI Optimization          | `ai-optimization`          |
+| Enhancement              | `enhancement`              |
 
 **Sub-categories** (e.g., "Rate Limiting", "Bundle Size", "GoldenPath") belong
 in the `fingerprint` and `title` fields only, NOT in `category`.
@@ -155,18 +156,148 @@ project-specific resources. This section MUST include the following note:
 
 ---
 
+## Quality Guardrails
+
+All audit findings must meet these quality standards to ensure actionable,
+grounded results:
+
+### Minimum Confidence Threshold
+
+**Threshold: 0.7 (70%)** — Findings below this threshold should be placed in the
+"SUSPECTED_FINDINGS" or "Inconclusive" section rather than confirmed findings.
+
+**Rationale:** Findings with confidence <70% often lack sufficient evidence or
+involve speculation. Including low-confidence items dilutes the actionability of
+the audit output.
+
+### Evidence Requirements
+
+Every confirmed finding MUST include:
+
+- **Specific file paths** — Exact location(s) where the issue occurs
+- **Line numbers** (where applicable) — Pinpoint the problematic code
+- **Code snippets** — Direct quotes showing the issue (3-10 lines recommended)
+- **Verification method** — How the finding was confirmed (grep output, tool
+  run, manual inspection)
+
+**Example of sufficient evidence:**
+
+```
+files: ["lib/auth/session.ts:45-52"]
+evidence: [
+  "No try/catch around Firebase auth call",
+  "grep output: 'await signInWithEmailAndPassword' (no error handling)"
+]
+```
+
+**Insufficient evidence:**
+
+```
+files: ["lib/auth/"]
+evidence: ["Auth code needs improvement"]
+```
+
+### False Positive Awareness
+
+Before reporting a finding, auditors MUST:
+
+1. **Check the false positives registry** — Read
+   `docs/technical-debt/FALSE_POSITIVES.jsonl` for patterns that have been
+   previously reviewed and dismissed
+2. **Verify context** — Ensure the "issue" isn't intentional design (e.g.,
+   verbose logging in debug hooks, detailed SKILL.md files)
+3. **Cross-reference** — Check if the file/pattern is referenced elsewhere
+   before flagging as "dead code" or "unused"
+
+**Common false positive patterns to avoid:**
+
+- Flagging intentionally detailed AI instruction files as "bloated"
+- Reporting scripts as "unused" without checking CI workflows, hooks, or other
+  scripts
+- Identifying "duplicate" code that has legitimate reasons for similarity
+- Marking debug/development-only code as "production issues"
+
+### Severity Calibration
+
+Use the **SHARED_TEMPLATE_BASE.md severity scale** consistently:
+
+| Level  | Name     | Definition                                      | Frequency Guideline        |
+| ------ | -------- | ----------------------------------------------- | -------------------------- |
+| **S0** | Critical | Security breach, data loss, production breaking | Should be RARE (1-5%)      |
+| **S1** | High     | Likely bugs, significant risk, major tech debt  | Should be limited (10-20%) |
+| **S2** | Medium   | Maintainability drag, inconsistency, friction   | Most findings (50-70%)     |
+| **S3** | Low      | Polish, cosmetic, minor improvements            | Common (20-30%)            |
+
+**S0 should be rare** — Reserve for findings that could cause:
+
+- Data loss or corruption
+- Security vulnerabilities exploitable in production
+- Complete application failure or crash
+- Regulatory compliance violations
+
+If >10% of findings are S0, recalibrate severity assignments.
+
+---
+
 ## TDMS Integration
 
 ### Automatic Intake
 
-After aggregation, ingest findings to TDMS:
+After aggregation, ingest findings to TDMS using the intake script:
 
 ```bash
+# Standard intake command
 node scripts/debt/intake-audit.js \
   docs/audits/single-session/[DOMAIN]/AUDIT_YYYY_QX.jsonl \
   --source "multi-ai-[DOMAIN]-audit" \
   --batch-id "[DOMAIN]-audit-YYYYMMDD"
+
+# Example for code review audit
+node scripts/debt/intake-audit.js \
+  docs/audits/single-session/code/CODE_REVIEW_2026_Q1.jsonl \
+  --source "multi-ai-code-review" \
+  --batch-id "code-review-20260216"
 ```
+
+### Intake Verification Steps
+
+After running the intake command, verify successful ingestion:
+
+1. **Check for errors** in the intake script output:
+
+   ```bash
+   # Look for "ERROR" or "WARN" messages in output
+   # Expected: "Successfully ingested X findings"
+   ```
+
+2. **Verify DEBT IDs were assigned**:
+
+   ```bash
+   # Check that findings have DEBT-XXXX IDs
+   grep "DEBT-" docs/technical-debt/MASTER_DEBT.jsonl | tail -10
+   ```
+
+3. **Regenerate views** to reflect new findings:
+
+   ```bash
+   node scripts/debt/generate-views.js
+   ```
+
+4. **Check the generated views** for the new items:
+
+   ```bash
+   # View by severity
+   cat docs/technical-debt/views/by-severity/S0-critical.md
+
+   # View by category
+   cat docs/technical-debt/views/by-category/[DOMAIN].md
+   ```
+
+5. **Verify finding count** matches expectations:
+   ```bash
+   # Count new items from this batch
+   grep "batch-id-[DOMAIN]-audit-YYYYMMDD" docs/technical-debt/MASTER_DEBT.jsonl | wc -l
+   ```
 
 ### Required TDMS Fields
 
@@ -264,9 +395,10 @@ and implementation order.
 
 ## Version History
 
-| Version | Date       | Changes                                             | Author |
-| ------- | ---------- | --------------------------------------------------- | ------ |
-| 1.0     | 2026-02-07 | Initial extraction from 7 audit templates (Phase 4) | Claude |
+| Version | Date       | Changes                                                                                                                                                      | Author |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| 1.1     | 2026-02-16 | Added Quality Guardrails section, expanded TDMS Integration with verification steps, updated category count from 7 to 9 (added AI Optimization, Enhancement) | Claude |
+| 1.0     | 2026-02-07 | Initial extraction from 7 audit templates (Phase 4)                                                                                                          | Claude |
 
 ---
 

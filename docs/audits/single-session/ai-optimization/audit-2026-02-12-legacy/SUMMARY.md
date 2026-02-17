@@ -195,7 +195,7 @@ AUDIT_TRACKER.md contains 96 table rows tracking audit completion dates, commits
 covered, findings, and threshold reset status across 7 audit categories. Updated
 after each audit cycle (Session #143 shows 258 findings).
 
-- **File:** `/home/user/sonash-v0/docs/AUDIT_TRACKER.md`
+- **File:** `/home/user/sonash-v0/docs/audits/AUDIT_TRACKER.md`
 - **Current State:** Markdown tables: Current Thresholds (46-55), Single-Session
   Audit Log (80-138), Multi-AI Audit Log (150-159), Master Issue Aggregation
   (165-170)
@@ -243,7 +243,7 @@ Contains 2 tables tracking threshold configuration (46 rows) and version history
 (12 rows). Thresholds reset after each audit; version history appended
 frequently.
 
-- **File:** `/home/user/sonash-v0/docs/AUDIT_TRACKER.md`
+- **File:** `/home/user/sonash-v0/docs/audits/AUDIT_TRACKER.md`
 - **Current State:** Markdown tables: Single-Session Thresholds (lines 46-55),
   Multi-AI Thresholds (59-63), Version History (242-260)
 - **Recommendation:** Extract to thresholds.jsonl and versions.jsonl. Thresholds
@@ -1380,7 +1380,7 @@ version history, the operational guidance hasn't been updated. Risk: AI agents
 reading outdated session logs may attempt to reference deleted systems.
 
 - **File:**
-  `docs/SESSION_HISTORY.md (lines 25-50), docs/AI_REVIEW_LEARNINGS_LOG.md (lines with 'IMS→TDMS'), docs/AUDIT_TRACKER.md (version 2.6-2.7)`
+  `docs/SESSION_HISTORY.md (lines 25-50), docs/AI_REVIEW_LEARNINGS_LOG.md (lines with 'IMS→TDMS'), docs/audits/AUDIT_TRACKER.md (version 2.6-2.7)`
 - **Current State:** PLAN_MAP.md v2.1 (2026-02-12) documents: 'IMS merged into
   TDMS — removed docs/improvements/ hierarchy, updated refs'. Verified:
   /home/user/sonash-v0/docs/improvements/ does not exist (deleted). However,
@@ -2068,4 +2068,4 @@ unused.
 2. Mark your decision (Act now / Defer / Reject / Modify)
 3. Findings marked "Act now" will be added to TDMS as actionable items
 4. Deferred findings stay in this report for future consideration
-5. Raw data: `docs/ai-optimization-audit/findings.jsonl`
+5. Raw data: `docs/audits/single-session/ai-optimization/findings.jsonl`

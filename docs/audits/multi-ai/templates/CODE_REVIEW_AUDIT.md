@@ -798,6 +798,20 @@ Do this after every PR merge:
 
 ---
 
+## Quality Guardrails
+
+- **Minimum confidence threshold**: 0.7 — findings below this should go to
+  "Inconclusive" section
+- **Evidence requirements**: Every finding must include specific file paths,
+  line numbers, and code snippets where applicable
+- **False positive awareness**: Check
+  `docs/technical-debt/FALSE_POSITIVES.jsonl` for patterns that have been
+  previously dismissed
+- **Severity calibration**: Use SHARED_TEMPLATE_BASE.md severity scale — S0
+  should be rare (production-breaking only)
+
+---
+
 ## 📦 TDMS Integration
 
 ### Automatic Intake
@@ -851,7 +865,7 @@ After TDMS intake:
 
 When using this template:
 
-1. **Copy this template** to `docs/reviews/CODE_REVIEW_PLAN_[YYYY]_Q[X].md`
+1. **Copy this template** to `docs/reviews/CODE_REVIEW_AUDIT_[YYYY]_Q[X].md`
 2. **Fill in Review Context** section with project-specific details
 3. **Select AI models** based on availability and capabilities
 4. **Run the review prompt** on each selected model
@@ -882,10 +896,9 @@ When using this template:
 - **[docs/technical-debt/PROCEDURE.md](../../technical-debt/PROCEDURE.md)** -
   TDMS intake and tracking procedures
 - **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
-- **[SECURITY_AUDIT_PLAN.md](./SECURITY_AUDIT_PLAN.md)** - Security-focused
+- **[SECURITY_AUDIT.md](./SECURITY_AUDIT.md)** - Security-focused reviews
+- **[PERFORMANCE_AUDIT.md](./PERFORMANCE_AUDIT.md)** - Performance-focused
   reviews
-- **[PERFORMANCE_AUDIT_PLAN.md](./PERFORMANCE_AUDIT_PLAN.md)** -
-  Performance-focused reviews
 - **[REFACTORING_AUDIT.md](./REFACTORING_AUDIT.md)** - Large-scale refactoring
   plans
 - **[AI_REVIEW_PROCESS.md](../../AI_REVIEW_PROCESS.md)** - Process for
@@ -909,4 +922,4 @@ When using this template:
 
 ---
 
-**END OF CODE_REVIEW_PLAN.md**
+**END OF CODE_REVIEW_AUDIT.md**

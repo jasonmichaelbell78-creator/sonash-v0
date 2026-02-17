@@ -83,9 +83,9 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 
 | Audit Type               | Template                                                                           | Focus Areas                                     |
 | ------------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------- |
-| Code Review              | [CODE_REVIEW_PLAN.md](./templates/CODE_REVIEW_PLAN.md)                             | Hygiene, types, patterns, testing, AI failures  |
-| Security                 | [SECURITY_AUDIT_PLAN.md](./templates/SECURITY_AUDIT_PLAN.md)                       | Auth, validation, OWASP, secrets, AI security   |
-| Performance              | [PERFORMANCE_AUDIT_PLAN.md](./templates/PERFORMANCE_AUDIT_PLAN.md)                 | Bundle, rendering, caching, vitals, offline     |
+| Code Review              | [CODE_REVIEW_AUDIT.md](./templates/CODE_REVIEW_AUDIT.md)                           | Hygiene, types, patterns, testing, AI failures  |
+| Security                 | [SECURITY_AUDIT.md](./templates/SECURITY_AUDIT.md)                                 | Auth, validation, OWASP, secrets, AI security   |
+| Performance              | [PERFORMANCE_AUDIT.md](./templates/PERFORMANCE_AUDIT.md)                           | Bundle, rendering, caching, vitals, offline     |
 | Refactoring              | [REFACTORING_AUDIT.md](./templates/REFACTORING_AUDIT.md)                           | Tech debt, architecture, DRY, god objects       |
 | Documentation            | [DOCUMENTATION_AUDIT.md](./templates/DOCUMENTATION_AUDIT.md)                       | Links, coverage, staleness, tier compliance     |
 | Process/Automation       | [PROCESS_AUDIT.md](./templates/PROCESS_AUDIT.md)                                   | CI/CD, hooks, automation, golden path           |

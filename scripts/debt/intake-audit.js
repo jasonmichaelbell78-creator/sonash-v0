@@ -190,12 +190,12 @@ function mapDocStandardsToTdms(item) {
     mapCommonAuditFields(item, mapped, metadata);
 
     // Clean up Doc Standards-specific fields that shouldn't be in TDMS
+    // Keep confidence in MASTER_DEBT for quality tracking (was previously lost)
     delete mapped.fingerprint;
     delete mapped.files;
     delete mapped.why_it_matters;
     delete mapped.suggested_fix;
     delete mapped.acceptance_tests;
-    delete mapped.confidence;
   }
 
   return { item: mapped, metadata };
@@ -305,37 +305,76 @@ function preserveEnhancementFields(normalized, mappedItem) {
   }
 }
 
-// Validate and normalize an input item
-function validateAndNormalize(item, sourceFile) {
+/**
+ * Detect the input format and apply the appropriate mapping to TDMS format.
+ * Tries enhancement audit first (shares fields with Doc Standards), then Doc Standards.
+ */
+function detectAndMapFormat(item) {
+  const isPlainObject = typeof item === "object" && item !== null && !Array.isArray(item);
+  if (!isPlainObject) {
+    return {
+      mappedItem: { title: null, severity: null, category: null, file: null },
+      mappingMetadata: { format_detected: "invalid" },
+    };
+  }
+
+  const enh = mapEnhancementAuditToTdms(item);
+  if (enh.metadata.format_detected === "enhancement-audit") {
+    return { mappedItem: enh.item, mappingMetadata: enh.metadata };
+  }
+
+  const doc = mapDocStandardsToTdms(item);
+  if (doc.metadata.format_detected === "doc-standards") {
+    return { mappedItem: doc.item, mappingMetadata: doc.metadata };
+  }
+
+  return { mappedItem: item, mappingMetadata: { format_detected: "tdms" } };
+}
+
+/**
+ * Check required fields and validate file paths on a mapped item.
+ * Returns arrays of errors and warnings.
+ */
+function checkRequiredFields(mappedItem) {
   const errors = [];
   const warnings = [];
 
-  // Try enhancement audit → TDMS mapping first (enhancement items share
-  // fields with Doc Standards like fingerprint/why_it_matters, so check first)
-  let { item: mappedItem, metadata: mappingMetadata } = mapEnhancementAuditToTdms(item);
-
-  // If not enhancement audit, try Doc Standards → TDMS mapping
-  if (mappingMetadata.format_detected === "tdms") {
-    const docResult = mapDocStandardsToTdms(item);
-    if (docResult.metadata.format_detected === "doc-standards") {
-      mappedItem = docResult.item;
-      mappingMetadata = docResult.metadata;
-    }
-  }
-
-  // Required fields check (after mapping)
   if (!mappedItem.title) errors.push("Missing required field: title");
   if (!mappedItem.severity) errors.push("Missing required field: severity");
   if (!mappedItem.category) errors.push("Missing required field: category");
 
-  // File path validation - warn on invalid paths (TDMS compliance)
-  const normalizedFile = normalizeFilePath(mappedItem.file || "");
-  if (normalizedFile) mappedItem.file = normalizedFile;
-  if (normalizedFile && !isValidFilePath(normalizedFile)) {
+  const rawFile = typeof mappedItem.file === "string" ? mappedItem.file : "";
+  const normalizedFile = normalizeFilePath(rawFile);
+
+  if (rawFile && !normalizedFile) {
     warnings.push(
-      `Invalid file path: "${mappedItem.file || "(empty)"}". TDMS requires a real file path.`
+      `Invalid file path: "${rawFile}" (could not be normalized to a repo-relative path)`
+    );
+  } else if (normalizedFile) {
+    mappedItem.file = normalizedFile;
+    if (!isValidFilePath(normalizedFile)) {
+      warnings.push(
+        `Invalid file path: "${normalizedFile}" (must be repo-relative and not contain unsafe segments)`
+      );
+    }
+  }
+
+  if (
+    (mappedItem.severity === "S0" || mappedItem.severity === "S1") &&
+    !mappedItem.verification_steps
+  ) {
+    warnings.push(
+      `S0/S1 finding missing verification_steps (recommended for critical/high severity)`
     );
   }
+
+  return { errors, warnings };
+}
+
+// Validate and normalize an input item
+function validateAndNormalize(item, sourceFile) {
+  const { mappedItem, mappingMetadata } = detectAndMapFormat(item);
+  const { errors, warnings } = checkRequiredFields(mappedItem);
 
   if (errors.length > 0) {
     return { valid: false, errors, warnings };

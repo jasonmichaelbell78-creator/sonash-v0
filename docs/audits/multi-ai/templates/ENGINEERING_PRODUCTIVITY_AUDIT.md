@@ -430,6 +430,20 @@ OUTPUT
 > [SHARED_TEMPLATE_BASE.md](./SHARED_TEMPLATE_BASE.md). Domain-specific content
 > below takes precedence.
 
+## Quality Guardrails
+
+- **Minimum confidence threshold**: 0.7 — findings below this should go to
+  "Inconclusive" section
+- **Evidence requirements**: Every finding must include specific file paths,
+  line numbers, and code snippets where applicable
+- **False positive awareness**: Check
+  `docs/technical-debt/FALSE_POSITIVES.jsonl` for patterns that have been
+  previously dismissed
+- **Severity calibration**: Use SHARED_TEMPLATE_BASE.md severity scale — S0
+  should be rare (production-breaking only)
+
+---
+
 ## TDMS Integration
 
 ### Automatic Intake

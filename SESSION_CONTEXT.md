@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 4.2 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 4.3 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-16 (Session #162)
+2026-02-16 (Session #164)
 
 ## AI Instructions
 
@@ -38,7 +38,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 163 (since Jan 1, 2026)
+**Current Session Count**: 164 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,37 +48,35 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #161-162 Summary** (PR #367 ALERTS OVERHAUL — 7 REVIEW ROUNDS):
+**Session #164 Summary** (AUDIT ECOSYSTEM REMEDIATION — WAVES 1-8):
 
-- Processed PR #367 review rounds R1-R7 (~100 items across SonarCloud + Qodo)
-- Created Reviews #324-330 in AI_REVIEW_LEARNINGS_LOG.md
-- PR #367 Retrospective: identified 3 ping-pong chains, 3-4 avoidable rounds
-- Created shared `scripts/lib/validate-skip-reason.js` (extracted from 3
-  scripts)
-- Added FIX_TEMPLATES 25-26, CODE_PATTERNS 2.9 (3 new patterns)
-- Updated pr-review SKILL.md: Step 5.6 propagation + Step 5.7 input validation
-- Fixed runCommandSafe Windows ENOENT (shell:true for npm/npx/gh on Windows)
-- Health score: C(75) → B(88) after ENOENT fix
-- Created DEBT-2979 (link checker FP), DEBT-2980 (commit tracker staleness)
+- Executed full 39-step remediation plan across 8 waves from
+  `.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md`
+- **Wave 1**: Consolidated audit ecosystem structure (scaffold dirs, move files)
+- **Wave 2-3**: 9-category alignment, severity standardization (I0-I3→S0-S3),
+  TDMS pipeline fixes
+- **Wave 4**: Rewrote 4 audit skills to AUDIT_STANDARDS compliance
+- **Wave 5-6**: Missing docs, template guardrails, template renames, governance
+- **Wave 8**: 8 improvement scripts, audit-health skill, category scoping
+- Applied PR #368 retro recommendations (template, pattern rule, Qodo
+  suppression)
+- Synced 4 reviews, incremented session counter
 - Tests: 293/294 passing
 
-**Session #163 Summary** (AUDIT ECOSYSTEM FULL HEALTH PLAN):
+**Session #165 Summary** (PR #369 R8-R9 + RETRO + SKILL UPDATE):
 
-- Deep-dived into full audit ecosystem health via `/deep-plan`
-- Ran 6 parallel analysis agents across skills, TDMS pipeline, process,
-  templates, orphans, cross-refs
-- Identified **41 issues** across 4 dimensions (7 critical, 12 high, 13 medium,
-  9 low)
-- Critical findings: state-manager.js missing 2 categories (BLOCKER),
-  generate-metrics.js age calc bug, audit-schema.json missing ai-optimization, 3
-  broken cross-refs in audit-comprehensive, comprehensive only covers 7/9
-  domains
-- Produced **39-step remediation plan across 8 waves** with 26 user-approved
-  decisions
-- Waves: Structure, Category Alignment, TDMS Pipeline Fixes, Skill Rewrites,
-  Missing Docs+Templates, Process & Automation, Verification, Improvements (8
-  new scripts)
-- Plan saved to `.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md` and pushed
+- Processed PR #369 R8 (13 items: 8 fixed, 5 rejected) and R9 (9 items: 5 fixed,
+  4 rejected)
+- R8: CC extraction (buildResults+statusIcon, guardSymlink+safeRename), symlink
+  walk skip, detectAndMapFormat early-return, error field strings
+- R9: Fail-closed guardSymlink (propagated to 2 files), non-object JSONL guard,
+  guardSymlink pattern recognizer, source_id regex tightening, file path
+  normalization warning
+- Produced comprehensive PR #369 retrospective (9 rounds, 119 items, 4 ping-pong
+  chains, cross-PR systemic analysis)
+- Updated pr-retro SKILL.md v1.0 → v2.1: comprehensive format canonical, 10
+  mandatory sections, 5 known churn patterns, TDMS enforcement for action items,
+  4 compliance mechanisms, display-to-user rule
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -98,7 +96,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/read-session-commits-ZpJLX`
+**Current Branch**: `claude/cherry-pick-recent-commits-X1eKD`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
@@ -154,7 +152,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 4. Document using template
 5. Implement and commit with review summary
 
-**Last Processed**: 2026-02-16 (Reviews #324-330: PR #367 R1-R7)
+**Last Processed**: 2026-02-16 (Reviews #331-334: PR #368 R3-R6)
 
 ---
 
@@ -219,6 +217,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------- | ------ |
+| 4.3     | 2026-02-16 | Session #164: Audit ecosystem remediation waves 1-8      | Claude |
 | 4.2     | 2026-02-12 | Session #154: Alerts enhancement plan + dead data audit  | Claude |
 | 4.1     | 2026-02-12 | Session #151: Enhancement audit + skill improvements     | Claude |
 | 4.0     | 2026-02-11 | Session #149: Major refactor - archived history, trimmed | Claude |

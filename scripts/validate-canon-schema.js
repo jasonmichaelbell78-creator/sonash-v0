@@ -4,7 +4,7 @@
  * CANON JSONL Schema Validator
  *
  * Validates CANON-*.jsonl files against the expected schema defined in
- * docs/multi-ai-audit/templates/AGGREGATOR.md
+ * docs/audits/multi-ai/templates/AGGREGATOR.md
  *
  * Usage:
  *   node scripts/validate-canon-schema.js [file-or-directory]
@@ -26,7 +26,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const REPO_ROOT = resolve(__dirname, "..");
 
-// Required fields per docs/multi-ai-audit/templates/AGGREGATOR.md
+// Required fields per docs/audits/multi-ai/templates/AGGREGATOR.md
 const REQUIRED_FIELDS = ["canonical_id", "category", "title", "severity", "effort", "files"];
 
 // Strongly recommended fields

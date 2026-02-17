@@ -1217,9 +1217,9 @@ claude/new-session-x1MF5 PR #336 **Suggestions:** 60+ total (Critical: 2, Major:
   try/catch
 - `scripts/multi-ai/state-manager.js` - Session ID constant, unsafe
   error.message, readFileSync try/catch
-- `docs/multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md` - Broken link fix
+- `docs/audits/multi-ai/templates/SECURITY_AUDIT_PLAN.md` - Broken link fix
 - `scripts/check-review-triggers.sh` - docs/docs/ prefix fix
-- `docs/multi-ai-audit/COORDINATOR.md` - Shell &; syntax fix
+- `docs/audits/multi-ai/COORDINATOR.md` - Shell &; syntax fix
 - `.claude/skills/multi-ai-audit/SKILL.md` - --verbose flag, orphaned refs halt
 - 22 additional scripts - S5852 regex backtracking bounds added
 

@@ -78,7 +78,7 @@ in this session.
 
 ## 3. Audit Schedule/Tracking → `audit-config.json`
 
-**Current:** `docs/AUDIT_TRACKER.md` has markdown tables with category
+**Current:** `docs/audits/AUDIT_TRACKER.md` has markdown tables with category
 definitions, thresholds, and last-run dates. `scripts/reset-audit-triggers.js`
 parses these tables with regex.
 

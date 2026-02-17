@@ -112,9 +112,9 @@ function trackAlertItem(item, alerts) {
  */
 function trackItemAge(item, now, ageState) {
   if (!isOpenItem(item)) return;
-  if (!item.created_at) return;
+  if (!item.created) return;
 
-  const createdMs = new Date(item.created_at).getTime();
+  const createdMs = new Date(item.created).getTime();
   if (!Number.isFinite(createdMs)) return;
 
   const ageDays = Math.floor((now.getTime() - createdMs) / (1000 * 60 * 60 * 24));

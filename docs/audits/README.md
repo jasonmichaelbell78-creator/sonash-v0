@@ -86,21 +86,21 @@ When should I audit?
 
 Templates for running audits across multiple AI systems (Claude, GPT, Gemini).
 
-| Template                                                                                           | Category                   |
-| -------------------------------------------------------------------------------------------------- | -------------------------- |
-| [CODE_REVIEW_PLAN.md](../multi-ai-audit/templates/CODE_REVIEW_PLAN.md)                             | `code-quality`             |
-| [SECURITY_AUDIT_PLAN.md](../multi-ai-audit/templates/SECURITY_AUDIT_PLAN.md)                       | `security`                 |
-| [PERFORMANCE_AUDIT_PLAN.md](../multi-ai-audit/templates/PERFORMANCE_AUDIT_PLAN.md)                 | `performance`              |
-| [REFACTORING_AUDIT.md](../multi-ai-audit/templates/REFACTORING_AUDIT.md)                           | `refactoring`              |
-| [DOCUMENTATION_AUDIT.md](../multi-ai-audit/templates/DOCUMENTATION_AUDIT.md)                       | `documentation`            |
-| [PROCESS_AUDIT.md](../multi-ai-audit/templates/PROCESS_AUDIT.md)                                   | `process`                  |
-| [ENGINEERING_PRODUCTIVITY_AUDIT.md](../multi-ai-audit/templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | `engineering-productivity` |
-| [ENHANCEMENT_AUDIT.md](../multi-ai-audit/templates/ENHANCEMENT_AUDIT.md)                           | `enhancements`             |
-| [AI_OPTIMIZATION_AUDIT.md](../multi-ai-audit/templates/AI_OPTIMIZATION_AUDIT.md)                   | `ai-optimization`          |
+| Template                                                                                    | Category                   |
+| ------------------------------------------------------------------------------------------- | -------------------------- |
+| [CODE_REVIEW_AUDIT.md](./multi-ai/templates/CODE_REVIEW_AUDIT.md)                           | `code-quality`             |
+| [SECURITY_AUDIT.md](./multi-ai/templates/SECURITY_AUDIT.md)                                 | `security`                 |
+| [PERFORMANCE_AUDIT.md](./multi-ai/templates/PERFORMANCE_AUDIT.md)                           | `performance`              |
+| [REFACTORING_AUDIT.md](./multi-ai/templates/REFACTORING_AUDIT.md)                           | `refactoring`              |
+| [DOCUMENTATION_AUDIT.md](./multi-ai/templates/DOCUMENTATION_AUDIT.md)                       | `documentation`            |
+| [PROCESS_AUDIT.md](./multi-ai/templates/PROCESS_AUDIT.md)                                   | `process`                  |
+| [ENGINEERING_PRODUCTIVITY_AUDIT.md](./multi-ai/templates/ENGINEERING_PRODUCTIVITY_AUDIT.md) | `engineering-productivity` |
+| [ENHANCEMENT_AUDIT.md](./multi-ai/templates/ENHANCEMENT_AUDIT.md)                           | `enhancements`             |
+| [AI_OPTIMIZATION_AUDIT.md](./multi-ai/templates/AI_OPTIMIZATION_AUDIT.md)                   | `ai-optimization`          |
 
 **Shared base:**
-[SHARED_TEMPLATE_BASE.md](../multi-ai-audit/templates/SHARED_TEMPLATE_BASE.md)
-**Aggregator:** [AGGREGATOR.md](../multi-ai-audit/templates/AGGREGATOR.md)
+[SHARED_TEMPLATE_BASE.md](./multi-ai/templates/SHARED_TEMPLATE_BASE.md)
+**Aggregator:** [AGGREGATOR.md](./multi-ai/templates/AGGREGATOR.md)
 
 ---
 
@@ -154,14 +154,17 @@ docs/audits/
 
 ## Key References
 
-| Document                                                          | Purpose                   |
-| ----------------------------------------------------------------- | ------------------------- |
-| [AUDIT_STANDARDS.md](./AUDIT_STANDARDS.md)                        | Canonical standards       |
-| [AUDIT_TRACKER.md](../AUDIT_TRACKER.md)                           | Threshold tracking        |
-| [JSONL_SCHEMA_STANDARD.md](../templates/JSONL_SCHEMA_STANDARD.md) | JSONL field definitions   |
-| [FALSE_POSITIVES.jsonl](../technical-debt/FALSE_POSITIVES.jsonl)  | Known false positives     |
-| [MASTER_DEBT.jsonl](../technical-debt/MASTER_DEBT.jsonl)          | All tracked findings      |
-| [multi-ai-audit/README.md](../multi-ai-audit/README.md)           | Multi-AI workflow details |
+| Document                                                             | Purpose                          |
+| -------------------------------------------------------------------- | -------------------------------- |
+| [AUDIT_STANDARDS.md](./AUDIT_STANDARDS.md)                           | Canonical standards              |
+| [AUDIT_TRACKER.md](./AUDIT_TRACKER.md)                               | Threshold tracking               |
+| [AUDIT_ECOSYSTEM_CODIFICATION.md](./AUDIT_ECOSYSTEM_CODIFICATION.md) | Original design decisions        |
+| [RESULTS_INDEX.md](./RESULTS_INDEX.md)                               | Historical audit results index   |
+| [JSONL_SCHEMA_STANDARD.md](../templates/JSONL_SCHEMA_STANDARD.md)    | JSONL field definitions          |
+| [FALSE_POSITIVES.jsonl](../technical-debt/FALSE_POSITIVES.jsonl)     | Known false positives            |
+| [MASTER_DEBT.jsonl](../technical-debt/MASTER_DEBT.jsonl)             | All tracked findings             |
+| [multi-ai/README.md](./multi-ai/README.md)                           | Multi-AI workflow details        |
+| [multi-ai/COORDINATOR.md](./multi-ai/COORDINATOR.md)                 | Multi-AI review coordination hub |
 
 ---
 

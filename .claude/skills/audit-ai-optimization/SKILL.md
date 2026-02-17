@@ -597,14 +597,31 @@ Run checkpoints after agents 3, 8, and 11.
 
 ## Context Recovery
 
-If context compaction occurs mid-audit:
+If the session is interrupted (compaction, timeout, crash):
 
-1. **Check what exists:** `ls -la ${AUDIT_DIR}/`
-2. **Re-derive AUDIT_DIR:** Look at the most recent
+1. **Check for state file:**
+   `.claude/state/audit-ai-optimization-<date>.state.json`
+2. **If state file exists and is < 24 hours old:** Resume from last completed
+   stage
+3. **If state file is stale (> 24 hours):** Start fresh — findings may be
+   outdated
+4. **Always preserve:** Any partial findings already written to the output
+   directory
+5. **Re-derive AUDIT_DIR:** Look at the most recent
    `docs/audits/single-session/ai-optimization/audit-*` directory
-3. **Resume from last checkpoint:** Skip completed stages, re-run incomplete
-   ones
-4. **Re-read this SKILL.md** for agent prompts
+6. **Re-read this SKILL.md** for agent prompts
+
+### State File Format
+
+```json
+{
+  "audit_type": "ai-optimization",
+  "date": "YYYY-MM-DD",
+  "stage_completed": "analysis|review|report",
+  "partial_findings_path": "docs/audits/single-session/ai-optimization/audit-YYYY-MM-DD/",
+  "last_updated": "ISO-8601"
+}
+```
 
 ---
 

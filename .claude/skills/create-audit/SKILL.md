@@ -21,9 +21,9 @@ integrations.
 ## What This Creates
 
 1. `.claude/skills/audit-<name>/SKILL.md` — Single-session audit skill
-2. `docs/multi-ai-audit/templates/<NAME>_AUDIT.md` — Multi-AI template
+2. `docs/audits/multi-ai/templates/<NAME>_AUDIT.md` — Multi-AI template
 3. `docs/audits/single-session/<name>/` — Output directory
-4. Entry in `docs/AUDIT_TRACKER.md` — Threshold tracking
+4. Entry in `docs/audits/AUDIT_TRACKER.md` — Threshold tracking
 5. Entry in `.claude/skills/SKILL_INDEX.md` — Skill index
 
 ---
@@ -209,7 +209,7 @@ node scripts/debt/generate-metrics.js
 
 ## Step 4: Generate Multi-AI Template
 
-Create `docs/multi-ai-audit/templates/<NAME>_AUDIT.md`:
+Create `docs/audits/multi-ai/templates/<NAME>_AUDIT.md`:
 
 ````markdown
 # [Project Name] Multi-AI <Title> Audit Plan
@@ -328,9 +328,9 @@ Print what was created:
 ```
 Created audit type: <name>
   Skill:     .claude/skills/audit-<name>/SKILL.md
-  Template:  docs/multi-ai-audit/templates/<NAME>_AUDIT.md
+  Template:  docs/audits/multi-ai/templates/<NAME>_AUDIT.md
   Output:    docs/audits/single-session/<name>/
-  Tracker:   Updated docs/AUDIT_TRACKER.md
+  Tracker:   Updated docs/audits/AUDIT_TRACKER.md
   Index:     Updated .claude/skills/SKILL_INDEX.md
 
 To run: /audit-<name>

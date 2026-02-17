@@ -738,8 +738,7 @@ MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md:
 
 When using this template:
 
-1. **Copy this template** to
-   `docs/reviews/PERFORMANCE_AUDIT_PLAN_[YYYY]_Q[X].md`
+1. **Copy this template** to `docs/reviews/PERFORMANCE_AUDIT_[YYYY]_Q[X].md`
 2. **Establish baseline metrics** before running audit
 3. **Run the performance audit prompt** on each model
 4. **Collect outputs** in specified formats
@@ -763,11 +762,24 @@ When using this template:
 - **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** -
   Canonical JSONL schema for all review templates
 - **[COORDINATOR.md](../COORDINATOR.md)** - Master index and trigger tracking
-- **[CODE_REVIEW_PLAN.md](./CODE_REVIEW_PLAN.md)** - General code review
+- **[CODE_REVIEW_AUDIT.md](./CODE_REVIEW_AUDIT.md)** - General code review
   template
-- **[SECURITY_AUDIT_PLAN.md](./SECURITY_AUDIT_PLAN.md)** - Security-focused
-  reviews
+- **[SECURITY_AUDIT.md](./SECURITY_AUDIT.md)** - Security-focused reviews
 - **[ARCHITECTURE.md](../../../ARCHITECTURE.md)** - System architecture
+
+---
+
+## Quality Guardrails
+
+- **Minimum confidence threshold**: 0.7 — findings below this should go to
+  "Inconclusive" section
+- **Evidence requirements**: Every finding must include specific file paths,
+  line numbers, and code snippets where applicable
+- **False positive awareness**: Check
+  `docs/technical-debt/FALSE_POSITIVES.jsonl` for patterns that have been
+  previously dismissed
+- **Severity calibration**: Use SHARED_TEMPLATE_BASE.md severity scale — S0
+  should be rare (production-breaking only)
 
 ---
 
@@ -815,4 +827,4 @@ Ensure all findings include:
 
 ---
 
-**END OF PERFORMANCE_AUDIT_PLAN.md**
+**END OF PERFORMANCE_AUDIT.md**

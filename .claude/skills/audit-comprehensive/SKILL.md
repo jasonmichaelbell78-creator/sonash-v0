@@ -1,6 +1,10 @@
 ---
 name: audit-comprehensive
 description: Run all 9 domain audits in staged waves and aggregate results
+supports_parallel: true
+fallback_available: true
+estimated_time_parallel: 65 min
+estimated_time_sequential: 180 min
 ---
 
 # Comprehensive Multi-Domain Audit Orchestrator
@@ -32,7 +36,7 @@ This skill orchestrates a complete codebase audit across all 9 domains:
    hook latency
 
 **Output:** Single unified report in
-`docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md`
+`docs/audits/comprehensive/audit-YYYY-MM-DD/COMPREHENSIVE_AUDIT_REPORT.md`
 
 ---
 
@@ -150,13 +154,15 @@ If not all present, notify user which audits are missing.
 **Step 2: Create Output Directory**
 
 ```bash
-mkdir -p docs/audits/comprehensive
+AUDIT_DATE=$(date +%Y-%m-%d)
+mkdir -p docs/audits/comprehensive/audit-${AUDIT_DATE}
 ```
 
 **Step 2.5: Verify Output Directory (CRITICAL)**
 
 ```bash
-AUDIT_DIR="docs/audits/comprehensive"
+AUDIT_DATE=$(date +%Y-%m-%d)
+AUDIT_DIR="docs/audits/comprehensive/audit-${AUDIT_DATE}"
 AUDIT_PATH=$(realpath "${AUDIT_DIR}" 2>/dev/null || echo "${AUDIT_DIR}")
 if [ -z "${AUDIT_DIR}" ] || [ "${AUDIT_PATH}" = "/" ] || [[ "${AUDIT_DIR}" == ".."* ]]; then
   echo "FATAL: Invalid or unsafe AUDIT_DIR"
@@ -175,7 +181,8 @@ npm run lint 2>&1 | tail -10
 npm run patterns:check 2>&1 | head -20
 ```
 
-Store results in `docs/audits/comprehensive/baseline.txt` for reference.
+Store results in `docs/audits/comprehensive/audit-YYYY-MM-DD/baseline.txt` for
+reference.
 
 **Step 4: Load False Positives**
 
@@ -258,7 +265,8 @@ each batch. This file survives context compaction.
 
 ### 1. Update AUDIT_TRACKER.md
 
-Add an entry to **each of the 9 category tables** in `docs/AUDIT_TRACKER.md`:
+Add an entry to **each of the 9 category tables** in
+`docs/audits/AUDIT_TRACKER.md`:
 
 | Date    | Session       | Commits Covered | Files Covered | Findings                     | Reset Threshold |
 | ------- | ------------- | --------------- | ------------- | ---------------------------- | --------------- |
@@ -314,7 +322,7 @@ Cross-Domain Insights:
    5 documentation gaps in complex areas
 
 Full Report:
-   docs/audits/comprehensive/COMPREHENSIVE_AUDIT_REPORT.md
+   docs/audits/comprehensive/audit-YYYY-MM-DD/COMPREHENSIVE_AUDIT_REPORT.md
 
 Recommended Next Steps:
    1. Review top 20 priority findings
@@ -389,16 +397,16 @@ Before running this audit, review:
 
 ### TDMS Integration (Required)
 
-- [PROCEDURE.md](docs/technical-debt/PROCEDURE.md) - Full TDMS workflow
-- [MASTER_DEBT.jsonl](docs/technical-debt/MASTER_DEBT.jsonl) - Canonical debt
-  store
+- [PROCEDURE.md](../../../docs/technical-debt/PROCEDURE.md) - Full TDMS workflow
+- [MASTER_DEBT.jsonl](../../../docs/technical-debt/MASTER_DEBT.jsonl) -
+  Canonical debt store
 
 ### Documentation Standards (Required)
 
-- [JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) - Output
-  format requirements and TDMS field mapping
-- [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) - 5-tier doc
-  hierarchy
+- [JSONL_SCHEMA_STANDARD.md](../../../docs/templates/JSONL_SCHEMA_STANDARD.md) -
+  Output format requirements and TDMS field mapping
+- [DOCUMENTATION_STANDARDS.md](../../../docs/DOCUMENTATION_STANDARDS.md) -
+  5-tier doc hierarchy
 
 ---
 

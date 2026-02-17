@@ -176,7 +176,7 @@ with no exclusions.
 
 **Step 4: Check Template Currency**
 
-Read `docs/multi-ai-audit/templates/PERFORMANCE_AUDIT_PLAN.md` and verify:
+Read `docs/audits/multi-ai/templates/PERFORMANCE_AUDIT_PLAN.md` and verify:
 
 - [ ] Stack versions match package.json
 - [ ] Bundle size baseline is recent
@@ -407,6 +407,32 @@ Full markdown report with all findings, baselines, and optimization plan.
 
 ---
 
+## Context Recovery
+
+If the session is interrupted (compaction, timeout, crash):
+
+1. **Check for state file:** `.claude/state/audit-performance-<date>.state.json`
+2. **If state file exists and is < 24 hours old:** Resume from last completed
+   stage
+3. **If state file is stale (> 24 hours):** Start fresh — findings may be
+   outdated
+4. **Always preserve:** Any partial findings already written to the output
+   directory
+
+### State File Format
+
+```json
+{
+  "audit_type": "performance",
+  "date": "YYYY-MM-DD",
+  "stage_completed": "analysis|review|report",
+  "partial_findings_path": "docs/audits/single-session/performance/audit-YYYY-MM-DD/",
+  "last_updated": "ISO-8601"
+}
+```
+
+---
+
 ## Post-Audit Validation
 
 **Before finalizing the audit:**
@@ -515,7 +541,7 @@ After ALL findings reviewed, summarize:
 ### Category-Specific Thresholds
 
 This audit **resets the performance category threshold** in
-`docs/AUDIT_TRACKER.md` (single-session audits reset their own category;
+`docs/audits/AUDIT_TRACKER.md` (single-session audits reset their own category;
 multi-AI audits reset all thresholds). Reset means the commit counter for this
 category starts counting from zero after this audit.
 

@@ -249,7 +249,7 @@ The TDMS intake pipeline will REJECT items with invalid file paths.
 
 OUTPUT FORMAT: Write findings to ${AUDIT_DIR}/stage-1-{domain}.jsonl
 One JSON object per line, with these fields:
-- category, title, fingerprint, impact (I0-I3, see calibration below), effort (E0-E3), confidence (0-100)
+- category, title, fingerprint, severity (S0-S3, see calibration below), effort (E0-E3), confidence (0-100)
 - files (array of actual file:line refs — NO placeholders, NO numbers-only, NO "multiple")
 - current_approach (what exists now and why)
 - proposed_outcome (what the improved version looks like)
@@ -268,21 +268,24 @@ WRITE ALL OUTPUT TO FILES. Never rely on conversation context.
 - Do NOT return findings content in your response
 ```
 
-### Impact Scale Calibration
+### Severity Scale Calibration
 
-Use these codebase-specific examples to calibrate impact ratings. Agents tend to
-over-rate impact — use these as anchors:
+Use these codebase-specific examples to calibrate severity ratings. Agents tend
+to over-rate severity — use these as anchors:
 
-| Impact | Definition                  | Example in This Codebase                                    |
-| ------ | --------------------------- | ----------------------------------------------------------- |
-| I0     | Transformative / structural | Migrate from Firebase to Supabase; rewrite auth system      |
-| I1     | Significant improvement     | Add ARIA labels to nav tabs; consolidate security docs      |
-| I2     | Moderate quality-of-life    | Standardize date formats; replace generic button labels     |
-| I3     | Minor polish                | Consistent loading text; keyboard shortcuts for power users |
+| Severity | Definition                  | Example in This Codebase                                    |
+| -------- | --------------------------- | ----------------------------------------------------------- |
+| S0       | Transformative / structural | Migrate from Firebase to Supabase; rewrite auth system      |
+| S1       | Significant improvement     | Add ARIA labels to nav tabs; consolidate security docs      |
+| S2       | Moderate quality-of-life    | Standardize date formats; replace generic button labels     |
+| S3       | Minor polish                | Consistent loading text; keyboard shortcuts for power users |
 
 **Rule of thumb**: If the change affects a single file or a small utility, it's
-I2 or I3. I0 is reserved for changes that would require a new milestone or
-architectural rethink. Most findings should be I1 or I2.
+S2 or S3. S0 is reserved for changes that would require a new milestone or
+architectural rethink. Most findings should be S1 or S2.
+
+**Legacy mapping**: Previous versions used I0-I3 (Impact scale). If processing
+older enhancement findings: I0→S0, I1→S1, I2→S2, I3→S3.
 
 ### Phase 1 Verification
 
@@ -365,19 +368,19 @@ Sequential process (1-2 agents):
 
 ## Findings by Impact
 
-### I0 — Transformative (N findings)
+### S0 — Critical / Transformative (N findings)
 
 [Full finding details]
 
-### I1 — Significant (N findings)
+### S1 — High / Significant (N findings)
 
 [...]
 
-### I2 — Moderate (N findings)
+### S2 — Medium / Moderate (N findings)
 
 [...]
 
-### I3 — Minor (N findings)
+### S3 — Low / Minor (N findings)
 
 [...]
 
@@ -400,16 +403,16 @@ Sequential process (1-2 agents):
 
 ### Presentation Format
 
-Present findings in **batches of 3-5 items**, grouped by impact tier (I0 first,
-then I1, I2, I3). Within each tier, group by category for coherence. Each batch
-shows full detail for every item:
+Present findings in **batches of 3-5 items**, grouped by severity tier (S0
+first, then S1, S2, S3). Within each tier, group by category for coherence. Each
+batch shows full detail for every item:
 
 ```markdown
-## I1 Batch 1: [Category Group] (N items)
+## S1 Batch 1: [Category Group] (N items)
 
 ### DEBT-XXXX: [Title]
 
-**Impact:** I1 | **Effort:** E2 | **Confidence:** 85% **Category:**
+**Severity:** S1 | **Effort:** E2 | **Confidence:** 85% **Category:**
 app-architecture
 
 **Current Approach:** [What exists now and why] **Proposed Improvement:** [What
@@ -533,6 +536,33 @@ Save to episodic memory after each phase for cross-session recall:
 
 ---
 
+## Context Recovery
+
+If the session is interrupted (compaction, timeout, crash):
+
+1. **Check for state file:**
+   `.claude/state/audit-enhancements-<date>.state.json`
+2. **If state file exists and is < 24 hours old:** Resume from last completed
+   stage
+3. **If state file is stale (> 24 hours):** Start fresh — findings may be
+   outdated
+4. **Always preserve:** Any partial findings already written to the output
+   directory
+
+### State File Format
+
+```json
+{
+  "audit_type": "enhancements",
+  "date": "YYYY-MM-DD",
+  "stage_completed": "analysis|review|report",
+  "partial_findings_path": "docs/audits/single-session/enhancements/audit-YYYY-MM-DD/",
+  "last_updated": "ISO-8601"
+}
+```
+
+---
+
 ## Post-Audit
 
 1. Verify all findings ingested via `node scripts/debt/validate-schema.js`
@@ -591,7 +621,7 @@ npm run tdms:metrics
 ## Multi-AI Template
 
 For cross-model consensus audits, see:
-`docs/multi-ai-audit/templates/ENHANCEMENT_AUDIT.md`
+`docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md`
 
 This template can be injected into any AI system (Claude, GPT, Gemini, Copilot)
 with the repo context for independent enhancement discovery.

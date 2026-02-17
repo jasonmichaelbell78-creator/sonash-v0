@@ -40,7 +40,7 @@ These decisions scope the audit — they do NOT pre-decide what to change:
 
 ## Output Schema
 
-Each finding in `docs/ai-optimization-audit/findings.jsonl`:
+Each finding in `docs/audits/single-session/ai-optimization/findings.jsonl`:
 
 ```json
 {
@@ -135,7 +135,8 @@ Scan all hooks and scripts for:
 
 - Steps 1-7 run as parallel subagents
 - Each produces findings in the shared JSONL schema
-- Results merged into single `docs/ai-optimization-audit/findings.jsonl`
+- Results merged into single
+  `docs/audits/single-session/ai-optimization/findings.jsonl`
 - Summary markdown generated for human review
 - User reviews findings case-by-case and decides what to act on
 - Accepted findings go to TDMS; deferred findings stay in the audit report
