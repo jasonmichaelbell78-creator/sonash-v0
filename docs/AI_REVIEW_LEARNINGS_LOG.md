@@ -760,6 +760,35 @@ prevented R4-R6 entirely, saving ~3 review rounds.
 
 ---
 
+#### Review #340: PR #369 R6 — CC Extraction x2, wx Flag, Atomic writeMasterDebt, Collision Detection (2026-02-17)
+
+**Source:** SonarCloud (2 CC Issues) + Qodo Security (1) + Qodo Suggestions (8)
+**PR/Branch:** claude/cherry-pick-recent-commits-X1eKD (PR \#369)
+**Suggestions:** 11 total (Fixed: 7, Rejected: 4)
+
+**Patterns Identified:**
+
+1. **Extract guardSymlink() + atomicWrite() for CC reduction** —
+   generate-results-index.js main() CC 17→~5 by extracting symlink guards and
+   atomic write into reusable helpers.
+2. **Extract classifyOpenItems() + applyResolutions() for CC reduction** —
+   track-resolutions.js main() CC 22→~8 by extracting classification loop and
+   --apply logic into separate functions.
+3. **Exclusive-create flag "wx"** — Using `{ flag: "wx" }` in writeFileSync
+   atomically prevents TOCTOU/symlink races on tmp files, eliminating the need
+   for a separate lstatSync guard.
+4. **Atomic write for writeMasterDebt()** — Replaced direct writeFileSync with
+   tmp+rename pattern (wx flag + cross-platform fallback) to close TOCTOU
+   window.
+5. **Return canonical path** — validateInputPath() was returning resolvedInput
+   (pre-realpath) instead of inputReal (post-realpath), undermining containment.
+6. **Finding key collision detection** — Map.set() silently overwrites duplicate
+   keys. Added has() check + warning to prevent silent data loss in comparisons.
+
+**Resolution Stats:** 7/11 fixed (64%), 4/11 rejected (JSONL data quality x4)
+
+---
+
 #### Review #339: PR #369 R5 — CC Extraction, tmpFile Symlink, ISO Date Normalization (2026-02-17)
 
 **Source:** SonarCloud (1 CC Issue) + Qodo Security (1) + Qodo Compliance (1) +

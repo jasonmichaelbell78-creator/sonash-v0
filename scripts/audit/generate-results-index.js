@@ -198,65 +198,41 @@ This index provides a comprehensive overview of all audit results in this reposi
 }
 
 /**
- * Main execution
+ * Guard against symlinks on a path. Exits the process if a symlink is detected.
+ * @param {string} targetPath - path to check
+ * @param {string} label - human-readable label for error messages
  */
-function main() {
-  console.log("Generating audit results index...");
-  console.log(`Repository root: ${repoRoot}`);
-  console.log(`Audits directory: ${auditsDir}`);
-
-  // Ensure audits directory exists
-  if (!fs.existsSync(auditsDir)) {
-    console.warn(`Warning: Audits directory does not exist: ${auditsDir}`);
-    fs.mkdirSync(auditsDir, { recursive: true });
-  }
-
-  // Collect results
-  const results = collectAuditResults();
-  console.log(`Found ${results.length} audit results`);
-
-  // Generate markdown
-  const markdown = generateMarkdown(results);
-
-  // Symlink guard — check both directory and file
-  const outputDir = path.dirname(outputFile);
+function guardSymlink(targetPath, label) {
   try {
-    const dirStat = fs.lstatSync(outputDir);
-    if (dirStat.isSymbolicLink()) {
-      console.error(`Error: ${outputDir} is a symlink — refusing to write`);
-      process.exit(2);
-    }
-  } catch {
-    // Directory doesn't exist — mkdirSync above handles creation
-  }
-  try {
-    const stat = fs.lstatSync(outputFile);
+    const stat = fs.lstatSync(targetPath);
     if (stat.isSymbolicLink()) {
-      console.error(`Error: ${outputFile} is a symlink — refusing to write`);
+      console.error(`Error: ${label} is a symlink — refusing to write`);
       process.exit(2);
     }
   } catch {
-    // File doesn't exist yet — safe to write
+    // Path doesn't exist — safe to proceed
   }
+}
 
-  // Atomic write: tmp file + rename to reduce TOCTOU window
+/**
+ * Atomically write content to outputFile via tmp+rename.
+ * Uses exclusive-create flag ("wx") on tmp to prevent TOCTOU/symlink races.
+ * @param {string} content - file content to write
+ */
+function atomicWrite(content) {
+  const outputDir = path.dirname(outputFile);
+  guardSymlink(outputDir, outputDir);
+  guardSymlink(outputFile, outputFile);
+
   const tmpFile = path.join(outputDir, `.RESULTS_INDEX.md.tmp-${process.pid}-${Date.now()}`);
   try {
-    // Guard: refuse to write through a pre-existing symlink at the tmp path
-    try {
-      const tmpStat = fs.lstatSync(tmpFile);
-      if (tmpStat.isSymbolicLink()) {
-        console.error(`Error: ${tmpFile} is a symlink — refusing to write`);
-        process.exit(2);
-      }
-    } catch {
-      // tmp file doesn't exist yet — expected and safe
-    }
-    fs.writeFileSync(tmpFile, markdown, "utf8");
+    // Exclusive-create the tmp file to prevent TOCTOU/symlink races
+    fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
     try {
       fs.renameSync(tmpFile, outputFile);
     } catch {
       // Cross-platform fallback: rename may fail on Windows if destination exists
+      guardSymlink(outputFile, outputFile);
       try {
         fs.rmSync(outputFile, { force: true });
       } catch {
@@ -274,6 +250,30 @@ function main() {
     }
     process.exit(2);
   }
+}
+
+/**
+ * Main execution
+ */
+function main() {
+  console.log("Generating audit results index...");
+  console.log(`Repository root: ${repoRoot}`);
+  console.log(`Audits directory: ${auditsDir}`);
+
+  // Ensure audits directory exists
+  if (!fs.existsSync(auditsDir)) {
+    console.warn(`Warning: Audits directory does not exist: ${auditsDir}`);
+    fs.mkdirSync(auditsDir, { recursive: true });
+  }
+
+  // Collect results
+  const results = collectAuditResults();
+  console.log(`Found ${results.length} audit results`);
+
+  // Generate markdown and write atomically
+  const markdown = generateMarkdown(results);
+  atomicWrite(markdown);
+
   console.log(`✓ Generated: ${outputFile}`);
   console.log(`  - Single-Session: ${results.filter((r) => r.type === "Single-Session").length}`);
   console.log(`  - Comprehensive: ${results.filter((r) => r.type === "Comprehensive").length}`);

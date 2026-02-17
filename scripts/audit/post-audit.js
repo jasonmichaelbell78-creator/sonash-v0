@@ -149,7 +149,7 @@ function printSummary(results) {
  *
  * Exits the process on any validation failure.
  * @param {string} inputFile - raw CLI argument
- * @returns {string} resolvedInput - validated absolute path
+ * @returns {string} inputReal - canonical validated absolute path
  */
 function validateInputPath(inputFile) {
   const resolvedInput = path.resolve(inputFile);
@@ -185,7 +185,7 @@ function validateInputPath(inputFile) {
     process.exit(1);
   }
 
-  return resolvedInput;
+  return inputReal;
 }
 
 // ---------------------------------------------------------------------------

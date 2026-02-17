@@ -106,11 +106,30 @@ function writeMasterDebt(items) {
   }
 
   const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
+  const dir = path.dirname(MASTER_DEBT_PATH);
+  const tmpFile = path.join(dir, `.MASTER_DEBT.jsonl.tmp-${process.pid}-${Date.now()}`);
   try {
-    fs.writeFileSync(MASTER_DEBT_PATH, content, "utf8");
+    // Exclusive-create to prevent TOCTOU/symlink races on tmp path
+    fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
+    try {
+      fs.renameSync(tmpFile, MASTER_DEBT_PATH);
+    } catch {
+      // Cross-platform fallback (Windows): remove destination then retry
+      try {
+        fs.rmSync(MASTER_DEBT_PATH, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      fs.renameSync(tmpFile, MASTER_DEBT_PATH);
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error(`Error writing MASTER_DEBT.jsonl: ${msg}`);
+    try {
+      if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
+    } catch {
+      /* cleanup best-effort */
+    }
     process.exit(1);
   }
 }
@@ -325,31 +344,15 @@ function printHumanReport(results, openItems, category, apply, appliedCount) {
 }
 
 // ---------------------------------------------------------------------------
-// Main
+// Orchestration helpers (extracted to reduce main() cognitive complexity)
 // ---------------------------------------------------------------------------
 
-function main() {
-  const { apply, jsonOutput, category } = parseArgs();
-
-  // Read all items
-  const allItems = readMasterDebt();
-
-  if (allItems.length === 0) {
-    console.error("Error: MASTER_DEBT.jsonl is empty or could not be parsed.");
-    process.exit(1);
-  }
-
-  // Filter to open items (not RESOLVED, not FALSE_POSITIVE)
-  let openItems = allItems.filter(
-    (item) => item.status !== "RESOLVED" && item.status !== "FALSE_POSITIVE"
-  );
-
-  // Apply category filter if specified
-  if (category) {
-    openItems = openItems.filter((item) => item.category === category);
-  }
-
-  // Classify each open item
+/**
+ * Classify all open items and bucket into result categories.
+ * @param {Array<Object>} openItems
+ * @returns {{ likely_resolved: Array, potentially_resolved: Array, still_open: Array, unknown: Array }}
+ */
+function classifyOpenItems(openItems) {
   const results = {
     likely_resolved: [],
     potentially_resolved: [],
@@ -368,28 +371,63 @@ function main() {
     });
   }
 
-  // If --apply, update the MASTER_DEBT.jsonl for likely_resolved items
+  return results;
+}
+
+/**
+ * Apply RESOLVED status to likely_resolved items in allItems, write back.
+ * @param {Array<Object>} allItems - full MASTER_DEBT contents (mutated in place)
+ * @param {Object} results - classification results from classifyOpenItems
+ * @param {string|null} category - category filter (if any)
+ * @returns {number} count of items marked RESOLVED
+ */
+function applyResolutions(allItems, results, category) {
+  const nowISO = new Date().toISOString().split("T")[0];
+  const likelyIds = new Set(results.likely_resolved.map((r) => r.id).filter(Boolean));
   let appliedCount = 0;
-  if (apply && results.likely_resolved.length > 0) {
-    const nowISO = new Date().toISOString().split("T")[0];
-    const likelyIds = new Set(results.likely_resolved.map((r) => r.id).filter(Boolean));
 
-    for (const item of allItems) {
-      if (!item.id) continue;
-      if (item.status === "RESOLVED" || item.status === "FALSE_POSITIVE") continue;
-      if (category && item.category !== category) continue;
-      if (likelyIds.has(item.id)) {
-        item.status = "RESOLVED";
-        item.resolved_at = nowISO;
-        item.resolved_by = "auto-resolution-tracker";
-        appliedCount++;
-      }
+  for (const item of allItems) {
+    if (!item.id) continue;
+    if (item.status === "RESOLVED" || item.status === "FALSE_POSITIVE") continue;
+    if (category && item.category !== category) continue;
+    if (likelyIds.has(item.id)) {
+      item.status = "RESOLVED";
+      item.resolved_at = nowISO;
+      item.resolved_by = "auto-resolution-tracker";
+      appliedCount++;
     }
-
-    writeMasterDebt(allItems);
   }
 
-  // Output
+  writeMasterDebt(allItems);
+  return appliedCount;
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
+function main() {
+  const { apply, jsonOutput, category } = parseArgs();
+
+  const allItems = readMasterDebt();
+  if (allItems.length === 0) {
+    console.error("Error: MASTER_DEBT.jsonl is empty or could not be parsed.");
+    process.exit(1);
+  }
+
+  // Filter to open items
+  let openItems = allItems.filter(
+    (item) => item.status !== "RESOLVED" && item.status !== "FALSE_POSITIVE"
+  );
+  if (category) {
+    openItems = openItems.filter((item) => item.category === category);
+  }
+
+  const results = classifyOpenItems(openItems);
+
+  const appliedCount =
+    apply && results.likely_resolved.length > 0 ? applyResolutions(allItems, results, category) : 0;
+
   if (jsonOutput) {
     printJsonReport(results, openItems, category, apply, appliedCount);
   } else {

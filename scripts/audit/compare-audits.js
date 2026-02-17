@@ -243,17 +243,34 @@ function countBySeverity(findings) {
  * Compare two sets of audit findings
  */
 function compareFindings(findings1, findings2) {
-  // Index findings by key
+  // Index findings by key (guard against key collisions)
   const map1 = new Map();
+  let collisions1 = 0;
   for (const f of findings1) {
     const key = findingKey(f);
+    if (map1.has(key)) {
+      collisions1++;
+      continue;
+    }
     map1.set(key, f);
   }
 
   const map2 = new Map();
+  let collisions2 = 0;
   for (const f of findings2) {
     const key = findingKey(f);
+    if (map2.has(key)) {
+      collisions2++;
+      continue;
+    }
     map2.set(key, f);
+  }
+
+  if (collisions1 > 0 || collisions2 > 0) {
+    console.error(
+      `Warning: finding key collisions detected (date1: ${collisions1}, date2: ${collisions2}). ` +
+        `Some findings may be omitted from comparison.`
+    );
   }
 
   const newFindings = [];
