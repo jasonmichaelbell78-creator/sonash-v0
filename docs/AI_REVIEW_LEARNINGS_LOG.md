@@ -1184,6 +1184,32 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #348: PR #371 R1 — SonarCloud S5852 regex DoS, CC refactoring, atomic writes, symlink guards (2026-02-17)
+
+**Source:** SonarCloud (10 hotspots + 12 issues) + Qodo Compliance (2) + Qodo
+Suggestions (11) **PR/Branch:** claude/new-session-6kCvR (PR #371)
+**Suggestions:** 34 total (Fixed: 31, Rejected: 3)
+
+**Patterns Identified:**
+
+1. **Regex DoS false positives (S5852)** — SonarCloud flags simple patterns like
+   `\d+\s*CRITICAL` that have disjoint character classes and no backtracking
+   risk. Replace with string parsing to clear quality gate.
+2. **CC explosion in parsing functions** — Functions that parse markdown with
+   multiple format variants (bold, table, inline) accumulate CC rapidly. Extract
+   format-specific helpers to keep each under CC 15.
+3. **Atomic write consistency** — Some write paths use atomic tmp+rename, others
+   use direct `writeFileSync`. Standardize on atomic pattern for all state
+   files.
+4. **Symlink guard propagation** — Backup write paths (.bak) missed symlink
+   guards despite main paths being protected.
+
+**Rejected:** [25] Unstructured logging (CLI tool by design), [26] No audit
+trail (local dev script), [27] Silent parse failures (intentional for JSONL
+tolerance)
+
+---
+
 #### Review #347: PR #370 R5 — TOCTOU file path, CWD-independent normalization, trailing slash preservation (2026-02-17)
 
 **Source:** Qodo Compliance (3) + Qodo Suggestions (6) **PR/Branch:**

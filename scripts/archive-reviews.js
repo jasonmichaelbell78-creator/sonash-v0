@@ -114,6 +114,52 @@ function atomicWrite(filePath, content) {
 }
 
 /**
+ * Match a line against known entry header patterns.
+ * Returns { type, id } if the line is a review or retrospective header, or null otherwise.
+ */
+function matchEntryHeader(line) {
+  // Match #### Review #N
+  const reviewMatch = line.match(/^####\s+Review\s+#(\d+)/);
+  if (reviewMatch) {
+    return { type: "review", id: Number.parseInt(reviewMatch[1], 10) };
+  }
+
+  // Match ### PR #N Retrospective
+  const retroMatch = line.match(/^###\s+PR\s+#(\d+)\s+Retrospective/);
+  if (retroMatch) {
+    return { type: "retrospective", id: Number.parseInt(retroMatch[1], 10) };
+  }
+
+  return null;
+}
+
+/**
+ * Finalize parsed entries by extracting PR numbers for reviews and assigning endLine values.
+ * Mutates the entries in place.
+ */
+function finalizeEntries(entries, lines) {
+  // Extract PR numbers for reviews from their content
+  // Also determine endLine for each entry: the line before the next entry starts,
+  // trimming trailing "---" separators
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+    const nextStart = i + 1 < entries.length ? entries[i + 1].startLine : lines.length;
+
+    // endLine: include everything up to the next entry, but include trailing ---
+    entry.endLine = nextStart;
+
+    // For reviews, extract PR number from content
+    if (entry.type === "review") {
+      const block = lines.slice(entry.startLine, entry.endLine).join("\n");
+      const prMatch = block.match(/PR\s*#(\d+)/);
+      if (prMatch) {
+        entry.pr = Number.parseInt(prMatch[1], 10);
+      }
+    }
+  }
+}
+
+/**
  * Parse the learnings log and identify all entry blocks.
  *
  * Returns an array of entry objects, each with:
@@ -137,54 +183,20 @@ function parseEntryBlocks(lines) {
     }
     if (inFence) continue;
 
-    // Match #### Review #N
-    const reviewMatch = line.match(/^####\s+Review\s+#(\d+)/);
-    if (reviewMatch) {
+    const match = matchEntryHeader(line);
+    if (match) {
       entries.push({
-        type: "review",
-        id: Number.parseInt(reviewMatch[1], 10),
-        pr: null,
+        type: match.type,
+        id: match.id,
+        pr: match.type === "retrospective" ? match.id : null,
         startLine: i,
         endLine: -1,
         headerLine: line,
       });
-      continue;
-    }
-
-    // Match ### PR #N Retrospective
-    const retroMatch = line.match(/^###\s+PR\s+#(\d+)\s+Retrospective/);
-    if (retroMatch) {
-      entries.push({
-        type: "retrospective",
-        id: Number.parseInt(retroMatch[1], 10),
-        pr: Number.parseInt(retroMatch[1], 10),
-        startLine: i,
-        endLine: -1,
-        headerLine: line,
-      });
-      continue;
     }
   }
 
-  // Extract PR numbers for reviews from their content
-  // Also determine endLine for each entry: the line before the next entry starts,
-  // trimming trailing "---" separators
-  for (let i = 0; i < entries.length; i++) {
-    const entry = entries[i];
-    const nextStart = i + 1 < entries.length ? entries[i + 1].startLine : lines.length;
-
-    // endLine: include everything up to the next entry, but include trailing ---
-    entry.endLine = nextStart;
-
-    // For reviews, extract PR number from content
-    if (entry.type === "review") {
-      const block = lines.slice(entry.startLine, entry.endLine).join("\n");
-      const prMatch = block.match(/PR\s*#(\d+)/);
-      if (prMatch) {
-        entry.pr = Number.parseInt(prMatch[1], 10);
-      }
-    }
-  }
+  finalizeEntries(entries, lines);
 
   return entries;
 }
@@ -272,7 +284,7 @@ function getArchiveFilename(entries) {
   if (allIds.length === 0) return null;
 
   const min = Math.min(...allIds);
-  const max = Math.max(...(reviewIds.length > 0 ? reviewIds : retroIds));
+  const max = Math.max(...allIds);
 
   return `REVIEWS_${min}-${max}.md`;
 }
@@ -429,48 +441,195 @@ function removeArchivedEntries(lines, entriesToArchive, entriesToKeep) {
   }
 
   const keptContent = keptBlocks.join("\n");
-  const result = before.join("\n") + keptContent + "\n" + after.join("\n");
+  const parts = [];
+  const beforeText = before.join("\n").trimEnd();
+  const afterText = after.join("\n").trimStart();
+  if (beforeText) parts.push(beforeText);
+  if (keptContent) parts.push(keptContent);
+  if (afterText) parts.push(afterText);
+  return parts.join("\n\n") + "\n";
+}
 
-  return result;
+/**
+ * Validate paths, read content, and parse entries from the learnings log.
+ * Returns { content, lines, entries } or null on error (sets process.exitCode).
+ */
+function validateAndParse() {
+  log("Archive Reviews: AI_REVIEW_LEARNINGS_LOG.md\n");
+
+  // Validate paths
+  if (!existsSync(LEARNINGS_LOG)) {
+    console.error("AI_REVIEW_LEARNINGS_LOG.md not found");
+    process.exitCode = 2;
+    return null;
+  }
+
+  if (isSymlink(LEARNINGS_LOG)) {
+    console.error("Refusing to read symlink");
+    process.exitCode = 2;
+    return null;
+  }
+
+  const content = readFileSync(LEARNINGS_LOG, "utf8");
+  const lines = content.split("\n");
+
+  // Parse all entry blocks
+  const entries = parseEntryBlocks(lines);
+
+  const reviewCount = entries.filter((e) => e.type === "review").length;
+  const retroCount = entries.filter((e) => e.type === "retrospective").length;
+  const totalCount = entries.length;
+
+  log(`  Reviews found:        ${reviewCount}`);
+  log(`  Retrospectives found: ${retroCount}`);
+  log(`  Total entries:        ${totalCount}`);
+  log(`  Keep threshold:       ${keepCount}`);
+
+  if (totalCount <= keepCount) {
+    log(`\nNo archival needed. ${totalCount} entries <= ${keepCount} threshold.`);
+    process.exitCode = 0;
+    return null;
+  }
+
+  return { content, lines, entries };
+}
+
+/**
+ * Handle dry-run output: log the preview of entries to archive and keep.
+ */
+function previewArchival(toArchive, toKeep) {
+  log("\nDry run. Use --apply to archive.");
+  log("\nPreview of entries to archive:");
+  for (const entry of toArchive) {
+    const label = entry.type === "review" ? `Review #${entry.id}` : `PR #${entry.id} Retrospective`;
+    log(`  - ${label}`);
+  }
+  log("\nEntries that would remain:");
+  for (const entry of toKeep) {
+    const label = entry.type === "review" ? `Review #${entry.id}` : `PR #${entry.id} Retrospective`;
+    log(`  - ${label}`);
+  }
+  process.exitCode = 1;
+}
+
+/**
+ * Execute the actual archival: backup, write archive, validate, update log, write log.
+ */
+function executeArchival(
+  toArchive,
+  toKeep,
+  lines,
+  content,
+  archiveFilename,
+  archivePath,
+  archiveNumber,
+  today,
+  archiveReviewIds,
+  archiveRetroIds
+) {
+  // Check archive path doesn't already exist
+  if (existsSync(archivePath)) {
+    console.error(`Archive file already exists: ${archiveFilename}`);
+    process.exitCode = 2;
+    return;
+  }
+
+  // Ensure archive directory exists
+  if (!existsSync(ARCHIVE_DIR)) {
+    mkdirSync(ARCHIVE_DIR, { recursive: true });
+  }
+
+  // Step 1: Back up the active log
+  const backupPath = LEARNINGS_LOG + ".bak";
+  try {
+    if (!isSafeToWrite(backupPath)) {
+      console.error("Refusing to write backup: symlink detected");
+      process.exitCode = 2;
+      return;
+    }
+    copyFileSync(LEARNINGS_LOG, backupPath);
+    log(`\n  Backup: AI_REVIEW_LEARNINGS_LOG.md.bak`);
+  } catch (err) {
+    console.error("Failed to create backup:", sanitizeError(err));
+    process.exitCode = 2;
+    return;
+  }
+
+  // Step 2: Build and write the archive file
+  const archiveContent = buildArchiveContent(toArchive, lines, today);
+
+  try {
+    atomicWrite(archivePath, archiveContent);
+  } catch (err) {
+    console.error("Failed to write archive file:", sanitizeError(err));
+    process.exitCode = 2;
+    return;
+  }
+
+  // Step 3: Validate archive was written
+  if (!existsSync(archivePath)) {
+    console.error("Archive file was not created successfully");
+    process.exitCode = 2;
+    return;
+  }
+
+  const writtenArchive = readFileSync(archivePath, "utf8");
+  if (writtenArchive.length < 100) {
+    console.error("Archive file appears too small, aborting active log modification");
+    process.exitCode = 2;
+    return;
+  }
+
+  log(`  Archive written: ${archiveFilename} (${writtenArchive.length} bytes)`);
+
+  // Step 4: Remove archived entries from active log
+  let updatedContent = removeArchivedEntries(lines, toArchive, toKeep);
+
+  // Step 5: Update the Archive Reference section
+  updatedContent = updateArchiveReference(
+    updatedContent,
+    archiveFilename,
+    toArchive,
+    archiveNumber,
+    today
+  );
+
+  // Step 6: Write updated active log
+  try {
+    atomicWrite(LEARNINGS_LOG, updatedContent);
+  } catch (err) {
+    console.error("Failed to update active log:", sanitizeError(err));
+    console.error("Archive file was written successfully at:", archiveFilename);
+    console.error("Backup available at: AI_REVIEW_LEARNINGS_LOG.md.bak");
+    process.exitCode = 2;
+    return;
+  }
+
+  log(`  Active log updated: ${toKeep.length} entries remaining`);
+
+  // Step 7: Summary
+  log(`\nArchival complete:`);
+  log(`  Archived: ${toArchive.length} entries -> docs/archive/${archiveFilename}`);
+  log(`  Remaining: ${toKeep.length} entries in active log`);
+  if (archiveReviewIds.length > 0) {
+    log(
+      `  Review range: #${archiveReviewIds[0]}-#${archiveReviewIds[archiveReviewIds.length - 1]}`
+    );
+  }
+  if (archiveRetroIds.length > 0) {
+    log(`  Retrospectives: ${archiveRetroIds.map((id) => "PR #" + id).join(", ")}`);
+  }
+  log(`  Backup: AI_REVIEW_LEARNINGS_LOG.md.bak`);
+
+  process.exitCode = 0;
 }
 
 function main() {
   try {
-    log("Archive Reviews: AI_REVIEW_LEARNINGS_LOG.md\n");
+    const parsed = validateAndParse();
+    if (!parsed) return;
 
-    // Validate paths
-    if (!existsSync(LEARNINGS_LOG)) {
-      console.error("AI_REVIEW_LEARNINGS_LOG.md not found");
-      process.exitCode = 2;
-      return;
-    }
-
-    if (isSymlink(LEARNINGS_LOG)) {
-      console.error("Refusing to read symlink");
-      process.exitCode = 2;
-      return;
-    }
-
-    const content = readFileSync(LEARNINGS_LOG, "utf8");
-    const lines = content.split("\n");
-
-    // Parse all entry blocks
-    const entries = parseEntryBlocks(lines);
-
-    const reviewCount = entries.filter((e) => e.type === "review").length;
-    const retroCount = entries.filter((e) => e.type === "retrospective").length;
-    const totalCount = entries.length;
-
-    log(`  Reviews found:        ${reviewCount}`);
-    log(`  Retrospectives found: ${retroCount}`);
-    log(`  Total entries:        ${totalCount}`);
-    log(`  Keep threshold:       ${keepCount}`);
-
-    if (totalCount <= keepCount) {
-      log(`\nNo archival needed. ${totalCount} entries <= ${keepCount} threshold.`);
-      process.exitCode = 0;
-      return;
-    }
+    const { content, lines, entries } = parsed;
 
     // Select entries for archival
     const { toArchive, toKeep } = selectEntriesForArchival(entries, keepCount);
@@ -517,120 +676,23 @@ function main() {
     log(`  Archive number: ${archiveNumber}`);
 
     if (!applyMode) {
-      log("\nDry run. Use --apply to archive.");
-      log("\nPreview of entries to archive:");
-      for (const entry of toArchive) {
-        const label =
-          entry.type === "review" ? `Review #${entry.id}` : `PR #${entry.id} Retrospective`;
-        log(`  - ${label}`);
-      }
-      log("\nEntries that would remain:");
-      for (const entry of toKeep) {
-        const label =
-          entry.type === "review" ? `Review #${entry.id}` : `PR #${entry.id} Retrospective`;
-        log(`  - ${label}`);
-      }
-      process.exitCode = 1;
+      previewArchival(toArchive, toKeep);
       return;
     }
 
     // --- Apply mode ---
-
-    // Check archive path doesn't already exist
-    if (existsSync(archivePath)) {
-      console.error(`Archive file already exists: ${archiveFilename}`);
-      process.exitCode = 2;
-      return;
-    }
-
-    // Ensure archive directory exists
-    if (!existsSync(ARCHIVE_DIR)) {
-      mkdirSync(ARCHIVE_DIR, { recursive: true });
-    }
-
-    // Step 1: Back up the active log
-    const backupPath = LEARNINGS_LOG + ".bak";
-    try {
-      if (!isSafeToWrite(backupPath)) {
-        console.error("Refusing to write backup: symlink detected");
-        process.exitCode = 2;
-        return;
-      }
-      copyFileSync(LEARNINGS_LOG, backupPath);
-      log(`\n  Backup: AI_REVIEW_LEARNINGS_LOG.md.bak`);
-    } catch (err) {
-      console.error("Failed to create backup:", sanitizeError(err));
-      process.exitCode = 2;
-      return;
-    }
-
-    // Step 2: Build and write the archive file
-    const archiveContent = buildArchiveContent(toArchive, lines, today);
-
-    try {
-      atomicWrite(archivePath, archiveContent);
-    } catch (err) {
-      console.error("Failed to write archive file:", sanitizeError(err));
-      process.exitCode = 2;
-      return;
-    }
-
-    // Step 3: Validate archive was written
-    if (!existsSync(archivePath)) {
-      console.error("Archive file was not created successfully");
-      process.exitCode = 2;
-      return;
-    }
-
-    const writtenArchive = readFileSync(archivePath, "utf8");
-    if (writtenArchive.length < 100) {
-      console.error("Archive file appears too small, aborting active log modification");
-      process.exitCode = 2;
-      return;
-    }
-
-    log(`  Archive written: ${archiveFilename} (${writtenArchive.length} bytes)`);
-
-    // Step 4: Remove archived entries from active log
-    let updatedContent = removeArchivedEntries(lines, toArchive, toKeep);
-
-    // Step 5: Update the Archive Reference section
-    updatedContent = updateArchiveReference(
-      updatedContent,
-      archiveFilename,
+    executeArchival(
       toArchive,
+      toKeep,
+      lines,
+      content,
+      archiveFilename,
+      archivePath,
       archiveNumber,
-      today
+      today,
+      archiveReviewIds,
+      archiveRetroIds
     );
-
-    // Step 6: Write updated active log
-    try {
-      atomicWrite(LEARNINGS_LOG, updatedContent);
-    } catch (err) {
-      console.error("Failed to update active log:", sanitizeError(err));
-      console.error("Archive file was written successfully at:", archiveFilename);
-      console.error("Backup available at: AI_REVIEW_LEARNINGS_LOG.md.bak");
-      process.exitCode = 2;
-      return;
-    }
-
-    log(`  Active log updated: ${toKeep.length} entries remaining`);
-
-    // Step 7: Summary
-    log(`\nArchival complete:`);
-    log(`  Archived: ${toArchive.length} entries -> docs/archive/${archiveFilename}`);
-    log(`  Remaining: ${toKeep.length} entries in active log`);
-    if (archiveReviewIds.length > 0) {
-      log(
-        `  Review range: #${archiveReviewIds[0]}-#${archiveReviewIds[archiveReviewIds.length - 1]}`
-      );
-    }
-    if (archiveRetroIds.length > 0) {
-      log(`  Retrospectives: ${archiveRetroIds.map((id) => "PR #" + id).join(", ")}`);
-    }
-    log(`  Backup: AI_REVIEW_LEARNINGS_LOG.md.bak`);
-
-    process.exitCode = 0;
   } catch (err) {
     console.error("Error:", sanitizeError(err));
     process.exitCode = 2;
