@@ -9,133 +9,69 @@
 
 ---
 
-**Items Needing Verification:** 123
+**Items Needing Verification:** 59
 
-This queue contains items with status=NEW that require verification.
-Run `verify-technical-debt` skill to process this queue.
+This queue contains items with status=NEW that require verification. Run
+`verify-technical-debt` skill to process this queue.
 
-| ID | Title | Severity | File | Line |
-|---|---|---|---|---|
-| DEBT-3131 | ROADMAP.md milestone tracking tables | S1 | home/user/sonash-v0/ROADMAP.md | 0 |
-| DEBT-3132 | AUDIT_TRACKER.md audit log tables | S1 | home/user/sonash-v0/docs/AUDIT_TRACKER.md | 0 |
-| DEBT-3133 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas | S1 | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md | 0 |
-| DEBT-3134 | AUDIT_TRACKER.md threshold matrix and version history | S1 | home/user/sonash-v0/docs/AUDIT_TRACKER.md | 0 |
-| DEBT-3154 | sync-claude-settings.js - Unused Claude Code settings syn... | S1 | home/user/sonash-v0/scripts/sync-claude-settings.js | 0 |
-| DEBT-3159 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl... | S1 | home/user/sonash-v0/scripts/check-backlog-health.js | 0 |
-| DEBT-3160 | Markdown table parsing in update-readme-status.js with pi... | S1 | home/user/sonash-v0/scripts/update-readme-status.js | 0 |
-| DEBT-3161 | check-session-gaps.js relies on hardcoded Session Context... | S1 | home/user/sonash-v0/scripts/check-session-gaps.js | 0 |
-| DEBT-3162 | aggregate-audit-findings.js markdown parsing fragility in... | S1 | home/user/sonash-v0/scripts/aggregate-audit-findings.js | 0 |
-| DEBT-3163 | generate-pending-alerts.js fragile DEFERRED item extraction | S1 | home/user/sonash-v0/scripts/generate-pending-alerts.js | 0 |
-| DEBT-3168 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused | S1 | home/user/sonash-v0/docs/HOOKIFY_STRATEGY.md | 0 |
-| DEBT-3176 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes | S1 | home/user/sonash-v0/docs/agent_docs/FIX_TEMPLATES.md | 0 |
-| DEBT-3181 | Technical debt view files - generated views without integ... | S1 | home/user/sonash-v0/docs/technical-debt/views/ | 0 |
-| DEBT-3182 | session-start.js uses execSync with shell:true — subproce... | S1 | .claude/hooks/session-start.js | 0 |
-| DEBT-3183 | SessionStart uses stacked synchronous subprocesses across... | S1 | .claude/settings.json | 0 |
-| DEBT-3202 | session-start.js outputs 400-600 tokens of verbose status... | S1 | .claude/hooks/session-start.js | 0 |
-| DEBT-3203 | SessionStart critical path runs multiple heavyweight sync... | S1 | .claude/hooks/session-start.js | 0 |
-| DEBT-3204 | Hook Latency: Unconditional test build | S1 | .claude/hooks/session-start.js | 0 |
-| DEBT-3205 | SessionStart runs 4 sequential Node process spawns — 4-8s... | S1 | .claude/settings.json | 0 |
-| DEBT-3206 | COMMAND_REFERENCE.md is 109KB — loaded on demand but risk... | S1 | .claude/COMMAND_REFERENCE.md | 0 |
-| DEBT-3207 | Session-start hook uses execSync for version checks that ... | S1 | .claude/hooks/session-start.js | 0 |
-| DEBT-2808 | Date formats inconsistent across the app | S2 | src/components | 0 |
-| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files | S2 | src | 0 |
-| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2 | docs | 0 |
-| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2 | package.json | 0 |
-| DEBT-2813 | Missing ARIA labels on critical navigation tabs | S2 | src/components | 0 |
-| DEBT-3127 | Add shellcheck to pre-commit hooks for shell script linting | S2 | .husky/ | 0 |
-| DEBT-3130 | Untitled finding | S2 | N/A | 0 |
-| DEBT-3135 | DOCUMENT_DEPENDENCIES.md sync status tracking | S2 | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md | 0 |
-| DEBT-3136 | SESSION_CONTEXT.md quick status table | S2 | home/user/sonash-v0/SESSION_CONTEXT.md | 0 |
-| DEBT-3137 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m... | S2 | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md | 0 |
-| DEBT-3138 | ROADMAP.md detailed milestone specifications embedded | S2 | home/user/sonash-v0/ROADMAP.md | 0 |
-| DEBT-3139 | PR_WORKFLOW_CHECKLIST.md version history table | S2 | home/user/sonash-v0/docs/PR_WORKFLOW_CHECKLIST.md | 0 |
-| DEBT-3140 | EXPANSION_EVALUATION_TRACKER.md command reference table | S2 | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md | 0 |
-| DEBT-3145 | ai-review.js - Unused AI review prompt applicator | S2 | home/user/sonash-v0/scripts/ai-review.js | 0 |
-| DEBT-3147 | create-canonical-findings.js - Unused canonical findings ... | S2 | home/user/sonash-v0/scripts/create-canonical-findings.js | 0 |
-| DEBT-3148 | generate-pending-alerts.js - Unused session-start alert g... | S2 | home/user/sonash-v0/scripts/generate-pending-alerts.js | 0 |
-| DEBT-3150 | migrate-existing-findings.js - Unused legacy findings mig... | S2 | home/user/sonash-v0/scripts/migrate-existing-findings.js | 0 |
-| DEBT-3152 | regenerate-findings-index.js - Unused canonical findings ... | S2 | home/user/sonash-v0/scripts/regenerate-findings-index.js | 0 |
-| DEBT-3155 | update-legacy-lines.js - Unused legacy findings line numb... | S2 | home/user/sonash-v0/scripts/update-legacy-lines.js | 0 |
-| DEBT-3164 | check-roadmap-health.js version parsing regex scoped to s... | S2 | home/user/sonash-v0/scripts/check-roadmap-health.js | 0 |
-| DEBT-3165 | Multi-AI normalize-format.js markdown table detection and... | S2 | home/user/sonash-v0/scripts/multi-ai/normalize-format.js | 0 |
-| DEBT-3166 | verify-sonar-phase.js hardcoded security section header d... | S2 | home/user/sonash-v0/scripts/verify-sonar-phase.js | 0 |
-| DEBT-3169 | RECAPTCHA_REMOVAL_GUIDE.md - 745 lines about Firebase con... | S2 | home/user/sonash-v0/docs/RECAPTCHA_REMOVAL_GUIDE.md | 0 |
-| DEBT-3170 | REVIEW_POLICY_INDEX.md - 370 lines index without inbound ... | S2 | home/user/sonash-v0/docs/REVIEW_POLICY_INDEX.md | 0 |
-| DEBT-3171 | PLAN_MAP.md - 242 lines documentation hierarchy map never... | S2 | home/user/sonash-v0/docs/PLAN_MAP.md | 0 |
-| DEBT-3172 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev... | S2 | home/user/sonash-v0/docs/MCP_SERVER_AUDIT.md | 0 |
-| DEBT-3177 | SKILL_AGENT_POLICY.md - 0 refs despite defining usage policy | S2 | home/user/sonash-v0/docs/agent_docs/SKILL_AGENT_POLICY.md | 0 |
-| DEBT-3178 | Audit inventory stage files (6 files) - generated but unr... | S2 | home/user/sonash-v0/docs/audits/single-session/process/audit-2026-02-09/stage-1*.md | 0 |
-| DEBT-3180 | Plan documents with zero inbound refs - 5 planning files ... | S2 | home/user/sonash-v0/docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others | 0 |
-| DEBT-3184 | Dead Script: dedupe-quotes.ts | S2 | scripts/dedupe-quotes.ts | 0 |
-| DEBT-3185 | Dead Script: enrich-addresses.ts | S2 | scripts/enrich-addresses.ts | 0 |
-| DEBT-3186 | Dead Script: import-nashville-links.ts | S2 | scripts/import-nashville-links.ts | 0 |
-| DEBT-3187 | Dead Script: migrate-library-content.ts | S2 | scripts/migrate-library-content.ts | 0 |
-| DEBT-3188 | Dead Script: migrate-meetings-dayindex.ts | S2 | scripts/migrate-meetings-dayindex.ts | 0 |
-| DEBT-3189 | Dead Script: migrate-to-journal.ts | S2 | scripts/migrate-to-journal.ts | 0 |
-| DEBT-3190 | Dead Script: seed-meetings.ts | S2 | scripts/seed-meetings.ts | 0 |
-| DEBT-3191 | Dead Script: seed-real-data.ts | S2 | scripts/seed-real-data.ts | 0 |
-| DEBT-3192 | Dead Script: seed-sober-living-data.ts | S2 | scripts/seed-sober-living-data.ts | 0 |
-| DEBT-3193 | Dead Script: set-admin-claim.ts | S2 | scripts/set-admin-claim.ts | 0 |
-| DEBT-3194 | Dead Script: sync-geocache.ts | S2 | scripts/sync-geocache.ts | 0 |
-| DEBT-3195 | Dead Script: test-geocode.ts | S2 | scripts/test-geocode.ts | 0 |
-| DEBT-3196 | Dead Script: retry-failures.ts | S2 | scripts/retry-failures.ts | 0 |
-| DEBT-3197 | session-start.js spawns 2 unnecessary child processes for... | S2 | .claude/hooks/session-start.js | 0 |
-| DEBT-3198 | session-start.sh (365 lines) is dead code — replaced by s... | S2 | .claude/hooks/session-start.sh | 0 |
-| DEBT-3199 | stop-serena-dashboard.js runs every SessionStart despite ... | S2 | .claude/hooks/stop-serena-dashboard.js | 0 |
-| DEBT-3200 | Shell hooks (.sh) are dead code — replaced by .js equival... | S2 | .claude/hooks/session-start.sh | 0 |
-| DEBT-3201 | Agent sub-prompts omit evidence field from output schema | S2 | .claude/skills/audit-ai-optimization/SKILL.md | 0 |
-| DEBT-3208 | Dead Documentation: Code Review Checklist references | S2 | .claude/skills/code-reviewer/SKILL.md | 140 |
-| DEBT-3209 | Fragile Parsing: Git output parsing in post-read-handler.js | S2 | .claude/hooks/post-read-handler.js | 0 |
-| DEBT-3210 | AI Instruction Bloat: audit-code SKILL.md | S2 | .claude/skills/audit-code/SKILL.md | 0 |
-| DEBT-3211 | check-edit-requirements.sh and check-write-requirements.s... | S2 | .claude/hooks/check-edit-requirements.sh | 0 |
-| DEBT-3212 | post-write-validator.js and pattern-check.js share identi... | S2 | .claude/hooks/post-write-validator.js | 0 |
-| DEBT-3213 | Multiple hooks contain duplicated gitExec helper function | S2 | .claude/hooks/post-read-handler.js | 0 |
-| DEBT-3214 | Context Optimization: Heavy episodic memory search | S2 | .claude/skills/audit-code/SKILL.md | 0 |
-| DEBT-3215 | Pre-commit subagent Task prompt is under-specified for de... | S2 | .claude/skills/pre-commit-fixer/SKILL.md | 0 |
-| DEBT-3216 | CRITICAL Persistence Rules boilerplate copy-pasted across... | S2 | .claude/skills/audit-ai-optimization/SKILL.md | 0 |
-| DEBT-3217 | hook-warnings-log.jsonl has repetitive low-value entries ... | S2 | .claude/state/hook-warnings-log.jsonl | 0 |
-| DEBT-3218 | Legacy shell hook scripts appear runtime-unused (possibly... | S2 | .claude/hooks/analyze-user-request.sh | 0 |
-| DEBT-3219 | 13 consolidated-out hook JS files remain as dead standalo... | S2 | .claude/hooks/agent-trigger-enforcer.js | 0 |
-| DEBT-3220 | Task() sub-agents dont check FALSE_POSITIVES.jsonl before... | S2 | .claude/skills/audit-ai-optimization/SKILL.md | 0 |
-| DEBT-3221 | stop-serena-dashboard.js uses 6+ execFileSync calls at se... | S2 | .claude/hooks/stop-serena-dashboard.js | 0 |
-| DEBT-3222 | Scripts not in package.json: add-false-positive.js, assig... | S2 | scripts/add-false-positive.js | 0 |
-| DEBT-3223 | Hooks use string manipulation where JSON.parse should be ... | S2 | .claude/hooks/state-utils.js | 0 |
-| DEBT-3224 | Audit skill prompts may not consistently reference FALSE_... | S2 | .claude/skills/audit-ai-optimization/SKILL.md | 0 |
-| DEBT-3226 | Skill Overlap: audit-code vs code-reviewer | S2 | .claude/skills/audit-code/SKILL.md | 0 |
-| DEBT-3230 | Subprocess Overhead: Node spawning in hooks | S2 | .claude/hooks/session-start.js | 0 |
-| DEBT-3232 | SKILL.md file exceeds 500 lines with duplicated boilerplate | S2 | .claude/skills/audit-ai-optimization/SKILL.md | 0 |
-| DEBT-3235 | Audit skill templates have high duplication and could be ... | S2 | .claude/skills/audit-code/SKILL.md | 0 |
-| DEBT-3236 | Session-start hook is 505 lines with inline prompts >10 l... | S2 | .claude/hooks/session-start.js | 0 |
-| DEBT-3237 | State JSONL files growing without bounds - reviews.jsonl ... | S2 | .claude/state/reviews.jsonl | 0 |
-| DEBT-3240 | Skills read entire large files when only headers/sections... | S2 | .claude/skills/session-begin/ | 0 |
-| DEBT-3241 | doc-optimizer and audit-process SKILL.md exceed 1500 line... | S2 | .claude/skills/doc-optimizer/SKILL.md | 0 |
-| DEBT-3242 | 10 audit skills share >50% identical structure without sh... | S2 | .claude/skills/audit-code/SKILL.md | 0 |
-| DEBT-3141 | SESSION_CONTEXT.md recent session summaries | S3 | home/user/sonash-v0/SESSION_CONTEXT.md | 0 |
-| DEBT-3142 | PLAN_MAP.md version history table | S3 | home/user/sonash-v0/docs/PLAN_MAP.md | 0 |
-| DEBT-3143 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou... | S3 | home/user/sonash-v0/docs/AI_REVIEW_LEARNINGS_LOG.md | 0 |
-| DEBT-3144 | ROADMAP_LOG.md completed items history (31KB, 1,129 lines) | S3 | home/user/sonash-v0/ROADMAP_LOG.md | 0 |
-| DEBT-3146 | check-review-triggers.sh - Dead shell script for multi-AI... | S3 | home/user/sonash-v0/scripts/check-review-triggers.sh | 0 |
-| DEBT-3149 | generate-placement-report.js - Unused roadmap placement s... | S3 | home/user/sonash-v0/scripts/generate-placement-report.js | 0 |
-| DEBT-3151 | redeploy-admin-dashboard.sh - Firebase deployment helper ... | S3 | home/user/sonash-v0/scripts/redeploy-admin-dashboard.sh | 0 |
-| DEBT-3153 | seed-commit-log.js - One-time commit log backfill utility | S3 | home/user/sonash-v0/scripts/seed-commit-log.js | 0 |
-| DEBT-3173 | MCP_SETUP.md - 178 lines configuration guide without trac... | S3 | home/user/sonash-v0/docs/MCP_SETUP.md | 0 |
-| DEBT-3174 | LEARNING_METRICS.md - 84 lines metrics tracking document | S3 | home/user/sonash-v0/docs/LEARNING_METRICS.md | 0 |
-| DEBT-3175 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve... | S3 | home/user/sonash-v0/docs/AUTOMATION_AUDIT_REPORT.md | 0 |
-| DEBT-3179 | ADR template and decisions/README - decision framework un... | S3 | home/user/sonash-v0/docs/decisions/ | 0 |
-| DEBT-3225 | filesystem MCP server configured but permanently disabled... | S3 | .mcp.json | 0 |
-| DEBT-3227 | Dead Documentation: technical-debt/INDEX.md | S3 | docs/technical-debt/INDEX.md | 0 |
-| DEBT-3228 | MCP Config Efficiency: Unused filesystem server | S3 | .mcp.json | 0 |
-| DEBT-3229 | Format Waste: Verbose session-start output | S3 | .claude/hooks/session-start.js | 0 |
-| DEBT-3231 | Dead Documentation: technical-debt/logs artifacts | S3 | docs/technical-debt/logs/verification-log.jsonl | 0 |
-| DEBT-3233 | settings.json disabledMcpjsonServers has 3 stale entries ... | S3 | .claude/settings.json | 0 |
-| DEBT-3234 | Session-begin checklist duplicates mandatory context reads | S3 | .claude/skills/session-begin/SKILL.md | 0 |
-| DEBT-3238 | session-start.js reads full reviews.jsonl for a single co... | S3 | .claude/hooks/session-start.js | 0 |
-| DEBT-3239 | MCP servers configured but 4 are disabled — disabled list... | S3 | .claude/settings.json | 0 |
-| DEBT-3243 | Multiple hooks duplicate loadJson/saveJson atomic write p... | S3 | .claude/hooks/post-read-handler.js | 0 |
-| DEBT-3244 | health-score-log.jsonl and hook-warnings-log.jsonl grow u... | S3 | .claude/state/health-score-log.jsonl | 0 |
-| DEBT-3245 | Remote-branch parsing relies on delimiter split that can ... | S3 | .claude/hooks/check-remote-session-context.js | 0 |
-| DEBT-3246 | Shell script hooks may be redundant with Node.js versions | S3 | .claude/hooks/session-start.sh | 0 |
-| DEBT-3156 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | S0 | All 57 files with AI Instructions sections | 0 |
-| DEBT-3157 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks | S0 | home/user/sonash-v0/.claude/hooks/commit-tracker.js | 0 |
-| DEBT-3158 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | S0 | home/user/sonash-v0/.claude/hooks/auto-save-context.js | 0 |
-| DEBT-3167 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide... | S0 | home/user/sonash-v0/docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md | 0 |
+| ID        | Title                                                        | Severity | File                                                                                 | Line |
+| --------- | ------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------ | ---- |
+| DEBT-3131 | ROADMAP.md milestone tracking tables                         | S1       | home/user/sonash-v0/ROADMAP.md                                                       | 0    |
+| DEBT-3132 | AUDIT_TRACKER.md audit log tables                            | S1       | home/user/sonash-v0/docs/AUDIT_TRACKER.md                                            | 0    |
+| DEBT-3133 | EXPANSION_EVALUATION_TRACKER.md decision log with 280 ideas  | S1       | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md                             | 0    |
+| DEBT-3134 | AUDIT_TRACKER.md threshold matrix and version history        | S1       | home/user/sonash-v0/docs/AUDIT_TRACKER.md                                            | 0    |
+| DEBT-3154 | sync-claude-settings.js - Unused Claude Code settings syn... | S1       | home/user/sonash-v0/scripts/sync-claude-settings.js                                  | 0    |
+| DEBT-3159 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl... | S1       | home/user/sonash-v0/scripts/check-backlog-health.js                                  | 0    |
+| DEBT-3160 | Markdown table parsing in update-readme-status.js with pi... | S1       | home/user/sonash-v0/scripts/update-readme-status.js                                  | 0    |
+| DEBT-3161 | check-session-gaps.js relies on hardcoded Session Context... | S1       | home/user/sonash-v0/scripts/check-session-gaps.js                                    | 0    |
+| DEBT-3162 | aggregate-audit-findings.js markdown parsing fragility in... | S1       | home/user/sonash-v0/scripts/aggregate-audit-findings.js                              | 0    |
+| DEBT-3163 | generate-pending-alerts.js fragile DEFERRED item extraction  | S1       | home/user/sonash-v0/scripts/generate-pending-alerts.js                               | 0    |
+| DEBT-3168 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused       | S1       | home/user/sonash-v0/docs/HOOKIFY_STRATEGY.md                                         | 0    |
+| DEBT-3176 | FIX_TEMPLATES.md - 0 outbound refs for Qodo PR fixes         | S1       | home/user/sonash-v0/docs/agent_docs/FIX_TEMPLATES.md                                 | 0    |
+| DEBT-3181 | Technical debt view files - generated views without integ... | S1       | home/user/sonash-v0/docs/technical-debt/views/                                       | 0    |
+| DEBT-2808 | Date formats inconsistent across the app                     | S2       | src/components                                                                       | 0    |
+| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | src                                                                                  | 0    |
+| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | docs                                                                                 | 0    |
+| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | package.json                                                                         | 0    |
+| DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | src/components                                                                       | 0    |
+| DEBT-3127 | Add shellcheck to pre-commit hooks for shell script linting  | S2       | .husky/                                                                              | 0    |
+| DEBT-3130 | Untitled finding                                             | S2       | N/A                                                                                  | 0    |
+| DEBT-3135 | DOCUMENT_DEPENDENCIES.md sync status tracking                | S2       | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md                                    | 0    |
+| DEBT-3136 | SESSION_CONTEXT.md quick status table                        | S2       | home/user/sonash-v0/SESSION_CONTEXT.md                                               | 0    |
+| DEBT-3137 | DOCUMENT_DEPENDENCIES.md cross-document update triggers m... | S2       | home/user/sonash-v0/docs/DOCUMENT_DEPENDENCIES.md                                    | 0    |
+| DEBT-3138 | ROADMAP.md detailed milestone specifications embedded        | S2       | home/user/sonash-v0/ROADMAP.md                                                       | 0    |
+| DEBT-3139 | PR_WORKFLOW_CHECKLIST.md version history table               | S2       | home/user/sonash-v0/docs/PR_WORKFLOW_CHECKLIST.md                                    | 0    |
+| DEBT-3140 | EXPANSION_EVALUATION_TRACKER.md command reference table      | S2       | home/user/sonash-v0/docs/EXPANSION_EVALUATION_TRACKER.md                             | 0    |
+| DEBT-3145 | ai-review.js - Unused AI review prompt applicator            | S2       | home/user/sonash-v0/scripts/ai-review.js                                             | 0    |
+| DEBT-3147 | create-canonical-findings.js - Unused canonical findings ... | S2       | home/user/sonash-v0/scripts/create-canonical-findings.js                             | 0    |
+| DEBT-3148 | generate-pending-alerts.js - Unused session-start alert g... | S2       | home/user/sonash-v0/scripts/generate-pending-alerts.js                               | 0    |
+| DEBT-3150 | migrate-existing-findings.js - Unused legacy findings mig... | S2       | home/user/sonash-v0/scripts/migrate-existing-findings.js                             | 0    |
+| DEBT-3152 | regenerate-findings-index.js - Unused canonical findings ... | S2       | home/user/sonash-v0/scripts/regenerate-findings-index.js                             | 0    |
+| DEBT-3155 | update-legacy-lines.js - Unused legacy findings line numb... | S2       | home/user/sonash-v0/scripts/update-legacy-lines.js                                   | 0    |
+| DEBT-3164 | check-roadmap-health.js version parsing regex scoped to s... | S2       | home/user/sonash-v0/scripts/check-roadmap-health.js                                  | 0    |
+| DEBT-3165 | Multi-AI normalize-format.js markdown table detection and... | S2       | home/user/sonash-v0/scripts/multi-ai/normalize-format.js                             | 0    |
+| DEBT-3166 | verify-sonar-phase.js hardcoded security section header d... | S2       | home/user/sonash-v0/scripts/verify-sonar-phase.js                                    | 0    |
+| DEBT-3169 | RECAPTCHA_REMOVAL_GUIDE.md - 745 lines about Firebase con... | S2       | home/user/sonash-v0/docs/RECAPTCHA_REMOVAL_GUIDE.md                                  | 0    |
+| DEBT-3170 | REVIEW_POLICY_INDEX.md - 370 lines index without inbound ... | S2       | home/user/sonash-v0/docs/REVIEW_POLICY_INDEX.md                                      | 0    |
+| DEBT-3171 | PLAN_MAP.md - 242 lines documentation hierarchy map never... | S2       | home/user/sonash-v0/docs/PLAN_MAP.md                                                 | 0    |
+| DEBT-3172 | MCP_SERVER_AUDIT.md - 374 lines about MCP consumption nev... | S2       | home/user/sonash-v0/docs/MCP_SERVER_AUDIT.md                                         | 0    |
+| DEBT-3177 | SKILL_AGENT_POLICY.md - 0 refs despite defining usage policy | S2       | home/user/sonash-v0/docs/agent_docs/SKILL_AGENT_POLICY.md                            | 0    |
+| DEBT-3178 | Audit inventory stage files (6 files) - generated but unr... | S2       | home/user/sonash-v0/docs/audits/single-session/process/audit-2026-02-09/stage-1\*.md | 0    |
+| DEBT-3180 | Plan documents with zero inbound refs - 5 planning files ... | S2       | home/user/sonash-v0/docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others                | 0    |
+| DEBT-3230 | Subprocess Overhead: Node spawning in hooks                  | S2       | .claude/hooks/session-start.js                                                       | 0    |
+| DEBT-3141 | SESSION_CONTEXT.md recent session summaries                  | S3       | home/user/sonash-v0/SESSION_CONTEXT.md                                               | 0    |
+| DEBT-3142 | PLAN_MAP.md version history table                            | S3       | home/user/sonash-v0/docs/PLAN_MAP.md                                                 | 0    |
+| DEBT-3143 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou... | S3       | home/user/sonash-v0/docs/AI_REVIEW_LEARNINGS_LOG.md                                  | 0    |
+| DEBT-3144 | ROADMAP_LOG.md completed items history (31KB, 1,129 lines)   | S3       | home/user/sonash-v0/ROADMAP_LOG.md                                                   | 0    |
+| DEBT-3146 | check-review-triggers.sh - Dead shell script for multi-AI... | S3       | home/user/sonash-v0/scripts/check-review-triggers.sh                                 | 0    |
+| DEBT-3149 | generate-placement-report.js - Unused roadmap placement s... | S3       | home/user/sonash-v0/scripts/generate-placement-report.js                             | 0    |
+| DEBT-3151 | redeploy-admin-dashboard.sh - Firebase deployment helper ... | S3       | home/user/sonash-v0/scripts/redeploy-admin-dashboard.sh                              | 0    |
+| DEBT-3153 | seed-commit-log.js - One-time commit log backfill utility    | S3       | home/user/sonash-v0/scripts/seed-commit-log.js                                       | 0    |
+| DEBT-3173 | MCP_SETUP.md - 178 lines configuration guide without trac... | S3       | home/user/sonash-v0/docs/MCP_SETUP.md                                                | 0    |
+| DEBT-3174 | LEARNING_METRICS.md - 84 lines metrics tracking document     | S3       | home/user/sonash-v0/docs/LEARNING_METRICS.md                                         | 0    |
+| DEBT-3175 | AUTOMATION_AUDIT_REPORT.md - 255 lines audit results neve... | S3       | home/user/sonash-v0/docs/AUTOMATION_AUDIT_REPORT.md                                  | 0    |
+| DEBT-3179 | ADR template and decisions/README - decision framework un... | S3       | home/user/sonash-v0/docs/decisions/                                                  | 0    |
+| DEBT-3156 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ... | S0       | All 57 files with AI Instructions sections                                           | 0    |
+| DEBT-3157 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks          | S0       | home/user/sonash-v0/.claude/hooks/commit-tracker.js                                  | 0    |
+| DEBT-3158 | SESSION_DECISIONS.md Decision Block Regex in auto-save-co... | S0       | home/user/sonash-v0/.claude/hooks/auto-save-context.js                               | 0    |
+| DEBT-3167 | SoNash_Technical_Ideation_Multi_AI 1.20.26.md - 4.1KB ide... | S0       | home/user/sonash-v0/docs/SoNash_Technical_Ideation_Multi_AI 1.20.26.md               | 0    |

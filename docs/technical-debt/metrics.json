@@ -1,19 +1,19 @@
 {
-  "generated": "2026-02-17T21:14:03.390Z",
+  "generated": "2026-02-17T23:33:03.550Z",
   "generated_date": "2026-02-17",
   "summary": {
     "total": 2547,
-    "open": 2034,
-    "resolved": 245,
-    "false_positives": 268,
+    "open": 2018,
+    "resolved": 257,
+    "false_positives": 272,
     "resolution_rate_pct": 10
   },
   "by_status": {
-    "NEW": 123,
-    "VERIFIED": 1911,
-    "IN_PROGRESS": 0,
-    "RESOLVED": 245,
-    "FALSE_POSITIVE": 268
+    "NEW": 59,
+    "VERIFIED": 1924,
+    "IN_PROGRESS": 35,
+    "RESOLVED": 257,
+    "FALSE_POSITIVE": 272
   },
   "by_severity": {
     "S0": 36,
@@ -167,6 +167,6 @@
     "avg_age_days": 12,
     "oldest_age_days": 18,
     "oldest_item_id": "DEBT-0001",
-    "verification_queue_size": 123
+    "verification_queue_size": 59
   }
 }

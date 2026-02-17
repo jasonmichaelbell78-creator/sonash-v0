@@ -28,52 +28,52 @@ distribution.
 
 ## Summary
 
-| Metric | Value |
-|--------|-------|
-| Total Items | 2547 |
-| Open Items | 2034 |
-| Resolved | 245 |
-| False Positives | 268 |
-| Resolution Rate | 10% |
+| Metric          | Value |
+| --------------- | ----- |
+| Total Items     | 2547  |
+| Open Items      | 2018  |
+| Resolved        | 257   |
+| False Positives | 272   |
+| Resolution Rate | 10%   |
 
 ---
 
 ## By Status
 
-| Status | Count |
-|--------|-------|
-| NEW | 123 |
-| VERIFIED | 1911 |
-| IN_PROGRESS | 0 |
-| RESOLVED | 245 |
-| FALSE_POSITIVE | 268 |
+| Status         | Count |
+| -------------- | ----- |
+| NEW            | 59    |
+| VERIFIED       | 1924  |
+| IN_PROGRESS    | 35    |
+| RESOLVED       | 257   |
+| FALSE_POSITIVE | 272   |
 
 ---
 
 ## By Severity
 
-| Severity | Count | % of Total |
-|----------|-------|------------|
-| S0 (Critical) | 36 | 1% |
-| S1 (High) | 438 | 17% |
-| S2 (Medium) | 1146 | 45% |
-| S3 (Low) | 927 | 36% |
+| Severity      | Count | % of Total |
+| ------------- | ----- | ---------- |
+| S0 (Critical) | 36    | 1%         |
+| S1 (High)     | 438   | 17%        |
+| S2 (Medium)   | 1146  | 45%        |
+| S3 (Low)      | 927   | 36%        |
 
 ---
 
 ## By Category
 
-| Category | Count |
-|----------|-------|
-| code-quality | 1454 |
-| documentation | 467 |
-| process | 336 |
-| ai-optimization | 116 |
-| security | 85 |
-| performance | 50 |
-| refactoring | 22 |
-| engineering-productivity | 9 |
-| enhancements | 8 |
+| Category                 | Count |
+| ------------------------ | ----- |
+| code-quality             | 1454  |
+| documentation            | 467   |
+| process                  | 336   |
+| ai-optimization          | 116   |
+| security                 | 85    |
+| performance              | 50    |
+| refactoring              | 22    |
+| engineering-productivity | 9     |
+| enhancements             | 8     |
 
 ---
 
@@ -81,29 +81,49 @@ distribution.
 
 ### S0 Critical Alerts (15)
 
-- **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity fr (functions/src/admin.ts:576)
-- **DEBT-0037**: Refactor this function to reduce its Cognitive Complexity fr (components/widgets/compact-meeting-countdown.tsx:69)
-- **DEBT-0854**: App Check disabled on all production Cloud Functions (functions/src/index.ts:0)
-- **DEBT-1056**: Refactor this function to reduce its Cognitive Complexity fr (components/admin/errors-tab.tsx:327)
-- **DEBT-1064**: Refactor this code to not nest functions more than 4 levels  (components/admin/logs-tab.tsx:342)
-- **DEBT-1538**: Refactor this function to reduce its Cognitive Complexity fr (functions/src/jobs.ts:1059)
-- **DEBT-1624**: Refactor this function to reduce its Cognitive Complexity fr (components/dev/lighthouse-tab.tsx:81)
-- **DEBT-1912**: Security risk: Client-side filtering of sensitive data (hooks/use-journal.ts:174)
-- **DEBT-2499**: CI gap: pull_request_target security vulnerability allows un (.github/workflows/deploy-firebase.yml:7)
-- **DEBT-3079**: CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn (N/A:0)
+- **DEBT-0012**: Refactor this function to reduce its Cognitive Complexity fr
+  (functions/src/admin.ts:576)
+- **DEBT-0037**: Refactor this function to reduce its Cognitive Complexity fr
+  (components/widgets/compact-meeting-countdown.tsx:69)
+- **DEBT-0854**: App Check disabled on all production Cloud Functions
+  (functions/src/index.ts:0)
+- **DEBT-1056**: Refactor this function to reduce its Cognitive Complexity fr
+  (components/admin/errors-tab.tsx:327)
+- **DEBT-1064**: Refactor this code to not nest functions more than 4 levels
+  (components/admin/logs-tab.tsx:342)
+- **DEBT-1538**: Refactor this function to reduce its Cognitive Complexity fr
+  (functions/src/jobs.ts:1059)
+- **DEBT-1624**: Refactor this function to reduce its Cognitive Complexity fr
+  (components/dev/lighthouse-tab.tsx:81)
+- **DEBT-1912**: Security risk: Client-side filtering of sensitive data
+  (hooks/use-journal.ts:174)
+- **DEBT-2499**: CI gap: pull_request_target security vulnerability allows un
+  (.github/workflows/deploy-firebase.yml:7)
+- **DEBT-3079**: CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn
+  (N/A:0)
 
 ### S1 High Priority Alerts (399)
 
-- **DEBT-0001**: Provide a compare function to avoid sorting elements alphabe (app/meetings/all/page.tsx:164)
-- **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe (components/notebook/pages/resources-page.tsx:306)
-- **DEBT-0003**: Use '[[' instead of '[' for conditional tests. The '[[' cons (.claude/hooks/session-start.sh:264)
-- **DEBT-0004**: Use '[[' instead of '[' for conditional tests. The '[[' cons (.claude/hooks/pattern-check.sh:89)
-- **DEBT-0005**: Use '[[' instead of '[' for conditional tests. The '[[' cons (scripts/check-review-triggers.sh:44)
-- **DEBT-0006**: Use '[[' instead of '[' for conditional tests. The '[[' cons (.claude/skills/artifacts-builder/scripts/bundle-artifact.sh:7)
-- **DEBT-0007**: Use '[[' instead of '[' for conditional tests. The '[[' cons (.claude/skills/artifacts-builder/scripts/init-artifact.sh:11)
-- **DEBT-0008**: Use '[[' instead of '[' for conditional tests. The '[[' cons (.claude/skills/systematic-debugging/find-polluter.sh:8)
-- **DEBT-0009**: Exporting mutable 'let' binding, use 'const' instead. (lib/firebase.ts:137)
-- **DEBT-0010**: Refactor this function to reduce its Cognitive Complexity fr (lib/db/meetings.ts:21)
+- **DEBT-0001**: Provide a compare function to avoid sorting elements alphabe
+  (app/meetings/all/page.tsx:164)
+- **DEBT-0002**: Provide a compare function to avoid sorting elements alphabe
+  (components/notebook/pages/resources-page.tsx:306)
+- **DEBT-0003**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (.claude/hooks/session-start.sh:264)
+- **DEBT-0004**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (.claude/hooks/pattern-check.sh:89)
+- **DEBT-0005**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (scripts/check-review-triggers.sh:44)
+- **DEBT-0006**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (.claude/skills/artifacts-builder/scripts/bundle-artifact.sh:7)
+- **DEBT-0007**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (.claude/skills/artifacts-builder/scripts/init-artifact.sh:11)
+- **DEBT-0008**: Use '[[' instead of '[' for conditional tests. The '[[' cons
+  (.claude/skills/systematic-debugging/find-polluter.sh:8)
+- **DEBT-0009**: Exporting mutable 'let' binding, use 'const' instead.
+  (lib/firebase.ts:137)
+- **DEBT-0010**: Refactor this function to reduce its Cognitive Complexity fr
+  (lib/db/meetings.ts:21)
 
 _...and 389 more S1 items_
 
@@ -111,20 +131,20 @@ _...and 389 more S1 items_
 
 ## Health Metrics
 
-| Metric | Value |
-|--------|-------|
-| Verification Queue | 123 items |
-| Avg Age (Open Items) | 12 days |
-| Oldest Item Age | 18 days |
-| Oldest Item | DEBT-0001 |
+| Metric               | Value     |
+| -------------------- | --------- |
+| Verification Queue   | 59 items  |
+| Avg Age (Open Items) | 12 days   |
+| Oldest Item Age      | 18 days   |
+| Oldest Item          | DEBT-0001 |
 
 ---
 
 ## Data Sources
 
-| Source | Count |
-|--------|-------|
-| unknown | 2547 |
+| Source  | Count |
+| ------- | ----- |
+| unknown | 2547  |
 
 ---
 
