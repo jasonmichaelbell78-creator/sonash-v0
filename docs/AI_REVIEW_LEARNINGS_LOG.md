@@ -760,6 +760,40 @@ prevented R4-R6 entirely, saving ~3 review rounds.
 
 ---
 
+#### Review #342: PR #369 R8 — CC buildResults+statusIcon, guardSymlink+safeRename, Symlink Walk, detectAndMapFormat (2026-02-17)
+
+**Source:** SonarCloud (3 Issues) + Qodo Security (1) + Qodo Compliance (2) +
+Qodo Suggestions (7) **PR/Branch:** claude/cherry-pick-recent-commits-X1eKD (PR
+\#369) **Suggestions:** 13 total (Fixed: 8, Rejected: 5)
+
+**Patterns Identified:**
+
+1. **Extract buildResults()+statusIcon() for CC reduction** —
+   count-commits-since.js main() CC 17→~8 by extracting the commit-counting loop
+   and nested ternary into named helpers.
+2. **Extract guardSymlink()+safeRename() for CC reduction** —
+   track-resolutions.js writeMasterDebt() CC 20→~6 by extracting symlink guard
+   and cross-platform rename into reusable helpers.
+3. **Skip symlinks in directory walk** — generate-results-index.js walk()
+   traversed symlinks, risking infinite loops or path traversal.
+   `entry.isSymbolicLink()` check added before `isDirectory()`.
+4. **Restrict fstatSync scan to openSync** — Pattern compliance checker's
+   forward scan for fstatSync should only trigger for openSync calls (not
+   writeFileSync), and should start from current line `i` not `backStart`.
+5. **Sequential format detection** — intake-audit.js detectAndMapFormat
+   refactored from mutating let variables to early-return pattern, preventing
+   accidental remapping of already-TDMS items.
+6. **Error field as string** — JSON output error field changed from boolean to
+   descriptive string "Failed to count commits" for consumer clarity.
+7. **Silent error in --json mode** — printNoData now outputs
+   `{"error":"message"}` instead of `{}` so callers can distinguish failure from
+   "no thresholds exceeded".
+
+**Resolution Stats:** 8/13 fixed (62%), 5/13 rejected (JSONL data quality x3,
+file/line normalization x1, state-manager dedup x1)
+
+---
+
 #### Review #341: PR #369 R7 — CC indexByKey, Ancestor Symlink, fstatSync Forward Scan, Error -1 (2026-02-17)
 
 **Source:** SonarCloud (1 CC Issue) + Qodo Security (2) + Qodo Compliance (2) +

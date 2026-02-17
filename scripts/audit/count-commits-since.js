@@ -200,11 +200,53 @@ function countCommitsSince(date) {
  */
 function printNoData(jsonOutput, detail) {
   if (jsonOutput) {
-    console.log("{}");
+    console.log(JSON.stringify({ error: detail || "unable to read AUDIT_TRACKER.md" }));
   } else {
     console.log("Audit Commit Thresholds:");
     console.log(`  ${detail || "(unable to read AUDIT_TRACKER.md)"}`);
   }
+}
+
+/**
+ * Derive a status icon string from error/exceeded flags.
+ * @param {boolean} isError
+ * @param {boolean} exceeded
+ * @returns {string}
+ */
+function statusIcon(isError, exceeded) {
+  if (isError) return "\u274c ERROR";
+  if (exceeded) return "\u26a0\ufe0f EXCEEDED";
+  return "\u2705 OK";
+}
+
+/**
+ * Build commit-count results for each category.
+ * @param {Array} categories
+ * @returns {{ output: Object, lines: string[] }}
+ */
+function buildResults(categories) {
+  const output = {};
+  const lines = [];
+
+  for (const cat of categories) {
+    const commits = countCommitsSince(cat.lastAuditDate);
+    const isError = commits < 0;
+    const exceeded = !isError && commits >= cat.threshold;
+
+    output[cat.key] = {
+      commits: isError ? null : commits,
+      threshold: cat.threshold,
+      exceeded,
+      error: isError ? "Failed to count commits" : undefined,
+    };
+
+    const icon = statusIcon(isError, exceeded);
+    const commitStr = isError ? " err" : String(commits).padStart(4);
+    const label = `${cat.display}:`.padEnd(28);
+    lines.push(`  ${label}${commitStr} commits (threshold: ${cat.threshold}) ${icon}`);
+  }
+
+  return { output, lines };
 }
 
 /**
@@ -230,35 +272,13 @@ function main() {
     process.exit(0);
   }
 
-  // Filter to a single category if requested
   const categories = filterCategories(trackerData, categoryFilter);
-
   if (categories.length === 0) {
     printNoData(jsonOutput, `No matching category found for: ${categoryFilter}`);
     process.exit(0);
   }
 
-  // Count commits for each category
-  const output = {};
-  const lines = [];
-
-  for (const cat of categories) {
-    const commits = countCommitsSince(cat.lastAuditDate);
-    const isError = commits < 0;
-    const exceeded = !isError && commits >= cat.threshold;
-
-    output[cat.key] = {
-      commits: isError ? null : commits,
-      threshold: cat.threshold,
-      exceeded,
-      error: isError || undefined,
-    };
-
-    const statusIcon = isError ? "\u274c ERROR" : exceeded ? "\u26a0\ufe0f EXCEEDED" : "\u2705 OK";
-    const commitStr = isError ? " err" : String(commits).padStart(4);
-    const label = `${cat.display}:`.padEnd(28);
-    lines.push(`  ${label}${commitStr} commits (threshold: ${cat.threshold}) ${statusIcon}`);
-  }
+  const { output, lines } = buildResults(categories);
 
   if (jsonOutput) {
     console.log(JSON.stringify(output));

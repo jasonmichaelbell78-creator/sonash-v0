@@ -1034,9 +1034,9 @@ const ANTI_PATTERNS = [
           }
         }
         // fd-based chains: openSync→fstatSync places fstatSync AFTER the open call
-        if (!hasGuard) {
+        if (!hasGuard && hasOpenSync) {
           const fwdEnd = Math.min(lines.length, i + 11);
-          for (let j = backStart; j < fwdEnd; j++) {
+          for (let j = i; j < fwdEnd; j++) {
             if (lines[j].includes("fstatSync")) {
               hasGuard = true;
               break;

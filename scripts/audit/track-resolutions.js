@@ -93,54 +93,54 @@ function readMasterDebt() {
  * Write items back to MASTER_DEBT.jsonl.
  * @param {Array<Object>} items
  */
-function writeMasterDebt(items) {
-  // Symlink guard — refuse to write through a symlink
+/**
+ * Guard against symlinks on a path. Exits the process if a symlink is detected.
+ * @param {string} targetPath - path to check
+ * @param {string} label - human-readable label for error messages
+ */
+function guardSymlink(targetPath, label) {
   try {
-    const stat = fs.lstatSync(MASTER_DEBT_PATH);
+    const stat = fs.lstatSync(targetPath);
     if (stat.isSymbolicLink()) {
-      console.error(`Error: ${MASTER_DEBT_PATH} is a symlink — refusing to write`);
+      console.error(`Error: ${label} is a symlink — refusing to write`);
       process.exit(1);
     }
   } catch {
-    // File doesn't exist yet — safe to write
+    // Path doesn't exist — safe to proceed
   }
+}
+
+/**
+ * Rename tmpFile to destFile with cross-platform fallback (Windows).
+ * Re-checks for symlinks before retrying.
+ * @param {string} tmpFile
+ * @param {string} destFile
+ * @param {string} destDir
+ */
+function safeRename(tmpFile, destFile, destDir) {
+  try {
+    fs.renameSync(tmpFile, destFile);
+  } catch {
+    guardSymlink(destDir, destDir);
+    guardSymlink(destFile, destFile);
+    try {
+      fs.rmSync(destFile, { force: true });
+    } catch {
+      /* best-effort */
+    }
+    fs.renameSync(tmpFile, destFile);
+  }
+}
+
+function writeMasterDebt(items) {
+  guardSymlink(MASTER_DEBT_PATH, MASTER_DEBT_PATH);
 
   const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
   const dir = path.dirname(MASTER_DEBT_PATH);
   const tmpFile = path.join(dir, `.MASTER_DEBT.jsonl.tmp-${process.pid}-${Date.now()}`);
   try {
-    // Exclusive-create to prevent TOCTOU/symlink races on tmp path
     fs.writeFileSync(tmpFile, content, { encoding: "utf8", flag: "wx" });
-    try {
-      fs.renameSync(tmpFile, MASTER_DEBT_PATH);
-    } catch {
-      // Cross-platform fallback (Windows): remove destination then retry
-      // Re-check dir and dest for symlinks before proceeding
-      try {
-        const dirStat = fs.lstatSync(dir);
-        if (dirStat.isSymbolicLink()) {
-          console.error(`Error: ${dir} is a symlink — refusing to write`);
-          process.exit(1);
-        }
-      } catch {
-        /* dir may not exist */
-      }
-      try {
-        const destStat = fs.lstatSync(MASTER_DEBT_PATH);
-        if (destStat.isSymbolicLink()) {
-          console.error(`Error: ${MASTER_DEBT_PATH} is a symlink — refusing to write`);
-          process.exit(1);
-        }
-      } catch {
-        /* dest may not exist */
-      }
-      try {
-        fs.rmSync(MASTER_DEBT_PATH, { force: true });
-      } catch {
-        /* best-effort */
-      }
-      fs.renameSync(tmpFile, MASTER_DEBT_PATH);
-    }
+    safeRename(tmpFile, MASTER_DEBT_PATH, dir);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error(`Error writing MASTER_DEBT.jsonl: ${msg}`);

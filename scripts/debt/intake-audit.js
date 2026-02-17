@@ -310,17 +310,17 @@ function preserveEnhancementFields(normalized, mappedItem) {
  * Tries enhancement audit first (shares fields with Doc Standards), then Doc Standards.
  */
 function detectAndMapFormat(item) {
-  let { item: mappedItem, metadata: mappingMetadata } = mapEnhancementAuditToTdms(item);
-
-  if (mappingMetadata.format_detected === "tdms") {
-    const docResult = mapDocStandardsToTdms(item);
-    if (docResult.metadata.format_detected === "doc-standards") {
-      mappedItem = docResult.item;
-      mappingMetadata = docResult.metadata;
-    }
+  const enh = mapEnhancementAuditToTdms(item);
+  if (enh.metadata.format_detected === "enhancement-audit") {
+    return { mappedItem: enh.item, mappingMetadata: enh.metadata };
   }
 
-  return { mappedItem, mappingMetadata };
+  const doc = mapDocStandardsToTdms(item);
+  if (doc.metadata.format_detected === "doc-standards") {
+    return { mappedItem: doc.item, mappingMetadata: doc.metadata };
+  }
+
+  return { mappedItem: item, mappingMetadata: { format_detected: "tdms" } };
 }
 
 /**

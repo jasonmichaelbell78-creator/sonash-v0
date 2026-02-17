@@ -25,6 +25,7 @@ function findAuditDirectories(baseDir, pattern) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
 
     for (const entry of entries) {
+      if (entry.isSymbolicLink()) continue;
       if (!entry.isDirectory()) continue;
 
       const fullPath = path.join(dir, entry.name);
