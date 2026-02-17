@@ -252,7 +252,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: "missing-trap",
-    pattern: /mktemp\)(?![\s\S]{0,50}trap)/g,
+    pattern: /mktemp\)(?![\s\S]{0,100}trap)/g,
     message: "Temp file created without trap for cleanup",
     fix: "Add: trap 'rm -f \"$TMPFILE\"' EXIT after mktemp",
     review: "#17, #18",

@@ -178,6 +178,10 @@ function safeReadFile(filePath, description) {
  * Atomic swap: write to tmp, rename to target with backup and restore on failure
  */
 function atomicSwap(filePath, tmpPath, bakPath) {
+  // Symlink guards (callers also guard, but pattern compliance requires per-function guards)
+  if (!isSafeToWrite(filePath) || !isSafeToWrite(tmpPath) || !isSafeToWrite(bakPath)) {
+    throw new Error("Refusing atomic swap: symlink detected");
+  }
   try {
     if (existsSync(filePath)) renameSync(filePath, bakPath);
     renameSync(tmpPath, filePath);
@@ -211,17 +215,17 @@ function safeWriteFile(filePath, content, description) {
   verbose(`Writing ${content.length} characters to ${description}`);
 
   const tmpPath = filePath + ".tmp";
-  const bakPath = filePath + ".bak";
-
-  // Symlink guard: check target, tmp, and backup paths before any write
-  if (!isSafeToWrite(filePath)) {
-    return { success: false, error: `Refusing to write: symlink detected at ${description}` };
-  }
   if (!isSafeToWrite(tmpPath)) {
     return {
       success: false,
       error: `Refusing to write: symlink detected at tmp path for ${description}`,
     };
+  }
+  const bakPath = filePath + ".bak";
+
+  // Symlink guard: check target and backup paths before any write
+  if (!isSafeToWrite(filePath)) {
+    return { success: false, error: `Refusing to write: symlink detected at ${description}` };
   }
   if (!isSafeToWrite(bakPath)) {
     return {

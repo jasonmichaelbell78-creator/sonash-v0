@@ -446,6 +446,7 @@ Checklist (verify before Step 4):
 - [ ] Verdict paragraph with 4 required points
 - [ ] TDMS entries created for action items >5 min (Step 5)
 - [ ] Full retro displayed to user in conversation
+- [ ] Run `npm run reviews:sync -- --apply` to sync retro to JSONL
 
 ### Mechanism 2: Cross-Skill Integration
 

@@ -71,11 +71,7 @@ Minor: X, Trivial: X)
 - <Learning 2>
 ```
 
-## 7.3 Update Quick Index
-
-If a new pattern category emerges, add it to the Quick Pattern Index section.
-
-## 7.4 Consolidation (Automated)
+## 7.3 Consolidation (Automated)
 
 Consolidation is fully automated via JSONL state files. No manual counter
 updates are needed. The system auto-triggers when 10+ reviews accumulate:
@@ -84,20 +80,17 @@ updates are needed. The system auto-triggers when 10+ reviews accumulate:
 - **Reviews:** `.claude/state/reviews.jsonl`
 - **Auto-trigger:** Runs at session-start via `run-consolidation.js --auto`
 
-## 7.5 Health Check (Every 10 Reviews)
+## 7.4 Health Check & Archival
 
-Check document health metrics:
+Run the automated archive check:
 
 ```bash
-wc -l docs/AI_REVIEW_LEARNINGS_LOG.md
+npm run reviews:archive          # Preview (dry run)
+npm run reviews:archive -- --apply  # Execute archival
 ```
 
-**Archival Criteria** (ALL must be true before archiving reviews):
-
-1. Log exceeds 1500 lines
-2. Reviews have been consolidated into claude.md Section 4
-3. At least 10 reviews in the batch being archived
-4. Archive to `docs/archive/REVIEWS_X-Y.md`
+The script archives oldest reviews when active count exceeds 20, keeping the
+newest 20 reviews in the active log.
 
 If criteria met, archive oldest consolidated batch and update Tiered Access
 table.

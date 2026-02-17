@@ -1,36 +1,36 @@
 {
-  "timestamp": "2026-02-15T14:32:14.596Z",
+  "timestamp": "2026-02-17T16:25:41.746Z",
   "healthScore": {
-    "grade": "C",
-    "score": 75,
+    "grade": "A",
+    "score": 90,
     "breakdown": {
       "code": {
-        "score": 60,
+        "score": 90,
         "weight": 0.15,
         "measured": true
       },
       "security": {
-        "score": 70,
+        "score": 100,
         "weight": 0.15,
         "measured": true
       },
       "debt-metrics": {
-        "score": 50,
-        "weight": 0.12,
+        "score": 60,
+        "weight": 0.11,
         "measured": true
       },
       "test-results": {
-        "score": 90,
+        "score": null,
         "weight": 0.1,
-        "measured": true
+        "measured": false
       },
       "learning": {
         "score": 90,
-        "weight": 0.08,
+        "weight": 0.07,
         "measured": true
       },
       "skip-abuse": {
-        "score": 60,
+        "score": 70,
         "weight": 0.03,
         "measured": true
       },
@@ -55,9 +55,9 @@
         "measured": true
       },
       "context-usage": {
-        "score": 100,
+        "score": null,
         "weight": 0.02,
-        "measured": true
+        "measured": false
       },
       "velocity": {
         "score": null,
@@ -65,49 +65,49 @@
         "measured": false
       },
       "review-quality": {
-        "score": null,
+        "score": 100,
         "weight": 0.03,
-        "measured": false
+        "measured": true
       },
       "docs": {
-        "score": null,
+        "score": 100,
         "weight": 0.03,
-        "measured": false
+        "measured": true
       },
       "debt-intake": {
-        "score": null,
+        "score": 100,
         "weight": 0.02,
-        "measured": false
+        "measured": true
       },
       "roadmap-hygiene": {
-        "score": null,
+        "score": 100,
         "weight": 0.02,
-        "measured": false
+        "measured": true
       },
       "trigger-compliance": {
-        "score": null,
+        "score": 100,
         "weight": 0.01,
-        "measured": false
+        "measured": true
       },
       "pattern-sync": {
-        "score": null,
+        "score": 100,
         "weight": 0.01,
-        "measured": false
+        "measured": true
       },
       "doc-placement": {
-        "score": null,
+        "score": 100,
         "weight": 0.01,
-        "measured": false
+        "measured": true
       },
       "external-links": {
-        "score": null,
+        "score": 70,
         "weight": 0.01,
-        "measured": false
+        "measured": true
       },
       "unused-deps": {
-        "score": null,
+        "score": 100,
         "weight": 0.01,
-        "measured": false
+        "measured": true
       },
       "review-churn": {
         "score": null,
@@ -115,9 +115,9 @@
         "measured": false
       },
       "backlog-health": {
-        "score": null,
+        "score": 100,
         "weight": 0.01,
-        "measured": false
+        "measured": true
       },
       "github-actions": {
         "score": null,
@@ -132,18 +132,18 @@
     }
   },
   "summary": {
-    "errors": 4,
-    "warnings": 9,
-    "info": 4
+    "errors": 3,
+    "warnings": 4,
+    "info": 10
   },
   "categoryScores": {
     "code": {
-      "errors": 1,
+      "errors": 0,
       "warnings": 1,
       "info": 0
     },
     "security": {
-      "errors": 1,
+      "errors": 0,
       "warnings": 0,
       "info": 0
     },
@@ -154,7 +154,7 @@
     },
     "debt-metrics": {
       "errors": 1,
-      "warnings": 2,
+      "warnings": 1,
       "info": 1
     },
     "learning": {
@@ -169,18 +169,13 @@
     },
     "hook-warnings": {
       "errors": 0,
-      "warnings": 3,
+      "warnings": 0,
       "info": 1
     },
     "skip-abuse": {
       "errors": 1,
-      "warnings": 1,
+      "warnings": 0,
       "info": 0
-    },
-    "test-results": {
-      "errors": 0,
-      "warnings": 1,
-      "info": 1
     },
     "session-state": {
       "errors": 0,
@@ -193,6 +188,116 @@
       "info": 0
     },
     "context-usage": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "docs": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "roadmap": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "review-quality": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 1
+    },
+    "consolidation": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 1
+    },
+    "commit-activity": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 2
+    },
+    "roadmap-health": {
+      "errors": 0,
+      "warnings": 1,
+      "info": 0
+    },
+    "hook-health": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 2
+    },
+    "debt-intake": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 1
+    },
+    "debt-resolution": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "roadmap-hygiene": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "trigger-compliance": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "pattern-sync": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "doc-placement": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "external-links": {
+      "errors": 1,
+      "warnings": 0,
+      "info": 0
+    },
+    "unused-deps": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "review-churn": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "backlog-health": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "github-actions": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "sonarcloud": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "test-results": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "velocity": {
+      "errors": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "session-activity": {
       "errors": 0,
       "warnings": 0,
       "info": 0

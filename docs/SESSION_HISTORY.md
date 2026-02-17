@@ -22,6 +22,21 @@ actionable.
 
 ## 2026-02 Sessions
 
+### Session #165 (2026-02-16)
+
+**Focus**: PR #369 R8-R9 + RETRO + SKILL UPDATE
+
+- Processed PR #369 R8 (13 items: 8 fixed, 5 rejected) and R9 (9 items: 5 fixed,
+  4 rejected)
+- R8: CC extraction (buildResults+statusIcon, guardSymlink+safeRename), symlink
+  walk skip, detectAndMapFormat early-return, error field strings
+- R9: Fail-closed guardSymlink (propagated to 2 files), non-object JSONL guard,
+  guardSymlink pattern recognizer, source_id regex tightening, file path
+  normalization warning
+- Produced comprehensive PR #369 retrospective (9 rounds, 119 items, 4 ping-pong
+  chains, cross-PR systemic analysis)
+- Updated pr-retro SKILL.md v1.0 → v2.1
+
 ### Session #163 (2026-02-16)
 
 **Focus**: AUDIT ECOSYSTEM FULL HEALTH PLAN

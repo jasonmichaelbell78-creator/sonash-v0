@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 4.3 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 4.4 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-16 (Session #164)
+2026-02-17 (Session #167)
 
 ## AI Instructions
 
@@ -38,7 +38,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 166 (since Jan 1, 2026)
+**Current Session Count**: 167 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -63,20 +63,30 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - Synced 4 reviews, incremented session counter
 - Tests: 293/294 passing
 
-**Session #165 Summary** (PR #369 R8-R9 + RETRO + SKILL UPDATE):
+**Session #166 Summary** (AI REVIEW LEARNINGS SYSTEM OVERHAUL):
 
-- Processed PR #369 R8 (13 items: 8 fixed, 5 rejected) and R9 (9 items: 5 fixed,
-  4 rejected)
-- R8: CC extraction (buildResults+statusIcon, guardSymlink+safeRename), symlink
-  walk skip, detectAndMapFormat early-return, error field strings
-- R9: Fail-closed guardSymlink (propagated to 2 files), non-object JSONL guard,
-  guardSymlink pattern recognizer, source_id regex tightening, file path
-  normalization warning
-- Produced comprehensive PR #369 retrospective (9 rounds, 119 items, 4 ping-pong
-  chains, cross-PR systemic analysis)
-- Updated pr-retro SKILL.md v1.0 → v2.1: comprehensive format canonical, 10
-  mandatory sections, 5 known churn patterns, TDMS enforcement for action items,
-  4 compliance mechanisms, display-to-user rule
+- Full overhaul of AI_REVIEW_LEARNINGS_LOG.md ecosystem (9-step plan)
+- Fixed sync-reviews-to-jsonl.js: severity regex, metadata filtering, --repair
+  mode, retrospective parsing (3 formats)
+- Repaired JSONL data quality: severity 3/61→27/61, learnings 42/61→58/61
+- Cleaned learnings log: removed Quick Index, collapsed version history, removed
+  stale sections (3,423→3,306 lines)
+- Built archive-reviews.js (automated archival, keeps newest 20)
+- Built promote-patterns.js (auto-promotes 3+ patterns to CODE_PATTERNS.md)
+- Updated 14 cross-referenced files (skills, schemas, docs, debt items)
+- Resolved DEBT-3128, DEBT-3129 (Quick Index debt)
+
+**Session #167 Summary** (ALERTS FULL SCAN + S0 SPRINT INTEGRATION):
+
+- Ran `/alerts --full` (33 categories) — processed all 17 alerts interactively
+- Moved 11 S0 critical debt items into Active Sprint in ROADMAP.md with
+  cross-references; updated MASTER_DEBT.jsonl sprintLocation fields
+- Fixed 7 pattern compliance violations (missing-trap regex 50→100, atomicSwap
+  symlink guards, archive-doc.js tmpPath guard placement)
+- Fixed cross-doc-deps false positives: added gitFilter:AD to 2 noisy rules
+- Fixed 2 broken ROADMAP.md links (CLAUDE.md → claude.md with anchors)
+- Added 5 alert suppressions for sandbox/scale false positives
+- Health: A (90/100), 4 fixed, 5 suppressed, 9 acknowledged
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -96,7 +106,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/cherry-pick-recent-commits-X1eKD`
+**Current Branch**: `claude/new-session-6kCvR`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
@@ -106,34 +116,12 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-**Execute Audit Ecosystem Full Health Remediation** —
-[.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md](.claude/plans/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)
-
-39-step implementation across 8 waves:
-
-1. **Wave 1**: Structure — scaffold dirs, move files, fix cross-refs
-2. **Wave 2**: Category Alignment — fix 9-category defs everywhere, fix
-   I0-I3→S0-S3
-3. **Wave 3**: TDMS Pipeline Fixes — intake, validate, metrics bugs + new
-   scripts
-4. **Wave 4**: Skill Rewrites — refactoring, documentation, aggregator,
-   eng-prod, comprehensive
-5. **Wave 5**: Missing Docs + Templates — 3 missing docs, guardrails, template
-   renames
-6. **Wave 6**: Process & Automation — tracker, coordinator, threshold hook
-7. **Wave 7**: Verification — cross-refs, validation scripts, RESULTS_INDEX
-8. **Wave 8**: Improvements — 8 new automation scripts
-
-**Note**: This supersedes the older AUDIT_ECOSYSTEM_CODIFICATION plan.
-
-### After Audit Codification
-
-1. **Fix S0 critical items** (9 items, 6 are E0 Cognitive Complexity) — highest
-   impact on health score
-2. **Fix dedup-multi-pass.js bug** — `secondary.evidence.filter` crashes when
-   evidence is not an array
-3. **GRAND PLAN Sprint 4** (`lib/` + `hooks/` + `app/`) - Continue debt
-   elimination
+1. **Fix 11 S0 critical items** (now in Active Sprint S0 Critical Debt section)
+   — 6 are E0 Cognitive Complexity refactors, 2 security items (App Check, CI
+   vuln)
+2. **GRAND PLAN Sprint 4** (`lib/` + `hooks/` + `app/`) — Continue debt
+   elimination (214 items, 40 files)
+3. **Track B: Dev Dashboard** — B3-B11 remaining (Lighthouse CI, Firestore tabs)
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
@@ -217,6 +205,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------- | ------ |
+| 4.4     | 2026-02-17 | Session #167: Alerts full scan + S0 sprint integration   | Claude |
 | 4.3     | 2026-02-16 | Session #164: Audit ecosystem remediation waves 1-8      | Claude |
 | 4.2     | 2026-02-12 | Session #154: Alerts enhancement plan + dead data audit  | Claude |
 | 4.1     | 2026-02-12 | Session #151: Enhancement audit + skill improvements     | Claude |

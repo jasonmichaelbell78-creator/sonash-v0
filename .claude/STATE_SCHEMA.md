@@ -173,16 +173,28 @@ Stores previous alert run results for delta computation.
 
 ### `consolidation.json`
 
-**Writers:** `alerts/run-alerts.js` **Readers:** `alerts/run-alerts.js` (self)
+**Writers:** `run-consolidation.js` **Readers:** `run-consolidation.js`,
+`check-triggers.js`, `session-start.js`
 
-Tracks consolidation status (archive thresholds).
+Tracks consolidation status (last consolidated review, number, and date).
 
 ### `reviews.jsonl`
 
-**Writers:** Various review/audit scripts **Readers:** `session-start.js`,
-`alerts/run-alerts.js`
+**Writers:** `sync-reviews-to-jsonl.js` **Readers:** `run-consolidation.js`,
+`promote-patterns.js`, `session-start.js`, `alerts/run-alerts.js`
 
-Append-only log of PR reviews. Archive recommended at >50 entries.
+Append-only log of PR reviews and retrospectives. Two entry types:
+
+- **Review entries:** `id` (number), `date`, `title`, `source`, `pr`,
+  `patterns`, `fixed`, `deferred`, `rejected`, `critical`, `major`, `minor`,
+  `trivial`, `total`, `learnings`, `sourceBreakdown`
+- **Retrospective entries:** `id` (string, e.g., "retro-370"), `type`:
+  "retrospective", `pr`, `date`, `rounds`, `totalItems`, `fixed`, `rejected`,
+  `deferred`, `churnChains`, `automationCandidates`, `skillsToUpdate`,
+  `processImprovements`, `learnings`
+
+Managed by: `npm run reviews:sync`, `npm run reviews:repair` (full rebuild).
+Archive at >20 active entries via `npm run reviews:archive`.
 
 ### `warned-files.json`
 

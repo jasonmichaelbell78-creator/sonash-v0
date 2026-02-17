@@ -1,0 +1,48 @@
+# Qodo PR-Agent Configuration
+# Created: 2026-02-17
+# Purpose: Suppress recurring false-positive review items that add noise
+# without actionable value. Each suppression has evidence from PR retros.
+
+[pr_reviewer]
+# Suppress persistent compliance items that have been rejected 3+ times
+# with stable rationale across PRs #369-#370
+
+extra_instructions = """\
+When reviewing files in scripts/debt/ or scripts/audit/:
+
+1. Do NOT flag "Missing actor context" or "actor/user identifier" in JSON
+   output files. Actor identity is captured in resolution-log.jsonl, which
+   is the durable audit trail. The JSON summary is an ephemeral CI artifact.
+   (Rejected in PR #370 R3, R4, R5 with same rationale)
+
+2. Do NOT flag "Unstructured console logs" or suggest structured logging
+   for CLI scripts. This is a pre-existing architectural pattern across all
+   TDMS scripts, tracked as DEBT-0455. Structured logging requires a
+   project-wide logger library, not per-file fixes.
+   (Rejected in PR #370 R3, R4, R5 with same rationale)
+
+3. Do NOT flag data quality issues (placeholder titles, null fields,
+   recompute content_hash) in JSONL files under docs/technical-debt/ or
+   docs/audits/. These are pipeline output, not hand-edited.
+   (Rejected ~100 times across PRs #366-#370)
+
+4. Do NOT flag "sensitive log persistence" or "override log" concerns
+   for SKIP_REASON audit trail files. The override-log.jsonl is an
+   intentional audit trail that must persist skip reasons.
+   (Rejected in PR #368 R3-R6 with same rationale)
+"""
+
+[pr_code_suggestions]
+extra_instructions = """\
+When suggesting changes to JSONL data files under docs/technical-debt/:
+
+1. Do NOT suggest replacing placeholder titles or descriptions in
+   MASTER_DEBT.jsonl or raw/deduped.jsonl. These are automated pipeline
+   output from multi-AI audit aggregation.
+
+2. Do NOT suggest recomputing content_hash values. Hashes are computed
+   by the ingestion pipeline and are intentionally stable.
+
+3. Do NOT suggest changing "file" fields to include line numbers when
+   the item refers to a directory or multiple files.
+"""
