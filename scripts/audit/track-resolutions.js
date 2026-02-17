@@ -157,12 +157,14 @@ function getCommitCountSince(relPath, sinceDate) {
   const normalized = normalizeRepoRelPath(relPath);
   if (!normalized || !isPathContained(normalized)) return -1;
 
-  const hasValidSince = typeof sinceDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(sinceDate);
+  const normalizedSince = typeof sinceDate === "string" ? sinceDate.trim().slice(0, 10) : sinceDate;
+  const hasValidSince =
+    typeof normalizedSince === "string" && /^\d{4}-\d{2}-\d{2}$/.test(normalizedSince);
   if (sinceDate && !hasValidSince) return -1;
 
   try {
     const args = ["log", "--oneline"];
-    if (hasValidSince) args.push(`--since=${sinceDate}`);
+    if (hasValidSince) args.push(`--since=${normalizedSince}`);
     args.push("--", normalized);
     const result = execFileSync("git", args, {
       cwd: REPO_ROOT,
@@ -374,6 +376,8 @@ function main() {
 
     for (const item of allItems) {
       if (!item.id) continue;
+      if (item.status === "RESOLVED" || item.status === "FALSE_POSITIVE") continue;
+      if (category && item.category !== category) continue;
       if (likelyIds.has(item.id)) {
         item.status = "RESOLVED";
         item.resolved_at = nowISO;

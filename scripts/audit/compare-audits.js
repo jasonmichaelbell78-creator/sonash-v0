@@ -185,8 +185,9 @@ function findingKey(finding) {
     return `content_hash::${finding.content_hash}`;
   }
 
-  // Normalize file: use finding.file or first element of finding.files
-  const file = finding.file || (Array.isArray(finding.files) && finding.files[0]) || "unknown";
+  // Normalize file: use finding.file or first element of finding.files, strip :lineNumber suffix
+  const rawFile = finding.file || (Array.isArray(finding.files) && finding.files[0]) || "unknown";
+  const file = typeof rawFile === "string" ? rawFile.replace(/:(\d+)$/, "") : "unknown";
   const title = String(finding.title ?? "untitled")
     .trim()
     .toLowerCase();

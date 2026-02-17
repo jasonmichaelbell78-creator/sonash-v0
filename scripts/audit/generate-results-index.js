@@ -240,10 +240,30 @@ function main() {
   }
 
   // Atomic write: tmp file + rename to reduce TOCTOU window
-  const tmpFile = path.join(outputDir, `.RESULTS_INDEX.md.tmp-${process.pid}`);
+  const tmpFile = path.join(outputDir, `.RESULTS_INDEX.md.tmp-${process.pid}-${Date.now()}`);
   try {
+    // Guard: refuse to write through a pre-existing symlink at the tmp path
+    try {
+      const tmpStat = fs.lstatSync(tmpFile);
+      if (tmpStat.isSymbolicLink()) {
+        console.error(`Error: ${tmpFile} is a symlink — refusing to write`);
+        process.exit(2);
+      }
+    } catch {
+      // tmp file doesn't exist yet — expected and safe
+    }
     fs.writeFileSync(tmpFile, markdown, "utf8");
-    fs.renameSync(tmpFile, outputFile);
+    try {
+      fs.renameSync(tmpFile, outputFile);
+    } catch {
+      // Cross-platform fallback: rename may fail on Windows if destination exists
+      try {
+        fs.rmSync(outputFile, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      fs.renameSync(tmpFile, outputFile);
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error(`Error: Failed to write results index: ${msg}`);

@@ -138,25 +138,22 @@ function printSummary(results) {
 }
 
 // ---------------------------------------------------------------------------
-// Main
+// Input validation
 // ---------------------------------------------------------------------------
 
-function main() {
-  const { inputFile, skipCommit } = parseArgs();
-
-  // --- Argument validation ---------------------------------------------------
-  if (!inputFile) {
-    console.error("Error: Missing required argument: path to audit output JSONL file");
-    console.error("");
-    console.error("Usage: node scripts/audit/post-audit.js <audit-output.jsonl> [--skip-commit]");
-    process.exit(1);
-  }
-
-  // Resolve the input path relative to cwd (not REPO_ROOT) so both absolute
-  // and relative paths work when invoking the script.
+/**
+ * Resolve and validate the input file path:
+ *  - resolve symlinks via realpathSync
+ *  - refuse symlinked inputs (lstatSync)
+ *  - verify containment within REPO_ROOT
+ *
+ * Exits the process on any validation failure.
+ * @param {string} inputFile - raw CLI argument
+ * @returns {string} resolvedInput - validated absolute path
+ */
+function validateInputPath(inputFile) {
   const resolvedInput = path.resolve(inputFile);
 
-  // Verify input is within the repo root (resolve symlinks to prevent bypass)
   let repoReal;
   let inputReal;
   try {
@@ -168,7 +165,6 @@ function main() {
     process.exit(1);
   }
 
-  // Refuse symlinked inputs
   try {
     const st = fs.lstatSync(resolvedInput);
     if (st.isSymbolicLink()) {
@@ -188,6 +184,25 @@ function main() {
     console.error(`  Repo root: ${repoReal}`);
     process.exit(1);
   }
+
+  return resolvedInput;
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
+function main() {
+  const { inputFile, skipCommit } = parseArgs();
+
+  if (!inputFile) {
+    console.error("Error: Missing required argument: path to audit output JSONL file");
+    console.error("");
+    console.error("Usage: node scripts/audit/post-audit.js <audit-output.jsonl> [--skip-commit]");
+    process.exit(1);
+  }
+
+  const resolvedInput = validateInputPath(inputFile);
 
   console.log("Post-Audit Pipeline");
   console.log("=".repeat(60));

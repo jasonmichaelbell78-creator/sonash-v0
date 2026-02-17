@@ -264,7 +264,8 @@ function checkStaleBaselines() {
       );
     }
   } catch (error) {
-    addResult("Stale Baselines", false, `Error checking baselines: ${error.message}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    addResult("Stale Baselines", false, `Error checking baselines: ${msg}`);
   }
 }
 

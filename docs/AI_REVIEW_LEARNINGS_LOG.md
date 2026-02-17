@@ -760,6 +760,34 @@ prevented R4-R6 entirely, saving ~3 review rounds.
 
 ---
 
+#### Review #339: PR #369 R5 — CC Extraction, tmpFile Symlink, ISO Date Normalization (2026-02-17)
+
+**Source:** SonarCloud (1 CC Issue) + Qodo Security (1) + Qodo Compliance (1) +
+Qodo Suggestions (9) **PR/Branch:** claude/cherry-pick-recent-commits-X1eKD (PR
+\#369) **Suggestions:** 12 total (Fixed: 7, Rejected: 5)
+
+**Patterns Identified:**
+
+1. **Extract validateInputPath() for CC reduction** — SonarCloud CC 20>15 on
+   main(). Extracted path resolution, symlink check, and containment validation
+   into a dedicated helper.
+2. **tmpFile symlink guard** — Atomic write pattern writes to tmp path without
+   checking if it's a pre-existing symlink. Add `lstatSync` check before
+   `writeFileSync` on the tmp path.
+3. **ISO timestamp normalization** — `sinceDate` from MASTER_DEBT.jsonl may be
+   full ISO (2026-02-16T...). Use `.trim().slice(0, 10)` before YYYY-MM-DD
+   validation.
+4. **Guard --apply loop against closed/filtered items** — The update loop
+   iterated over `allItems` ignoring filters applied to `openItems`. Added
+   status and category guards to prevent re-resolving already-closed items.
+5. **Cross-platform atomic rename** — `fs.renameSync` may fail on Windows if
+   destination exists. Added fallback: `rmSync(dest)` then retry rename.
+
+**Resolution Stats:** 7/12 fixed (58%), 5/12 rejected (JSONL data quality x3,
+title case preservation, state-manager CLI parsing)
+
+---
+
 #### Review #338: PR #369 R4 — realpathSync Hardening, Atomic Write, Fail-Fast JSONL (2026-02-17)
 
 **Source:** SonarCloud (1 Hotspot) + Qodo Suggestions (11) **PR/Branch:**
