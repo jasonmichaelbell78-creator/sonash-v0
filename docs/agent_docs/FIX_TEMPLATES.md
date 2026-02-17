@@ -1,14 +1,14 @@
 # Fix Templates for Qodo PR Review Findings
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.4
-**Last Updated:** 2026-02-16
+**Document Version:** 1.7
+**Last Updated:** 2026-02-17
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 ## Purpose
 
-Copy-paste fix templates for the top 26 most common Qodo PR review findings in
+Copy-paste fix templates for the top 29 most common Qodo PR review findings in
 the SoNash codebase. Each template is self-contained: paste the "Good Code"
 block directly into the flagged location. Project-specific helpers are
 referenced where available.
@@ -1265,10 +1265,113 @@ try {
 
 ---
 
+## Template 28: Fail-Closed Catch Block
+
+**Triggered by**: Qodo "Error Handling" / SonarCloud S1066 **Severity**: MAJOR
+**Review frequency**: 3 occurrences (PR #369 R9)
+
+Generic `catch {}` or `catch { return; }` blocks silently swallow unexpected
+errors (EPERM, EIO, ENOMEM). Only ignore expected filesystem errors; treat
+everything else as fatal.
+
+### Bad Code
+
+```javascript
+try {
+  const stat = fs.lstatSync(filePath);
+  if (stat.isSymbolicLink()) return false;
+} catch {
+  // ignore — file doesn't exist
+  return true;
+}
+```
+
+### Good Code
+
+```javascript
+try {
+  const stat = fs.lstatSync(filePath);
+  if (stat.isSymbolicLink()) return false;
+} catch (err) {
+  const code = err && typeof err === "object" ? err.code : null;
+  if (code === "ENOENT" || code === "ENOTDIR") return true;
+  // Unexpected error (EPERM, EIO, ENOMEM) — fail closed
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`guardSymlink failed on ${filePath}: ${msg}`);
+  process.exit(1);
+}
+```
+
+### When to Use
+
+- Any `try/catch` around `lstatSync`, `statSync`, `realpathSync`,
+  `readlinkSync`, or similar filesystem probe calls
+- Security-sensitive code where silently ignoring errors could bypass a guard
+- Replace ALL generic `catch {}` and `catch { return; }` blocks in
+  security-adjacent code
+
+### Key Principle
+
+**Fail closed, not open.** If you can't determine whether a path is safe, assume
+it isn't. Only allow through the specific error codes you expect (typically
+ENOENT for "file doesn't exist").
+
+---
+
+## Template 29: Validate-Then-Store Path (TOCTOU Prevention)
+
+**Triggered by**: Qodo "TOCTOU" / "Path Traversal" **Severity**: MAJOR **Review
+frequency**: 2 occurrences (PR #370 R5)
+
+When validating a user-supplied path (CLI arg, env var, config value), always
+store the resolved/validated form — never validate one form and store another.
+
+### Bad Code
+
+```javascript
+// Validates resolved path but stores raw input — TOCTOU gap
+validatePathInDir(REPO_ROOT, path.resolve(REPO_ROOT, userInput));
+parsed.file = userInput; // raw input stored!
+```
+
+### Good Code
+
+```javascript
+// Resolve ONCE, validate, store the resolved form
+const resolvedPath = path.resolve(REPO_ROOT, userInput);
+validatePathInDir(REPO_ROOT, resolvedPath);
+parsed.file = resolvedPath; // validated form stored
+```
+
+### When to Use
+
+- Any CLI argument that specifies a file path (`--file`, `--output-json`,
+  `--config`)
+- Environment variable paths (`process.env.LOG_DIR`, `process.env.OUTPUT_PATH`)
+- Config file values that contain paths
+- Any code pattern: `validate(transform(input)); use(input)` — should be
+  `const safe = transform(input); validate(safe); use(safe)`
+
+### Path Normalization Test Matrix
+
+When implementing any path manipulation function, test with ALL of these:
+
+| Input                                        | Expected Behavior                  |
+| -------------------------------------------- | ---------------------------------- |
+| Absolute path (`/home/user/repo/file.js`)    | Strip prefix, return relative      |
+| Relative path (`src/file.js`)                | Pass through unchanged             |
+| Different CWD (`../other/file.js`)           | Resolve against repo root, not CWD |
+| Directory with trailing slash (`scripts/`)   | Preserve trailing slash            |
+| Empty string                                 | Return as-is or error              |
+| Non-string input (`null`, `undefined`, `42`) | Return as-is or error              |
+
+---
+
 ## Version History
 
 | Version | Date       | Change                                                                                              |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| 1.7     | 2026-02-17 | Add Templates 28-29 (fail-closed catch, validate-then-store path). Source: PR #369-#370 retros.     |
 | 1.5     | 2026-02-16 | Add Template 27 (Secure Audit File Write fd-based chain). Source: PR #368 retro.                    |
 | 1.4     | 2026-02-16 | Add Templates 25-26 (SKIP_REASON validation chain, POSIX shell portability). Source: PR #367 retro. |
 | 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)                                                             |

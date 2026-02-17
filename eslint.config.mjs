@@ -47,6 +47,9 @@ export default [
       ],
       "@typescript-eslint/no-explicit-any": "warn",
       "no-console": "off",
+      // CC limit — recommended in 4 consecutive PR retros (#367-#370), ~20 avoidable rounds
+      // "warn" globally; SonarCloud enforces as error. Prevents new CC >15 functions.
+      complexity: ["warn", 15],
     },
   },
   // Node.js scripts configuration (ES modules that define their own __filename/__dirname)

@@ -106,6 +106,19 @@ This catches the most common ping-pong pattern: a security fix applied to one
 file while the same pattern exists in 10+ other files. PR #366 had 5 rounds of
 symlink guard ping-pong that this sweep would have prevented.
 
+### Cognitive Complexity Pre-Check (NEW — PR #370 Retro)
+
+**Before the first push**, run the CC lint check on all new/modified .js files:
+
+```bash
+npx eslint --rule 'complexity: [error, 15]' <new-or-modified-files>
+```
+
+This catches CC >15 violations before SonarCloud sees them. The CC lint rule is
+now configured as a warning in eslint.config.mjs, but running it as an error
+pre-push catches violations before CI. CC violations were the #1 cross-PR churn
+driver across PRs #366-#370, causing ~20 avoidable review rounds.
+
 ---
 
 ## STEP 0: CONTEXT LOADING (Tiered Access)
@@ -290,7 +303,7 @@ via Task tool, then collect and verify results.
 ### 5.2 For Each Fix
 
 - **Check FIX_TEMPLATES first** - Read `docs/agent_docs/FIX_TEMPLATES.md` for
-  copy-paste fixes for the top 20 Qodo findings. This prevents cascade fixes
+  copy-paste fixes for the top 29 Qodo findings. This prevents cascade fixes
   (fixing one issue in a way that creates another)
 - **Read** the file first (never edit without reading)
 - **Understand** the context around the issue
@@ -410,6 +423,28 @@ CLI args, file content), implement the FULL validation chain in a single pass:
 
 **If no shared validator exists, CREATE ONE** if 2+ files need the same
 validation. This prevents future propagation misses.
+
+---
+
+### 5.8 Path Normalization Test Matrix (NEW — PR #370 Retro)
+
+**Problem:** PR #370 had 3 rounds of `normalizeFilePath` ping-pong because edge
+cases (CWD independence, trailing slashes) were missed incrementally.
+
+**Rule:** When writing or modifying ANY path manipulation function, verify
+against this test matrix BEFORE committing:
+
+| Input                                      | Expected Behavior                  |
+| ------------------------------------------ | ---------------------------------- |
+| Absolute path (`/home/user/repo/file.js`)  | Strip prefix, return relative      |
+| Relative path (`src/file.js`)              | Pass through unchanged             |
+| Different CWD (`../other/file.js`)         | Resolve against repo root, not CWD |
+| Directory with trailing slash (`scripts/`) | Preserve trailing slash            |
+| Empty string                               | Return as-is or error              |
+| Non-string input (`null`, `undefined`)     | Return as-is or error              |
+
+Also: always store the resolved/validated form, never validate one form and
+store another (see FIX_TEMPLATES #29).
 
 ---
 
@@ -538,9 +573,10 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 ## Version History
 
-| Version | Date       | Description                                                    |
-| ------- | ---------- | -------------------------------------------------------------- |
-| 2.2     | 2026-02-15 | Add Security Pattern Sweep + Propagation Check (PR #366 retro) |
-| 2.1     | 2026-02-14 | Extract reference docs: SonarCloud, agents, TDMS, learning     |
-| 2.0     | 2026-02-10 | Full protocol with parallel agents, TDMS integration           |
-| 1.0     | 2026-01-15 | Initial version                                                |
+| Version | Date       | Description                                                                            |
+| ------- | ---------- | -------------------------------------------------------------------------------------- |
+| 2.3     | 2026-02-17 | Add CC Pre-Push Check (Step 0.5) + Path Test Matrix (Step 5.8). Source: PR #370 retro. |
+| 2.2     | 2026-02-15 | Add Security Pattern Sweep + Propagation Check (PR #366 retro)                         |
+| 2.1     | 2026-02-14 | Extract reference docs: SonarCloud, agents, TDMS, learning                             |
+| 2.0     | 2026-02-10 | Full protocol with parallel agents, TDMS integration                                   |
+| 1.0     | 2026-01-15 | Initial version                                                                        |

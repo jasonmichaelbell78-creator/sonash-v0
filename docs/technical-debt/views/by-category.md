@@ -1944,7 +1944,7 @@
 | DEBT-2440 | Gap: No migration guide for legacy patterns                    | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
 | DEBT-2955 | Document atomic write pattern as reusable helper               | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
 
-## engineering-productivity (6)
+## engineering-productivity (9)
 
 | ID        | Title                                                        | Severity | File                            | Line |
 | --------- | ------------------------------------------------------------ | -------- | ------------------------------- | ---- |
@@ -1954,6 +1954,9 @@
 | DEBT-2834 | Composite validator: consolidate 9 PostToolUse hooks into... | S2       | .claude/settings.json           | 57   |
 | DEBT-2979 | External link checker has ~100% false positive rate          | S2       | scripts/check-external-links.js | 0    |
 | DEBT-2980 | Commit tracker shows 212h stale despite recent commits       | S2       | .claude/hooks/commit-tracker.js | 0    |
+| DEBT-3127 | Add shellcheck to pre-commit hooks for shell script linting  | S2       | .husky/                         | 0    |
+| DEBT-3128 | Archive reviews #285-334 to reduce learnings log from 340... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md | 0    |
+| DEBT-3129 | Refresh Quick Pattern Index with recent patterns from rev... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md | 0    |
 
 ## enhancements (8)
 

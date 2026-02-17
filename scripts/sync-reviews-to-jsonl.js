@@ -118,6 +118,12 @@ function parseMarkdownReviews(content) {
         patterns: [],
         fixed: 0,
         deferred: 0,
+        rejected: 0,
+        critical: 0,
+        major: 0,
+        minor: 0,
+        trivial: 0,
+        total: 0,
         learnings: [],
         _rawLines: [],
       };
@@ -157,6 +163,24 @@ function parseMarkdownReviews(content) {
     // Deferred count
     const deferredMatch = raw.match(/Deferred:\s*(\d+)/i) || raw.match(/deferred\s*(\d+)/i);
     if (deferredMatch) review.deferred = Number.parseInt(deferredMatch[1], 10);
+
+    // Rejected count
+    const rejectedMatch = raw.match(/Rejected:\s*(\d+)/i) || raw.match(/rejected\s*(\d+)/i);
+    if (rejectedMatch) review.rejected = Number.parseInt(rejectedMatch[1], 10);
+
+    // Severity breakdown from "N CRITICAL, N MAJOR, N MINOR, N TRIVIAL" pattern
+    const criticalMatch = raw.match(/(\d+)\s*CRITICAL/i);
+    if (criticalMatch) review.critical = Number.parseInt(criticalMatch[1], 10);
+    const majorMatch = raw.match(/(\d+)\s*MAJOR/i);
+    if (majorMatch) review.major = Number.parseInt(majorMatch[1], 10);
+    const minorMatch = raw.match(/(\d+)\s*MINOR/i);
+    if (minorMatch) review.minor = Number.parseInt(minorMatch[1], 10);
+    const trivialMatch = raw.match(/(\d+)\s*TRIVIAL/i);
+    if (trivialMatch) review.trivial = Number.parseInt(trivialMatch[1], 10);
+
+    // Total items from "N total" or "N items" pattern
+    const totalMatch = raw.match(/(\d+)\s*total/i) || raw.match(/(\d+)\s*items/i);
+    if (totalMatch) review.total = Number.parseInt(totalMatch[1], 10);
 
     // Patterns from numbered lists under "Patterns Identified" or "Key Patterns"
     const patternMatches = raw.matchAll(/^\d+\.\s+\*\*([^*]+)\*\*/gm);

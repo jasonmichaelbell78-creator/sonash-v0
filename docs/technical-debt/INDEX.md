@@ -9,7 +9,7 @@
 
 ---
 
-**Total Items:** 2427
+**Total Items:** 2430
 
 ## Quick Stats
 
@@ -17,8 +17,8 @@
 | ------------- | ----- |
 | S0 (Critical) | 32    |
 | S1 (High)     | 417   |
-| S2 (Medium)   | 1078  |
-| S3 (Low)      | 900   |
+| S2 (Medium)   | 1079  |
+| S3 (Low)      | 902   |
 
 | Category                 | Count |
 | ------------------------ | ----- |
@@ -29,15 +29,15 @@
 | ai-optimization          | 51    |
 | performance              | 50    |
 | refactoring              | 22    |
+| engineering-productivity | 9     |
 | enhancements             | 8     |
-| engineering-productivity | 6     |
 
 | Status         | Count |
 | -------------- | ----- |
 | VERIFIED       | 1911  |
 | RESOLVED       | 243   |
 | FALSE_POSITIVE | 268   |
-| NEW            | 5     |
+| NEW            | 8     |
 
 ## Views
 

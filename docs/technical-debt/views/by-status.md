@@ -9,15 +9,18 @@
 
 ---
 
-## NEW (5)
+## NEW (8)
 
-| ID        | Title                                                        | Severity | Category      |
-| --------- | ------------------------------------------------------------ | -------- | ------------- |
-| DEBT-2808 | Date formats inconsistent across the app                     | S2       | enhancements  |
-| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | enhancements  |
-| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | documentation |
-| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | enhancements  |
-| DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | enhancements  |
+| ID        | Title                                                        | Severity | Category                 |
+| --------- | ------------------------------------------------------------ | -------- | ------------------------ |
+| DEBT-2808 | Date formats inconsistent across the app                     | S2       | enhancements             |
+| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | enhancements             |
+| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | documentation            |
+| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | enhancements             |
+| DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | enhancements             |
+| DEBT-3127 | Add shellcheck to pre-commit hooks for shell script linting  | S2       | engineering-productivity |
+| DEBT-3128 | Archive reviews #285-334 to reduce learnings log from 340... | S3       | engineering-productivity |
+| DEBT-3129 | Refresh Quick Pattern Index with recent patterns from rev... | S3       | engineering-productivity |
 
 ## VERIFIED (1911)
 
