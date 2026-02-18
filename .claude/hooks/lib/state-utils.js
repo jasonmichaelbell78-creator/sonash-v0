@@ -15,8 +15,16 @@ let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require("./symlink-guard"));
 } catch {
-  // Fallback: allow all writes if symlink guard not available
-  isSafeToWrite = () => true;
+  // Fail-closed: only allow writes within known state directories
+  isSafeToWrite = (p) => {
+    try {
+      const resolved = fs.realpathSync(path.resolve(p));
+      const stateDir = fs.realpathSync(path.resolve(__dirname, "..", "..", "state"));
+      return resolved.startsWith(stateDir + path.sep) || resolved === stateDir;
+    } catch {
+      return false;
+    }
+  };
 }
 
 /**
@@ -49,7 +57,19 @@ function backupSwap(filePath, tmpPath, bakPath) {
   } catch {
     silentRm(filePath);
   }
-  fs.renameSync(tmpPath, filePath);
+  try {
+    fs.renameSync(tmpPath, filePath);
+  } catch (err) {
+    // Restore backup if rename failed to prevent data loss
+    if (fs.existsSync(bakPath) && !fs.existsSync(filePath)) {
+      try {
+        fs.renameSync(bakPath, filePath);
+      } catch {
+        /* best effort */
+      }
+    }
+    throw err;
+  }
   silentRm(bakPath);
 }
 

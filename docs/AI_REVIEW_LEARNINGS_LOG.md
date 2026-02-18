@@ -1326,6 +1326,34 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #350: PR #374 R1 — Bidirectional Containment, Fail-Closed Guard, backupSwap Safety (2026-02-17)
+
+**Source:** Qodo Compliance + CI (Prettier) + SonarCloud Duplication
+**PR/Branch:** claude/cherry-pick-recent-commits-X1eKD (PR #374)
+**Suggestions:** 15 total (Fixed: 8, Deferred: 4, Rejected: 3)
+
+**Patterns:**
+
+1. **Bidirectional containment on env vars** — `CLAUDE_PROJECT_DIR` resolved
+   without checking it stays within expected bounds. Fix: `realpathSync` +
+   bidirectional `startsWith` check between resolved and CWD.
+2. **Fail-closed fallback** — When `symlink-guard` module unavailable, fallback
+   was `() => true` (allow all). Fix: restrict to known `.claude/state/` dir.
+3. **backupSwap data loss** — `renameSync` without try/catch after moving
+   original to `.bak` could lose both files. Fix: wrap in try/catch with
+   rollback.
+4. **Propagation win** — Found same unsafe `projectDir` pattern in
+   `post-write-validator.js` and migrated to shared `git-utils.js`.
+5. **Seed data immutability** — `readonly` array prevents accidental mutation of
+   constants used in reset operations.
+
+**Key learning:** When extracting shared libraries from hooks, the security
+properties of the original inline code must transfer to the shared module. The
+`resolveProjectDir()` function now centralizes validation that was previously
+done (or missing) in each hook independently.
+
+---
+
 #### Review #348: PR #371 R1+R2 — SonarCloud S5852 regex DoS, CC refactoring, atomic writes, symlink guards (2026-02-17)
 
 **Source:** R1: SonarCloud (10 hotspots + 12 issues) + Qodo Compliance (2) +

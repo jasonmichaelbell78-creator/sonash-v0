@@ -47,7 +47,7 @@ export const SoberLivingService = {
   },
 
   // Seed initial data
-  seedInitialHomes: async (homes: SoberLivingHome[]) => {
+  seedInitialHomes: async (homes: readonly SoberLivingHome[]) => {
     const batch = writeBatch(db);
 
     // Delete existing (optional, or just append?)
@@ -74,7 +74,7 @@ export const SoberLivingService = {
  * Initial sober living homes seed data.
  * Moved from scripts/seed-sober-living-data.ts (deleted in Track AI sprint).
  */
-export const INITIAL_SOBER_LIVING_HOMES: SoberLivingHome[] = [
+export const INITIAL_SOBER_LIVING_HOMES: readonly SoberLivingHome[] = [
   // Region 5
   {
     id: "temp_1",

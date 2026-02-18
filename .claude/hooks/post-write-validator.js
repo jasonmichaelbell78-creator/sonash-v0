@@ -45,7 +45,7 @@ try {
 // 1. SHARED: Parse args ONCE
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const projectDir = path.resolve(process.env.CLAUDE_PROJECT_DIR || process.cwd());
+const { projectDir } = require("./lib/git-utils");
 const toolName = (process.env.CLAUDE_TOOL || "edit").toLowerCase();
 const isWriteTool = toolName === "write";
 
