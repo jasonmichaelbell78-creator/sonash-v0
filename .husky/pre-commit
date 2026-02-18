@@ -2,6 +2,11 @@
 # Pre-commit hook - AUTOMATED GATE (not optional documentation)
 # This blocks commits if checks fail
 
+# Log all output to .git/hook-output.log for debugging
+# (hook stderr is often invisible in CI/agent contexts like Claude Code)
+HOOK_OUTPUT_LOG="$(git rev-parse --show-toplevel 2>/dev/null || echo .)/.git/hook-output.log"
+exec > >(tee "$HOOK_OUTPUT_LOG") 2>&1
+
 # Shared guard: any SKIP_ override requires SKIP_REASON (Session #162)
 require_skip_reason() {
   if [ -z "${SKIP_REASON:-}" ]; then
@@ -61,9 +66,9 @@ echo "  ✅ ESLint passed (0 errors)"
 # Recommended in 5 consecutive retros (#367-#371).
 new_js=$(git diff --cached --name-only --diff-filter=A | grep '\.js$' || true)
 if [ -n "$new_js" ]; then
-  if ! printf '%s\n' "$new_js" | xargs -r npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- > /dev/null 2>&1; then
+  if ! printf '%s\n' "$new_js" | xargs -r npx eslint --no-config-lookup --no-inline-config --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- > /dev/null 2>&1; then
     echo "  ❌ Cognitive Complexity >15 in new JS files"
-    printf '%s\n' "$new_js" | xargs -r npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- 2>&1 | grep "complexity" | head -10 || true
+    printf '%s\n' "$new_js" | xargs -r npx eslint --no-config-lookup --no-inline-config --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- 2>&1 | grep "complexity" | head -10 || true
     echo ""
     echo "  Extract helpers to reduce CC. See FIX_TEMPLATES.md Template 30."
     exit 1

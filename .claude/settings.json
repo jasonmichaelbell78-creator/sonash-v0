@@ -106,6 +106,12 @@
             "command": "node .claude/hooks/commit-tracker.js $ARGUMENTS",
             "statusMessage": "Tracking commits...",
             "continueOnError": true
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/commit-failure-reporter.js $ARGUMENTS",
+            "statusMessage": "Checking commit status...",
+            "continueOnError": true
           }
         ]
       },
