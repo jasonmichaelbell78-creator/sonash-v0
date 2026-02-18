@@ -917,37 +917,269 @@ entries, resolved item accuracy, and schema compliance.
 
 ## Domain 17: Prior Audit Findings
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** MEDIUM | **Expected Findings:** 5-15 | **Session:** 5
+
+Cross-references findings from all prior audits (single-session, multi-AI) to
+identify unresolved issues, regressions, and pattern recurrence.
+
+### Checks
+
+| ID   | Check                              | Method                                                          | Finding Criteria                                           |
+| ---- | ---------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------- |
+| 17.1 | Prior audit inventory              | List all files in `docs/audits/single-session/` and `multi-ai/` | Informational — establishes baseline                       |
+| 17.2 | Unresolved S0/S1 from prior audits | Read prior JSONL findings, check if S0/S1 items are fixed       | Still-open S0/S1 from prior audit → S1 finding             |
+| 17.3 | Recurring patterns                 | Compare prior findings with current codebase state              | Same issue found in 2+ prior audits and still present → S1 |
+| 17.4 | Multi-AI audit consensus           | Read `maa-2026-02-17` UNIFIED-FINDINGS.jsonl                    | Consensus findings (3+ AIs agreed) still open → S1         |
+| 17.5 | Prior audit staleness              | Check dates of most recent audits per domain                    | No audit in > 30 days for a domain → S3                    |
+| 17.6 | False positives review             | Read FALSE_POSITIVES.jsonl — are they still false positives?    | Previously FP'd item now valid → S2 finding                |
+| 17.7 | AUDIT_TRACKER currency             | Read `AUDIT_TRACKER.md` — does it reflect recent audits?        | Missing entries → S3 finding                               |
+
+### Key Files
+
+- `docs/audits/single-session/*/` (9 domain directories)
+- `docs/audits/multi-ai/maa-2026-02-17-182d43/`
+- `docs/audits/AUDIT_TRACKER.md`
+- `docs/audits/RESULTS_INDEX.md`
+- `docs/technical-debt/FALSE_POSITIVES.jsonl`
+
+### Suggestions Template
+
+For recurring unresolved findings:
+
+- **Suggestion:** "Accept at S1. A finding that appears in multiple prior audits
+  and is still present indicates a systemic avoidance pattern — either the fix
+  is too expensive (re-prioritize) or it keeps getting deferred (escalate)."
+- **Counter-argument:** "Some findings are intentionally deferred because the
+  fix requires architectural changes planned for a future milestone."
 
 ---
 
 ## Domain 18: Admin Panel
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** MEDIUM | **Expected Findings:** 3-8 | **Session:** 5
+
+Audits the 17-tab admin panel for completeness, function connectivity,
+authorization consistency, and data integrity of admin operations.
+
+### Checks
+
+| ID   | Check                          | Method                                                       | Finding Criteria                                    |
+| ---- | ------------------------------ | ------------------------------------------------------------ | --------------------------------------------------- |
+| 18.1 | Admin tab inventory            | List all files in `components/admin/` — verify 17 tabs exist | Missing tabs → S2 finding                           |
+| 18.2 | Tab-to-function mapping        | Map each admin tab to its corresponding Cloud Function       | Tab without corresponding function → S2 finding     |
+| 18.3 | Admin authorization uniformity | Compare auth checks across all admin Cloud Functions         | Inconsistent admin check patterns → S2 finding      |
+| 18.4 | CRUD operation completeness    | For each entity (meetings, quotes, etc), verify CRUD exists  | Missing delete or update for managed entities → S2  |
+| 18.5 | Admin soft-delete consistency  | Compare soft-delete logic across all admin delete operations | Inconsistent soft-delete patterns → S2 finding      |
+| 18.6 | Privilege types management     | Read privilege system — verify CRUD for privilege types      | Incomplete privilege management → S2 finding        |
+| 18.7 | Error handling in admin tabs   | Check admin tabs for error boundaries and loading states     | Admin tab crashes on error → S2 finding             |
+| 18.8 | Admin analytics tab            | Read analytics-tab.tsx — verify it shows meaningful data     | Analytics tab is placeholder or broken → S3 finding |
+
+### Key Files
+
+- `components/admin/` (17 files)
+- `functions/src/admin.ts` (3100+ lines)
+- `functions/src/index.ts` (shared admin functions)
+
+### Suggestions Template
+
+For admin auth inconsistency:
+
+- **Suggestion:** "Accept at S2. If some admin functions check
+  `request.auth.token.admin === true` and others check a Firestore field, the
+  inconsistency is a maintenance risk even if both currently work."
+- **Counter-argument:** "If all admin functions are behind the same admin route
+  guard on the client and all verify auth server-side (just differently), the
+  practical risk is low."
 
 ---
 
 ## Domain 19: Data Integrity & Migration
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** HIGH | **Expected Findings:** 3-8 | **Session:** 5
+
+Audits data migration paths, soft-delete lifecycle, scheduled cleanup jobs, and
+data consistency between client expectations and server storage.
+
+### Checks
+
+| ID   | Check                            | Method                                                          | Finding Criteria                                               |
+| ---- | -------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------- |
+| 19.1 | Anonymous migration completeness | Read `migrateAnonymousUserData` — verify all collections copied | Missing collections → S0 finding (data loss)                   |
+| 19.2 | Migration transaction safety     | Check if migration uses transactions for atomicity              | Non-transactional migration → S1 finding                       |
+| 19.3 | Soft-delete lifecycle            | Trace: soft-delete → scheduled hard-delete → verify chain       | Broken chain (soft-deleted never hard-deleted) → S2            |
+| 19.4 | Scheduled job error handling     | Read `scheduledHardDeleteSoftDeletedUsers` for error handling   | Unhandled errors in scheduled delete → S1 finding              |
+| 19.5 | Data schema validation           | Check if Firestore data matches Zod schemas in functions        | Client writes fields server doesn't validate → S2              |
+| 19.6 | Timestamp consistency            | Check timestamp handling (client vs server timestamps)          | Client-generated timestamps accepted without server check → S2 |
+| 19.7 | Account linking data integrity   | Read `account-linking.ts` — verify data isn't lost on link      | Data loss on account linking → S0 finding                      |
+| 19.8 | Backup/recovery capability       | Check if any backup strategy exists for Firestore data          | No backup strategy → S2 finding                                |
+
+### Key Files
+
+- `functions/src/index.ts` (migrateAnonymousUserData)
+- `functions/src/scheduled.ts` (scheduledHardDeleteSoftDeletedUsers)
+- `lib/firebase/account-linking.ts`
+- `hooks/use-journal.ts` (timestamp validation — CANON-0042)
+
+### Suggestions Template
+
+For missing backup strategy:
+
+- **Suggestion:** "Accept at S2. Firestore data (recovery journals, daily logs)
+  has no documented backup strategy. Google's built-in Firestore exports should
+  be configured for point-in-time recovery."
+- **Counter-argument:** "Firestore has automatic replication across zones. Data
+  loss from Google infrastructure failure is extremely unlikely. The bigger risk
+  is accidental deletion by admin operations."
 
 ---
 
 ## Domain 20: Final Report & Cross-Cutting Analysis
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** NONE (synthesis) | **Expected Findings:** 3-5 cross-cutting |
+**Session:** 6
+
+Synthesizes all domain findings into the final report, identifies cross-cutting
+patterns, and generates the unified findings file.
+
+### Steps (not checks — this is a synthesis domain)
+
+| ID   | Step                           | Method                                                      | Output                                                     |
+| ---- | ------------------------------ | ----------------------------------------------------------- | ---------------------------------------------------------- |
+| 20.1 | Merge all domain JSONL         | Concatenate d00-d22 JSONL files into unified-findings.jsonl | Single file with all accepted findings                     |
+| 20.2 | Deduplicate cross-domain       | Check for same file+line appearing in multiple domains      | Merge duplicates, note which domains found them            |
+| 20.3 | Cross-cutting pattern scan     | Group findings by file, category, and fix-type              | List patterns (e.g., "8 validation gaps across 4 domains") |
+| 20.4 | Severity distribution analysis | Calculate S0/S1/S2/S3 percentages                           | Distribution chart and anomaly flags                       |
+| 20.5 | Risk matrix generation         | Rank domains by finding count × severity                    | Per-domain risk table                                      |
+| 20.6 | Effort estimation              | Sum effort estimates across all findings                    | Total hours estimate                                       |
+| 20.7 | Generate SUMMARY.md            | Write full report (see WORKFLOW.md for template)            | Final report document                                      |
+| 20.8 | Present report to user         | Show executive summary, ask for approval                    | INTERACTIVE: approve/edit/add notes                        |
+
+### INTERACTIVE: Cross-Cutting Patterns
+
+For each detected pattern, present with suggestion:
+
+```
+Pattern: "Missing validation at boundaries"
+8 findings across 4 domains (D07, D08, D09, D11)
+
+Suggestion: Promote to standalone systemic finding.
+Addressing as one unit (shared Zod schemas) is more
+efficient than 8 separate fixes. Est: E3 as unit vs E2×8.
+
+○ Promote to standalone finding  [Recommended]
+○ Note only (mention in report)
+○ Dismiss (coincidental, not systemic)
+```
+
+### INTERACTIVE: Final Report Approval
+
+```
+○ Approve report as-is  [Recommended]
+○ Edit executive summary
+○ Add/remove sections
+○ Add notes before finalizing
+```
+
+### Key Output Files
+
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/SUMMARY.md`
+- `docs/audits/comprehensive/audit-YYYY-MM-DD/unified-findings.jsonl`
 
 ---
 
 ## Domain 21: Post-Test Self-Audit
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** NONE (quality gate) | **Expected Findings:** 1-3 meta-findings |
+**Session:** 6
+
+The audit audits itself. Verifies completeness, quality, and identifies gaps in
+the audit's own execution.
+
+### Checks
+
+| ID   | Check                         | Method                                                         | Finding Criteria                                      |
+| ---- | ----------------------------- | -------------------------------------------------------------- | ----------------------------------------------------- |
+| 21.1 | Domain completion             | Verify all 23 domains executed (check PLAN_INDEX.md)           | Skipped domains → meta-finding                        |
+| 21.2 | Check coverage                | Cross-reference: every check ID was actually run               | Unexecuted checks → meta-finding per check            |
+| 21.3 | Zero-finding domains          | Flag domains with 0 findings as suspicious                     | 0 findings in medium/high risk domain → meta-finding  |
+| 21.4 | Severity distribution quality | Check for unrealistic distributions (all S3, no S1)            | Skewed distribution → meta-finding                    |
+| 21.5 | Finding ID uniqueness         | Verify no duplicate IDs across all JSONL files                 | Duplicate IDs → meta-finding                          |
+| 21.6 | JSONL validity                | Parse all domain JSONL files for valid JSON                    | Invalid JSONL → meta-finding                          |
+| 21.7 | Deferred items disposition    | Count deferred items not yet revisited                         | Unresolved deferrals → meta-finding (trigger revisit) |
+| 21.8 | PLAN_INDEX consistency        | Verify PLAN_INDEX.md matches actual files on disk              | Mismatch → meta-finding                               |
+| 21.9 | Evidence quality              | Sample 5 findings — verify evidence is actual code not generic | Vague evidence → meta-finding                         |
+
+### INTERACTIVE: Self-Audit Results
+
+```
+Self-audit found N items:
+
+SA-001 [meta] Domain 15 had 0 findings (medium risk domain)
+  → Suggestion: Re-run with deeper PWA checks
+
+SA-002 [meta] 3 deferred findings never revisited
+  → Suggestion: Present for final disposition now
+
+○ Accept findings, move to final report
+○ Re-run flagged domains
+○ Revisit deferred findings now
+○ Both: re-run AND revisit
+```
 
 ---
 
 ## Domain 22: Sentry & Monitoring
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** MEDIUM | **Expected Findings:** 3-6 | **Session:** 6
+
+Audits the dual-logger Sentry architecture (client + server), PII redaction
+coverage, monitoring configuration, and observability gaps.
+
+### Checks
+
+| ID   | Check                           | Method                                                            | Finding Criteria                                    |
+| ---- | ------------------------------- | ----------------------------------------------------------------- | --------------------------------------------------- |
+| 22.1 | Client Sentry config            | Read `sentry.client.config.ts` for DSN, sampling, integrations    | Missing or placeholder DSN → S2 finding             |
+| 22.2 | Server Sentry config            | Read `sentry.server.config.ts` for consistency with client        | Client/server Sentry config divergence → S2 finding |
+| 22.3 | Dual-logger architecture        | Compare `lib/logger.ts` (client) vs `security-logger.ts` (server) | Different SENSITIVE_KEYS lists → S1 finding         |
+| 22.4 | PII redaction coverage (client) | Read `lib/logger.ts` SENSITIVE_KEYS, compare with actual data     | Fields containing PII not in SENSITIVE_KEYS → S1    |
+| 22.5 | PII redaction coverage (server) | Read `security-logger.ts` SENSITIVE_KEYS, compare                 | Same check for server-side logger                   |
+| 22.6 | Log injection prevention        | Check if logger sanitizes control characters                      | Missing sanitization → S1 finding                   |
+| 22.7 | Error boundary coverage         | Check React error boundaries that report to Sentry                | Missing error boundaries on critical paths → S2     |
+| 22.8 | Source map upload               | Check if source maps are uploaded for production debugging        | No source map upload → S2 finding                   |
+| 22.9 | Instrumentation config          | Check `instrumentation.ts` for proper Next.js integration         | Missing or misconfigured instrumentation → S2       |
+
+### Key Files
+
+- `lib/logger.ts` (client-side logger with Sentry)
+- `functions/src/security-logger.ts` (server-side logger with Sentry)
+- `sentry.client.config.ts`
+- `sentry.server.config.ts`
+- `instrumentation.ts`
+- `next.config.ts` (Sentry webpack plugin)
+
+### Known Issues (from research)
+
+- Two separate Sentry integrations: `@sentry/nextjs` (client) and `@sentry/node`
+  (server)
+- Two separate SENSITIVE_KEYS lists with potentially different coverage
+- Two separate redaction algorithms (client uses `looksLikeSensitiveId`
+  heuristic, server may differ)
+- `lib/logger.ts` strips control characters (line 87) — good, but verify server
+  does too
+
+### Suggestions Template
+
+For dual-logger SENSITIVE_KEYS mismatch:
+
+- **Suggestion:** "Accept at S1. If the client logger redacts 'uid' but the
+  server logger doesn't (or vice versa), PII could leak through one channel. The
+  lists should be identical or share a common module."
+- **Counter-argument:** "Client and server handle different data. The client
+  sees user input while the server sees request metadata. Different
+  SENSITIVE_KEYS may be intentional."
+- **Suggested fix:** "Extract SENSITIVE_KEYS to a shared module imported by both
+  loggers. If they must differ, document why explicitly."
 
 ---
 
