@@ -1,11 +1,6 @@
 {
   "_note_auto_discovered_plugins": "Firebase, GitHub, Context7, Serena, and Episodic Memory MCP tools are auto-discovered by Claude Code's plugin system and do NOT need entries here.",
   "mcpServers": {
-    "filesystem": {
-      "_note": "filesystem MCP duplicates native Read/Write/Glob tools — disabled since no skills reference mcp__filesystem__ tools",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
-    },
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]

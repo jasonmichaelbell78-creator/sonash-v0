@@ -424,7 +424,8 @@ For each orphan found, create a JSONL entry (JSONL_SCHEMA_STANDARD.md format):
   "files": ["path/to/file:1"],
   "why_it_matters": "Orphaned code increases maintenance burden and confusion",
   "suggested_fix": "Remove if unused, or document intended use",
-  "acceptance_tests": ["Verify no callers exist", "Remove and confirm no breakage"]
+  "acceptance_tests": ["Verify no callers exist", "Remove and confirm no breakage"],
+  "evidence": ["grep output showing zero callers", "dependency graph excerpt"]
 }
 
 CRITICAL: You MUST write findings directly to this file:
@@ -463,7 +464,8 @@ For each duplication found, create a JSONL entry (JSONL_SCHEMA_STANDARD.md forma
   "files": ["path/to/file:123", "other/location:456"],
   "why_it_matters": "Duplicated logic leads to inconsistent behavior and double maintenance",
   "suggested_fix": "Consolidate into single source, call from both places",
-  "acceptance_tests": ["Single source of truth exists", "Both callers use shared implementation"]
+  "acceptance_tests": ["Single source of truth exists", "Both callers use shared implementation"],
+  "evidence": ["code snippet from each duplicate", "diff showing similarity"]
 }
 
 CRITICAL: You MUST write findings directly to this file:
@@ -502,7 +504,8 @@ For each finding, create a JSONL entry (JSONL_SCHEMA_STANDARD.md format):
   "files": ["path/to/file:1"],
   "why_it_matters": "Dead automation clutters codebase and misleads developers",
   "suggested_fix": "Remove or fix trigger condition",
-  "acceptance_tests": ["Removed from codebase", "OR trigger condition now fires correctly"]
+  "acceptance_tests": ["Removed from codebase", "OR trigger condition now fires correctly"],
+  "evidence": ["grep output", "trigger condition analysis"]
 }
 
 CRITICAL: You MUST write findings directly to this file:
@@ -753,7 +756,8 @@ For each performance issue, create a JSONL entry (JSONL_SCHEMA_STANDARD.md forma
   "files": [".husky/pre-commit:[line]"],
   "why_it_matters": "Slow hooks degrade developer experience and encourage bypassing",
   "suggested_fix": "[specific optimization]",
-  "acceptance_tests": ["Hook completes in <[Y]s", "No functionality lost"]
+  "acceptance_tests": ["Hook completes in <[Y]s", "No functionality lost"],
+  "evidence": ["timing measurement", "profiling output"]
 }
 
 CRITICAL: You MUST write findings directly to this file:
@@ -1030,7 +1034,8 @@ For each gap, create a JSONL entry (JSONL_SCHEMA_STANDARD.md format):
   "files": ["[relevant file or 'N/A']:1"],
   "why_it_matters": "[what's missing and why it matters]",
   "suggested_fix": "[how to add coverage]",
-  "acceptance_tests": ["Coverage added", "Validation passes"]
+  "acceptance_tests": ["Coverage added", "Validation passes"],
+  "evidence": ["missing coverage area", "gap analysis output"]
 }
 
 CRITICAL: You MUST write findings directly to this file:
@@ -1069,7 +1074,8 @@ For each opportunity, create a JSONL entry (JSONL_SCHEMA_STANDARD.md format):
   "files": ["[relevant file or N/A]"],
   "why_it_matters": "[current state] -> [improved state]",
   "suggested_fix": "[specific implementation suggestion]",
-  "acceptance_tests": ["Improvement implemented", "Verified working"]
+  "acceptance_tests": ["Improvement implemented", "Verified working"],
+  "evidence": ["current state measurement", "improvement opportunity analysis"]
 }
 
 CRITICAL: You MUST write findings directly to this file:

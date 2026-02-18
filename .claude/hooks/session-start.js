@@ -41,22 +41,13 @@ process.chdir(projectDir);
 let warnings = 0;
 
 console.log(`🚀 SessionStart Hook for sonash-v0 (${envType})`);
-console.log("━".repeat(66));
 
 // Log environment (secure: excludes PWD to avoid exposing sensitive paths)
 console.log("📋 Environment:");
-try {
-  const nodeVersion = execSync("node -v", { encoding: "utf8" }).trim();
-  console.log(`   Node: ${nodeVersion}`);
-} catch {
-  console.log("   Node: not found");
-}
-try {
-  const npmVersion = execSync("npm -v", { encoding: "utf8" }).trim();
-  console.log(`   npm:  ${npmVersion}`);
-} catch {
-  console.log("   npm:  not found");
-}
+console.log(`   Node: ${process.version}`);
+const npmUA = process.env.npm_config_user_agent || "";
+const npmVersion = npmUA.match(/(?:^|\s)npm\/([0-9]+(?:\.[0-9]+)*)/i)?.[1] || "unknown";
+console.log(`   npm:  ${npmVersion}`);
 console.log("");
 
 // =============================================================================
@@ -125,11 +116,7 @@ if (previousState && previousState.lastBegin) {
   // If begin exists but no end after it, warn about incomplete session
   if (!lastEnd || lastEnd < lastBegin) {
     const hoursAgo = Math.round((Date.now() - lastBegin.getTime()) / (1000 * 60 * 60));
-    console.log("⚠️  Cross-Session Warning:");
-    console.log(`   Previous session started ${hoursAgo}h ago without session-end`);
-    console.log("   Tip: Run /session-end skill at end of each session");
-    console.log("   This helps track progress and update documentation");
-    console.log("");
+    console.log(`⚠️  Previous session started ${hoursAgo}h ago without session-end`);
     warnings++;
 
     // Auto-close the previous session to keep begin/end counts approximately aligned
@@ -216,23 +203,17 @@ function checkSecretsStatus() {
   return { hasEnvLocal, hasEncrypted, hasTokens };
 }
 
-console.log("🔐 Checking MCP secrets status...");
 const secretsStatus = checkSecretsStatus();
-
 if (secretsStatus.hasTokens) {
-  console.log("   ✓ .env.local has tokens configured");
+  console.log("🔐 MCP secrets: ✓ configured");
 } else if (secretsStatus.hasEncrypted) {
-  console.log("   ⚠️ Encrypted secrets found but not decrypted");
-  console.log("   → Run: node scripts/secrets/decrypt-secrets.js");
-  console.log("   → Or tell Claude: 'decrypt my secrets'");
+  console.log(
+    "🔐 MCP secrets: ⚠️ encrypted but not decrypted → node scripts/secrets/decrypt-secrets.js"
+  );
   warnings++;
 } else {
-  console.log("   ℹ️ No MCP tokens configured (some MCP servers may not work)");
-  console.log("   → To set up: Add tokens to .env.local");
-  console.log("   → Or encrypt: node scripts/secrets/encrypt-secrets.js");
+  console.log("🔐 MCP secrets: ℹ️ not configured");
 }
-
-console.log("");
 
 // =============================================================================
 // Dependency Cache Check
@@ -374,51 +355,64 @@ if (fs.existsSync("functions")) {
   }
 }
 
-// Build test files
-runCommand("Building test files", "npm run test:build", 60000);
-
-console.log("");
+// Build test files (TTL guard: skip if dist-tests exists and is <1h old)
+const distTestsDir = path.join(projectDir, "dist-tests");
+const TEST_BUILD_TTL_MS = 60 * 60 * 1000; // 1 hour
+let needsTestBuild = true;
+try {
+  if (fs.existsSync(distTestsDir)) {
+    const stat = fs.statSync(distTestsDir);
+    if (Date.now() - stat.mtimeMs < TEST_BUILD_TTL_MS) {
+      needsTestBuild = false;
+    }
+  }
+} catch (err) {
+  // Stat failed (permissions, race condition, etc.) — rebuild as fallback
+  if (process.env.DEBUG) {
+    const code =
+      err && typeof err === "object" && "code" in err && typeof err.code === "string"
+        ? err.code
+        : "unknown";
+    console.log(`  dist-tests stat failed (${code})`);
+  }
+}
+if (needsTestBuild) {
+  runCommand("Building test files", "npm run test:build", 60000);
+} else {
+  console.log("📦 Skipping test build (dist-tests fresh, <1h old)");
+}
 
 // Pattern compliance check
-console.log("🔍 Checking for known anti-patterns...");
 try {
   execSync("node scripts/check-pattern-compliance.js", { stdio: "pipe" });
-  console.log("   ✓ No pattern violations found");
+  console.log("🔍 Patterns: ✓ compliant");
 } catch (error) {
   const exitCode = error.status || 1;
   if (exitCode >= 2) {
-    console.log(`   ❌ Pattern checker failed (exit ${exitCode})`);
+    console.log(`🔍 Patterns: ❌ failed (exit ${exitCode})`);
   } else {
-    console.log("   ⚠️ Pattern violations detected - see docs/agent_docs/CODE_PATTERNS.md");
-    console.log("   Run: npm run patterns:check-all for details");
+    console.log("🔍 Patterns: ⚠️ violations detected — npm run patterns:check-all");
   }
   warnings++;
 }
 
-console.log("");
-
-// Auto-consolidation (runs automatically when threshold reached - Session #69)
-console.log("🔍 Running auto-consolidation check...");
+// Auto-consolidation
 try {
   const output = execSync("node scripts/run-consolidation.js --auto", { encoding: "utf8" });
   if (output.trim()) {
     console.log(output.trim());
   } else {
-    console.log("   ✓ No consolidation needed");
+    console.log("🔍 Consolidation: ✓ not needed");
   }
 } catch (error) {
   const exitCode = error.status || 1;
   if (exitCode >= 2) {
-    console.log(`   ❌ Auto-consolidation failed (exit ${exitCode})`);
+    console.log(`🔍 Consolidation: ❌ failed (exit ${exitCode})`);
     warnings++;
   } else if (exitCode === 1) {
-    // Exit code 1 indicates "consolidation needed but not applied" (unexpected for --auto)
-    // Surface stdout/stderr to aid debugging (Review #159)
     const stdout = (error.stdout || "").toString().trim();
-    const stderr = (error.stderr || "").toString().trim();
     if (stdout) console.log(stdout);
-    if (stderr) console.log(stderr);
-    console.log("   ⚠️ Auto-consolidation returned exit code 1 (unexpected for --auto)");
+    console.log("🔍 Consolidation: ⚠️ exit code 1 (unexpected for --auto)");
   }
 }
 
@@ -451,10 +445,32 @@ try {
   // Non-fatal
 }
 
-console.log("");
+// Rotate other state logs (same pattern as reviews.jsonl)
+try {
+  const { rotateJsonl } = require("./lib/rotate-state.js");
+  const hookWarningsPath = path.join(projectDir, ".claude", "state", "hook-warnings-log.jsonl");
+  if (fs.existsSync(hookWarningsPath)) {
+    const hwResult = rotateJsonl(hookWarningsPath, 50, 30);
+    if (hwResult) {
+      console.log(
+        `   🔄 hook-warnings-log.jsonl rotated: ${hwResult.before} → ${hwResult.after} entries`
+      );
+    }
+  }
+  const healthScorePath = path.join(projectDir, ".claude", "state", "health-score-log.jsonl");
+  if (fs.existsSync(healthScorePath)) {
+    const hsResult = rotateJsonl(healthScorePath, 30, 20);
+    if (hsResult) {
+      console.log(
+        `   🔄 health-score-log.jsonl rotated: ${hsResult.before} → ${hsResult.after} entries`
+      );
+    }
+  }
+} catch {
+  // Non-fatal
+}
 
 // Technical Debt health check (TDMS)
-console.log("🔍 Checking technical debt status...");
 try {
   const metricsPath = path.join(projectDir, "docs", "technical-debt", "metrics.json");
   if (fs.existsSync(metricsPath)) {
@@ -463,43 +479,27 @@ try {
     const s1Count = metrics.by_severity?.S1 ?? 0;
     const total = metrics.summary?.total ?? 0;
     const resolved = metrics.summary?.resolved ?? 0;
-    console.log(`   📊 Total: ${total} items (${resolved} resolved)`);
+    console.log(`📊 TDMS: ${total} items (${resolved} resolved)`);
     if (s0Count > 0) {
-      console.log(`   🔴 S0 Critical: ${s0Count} items need attention`);
+      console.log(`   🔴 S0: ${s0Count} critical`);
       warnings++;
-    } else {
-      console.log(`   ✅ No S0 critical items`);
     }
     if (s1Count > 10) {
-      console.log(`   🟡 S1 High: ${s1Count} items (threshold: 10)`);
+      console.log(`   🟡 S1: ${s1Count} high (threshold: 10)`);
     }
   } else {
-    console.log("   ⚠️ TDMS metrics not found - run: npm run debt:metrics");
+    console.log("📊 TDMS: ⚠️ metrics not found — npm run debt:metrics");
     warnings++;
   }
 } catch (error) {
-  console.log(
-    `   ❌ TDMS check failed: ${error instanceof Error ? error.message : "Unknown error"}`
-  );
+  console.log(`📊 TDMS: ❌ metrics read failed`);
   warnings++;
 }
 
 console.log("");
-console.log("━".repeat(66));
 if (warnings === 0) {
-  console.log("✅ SessionStart hook completed successfully!");
+  console.log("✅ SessionStart complete");
 } else {
-  console.log(`⚠️ SessionStart hook completed with ${warnings} warning(s)`);
-  console.log("   Some steps may have failed - check output above.");
+  console.log(`⚠️ SessionStart completed with ${warnings} warning(s)`);
 }
-
-// =============================================================================
-// Pending Alerts (legacy generate-pending-alerts.js removed in Session #158)
-// Alerts are now handled by /alerts skill (run-alerts.js)
-// =============================================================================
-
-console.log("");
-console.log("━".repeat(66));
-console.log("📋 Next: Run /session-begin for full checklist, or start working.");
-console.log("   If MCP tokens missing: node scripts/secrets/decrypt-secrets.js");
-console.log("━".repeat(66));
+console.log("📋 Next: /session-begin or start working");

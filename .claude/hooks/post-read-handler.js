@@ -19,8 +19,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execFileSync } = require("node:child_process");
-const { isSafeToWrite } = require("./lib/symlink-guard");
+const { gitExec, projectDir } = require("./lib/git-utils.js");
+const { loadJson, saveJson } = require("./lib/state-utils.js");
 
 let rotateHelpers;
 try {
@@ -43,26 +43,8 @@ const SAVE_INTERVAL_MINUTES = 15;
 const FILE_READ_THRESHOLD_HANDOFF = 25;
 const HANDOFF_COOLDOWN_MINUTES = 10;
 
-// ─── Project directory resolution + security ────────────────────────────────
-
-const safeBaseDir = path.resolve(process.cwd());
-const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
-const projectDir = path.resolve(safeBaseDir, projectDirInput);
-
-// Security check (bidirectional containment, Windows case-insensitive)
-const baseForCheck = process.platform === "win32" ? safeBaseDir.toLowerCase() : safeBaseDir;
-const projectForCheck = process.platform === "win32" ? projectDir.toLowerCase() : projectDir;
-
-const projectInsideCwd =
-  projectForCheck === baseForCheck || projectForCheck.startsWith(baseForCheck + path.sep);
-const cwdInsideProject =
-  baseForCheck === projectForCheck || baseForCheck.startsWith(projectForCheck + path.sep);
-
-if (!projectInsideCwd && !cwdInsideProject) {
-  console.log("ok");
-  process.exit(0);
-}
-
+// ─── Project directory ───────────────────────────────────────────────────────
+// projectDir is resolved by git-utils.js
 process.chdir(projectDir);
 
 // ─── Shared paths ───────────────────────────────────────────────────────────
@@ -81,81 +63,7 @@ const AUTOSAVE_STATE_FILE = path.join(projectDir, ".claude", "hooks", ".auto-sav
 const HANDOFF_STATE_FILE = path.join(projectDir, ".claude", "hooks", ".handoff-state.json");
 const HANDOFF_OUTPUT = path.join(projectDir, ".claude", "state", "handoff.json");
 
-// ─── Shared utilities ───────────────────────────────────────────────────────
-
-function loadJson(filePath) {
-  try {
-    return JSON.parse(fs.readFileSync(filePath, "utf8"));
-  } catch {
-    return null;
-  }
-}
-
-function saveJson(filePath, data) {
-  const tmpPath = `${filePath}.tmp`;
-  const bakPath = `${filePath}.bak`;
-  try {
-    // Refuse writes to symlinks or into symlinked directories (file + all ancestors)
-    if (!isSafeToWrite(filePath)) return false;
-    if (!isSafeToWrite(tmpPath)) return false;
-    if (!isSafeToWrite(bakPath)) return false;
-    const dir = path.dirname(filePath);
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
-    // Preserve old file until new one is committed (safer on Windows)
-    try {
-      if (fs.existsSync(filePath)) {
-        try {
-          fs.rmSync(bakPath, { force: true });
-        } catch {
-          /* best-effort */
-        }
-        fs.renameSync(filePath, bakPath);
-      }
-    } catch {
-      // If backup fails, try direct rm+rename
-      try {
-        fs.rmSync(filePath, { force: true });
-      } catch {
-        /* best-effort */
-      }
-    }
-    fs.renameSync(tmpPath, filePath);
-    // Cleanup backup after successful commit
-    try {
-      fs.rmSync(bakPath, { force: true });
-    } catch {
-      /* best-effort */
-    }
-    return true;
-  } catch (err) {
-    console.warn(
-      `post-read-handler: failed to save ${path.basename(filePath)}: ${err instanceof Error ? err.message : String(err)}`
-    );
-    try {
-      fs.rmSync(tmpPath, { force: true });
-    } catch {
-      /* cleanup */
-    }
-    // Attempt to restore backup if we created one
-    try {
-      if (fs.existsSync(bakPath) && !fs.existsSync(filePath)) {
-        fs.renameSync(bakPath, filePath);
-      }
-    } catch {
-      /* non-critical */
-    }
-    return false;
-  }
-}
-
-function gitExec(args) {
-  try {
-    return execFileSync("git", args, { cwd: projectDir, encoding: "utf8", timeout: 5000 }).trim();
-  } catch {
-    return "";
-  }
-}
+// ─── Shared utilities (from lib/state-utils.js and lib/git-utils.js) ────────
 
 // ─── Parse argv[2] JSON once ────────────────────────────────────────────────
 
@@ -439,15 +347,15 @@ function gatherGitContext() {
   return {
     branch: gitExec(["rev-parse", "--abbrev-ref", "HEAD"]),
     lastCommit: gitExec(["log", "--oneline", "-1"]),
-    uncommittedFiles: gitExec(["diff", "--name-only"])
-      .split("\n")
+    uncommittedFiles: gitExec(["diff", "-z", "--name-only"], { trim: false })
+      .split("\0")
       .filter((f) => f.length > 0),
-    untrackedFiles: gitExec(["ls-files", "--others", "--exclude-standard"])
-      .split("\n")
+    untrackedFiles: gitExec(["ls-files", "-z", "--others", "--exclude-standard"], { trim: false })
+      .split("\0")
       .filter((f) => f.length > 0)
       .slice(0, 20), // Cap at 20
-    stagedFiles: gitExec(["diff", "--cached", "--name-only"])
-      .split("\n")
+    stagedFiles: gitExec(["diff", "-z", "--cached", "--name-only"], { trim: false })
+      .split("\0")
       .filter((f) => f.length > 0),
   };
 }

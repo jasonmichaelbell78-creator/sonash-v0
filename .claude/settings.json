@@ -22,13 +22,6 @@
             "command": "node .claude/hooks/check-remote-session-context.js",
             "statusMessage": "Checking remote branches for session context...",
             "continueOnError": true
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/stop-serena-dashboard.js",
-            "statusMessage": "Stopping Serena dashboard...",
-            "timeout": 10000,
-            "continueOnError": true
           }
         ]
       },

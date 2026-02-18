@@ -6,8 +6,11 @@
 
 import { AdminCrudTable } from "./admin-crud-table";
 import { AdminCrudConfig } from "./admin-crud-types";
-import { SoberLivingHome, SoberLivingService } from "@/lib/db/sober-living";
-import { INITIAL_SOBER_LIVING_HOMES } from "@/scripts/seed-sober-living-data";
+import {
+  SoberLivingHome,
+  SoberLivingService,
+  INITIAL_SOBER_LIVING_HOMES,
+} from "@/lib/db/sober-living";
 import { MapPin, Phone, Globe } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

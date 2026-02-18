@@ -192,7 +192,7 @@ All templates now located in `docs/audits/multi-ai/templates/`:
 | **AGGREGATOR.md**                     | 2-tier aggregation process                            |
 | **SHARED_TEMPLATE_BASE.md**           | Shared boilerplate for all audit templates            |
 
-See [docs/audits/multi-ai/README.md](./multi-ai-audit/README.md) for full
+See [docs/audits/multi-ai/README.md](./audits/multi-ai/README.md) for full
 navigation.
 
 ### Other Templates
@@ -260,7 +260,7 @@ navigation.
   [FIREBASE_CHANGE_POLICY.md](./FIREBASE_CHANGE_POLICY.md)
 - **Submit a PR** → [PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md)
 - **Run a multi-AI audit** →
-  [docs/audits/multi-ai/README.md](./multi-ai-audit/README.md)
+  [docs/audits/multi-ai/README.md](./audits/multi-ai/README.md)
 - **Fix anti-patterns** → [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)
 - **Understand current session** → [SESSION_CONTEXT.md](../SESSION_CONTEXT.md)
 - **See project roadmap** → [ROADMAP.md](../ROADMAP.md)

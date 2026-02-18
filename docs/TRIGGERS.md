@@ -596,25 +596,17 @@ feedback on code quality, security, and best practices.
 
 ### Hooks Implemented
 
-| Hook                        | Trigger              | Action  | Purpose                                           |
-| --------------------------- | -------------------- | ------- | ------------------------------------------------- |
-| pattern-check.js            | Write/Edit           | Warn    | Anti-pattern detection                            |
-| component-size-check.js     | Write/Edit           | Warn    | Component >300 lines warning                      |
-| firestore-write-block.js    | Write/Edit           | Block   | Prevent direct writes to protected DB             |
-| test-mocking-validator.js   | Write/Edit           | Block   | Ensure tests mock httpsCallable                   |
-| app-check-validator.js      | Write/Edit           | Warn    | Cloud Function App Check verification             |
-| typescript-strict-check.js  | Write/Edit           | Warn    | Detect `any` type usage                           |
-| repository-pattern-check.js | Write/Edit           | Warn    | Firestore queries in components                   |
-| agent-trigger-enforcer.js   | Write/Edit           | Suggest | Recommend agents + delegated review queue (#250)  |
-| large-context-warning.js    | Read                 | Warn    | Track file reads for context bloat                |
-| decision-save-prompt.js     | AskQuestion          | Prompt  | Remind to document decisions                      |
-| audit-s0s1-validator.js     | Write                | Warn    | S0/S1 verification_steps validation (Session #98) |
-| track-agent-invocation.js   | Task                 | Track   | Record agent invocations for compliance (#101)    |
-| auto-save-context.js        | Read                 | Save    | Auto-save context to MCP memory on threshold      |
-| compaction-handoff.js       | Read                 | Save    | Write handoff.json for compaction recovery (#133) |
-| commit-tracker.js           | Bash                 | Track   | Log git commits to JSONL (#138)                   |
-| pre-compaction-save.js      | PreCompact           | Save    | Full state snapshot before compaction (#138)      |
-| compact-restore.js          | SessionStart:compact | Restore | Output recovery context after compaction (#138)   |
+| Hook                      | Trigger              | Action  | Purpose                                         |
+| ------------------------- | -------------------- | ------- | ----------------------------------------------- |
+| session-start.js          | SessionStart         | Setup   | Deps, builds, patterns, TDMS check              |
+| compact-restore.js        | SessionStart:compact | Restore | Output recovery context after compaction (#138) |
+| pre-compaction-save.js    | PreCompact           | Save    | Full state snapshot before compaction (#138)    |
+| post-write-validator.js   | Write/Edit           | Warn    | Schema, lint, pattern validation                |
+| post-read-handler.js      | Read                 | Track   | Context tracking, auto-save, handoff            |
+| commit-tracker.js         | Bash                 | Track   | Log git commits to JSONL (#138)                 |
+| track-agent-invocation.js | Task                 | Track   | Record agent invocations for compliance (#101)  |
+| decision-save-prompt.js   | AskQuestion          | Prompt  | Remind to document decisions                    |
+| user-prompt-handler.js    | UserPromptSubmit     | Process | Process user prompts                            |
 
 ### Verification
 

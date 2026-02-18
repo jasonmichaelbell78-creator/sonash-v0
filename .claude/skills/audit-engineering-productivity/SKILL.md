@@ -249,7 +249,8 @@ Create
   "files": ["array/of/file/paths.ts"],
   "why_it_matters": "1-3 sentences explaining impact",
   "suggested_fix": "Concrete remediation direction",
-  "acceptance_tests": ["Array of verification steps"]
+  "acceptance_tests": ["Array of verification steps"],
+  "evidence": ["code snippet", "grep output", "measurement data"]
 }
 ```
 

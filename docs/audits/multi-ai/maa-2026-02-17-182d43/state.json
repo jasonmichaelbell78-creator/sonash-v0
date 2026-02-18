@@ -1,0 +1,67 @@
+{
+  "session_id": "maa-2026-02-17-182d43",
+  "created": "2026-02-17T20:33:13.075Z",
+  "status": "in_progress",
+  "workflow_phase": "starting",
+  "current_category": null,
+  "selected_categories": [
+    "code-quality",
+    "security",
+    "performance",
+    "refactoring",
+    "documentation",
+    "process",
+    "engineering-productivity",
+    "enhancements",
+    "ai-optimization"
+  ],
+  "categories": {
+    "code-quality": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "security": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "performance": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "refactoring": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "documentation": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "process": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "engineering-productivity": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "enhancements": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    },
+    "ai-optimization": {
+      "status": "pending",
+      "sources": [],
+      "finding_count": 0
+    }
+  },
+  "final_output": null,
+  "last_updated": "2026-02-17T20:33:13.075Z"
+}

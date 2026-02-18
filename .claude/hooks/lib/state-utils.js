@@ -1,0 +1,139 @@
+/* eslint-disable */
+/**
+ * Shared JSON state persistence utilities for hooks.
+ * Extracted from post-read-handler.js, pre-compaction-save.js
+ *
+ * Features:
+ *   - Atomic write with tmp+backup strategy
+ *   - Symlink guard integration (optional, used when available)
+ *   - Cross-drive fallback (Windows)
+ */
+const fs = require("node:fs");
+const path = require("node:path");
+
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require("./symlink-guard"));
+} catch {
+  // Fail-closed: only allow writes within known .claude subdirectories
+  isSafeToWrite = (p) => {
+    try {
+      const claudeDir = path.resolve(__dirname, "..", "..");
+      const claudeReal = fs.realpathSync(claudeDir);
+
+      // Don't require state/hooks dirs to exist yet (fresh repo); saveJson will mkdirSync them.
+      const stateRoot = path.resolve(claudeReal, "state");
+      const hooksRoot = path.resolve(claudeReal, "hooks");
+
+      const abs = path.resolve(p);
+      // For new files (.tmp, .bak), realpath the parent dir and validate containment
+      const parentReal = fs.realpathSync(path.dirname(abs));
+
+      const norm = (x) => (process.platform === "win32" ? x.toLowerCase() : x);
+      const isUnder = (dir, root) => {
+        const d = norm(dir);
+        const r = norm(root);
+        return d === r || d.startsWith(r + path.sep);
+      };
+
+      return isUnder(parentReal, stateRoot) || isUnder(parentReal, hooksRoot);
+    } catch {
+      return false;
+    }
+  };
+}
+
+/**
+ * Load and parse a JSON file. Returns null on any error.
+ * @param {string} filePath
+ * @returns {any|null}
+ */
+function loadJson(filePath) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+/** Remove file silently (best-effort). */
+function silentRm(p) {
+  try {
+    fs.rmSync(p, { force: true });
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Atomic backup-swap: move existing dest to .bak, rename tmp to dest. */
+function backupSwap(filePath, tmpPath, bakPath) {
+  silentRm(bakPath);
+  if (fs.existsSync(filePath)) {
+    try {
+      fs.renameSync(filePath, bakPath);
+    } catch {
+      // Don't delete original on backup failure; best-effort copy instead
+      try {
+        fs.copyFileSync(filePath, bakPath);
+      } catch {
+        /* best effort */
+      }
+    }
+  }
+  try {
+    fs.renameSync(tmpPath, filePath);
+  } catch (err) {
+    // Restore backup if rename failed to prevent data loss
+    if (fs.existsSync(bakPath) && !fs.existsSync(filePath)) {
+      try {
+        fs.renameSync(bakPath, filePath);
+      } catch {
+        /* best effort */
+      }
+    }
+    throw err;
+  }
+  silentRm(bakPath);
+}
+
+/**
+ * Save data as JSON with atomic write (tmp+backup strategy).
+ * @param {string} filePath
+ * @param {any} data
+ * @returns {boolean} true on success
+ */
+function saveJson(filePath, data) {
+  const tmpPath = `${filePath}.tmp`;
+  const bakPath = `${filePath}.bak`;
+  let safeToWrite = false;
+  try {
+    // Ensure parent dir exists before isSafeToWrite (which needs realpathSync)
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    safeToWrite = isSafeToWrite(filePath) && isSafeToWrite(tmpPath) && isSafeToWrite(bakPath);
+    if (!safeToWrite) return false;
+    fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
+    backupSwap(filePath, tmpPath, bakPath);
+    return true;
+  } catch {
+    // Rollback: restore backup if dest was moved but tmp rename failed
+    try {
+      if (fs.existsSync(bakPath) && !fs.existsSync(filePath)) {
+        fs.renameSync(bakPath, filePath);
+      }
+    } catch {
+      /* ignore */
+    }
+    // Fallback: direct write if rename fails (Windows cross-drive)
+    if (!safeToWrite) return false;
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+      silentRm(tmpPath);
+      silentRm(bakPath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+module.exports = { loadJson, saveJson };

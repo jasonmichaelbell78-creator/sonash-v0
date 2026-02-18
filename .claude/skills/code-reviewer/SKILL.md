@@ -172,9 +172,10 @@ npm run patterns:check
 
 ## Reference Documentation
 
-- `references/code_review_checklist.md` — Detailed patterns and practices
-- `references/coding_standards.md` — Workflow documentation
-- `references/common_antipatterns.md` — Anti-patterns to avoid
+- `docs/agent_docs/CODE_PATTERNS.md` — Detailed patterns and practices (230+
+  from 259 reviews)
+- `docs/agent_docs/SECURITY_CHECKLIST.md` — Pre-write security checklist
+- `docs/agent_docs/FIX_TEMPLATES.md` — Standard fix patterns
 - `docs/agent_docs/CODE_PATTERNS.md` — 230+ patterns from 259 reviews
 - `docs/agent_docs/SECURITY_CHECKLIST.md` — Pre-write security checklist
 - `docs/agent_docs/FIX_TEMPLATES.md` — Standard fix patterns
