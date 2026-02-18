@@ -15,15 +15,17 @@ let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require("./symlink-guard"));
 } catch {
-  // Fail-closed: only allow writes within known state directories
+  // Fail-closed: only allow writes within known .claude subdirectories
   isSafeToWrite = (p) => {
     try {
-      const stateDir = fs.realpathSync(path.resolve(__dirname, "..", "..", "state"));
+      const claudeDir = path.resolve(__dirname, "..", "..");
+      const stateDir = fs.realpathSync(path.resolve(claudeDir, "state"));
+      const hooksDir = fs.realpathSync(path.resolve(claudeDir, "hooks"));
       const abs = path.resolve(p);
       // For new files (.tmp, .bak), realpath the parent dir and rejoin basename
       const parentReal = fs.realpathSync(path.dirname(abs));
-      const resolved = path.join(parentReal, path.basename(abs));
-      return resolved === stateDir || resolved.startsWith(stateDir + path.sep);
+      const isUnder = (dir, root) => dir === root || dir.startsWith(root + path.sep);
+      return isUnder(parentReal, stateDir) || isUnder(parentReal, hooksDir);
     } catch {
       return false;
     }
@@ -55,10 +57,17 @@ function silentRm(p) {
 /** Atomic backup-swap: move existing dest to .bak, rename tmp to dest. */
 function backupSwap(filePath, tmpPath, bakPath) {
   silentRm(bakPath);
-  try {
-    if (fs.existsSync(filePath)) fs.renameSync(filePath, bakPath);
-  } catch {
-    silentRm(filePath);
+  if (fs.existsSync(filePath)) {
+    try {
+      fs.renameSync(filePath, bakPath);
+    } catch {
+      // Don't delete original on backup failure; best-effort copy instead
+      try {
+        fs.copyFileSync(filePath, bakPath);
+      } catch {
+        /* best effort */
+      }
+    }
   }
   try {
     fs.renameSync(tmpPath, filePath);
@@ -86,9 +95,10 @@ function saveJson(filePath, data) {
   const tmpPath = `${filePath}.tmp`;
   const bakPath = `${filePath}.bak`;
   try {
+    // Ensure parent dir exists before isSafeToWrite (which needs realpathSync)
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
     if (!isSafeToWrite(filePath) || !isSafeToWrite(tmpPath) || !isSafeToWrite(bakPath))
       return false;
-    fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
     backupSwap(filePath, tmpPath, bakPath);
     return true;

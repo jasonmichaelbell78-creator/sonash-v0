@@ -1326,6 +1326,36 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #352: PR #374 R3 — Descendant Containment, backupSwap Copy, mkdirSync Order, CI Fix (2026-02-17)
+
+**Source:** Qodo Compliance + Code Suggestions + CI Failure **PR/Branch:**
+claude/cherry-pick-recent-commits-X1eKD (PR #374) **Suggestions:** 8 total
+(Fixed: 7, Deferred: 1)
+
+**Patterns:**
+
+1. **Descendant-only containment** — Bidirectional `startsWith` allowed ancestor
+   directories (e.g., `/`). Restricted to descendant-only: resolved must be cwd
+   or under cwd, not the reverse.
+2. **backupSwap: copy fallback** — If rename to `.bak` fails, `copyFileSync` as
+   fallback instead of deleting the original. Prevents data loss on cross-drive.
+3. **mkdirSync before isSafeToWrite** — `realpathSync` in isSafeToWrite fails if
+   parent dir doesn't exist yet. Move mkdirSync first.
+4. **isSafeToWrite hooks dir** — Fallback guard was too restrictive (state dir
+   only). Added hooks dir since hooks write to their own directory.
+5. **npm UA parsing crash** — `split("/")[1].split(" ")[0]` crashes on
+   unexpected format. Replaced with regex extraction.
+6. **MASTER_DEBT orphaned refs** — Evidence dedup in R2 used `generate-views.js`
+   which overwrites MASTER_DEBT from deduped.jsonl. The deduped.jsonl had fewer
+   items than main's MASTER_DEBT (missing ROADMAP-referenced IDs). Fixed by
+   merging committed + main entries.
+
+**Key learning:** The MASTER_DEBT/deduped.jsonl sync is fragile. When deduping
+evidence arrays, operate on MASTER_DEBT directly and only copy TO deduped.jsonl
+afterward — never let generate-views.js overwrite MASTER_DEBT with a subset.
+
+---
+
 #### Review #351: PR #374 R2 — Path Sep Boundary, New-File Guard, Evidence Dedup (2026-02-17)
 
 **Source:** Qodo Compliance + Code Suggestions **PR/Branch:**

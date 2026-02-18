@@ -45,9 +45,9 @@ console.log(`🚀 SessionStart Hook for sonash-v0 (${envType})`);
 // Log environment (secure: excludes PWD to avoid exposing sensitive paths)
 console.log("📋 Environment:");
 console.log(`   Node: ${process.version}`);
-console.log(
-  `   npm:  ${process.env.npm_config_user_agent ? process.env.npm_config_user_agent.split("/")[1].split(" ")[0] : "unknown"}`
-);
+const npmUA = process.env.npm_config_user_agent || "";
+const npmVersion = npmUA.match(/(?:^|\s)npm\/([0-9]+(?:\.[0-9]+)*)/i)?.[1] || "unknown";
+console.log(`   npm:  ${npmVersion}`);
 console.log("");
 
 // =============================================================================

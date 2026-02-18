@@ -1,100 +1,100 @@
 {
-  "generated": "2026-02-18T00:56:49.024Z",
+  "generated": "2026-02-18T02:00:36.731Z",
   "generated_date": "2026-02-18",
   "summary": {
-    "total": 2555,
-    "open": 1989,
-    "resolved": 294,
+    "total": 2656,
+    "open": 2086,
+    "resolved": 298,
     "false_positives": 272,
-    "resolution_rate_pct": 12
+    "resolution_rate_pct": 11
   },
   "by_status": {
-    "NEW": 65,
-    "VERIFIED": 1924,
+    "NEW": 67,
+    "VERIFIED": 2019,
     "IN_PROGRESS": 0,
-    "RESOLVED": 294,
+    "RESOLVED": 298,
     "FALSE_POSITIVE": 272
   },
   "by_severity": {
-    "S0": 36,
+    "S0": 40,
     "S1": 438,
-    "S2": 1152,
-    "S3": 929
+    "S2": 1250,
+    "S3": 928
   },
   "by_category": {
-    "code-quality": 1454,
+    "code-quality": 1546,
     "security": 85,
     "performance": 50,
     "documentation": 468,
     "refactoring": 22,
-    "process": 336,
-    "engineering-productivity": 11,
-    "enhancements": 11,
+    "process": 338,
+    "engineering-productivity": 9,
+    "enhancements": 20,
     "ai-optimization": 118
   },
   "by_source": {
-    "unknown": 2555
+    "unknown": 2656
   },
   "alerts": {
-    "s0_count": 15,
+    "s0_count": 19,
     "s1_count": 396,
     "s0_items": [
       {
-        "id": "DEBT-0012",
+        "id": "DEBT-0013",
         "title": "Refactor this function to reduce its Cognitive Complexity fr",
         "file": "functions/src/admin.ts",
         "line": 576
       },
       {
-        "id": "DEBT-0037",
+        "id": "DEBT-0038",
         "title": "Refactor this function to reduce its Cognitive Complexity fr",
         "file": "components/widgets/compact-meeting-countdown.tsx",
         "line": 69
       },
       {
-        "id": "DEBT-0854",
+        "id": "DEBT-0853",
         "title": "App Check disabled on all production Cloud Functions",
         "file": "functions/src/index.ts",
         "line": 0
       },
       {
-        "id": "DEBT-1056",
+        "id": "DEBT-0956",
         "title": "Refactor this function to reduce its Cognitive Complexity fr",
         "file": "components/admin/errors-tab.tsx",
         "line": 327
       },
       {
-        "id": "DEBT-1064",
+        "id": "DEBT-0963",
         "title": "Refactor this code to not nest functions more than 4 levels ",
         "file": "components/admin/logs-tab.tsx",
         "line": 342
       },
       {
-        "id": "DEBT-1538",
+        "id": "DEBT-1227",
         "title": "Refactor this function to reduce its Cognitive Complexity fr",
         "file": "functions/src/jobs.ts",
         "line": 1059
       },
       {
-        "id": "DEBT-1624",
+        "id": "DEBT-1271",
         "title": "Refactor this function to reduce its Cognitive Complexity fr",
         "file": "components/dev/lighthouse-tab.tsx",
         "line": 81
       },
       {
-        "id": "DEBT-1912",
+        "id": "DEBT-1293",
         "title": "Security risk: Client-side filtering of sensitive data",
         "file": "hooks/use-journal.ts",
         "line": 174
       },
       {
-        "id": "DEBT-2499",
+        "id": "DEBT-1878",
         "title": "CI gap: pull_request_target security vulnerability allows un",
         "file": ".github/workflows/deploy-firebase.yml",
         "line": 7
       },
       {
-        "id": "DEBT-3079",
+        "id": "DEBT-2381",
         "title": "CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn",
         "file": "N/A",
         "line": 0
@@ -102,61 +102,61 @@
     ],
     "s1_items": [
       {
-        "id": "DEBT-0001",
+        "id": "DEBT-0002",
         "title": "Provide a compare function to avoid sorting elements alphabe",
         "file": "app/meetings/all/page.tsx",
         "line": 164
       },
       {
-        "id": "DEBT-0002",
+        "id": "DEBT-0003",
         "title": "Provide a compare function to avoid sorting elements alphabe",
         "file": "components/notebook/pages/resources-page.tsx",
         "line": 306
       },
       {
-        "id": "DEBT-0003",
+        "id": "DEBT-0004",
         "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
         "file": ".claude/hooks/session-start.sh",
         "line": 264
       },
       {
-        "id": "DEBT-0004",
+        "id": "DEBT-0005",
         "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
         "file": ".claude/hooks/pattern-check.sh",
         "line": 89
       },
       {
-        "id": "DEBT-0005",
+        "id": "DEBT-0006",
         "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
         "file": "scripts/check-review-triggers.sh",
         "line": 44
       },
       {
-        "id": "DEBT-0006",
+        "id": "DEBT-0007",
         "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
         "file": ".claude/skills/artifacts-builder/scripts/bundle-artifact.sh",
         "line": 7
       },
       {
-        "id": "DEBT-0007",
+        "id": "DEBT-0008",
         "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
         "file": ".claude/skills/artifacts-builder/scripts/init-artifact.sh",
         "line": 11
       },
       {
-        "id": "DEBT-0008",
+        "id": "DEBT-0009",
         "title": "Use '[[' instead of '[' for conditional tests. The '[[' cons",
         "file": ".claude/skills/systematic-debugging/find-polluter.sh",
         "line": 8
       },
       {
-        "id": "DEBT-0009",
+        "id": "DEBT-0010",
         "title": "Exporting mutable 'let' binding, use 'const' instead.",
         "file": "lib/firebase.ts",
         "line": 137
       },
       {
-        "id": "DEBT-0010",
+        "id": "DEBT-0011",
         "title": "Refactor this function to reduce its Cognitive Complexity fr",
         "file": "lib/db/meetings.ts",
         "line": 21
@@ -166,7 +166,7 @@
   "health": {
     "avg_age_days": 13,
     "oldest_age_days": 19,
-    "oldest_item_id": "DEBT-0001",
-    "verification_queue_size": 65
+    "oldest_item_id": "DEBT-0002",
+    "verification_queue_size": 67
   }
 }

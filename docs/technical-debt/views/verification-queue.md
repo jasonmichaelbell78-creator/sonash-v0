@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 62
+**Items Needing Verification:** 67
 
 This queue contains items with status=NEW that require verification. Run
 `verify-technical-debt` skill to process this queue.
@@ -61,6 +61,11 @@ This queue contains items with status=NEW that require verification. Run
 | DEBT-2481 | Plan documents with zero inbound refs - 5 planning files ... | S2       | home/user/sonash-v0/docs/plans/CI_GATES_BLOCKING_PLAN.md and 4 others                | 0    |
 | DEBT-2531 | Subprocess Overhead: Node spawning in hooks                  | S2       | .claude/hooks/session-start.js                                                       | 0    |
 | DEBT-2548 | Dead Documentation: Code Review Checklist references         | S2       | 140                                                                                  | 0    |
+| DEBT-2809 | Triage 96 stale TODO/TBD markers across 34 files             | S2       | src                                                                                  | 0    |
+| DEBT-2811 | Documentation effectiveness metrics — track which docs ar... | S2       | docs                                                                                 | 0    |
+| DEBT-2812 | Add engines field to root package.json for CI/CD consistency | S2       | package.json                                                                         | 0    |
+| DEBT-2808 | Date formats inconsistent across the app                     | S2       | src/components                                                                       | 0    |
+| DEBT-2813 | Missing ARIA labels on critical navigation tabs              | S2       | src/components                                                                       | 0    |
 | DEBT-2442 | SESSION_CONTEXT.md recent session summaries                  | S3       | home/user/sonash-v0/SESSION_CONTEXT.md                                               | 0    |
 | DEBT-2443 | PLAN_MAP.md version history table                            | S3       | home/user/sonash-v0/docs/PLAN_MAP.md                                                 | 0    |
 | DEBT-2444 | AI_REVIEW_LEARNINGS_LOG.md large append-only learning jou... | S3       | home/user/sonash-v0/docs/AI_REVIEW_LEARNINGS_LOG.md                                  | 0    |

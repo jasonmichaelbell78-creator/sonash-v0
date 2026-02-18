@@ -8,8 +8,9 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 /**
- * Resolve and validate project directory with bidirectional containment.
- * Falls back to cwd() if CLAUDE_PROJECT_DIR is invalid or escapes expected bounds.
+ * Resolve and validate project directory with descendant containment.
+ * Only accepts CLAUDE_PROJECT_DIR if it resolves to cwd or a descendant of cwd.
+ * Falls back to cwd() if invalid, unreachable, or escapes expected bounds.
  */
 function resolveProjectDir() {
   const fallback = process.cwd();
@@ -18,11 +19,11 @@ function resolveProjectDir() {
   try {
     const resolved = fs.realpathSync(path.resolve(envDir));
     const cwd = fs.realpathSync(fallback);
-    // Case-insensitive on Windows; enforce path.sep boundary to prevent sibling-prefix bypass
     const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
     const a = norm(resolved);
     const b = norm(cwd);
-    if (a === b || a.startsWith(b + path.sep) || b.startsWith(a + path.sep)) return resolved;
+    // Descendant-only: resolved must be cwd itself or under cwd
+    if (a === b || a.startsWith(b + path.sep)) return resolved;
     return fallback;
   } catch {
     return fallback;
