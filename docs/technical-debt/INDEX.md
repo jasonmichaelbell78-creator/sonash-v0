@@ -35,10 +35,9 @@
 | Status         | Count |
 | -------------- | ----- |
 | VERIFIED       | 1924  |
-| RESOLVED       | 257   |
+| RESOLVED       | 292   |
 | FALSE_POSITIVE | 272   |
 | NEW            | 59    |
-| IN_PROGRESS    | 35    |
 
 ## Views
 

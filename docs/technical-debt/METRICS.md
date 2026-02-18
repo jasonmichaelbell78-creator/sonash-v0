@@ -31,10 +31,10 @@ distribution.
 | Metric          | Value |
 | --------------- | ----- |
 | Total Items     | 2547  |
-| Open Items      | 2018  |
-| Resolved        | 257   |
+| Open Items      | 1983  |
+| Resolved        | 292   |
 | False Positives | 272   |
-| Resolution Rate | 10%   |
+| Resolution Rate | 11%   |
 
 ---
 
@@ -44,8 +44,8 @@ distribution.
 | -------------- | ----- |
 | NEW            | 59    |
 | VERIFIED       | 1924  |
-| IN_PROGRESS    | 35    |
-| RESOLVED       | 257   |
+| IN_PROGRESS    | 0     |
+| RESOLVED       | 292   |
 | FALSE_POSITIVE | 272   |
 
 ---
@@ -102,7 +102,7 @@ distribution.
 - **DEBT-3079**: CRITICAL: 57 separate AI Instructions sections = ~4,500+ unn
   (N/A:0)
 
-### S1 High Priority Alerts (399)
+### S1 High Priority Alerts (396)
 
 - **DEBT-0001**: Provide a compare function to avoid sorting elements alphabe
   (app/meetings/all/page.tsx:164)
@@ -125,7 +125,7 @@ distribution.
 - **DEBT-0010**: Refactor this function to reduce its Cognitive Complexity fr
   (lib/db/meetings.ts:21)
 
-_...and 389 more S1 items_
+_...and 386 more S1 items_
 
 ---
 

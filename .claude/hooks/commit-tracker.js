@@ -21,14 +21,10 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execFileSync } = require("node:child_process");
-
-// Paths
-const safeBaseDir = path.resolve(process.cwd());
-const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
-const projectDir = path.resolve(safeBaseDir, projectDirInput);
+const { gitExec, projectDir } = require("./lib/git-utils.js");
 
 // Security check - bidirectional containment
+const safeBaseDir = path.resolve(process.cwd());
 const baseForCheck = process.platform === "win32" ? safeBaseDir.toLowerCase() : safeBaseDir;
 const projectForCheck = process.platform === "win32" ? projectDir.toLowerCase() : projectDir;
 
@@ -63,17 +59,6 @@ function extractCommand() {
   } catch {
     // Not JSON — treat as raw string
     return typeof arg === "string" ? arg : "";
-  }
-}
-
-/**
- * Execute git command safely with timeout
- */
-function gitExec(args) {
-  try {
-    return execFileSync("git", args, { cwd: projectDir, encoding: "utf8", timeout: 5000 }).trim();
-  } catch {
-    return "";
   }
 }
 

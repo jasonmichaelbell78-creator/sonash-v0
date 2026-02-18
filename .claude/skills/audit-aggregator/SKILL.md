@@ -585,6 +585,53 @@ Automatically invoked after all 9 domain audits complete.
 
 ---
 
+## Interactive Review (MANDATORY)
+
+After generating the aggregated report and JSONL file, present findings for
+interactive triage. **Do NOT skip this phase or auto-proceed to TDMS intake.**
+
+### Review Format
+
+Present findings in batches of 10, sorted by severity (S0 first), then
+confidence (descending). For each finding:
+
+```
+[N/TOTAL] FINGERPRINT
+  Title: ...
+  Severity: S0-S3 | Effort: low/medium/high | Confidence: 0.0-1.0
+  Category: ... | Source Domains: [which audits found this]
+  Files: [affected files]
+  Description: [1-2 sentences]
+  Suggested Fix: [1-2 sentences]
+
+  Action? [keep / drop / adjust-severity / adjust-effort / edit]
+```
+
+### User Actions
+
+| Action            | Effect                                             |
+| ----------------- | -------------------------------------------------- |
+| `keep` (or Enter) | Accept finding as-is                               |
+| `drop`            | Mark as FALSE_POSITIVE, exclude from TDMS intake   |
+| `adjust-severity` | Prompt for new severity (S0-S3)                    |
+| `adjust-effort`   | Prompt for new effort (low/medium/high)            |
+| `edit`            | Prompt for field to edit (title, description, etc) |
+
+### Batch Navigation
+
+After each batch of 10:
+
+- Show running tally: `Reviewed: X | Kept: Y | Dropped: Z | Adjusted: W`
+- Ask: `Continue next batch? [yes / skip-rest-keep-all / skip-rest-drop-rest]`
+
+### Post-Review
+
+1. Write dropped findings to `FALSE_POSITIVES.jsonl` in the audit output dir
+2. Apply all adjustments to the JSONL file
+3. Show final summary: total kept, dropped, adjusted by severity
+
+---
+
 ## Post-Audit
 
 After generating both the Markdown report and JSONL file, complete this 5-step
@@ -759,6 +806,7 @@ Before running this aggregator, review:
 
 | Version | Date       | Description                                                                                                            |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 1.4     | 2026-02-17 | Add mandatory Interactive Review phase before TDMS intake                                                              |
 | 1.3     | 2026-02-16 | AUDIT_STANDARDS compliance: Pre-Audit Validation, JSONL output, Post-Audit TDMS checklist, standard fingerprint format |
 | 1.2     | 2026-02-14 | 9-domain coverage: add engineering-productivity, enhancements, ai-optimization                                         |
 | 1.1     | 2026-02-03 | Added Triage & Roadmap Integration section with priority scoring formula                                               |

@@ -49,7 +49,7 @@ Select Category → Output Template → Await Findings
 Await Findings → [User: "add <source>"] → Prompt for Paste → Process Findings → Await Findings
               → [User: "done"] → Aggregate Category → Select Next Category
               → [User: "skip"] → Select Next Category
-              → [User: "finish"] → Unify All Categories → TDMS Intake → Roadmap Integration → COMPLETE
+              → [User: "finish"] → Unify All Categories → Interactive Review → TDMS Intake → Roadmap Integration → COMPLETE
               → [User: "status"] → Show Status → Await Findings
 ```
 
@@ -542,13 +542,64 @@ Output Files:
 Proceeding to TDMS intake...
 ```
 
-### Step 5.4: Transition to Intake
+### Step 5.4: Transition to Review
 
 Do NOT mark the session as complete yet. Proceed directly to Phase 6.
 
 ---
 
-## Phase 6: TDMS Intake (Automated)
+## Phase 6: Interactive Review (MANDATORY — before TDMS intake)
+
+**Do NOT ingest findings into TDMS until the user has reviewed them.**
+
+### Presentation Format
+
+Present findings in **batches of 3-5 items**, grouped by severity (S0 first,
+then S1, S2, S3). For multi-AI findings, also show consensus data:
+
+```
+### CANON-XXXX: [Title]
+**Severity:** S_ | **Effort:** E_ | **Confidence:** _%
+**AI Consensus:** [N/M AIs flagged this] | **Sources:** [list]
+**Current:** [What exists now]
+**Suggested Fix:** [Concrete remediation]
+**Counter-argument:** [Why NOT to do this]
+**Recommendation:** ACCEPT/DECLINE/DEFER — [Reasoning]
+```
+
+Group related findings (same file, same theme) together. Present options:
+
+- **Accept** — include in TDMS intake
+- **Decline** — remove entirely (false positive or not worth tracking)
+- **Defer** — add to TDMS as NEW status for future planning
+
+Do NOT present all items at once — batches of 3-5 keep decisions manageable.
+Wait for user decisions on each batch before presenting the next.
+
+### Decision Tracking (Compaction-Safe)
+
+Create `${SESSION_DIR}/REVIEW_DECISIONS.md` after the first batch to track all
+decisions. Update after each batch. This file survives context compaction.
+
+### Processing Decisions
+
+After each batch:
+
+- Record decisions in REVIEW_DECISIONS.md
+- If DECLINED: remove from findings before TDMS intake
+- If DEFERRED: keep in TDMS as NEW status for future planning
+- If ACCEPTED: proceed to TDMS intake
+
+### Post-Review Summary
+
+After ALL findings reviewed, summarize:
+
+- Total accepted / declined / deferred
+- Proceed to Phase 7 (TDMS Intake) with accepted + deferred items only
+
+---
+
+## Phase 7: TDMS Intake (Automated)
 
 **Immediately after unification completes:**
 
@@ -618,13 +669,13 @@ updateSession(sessionId, {
 
 ---
 
-## Phase 7: Roadmap Integration (Interactive Placement)
+## Phase 8: Roadmap Integration (Interactive Placement)
 
 **Immediately after TDMS intake completes.** This phase presents the user with a
 rich placement analysis — suggestions, pros/cons, must-fix items, and options —
 before auto-assigning roadmap references.
 
-### Step 7.1: Assign Roadmap References (Dry-Run)
+### Step 9.1: Assign Roadmap References (Dry-Run)
 
 ```bash
 node scripts/debt/assign-roadmap-refs.js --dry-run --verbose --report
@@ -649,7 +700,7 @@ This maps each new DEBT item to a roadmap track/milestone using:
 | ai-optimization (scripts/) | Track-E          |
 | ai-optimization (default)  | Track-D          |
 
-### Step 7.2: Severity-Weighted Placement Summary
+### Step 9.2: Severity-Weighted Placement Summary
 
 Compute and present **inline** (severity weights: S0=10, S1=5, S2=2, S3=1):
 
@@ -662,7 +713,7 @@ Compute and present **inline** (severity weights: S0=10, S1=5, S2=2, S3=1):
 | TOTAL           | 1,850 | ... | ... | ... | ... |  5,527 |
 ```
 
-### Step 7.3: Must-Fix-Now Analysis
+### Step 9.3: Must-Fix-Now Analysis
 
 Present separately:
 
@@ -672,7 +723,7 @@ Present separately:
   warrant severity downgrade
 - **Quick Wins**: E0-E1 items that can be batch-fixed easily
 
-### Step 7.4: Concentration Risk & Suggestions
+### Step 9.4: Concentration Risk & Suggestions
 
 For any track carrying >40% of total weight:
 
@@ -681,7 +732,7 @@ For any track carrying >40% of total weight:
 - **Cons** of keeping current assignment
 - **Suggestion**: Downgrade, split sub-track, or keep as-is
 
-### Step 7.5: Present Options to User
+### Step 9.5: Present Options to User
 
 Use `AskUserQuestion` to offer placement decisions:
 
@@ -691,7 +742,7 @@ Use `AskUserQuestion` to offer placement decisions:
 3. **Show more detail** — deeper breakdown before deciding
 4. **Custom adjustment** — user specifies track reassignments
 
-### Step 7.6: Apply Canonical Severity Rules
+### Step 9.6: Apply Canonical Severity Rules
 
 These severity adjustments are standing policy (apply automatically after user
 approves placement):
@@ -702,7 +753,7 @@ approves placement):
 
 Additional rules may be added to this table as the team establishes patterns.
 
-### Step 7.7: Apply Assignments
+### Step 9.7: Apply Assignments
 
 ```bash
 node scripts/debt/assign-roadmap-refs.js --report --verbose
@@ -714,7 +765,7 @@ Then sync `raw/deduped.jsonl` from MASTER_DEBT.jsonl:
 cp docs/technical-debt/MASTER_DEBT.jsonl docs/technical-debt/raw/deduped.jsonl
 ```
 
-### Step 7.8: Validate References
+### Step 9.8: Validate References
 
 ```bash
 node scripts/debt/sync-roadmap-refs.js --check-only
@@ -723,14 +774,14 @@ node scripts/debt/sync-roadmap-refs.js --check-only
 If orphaned references are detected, HALT the workflow. Report errors to the
 user and do not proceed until data is corrected.
 
-### Step 7.9: Regenerate Metrics
+### Step 9.9: Regenerate Metrics
 
 ```bash
 node scripts/debt/generate-views.js
 node scripts/debt/generate-metrics.js
 ```
 
-### Step 7.10: Update State
+### Step 9.10: Update State
 
 ```javascript
 updateSession(sessionId, {
@@ -744,9 +795,9 @@ updateSession(sessionId, {
 
 ---
 
-## Phase 8: Final Summary & Session Complete
+## Phase 9: Final Summary & Session Complete
 
-### Step 8.1: Generate Final Report
+### Step 9.1: Generate Final Report
 
 ```
 ══════════════════════════════════════════════════
@@ -796,7 +847,7 @@ Remaining Manual Steps:
   3. Archive session when satisfied: move to docs/audits/multi-ai/archive/
 ```
 
-### Step 8.2: Reset Audit Triggers
+### Step 9.2: Reset Audit Triggers
 
 ```bash
 node scripts/reset-audit-triggers.js --type=multi-ai --apply
@@ -804,7 +855,7 @@ node scripts/reset-audit-triggers.js --type=multi-ai --apply
 
 This resets all category thresholds and multi-AI counters in AUDIT_TRACKER.md.
 
-### Step 8.3: Complete Session
+### Step 9.3: Complete Session
 
 ```javascript
 completeSession(sessionId, {
@@ -924,13 +975,13 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 - [scripts/multi-ai/](../../../scripts/multi-ai/) - Processing scripts
   (normalize, aggregate, unify)
 - [scripts/debt/intake-audit.js](../../../scripts/debt/intake-audit.js) - TDMS
-  intake (Phase 6)
+  intake (Phase 7)
 - [scripts/debt/assign-roadmap-refs.js](../../../scripts/debt/assign-roadmap-refs.js) -
-  Roadmap assignment (Phase 7)
+  Roadmap assignment (Phase 8)
 - [scripts/debt/sync-roadmap-refs.js](../../../scripts/debt/sync-roadmap-refs.js) -
-  Roadmap validation (Phase 7)
+  Roadmap validation (Phase 8)
 - [scripts/debt/generate-metrics.js](../../../scripts/debt/generate-metrics.js) -
-  Metrics regeneration (Phase 7)
+  Metrics regeneration (Phase 8)
 - [docs/technical-debt/PROCEDURE.md](../../../docs/technical-debt/PROCEDURE.md) -
   TDMS procedures
 
@@ -938,11 +989,12 @@ Users can paste whatever the AI outputs - the skill handles conversion.
 
 ## Version History
 
-| Version | Date       | Changes                                                                                                                                                                                  |
-| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.5     | 2026-02-16 | Added Step 1.3 (audit scope selection) for category scoping: all, select, or single category mode; renumbered category menu to Step 1.4                                                  |
-| 1.4     | 2026-02-16 | Added enhancements + ai-optimization categories (7→9), updated template mapping, output checklist, status display, roadmap integration table, and all count references                   |
-| 1.3     | 2026-02-06 | Added per-category output checklist to Step 2.3 to prevent template summarization/truncation (recurring error)                                                                           |
-| 1.2     | 2026-02-05 | Fixed template mapping table format, standardized prompt extraction regex, resolved REFACTORING_AUDIT.md ambiguity                                                                       |
-| 1.1     | 2026-02-05 | Added Phase 6 (TDMS intake), Phase 7 (roadmap integration), Phase 8 (summary) — automates the full pipeline from unified findings through MASTER_DEBT.jsonl and roadmap track assignment |
-| 1.0     | 2026-02-04 | Initial skill creation                                                                                                                                                                   |
+| Version | Date       | Changes                                                                                                                                                                |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.5     | 2026-02-16 | Added Step 1.3 (audit scope selection) for category scoping: all, select, or single category mode; renumbered category menu to Step 1.4                                |
+| 1.4     | 2026-02-16 | Added enhancements + ai-optimization categories (7→9), updated template mapping, output checklist, status display, roadmap integration table, and all count references |
+| 1.3     | 2026-02-06 | Added per-category output checklist to Step 2.3 to prevent template summarization/truncation (recurring error)                                                         |
+| 1.2     | 2026-02-05 | Fixed template mapping table format, standardized prompt extraction regex, resolved REFACTORING_AUDIT.md ambiguity                                                     |
+| 1.2     | 2026-02-17 | Added Phase 6 (Interactive Review) — mandatory user review before TDMS intake; renumbered remaining phases 7-9                                                         |
+| 1.1     | 2026-02-05 | Added TDMS intake, roadmap integration, summary phases — automates the full pipeline from unified findings through MASTER_DEBT.jsonl and roadmap track assignment      |
+| 1.0     | 2026-02-04 | Initial skill creation                                                                                                                                                 |

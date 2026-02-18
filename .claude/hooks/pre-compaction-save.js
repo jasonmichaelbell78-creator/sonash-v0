@@ -28,26 +28,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execFileSync } = require("node:child_process");
-
-// Paths
-const safeBaseDir = path.resolve(process.cwd());
-const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
-const projectDir = path.resolve(safeBaseDir, projectDirInput);
-
-// Security check - bidirectional containment
-const baseForCheck = process.platform === "win32" ? safeBaseDir.toLowerCase() : safeBaseDir;
-const projectForCheck = process.platform === "win32" ? projectDir.toLowerCase() : projectDir;
-
-const projectInsideCwd =
-  projectForCheck === baseForCheck || projectForCheck.startsWith(baseForCheck + path.sep);
-const cwdInsideProject =
-  baseForCheck === projectForCheck || baseForCheck.startsWith(projectForCheck + path.sep);
-
-if (!projectInsideCwd && !cwdInsideProject) {
-  console.log("ok");
-  process.exit(0);
-}
+const { gitExec, projectDir } = require("./lib/git-utils.js");
+const { loadJson, saveJson } = require("./lib/state-utils.js");
 
 // State file paths
 const STATE_DIR = path.join(projectDir, ".claude", "state");
@@ -59,86 +41,8 @@ const SESSION_STATE = path.join(HOOKS_DIR, ".session-state.json");
 const CONTEXT_TRACKING = path.join(HOOKS_DIR, ".context-tracking-state.json");
 const SESSION_CONTEXT_MD = path.join(projectDir, "SESSION_CONTEXT.md");
 
-/**
- * Load JSON file safely
- */
-function loadJson(filePath) {
-  try {
-    return JSON.parse(fs.readFileSync(filePath, "utf8"));
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Save JSON file with atomic write
- */
-function saveJson(filePath, data) {
-  const tmpPath = `${filePath}.tmp`;
-  const backupPath = `${filePath}.bak`;
-  try {
-    const dir = path.dirname(filePath);
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
-    // Backup-swap: move existing dest to .bak, then rename tmp to dest.
-    // If crash occurs at any point, at least one copy survives.
-    try {
-      fs.rmSync(backupPath, { force: true });
-    } catch {
-      /* ignore */
-    }
-    try {
-      if (fs.existsSync(filePath)) fs.renameSync(filePath, backupPath);
-    } catch {
-      // If backup rename fails, fall through to try direct rename
-    }
-    fs.renameSync(tmpPath, filePath);
-    // Success — clean up backup
-    try {
-      fs.rmSync(backupPath, { force: true });
-    } catch {
-      /* ignore */
-    }
-    return true;
-  } catch {
-    // Rollback: restore backup if dest was moved but tmp rename failed
-    try {
-      if (fs.existsSync(backupPath) && !fs.existsSync(filePath)) {
-        fs.renameSync(backupPath, filePath);
-      }
-    } catch {
-      /* ignore */
-    }
-    // Fallback: direct write if rename fails (Windows cross-drive)
-    try {
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-      try {
-        fs.rmSync(tmpPath, { force: true });
-      } catch {
-        /* ignore */
-      }
-      try {
-        fs.rmSync(backupPath, { force: true });
-      } catch {
-        /* ignore */
-      }
-      return true;
-    } catch {
-      return false;
-    }
-  }
-}
-
-/**
- * Execute git command safely
- */
-function gitExec(args) {
-  try {
-    return execFileSync("git", args, { cwd: projectDir, encoding: "utf8", timeout: 5000 }).trim();
-  } catch {
-    return "";
-  }
-}
+// loadJson, saveJson from lib/state-utils.js
+// gitExec from lib/git-utils.js
 
 /**
  * Get session counter from SESSION_CONTEXT.md

@@ -294,7 +294,7 @@ reliability, and solo developer automations.
 | **Track C**  | UI/UX Improvements                      | 📋 Reserved     | TBD       | Claude |
 | **Track D**  | CI Reliability & Automation             | 📋 Planned      | ~28 hours | Claude |
 | **Track E**  | Solo Developer Automations              | 📋 Planned      | ~14 hours | Claude |
-| **Track AI** | AI Optimization Sprint (multi-AI audit) | 📋 Planned      | ~9 hours  | Claude |
+| **Track AI** | AI Optimization Sprint (multi-AI audit) | ✅ Complete     | ~9 hours  | Claude |
 | **Track O**  | Owner Actions (manual setup)            | 📋 **DO FIRST** | ~10 min   | Jason  |
 | **Track P**  | Performance Critical (CWV fix)          | 📋 Planned      | ~24 hours | Claude |
 | **Track T**  | Testing Infrastructure (Playwright)     | 🔄 Phase 1 Done | ~70 hours | Claude |
@@ -330,7 +330,7 @@ reliability, and solo developer automations.
 - CANON-0067 (47 cognitive complexity violations) is a broader parent item in
   M2.3-REF
 
-### Track AI - AI Optimization Sprint (NEW - Session #169)
+### Track AI - AI Optimization Sprint (COMPLETE - Session #169)
 
 > **Source:** Multi-AI Audit session `maa-2026-02-17-182d43` (5 AI sources, 65
 > findings). **Triage:** 35 accepted for sprint, 13 deferred to debt, 19
@@ -339,56 +339,56 @@ reliability, and solo developer automations.
 
 #### Phase 1: Dead Code Removal (E0, ~1 hour)
 
-- [ ] **AI-1.1** Delete 6 dead `.sh` hook files (DEBT-3198, 3200, 3211, 3218)
-- [ ] **AI-1.2** Delete 13 dead TypeScript migration scripts (DEBT-3184–3196)
-- [ ] **AI-1.3** Verified delete of orphaned consolidated hook JS files
+- [x] **AI-1.1** Delete 6 dead `.sh` hook files (DEBT-3198, 3200, 3211, 3218)
+- [x] **AI-1.2** Delete 13 dead TypeScript migration scripts (DEBT-3184–3196)
+- [x] **AI-1.3** Verified delete of orphaned consolidated hook JS files
       (DEBT-3219) — verify references in settings.json/package.json first
-- [ ] **AI-1.4** Delete dead technical-debt log artifacts (DEBT-3231)
-- [ ] **AI-1.5** Remove `stop-serena-dashboard.js` from SessionStart hooks
+- [x] **AI-1.4** Delete dead technical-debt log artifacts (DEBT-3231)
+- [x] **AI-1.5** Remove `stop-serena-dashboard.js` from SessionStart hooks
       (DEBT-3199, 3221)
-- [ ] **AI-1.6** Remove `filesystem` entry from `.mcp.json` (DEBT-3225)
+- [x] **AI-1.6** Remove `filesystem` entry from `.mcp.json` (DEBT-3225)
 
 #### Phase 2: Quick Fixes (E0, ~1 hour)
 
-- [ ] **AI-2.1** Replace `execSync('node -v')` with `process.version`
+- [x] **AI-2.1** Replace `execSync('node -v')` with `process.version`
       (DEBT-3197)
-- [ ] **AI-2.2** Apply `rotateJsonl()` to `hook-warnings-log.jsonl` and
+- [x] **AI-2.2** Apply `rotateJsonl()` to `hook-warnings-log.jsonl` and
       `health-score-log.jsonl` (DEBT-3217, 3244)
-- [ ] **AI-2.3** Fix broken link in `code-reviewer/SKILL.md` — point to
+- [x] **AI-2.3** Fix broken link in `code-reviewer/SKILL.md` — point to
       `docs/agent_docs/CODE_PATTERNS.md` (DEBT-3208)
-- [ ] **AI-2.4** Add `evidence` field to all audit agent output schemas
+- [x] **AI-2.4** Add `evidence` field to all audit agent output schemas
       (DEBT-3201)
-- [ ] **AI-2.5** Fix git diff parsing in `post-read-handler.js` to use `-z` flag
+- [x] **AI-2.5** Fix git diff parsing in `post-read-handler.js` to use `-z` flag
       (DEBT-3209)
 
 #### Phase 3: Session-Start Incremental (E1, ~2 hours)
 
-- [ ] **AI-3.1** Add TTL guard on unconditional `npm run test:build` (DEBT-3204)
-- [ ] **AI-3.2** Condense session-start output to <10 lines, <100 tokens
+- [x] **AI-3.1** Add TTL guard on unconditional `npm run test:build` (DEBT-3204)
+- [x] **AI-3.2** Condense session-start output to <10 lines, <100 tokens
       (DEBT-3202)
 
 #### Phase 4: Hook Shared Libraries (E1, ~3 hours)
 
-- [ ] **AI-4.1** Extract `gitExec()` to `hooks/lib/git-utils.js`, update 7 hooks
+- [x] **AI-4.1** Extract `gitExec()` to `hooks/lib/git-utils.js`, update 7 hooks
       (DEBT-3213)
-- [ ] **AI-4.2** Extract `INLINE_PATTERNS` + `checkInlinePatterns()` to
+- [x] **AI-4.2** Extract `INLINE_PATTERNS` + `checkInlinePatterns()` to
       `hooks/lib/inline-patterns.js` (DEBT-3212)
-- [ ] **AI-4.3** Migrate `loadJson`/`saveJson` users to `state-utils.js`
+- [x] **AI-4.3** Migrate `loadJson`/`saveJson` users to `state-utils.js`
       (DEBT-3243)
-- [ ] **AI-4.4** Add `FALSE_POSITIVES.jsonl` exclusion to audit agent prompts
-      (DEBT-3220)
+- [x] **AI-4.4** Add `FALSE_POSITIVES.jsonl` exclusion to audit agent prompts
+      (DEBT-3220) — already present in all 13+ audit skills
 
 #### Phase 5: Reference Doc Trim (E1, ~1 hour)
 
-- [ ] **AI-5.1** Trim `COMMAND_REFERENCE.md` (109KB) to lightweight index
+- [x] **AI-5.1** Trim `COMMAND_REFERENCE.md` (109KB) to lightweight index
       (<10KB) linking to source files (DEBT-3206)
 
 #### Phase 6: Audit Review Stage Fix (E1, ~1 hour)
 
-- [ ] **AI-6.1** Add Interactive Review phase to `multi-ai-audit/SKILL.md`
+- [x] **AI-6.1** Add Interactive Review phase to `multi-ai-audit/SKILL.md`
       between Phase 5 (Unification) and Phase 6 (TDMS Intake) — adapt
       single-session format for CANON-grouped, consensus-scored findings
-- [ ] **AI-6.2** Add Interactive Review phase to `audit-aggregator/SKILL.md`
+- [x] **AI-6.2** Add Interactive Review phase to `audit-aggregator/SKILL.md`
 
 **Total: 18 work items | ~9 hours estimated | 6 phases**
 

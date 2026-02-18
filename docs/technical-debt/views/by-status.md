@@ -2002,47 +2002,11 @@
 | DEBT-3079 | CRITICAL: 57 separate AI Instructions sections = ~4,500+ ...   | S0       | code-quality             |
 | DEBT-3080 | SESSION_CONTEXT.md Session Counter Regex in 5 hooks            | S0       | code-quality             |
 
-## IN_PROGRESS (35)
+## IN_PROGRESS (0)
 
-| ID        | Title                                                        | Severity | Category        |
-| --------- | ------------------------------------------------------------ | -------- | --------------- |
-| DEBT-3202 | session-start.js outputs 400-600 tokens of verbose status... | S1       | ai-optimization |
-| DEBT-3204 | Hook Latency: Unconditional test build                       | S1       | ai-optimization |
-| DEBT-3206 | COMMAND_REFERENCE.md is 109KB — loaded on demand but risk... | S1       | ai-optimization |
-| DEBT-3184 | Dead Script: dedupe-quotes.ts                                | S2       | ai-optimization |
-| DEBT-3185 | Dead Script: enrich-addresses.ts                             | S2       | ai-optimization |
-| DEBT-3186 | Dead Script: import-nashville-links.ts                       | S2       | ai-optimization |
-| DEBT-3187 | Dead Script: migrate-library-content.ts                      | S2       | ai-optimization |
-| DEBT-3188 | Dead Script: migrate-meetings-dayindex.ts                    | S2       | ai-optimization |
-| DEBT-3189 | Dead Script: migrate-to-journal.ts                           | S2       | ai-optimization |
-| DEBT-3190 | Dead Script: seed-meetings.ts                                | S2       | ai-optimization |
-| DEBT-3191 | Dead Script: seed-real-data.ts                               | S2       | ai-optimization |
-| DEBT-3192 | Dead Script: seed-sober-living-data.ts                       | S2       | ai-optimization |
-| DEBT-3193 | Dead Script: set-admin-claim.ts                              | S2       | ai-optimization |
-| DEBT-3194 | Dead Script: sync-geocache.ts                                | S2       | ai-optimization |
-| DEBT-3195 | Dead Script: test-geocode.ts                                 | S2       | ai-optimization |
-| DEBT-3196 | Dead Script: retry-failures.ts                               | S2       | ai-optimization |
-| DEBT-3197 | session-start.js spawns 2 unnecessary child processes for... | S2       | ai-optimization |
-| DEBT-3198 | session-start.sh (365 lines) is dead code — replaced by s... | S2       | ai-optimization |
-| DEBT-3199 | stop-serena-dashboard.js runs every SessionStart despite ... | S2       | ai-optimization |
-| DEBT-3200 | Shell hooks (.sh) are dead code — replaced by .js equival... | S2       | ai-optimization |
-| DEBT-3201 | Agent sub-prompts omit evidence field from output schema     | S2       | ai-optimization |
-| DEBT-3208 | Dead Documentation: Code Review Checklist references         | S2       | ai-optimization |
-| DEBT-3209 | Fragile Parsing: Git output parsing in post-read-handler.js  | S2       | ai-optimization |
-| DEBT-3211 | check-edit-requirements.sh and check-write-requirements.s... | S2       | ai-optimization |
-| DEBT-3212 | post-write-validator.js and pattern-check.js share identi... | S2       | ai-optimization |
-| DEBT-3213 | Multiple hooks contain duplicated gitExec helper function    | S2       | ai-optimization |
-| DEBT-3217 | hook-warnings-log.jsonl has repetitive low-value entries ... | S2       | ai-optimization |
-| DEBT-3218 | Legacy shell hook scripts appear runtime-unused (possibly... | S2       | ai-optimization |
-| DEBT-3219 | 13 consolidated-out hook JS files remain as dead standalo... | S2       | ai-optimization |
-| DEBT-3220 | Task() sub-agents dont check FALSE_POSITIVES.jsonl before... | S2       | ai-optimization |
-| DEBT-3221 | stop-serena-dashboard.js uses 6+ execFileSync calls at se... | S2       | ai-optimization |
-| DEBT-3225 | filesystem MCP server configured but permanently disabled... | S3       | ai-optimization |
-| DEBT-3231 | Dead Documentation: technical-debt/logs artifacts            | S3       | ai-optimization |
-| DEBT-3243 | Multiple hooks duplicate loadJson/saveJson atomic write p... | S3       | ai-optimization |
-| DEBT-3244 | health-score-log.jsonl and hook-warnings-log.jsonl grow u... | S3       | ai-optimization |
+_No items_
 
-## RESOLVED (257)
+## RESOLVED (292)
 
 | ID        | Title                                                          | Severity | Category                 |
 | --------- | -------------------------------------------------------------- | -------- | ------------------------ |
@@ -2081,6 +2045,9 @@
 | DEBT-3063 | Unclear relationship: audit-validation-wrapper vs audit-c...   | S1       | code-quality             |
 | DEBT-3082 | AUDIT_FINDINGS_BACKLOG.md markdown parsing in check-backl...   | S1       | code-quality             |
 | DEBT-3091 | HOOKIFY_STRATEGY.md - 1.1KB implementation plan unused         | S1       | code-quality             |
+| DEBT-3202 | session-start.js outputs 400-600 tokens of verbose status...   | S1       | ai-optimization          |
+| DEBT-3204 | Hook Latency: Unconditional test build                         | S1       | ai-optimization          |
+| DEBT-3206 | COMMAND_REFERENCE.md is 109KB — loaded on demand but risk...   | S1       | ai-optimization          |
 | DEBT-0274 | Add an explicit return statement at the end of the function.   | S2       | code-quality             |
 | DEBT-0275 | Assign this positional parameter to a local variable.          | S2       | code-quality             |
 | DEBT-0415 | Tier 2 docs missing required metadata (Document Version, ...   | S2       | code-quality             |
@@ -2212,7 +2179,35 @@
 | DEBT-3060 | Empty or minimal SKILL.md descriptions                         | S2       | code-quality             |
 | DEBT-3070 | Undefined skill descriptions create discovery problem (50...   | S2       | code-quality             |
 | DEBT-3094 | PLAN_MAP.md - 242 lines documentation hierarchy map never...   | S2       | code-quality             |
+| DEBT-3184 | Dead Script: dedupe-quotes.ts                                  | S2       | ai-optimization          |
+| DEBT-3185 | Dead Script: enrich-addresses.ts                               | S2       | ai-optimization          |
+| DEBT-3186 | Dead Script: import-nashville-links.ts                         | S2       | ai-optimization          |
+| DEBT-3187 | Dead Script: migrate-library-content.ts                        | S2       | ai-optimization          |
+| DEBT-3188 | Dead Script: migrate-meetings-dayindex.ts                      | S2       | ai-optimization          |
+| DEBT-3189 | Dead Script: migrate-to-journal.ts                             | S2       | ai-optimization          |
+| DEBT-3190 | Dead Script: seed-meetings.ts                                  | S2       | ai-optimization          |
+| DEBT-3191 | Dead Script: seed-real-data.ts                                 | S2       | ai-optimization          |
+| DEBT-3192 | Dead Script: seed-sober-living-data.ts                         | S2       | ai-optimization          |
+| DEBT-3193 | Dead Script: set-admin-claim.ts                                | S2       | ai-optimization          |
+| DEBT-3194 | Dead Script: sync-geocache.ts                                  | S2       | ai-optimization          |
+| DEBT-3195 | Dead Script: test-geocode.ts                                   | S2       | ai-optimization          |
+| DEBT-3196 | Dead Script: retry-failures.ts                                 | S2       | ai-optimization          |
+| DEBT-3197 | session-start.js spawns 2 unnecessary child processes for...   | S2       | ai-optimization          |
+| DEBT-3198 | session-start.sh (365 lines) is dead code — replaced by s...   | S2       | ai-optimization          |
+| DEBT-3199 | stop-serena-dashboard.js runs every SessionStart despite ...   | S2       | ai-optimization          |
+| DEBT-3200 | Shell hooks (.sh) are dead code — replaced by .js equival...   | S2       | ai-optimization          |
+| DEBT-3201 | Agent sub-prompts omit evidence field from output schema       | S2       | ai-optimization          |
+| DEBT-3208 | Dead Documentation: Code Review Checklist references           | S2       | ai-optimization          |
+| DEBT-3209 | Fragile Parsing: Git output parsing in post-read-handler.js    | S2       | ai-optimization          |
+| DEBT-3211 | check-edit-requirements.sh and check-write-requirements.s...   | S2       | ai-optimization          |
+| DEBT-3212 | post-write-validator.js and pattern-check.js share identi...   | S2       | ai-optimization          |
+| DEBT-3213 | Multiple hooks contain duplicated gitExec helper function      | S2       | ai-optimization          |
 | DEBT-3214 | Context Optimization: Heavy episodic memory search             | S2       | ai-optimization          |
+| DEBT-3217 | hook-warnings-log.jsonl has repetitive low-value entries ...   | S2       | ai-optimization          |
+| DEBT-3218 | Legacy shell hook scripts appear runtime-unused (possibly...   | S2       | ai-optimization          |
+| DEBT-3219 | 13 consolidated-out hook JS files remain as dead standalo...   | S2       | ai-optimization          |
+| DEBT-3220 | Task() sub-agents dont check FALSE_POSITIVES.jsonl before...   | S2       | ai-optimization          |
+| DEBT-3221 | stop-serena-dashboard.js uses 6+ execFileSync calls at se...   | S2       | ai-optimization          |
 | DEBT-3224 | Audit skill prompts may not consistently reference FALSE\_...  | S2       | ai-optimization          |
 | DEBT-3237 | State JSONL files growing without bounds - reviews.jsonl ...   | S2       | ai-optimization          |
 | DEBT-3240 | Skills read entire large files when only headers/sections...   | S2       | ai-optimization          |
@@ -2276,12 +2271,16 @@
 | DEBT-3052 | check-write-requirements and check-edit-requirements coul...   | S3       | code-quality             |
 | DEBT-3128 | Archive reviews #285-334 to reduce learnings log from 340...   | S3       | engineering-productivity |
 | DEBT-3129 | Refresh Quick Pattern Index with recent patterns from rev...   | S3       | engineering-productivity |
+| DEBT-3225 | filesystem MCP server configured but permanently disabled...   | S3       | ai-optimization          |
 | DEBT-3227 | Dead Documentation: technical-debt/INDEX.md                    | S3       | ai-optimization          |
 | DEBT-3228 | MCP Config Efficiency: Unused filesystem server                | S3       | ai-optimization          |
 | DEBT-3229 | Format Waste: Verbose session-start output                     | S3       | ai-optimization          |
+| DEBT-3231 | Dead Documentation: technical-debt/logs artifacts              | S3       | ai-optimization          |
 | DEBT-3233 | settings.json disabledMcpjsonServers has 3 stale entries ...   | S3       | ai-optimization          |
 | DEBT-3238 | session-start.js reads full reviews.jsonl for a single co...   | S3       | ai-optimization          |
 | DEBT-3239 | MCP servers configured but 4 are disabled — disabled list...   | S3       | ai-optimization          |
+| DEBT-3243 | Multiple hooks duplicate loadJson/saveJson atomic write p...   | S3       | ai-optimization          |
+| DEBT-3244 | health-score-log.jsonl and hook-warnings-log.jsonl grow u...   | S3       | ai-optimization          |
 | DEBT-3245 | Remote-branch parsing relies on delimiter split that can ...   | S3       | ai-optimization          |
 | DEBT-3246 | Shell script hooks may be redundant with Node.js versions      | S3       | ai-optimization          |
 | DEBT-0850 | Legacy journalEntries collection allows direct client wri...   | S0       | security                 |

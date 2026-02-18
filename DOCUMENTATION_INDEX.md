@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-02-17 **Active Documents:** 274 **Archived Documents:** 100
+**Generated:** 2026-02-18 **Active Documents:** 274 **Archived Documents:** 100
 
 ---
 
@@ -86,7 +86,7 @@ _Essential project-level documentation_
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑15     | 2026-02-17    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-02-05    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑18    | 2026-02-17    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓18 ↑18    | 2026-02-18    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                | ↓4 ↑6      | 2026-02-09    |
 
 ### Core Documentation (Tier 2)
@@ -217,18 +217,18 @@ _Claude Code skills_
 | [Architecture Patterns](.claude/skills/senior-architect/references/architecture_patterns.md)                                        | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Architecture Patterns](.claude/skills/senior-fullstack/references/architecture_patterns.md)                                        | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Artifacts Builder](.claude/skills/artifacts-builder/SKILL.md)                                                                      | To build powerful frontend claude.ai artifacts, follow these...   | ↓0 ↑0      | 2026-01-17    |
-| [Audit Aggregator Agent](.claude/skills/audit-aggregator/SKILL.md)                                                                  | -                                                                 | ↓0 ↑0      | 2026-02-17    |
+| [Audit Aggregator Agent](.claude/skills/audit-aggregator/SKILL.md)                                                                  | -                                                                 | ↓0 ↑0      | 2026-02-18    |
 | [Audit System Health Check](.claude/skills/audit-health/SKILL.md)                                                                   | Quick meta-check that verifies the audit ecosystem is health...   | ↓0 ↑0      | 2026-02-17    |
 | [Backend Security Practices](.claude/skills/senior-backend/references/backend_security_practices.md)                                | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Cicd Pipeline Guide](.claude/skills/senior-devops/references/cicd_pipeline_guide.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Code Review Checklist](.claude/skills/code-reviewer/references/code_review_checklist.md)                                           | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
-| [Code Reviewer](.claude/skills/code-reviewer/SKILL.md)                                                                              | Code review toolkit tailored for the SoNash codebase.             | ↓0 ↑0      | 2026-02-17    |
+| [Code Reviewer](.claude/skills/code-reviewer/SKILL.md)                                                                              | Code review toolkit tailored for the SoNash codebase.             | ↓0 ↑0      | 2026-02-18    |
 | [Coding Standards](.claude/skills/code-reviewer/references/coding_standards.md)                                                     | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Common Antipatterns](.claude/skills/code-reviewer/references/common_antipatterns.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Comprehensive Audit Recovery Procedures](.claude/skills/audit-comprehensive/reference/RECOVERY_PROCEDURES.md)                      | Persist critical environment variables across context compac...   | ↓2 ↑0      | 2026-02-17    |
 | [Comprehensive Audit Triage Guide](.claude/skills/audit-comprehensive/reference/TRIAGE_GUIDE.md)                                    | Complete guide for triaging findings from the 9-domain compr...   | ↓1 ↑0      | 2026-02-17    |
 | [Comprehensive Audit Wave Details](.claude/skills/audit-comprehensive/reference/WAVE_DETAILS.md)                                    | Core technical audits that form the foundation for all subse...   | ↓1 ↑1      | 2026-02-17    |
-| [Comprehensive Automation Audit](.claude/skills/audit-process/SKILL.md)                                                             | -                                                                 | ↓0 ↑0      | 2026-02-17    |
+| [Comprehensive Automation Audit](.claude/skills/audit-process/SKILL.md)                                                             | -                                                                 | ↓0 ↑0      | 2026-02-18    |
 | [Comprehensive Multi-Domain Audit Orchestrator](.claude/skills/audit-comprehensive/SKILL.md)                                        | -                                                                 | ↓0 ↑6      | 2026-02-17    |
 | [Condition-Based Waiting](.claude/skills/systematic-debugging/condition-based-waiting.md)                                           | Flaky tests often guess at timing with arbitrary delays. Thi...   | ↓0 ↑0      | 2026-01-17    |
 | [Content Research Writer](.claude/skills/content-research-writer/SKILL.md)                                                          | This skill acts as your writing partner, helping you researc...   | ↓0 ↑0      | 2026-01-17    |
@@ -265,7 +265,7 @@ _Claude Code skills_
 | [MCP Server Development Best Practices and Guidelines](.claude/skills/mcp-builder/reference/mcp_best_practices.md)                  | This document compiles essential best practices and guidelin...   | ↓1 ↑0      | 2026-01-17    |
 | [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md)                                                                 | To create high-quality MCP (Model Context Protocol) servers ...   | ↓0 ↑4      | 2026-01-17    |
 | [MCP Server Evaluation Guide](.claude/skills/mcp-builder/reference/evaluation.md)                                                   | This document provides guidance on creating comprehensive ev...   | ↓1 ↑0      | 2026-01-17    |
-| [Multi-AI Audit Orchestrator](.claude/skills/multi-ai-audit/SKILL.md)                                                               | Single-entry-point skill that orchestrates the entire multi-...   | ↓0 ↑2      | 2026-02-17    |
+| [Multi-AI Audit Orchestrator](.claude/skills/multi-ai-audit/SKILL.md)                                                               | Single-entry-point skill that orchestrates the entire multi-...   | ↓0 ↑2      | 2026-02-18    |
 | [Nextjs Optimization Guide](.claude/skills/senior-frontend/references/nextjs_optimization_guide.md)                                 | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-17    |
 | [Node/TypeScript MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/node_mcp_server.md)                          | This document provides Node/TypeScript-specific best practic...   | ↓1 ↑0      | 2026-01-17    |
 | [OpenRouter Integration for MarkItDown](.claude/skills/markitdown/OPENROUTER_INTEGRATION.md)                                        | This MarkItDown skill has been configured to use \*\*OpenRoute... | ↓0 ↑0      | 2026-01-17    |
@@ -293,7 +293,7 @@ _Claude Code skills_
 | [Single-Session AI Optimization Audit](.claude/skills/audit-ai-optimization/SKILL.md)                                               | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-17    |
 | [Single-Session Code Review Audit](.claude/skills/audit-code/SKILL.md)                                                              | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-17    |
 | [Single-Session Documentation Audit](.claude/skills/audit-documentation/SKILL.md)                                                   | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-17    |
-| [Single-Session Engineering Productivity Audit](.claude/skills/audit-engineering-productivity/SKILL.md)                             | Evaluates developer experience (DX), debugging capabilities,...   | ↓0 ↑0      | 2026-02-17    |
+| [Single-Session Engineering Productivity Audit](.claude/skills/audit-engineering-productivity/SKILL.md)                             | Evaluates developer experience (DX), debugging capabilities,...   | ↓0 ↑0      | 2026-02-18    |
 | [Single-Session Performance Audit](.claude/skills/audit-performance/SKILL.md)                                                       | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-17    |
 | [Single-Session Refactoring Audit](.claude/skills/audit-refactoring/SKILL.md)                                                       | This audit identifies technical debt related to code structu...   | ↓0 ↑6      | 2026-02-17    |
 | [Single-Session Security Audit](.claude/skills/audit-security/SKILL.md)                                                             | \| Condition \| Mode \| T...                                      | ↓0 ↑0      | 2026-02-17    |
@@ -333,9 +333,9 @@ _TDMS tracking and management_
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-02-05    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓2 ↑4      | 2026-02-17    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓2 ↑4      | 2026-02-18    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓7 ↑1      | 2026-02-17    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-02-17    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-02-18    |
 
 ### Templates (Tier 3)
 
@@ -371,13 +371,13 @@ _Uncategorized_
 
 _Uncategorized_
 
-| Document                                                            | Description                                                     | References | Last Modified |
-| ------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Claude Code Command Reference](.claude/COMMAND_REFERENCE.md)       | Comprehensive                                                   | ↓3 ↑0      | 2026-02-17    |
-| [Claude Hooks Documentation](.claude/HOOKS.md)                      | Prepare development environment for new session                 | ↓2 ↑5      | 2026-02-02    |
-| [Cross-Platform Claude Code Setup](.claude/CROSS_PLATFORM_SETUP.md) | This guide explains how to set up Claude Code consistently a... | ↓3 ↑0      | 2026-02-02    |
-| [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)        | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-17    |
-| [Required Plugins for Claude Code](.claude/REQUIRED_PLUGINS.md)     | This document lists all plugins required for full functional... | ↓2 ↑0      | 2026-02-02    |
+| Document                                                              | Description                                                     | References | Last Modified |
+| --------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑0      | 2026-02-18    |
+| [Claude Hooks Documentation](.claude/HOOKS.md)                        | Prepare development environment for new session                 | ↓2 ↑5      | 2026-02-02    |
+| [Cross-Platform Claude Code Setup](.claude/CROSS_PLATFORM_SETUP.md)   | This guide explains how to set up Claude Code consistently a... | ↓3 ↑0      | 2026-02-02    |
+| [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)          | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-02-17    |
+| [Required Plugins for Claude Code](.claude/REQUIRED_PLUGINS.md)       | This document lists all plugins required for full functional... | ↓2 ↑0      | 2026-02-02    |
 
 ### .claude > agents (Tier 4)
 
@@ -587,9 +587,9 @@ _Auto-generated debt dashboards_
 | ---------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
 | [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-02-17    |
 | [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-02-17    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-02-17    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-02-18    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md) | <!-- prettier-ignore-start --> | ↓0 ↑1      | 2026-02-02    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-02-17    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-02-18    |
 
 ---
 
@@ -887,7 +887,7 @@ Documents with no inbound links (not referenced by any other document):
 | 35  | [.claude/agents/technical-writer.md](.claude/agents/technical-writer.md)                                                                                                                   | technical writer                                                   | 4    | -                                                                               |
 | 36  | [.claude/agents/test-engineer.md](.claude/agents/test-engineer.md)                                                                                                                         | .github/workflows/test-automation.yml                              | 4    | -                                                                               |
 | 37  | [.claude/agents/ui-ux-designer.md](.claude/agents/ui-ux-designer.md)                                                                                                                       | ui ux designer                                                     | 4    | -                                                                               |
-| 38  | [.claude/COMMAND_REFERENCE.md](.claude/COMMAND_REFERENCE.md)                                                                                                                               | Claude Code Command Reference                                      | 4    | -                                                                               |
+| 38  | [.claude/COMMAND_REFERENCE.md](.claude/COMMAND_REFERENCE.md)                                                                                                                               | Claude Code Command Reference \(Index\)                            | 4    | ACTIVE                                                                          |
 | 39  | [.claude/commands/README.md](.claude/commands/README.md)                                                                                                                                   | Commands Folder - DEPRECATED                                       | 3    | -                                                                               |
 | 40  | [.claude/CROSS_PLATFORM_SETUP.md](.claude/CROSS_PLATFORM_SETUP.md)                                                                                                                         | Cross-Platform Claude Code Setup                                   | 4    | -                                                                               |
 | 41  | [.claude/HOOKS.md](.claude/HOOKS.md)                                                                                                                                                       | Claude Hooks Documentation                                         | 4    | -                                                                               |
@@ -1248,7 +1248,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-02-17 | Auto-generated from codebase scan |
+| Auto    | 2026-02-18 | Auto-generated from codebase scan |
 
 ---
 

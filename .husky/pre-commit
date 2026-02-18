@@ -55,14 +55,15 @@ if ! npm run lint > /dev/null 2>&1; then
 fi
 echo "  ✅ ESLint passed (0 errors)"
 
-# 1b. CC check on staged JS files (error-level, blocks new CC >15 functions)
-# Global config uses "warn" (113 pre-existing violations). This gate ensures
-# NEW code doesn't introduce CC >15. Recommended in 5 consecutive retros (#367-#371).
-staged_js=$(git diff --cached --name-only --diff-filter=ACM | grep '\.js$' || true)
-if [ -n "$staged_js" ]; then
-  if ! printf '%s\n' "$staged_js" | xargs npx eslint --no-eslintrc --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- > /dev/null 2>&1; then
-    echo "  ❌ Cognitive Complexity >15 in staged files"
-    printf '%s\n' "$staged_js" | xargs npx eslint --no-eslintrc --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- 2>&1 | grep "complexity" | head -10 || true
+# 1b. CC check on NEW JS files (error-level, blocks new CC >15 functions)
+# Only checks newly added files (diff-filter=A) to avoid pre-existing violations.
+# Uses --no-config-lookup (ESLint 9 flat config compatible; replaces --no-eslintrc).
+# Recommended in 5 consecutive retros (#367-#371).
+new_js=$(git diff --cached --name-only --diff-filter=A | grep '\.js$' || true)
+if [ -n "$new_js" ]; then
+  if ! printf '%s\n' "$new_js" | xargs -r npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- > /dev/null 2>&1; then
+    echo "  ❌ Cognitive Complexity >15 in new JS files"
+    printf '%s\n' "$new_js" | xargs -r npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2022 --parser-options=sourceType:module -- 2>&1 | grep "complexity" | head -10 || true
     echo ""
     echo "  Extract helpers to reduce CC. See FIX_TEMPLATES.md Template 30."
     exit 1
