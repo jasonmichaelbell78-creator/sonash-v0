@@ -26,8 +26,8 @@ const { join } = require("node:path");
 let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require(join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")));
-} catch {
-  console.error("symlink-guard unavailable; disabling writes");
+} catch (err) {
+  console.error("symlink-guard unavailable; disabling writes:", err);
   isSafeToWrite = () => false;
 }
 
@@ -66,17 +66,18 @@ function ok(msg) {
  * e.g. [1,2,3,5,7,8] → ["#1-#3", "#5", "#7-#8"]
  */
 function groupConsecutive(nums) {
-  if (nums.length === 0) return [];
+  const sorted = Array.from(new Set(nums)).sort((a, b) => a - b);
+  if (sorted.length === 0) return [];
   const ranges = [];
-  let start = nums[0];
-  let end = nums[0];
-  for (let i = 1; i < nums.length; i++) {
-    if (nums[i] === end + 1) {
-      end = nums[i];
+  let start = sorted[0];
+  let end = sorted[0];
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i] === end + 1) {
+      end = sorted[i];
     } else {
       ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
-      start = nums[i];
-      end = nums[i];
+      start = sorted[i];
+      end = sorted[i];
     }
   }
   ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
@@ -142,7 +143,8 @@ function extractReviewIds(filePath, opts = {}) {
     }
 
     return ids;
-  } catch {
+  } catch (err) {
+    console.error(`Error processing file ${filePath}:`, err);
     return [];
   }
 }
@@ -165,8 +167,8 @@ function checkWrongHeadings(filePath, fileName) {
       }
       return wrongHeadings;
     }
-  } catch {
-    /* skip */
+  } catch (err) {
+    console.error(`Error checking headings in ${fileName}:`, err);
   }
   return 0;
 }
@@ -188,7 +190,8 @@ function getJsonlMaxId() {
       }
     }
     return max;
-  } catch {
+  } catch (err) {
+    console.error("Error reading reviews.jsonl:", err);
     return 0;
   }
 }
