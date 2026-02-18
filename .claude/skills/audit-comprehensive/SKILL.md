@@ -547,25 +547,188 @@ For GDPR missing functions:
 
 ## Domain 8: Security Headers & CSP
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** HIGH | **Expected Findings:** 4-8 | **Session:** 3
+
+Audits HTTP security headers, Content Security Policy, CORS configuration, and
+the known Permissions-Policy issue. Static export means headers must come from
+hosting config (Firebase hosting or CDN), not Next.js middleware.
+
+### Checks
+
+| ID  | Check                         | Method                                                     | Finding Criteria                                          |
+| --- | ----------------------------- | ---------------------------------------------------------- | --------------------------------------------------------- |
+| 8.1 | Permissions-Policy header     | Check `next.config.ts` headers or Firebase hosting config  | Known S1: camera/microphone blocked despite voice feature |
+| 8.2 | Content-Security-Policy       | Check if CSP header is configured and covers all origins   | Missing CSP → S1; overly permissive (unsafe-inline) → S2  |
+| 8.3 | X-Content-Type-Options        | Check for `nosniff` header                                 | Missing → S2 finding                                      |
+| 8.4 | X-Frame-Options               | Check for `DENY` or `SAMEORIGIN`                           | Missing → S2 finding (clickjacking risk)                  |
+| 8.5 | Strict-Transport-Security     | Check for HSTS header with adequate max-age                | Missing or max-age < 1 year → S2 finding                  |
+| 8.6 | Referrer-Policy               | Check for appropriate referrer policy                      | Missing or `unsafe-url` → S2 finding                      |
+| 8.7 | Static export header delivery | Verify how headers are actually delivered (hosting config) | Headers defined but not deployable → S1 finding           |
+| 8.8 | CORS configuration            | Check Firebase Functions CORS settings                     | Overly permissive origins → S1 finding                    |
+
+### Key Files
+
+- `next.config.ts` (headers function)
+- `firebase.json` (hosting headers section)
+- `functions/src/index.ts` (CORS in Cloud Functions)
+- `sentry.client.config.ts`, `sentry.server.config.ts` (CSP impact)
+
+### Known Issues (from research)
+
+- `Permissions-Policy: camera=(), microphone=()` blocks the voice text area's
+  access to the microphone. This is a known S1 finding already identified.
+- Static export means `next.config.ts` headers() may not take effect in
+  production — depends entirely on Firebase Hosting configuration.
+
+### Suggestions Template
+
+For Permissions-Policy:
+
+- **Suggestion:** "Accept at S1. The header explicitly blocks microphone access
+  while the app has a voice-to-text feature. Either remove the restriction or
+  remove the feature."
+- **Counter-argument:** "If voice-to-text is used only in development/testing
+  and not shipped to production users, the header is correct as a security
+  measure."
+- **Suggested fix:** "Change to
+  `Permissions-Policy: camera=(), microphone=(self)` to allow self-origin
+  microphone access."
 
 ---
 
 ## Domain 9: Firestore Rules
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** HIGH | **Expected Findings:** 5-10 | **Session:** 3
+
+Audits the Firestore security rules for over-permissive access, missing
+validation, consistency with application logic, and CANON reference validity.
+
+### Checks
+
+| ID   | Check                           | Method                                                         | Finding Criteria                                       |
+| ---- | ------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------ |
+| 9.1  | Rules file syntax               | `firebase emulators:exec` or manual parse of `firestore.rules` | Syntax errors → S0 finding                             |
+| 9.2  | Over-permissive reads           | Check for `allow read: if true` or broad collection access     | Unauthenticated reads on user data → S0 finding        |
+| 9.3  | Over-permissive writes          | Check for `allow write: if true` or missing field validation   | Missing field-level validation → S1 finding            |
+| 9.4  | Admin-only paths                | Verify admin collections require admin custom claim            | Admin data readable by non-admins → S0 finding         |
+| 9.5  | User data isolation             | Verify users can only read/write their own data                | Cross-user data access possible → S0 finding           |
+| 9.6  | Soft-delete rules               | Check if rules prevent reading soft-deleted documents          | Soft-deleted docs still readable → S2 finding          |
+| 9.7  | CANON reference validation      | Check CANON-0002, CANON-0034 refs in rules comments            | Referenced CANON docs don't exist → S3 finding         |
+| 9.8  | Rules match application queries | Compare rules with actual Firestore queries in app code        | App queries that would be denied by rules → S1 finding |
+| 9.9  | Rate limiting at rules level    | Check if rules implement any rate limiting                     | No rate limiting at rules level → S3 (informational)   |
+| 9.10 | Storage rules existence         | Check if Firebase Storage rules exist                          | No storage rules file → S1 if storage is used          |
+
+### Key Files
+
+- `firestore.rules`
+- `storage.rules` (if it exists)
+- `firebase.json` (rules references)
+- `hooks/use-journal.ts` (Firestore queries)
+- `lib/firebase/firestore-collections.ts`
+
+### Suggestions Template
+
+For over-permissive reads:
+
+- **Suggestion:** "Accept at S0 if user data (journal entries, daily logs) can
+  be read by other authenticated users. Recovery data is highly sensitive —
+  every user should only see their own data."
+- **Counter-argument:** "Some collections (meetings, quotes, slogans) are
+  intentionally public/shared. Only user-specific collections need strict
+  isolation."
 
 ---
 
 ## Domain 10: Environment & Config
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** MEDIUM | **Expected Findings:** 3-6 | **Session:** 3
+
+Audits environment variable handling, secret management, configuration
+consistency across environments, and the `.env` file patterns.
+
+### Checks
+
+| ID   | Check                        | Method                                                           | Finding Criteria                                          |
+| ---- | ---------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------- |
+| 10.1 | Env file patterns            | Check for `.env`, `.env.local`, `.env.production` files          | Secrets in `.env` committed to git → S0 finding           |
+| 10.2 | NEXT*PUBLIC* prefix audit    | Grep for NEXT*PUBLIC* — all are client-exposed                   | Secrets with NEXT*PUBLIC* prefix → S0 finding             |
+| 10.3 | .gitignore coverage          | Verify `.env*` is in `.gitignore`                                | Missing gitignore for env files → S0 finding              |
+| 10.4 | Env var documentation        | Check if `.env.example` or `.env.template` exists                | No env documentation → S3 finding                         |
+| 10.5 | Firebase config exposure     | Check if Firebase config (apiKey, projectId) is in client code   | Expected for Firebase (not a secret), but validate scope  |
+| 10.6 | Sentry DSN exposure          | Check if Sentry DSN is hardcoded vs env var                      | Hardcoded DSN → S3 (DSN is semi-public but best practice) |
+| 10.7 | Runtime vs build-time config | Verify env vars used at build time are in CI config              | Missing CI env vars → S2 finding                          |
+| 10.8 | Functions env config         | Check how Cloud Functions access secrets (env vs Secret Manager) | Secrets in env files → S2; Secret Manager preferred → S3  |
+
+### Key Files
+
+- `.env*` files (if they exist)
+- `.gitignore`
+- `lib/firebase/config.ts`
+- `sentry.client.config.ts`
+- `.github/workflows/` (CI configuration)
+- `functions/src/` (environment variable usage)
+
+### Suggestions Template
+
+For Firebase config exposure:
+
+- **Suggestion:** "Accept as informational (no severity). Firebase client config
+  (apiKey, authDomain, projectId) is designed to be public. Security comes from
+  Firestore rules and Auth, not config secrecy."
+- **Counter-argument:** "While Firebase config is public, the apiKey can be
+  restricted to specific domains in the Google Cloud Console. Verify this
+  restriction is in place."
 
 ---
 
 ## Domain 11: Auth & Session Management
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** HIGH | **Expected Findings:** 4-8 | **Session:** 3
+
+Audits the authentication flow, session persistence, anonymous-to-authenticated
+migration, role management, and token handling.
+
+### Checks
+
+| ID   | Check                       | Method                                                           | Finding Criteria                                         |
+| ---- | --------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------- |
+| 11.1 | Auth provider configuration | Read auth context for configured providers (email, Google, anon) | Insecure providers enabled → S1 finding                  |
+| 11.2 | Session persistence         | Check `setPersistence` calls — local vs session vs none          | `LOCAL` persistence on shared devices → S2 finding       |
+| 11.3 | Token refresh handling      | Check for token refresh logic and error handling                 | No refresh handling → S1; silent failures → S2           |
+| 11.4 | Anonymous-to-auth migration | Read `migrateAnonymousUserData` and `account-linking.ts`         | Data loss during migration → S0; race conditions → S1    |
+| 11.5 | Admin role assignment       | How is isAdmin set? Custom claims vs Firestore field             | Admin role in Firestore (client-modifiable) → S0 finding |
+| 11.6 | Auth state listener cleanup | Check if `onAuthStateChanged` listeners are properly cleaned up  | Memory leak from unsubscribed listeners → S2 finding     |
+| 11.7 | reCAPTCHA integration       | Read `secure-caller.ts` for reCAPTCHA Enterprise integration     | Missing reCAPTCHA on sensitive operations → S1 finding   |
+| 11.8 | Password requirements       | Check if email/password auth enforces strong passwords           | No minimum requirements → S2 finding                     |
+| 11.9 | Auth error message leakage  | Check if auth errors reveal user existence                       | "User not found" vs "Invalid credentials" → S2 finding   |
+
+### Key Files
+
+- `lib/firebase/auth.ts`
+- `contexts/auth-context.tsx`
+- `lib/firebase/account-linking.ts`
+- `lib/utils/secure-caller.ts`
+- `functions/src/index.ts` (migrateAnonymousUserData)
+- `components/auth/` (auth UI components)
+
+### Suggestions Template
+
+For anonymous migration:
+
+- **Suggestion:** "Accept at S1. Anonymous-to-authenticated migration is a
+  critical path. If data is lost during migration, users lose their recovery
+  journals — this is both a data integrity and trust issue."
+- **Counter-argument:** "Anonymous accounts are a convenience feature for
+  first-time exploration. Most users sign up before entering significant data.
+  Test with actual migration to verify."
+
+For admin role storage:
+
+- **Suggestion:** "Accept at S0 if admin role is stored in Firestore (client can
+  modify). Custom claims set server-side are the secure approach."
+- **Counter-argument:** "If the isAdmin field is only READ client-side (for UI
+  gating) but all admin operations are verified server-side via custom claims,
+  the Firestore field is just a UI hint and not a security issue."
 
 ---
 
