@@ -18,9 +18,12 @@ try {
   // Fail-closed: only allow writes within known state directories
   isSafeToWrite = (p) => {
     try {
-      const resolved = fs.realpathSync(path.resolve(p));
       const stateDir = fs.realpathSync(path.resolve(__dirname, "..", "..", "state"));
-      return resolved.startsWith(stateDir + path.sep) || resolved === stateDir;
+      const abs = path.resolve(p);
+      // For new files (.tmp, .bak), realpath the parent dir and rejoin basename
+      const parentReal = fs.realpathSync(path.dirname(abs));
+      const resolved = path.join(parentReal, path.basename(abs));
+      return resolved === stateDir || resolved.startsWith(stateDir + path.sep);
     } catch {
       return false;
     }

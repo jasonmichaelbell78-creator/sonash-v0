@@ -17,9 +17,12 @@ function resolveProjectDir() {
   if (!envDir || typeof envDir !== "string") return fallback;
   try {
     const resolved = fs.realpathSync(path.resolve(envDir));
-    // Bidirectional check: resolved must equal or contain cwd, OR cwd must contain resolved
     const cwd = fs.realpathSync(fallback);
-    if (resolved.startsWith(cwd) || cwd.startsWith(resolved)) return resolved;
+    // Case-insensitive on Windows; enforce path.sep boundary to prevent sibling-prefix bypass
+    const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
+    const a = norm(resolved);
+    const b = norm(cwd);
+    if (a === b || a.startsWith(b + path.sep) || b.startsWith(a + path.sep)) return resolved;
     return fallback;
   } catch {
     return fallback;

@@ -1326,6 +1326,25 @@ implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
 
 ---
 
+#### Review #351: PR #374 R2 — Path Sep Boundary, New-File Guard, Evidence Dedup (2026-02-17)
+
+**Source:** Qodo Compliance + Code Suggestions **PR/Branch:**
+claude/cherry-pick-recent-commits-X1eKD (PR #374) **Suggestions:** 3 total
+(Fixed: 3)
+
+**Patterns:**
+
+1. **Path separator boundary** — `startsWith(dir)` without `+ path.sep` allows
+   sibling-prefix bypass (`/repo/app` matches `/repo/app-malicious`). Fix: check
+   `a === b || a.startsWith(b + path.sep)`. Also case-insensitive on Windows.
+2. **realpathSync on new files** — Fallback `isSafeToWrite` used `realpathSync`
+   on paths that don't exist yet (`.tmp`, `.bak`). Fix: realpath the parent dir
+   and rejoin basename.
+3. **Evidence dedup** — 27 JSONL entries had 3x duplicated `code_reference` and
+   `description` objects in evidence arrays. Fixed with Set-based dedup.
+
+---
+
 #### Review #350: PR #374 R1 — Bidirectional Containment, Fail-Closed Guard, backupSwap Safety (2026-02-17)
 
 **Source:** Qodo Compliance + CI (Prettier) + SonarCloud Duplication
