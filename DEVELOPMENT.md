@@ -668,40 +668,29 @@ Configured in `.claude/settings.json`.
 | session-start.js         | Setup     | Verify dependencies, build functions, run tests    |
 | check-mcp-servers.js     | Check     | Verify MCP server availability                     |
 
-> **Security Controls (stop-serena-dashboard.js)**: Cross-platform process
-> termination with defense-in-depth security: process allowlist validation,
-> listen-only state targeting, TOCTOU-safe symlink protection (O_NOFOLLOW), PID
-> validation, graceful shutdown polling, comprehensive audit logging with
-> user/session context, native process signaling, secure log permissions
-> (0o600). See Review #198 for 24 security hardening fixes across 3 rounds.
-
 **PostToolUse Hooks (Write/Edit):**
 
-| Hook                        | Action  | Purpose                                           |
-| --------------------------- | ------- | ------------------------------------------------- |
-| pattern-check.js            | Warn    | Anti-pattern detection                            |
-| component-size-check.js     | Warn    | Component >300 lines warning                      |
-| firestore-write-block.js    | BLOCK   | Prevent direct writes to protected DB             |
-| test-mocking-validator.js   | BLOCK   | Ensure tests mock httpsCallable                   |
-| app-check-validator.js      | Warn    | Cloud Function App Check verification             |
-| typescript-strict-check.js  | Warn    | Detect `any` type usage                           |
-| repository-pattern-check.js | Warn    | Firestore queries in components                   |
-| agent-trigger-enforcer.js   | Suggest | Recommend agents + delegated review queue (#250)  |
-| audit-s0s1-validator.js     | Warn    | S0/S1 verification_steps validation (Session #98) |
+| Hook                    | Action | Purpose                          |
+| ----------------------- | ------ | -------------------------------- |
+| post-write-validator.js | Warn   | Schema, lint, pattern validation |
 
 **PostToolUse Hooks (Read):**
 
-| Hook                     | Action | Purpose                                  |
-| ------------------------ | ------ | ---------------------------------------- |
-| large-context-warning.js | Warn   | Track file reads for context size        |
-| auto-save-context.js     | Save   | Auto-save context to MCP on threshold    |
-| compaction-handoff.js    | Save   | Write handoff.json for compaction (#133) |
+| Hook                 | Action | Purpose                              |
+| -------------------- | ------ | ------------------------------------ |
+| post-read-handler.js | Track  | Context tracking, auto-save, handoff |
 
 **PostToolUse Hooks (Bash):**
 
 | Hook              | Action | Purpose                         |
 | ----------------- | ------ | ------------------------------- |
 | commit-tracker.js | Track  | Log git commits to JSONL (#138) |
+
+**PostToolUse Hooks (Task):**
+
+| Hook                      | Action | Purpose                                 |
+| ------------------------- | ------ | --------------------------------------- |
+| track-agent-invocation.js | Track  | Record agent invocations for compliance |
 
 **PreCompact Hooks:**
 
@@ -717,11 +706,17 @@ Configured in `.claude/settings.json`.
 
 **UserPromptSubmit Hooks:**
 
-| Hook                    | Action | Purpose                                                          |
-| ----------------------- | ------ | ---------------------------------------------------------------- |
-| analyze-user-request.js | Prompt | Check PRE-TASK triggers (v2.0: tightened matching, stderr hints) |
-| session-end-reminder.js | Prompt | Detect session ending phrases                                    |
-| plan-mode-suggestion.js | Prompt | Suggest Plan mode for complex                                    |
+| Hook                   | Action  | Purpose              |
+| ---------------------- | ------- | -------------------- |
+| user-prompt-handler.js | Process | Process user prompts |
+
+**Shared Libraries (`hooks/lib/`):**
+
+| Module             | Purpose                                             |
+| ------------------ | --------------------------------------------------- |
+| git-utils.js       | Shared `gitExec()` and `projectDir`                 |
+| inline-patterns.js | Shared `INLINE_PATTERNS` + `checkInlinePatterns()`  |
+| state-utils.js     | Shared `loadJson()`/`saveJson()` with atomic writes |
 
 > **BLOCKING hooks**: firestore-write-block.js and test-mocking-validator.js
 > will prevent operations that violate security patterns. All other hooks

@@ -113,7 +113,7 @@ _Foundation_
 | Document                                      | Description                                                  | References | Last Modified |
 | --------------------------------------------- | ------------------------------------------------------------ | ---------- | ------------- |
 | [Architecture Documentation](ARCHITECTURE.md) | -                                                            | ↓10 ↑6     | 2026-02-12    |
-| [Development Guide](DEVELOPMENT.md)           | Unified dev dashboard for monitoring session activity, error | ↓11 ↑11    | 2026-02-17    |
+| [Development Guide](DEVELOPMENT.md)           | Unified dev dashboard for monitoring session activity, error | ↓11 ↑11    | 2026-02-18    |
 
 ### Agent Documentation (Tier 3)
 
@@ -517,7 +517,7 @@ _Reference_
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                 | This document captures important decisions, options presente...   | ↓1 ↑0      | 2026-02-02    |
 | [Session History Log](docs/SESSION_HISTORY.md)                                    | -                                                                 | ↓1 ↑1      | 2026-02-17    |
 | [Slash Commands Reference](docs/SLASH_COMMANDS_REFERENCE.md)                      | -                                                                 | ↓1 ↑2      | 2026-02-17    |
-| [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-02-17    |
+| [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-02-18    |
 
 ### Decisions (Tier 4)
 
@@ -544,7 +544,7 @@ _Reference_
 | ------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Context & Rules for SoNash](claude.md) | Core rules and constraints loaded on every AI turn. Kept min...   | ↓5 ↑7      | 2026-02-17    |
 | [AI Workflow Guide](AI_WORKFLOW.md)        | \*\*Every phase, section, or milestone completion MUST include... | ↓9 ↑16     | 2026-02-17    |
-| [Session Context](SESSION_CONTEXT.md)      | -                                                                 | ↓5 ↑8      | 2026-02-17    |
+| [Session Context](SESSION_CONTEXT.md)      | -                                                                 | ↓5 ↑8      | 2026-02-18    |
 
 ### scripts (Tier 4)
 
