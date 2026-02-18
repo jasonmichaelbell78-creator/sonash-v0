@@ -48,19 +48,6 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #166 Summary** (AI REVIEW LEARNINGS SYSTEM OVERHAUL):
-
-- Full overhaul of AI_REVIEW_LEARNINGS_LOG.md ecosystem (9-step plan)
-- Fixed sync-reviews-to-jsonl.js: severity regex, metadata filtering, --repair
-  mode, retrospective parsing (3 formats)
-- Repaired JSONL data quality: severity 3/61→27/61, learnings 42/61→58/61
-- Cleaned learnings log: removed Quick Index, collapsed version history, removed
-  stale sections (3,423→3,306 lines)
-- Built archive-reviews.js (automated archival, keeps newest 20)
-- Built promote-patterns.js (auto-promotes 3+ patterns to CODE_PATTERNS.md)
-- Updated 14 cross-referenced files (skills, schemas, docs, debt items)
-- Resolved DEBT-3128, DEBT-3129 (Quick Index debt)
-
 **Session #167 Summary** (ALERTS FULL SCAN + S0 SPRINT INTEGRATION):
 
 - Ran `/alerts --full` (33 categories) — processed all 17 alerts interactively
@@ -73,20 +60,21 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - Added 5 alert suppressions for sandbox/scale false positives
 - Health: A (90/100), 4 fixed, 5 suppressed, 9 acknowledged
 
-**Session #169 Summary** (AI-OPTIMIZATION AUDIT TRIAGE + SPRINT CREATION):
+**Session #169 Summary** (AI-OPTIMIZATION AUDIT + TRACK AI SPRINT COMPLETE):
 
-- Resumed multi-AI audit session `maa-2026-02-17-182d43` (ai-optimization, 65
-  findings from 5 AI sources)
-- Interactive triage of all 65 findings across 19 groups: 35 accepted for
-  sprint, 13 deferred to debt, 19 dismissed (duplicates/FP/negligible)
-- Created Track AI sprint in ROADMAP.md (6 phases, 18 work items, ~9 hours)
-- Updated MASTER_DEBT.jsonl: 35 items → SPRINT status, 13 → VERIFIED, 7 → FP, 12
-  → RESOLVED (wont_fix/duplicate)
-- Added CANON-0041 to FALSE_POSITIVES.jsonl (audit-code vs code-reviewer)
-- Regenerated views and metrics
-- Investigated missing review stage: multi-ai-audit, audit-aggregator, and
-  audit-health all lack Interactive Review phase; added Phase 6 (3 items) to
-  sprint
+- Ran multi-AI audit for ai-optimization (5 AI sources, 65 findings)
+- Interactive triage: 35 accepted, 13 deferred, 19 dismissed
+- Created and **completed** Track AI sprint (18/18 items, 6 phases):
+  - Phase 1: Deleted 19 dead files (6 .sh hooks, 13 TS scripts, etc.)
+  - Phase 2: 5 quick fixes (process.version, log rotation, broken links,
+    evidence field, git diff -z)
+  - Phase 3: Session-start optimization (TTL guard, condensed output)
+  - Phase 4: Hook shared libraries (git-utils, inline-patterns, state-utils)
+  - Phase 5: Trimmed COMMAND_REFERENCE.md (109KB → <5KB)
+  - Phase 6: Added Interactive Review phase to multi-ai-audit + audit-aggregator
+- Bonus: Fixed pre-commit CC gate (--no-eslintrc → --no-config-lookup)
+- TDMS: 35 items resolved (292 total), views/metrics regenerated
+- Updated cross-docs (SESSION_CONTEXT, TRIGGERS, DEVELOPMENT)
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 

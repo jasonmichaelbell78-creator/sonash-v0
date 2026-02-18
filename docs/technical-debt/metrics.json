@@ -1,39 +1,39 @@
 {
-  "generated": "2026-02-17T23:56:12.454Z",
-  "generated_date": "2026-02-17",
+  "generated": "2026-02-18T00:56:49.024Z",
+  "generated_date": "2026-02-18",
   "summary": {
-    "total": 2547,
-    "open": 1983,
-    "resolved": 292,
+    "total": 2555,
+    "open": 1989,
+    "resolved": 294,
     "false_positives": 272,
-    "resolution_rate_pct": 11
+    "resolution_rate_pct": 12
   },
   "by_status": {
-    "NEW": 59,
+    "NEW": 65,
     "VERIFIED": 1924,
     "IN_PROGRESS": 0,
-    "RESOLVED": 292,
+    "RESOLVED": 294,
     "FALSE_POSITIVE": 272
   },
   "by_severity": {
     "S0": 36,
     "S1": 438,
-    "S2": 1146,
-    "S3": 927
+    "S2": 1152,
+    "S3": 929
   },
   "by_category": {
     "code-quality": 1454,
     "security": 85,
     "performance": 50,
-    "documentation": 467,
+    "documentation": 468,
     "refactoring": 22,
     "process": 336,
-    "engineering-productivity": 9,
-    "enhancements": 8,
-    "ai-optimization": 116
+    "engineering-productivity": 11,
+    "enhancements": 11,
+    "ai-optimization": 118
   },
   "by_source": {
-    "unknown": 2547
+    "unknown": 2555
   },
   "alerts": {
     "s0_count": 15,
@@ -164,9 +164,9 @@
     ]
   },
   "health": {
-    "avg_age_days": 12,
-    "oldest_age_days": 18,
+    "avg_age_days": 13,
+    "oldest_age_days": 19,
     "oldest_item_id": "DEBT-0001",
-    "verification_queue_size": 59
+    "verification_queue_size": 65
   }
 }
