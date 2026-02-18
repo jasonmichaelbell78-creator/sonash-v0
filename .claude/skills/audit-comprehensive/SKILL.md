@@ -734,31 +734,184 @@ For admin role storage:
 
 ## Domain 12: Performance
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** MEDIUM | **Expected Findings:** 4-8 | **Session:** 4
+
+Audits client-side performance, bundle optimization, rendering patterns,
+Firestore query efficiency, and font/image loading strategies.
+
+### Checks
+
+| ID   | Check                    | Method                                                         | Finding Criteria                                         |
+| ---- | ------------------------ | -------------------------------------------------------------- | -------------------------------------------------------- |
+| 12.1 | Bundle splitting         | Check `next.config.ts` for dynamic imports and code splitting  | No dynamic imports for heavy libs (Leaflet, Sentry) → S2 |
+| 12.2 | Font loading strategy    | Check `public/fonts/` usage and `font-display` setting         | No `font-display: swap` → S3; render-blocking fonts → S2 |
+| 12.3 | Image lazy loading       | Check Image components for `loading="lazy"` or Next Image      | Above-fold images with lazy loading → S3; no lazy → S2   |
+| 12.4 | Firestore query patterns | Grep for `getDocs`, `getDoc` — check for missing `limit()`     | Unbounded queries (no limit) on large collections → S1   |
+| 12.5 | React re-render patterns | Check for missing `useMemo`/`useCallback` on expensive renders | Context value causing full tree re-render → S2 finding   |
+| 12.6 | Lighthouse dev dashboard | Read `components/dev/lighthouse-tab.tsx` — verify it works     | Dev tool misconfigured or outdated → S3 finding          |
+| 12.7 | Client-side data caching | Check for duplicate Firestore reads on navigation              | Same data fetched on every page visit → S2 finding       |
+| 12.8 | CSS unused rules         | Check `globals.css` size and Tailwind purge config             | Large CSS bundle with unused rules → S3 finding          |
+
+### Key Files
+
+- `next.config.ts` (bundling config)
+- `public/fonts/` (custom fonts)
+- `components/notebook/` (main rendering path)
+- `hooks/` (data fetching patterns)
+- `components/dev/lighthouse-tab.tsx`
+- `app/globals.css`
+
+### Suggestions Template
+
+For unbounded Firestore queries:
+
+- **Suggestion:** "Accept at S1. Queries without `limit()` on growing
+  collections (journal entries, daily logs) will degrade linearly as data grows.
+  A user with 365 days of entries will load all of them on every page visit."
+- **Counter-argument:** "If the UI needs all entries for features like
+  history/growth views, limiting the query requires pagination UI. The fix is
+  E2-E3 depending on the feature."
 
 ---
 
 ## Domain 13: Config File Consistency
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** LOW | **Expected Findings:** 2-5 | **Session:** 4
+
+Audits configuration files for internal consistency, conflicts between
+TypeScript configs, and correct tool setup.
+
+### Checks
+
+| ID   | Check                        | Method                                                           | Finding Criteria                                    |
+| ---- | ---------------------------- | ---------------------------------------------------------------- | --------------------------------------------------- |
+| 13.1 | tsconfig root vs functions   | Compare `tsconfig.json` with `functions/tsconfig.json`           | Conflicting compiler options → S2 finding           |
+| 13.2 | Package.json scripts audit   | List all scripts, check for dead/broken scripts                  | Scripts referencing non-existent files → S2 finding |
+| 13.3 | Firebase config consistency  | Compare `firebase.json` with actual project structure            | Mismatched hosting/functions paths → S2 finding     |
+| 13.4 | Tailwind v4 config           | Verify CSS-based config is complete (no legacy JS config)        | Mixed old/new Tailwind config → S2 finding          |
+| 13.5 | ESLint flat config migration | Verify `eslint.config.mjs` is complete and no `.eslintrc` exists | Legacy config alongside flat config → S2 finding    |
+| 13.6 | Vitest config alignment      | Check vitest.config.ts matches tsconfig paths                    | Path alias mismatch → S2 finding                    |
+| 13.7 | next.config.ts completeness  | Verify all necessary config for static export                    | Missing config for static export edge cases → S2    |
+
+### Key Files
+
+- `tsconfig.json`, `functions/tsconfig.json`
+- `package.json`, `functions/package.json`
+- `firebase.json`
+- `eslint.config.mjs`
+- `vitest.config.ts`
+- `next.config.ts`
+- `app/globals.css` (Tailwind v4 CSS config)
 
 ---
 
 ## Domain 14: Documentation & Canon
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** LOW | **Expected Findings:** 5-10 | **Session:** 4
+
+Audits documentation freshness, CANON reference validity, archive health, and
+the `analysis/` directory contents.
+
+### Checks
+
+| ID   | Check                     | Method                                                        | Finding Criteria                                       |
+| ---- | ------------------------- | ------------------------------------------------------------- | ------------------------------------------------------ |
+| 14.1 | CANON reference inventory | Grep for `CANON-\d+` across codebase                          | List all references with file:line → informational     |
+| 14.2 | CANON reference validity  | Check if each CANON-XXXX has a corresponding document         | Orphaned reference → S3 finding per orphan             |
+| 14.3 | Doc header freshness      | Check `Last Updated` dates in doc headers                     | Doc not updated in > 90 days → S3 finding              |
+| 14.4 | Analysis directory review | Read `analysis/` — 15 files from earlier pass                 | Outdated or conflicting analysis → S3 finding          |
+| 14.5 | Archive validity          | Check `docs/archive/` for referenced but moved docs           | Broken references to archived docs → S3 finding        |
+| 14.6 | README accuracy           | Compare README.md claims with actual project state            | README mentions features that don't exist → S2 finding |
+| 14.7 | DOCUMENTATION_STANDARDS   | Verify docs follow the 5-tier hierarchy                       | Docs outside hierarchy → S3 finding                    |
+| 14.8 | AI_REVIEW_LEARNINGS_LOG   | Check if learnings log is current and referenced              | Stale learnings log → S3 finding                       |
+| 14.9 | Audit ecosystem health    | Check `docs/audits/` — 80+ files across templates and results | Orphaned results, stale templates → S3 per issue       |
+
+### Key Files
+
+- All files containing `CANON-\d+` references
+- `analysis/` (15 files)
+- `docs/archive/`
+- `README.md`
+- `docs/DOCUMENTATION_STANDARDS.md`
+- `docs/AI_REVIEW_LEARNINGS_LOG.md`
+- `docs/audits/` (audit ecosystem)
 
 ---
 
 ## Domain 15: PWA & Offline
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** MEDIUM | **Expected Findings:** 4-8 | **Session:** 4
+
+Audits PWA manifest completeness, installability, offline behavior, and the gap
+between offline-indicator UI and actual offline capability.
+
+### Checks
+
+| ID   | Check                        | Method                                                          | Finding Criteria                                      |
+| ---- | ---------------------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
+| 15.1 | Manifest completeness        | Read `public/manifest.json` against PWA checklist               | Missing required fields → S2 per field                |
+| 15.2 | Icon format and sizes        | Check icon files: format, sizes, maskable                       | JPG icons (should be PNG) → S2; no maskable icon → S2 |
+| 15.3 | Service worker               | Check for service worker registration                           | No service worker → S2 (PWA without offline)          |
+| 15.4 | Offline indicator vs reality | Read `offline-indicator.tsx` — does it match actual capability? | UI claims offline support but no SW → S2 finding      |
+| 15.5 | Install prompt               | Read `install-prompt.tsx` — verify install flow works           | Broken install prompt → S2 finding                    |
+| 15.6 | Apple touch icon             | Check for apple-touch-icon meta tag                             | Missing → S3 finding                                  |
+| 15.7 | Theme color consistency      | Compare manifest theme_color with meta tag                      | Mismatch → S3 finding                                 |
+| 15.8 | Splash screen                | Check for PWA splash screen configuration                       | Missing splash → S3 finding                           |
+
+### Key Files
+
+- `public/manifest.json`
+- `public/pwa-icon.jpg`
+- `components/pwa/install-prompt.tsx`
+- `components/pwa/offline-indicator.tsx`
+- `app/layout.tsx` (meta tags, manifest link)
+
+### Known Issues (from research)
+
+- Icons use JPG format (should be PNG for transparency)
+- Same JPG file for both 192x192 and 512x512 sizes
+- No maskable icon defined
+- No service worker — PWA is install-only with no offline support
+- `offline-indicator.tsx` exists but there's no actual offline capability
+
+### Suggestions Template
+
+For missing service worker:
+
+- **Suggestion:** "Accept at S2. A PWA without a service worker can be installed
+  but provides no offline experience. For a recovery app used by people who may
+  have unreliable connectivity, offline access to at least their daily log would
+  be valuable."
+- **Counter-argument:** "Service worker implementation is E3 effort. The app's
+  core features require Firestore (online). Offline would require a local-first
+  architecture change."
 
 ---
 
 ## Domain 16: TDMS Integrity
 
-<!-- PLACEHOLDER: Will be filled with checks -->
+**Risk:** LOW | **Expected Findings:** 2-5 | **Session:** 4
+
+Audits the Technical Debt Management System itself — data integrity, duplicate
+entries, resolved item accuracy, and schema compliance.
+
+### Checks
+
+| ID   | Check                     | Method                                                        | Finding Criteria                                         |
+| ---- | ------------------------- | ------------------------------------------------------------- | -------------------------------------------------------- |
+| 16.1 | JSONL validity            | Parse every line of MASTER_DEBT.jsonl                         | Invalid JSON lines → S1 finding                          |
+| 16.2 | Schema compliance         | Verify all entries have required fields (id, severity, title) | Missing required fields → S2 per entry                   |
+| 16.3 | Duplicate detection       | Check for entries with identical titles or file+line          | Duplicates → S3 finding per duplicate pair               |
+| 16.4 | Resolved item accuracy    | Sample resolved items — verify they're actually fixed         | Resolved but not fixed → S2 finding                      |
+| 16.5 | Severity distribution     | Analyze S0/S1/S2/S3 distribution for anomalies                | > 50% S0 or 0% S0 in 2656 items → suspicious, S3 finding |
+| 16.6 | Stale entries             | Check for items open > 30 days without activity               | Stale items → informational, not a finding               |
+| 16.7 | Cross-reference with code | Sample entries — verify referenced files still exist          | References to deleted files → S3 finding                 |
+
+### Key Files
+
+- `docs/technical-debt/MASTER_DEBT.jsonl`
+- `docs/technical-debt/PROCEDURE.md`
+- `docs/technical-debt/FALSE_POSITIVES.jsonl`
 
 ---
 
