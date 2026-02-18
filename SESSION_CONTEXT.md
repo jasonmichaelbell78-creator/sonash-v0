@@ -4,6 +4,10 @@
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 2026-02-17 (Session #169)
 
+## Purpose
+
+Quick session-to-session handoff context for AI coding sessions.
+
 ## AI Instructions
 
 **This document is your session starting point:**

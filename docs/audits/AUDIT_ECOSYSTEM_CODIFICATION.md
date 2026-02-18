@@ -6,6 +6,12 @@
 **Status:** COMPLETED/REFERENCE
 <!-- prettier-ignore-end -->
 
+## Purpose
+
+Captures the original design decisions and implementation plan for codifying the
+audit ecosystem into a standardized, maintainable system with consistent
+conventions across all audit types.
+
 > **Note:** This document captures the original design decisions and
 > implementation plan for the audit ecosystem codification. For current
 > standards see [AUDIT_STANDARDS.md](./AUDIT_STANDARDS.md). For current
@@ -420,3 +426,11 @@ Wave 5 (sequential, final):
 10. SKILL_INDEX.md lists all audit skills (12+)
 11. multi-ai-audit/README.md template count matches reality
 12. audit-comprehensive mentions 9 domain audits across 4 stages
+
+---
+
+## Version History
+
+| Version | Date       | Change                      |
+| ------- | ---------- | --------------------------- |
+| 1.0     | 2026-02-16 | Initial implementation plan |

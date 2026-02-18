@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.26
-**Last Updated:** Session #169
+**Document Version:** 3.25
+**Last Updated:** Session #151
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
@@ -285,19 +285,18 @@ reliability, and solo developer automations.
 | A — Admin Panel  | A1-A25              | ✅ All phases | #75-#129  | [ROADMAP_LOG.md](./ROADMAP_LOG.md#track-a--admin-panel--development-complete)              |
 | A-Test — Testing | 293/294 tests       | ✅ Complete   | #130-#141 | [ROADMAP_LOG.md](./ROADMAP_LOG.md#track-a-test--testing--validation--complete)             |
 
-### Sprint Tracks (9 Parallel Tracks)
+### Sprint Tracks (8 Parallel Tracks)
 
-| Track        | Focus                                   | Status          | Effort    | Owner  |
-| ------------ | --------------------------------------- | --------------- | --------- | ------ |
-| **Track A**  | Admin Panel (Sentry + GCP Logs)         | ✅ Archived     | ~6 hours  | Claude |
-| **Track B**  | Dev Dashboard MVP (expanded +B10/B11)   | 🔄 In Progress  | ~20 hours | Claude |
-| **Track C**  | UI/UX Improvements                      | 📋 Reserved     | TBD       | Claude |
-| **Track D**  | CI Reliability & Automation             | 📋 Planned      | ~28 hours | Claude |
-| **Track E**  | Solo Developer Automations              | 📋 Planned      | ~14 hours | Claude |
-| **Track AI** | AI Optimization Sprint (multi-AI audit) | ✅ Complete     | ~9 hours  | Claude |
-| **Track O**  | Owner Actions (manual setup)            | 📋 **DO FIRST** | ~10 min   | Jason  |
-| **Track P**  | Performance Critical (CWV fix)          | 📋 Planned      | ~24 hours | Claude |
-| **Track T**  | Testing Infrastructure (Playwright)     | 🔄 Phase 1 Done | ~70 hours | Claude |
+| Track       | Focus                                 | Status          | Effort    | Owner  |
+| ----------- | ------------------------------------- | --------------- | --------- | ------ |
+| **Track A** | Admin Panel (Sentry + GCP Logs)       | ✅ Archived     | ~6 hours  | Claude |
+| **Track B** | Dev Dashboard MVP (expanded +B10/B11) | 🔄 In Progress  | ~20 hours | Claude |
+| **Track C** | UI/UX Improvements                    | 📋 Reserved     | TBD       | Claude |
+| **Track D** | CI Reliability & Automation           | 📋 Planned      | ~28 hours | Claude |
+| **Track E** | Solo Developer Automations            | 📋 Planned      | ~14 hours | Claude |
+| **Track O** | Owner Actions (manual setup)          | 📋 **DO FIRST** | ~10 min   | Jason  |
+| **Track P** | Performance Critical (CWV fix)        | 📋 Planned      | ~24 hours | Claude |
+| **Track T** | Testing Infrastructure (Playwright)   | 🔄 Phase 1 Done | ~70 hours | Claude |
 
 ### S0 Critical Debt (Immediate Action)
 
@@ -329,76 +328,6 @@ reliability, and solo developer automations.
   (components/) - already done
 - CANON-0067 (47 cognitive complexity violations) is a broader parent item in
   M2.3-REF
-
-### Track AI - AI Optimization Sprint (COMPLETE - Session #169)
-
-> **Source:** Multi-AI Audit session `maa-2026-02-17-182d43` (5 AI sources, 65
-> findings). **Triage:** 35 accepted for sprint, 13 deferred to debt, 19
-> dismissed (duplicates/FP/negligible). **Goal:** Clean dead code, reduce
-> session-start latency, DRY up hooks, fix audit prompt gaps.
-
-#### Phase 1: Dead Code Removal (E0, ~1 hour)
-
-- [x] **AI-1.1** Delete 6 dead `.sh` hook files (DEBT-3198, 3200, 3211, 3218)
-- [x] **AI-1.2** Delete 13 dead TypeScript migration scripts (DEBT-3184–3196)
-- [x] **AI-1.3** Verified delete of orphaned consolidated hook JS files
-      (DEBT-3219) — verify references in settings.json/package.json first
-- [x] **AI-1.4** Delete dead technical-debt log artifacts (DEBT-3231)
-- [x] **AI-1.5** Remove `stop-serena-dashboard.js` from SessionStart hooks
-      (DEBT-3199, 3221)
-- [x] **AI-1.6** Remove `filesystem` entry from `.mcp.json` (DEBT-3225)
-
-#### Phase 2: Quick Fixes (E0, ~1 hour)
-
-- [x] **AI-2.1** Replace `execSync('node -v')` with `process.version`
-      (DEBT-3197)
-- [x] **AI-2.2** Apply `rotateJsonl()` to `hook-warnings-log.jsonl` and
-      `health-score-log.jsonl` (DEBT-3217, 3244)
-- [x] **AI-2.3** Fix broken link in `code-reviewer/SKILL.md` — point to
-      `docs/agent_docs/CODE_PATTERNS.md` (DEBT-3208)
-- [x] **AI-2.4** Add `evidence` field to all audit agent output schemas
-      (DEBT-3201)
-- [x] **AI-2.5** Fix git diff parsing in `post-read-handler.js` to use `-z` flag
-      (DEBT-3209)
-
-#### Phase 3: Session-Start Incremental (E1, ~2 hours)
-
-- [x] **AI-3.1** Add TTL guard on unconditional `npm run test:build` (DEBT-3204)
-- [x] **AI-3.2** Condense session-start output to <10 lines, <100 tokens
-      (DEBT-3202)
-
-#### Phase 4: Hook Shared Libraries (E1, ~3 hours)
-
-- [x] **AI-4.1** Extract `gitExec()` to `hooks/lib/git-utils.js`, update 7 hooks
-      (DEBT-3213)
-- [x] **AI-4.2** Extract `INLINE_PATTERNS` + `checkInlinePatterns()` to
-      `hooks/lib/inline-patterns.js` (DEBT-3212)
-- [x] **AI-4.3** Migrate `loadJson`/`saveJson` users to `state-utils.js`
-      (DEBT-3243)
-- [x] **AI-4.4** Add `FALSE_POSITIVES.jsonl` exclusion to audit agent prompts
-      (DEBT-3220) — already present in all 13+ audit skills
-
-#### Phase 5: Reference Doc Trim (E1, ~1 hour)
-
-- [x] **AI-5.1** Trim `COMMAND_REFERENCE.md` (109KB) to lightweight index
-      (<10KB) linking to source files (DEBT-3206)
-
-#### Phase 6: Audit Review Stage Fix (E1, ~1 hour)
-
-- [x] **AI-6.1** Add Interactive Review phase to `multi-ai-audit/SKILL.md`
-      between Phase 5 (Unification) and Phase 6 (TDMS Intake) — adapt
-      single-session format for CANON-grouped, consensus-scored findings
-- [x] **AI-6.2** Add Interactive Review phase to `audit-aggregator/SKILL.md`
-
-**Total: 18 work items | ~9 hours estimated | 6 phases**
-
-#### Deferred to Debt (3 items, E2-E3)
-
-| DEBT ID                                 | Title                                           | Effort |
-| --------------------------------------- | ----------------------------------------------- | ------ |
-| DEBT-3182, 3183, 3203, 3205, 3207, 3236 | Full session-start.js architectural overhaul    | E3     |
-| DEBT-3210, 3216, 3232, 3235, 3241, 3242 | Shared base audit template                      | E3     |
-| DEBT-3215                               | Structured return protocol for pre-commit-fixer | E2     |
 
 ### GRAND PLAN: Technical Debt Elimination (1,727 items)
 
@@ -3222,7 +3151,6 @@ trigger matrix and cross-document update rules, see
 
 | Version | Session | Changes                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 3.26    | #169    | Added Track AI — AI Optimization Sprint (16 items, 5 phases) from multi-AI audit triage; updated Sprint Tracks table (8→9); updated debt statuses (35 SPRINT, 13 VERIFIED, 19 dismissed); regenerated views/metrics                                                                                                                                                            |
 | 3.22    | #142    | Moved Agile Process, Process & Tooling Improvements to DEVELOPMENT.md; trimmed Update Triggers and AI Instructions sections to summaries with links                                                                                                                                                                                                                            |
 | 3.21    | #141    | Track T Phase 1 COMPLETE: `/test-suite` skill with 27 feature protocols, 5-phase pipeline (smoke/feature/security/performance/report), Firebase Preview Channels, dual browser support (Playwright MCP + Chrome Extension); added TESTING_USER_MANUAL.md references to all core docs; updated cross-document sync triggers for test protocols                                  |
 | 3.20    | #140    | Completed date-to-session migration: converted all remaining inline dates to session references; replaced Version History Date column with Session column; removed inline dates from completed items; npm audit fix (brace-expansion vuln); cleaned up stale .bak file                                                                                                         |

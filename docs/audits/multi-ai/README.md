@@ -138,11 +138,11 @@ See [AGGREGATOR.md](./templates/AGGREGATOR.md) for the 2-tier consensus process.
 
 ## Related Documents
 
-- [AI_WORKFLOW.md](../../AI_WORKFLOW.md) - Session workflow (references
+- [AI_WORKFLOW.md](../../../AI_WORKFLOW.md) - Session workflow (references
   coordinator)
-- [docs/technical-debt/PROCEDURE.md](../technical-debt/PROCEDURE.md) - TDMS
+- [docs/technical-debt/PROCEDURE.md](../../technical-debt/PROCEDURE.md) - TDMS
   procedures
-- [docs/templates/JSONL_SCHEMA_STANDARD.md](../templates/JSONL_SCHEMA_STANDARD.md) -
+- [docs/templates/JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md) -
   TDMS canonical schema (includes enhancement type extensions)
 
 ---

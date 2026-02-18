@@ -3606,3 +3606,178 @@ filenames from being interpreted as flags.
 - Pipeline commands in hooks should append `|| true` when running under set -e
 
 ---
+
+### Review #350: PR #374 R1 — Bidirectional Containment, Fail-Closed Guard, backupSwap Safety
+
+**Date:** 2026-02-17 **Source:** Qodo PR Compliance + Code Suggestions
+**PR/Branch:** PR #374
+
+**Summary:** 15 suggestions (8 fixed, 4 deferred, 3 rejected). Key security
+fixes: bidirectional path containment in resolveProjectDir(), fail-closed
+symlink guard fallback restricting writes to .claude/state/ only, and backupSwap
+restore-on-failure logic.
+
+**Patterns Identified:**
+
+1. **Bidirectional containment in resolveProjectDir()**: Original check only
+   verified CWD was under CLAUDE_PROJECT_DIR but not vice versa. Added
+   bidirectional check so resolved path must be ancestor or descendant of CWD.
+2. **Fail-closed symlink guard fallback**: When symlink-guard.js module is
+   unavailable, the fallback isSafeToWrite allowed all writes (fail-open).
+   Changed to restrict writes to known .claude/state/ directory only.
+3. **backupSwap missing restore on failure**: If final renameSync(tmp, dest)
+   failed after backup was created, the backup was never restored, losing the
+   original file. Added restore logic in catch block.
+4. **Prettier formatting as CI blocker**: SUMMARY.md had trailing whitespace
+   that failed the prettier check in CI.
+
+**Resolution:**
+
+- Fixed: 8 items (containment, fail-closed guard, backupSwap, prettier, readonly
+  seed data, propagated projectDir to post-write-validator.js)
+- Deferred: 4 items (stable seed IDs, build freshness detection, etc.)
+- Rejected: 3 items (false positives or already handled)
+
+**Key Learnings:**
+
+- Path containment checks must be bidirectional to prevent both escape and
+  restriction bypass
+- Security fallbacks must be fail-closed (deny by default), not fail-open
+- Atomic write helpers need restore-on-failure for the backup file
+- Pre-commit pattern check can false-positive on atomic write patterns that span
+  multiple lines — use SKIP_PATTERN_CHECK with documented reason
+
+---
+
+### Review #351: PR #374 R2 — Path Sep Boundary, New-File Guard, Evidence Dedup
+
+**Date:** 2026-02-17 **Source:** Qodo PR Compliance + Code Suggestions
+**PR/Branch:** PR #374
+
+**Summary:** 3 suggestions, all fixed. Path separator boundary bypass in
+containment check, isSafeToWrite crash on non-existent files, and duplicate
+evidence objects in MASTER_DEBT.jsonl.
+
+**Patterns Identified:**
+
+1. **startsWith without path.sep boundary**: `a.startsWith(b)` matches
+   `/repo/app-malicious` when checking against `/repo/app`. Must use
+   `a.startsWith(b + path.sep)` or check `a === b` separately.
+2. **realpathSync on non-existent files**: isSafeToWrite fallback used
+   `realpathSync(path.resolve(p))` which throws on .tmp/.bak files that don't
+   exist yet. Fix: realpath the parent directory and check containment there.
+3. **Evidence array deduplication**: MASTER_DEBT.jsonl had duplicate evidence
+   objects within items, inflating file size. Deduped 27 entries by
+   JSON.stringify comparison.
+
+**Resolution:**
+
+- Fixed: 3/3 items
+- Deferred: 0
+- Rejected: 0
+
+**Key Learnings:**
+
+- Path containment with startsWith ALWAYS needs the separator boundary check
+- When validating paths for files that may not exist yet, realpath the parent
+  directory instead of the full path
+- Case-insensitive comparison needed on Windows: normalize with toLowerCase()
+  before startsWith checks
+
+---
+
+### Review #353: PR #374 R4 — Ancestor Containment Restore, Fresh Repo Guard, gitExec Trim, CI Doc Fixes
+
+**Date:** 2026-02-18 **Source:** Qodo PR Compliance + Code Suggestions + CI
+Failure **PR/Branch:** PR #374
+
+**Summary:** 8 suggestions (6 fixed, 1 rejected, 1 pre-existing batch fix). Key
+fixes: restore ancestor containment for monorepo support, prevent fallback write
+lockout on fresh repos, optional trim for NUL-delimited git output, silent catch
+blocks get DEBUG logging, sanitize error messages in TDMS hook, fix CI
+docs:check failures.
+
+**Patterns Identified:**
+
+1. **Descendant-only containment too restrictive**: R3 removed ancestor
+   direction, but CLAUDE_PROJECT_DIR can legitimately be a monorepo root that is
+   an ancestor of cwd. Restored bidirectional check.
+2. **realpathSync on non-existent directories**: Fallback isSafeToWrite used
+   realpathSync on state/hooks dirs which may not exist on fresh checkouts. Fix:
+   realpath the .claude dir, then path.resolve for subdirs.
+3. **gitExec .trim() corrupts NUL-delimited output**: git commands with -z flag
+   produce NUL-separated output that .trim() mangles. Added opts.trim=false.
+4. **Silent catch blocks reduce debuggability**: Qodo compliance flagged
+   try/catch blocks that swallow errors without any context. Added DEBUG-gated
+   logging for non-critical paths.
+5. **Raw error.message exposure**: TDMS hook logged raw error.message which
+   could expose internal paths. Replaced with generic message.
+
+**Resolution:**
+
+- Fixed: 6 items (ancestor containment, fresh repo guard, trim flag, silent
+  catches, error sanitization, CI doc fixes)
+- Rejected: 1 item (seed data PII — public business listings)
+- Pre-existing (batch): 7 doc files with broken links and missing sections
+
+**Key Learnings:**
+
+- Containment checks need both directions: descendant (resolved under cwd) AND
+  ancestor (cwd under resolved) for monorepo/workspace scenarios
+- Fresh repo checkouts may not have .claude/state/ or .claude/hooks/ dirs yet —
+  don't realpathSync them, use path.resolve instead
+- git commands using -z flag need raw output — provide opt-out from .trim()
+- Review ping-pong pattern: R2→R3→R4 progressively adjusted the same containment
+  logic — should have gotten bidirectional right in R1
+
+---
+
+### Review #352: PR #374 R3 — Descendant Containment, backupSwap Copy, mkdirSync Order, CI Fix
+
+**Date:** 2026-02-18 **Source:** Qodo PR Compliance + Code Suggestions + CI
+Failure **PR/Branch:** PR #374
+
+**Summary:** 8 suggestions (7 fixed, 1 deferred). CI failure from orphaned
+ROADMAP debt references caused by MASTER_DEBT data loss during evidence dedup.
+Code fixes: descendant-only containment, backupSwap copy fallback, mkdirSync
+before isSafeToWrite.
+
+**Patterns Identified:**
+
+1. **Ancestor containment too permissive**: `cwd.startsWith(resolved)` allowed
+   resolved to be `/` or any ancestor directory. Restricted to descendant-only:
+   resolved must equal CWD or be under CWD.
+2. **backupSwap deletes original on rename failure**: If renameSync(file, bak)
+   fails, the catch block called silentRm(file) which deletes the original.
+   Changed to copyFileSync as fallback to preserve the original.
+3. **mkdirSync after isSafeToWrite**: If parent dir doesn't exist, realpathSync
+   in isSafeToWrite fails and saveJson silently returns false. Moved mkdirSync
+   before the isSafeToWrite check.
+4. **MASTER_DEBT data loss chain**: R2's evidence dedup changed deduped.jsonl,
+   then generate-views.js overwrote MASTER_DEBT.jsonl from deduped.jsonl (which
+   had fewer entries than main). 56 ROADMAP-referenced DEBT IDs were lost.
+   Restored by merging committed + main entries.
+5. **npm UA parsing crash**: npm_config_user_agent can be empty string or have
+   unexpected format. Regex needed optional match with fallback to "unknown".
+
+**Resolution:**
+
+- Fixed: 7 items (descendant containment, backupSwap copy, mkdirSync order,
+  hooks dir in fallback guard, npm UA parsing, orphaned refs restore, module
+  load verification)
+- Deferred: 1 item (build freshness detection — dir mtime vs file mtime)
+- Rejected: 0
+
+**Key Learnings:**
+
+- generate-views.js OVERWRITES MASTER_DEBT.jsonl from deduped.jsonl — any
+  modification to deduped.jsonl can cause data loss if entries are removed
+- Path containment should be descendant-only unless there's an explicit need for
+  ancestor checks
+- Atomic write helpers must never delete the original file in error paths — use
+  copy as fallback for backup creation
+- mkdir must happen before any realpathSync calls on paths within that directory
+- Always verify CI passes after data file modifications — orphaned reference
+  checks catch data loss early
+
+---

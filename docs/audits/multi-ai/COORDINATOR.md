@@ -103,18 +103,18 @@ node scripts/debt/intake-audit.js \
 
 ### TDMS Resources
 
-| Resource                                                           | Purpose                             |
-| ------------------------------------------------------------------ | ----------------------------------- |
-| [docs/technical-debt/PROCEDURE.md](../technical-debt/PROCEDURE.md) | Full intake/verification procedures |
-| [docs/technical-debt/INDEX.md](../technical-debt/INDEX.md)         | View all tracked technical debt     |
-| [docs/technical-debt/views/](../technical-debt/views/)             | Filtered views by severity/category |
-| `scripts/debt/intake-audit.js`                                     | Audit intake script                 |
-| `scripts/debt/generate-views.js`                                   | Regenerate MD views                 |
+| Resource                                                              | Purpose                             |
+| --------------------------------------------------------------------- | ----------------------------------- |
+| [docs/technical-debt/PROCEDURE.md](../../technical-debt/PROCEDURE.md) | Full intake/verification procedures |
+| [docs/technical-debt/INDEX.md](../../technical-debt/INDEX.md)         | View all tracked technical debt     |
+| [docs/technical-debt/views/](../../technical-debt/views/)             | Filtered views by severity/category |
+| `scripts/debt/intake-audit.js`                                        | Audit intake script                 |
+| `scripts/debt/generate-views.js`                                      | Regenerate MD views                 |
 
 ### Category Mapping
 
 See
-[PROCEDURE.md Section 11](../technical-debt/PROCEDURE.md#11-category-field-normalization)
+[PROCEDURE.md Section 11](../../technical-debt/PROCEDURE.md#11-category-field-normalization)
 for complete mapping tables from audit categories to TDMS categories.
 
 ---
@@ -323,7 +323,7 @@ This is the master health monitoring view.
 
 ### 1. Security Standards Compliance
 
-**Standard:** [GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md)
+**Standard:** [GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md)
 
 | Standard           | Requirement               | Current Status | Last Verified |
 | ------------------ | ------------------------- | -------------- | ------------- |
@@ -672,7 +672,7 @@ After completing any multi-AI audit:
    npm run tdms:views
    ```
 
-4. **Verify** at [docs/technical-debt/views/](../technical-debt/views/)
+4. **Verify** at [docs/technical-debt/views/](../../technical-debt/views/)
 
 ---
 
@@ -682,10 +682,10 @@ After completing any multi-AI audit:
 > (comprehensive audits involving multiple AI models).
 >
 > **Session tracking** has been moved to
-> [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md) where it belongs.
+> [SESSION_CONTEXT.md](../../../SESSION_CONTEXT.md) where it belongs.
 >
 > **PR/commit reviews** are tracked in
-> [AI_REVIEW_LEARNINGS_LOG.md](../AI_REVIEW_LEARNINGS_LOG.md).
+> [AI_REVIEW_LEARNINGS_LOG.md](../../AI_REVIEW_LEARNINGS_LOG.md).
 
 This coordinator should be used when:
 
@@ -704,15 +704,15 @@ It should NOT be used for:
 
 ## Related Documents
 
-- **[AI_WORKFLOW.md](../../AI_WORKFLOW.md)** - Master workflow guide (references
-  this coordinator)
-- **[docs/technical-debt/PROCEDURE.md](../technical-debt/PROCEDURE.md)** - TDMS
-  intake and tracking procedures
-- **[docs/technical-debt/views/](../technical-debt/views/)** - TDMS dashboard
+- **[AI_WORKFLOW.md](../../../AI_WORKFLOW.md)** - Master workflow guide
+  (references this coordinator)
+- **[docs/technical-debt/PROCEDURE.md](../../technical-debt/PROCEDURE.md)** -
+  TDMS intake and tracking procedures
+- **[docs/technical-debt/views/](../../technical-debt/views/)** - TDMS dashboard
   views (by-severity, by-category, by-status, verification-queue)
-- **[GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md)** -
+- **[GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md)** -
   Mandatory security standards
-- **[DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md)** - Document
+- **[DOCUMENTATION_STANDARDS.md](../../DOCUMENTATION_STANDARDS.md)** - Document
   formatting standards
 - **Audit Templates:**
   - [CODE_REVIEW_AUDIT.md](./templates/CODE_REVIEW_AUDIT.md)

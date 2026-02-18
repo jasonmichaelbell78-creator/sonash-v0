@@ -8,8 +8,9 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 /**
- * Resolve and validate project directory with descendant containment.
- * Only accepts CLAUDE_PROJECT_DIR if it resolves to cwd or a descendant of cwd.
+ * Resolve and validate project directory with containment check.
+ * Accepts CLAUDE_PROJECT_DIR if it resolves to cwd, a descendant of cwd,
+ * or an ancestor of cwd (monorepo root pointing to workspace).
  * Falls back to cwd() if invalid, unreachable, or escapes expected bounds.
  */
 function resolveProjectDir() {
@@ -22,8 +23,10 @@ function resolveProjectDir() {
     const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
     const a = norm(resolved);
     const b = norm(cwd);
-    // Descendant-only: resolved must be cwd itself or under cwd
-    if (a === b || a.startsWith(b + path.sep)) return resolved;
+    // Containment: allow resolved to be cwd/descendant OR an ancestor of cwd
+    const resolvedInsideCwd = a === b || a.startsWith(b + path.sep);
+    const cwdInsideResolved = b.startsWith(a + path.sep);
+    if (resolvedInsideCwd || cwdInsideResolved) return resolved;
     return fallback;
   } catch {
     return fallback;
@@ -40,11 +43,12 @@ const projectDir = resolveProjectDir();
  */
 function gitExec(args, opts = {}) {
   try {
-    return execFileSync("git", args, {
+    const out = execFileSync("git", args, {
       cwd: opts.cwd || projectDir,
       encoding: "utf8",
       timeout: opts.timeout || 5000,
-    }).trim();
+    });
+    return opts.trim === false ? out : out.trim();
   } catch {
     return "";
   }

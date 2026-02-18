@@ -1,6 +1,10 @@
 # Multi-AI Audit Summary
 
-**Session:** maa-2026-02-17-182d43 **Generated:** 2026-02-17
+<!-- prettier-ignore-start -->
+**Session:** maa-2026-02-17-182d43
+**Generated:** 2026-02-17
+**Last Updated:** 2026-02-17
+<!-- prettier-ignore-end -->
 
 ---
 
@@ -122,6 +126,14 @@ _No cross-cutting files_
 2. **Ingest** to TDMS: `node scripts/debt/intake-audit.js <path-to-unified>`
 3. **Track** progress in ROADMAP.md or your issue tracker
 4. **Archive** the session when complete
+
+---
+
+## Version History
+
+| Version | Date       | Changes              |
+| ------- | ---------- | -------------------- |
+| 1.0     | 2026-02-17 | Initial audit report |
 
 ---
 

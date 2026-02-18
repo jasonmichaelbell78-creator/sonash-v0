@@ -366,8 +366,12 @@ try {
       needsTestBuild = false;
     }
   }
-} catch {
-  // Stat failed, rebuild
+} catch (err) {
+  // Stat failed (permissions, race condition, etc.) — rebuild as fallback
+  if (process.env.DEBUG)
+    console.log(
+      `  dist-tests stat failed: ${err instanceof Error ? err.code || "unknown" : "unknown"}`
+    );
 }
 if (needsTestBuild) {
   runCommand("Building test files", "npm run test:build", 60000);
@@ -485,7 +489,7 @@ try {
     warnings++;
   }
 } catch (error) {
-  console.log(`📊 TDMS: ❌ ${error instanceof Error ? error.message : "Unknown error"}`);
+  console.log(`📊 TDMS: ❌ metrics read failed`);
   warnings++;
 }
 
