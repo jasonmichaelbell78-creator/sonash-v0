@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 17.34 **Created:** 2026-01-02 **Last Updated:** 2026-02-18
+**Document Version:** 17.35 **Created:** 2026-01-02 **Last Updated:** 2026-02-18
 
 ## Purpose
 
@@ -27,10 +27,11 @@ improvements made.
 ## Version History
 
 <details>
-<summary>Full version history (v1.0 – v17.34) — click to expand</summary>
+<summary>Full version history (v1.0 – v17.35) — click to expand</summary>
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.35    | 2026-02-18               | Review #354: SonarCloud + Qodo R2 — CC reduction (extractReviewIds 22→~8 via helper extraction), nested ternary→lookup, error log sanitization (4 catches), DoS caps (range expansion + gap scan). 5 fixed, 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 17.34    | 2026-02-18               | Review #353: Qodo review of check-review-archive.js — silent catch logging (5 catches), groupConsecutive sort/dedupe. 3 fixed + 2 propagation, 1 rejected (false positive).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.33    | 2026-02-17               | Overhaul: removed stale Quick Index, collapsed version history, removed Pattern Effectiveness Audit, cleaned stale placeholders, fixed JSONL data quality, added retro parsing, added archive-reviews.js + promote-patterns.js automation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 17.32    | 2026-02-17               | Format audit: collapsed version history ≤17.21 into details, fixed stale tiered access (#180→#285), added missing archives 6-8, updated document health metrics (3400 lines, 63 active reviews — both over threshold).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -1510,6 +1511,45 @@ cumulatively. This is the project's most persistent and expensive process gap.
 87% fix rate vs 78/119 = 66% in #369), rejection noise has decreased (6 vs 41),
 and total cycle length has decreased (5 vs 9). If the CC lint rule is finally
 implemented, the next similarly-scoped PR should achieve a 2-3 round cycle.
+
+---
+
+#### Review #354: SonarCloud + Qodo R2 — CC Reduction, DoS Caps, Error Sanitization (2026-02-18)
+
+**Source:** SonarCloud (2 issues) + Qodo Incremental (4 suggestions) + Qodo
+Compliance (2 flags) **PR/Branch:** claude/new-session-KE2kF **Suggestions:** 8
+total, 6 unique after dedup (Fixed: 5, Rejected: 1)
+
+**Patterns:**
+
+1. **Cognitive Complexity reduction** — `extractReviewIds` CC 22→~8. Extracted
+   `parseHeadingIds()` and `parseTableIds()` helpers. Also adopted Set-based
+   dedup (`[...new Set([...headings.ids, ...table.ids])]`) replacing O(n) array
+   `includes()` checks.
+2. **DoS caps** — Range expansion in `parseTableIds` capped at 5000
+   (`MAX_RANGE_EXPANSION`). Gap scan loop capped at 10,000 (`MAX_GAP_SCAN_SPAN`)
+   with early exit + `process.exitCode = 2`.
+3. **Error log sanitization** — All 4 catch blocks now use
+   `err instanceof Error ? err.message : String(err)` with
+   `.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]")` to prevent leaking absolute
+   paths in CI logs. Addresses Qodo Secure Error Handling + Secure Logging
+   compliance flags.
+4. **Nested ternary extraction** — SonarCloud S3358 at L248: replaced
+   `fmt === "table" ? "..." : fmt === "mixed" ? "..." : ""` with lookup object
+   `FMT_LABELS[fmt] || ""`.
+
+**Rejected:**
+
+- JSONL ordering note — `reviews.jsonl` is managed by the sync tool
+  (`npm run reviews:sync`), not this script. Ordering is a sync concern.
+
+**Key Learnings:**
+
+- Extracting regex-parsing loops into pure functions is the most effective CC
+  reduction technique for file-scanning scripts
+- Set-based dedup at extraction time produces cleaner inventory counts but
+  removes within-file duplicate detection (acceptable trade-off)
+- DoS caps should be applied to any loop driven by parsed numeric ranges
 
 ---
 

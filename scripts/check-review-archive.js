@@ -27,7 +27,11 @@ let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require(join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")));
 } catch (err) {
-  console.error("symlink-guard unavailable; disabling writes:", err);
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(
+    "symlink-guard unavailable; disabling writes:",
+    msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]")
+  );
   isSafeToWrite = () => false;
 }
 
@@ -84,6 +88,63 @@ function groupConsecutive(nums) {
   return ranges;
 }
 
+/** Maximum range expansion (e.g. #1-#5000) to prevent DoS from malformed input */
+const MAX_RANGE_EXPANSION = 5000;
+
+/**
+ * Parse heading-based review IDs from content.
+ * @returns {{ ids: number[], found: boolean }}
+ */
+function parseHeadingIds(content) {
+  const headingRegex = /^####\s+Review\s+#(\d+)/gm;
+  const ids = [];
+  let match;
+  let found = false;
+  while ((match = headingRegex.exec(content)) !== null) {
+    ids.push(Number.parseInt(match[1], 10));
+    found = true;
+  }
+  return { ids, found };
+}
+
+/**
+ * Parse table-index review IDs from content (| #N | and | #N-M | rows).
+ * @returns {{ ids: number[], found: boolean }}
+ */
+function parseTableIds(content) {
+  const ids = [];
+  let match;
+  let found = false;
+
+  // Single review rows: | #N |
+  const tableRegex = /^\|\s*#(\d+)\s*\|/gm;
+  while ((match = tableRegex.exec(content)) !== null) {
+    ids.push(Number.parseInt(match[1], 10));
+    found = true;
+  }
+
+  // Consolidated range rows: | #N-M |
+  const rangeRegex = /^\|\s*#(\d+)-(\d+)\s*\|/gm;
+  while ((match = rangeRegex.exec(content)) !== null) {
+    const start = Number.parseInt(match[1], 10);
+    const end = Number.parseInt(match[2], 10);
+    const span = end - start + 1;
+    if (
+      !Number.isFinite(start) ||
+      !Number.isFinite(end) ||
+      span <= 0 ||
+      span > MAX_RANGE_EXPANSION
+    ) {
+      found = true;
+      continue;
+    }
+    for (let i = start; i <= end; i++) ids.push(i);
+    found = true;
+  }
+
+  return { ids, found };
+}
+
 /**
  * Extract review IDs from a file using heading pattern (#### Review #N).
  * For archive files, also checks table index rows (| #N |, | #N-M |)
@@ -99,44 +160,16 @@ function extractReviewIds(filePath, opts = {}) {
   try {
     if (lstatSync(filePath).isSymbolicLink()) return [];
     const content = readFileSync(filePath, "utf8");
-    const ids = [];
 
-    // Pattern 1: #### Review #N (full content entries)
-    const headingRegex = /^####\s+Review\s+#(\d+)/gm;
-    let match;
-    let hasHeadings = false;
-    while ((match = headingRegex.exec(content)) !== null) {
-      ids.push(Number.parseInt(match[1], 10));
-      hasHeadings = true;
-    }
+    const headings = parseHeadingIds(content);
+    const table = includeTableIndex ? parseTableIds(content) : { ids: [], found: false };
 
-    let hasTable = false;
-    if (includeTableIndex) {
-      // Pattern 2: | #N | (table index rows — single review)
-      // Only used for archive files to avoid false positives from PR# tables
-      const tableRegex = /^\|\s*#(\d+)\s*\|/gm;
-      while ((match = tableRegex.exec(content)) !== null) {
-        const id = Number.parseInt(match[1], 10);
-        if (!ids.includes(id)) ids.push(id);
-        hasTable = true;
-      }
-
-      // Pattern 3: | #N-M | (consolidated range rows)
-      const rangeRegex = /^\|\s*#(\d+)-(\d+)\s*\|/gm;
-      while ((match = rangeRegex.exec(content)) !== null) {
-        const start = Number.parseInt(match[1], 10);
-        const end = Number.parseInt(match[2], 10);
-        for (let i = start; i <= end; i++) {
-          if (!ids.includes(i)) ids.push(i);
-        }
-        hasTable = true;
-      }
-    }
+    const ids = [...new Set([...headings.ids, ...table.ids])];
 
     // Store format metadata for reporting
-    if (hasHeadings && hasTable) {
+    if (headings.found && table.found) {
       ids._format = "mixed";
-    } else if (hasTable) {
+    } else if (table.found) {
       ids._format = "table";
     } else {
       ids._format = "full";
@@ -144,7 +177,11 @@ function extractReviewIds(filePath, opts = {}) {
 
     return ids;
   } catch (err) {
-    console.error(`Error processing file ${filePath}:`, err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(
+      `Error processing ${filePath.replace(ROOT + "/", "")}:`,
+      msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]")
+    );
     return [];
   }
 }
@@ -168,7 +205,11 @@ function checkWrongHeadings(filePath, fileName) {
       return wrongHeadings;
     }
   } catch (err) {
-    console.error(`Error checking headings in ${fileName}:`, err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(
+      `Error checking headings in ${fileName}:`,
+      msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]")
+    );
   }
   return 0;
 }
@@ -191,7 +232,8 @@ function getJsonlMaxId() {
     }
     return max;
   } catch (err) {
-    console.error("Error reading reviews.jsonl:", err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Error reading reviews.jsonl:", msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]"));
     return 0;
   }
 }
@@ -245,7 +287,8 @@ function main() {
       const filePath = join(ARCHIVE_DIR, file);
       const ids = extractReviewIds(filePath, { includeTableIndex: true });
       const fmt = ids._format || "full";
-      const fmtLabel = fmt === "table" ? " (table-indexed)" : fmt === "mixed" ? " (mixed)" : "";
+      const FMT_LABELS = { table: " (table-indexed)", mixed: " (mixed)" };
+      const fmtLabel = FMT_LABELS[fmt] || "";
       if (ids.length > 0) {
         console.log(
           `  ${file}: ${ids.length} reviews (#${Math.min(...ids)}-#${Math.max(...ids)})${fmtLabel}`
@@ -282,9 +325,20 @@ function main() {
   // 4. Gap analysis
   console.log("4. Coverage Gaps:");
   if (allIds.size > 0) {
+    const MAX_GAP_SCAN_SPAN = 10_000;
     const sortedIds = [...allIds.keys()].sort((a, b) => a - b);
     const minId = sortedIds[0];
     const maxId = sortedIds[sortedIds.length - 1];
+    const span = maxId - minId + 1;
+
+    if (!Number.isFinite(span) || span <= 0 || span > MAX_GAP_SCAN_SPAN) {
+      warn(
+        `Gap scan range #${minId}-#${maxId} (${span} entries) exceeds cap of ${MAX_GAP_SCAN_SPAN} — possible corrupted archive`
+      );
+      process.exitCode = 2;
+      return;
+    }
+
     const knownSkipped = [];
     const trulyMissing = [];
 
