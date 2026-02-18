@@ -40,12 +40,12 @@ in the audit lifecycle.
 ## 0. Invocation
 
 ```
-/audit-comprehensive                     # Fresh audit — full run from Domain 0
-/audit-comprehensive --resume            # Resume from PLAN_INDEX.md checkpoint
-/audit-comprehensive --domain 7          # Run single domain (re-runs)
-/audit-comprehensive --from 5 --to 11    # Run a range (session-scoped)
-/audit-comprehensive --dry-run           # Show checks without executing
-/audit-comprehensive --batch             # Accept all findings without review
+/system-test                     # Fresh audit — full run from Domain 0
+/system-test --resume            # Resume from PLAN_INDEX.md checkpoint
+/system-test --domain 7          # Run single domain (re-runs)
+/system-test --from 5 --to 11    # Run a range (session-scoped)
+/system-test --dry-run           # Show checks without executing
+/system-test --batch             # Accept all findings without review
 ```
 
 ### Flag Reference
@@ -85,7 +85,7 @@ Runs on **every invocation** regardless of mode.
         ├── ...
         └── d22-sentry.jsonl
 1d. Write PLAN_INDEX.md skeleton (all 23 domains, status: pending)
-1e. Commit: "audit(comprehensive): initialize audit-YYYY-MM-DD"
+1e. Commit: "system-test: initialize audit-YYYY-MM-DD"
 ```
 
 ### INTERACTIVE DECISION 1 — Session Context
@@ -418,7 +418,7 @@ After all findings in a domain are reviewed:
 ○ Pause here (save checkpoint, end session)
 ```
 
-→ Commit: `audit(comprehensive): Domain 7 — Cloud Functions [8/23]` → Update
+→ Commit: `system-test: Domain 7 — Cloud Functions [8/23]` → Update
 PLAN_INDEX.md (mark Domain 7 as ✅ Complete, update counts)
 
 ### 3f. Session Boundary Check
@@ -459,7 +459,7 @@ If ending session:
   ✅ PLAN_INDEX.md updated
 
   Resume next session with:
-    /audit-comprehensive --resume
+    /system-test --resume
 
   Next session starts at: Domain 8 (Security Headers & CSP)
 ```
@@ -698,7 +698,7 @@ S0 ████░░░░░░░░░░░░ XX (XX%) S1 █████�
 └─────────────────────────────────────────────────┘
 ```
 
-→ Commit: `audit(comprehensive): final report — XXX findings across 23 domains`
+→ Commit: `system-test: final report — XXX findings across 23 domains`
 
 ---
 
@@ -723,7 +723,7 @@ Preview what would change in MASTER_DEBT.jsonl, then ask.
 
   Sample new entry:
   {"id":"COMP-2026-02-18-D07-003","severity":"S1","effort":"E2",
-   "title":"Soft-delete TOCTOU race","source":"audit-comprehensive",
+   "title":"Soft-delete TOCTOU race","source":"system-test",
    "domain":"cloud-functions","file":"functions/src/index.ts:287"}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -832,7 +832,7 @@ The conversation is a coordination layer; the files ARE the audit.
 
 Commit after every completed domain. Each commit is a checkpoint. Worst case:
 lose 1 domain of in-progress work. Pattern:
-`audit(comprehensive): Domain N — <name> [M/23]`
+`system-test: Domain N — <name> [M/23]`
 
 ### Layer 3: PLAN_INDEX.md as Recovery Anchor
 

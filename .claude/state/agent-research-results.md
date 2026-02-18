@@ -998,7 +998,7 @@ findings from the second pass:
    - Reality: 55 live skills (SKILL_INDEX.md is a file, not a skill)
 
 3. **Reference Subdirectories (3 skills with advanced structure)**
-   - `audit-comprehensive/reference/` - Contains RECOVERY_PROCEDURES.md,
+   - `system-test/reference/` - Contains RECOVERY_PROCEDURES.md,
      TRIAGE_GUIDE.md, WAVE_DETAILS.md
    - `mcp-builder/reference/` - Contains evaluation.md, mcp_best_practices.md,
      node_mcp_server.md, python_mcp_server.md
@@ -1926,7 +1926,7 @@ All integrated with milestone planning (e.g., M2.1, Track-E references).
 
 - `/home/user/sonash-v0/.claude/skills/pr-retro/SKILL.md`
 - `/home/user/sonash-v0/.claude/skills/audit-code/SKILL.md`
-- `/home/user/sonash-v0/.claude/skills/audit-comprehensive/SKILL.md`
+- `/home/user/sonash-v0/.claude/skills/system-test/SKILL.md`
 - `/home/user/sonash-v0/.claude/skills/SKILL_INDEX.md`
 - 54 total skills in `/home/user/sonash-v0/.claude/skills/`
 

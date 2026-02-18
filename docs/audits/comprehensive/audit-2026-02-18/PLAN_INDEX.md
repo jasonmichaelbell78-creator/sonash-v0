@@ -8,18 +8,18 @@
 
 ## Audit Metadata
 
-| Field              | Value                                                      |
-| ------------------ | ---------------------------------------------------------- |
-| Audit ID           | `COMP-2026-02-18`                                          |
-| Skill Version      | 4.0 (23-domain interactive)                                |
-| Started            | 2026-02-18                                                 |
-| Current Session    | 0 (planning)                                               |
-| Last Completed     | — (not started)                                            |
-| Last Commit        | — (not started)                                            |
-| Total Findings     | 0                                                          |
-| Output Directory   | `docs/audits/comprehensive/audit-2026-02-18/`              |
-| Skill File         | `.claude/skills/audit-comprehensive/SKILL.md`              |
-| Workflow Reference | `.claude/skills/audit-comprehensive/reference/WORKFLOW.md` |
+| Field              | Value                                              |
+| ------------------ | -------------------------------------------------- |
+| Audit ID           | `COMP-2026-02-18`                                  |
+| Skill Version      | 4.0 (23-domain interactive)                        |
+| Started            | 2026-02-18                                         |
+| Current Session    | 0 (planning)                                       |
+| Last Completed     | — (not started)                                    |
+| Last Commit        | — (not started)                                    |
+| Total Findings     | 0                                                  |
+| Output Directory   | `docs/audits/comprehensive/audit-2026-02-18/`      |
+| Skill File         | `.claude/skills/system-test/SKILL.md`              |
+| Workflow Reference | `.claude/skills/system-test/reference/WORKFLOW.md` |
 
 ---
 
@@ -73,7 +73,7 @@ If context compacts or a session is interrupted:
 1. Read this file (`PLAN_INDEX.md`)
 2. Identify last domain with status `✅ Complete`
 3. Resume from the next domain number
-4. Run: `/audit-comprehensive --resume`
+4. Run: `/system-test --resume`
 
 ---
 

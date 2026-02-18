@@ -26,7 +26,8 @@ Source: `.claude/skills/*/SKILL.md`
 | `/audit-enhancements`             | Comprehensive enhancement audit                      |
 | `/audit-engineering-productivity` | Engineering productivity audit                       |
 | `/audit-ai-optimization`          | AI optimization audit                                |
-| `/audit-comprehensive`            | 23-domain interactive audit with per-finding review  |
+| `/audit-comprehensive`            | Run all 9 domain audits in staged waves              |
+| `/system-test`                    | 23-domain interactive system/repo test plan          |
 | `/audit-aggregator`               | Aggregate and deduplicate audit findings             |
 | `/audit-health`                   | Meta-check for audit system health                   |
 | `/create-audit`                   | Interactive wizard to scaffold new audit type        |
