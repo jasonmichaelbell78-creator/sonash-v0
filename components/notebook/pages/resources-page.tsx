@@ -13,8 +13,11 @@ import {
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { MeetingsService, type Meeting } from "@/lib/db/meetings";
 import type { QueryDocumentSnapshot } from "firebase/firestore";
-import { SoberLivingService, type SoberLivingHome } from "@/lib/db/sober-living";
-import { INITIAL_SOBER_LIVING_HOMES } from "@/scripts/seed-sober-living-data";
+import {
+  SoberLivingService,
+  type SoberLivingHome,
+  INITIAL_SOBER_LIVING_HOMES,
+} from "@/lib/db/sober-living";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 import { useAuth } from "@/components/providers/auth-provider";
