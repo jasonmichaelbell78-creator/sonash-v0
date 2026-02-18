@@ -7,10 +7,12 @@
  * Modes:
  *   --type=multi-ai        Reset ALL category dates + multi-AI counters (full reset)
  *   --type=comprehensive   Alias for --type=multi-ai
+ *   --type=multi-ai-single Reset one category with "Multi-AI" label (requires --category=X)
+ *                          Does NOT reset multi-AI global counters (commits/time)
  *   --type=single          Reset only one category (requires --category=X)
  *
  * Options:
- *   --category=X           Category to reset (code|security|performance|refactoring|documentation|process|engineering-productivity)
+ *   --category=X           Category to reset (code|security|performance|refactoring|documentation|process|engineering-productivity|enhancements|ai-optimization)
  *   --apply                Actually write changes (default: dry-run)
  *   --verbose              Show detailed output
  *
@@ -26,7 +28,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, "..");
 
-const TRACKER_PATH = join(ROOT, "docs", "AUDIT_TRACKER.md");
+const TRACKER_PATH = join(ROOT, "docs", "audits", "AUDIT_TRACKER.md");
 
 const VALID_CATEGORIES = [
   "code",
@@ -36,9 +38,11 @@ const VALID_CATEGORIES = [
   "documentation",
   "process",
   "engineering-productivity",
+  "enhancements",
+  "ai-optimization",
 ];
 
-const VALID_TYPES = ["multi-ai", "comprehensive", "single"];
+const VALID_TYPES = ["multi-ai", "comprehensive", "multi-ai-single", "single"];
 
 // Parse arguments
 const args = process.argv.slice(2);
@@ -68,8 +72,8 @@ function validateArgs() {
   if (!VALID_TYPES.includes(TYPE)) {
     return { valid: false, error: `Invalid type: ${TYPE}. Valid: ${VALID_TYPES.join(", ")}` };
   }
-  if (TYPE === "single" && !CATEGORY) {
-    return { valid: false, error: "--type=single requires --category=X" };
+  if ((TYPE === "single" || TYPE === "multi-ai-single") && !CATEGORY) {
+    return { valid: false, error: `--type=${TYPE} requires --category=X` };
   }
   if (CATEGORY && !VALID_CATEGORIES.includes(CATEGORY)) {
     return {
@@ -102,10 +106,11 @@ function resetCategoryRow(content, category, auditType) {
     .join("-");
   // Build a pattern that matches the category row in the threshold table
   // Use [-\s]+ between words to match both "Engineering-Productivity" and "Engineering Productivity"
+  // Allow optional **bold** markers around category name (e.g., "**Enhancements**")
   // Format: | Category | Last Audit | Commits Since | Files Since | Trigger At |
-  const displayNamePattern = escapeRegex(displayName).replace(/\\-/g, "[-\\s]+");
+  const displayNamePattern = escapeRegex(displayName).replace(/-/g, "[-\\s]+");
   const rowPattern = new RegExp(
-    String.raw`^(\|\s*${displayNamePattern}\s*\|)[^|\n]+\|[^|\n]+\|[^|\n]+\|(.*)$`,
+    String.raw`^(\|\s*\*{0,2}${displayNamePattern}\*{0,2}\s*\|)[^|\n]+\|[^|\n]+\|[^|\n]+\|(.*)$`,
     "mi"
   );
 
@@ -184,7 +189,7 @@ function main() {
   if (!validation.valid) {
     console.error(`❌ ${validation.error}`);
     console.error(
-      "\nUsage: node scripts/reset-audit-triggers.js --type=<multi-ai|comprehensive|single> [--category=X] [--apply]"
+      "\nUsage: node scripts/reset-audit-triggers.js --type=<multi-ai|comprehensive|multi-ai-single|single> [--category=X] [--apply]"
     );
     process.exit(1);
   }
@@ -216,6 +221,11 @@ function main() {
 
     // Reset multi-AI thresholds
     updated = resetMultiAIThresholds(updated);
+  } else if (effectiveType === "multi-ai-single") {
+    console.log(
+      `🔄 Resetting ${CATEGORY} category threshold (multi-AI single-category audit)...\n`
+    );
+    updated = resetCategoryRow(updated, CATEGORY, "Multi-AI");
   } else if (effectiveType === "single") {
     console.log(`🔄 Resetting ${CATEGORY} category threshold (single-session audit)...\n`);
     updated = resetCategoryRow(updated, CATEGORY, "Single");

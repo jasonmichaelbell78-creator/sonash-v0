@@ -546,6 +546,192 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews
 
+### PR #374 Retrospective (2026-02-18)
+
+#### Review Cycle Summary
+
+| Metric         | Value                                    |
+| -------------- | ---------------------------------------- |
+| Rounds         | 5 (R1-R5, 2026-02-17 through 2026-02-18) |
+| Total items    | 40                                       |
+| Fixed          | 29                                       |
+| Deferred       | 5                                        |
+| Rejected       | 5                                        |
+| Review sources | Qodo Compliance + Code Suggestions, CI   |
+
+#### Per-Round Breakdown
+
+| Round     | Date       | Source  | Items  | Fixed  | Deferred | Rejected | Key Patterns                                                 |
+| --------- | ---------- | ------- | ------ | ------ | -------- | -------- | ------------------------------------------------------------ |
+| R1        | 2026-02-17 | Qodo+CI | 15     | 8      | 4        | 3        | Bidirectional containment, fail-closed guard, backupSwap     |
+| R2        | 2026-02-17 | Qodo    | 3      | 3      | 0        | 0        | Path sep boundary, realpathSync on new files, evidence dedup |
+| R3        | 2026-02-18 | Qodo+CI | 8      | 7      | 1        | 0        | Descendant containment, backupSwap copy, mkdirSync order     |
+| R4        | 2026-02-18 | Qodo+CI | 8      | 6      | 0        | 1        | Ancestor containment restore, gitExec trim, fresh repo       |
+| R5        | 2026-02-18 | Qodo    | 6      | 5      | 0        | 1        | saveJson guard bypass, NUL trim propagation, depth limit     |
+| **Total** |            |         | **40** | **29** | **5**    | **5**    |                                                              |
+
+#### Ping-Pong Chains
+
+##### Chain 1: resolveProjectDir Containment Direction (R1->R2->R3->R4 = 4 rounds)
+
+| Round | What Happened                                                                                        | Files Affected | Root Cause                   |
+| ----- | ---------------------------------------------------------------------------------------------------- | -------------- | ---------------------------- |
+| R1    | Added bidirectional containment: ancestor OR descendant of CWD allowed                               | git-utils.js   | Initial — both directions    |
+| R2    | startsWith without path.sep boundary — `/repo/app` matches `/repo/app-malicious`                     | git-utils.js   | Missing boundary check       |
+| R3    | Ancestor direction too permissive — allows `/`. Restricted to descendant-only                        | git-utils.js   | R1's bidirectional too loose |
+| R4    | Descendant-only too restrictive — monorepo root needs ancestor. Restored bidirectional + depth limit | git-utils.js   | R3 overcorrected             |
+
+**Avoidable rounds:** 2 (R3 + R4). If R1 had bidirectional with path.sep
+boundary AND depth limit, R2 would fix boundary and R3/R4 wouldn't exist.
+
+**Prevention:** Path containment: always (1) use path.sep boundary, (2) handle
+both directions with justification, (3) add depth limits for ancestor direction.
+
+##### Chain 2: isSafeToWrite / realpathSync Lifecycle (R1->R2->R3->R4 = 4 rounds)
+
+| Round | What Happened                                                                         | Files Affected | Root Cause                 |
+| ----- | ------------------------------------------------------------------------------------- | -------------- | -------------------------- |
+| R1    | Added fail-closed fallback isSafeToWrite using realpathSync                           | state-utils.js | Initial implementation     |
+| R2    | realpathSync crash on .tmp/.bak files that don't exist. Fixed: realpath parent        | state-utils.js | Non-existent file paths    |
+| R3    | mkdirSync was after isSafeToWrite — parent dir may not exist yet                      | state-utils.js | Ordering dependency missed |
+| R4    | Fresh repo: no .claude/state/ dir — fallback guard fails. Fixed: realpath .claude dir | state-utils.js | Fresh checkout edge case   |
+
+**Avoidable rounds:** 2 (R3 + R4). Full lifecycle test matrix at R1/R2 would
+catch mkdir ordering and fresh checkout edge cases.
+
+**Prevention:** Filesystem guard test matrix: existing path, non-existent file,
+non-existent parent, fresh checkout with no directory tree.
+
+##### Chain 3: gitExec .trim() Propagation (R4->R5 = 2 rounds)
+
+| Round | What Happened                                                                   | Files Affected                               | Root Cause            |
+| ----- | ------------------------------------------------------------------------------- | -------------------------------------------- | --------------------- |
+| R4    | Added opts.trim=false option to gitExec for NUL-delimited git output            | git-utils.js                                 | Initial — opt-in flag |
+| R5    | 4 callers in other files use -z but weren't updated. Added auto-detect approach | post-read-handler.js, pre-compaction-save.js | Propagation miss      |
+
+**Avoidable rounds:** 1 (R5). Grep for ALL git -z callers at R4 would fix all 5
+callers in one pass.
+
+##### Chain 4: backupSwap Safety (R1->R3 = 2 rounds)
+
+| Round | What Happened                                                                            | Files Affected | Root Cause                    |
+| ----- | ---------------------------------------------------------------------------------------- | -------------- | ----------------------------- |
+| R1    | Added restore-on-failure logic using renameSync in catch                                 | state-utils.js | Initial fix                   |
+| R3    | renameSync(file, bak) failure → silentRm(file) deletes original. Changed to copyFileSync | state-utils.js | Catch path had data-loss risk |
+
+**Avoidable rounds:** 1 (R3). Use copyFileSync from the start per FIX_TEMPLATES
+#22.
+
+**Total avoidable rounds across all chains: ~6 items, ~2 full rounds avoidable
+(R3 and R5 were predominantly incremental refinements)**
+
+#### Rejection Analysis
+
+| Category                    | Count | Rounds | Examples                                                             |
+| --------------------------- | ----- | ------ | -------------------------------------------------------------------- |
+| Threat model mismatch       | 2     | R4, R5 | "CLAUDE_PROJECT_DIR attacker-controlled" — env set by Claude runtime |
+| Seed data PII               | 1     | R4     | "Public business listings" — not PII                                 |
+| Pre-existing/not applicable | 2     | R1     | Already handled upstream or not applicable to this context           |
+
+**Rejection accuracy:** 5/5 rejections were correct (100% accuracy).
+
+#### Recurring Patterns (Automation Candidates)
+
+| Pattern                            | Rounds | Also in PRs        | Already Automated? | Recommended Action                                              | Est. Effort |
+| ---------------------------------- | ------ | ------------------ | ------------------ | --------------------------------------------------------------- | ----------- |
+| Path containment direction         | R1-R4  | New                | No                 | Add pre-implementation decision checklist to pr-review Step 0.5 | ~10 min     |
+| realpathSync on non-existent paths | R1-R4  | #370 (path norm)   | No                 | FIX_TEMPLATES: "realpathSync lifecycle" template                | ~15 min     |
+| Propagation miss on shared utils   | R4-R5  | #366, #367         | Partial (Step 5.6) | Enforcement gap — consider auto-remind                          | ~0 min      |
+| Fallback bypasses safety guard     | R1, R5 | #369 (fail-closed) | No                 | FIX_TEMPLATES: "Hoist safety flag to function scope"            | ~10 min     |
+
+#### Previous Retro Action Item Audit
+
+| Retro   | Recommended Action                      | Implemented?            | Impact on #374                                 |
+| ------- | --------------------------------------- | ----------------------- | ---------------------------------------------- |
+| PR #370 | CC eslint as error                      | **YES** (pre-commit)    | 0 CC rounds — fully resolved                   |
+| PR #370 | Qodo suppression for actor/logs         | **YES** (pr-agent.toml) | 0 repeat compliance rejections                 |
+| PR #370 | Path normalization test matrix          | **NOT DONE**            | realpathSync chain R1-R4 (~2 avoidable rounds) |
+| PR #370 | FIX_TEMPLATES #29 (validate-then-store) | DONE                    | Applied correctly                              |
+| PR #371 | CC from warn to error                   | **YES** (pre-commit)    | 0 CC rounds — success                          |
+| PR #371 | Qodo suppression for compliance rules   | **DONE**                | No repeat compliance rejections                |
+| PR #371 | FIX_TEMPLATES extraction guidelines     | DONE                    | Not directly relevant                          |
+
+**Total avoidable rounds from unimplemented retro actions: ~2** (Path test
+matrix from #370 would have prevented realpathSync lifecycle chain R3-R4)
+
+#### Cross-PR Systemic Analysis
+
+| PR       | Rounds | Total Items | CC Rounds | Security Rounds | Rejections | Key Issue              |
+| -------- | ------ | ----------- | --------- | --------------- | ---------- | ---------------------- |
+| #366     | 8      | ~90         | 4         | 5               | ~20        | Symlink ping-pong      |
+| #367     | 7      | ~193        | 6         | 0               | ~24        | SKIP_REASON validation |
+| #368     | 6      | ~65         | 3         | 3               | ~15        | TOCTOU fd-based write  |
+| #369     | 9      | 119         | 6         | 8               | 41         | Both CC + symlink      |
+| #370     | 5      | 53          | 1         | 3               | 6          | Path normalization     |
+| #371     | 2      | 45          | 2         | 0               | 7          | CC extraction+S5852    |
+| **#374** | **5**  | **40**      | **0**     | **5**           | **5**      | **Path containment**   |
+
+**Persistent cross-PR patterns:**
+
+| Pattern                        | PRs Affected | Times Recommended | Status                          | Required Action                                    |
+| ------------------------------ | ------------ | ----------------- | ------------------------------- | -------------------------------------------------- |
+| CC lint rule                   | #366-#371    | 5x                | **RESOLVED** (pre-commit error) | None — 0 CC rounds in #374                         |
+| Qodo suppression               | #369-#371    | 3x                | **RESOLVED** (pr-agent.toml)    | None — 0 repeat compliance in #374                 |
+| Incremental security hardening | #366-#374    | 4x                | Improved but recurring          | Pre-implementation test matrix for guard functions |
+| Propagation check              | #366-#374    | 3x                | Documented in Step 5.6          | Enforcement gap — still missed R4->R5              |
+
+#### Skills/Templates to Update
+
+1. **FIX_TEMPLATES.md:** Add "realpathSync lifecycle" template — handle:
+   existing path, non-existent file, non-existent parent, fresh checkout. (~15
+   min)
+2. **FIX_TEMPLATES.md:** Add "Hoist safety flag to function scope" — when
+   try/catch has a fallback write path, hoist the safety check result to a
+   variable accessible in the catch block. (~10 min)
+3. **pr-review SKILL.md Step 0.5:** Add filesystem guard pre-push check: verify
+   guard functions with test matrix (existing path, non-existent file,
+   non-existent parent, fresh checkout). (~5 min)
+
+#### Process Improvements
+
+1. **Path containment decisions need upfront design** — Containment direction
+   flipped 3 times across R1-R4. Document required directions with justification
+   BEFORE writing code. Evidence: R1-R4 containment chain.
+2. **Filesystem guard test matrix at implementation time** — isSafeToWrite
+   failed in 4 different ways across 4 rounds. A 4-row test matrix would have
+   prevented 2 rounds. Evidence: R1-R4 realpathSync chain.
+3. **Propagation check enforcement** — Despite Step 5.6 documenting the
+   propagation pattern, R4->R5 missed 4 git -z callers. Consider auto-remind
+   after shared utility modifications. Evidence: R4->R5 trim chain.
+
+#### Verdict
+
+PR #374 had a **moderate review cycle** — 5 rounds with 40 items (29 fixed, 5
+deferred, 5 rejected). This matches PR #370's round count but with fewer total
+items (40 vs 53) and fewer rejections (5 vs 6).
+
+**~2 rounds were fully avoidable** (R3 and R5 were predominantly incremental
+refinements of previous fixes). R1-R2 were productive, R4 had a mix of genuine
+and avoidable items.
+
+The **single highest-impact change** is implementing a filesystem guard test
+matrix (test with non-existent files, non-existent parents, fresh checkouts).
+This would have prevented the 4-round isSafeToWrite chain.
+
+**Key milestone:** The two most persistent cross-PR patterns (CC lint rule: 5
+retros, Qodo suppression: 3 retros) are now **fully resolved**. PR #374 had 0 CC
+rounds and 0 repeat compliance rejections — validating the retro-driven
+improvement cycle. Security/filesystem hardening remains the dominant churn
+driver, suggesting a new pre-implementation checklist for hook infrastructure
+changes.
+
+**Trend:** CC rounds: 6→1→2→0 (resolved). Rejections: 41→6→7→5 (stable low).
+Security rounds: 8→3→0→5 (spiked due to new containment logic). Total: improving
+overall with resolved systemic patterns, but hook infrastructure PRs remain
+inherently security-heavy.
+
+---
+
 ### PR #371 Retrospective (2026-02-17)
 
 #### Review Cycle Summary

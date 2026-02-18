@@ -125,6 +125,49 @@ CC violations were the #1 cross-PR churn driver across PRs #366-#371, causing
 ~20 avoidable review rounds. The pre-commit hook now enforces CC as error on
 staged files (warn globally for 113 pre-existing violations).
 
+### Filesystem Guard Pre-Check (NEW — PR #374 Retro)
+
+**Before the first push**, if the PR introduces or modifies filesystem guard
+functions (`isSafeToWrite`, `validatePathInDir`, path containment checks),
+verify against the full lifecycle test matrix:
+
+| Scenario                        | Test With                            |
+| ------------------------------- | ------------------------------------ |
+| File exists                     | Normal operation                     |
+| File doesn't exist, parent does | `.tmp`/`.bak` paths                  |
+| Parent doesn't exist            | Fresh checkout, `mkdirSync` ordering |
+| Fresh checkout (no .claude/)    | First-ever run on clean clone        |
+| Symlink in path                 | Symlink to outside project           |
+
+Also verify path containment decisions BEFORE writing code:
+
+1. **Which directions needed?** Descendant-only or bidirectional (ancestor +
+   descendant)?
+2. **Separator boundary?** `startsWith(root + path.sep)`, not `startsWith(root)`
+3. **Case sensitivity?** Windows needs `.toLowerCase()`
+4. **Depth limit?** If ancestor direction, cap at 10 levels
+
+See FIX_TEMPLATES.md Templates 31 (realpathSync lifecycle) and 33 (path
+containment decision matrix).
+
+PR #374 had 4 rounds of containment direction flip-flopping and 4 rounds of
+realpathSync edge cases — all preventable with this pre-check.
+
+### Shared Utility Caller Audit (NEW — PR #374 Retro)
+
+**Before the first push**, if the PR modifies any shared utility function (in
+`lib/` directories), grep for ALL callers and verify they're compatible:
+
+```bash
+# Find all callers of the modified function
+grep -rn "functionName" .claude/hooks/ scripts/ --include="*.js"
+```
+
+This catches the propagation miss pattern where a shared function behavior
+changes but callers in other files aren't updated. PR #374 R4→R5 had a trim
+behavior change in `gitExec()` that wasn't propagated to 4 callers in other
+files.
+
 ---
 
 ## STEP 0: CONTEXT LOADING (Tiered Access)
@@ -386,15 +429,18 @@ the entire codebase for all instances BEFORE committing.
 
 **Search patterns for common issues:**
 
-| Issue Type         | Search Pattern                                            |
-| ------------------ | --------------------------------------------------------- |
-| Missing symlink    | `writeFileSync\|renameSync\|appendFileSync` without guard |
-| Missing try/catch  | `readFileSync` without surrounding try                    |
-| Atomic write       | `writeFileSync.*tmp` without rm+rename                    |
-| statSync vs lstat  | `statSync` (should be `lstatSync` for symlink safety)     |
-| Inline vs shared   | Old inline pattern that should use the new shared helper  |
-| Env var validation | `SKIP_REASON` (search ALL file types: JS, shell, hooks)   |
-| POSIX compliance   | `$'\\'` or `grep -P` in `.husky/` scripts                 |
+| Issue Type         | Search Pattern                                             |
+| ------------------ | ---------------------------------------------------------- |
+| Missing symlink    | `writeFileSync\|renameSync\|appendFileSync` without guard  |
+| Missing try/catch  | `readFileSync` without surrounding try                     |
+| Atomic write       | `writeFileSync.*tmp` without rm+rename                     |
+| statSync vs lstat  | `statSync` (should be `lstatSync` for symlink safety)      |
+| Inline vs shared   | Old inline pattern that should use the new shared helper   |
+| Env var validation | `SKIP_REASON` (search ALL file types: JS, shell, hooks)    |
+| POSIX compliance   | `$'\\'` or `grep -P` in `.husky/` scripts                  |
+| realpathSync guard | `realpathSync` without try/catch or parent-dir fallback    |
+| Path containment   | `startsWith(dir)` without `+ path.sep` boundary            |
+| Shared util change | Modified function name → grep ALL callers across all files |
 
 **CRITICAL (PR #367 retro):** Propagation checks must search ALL file types that
 consume the same pattern. PR #367 R4 fixed SKIP_REASON validation in shell hooks
@@ -579,11 +625,12 @@ Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
 
 ## Version History
 
-| Version | Date       | Description                                                                            |
-| ------- | ---------- | -------------------------------------------------------------------------------------- |
-| 2.4     | 2026-02-17 | CC now enforced via pre-commit hook (error on staged files). Source: PR #371 retro.    |
-| 2.3     | 2026-02-17 | Add CC Pre-Push Check (Step 0.5) + Path Test Matrix (Step 5.8). Source: PR #370 retro. |
-| 2.2     | 2026-02-15 | Add Security Pattern Sweep + Propagation Check (PR #366 retro)                         |
-| 2.1     | 2026-02-14 | Extract reference docs: SonarCloud, agents, TDMS, learning                             |
-| 2.0     | 2026-02-10 | Full protocol with parallel agents, TDMS integration                                   |
-| 1.0     | 2026-01-15 | Initial version                                                                        |
+| Version | Date       | Description                                                                                               |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 2.5     | 2026-02-18 | Add filesystem guard pre-check, shared utility caller audit, propagation patterns. Source: PR #374 retro. |
+| 2.4     | 2026-02-17 | CC now enforced via pre-commit hook (error on staged files). Source: PR #371 retro.                       |
+| 2.3     | 2026-02-17 | Add CC Pre-Push Check (Step 0.5) + Path Test Matrix (Step 5.8). Source: PR #370 retro.                    |
+| 2.2     | 2026-02-15 | Add Security Pattern Sweep + Propagation Check (PR #366 retro)                                            |
+| 2.1     | 2026-02-14 | Extract reference docs: SonarCloud, agents, TDMS, learning                                                |
+| 2.0     | 2026-02-10 | Full protocol with parallel agents, TDMS integration                                                      |
+| 1.0     | 2026-01-15 | Initial version                                                                                           |

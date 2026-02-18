@@ -1430,15 +1430,237 @@ CC in another" ping-pong pattern that caused 2+ rounds in PRs #369-#371.
 
 ---
 
+## Template 31: realpathSync Lifecycle in Guard Functions
+
+**Triggered by**: Qodo "realpathSync crash" / "ENOENT" / "missing directory"
+**Severity**: MAJOR **Review frequency**: 4 occurrences (PR #374 R1-R4)
+
+When using `realpathSync` in filesystem guard functions (e.g., `isSafeToWrite`,
+`validatePathInDir`), handle the full lifecycle — files and directories may not
+exist yet.
+
+### Bad Code
+
+```javascript
+// Crashes on non-existent files, missing parent dirs, fresh checkouts
+function isSafeToWrite(filePath) {
+  const real = fs.realpathSync(filePath); // throws ENOENT
+  return real.startsWith(allowedDir);
+}
+```
+
+### Good Code
+
+```javascript
+function isSafeToWrite(filePath) {
+  try {
+    // Try the full path first (fast path for existing files)
+    const real = fs.realpathSync(filePath);
+    return isUnderAllowedDir(real);
+  } catch {
+    // File doesn't exist — realpath the parent directory instead
+    const parentDir = path.dirname(filePath);
+    try {
+      const realParent = fs.realpathSync(parentDir);
+      const projected = path.join(realParent, path.basename(filePath));
+      return isUnderAllowedDir(projected);
+    } catch {
+      // Parent doesn't exist either — resolve from a known-good ancestor
+      // (e.g., .claude dir or project root)
+      try {
+        const ancestor = fs.realpathSync(path.resolve(projectDir, ".claude"));
+        const resolved = path.resolve(
+          ancestor,
+          path.relative(path.resolve(projectDir, ".claude"), filePath)
+        );
+        return isUnderAllowedDir(resolved);
+      } catch {
+        return false; // fail-closed: no resolvable ancestor
+      }
+    }
+  }
+}
+```
+
+### Test Matrix (MANDATORY before committing)
+
+| Scenario                        | Input Example                      | Expected           |
+| ------------------------------- | ---------------------------------- | ------------------ |
+| File exists                     | `.claude/state/handoff.json`       | Resolve, validate  |
+| File doesn't exist, parent does | `.claude/state/handoff.json.tmp`   | Realpath parent    |
+| Parent doesn't exist            | `.claude/state/` on fresh checkout | Resolve ancestor   |
+| Fresh checkout (no .claude/)    | First-ever run                     | Fail-closed: false |
+| Symlink in path                 | `.claude/state -> /tmp/evil`       | Detect, reject     |
+
+### Ordering Rule
+
+`mkdirSync` MUST come BEFORE `isSafeToWrite`, not after:
+
+```javascript
+// CORRECT: mkdir first, then validate, then write
+fs.mkdirSync(path.dirname(filePath), { recursive: true });
+if (!isSafeToWrite(filePath)) return false;
+fs.writeFileSync(tmpPath, data);
+```
+
+---
+
+## Template 32: Hoist Safety Flag to Function Scope
+
+**Triggered by**: Qodo "fallback bypasses guard" / "catch block unsafe write"
+**Severity**: CRITICAL **Review frequency**: 2 occurrences (PR #374 R1, R5)
+
+When a try/catch block has a fallback write path, the catch block may bypass
+safety guards that were checked in the try block. Hoist the guard result to a
+variable at function scope so both paths respect it.
+
+### Bad Code
+
+```javascript
+function saveJson(filePath, data) {
+  try {
+    if (!isSafeToWrite(filePath)) return false; // guard checked here
+    fs.writeFileSync(tmpPath, JSON.stringify(data));
+    fs.renameSync(tmpPath, filePath);
+    return true;
+  } catch {
+    // DANGER: fallback write bypasses isSafeToWrite!
+    fs.writeFileSync(filePath, JSON.stringify(data));
+    return true;
+  }
+}
+```
+
+### Good Code
+
+```javascript
+function saveJson(filePath, data) {
+  let safeToWrite = false; // hoisted to function scope
+
+  try {
+    safeToWrite = isSafeToWrite(filePath) && isSafeToWrite(tmpPath);
+    if (!safeToWrite) return false;
+
+    fs.writeFileSync(tmpPath, JSON.stringify(data));
+    fs.renameSync(tmpPath, filePath);
+    return true;
+  } catch {
+    // Fallback respects the same guard
+    if (!safeToWrite) return false;
+
+    fs.writeFileSync(filePath, JSON.stringify(data));
+    return true;
+  }
+}
+```
+
+### Pattern
+
+The general rule: **any boolean gate checked in `try` that affects `catch`
+behavior must be declared BEFORE the try block.**
+
+```javascript
+let guardResult = false;
+try {
+  guardResult = checkGuard();
+  if (!guardResult) return;
+  // ... risky operation
+} catch {
+  if (!guardResult) return; // catch respects the same gate
+  // ... fallback operation
+}
+```
+
+### When to Use
+
+- Any function with try/catch that has a fallback write/delete/rename in catch
+- Functions that call `isSafeToWrite()`, `validatePath()`, or similar guards
+- Any pattern where the catch block does something the try block guards against
+
+---
+
+## Template 33: Path Containment Decision Matrix
+
+**Triggered by**: Qodo "path traversal" / "containment bypass" / "ancestor too
+permissive" **Severity**: CRITICAL **Review frequency**: 4 occurrences (PR #374
+R1-R4)
+
+Path containment checks (`isPathUnder(candidate, root)`) have two directions.
+Choosing the wrong direction or missing boundary checks causes multi-round
+ping-pong as the check flip-flops between too permissive and too restrictive.
+
+### Decision Matrix (Answer BEFORE Writing Code)
+
+| Question                                                    | Answer   | Implication                          |
+| ----------------------------------------------------------- | -------- | ------------------------------------ |
+| Can the candidate be a child of root?                       | Yes/No   | Enable descendant direction          |
+| Can the candidate be a parent of root? (monorepo/workspace) | Yes/No   | Enable ancestor direction            |
+| Is this Windows-compatible?                                 | Yes/No   | Case-insensitive comparison          |
+| What's the max ancestor depth?                              | N levels | Defense-in-depth cap (recommend: 10) |
+
+### Bad Code
+
+```javascript
+// Missing boundary: /repo/app matches /repo/app-malicious
+if (resolved.startsWith(root)) {
+  /* ... */
+}
+
+// Missing direction: breaks monorepo where root is ancestor of cwd
+if (!resolved.startsWith(cwd)) return fallback;
+```
+
+### Good Code
+
+```javascript
+function isContained(candidate, root) {
+  const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
+  const a = norm(fs.realpathSync(path.resolve(candidate)));
+  const b = norm(fs.realpathSync(path.resolve(root)));
+
+  // Exact match
+  if (a === b) return true;
+
+  // Descendant: candidate is under root
+  const isDescendant = a.startsWith(b + path.sep);
+
+  // Ancestor: root is under candidate (monorepo support)
+  const isAncestor = b.startsWith(a + path.sep);
+
+  if (isDescendant) return true;
+
+  if (isAncestor) {
+    // Defense-in-depth: cap ancestor depth
+    const depth = b.slice(a.length).split(path.sep).filter(Boolean).length;
+    return depth <= 10;
+  }
+
+  return false;
+}
+```
+
+### Checklist (Verify All Before Committing)
+
+1. **Separator boundary**: `startsWith(root + path.sep)`, not just
+   `startsWith(root)`
+2. **Exact match**: Check `a === b` separately from startsWith
+3. **Case sensitivity**: Windows paths need `.toLowerCase()`
+4. **Both directions justified**: Document why ancestor is needed (or not)
+5. **Depth limit**: If ancestor direction enabled, cap at 10 levels
+6. **realpathSync lifecycle**: Handle non-existent paths (see Template 31)
+
+---
+
 ## Version History
 
-| Version | Date       | Change                                                                                              |
-| ------- | ---------- | --------------------------------------------------------------------------------------------------- |
-| 1.8     | 2026-02-17 | Add Template 30 (CC extraction guidelines). Source: PR #371 retro.                                  |
-| 1.7     | 2026-02-17 | Add Templates 28-29 (fail-closed catch, validate-then-store path). Source: PR #369-#370 retros.     |
-| 1.5     | 2026-02-16 | Add Template 27 (Secure Audit File Write fd-based chain). Source: PR #368 retro.                    |
-| 1.4     | 2026-02-16 | Add Templates 25-26 (SKIP_REASON validation chain, POSIX shell portability). Source: PR #367 retro. |
-| 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)                                                             |
-| 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)                                                      |
-| 1.1     | 2026-02-14 | Add Templates 21-22 (regex complexity, atomic write)                                                |
-| 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis                                                      |
+| Version | Date       | Change                                                                                                    |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| 1.9     | 2026-02-18 | Add Templates 31-33 (realpathSync lifecycle, safety flag hoist, path containment). Source: PR #374 retro. |
+| 1.8     | 2026-02-17 | Add Template 30 (CC extraction guidelines). Source: PR #371 retro.                                        |
+| 1.7     | 2026-02-17 | Add Templates 28-29 (fail-closed catch, validate-then-store path). Source: PR #369-#370 retros.           |
+| 1.5     | 2026-02-16 | Add Template 27 (Secure Audit File Write fd-based chain). Source: PR #368 retro.                          |
+| 1.4     | 2026-02-16 | Add Templates 25-26 (SKIP_REASON validation chain, POSIX shell portability). Source: PR #367 retro.       |
+| 1.3     | 2026-02-15 | Add Template 24 (tmpPath symlink guard)                                                                   |
+| 1.2     | 2026-02-15 | Add Template 23 (pattern propagation workflow)                                                            |
+| 1.1     | 2026-02-14 | Add Templates 21-22 (regex complexity, atomic write)                                                      |
+| 1.0     | 2026-02-11 | Initial 20 templates from Qodo review analysis                                                            |
