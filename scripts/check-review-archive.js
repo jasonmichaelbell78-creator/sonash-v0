@@ -39,6 +39,17 @@ const REVIEWS_JSONL = join(ROOT, ".claude", "state", "reviews.jsonl");
 const args = process.argv.slice(2);
 const fixMode = args.includes("--fix");
 
+// Known-skipped review IDs: numbers that were never assigned to individual reviews.
+// These gaps come from numbering skips, batch consolidations, or PR rounds that
+// weren't individually documented. Verified via git log -S "#### Review #N".
+// Last verified: Session #170 (2026-02-18)
+const KNOWN_SKIPPED_IDS = new Set([
+  41, 64, 65, 66, 67, 68, 69, 70, 71, 80, 83, 84, 85, 86, 90, 91, 117, 118, 119, 120, 157, 158, 159,
+  160, 166, 167, 168, 169, 170, 172, 173, 174, 175, 176, 177, 178, 185, 203, 205, 206, 207, 208,
+  209, 210, 220, 228, 229, 230, 231, 232, 233, 234, 240, 241, 242, 243, 244, 245, 246, 247, 248,
+  323, 335, 349,
+]);
+
 let issues = 0;
 
 function warn(msg) {
@@ -51,18 +62,85 @@ function ok(msg) {
 }
 
 /**
- * Extract review IDs from a file using #### Review #N pattern
+ * Group consecutive numbers into ranges for display.
+ * e.g. [1,2,3,5,7,8] → ["#1-#3", "#5", "#7-#8"]
  */
-function extractReviewIds(filePath) {
+function groupConsecutive(nums) {
+  if (nums.length === 0) return [];
+  const ranges = [];
+  let start = nums[0];
+  let end = nums[0];
+  for (let i = 1; i < nums.length; i++) {
+    if (nums[i] === end + 1) {
+      end = nums[i];
+    } else {
+      ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
+      start = nums[i];
+      end = nums[i];
+    }
+  }
+  ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
+  return ranges;
+}
+
+/**
+ * Extract review IDs from a file using heading pattern (#### Review #N).
+ * For archive files, also checks table index rows (| #N |, | #N-M |)
+ * which are used in summary-only archives like REVIEWS_101-136.md.
+ *
+ * @param {string} filePath - File to scan
+ * @param {object} [opts] - Options
+ * @param {boolean} [opts.includeTableIndex=false] - Also match | #N | table rows
+ *   (use for archive files only; the active log has PR# tables that would false-positive)
+ */
+function extractReviewIds(filePath, opts = {}) {
+  const { includeTableIndex = false } = opts;
   try {
     if (lstatSync(filePath).isSymbolicLink()) return [];
     const content = readFileSync(filePath, "utf8");
     const ids = [];
-    const regex = /^####\s+Review\s+#(\d+)/gm;
+
+    // Pattern 1: #### Review #N (full content entries)
+    const headingRegex = /^####\s+Review\s+#(\d+)/gm;
     let match;
-    while ((match = regex.exec(content)) !== null) {
+    let hasHeadings = false;
+    while ((match = headingRegex.exec(content)) !== null) {
       ids.push(Number.parseInt(match[1], 10));
+      hasHeadings = true;
     }
+
+    let hasTable = false;
+    if (includeTableIndex) {
+      // Pattern 2: | #N | (table index rows — single review)
+      // Only used for archive files to avoid false positives from PR# tables
+      const tableRegex = /^\|\s*#(\d+)\s*\|/gm;
+      while ((match = tableRegex.exec(content)) !== null) {
+        const id = Number.parseInt(match[1], 10);
+        if (!ids.includes(id)) ids.push(id);
+        hasTable = true;
+      }
+
+      // Pattern 3: | #N-M | (consolidated range rows)
+      const rangeRegex = /^\|\s*#(\d+)-(\d+)\s*\|/gm;
+      while ((match = rangeRegex.exec(content)) !== null) {
+        const start = Number.parseInt(match[1], 10);
+        const end = Number.parseInt(match[2], 10);
+        for (let i = start; i <= end; i++) {
+          if (!ids.includes(i)) ids.push(i);
+        }
+        hasTable = true;
+      }
+    }
+
+    // Store format metadata for reporting
+    if (hasHeadings && hasTable) {
+      ids._format = "mixed";
+    } else if (hasTable) {
+      ids._format = "table";
+    } else {
+      ids._format = "full";
+    }
+
     return ids;
   } catch {
     return [];
@@ -162,11 +240,15 @@ function main() {
 
     for (const file of archiveFiles) {
       const filePath = join(ARCHIVE_DIR, file);
-      const ids = extractReviewIds(filePath);
+      const ids = extractReviewIds(filePath, { includeTableIndex: true });
+      const fmt = ids._format || "full";
+      const fmtLabel = fmt === "table" ? " (table-indexed)" : fmt === "mixed" ? " (mixed)" : "";
       if (ids.length > 0) {
-        console.log(`  ${file}: ${ids.length} reviews (#${Math.min(...ids)}-#${Math.max(...ids)})`);
+        console.log(
+          `  ${file}: ${ids.length} reviews (#${Math.min(...ids)}-#${Math.max(...ids)})${fmtLabel}`
+        );
       } else {
-        console.log(`  ${file}: 0 reviews (summary-only)`);
+        console.log(`  ${file}: 0 reviews (empty)`);
       }
       for (const id of ids) {
         if (!allIds.has(id)) allIds.set(id, []);
@@ -200,35 +282,39 @@ function main() {
     const sortedIds = [...allIds.keys()].sort((a, b) => a - b);
     const minId = sortedIds[0];
     const maxId = sortedIds[sortedIds.length - 1];
-    const gaps = [];
+    const knownSkipped = [];
+    const trulyMissing = [];
 
     for (let id = minId; id <= maxId; id++) {
-      if (!allIds.has(id)) gaps.push(id);
-    }
-
-    if (gaps.length > 0) {
-      // Group consecutive gaps for readability
-      const ranges = [];
-      let start = gaps[0];
-      let end = gaps[0];
-      for (let i = 1; i < gaps.length; i++) {
-        if (gaps[i] === end + 1) {
-          end = gaps[i];
+      if (!allIds.has(id)) {
+        if (KNOWN_SKIPPED_IDS.has(id)) {
+          knownSkipped.push(id);
         } else {
-          ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
-          start = gaps[i];
-          end = gaps[i];
+          trulyMissing.push(id);
         }
       }
-      ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
-
-      warn(`${gaps.length} reviews missing from archives: ${ranges.join(", ")}`);
-      console.log(
-        `    Total range: #${minId}-#${maxId} (${maxId - minId + 1} expected, ${allIds.size} found)`
-      );
-    } else {
-      ok(`Complete coverage: #${minId}-#${maxId} (${allIds.size} reviews)`);
     }
+
+    if (trulyMissing.length > 0) {
+      const ranges = groupConsecutive(trulyMissing);
+      warn(`${trulyMissing.length} reviews missing from archives: ${ranges.join(", ")}`);
+    }
+
+    if (knownSkipped.length > 0) {
+      console.log(`  ℹ️  ${knownSkipped.length} known-skipped IDs (never assigned, not a gap)`);
+    }
+
+    if (trulyMissing.length === 0 && knownSkipped.length === 0) {
+      ok(`Complete coverage: #${minId}-#${maxId} (${allIds.size} reviews)`);
+    } else if (trulyMissing.length === 0) {
+      ok(
+        `Full coverage: #${minId}-#${maxId} (${allIds.size} reviews, ${knownSkipped.length} known-skipped)`
+      );
+    }
+
+    console.log(
+      `    Total range: #${minId}-#${maxId} (${allIds.size} found, ${knownSkipped.length} skipped, ${trulyMissing.length} missing)`
+    );
   }
   console.log();
 
