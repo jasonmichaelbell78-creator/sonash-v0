@@ -65,6 +65,9 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 - Estimated 5 sessions to complete full execution
 - Next session: Begin Domain 1-5 execution (prerequisites, build, tests, lint,
   deps)
+- Investigated 102 "missing" review archives — not data loss; detection gap in
+  check-review-archive.js (summary-only archives lack expected `#### Review #N`
+  headings). All 352 reviews present in JSONL.
 
 **Session #169 Summary** (AI-OPTIMIZATION AUDIT + TRACK AI SPRINT COMPLETE):
 
@@ -101,7 +104,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/plan-system-testing-ur2yh`
+**Current Branch**: `claude/new-session-KE2kF`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
