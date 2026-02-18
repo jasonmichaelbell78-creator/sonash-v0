@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 4.5 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 4.6 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-02-17 (Session #169)
+2026-02-18 (Session #170)
 
 ## Purpose
 
@@ -42,7 +42,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Session Tracking
 
-**Current Session Count**: 169 (since Jan 1, 2026)
+**Current Session Count**: 170 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -52,17 +52,22 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ## Recent Session Summaries
 
-**Session #167 Summary** (ALERTS FULL SCAN + S0 SPRINT INTEGRATION):
+**Session #170 Summary** (COMPREHENSIVE SYSTEM TEST PLANNING):
 
-- Ran `/alerts --full` (33 categories) — processed all 17 alerts interactively
-- Moved 11 S0 critical debt items into Active Sprint in ROADMAP.md with
-  cross-references; updated MASTER_DEBT.jsonl sprintLocation fields
-- Fixed 7 pattern compliance violations (missing-trap regex 50→100, atomicSwap
-  symlink guards, archive-doc.js tmpPath guard placement)
-- Fixed cross-doc-deps false positives: added gitFilter:AD to 2 noisy rules
-- Fixed 2 broken ROADMAP.md links (CLAUDE.md → claude.md with anchors)
-- Added 5 alert suppressions for sandbox/scale false positives
-- Health: A (90/100), 4 fixed, 5 suppressed, 9 acknowledged
+- Planned a 20-domain comprehensive system/repo test covering every file
+- Deep-plan discovery: 5 batches of questions (20 questions total) to scope
+  breadth
+- Decisions: max depth on all dimensions — static + logical + runtime analysis,
+  full doc audit, full TDMS reconciliation, full security audit, full dependency
+  audit
+- Plan saved to `.claude/plans/system-test-plan.md`
+- Identified 8 pre-existing issues before execution begins
+- Estimated 5 sessions to complete full execution
+- Next session: Begin Domain 1-5 execution (prerequisites, build, tests, lint,
+  deps)
+- Investigated 102 "missing" review archives — not data loss; detection gap in
+  check-review-archive.js (summary-only archives lack expected `#### Review #N`
+  headings). All 352 reviews present in JSONL.
 
 **Session #169 Summary** (AI-OPTIMIZATION AUDIT + TRACK AI SPRINT COMPLETE):
 
@@ -99,7 +104,7 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 | M1.5 - Quick Wins                 | Paused   | ~20%             |
 | M1.6 - Admin Panel + UX           | Paused   | ~75%             |
 
-**Current Branch**: `claude/new-session-6kCvR`
+**Current Branch**: `claude/new-session-KE2kF`
 
 **Test Status**: 99.7% pass rate (293/294 tests passing, 1 skipped)
 
@@ -109,10 +114,11 @@ On**: Session infrastructure improvements (archival, hooks, automation audit)
 
 ### Immediate Priority (Next Session)
 
-1. **Fix 11 S0 critical items** (Active Sprint S0 Critical Debt section)
-2. **GRAND PLAN Sprint 4** (`lib/` + `hooks/` + `app/`) — Continue debt
+1. **Execute System Test Domains 1-5** — Prerequisites, Build, Tests, Static
+   Analysis, Dependencies (plan: `.claude/plans/system-test-plan.md`)
+2. **Fix 11 S0 critical items** (Active Sprint S0 Critical Debt section)
+3. **GRAND PLAN Sprint 4** (`lib/` + `hooks/` + `app/`) — Continue debt
    elimination (214 items, 40 files)
-3. ~~**Track AI: AI Optimization Sprint**~~ — COMPLETE (Session #169)
 
 **See**: [ROADMAP.md](./ROADMAP.md) for full milestone details
 
@@ -196,6 +202,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------- | ------ |
+| 4.6     | 2026-02-18 | Session #170: Comprehensive system test planning         | Claude |
 | 4.4     | 2026-02-17 | Session #167: Alerts full scan + S0 sprint integration   | Claude |
 | 4.3     | 2026-02-16 | Session #164: Audit ecosystem remediation waves 1-8      | Claude |
 | 4.2     | 2026-02-12 | Session #154: Alerts enhancement plan + dead data audit  | Claude |

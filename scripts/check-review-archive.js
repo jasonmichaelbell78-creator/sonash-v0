@@ -26,8 +26,12 @@ const { join } = require("node:path");
 let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require(join(__dirname, "..", ".claude", "hooks", "lib", "symlink-guard")));
-} catch {
-  console.error("symlink-guard unavailable; disabling writes");
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(
+    "symlink-guard unavailable; disabling writes:",
+    msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]")
+  );
   isSafeToWrite = () => false;
 }
 
@@ -38,6 +42,17 @@ const REVIEWS_JSONL = join(ROOT, ".claude", "state", "reviews.jsonl");
 
 const args = process.argv.slice(2);
 const fixMode = args.includes("--fix");
+
+// Known-skipped review IDs: numbers that were never assigned to individual reviews.
+// These gaps come from numbering skips, batch consolidations, or PR rounds that
+// weren't individually documented. Verified via git log -S "#### Review #N".
+// Last verified: Session #170 (2026-02-18)
+const KNOWN_SKIPPED_IDS = new Set([
+  41, 64, 65, 66, 67, 68, 69, 70, 71, 80, 83, 84, 85, 86, 90, 91, 117, 118, 119, 120, 157, 158, 159,
+  160, 166, 167, 168, 169, 170, 172, 173, 174, 175, 176, 177, 178, 185, 203, 205, 206, 207, 208,
+  209, 210, 220, 228, 229, 230, 231, 232, 233, 234, 240, 241, 242, 243, 244, 245, 246, 247, 248,
+  323, 335, 349,
+]);
 
 let issues = 0;
 
@@ -51,20 +66,122 @@ function ok(msg) {
 }
 
 /**
- * Extract review IDs from a file using #### Review #N pattern
+ * Group consecutive numbers into ranges for display.
+ * e.g. [1,2,3,5,7,8] → ["#1-#3", "#5", "#7-#8"]
  */
-function extractReviewIds(filePath) {
+function groupConsecutive(nums) {
+  const sorted = Array.from(new Set(nums)).sort((a, b) => a - b);
+  if (sorted.length === 0) return [];
+  const ranges = [];
+  let start = sorted[0];
+  let end = sorted[0];
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i] === end + 1) {
+      end = sorted[i];
+    } else {
+      ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
+      start = sorted[i];
+      end = sorted[i];
+    }
+  }
+  ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
+  return ranges;
+}
+
+/** Maximum range expansion (e.g. #1-#5000) to prevent DoS from malformed input */
+const MAX_RANGE_EXPANSION = 5000;
+
+/**
+ * Parse heading-based review IDs from content.
+ * @returns {{ ids: number[], found: boolean }}
+ */
+function parseHeadingIds(content) {
+  const headingRegex = /^####\s+Review\s+#(\d+)/gm;
+  const ids = [];
+  let match;
+  let found = false;
+  while ((match = headingRegex.exec(content)) !== null) {
+    ids.push(Number.parseInt(match[1], 10));
+    found = true;
+  }
+  return { ids, found };
+}
+
+/**
+ * Parse table-index review IDs from content (| #N | and | #N-M | rows).
+ * @returns {{ ids: number[], found: boolean }}
+ */
+function parseTableIds(content) {
+  const ids = [];
+  let match;
+  let found = false;
+
+  // Single review rows: | #N |
+  const tableRegex = /^\|\s*#(\d+)\s*\|/gm;
+  while ((match = tableRegex.exec(content)) !== null) {
+    ids.push(Number.parseInt(match[1], 10));
+    found = true;
+  }
+
+  // Consolidated range rows: | #N-M |
+  const rangeRegex = /^\|\s*#(\d+)-(\d+)\s*\|/gm;
+  while ((match = rangeRegex.exec(content)) !== null) {
+    const start = Number.parseInt(match[1], 10);
+    const end = Number.parseInt(match[2], 10);
+    const span = end - start + 1;
+    if (
+      !Number.isFinite(start) ||
+      !Number.isFinite(end) ||
+      span <= 0 ||
+      span > MAX_RANGE_EXPANSION
+    ) {
+      found = true;
+      continue;
+    }
+    for (let i = start; i <= end; i++) ids.push(i);
+    found = true;
+  }
+
+  return { ids, found };
+}
+
+/**
+ * Extract review IDs from a file using heading pattern (#### Review #N).
+ * For archive files, also checks table index rows (| #N |, | #N-M |)
+ * which are used in summary-only archives like REVIEWS_101-136.md.
+ *
+ * @param {string} filePath - File to scan
+ * @param {object} [opts] - Options
+ * @param {boolean} [opts.includeTableIndex=false] - Also match | #N | table rows
+ *   (use for archive files only; the active log has PR# tables that would false-positive)
+ */
+function extractReviewIds(filePath, opts = {}) {
+  const { includeTableIndex = false } = opts;
   try {
     if (lstatSync(filePath).isSymbolicLink()) return [];
     const content = readFileSync(filePath, "utf8");
-    const ids = [];
-    const regex = /^####\s+Review\s+#(\d+)/gm;
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-      ids.push(Number.parseInt(match[1], 10));
+
+    const headings = parseHeadingIds(content);
+    const table = includeTableIndex ? parseTableIds(content) : { ids: [], found: false };
+
+    const ids = [...new Set([...headings.ids, ...table.ids])];
+
+    // Store format metadata for reporting
+    if (headings.found && table.found) {
+      ids._format = "mixed";
+    } else if (table.found) {
+      ids._format = "table";
+    } else {
+      ids._format = "full";
     }
+
     return ids;
-  } catch {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(
+      `Error processing ${filePath.replace(ROOT + "/", "")}:`,
+      msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]")
+    );
     return [];
   }
 }
@@ -87,8 +204,12 @@ function checkWrongHeadings(filePath, fileName) {
       }
       return wrongHeadings;
     }
-  } catch {
-    /* skip */
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(
+      `Error checking headings in ${fileName}:`,
+      msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]")
+    );
   }
   return 0;
 }
@@ -110,7 +231,9 @@ function getJsonlMaxId() {
       }
     }
     return max;
-  } catch {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Error reading reviews.jsonl:", msg.replaceAll(/C:\\Users\\[^\\]+/gi, "[PATH]"));
     return 0;
   }
 }
@@ -162,11 +285,16 @@ function main() {
 
     for (const file of archiveFiles) {
       const filePath = join(ARCHIVE_DIR, file);
-      const ids = extractReviewIds(filePath);
+      const ids = extractReviewIds(filePath, { includeTableIndex: true });
+      const fmt = ids._format || "full";
+      const FMT_LABELS = { table: " (table-indexed)", mixed: " (mixed)" };
+      const fmtLabel = FMT_LABELS[fmt] || "";
       if (ids.length > 0) {
-        console.log(`  ${file}: ${ids.length} reviews (#${Math.min(...ids)}-#${Math.max(...ids)})`);
+        console.log(
+          `  ${file}: ${ids.length} reviews (#${Math.min(...ids)}-#${Math.max(...ids)})${fmtLabel}`
+        );
       } else {
-        console.log(`  ${file}: 0 reviews (summary-only)`);
+        console.log(`  ${file}: 0 reviews (empty)`);
       }
       for (const id of ids) {
         if (!allIds.has(id)) allIds.set(id, []);
@@ -197,38 +325,53 @@ function main() {
   // 4. Gap analysis
   console.log("4. Coverage Gaps:");
   if (allIds.size > 0) {
+    const MAX_GAP_SCAN_SPAN = 10_000;
     const sortedIds = [...allIds.keys()].sort((a, b) => a - b);
     const minId = sortedIds[0];
     const maxId = sortedIds[sortedIds.length - 1];
-    const gaps = [];
+    const span = maxId - minId + 1;
+
+    if (!Number.isFinite(span) || span <= 0 || span > MAX_GAP_SCAN_SPAN) {
+      warn(
+        `Gap scan range #${minId}-#${maxId} (${span} entries) exceeds cap of ${MAX_GAP_SCAN_SPAN} — possible corrupted archive`
+      );
+      process.exitCode = 2;
+      return;
+    }
+
+    const knownSkipped = [];
+    const trulyMissing = [];
 
     for (let id = minId; id <= maxId; id++) {
-      if (!allIds.has(id)) gaps.push(id);
-    }
-
-    if (gaps.length > 0) {
-      // Group consecutive gaps for readability
-      const ranges = [];
-      let start = gaps[0];
-      let end = gaps[0];
-      for (let i = 1; i < gaps.length; i++) {
-        if (gaps[i] === end + 1) {
-          end = gaps[i];
+      if (!allIds.has(id)) {
+        if (KNOWN_SKIPPED_IDS.has(id)) {
+          knownSkipped.push(id);
         } else {
-          ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
-          start = gaps[i];
-          end = gaps[i];
+          trulyMissing.push(id);
         }
       }
-      ranges.push(start === end ? `#${start}` : `#${start}-#${end}`);
-
-      warn(`${gaps.length} reviews missing from archives: ${ranges.join(", ")}`);
-      console.log(
-        `    Total range: #${minId}-#${maxId} (${maxId - minId + 1} expected, ${allIds.size} found)`
-      );
-    } else {
-      ok(`Complete coverage: #${minId}-#${maxId} (${allIds.size} reviews)`);
     }
+
+    if (trulyMissing.length > 0) {
+      const ranges = groupConsecutive(trulyMissing);
+      warn(`${trulyMissing.length} reviews missing from archives: ${ranges.join(", ")}`);
+    }
+
+    if (knownSkipped.length > 0) {
+      console.log(`  ℹ️  ${knownSkipped.length} known-skipped IDs (never assigned, not a gap)`);
+    }
+
+    if (trulyMissing.length === 0 && knownSkipped.length === 0) {
+      ok(`Complete coverage: #${minId}-#${maxId} (${allIds.size} reviews)`);
+    } else if (trulyMissing.length === 0) {
+      ok(
+        `Full coverage: #${minId}-#${maxId} (${allIds.size} reviews, ${knownSkipped.length} known-skipped)`
+      );
+    }
+
+    console.log(
+      `    Total range: #${minId}-#${maxId} (${allIds.size} found, ${knownSkipped.length} skipped, ${trulyMissing.length} missing)`
+    );
   }
   console.log();
 
